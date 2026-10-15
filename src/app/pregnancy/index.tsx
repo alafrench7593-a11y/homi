@@ -118,7 +118,7 @@ export default function PregnancyUniverse() {
         <ListRow icon="check-square" title="Listes de préparation" onPress={() => router.push('/lists')} />
         <ListRow icon="folder" title="Échographies et documents" subtitle={docs?.length ? `${docs.length} document(s)` : undefined} onPress={() => router.push('/documents')} />
         <ListRow icon="star" title="Idées de prénoms" onPress={() => router.push('/names')} />
-        <ListRow icon="book-open" title="Préparer l’accouchement" subtitle="Signes du travail, péridurale, césarienne…" onPress={() => router.push('/(tabs)/discover')} />
+        <ListRow icon="book-open" title="Préparer l’accouchement" subtitle="Signes du travail, péridurale, césarienne…" onPress={() => router.push('/library')} />
         <ListRow icon="edit-3" title="Modifier la grossesse" subtitle="Date du terme, nombre de bébés" onPress={() => router.push('/pregnancy/edit')} />
       </Card>
 

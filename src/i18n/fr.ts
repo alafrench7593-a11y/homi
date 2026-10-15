@@ -3,6 +3,7 @@ export const fr = {
   'tab.track': 'Suivi',
   'tab.ask': 'Questions',
   'tab.discover': 'Découvrir',
+  'tab.profile': 'Profil',
   'tab.community': 'Communauté',
   'common.save': 'Enregistrer',
   'common.cancel': 'Annuler',

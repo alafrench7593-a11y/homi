@@ -6,7 +6,8 @@ import { FetusArt } from '@/components/FetusArt';
 import { StarField } from '@/components/StarField';
 import { ClockLegend, DayClock, WeeksRing, type ClockEvent } from '@/components/DayClock';
 import { Card, haptic, Icon, type IconName, Row, Text } from '@/components/ui';
-import { useAppointments, useExpectedBabies, useLogs, useOpenSleep, useReminders } from '@/lib/data/hooks';
+import { useAppointments, useExpectedBabies, useLogs, useOpenSleep, usePeriods, useReminders } from '@/lib/data/hooks';
+import { estimateCycle } from '@/lib/domain/cycle';
 import { countdownLabel, pregnancyProgress } from '@/lib/domain/pregnancy';
 import { formatWeight, weekInfo } from '@/lib/domain/fetalWeeks';
 import { childAge } from '@/lib/domain/child';
@@ -144,14 +145,23 @@ const QUICK: Record<string, { icon: IconName; label: string; go: (childId?: stri
   mood: { icon: 'heart', label: 'Mon humeur', go: () => router.push('/me/mood') },
   weight: { icon: 'trending-up', label: 'Mon poids', go: () => router.push('/pregnancy/weight') },
   scan: { icon: 'maximize', label: 'Scanner', go: () => router.push('/scanner') },
+  period: { icon: 'droplet', label: 'Mes règles', go: () => router.push(useCycleRoute()) },
+  test: { icon: 'check-circle', label: 'Test', go: () => router.push('/fertility') },
+  pill: { icon: 'shield', label: 'Contraception', go: () => router.push('/contraception') },
+  mysleep: { icon: 'cloud', label: 'Mon sommeil', go: () => router.push('/me/sleep') },
+  appointment: { icon: 'calendar', label: 'Rendez-vous', go: () => router.push('/appointments') },
 };
+/** Le suivi du cycle s'ouvre dans le parcours choisi (concevoir ou éviter). */
+let cycleRoute: '/fertility' | '/contraception' = '/fertility';
+export function setCycleRoute(r: '/fertility' | '/contraception') { cycleRoute = r; }
+function useCycleRoute() { return cycleRoute; }
 export const QUICK_KEYS = Object.keys(QUICK);
 export const quickLabel = (k: string) => QUICK[k]?.label ?? k;
 
-export function QuickActions({ keys, childId, onCustomize }: { keys: string[]; childId?: string; onCustomize: () => void }) {
+export function QuickActions({ keys, childId, onCustomize }: { keys: string[]; childId?: string; onCustomize?: () => void }) {
   const t = useTheme();
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
       {keys.filter((k) => QUICK[k]).slice(0, 4).map((k) => (
         <Pressable
           key={k}
@@ -170,12 +180,12 @@ export function QuickActions({ keys, childId, onCustomize }: { keys: string[]; c
           )}
         </Pressable>
       ))}
-      <Pressable accessibilityRole="button" accessibilityLabel="Choisir mes raccourcis" onPress={onCustomize} style={{ alignItems: 'center', gap: 6, width: 72 }}>
+      {onCustomize && <Pressable accessibilityRole="button" accessibilityLabel="Choisir mes raccourcis" onPress={onCustomize} style={{ alignItems: 'center', gap: 6, width: 72 }}>
         <View style={{ width: 58, height: 58, borderRadius: 29, borderWidth: 1.5, borderStyle: 'dashed', borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="sliders" color={t.colors.textMuted} />
         </View>
         <Text variant="caption" muted center>Choisir</Text>
-      </Pressable>
+      </Pressable>}
     </View>
   );
 }
@@ -206,5 +216,44 @@ export function UpcomingCard() {
       {next && row('calendar', next.title, new Date(next.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }), () => router.push('/appointments'))}
       {nextReminder && row('bell', nextReminder.r.title, `Rappel ${nextReminder.at!.toLocaleString('fr-FR', { weekday: 'long', hour: '2-digit', minute: '2-digit' })}`, () => router.push('/settings/reminders'))}
     </View>
+  );
+}
+
+/** Carte principale pour les parcours « concevoir » et « éviter une grossesse ». */
+export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' }) {
+  const t = useTheme();
+  const { data: periods } = usePeriods();
+  const est = estimateCycle((periods ?? []).map((p) => ({ start_date: p.start_date, end_date: p.end_date })));
+  const last = periods?.length ? periods[periods.length - 1] : null;
+  const day = last ? Math.floor((Date.now() - new Date(last.start_date).getTime()) / 86_400_000) + 1 : null;
+  const fmt = (d: string | null | undefined) => (d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) : '—');
+  const href = mode === 'ttc' ? '/fertility' : '/contraception';
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={mode === 'ttc' ? 'Ouvrir mon projet bébé' : 'Ouvrir mon cycle et ma contraception'} onPress={() => { haptic('selection'); router.push(href); }} style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })}>
+      <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface, padding: spacing.md, gap: spacing.sm }}>
+        <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{mode === 'ttc' ? 'PROJET BÉBÉ' : 'MON CYCLE'}</Text>
+        {day ? (
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+            <Text style={{ fontFamily: fonts.display, fontSize: 72, lineHeight: 74, letterSpacing: -4 }}>J{day}</Text>
+            <Text variant="small" muted style={{ marginBottom: 12, marginLeft: 8 }}>du cycle</Text>
+          </View>
+        ) : <Text variant="heading">Notez vos dernières règles pour commencer.</Text>}
+        <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+          <View style={{ flex: 1, borderRadius: radius.lg, padding: spacing.sm, backgroundColor: t.colors.surfaceAlt }}>
+            <Text variant="caption" muted>{mode === 'ttc' ? 'Période fertile (estimation)' : 'Fertilité plus élevée (estimation)'}</Text>
+            <Text weight="bold">{est.fertileWindow ? `${fmt(est.fertileWindow.start)} → ${fmt(est.fertileWindow.end)}` : 'À estimer'}</Text>
+          </View>
+          <View style={{ flex: 1, borderRadius: radius.lg, padding: spacing.sm, backgroundColor: t.colors.surfaceAlt }}>
+            <Text variant="caption" muted>Prochaines règles (estimation)</Text>
+            <Text weight="bold">{fmt(est.nextPeriod)}</Text>
+          </View>
+        </View>
+        <Text variant="caption" muted>
+          {mode === 'ttc'
+            ? 'Estimations à partir de vos saisies : elles ne garantissent pas une grossesse.'
+            : 'Une grossesse reste possible en dehors de ces dates : seule une contraception adaptée permet de l’éviter.'}
+        </Text>
+      </View>
+    </Pressable>
   );
 }

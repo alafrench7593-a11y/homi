@@ -15,8 +15,8 @@ import { useActiveSubject, useChildren } from '@/lib/data/hooks';
 import { Sheet } from './Overlays';
 import { haptic, Icon, type IconName, Text } from './ui';
 
-const TAB_ICONS: Record<string, IconName> = { index: 'home', track: 'activity', ask: 'message-circle', discover: 'compass', community: 'users' };
-const SHORT: Record<string, string> = { index: 'Accueil', track: 'Suivi', ask: 'Questions', discover: 'Découvrir', community: 'Entraide' };
+const TAB_ICONS: Record<string, IconName> = { index: 'home', track: 'activity', ask: 'message-circle', community: 'users', profile: 'user' };
+const SHORT: Record<string, string> = { index: 'Accueil', track: 'Suivi', ask: 'Questions', community: 'Communauté', profile: 'Profil' };
 
 export const DOCK_HEIGHT = 74;
 
@@ -48,7 +48,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3, minHeight: 56 }}
       >
         <Feather name={TAB_ICONS[route.name] ?? 'circle'} size={21} color={focused ? '#FFFFFF' : 'rgba(255,241,245,0.5)'} />
-        <Text style={{ fontFamily: focused ? fonts.bodyMedium : fonts.body, fontSize: 10.5, lineHeight: 13, letterSpacing: 0.3 }} color={focused ? '#FFFFFF' : 'rgba(255,241,245,0.5)'} numberOfLines={1}>
+        <Text style={{ fontFamily: focused ? fonts.bodyMedium : fonts.body, fontSize: 9.5, lineHeight: 12, letterSpacing: -0.1 }} color={focused ? '#FFFFFF' : 'rgba(255,241,245,0.5)'} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
           {label}
         </Text>
         {focused && <View style={{ position: 'absolute', top: 4, width: 4, height: 4, borderRadius: 2, backgroundColor: palette.gold }} />}
@@ -61,7 +61,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
       <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: Math.max(insets.bottom, 10), paddingHorizontal: spacing.sm }}>
         <View style={{ height: DOCK_HEIGHT - 10, borderRadius: radius.pill, backgroundColor: t.colors.tabBar, marginHorizontal: spacing.xs, shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 8, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4 }}>
           {left.map(renderTab)}
-          <View style={{ width: 70, alignItems: 'center' }}>
+          <View style={{ width: 58, alignItems: 'center' }}>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Ajouter ou poser une question"

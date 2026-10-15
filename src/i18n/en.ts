@@ -6,6 +6,7 @@ export const en: Partial<Dictionary> = {
   'tab.track': 'Tracking',
   'tab.ask': 'Questions',
   'tab.discover': 'Discover',
+  'tab.profile': 'Profile',
   'tab.community': 'Community',
   'common.save': 'Save',
   'common.cancel': 'Cancel',

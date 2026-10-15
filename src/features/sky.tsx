@@ -185,7 +185,7 @@ const UNIVERSE: { icon: IconName; label: string; href: string }[] = [
   { icon: 'heart', label: 'Humeur', href: '/me/mood' },
   { icon: 'trending-up', label: 'Croissance', href: '/(tabs)/track' },
   { icon: 'users', label: 'Famille', href: '/settings/family' },
-  { icon: 'book-open', label: 'Bibliothèque', href: '/(tabs)/discover' },
+  { icon: 'book-open', label: 'Bibliothèque', href: '/library' },
   { icon: 'message-square', label: 'Entraide', href: '/(tabs)/community' },
   { icon: 'bell', label: 'Rappels', href: '/settings/reminders' },
   { icon: 'life-buoy', label: 'Urgences', href: '/emergency' },

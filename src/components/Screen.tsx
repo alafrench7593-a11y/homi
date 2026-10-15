@@ -1,7 +1,7 @@
 import React from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useIsFocused } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
@@ -26,6 +26,7 @@ interface ScreenProps {
 export function Screen({ children, title, subtitle, back, right, scroll = true, padded = true, stars, footer, contentStyle, bottomInset = 0 }: ScreenProps) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  const focused = useIsFocused();
   const header = (title || back || right) && (
     <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
       <View style={styles.headerRow}>
@@ -59,7 +60,7 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent', opacity: focused ? 1 : 0 }} pointerEvents={focused ? 'auto' : 'none'}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       {(stars || t.isDark) && <StarField density={t.name === 'night' ? 30 : stars ? 26 : 16} color="#FFF1E6" />}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>

@@ -1,7 +1,7 @@
 /** Découvrir : bibliothèque d'articles sourcés, vidéos validées, outils. */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import {} from '@/components/Family';
 import { Card, Chip, Field, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -15,7 +15,8 @@ import { spacing } from '@/theme/tokens';
 
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
-export default function Discover() {
+export default function Library() {
+  const params = useLocalSearchParams<{ q?: string }>();
   const t = useTheme();
   const { data: articles } = useArticles();
   const { data: categories } = useCategories();
@@ -25,7 +26,7 @@ export default function Discover() {
   const { data: children } = useChildren();
   const premium = usePremium();
   const [cat, setCat] = useState<string | null>(null);
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState(typeof params.q === 'string' ? params.q : '');
 
   const forYou = useMemo(() => suggestArticles(articles ?? [], {
     journeys: profile?.journeys ?? [],
@@ -39,7 +40,7 @@ export default function Discover() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Screen title="Découvrir" subtitle="Des informations claires, sourcées et datées." bottomInset={96}>
+      <Screen back title="Bibliothèque" subtitle="Des informations claires, sourcées et datées.">
         <Field label="Rechercher" placeholder="Allaitement, péridurale, sommeil…" value={q} onChangeText={setQ} returnKeyType="search" />
 
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>

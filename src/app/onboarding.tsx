@@ -16,16 +16,10 @@ import type { ConsentPurpose, Journey } from '@/lib/types';
 import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, PregnancyForm, validateChild, validatePregnancy, type ChildDraft } from '@/features/profiles';
 import { useTheme } from '@/theme/ThemeProvider';
 import { palette, radius, spacing } from '@/theme/tokens';
+import { JOURNEY_OPTIONS } from '@/lib/domain/journeys';
 import { BRAND } from '@/config/brand';
 
-const JOURNEYS: { key: Journey; label: string; icon: IconName; hint: string }[] = [
-  { key: 'avoid', label: 'Je souhaite éviter une grossesse', icon: 'shield', hint: 'Contraception, cycle, santé sexuelle' },
-  { key: 'ttc', label: 'J’essaie d’avoir un enfant', icon: 'sunrise', hint: 'Cycle, tests, soutien' },
-  { key: 'pregnant', label: 'Je suis enceinte', icon: 'moon', hint: 'Semaine après semaine' },
-  { key: 'newborn', label: 'Mon bébé est né', icon: 'heart', hint: 'Bébé et post-partum' },
-  { key: 'child', label: 'Je souhaite suivre un enfant', icon: 'sun', hint: 'Jusqu’à 10 ans' },
-  { key: 'family', label: 'J’organise ma famille avec plusieurs enfants', icon: 'users', hint: 'Fratrie, jumeaux, triplés' },
-];
+const JOURNEYS: { key: Journey; label: string; icon: IconName; hint: string }[] = JOURNEY_OPTIONS;
 
 const REMINDERS = [
   { key: 'appointments', label: 'Rendez-vous et examens' },
