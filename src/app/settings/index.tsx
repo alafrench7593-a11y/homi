@@ -38,7 +38,7 @@ export default function SettingsScreen() {
   const premium = usePremium();
   const { isModerator } = useMyRoles();
 
-  const preference = useUiStore((s) => s.themePreference) as string;
+  const preference = useUiStore((s) => s.themePreference);
   const setTheme = useUiStore((s) => s.setTheme);
   const skyOverride = useUiStore((s) => s.skyOverride);
   const setSkyOverride = useUiStore((s) => s.setSkyOverride);

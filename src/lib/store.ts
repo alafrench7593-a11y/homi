@@ -10,7 +10,7 @@ export type ActiveSubject =
   | { type: 'me' };
 
 interface UiState {
-  themePreference: 'auto' | 'system' | 'light' | 'dark';
+  themePreference: 'auto' | 'system' | 'light' | 'dark' | 'night';
   /** Aperçu d'une phase du ciel (réglages > apparence) ; null = heure réelle */
   skyOverride: 'dawn' | 'day' | 'dusk' | 'night' | null;
   setSkyOverride: (p: UiState['skyOverride']) => void;
