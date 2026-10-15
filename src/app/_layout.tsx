@@ -25,6 +25,7 @@ import { Manrope_700Bold } from '@expo-google-fonts/manrope/700Bold';
 import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument-serif/400Regular_Italic';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router';
 import { LiquidAurora } from '@/components/LiquidAurora';
+import { VideoBackdrop } from '@/components/VideoBackdrop';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 configureNotifications();
@@ -144,12 +145,12 @@ function WebFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Fond vivant unique, derrière toutes les pages. */
+/** Fond vivant unique, derrière toutes les pages : vidéo en boucle, aurore en attendant qu'elle charge. */
 function Backdrop() {
   const t = useTheme();
   return (
     <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t.colors.background }}>
-      <LiquidAurora fallback={<Aurora />} />
+      <VideoBackdrop fallback={<LiquidAurora fallback={<Aurora />} />} />
     </View>
   );
 }
