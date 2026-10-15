@@ -16,17 +16,10 @@ import type { ConsentPurpose, Journey } from '@/lib/types';
 import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, PregnancyForm, validateChild, validatePregnancy, type ChildDraft } from '@/features/profiles';
 import { useTheme } from '@/theme/ThemeProvider';
 import { palette, radius, spacing } from '@/theme/tokens';
-import { JOURNEY_OPTIONS } from '@/lib/domain/journeys';
+import { JOURNEY_OPTIONS, reminderSuggestions } from '@/lib/domain/journeys';
 import { BRAND } from '@/config/brand';
 
 const JOURNEYS: { key: Journey; label: string; icon: IconName; hint: string }[] = JOURNEY_OPTIONS;
-
-const REMINDERS = [
-  { key: 'appointments', label: 'Rendez-vous et examens' },
-  { key: 'checklists', label: 'Listes de préparation' },
-  { key: 'bottles', label: 'Biberons ou tétées (vous choisirez la fréquence)' },
-  { key: 'medication', label: 'Traitements prescrits' },
-];
 
 type Step = 'intro' | 'journeys' | 'pregnancy' | 'children' | 'reminders' | 'consents';
 
@@ -42,7 +35,7 @@ export default function Onboarding() {
   const [pErrors, setPErrors] = useState<Record<string, string>>({});
   const [children, setChildren] = useState<ChildDraft[]>([emptyChild()]);
   const [cErrors, setCErrors] = useState<Record<string, string>[]>([{}]);
-  const [reminders, setReminders] = useState<string[]>(['appointments', 'checklists']);
+  const [reminders, setReminders] = useState<string[]>([]);
   const [consents, setConsents] = useState<Record<ConsentPurpose, boolean>>({ terms: true, health_data: true, ai_assistant: true, document_reading: false, analytics: false, crash_reports: false, marketing: false });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +74,11 @@ export default function Onboarding() {
       if (needsChildren) for (const c of children) if (c.first_name.trim()) await createChild(hid, c);
       await backend.update('privacy_settings', { analytics_enabled: consents.analytics, crash_reports_enabled: consents.crash_reports }, [{ col: 'user_id', op: 'eq', value: userId }]);
       await backend.update('profiles', { display_name: name.trim() || null, journeys, onboarding_completed: true }, [{ col: 'id', op: 'eq', value: userId }]);
-      if (reminders.length) await requestPermission().catch(() => undefined);
+      const chosen = reminderSuggestions(journeys).filter((r) => reminders.includes(r.key));
+      if (chosen.length) {
+        await backend.insert('reminders', chosen.map((r) => ({ user_id: userId, household_id: hid, category: r.category, title: r.title, body: r.body, schedule: r.schedule, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris', enabled: true, deep_link: r.deep_link })));
+        await requestPermission().catch(() => undefined);
+      }
       await qc.invalidateQueries();
       haptic('success');
       toast('Bienvenue ! Votre espace est prêt.');
@@ -208,7 +205,7 @@ export default function Onboarding() {
           <Text variant="title" accessibilityRole="header">Des rappels, si vous le souhaitez</Text>
           <Text muted>Rien n’est programmé automatiquement : vous choisissez ce qui vous aide. Le téléphone vous demandera ensuite l’autorisation d’envoyer des notifications.</Text>
           <Row wrap>
-            {REMINDERS.map((r) => (
+            {reminderSuggestions(journeys).map((r) => (
               <Chip key={r.key} label={r.label} selected={reminders.includes(r.key)} onPress={() => setReminders(reminders.includes(r.key) ? reminders.filter((x) => x !== r.key) : [...reminders, r.key])} />
             ))}
           </Row>

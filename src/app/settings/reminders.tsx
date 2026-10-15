@@ -5,7 +5,8 @@ import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, Chip, Field, Loading, Row, Segmented, SectionTitle, Text, Toggle } from '@/components/ui';
 import { EmptyStateCard } from '@/components/ui-extra';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
-import { useReminders } from '@/lib/data/hooks';
+import { useProfile, useReminders } from '@/lib/data/hooks';
+import { reminderSuggestions } from '@/lib/domain/journeys';
 import { friendlyError, useDeleteReminder, useSaveReminder, useToggleReminder, type ReminderDraft } from '@/lib/data/hooks-settings';
 import { describeSchedule, IOS_PENDING_LIMIT, nextOccurrence, validateSchedule, type ReminderSchedule, type Weekday } from '@/lib/domain/reminders';
 import { frToISO, todayISO } from '@/lib/domain/dates';
@@ -170,6 +171,8 @@ export default function RemindersScreen() {
   const toast = useToast();
   const { data: reminders, isLoading, error, refetch } = useReminders();
   const toggle = useToggleReminder();
+  const save = useSaveReminder();
+  const { data: profile } = useProfile();
   const [permission, setPermission] = useState<PermissionState>(notificationsSupported ? 'undetermined' : 'unsupported');
   const [pendingCount, setPendingCount] = useState<number | null>(null);
   const [editing, setEditing] = useState<Reminder | undefined>();
@@ -200,6 +203,7 @@ export default function RemindersScreen() {
   }
 
   const list = reminders ?? [];
+  const suggestions = reminderSuggestions(profile?.journeys ?? []).filter((sg) => !list.some((r) => r.title === sg.title));
   return (
     <Screen back title="Rappels" subtitle="Des notifications sur ce téléphone, même hors connexion." footer={<Button label="Nouveau rappel" icon="plus" onPress={() => { setEditing(undefined); setOpen(true); }} />}>
       {permission === 'unsupported' ? (
@@ -233,6 +237,24 @@ export default function RemindersScreen() {
               </View>
             );
           })}
+        </Card>
+      )}
+
+      {suggestions.length > 0 && (
+        <Card>
+          <Text weight="bold">Suggestions pour votre parcours</Text>
+          <Text variant="small" muted>Rien n’est activé sans vous : ajoutez seulement ce qui vous aide.</Text>
+          {suggestions.map((sg) => (
+            <View key={sg.key} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
+              <Text style={{ flex: 1 }}>{sg.label}</Text>
+              <Button label="Ajouter" size="sm" variant="secondary" onPress={async () => {
+                try {
+                  await save.mutateAsync({ draft: { category: sg.category, title: sg.title, body: sg.body, schedule: sg.schedule, enabled: true, deep_link: sg.deep_link } as never });
+                  toast('Rappel ajouté.');
+                } catch (e) { toast(friendlyError(e), 'error'); }
+              }} />
+            </View>
+          ))}
         </Card>
       )}
 

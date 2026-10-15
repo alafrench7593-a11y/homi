@@ -140,3 +140,34 @@ export function articleOfDay<T>(list: T[], date = new Date()): T | undefined {
   const day = Math.floor(date.getTime() / 86_400_000);
   return list[day % list.length];
 }
+
+/** Rappels proposés selon le parcours (jamais créés sans l'accord de l'utilisatrice). */
+export interface ReminderSuggestion {
+  key: string;
+  label: string;
+  category: 'medication' | 'tracking' | 'custom';
+  title: string;
+  body: string;
+  schedule: { type: 'daily'; hour: number; minute: number } | { type: 'weekly'; weekdays: (1 | 2 | 3 | 4 | 5 | 6 | 7)[]; hour: number; minute: number };
+  deep_link: string;
+}
+
+export function reminderSuggestions(journeys: Journey[]): ReminderSuggestion[] {
+  const m = mainJourneys(journeys);
+  const out: ReminderSuggestion[] = [];
+  if (m.includes('avoid')) {
+    out.push({ key: 'pill', label: 'Prendre ma contraception (chaque jour à 21 h)', category: 'medication', title: 'Contraception', body: 'C’est l’heure prévue pour votre contraception.', schedule: { type: 'daily', hour: 21, minute: 0 }, deep_link: '/contraception' });
+  }
+  if (m.includes('ttc')) {
+    out.push({ key: 'ttc-observe', label: 'Noter mes observations du matin (8 h)', category: 'tracking', title: 'Observations du jour', body: 'Température, glaire ou symptômes : notez ce que vous souhaitez.', schedule: { type: 'daily', hour: 8, minute: 0 }, deep_link: '/fertility/body' });
+  }
+  if (m.includes('pregnant')) {
+    out.push({ key: 'vitamins', label: 'Mes vitamines prescrites (9 h)', category: 'medication', title: 'Vitamines', body: 'Pensez à vos vitamines, si elles vous ont été prescrites.', schedule: { type: 'daily', hour: 9, minute: 0 }, deep_link: '/me' });
+    out.push({ key: 'weight', label: 'Mon poids, une fois par semaine (lundi 8 h)', category: 'tracking', title: 'Mon poids', body: 'Si vous le souhaitez, notez votre poids de la semaine.', schedule: { type: 'weekly', weekdays: [1], hour: 8, minute: 0 }, deep_link: '/pregnancy/weight' });
+  }
+  if (m.includes('mother') || m.includes('pregnant')) {
+    out.push({ key: 'mysleep', label: 'Noter ma nuit (9 h 30)', category: 'tracking', title: 'Mon sommeil', body: 'Comment s’est passée votre nuit ?', schedule: { type: 'daily', hour: 9, minute: 30 }, deep_link: '/me/sleep' });
+    out.push({ key: 'mood', label: 'Comment je me sens (dimanche 18 h)', category: 'custom', title: 'Comment te sens-tu ?', body: 'Un bilan privé et facultatif, quelques secondes.', schedule: { type: 'weekly', weekdays: [7], hour: 18, minute: 0 }, deep_link: '/me/mood' });
+  }
+  return out;
+}
