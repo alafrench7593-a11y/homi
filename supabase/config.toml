@@ -60,3 +60,15 @@ verify_jwt = false
 
 [functions.send-push]
 verify_jwt = false
+
+# E-mails d'authentification (confirmation, connexion, mot de passe oublié) envoyés via Resend
+# par la fonction auth-email. En production : Dashboard › Authentication › Hooks › Send Email Hook
+# (type HTTPS, URL https://<ref>.supabase.co/functions/v1/auth-email), puis copier le secret
+# généré dans `supabase secrets set SEND_EMAIL_HOOK_SECRET=v1,whsec_...`.
+[auth.hook.send_email]
+enabled = true
+uri = "http://host.docker.internal:54321/functions/v1/auth-email"
+secrets = "env(SEND_EMAIL_HOOK_SECRET)"
+
+[functions.auth-email]
+verify_jwt = false
