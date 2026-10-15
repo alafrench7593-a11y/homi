@@ -9,6 +9,9 @@ import { Screen } from '@/components/Screen';
 import { EmergencyList } from '@/components/Family';
 import { Banner, Card, Icon, type IconName, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useAppointments, useArticles, useDocuments, useMoods } from '@/lib/data/hooks';
+import { useParentSleepLogs } from '@/lib/data/hooks-sleep';
+import { nightLabel, nightMinutes } from '@/lib/domain/parentSleep';
+import { formatDuration } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
@@ -42,12 +45,16 @@ export default function MeSpace() {
   const { data: moods } = useMoods(1);
   const { data: appointments } = useAppointments({ upcomingOnly: true });
   const { data: documents } = useDocuments();
+  const { data: sleepLogs } = useParentSleepLogs(1);
 
   const lastMood = moods?.[0];
+  const lastNight = sleepLogs?.[0];
+  const lastNightMinutes = lastNight ? nightMinutes(lastNight) : null;
   const nextAppt = appointments?.find((a) => a.for_parent) ?? appointments?.[0];
 
   const links: { icon: IconName; title: string; subtitle: string; to: string }[] = [
     { icon: 'heart', title: 'Comment je me sens', subtitle: lastMood ? `Dernier bilan : ${new Date(lastMood.checked_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}` : 'Un bilan privé et facultatif', to: '/me/mood' },
+    { icon: 'moon', title: 'Mon sommeil', subtitle: lastNight ? `${nightLabel(lastNight.log_date)}${lastNightMinutes != null ? ` · ${formatDuration(lastNightMinutes)}` : ''}` : 'Vos nuits, siestes et fatigue — privé, sans objectif', to: '/me/sleep' },
     { icon: 'circle', title: 'Mon cycle', subtitle: 'Règles, symptômes et tests — estimations sans garantie', to: '/cycle' },
     { icon: 'calendar', title: 'Mes rendez-vous', subtitle: nextAppt ? `Prochain : ${nextAppt.title}` : 'Postnatal, rééducation, suivi', to: '/appointments' },
     { icon: 'folder', title: 'Mes documents', subtitle: documents?.length ? `${documents.length} document${documents.length > 1 ? 's' : ''}` : 'Ordonnances, comptes rendus, résultats', to: '/documents' },
