@@ -121,6 +121,7 @@ export interface ReminderDraft {
   category: Reminder['category'];
   schedule: ReminderSchedule;
   enabled: boolean;
+  deep_link?: string | null;
 }
 
 /** Après chaque modification : relecture de la liste puis reprogrammation des notifications locales. */

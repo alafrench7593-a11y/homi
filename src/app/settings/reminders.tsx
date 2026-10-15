@@ -249,7 +249,7 @@ export default function RemindersScreen() {
               <Text style={{ flex: 1 }}>{sg.label}</Text>
               <Button label="Ajouter" size="sm" variant="secondary" onPress={async () => {
                 try {
-                  await save.mutateAsync({ draft: { category: sg.category, title: sg.title, body: sg.body, schedule: sg.schedule, enabled: true, deep_link: sg.deep_link } as never });
+                  await save.mutateAsync({ draft: { category: sg.category, title: sg.title, body: sg.body, schedule: sg.schedule, enabled: true, deep_link: sg.deep_link } });
                   toast('Rappel ajouté.');
                 } catch (e) { toast(friendlyError(e), 'error'); }
               }} />
