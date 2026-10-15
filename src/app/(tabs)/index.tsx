@@ -73,6 +73,7 @@ export default function Home() {
             {subtitle ? <Text variant="small" muted>{subtitle}</Text> : null}
           </View>
           <Row gap={0}>
+            <IconButton icon="maximize" label="Scanner un produit ou un aliment" onPress={() => router.push('/scanner')} />
             <IconButton icon="life-buoy" label="Besoin d’aide maintenant" color={t.colors.heart} onPress={() => router.push('/emergency')} />
             <View>
               <IconButton icon="bell" label={unread ? `Notifications, ${unread} non lues` : 'Notifications'} onPress={() => router.push('/notifications')} />

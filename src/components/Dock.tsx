@@ -97,6 +97,7 @@ function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => 
     { icon: 'feather', label: 'Repas', onPress: track('meal'), show: !!child },
     { icon: 'thermometer', label: 'Note santé', onPress: track('observation'), show: !!child },
     { icon: 'heart', label: 'Mon humeur', onPress: go(() => router.push('/me/mood')), show: true },
+    { icon: 'clock', label: 'Minuteur biberon', onPress: go(() => router.push(childId ? `/bottle/${childId}` : '/bottle')), show: !!child },
     { icon: 'maximize', label: 'Scanner', onPress: go(() => router.push('/scanner')), show: true },
   ];
 

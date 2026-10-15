@@ -36,7 +36,14 @@ interface Ctx { journeys: Journey[]; hasPregnancy: boolean; childId?: string; ch
 /** Catégories d'outils affichées dans « Tous mes outils », uniquement celles qui concernent la personne. */
 export function toolCategories({ journeys, hasPregnancy, childId, childCount }: Ctx): ToolCategory[] {
   const m = mainJourneys(journeys);
-  const cats: ToolCategory[] = [];
+  const cats: ToolCategory[] = [{
+    key: 'scanner', title: 'Scanner', items: [
+      { icon: 'maximize', label: 'Scanner un produit', sub: 'Crème, lingettes, lessive…', href: '/scanner/product' },
+      { icon: 'search', label: 'Scanner un aliment', sub: 'Puis-je manger ou donner ?', href: '/scanner/food' },
+      { icon: 'clock', label: 'Historique et favoris', href: '/scanner/history' },
+      { icon: 'columns', label: 'Comparer deux produits', href: '/scanner/compare' },
+    ],
+  }];
   const child = (tab?: string) => (childId ? `/child/${childId}${tab ? `?tab=${tab}` : ''}` : '/profiles/new?kind=child');
 
   if (m.includes('ttc')) {
@@ -84,7 +91,9 @@ export function toolCategories({ journeys, hasPregnancy, childId, childCount }: 
     cats.push({
       key: 'mother', title: childCount > 1 ? 'Mes enfants' : 'Mon bébé', items: [
         { icon: 'smile', label: childCount > 1 ? 'Mes enfants' : 'Mon bébé ou mon enfant', href: child() },
+        { icon: 'clock', label: 'Minuteur biberon', sub: childCount > 1 ? 'Un minuteur par enfant' : undefined, href: childId ? `/bottle/${childId}` : '/bottle' },
         { icon: 'coffee', label: 'Biberons et allaitement', href: '/(tabs)/track' },
+        { icon: 'bar-chart-2', label: 'Historique des biberons', href: childId ? `/bottle/history?child=${childId}` : '/bottle/history' },
         { icon: 'feather', label: 'Repas et diversification', href: child('foods') },
         { icon: 'wind', label: 'Couches', href: '/(tabs)/track' },
         { icon: 'moon', label: 'Sommeil du bébé', href: '/night' },
@@ -108,7 +117,6 @@ export function toolCategories({ journeys, hasPregnancy, childId, childCount }: 
   cats.push({
     key: 'all', title: 'Pour tout le monde', items: [
       { icon: 'book-open', label: 'Bibliothèque', sub: 'Articles sourcés', href: '/library' },
-      { icon: 'maximize', label: 'Scanner un produit', href: '/scanner' },
       { icon: 'bell', label: 'Rappels', href: '/settings/reminders' },
       { icon: 'life-buoy', label: 'Urgences', sub: '15 · 112 · 3114', href: '/emergency' },
     ],
