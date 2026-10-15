@@ -7,7 +7,6 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { IconButton, Text } from './ui';
 import { StarField } from './StarField';
-import { Aurora } from './Aurora';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -60,9 +59,8 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: t.colors.background }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
-      <Aurora />
       {(stars || t.isDark) && <StarField density={t.name === 'night' ? 30 : stars ? 26 : 16} color="#FFF1E6" />}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {header}

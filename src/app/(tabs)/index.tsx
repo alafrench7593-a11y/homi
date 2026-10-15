@@ -20,6 +20,7 @@ import { useOfflineStore } from '@/lib/offline';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, NACRE, previewTime, spacing } from '@/theme/tokens';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Appear } from '@/components/Appear';
 import { useUiStore } from '@/lib/store';
 
 export default function Home() {
@@ -84,11 +85,11 @@ export default function Home() {
             </Pressable>
           </Row>
         </Row>
-        <ProfileSwitcher />
+        <Appear kind="soft" delay={0.16}><ProfileSwitcher /></Appear>
         {!offline.online && <Banner tone="warning" title="Hors connexion">{offline.pending.length ? `${offline.pending.length} entrée(s) en attente de synchronisation.` : 'Vos dernières données restent consultables ; les nouvelles saisies seront synchronisées.'}</Banner>}
 
-        {subject.type === 'pregnancy' && pregnancy && <PregnancyHero pregnancy={pregnancy} />}
-        <SectionTitle title="Le fil du jour" />
+        {subject.type === 'pregnancy' && pregnancy && <Appear kind="pop" delay={0.26}><PregnancyHero pregnancy={pregnancy} /></Appear>}
+        <Appear kind="soft" delay={0.42}><SectionTitle title="Le fil du jour" /></Appear>
         <DayThread moments={moments} empty={child ? 'Rien d’enregistré aujourd’hui. Touchez « + » pour ajouter un moment.' : 'Vos rendez-vous et rappels du jour apparaîtront ici.'} />
         {subject.type === 'child' && child && <ChildToday child={child} compact />}
 

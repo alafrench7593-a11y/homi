@@ -1,13 +1,13 @@
 /** Primitives d'interface du design system « Toi & Moi ». */
 import React from 'react';
 import {
-  ActivityIndicator, Pressable, StyleSheet, Text as RNText, TextInput, View,
+  ActivityIndicator, Animated, Easing, Pressable, StyleSheet, Text as RNText, TextInput, View,
   type PressableProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
-import { useTheme } from '@/theme/ThemeProvider';
+import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, NACRE, radius, spacing, typeScale } from '@/theme/tokens';
 import { useUiStore } from '@/lib/store';
 
@@ -111,17 +111,31 @@ interface ButtonProps extends Omit<PressableProps, 'style' | 'children'> {
 
 export function Button({ label, variant = 'primary', icon, loading, size = 'md', style, full, disabled, onPress, ...rest }: ButtonProps) {
   const t = useTheme();
-  const palette = {
-    primary: { bg: t.colors.primary, fg: t.colors.primaryText, border: t.colors.primary },
-    secondary: { bg: 'transparent', fg: t.colors.text, border: t.colors.border },
-    ghost: { bg: 'transparent', fg: t.colors.primary, border: 'transparent' },
-    danger: { bg: t.colors.danger, fg: '#fff', border: t.colors.danger },
-    night: { bg: '#FF8FB1', fg: '#1A0A13', border: '#FF8FB1' },
-  }[variant];
+  const reduce = useReduceMotion();
+  const [w, setW] = React.useState(0);
+  const shine = React.useRef(new Animated.Value(0)).current;
+  const sweep = () => {
+    if (reduce || !w) return;
+    shine.setValue(0);
+    Animated.timing(shine, { toValue: 1, duration: 650, easing: Easing.out(Easing.ease), useNativeDriver: true }).start();
+  };
+  // Verre liquide : primaire perlé (nuit) ou rose (jour), secondaire givré, reflet qui balaie au toucher
+  const glass = t.name !== 'night' && (variant === 'primary' || variant === 'secondary');
+  const fills: Record<string, [string, string, string]> = {
+    primaryDark: ['#FFFFFF', '#FFEAF1', '#F4C9D8'],
+    primaryLight: ['#FFA9C2', '#F57A9C', '#E9587C'],
+    secondaryDark: ['rgba(255,255,255,0.16)', 'rgba(20,8,24,0.35)', 'rgba(190,170,255,0.14)'],
+    secondaryLight: ['rgba(255,255,255,0.92)', 'rgba(255,255,255,0.55)', 'rgba(255,214,228,0.7)'],
+  };
+  const fill = variant === 'primary' ? (t.isDark ? fills.primaryDark : fills.primaryLight) : t.isDark ? fills.secondaryDark : fills.secondaryLight;
+  const fg = glass
+    ? variant === 'primary' ? (t.isDark ? '#2A1022' : '#FFFFFF') : t.colors.text
+    : { primary: t.colors.primaryText, secondary: t.colors.text, ghost: t.colors.primary, danger: '#fff', night: '#1A0A13' }[variant];
+  const bg = glass ? 'transparent' : { primary: t.colors.primary, secondary: 'transparent', ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
+  const border = glass
+    ? variant === 'primary' ? (t.isDark ? '#FFFFFF' : 'rgba(255,255,255,0.65)') : t.isDark ? 'rgba(255,255,255,0.42)' : 'rgba(255,255,255,0.95)'
+    : { primary: t.colors.primary, secondary: t.colors.border, ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
   const h = size === 'lg' ? 58 : size === 'sm' ? 40 : MIN_TOUCH + 2;
-  // Signature : bouton principal en dégradé rose
-  const nacre = variant === 'primary' && t.name !== 'night';
-  if (nacre) palette.fg = '#FFFFFF';
   return (
     <Pressable
       accessibilityRole="button"
@@ -129,24 +143,33 @@ export function Button({ label, variant = 'primary', icon, loading, size = 'md',
       accessibilityState={{ disabled: !!disabled || !!loading, busy: !!loading }}
       disabled={disabled || loading}
       hitSlop={size === 'sm' ? 6 : 0}
+      onLayout={(e) => setW(e.nativeEvent.layout.width)}
+      onPressIn={sweep}
       onPress={(e) => {
         haptic('light');
         onPress?.(e);
       }}
       style={({ pressed }) => [
         styles.button,
-        { minHeight: h, backgroundColor: nacre ? 'transparent' : palette.bg, borderColor: nacre ? 'transparent' : palette.border, overflow: 'hidden', opacity: disabled ? 0.45 : pressed ? 0.85 : 1, alignSelf: full ? 'stretch' : 'auto', paddingHorizontal: size === 'sm' ? spacing.sm : spacing.lg },
+        { minHeight: h, backgroundColor: bg, borderColor: border, overflow: 'hidden', opacity: disabled ? 0.45 : 1, transform: [{ scale: pressed ? 0.97 : 1 }], alignSelf: full ? 'stretch' : 'auto', paddingHorizontal: size === 'sm' ? spacing.sm : spacing.lg },
+        glass && variant === 'primary' && { shadowColor: t.isDark ? '#FFC2D6' : '#E9587C', shadowOpacity: t.isDark ? 0.35 : 0.3, shadowRadius: 18, shadowOffset: { width: 0, height: 6 } },
         style,
       ]}
       {...rest}
     >
-      {nacre && <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {glass && <LinearGradient colors={fill} start={{ x: 0, y: 0 }} end={variant === 'primary' ? { x: 0, y: 1 } : { x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {glass && <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 12, right: 12, height: 1, backgroundColor: 'rgba(255,255,255,0.9)', opacity: variant === 'primary' ? 0.95 : 0.35 }} />}
+      {glass && w > 0 && (
+        <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -10, bottom: -10, width: w * 0.5, transform: [{ translateX: shine.interpolate({ inputRange: [0, 1], outputRange: [-w * 0.7, w * 1.2] }) }, { rotate: '18deg' }] }}>
+          <LinearGradient colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFill} />
+        </Animated.View>
+      )}
       {loading ? (
-        <ActivityIndicator color={palette.fg} />
+        <ActivityIndicator color={fg} />
       ) : (
         <>
-          {icon && <Icon name={icon} size={size === 'sm' ? 16 : 19} color={palette.fg} />}
-          <Text variant={size === 'sm' ? 'small' : 'body'} weight="bold" color={palette.fg} numberOfLines={2} center>
+          {icon && <Icon name={icon} size={size === 'sm' ? 16 : 19} color={fg} />}
+          <Text variant={size === 'sm' ? 'small' : 'body'} weight="bold" color={fg} numberOfLines={2} center style={{ letterSpacing: -0.2 }}>
             {label}
           </Text>
         </>

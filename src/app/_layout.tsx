@@ -22,6 +22,9 @@ import { Manrope_500Medium } from '@expo-google-fonts/manrope/500Medium';
 import { Manrope_600SemiBold } from '@expo-google-fonts/manrope/600SemiBold';
 import { Aurora } from '@/components/Aurora';
 import { Manrope_700Bold } from '@expo-google-fonts/manrope/700Bold';
+import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument-serif/400Regular_Italic';
+import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router';
+import { LiquidAurora } from '@/components/LiquidAurora';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 configureNotifications();
@@ -77,19 +80,23 @@ function Bootstrap() {
 
 function Navigator() {
   const t = useTheme();
+  const base = t.isDark ? DarkTheme : DefaultTheme;
+  const navTheme = { ...base, colors: { ...base.colors, background: 'transparent', card: 'transparent', text: t.colors.text, primary: t.colors.primary, border: 'transparent' } };
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: t.colors.background }, animation: Platform.OS === 'android' ? 'fade_from_bottom' : 'default' }}>
+    <NavThemeProvider value={navTheme}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' }, animation: 'fade' }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="track/[kind]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="night" options={{ animation: 'fade', gestureEnabled: false }} />
       <Stack.Screen name="emergency" options={{ presentation: 'modal' }} />
       <Stack.Screen name="assistant/chat" options={{ presentation: Platform.OS === 'ios' ? 'modal' : 'card' }} />
     </Stack>
+    </NavThemeProvider>
   );
 }
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({ SpaceGrotesk_500Medium, SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold, Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold });
+  const [loaded, error] = useFonts({ SpaceGrotesk_500Medium, SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold, Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold, InstrumentSerif_400Regular_Italic });
 
   useEffect(() => {
     if (loaded || error) SplashScreen.hideAsync().catch(() => undefined);
@@ -112,6 +119,7 @@ export default function RootLayout() {
             <ToastProvider>
               <Bootstrap />
               <WebFrame>
+                <Backdrop />
                 <Navigator />
               </WebFrame>
             </ToastProvider>
@@ -132,6 +140,16 @@ function WebFrame({ children }: { children: React.ReactNode }) {
       <View style={{ flex: 1, width: 420, maxHeight: 900, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 50, shadowOffset: { width: 0, height: 24 } }}>
         {children}
       </View>
+    </View>
+  );
+}
+
+/** Fond vivant unique, derrière toutes les pages. */
+function Backdrop() {
+  const t = useTheme();
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t.colors.background }}>
+      <LiquidAurora fallback={<Aurora />} />
     </View>
   );
 }

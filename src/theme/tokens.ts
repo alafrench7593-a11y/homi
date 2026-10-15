@@ -176,6 +176,7 @@ export const fonts = {
   body: 'Manrope_500Medium',
   bodyMedium: 'Manrope_600SemiBold',
   bodyBold: 'Manrope_700Bold',
+  serifItalic: 'InstrumentSerif_400Regular_Italic',
 };
 
 /** Tailles de base ; elles suivent le réglage de taille de texte du téléphone (allowFontScaling). */

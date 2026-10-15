@@ -9,7 +9,7 @@ export default function TabsLayout() {
   const { session, ready } = useAuth();
   if (ready && !session) return <Redirect href="/welcome" />;
   return (
-    <Tabs screenOptions={{ headerShown: false }} tabBar={(props) => <Dock {...props} />}>
+    <Tabs screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' } }} tabBar={(props) => <Dock {...props} />}>
       <Tabs.Screen name="index" options={{ title: tr('tab.home') }} />
       <Tabs.Screen name="track" options={{ title: tr('tab.track') }} />
       <Tabs.Screen name="ask" options={{ title: tr('tab.ask') }} />
