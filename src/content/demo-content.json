@@ -1,0 +1,1417 @@
+{
+    "foods": [
+        {
+            "id": "2d40e53e-9a6f-4b23-b84a-2304558832d8",
+            "name": "Avocat",
+            "source": "dev",
+            "category": "fruit",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "e9c01858-5e31-41cb-9d48-6bf839880e58",
+            "name": "Banane",
+            "source": "dev",
+            "category": "fruit",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "710ef169-2057-42ea-b51d-e2e9777f150d",
+            "name": "Blé (semoule fine)",
+            "source": "dev",
+            "category": "féculent",
+            "allergen_group": "gluten",
+            "is_major_allergen": true
+        },
+        {
+            "id": "9504e2d7-cda1-47ec-9baa-01ca48f3b95d",
+            "name": "Brocoli",
+            "source": "dev",
+            "category": "légume",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "064c2f5f-dfca-40af-9d16-a295c71692d3",
+            "name": "Carotte",
+            "source": "dev",
+            "category": "légume",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "a8d2ab06-ba53-4682-bef8-5868818a2a53",
+            "name": "Courgette",
+            "source": "dev",
+            "category": "légume",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "b5408ed8-86cf-423e-aa6f-643d45f60965",
+            "name": "Lentilles corail",
+            "source": "dev",
+            "category": "légumineuse",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "6701cd85-3919-40ab-a739-651bc377a28a",
+            "name": "Patate douce",
+            "source": "dev",
+            "category": "légume",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "bc7007ac-f2fb-4b09-8c8e-c4c6f0c3972c",
+            "name": "Petits pois",
+            "source": "dev",
+            "category": "légume",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "38ca9194-1879-4ac8-8d54-04152b543597",
+            "name": "Poire",
+            "source": "dev",
+            "category": "fruit",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "8b973ddb-d62b-46d3-bd25-0e08c95b5242",
+            "name": "Poisson blanc",
+            "source": "dev",
+            "category": "protéine",
+            "allergen_group": "poisson",
+            "is_major_allergen": true
+        },
+        {
+            "id": "36f9c375-3d4d-4b44-9912-b75af430c448",
+            "name": "Pomme",
+            "source": "dev",
+            "category": "fruit",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "bd384d8b-1895-4509-b7d9-48b77ff5de15",
+            "name": "Poulet",
+            "source": "dev",
+            "category": "protéine",
+            "allergen_group": null,
+            "is_major_allergen": false
+        },
+        {
+            "id": "ea320cf1-a120-4897-bfad-6ca86d8e9957",
+            "name": "Purée d'arachide lisse (diluée)",
+            "source": "dev",
+            "category": "protéine",
+            "allergen_group": "arachide",
+            "is_major_allergen": true
+        },
+        {
+            "id": "3c8197ca-8bf2-4790-b4fa-e122d7bcb71c",
+            "name": "Yaourt nature",
+            "source": "dev",
+            "category": "laitage",
+            "allergen_group": "lait",
+            "is_major_allergen": true
+        },
+        {
+            "id": "6c94cbcf-abe6-452c-a1da-f0e5c5da3915",
+            "name": "Œuf (bien cuit)",
+            "source": "dev",
+            "category": "protéine",
+            "allergen_group": "œuf",
+            "is_major_allergen": true
+        }
+    ],
+    "forums": [
+        {
+            "id": "d5aa7ca4-8bd9-4d71-ac0e-edf5216317ee",
+            "icon": "shield",
+            "slug": "contraception",
+            "title": "Contraception",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
+                "avoid"
+            ],
+            "position": 1,
+            "description": "Moyens de contraception, questions avant une consultation, ressentis."
+        },
+        {
+            "id": "22c21383-2f1a-4e4f-bb09-676f4924c059",
+            "icon": "sparkles",
+            "slug": "projet-bebe",
+            "title": "Projet bébé",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
+                "ttc"
+            ],
+            "position": 2,
+            "description": "Essayer d'avoir un enfant, attendre, espérer, se soutenir."
+        },
+        {
+            "id": "5add4f3a-9ef7-41aa-a4f8-5acf7c40ed8d",
+            "icon": "moon",
+            "slug": "grossesse",
+            "title": "Grossesse",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
+                "pregnant"
+            ],
+            "position": 3,
+            "description": "Questions et partages pendant la grossesse."
+        },
+        {
+            "id": "0b5ae06f-ed12-4447-a4ec-0b5a71179539",
+            "icon": "twins",
+            "slug": "jumeaux-triples",
+            "title": "Jumeaux & triplés",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
+                "pregnant",
+                "newborn"
+            ],
+            "position": 4,
+            "description": "Grossesses multiples et familles de jumeaux ou triplés."
+        },
+        {
+            "id": "11ebc4a3-7f9e-4b88-ab38-ac59eabf915d",
+            "icon": "heart",
+            "slug": "post-partum",
+            "title": "Post-partum",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
+                "newborn"
+            ],
+            "position": 5,
+            "description": "Après la naissance : récupération, émotions, quotidien."
+        },
+        {
+            "id": "3cb702bd-07ea-479b-917c-2d09666465a7",
+            "icon": "drop",
+            "slug": "allaitement",
+            "title": "Allaitement",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
+                "newborn"
+            ],
+            "position": 6,
+            "description": "Allaitement, tire-lait, sevrage, et allaitement mixte."
+        },
+        {
+            "id": "04e9a53b-455c-46ef-b26f-29417d2dc1f3",
+            "icon": "baby",
+            "slug": "parents-bebes",
+            "title": "Parents de bébés",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
+                "newborn",
+                "child"
+            ],
+            "position": 7,
+            "description": "Le quotidien avec un bébé de 0 à 2 ans."
+        },
+        {
+            "id": "0b593782-4d84-4e18-bbbc-56a498fec134",
+            "icon": "sun",
+            "slug": "parents-enfants",
+            "title": "Parents d'enfants",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
+                "child"
+            ],
+            "position": 8,
+            "description": "De 2 à 10 ans : école, émotions, organisation."
+        },
+        {
+            "id": "ad7ae9e1-3a77-4b40-a4f1-017144073f93",
+            "icon": "users",
+            "slug": "familles-nombreuses",
+            "title": "Familles nombreuses",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
+                "family"
+            ],
+            "position": 9,
+            "description": "Organiser la vie avec plusieurs enfants."
+        },
+        {
+            "id": "9f5651f6-fc01-49a0-aadf-831a5f2b2520",
+            "icon": "map",
+            "slug": "rencontres-locales",
+            "title": "Organisation & rencontres locales",
+            "archived": false,
+            "is_local": true,
+            "journeys": [
+            ],
+            "position": 10,
+            "description": "Proposer une rencontre dans un lieu public, par zone générale uniquement."
+        }
+    ],
+    "articles": [
+        {
+            "id": "710e33b5-23ca-47ca-a394-597339ae34f6",
+            "slug": "baby-blues-ou-depression",
+            "tags": [
+                "emotions",
+                "post-partum"
+            ],
+            "title": "Baby blues ou dépression du post-partum ?",
+            "status": "published",
+            "body_md": "Dans les jours qui suivent la naissance, beaucoup de personnes traversent des moments de larmes, d'irritabilité ou de fatigue intense. On parle souvent de **baby blues** : il apparaît généralement dans les premiers jours et s'estompe en quelques jours.\n\nQuand la tristesse, l'anxiété, la perte d'intérêt ou l'épuisement **durent plus de deux semaines**, s'aggravent, ou apparaissent plus tard dans la première année, il peut s'agir d'une **dépression du post-partum**. Elle peut toucher la mère comme le coparent. Ce n'est ni une faiblesse ni un échec : cela se soigne.\n\n### Ce qui peut aider\n- En parler à une personne de confiance.\n- En parler à votre sage-femme, votre médecin ou votre PMI : ils sont là pour ça.\n- Accepter l'aide pour les repas, les nuits, les courses.\n\n### Quand appeler tout de suite\nSi vous avez des idées de suicide, peur de vous faire du mal ou de faire du mal à votre bébé : appelez le **3114** (prévention du suicide, 24 h/24) ou le **15**. Vous n'êtes pas seule, et vous n'êtes pas seul.",
+            "sources": [
+                {
+                    "url": "https://www.santepubliquefrance.fr",
+                    "label": "Santé publique France"
+                },
+                {
+                    "url": "https://3114.fr",
+                    "label": "3114 — numéro national de prévention du suicide"
+                }
+            ],
+            "summary": "Deux réalités différentes, et toutes deux méritent d'être prises au sérieux.",
+            "journeys": [
+                "newborn"
+            ],
+            "max_week": null,
+            "min_week": null,
+            "is_premium": false,
+            "postpartum": true,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "eb6e7bb6-d8b9-4d48-8560-4781bb997235",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": 12,
+            "min_age_months": 0,
+            "is_safety_critical": true,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "560a37b0-dd9d-409c-808a-179e7fcaca78",
+            "slug": "cesarienne",
+            "tags": [
+                "accouchement"
+            ],
+            "title": "Césarienne programmée ou en urgence",
+            "status": "published",
+            "body_md": "Une césarienne peut être **programmée** à l'avance pour des raisons médicales, ou décidée **pendant le travail** par l'équipe. Dans les deux cas, c'est un accouchement à part entière.\n\nSi votre accouchement ne ressemble pas à ce que vous aviez imaginé, ce que vous ressentez est légitime. Vous n'avez pas « échoué ». En parler à l'équipe, à votre sage-femme ou lors du rendez-vous postnatal peut aider à mettre des mots sur ce vécu.\n\nAprès une césarienne, la récupération demande du temps : demandez à l'équipe quels mouvements éviter, comment soulager la douleur et quand reprendre la conduite ou le sport.",
+            "sources": [
+                {
+                    "url": "https://www.has-sante.fr",
+                    "label": "Haute Autorité de santé"
+                },
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                }
+            ],
+            "summary": "Comprendre ce qui peut se passer, sans jugement.",
+            "journeys": [
+                "pregnant",
+                "newborn"
+            ],
+            "max_week": 42,
+            "min_week": 28,
+            "is_premium": false,
+            "postpartum": true,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "c4fa0899-d198-409e-ab57-aed782d527a1",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": null,
+            "min_age_months": null,
+            "is_safety_critical": false,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "9e5d87ec-1de0-4716-895e-351d7f6b40f4",
+            "slug": "contraception-urgence",
+            "tags": [
+                "contraception"
+            ],
+            "title": "Contraception d'urgence",
+            "status": "published",
+            "body_md": "Après un rapport non protégé (oubli de pilule, préservatif qui a glissé…), une **contraception d'urgence** peut être utilisée. Plus elle est prise tôt, plus elle est efficace.\n\n- La pilule de contraception d'urgence est disponible en pharmacie.\n- Le stérilet au cuivre peut aussi être posé comme contraception d'urgence par un professionnel.\n\nUn pharmacien, un médecin, une sage-femme ou un centre de santé sexuelle peuvent vous conseiller, de façon confidentielle. Pensez aussi au dépistage des infections sexuellement transmissibles.",
+            "sources": [
+                {
+                    "url": "https://www.has-sante.fr",
+                    "label": "Haute Autorité de santé"
+                },
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                }
+            ],
+            "summary": "Que faire après un rapport non ou mal protégé ?",
+            "journeys": [
+                "avoid"
+            ],
+            "max_week": null,
+            "min_week": null,
+            "is_premium": false,
+            "postpartum": false,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "ae51badf-8a98-4337-9502-73ca7ee6f410",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": null,
+            "min_age_months": null,
+            "is_safety_critical": true,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "1151707a-a7aa-4baf-b607-d099a4f96398",
+            "slug": "cycle-fenetre-fertile",
+            "tags": [
+                "cycle"
+            ],
+            "title": "Le cycle et la « fenêtre fertile » : des estimations",
+            "status": "published",
+            "body_md": "Le cycle menstruel dure en moyenne autour de 28 jours, mais il varie d'une personne à l'autre et d'un mois à l'autre. L'ovulation survient souvent environ 14 jours **avant** les règles suivantes — ce qui la rend difficile à prévoir à l'avance.\n\nLes dates affichées dans l'application sont des **estimations** calculées à partir de vos saisies. Elles ne permettent **ni de garantir une grossesse, ni de l'éviter**. Pour éviter une grossesse, parlez de contraception avec un médecin, une sage-femme ou un centre de santé sexuelle.",
+            "sources": [
+                {
+                    "url": "https://www.has-sante.fr",
+                    "label": "Haute Autorité de santé"
+                },
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                }
+            ],
+            "summary": "Pourquoi un calendrier ne peut jamais garantir quoi que ce soit.",
+            "journeys": [
+                "avoid",
+                "ttc"
+            ],
+            "max_week": null,
+            "min_week": null,
+            "is_premium": false,
+            "postpartum": false,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "ae51badf-8a98-4337-9502-73ca7ee6f410",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": null,
+            "min_age_months": null,
+            "is_safety_critical": true,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "d57e94a2-334d-499b-8346-473a0d998004",
+            "slug": "debut-diversification",
+            "tags": [
+                "diversification",
+                "allergenes"
+            ],
+            "title": "Commencer la diversification",
+            "status": "published",
+            "body_md": "Les recommandations françaises actuelles indiquent de commencer la diversification **entre 4 et 6 mois**, et pas avant 4 mois, en accord avec le médecin ou le pédiatre qui suit votre enfant.\n\n- Le lait reste l'aliment principal pendant la première année.\n- Les aliments allergènes (œuf, arachide en poudre ou purée lisse, poisson…) peuvent être introduits **dès le début** de la diversification, sans attendre, sauf avis médical contraire.\n- Les textures évoluent progressivement : lisse, puis écrasé, puis petits morceaux fondants.\n\n### Réaction après un aliment\nEn cas de gêne respiratoire, gonflement du visage ou de la bouche, vomissements répétés ou malaise : **appelez le 15**.",
+            "sources": [
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                },
+                {
+                    "url": "https://www.1000-premiers-jours.fr",
+                    "label": "1000 premiers jours"
+                }
+            ],
+            "summary": "Quand et comment proposer les premiers aliments, à votre rythme et à celui de bébé.",
+            "journeys": [
+                "newborn",
+                "child"
+            ],
+            "max_week": null,
+            "min_week": null,
+            "is_premium": false,
+            "postpartum": false,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "10a6dd7c-5865-43a2-9027-ceb547ed2f62",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": 12,
+            "min_age_months": 4,
+            "is_safety_critical": false,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "9b515355-9466-4bff-a5cc-04be0a52c493",
+            "slug": "demander-de-l-aide",
+            "tags": [
+                "emotions"
+            ],
+            "title": "Comment demander de l'aide quand on n'y arrive plus",
+            "status": "published",
+            "body_md": "Il n'est pas toujours facile de dire que l'on ne va pas bien, surtout quand on a l'impression que tout le monde attend de nous du bonheur.\n\nQuelques phrases peuvent aider à commencer :\n- « Je suis épuisée et j'ai besoin que tu prennes une nuit. »\n- « Je ne me reconnais pas en ce moment, est-ce qu'on peut en parler ? »\n- À un professionnel : « Je me sens triste ou inquiète presque tous les jours depuis plus de deux semaines. »\n\nLa sage-femme, le médecin traitant, le pédiatre ou la PMI peuvent vous orienter. En cas de danger immédiat : **15**, **112** ou **3114**.",
+            "sources": [
+                {
+                    "url": "https://www.santepubliquefrance.fr",
+                    "label": "Santé publique France"
+                },
+                {
+                    "url": "https://3114.fr",
+                    "label": "3114 — numéro national de prévention du suicide"
+                }
+            ],
+            "summary": "Des mots simples pour oser dire « j'ai besoin d'aide ».",
+            "journeys": [
+                "newborn",
+                "pregnant"
+            ],
+            "max_week": null,
+            "min_week": null,
+            "is_premium": false,
+            "postpartum": true,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "eb6e7bb6-d8b9-4d48-8560-4781bb997235",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": null,
+            "min_age_months": null,
+            "is_safety_critical": true,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "df6b2f39-8b7f-4816-b243-7226ae0028d0",
+            "slug": "diastasis",
+            "tags": [
+                "abdominaux"
+            ],
+            "title": "Diastasis des grands droits : comprendre",
+            "status": "published",
+            "body_md": "Pendant la grossesse, les muscles grands droits de l'abdomen s'écartent pour laisser de la place au bébé. Après la naissance, cet écart se réduit souvent progressivement.\n\nSi vous remarquez un « renflement » au milieu du ventre quand vous vous redressez, ou des douleurs dans le dos, parlez-en à votre sage-femme, votre médecin ou un kinésithérapeute. Ils pourront évaluer la situation et vous dire quand et comment reprendre une activité.\n\nLa rééducation abdominale se fait **généralement après** la rééducation du périnée.",
+            "sources": [
+                {
+                    "url": "https://www.has-sante.fr",
+                    "label": "Haute Autorité de santé"
+                },
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                }
+            ],
+            "summary": "L'écartement des muscles abdominaux après la grossesse, et à qui en parler.",
+            "journeys": [
+                "newborn"
+            ],
+            "max_week": null,
+            "min_week": null,
+            "is_premium": false,
+            "postpartum": true,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "50a762f2-18a3-4df4-adfa-974289257910",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": 12,
+            "min_age_months": 0,
+            "is_safety_critical": false,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "4f96c6de-144f-41a4-ad5b-ae5c39aa49cf",
+            "slug": "fromages-grossesse",
+            "tags": [
+                "alimentation"
+            ],
+            "title": "Fromages et grossesse : ce qu'il faut savoir",
+            "status": "published",
+            "body_md": "Pendant la grossesse, il est recommandé d'éviter certains aliments en raison du risque de **listériose** et de **toxoplasmose**.\n\nPour les fromages, les recommandations officielles conseillent généralement d'éviter les **fromages au lait cru** (sauf fromages à pâte pressée cuite, type comté ou emmental, selon les recommandations en vigueur) et de retirer la croûte des fromages. Vérifiez l'étiquette : la mention « au lait cru » doit y figurer.\n\nCes recommandations peuvent évoluer : référez-vous aux sources officielles à jour et à votre professionnel de santé.",
+            "sources": [
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                },
+                {
+                    "url": "https://www.1000-premiers-jours.fr",
+                    "label": "1000 premiers jours"
+                }
+            ],
+            "summary": "Le lait cru, les pâtes molles et la listériose, expliqués simplement.",
+            "journeys": [
+                "pregnant"
+            ],
+            "max_week": 42,
+            "min_week": 0,
+            "is_premium": false,
+            "postpartum": false,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "83991046-f600-4fe0-91cc-8d622e1a0ca8",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": null,
+            "min_age_months": null,
+            "is_safety_critical": false,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "90b601e4-b566-49db-8d18-bb4d8d246ad7",
+            "slug": "hormones-apres-naissance",
+            "tags": [
+                "hormones"
+            ],
+            "title": "Hormones après la naissance : ce qui change",
+            "status": "published",
+            "body_md": "Après l'accouchement, les taux d'œstrogènes et de progestérone chutent rapidement. Ces changements peuvent jouer sur l'humeur, le sommeil, la peau, les cheveux ou la libido. L'allaitement modifie aussi l'équilibre hormonal (la prolactine notamment) et peut retarder le retour des règles.\n\nAttention : **les hormones n'expliquent pas tout**. Une grande tristesse, une douleur, une fatigue extrême ou un symptôme qui dure ne doivent jamais être mis uniquement sur le compte des hormones. Parlez-en à un professionnel.",
+            "sources": [
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                },
+                {
+                    "url": "https://www.1000-premiers-jours.fr",
+                    "label": "1000 premiers jours"
+                }
+            ],
+            "summary": "Une chute hormonale importante, qui n'explique pas tout.",
+            "journeys": [
+                "newborn"
+            ],
+            "max_week": null,
+            "min_week": null,
+            "is_premium": true,
+            "postpartum": true,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "c2ee1d47-0820-4408-ba88-792adbebf002",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": 12,
+            "min_age_months": 0,
+            "is_safety_critical": false,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "e86da414-f506-4305-91c3-e24fbcef8cd0",
+            "slug": "nuits-jumeaux",
+            "tags": [
+                "jumeaux",
+                "sommeil"
+            ],
+            "title": "Organiser les nuits avec des jumeaux",
+            "status": "published",
+            "body_md": "Avec deux (ou trois) bébés, l'organisation des nuits devient un vrai sujet d'équipe.\n\n- **Se relayer** par tranches horaires plutôt que de se lever à deux à chaque réveil.\n- **Noter** tétées, biberons et couches de chaque bébé séparément : l'onglet Suivi le permet, bébé par bébé.\n- **Accepter l'aide** extérieure pour une nuit ou une sieste.\n\nChaque bébé a son propre rythme : il est normal qu'ils ne soient pas synchronisés, et il n'y a pas lieu de les comparer.",
+            "sources": [
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                },
+                {
+                    "url": "https://www.1000-premiers-jours.fr",
+                    "label": "1000 premiers jours"
+                }
+            ],
+            "summary": "Des pistes concrètes pour tenir dans la durée, à adapter à votre famille.",
+            "journeys": [
+                "newborn",
+                "family"
+            ],
+            "max_week": null,
+            "min_week": null,
+            "is_premium": true,
+            "postpartum": false,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "4b206a14-a3b6-4c21-897b-608a2826ae5f",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": 24,
+            "min_age_months": 0,
+            "is_safety_critical": false,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "53dc7729-1ca5-40cb-819a-dfe3287c84a6",
+            "slug": "perinee-role",
+            "tags": [
+                "perinee"
+            ],
+            "title": "À quoi sert le périnée ?",
+            "status": "published",
+            "body_md": "Le périnée est un ensemble de muscles et de tissus situé au fond du bassin. Il soutient la vessie, l'utérus et le rectum, et participe à la continence.\n\nLa grossesse et l'accouchement peuvent l'affaiblir, quel que soit le mode d'accouchement. Des fuites urinaires, une sensation de pesanteur ou de gêne ne sont **pas une fatalité** : parlez-en lors du rendez-vous postnatal.\n\nLa rééducation périnéale se fait avec une sage-femme ou un kinésithérapeute, après une évaluation adaptée à votre accouchement. Cette application ne propose pas de programme d'exercices personnalisé.",
+            "sources": [
+                {
+                    "url": "https://www.has-sante.fr",
+                    "label": "Haute Autorité de santé"
+                },
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                }
+            ],
+            "summary": "Un ensemble de muscles discret mais essentiel, mis à rude épreuve par la grossesse.",
+            "journeys": [
+                "newborn"
+            ],
+            "max_week": null,
+            "min_week": null,
+            "is_premium": false,
+            "postpartum": true,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "50a762f2-18a3-4df4-adfa-974289257910",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": 12,
+            "min_age_months": 0,
+            "is_safety_critical": false,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "9d06c34c-3c84-4077-8501-c87842efe252",
+            "slug": "premiers-jours-retour-maison",
+            "tags": [
+                "retour-maison"
+            ],
+            "title": "Les premiers jours à la maison",
+            "status": "published",
+            "body_md": "Le retour à la maison est souvent un mélange de joie et de fatigue. Il n'y a pas de rythme « normal » à atteindre.\n\n- **Limiter les visites** si vous en avez besoin.\n- **Les saignements** (lochies) diminuent progressivement sur plusieurs semaines. Des saignements très abondants, des caillots importants, de la fièvre ou une douleur qui augmente doivent faire **consulter rapidement**.\n- **La sage-femme à domicile** peut passer après la sortie : n'hésitez pas à poser vos questions.\n\nPensez aussi à vous : manger, boire, dormir dès que possible.",
+            "sources": [
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                },
+                {
+                    "url": "https://www.1000-premiers-jours.fr",
+                    "label": "1000 premiers jours"
+                }
+            ],
+            "summary": "Repos, visites, saignements, aide : s'organiser sans culpabiliser.",
+            "journeys": [
+                "newborn"
+            ],
+            "max_week": null,
+            "min_week": null,
+            "is_premium": false,
+            "postpartum": true,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "c2ee1d47-0820-4408-ba88-792adbebf002",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": 2,
+            "min_age_months": 0,
+            "is_safety_critical": false,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "c6797653-a3e4-424f-9093-13d967cf6ce7",
+            "slug": "signes-du-travail",
+            "tags": [
+                "travail"
+            ],
+            "title": "Reconnaître les signes du travail",
+            "status": "published",
+            "body_md": "Chaque accouchement est différent. Votre sage-femme ou votre maternité vous indiquera **quand venir**, selon votre situation : suivez en priorité ses consignes.\n\n### Signes fréquents\n- Des contractions qui deviennent régulières, de plus en plus rapprochées et intenses.\n- Une perte des eaux (liquide clair qui s'écoule).\n\n### Appelez ou partez sans attendre si\n- Vous perdez du sang rouge.\n- Le liquide perdu est teinté (vert, marron) ou vous perdez les eaux avant terme.\n- Vous sentez moins bouger votre bébé.\n- Vous avez de la fièvre, un mal de tête intense, des troubles de la vue, une douleur inhabituelle.\n\nEn cas de doute, appelez votre maternité ou le **15**.",
+            "sources": [
+                {
+                    "url": "https://www.has-sante.fr",
+                    "label": "Haute Autorité de santé"
+                },
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                }
+            ],
+            "summary": "Contractions, perte des eaux, saignements : quand partir à la maternité ?",
+            "journeys": [
+                "pregnant"
+            ],
+            "max_week": 42,
+            "min_week": 30,
+            "is_premium": false,
+            "postpartum": false,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "c4fa0899-d198-409e-ab57-aed782d527a1",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": null,
+            "min_age_months": null,
+            "is_safety_critical": true,
+            "reviewer_qualification": null
+        },
+        {
+            "id": "65c1068e-18b5-4500-96db-5a60559d6094",
+            "slug": "valise-maternite",
+            "tags": [
+                "preparation"
+            ],
+            "title": "Préparer sa valise de maternité",
+            "status": "published",
+            "body_md": "Beaucoup de personnes préparent leur valise vers la fin du deuxième trimestre ou au début du troisième, pour être tranquilles. Votre maternité vous remettra souvent sa propre liste : elle prime sur toute liste générale.\n\n### Les papiers\nCarte Vitale, pièce d'identité, dossier de suivi de grossesse, résultats d'examens, carte de groupe sanguin si vous l'avez.\n\n### Pour vous\nVêtements confortables, sous-vêtements adaptés, protections, nécessaire de toilette, chargeur, de quoi grignoter.\n\n### Pour bébé\nQuelques bodies et pyjamas, un bonnet, des chaussettes, une gigoteuse ou une couverture, un siège auto adapté pour le retour.\n\nVous pouvez cocher chaque élément dans la liste « Valise de maternité » de l'onglet Suivi.",
+            "sources": [
+                {
+                    "url": "https://www.ameli.fr",
+                    "label": "Assurance Maladie — ameli.fr"
+                },
+                {
+                    "url": "https://www.1000-premiers-jours.fr",
+                    "label": "1000 premiers jours"
+                }
+            ],
+            "summary": "L'essentiel pour vous, pour bébé et pour les papiers — à adapter à votre maternité.",
+            "journeys": [
+                "pregnant"
+            ],
+            "max_week": 41,
+            "min_week": 24,
+            "is_premium": false,
+            "postpartum": false,
+            "updated_on": "2026-10-15",
+            "author_name": "Équipe éditoriale Toi & Moi (brouillon)",
+            "category_id": "c4fa0899-d198-409e-ab57-aed782d527a1",
+            "validated_at": null,
+            "reviewer_name": null,
+            "max_age_months": null,
+            "min_age_months": null,
+            "is_safety_critical": false,
+            "reviewer_qualification": null
+        }
+    ],
+    "products": [
+        {
+            "id": "9103d42b-53a5-4e96-a79a-60ff049055ec",
+            "name": "Crème change démo",
+            "brand": "Marque Démo",
+            "barcode": "0000000000017",
+            "is_demo": true,
+            "category": "cream",
+            "attributes": {
+                "fragrance": true
+            },
+            "data_source": "Base fictive de démonstration",
+            "ingredients": [
+                "Aqua",
+                "Zinc oxide",
+                "Glycerin",
+                "Parfum"
+            ],
+            "data_retrieved_at": "2026-10-15",
+            "declared_allergens": [
+            ]
+        },
+        {
+            "id": "205611c0-e7e6-44fa-8a6c-836977353d22",
+            "name": "Brie au lait cru démo",
+            "brand": "Fromagerie Démo",
+            "barcode": "0000000000024",
+            "is_demo": true,
+            "category": "food",
+            "attributes": {
+                "raw_milk": true,
+                "cheese_type": "soft"
+            },
+            "data_source": "Base fictive de démonstration",
+            "ingredients": [
+                "Lait cru de vache",
+                "Sel",
+                "Ferments lactiques",
+                "Présure"
+            ],
+            "data_retrieved_at": "2026-10-15",
+            "declared_allergens": [
+                "lait"
+            ]
+        },
+        {
+            "id": "43caf3f5-ff5e-41cc-bedf-91e4f94b3b37",
+            "name": "Comté démo",
+            "brand": "Fromagerie Démo",
+            "barcode": "0000000000031",
+            "is_demo": true,
+            "category": "food",
+            "attributes": {
+                "raw_milk": true,
+                "cheese_type": "hard_cooked"
+            },
+            "data_source": "Base fictive de démonstration",
+            "ingredients": [
+                "Lait cru de vache",
+                "Sel",
+                "Ferments",
+                "Présure"
+            ],
+            "data_retrieved_at": "2026-10-15",
+            "declared_allergens": [
+                "lait"
+            ]
+        },
+        {
+            "id": "cd43c9a5-b418-4ac8-9d74-060f00503984",
+            "name": "Lingettes bébé démo",
+            "brand": "Marque Démo",
+            "barcode": "0000000000048",
+            "is_demo": true,
+            "category": "wipes",
+            "attributes": {
+                "fragrance": false
+            },
+            "data_source": "Base fictive de démonstration",
+            "ingredients": [
+                "Aqua",
+                "Glycerin",
+                "Sodium benzoate"
+            ],
+            "data_retrieved_at": "2026-10-15",
+            "declared_allergens": [
+            ]
+        },
+        {
+            "id": "d9a3aa42-85be-4b7e-91d6-0bdc3847d715",
+            "name": "Purée pomme-poire démo",
+            "brand": "Petits Pots Démo",
+            "barcode": "0000000000055",
+            "is_demo": true,
+            "category": "food",
+            "attributes": {
+                "min_age_months": 4
+            },
+            "data_source": "Base fictive de démonstration",
+            "ingredients": [
+                "Pomme 60 %",
+                "Poire 40 %"
+            ],
+            "data_retrieved_at": "2026-10-15",
+            "declared_allergens": [
+            ]
+        }
+    ],
+    "baby_names": [
+        {
+            "id": "355c95c0-f8de-44a6-bbb4-533044da976d",
+            "name": "Adam",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "hébraïque",
+            "meaning": "« homme », « terre »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "ecdd8248-76f3-4ab1-8e37-2989daa34c1a",
+            "name": "Alix",
+            "usage": [
+                "mixed"
+            ],
+            "origin": "germanique",
+            "meaning": "« noble »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "f1522258-21e8-47f5-abbb-96af9ccbfc9f",
+            "name": "Amara",
+            "usage": [
+                "feminine"
+            ],
+            "origin": "igbo / sanskrite",
+            "meaning": "« grâce », « éternelle »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "540aa9dc-e1c8-4094-a112-6f5bd58b0db8",
+            "name": "Ambre",
+            "usage": [
+                "feminine"
+            ],
+            "origin": "arabe",
+            "meaning": "résine fossile dorée",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "d11efbc7-b6b4-4472-bb55-52d4ecca2d54",
+            "name": "Aya",
+            "usage": [
+                "feminine"
+            ],
+            "origin": "arabe / japonaise",
+            "meaning": "« signe », « couleur »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "05f32e07-b506-4ac4-9a1a-ba2073ea2d8e",
+            "name": "Camille",
+            "usage": [
+                "mixed"
+            ],
+            "origin": "latine",
+            "meaning": "servant(e) lors des cérémonies",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "4c64fbc0-b599-4da8-90eb-191e3e957a51",
+            "name": "Charlie",
+            "usage": [
+                "mixed"
+            ],
+            "origin": "germanique",
+            "meaning": "« homme libre »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "db055ebb-484a-4c51-b360-0763a4c8a1cb",
+            "name": "Eden",
+            "usage": [
+                "mixed"
+            ],
+            "origin": "hébraïque",
+            "meaning": "« délice »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "5f03f616-3658-4cb1-8eb2-0b1a338e10c1",
+            "name": "Gabriel",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "hébraïque",
+            "meaning": "« force de Dieu »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "00bd4f38-3ae5-40b1-9a59-385aedccc615",
+            "name": "Ilyes",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "hébraïque / arabe",
+            "meaning": "forme d'Élie",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "24b2d423-3152-4d95-b1bc-b573cd944d31",
+            "name": "Inès",
+            "usage": [
+                "feminine"
+            ],
+            "origin": "grecque",
+            "meaning": "« pure »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "9830d319-e680-4821-8c07-386dc12d40d9",
+            "name": "Iris",
+            "usage": [
+                "feminine"
+            ],
+            "origin": "grecque",
+            "meaning": "« arc-en-ciel »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "0ddd1d00-360f-4f0c-a769-21a3565783b5",
+            "name": "Jade",
+            "usage": [
+                "feminine"
+            ],
+            "origin": "espagnole",
+            "meaning": "pierre précieuse",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "dda6803b-213b-42ab-8bed-be24d515ae53",
+            "name": "Kenzo",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "japonaise",
+            "meaning": "« sage », « en bonne santé »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "e7e2b193-2c54-4a20-a221-efc01226c676",
+            "name": "Kofi",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "akan",
+            "meaning": "« né un vendredi »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "c68668f7-a5fd-46f8-8204-6043abc0f462",
+            "name": "Lina",
+            "usage": [
+                "feminine"
+            ],
+            "origin": "arabe",
+            "meaning": "« tendre »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "be3b81eb-87e5-4fa7-bcbb-41dfe2f0d81e",
+            "name": "Lou",
+            "usage": [
+                "mixed"
+            ],
+            "origin": "germanique",
+            "meaning": "diminutif de Louise / Louis",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "ccdfcac3-94f6-4932-aff6-08655c91d00a",
+            "name": "Louis",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "germanique",
+            "meaning": "« glorieux au combat »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "789dafea-c22b-43fc-91b1-dbb853667b20",
+            "name": "Louise",
+            "usage": [
+                "feminine"
+            ],
+            "origin": "germanique",
+            "meaning": "« glorieuse au combat »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "018a6afc-8bd7-4a36-9b9e-9089f2c5a358",
+            "name": "Léo",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "latine",
+            "meaning": "« lion »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "b313da6c-c1d4-4849-9df2-eec8373af850",
+            "name": "Malo",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "bretonne",
+            "meaning": "« brillant », « gage »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "63d2811a-70b5-4206-9cce-0a6ecd64c459",
+            "name": "Maël",
+            "usage": [
+                "masculine",
+                "mixed"
+            ],
+            "origin": "bretonne",
+            "meaning": "« prince »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "31795723-a940-4581-80c0-81aa8ce1d871",
+            "name": "Mila",
+            "usage": [
+                "feminine"
+            ],
+            "origin": "slave",
+            "meaning": "« chère »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "e5143556-c194-403b-bba0-4efcf73efad9",
+            "name": "Noa",
+            "usage": [
+                "mixed"
+            ],
+            "origin": "hébraïque",
+            "meaning": "« mouvement »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "33bbb5c7-4a64-488d-a813-b509ba0f9e4a",
+            "name": "Nour",
+            "usage": [
+                "feminine",
+                "mixed"
+            ],
+            "origin": "arabe",
+            "meaning": "« lumière »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "db4908ad-e38f-4c38-8b50-c12864d0157b",
+            "name": "Noé",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "hébraïque",
+            "meaning": "« repos »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "122a89f5-0146-49fa-810f-8113823294f9",
+            "name": "Raphaël",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "hébraïque",
+            "meaning": "« Dieu guérit »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "39ad6820-46b2-4265-a872-22f0b2d2d25a",
+            "name": "Rose",
+            "usage": [
+                "feminine"
+            ],
+            "origin": "latine",
+            "meaning": "la fleur",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "b23d31d2-1aeb-4d68-a863-c6f5e55bc5c8",
+            "name": "Sacha",
+            "usage": [
+                "mixed"
+            ],
+            "origin": "russe",
+            "meaning": "diminutif d'Alexandre, « protecteur »",
+            "popularity_rank": null,
+            "popularity_source": null
+        },
+        {
+            "id": "d80ec776-a3d8-4e61-a4e8-ef1ed50f304e",
+            "name": "Timéo",
+            "usage": [
+                "masculine"
+            ],
+            "origin": "grecque",
+            "meaning": "« qui honore Dieu »",
+            "popularity_rank": null,
+            "popularity_source": null
+        }
+    ],
+    "plan_limits": [
+        {
+            "key": "assistant_questions_per_month",
+            "free_value": 5,
+            "description": "Questions à l'assistant par mois",
+            "premium_value": 300
+        },
+        {
+            "key": "documents_count",
+            "free_value": 15,
+            "description": "Documents dans le coffre",
+            "premium_value": 2000
+        },
+        {
+            "key": "children_count",
+            "free_value": 3,
+            "description": "Profils enfants actifs par foyer",
+            "premium_value": 12
+        },
+        {
+            "key": "checklists_count",
+            "free_value": 4,
+            "description": "Listes de préparation par foyer",
+            "premium_value": 100
+        },
+        {
+            "key": "product_scans_per_month",
+            "free_value": 10,
+            "description": "Scans détaillés de produits par mois",
+            "premium_value": 1000
+        }
+    ],
+    "product_recalls": [
+        {
+            "id": "23c07bdc-a4ec-463b-9f79-23fd5027b5d1",
+            "title": "Brie au lait cru démo (lot L2026-09)",
+            "reason": "Exemple fictif : présence possible de Listeria monocytogenes.",
+            "source": "Rappel fictif de démonstration — format RappelConso",
+            "barcode": "0000000000024",
+            "is_demo": true,
+            "product_id": null,
+            "lot_numbers": [
+                "L2026-09"
+            ],
+            "official_url": "https://rappel.conso.gouv.fr",
+            "published_on": "2026-10-15",
+            "recommended_action": "Exemple fictif : ne pas consommer, rapporter au point de vente."
+        }
+    ],
+    "content_categories": [
+        {
+            "id": "83991046-f600-4fe0-91cc-8d622e1a0ca8",
+            "icon": "moon",
+            "slug": "grossesse",
+            "label": "Grossesse",
+            "position": 1
+        },
+        {
+            "id": "c4fa0899-d198-409e-ab57-aed782d527a1",
+            "icon": "sparkles",
+            "slug": "accouchement",
+            "label": "Accouchement",
+            "position": 2
+        },
+        {
+            "id": "c2ee1d47-0820-4408-ba88-792adbebf002",
+            "icon": "heart",
+            "slug": "post-partum",
+            "label": "Après la naissance",
+            "position": 3
+        },
+        {
+            "id": "eb6e7bb6-d8b9-4d48-8560-4781bb997235",
+            "icon": "leaf",
+            "slug": "sante-mentale",
+            "label": "Émotions & sante mentale",
+            "position": 4
+        },
+        {
+            "id": "4b206a14-a3b6-4c21-897b-608a2826ae5f",
+            "icon": "baby",
+            "slug": "bebe",
+            "label": "Bébé au quotidien",
+            "position": 5
+        },
+        {
+            "id": "10a6dd7c-5865-43a2-9027-ceb547ed2f62",
+            "icon": "bowl",
+            "slug": "alimentation",
+            "label": "Alimentation",
+            "position": 6
+        },
+        {
+            "id": "5559bc08-8cec-4f7b-b339-197bec6fdf38",
+            "icon": "sun",
+            "slug": "enfant",
+            "label": "Enfant",
+            "position": 7
+        },
+        {
+            "id": "ae51badf-8a98-4337-9502-73ca7ee6f410",
+            "icon": "circle",
+            "slug": "cycle",
+            "label": "Cycle & contraception",
+            "position": 8
+        },
+        {
+            "id": "50a762f2-18a3-4df4-adfa-974289257910",
+            "icon": "flower",
+            "slug": "reeducation",
+            "label": "Rééducation",
+            "position": 9
+        }
+    ],
+    "emergency_resources": [
+        {
+            "id": "b1aa4a90-9f00-4a69-9fb0-30f1c0b51c52",
+            "kind": "emergency",
+            "label": "SAMU",
+            "phone": "15",
+            "active": true,
+            "country": "FR",
+            "position": 1,
+            "available": "24 h/24, 7 j/7",
+            "description": "Urgence médicale : malaise, difficulté à respirer, bébé qui ne réagit pas, réaction allergique grave."
+        },
+        {
+            "id": "220161c1-49e7-4bb7-9d49-14e42b7661ea",
+            "kind": "emergency",
+            "label": "Numéro d'urgence européen",
+            "phone": "112",
+            "active": true,
+            "country": "FR",
+            "position": 2,
+            "available": "24 h/24, 7 j/7",
+            "description": "Urgence, partout dans l'Union européenne, y compris depuis un téléphone sans forfait."
+        },
+        {
+            "id": "b68ab8ac-e448-4684-86af-9ba2f66eab91",
+            "kind": "suicide_prevention",
+            "label": "Prévention du suicide",
+            "phone": "3114",
+            "active": true,
+            "country": "FR",
+            "position": 3,
+            "available": "24 h/24, 7 j/7",
+            "description": "Si vous pensez au suicide, si vous avez peur de vous faire du mal, ou si vous vous inquiétez pour un proche. Gratuit et confidentiel."
+        },
+        {
+            "id": "9de7b2e0-3829-45fe-a81c-7f8f690a3433",
+            "kind": "parenting_support",
+            "label": "Enfance en danger",
+            "phone": "119",
+            "active": true,
+            "country": "FR",
+            "position": 4,
+            "available": "24 h/24, 7 j/7",
+            "description": "Si un enfant est en danger ou en risque de l'être, ou si vous avez peur de faire du mal à votre enfant."
+        },
+        {
+            "id": "9a1ac5ea-0e74-4807-8b89-ba5deb08c3fc",
+            "kind": "violence",
+            "label": "Violences Femmes Info",
+            "phone": "3919",
+            "active": true,
+            "country": "FR",
+            "position": 5,
+            "available": "24 h/24, 7 j/7",
+            "description": "Écoute et orientation pour les femmes victimes de violences et leur entourage."
+        },
+        {
+            "id": "91d8aacd-abbe-4905-b26b-46ddd253f553",
+            "kind": "emergency",
+            "label": "Urgence par SMS (personnes sourdes ou malentendantes)",
+            "phone": "114",
+            "active": true,
+            "country": "FR",
+            "position": 6,
+            "available": "24 h/24, 7 j/7",
+            "description": "Contacter les secours par SMS, fax ou application."
+        }
+    ]
+}

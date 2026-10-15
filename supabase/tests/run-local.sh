@@ -30,6 +30,21 @@ done
 echo "→ Données de développement"
 "${DB[@]}" -f "$ROOT/supabase/seed.sql" >/dev/null
 
+if [ -n "${EXPORT_DEMO_JSON:-}" ]; then
+  echo "→ Export du contenu de démonstration vers $EXPORT_DEMO_JSON"
+  "${DB[@]}" -At -c "select jsonb_pretty(jsonb_build_object(
+    'content_categories', (select jsonb_agg(t order by position) from public.content_categories t),
+    'articles', (select jsonb_agg(to_jsonb(t) - 'created_at' order by slug) from public.articles t where status = 'published'),
+    'forums', (select jsonb_agg(t order by position) from public.forums t),
+    'emergency_resources', (select jsonb_agg(t order by position) from public.emergency_resources t),
+    'foods', (select jsonb_agg(to_jsonb(t) - 'created_at' order by name) from public.foods t),
+    'baby_names', (select jsonb_agg(to_jsonb(t) - 'created_at' order by name) from public.baby_names t),
+    'products', (select jsonb_agg(to_jsonb(t) - 'created_at') from public.products t),
+    'product_recalls', (select jsonb_agg(to_jsonb(t) - 'created_at') from public.product_recalls t),
+    'plan_limits', (select jsonb_agg(t) from public.plan_limits t)))" > "$EXPORT_DEMO_JSON"
+  exit 0
+fi
+
 STATUS=0
 for t in "$ROOT"/supabase/tests/sql/*.sql; do
   echo "→ Tests $(basename "$t")"

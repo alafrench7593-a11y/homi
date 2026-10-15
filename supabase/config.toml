@@ -1,0 +1,62 @@
+# Configuration Supabase CLI (développement local : `supabase start`)
+project_id = "toi-et-moi"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[auth]
+enabled = true
+site_url = "toietmoi://"
+additional_redirect_urls = ["toietmoi://auth/callback", "exp://127.0.0.1:8081/--/auth/callback", "http://localhost:8081/auth/callback"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+minimum_password_length = 10
+password_requirements = "lower_upper_letters_digits"
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+double_confirm_changes = true
+max_frequency = "1m0s"
+
+[auth.rate_limit]
+email_sent = 4
+sign_in_sign_ups = 30
+token_verifications = 30
+
+[storage]
+enabled = true
+file_size_limit = "25MiB"
+
+[functions.assistant]
+verify_jwt = true
+
+[functions.delete-account]
+verify_jwt = true
+
+[functions.product-lookup]
+verify_jwt = true
+
+[functions.document-extract]
+verify_jwt = true
+
+# Appelées par des services externes : protégées par un secret partagé
+[functions.revenuecat-webhook]
+verify_jwt = false
+
+[functions.send-push]
+verify_jwt = false

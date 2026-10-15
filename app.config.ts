@@ -1,5 +1,6 @@
 import type { ExpoConfig } from 'expo/config';
-import { BRAND } from './src/config/brand';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const BRAND = require('./src/config/brand.json');
 
 const config: ExpoConfig = {
   name: BRAND.name,

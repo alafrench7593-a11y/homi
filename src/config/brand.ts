@@ -1,14 +1,8 @@
 /**
- * Identité de l'application — UN SEUL endroit à modifier si le nom change
- * (la disponibilité juridique de « Toi & Moi » doit être vérifiée avant publication).
- * Ce fichier est aussi lu par app.config.ts : il doit rester sans dépendance.
+ * Identité de l'application — modifiez UNIQUEMENT src/config/brand.json
+ * si le nom change (la disponibilité juridique de « Toi & Moi » doit être
+ * vérifiée avant publication). Ce JSON est aussi lu par app.config.ts.
  */
-export const BRAND = {
-  name: 'Toi & Moi',
-  shortName: 'Toi & Moi',
-  tagline: 'À chaque étape de votre histoire',
-  slug: 'toi-et-moi',
-  scheme: 'toietmoi',
-  bundleId: 'fr.toietmoi.app',
-  supportEmail: 'contact@exemple.fr', // À remplacer avant publication
-} as const;
+import brand from './brand.json';
+
+export const BRAND = brand;
