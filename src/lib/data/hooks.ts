@@ -191,7 +191,7 @@ export function useMaternalWeights() {
 }
 export function useMoods(limit = 30) {
   const userId = useUserId();
-  return useRows<MoodCheckin>(['mood_checkins'], userId ? { table: 'mood_checkins', filters: [eq('user_id', userId)], order: [{ col: 'checked_at', asc: false }], limit } : null);
+  return useRows<MoodCheckin>(['mood_checkins', String(limit)], userId ? { table: 'mood_checkins', filters: [eq('user_id', userId)], order: [{ col: 'checked_at', asc: false }], limit } : null);
 }
 export function usePeriods() {
   const userId = useUserId();
