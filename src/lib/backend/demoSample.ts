@@ -51,4 +51,30 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
   if (!T('community_profiles').some((p) => p.user_id === userId)) {
     T('community_profiles').push({ user_id: userId, pseudonym: 'CamilleEtLesJumeaux', area_label: 'Île-de-France', suspended_until: null, created_at: iso(1) });
   }
+
+  // « Mon sommeil » : quelques nuits récentes de Camille (carnet privé)
+  const at = (date: string, hhmm: string, dayShift = 0) => {
+    const [y, m, d] = date.split('-').map(Number);
+    const [h, mi] = hhmm.split(':').map(Number);
+    return new Date(y, m - 1, d + dayShift, h, mi).toISOString();
+  };
+  const nights: [number, string, string, number, { at: string | null; minutes: number | null }[], { start: string; end: string }[], number, number, number, string | null][] = [
+    [5, '22:45', '06:50', 2, [{ at: '01:30', minutes: 20 }, { at: '04:10', minutes: 15 }], [{ start: '14:00', end: '14:40' }], 3, 3, 4, null],
+    [4, '23:30', '07:15', 1, [{ at: '03:00', minutes: 30 }], [], 3, 3, 3, 'Les bébés bougent beaucoup le soir.'],
+    [3, '22:15', '06:30', 3, [{ at: '02:00', minutes: null }], [{ start: '13:30', end: '14:15' }], 2, 4, 3, null],
+    [1, '22:30', '07:00', 2, [], [{ start: '15:00', end: '15:30' }], 3, 4, 4, 'Coussin de grossesse : ça aide.'],
+    [0, '23:00', '07:20', 1, [{ at: '04:30', minutes: 10 }], [], 4, 3, 4, null],
+  ];
+  for (const [ago, bed, wake, count, details, naps, quality, fatigue, mood, note] of nights) {
+    const day = addDays(today, -ago);
+    if (T('parent_sleep_logs').some((r) => r.user_id === userId && r.log_date === day)) continue;
+    const bedtime = at(day, bed, -1);
+    const wake_time = at(day, wake);
+    const awake = details.reduce((s, d) => s + (d.minutes ?? 0), 0);
+    T('parent_sleep_logs').push({
+      id: uuid(), user_id: userId, log_date: day, bedtime, wake_time, night_wakings: count, waking_details: details,
+      sleep_minutes: Math.round((Date.parse(wake_time) - Date.parse(bedtime)) / 60_000) - awake, duration_edited: false,
+      naps, quality, fatigue, mood, note, created_at: iso(ago * 24), updated_at: iso(ago * 24),
+    });
+  }
 }

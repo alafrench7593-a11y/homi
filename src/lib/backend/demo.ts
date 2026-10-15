@@ -25,6 +25,7 @@ const OWNER_TABLES: Record<string, string> = {
   assistant_conversations: 'user_id', assistant_messages: 'user_id', consents: 'user_id', posts: 'author_id', comments: 'author_id',
   post_likes: 'user_id', saved_posts: 'user_id', reports: 'reporter_id', user_blocks: 'blocker_id', notes: 'author_id',
   documents: 'uploaded_by', name_votes: 'user_id',
+  parent_sleep_logs: 'user_id',
 };
 
 interface DemoState {
@@ -182,6 +183,12 @@ export function createDemoBackend(): Backend {
       r.status = 'open';
     }
     if (table === 'reminders') r.updated_at = nowIso();
+    if (table === 'parent_sleep_logs') {
+      // Même règles que la base : une entrée par jour, réveil après le coucher
+      if (T(table).some((x) => x.user_id === r.user_id && x.log_date === r.log_date)) throw new BackendError('Une nuit est déjà enregistrée pour ce jour : modifiez-la plutôt.');
+      if (r.bedtime && r.wake_time && r.wake_time <= r.bedtime) throw new BackendError('Le réveil doit être après le coucher.');
+      r.updated_at = nowIso();
+    }
     if (table === 'documents') r.private_to_uploader ??= false;
     return r;
   }
@@ -500,7 +507,11 @@ export function createDemoBackend(): Backend {
       const rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
       for (const r of rows) {
         if (table === 'sleeps' && patch.ended_at && patch.ended_at < r.started_at) throw new BackendError('La fin du sommeil ne peut pas précéder son début.');
-        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children'].includes(table) ? { updated_at: nowIso() } : {});
+        if (table === 'parent_sleep_logs') {
+          if (r.user_id !== state.session?.userId) continue;
+          if (patch.log_date && T(table).some((x) => x.id !== r.id && x.user_id === r.user_id && x.log_date === patch.log_date)) throw new BackendError('Une nuit est déjà enregistrée pour ce jour : modifiez-la plutôt.');
+        }
+        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'parent_sleep_logs'].includes(table) ? { updated_at: nowIso() } : {});
       }
       persist();
       return JSON.parse(JSON.stringify(rows)) as R[];
