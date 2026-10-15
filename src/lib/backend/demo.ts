@@ -25,6 +25,8 @@ const OWNER_TABLES: Record<string, string> = {
   assistant_conversations: 'user_id', assistant_messages: 'user_id', consents: 'user_id', posts: 'author_id', comments: 'author_id',
   post_likes: 'user_id', saved_posts: 'user_id', reports: 'reporter_id', user_blocks: 'blocker_id', notes: 'author_id',
   documents: 'uploaded_by', name_votes: 'user_id',
+  // Parcours fertilité : données intimes, strictement personnelles
+  intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
 };
 
 interface DemoState {
@@ -299,7 +301,7 @@ export function createDemoBackend(): Backend {
         exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
-        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'favorites'].map((t) => [t, view(t)])),
+        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
           ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents']
@@ -479,7 +481,7 @@ export function createDemoBackend(): Backend {
       const out: Row[] = [];
       for (const raw of Array.isArray(input) ? input : [input]) {
         const conflictCol = opts?.onConflict;
-        if (conflictCol && raw[conflictCol] != null) {
+        if (conflictCol && conflictCol.split(',').every((c) => raw[c] != null)) {
           const existing = T(table).find((r) => conflictCol.split(',').every((c) => r[c] === raw[c]));
           if (existing) {
             if (!opts?.ignoreDuplicates) Object.assign(existing, raw);
@@ -500,7 +502,7 @@ export function createDemoBackend(): Backend {
       const rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
       for (const r of rows) {
         if (table === 'sleeps' && patch.ended_at && patch.ended_at < r.started_at) throw new BackendError('La fin du sommeil ne peut pas précéder son début.');
-        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children'].includes(table) ? { updated_at: nowIso() } : {});
+        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'contraception_methods', 'consultation_questions'].includes(table) ? { updated_at: nowIso() } : {});
       }
       persist();
       return JSON.parse(JSON.stringify(rows)) as R[];

@@ -4,6 +4,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { Redirect } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
@@ -11,6 +12,7 @@ import { useUserId } from '@/lib/auth';
 import { backend, BackendError, eq } from '@/lib/backend';
 import { useInvalidate, usePeriods, useTests } from '@/lib/data/hooks';
 import { useSymptomLogs } from '@/lib/data/hooks-me';
+import { useFertilityJourney } from '@/lib/data/hooks-fertility';
 import { addDays, daysBetween, formatDateFr, frToISO, parseISODate, todayISO } from '@/lib/domain/dates';
 import { cycleDayKind, estimateCycle, type CycleDayKind } from '@/lib/domain/cycle';
 import { toFrDate } from '@/lib/validation';
@@ -77,7 +79,18 @@ function CycleCalendar({ entries, est }: { entries: PeriodEntry[]; est: ReturnTy
   );
 }
 
-export default function CycleScreen() {
+/**
+ * Les personnes ayant choisi un parcours fertilité sont redirigées vers l'écran dédié :
+ * « concevoir » -> /fertility, « éviter une grossesse » -> /contraception.
+ */
+export default function CycleRoute() {
+  const journey = useFertilityJourney();
+  if (journey === 'ttc') return <Redirect href={'/fertility' as never} />;
+  if (journey === 'avoid') return <Redirect href={'/contraception' as never} />;
+  return <CycleScreen />;
+}
+
+function CycleScreen() {
   const toast = useToast();
   const inv = useInvalidate();
   const userId = useUserId();
