@@ -56,7 +56,7 @@ function ChildTracking({ childId }: { childId: string }) {
         onPress={() => { haptic('light'); router.push('/night'); }}
         style={({ pressed }) => ({ borderRadius: radius.lg, padding: spacing.md, backgroundColor: '#1B2140', flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.9 : 1 })}
       >
-        <Icon name="moon" color="#E2B884" />
+        <Icon name="moon" color="#FF8FB1" />
         <View style={{ flex: 1 }}>
           <Text weight="bold" color="#F2DFC1">{openSleep ? 'Sommeil en cours' : 'Mode nuit'}</Text>
           <Text variant="small" color="#B8A88F">{openSleep ? 'Touchez pour arrêter ou noter un réveil' : 'Écran apaisé pour les nuits : sommeil, tétées, couches'}</Text>

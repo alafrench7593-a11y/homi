@@ -44,7 +44,7 @@ export function WelcomeIllustration({ size = 300 }: { size?: number }) {
       <Person x={258} y={156} scale={0.5} skin={SKIN_TONES[2]} cloth="#EBCFC8" hair="#2B2433" />
       <Person x={218} y={158} scale={0.5} skin={SKIN_TONES[2]} cloth="#E6D6C2" hair="#2B2433" />
       {[[30, 40], [262, 30], [230, 76], [50, 96], [110, 24]].map(([x, y], i) => (
-        <Circle key={i} cx={x} cy={y} r={i % 2 ? 1.6 : 2.4} fill="#C6A15B" opacity={0.7} />
+        <Circle key={i} cx={x} cy={y} r={i % 2 ? 1.6 : 2.4} fill="#FF8FB1" opacity={0.7} />
       ))}
     </Svg>
   );
@@ -76,8 +76,8 @@ export function EmptyIllustration({ kind = 'moon', size = 140 }: { kind?: 'moon'
           <Circle cx="82" cy="69" r="4" fill="#F7F1E8" />
         </G>
       )}
-      <Circle cx="112" cy="30" r="2.5" fill="#C6A15B" />
-      <Circle cx="26" cy="36" r="1.8" fill="#C6A15B" />
+      <Circle cx="112" cy="30" r="2.5" fill="#FF8FB1" />
+      <Circle cx="26" cy="36" r="1.8" fill="#FF8FB1" />
     </Svg>
   );
 }

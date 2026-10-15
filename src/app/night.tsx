@@ -18,7 +18,7 @@ import { formatDuration, formatTime, timeAgo } from '@/lib/domain/dates';
 import type { Breastfeed, Diaper } from '@/lib/types';
 import { radius, spacing } from '@/theme/tokens';
 
-const GOLD = '#E2B884';
+const GOLD = '#FF8FB1';
 const TEXT = '#F2DFC1';
 const MUTED = '#B8A88F';
 

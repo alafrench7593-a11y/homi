@@ -26,7 +26,7 @@ export interface SkyMoment {
 }
 
 const KIND_COLOR: Record<SkyMoment['kind'], string> = {
-  feed: '#C77A62', meal: '#C77A62', sleep: '#8E7FD0', diaper: '#B8913F', appointment: '#121633', reminder: '#6E60B5',
+  feed: '#FF5C8A', meal: '#FF7A6B', sleep: '#8E6CF0', diaper: '#F2A93B', appointment: '#F0477D', reminder: '#7A5CE0',
 };
 
 /** Rassemble les moments d'aujourd'hui (passés et à venir) pour l'enfant affiché et le foyer. */

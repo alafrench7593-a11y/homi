@@ -15,47 +15,63 @@ import { summarizeDay, suggestedNextSide } from '@/lib/domain/daily';
 import { nextOccurrence } from '@/lib/domain/reminders';
 import type { Appointment, Bottle, Breastfeed, Child, Diaper, Pregnancy, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { fonts, NACRE, palette, radius, spacing } from '@/theme/tokens';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ORB_HUES = ['rose', 'lavande', 'or'] as const;
 
 export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
+  const t = useTheme();
   const p = pregnancyProgress(pregnancy.due_date);
   const info = weekInfo(p.weeksSA);
   const { data: babies } = useExpectedBabies(pregnancy.id);
   const n = Math.max(1, babies?.length ?? 1);
-  const orbSize = n === 1 ? 200 : n === 2 ? 150 : 112;
+  const orbSize = n === 1 ? 168 : n === 2 ? 120 : 92;
+  const pct = Math.max(2, Math.min(100, Math.round((p.weeksSA / 41) * 100)));
+  const tile = { flex: 1, borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.colors.surface, borderWidth: t.isDark ? 1 : 0, borderColor: t.colors.border, gap: 2 } as const;
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`Grossesse : ${p.label}, ${countdownLabel(p.daysToDue)}. Ouvrir l’univers de la grossesse.`}
-      onPress={() => { haptic('selection'); router.push('/pregnancy'); }}
-      style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })}
-    >
-      <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: '#121633', borderWidth: 1, borderColor: 'rgba(216,188,133,0.28)', paddingVertical: spacing.lg, paddingHorizontal: spacing.md }}>
-        <StarField density={26} />
-        <View style={{ alignItems: 'center' }}>
-          <WeeksRing week={p.weeksSA} size={280}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              {Array.from({ length: n }, (_, i) => (
-                <View key={i} style={{ marginLeft: i ? -orbSize * 0.28 : 0 }}><FetusArt week={p.weeksSA} growth={info.growth} size={orbSize} hue={ORB_HUES[i % 3]} interactive={false} accessibilityLabel={`Illustration artistique ${babies?.[i]?.nickname ? 'de ' + babies[i].nickname : 'du bébé'}`} /></View>
-              ))}
-            </View>
-          </WeeksRing>
-        </View>
-        <View style={{ marginTop: spacing.xs, gap: 6 }}>
-          <View>
-            <Text variant="hero" color={palette.milk}>{p.weeksSA}<Text variant="heading" color={palette.gold}> SA{p.extraDays ? ` + ${p.extraDays} j` : ''}</Text></Text>
-            <Text variant="small" color="rgba(251,248,244,0.7)">{p.weeksSG} semaines de grossesse, trimestre {p.trimester}</Text>
+    <View style={{ gap: spacing.xs }}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Grossesse : ${p.label}, ${countdownLabel(p.daysToDue)}. Ouvrir l’univers de la grossesse.`}
+        onPress={() => { haptic('selection'); router.push('/pregnancy'); }}
+        style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })}
+      >
+        <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, borderWidth: t.isDark ? 1 : 0, borderColor: t.colors.border, padding: spacing.md, minHeight: 236 }}>
+          <LinearGradient colors={t.isDark ? ['transparent', 'rgba(255,92,138,0.16)'] : ['#FFFFFF', '#FFE6EE']} start={{ x: 0.2, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{n > 1 ? `GROSSESSE · ${n} BÉBÉS` : 'GROSSESSE'}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: spacing.md }}>
+            <Text style={{ fontFamily: fonts.display, fontSize: 92, lineHeight: 90, letterSpacing: -5 }}>{p.weeksSA}</Text>
+            <Text variant="heading" color={t.colors.primary} style={{ marginBottom: 12, marginLeft: 4 }}>SA{p.extraDays ? ` +${p.extraDays} j` : ''}</Text>
           </View>
-          <Text color={palette.gold}>Terme le {new Date(pregnancy.due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}, {countdownLabel(p.daysToDue)}</Text>
+          <Text variant="small" muted>Trimestre {p.trimester} · {p.weeksSG} semaines de grossesse</Text>
+          <View style={{ position: 'absolute', right: -14, top: 34, flexDirection: 'row' }} pointerEvents="none">
+            {Array.from({ length: n }, (_, i) => (
+              <View key={i} style={{ marginLeft: i ? -orbSize * 0.35 : 0 }}><FetusArt week={p.weeksSA} growth={info.growth} size={orbSize} hue={ORB_HUES[i % 3]} interactive={false} accessibilityLabel={`Illustration artistique ${babies?.[i]?.nickname ? 'de ' + babies[i].nickname : 'du bébé'}, pas une échographie`} /></View>
+            ))}
+          </View>
+          <View style={{ marginTop: 'auto', paddingTop: spacing.md }}>
+            <Text variant="caption" muted style={{ alignSelf: 'flex-end', marginBottom: 4 }}>{pct} %</Text>
+            <View style={{ height: 8, borderRadius: 4, backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : '#F7DCE5', overflow: 'hidden' }}>
+              <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ width: `${pct}%`, height: '100%', borderRadius: 4 }} />
+            </View>
+          </View>
         </View>
-        <View style={{ marginTop: spacing.md, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: 'rgba(200,163,94,0.35)' }}>
-          <Text color={palette.milk}>{n > 1 ? 'Chacun' : 'Il ou elle'} a à peu près la taille d’{info.compare.replace(/^une? /, (m) => m)}.</Text>
-          <Text variant="caption" color="rgba(251,248,244,0.6)">Repères moyens ({info.lengthCm} cm, {formatWeight(info.weightG)}). Illustration artistique, pas une échographie.</Text>
+      </Pressable>
+      <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+        <View style={tile} accessible accessibilityLabel={`Terme le ${new Date(pregnancy.due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}, ${countdownLabel(p.daysToDue)}`}>
+          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>TERME</Text>
+          <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 36, letterSpacing: -1 }}>{p.daysToDue > 0 ? `J-${p.daysToDue}` : 'Bientôt'}</Text>
+          <Text variant="small" muted>{new Date(pregnancy.due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</Text>
+        </View>
+        <View style={tile} accessible accessibilityLabel={`Taille moyenne : environ ${info.lengthCm} centimètres, comme ${info.compare}`}>
+          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>TAILLE</Text>
+          <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 36, letterSpacing: -1 }}>{info.lengthCm} cm</Text>
+          <Text variant="small" muted numberOfLines={1}>{info.compare}</Text>
         </View>
       </View>
-    </Pressable>
+      <Text variant="caption" muted center>Repères moyens · illustration artistique, pas une échographie</Text>
+    </View>
   );
 }
 

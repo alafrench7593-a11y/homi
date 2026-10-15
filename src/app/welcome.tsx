@@ -17,9 +17,9 @@ const JOURNEY = ['Contraception', 'Projet bébé', 'Grossesse', 'Naissance', 'En
 export default function Welcome() {
   const insets = useSafeAreaInsets();
   return (
-    <View style={{ flex: 1, backgroundColor: '#0D1029' }}>
+    <View style={{ flex: 1, backgroundColor: '#140A11' }}>
       <StatusBar style="light" />
-      <LinearGradient colors={['#1A1F4A', '#0D1029', '#07081A']} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+      <LinearGradient colors={['#1A1F4A', '#140A11', '#07081A']} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
       <StarField density={50} color="#D8BC85" />
       <View style={{ flex: 1, paddingTop: insets.top + spacing.lg, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, justifyContent: 'space-between' }}>
         <View style={{ alignItems: 'center', gap: spacing.md }}>
@@ -44,7 +44,7 @@ export default function Welcome() {
             <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
             <Text weight="medium" color={palette.night} style={{ letterSpacing: 0.5 }}>Créer mon compte</Text>
           </Pressable>
-          <Pressable accessibilityRole="button" onPress={() => router.push('/auth/sign-in')} style={({ pressed }) => ({ minHeight: 58, borderRadius: radius.pill, borderWidth: 1.2, borderColor: 'rgba(216,188,133,0.45)', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.8 : 1 })}>
+          <Pressable accessibilityRole="button" onPress={() => router.push('/auth/sign-in')} style={({ pressed }) => ({ minHeight: 58, borderRadius: radius.pill, borderWidth: 1.2, borderColor: 'rgba(255,143,177,0.45)', alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.8 : 1 })}>
             <Text weight="medium" color={palette.milk}>J’ai déjà un compte</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={() => router.push('/emergency')} style={{ minHeight: 48, flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' }}>

@@ -7,7 +7,7 @@ import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Banner, Card, Chip, Icon, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { ChildToday, PregnancyHero, QuickActions, QUICK_KEYS, quickLabel, UpcomingCard } from '@/features/home';
-import { DayThread, SkyArc, UniverseGrid, useSkyMoments } from '@/features/sky';
+import { DayThread, UniverseGrid, useSkyMoments } from '@/features/sky';
 import { pregnancyProgress as pp } from '@/lib/domain/pregnancy';
 import {
   useActivePregnancy, useActiveSubject, useArticles, useChildren, useMoods, useNotificationsInbox, usePremium, useProfile, useUpdateProfile,
@@ -18,7 +18,8 @@ import { childAge } from '@/lib/domain/child';
 import { isLocked, suggestArticles } from '@/lib/domain/content';
 import { useOfflineStore } from '@/lib/offline';
 import { useTheme } from '@/theme/ThemeProvider';
-import { previewTime, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, NACRE, previewTime, spacing } from '@/theme/tokens';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useUiStore } from '@/lib/store';
 
 export default function Home() {
@@ -64,18 +65,25 @@ export default function Home() {
   return (
     <View style={{ flex: 1 }}>
       <Screen bottomInset={96}>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <Text variant="small" muted>{new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</Text>
+        <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start', marginTop: spacing.xs }}>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text variant="small" muted weight="bold">{skyNow.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase())}</Text>
+            <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, skyNow)}</Text>
+            {skySubtitle ? <Text variant="small" muted>{skySubtitle}</Text> : null}
+          </View>
           <Row gap={0}>
             <IconButton icon="life-buoy" label="Besoin d’aide maintenant" color={t.colors.heart} onPress={() => router.push('/emergency')} />
             <View>
               <IconButton icon="bell" label={unread ? `Notifications, ${unread} non lues` : 'Notifications'} onPress={() => router.push('/notifications')} />
               {unread > 0 && <View style={{ position: 'absolute', top: 11, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />}
             </View>
-            <IconButton icon="settings" label="Réglages" onPress={() => router.push('/settings')} />
+            <Pressable accessibilityRole="button" accessibilityLabel="Réglages et profil" onPress={() => router.push('/settings')} style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
+              <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' }}>
+                <Text weight="bold" color="#FFFFFF">{(profile?.display_name ?? '•').slice(0, 1).toUpperCase()}</Text>
+              </LinearGradient>
+            </Pressable>
           </Row>
         </Row>
-        <SkyArc phase={t.phase ?? 'day'} moments={moments} greeting={greeting(profile?.display_name, skyNow)} subtitle={skySubtitle} now={skyNow} />
         <ProfileSwitcher />
         {!offline.online && <Banner tone="warning" title="Hors connexion">{offline.pending.length ? `${offline.pending.length} entrée(s) en attente de synchronisation.` : 'Vos dernières données restent consultables ; les nouvelles saisies seront synchronisées.'}</Banner>}
 

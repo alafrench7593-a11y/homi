@@ -17,7 +17,7 @@ import type { ExpectedBaby } from '@/lib/types';
 import { spacing } from '@/theme/tokens';
 
 const HUES = ['rose', 'lavande', 'or'] as const;
-const GOLD = '#E2B884';
+const GOLD = '#FF8FB1';
 const TEXT = '#F2DFC1';
 const MUTED = '#B8A88F';
 
@@ -64,7 +64,7 @@ export default function PregnancyUniverse() {
 
   return (
     <Screen back stars>
-      <View style={{ backgroundColor: '#121633', borderWidth: 1, borderColor: 'rgba(216,188,133,0.28)', borderRadius: 30, padding: spacing.lg, gap: spacing.sm, overflow: 'hidden' }}>
+      <View style={{ backgroundColor: '#1E0F1A', borderWidth: 1, borderColor: 'rgba(255,143,177,0.18)', borderRadius: 30, padding: spacing.lg, gap: spacing.sm, overflow: 'hidden' }}>
         <Text variant="small" color={GOLD} center>{multiplicityLabel(pregnancy.multiplicity)}</Text>
         <Text variant="hero" color={TEXT} center>{w} SA</Text>
         <Text center color={MUTED}>{Math.max(0, w - 2)} semaines de grossesse, trimestre {w < 15 ? 1 : w < 29 ? 2 : 3}</Text>
@@ -84,8 +84,8 @@ export default function PregnancyUniverse() {
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }} accessibilityLabel="Choisir une semaine">
         {Array.from({ length: 39 }, (_, i) => i + 4).map((s) => (
-          <Pressable key={s} accessibilityRole="button" accessibilityState={{ selected: s === w }} accessibilityLabel={`Semaine ${s}`} onPress={() => setWeek(s === p.weeksSA ? null : s)} style={{ width: 46, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: s === w ? '#C6A15B' : s === p.weeksSA ? '#2A3157' : 'transparent', borderWidth: 1, borderColor: '#C6A15B55' }}>
-            <Text variant="small" weight="bold" color={s === w ? '#120F1E' : undefined}>{s}</Text>
+          <Pressable key={s} accessibilityRole="button" accessibilityState={{ selected: s === w }} accessibilityLabel={`Semaine ${s}`} onPress={() => setWeek(s === p.weeksSA ? null : s)} style={{ width: 46, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: s === w ? '#FF8FB1' : s === p.weeksSA ? '#3A1D2E' : 'transparent', borderWidth: 1, borderColor: '#FF8FB155' }}>
+            <Text variant="small" weight="bold" color={s === w ? '#1A0A13' : undefined}>{s}</Text>
           </Pressable>
         ))}
       </ScrollView>

@@ -70,14 +70,14 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
   const t = useTheme();
   const bg = {
     surface: t.colors.surface,
-    soft: t.isDark ? 'rgba(235,205,198,0.08)' : '#F7EAE6',
-    lavender: t.isDark ? 'rgba(181,168,227,0.10)' : '#EEEAF8',
-    night: '#121633',
-    gold: t.isDark ? 'rgba(216,188,133,0.10)' : '#F5EEDF',
+    soft: t.isDark ? 'rgba(255,111,156,0.10)' : '#FFE3EB',
+    lavender: t.isDark ? 'rgba(201,181,255,0.10)' : '#EFE9FF',
+    night: '#1E0F1A',
+    gold: t.isDark ? 'rgba(255,143,177,0.10)' : '#FFF0E6',
     danger: t.colors.dangerSoft,
   }[tone];
   const content = (
-    <View style={[styles.card, { backgroundColor: bg, borderColor: tone === 'surface' || t.isDark ? t.colors.border : 'transparent', padding: padded ? spacing.md : 0 }, style]}>
+    <View style={[styles.card, { backgroundColor: bg, borderColor: t.isDark ? t.colors.border : 'transparent', padding: padded ? spacing.md : 0 }, !t.isDark && tone === 'surface' && styles.shadow, style]}>
       {children}
     </View>
   );
@@ -116,12 +116,12 @@ export function Button({ label, variant = 'primary', icon, loading, size = 'md',
     secondary: { bg: 'transparent', fg: t.colors.text, border: t.colors.border },
     ghost: { bg: 'transparent', fg: t.colors.primary, border: 'transparent' },
     danger: { bg: t.colors.danger, fg: '#fff', border: t.colors.danger },
-    night: { bg: '#E2B884', fg: '#120F1E', border: '#E2B884' },
+    night: { bg: '#FF8FB1', fg: '#1A0A13', border: '#FF8FB1' },
   }[variant];
   const h = size === 'lg' ? 58 : size === 'sm' ? 40 : MIN_TOUCH + 2;
-  // Signature : bouton principal nacré sur fond de nuit
-  const nacre = variant === 'primary' && t.name === 'dark';
-  if (nacre) palette.fg = '#121633';
+  // Signature : bouton principal en dégradé rose
+  const nacre = variant === 'primary' && t.name !== 'night';
+  if (nacre) palette.fg = '#FFFFFF';
   return (
     <Pressable
       accessibilityRole="button"
@@ -146,7 +146,7 @@ export function Button({ label, variant = 'primary', icon, loading, size = 'md',
       ) : (
         <>
           {icon && <Icon name={icon} size={size === 'sm' ? 16 : 19} color={palette.fg} />}
-          <Text variant={size === 'sm' ? 'small' : 'body'} weight="medium" color={palette.fg} numberOfLines={2} center style={{ letterSpacing: 0.4 }}>
+          <Text variant={size === 'sm' ? 'small' : 'body'} weight="bold" color={palette.fg} numberOfLines={2} center>
             {label}
           </Text>
         </>
@@ -184,7 +184,7 @@ export function Chip({ label, selected, onPress, icon, tone }: { label: string; 
       accessibilityState={{ checked: !!selected }}
       accessibilityLabel={label}
       onPress={onPress ? () => { haptic('selection'); onPress(); } : undefined}
-      style={[styles.chip, { borderColor: selected ? active : t.colors.border, backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : t.colors.surface }]}
+      style={[styles.chip, { borderColor: selected ? active : t.isDark ? t.colors.border : 'transparent', backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : t.colors.surface }]}
     >
       {icon && <Icon name={icon} size={15} color={filled ? t.colors.primaryText : selected ? active : t.colors.textMuted} />}
       {label ? <Text variant="small" weight="medium" color={filled ? t.colors.primaryText : selected ? active : t.colors.text}>{label}</Text> : null}
@@ -262,10 +262,10 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
 export function Banner({ tone = 'info', icon, title, children, action }: { tone?: 'info' | 'warning' | 'danger' | 'demo' | 'success'; icon?: IconName; title?: string; children?: React.ReactNode; action?: React.ReactNode }) {
   const t = useTheme();
   const c = {
-    info: { bg: t.isDark ? '#262B4D' : '#EEEAF8', fg: t.colors.lavender, icon: 'info' as IconName },
-    warning: { bg: t.isDark ? '#3A3324' : '#FBF1DE', fg: t.isDark ? t.colors.gold : '#8A6420', icon: 'alert-triangle' as IconName },
+    info: { bg: t.isDark ? '#2A1D3A' : '#EFE9FF', fg: t.colors.lavender, icon: 'info' as IconName },
+    warning: { bg: t.isDark ? '#3A2A1C' : '#FFF1DC', fg: t.isDark ? '#F7C77E' : '#8A5A12', icon: 'alert-triangle' as IconName },
     danger: { bg: t.colors.dangerSoft, fg: t.colors.danger, icon: 'alert-octagon' as IconName },
-    demo: { bg: t.isDark ? '#2A2F4E' : '#F4EBDF', fg: t.colors.textMuted, icon: 'smartphone' as IconName },
+    demo: { bg: t.isDark ? '#2E1A27' : '#FFE9EF', fg: t.colors.textMuted, icon: 'smartphone' as IconName },
     success: { bg: t.isDark ? '#22362A' : '#E6F0E8', fg: t.colors.success, icon: 'check-circle' as IconName },
   }[tone];
   return (
@@ -363,12 +363,12 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
 
 const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: 1 },
-  shadow: { shadowColor: '#5B3A2E', shadowOpacity: 0.07, shadowRadius: 18, shadowOffset: { width: 0, height: 6 }, elevation: 2 },
-  button: { borderRadius: radius.pill, borderWidth: 1.2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 10 },
+  shadow: { shadowColor: '#C2416E', shadowOpacity: 0.07, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: 2 },
+  button: { borderRadius: radius.pill, borderWidth: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 10 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, minHeight: 40, borderRadius: radius.pill, borderWidth: 1.2 },
   segmented: { flexDirection: 'row', borderRadius: radius.pill, padding: 4, gap: 4 },
   segment: { flex: 1, minHeight: 40, borderRadius: radius.pill, justifyContent: 'center', paddingHorizontal: 8 },
-  input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1.2, borderRadius: radius.md, paddingHorizontal: spacing.md, gap: spacing.xs },
+  input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1.5, borderRadius: radius.md, paddingHorizontal: spacing.md, gap: spacing.xs },
   banner: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md, alignItems: 'flex-start' },
   sectionTitle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.md },
   listRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingVertical: spacing.xs },

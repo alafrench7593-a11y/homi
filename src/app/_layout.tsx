@@ -9,18 +9,18 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { CormorantGaramond_500Medium } from '@expo-google-fonts/cormorant-garamond/500Medium';
-import { CormorantGaramond_600SemiBold } from '@expo-google-fonts/cormorant-garamond/600SemiBold';
-import { CormorantGaramond_500Medium_Italic } from '@expo-google-fonts/cormorant-garamond/500Medium_Italic';
-import { Jost_400Regular } from '@expo-google-fonts/jost/400Regular';
-import { Jost_500Medium } from '@expo-google-fonts/jost/500Medium';
-import { Jost_600SemiBold } from '@expo-google-fonts/jost/600SemiBold';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
 import { configureNotifications, notificationsSupported, registerPushToken, snoozeLocally } from '@/lib/notifications';
 import { startOfflineSync } from '@/lib/offline';
 import { configurePurchases, resetPurchasesUser } from '@/lib/purchases';
+import { SpaceGrotesk_500Medium } from '@expo-google-fonts/space-grotesk/500Medium';
+import { SpaceGrotesk_600SemiBold } from '@expo-google-fonts/space-grotesk/600SemiBold';
+import { SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk/700Bold';
+import { Manrope_500Medium } from '@expo-google-fonts/manrope/500Medium';
+import { Manrope_600SemiBold } from '@expo-google-fonts/manrope/600SemiBold';
+import { Manrope_700Bold } from '@expo-google-fonts/manrope/700Bold';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 configureNotifications();
@@ -88,7 +88,7 @@ function Navigator() {
 }
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({ CormorantGaramond_500Medium, CormorantGaramond_600SemiBold, CormorantGaramond_500Medium_Italic, Jost_400Regular, Jost_500Medium, Jost_600SemiBold });
+  const [loaded, error] = useFonts({ SpaceGrotesk_500Medium, SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold, Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold });
 
   useEffect(() => {
     if (loaded || error) SplashScreen.hideAsync().catch(() => undefined);

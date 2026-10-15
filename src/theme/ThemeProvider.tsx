@@ -32,13 +32,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const name: ThemeName = nightMode
     ? 'night'
     : preference === 'auto'
-      ? (phase === 'night' ? 'dark' : 'light')
+      ? (phase === 'night' || phase === 'dusk' ? 'dark' : 'light')
       : preference === 'system' ? (system === 'dark' ? 'dark' : 'light') : preference;
   const value = useMemo(() => {
     const base = themes[name];
-    const theme: Theme = name === 'light' && preference === 'auto' && phase !== 'night'
+    const auto = preference === 'auto';
+    const theme: Theme = auto && name !== 'night' && phase !== 'night'
       ? { ...base, phase, colors: { ...base.colors, gradient: SKY_GRADIENTS[phase] } }
-      : { ...base, phase: name === 'light' ? 'day' : 'night' };
+      : { ...base, phase: auto ? phase : name === 'light' ? 'day' : 'night' };
     return { theme, reduceMotion };
   }, [name, reduceMotion, phase, preference]);
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
