@@ -160,6 +160,30 @@ insert into public.product_recalls (barcode, lot_numbers, title, reason, recomme
 values ('0000000000024', array['L2026-09'], 'Brie au lait cru démo (lot L2026-09)', 'Exemple fictif : présence possible de Listeria monocytogenes.',
         'Exemple fictif : ne pas consommer, rapporter au point de vente.', 'https://rappel.conso.gouv.fr', 'Rappel fictif de démonstration — format RappelConso', current_date, true);
 
+-- Scanner : données de DÉMONSTRATION (is_demo = true, affichées « Données de démonstration »).
+-- Les lignes CosIng / Ciqual ne sont PAS officielles : elles illustrent l'affichage tant que
+-- les vraies tables n'ont pas été importées (scripts/import-cosing.mjs, scripts/import-ciqual.mjs).
+-- Même contenu que src/content/scanner-demo.ts.
+insert into public.products (barcode, name, brand, category, product_type, ingredients_text, precautions_text, period_after_opening, declared_allergens, attributes, nutrition, data_source, data_retrieved_at, is_demo) values
+ ('0000000000062','Lingettes parfumées démo','Marque Démo','wipes','wipes','Aqua, Glycerin, Phenoxyethanol, Ethylhexylglycerin, Parfum, Limonene, Linalool','Texte de démonstration : usage externe, ne pas avaler.','3M','{}','{"fragrance":true}',null,'Base fictive de démonstration',current_date,true),
+ ('0000000000079','Huile de massage vergetures démo','Marque Démo','stretch_marks','stretch_marks','Prunus Amygdalus Dulcis Oil, Lavandula Angustifolia Oil, Tocopherol, Linalool, Limonene',null,'6M','{}','{}',null,'Base fictive de démonstration',current_date,true),
+ ('0000000000086','Lessive douce démo','Marque Démo','laundry','laundry','Aqua, Sodium Laureth Sulfate, Sodium Citrate, Parfum','Texte de démonstration : tenir hors de portée des enfants ; en cas de contact avec les yeux, rincer.',null,'{}','{}',null,'Base fictive de démonstration',current_date,true),
+ ('0000000000093','Biscuits au miel démo','Biscuiterie Démo','food',null,'Farine de blé, sucre, miel 8 %, beurre, sel, poudre à lever',null,null,array['gluten','lait'],'{}','{"salt_g_100g":0.6,"sugars_g_100g":28,"energy_kcal_100g":450}','Base fictive de démonstration',current_date,true);
+
+insert into public.product_recalls (source_key, barcode, gtins, lot_numbers, title, brand, product_name, reason, risks, recommended_action, official_url, source, published_on, is_demo)
+values ('demo:lingettes-062','0000000000062',array['0000000000062'],array['DEMO-24'],'Lingettes parfumées démo (lot DEMO-24)','Marque Démo','Lingettes parfumées démo',
+        'Exemple fictif : contamination microbiologique possible.','Exemple fictif.','Exemple fictif : ne plus utiliser, rapporter au point de vente.','https://rappel.conso.gouv.fr',
+        'Rappel fictif de démonstration — format RappelConso',current_date,true);
+
+insert into public.cosing_ingredients (inci_name, functions, restrictions, annex_refs, updated_on, is_demo) values
+ ('Aqua', array['Solvant'], null, '{}', current_date, true),
+ ('Glycerin', array['Humectant'], null, '{}', current_date, true),
+ ('Phenoxyethanol', array['Conservateur'], 'Conservateur autorisé à concentration limitée (annexe V).', array['V'], current_date, true),
+ ('Parfum', array['Parfumant'], null, '{}', current_date, true);
+
+insert into public.ciqual_foods (code, nom, groupe, nutrients, source_version, source_date, is_demo)
+values ('DEMO-MIEL','Miel (démonstration)','produits sucrés','{"sucres_g":80,"sel_g":0}','Démonstration',current_date,true);
+
 -- ---------------------------------------------------------------------
 -- Comptes de développement
 -- ---------------------------------------------------------------------
