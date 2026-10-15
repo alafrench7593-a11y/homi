@@ -10,6 +10,20 @@ Application mobile française qui accompagne les familles du désir d'enfant aux
 
 ---
 
+
+## Organisation par parcours
+
+Au premier lancement, l’utilisatrice choisit un ou plusieurs parcours : **éviter une grossesse**, **essayer d’avoir un enfant**, **enceinte**, **maman**, **plusieurs enfants** (modifiable dans Profil › Mes parcours, écran `/journeys`).
+
+- **Navigation** : Accueil · Suivi · Questions · Communauté · Profil (+ bouton central d’ajout rapide).
+- **Accueil** volontairement court : profil actif, une carte principale adaptée (grossesse, enfant, cycle), 3–4 actions rapides, prochain rappel ou rendez-vous, article du jour, « Poser une question » et « Tous mes outils ».
+- **Tous mes outils** (`/tools`) : catégories affichées seulement si elles concernent le parcours (logique dans `src/lib/domain/journeys.ts`).
+- **Concevoir** : `/fertility` (+ `log`, `body`, `intimacy` privé, `history`, `reminders`, `consultation`, `exams`). **Éviter une grossesse** : `/contraception` (+ `log`, `history`, `methods`, `emergency`, `reminders`, `consultation`). Toutes les dates sont des **estimations** ; aucun jour n’est présenté comme « sans risque ».
+- **Mon sommeil** (`/me/sleep`), distinct du sommeil du bébé, avec résumé sur 7 jours.
+- **Communauté** : 15 espaces ouverts à toutes et tous, publications, réponses, recherche, favoris, pseudonyme, notifications, signalement, blocage, modération.
+- **Rappels proposés** selon le parcours (onboarding et Réglages › Rappels), jamais activés sans accord.
+- **Dents** (`/teeth`), **Bibliothèque** (`/library`).
+
 ## 1. Démarrer en 2 minutes (mode démo, sans serveur)
 
 ```bash

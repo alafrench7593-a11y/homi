@@ -48,7 +48,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3, minHeight: 56 }}
       >
         <Feather name={TAB_ICONS[route.name] ?? 'circle'} size={21} color={focused ? '#FFFFFF' : 'rgba(255,241,245,0.5)'} />
-        <Text style={{ fontFamily: focused ? fonts.bodyMedium : fonts.body, fontSize: 9.5, lineHeight: 12, letterSpacing: -0.1 }} color={focused ? '#FFFFFF' : 'rgba(255,241,245,0.5)'} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+        <Text style={{ fontFamily: focused ? fonts.bodyMedium : fonts.body, fontSize: label.length > 9 ? 8.5 : 9.5, lineHeight: 12, letterSpacing: label.length > 9 ? -0.3 : -0.1 }} color={focused ? '#FFFFFF' : 'rgba(255,241,245,0.5)'} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
           {label}
         </Text>
         {focused && <View style={{ position: 'absolute', top: 4, width: 4, height: 4, borderRadius: 2, backgroundColor: palette.gold }} />}
