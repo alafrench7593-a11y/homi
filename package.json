@@ -63,7 +63,8 @@
     "db:test": "bash supabase/tests/run-local.sh",
     "verify": "npm run typecheck && npm test && npm run db:test",
     "content:export": "EXPORT_DEMO_JSON=$PWD/src/content/demo-content.json bash supabase/tests/run-local.sh",
-    "foetus:import": "node scripts/import-foetus.mjs"
+    "foetus:import": "node scripts/import-foetus.mjs",
+    "check:services": "node scripts/check-services.mjs"
   },
   "private": true,
   "jest": {
