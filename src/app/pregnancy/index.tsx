@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { FetusOrb } from '@/components/FetusOrb';
+import { FetusArt } from '@/components/FetusArt';
 import { WeeksRing } from '@/components/DayClock';
 import { ProgressRing } from '@/components/Charts';
 import { Banner, Button, Card, Chip, Field, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -69,7 +69,7 @@ export default function PregnancyUniverse() {
         <Text variant="hero" color={TEXT} center>{w} SA</Text>
         <Text center color={MUTED}>{Math.max(0, w - 2)} semaines de grossesse, trimestre {w < 15 ? 1 : w < 29 ? 2 : 3}</Text>
         <View style={{ alignItems: 'center', paddingVertical: spacing.sm }}>
-          <WeeksRing week={w} size={310}><FetusOrb growth={info.growth} size={n > 1 ? 220 : 250} hue={HUES[selected % 3]} accessibilityLabel={`Illustration artistique ${babies?.[selected]?.nickname ? 'de ' + babies[selected].nickname : 'du bébé'} à ${w} semaines d’aménorrhée. Glissez pour faire tourner.`} /></WeeksRing>
+          <WeeksRing week={w} size={310}><FetusArt week={w} growth={info.growth} size={n > 1 ? 220 : 250} hue={HUES[selected % 3]} accessibilityLabel={`Illustration artistique ${babies?.[selected]?.nickname ? 'de ' + babies[selected].nickname : 'du bébé'} à ${w} semaines d’aménorrhée. Glissez pour faire tourner.`} /></WeeksRing>
         </View>
         {n > 1 && (
           <Row wrap style={{ justifyContent: 'center' }}>

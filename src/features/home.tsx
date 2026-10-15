@@ -2,7 +2,7 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
-import { FetusOrb } from '@/components/FetusOrb';
+import { FetusArt } from '@/components/FetusArt';
 import { StarField } from '@/components/StarField';
 import { ClockLegend, DayClock, WeeksRing, type ClockEvent } from '@/components/DayClock';
 import { Card, haptic, Icon, type IconName, Row, Text } from '@/components/ui';
@@ -38,7 +38,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
           <WeeksRing week={p.weeksSA} size={280}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {Array.from({ length: n }, (_, i) => (
-                <View key={i} style={{ marginLeft: i ? -orbSize * 0.28 : 0 }}><FetusOrb growth={info.growth} size={orbSize} hue={ORB_HUES[i % 3]} interactive={false} accessibilityLabel={`Illustration artistique ${babies?.[i]?.nickname ? 'de ' + babies[i].nickname : 'du bébé'}`} /></View>
+                <View key={i} style={{ marginLeft: i ? -orbSize * 0.28 : 0 }}><FetusArt week={p.weeksSA} growth={info.growth} size={orbSize} hue={ORB_HUES[i % 3]} interactive={false} accessibilityLabel={`Illustration artistique ${babies?.[i]?.nickname ? 'de ' + babies[i].nickname : 'du bébé'}`} /></View>
               ))}
             </View>
           </WeeksRing>
