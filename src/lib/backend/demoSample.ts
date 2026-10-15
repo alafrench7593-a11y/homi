@@ -27,8 +27,17 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
     { id: noe, household_id: hid, first_name: 'Noé', birth_date: addDays(today, -2200), sex: null, photo_path: null, from_pregnancy_id: null, multiple_group: null, enabled_tracking: ['sleep', 'meal', 'growth'], allergies_declared: ['arachide'], habits: null, archived: false, created_at: iso(5000) },
   );
   const log = (table: string, r: Row) => T(table).push({ id: uuid(), household_id: hid, created_by: userId, created_at: new Date().toISOString(), note: null, ...r });
-  log('bottles', { child_id: lina, at: iso(3), prepared_ml: 210, consumed_ml: 180, milk_type: 'Lait 2e âge' });
-  log('bottles', { child_id: lina, at: iso(27), prepared_ml: 210, consumed_ml: 200, milk_type: 'Lait 2e âge' });
+  const lastBottle = uuid();
+  T('bottles').push({ id: lastBottle, household_id: hid, created_by: userId, created_at: iso(3), note: null, child_id: lina, at: iso(3), prepared_ml: 210, consumed_ml: 180, planned_next_ml: 210, milk_type: 'Lait 2e âge' });
+  log('bottles', { child_id: lina, at: iso(6.5), prepared_ml: 210, consumed_ml: 210, planned_next_ml: null, milk_type: 'Lait 2e âge' });
+  log('bottles', { child_id: lina, at: iso(27), prepared_ml: 210, consumed_ml: 200, planned_next_ml: null, milk_type: 'Lait 2e âge' });
+  // Minuteur biberon de Lina : délai et quantité saisis par le parent (l'app n'en propose aucun)
+  if (!T('bottle_timers').some((x) => x.child_id === lina && x.status === 'active')) {
+    T('bottle_timers').push({
+      id: uuid(), household_id: hid, child_id: lina, bottle_id: lastBottle, last_bottle_at: iso(3), interval_minutes: 210,
+      due_at: new Date(now - 3 * 3600_000 + 210 * 60_000).toISOString(), planned_ml: 210, status: 'active', created_by: userId, created_at: iso(3), updated_at: iso(3),
+    });
+  }
   log('diapers', { child_id: lina, at: iso(2), wet: true, stool: false });
   log('diapers', { child_id: lina, at: iso(6), wet: true, stool: true });
   log('sleeps', { child_id: lina, started_at: iso(14), ended_at: iso(4), wakeups: 1 });

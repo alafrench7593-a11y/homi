@@ -7,9 +7,11 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { backend } from './backend';
+import { backend, eq, inList } from './backend';
+import { bottleTimerUrl, cancelTimer, notificationContent, snoozeTimer } from './domain/bottleTimer';
 import { IOS_PENDING_LIMIT, planReminder, toExpoWeekday, validateSchedule, type PlannedTrigger } from './domain/reminders';
-import type { Reminder } from './types';
+import type { Child, Reminder } from './types';
+import type { BottleTimer } from './types-bottle';
 
 export const notificationsSupported = Platform.OS === 'ios' || Platform.OS === 'android';
 const MAP_KEY = 'toietmoi.scheduled.v1';
@@ -29,11 +31,22 @@ export function configureNotifications() {
     Notifications.setNotificationChannelAsync('reminders', { name: 'Rappels', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200] }).catch(() => undefined);
     Notifications.setNotificationChannelAsync('community', { name: 'Communauté', importance: Notifications.AndroidImportance.DEFAULT }).catch(() => undefined);
     Notifications.setNotificationChannelAsync('alerts', { name: 'Alertes officielles', importance: Notifications.AndroidImportance.HIGH }).catch(() => undefined);
+    Notifications.setNotificationChannelAsync(BOTTLE_CHANNEL, { name: 'Biberons', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200] }).catch(() => undefined);
   }
   Notifications.setNotificationCategoryAsync('reminder', [
     { identifier: 'snooze', buttonTitle: 'Reporter de 30 min', options: { opensAppToForeground: false } },
     { identifier: 'done', buttonTitle: 'C’est fait', options: { opensAppToForeground: false } },
   ]).catch(() => undefined);
+  // Minuteur biberon : « Reporter 15 min » et « Annuler », traités sans ouvrir l'application quand le système le permet
+  Notifications.setNotificationCategoryAsync(BOTTLE_CATEGORY, [
+    { identifier: BOTTLE_ACTION_SNOOZE, buttonTitle: 'Reporter 15 min', options: { opensAppToForeground: false } },
+    { identifier: BOTTLE_ACTION_CANCEL, buttonTitle: 'Annuler', options: { opensAppToForeground: false, isDestructive: true } },
+  ]).catch(() => undefined);
+  if (!bottleResponseSub) {
+    bottleResponseSub = Notifications.addNotificationResponseReceivedListener((r) => {
+      handleBottleNotificationResponse(r).catch(() => undefined);
+    });
+  }
 }
 
 export type PermissionState = 'granted' | 'denied' | 'undetermined' | 'unsupported';
@@ -131,6 +144,8 @@ export async function syncLocalReminders(reminders: Reminder[]): Promise<{ sched
     map[r.id] = { signature: signature(r), ids };
   }
   await AsyncStorage.setItem(MAP_KEY, JSON.stringify(map));
+  // Même chemin de synchronisation (ouverture de l'app, modification des rappels) : minuteurs biberon
+  await syncBottleTimers().catch(() => undefined);
   return { scheduled, skipped };
 }
 
@@ -146,7 +161,7 @@ export async function snoozeLocally(title: string, body: string | undefined, url
 export async function cancelAllLocal() {
   if (!notificationsSupported) return;
   await Notifications.cancelAllScheduledNotificationsAsync();
-  await AsyncStorage.removeItem(MAP_KEY);
+  await AsyncStorage.multiRemove([MAP_KEY, BOTTLE_MAP_KEY]);
 }
 
 /** Notification de test immédiate : permet de vérifier la réception sur l'appareil. */
@@ -162,4 +177,195 @@ export async function sendTestNotification() {
 export async function scheduledCount(): Promise<number> {
   if (!notificationsSupported) return 0;
   return (await Notifications.getAllScheduledNotificationsAsync()).length;
+}
+
+// =====================================================================
+// Minuteur biberon : notifications LOCALES à échéance absolue (déclencheur DATE)
+// =====================================================================
+/**
+ * Où sont les données ?
+ *  - Les minuteurs : table `bottle_timers` (Supabase, partagée dans le foyer selon le domaine
+ *    « daily ») ou moteur local en mode démonstration. Ils survivent à la fermeture de l'app,
+ *    au redémarrage du téléphone et au changement d'appareil : syncBottleTimers() reprogramme
+ *    tout au démarrage (appelée depuis syncLocalReminders).
+ *  - Les identifiants des notifications programmées SUR CET APPAREIL : AsyncStorage
+ *    `toietmoi.bottle-scheduled.v1` ({ [timerId]: { signature, ids } }) — l'ancienne
+ *    notification est annulée avant toute reprogrammation (modification, report, annulation).
+ *  - L'interrupteur « Notifications du minuteur biberon » : AsyncStorage `toietmoi.bottle-notifs.v1`
+ *    ({ enabled: boolean }, activé par défaut), propre à CET appareil. Désactivé : plus aucune
+ *    notification biberon n'est programmée ici ; le minuteur reste affiché dans l'application.
+ */
+const BOTTLE_MAP_KEY = 'toietmoi.bottle-scheduled.v1';
+export const BOTTLE_PREFS_KEY = 'toietmoi.bottle-notifs.v1';
+const BOTTLE_HANDLED_KEY = 'toietmoi.bottle-handled.v1';
+const BOTTLE_CHANNEL = 'bottle';
+export const BOTTLE_CATEGORY = 'bottle';
+export const BOTTLE_ACTION_SNOOZE = 'bottle-snooze-15';
+export const BOTTLE_ACTION_CANCEL = 'bottle-cancel';
+let bottleResponseSub: { remove: () => void } | null = null;
+
+type BottleScheduledMap = Record<string, { signature: string; ids: string[] }>;
+
+async function readJson<T>(key: string, fallback: T): Promise<T> {
+  try {
+    const raw = await AsyncStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export async function getBottleNotificationsEnabled(): Promise<boolean> {
+  const prefs = await readJson<{ enabled?: boolean }>(BOTTLE_PREFS_KEY, {});
+  return prefs.enabled !== false;
+}
+
+/** Active / désactive les notifications du minuteur biberon sur cet appareil, puis resynchronise. */
+export async function setBottleNotificationsEnabled(enabled: boolean): Promise<void> {
+  await AsyncStorage.setItem(BOTTLE_PREFS_KEY, JSON.stringify({ enabled }));
+  await syncBottleTimers().catch(() => undefined);
+}
+
+/** Identifiants programmés sur cet appareil pour un minuteur (vide = aucune notification en attente ici). */
+export async function scheduledBottleIds(timerId: string): Promise<string[]> {
+  if (!notificationsSupported) return [];
+  return (await readJson<BottleScheduledMap>(BOTTLE_MAP_KEY, {}))[timerId]?.ids ?? [];
+}
+
+export interface BottleSyncResult { scheduled: number; cancelled: number; active: number }
+
+let bottleChain: Promise<unknown> = Promise.resolve();
+
+/**
+ * Synchronise les notifications biberon de CET appareil avec les minuteurs actifs :
+ * annule ce qui a été annulé / modifié / reporté, programme ce qui manque.
+ * Idempotente et sérialisée (deux synchronisations ne se chevauchent jamais : pas de doublon).
+ * Appelée au démarrage (via syncLocalReminders), après chaque action sur un minuteur
+ * et quand l'interrupteur de notifications change.
+ */
+export function syncBottleTimers(): Promise<BottleSyncResult> {
+  const run = bottleChain.then(doSyncBottleTimers, doSyncBottleTimers);
+  bottleChain = run.catch(() => undefined);
+  return run;
+}
+
+async function doSyncBottleTimers(): Promise<BottleSyncResult> {
+  if (!notificationsSupported) return { scheduled: 0, cancelled: 0, active: 0 };
+  // Action « Reporter » / « Annuler » choisie pendant que l'application était fermée
+  await applyPendingBottleResponse().catch(() => undefined);
+
+  const session = await backend.auth.getSession().catch(() => null);
+  const enabled = await getBottleNotificationsEnabled();
+  let timers: BottleTimer[] = [];
+  let names = new Map<string, string>();
+  let fetched = !session; // déconnecté : tout est annulé
+  if (session && enabled) {
+    try {
+      timers = await backend.select<BottleTimer>({ table: 'bottle_timers', filters: [eq('status', 'active')] });
+      const ids = [...new Set(timers.map((t) => t.child_id))];
+      const children = ids.length ? await backend.select<Child>({ table: 'children', filters: [inList('id', ids)] }) : [];
+      names = new Map(children.map((c) => [c.id, c.first_name]));
+      fetched = true;
+    } catch {
+      fetched = false; // hors connexion : on garde ce qui est déjà programmé
+    }
+  } else if (!enabled) {
+    fetched = true;
+  }
+  const map = await readJson<BottleScheduledMap>(BOTTLE_MAP_KEY, {});
+  if (!fetched) return { scheduled: 0, cancelled: 0, active: Object.keys(map).length };
+
+  const now = Date.now();
+  const wanted = new Map(timers.filter((t) => Date.parse(t.due_at) > now && names.has(t.child_id)).map((t) => [t.id, t]));
+  const sig = (t: BottleTimer) => JSON.stringify([t.due_at, t.planned_ml, names.get(t.child_id), t.child_id]);
+
+  let cancelled = 0;
+  for (const [id, entry] of Object.entries(map)) {
+    const t = wanted.get(id);
+    if (!t || sig(t) !== entry.signature) {
+      await Promise.all(entry.ids.map((nid) => Notifications.cancelScheduledNotificationAsync(nid).catch(() => undefined)));
+      cancelled += entry.ids.length;
+      delete map[id];
+    }
+  }
+  // Notifications biberon orphelines (carte locale perdue, réinstallation…) : seules celles marquées
+  // data.kind === 'bottle' et absentes de la carte sont annulées. Les autres notifications
+  // programmées (rappels, rendez-vous, forum) ne sont JAMAIS touchées ici.
+  try {
+    const owned = new Set(Object.values(map).flatMap((e) => e.ids));
+    for (const n of await Notifications.getAllScheduledNotificationsAsync()) {
+      const d = (n.content.data ?? {}) as { kind?: string };
+      if (d.kind === 'bottle' && !owned.has(n.identifier)) {
+        await Notifications.cancelScheduledNotificationAsync(n.identifier).catch(() => undefined);
+        cancelled++;
+      }
+    }
+  } catch {
+    // liste indisponible : rien d'autre n'est annulé
+  }
+  let scheduled = 0;
+  for (const t of wanted.values()) {
+    if (map[t.id]) continue;
+    const { title, body } = notificationContent(names.get(t.child_id) ?? 'votre enfant', t.planned_ml);
+    try {
+      const nid = await Notifications.scheduleNotificationAsync({
+        content: {
+          title,
+          body,
+          sound: 'default',
+          categoryIdentifier: BOTTLE_CATEGORY,
+          // Le gestionnaire existant (_layout) ouvre data.url : le minuteur du bon enfant
+          data: { url: bottleTimerUrl(t.child_id), source: 'bottle', kind: 'bottle', timerId: t.id, childId: t.child_id, dueAt: t.due_at },
+        },
+        // Instant absolu : correct quel que soit le fuseau et à travers le changement d'heure
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(t.due_at), channelId: BOTTLE_CHANNEL },
+      });
+      map[t.id] = { signature: sig(t), ids: [nid] };
+      scheduled++;
+    } catch {
+      // programmation refusée par le système : réessayée à la prochaine synchronisation
+    }
+  }
+  await AsyncStorage.setItem(BOTTLE_MAP_KEY, JSON.stringify(map));
+  return { scheduled, cancelled, active: wanted.size };
+}
+
+/** Réponse à une notification biberon (bouton « Reporter 15 min » ou « Annuler »). */
+export async function handleBottleNotificationResponse(response: Notifications.NotificationResponse): Promise<boolean> {
+  const handled = await applyBottleAction(response);
+  if (handled) await syncBottleTimers().catch(() => undefined);
+  return handled;
+}
+
+async function applyPendingBottleResponse() {
+  const last = Notifications.getLastNotificationResponse?.();
+  if (last) await applyBottleAction(last);
+}
+
+/** Met à jour le minuteur en base (sans resynchroniser). Dédoublonné : chaque réponse n'est traitée qu'une fois. */
+async function applyBottleAction(response: Notifications.NotificationResponse): Promise<boolean> {
+  const request = response.notification.request;
+  const data = (request.content.data ?? {}) as { source?: string; timerId?: string };
+  const action = response.actionIdentifier;
+  if (data.source !== 'bottle' || !data.timerId || (action !== BOTTLE_ACTION_SNOOZE && action !== BOTTLE_ACTION_CANCEL)) return false;
+  const key = `${request.identifier}:${action}:${response.notification.date}`;
+  const done = await readJson<string[]>(BOTTLE_HANDLED_KEY, []);
+  if (done.includes(key)) return false;
+  await AsyncStorage.setItem(BOTTLE_HANDLED_KEY, JSON.stringify([...done, key].slice(-30)));
+  try {
+    const [timer] = await backend.select<BottleTimer>({ table: 'bottle_timers', filters: [eq('id', data.timerId)] });
+    if (!timer || timer.status !== 'active') return true;
+    const patch = action === BOTTLE_ACTION_SNOOZE ? snoozeTimer(timer, 15) : cancelTimer();
+    await backend.update('bottle_timers', patch, [eq('id', timer.id)]);
+  } catch {
+    // Hors connexion : le report reste assuré par une notification ponctuelle sur cet appareil
+    if (action === BOTTLE_ACTION_SNOOZE) {
+      await Notifications.scheduleNotificationAsync({
+        // Sans kind 'bottle' : ce report ponctuel hors connexion n'est pas annulé par la synchronisation suivante
+        content: { title: request.content.title ?? 'Biberon', body: request.content.body ?? undefined, categoryIdentifier: BOTTLE_CATEGORY, data: { ...data, kind: 'bottle-offline-snooze' } },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(Date.now() + 15 * 60_000), channelId: BOTTLE_CHANNEL },
+      }).catch(() => undefined);
+    }
+  }
+  return true;
 }
