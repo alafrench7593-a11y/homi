@@ -8,6 +8,11 @@ import { confirm, useToast } from '@/components/Overlays';
 import { Stepper, TimePicker, KIND_META } from '@/features/tracking';
 import { backend, eq } from '@/lib/backend';
 import { useAddLog, useChild, useChildren, useDeleteRow, useInvalidate, useRows } from '@/lib/data/hooks';
+import { useBottleTimer, useStartBottleTimer, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
+import { NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
+import { atClock, bottleDraftDefaults, formatHM, markBottleGiven, resolveReminderChoice, type ReminderChoice } from '@/lib/domain/bottleTimer';
+import type { BottleRecord } from '@/lib/types-bottle';
+import { uuid } from '@/lib/uuid';
 import { LOG_TABLE, type Bottle, type Breastfeed, type Diaper, type LogKind, type Meal, type Observation, type Pumping, type Sleep } from '@/lib/types';
 import { formatDuration } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -19,7 +24,8 @@ export default function TrackEntry() {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
-  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string }>();
+  // timer / planned : ouverture depuis le minuteur (« Marquer le biberon comme donné »)
+  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string }>();
   const kind = (params.kind ?? 'bottle') as LogKind;
   const { data: children } = useChildren();
   const childId = params.child || children?.[0]?.id || '';
@@ -30,9 +36,17 @@ export default function TrackEntry() {
   const { data: existing } = useRows<Record<string, unknown>>([LOG_TABLE[kind], 'edit', params.id ?? ''], editing ? { table: LOG_TABLE[kind], filters: [eq('id', params.id)] } : null);
   const { data: lastBottle } = useRows<Bottle>(['bottles', childId, 'last'], kind === 'bottle' && childId ? { table: 'bottles', filters: [eq('child_id', childId)], order: [{ col: 'at', asc: false }], limit: 1 } : null);
 
+  const bottleTimer = useBottleTimer(kind === 'bottle' ? childId : null);
+  const startTimer = useStartBottleTimer();
+  const updateTimer = useUpdateBottleTimer();
+  // Valeurs initiales : rien n'est suggéré (seule la quantité prévue saisie sur le minuteur pré-remplit « préparée »)
+  const draft = bottleDraftDefaults({ plannedMl: params.planned != null && params.planned !== '' && Number.isInteger(Number(params.planned)) ? Number(params.planned) : null });
+
   const [time, setTime] = useState(new Date());
-  const [prepared, setPrepared] = useState<number | null>(null);
-  const [consumed, setConsumed] = useState<number | null>(null);
+  const [prepared, setPrepared] = useState<number | null>(draft.prepared_ml);
+  const [consumed, setConsumed] = useState<number | null>(draft.consumed_ml);
+  const [plannedNext, setPlannedNext] = useState(draft.planned_next_ml == null ? '' : String(draft.planned_next_ml));
+  const [reminder, setReminder] = useState<ReminderChoice>(draft.reminder);
   const [milkType, setMilkType] = useState('');
   const [side, setSide] = useState<Side>('left');
   const [duration, setDuration] = useState('');
@@ -55,22 +69,20 @@ export default function TrackEntry() {
   const [saving, setSaving] = useState(false);
   const loadedRef = useRef(false);
 
-  // Pré-remplissage : édition, ou dernier type de lait utilisé
+  // Pré-remplissage : édition, ou dernier type de lait utilisé (jamais de quantité suggérée)
   useEffect(() => {
     if (loadedRef.current) return;
     const r = existing?.[0];
     if (editing && !r) return;
+    if (!editing && kind === 'bottle' && lastBottle === undefined) return;
     loadedRef.current = true;
     if (!r) {
-      if (lastBottle?.[0]) {
-        setMilkType(lastBottle[0].milk_type ?? '');
-        setPrepared(lastBottle[0].prepared_ml);
-      }
+      if (lastBottle?.[0]) setMilkType(lastBottle[0].milk_type ?? '');
       return;
     }
     setNote((r.note as string) ?? '');
     switch (kind) {
-      case 'bottle': { const b = r as unknown as Bottle; setTime(new Date(b.at)); setPrepared(b.prepared_ml); setConsumed(b.consumed_ml); setMilkType(b.milk_type ?? ''); break; }
+      case 'bottle': { const b = r as unknown as BottleRecord; setTime(new Date(b.at)); setPrepared(b.prepared_ml); setConsumed(b.consumed_ml); setMilkType(b.milk_type ?? ''); setPlannedNext(b.planned_next_ml != null ? String(b.planned_next_ml) : ''); break; }
       case 'breastfeed': { const f = r as unknown as Breastfeed; setTime(new Date(f.started_at)); setSide(f.side); if (f.ended_at) setDuration(String(Math.round((new Date(f.ended_at).getTime() - new Date(f.started_at).getTime()) / 60000))); break; }
       case 'pumping': { const p = r as unknown as Pumping; setTime(new Date(p.at)); setAmount(p.amount_ml); setSide(p.side ?? 'both'); break; }
       case 'diaper': { const d = r as unknown as Diaper; setTime(new Date(d.at)); setWet(d.wet); setStool(d.stool); break; }
@@ -93,7 +105,13 @@ export default function TrackEntry() {
       case 'bottle':
         if (prepared == null && consumed == null) return setError('Indiquez au moins une quantité.'), null;
         if (prepared != null && consumed != null && consumed > prepared) return setError('La quantité bue ne peut pas dépasser la quantité préparée.'), null;
-        return { ...base, at: time.toISOString(), prepared_ml: prepared, consumed_ml: consumed, milk_type: milkType.trim() || null };
+        if ((prepared ?? 0) > 500 || (consumed ?? 0) > 500) return setError('Quantité attendue entre 0 et 500 ml.'), null;
+        {
+          const next = parseMl(plannedNext);
+          if (next.error) return setError(next.error), null;
+          if (!editing && reminder.kind !== 'none' && resolveReminderChoice(reminder) == null) return setError('Choisissez une durée de rappel valide (10 min à 12 h).'), null;
+          return { ...base, at: time.toISOString(), prepared_ml: prepared, consumed_ml: consumed, planned_next_ml: next.value, milk_type: milkType.trim() || null };
+        }
       case 'breastfeed': {
         const mins = timerStart ? elapsed / 60 : Number(duration.replace(',', '.'));
         if (!timerStart && duration && (!Number.isFinite(mins) || mins <= 0 || mins > 180)) return setError('Durée attendue entre 1 et 180 minutes.'), null;
@@ -134,6 +152,14 @@ export default function TrackEntry() {
         await backend.update(LOG_TABLE[kind], patch, [eq('id', params.id)]);
         inv(LOG_TABLE[kind]);
         toast('Modification enregistrée.');
+      } else if (kind === 'bottle') {
+        const id = uuid();
+        const res = await add.mutateAsync({ ...row, id });
+        const timerNote = await afterBottleSaved(res === 'sent' ? id : null, (row.planned_next_ml as number | null) ?? null);
+        toast(
+          (res === 'queued' ? 'Biberon enregistré sur l’appareil — synchronisation au retour du réseau.' : 'Biberon enregistré.') + (timerNote ? ` ${timerNote}` : ''),
+          res === 'queued' ? 'info' : 'success',
+        );
       } else {
         const res = await add.mutateAsync(row);
         if (kind === 'meal' && res === 'sent') {
@@ -153,6 +179,35 @@ export default function TrackEntry() {
       setError(e instanceof Error ? e.message : 'Enregistrement impossible.');
     } finally {
       setSaving(false);
+    }
+  }
+
+  /**
+   * Après l'enregistrement d'un biberon : démarre le rappel choisi (en remplaçant, après accord,
+   * le minuteur en cours — jamais deux pour un enfant), ou clôt le minuteur dont on vient.
+   * Renvoie une phrase pour le message de confirmation.
+   */
+  async function afterBottleSaved(bottleId: string | null, plannedMl: number | null): Promise<string | null> {
+    const minutes = resolveReminderChoice(reminder);
+    const active = bottleTimer.active;
+    const fromActiveTimer = !!active && params.timer === active.id;
+    const name = child?.first_name ?? 'l’enfant';
+    try {
+      if (minutes == null) {
+        if (!active) return null;
+        if (fromActiveTimer || (await confirm(`Un rappel est en cours pour ${name}`, `Il est prévu ${atClock(active.due_at)}. Le clore maintenant que ce biberon est enregistré ?`, 'Clore le rappel', false))) {
+          await updateTimer.mutateAsync({ id: active.id, patch: markBottleGiven() });
+          return 'Rappel en cours clos.';
+        }
+        return null;
+      }
+      if (active && !fromActiveTimer && !(await confirm('Remplacer le minuteur en cours ?', `Un rappel est déjà prévu ${atClock(active.due_at)} pour ${name}. Le remplacer par un rappel dans ${formatHM(minutes)} après ce biberon ?`, 'Remplacer', false))) {
+        return 'Le rappel en cours est conservé.';
+      }
+      const timer = await startTimer.mutateAsync({ childId, lastBottleAt: time, intervalMinutes: minutes, plannedMl, bottleId, replace: active ? 'new_bottle' : false });
+      return `Prochain rappel ${atClock(timer.due_at)}.`;
+    } catch (e) {
+      return `Rappel non programmé : ${e instanceof Error ? e.message : 'erreur inconnue'}`;
     }
   }
 
@@ -195,10 +250,25 @@ export default function TrackEntry() {
 
       {kind === 'bottle' && (
         <>
-          <TimePicker value={time} onChange={setTime} />
+          <TimePicker value={time} onChange={setTime} label="Heure du biberon" />
           <Stepper label="Quantité préparée" value={prepared} onChange={setPrepared} presets={[60, 90, 120, 150, 180, 210, 240]} />
           <Stepper label="Quantité bue" value={consumed} onChange={setConsumed} />
           <Field label="Type de lait" optional value={milkType} onChangeText={setMilkType} placeholder="Lait infantile 1er âge, lait maternel…" hint="Tel que vous l’indiquez : l’application ne recommande pas de lait." />
+          <Field label="Quantité prévue pour le prochain biberon" optional value={plannedNext} onChangeText={setPlannedNext} keyboardType="number-pad" suffix="ml" hint="Celle que vous avez décidée ou qu’un professionnel vous a indiquée. Elle sera rappelée avec le minuteur." />
+          {!editing && (
+            <View style={{ gap: spacing.xs }}>
+              <Text variant="label">Prochain rappel</Text>
+              {bottleTimer.active && (
+                <Text variant="small" muted>
+                  {params.timer === bottleTimer.active.id
+                    ? `Le rappel en cours (prévu ${atClock(bottleTimer.active.due_at)}) sera clos ou remplacé.`
+                    : `Un rappel est déjà prévu ${atClock(bottleTimer.active.due_at)} : vous pourrez choisir de le remplacer.`}
+                </Text>
+              )}
+              <ReminderChoicePicker value={reminder} onChange={setReminder} lastInterval={bottleTimer.lastInterval} />
+              <Text variant="caption" muted>{NO_RECOMMENDATION_NOTE}</Text>
+            </View>
+          )}
         </>
       )}
 

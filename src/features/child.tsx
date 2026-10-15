@@ -10,6 +10,7 @@ import { PremiumGate } from '@/components/Family';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { ChildToday } from '@/features/home';
+import { BottleTimerCard } from '@/features/bottle';
 import { KIND_META, Timeline, type LogItem, logTime } from '@/features/tracking';
 import { ChildForm, childToDraft, validateChild, type ChildDraft } from '@/features/profiles';
 import { backend, eq } from '@/lib/backend';
@@ -90,6 +91,7 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
   return (
     <>
       <ChildToday child={child} compact />
+      {(child.enabled_tracking.includes('bottle') || !!bottles?.length) && <BottleTimerCard child={child} />}
       <Row wrap>
         {quick.map((k) => (
           <Chip key={k} icon={KIND_META[k].icon} label={KIND_META[k].label} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: k, child: child.id } })} />
