@@ -128,11 +128,15 @@ export interface Article {
 export interface Category { id: string; slug: string; label: string; icon: string | null; position: number }
 export interface EmergencyResource { id: string; country: string; label: string; phone: string; description: string; kind: string; available: string | null; position: number; active: boolean }
 
-export interface Conversation { id: string; user_id: string; title: string; created_at: string; updated_at: string }
+export interface Conversation { id: string; user_id: string; title: string; context_enabled?: boolean; created_at: string; updated_at: string }
 export interface AssistantMessage {
   id: string; conversation_id: string; role: 'user' | 'assistant'; content: string;
   sources: { ref: number; title: string; slug: string; sources: SourceRef[] }[]; feedback: -1 | 1 | null; saved: boolean; created_at: string;
+  /** Réponse structurée (sections, sources officielles) — absente pour les anciennes réponses. */
+  structured?: import('../../supabase/functions/_shared/assistant-format').StructuredAnswer | null;
+  safety_level?: 'none' | 'medical_urgent' | 'crisis';
 }
+export interface AssistantFeedback { id: string; message_id: string; user_id: string; value: -1 | 1; reason: string | null; created_at: string; updated_at: string }
 
 export interface Forum { id: string; slug: string; title: string; description: string; journeys: Journey[]; icon: string | null; is_local: boolean; position: number }
 export interface FeedPost {

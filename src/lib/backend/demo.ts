@@ -8,9 +8,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import content from '@/content/demo-content.json';
 import { uuid } from '../uuid';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
-import { assessSafety, crisisMessage } from '../../../supabase/functions/_shared/safety';
+import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../../../supabase/functions/_shared/safety';
 import { assessProduct, type ProductData } from '../../../supabase/functions/_shared/product-rules';
 import { ASSISTANT_FOOTER } from '../../../supabase/functions/_shared/assistant-prompt';
+import {
+  DEV_MODE_LABEL, INJECTION_REFUSAL, MAX_QUESTION_LENGTH, devModeAnswer, isEmptyAnswer, looksLikePromptInjection,
+  parseStructuredAnswer, structuredToMarkdown, todayIso,
+} from '../../../supabase/functions/_shared/assistant-format';
 import { buildSampleFamily } from './demoSample';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -22,7 +26,7 @@ const CHILD_TABLES = ['child_measurements', 'child_milestones', 'child_health_it
 const OWNER_TABLES: Record<string, string> = {
   period_entries: 'user_id', symptom_logs: 'user_id', ovulation_tests: 'user_id', pregnancy_tests: 'user_id', maternal_weights: 'user_id',
   mood_checkins: 'user_id', reminders: 'user_id', favorites: 'user_id', product_scans: 'user_id', push_devices: 'user_id',
-  assistant_conversations: 'user_id', assistant_messages: 'user_id', consents: 'user_id', posts: 'author_id', comments: 'author_id',
+  assistant_conversations: 'user_id', assistant_messages: 'user_id', assistant_feedback: 'user_id', consents: 'user_id', posts: 'author_id', comments: 'author_id',
   post_likes: 'user_id', saved_posts: 'user_id', reports: 'reporter_id', user_blocks: 'blocker_id', notes: 'author_id',
   documents: 'uploaded_by', name_votes: 'user_id',
 };
@@ -61,7 +65,8 @@ function matches(row: Row, f: Filter): boolean {
   }
 }
 
-export function createDemoBackend(): Backend {
+export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backend {
+  const streamDelayMs = opts.streamDelayMs ?? 14;
   let state: DemoState = { users: [], session: null, tables: {} };
   let loaded: Promise<void> | null = null;
   const listeners = new Set<(s: Session | null) => void>();
@@ -156,6 +161,12 @@ export function createDemoBackend(): Backend {
     if (table === 'checklist_items') r.household_id = T('checklists').find((p) => p.id === r.checklist_id)?.household_id;
     if (table === 'name_votes') r.household_id = T('name_favorites').find((p) => p.id === r.favorite_id)?.household_id;
 
+    if (table === 'assistant_feedback') {
+      const m = T('assistant_messages').find((x) => x.id === r.message_id);
+      if (!m || m.user_id !== me || m.role !== 'assistant') throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
+      if (![1, -1].includes(r.value)) throw new BackendError('Valeur invalide.');
+      r.updated_at = nowIso();
+    }
     if (table === 'sleeps' && !r.ended_at && T('sleeps').some((s) => s.child_id === r.child_id && !s.ended_at)) {
       throw new BackendError('Un sommeil est déjà en cours pour cet enfant.');
     }
@@ -246,6 +257,105 @@ export function createDemoBackend(): Backend {
     return rows;
   }
 
+  // ---------------------------------------------------------------- assistant (même logique que la fonction serveur)
+  function syncFeedback(f: Row) {
+    const m = T('assistant_messages').find((x) => x.id === f.message_id);
+    if (m) m.feedback = f.value;
+  }
+
+  function assistantCore(b: Row): { result: Row; raw: string | null } {
+    const message = String(b.message ?? '').trim();
+    if (message.length < 2 || message.length > MAX_QUESTION_LENGTH) {
+      throw new BackendError(`La question doit contenir entre 2 et ${MAX_QUESTION_LENGTH} caractères.`, 'bad_request', undefined, 400);
+    }
+    const me = uid();
+    const useContext = b.use_context === true;
+    const keepHistory = T('privacy_settings').find((p) => p.user_id === me)?.ai_history_enabled !== false;
+    const consent = T('consents')
+      .filter((c) => c.user_id === me && c.purpose === 'ai_assistant')
+      .sort((x, y) => (x.created_at < y.created_at ? 1 : x.created_at > y.created_at ? -1 : 0))[0];
+    const consented = consent?.granted === true;
+    let convId = (b.conversation_id as string | null) ?? null;
+    if (convId && !T('assistant_conversations').some((c) => c.id === convId && c.user_id === me)) {
+      throw new BackendError('Conversation introuvable.', 'not_found', undefined, 404);
+    }
+
+    const store = (answer: string, extra: Row): string | null => {
+      if (!keepHistory || !consented) return null;
+      if (!convId) {
+        convId = uuid();
+        T('assistant_conversations').push({ id: convId, user_id: me, title: message.slice(0, 80), context_enabled: useContext, context_snapshot: {}, created_at: nowIso(), updated_at: nowIso() });
+      } else {
+        const conv = T('assistant_conversations').find((c) => c.id === convId);
+        if (conv) Object.assign(conv, { updated_at: nowIso(), context_enabled: useContext });
+      }
+      T('assistant_messages').push({ id: uuid(), conversation_id: convId, user_id: me, role: 'user', content: message, sources: [], structured: null, safety_level: 'none', feedback: null, saved: false, created_at: nowIso() });
+      const mid = uuid();
+      T('assistant_messages').push({
+        id: mid, conversation_id: convId, user_id: me, role: 'assistant', content: answer, sources: extra.sources ?? [], structured: extra.structured ?? null,
+        safety_flags: extra.flags ?? [], safety_level: extra.safety ?? 'none', feedback: null, saved: false, created_at: new Date(Date.now() + 1).toISOString(),
+      });
+      return mid;
+    };
+
+    // 1) Urgence : orientation immédiate, sans IA ni quota
+    const safety = assessSafety(message);
+    if (safety.level !== 'none') {
+      const answer = crisisMessage(safety.level);
+      const mid = store(answer, { safety: safety.level, flags: safety.reasons });
+      return {
+        raw: null,
+        result: {
+          conversation_id: convId, message_id: mid, answer, safety: safety.level, reasons: safety.reasons, urgent_contacts: urgentContacts(safety.level),
+          sources: [], structured: null, show_emergency_resources: true, stored: !!mid,
+        },
+      };
+    }
+    if (!consented) throw new BackendError('Pour utiliser l’assistant, acceptez d’abord ses conditions d’utilisation.', 'consent_required', undefined, 403);
+
+    // 2) Tentative de détournement : refus poli, sans quota
+    if (looksLikePromptInjection(message)) {
+      const structured = { ...INJECTION_REFUSAL, updated_on: todayIso() };
+      return { raw: null, result: { conversation_id: convId, message_id: null, answer: structured.short, structured, safety: 'none', sources: [], stored: false, refused: true } };
+    }
+
+    // 3) Quota
+    const month = new Date().toISOString().slice(0, 7);
+    const usage = T('assistant_usage');
+    let u = usage.find((x) => x.user_id === me && x.month === month);
+    if (!u) usage.push((u = { user_id: me, month, questions: 0 }));
+    const quota = limit('assistant_questions_per_month');
+    if (u.questions >= quota) throw new BackendError(`Vous avez utilisé vos ${quota} questions de ce mois.`, 'quota_reached', 'premium_required', 402);
+    u.questions += 1;
+
+    // 4) Articles liés + réponse « mode développement » au format structuré
+    const norm = (x: string) => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const words = norm(message).split(/[^a-z0-9]+/).filter((w) => w.length > 4);
+    const articles = T('articles')
+      .map((a) => ({ a, score: words.filter((w) => norm(`${a.title} ${a.summary} ${a.body_md}`).includes(w)).length }))
+      .filter((x) => x.score > 0)
+      .sort((x, y) => y.score - x.score)
+      .slice(0, 3)
+      .map((x) => x.a);
+    const raw = devModeAnswer(message, articles as { title: string; summary: string }[]);
+    const today = todayIso();
+    let structured = parseStructuredAnswer(raw, today);
+    const flags = auditAnswer(raw);
+    if (flags.length || isEmptyAnswer(structured)) {
+      structured = { ...structured, short: 'Je préfère ne pas répondre précisément : demandez l’avis d’un professionnel de santé.', actions: [], watch: [] };
+    }
+    const answer = structuredToMarkdown(structured) + ASSISTANT_FOOTER;
+    const sources = articles.map((a, i) => ({ ref: i + 1, title: a.title, slug: a.slug, sources: a.sources }));
+    const mid = store(answer, { sources, structured, flags });
+    return {
+      raw,
+      result: {
+        conversation_id: convId, message_id: mid, answer, structured, replaced: flags.length > 0, sources, safety: 'none', demo: true, dev_mode: DEV_MODE_LABEL, model: null,
+        quota: { used: u.questions, limit: quota, remaining: Math.max(0, quota - u.questions) }, stored: !!mid,
+      },
+    };
+  }
+
   // ---------------------------------------------------------------- fonctions backend simulées
   const rpcs: Record<string, (a: Row) => unknown> = {
     create_household: (a) => {
@@ -267,6 +377,12 @@ export function createDemoBackend(): Backend {
       throw new BackendError('En mode démonstration, un seul compte existe sur cet appareil : connectez Supabase pour partager avec un coparent.');
     },
     has_premium: () => isPremium(),
+    assistant_quota_status: () => {
+      const month = new Date().toISOString().slice(0, 7);
+      const used = T('assistant_usage').find((x) => x.user_id === uid() && x.month === month)?.questions ?? 0;
+      const quota = limit('assistant_questions_per_month');
+      return [{ used, quota, remaining: Math.max(0, quota - used) }];
+    },
     plan_limit: (a) => limit(a.p_key),
     block_author: (a) => {
       const author = a.p_post ? T('posts').find((p) => p.id === a.p_post)?.author_id : T('comments').find((c) => c.id === a.p_comment)?.author_id;
@@ -299,7 +415,7 @@ export function createDemoBackend(): Backend {
         exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
-        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'favorites'].map((t) => [t, view(t)])),
+        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
           ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents']
@@ -325,46 +441,7 @@ export function createDemoBackend(): Backend {
   };
 
   const functions: Record<string, (b: Row) => unknown> = {
-    assistant: (b) => {
-      const message = String(b.message ?? '').trim();
-      const safety = assessSafety(message);
-      if (safety.level !== 'none') {
-        return { conversation_id: b.conversation_id ?? null, answer: crisisMessage(safety.level), safety: safety.level, sources: [], show_emergency_resources: true, stored: false };
-      }
-      const month = new Date().toISOString().slice(0, 7);
-      const usage = T('assistant_usage');
-      let u = usage.find((x) => x.user_id === uid() && x.month === month);
-      if (!u) usage.push((u = { user_id: uid(), month, questions: 0 }));
-      const quota = limit('assistant_questions_per_month');
-      if (u.questions >= quota) throw new BackendError(`Vous avez utilisé vos ${quota} questions de ce mois.`, 'quota_reached', 'premium_required', 402);
-      u.questions += 1;
-
-      const words = message.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').split(/[^a-z0-9]+/).filter((w) => w.length > 4);
-      const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-      const articles = T('articles')
-        .map((a) => ({ a, score: words.filter((w) => norm(`${a.title} ${a.summary} ${a.body_md}`).includes(w)).length }))
-        .filter((x) => x.score > 0)
-        .sort((x, y) => y.score - x.score)
-        .slice(0, 3)
-        .map((x) => x.a);
-      const answer = (articles.length
-        ? `**Mode démonstration** — aucun service d’intelligence artificielle n’est connecté : voici les articles de la bibliothèque liés à votre question.\n\n${articles.map((a, i) => `• [${i + 1}] **${a.title}** — ${a.summary}`).join('\n')}\n\nÀ demander à un professionnel : toute question sur votre santé ou celle de votre enfant.`
-        : '**Mode démonstration** — aucun service d’intelligence artificielle n’est connecté et aucun article de la bibliothèque ne correspond. Notez votre question pour votre prochain rendez-vous.') + ASSISTANT_FOOTER;
-      const sources = articles.map((a, i) => ({ ref: i + 1, title: a.title, slug: a.slug, sources: a.sources }));
-
-      let convId = b.conversation_id as string | null;
-      if (!convId) {
-        convId = uuid();
-        T('assistant_conversations').push({ id: convId, user_id: uid(), title: message.slice(0, 80), created_at: nowIso(), updated_at: nowIso() });
-      } else {
-        const conv = T('assistant_conversations').find((c) => c.id === convId);
-        if (conv) conv.updated_at = nowIso();
-      }
-      T('assistant_messages').push({ id: uuid(), conversation_id: convId, user_id: uid(), role: 'user', content: message, sources: [], feedback: null, saved: false, created_at: nowIso() });
-      const mid = uuid();
-      T('assistant_messages').push({ id: mid, conversation_id: convId, user_id: uid(), role: 'assistant', content: answer, sources, feedback: null, saved: false, created_at: new Date(Date.now() + 1).toISOString() });
-      return { conversation_id: convId, message_id: mid, answer, sources, safety: 'none', demo: true, quota: { used: u.questions, limit: quota }, stored: true };
-    },
+    assistant: (b) => assistantCore(b).result,
     'product-lookup': (b) => {
       const barcode = String(b.barcode ?? '').replace(/\D/g, '');
       const product = T('products').find((p) => p.barcode === barcode) as (ProductData & { id: string }) | undefined;
@@ -479,7 +556,7 @@ export function createDemoBackend(): Backend {
       const out: Row[] = [];
       for (const raw of Array.isArray(input) ? input : [input]) {
         const conflictCol = opts?.onConflict;
-        if (conflictCol && raw[conflictCol] != null) {
+        if (conflictCol && conflictCol.split(',').every((c) => raw[c] != null)) {
           const existing = T(table).find((r) => conflictCol.split(',').every((c) => r[c] === raw[c]));
           if (existing) {
             if (!opts?.ignoreDuplicates) Object.assign(existing, raw);
@@ -492,12 +569,14 @@ export function createDemoBackend(): Backend {
         afterInsert(table, row);
         out.push(row);
       }
+      if (table === 'assistant_feedback') out.forEach(syncFeedback);
       persist();
       return JSON.parse(JSON.stringify(out)) as R[];
     },
     async update<R>(table: string, patch: Row, filters: Filter[]) {
       await load();
       const rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
       for (const r of rows) {
         if (table === 'sleeps' && patch.ended_at && patch.ended_at < r.started_at) throw new BackendError('La fin du sommeil ne peut pas précéder son début.');
         Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children'].includes(table) ? { updated_at: nowIso() } : {});
@@ -514,7 +593,12 @@ export function createDemoBackend(): Backend {
       // Suppressions en cascade principales
       if (table === 'children') for (const t of CHILD_TABLES) state.tables[t] = T(t).filter((r) => !removed.some((c) => c.id === r.child_id));
       if (table === 'checklists') state.tables.checklist_items = T('checklist_items').filter((i) => !removed.some((c) => c.id === i.checklist_id));
-      if (table === 'assistant_conversations') state.tables.assistant_messages = T('assistant_messages').filter((m) => !removed.some((c) => c.id === m.conversation_id));
+      if (table === 'assistant_conversations') {
+        const gone = new Set(T('assistant_messages').filter((m) => removed.some((c) => c.id === m.conversation_id)).map((m) => m.id));
+        state.tables.assistant_messages = T('assistant_messages').filter((m) => !gone.has(m.id));
+        state.tables.assistant_feedback = T('assistant_feedback').filter((f) => !gone.has(f.message_id));
+      }
+      if (table === 'assistant_feedback') removed.forEach((f) => { const m = T('assistant_messages').find((x) => x.id === f.message_id); if (m) m.feedback = null; });
       if (table === 'posts') state.tables.comments = T('comments').filter((c) => !removed.some((p) => p.id === c.post_id));
       persist();
     },
@@ -525,6 +609,21 @@ export function createDemoBackend(): Backend {
       const out = impl(args ?? {});
       persist();
       return out as R;
+    },
+    async invokeStream<R>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void) {
+      await load();
+      if (fn !== 'assistant') return this.invoke<R>(fn, body);
+      const { result, raw } = assistantCore(body ?? {});
+      persist();
+      if (raw) {
+        // Diffusion simulée : le texte arrive par petits morceaux, comme avec le vrai service
+        onEvent('meta', { conversation_id: result.conversation_id, quota: result.quota, demo: true });
+        for (const piece of raw.match(/[\s\S]{1,22}/g) ?? []) {
+          onEvent('delta', { text: piece });
+          if (streamDelayMs > 0) await new Promise((r) => setTimeout(r, streamDelayMs));
+        }
+      }
+      return JSON.parse(JSON.stringify(result)) as R;
     },
     async invoke<R>(fn: string, body: unknown) {
       await load();

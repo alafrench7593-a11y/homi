@@ -1,5 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { fetch as expoFetch } from 'expo/fetch';
 import { AppState, Platform } from 'react-native';
+import { parseSse } from '../../../supabase/functions/_shared/assistant-format';
 import { secureSessionStorage } from './secureStorage';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
 
@@ -62,7 +64,7 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
   const toSession = (s: { user: { id: string; email?: string | null } } | null): Session | null =>
     s ? { userId: s.user.id, email: s.user.email ?? null } : null;
 
-  return {
+  const api: Backend = {
     mode: 'supabase',
     auth: {
       async getSession() {
@@ -166,5 +168,72 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
       }
       return data as T;
     },
+    async invokeStream<T>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void) {
+      const { data: sess } = await client.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) throw new BackendError('Connexion requise.', '42501', undefined, 401);
+      // Web : fetch natif (flux lisible). iOS / Android : expo/fetch, qui expose aussi un flux lisible.
+      const doFetch = (Platform.OS === 'web' ? globalThis.fetch : (expoFetch as unknown as typeof globalThis.fetch)) ?? globalThis.fetch;
+      let res: Response;
+      try {
+        res = await doFetch(`${url.replace(/\/$/, '')}/functions/v1/${fn}`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}`, apikey: anonKey, 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+          body: JSON.stringify({ ...body, stream: true }),
+        });
+      } catch {
+        // Plateforme sans fetch en flux : réponse complète, sans diffusion
+        return api.invoke<T>(fn, { ...body, stream: false });
+      }
+      const type = res.headers.get('content-type') ?? '';
+      if (!type.includes('text/event-stream')) {
+        let payload: { message?: string; error?: string } | null = null;
+        try {
+          payload = await res.json();
+        } catch {
+          payload = null;
+        }
+        if (!res.ok) {
+          throw new BackendError(payload?.message ?? 'Le service est momentanément indisponible.', payload?.error ?? 'function_error', payload?.error === 'quota_reached' ? 'premium_required' : undefined, res.status);
+        }
+        return payload as T;
+      }
+      let final: T | null = null;
+      let failure: { message?: string; error?: string } | null = null;
+      const handle = (text: string, flush = false) => {
+        const parsed = parseSse(flush ? text + '\n\n' : text);
+        for (const ev of parsed.events) {
+          let data: unknown = null;
+          try {
+            data = JSON.parse(ev.data);
+          } catch {
+            continue;
+          }
+          if (ev.event === 'done') final = data as T;
+          else if (ev.event === 'error') failure = data as { message?: string; error?: string };
+          else onEvent(ev.event, data);
+        }
+        return parsed.rest;
+      };
+      const stream = res.body as ReadableStream<Uint8Array> | null;
+      if (stream && typeof stream.getReader === 'function') {
+        const reader = stream.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer = handle(buffer + decoder.decode(value, { stream: true }));
+        }
+        handle(buffer + decoder.decode(), true);
+      } else {
+        // Pas de flux lisible : on lit tout d'un coup (affichage non progressif)
+        handle(await res.text(), true);
+      }
+      if (failure) throw new BackendError((failure as { message?: string }).message ?? 'L’assistant est momentanément indisponible.', (failure as { error?: string }).error ?? 'function_error', undefined, 503);
+      if (!final) throw new BackendError('La réponse a été interrompue. Réessayez dans un instant.', 'stream_interrupted');
+      return final;
+    },
   };
+  return api;
 }
