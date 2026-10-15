@@ -2,9 +2,9 @@
  * Communauté : 15 espaces séparés, ouverts à toutes et tous quel que soit le parcours.
  * « Mes espaces » sont suggérés d'après le profil ; « Tous les espaces » restent accessibles.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, Chip, Field, Icon, IconButton, ListRow, Loading, Row, SectionTitle, Text } from '@/components/ui';
 import { PostCard, SpaceTile, spaceIcon } from '@/features/community';
@@ -20,6 +20,14 @@ export default function Community() {
   const { data: me } = useCommunityProfile();
   const { data: saved } = useSavedPosts();
   const [forumId, setForumId] = useState<string | null>(null);
+  const { space } = useLocalSearchParams<{ space?: string }>();
+  // Lien direct vers un espace (ex. depuis « Tous mes outils ») : /(tabs)/community?space=grossesse
+  useEffect(() => {
+    if (typeof space === 'string' && space) {
+      const f = spaces.all.find((x) => x.slug === space);
+      if (f) setForumId(f.id);
+    }
+  }, [space, spaces.all]);
   const [q, setQ] = useState('');
   const [searchInSpace, setSearchInSpace] = useState(true);
   const current = spaces.all.find((f) => f.id === forumId) ?? null;
