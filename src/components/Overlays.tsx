@@ -12,7 +12,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} accessibilityViewIsModal>
       <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }]} onPress={onClose} accessibilityLabel="Fermer" accessibilityRole="button" />
-      <View style={[styles.sheet, { backgroundColor: t.colors.surface, paddingBottom: insets.bottom + spacing.md }]}>
+      <View style={[styles.sheet, { backgroundColor: t.isDark ? t.colors.surface : '#FBF8F4', paddingBottom: insets.bottom + spacing.md }]}>
         <View style={[styles.grabber, { backgroundColor: t.colors.border }]} />
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg }}>
           <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{title}</Text>

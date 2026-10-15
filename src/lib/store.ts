@@ -10,7 +10,10 @@ export type ActiveSubject =
   | { type: 'me' };
 
 interface UiState {
-  themePreference: 'system' | 'light' | 'dark';
+  themePreference: 'auto' | 'system' | 'light' | 'dark';
+  /** Aperçu d'une phase du ciel (réglages > apparence) ; null = heure réelle */
+  skyOverride: 'dawn' | 'day' | 'dusk' | 'night' | null;
+  setSkyOverride: (p: UiState['skyOverride']) => void;
   nightMode: boolean;
   nightVibrations: boolean;
   householdId: string | null;
@@ -28,7 +31,9 @@ interface UiState {
 export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
-      themePreference: 'dark', // « Velours » par défaut ; « Porcelaine » disponible dans les réglages
+      themePreference: 'auto', // le ciel de la famille : suit l'heure réelle
+      skyOverride: null,
+      setSkyOverride: (skyOverride) => set({ skyOverride }),
       nightMode: false,
       nightVibrations: false,
       householdId: null,

@@ -31,8 +31,32 @@ export const NACRE: [string, string, string] = ['#F2D7D0', '#D8CFF3', '#F3E6CF']
 
 export type ThemeName = 'light' | 'dark' | 'night';
 
+/** Le ciel de la famille : l'ambiance suit l'heure réelle. */
+export type SkyPhase = 'dawn' | 'day' | 'dusk' | 'night';
+export function skyPhase(d: Date = new Date()): SkyPhase {
+  const h = d.getHours() + d.getMinutes() / 60;
+  if (h >= 5.5 && h < 8.5) return 'dawn';
+  if (h >= 8.5 && h < 18.5) return 'day';
+  if (h >= 18.5 && h < 21.5) return 'dusk';
+  return 'night';
+}
+export const SKY_GRADIENTS: Record<Exclude<SkyPhase, 'night'>, [string, string, string]> = {
+  dawn: ['#F9DCD3', '#F8ECE7', '#E9E3F6'],
+  day: ['#FFF6E8', '#FBF7F1', '#ECEEF9'],
+  dusk: ['#F1C2B6', '#E6CFE0', '#CFC8EC'],
+};
+/** Heure représentative de chaque phase (aperçu dans les réglages). */
+export function previewTime(p: SkyPhase): Date {
+  const d = new Date();
+  const [h, m] = { dawn: [7, 10], day: [13, 30], dusk: [19, 45], night: [2, 15] }[p];
+  d.setHours(h, m, 0, 0);
+  return d;
+}
+export const SKY_LABEL: Record<SkyPhase, string> = { dawn: 'Aube', day: 'Jour', dusk: 'Crépuscule', night: 'Nuit' };
+
 export interface Theme {
   name: ThemeName;
+  phase?: SkyPhase;
   isDark: boolean;
   colors: {
     background: string;
@@ -67,9 +91,9 @@ export const themes: Record<ThemeName, Theme> = {
       background: palette.mist,
       backgroundAlt: palette.mistDeep,
       gradient: ['#FBF8F4', '#F6F2EC', '#F1EBF3'],
-      surface: '#FFFFFF',
-      surfaceAlt: '#F1EBE3',
-      border: '#E6DCCB',
+      surface: 'rgba(255,255,255,0.78)',
+      surfaceAlt: 'rgba(255,255,255,0.55)',
+      border: 'rgba(255,255,255,0.95)',
       text: palette.ink,
       textMuted: palette.inkSoft,
       primary: palette.night,
@@ -77,7 +101,7 @@ export const themes: Record<ThemeName, Theme> = {
       accent: palette.lavender,
       accentSoft: '#F4E4E0',
       lavender: palette.lavenderInk,
-      gold: palette.goldInk,
+      gold: '#A8742A',
       success: '#3F7A5C',
       danger: palette.danger,
       dangerSoft: palette.dangerSoft,

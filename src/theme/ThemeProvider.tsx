@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { AccessibilityInfo, useColorScheme } from 'react-native';
-import { themes, type Theme, type ThemeName } from './tokens';
+import { SKY_GRADIENTS, skyPhase, themes, type SkyPhase, type Theme, type ThemeName } from './tokens';
 import { useUiStore } from '@/lib/store';
 
 interface ThemeContextValue {
@@ -14,7 +14,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const system = useColorScheme();
   const preference = useUiStore((s) => s.themePreference);
   const nightMode = useUiStore((s) => s.nightMode);
+  const skyOverride = useUiStore((s) => s.skyOverride);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [clock, setClock] = useState(() => skyPhase());
+  useEffect(() => {
+    const id = setInterval(() => setClock(skyPhase()), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion).catch(() => undefined);
@@ -22,8 +28,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return () => sub.remove();
   }, []);
 
-  const name: ThemeName = nightMode ? 'night' : preference === 'system' ? (system === 'dark' ? 'dark' : 'light') : preference;
-  const value = useMemo(() => ({ theme: themes[name], reduceMotion }), [name, reduceMotion]);
+  const phase: SkyPhase = skyOverride ?? clock;
+  const name: ThemeName = nightMode
+    ? 'night'
+    : preference === 'auto'
+      ? (phase === 'night' ? 'dark' : 'light')
+      : preference === 'system' ? (system === 'dark' ? 'dark' : 'light') : preference;
+  const value = useMemo(() => {
+    const base = themes[name];
+    const theme: Theme = name === 'light' && preference === 'auto' && phase !== 'night'
+      ? { ...base, phase, colors: { ...base.colors, gradient: SKY_GRADIENTS[phase] } }
+      : { ...base, phase: name === 'light' ? 'day' : 'night' };
+    return { theme, reduceMotion };
+  }, [name, reduceMotion, phase, preference]);
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 

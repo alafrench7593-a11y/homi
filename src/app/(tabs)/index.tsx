@@ -7,6 +7,8 @@ import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Banner, Card, Chip, Icon, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { ChildToday, PregnancyHero, QuickActions, QUICK_KEYS, quickLabel, UpcomingCard } from '@/features/home';
+import { DayThread, SkyArc, UniverseGrid, useSkyMoments } from '@/features/sky';
+import { pregnancyProgress as pp } from '@/lib/domain/pregnancy';
 import {
   useActivePregnancy, useActiveSubject, useArticles, useChildren, useMoods, useNotificationsInbox, usePremium, useProfile, useUpdateProfile,
 } from '@/lib/data/hooks';
@@ -16,7 +18,8 @@ import { childAge } from '@/lib/domain/child';
 import { isLocked, suggestArticles } from '@/lib/domain/content';
 import { useOfflineStore } from '@/lib/offline';
 import { useTheme } from '@/theme/ThemeProvider';
-import { spacing } from '@/theme/tokens';
+import { previewTime, spacing } from '@/theme/tokens';
+import { useUiStore } from '@/lib/store';
 
 export default function Home() {
   const t = useTheme();
@@ -38,6 +41,15 @@ export default function Home() {
   const child = subject.type === 'child' ? children?.find((c) => c.id === subject.id) : undefined;
   const postpartum = journeys.includes('newborn') || (children ?? []).some((c) => childAge(c.birth_date).months < 12);
   const shortcuts = profile?.home_shortcuts ?? ['bottle', 'diaper', 'sleep', 'question'];
+  const skyChildId = child?.id ?? (subject.type === 'family' ? children?.[0]?.id : undefined);
+  const moments = useSkyMoments(skyChildId);
+  const skyOverride = useUiStore((st) => st.skyOverride);
+  const skyNow = skyOverride ? previewTime(skyOverride) : new Date();
+  const skySubtitle = child
+    ? `${child.first_name}, ${childAge(child.birth_date).label}`
+    : subject.type === 'pregnancy' && pregnancy
+      ? `${pp(pregnancy.due_date).label}, terme le ${new Date(pregnancy.due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}`
+      : undefined;
 
   const suggestions = useMemo(() => suggestArticles(articles ?? [], {
     journeys,
@@ -63,12 +75,14 @@ export default function Home() {
             <IconButton icon="settings" label="Réglages" onPress={() => router.push('/settings')} />
           </Row>
         </Row>
-        <Text variant="hero" accessibilityRole="header">{greeting(profile?.display_name)}</Text>
+        <SkyArc phase={t.phase ?? 'day'} moments={moments} greeting={greeting(profile?.display_name, skyNow)} subtitle={skySubtitle} now={skyNow} />
         <ProfileSwitcher />
         {!offline.online && <Banner tone="warning" title="Hors connexion">{offline.pending.length ? `${offline.pending.length} entrée(s) en attente de synchronisation.` : 'Vos dernières données restent consultables ; les nouvelles saisies seront synchronisées.'}</Banner>}
 
         {subject.type === 'pregnancy' && pregnancy && <PregnancyHero pregnancy={pregnancy} />}
-        {subject.type === 'child' && child && <ChildToday child={child} />}
+        <SectionTitle title="Le fil du jour" />
+        <DayThread moments={moments} empty={child ? 'Rien d’enregistré aujourd’hui. Touchez « + » pour ajouter un moment.' : 'Vos rendez-vous et rappels du jour apparaîtront ici.'} />
+        {subject.type === 'child' && child && <ChildToday child={child} compact />}
 
         {subject.type === 'family' && (
           <View style={{ gap: spacing.sm }}>
@@ -122,6 +136,9 @@ export default function Home() {
         )}
 
         <UpcomingCard />
+
+        <SectionTitle title="Tout l’univers" />
+        <UniverseGrid />
 
         {suggestions.length > 0 && (
           <>

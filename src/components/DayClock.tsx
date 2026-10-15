@@ -54,7 +54,7 @@ export function DayClock({ events, size = 280, children, now = new Date(), label
           const p2 = polar(c, c, c - (h % 6 === 0 ? 14 : 9), a);
           return <Line key={h} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={ink} strokeOpacity={h % 6 === 0 ? 0.55 : 0.18} strokeWidth={h % 6 === 0 ? 1.6 : 1} />;
         })}
-        {[0, 6, 12, 18].map((h) => {
+        {size >= 260 && [0, 6, 12, 18].map((h) => {
           const p = polar(c, c, rDiaper - 16, (h / 24) * 360 - 90);
           return <SvgText key={h} x={p.x} y={p.y + 4} fontSize={11} fill={ink} fillOpacity={0.5} textAnchor="middle" fontFamily={fonts.bodyMedium}>{h === 0 ? '0h' : `${h}h`}</SvgText>;
         })}
