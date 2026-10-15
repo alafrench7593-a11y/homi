@@ -36,6 +36,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     <ToastContext.Provider value={show}>
       {children}
       {toast && <ToastView key={toast.key} msg={toast.msg} tone={toast.tone} onDone={() => setToast(null)} />}
+      {Platform.OS === 'web' && <ConfirmHost />}
     </ToastContext.Provider>
   );
 }
@@ -67,14 +68,49 @@ function ToastView({ msg, tone, onDone }: { msg: string; tone: ToastTone; onDone
 
 export const useToast = () => useContext(ToastContext);
 
-/** Confirmation multiplateforme (Alert natif, window.confirm sur le web). */
+/** Confirmation multiplateforme : Alert natif sur iOS/Android, fenêtre intégrée à l'app sur le web
+ * (les boîtes natives du navigateur peuvent être bloquées, par exemple dans un aperçu intégré). */
+type ConfirmRequest = { title: string; message: string; confirmLabel: string; destructive: boolean; resolve: (v: boolean) => void };
+let showConfirm: ((r: ConfirmRequest) => void) | null = null;
+
 export function confirm(title: string, message: string, confirmLabel = 'Confirmer', destructive = true): Promise<boolean> {
-  if (Platform.OS === 'web') return Promise.resolve(globalThis.confirm?.(`${title}\n\n${message}`) ?? true);
+  if (Platform.OS === 'web') {
+    if (!showConfirm) return Promise.resolve(globalThis.confirm?.(`${title}\n\n${message}`) ?? false);
+    return new Promise((resolve) => showConfirm!({ title, message, confirmLabel, destructive, resolve }));
+  }
   return new Promise((resolve) =>
     Alert.alert(title, message, [
       { text: 'Annuler', style: 'cancel', onPress: () => resolve(false) },
       { text: confirmLabel, style: destructive ? 'destructive' : 'default', onPress: () => resolve(true) },
     ]),
+  );
+}
+
+function ConfirmHost() {
+  const t = useTheme();
+  const [req, setReq] = useState<ConfirmRequest | null>(null);
+  useEffect(() => {
+    showConfirm = setReq;
+    return () => { showConfirm = null; };
+  }, []);
+  if (!req) return null;
+  const done = (v: boolean) => { req.resolve(v); setReq(null); };
+  return (
+    <Modal visible transparent animationType="fade" onRequestClose={() => done(false)}>
+      <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }]} onPress={() => done(false)} accessibilityLabel="Fermer" />
+      <View style={{ position: 'absolute', left: spacing.lg, right: spacing.lg, top: '30%', borderRadius: radius.xl, padding: spacing.lg, gap: spacing.sm, backgroundColor: t.isDark ? '#22152C' : '#FFFFFF' }} accessibilityViewIsModal accessibilityRole="alert">
+        <Text variant="heading">{req.title}</Text>
+        {req.message ? <Text muted>{req.message}</Text> : null}
+        <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs }}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Annuler" onPress={() => done(false)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
+            <Text weight="bold">Annuler</Text>
+          </Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel={req.confirmLabel} onPress={() => done(true)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, backgroundColor: req.destructive ? t.colors.danger : t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
+            <Text weight="bold" color="#FFFFFF">{req.confirmLabel}</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
