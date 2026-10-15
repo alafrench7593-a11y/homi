@@ -18,17 +18,26 @@ insert into public.emergency_resources (country, label, phone, description, kind
 -- ---------------------------------------------------------------------
 -- Forums
 -- ---------------------------------------------------------------------
+-- Les 15 espaces sont aussi créés par la migration 20261016000300 : upsert par slug.
 insert into public.forums (slug, title, description, journeys, icon, is_local, position) values
- ('contraception','Contraception','Moyens de contraception, questions avant une consultation, ressentis.', '{avoid}','shield',false,1),
- ('projet-bebe','Projet bébé','Essayer d''avoir un enfant, attendre, espérer, se soutenir.', '{ttc}','sparkles',false,2),
- ('grossesse','Grossesse','Questions et partages pendant la grossesse.', '{pregnant}','moon',false,3),
- ('jumeaux-triples','Jumeaux & triplés','Grossesses multiples et familles de jumeaux ou triplés.', '{pregnant,newborn}','twins',false,4),
- ('post-partum','Post-partum','Après la naissance : récupération, émotions, quotidien.', '{newborn}','heart',false,5),
- ('allaitement','Allaitement','Allaitement, tire-lait, sevrage, et allaitement mixte.', '{newborn}','drop',false,6),
- ('parents-bebes','Parents de bébés','Le quotidien avec un bébé de 0 à 2 ans.', '{newborn,child}','baby',false,7),
- ('parents-enfants','Parents d''enfants','De 2 à 10 ans : école, émotions, organisation.', '{child}','sun',false,8),
- ('familles-nombreuses','Familles nombreuses','Organiser la vie avec plusieurs enfants.', '{family}','users',false,9),
- ('rencontres-locales','Organisation & rencontres locales','Proposer une rencontre dans un lieu public, par zone générale uniquement.', '{}','map',true,10);
+ ('eviter-grossesse','Éviter une grossesse','Contraception, oublis, questions avant une consultation, ressentis.','{avoid}','shield',false,1),
+ ('projet-bebe','Projet bébé','Essayer d''avoir un enfant, attendre, espérer, se soutenir.','{ttc}','sparkles',false,2),
+ ('fertilite','Fertilité','Parcours de PMA, examens, attente et soutien entre personnes concernées.','{ttc}','fertility',false,3),
+ ('grossesse','Grossesse','Questions et partages pendant la grossesse.','{pregnant}','moon',false,4),
+ ('jumeaux-triples','Jumeaux et triplés','Grossesses multiples et familles de jumeaux ou triplés.','{pregnant,newborn,child}','twins',false,5),
+ ('accouchement','Accouchement','Se préparer, raconter son accouchement, projet de naissance.','{pregnant}','birth',false,6),
+ ('post-partum','Post-partum','Après la naissance : récupération, émotions, quotidien.','{newborn}','heart',false,7),
+ ('allaitement','Allaitement','Allaitement, tire-lait, sevrage, et allaitement mixte.','{newborn}','drop',false,8),
+ ('biberon','Biberon','Préparation, quantités, choix du lait, passage au biberon.','{newborn}','bottle',false,9),
+ ('sommeil','Sommeil','Nuits, siestes, rituels du coucher, fatigue des parents.','{newborn,child}','sleep',false,10),
+ ('diversification','Diversification','Premiers repas, textures, allergènes, idées de menus.','{newborn,child}','food',false,11),
+ ('parents-bebes','Parents de bébés','Le quotidien avec un bébé de 0 à 2 ans.','{newborn,child}','baby',false,12),
+ ('parents-enfants','Parents d’enfants','De 2 à 10 ans : école, émotions, organisation.','{child,family}','sun',false,13),
+ ('familles-nombreuses','Familles nombreuses','Organiser la vie avec plusieurs enfants.','{family}','users',false,14),
+ ('rencontres-locales','Rencontres locales','Proposer une rencontre dans un lieu public, par zone générale uniquement.','{}','map',true,15)
+on conflict (slug) do update set
+  title = excluded.title, description = excluded.description, journeys = excluded.journeys, icon = excluded.icon,
+  is_local = excluded.is_local, position = excluded.position, archived = false;
 
 insert into public.moderation_terms (pattern, action, reason) values
  ('\m(viagra|casino|crypto ?monnaie)\M','block','spam'),
@@ -220,4 +229,6 @@ insert into public.community_profiles (user_id, pseudonym, area_label) values
  ('22222222-2222-4222-8222-222222222222','Alex_papa','Île-de-France');
 insert into public.posts (forum_id, author_id, title, body) values
  ((select id from public.forums where slug='jumeaux-triples'),'11111111-1111-4111-8111-111111111111',
-  'Vos astuces pour préparer l''arrivée de jumeaux ?', 'Nous attendons des jumeaux pour l''hiver. Qu''est-ce qui vous a le plus aidés les premières semaines ?');
+  'Vos astuces pour préparer l''arrivée de jumeaux ?', 'Nous attendons des jumeaux pour l''hiver. Qu''est-ce qui vous a le plus aidés les premières semaines ?'),
+ ((select id from public.forums where slug='sommeil'),'22222222-2222-4222-8222-222222222222',
+  'Réveils à 5 h du matin', 'Notre fille de 15 mois se réveille tous les jours à 5 h. Des idées pour décaler un peu le réveil ?');

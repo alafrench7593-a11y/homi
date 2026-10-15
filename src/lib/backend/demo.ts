@@ -17,6 +17,8 @@ type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-exp
 type Tables = Record<string, Row[]>;
 
 const KEY = 'toietmoi.demo.v1';
+/** Version des exemples de la communauté : l'augmenter ajoute les nouveaux exemples aux appareils existants. */
+const COMMUNITY_SEED_VERSION = 2;
 const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_resources', 'foods', 'baby_names', 'products', 'product_recalls', 'plan_limits'] as const;
 const CHILD_TABLES = ['child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations'];
 const OWNER_TABLES: Record<string, string> = {
@@ -42,6 +44,17 @@ function fnv(s: string): string {
 }
 
 const nowIso = () => new Date().toISOString();
+
+/** Termes surveillés (mêmes règles que supabase/seed.sql → moderation_terms). */
+const DEMO_TERMS: { pattern: RegExp; action: 'block' | 'review'; reason: string }[] = [
+  { pattern: /\b(viagra|casino|crypto ?monnaie)\b/i, action: 'block', reason: 'spam' },
+  { pattern: /(vends?|achète|acheter|vente).{0,20}lait maternel/i, action: 'review', reason: 'vente de lait maternel' },
+  { pattern: /(arrêtez|arrête|arrêter) (le|son|votre) traitement/i, action: 'review', reason: 'conseil médical potentiellement dangereux' },
+  { pattern: /\b(mon|notre) adresse (est|:)/i, action: 'review', reason: 'donnée personnelle' },
+];
+const PERSONAL_DATA = /(\+33|0)[1-9]([ .-]?[0-9]{2}){4}|[\w.%+-]+@[\w.-]+\.[a-z]{2,}/i;
+const PSEUDONYM = /^[A-Za-zÀ-ÿ0-9_.\- ]{3,24}$/;
+const fold = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 function matches(row: Row, f: Filter): boolean {
   const v = row[f.col];
@@ -80,7 +93,7 @@ export function createDemoBackend(): Backend {
           // stockage illisible : on repart d'un état vide
         }
         for (const t of CATALOG_TABLES) state.tables[t] = JSON.parse(JSON.stringify(catalogs[t] ?? []));
-        if (!state.tables.posts?.length) seedCommunity();
+        if ((state.tables._community_seed?.[0]?.version ?? 0) < COMMUNITY_SEED_VERSION) seedCommunity();
       })();
     }
     return loaded;
@@ -108,6 +121,22 @@ export function createDemoBackend(): Backend {
     const l = T('plan_limits').find((p) => p.key === key);
     return l ? (isPremium() ? l.premium_value : l.free_value) : Infinity;
   };
+  let replyTarget: string | null = null;
+  const blockedBetween = (a: string, b: string) => T('user_blocks').some((x) => (x.blocker_id === a && x.blocked_id === b) || (x.blocker_id === b && x.blocked_id === a));
+  /** Pseudonyme : format, unicité, jamais le prénom du profil ni l'identifiant de l'e-mail. */
+  function checkPseudonym(r: Row, creating: boolean) {
+    if (r.pseudonym == null) return;
+    r.pseudonym = String(r.pseudonym).trim();
+    if (!PSEUDONYM.test(r.pseudonym)) throw new BackendError('Pseudonyme invalide : 3 à 24 caractères (lettres, chiffres, espace, point, tiret).');
+    const owner = r.user_id ?? state.session?.userId;
+    if (T('community_profiles').some((p) => p.pseudonym === r.pseudonym && (creating || p.user_id !== owner))) throw new BackendError('Ce pseudonyme existe déjà.', '23505');
+    const name = T('profiles').find((p) => p.id === owner)?.display_name;
+    const email = state.users.find((u) => u.id === owner)?.email.split('@')[0];
+    const lower = r.pseudonym.toLowerCase();
+    if ((name && lower === String(name).trim().toLowerCase()) || (email && lower === email.toLowerCase())) {
+      throw new BackendError('Choisissez un pseudonyme différent de votre prénom et de votre adresse e-mail.', 'P0001', 'pseudonym_identifying');
+    }
+  }
   const notify = (userId: string, n: Row) => T('notifications').push({ id: uuid(), user_id: userId, payload: {}, read_at: null, created_at: nowIso(), ...n });
 
   function seedCommunity() {
@@ -117,26 +146,43 @@ export function createDemoBackend(): Backend {
       { user_id: 'demo-voisin-2', pseudonym: 'PapaDeNour', area_label: 'Lille' },
       { user_id: 'demo-voisine-3', pseudonym: 'Clem.2026', area_label: 'Nantes' },
     ];
-    state.tables.community_profiles = others.map((o) => ({ ...o, suspended_until: null, created_at: nowIso() }));
+    // Amorçage additif : un appareil qui avait déjà la démo reçoit les nouveaux exemples sans perdre ses données
+    for (const o of others) if (!T('community_profiles').some((x) => x.user_id === o.user_id)) T('community_profiles').push({ ...o, suspended_until: null, created_at: nowIso() });
     const p = (slugF: string, author: string, title: string, body: string, hoursAgo: number, likes = 0) => ({
       id: uuid(), forum_id: forum(slugF), author_id: author, title, body, area_label: null, status: 'visible', report_count: 0,
       like_count: likes, comment_count: 0, created_at: new Date(Date.now() - hoursAgo * 3600_000).toISOString(), edited_at: null,
     });
-    state.tables.posts = [
+    const samples = [
       p('post-partum', 'demo-voisine-1', 'Trois semaines après : on en parle ?', 'Je pensais être plus en forme. Les nuits sont longues et je pleure facilement. Vous avez vécu ça aussi ?', 5, 12),
       p('jumeaux-triples', 'demo-voisin-2', 'Tableau de relais pour les nuits', 'Avec ma compagne on a fait un tableau : 22h-2h pour moi, 2h-6h pour elle. Ça nous a sauvés. Et vous ?', 20, 31),
       p('grossesse', 'demo-voisine-3', 'Valise : vous l’avez préparée quand ?', 'Je suis à 30 SA et je n’ai encore rien fait. Pas de panique ?', 30, 7),
       p('parents-enfants', 'demo-voisin-2', 'Préparer un aîné à l’arrivée du bébé', 'Notre fille de 4 ans pose plein de questions. Des livres à conseiller ?', 52, 18),
+      p('sommeil', 'demo-voisine-1', 'Réveils à 5 h du matin', 'Notre fils de 15 mois se réveille tous les jours à 5 h. Des idées pour décaler un peu le réveil ?', 8, 9),
+      p('diversification', 'demo-voisine-3', 'Premières purées : par quoi commencer ?', 'On démarre la diversification la semaine prochaine. Carotte, courgette… vous avez commencé par quoi ?', 26, 14),
+      p('projet-bebe', 'demo-voisine-1', 'Un an d’essais, comment tenir le moral ?', 'Chaque mois l’attente puis la déception. Comment faites-vous pour garder le moral à deux ?', 40, 22),
+      p('fertilite', 'demo-voisine-3', 'Premier rendez-vous en centre de PMA', 'Rendez-vous dans deux semaines. Quelles questions avez-vous posées la première fois ?', 70, 6),
+      p('biberon', 'demo-voisin-2', 'Biberons la nuit : vos astuces ?', 'Eau prête à température, doses de lait préparées… comment vous organisez-vous la nuit ?', 12, 5),
+      { ...p('rencontres-locales', 'demo-voisine-1', 'Balade poussette au parc de la Tête d’Or', 'Une balade samedi matin, entre parents de bébés ? Rendez-vous devant l’entrée principale.', 16, 3), area_label: 'Lyon' },
     ];
-    const c = (postIdx: number, author: string, body: string) => {
-      const post = state.tables.posts[postIdx];
+    const added = new Set<number>();
+    samples.forEach((s, i) => {
+      if (!s.forum_id || T('posts').some((x) => x.title === s.title)) return;
+      T('posts').push(s);
+      added.add(i);
+    });
+    const c = (postIdx: number, author: string, body: string, parentId: string | null = null) => {
+      if (!added.has(postIdx)) return null;
+      const post = samples[postIdx];
       post.comment_count += 1;
-      return { id: uuid(), post_id: post.id, parent_id: null, author_id: author, body, status: 'visible', report_count: 0, created_at: nowIso() };
+      const row = { id: uuid(), post_id: post.id, parent_id: parentId, author_id: author, body, status: 'visible', report_count: 0, created_at: nowIso() };
+      T('comments').push(row);
+      return row;
     };
-    state.tables.comments = [
-      c(0, 'demo-voisine-3', 'Oui. Ça m’a fait du bien d’en parler à ma sage-femme. Tu n’es pas seule.'),
-      c(1, 'demo-voisine-1', 'Excellente idée, on va essayer !'),
-    ];
+    const first = c(0, 'demo-voisine-3', 'Oui. Ça m’a fait du bien d’en parler à ma sage-femme. Tu n’es pas seule.');
+    if (first) c(0, 'demo-voisine-1', 'Merci, je vais lui en parler au prochain rendez-vous.', first.id);
+    c(1, 'demo-voisine-1', 'Excellente idée, on va essayer !');
+    c(4, 'demo-voisin-2', 'On a décalé le coucher de 20 minutes, ça a aidé au bout d’une semaine.');
+    state.tables._community_seed = [{ version: COMMUNITY_SEED_VERSION }];
   }
 
   // ---------------------------------------------------------------- règles d'insertion
@@ -168,14 +214,37 @@ export function createDemoBackend(): Backend {
       const count = T(table).filter((x) => x.household_id === r.household_id).length;
       if (count >= limit(quota[table])) throw new BackendError('Limite de la version gratuite atteinte.', 'P0001', 'premium_required');
     }
+    if (table === 'community_profiles') checkPseudonym(r, true);
     if (table === 'posts' || table === 'comments') {
       const profile = T('community_profiles').find((p) => p.user_id === me);
       if (!profile) throw new BackendError('Choisissez un pseudonyme avant de publier.', 'P0001', 'pseudonym_required');
+      if (profile.suspended_until && profile.suspended_until > nowIso()) throw new BackendError('Votre compte communauté est suspendu.', '42501');
+      if (table === 'posts' && !T('forums').some((f) => f.id === r.forum_id)) throw new BackendError('Choisissez un espace.');
       const text = `${r.title ?? ''} ${r.body ?? ''}`;
-      if (/\b(viagra|casino)\b/i.test(text)) throw new BackendError('Ce contenu ne respecte pas les règles de la communauté.');
-      r.status = /(\+33|0)[1-9]([ .-]?[0-9]{2}){4}|[\w.%+-]+@[\w.-]+\.[a-z]{2,}/i.test(text) ? 'pending_review' : 'visible';
+      let status = PERSONAL_DATA.test(text) ? 'pending_review' : 'visible';
+      for (const term of DEMO_TERMS) {
+        if (!term.pattern.test(text)) continue;
+        if (term.action === 'block') throw new BackendError(`Ce contenu ne respecte pas les règles de la communauté (${term.reason}).`);
+        status = 'pending_review';
+      }
+      r.status = status;
       r.report_count = 0;
       if (table === 'posts') Object.assign(r, { like_count: 0, comment_count: 0, edited_at: null });
+      if (table === 'comments') {
+        const post = T('posts').find((p) => p.id === r.post_id);
+        if (!post || post.status !== 'visible') throw new BackendError('Cette publication n’accepte plus de commentaires.', '42501');
+        if (blockedBetween(post.author_id, r.author_id)) throw new BackendError('Impossible de répondre à cette publication.', '42501');
+        r.parent_id ??= null;
+        replyTarget = null;
+        if (r.parent_id) {
+          const parent = T('comments').find((x) => x.id === r.parent_id);
+          if (!parent || parent.post_id !== r.post_id) throw new BackendError('Le commentaire auquel vous répondez est introuvable.');
+          if (parent.status !== 'visible' || blockedBetween(parent.author_id, r.author_id)) throw new BackendError('Impossible de répondre à ce commentaire.', '42501');
+          replyTarget = parent.author_id;
+          // Un seul niveau : une réponse à une réponse est rattachée au commentaire racine
+          if (parent.parent_id) r.parent_id = parent.parent_id;
+        }
+      }
     }
     if (table === 'reports') {
       const dup = T('reports').some((x) => x.reporter_id === me && ((r.post_id && x.post_id === r.post_id) || (r.comment_id && x.comment_id === r.comment_id)));
@@ -198,10 +267,21 @@ export function createDemoBackend(): Backend {
       const post = T('posts').find((p) => p.id === r.post_id);
       if (post) {
         post.comment_count += 1;
-        if (post.author_id !== r.author_id && post.author_id === state.session?.userId) {
-          notify(post.author_id, { category: 'community_comment', title: 'Nouveau commentaire', body: r.body.slice(0, 120), deep_link: `/community/post/${post.id}` });
+        // Mêmes règles que le déclencheur on_comment : réponse → community_reply, sinon community_comment
+        if (r.status === 'visible') {
+          const who = T('community_profiles').find((p) => p.user_id === r.author_id)?.pseudonym ?? 'Quelqu’un';
+          const payload = { post_id: post.id, comment_id: r.id, parent_id: r.parent_id };
+          const notified = new Set<string>([r.author_id]);
+          if (replyTarget && !notified.has(replyTarget) && !blockedBetween(replyTarget, r.author_id)) {
+            notify(replyTarget, { category: 'community_reply', title: `${who} a répondu à votre commentaire`, body: r.body.slice(0, 120), deep_link: `/community/post/${post.id}`, payload });
+            notified.add(replyTarget);
+          }
+          if (!notified.has(post.author_id) && !blockedBetween(post.author_id, r.author_id)) {
+            notify(post.author_id, { category: 'community_comment', title: `${who} a commenté votre publication`, body: r.body.slice(0, 120), deep_link: `/community/post/${post.id}`, payload });
+          }
         }
       }
+      replyTarget = null;
     }
     if (table === 'post_likes') {
       const post = T('posts').find((p) => p.id === r.post_id);
@@ -219,7 +299,8 @@ export function createDemoBackend(): Backend {
   // ---------------------------------------------------------------- vues
   function view(table: string): Row[] {
     const me = state.session?.userId;
-    const blocked = new Set(T('user_blocks').filter((b) => b.blocker_id === me).map((b) => b.blocked_id));
+    // Blocage dans les deux sens, comme is_blocked_between côté Supabase
+    const blocked = new Set(T('user_blocks').flatMap((b) => (b.blocker_id === me ? [b.blocked_id] : b.blocked_id === me ? [b.blocker_id] : [])));
     const pseudo = (id: string) => T('community_profiles').find((p) => p.user_id === id)?.pseudonym ?? null;
     if (table === 'forum_feed') {
       return T('posts')
@@ -277,8 +358,19 @@ export function createDemoBackend(): Backend {
     plan_limit: (a) => limit(a.p_key),
     block_author: (a) => {
       const author = a.p_post ? T('posts').find((p) => p.id === a.p_post)?.author_id : T('comments').find((c) => c.id === a.p_comment)?.author_id;
-      if (author && author !== uid()) T('user_blocks').push({ blocker_id: uid(), blocked_id: author, created_at: nowIso() });
+      if (author && author !== uid() && !T('user_blocks').some((b) => b.blocker_id === uid() && b.blocked_id === author)) {
+        T('user_blocks').push({ blocker_id: uid(), blocked_id: author, created_at: nowIso() });
+      }
       return null;
+    },
+    // Recherche : plein texte (français) côté Supabase ; ici, simple « contient » sans casse ni accents
+    search_posts: (a) => {
+      const q = fold(String(a.p_query ?? '').trim());
+      if (q.length < 2) return [];
+      return view('forum_feed')
+        .filter((p) => p.status === 'visible' && (!a.p_forum || p.forum_id === a.p_forum) && fold(`${p.title} ${p.body}`).includes(q))
+        .sort((x, y) => (x.created_at < y.created_at ? 1 : -1))
+        .slice(0, Math.min(Math.max(Number(a.p_limit) || 50, 1), 100));
     },
     moderate: (a) => {
       const target = a.p_post ? T('posts').find((p) => p.id === a.p_post) : T('comments').find((c) => c.id === a.p_comment);
@@ -506,6 +598,7 @@ export function createDemoBackend(): Backend {
       await load();
       const rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
       for (const r of rows) {
+        if (table === 'community_profiles' && patch.pseudonym != null) checkPseudonym({ ...patch, user_id: r.user_id }, false);
         if (table === 'sleeps' && patch.ended_at && patch.ended_at < r.started_at) throw new BackendError('La fin du sommeil ne peut pas précéder son début.');
         if (table === 'parent_sleep_logs') {
           if (r.user_id !== state.session?.userId) continue;
@@ -521,7 +614,12 @@ export function createDemoBackend(): Backend {
       const removed = T(table).filter((r) => filters.every((f) => matches(r, f)));
       state.tables[table] = T(table).filter((r) => !removed.includes(r));
       if (table === 'post_likes') removed.forEach((l) => { const p = T('posts').find((x) => x.id === l.post_id); if (p) p.like_count = Math.max(0, p.like_count - 1); });
-      if (table === 'comments') removed.forEach((c) => { const p = T('posts').find((x) => x.id === c.post_id); if (p) p.comment_count = Math.max(0, p.comment_count - 1); });
+      if (table === 'comments') {
+        // Les réponses d'un commentaire supprimé sont supprimées avec lui
+        const replies = T('comments').filter((c) => removed.some((x) => x.id === c.parent_id));
+        state.tables.comments = T('comments').filter((c) => !replies.includes(c));
+        [...removed, ...replies].forEach((c) => { const p = T('posts').find((x) => x.id === c.post_id); if (p) p.comment_count = Math.max(0, p.comment_count - 1); });
+      }
       // Suppressions en cascade principales
       if (table === 'children') for (const t of CHILD_TABLES) state.tables[t] = T(t).filter((r) => !removed.some((c) => c.id === r.child_id));
       if (table === 'checklists') state.tables.checklist_items = T('checklist_items').filter((i) => !removed.some((c) => c.id === i.checklist_id));
