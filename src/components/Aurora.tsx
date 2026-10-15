@@ -80,7 +80,7 @@ export function Aurora({ mood: forced, intensity = 1 }: { mood?: AuroraMood; int
   ], [W, H]);
 
   const ribbon = (y: number, amp: number, thick: number) =>
-    `M ${-W * 0.2} ${y} C ${W * 0.2} ${y - amp}, ${W * 0.55} ${y + amp}, ${W * 1.2} ${y - amp * 0.4} L ${W * 1.2} ${y - amp * 0.4 + thick} C ${W * 0.55} ${y + amp + thick}, ${W * 0.2} ${y - amp + thick}, ${-W * 0.2} ${y + thick} Z`;
+    `M ${-W * 0.3} ${y} C ${W * 0.2} ${y - amp}, ${W * 0.55} ${y + amp}, ${W * 1.3} ${y - amp * 0.4} L ${W * 1.3} ${y - amp * 0.4 + thick} C ${W * 0.55} ${y + amp + thick}, ${W * 0.2} ${y - amp + thick}, ${-W * 0.3} ${y + thick} Z`;
 
   const tx = (v: Animated.Value, a: number) => v.interpolate({ inputRange: [0, 1], outputRange: [-a, a] });
 
@@ -88,8 +88,8 @@ export function Aurora({ mood: forced, intensity = 1 }: { mood?: AuroraMood; int
     <View pointerEvents="none" style={StyleSheet.absoluteFill} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <LinearGradient colors={m.base} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
       {/* halos de couleur */}
-      <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ translateX: tx(d1, W * 0.06) }, { translateY: tx(d2, H * 0.02) }] }]}>
-        <Svg width={W} height={H}>
+      <Animated.View style={{ position: 'absolute', left: -W * 0.15, top: -H * 0.05, width: W * 1.3, height: H * 1.1, transform: [{ translateX: tx(d1, W * 0.06) }, { translateY: tx(d2, H * 0.02) }] }}>
+        <Svg width={W * 1.3} height={H * 1.1} viewBox={`${-W * 0.15} ${-H * 0.05} ${W * 1.3} ${H * 1.1}`}>
           <Defs>
             {m.glows.map((g, i) => (
               <RadialGradient key={i} id={`g${uid}${i}`} cx="50%" cy="50%" rx="50%" ry="50%">
@@ -104,8 +104,8 @@ export function Aurora({ mood: forced, intensity = 1 }: { mood?: AuroraMood; int
       </Animated.View>
       {/* voiles d'aurore */}
       {m.ribbons.map((r, i) => (
-        <Animated.View key={i} style={[StyleSheet.absoluteFill, { transform: [{ translateX: tx(i ? d3 : d2, W * 0.1) }, { translateY: tx(i ? d1 : d3, 10) }, { skewY: i ? '-4deg' : '3deg' }] }]}>
-          <Svg width={W} height={H}>
+        <Animated.View key={i} style={{ position: 'absolute', left: -W * 0.25, top: 0, width: W * 1.5, height: H, transform: [{ translateX: tx(i ? d3 : d2, W * 0.1) }, { translateY: tx(i ? d1 : d3, 10) }, { skewY: i ? '-4deg' : '3deg' }] }}>
+          <Svg width={W * 1.5} height={H} viewBox={`${-W * 0.25} 0 ${W * 1.5} ${H}`}>
             <Defs>
               <SvgLinear id={`r${uid}${i}`} x1="0" y1="0" x2="0" y2="1">
                 <Stop offset="0" stopColor={r.c} stopOpacity={0} />

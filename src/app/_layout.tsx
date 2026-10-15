@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { Platform, View, useWindowDimensions } from 'react-native';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Notifications from 'expo-notifications';
@@ -20,6 +20,7 @@ import { SpaceGrotesk_600SemiBold } from '@expo-google-fonts/space-grotesk/600Se
 import { SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk/700Bold';
 import { Manrope_500Medium } from '@expo-google-fonts/manrope/500Medium';
 import { Manrope_600SemiBold } from '@expo-google-fonts/manrope/600SemiBold';
+import { Aurora } from '@/components/Aurora';
 import { Manrope_700Bold } from '@expo-google-fonts/manrope/700Bold';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -110,11 +111,27 @@ export default function RootLayout() {
           <ThemeProvider>
             <ToastProvider>
               <Bootstrap />
-              <Navigator />
+              <WebFrame>
+                <Navigator />
+              </WebFrame>
             </ToastProvider>
           </ThemeProvider>
         </AuthProvider>
       </PersistQueryClientProvider>
     </SafeAreaProvider>
+  );
+}
+
+/** Sur un grand écran (version web), l'app garde un format téléphone centré au lieu de s'étirer. */
+function WebFrame({ children }: { children: React.ReactNode }) {
+  const { width } = useWindowDimensions();
+  if (Platform.OS !== 'web' || width < 600) return <>{children}</>;
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#140D1C', padding: 24 }}>
+      <Aurora mood="evening" intensity={1.3} />
+      <View style={{ flex: 1, width: 420, maxHeight: 900, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 50, shadowOffset: { width: 0, height: 24 } }}>
+        {children}
+      </View>
+    </View>
   );
 }
