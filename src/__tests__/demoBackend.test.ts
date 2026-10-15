@@ -78,12 +78,10 @@ describe('moteur local : parcours essentiels', () => {
   it('abonnement : quotas gratuits puis droits premium (mode test)', async () => {
     expect(await db.rpc('has_premium')).toBe(false);
     await db.insert('consents', { purpose: 'ai_assistant', granted: true, version: '1' });
-    for (let i = 0; i < 5; i++) await db.invoke('assistant', { message: 'Comment préparer la valise de maternité ?' });
-    await expect(db.invoke('assistant', { message: 'Encore une question sur la valise' })).rejects.toThrow(/questions de ce mois/);
+    // Sans serveur, l'assistant ne simule aucune réponse
+    await expect(db.invoke('assistant', { message: 'Comment préparer la valise de maternité ?' })).rejects.toThrow(/Gemini/);
     await db.rpc('set_demo_subscription', { active: true, period: 'annual' });
     expect(await db.rpc('has_premium')).toBe(true);
-    const out = await db.invoke<{ answer: string; sources: unknown[] }>('assistant', { message: 'Comment préparer la valise de maternité ?' });
-    expect(out.sources.length).toBeGreaterThan(0);
   });
 
   it('l’assistant oriente vers les secours sans consommer de quota', async () => {

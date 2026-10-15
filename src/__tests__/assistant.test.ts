@@ -200,40 +200,14 @@ describe('assistant sur le moteur local (mode démonstration)', () => {
     await db.insert('consents', { purpose: 'ai_assistant', granted: true, version: '1' });
   });
 
-  it('diffuse la réponse par morceaux puis renvoie la réponse structurée', async () => {
-    const deltas: string[] = [];
-    const res = await db.invokeStream<AskResponse>('assistant', { message: 'Comment préparer la valise de maternité ?', use_context: true, context: { journeys: ['pregnant'] } }, (event, data) => {
-      if (event === 'delta') deltas.push((data as { text: string }).text);
-    });
-    expect(deltas.length).toBeGreaterThan(5);
-    expect(parseStructuredAnswer(deltas.join('')).short).toContain(DEV_MODE_LABEL);
-    expect(res.structured?.short).toContain(DEV_MODE_LABEL);
-    expect(res.structured?.sources.every((s) => isAllowedSourceUrl(s.url))).toBe(true);
-    expect(res.quota).toEqual({ used: 1, limit: 5, remaining: 4 });
-    const [conv] = await db.select<Conversation>({ table: 'assistant_conversations', filters: [eq('id', res.conversation_id)] });
-    expect(conv.context_enabled).toBe(true);
-    const [status] = await db.rpc<{ remaining: number }[]>('assistant_quota_status');
-    expect(status.remaining).toBe(4);
-  });
-
-  it('retours « Utile / Pas utile », favoris et suppression de la conversation', async () => {
-    const res = await db.invoke<AskResponse>('assistant', { message: 'Comment commencer la diversification ?' });
-    const mid = res.message_id!;
-    await db.insert('assistant_feedback', { user_id: userId, message_id: mid, value: 1 }, { onConflict: 'user_id,message_id' });
-    await db.insert('assistant_feedback', { user_id: userId, message_id: mid, value: -1 }, { onConflict: 'user_id,message_id' });
-    expect(await db.select({ table: 'assistant_feedback' })).toHaveLength(1);
-    let [msg] = await db.select<AssistantMessage>({ table: 'assistant_messages', filters: [eq('id', mid)] });
-    expect(msg.feedback).toBe(-1);
-    expect(msg.structured?.short).toBeTruthy();
-    await expect(db.update('assistant_messages', { content: 'modifié' }, [eq('id', mid)])).rejects.toThrow(/autorisation/);
-    const [question] = await db.select<AssistantMessage>({ table: 'assistant_messages', filters: [eq('conversation_id', res.conversation_id), eq('role', 'user')] });
-    await expect(db.insert('assistant_feedback', { user_id: userId, message_id: question.id, value: 1 })).rejects.toThrow(/autorisation/);
-    await db.update('assistant_messages', { saved: true }, [eq('id', mid)]);
-    [msg] = await db.select<AssistantMessage>({ table: 'assistant_messages', filters: [eq('id', mid)] });
-    expect(msg.saved).toBe(true);
-    await db.remove('assistant_conversations', [eq('id', res.conversation_id)]);
-    expect(await db.select({ table: 'assistant_messages', filters: [eq('conversation_id', res.conversation_id)] })).toHaveLength(0);
-    expect(await db.select({ table: 'assistant_feedback' })).toHaveLength(0);
+  it('sans serveur ni clé Gemini : erreur explicite, aucune réponse simulée, aucune question décomptée', async () => {
+    const before = (await db.rpc<{ used: number }[]>('assistant_quota_status'))[0].used;
+    const err = await db.invoke('assistant', { message: 'Comment préparer la valise de maternité ?' }).catch((e) => e);
+    expect(err).toBeInstanceOf(BackendError);
+    expect((err as BackendError).code).toBe('ai_not_configured');
+    expect((err as BackendError).message).toMatch(/Gemini/);
+    expect((await db.rpc<{ used: number }[]>('assistant_quota_status'))[0].used).toBe(before);
+    expect(await db.select({ table: 'assistant_messages', filters: [eq('role', 'assistant')] })).toHaveLength(0);
   });
 
   it('refuse poliment un détournement sans consommer de question', async () => {
@@ -248,20 +222,4 @@ describe('assistant sur le moteur local (mode démonstration)', () => {
     await expect(db.invoke('assistant', { message: 'Bonjour à vous', conversation_id: 'inconnue' })).rejects.toThrow(/introuvable/);
   });
 
-  it('n’enregistre rien quand l’historique est désactivé', async () => {
-    await db.update('privacy_settings', { ai_history_enabled: false }, [eq('user_id', userId)]);
-    const res = await db.invoke<AskResponse>('assistant', { message: 'Combien de siestes à 1 an ?' });
-    expect(res.stored).toBe(false);
-    expect(res.message_id).toBeNull();
-    expect(res.structured).toBeTruthy();
-  });
-
-  it('bloque au-delà du quota gratuit avec un message premium', async () => {
-    await db.update('privacy_settings', { ai_history_enabled: true }, [eq('user_id', userId)]);
-    let err: unknown = null;
-    for (let i = 0; i < 6 && !err; i++) err = await db.invoke('assistant', { message: 'Comment calmer les pleurs du soir ?' }).then(() => null, (e) => e);
-    expect((err as BackendError).isPremiumRequired).toBe(true);
-    const [status] = await db.rpc<{ remaining: number }[]>('assistant_quota_status');
-    expect(status.remaining).toBe(0);
-  });
 });

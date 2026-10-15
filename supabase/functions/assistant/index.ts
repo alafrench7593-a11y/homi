@@ -6,18 +6,16 @@
 //  - JSON (application/json) : erreurs, orientation urgente, refus, ou réponse complète si stream=false ;
 //  - SSE (text/event-stream) si stream=true : événements « meta », « delta » ({ text }), puis « done »
 //    (même contenu que la réponse JSON complète) ou « error ».
-import { adminClient, corsHeaders, env, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { geminiConfig, geminiGenerate, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
 import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, sanitizeContext, type ArticleRef, type AssistantContext } from '../_shared/assistant-prompt.ts';
 import {
-  DEV_MODE_LABEL,
   INJECTION_REFUSAL,
   MAX_QUESTION_LENGTH,
-  devModeAnswer,
   encodeSse,
   isEmptyAnswer,
   looksLikePromptInjection,
-  parseSse,
   parseStructuredAnswer,
   structuredToMarkdown,
   todayIso,
@@ -25,7 +23,7 @@ import {
 } from '../_shared/assistant-format.ts';
 
 const APP_NAME = Deno.env.get('APP_NAME') ?? 'Toi & Moi';
-const MODEL = Deno.env.get('ASSISTANT_MODEL') || 'claude-sonnet-5-5';
+
 const MAX_HISTORY = 12;
 const MAX_TOKENS = 1400;
 
@@ -151,6 +149,13 @@ Deno.serve(async (req) => {
   }
 
   // 3) Quota (gratuit / premium), vérifié et réservé côté serveur
+  // L'IA n'est pas configurée : on le dit clairement, sans consommer de question ni simuler de réponse.
+  const geminiOrNull = geminiConfig();
+  if (!geminiOrNull) {
+    return json({ error: 'ai_not_configured', message: 'Assistant IA non configuré : la clé GEMINI_API_KEY doit être ajoutée aux secrets Supabase (voir README, section Assistant IA).' }, 503);
+  }
+  const gemini = geminiOrNull;
+
   const { data: quotaRows, error: quotaErr } = await admin.rpc('consume_assistant_quota', { p_user: user.id });
   if (quotaErr) return json({ error: 'server_error' }, 500);
   const quota = quotaRows?.[0];
@@ -196,8 +201,7 @@ Deno.serve(async (req) => {
     if (history.length && history[history.length - 1].role === 'user') history.pop();
   }
 
-  const apiKey = env('ANTHROPIC_API_KEY', false);
-  const devMode = !apiKey;
+  const devMode = false;
   const today = todayIso();
 
   /** Contrôle, structuration, filtrage des sources, enregistrement : réponse finale. */
@@ -217,25 +221,17 @@ Deno.serve(async (req) => {
       sources: articleRefs,
       safety: 'none' as const,
       demo: devMode,
-      dev_mode: devMode ? DEV_MODE_LABEL : undefined,
-      model: devMode ? null : MODEL,
+      model: gemini.model,
       quota: quotaOut,
       stored: !!saved.messageId,
     };
   }
 
-  const anthropicRequest = (stream: boolean) =>
-    fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: MAX_TOKENS,
-        stream,
-        system: buildSystemPrompt(APP_NAME, context, articles, today),
-        messages: [...history, { role: 'user', content: message }],
-      }),
-    });
+  const geminiRequest = {
+    system: buildSystemPrompt(APP_NAME, context, articles, today),
+    turns: [...history.map((h) => ({ role: h.role === 'assistant' ? 'model' : 'user', text: h.content }) as GeminiTurn), { role: 'user', text: message } as GeminiTurn],
+    maxOutputTokens: MAX_TOKENS,
+  };
 
   const unavailable = async () => {
     await admin.rpc('refund_assistant_quota', { p_user: user.id });
@@ -245,15 +241,12 @@ Deno.serve(async (req) => {
   // 7a) Réponse complète (sans diffusion)
   if (!wantsStream) {
     let raw: string;
-    if (devMode) raw = devModeAnswer(message, articles);
-    else {
-      const res = await anthropicRequest(false);
-      if (!res.ok) {
-        console.error('llm_error', res.status); // jamais le contenu
-        return json(await unavailable(), 503);
-      }
-      const out = await res.json();
-      raw = (out.content ?? []).filter((b: { type: string }) => b.type === 'text').map((b: { text: string }) => b.text).join('\n').trim();
+    try {
+      raw = (await geminiGenerate(gemini, geminiRequest)).trim();
+    } catch (e) {
+      console.error('llm_error', e instanceof GeminiError ? e.status : 'unknown'); // jamais le contenu
+      if (e instanceof GeminiError && e.blocked) return json(await finalize(''));
+      return json(await unavailable(), 503);
     }
     return json(await finalize(raw));
   }
@@ -279,39 +272,14 @@ Deno.serve(async (req) => {
       send('meta', { conversation_id: requestedConversation, quota: quotaOut, demo: devMode });
       let raw = '';
       try {
-        if (devMode) {
-          raw = devModeAnswer(message, articles);
-          for (const piece of raw.match(/[\s\S]{1,24}/g) ?? []) {
-            send('delta', { text: piece });
-            await new Promise((r) => setTimeout(r, 15));
-          }
-        } else {
-          const res = await anthropicRequest(true);
-          if (!res.ok || !res.body) {
-            console.error('llm_error', res.status);
-            send('error', await unavailable());
-            close();
-            return;
-          }
-          const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
-          let buffer = '';
-          for (;;) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            const parsed = parseSse(buffer + value);
-            buffer = parsed.rest;
-            for (const ev of parsed.events) {
-              if (ev.event === 'content_block_delta') {
-                const d = JSON.parse(ev.data);
-                if (d.delta?.type === 'text_delta' && typeof d.delta.text === 'string') {
-                  raw += d.delta.text;
-                  send('delta', { text: d.delta.text });
-                }
-              } else if (ev.event === 'error') {
-                throw new Error('llm_stream_error');
-              }
-            }
-          }
+        try {
+          await geminiStream(gemini, geminiRequest, (t) => {
+            raw += t;
+            send('delta', { text: t });
+          });
+        } catch (e) {
+          if (!(e instanceof GeminiError && e.blocked)) throw e;
+          raw = ''; // réponse bloquée : remplacée par la réponse prudente
         }
         send('done', await finalize(raw.trim()));
       } catch (e) {

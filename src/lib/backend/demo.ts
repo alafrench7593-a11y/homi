@@ -409,41 +409,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       return { raw: null, result: { conversation_id: convId, message_id: null, answer: structured.short, structured, safety: 'none', sources: [], stored: false, refused: true } };
     }
 
-    // 3) Quota
-    const month = new Date().toISOString().slice(0, 7);
-    const usage = T('assistant_usage');
-    let u = usage.find((x) => x.user_id === me && x.month === month);
-    if (!u) usage.push((u = { user_id: me, month, questions: 0 }));
-    const quota = limit('assistant_questions_per_month');
-    if (u.questions >= quota) throw new BackendError(`Vous avez utilisé vos ${quota} questions de ce mois.`, 'quota_reached', 'premium_required', 402);
-    u.questions += 1;
-
-    // 4) Articles liés + réponse « mode développement » au format structuré
-    const norm = (x: string) => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-    const words = norm(message).split(/[^a-z0-9]+/).filter((w) => w.length > 4);
-    const articles = T('articles')
-      .map((a) => ({ a, score: words.filter((w) => norm(`${a.title} ${a.summary} ${a.body_md}`).includes(w)).length }))
-      .filter((x) => x.score > 0)
-      .sort((x, y) => y.score - x.score)
-      .slice(0, 3)
-      .map((x) => x.a);
-    const raw = devModeAnswer(message, articles as { title: string; summary: string }[]);
-    const today = todayIso();
-    let structured = parseStructuredAnswer(raw, today);
-    const flags = auditAnswer(raw);
-    if (flags.length || isEmptyAnswer(structured)) {
-      structured = { ...structured, short: 'Je préfère ne pas répondre précisément : demandez l’avis d’un professionnel de santé.', actions: [], watch: [] };
-    }
-    const answer = structuredToMarkdown(structured) + ASSISTANT_FOOTER;
-    const sources = articles.map((a, i) => ({ ref: i + 1, title: a.title, slug: a.slug, sources: a.sources }));
-    const mid = store(answer, { sources, structured, flags });
-    return {
-      raw,
-      result: {
-        conversation_id: convId, message_id: mid, answer, structured, replaced: flags.length > 0, sources, safety: 'none', demo: true, dev_mode: DEV_MODE_LABEL, model: null,
-        quota: { used: u.questions, limit: quota, remaining: Math.max(0, quota - u.questions) }, stored: !!mid,
-      },
-    };
+    // 3) Pas d'IA sans serveur : on le dit clairement, sans réponse simulée ni question décomptée.
+    throw new BackendError('Assistant IA non disponible en mode démonstration : il nécessite Supabase et une clé Gemini côté serveur (voir README, section Assistant IA). L’orientation en cas d’urgence reste active.', 'ai_not_configured', undefined, 503);
   }
 
   // ---------------------------------------------------------------- fonctions backend simulées

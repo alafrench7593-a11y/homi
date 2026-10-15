@@ -1,9 +1,9 @@
 // Lecture automatique d'un document : extrait UNIQUEMENT les éléments clairement écrits
 // (date, terme, nom de l'examen, mesures, poids fœtal estimé), présentés « à vérifier ».
 // Aucune interprétation. POST { document_id }
+import { geminiConfig, geminiGenerate, GeminiError } from '../_shared/gemini.ts';
 import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser } from '../_shared/http.ts';
 
-const MODEL = Deno.env.get('EXTRACTION_MODEL') ?? 'claude-sonnet-5-5';
 
 const INSTRUCTIONS = `Tu transcris des informations EXPLICITEMENT écrites dans un document médical.
 Règles absolues :
@@ -37,26 +37,24 @@ Deno.serve(async (req) => {
   if (!doc) return json({ error: 'not_found' }, 404);
   if (doc.size_bytes > 10 * 1024 * 1024) return json({ error: 'too_large', message: 'Document trop volumineux pour la lecture automatique (10 Mo maximum).' }, 413);
 
-  const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
-  if (!apiKey) return json({ fields: null, status: 'unavailable', message: 'La lecture automatique n’est pas encore activée (aucun service connecté).' });
+  const gemini = geminiConfig();
+  if (!gemini) return json({ fields: null, status: 'not_configured', message: 'Lecture automatique non configurée : la clé GEMINI_API_KEY doit être ajoutée aux secrets Supabase.' });
 
   const { data: file, error } = await admin.storage.from('documents').download(doc.storage_path);
   if (error || !file) return json({ error: 'file_unavailable' }, 404);
   const data = toBase64(await file.arrayBuffer());
-  const source = { type: 'base64', media_type: doc.mime_type, data };
-  const block = doc.mime_type === 'application/pdf' ? { type: 'document', source } : { type: 'image', source };
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 600, system: INSTRUCTIONS, messages: [{ role: 'user', content: [block, { type: 'text', text: 'Transcris les champs demandés.' }] }] }),
-  });
-  if (!res.ok) {
-    console.error('extract_llm_error', res.status);
+  let text: string;
+  try {
+    text = await geminiGenerate(gemini, {
+      system: INSTRUCTIONS,
+      turns: [{ role: 'user', text: 'Transcris les champs demandés.' }],
+      images: [{ mimeType: doc.mime_type, base64: data }],
+      maxOutputTokens: 600,
+    });
+  } catch (e) {
+    console.error('extract_llm_error', e instanceof GeminiError ? e.status : 'unknown');
     return json({ error: 'unavailable' }, 503);
   }
-  const out = await res.json();
-  const text = (out.content ?? []).map((b: { text?: string }) => b.text ?? '').join('');
   let fields: unknown = null;
   try {
     fields = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
