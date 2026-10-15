@@ -77,6 +77,7 @@ describe('moteur local : parcours essentiels', () => {
 
   it('abonnement : quotas gratuits puis droits premium (mode test)', async () => {
     expect(await db.rpc('has_premium')).toBe(false);
+    await db.insert('consents', { purpose: 'ai_assistant', granted: true, version: '1' });
     for (let i = 0; i < 5; i++) await db.invoke('assistant', { message: 'Comment préparer la valise de maternité ?' });
     await expect(db.invoke('assistant', { message: 'Encore une question sur la valise' })).rejects.toThrow(/questions de ce mois/);
     await db.rpc('set_demo_subscription', { active: true, period: 'annual' });

@@ -100,7 +100,7 @@ Le script recadre en carré, réduit à 1024 px, convertit en WebP et régénèr
 ```bash
 npm run typecheck     # TypeScript strict
 npm test              # tests unitaires (dates, grossesse, rappels, sécurité de l'assistant, backend démo)
-npm run db:test       # tests de sécurité SQL/RLS sur un Postgres local (92 assertions)
+npm run db:test       # tests de sécurité SQL/RLS sur un Postgres local (121 assertions)
 npm run verify        # les trois
 ```
 
@@ -141,3 +141,31 @@ Supabase · Anthropic (assistant, extraction de documents) · RevenueCat · Expo
 - [ ] Tester sur appareils réels iOS et Android, avec VoiceOver/TalkBack et grandes tailles de texte.
 - [ ] Mettre en place la modération humaine de la communauté et la gestion des signalements.
 - [ ] Fiches stores : captures, description, classification d'âge, section « données collectées ».
+
+## Assistant IA
+
+L’onglet **Questions** (accessible depuis tous les parcours) est l’accueil de l’assistant : nouvelle conversation, idées de questions selon le parcours (contraception, projet bébé, grossesse, bébé, enfant, famille), questions restantes, réponses favorites et historique privé (suppression d’une conversation ou de tout l’historique). L’écran de conversation est `src/app/assistant/chat.tsx`.
+
+**Ce que fait l’assistant**
+- Chaque conversation commence par : « Vous échangez avec un assistant d’intelligence artificielle spécialisé dans l’information en santé et parentalité. Il ne remplace pas un médecin, une sage-femme, un pédiatre ou les services d’urgence. »
+- Réponses en français, **structurées** : *En bref*, *Ce que vous pouvez faire*, *À surveiller*, *Quand demander un avis professionnel*, *Pour mieux vous répondre* (questions courtes si une information manque), *Sources* et date de mise à jour. Le serveur **supprime toute source** qui n’est pas sur la liste des sites officiels autorisés (`ALLOWED_SOURCE_DOMAINS` dans `supabase/functions/_shared/assistant-format.ts` : ameli.fr, sante.gouv.fr, has-sante.fr, santepubliquefrance.fr, mpedia.fr, 1000-premiers-jours.fr, service-public.fr, 3114.fr…).
+- **Urgences** : `assessSafety` (`_shared/safety.ts`) détecte les signaux d’alerte (détresse respiratoire, saignement, perte des eaux, contractions avant terme, pré-éclampsie, phlébite, fièvre après l’accouchement, nourrisson mou ou fébrile, purpura, idées suicidaires…) **avant tout appel à l’IA** et renvoie une carte d’orientation gratuite : 15, 112, 3114 (détresse psychologique), 114 par SMS (personnes sourdes ou malentendantes).
+- **Contexte** (parcours, phase estimée du cycle, semaine de grossesse, grossesse multiple, âge des enfants, quelques données saisies sous forme de nombres) envoyé **uniquement si la personne l’active** pour la conversation (choix mémorisé dans `assistant_conversations.context_enabled`), puis nettoyé côté serveur (`sanitizeContext` : listes fermées et nombres bornés, aucun texte libre).
+- Consignes (`_shared/assistant-prompt.ts`) : jamais de diagnostic, de prescription, de dose, d’interprétation seule d’une analyse/échographie/photo, de promesse de sécurité, de « consultation inutile », ni de source inventée ; refus poli hors sujet ; données encadrées par des balises et traitées comme des données. Les réponses sont contrôlées (`auditAnswer`) et remplacées par une version prudente si nécessaire.
+- **Diffusion progressive** : la fonction relaie en Server-Sent Events le flux de l’API Anthropic (`stream: true`) ; l’app affiche le texte au fur et à mesure (`fetch` du navigateur sur le web, `expo/fetch` sur iOS/Android) et bascule sans diffusion si le flux n’est pas lisible.
+- **Retours « Utile / Pas utile »** dans `assistant_feedback` (RLS : propriétaire uniquement, seulement sur ses propres réponses), **favoris** (`assistant_messages.saved`), **quota** gratuit/premium vérifié par le serveur (`consume_assistant_quota`, 5 puis 300 questions par mois selon `plan_limits`), affiché via `assistant_quota_status()` avec bandeau premium quand il est atteint. Une question est rendue (`refund_assistant_quota`) si le service d’IA échoue.
+- **Protection** : JWT vérifié, lectures sous RLS avec le client de l’utilisateur, limite de débit (8/min, 120/jour), 2 000 caractères maximum, détection des tentatives de détournement (refus sans consommer de question). Les conversations ne sont **jamais publiées** dans la communauté.
+
+**Configuration (secrets serveur, jamais dans l’app)**
+```bash
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-...            # clé IA (obligatoire pour de vraies réponses)
+supabase secrets set ASSISTANT_MODEL=claude-sonnet-5-5        # optionnel (valeur par défaut)
+supabase secrets set APP_NAME="Toi & Moi"                     # optionnel
+supabase db push                                              # applique 20261016000400_assistant_feedback.sql
+supabase functions deploy assistant                           # vérification du JWT activée (par défaut)
+```
+`SUPABASE_URL`, `SUPABASE_ANON_KEY` et `SUPABASE_SERVICE_ROLE_KEY` sont fournies automatiquement aux fonctions par Supabase.
+
+**Sans clé IA** : la fonction répond en **« Mode développement : aucune clé IA configurée »**, avec une réponse au format structuré (diffusée en continu) pour tester l’affichage de bout en bout. En mode démo (sans Supabase), le moteur local fait de même, avec diffusion simulée, retours, favoris, quota et orientation urgente.
+
+Tests : `npm test` (`src/__tests__/assistant.test.ts`, `safety.test.ts`) et `npm run db:test` (`supabase/tests/sql/33_assistant.sql`).

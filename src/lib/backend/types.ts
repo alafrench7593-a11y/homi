@@ -60,6 +60,14 @@ export interface Backend {
   remove(table: string, filters: Filter[]): Promise<void>;
   rpc<T>(fn: string, args?: Record<string, unknown>): Promise<T>;
   invoke<T>(fn: string, body: unknown): Promise<T>;
+  /**
+   * Appel d'une fonction backend en diffusion continue (Server-Sent Events).
+   * `onEvent` reçoit chaque événement intermédiaire (« meta », « delta »…) ;
+   * la promesse se résout avec l'événement final « done » (ou la réponse JSON
+   * si le serveur a répondu sans diffusion, par exemple une orientation urgente).
+   * Sur les plateformes sans flux lisible, bascule automatiquement sans diffusion.
+   */
+  invokeStream<T>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void): Promise<T>;
 }
 
 export const eq = (col: string, value: unknown): Filter => ({ col, op: 'eq', value });
