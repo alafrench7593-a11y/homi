@@ -45,7 +45,7 @@ const config: ExpoConfig = {
   ],
   experiments: { typedRoutes: true },
   extra: {
-    eas: { projectId: process.env.EAS_PROJECT_ID },
+    eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID },
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
   },

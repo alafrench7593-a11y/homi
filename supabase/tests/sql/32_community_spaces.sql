@@ -1,8 +1,8 @@
 -- Communauté : espaces ouverts à toutes et tous, réponses en fil + notifications,
 -- blocage, recherche plein texte, pseudonyme non identifiant.
-\set INES '55555555-5555-4555-8555-555555555555'
-\set HUGO '66666666-6666-4666-8666-666666666666'
-\set LEA  '77777777-7777-4777-8777-777777777777'
+\set INES 'a5a5a5a5-5555-4555-8555-555555555555'
+\set HUGO 'a6a6a6a6-6666-4666-8666-666666666666'
+\set LEA  'a7a7a7a7-7777-4777-8777-777777777777'
 
 reset role;
 insert into auth.users (id, email) values
@@ -22,7 +22,7 @@ select tests.ok((select bool_and(is_local = (slug = 'rencontres-locales')) from 
 -- Pseudonyme obligatoire, jamais le prénom
 select tests.throws($$insert into public.posts (forum_id, title, body) values ((select id from public.forums where slug='parents-bebes'), 'Sans pseudo', 'Message')$$,
   'pseudonyme : requis avant de publier');
-select tests.throws($$insert into public.community_profiles (user_id, pseudonym) values ('55555555-5555-4555-8555-555555555555', 'inès')$$,
+select tests.throws($$insert into public.community_profiles (user_id, pseudonym) values ('a5a5a5a5-5555-4555-8555-555555555555', 'inès')$$,
   'pseudonyme : le prénom du profil est refusé');
 insert into public.community_profiles (user_id, pseudonym) values (auth.uid(), 'Ines_en_projet');
 
@@ -37,7 +37,7 @@ select tests.ok(tests.count($$select * from public.forum_feed where area_label =
 reset role;
 
 set role authenticated; set request.jwt.claim.sub = :'HUGO';
-select tests.throws($$insert into public.community_profiles (user_id, pseudonym) values ('66666666-6666-4666-8666-666666666666', 'hugo.martin')$$,
+select tests.throws($$insert into public.community_profiles (user_id, pseudonym) values ('a6a6a6a6-6666-4666-8666-666666666666', 'hugo.martin')$$,
   'pseudonyme : l''identifiant de l''adresse e-mail est refusé');
 insert into public.community_profiles (user_id, pseudonym) values (auth.uid(), 'PapaHugo');
 select tests.ok(tests.count($$select * from public.forum_feed where title = 'Question d’une future maman'$$) = 1, 'espaces : un parent d''enfant voit la publication de l''espace « Parents de bébés »');

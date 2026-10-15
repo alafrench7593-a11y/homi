@@ -12,8 +12,8 @@ import { Platform } from 'react-native';
 import Purchases, { type PurchasesPackage } from 'react-native-purchases';
 import { backend } from './backend';
 
-const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY;
-const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
+const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_APPLE_KEY;
+const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY;
 const apiKey = Platform.OS === 'ios' ? IOS_KEY : Platform.OS === 'android' ? ANDROID_KEY : undefined;
 
 export type PurchaseMode = 'store' | 'test' | 'unavailable';

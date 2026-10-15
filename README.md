@@ -59,7 +59,7 @@ Aperçu web : `npx expo start --web`.
 3. Copiez `.env.example` en `.env` et renseignez `EXPO_PUBLIC_SUPABASE_URL` et `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
 4. Déployez les fonctions et leurs secrets :
    ```bash
-   supabase secrets set ANTHROPIC_API_KEY=... REVENUECAT_WEBHOOK_SECRET=... REVENUECAT_SECRET_API_KEY=... EXPO_ACCESS_TOKEN=...
+   supabase secrets set GEMINI_API_KEY=... GEMINI_MODEL=... OPENFOODFACTS_USER_AGENT=... REVENUECAT_WEBHOOK_SECRET=... EXPO_ACCESS_TOKEN=... RESEND_API_KEY=... RESEND_FROM_EMAIL=...
    supabase functions deploy assistant revenuecat-webhook delete-account send-push product-lookup document-extract
    ```
 5. Auth › URL configuration : ajoutez `toietmoi://auth/callback` aux URL de redirection.
@@ -78,14 +78,14 @@ En local : `supabase start` puis utilisez l'URL/clé affichées.
 ## 4. Notifications
 
 - **Locales** (rappels biberon, vitamines, rendez-vous…) : programmées sur l'appareil par `syncLocalReminders` ; fonctionnent sans serveur. iOS limite à 64 notifications en attente : l'app planifie au plus près.
-- **Push** (réponse à un post, rappel produit, messages de l'équipe) : nécessitent `EAS_PROJECT_ID` (via `eas init`), un build de développement ou de production (pas Expo Go sur Android), et `EXPO_ACCESS_TOKEN` côté fonctions. Les jetons sont enregistrés dans `push_devices`, l'envoi passe par la fonction `send-push`.
+- **Push** (réponse à un post, rappel produit, messages de l'équipe) : nécessitent `EXPO_PUBLIC_EAS_PROJECT_ID` (via `eas init`), un build de développement ou de production (pas Expo Go sur Android), et `EXPO_ACCESS_TOKEN` côté fonctions. Les jetons sont enregistrés dans `push_devices`, l'envoi passe par la fonction `send-push`.
 - Android : configurez FCM (`eas credentials`). iOS : clé APNs gérée par EAS.
 
 ## 5. Abonnements (RevenueCat)
 
 1. Créez les produits dans App Store Connect / Google Play : `toietmoi_premium_monthly` (5,99 €) et `toietmoi_premium_annual` (39,99 €, 7 jours d'essai).
 2. Dans RevenueCat : entitlement `premium`, offering par défaut avec ces deux produits.
-3. Renseignez les clés publiques `EXPO_PUBLIC_REVENUECAT_IOS_KEY` / `_ANDROID_KEY`.
+3. Renseignez les clés publiques `EXPO_PUBLIC_REVENUECAT_APPLE_KEY` / `EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY`.
 4. Webhook RevenueCat → `https://<ref>.supabase.co/functions/v1/revenuecat-webhook`, en-tête `Authorization: Bearer <REVENUECAT_WEBHOOK_SECRET>`.
 
 Sans clés, l'achat est indisponible (Expo Go) ou simulé en mode démo. **Ce qui reste toujours gratuit** : urgences (15, 112, 3114, 119, 3919, 114), réponses de sécurité de l'assistant, suivi quotidien de base, bilan d'humeur.
@@ -93,7 +93,7 @@ Sans clés, l'achat est indisponible (Expo Go) ou simulé en mode démo. **Ce qu
 ## 6. Builds
 
 ```bash
-eas init                                   # crée le projet EAS et renseigne EAS_PROJECT_ID
+eas init                                   # crée le projet EAS → copiez l’ID dans EXPO_PUBLIC_EAS_PROJECT_ID
 eas build --profile development --platform ios|android   # client de développement
 eas build --profile preview --platform android            # APK à partager
 eas build --profile production --platform all
@@ -142,7 +142,7 @@ scripts/          outils (import des illustrations)
 
 ## 11. Services externes
 
-Supabase · Anthropic (assistant, extraction de documents) · RevenueCat · Expo/EAS (builds, push) · Apple App Store / Google Play · Open Food Facts / Open Beauty Facts (scanner, optionnel).
+Supabase · Gemini API (assistant, explication du scanner, lecture de documents) · Resend (e-mails) · RevenueCat · Expo/EAS (builds, push) · Apple App Store / Google Play · Open Food Facts / Open Beauty Facts (scanner, optionnel).
 
 ## 12. Avant la mise en ligne
 
@@ -166,20 +166,20 @@ L’onglet **Questions** (accessible depuis tous les parcours) est l’accueil d
 - **Urgences** : `assessSafety` (`_shared/safety.ts`) détecte les signaux d’alerte (détresse respiratoire, saignement, perte des eaux, contractions avant terme, pré-éclampsie, phlébite, fièvre après l’accouchement, nourrisson mou ou fébrile, purpura, idées suicidaires…) **avant tout appel à l’IA** et renvoie une carte d’orientation gratuite : 15, 112, 3114 (détresse psychologique), 114 par SMS (personnes sourdes ou malentendantes).
 - **Contexte** (parcours, phase estimée du cycle, semaine de grossesse, grossesse multiple, âge des enfants, quelques données saisies sous forme de nombres) envoyé **uniquement si la personne l’active** pour la conversation (choix mémorisé dans `assistant_conversations.context_enabled`), puis nettoyé côté serveur (`sanitizeContext` : listes fermées et nombres bornés, aucun texte libre).
 - Consignes (`_shared/assistant-prompt.ts`) : jamais de diagnostic, de prescription, de dose, d’interprétation seule d’une analyse/échographie/photo, de promesse de sécurité, de « consultation inutile », ni de source inventée ; refus poli hors sujet ; données encadrées par des balises et traitées comme des données. Les réponses sont contrôlées (`auditAnswer`) et remplacées par une version prudente si nécessaire.
-- **Diffusion progressive** : la fonction relaie en Server-Sent Events le flux de l’API Anthropic (`stream: true`) ; l’app affiche le texte au fur et à mesure (`fetch` du navigateur sur le web, `expo/fetch` sur iOS/Android) et bascule sans diffusion si le flux n’est pas lisible.
+- **Diffusion progressive** : la fonction relaie en Server-Sent Events le flux de l’API Gemini (`streamGenerateContent?alt=sse`, client `_shared/gemini.ts`) ; l’app affiche le texte au fur et à mesure (`fetch` du navigateur sur le web, `expo/fetch` sur iOS/Android) et bascule sans diffusion si le flux n’est pas lisible.
 - **Retours « Utile / Pas utile »** dans `assistant_feedback` (RLS : propriétaire uniquement, seulement sur ses propres réponses), **favoris** (`assistant_messages.saved`), **quota** gratuit/premium vérifié par le serveur (`consume_assistant_quota`, 5 puis 300 questions par mois selon `plan_limits`), affiché via `assistant_quota_status()` avec bandeau premium quand il est atteint. Une question est rendue (`refund_assistant_quota`) si le service d’IA échoue.
 - **Protection** : JWT vérifié, lectures sous RLS avec le client de l’utilisateur, limite de débit (8/min, 120/jour), 2 000 caractères maximum, détection des tentatives de détournement (refus sans consommer de question). Les conversations ne sont **jamais publiées** dans la communauté.
 
 **Configuration (secrets serveur, jamais dans l’app)**
 ```bash
-supabase secrets set ANTHROPIC_API_KEY=sk-ant-...            # clé IA (obligatoire pour de vraies réponses)
-supabase secrets set ASSISTANT_MODEL=claude-sonnet-5-5        # optionnel (valeur par défaut)
+supabase secrets set GEMINI_API_KEY=...                       # clé Google AI Studio (aistudio.google.com › Get API key)
+supabase secrets set GEMINI_MODEL=gemini-3.5-flash-lite       # optionnel (valeur par défaut)
 supabase secrets set APP_NAME="Toi & Moi"                     # optionnel
 supabase db push                                              # applique 20261016000400_assistant_feedback.sql
 supabase functions deploy assistant                           # vérification du JWT activée (par défaut)
 ```
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` et `SUPABASE_SERVICE_ROLE_KEY` sont fournies automatiquement aux fonctions par Supabase.
 
-**Sans clé IA** : la fonction répond en **« Mode développement : aucune clé IA configurée »**, avec une réponse au format structuré (diffusée en continu) pour tester l’affichage de bout en bout. En mode démo (sans Supabase), le moteur local fait de même, avec diffusion simulée, retours, favoris, quota et orientation urgente.
+**Sans clé IA** : aucune réponse n’est simulée. La fonction renvoie l’erreur explicite `ai_not_configured` (« Assistant IA non configuré… ») sans décompter de question. En mode démo (sans Supabase), l’assistant affiche le même message ; seule l’orientation en cas d’urgence (règles locales, sans IA) reste active.
 
 Tests : `npm test` (`src/__tests__/assistant.test.ts`, `safety.test.ts`) et `npm run db:test` (`supabase/tests/sql/33_assistant.sql`).

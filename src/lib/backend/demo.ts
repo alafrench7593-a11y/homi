@@ -24,7 +24,19 @@ const KEY = 'toietmoi.demo.v1';
 /** Version des exemples de la communauté : l'augmenter ajoute les nouveaux exemples aux appareils existants. */
 const COMMUNITY_SEED_VERSION = 2;
 const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_resources', 'foods', 'baby_names', 'products', 'product_recalls', 'plan_limits'] as const;
-const CHILD_TABLES = ['child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations'];
+const CHILD_TABLES = ['child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers'];
+
+/** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
+function checkBottleTimer(all: Row[], r: Row) {
+  if (!Number.isInteger(r.interval_minutes) || r.interval_minutes < 10 || r.interval_minutes > 720) throw new BackendError('Le délai doit être compris entre 10 minutes et 12 heures.');
+  if (!r.last_bottle_at || !r.due_at || r.due_at <= r.last_bottle_at) throw new BackendError('Le rappel doit être prévu après le dernier biberon.');
+  if (Date.parse(r.due_at) - Date.parse(r.last_bottle_at) > 2 * 86400_000) throw new BackendError('Rappel trop éloigné du dernier biberon.');
+  if (r.planned_ml != null && (!Number.isInteger(r.planned_ml) || r.planned_ml < 0 || r.planned_ml > 500)) throw new BackendError('Quantité attendue entre 0 et 500 ml.');
+  if (!['active', 'cancelled', 'done'].includes(r.status)) throw new BackendError('Statut de minuteur invalide.');
+  if (r.status === 'active' && all.some((x) => x !== r && x.id !== r.id && x.child_id === r.child_id && x.status === 'active')) {
+    throw new BackendError('Un minuteur est déjà actif pour cet enfant.', '23505');
+  }
+}
 const OWNER_TABLES: Record<string, string> = {
   period_entries: 'user_id', symptom_logs: 'user_id', ovulation_tests: 'user_id', pregnancy_tests: 'user_id', maternal_weights: 'user_id',
   mood_checkins: 'user_id', reminders: 'user_id', favorites: 'user_id', product_scans: 'user_id', push_devices: 'user_id',
@@ -265,6 +277,14 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       r.status = 'open';
     }
     if (table === 'reminders') r.updated_at = nowIso();
+    if (table === 'bottle_timers') {
+      r.status ??= 'active';
+      r.planned_ml ??= null;
+      r.bottle_id ??= null;
+      r.updated_at = nowIso();
+      checkBottleTimer(T('bottle_timers'), r);
+    }
+    if (table === 'bottles') r.planned_next_ml ??= null;
     if (table === 'parent_sleep_logs') {
       // Même règles que la base : une entrée par jour, réveil après le coucher
       if (T(table).some((x) => x.user_id === r.user_id && x.log_date === r.log_date)) throw new BackendError('Une nuit est déjà enregistrée pour ce jour : modifiez-la plutôt.');
@@ -409,41 +429,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       return { raw: null, result: { conversation_id: convId, message_id: null, answer: structured.short, structured, safety: 'none', sources: [], stored: false, refused: true } };
     }
 
-    // 3) Quota
-    const month = new Date().toISOString().slice(0, 7);
-    const usage = T('assistant_usage');
-    let u = usage.find((x) => x.user_id === me && x.month === month);
-    if (!u) usage.push((u = { user_id: me, month, questions: 0 }));
-    const quota = limit('assistant_questions_per_month');
-    if (u.questions >= quota) throw new BackendError(`Vous avez utilisé vos ${quota} questions de ce mois.`, 'quota_reached', 'premium_required', 402);
-    u.questions += 1;
-
-    // 4) Articles liés + réponse « mode développement » au format structuré
-    const norm = (x: string) => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-    const words = norm(message).split(/[^a-z0-9]+/).filter((w) => w.length > 4);
-    const articles = T('articles')
-      .map((a) => ({ a, score: words.filter((w) => norm(`${a.title} ${a.summary} ${a.body_md}`).includes(w)).length }))
-      .filter((x) => x.score > 0)
-      .sort((x, y) => y.score - x.score)
-      .slice(0, 3)
-      .map((x) => x.a);
-    const raw = devModeAnswer(message, articles as { title: string; summary: string }[]);
-    const today = todayIso();
-    let structured = parseStructuredAnswer(raw, today);
-    const flags = auditAnswer(raw);
-    if (flags.length || isEmptyAnswer(structured)) {
-      structured = { ...structured, short: 'Je préfère ne pas répondre précisément : demandez l’avis d’un professionnel de santé.', actions: [], watch: [] };
-    }
-    const answer = structuredToMarkdown(structured) + ASSISTANT_FOOTER;
-    const sources = articles.map((a, i) => ({ ref: i + 1, title: a.title, slug: a.slug, sources: a.sources }));
-    const mid = store(answer, { sources, structured, flags });
-    return {
-      raw,
-      result: {
-        conversation_id: convId, message_id: mid, answer, structured, replaced: flags.length > 0, sources, safety: 'none', demo: true, dev_mode: DEV_MODE_LABEL, model: null,
-        quota: { used: u.questions, limit: quota, remaining: Math.max(0, quota - u.questions) }, stored: !!mid,
-      },
-    };
+    // 3) Pas d'IA sans serveur : on le dit clairement, sans réponse simulée ni question décomptée.
+    throw new BackendError('Assistant IA non disponible en mode démonstration : il nécessite Supabase et une clé Gemini côté serveur (voir README, section Assistant IA). L’orientation en cas d’urgence reste active.', 'ai_not_configured', undefined, 503);
   }
 
   // ---------------------------------------------------------------- fonctions backend simulées
@@ -681,11 +668,16 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       for (const r of rows) {
         if (table === 'community_profiles' && patch.pseudonym != null) checkPseudonym({ ...patch, user_id: r.user_id }, false);
         if (table === 'sleeps' && patch.ended_at && patch.ended_at < r.started_at) throw new BackendError('La fin du sommeil ne peut pas précéder son début.');
+        if (table === 'bottle_timers') checkBottleTimer(T(table), { ...r, ...patch, id: r.id });
+        if (table === 'bottles') {
+          const next = { ...r, ...patch };
+          if (next.prepared_ml != null && next.consumed_ml != null && next.consumed_ml > next.prepared_ml) throw new BackendError('La quantité bue ne peut pas dépasser la quantité préparée.');
+        }
         if (table === 'parent_sleep_logs') {
           if (r.user_id !== state.session?.userId) continue;
           if (patch.log_date && T(table).some((x) => x.id !== r.id && x.user_id === r.user_id && x.log_date === patch.log_date)) throw new BackendError('Une nuit est déjà enregistrée pour ce jour : modifiez-la plutôt.');
         }
-        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'parent_sleep_logs', 'contraception_methods', 'consultation_questions'].includes(table) ? { updated_at: nowIso() } : {});
+        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'parent_sleep_logs', 'contraception_methods', 'consultation_questions', 'bottle_timers'].includes(table) ? { updated_at: nowIso() } : {});
       }
       persist();
       return JSON.parse(JSON.stringify(rows)) as R[];
@@ -703,6 +695,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       }
       // Suppressions en cascade principales
       if (table === 'children') for (const t of CHILD_TABLES) state.tables[t] = T(t).filter((r) => !removed.some((c) => c.id === r.child_id));
+      // bottle_timers.bottle_id : on delete set null
+      if (table === 'bottles') T('bottle_timers').forEach((x) => { if (removed.some((b) => b.id === x.bottle_id)) x.bottle_id = null; });
       if (table === 'checklists') state.tables.checklist_items = T('checklist_items').filter((i) => !removed.some((c) => c.id === i.checklist_id));
       if (table === 'assistant_conversations') {
         const gone = new Set(T('assistant_messages').filter((m) => removed.some((c) => c.id === m.conversation_id)).map((m) => m.id));
