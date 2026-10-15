@@ -44,7 +44,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
             <Text style={{ fontFamily: fonts.display, fontSize: 92, lineHeight: 90, letterSpacing: -5 }}>{p.weeksSA}</Text>
             <Text variant="heading" color={t.colors.primary} style={{ marginBottom: 12, marginLeft: 4 }}>SA{p.extraDays ? ` +${p.extraDays} j` : ''}</Text>
           </View>
-          <Text variant="small" muted>Trimestre {p.trimester} · {p.weeksSG} semaines de grossesse</Text>
+          <Text variant="small" muted style={{ maxWidth: '52%' }}>Trimestre {p.trimester} · {p.weeksSG} semaines de grossesse</Text>
           <View style={{ position: 'absolute', right: -14, top: 34, flexDirection: 'row' }} pointerEvents="none">
             {Array.from({ length: n }, (_, i) => (
               <View key={i} style={{ marginLeft: i ? -orbSize * 0.35 : 0 }}><FetusArt week={p.weeksSA} growth={info.growth} size={orbSize} hue={ORB_HUES[i % 3]} interactive={false} accessibilityLabel={`Illustration artistique ${babies?.[i]?.nickname ? 'de ' + babies[i].nickname : 'du bébé'}, pas une échographie`} /></View>
