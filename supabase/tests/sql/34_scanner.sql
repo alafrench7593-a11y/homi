@@ -11,7 +11,7 @@
 \set SCAN1 'c5c5c5c5-0000-4000-8000-000000000101'
 \set SCAN2 'c5c5c5c5-0000-4000-8000-000000000102'
 
-insert into auth.users (id, email) values (:'LEA', 'lea@exemple.test'), (:'HUGO', 'hugo@exemple.test'), (:'NOAM', 'noam@exemple.test');
+insert into auth.users (id, email) values (:'LEA', 'lea.scanner@exemple.test'), (:'HUGO', 'hugo.scanner@exemple.test'), (:'NOAM', 'noam.scanner@exemple.test');
 insert into public.households (id, name, created_by) values (:'FA', 'Foyer de Léa', :'LEA'), (:'FB', 'Foyer de Noam', :'NOAM');
 insert into public.household_members (household_id, user_id, role, can_view, can_edit) values
  (:'FA', :'HUGO', 'coparent', array['daily','health','documents','pregnancy','lists','names','profile'], array['daily','health']);

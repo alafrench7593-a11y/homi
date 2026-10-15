@@ -37,6 +37,16 @@ export function useScanProfileOptions(): ProfileOption[] {
   }, [pregnancy, children]);
 }
 
+/** Profils génériques (sans lien avec un membre du foyer). L'âge exact est demandé pour bébé et enfant. */
+export const GENERIC_PROFILES: { key: string; label: string; kind: ScanProfile['kind']; needsAge: boolean }[] = [
+  { key: 'g:pregnant', label: 'Personne enceinte', kind: 'pregnant', needsAge: false },
+  { key: 'g:breastfeeding', label: 'Personne qui allaite', kind: 'breastfeeding', needsAge: false },
+  { key: 'g:newborn', label: 'Nouveau-né (moins d’un mois)', kind: 'newborn', needsAge: false },
+  { key: 'g:baby', label: 'Bébé (moins de 3 ans)', kind: 'baby', needsAge: true },
+  { key: 'g:child', label: 'Enfant (3 ans et plus)', kind: 'child', needsAge: true },
+  { key: 'g:adult', label: 'Adulte', kind: 'adult', needsAge: false },
+];
+
 // ---------------------------------------------------------------- historique
 export function useScanHistory(kind?: ScanKind) {
   const userId = useUserId();
@@ -104,7 +114,7 @@ export function useScanQuota() {
 
 // ---------------------------------------------------------------- recherche, rappels
 export function useLookupBarcode() {
-  return useMutation({ mutationFn: (barcode: string) => backend.invoke<LookupResponse>('product-lookup', { barcode }) });
+  return useMutation({ mutationFn: (a: { barcode: string; kind: ScanKind }) => backend.invoke<LookupResponse>('product-lookup', { barcode: a.barcode, kind: a.kind }) });
 }
 
 export function useSearchProducts() {

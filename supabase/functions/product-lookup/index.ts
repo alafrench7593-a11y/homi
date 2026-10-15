@@ -5,73 +5,45 @@
 // POST { action: 'recalls', barcode?, brand?, name? } → rappels RappelConso pour CE produit (cache product_recalls)
 // POST { action: 'recall_watch' }                  → vérifie les rappels des produits de l'historique et des favoris
 //
-// Variables : OPEN_FACTS_ENABLED=true, OPENFOODFACTS_USER_AGENT="ToiEtMoi/1.0 (contact@…)",
-//             RAPPELCONSO_ENABLED (défaut true), RAPPELCONSO_DATASET (défaut rappelconso-v2-gtin-espaces).
+// Variables : OPENFOODFACTS_USER_AGENT="ToiEtMoi/1.0 (contact@votre-domaine)" (active Open Food / Beauty / Products Facts ;
+//             OPEN_FACTS_ENABLED=false pour les couper), RAPPELCONSO_ENABLED (défaut true),
+//             RAPPELCONSO_DATASET (défaut rappelconso-v2-gtin-espaces).
 // Sans base réelle connectée, la réponse le dit explicitement (`database: 'not_connected'`) : aucun résultat n'est inventé.
 import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shared/http.ts';
 import { assessProduct, type ProductData, type ScanContext } from '../_shared/product-rules.ts';
-import { normalizeOpenFacts, normalizeSearch, productUrl, searchUrl, type NormalizedProduct, type OpenFactsKind } from '../_shared/open-facts.ts';
-import { matchRecalls, parseRecallRecords, rappelConsoUrl, recallRow, sameGtin } from '../_shared/rappelconso.ts';
+import { fromProductRow, lookupOpenFacts, searchOpenFacts, type NormalizedProduct } from '../_shared/open-facts.ts';
+import { fetchRecallRecords, matchRecalls, recallRow, sameGtin } from '../_shared/rappelconso.ts';
 
 // deno-lint-ignore no-explicit-any
 type Any = any;
 
 const today = () => new Date().toISOString().slice(0, 10);
-const openFactsEnabled = () => Deno.env.get('OPEN_FACTS_ENABLED') === 'true';
-const userAgent = () => Deno.env.get('OPENFOODFACTS_USER_AGENT') || Deno.env.get('OPEN_FACTS_USER_AGENT') || 'ToiEtMoi/1.0 (contact@toietmoi.app)';
+/** User-Agent exigé par Open Food Facts (« NomApp/Version (contact) ») : sans lui, les bases Open Facts ne sont pas interrogées. */
+const userAgent = () => (Deno.env.get('OPENFOODFACTS_USER_AGENT') ?? '').trim();
+const openFactsEnabled = () => userAgent().length > 0 && Deno.env.get('OPEN_FACTS_ENABLED') !== 'false';
 const recallsEnabled = () => Deno.env.get('RAPPELCONSO_ENABLED') !== 'false';
 
-async function getJson(url: string, timeoutMs = 8000): Promise<unknown | null> {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, { headers: { 'User-Agent': userAgent(), Accept: 'application/json' }, signal: ctrl.signal });
-    if (!res.ok) {
-      console.error('lookup_http', new URL(url).host, res.status);
-      return null;
-    }
-    return await res.json();
-  } catch (e) {
-    console.error('lookup_fetch', new URL(url).host, (e as Error).name);
-    return null;
-  } finally {
-    clearTimeout(t);
-  }
-}
-
-/** Ligne de la table products → forme normalisée commune. */
+/** Ligne de la table products → forme normalisée commune (+ ligne d'origine pour l'évaluation historique). */
 function fromLocal(p: Any): Any {
-  const ingredients = p.ingredients_text ?? (Array.isArray(p.ingredients) ? p.ingredients.join(', ') : null);
-  return {
-    id: p.id,
-    barcode: p.barcode, name: p.name, brand: p.brand, image_url: p.image_url ?? null, ingredients_text: ingredients,
-    allergens: p.declared_allergens ?? [], categories: [], precautions_text: p.precautions_text ?? null, period_after_opening: p.period_after_opening ?? null,
-    nutrition: p.nutrition ?? null,
-    labels: { rawMilk: p.attributes?.raw_milk ?? null, alcohol: p.attributes?.alcohol ?? null, caffeine: null, sweeteners: null },
-    kind: p.category === 'food' || p.category === 'drink' ? 'food' : 'product',
-    product_type: p.product_type ?? null,
-    data_source: p.data_source, source_url: p.source_url ?? '', data_retrieved_at: String(p.data_retrieved_at).slice(0, 10), last_modified: null,
-    collaborative: /collaborati/i.test(String(p.data_source ?? '')), is_demo: p.is_demo === true,
-    legacy: p,
-  } as Any;
+  return { ...fromProductRow(p), legacy: p };
 }
 
-async function fromOpenFacts(barcode: string): Promise<NormalizedProduct | null> {
+async function fromOpenFacts(barcode: string, hint?: unknown): Promise<NormalizedProduct | null> {
   if (!openFactsEnabled()) return null;
-  for (const kind of ['food', 'beauty', 'products'] as OpenFactsKind[]) {
-    const out = normalizeOpenFacts(await getJson(productUrl(kind, barcode)), kind, barcode, today());
-    if (out) return out;
-  }
-  return null;
+  return await lookupOpenFacts(barcode, { userAgent: userAgent(), today: today(), hint });
 }
 
 async function checkRecalls(admin: Any, product: { barcode?: string | null; brand?: string | null; name?: string | null }) {
-  const status = { checked: false, source: 'RappelConso', error: null as string | null };
+  const status = { checked: false, source: 'RappelConso', error: null as string | null, checkedOn: today() };
   const terms = [product.barcode, product.brand && product.name ? `${product.brand} ${product.name}` : null].filter(Boolean) as string[];
+  if (!recallsEnabled()) status.error = 'La vérification RappelConso est désactivée sur ce serveur (RAPPELCONSO_ENABLED=false).';
+  else if (!terms.length) status.error = 'Ni code-barres ni marque et nom : la vérification des rappels n’est pas possible.';
   if (recallsEnabled() && terms.length) {
     const dataset = Deno.env.get('RAPPELCONSO_DATASET') || undefined;
-    const records = (await Promise.all(terms.map((t) => getJson(rappelConsoUrl(t, { dataset }))))).flatMap((p) => (p ? parseRecallRecords(p) : []));
-    status.checked = true;
+    // Vérification réputée faite seulement si la base officielle a répondu à toutes les requêtes
+    const { records, checked } = await fetchRecallRecords(terms, { dataset });
+    status.checked = checked;
+    if (!status.checked) status.error = 'La base officielle RappelConso n’a pas pu être consultée. Réessayez plus tard ou consultez rappel.conso.gouv.fr.';
     const matches = matchRecalls(records, product);
     if (matches.length) {
       // Cache : l'insertion d'un nouveau rappel déclenche les notifications (historique et favoris)
@@ -125,11 +97,10 @@ Deno.serve(async (req) => {
     const candidates: Any[] = local.map((p: Any) => fromLocal(p));
     if (openFactsEnabled()) {
       if (/^\d{8,14}$/.test(asCode)) {
-        const p = await fromOpenFacts(asCode);
+        const p = await fromOpenFacts(asCode, body.kind);
         if (p) candidates.push(p);
       } else {
-        const kinds: OpenFactsKind[] = body.kind === 'food' ? ['food'] : body.kind === 'product' ? ['beauty', 'products'] : ['food', 'beauty'];
-        for (const k of kinds) candidates.push(...normalizeSearch(await getJson(searchUrl(k, query)), k, today()));
+        candidates.push(...await searchOpenFacts(query, { userAgent: userAgent(), today: today(), hint: body.kind }));
       }
     }
     return json({ candidates: candidates.slice(0, 12).map(({ legacy: _l, ...c }: Any) => c), database });
@@ -169,7 +140,7 @@ Deno.serve(async (req) => {
   };
 
   const { data: localRow } = await admin.from('products').select('*').eq('barcode', barcode).maybeSingle();
-  const product: Any = localRow ? fromLocal(localRow) : await fromOpenFacts(barcode);
+  const product: Any = localRow ? fromLocal(localRow) : await fromOpenFacts(barcode, body.kind);
   const { recalls, status } = await checkRecalls(admin, { barcode, brand: product?.brand ?? null, name: product?.name ?? null });
 
   if (!product) {

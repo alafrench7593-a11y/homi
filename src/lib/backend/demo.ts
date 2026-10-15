@@ -16,6 +16,13 @@ import {
   parseStructuredAnswer, structuredToMarkdown, todayIso,
 } from '../../../supabase/functions/_shared/assistant-format';
 import { buildSampleFamily } from './demoSample';
+import { fromProductRow } from '../../../supabase/functions/_shared/open-facts';
+import { matchRecalls, type RecallRecord } from '../../../supabase/functions/_shared/rappelconso';
+import { sanitizePayload } from '../../../supabase/functions/_shared/scan-explain';
+import { DEMO_CIQUAL, DEMO_COSING, DEMO_SCANNER_PRODUCTS, DEMO_SCANNER_RECALLS } from '@/content/scanner-demo';
+import { SCAN_SOURCES } from '../domain/scanSources';
+import { PRODUCT_VERDICTS } from '../domain/scanProduct';
+import { FOOD_VERDICTS } from '../domain/scanFood';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 type Tables = Record<string, Row[]>;
@@ -23,7 +30,10 @@ type Tables = Record<string, Row[]>;
 const KEY = 'toietmoi.demo.v1';
 /** Version des exemples de la communauté : l'augmenter ajoute les nouveaux exemples aux appareils existants. */
 const COMMUNITY_SEED_VERSION = 2;
-const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_resources', 'foods', 'baby_names', 'products', 'product_recalls', 'plan_limits'] as const;
+const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_resources', 'foods', 'baby_names', 'products', 'product_recalls', 'plan_limits', 'scan_sources', 'cosing_ingredients', 'ciqual_foods'] as const;
+const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
+/** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
+const DEMO_RECALL_CHECK = 'Mode démonstration : la base officielle RappelConso n’est pas interrogée ; seuls des rappels fictifs de démonstration peuvent apparaître.';
 const CHILD_TABLES = ['child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers'];
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
@@ -43,6 +53,8 @@ const OWNER_TABLES: Record<string, string> = {
   assistant_conversations: 'user_id', assistant_messages: 'user_id', assistant_feedback: 'user_id', consents: 'user_id', posts: 'author_id', comments: 'author_id',
   post_likes: 'user_id', saved_posts: 'user_id', reports: 'reporter_id', user_blocks: 'blocker_id', notes: 'author_id',
   documents: 'uploaded_by', name_votes: 'user_id',
+  // Scanner : historique, résultats et favoris strictement personnels
+  scan_results: 'user_id', scan_favorites: 'user_id',
   parent_sleep_logs: 'user_id',
   // Parcours fertilité : données intimes, strictement personnelles
   intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
@@ -112,6 +124,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
           // stockage illisible : on repart d'un état vide
         }
         for (const t of CATALOG_TABLES) state.tables[t] = JSON.parse(JSON.stringify(catalogs[t] ?? []));
+        // Scanner : données de démonstration (fictives, is_demo = true), mêmes que la section « Scanner » de supabase/seed.sql
+        for (const p of DEMO_SCANNER_PRODUCTS) if (!state.tables.products.some((x) => x.barcode === p.barcode)) state.tables.products.push(JSON.parse(JSON.stringify(p)));
+        for (const r of DEMO_SCANNER_RECALLS) if (!state.tables.product_recalls.some((x) => x.id === r.id)) state.tables.product_recalls.push(JSON.parse(JSON.stringify(r)));
+        state.tables.scan_sources = Object.values(SCAN_SOURCES).map((x) => ({ ...x }));
+        state.tables.cosing_ingredients = JSON.parse(JSON.stringify(DEMO_COSING));
+        state.tables.ciqual_foods = JSON.parse(JSON.stringify(DEMO_CIQUAL));
         if ((state.tables._community_seed?.[0]?.version ?? 0) < COMMUNITY_SEED_VERSION) seedCommunity();
       })();
     }
@@ -204,6 +222,65 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     state.tables._community_seed = [{ version: COMMUNITY_SEED_VERSION }];
   }
 
+  // ---------------------------------------------------------------- scanner (mêmes règles que 20261016000600_scanner.sql)
+  const monthKey = () => new Date().toISOString().slice(0, 7);
+  function scanUsed(userId: string) {
+    return T('scan_usage').find((u) => u.user_id === userId && u.month === monthKey())?.analyses ?? 0;
+  }
+  function checkScan(r: Row) {
+    r.kind ??= 'product';
+    r.confirmed ??= false;
+    r.product_snapshot ??= {};
+    r.answers ??= {};
+    r.sources ??= [];
+    r.is_demo ??= false;
+    r.verdict ??= null;
+    r.analysed_at ??= null;
+    if (!['product', 'food'].includes(r.kind)) throw new BackendError('Type de scan invalide.');
+    if (!SCAN_METHODS.includes(r.method)) throw new BackendError('Méthode de scan invalide.');
+    const allowed: readonly string[] = r.kind === 'product' ? PRODUCT_VERDICTS : FOOD_VERDICTS;
+    if (r.verdict != null && !allowed.includes(r.verdict)) throw new BackendError('Verdict non prévu pour ce type de scan.');
+    if ((r.verdict == null) !== (r.analysed_at == null)) throw new BackendError('Un verdict exige une date d’analyse.');
+    if (r.analysed_at) {
+      // Quota mensuel des analyses : compteur non remboursé par la suppression de l'historique
+      const used = scanUsed(r.user_id);
+      if (used >= limit('product_scans_per_month')) throw new BackendError('Limite de la version gratuite atteinte (product_scans_per_month)', 'P0001', 'premium_required');
+      const row = T('scan_usage').find((u) => u.user_id === r.user_id && u.month === monthKey());
+      if (row) row.analyses += 1;
+      else T('scan_usage').push({ user_id: r.user_id, month: monthKey(), analyses: 1 });
+    }
+  }
+  const scanMatchesRecall = (s: Row, rc: Row) =>
+    (rc.product_id && s.product_id === rc.product_id) || (s.barcode && (s.barcode === rc.barcode || (rc.gtins ?? []).includes(s.barcode)));
+  /** Notifie une personne d'un rappel concernant un produit de son historique (une seule fois par rappel). */
+  function notifyRecall(rc: Row, userId: string): number {
+    if (T('scan_recall_alerts').some((a) => a.user_id === userId && a.recall_id === rc.id)) return 0;
+    const scan = T('product_scans').filter((s) => s.user_id === userId && scanMatchesRecall(s, rc)).sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];
+    if (!scan) return 0;
+    T('scan_recall_alerts').push({ user_id: userId, recall_id: rc.id, created_at: nowIso() });
+    notify(userId, {
+      category: 'product_recall', title: `${rc.is_demo ? 'Rappel (démonstration) : ' : 'Rappel officiel : '}${rc.title}`, body: String(rc.reason ?? '').slice(0, 240),
+      deep_link: `/scanner/result/${scan.id}`, payload: { recall_id: rc.id, scan_id: scan.id, is_demo: !!rc.is_demo },
+    });
+    return 1;
+  }
+  function recallsFor(p: { barcode?: string | null; brand?: string | null; name?: string | null }): Row[] {
+    const out = new Map<string, Row>();
+    if (p.barcode) for (const r of T('product_recalls')) if (r.barcode === p.barcode || (r.gtins ?? []).includes(p.barcode)) out.set(r.id, { ...r, match: 'gtin' });
+    if (p.brand && p.name) {
+      const records: (RecallRecord & { row: Row })[] = T('product_recalls').map((r) => ({
+        key: r.id, gtins: r.gtins ?? [], title: r.title, brand: r.brand ?? null, product_name: r.product_name ?? null, reason: r.reason, risks: r.risks ?? null,
+        recommended_action: r.recommended_action, official_url: r.official_url, image_url: null, published_on: r.published_on, lot_numbers: r.lot_numbers ?? [], category: null, row: r,
+      }));
+      for (const m of matchRecalls(records, { brand: p.brand, name: p.name })) {
+        const row = (m.record as RecallRecord & { row: Row }).row;
+        if (!out.has(row.id)) out.set(row.id, { ...row, match: m.match });
+      }
+    }
+    return [...out.values()];
+  }
+  const demoRecallCheck = () => ({ checked: false, source: 'RappelConso', error: DEMO_RECALL_CHECK, checkedOn: new Date().toISOString().slice(0, 10) });
+
   // ---------------------------------------------------------------- règles d'insertion
   function beforeInsert(table: string, r: Row): Row {
     const me = state.session?.userId;
@@ -238,6 +315,14 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     if (quota[table]) {
       const count = T(table).filter((x) => x.household_id === r.household_id).length;
       if (count >= limit(quota[table])) throw new BackendError('Limite de la version gratuite atteinte.', 'P0001', 'premium_required');
+    }
+    if (table === 'product_scans') checkScan(r);
+    if (table === 'scan_results' || table === 'scan_favorites') {
+      const scan = T('product_scans').find((x) => x.id === r.scan_id);
+      if (!scan || scan.user_id !== me) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
+      if (table === 'scan_results' && T('scan_results').some((x) => x.scan_id === r.scan_id)) throw new BackendError('Résultat déjà enregistré.', '23505');
+      if (table === 'scan_favorites' && T('scan_favorites').some((x) => x.scan_id === r.scan_id && x.user_id === me)) throw new BackendError('Déjà dans vos favoris.', '23505');
+      if (table === 'scan_results') r.explanation ??= null;
     }
     if (table === 'community_profiles') checkPseudonym(r, true);
     if (table === 'posts' || table === 'comments') {
@@ -296,6 +381,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   }
 
   function afterInsert(table: string, r: Row) {
+    if (table === 'product_scans' && (r.barcode || r.product_id)) {
+      for (const rc of T('product_recalls')) if (scanMatchesRecall(r, rc)) notifyRecall(rc, r.user_id);
+    }
     if (table === 'comments') {
       const post = T('posts').find((p) => p.id === r.post_id);
       if (post) {
@@ -454,6 +542,19 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       throw new BackendError('En mode démonstration, un seul compte existe sur cet appareil : connectez Supabase pour partager avec un coparent.');
     },
     has_premium: () => isPremium(),
+    scan_quota_status: () => {
+      const used = scanUsed(uid());
+      const quota = limit('product_scans_per_month');
+      return [{ used, quota, remaining: Math.max(0, quota - used) }];
+    },
+    cosing_lookup: (a) => {
+      const names = new Set(((a.p_names as string[]) ?? []).slice(0, 200).map((n) => String(n).trim().toLowerCase()));
+      return T('cosing_ingredients').filter((c) => names.has(String(c.inci_name).toLowerCase()));
+    },
+    notify_my_recalls: () => {
+      const me = uid();
+      return T('product_recalls').reduce((n, rc) => n + notifyRecall(rc, me), 0);
+    },
     assistant_quota_status: () => {
       const month = new Date().toISOString().slice(0, 7);
       const used = T('assistant_usage').find((x) => x.user_id === uid() && x.month === month)?.questions ?? 0;
@@ -503,7 +604,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
-        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs'].map((t) => [t, view(t)])),
+        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
           ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents']
@@ -531,17 +632,50 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   const functions: Record<string, (b: Row) => unknown> = {
     assistant: (b) => assistantCore(b).result,
     'product-lookup': (b) => {
+      const action = typeof b.action === 'string' ? b.action : 'lookup';
+      if (action === 'search') {
+        const query = String(b.query ?? '').trim();
+        if (query.length < 2) throw new BackendError('Saisissez au moins 2 caractères.');
+        const code = query.replace(/\D/g, '');
+        const q = fold(query);
+        const rows = T('products').filter((p) => (/^\d{8,14}$/.test(code) ? p.barcode === code : fold(String(p.name ?? '')).includes(q)))
+          .filter((p) => (b.kind === 'food' ? ['food', 'drink'].includes(p.category) : b.kind === 'product' ? !['food', 'drink'].includes(p.category) : true));
+        return {
+          candidates: rows.slice(0, 12).map((p) => fromProductRow(p)), database: 'demo',
+          message: 'Mode démonstration : seule une base fictive est consultée (Open Food Facts, Open Beauty Facts et Open Products Facts nécessitent le serveur).',
+        };
+      }
+      if (action === 'recalls') {
+        const barcode = b.barcode ? String(b.barcode).replace(/\D/g, '') : null;
+        return { recalls: recallsFor({ barcode, brand: b.brand ?? null, name: b.name ?? null }), recall_check: demoRecallCheck() };
+      }
+      if (action === 'recall_watch') {
+        const me = uid();
+        return { checked: T('product_scans').filter((s) => s.user_id === me && s.barcode).length, notified: T('product_recalls').reduce((n, rc) => n + notifyRecall(rc, me), 0) };
+      }
       const barcode = String(b.barcode ?? '').replace(/\D/g, '');
-      const product = T('products').find((p) => p.barcode === barcode) as (ProductData & { id: string }) | undefined;
-      const recalls = T('product_recalls').filter((r) => r.barcode === barcode || (product && r.product_id === product.id));
-      if (!product) return { found: false, barcode, recalls, message: 'Produit introuvable dans la base de démonstration. Essayez 0000000000024 ou saisissez les ingrédients.' };
-      if (b.confirm) T('product_scans').push({ id: uuid(), user_id: uid(), product_id: product.id, barcode, method: 'barcode', confirmed: true, created_at: nowIso() });
-      const assessment = assessProduct(product, b.context ?? {});
+      if (barcode.length < 8 || barcode.length > 14) throw new BackendError('Code-barres non reconnu. Vous pouvez le saisir à la main.');
+      const product = T('products').find((p) => p.barcode === barcode) as (ProductData & { id: string; barcode: string }) | undefined;
+      const recalls = recallsFor({ barcode, brand: product?.brand ?? null, name: product?.name ?? null });
+      if (!product) {
+        return {
+          found: false, barcode, recalls, recall_check: demoRecallCheck(), database: 'demo',
+          message: 'Produit introuvable dans la base de démonstration. Essayez un code proposé ou saisissez le nom et les ingrédients.',
+        };
+      }
+      if (b.confirm) T('product_scans').push({ id: uuid(), user_id: uid(), kind: 'product', product_id: product.id, barcode, method: 'barcode', confirmed: true, product_snapshot: { name: product.name, brand: product.brand }, answers: {}, sources: [], verdict: null, analysed_at: null, is_demo: true, created_at: nowIso() });
+      // Évaluation historique conservée pour compatibilité ; le nouveau scanner utilise les moteurs de règles de l'application
+      const assessment = assessProduct({ ...product, ingredients: product.ingredients ?? (((product as Row).ingredients_text as string | null)?.split(/,\s*/) ?? null) }, b.context ?? {});
       return {
-        found: true, needs_confirmation: !b.confirm, recalls,
-        product: { name: product.name, brand: product.brand, category: product.category, ingredients: product.ingredients, declared_allergens: product.declared_allergens, data_source: product.data_source, data_retrieved_at: product.data_retrieved_at, is_demo: true },
+        found: true, needs_confirmation: !b.confirm, recalls, recall_check: demoRecallCheck(), database: 'demo',
+        product: { ...fromProductRow(product), category: product.category, ingredients: product.ingredients, declared_allergens: product.declared_allergens, is_demo: true },
         assessment: isPremium() ? assessment : { ...assessment, findings: assessment.findings.filter((f) => f.level === 'avoid_advised'), limited: true },
       };
+    },
+    // Pas d'IA sans serveur : on le dit, l'application affiche l'explication des règles (jamais un faux texte IA)
+    'scan-explain': (b) => {
+      if (!sanitizePayload(b)) throw new BackendError('Résultat d’analyse invalide.');
+      return { ai: 'not_configured', message: 'Explication IA non configurée (mode démonstration : aucune clé Gemini côté serveur).' };
     },
     'document-extract': () => ({ fields: null, status: 'unavailable', message: 'La lecture automatique nécessite un service connecté (indisponible en mode démonstration).' }),
     'delete-account': async () => {
@@ -665,6 +799,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       await load();
       const rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
       if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
+      // Un scan analysé ne se réécrit pas ; seul le champ « explication IA » d'un résultat est modifiable
+      if (table === 'product_scans' || (table === 'scan_results' && Object.keys(patch).some((k) => k !== 'explanation'))) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
       for (const r of rows) {
         if (table === 'community_profiles' && patch.pseudonym != null) checkPseudonym({ ...patch, user_id: r.user_id }, false);
         if (table === 'sleeps' && patch.ended_at && patch.ended_at < r.started_at) throw new BackendError('La fin du sommeil ne peut pas précéder son début.');
@@ -705,6 +841,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       }
       if (table === 'assistant_feedback') removed.forEach((f) => { const m = T('assistant_messages').find((x) => x.id === f.message_id); if (m) m.feedback = null; });
       if (table === 'posts') state.tables.comments = T('comments').filter((c) => !removed.some((p) => p.id === c.post_id));
+      if (table === 'product_scans') {
+        state.tables.scan_results = T('scan_results').filter((x) => !removed.some((s) => s.id === x.scan_id));
+        state.tables.scan_favorites = T('scan_favorites').filter((x) => !removed.some((s) => s.id === x.scan_id));
+      }
       persist();
     },
     async rpc<R>(fn: string, args?: Row) {

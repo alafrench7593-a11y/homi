@@ -76,14 +76,14 @@ await check('CosIng (table importée)', ['EXPO_PUBLIC_SUPABASE_URL', 'SUPABASE_S
   const res = await fetch(`${E.EXPO_PUBLIC_SUPABASE_URL}/rest/v1/cosing_ingredients?select=inci_name&limit=1`, { headers: { apikey: E.SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${E.SUPABASE_SERVICE_ROLE_KEY}`, Prefer: 'count=exact' } });
   if (!res.ok) throw new Error(`HTTP ${res.status} : table absente ? (supabase db push)`);
   const total = res.headers.get('content-range')?.split('/')[1];
-  if (!total || total === '0') throw new Error('table vide : lancez npm run import:cosing -- <fichier CosIng officiel>');
+  if (!total || total === '0') throw new Error('table vide : lancez npm run cosing:import -- <fichier CosIng officiel>');
   return `${total} ingrédients CosIng`;
 });
 await check('Ciqual ANSES (table importée)', ['EXPO_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'], async () => {
   const res = await fetch(`${E.EXPO_PUBLIC_SUPABASE_URL}/rest/v1/ciqual_foods?select=code&limit=1`, { headers: { apikey: E.SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${E.SUPABASE_SERVICE_ROLE_KEY}`, Prefer: 'count=exact' } });
   if (!res.ok) throw new Error(`HTTP ${res.status} : table absente ? (supabase db push)`);
   const total = res.headers.get('content-range')?.split('/')[1];
-  if (!total || total === '0') throw new Error('table vide : lancez npm run import:ciqual -- <fichier Ciqual officiel>');
+  if (!total || total === '0') throw new Error('table vide : lancez npm run ciqual:import -- <fichier Ciqual officiel>');
   return `${total} aliments Ciqual`;
 });
 await check('Expo (projet EAS)', ['EXPO_PUBLIC_EAS_PROJECT_ID'], async () => {

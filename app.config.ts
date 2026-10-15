@@ -17,7 +17,7 @@ const config: ExpoConfig = {
       NSCameraUsageDescription:
         'La caméra sert uniquement à scanner un produit ou photographier un document que vous choisissez d’enregistrer.',
       NSPhotoLibraryUsageDescription:
-        'L’accès aux photos sert uniquement à ajouter une image que vous choisissez (document, photo de profil).',
+        'L’accès aux photos sert uniquement à ajouter une image que vous choisissez (document, photo de profil, produit à analyser).',
       ITSAppUsesNonExemptEncryption: false,
     },
   },

@@ -142,3 +142,105 @@ export function normalizeSearch(payload: unknown, kind: OpenFactsKind, today: st
     .map((x) => normalizeProductObject(x, kind, String(x.code), today))
     .filter((x) => !!x.name);
 }
+
+/** Fiche de la base interne (table public.products) → même forme que les fiches Open Facts. */
+export interface LocalProductRow {
+  id?: string;
+  barcode?: string | null;
+  name?: string | null;
+  brand?: string | null;
+  category?: string | null;
+  product_type?: string | null;
+  image_url?: string | null;
+  ingredients?: string[] | null;
+  ingredients_text?: string | null;
+  precautions_text?: string | null;
+  period_after_opening?: string | null;
+  declared_allergens?: string[] | null;
+  attributes?: Record<string, unknown> | null;
+  nutrition?: { salt_g_100g?: number | null; sugars_g_100g?: number | null; energy_kcal_100g?: number | null } | null;
+  source_url?: string | null;
+  data_source?: string | null;
+  data_retrieved_at?: string | null;
+  is_demo?: boolean | null;
+}
+
+export function fromProductRow(p: LocalProductRow) {
+  const ingredients = str(p.ingredients_text) ?? (Array.isArray(p.ingredients) && p.ingredients.length ? p.ingredients.join(', ') : null);
+  const isFood = p.category === 'food' || p.category === 'drink';
+  const attrs = (p.attributes ?? {}) as Record<string, unknown>;
+  const n = p.nutrition ?? null;
+  return {
+    id: p.id,
+    barcode: String(p.barcode ?? ''),
+    name: str(p.name),
+    brand: str(p.brand),
+    image_url: p.image_url && /^https:\/\//.test(p.image_url) ? p.image_url : null,
+    ingredients_text: ingredients,
+    allergens: Array.isArray(p.declared_allergens) ? p.declared_allergens : [],
+    categories: [] as string[],
+    precautions_text: str(p.precautions_text),
+    period_after_opening: str(p.period_after_opening),
+    nutrition: n ? { salt_g_100g: n.salt_g_100g ?? null, sugars_g_100g: n.sugars_g_100g ?? null, energy_kcal_100g: n.energy_kcal_100g ?? null } : null,
+    labels: {
+      rawMilk: attrs.raw_milk === true ? true : null,
+      alcohol: attrs.alcohol === true ? true : null,
+      caffeine: attrs.caffeine === true ? true : null,
+      sweeteners: attrs.sweeteners === true ? true : null,
+    },
+    kind: (isFood ? 'food' : 'product') as 'food' | 'product',
+    product_type: str(p.product_type) ?? (isFood ? null : str(p.category)),
+    data_source: str(p.data_source) ?? 'Base interne',
+    source_url: str(p.source_url) ?? '',
+    data_retrieved_at: String(p.data_retrieved_at ?? '').slice(0, 10),
+    last_modified: null as string | null,
+    collaborative: /collaborati/i.test(String(p.data_source ?? '')),
+    is_demo: p.is_demo === true,
+  };
+}
+
+// ---------------------------------------------------------------- appels réseau (fetch injectable pour les tests)
+export type FetchLike = (url: string, init?: { headers?: Record<string, string>; signal?: AbortSignal }) => Promise<{ ok: boolean; status: number; json(): Promise<unknown> }>;
+
+/** GET JSON avec délai maximal ; null en cas d'erreur réseau, de code HTTP non 2xx ou de JSON invalide. */
+export async function getJsonWith(fetchImpl: FetchLike, url: string, headers: Record<string, string>, timeoutMs = 8000): Promise<unknown | null> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetchImpl(url, { headers: { Accept: 'application/json', ...headers }, signal: ctrl.signal });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Ordre des bases : cosmétiques puis autres produits pour le scanner de produits, aliments d'abord sinon. */
+export function lookupOrder(hint: unknown): OpenFactsKind[] {
+  return hint === 'product' ? ['beauty', 'products', 'food'] : ['food', 'beauty', 'products'];
+}
+
+export interface OpenFactsOptions { userAgent: string; today: string; fetchImpl?: FetchLike; hint?: unknown }
+
+/** Fiche par code-barres dans Open Food / Beauty / Products Facts. Sans User-Agent identifié : aucun appel. */
+export async function lookupOpenFacts(barcode: string, o: OpenFactsOptions): Promise<NormalizedProduct | null> {
+  if (!o.userAgent.trim()) return null;
+  const f = o.fetchImpl ?? (fetch as unknown as FetchLike);
+  for (const kind of lookupOrder(o.hint)) {
+    const out = normalizeOpenFacts(await getJsonWith(f, productUrl(kind, barcode), { 'User-Agent': o.userAgent }), kind, barcode, o.today);
+    if (out) return out;
+  }
+  return null;
+}
+
+/** Recherche par nom dans les bases adaptées au type de scan. */
+export async function searchOpenFacts(query: string, o: OpenFactsOptions): Promise<NormalizedProduct[]> {
+  if (!o.userAgent.trim()) return [];
+  const f = o.fetchImpl ?? (fetch as unknown as FetchLike);
+  const kinds: OpenFactsKind[] = o.hint === 'food' ? ['food'] : o.hint === 'product' ? ['beauty', 'products'] : ['food', 'beauty'];
+  const out: NormalizedProduct[] = [];
+  for (const k of kinds) out.push(...normalizeSearch(await getJsonWith(f, searchUrl(k, query), { 'User-Agent': o.userAgent }), k, o.today));
+  return out;
+}

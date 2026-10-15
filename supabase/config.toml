@@ -51,6 +51,9 @@ verify_jwt = true
 [functions.product-lookup]
 verify_jwt = true
 
+[functions.scan-explain]
+verify_jwt = true
+
 [functions.document-extract]
 verify_jwt = true
 

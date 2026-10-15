@@ -5,8 +5,9 @@
 // contenant une promesse d'innocuité ou un autre verdict est rejetée. Sans GEMINI_API_KEY :
 // { ai: 'not_configured' } — l'application affiche alors l'explication des règles, jamais un faux texte IA.
 import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shared/http.ts';
-import { geminiConfig, geminiGenerate, GeminiError } from '../_shared/gemini.ts';
-import { buildExplainPrompt, checkExplanation, EXPLAIN_SCHEMA, EXPLAIN_SYSTEM, sanitizePayload } from '../_shared/scan-explain.ts';
+import { geminiConfig } from '../_shared/gemini.ts';
+import { sanitizePayload } from '../_shared/scan-explain.ts';
+import { runExplain } from '../_shared/scan-explain-run.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -25,21 +26,12 @@ Deno.serve(async (req) => {
     return json({ ai: 'unavailable', message: 'Trop d’explications demandées en une heure. L’explication des règles reste affichée.' });
   }
 
-  const generatedOn = new Date().toISOString().slice(0, 10);
-  let raw = '';
-  try {
-    raw = await geminiGenerate(cfg, { system: EXPLAIN_SYSTEM, turns: [{ role: 'user', text: buildExplainPrompt(payload) }], maxOutputTokens: 900, responseSchema: EXPLAIN_SCHEMA });
-  } catch (e) {
-    console.error('scan_explain_error', e instanceof GeminiError ? e.status : 'fetch');
-    return json({ ai: 'unavailable', message: 'L’explication IA est momentanément indisponible. L’explication des règles reste affichée.' });
+  const result = await runExplain(payload, cfg);
+  if (result.ai !== 'ok') {
+    console.error('scan_explain', result.ai, result.reason ?? '');
+    const { reason: _r, ...publicResult } = result;
+    return json(publicResult);
   }
-  const checked = checkExplanation(raw, payload);
-  if (!checked.ok) {
-    console.error('scan_explain_rejected', checked.reason);
-    return json({ ai: 'rejected', message: 'L’explication IA n’a pas passé les contrôles de prudence : seule l’explication des règles est affichée.' });
-  }
-
-  const result = { ai: 'ok', model: cfg.model, generated_on: generatedOn, verdict: payload.verdict, explanation: checked.explanation };
   // Mémorisation sur le résultat (RLS : uniquement si le scan appartient à la personne)
   if (typeof body.scan_id === 'string') {
     await auth.client.from('scan_results').update({ explanation: result }).eq('scan_id', body.scan_id);

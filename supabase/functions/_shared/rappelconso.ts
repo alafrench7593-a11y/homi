@@ -77,6 +77,15 @@ function gtinsOf(v: unknown): string[] {
   return [...new Set((raw.match(/\d{8,14}/g) ?? []))];
 }
 
+/** Clé de contrôle GS1 (EAN-8, UPC-A, EAN-13, GTIN-14). */
+export function validGtin(code: string): boolean {
+  const d = digits(code);
+  if (![8, 12, 13, 14].includes(d.length)) return false;
+  const body = d.slice(0, -1).split('').reverse().map(Number);
+  const sum = body.reduce((acc, n, i) => acc + n * (i % 2 === 0 ? 3 : 1), 0);
+  return (10 - (sum % 10)) % 10 === Number(d[d.length - 1]);
+}
+
 function isoDate(v: unknown): string | null {
   const s = text(v);
   if (!s) return null;
@@ -116,7 +125,11 @@ export function parseRecallRecords(payload: unknown): RecallRecord[] {
     if (!title) continue;
     out.push({
       key: `rappelconso:${id}`,
-      gtins: gtinsOf(pick(r, CANDIDATES.gtin)),
+      // Champ GTIN dédié ; à défaut (ancien schéma), codes valides cités dans « identification des produits »
+      gtins: (() => {
+        const direct = gtinsOf(pick(r, CANDIDATES.gtin));
+        return direct.length ? direct : gtinsOf(pick(r, CANDIDATES.lots)).filter(validGtin);
+      })(),
       title,
       brand,
       product_name: name,
@@ -183,4 +196,29 @@ export function recallRow(r: RecallRecord, barcode: string | null) {
     published_on: r.published_on ?? new Date().toISOString().slice(0, 10),
     is_demo: false,
   };
+}
+
+// ---------------------------------------------------------------- appel réseau (fetch injectable pour les tests)
+export type RecallFetch = (url: string, init?: { headers?: Record<string, string>; signal?: AbortSignal }) => Promise<{ ok: boolean; status: number; json(): Promise<unknown> }>;
+
+/**
+ * Interroge RappelConso pour chaque terme (code-barres, « marque nom »).
+ * `checked` n'est vrai que si la base officielle a répondu à TOUTES les requêtes : sinon, l'application
+ * dit que la vérification n'a pas pu être faite (jamais « aucun rappel » par défaut).
+ */
+export async function fetchRecallRecords(terms: string[], o: { fetchImpl?: RecallFetch; dataset?: string; base?: string; timeoutMs?: number } = {}): Promise<{ records: RecallRecord[]; checked: boolean }> {
+  const f = o.fetchImpl ?? (fetch as unknown as RecallFetch);
+  const payloads = await Promise.all(terms.map(async (t) => {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), o.timeoutMs ?? 8000);
+    try {
+      const res = await f(rappelConsoUrl(t, { dataset: o.dataset, base: o.base }), { headers: { Accept: 'application/json' }, signal: ctrl.signal });
+      return res.ok ? await res.json() : null;
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  }));
+  return { records: payloads.flatMap((p) => (p ? parseRecallRecords(p) : [])), checked: terms.length > 0 && payloads.every((p) => p != null) };
 }

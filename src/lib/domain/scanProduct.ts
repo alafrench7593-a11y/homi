@@ -11,7 +11,7 @@
 import {
   DEMO_LABEL, ENGINE_VERSION, GENERAL_DISCLAIMER, RECALL_DISCLAIMER, findingSources, isChildProfile, norm, profileAgeMonths, profileLabel,
   sortFindings, splitIngredients, todayIso,
-  type Certainty, type DataSourceInfo, type Finding, type RecallInfo, type ScanProfile,
+  type Certainty, type DataSourceInfo, type Finding, type RecallCheck, type RecallInfo, type ScanProfile,
 } from './scanCommon';
 import type { ScanSource } from './scanSources';
 
@@ -95,6 +95,7 @@ export interface ProductInput {
   zone?: Zone | null;
   dataSource: DataSourceInfo & { collaborative?: boolean };
   recalls: RecallInfo[];
+  recallCheck?: RecallCheck | null;
   cosing?: CosingRow[];
 }
 
@@ -140,6 +141,7 @@ export interface ProductAnalysis {
   missing: string[];
   askProfessional: string | null;
   recalls: RecallInfo[];
+  recallCheck: RecallCheck | null;
   recallDisclaimer: string;
   sources: ScanSource[];
   dataSource: DataSourceInfo;
@@ -418,7 +420,7 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
   if (type === 'laundry' || type === 'household') {
     findings.push({
       id: 'household', level: 'precaution', title: 'Respectez l’étiquette et rangez hors de portée des enfants',
-      explanation: `Les mélanges dangereux portent des pictogrammes et des mentions de danger obligatoires : lisez-les avant usage, gardez l’emballage d’origine et rangez le produit hors de portée des enfants.${child ? ' Pour un jeune enfant, le risque principal est l’ingestion ou la projection du produit pur.' : ''}`,
+      explanation: `Les mélanges classés selon le règlement CLP portent des pictogrammes et des mentions de danger obligatoires : lisez-les avant usage, gardez l’emballage d’origine et rangez le produit hors de portée des enfants.${child ? ' Pour un jeune enfant, le risque principal est l’ingestion ou la projection du produit pur.' : ''}`,
       sourceIds: ['eu-clp-1272-2008'],
     });
     if (!input.precautionsText) {
@@ -454,7 +456,11 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
   let verdict: ProductVerdict;
   let verdictReason: string;
   const avoid = sorted.find((f) => f.level === 'avoid');
-  if (avoid) {
+  if (!input.identity.confirmed) {
+    // Sans confirmation du produit, aucune conclusion (les rappels éventuels restent affichés)
+    verdict = 'Informations insuffisantes';
+    verdictReason = insufficient ?? 'Le produit n’a pas été confirmé.';
+  } else if (avoid) {
     verdict = 'Déconseillé pour ce profil selon la source indiquée';
     verdictReason = avoid.title;
   } else if (insufficient) {
@@ -495,6 +501,7 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
     missing: [...new Set(missing)],
     askProfessional,
     recalls: input.recalls,
+    recallCheck: input.recallCheck ?? null,
     recallDisclaimer: RECALL_DISCLAIMER,
     sources: findingSources(sorted, ['rappelconso']),
     dataSource: input.dataSource,

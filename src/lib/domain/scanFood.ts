@@ -11,7 +11,7 @@
 import {
   DEMO_LABEL, ENGINE_VERSION, GENERAL_DISCLAIMER, RECALL_DISCLAIMER, findingSources, isChildProfile, norm, profileAgeMonths, profileLabel,
   sortFindings, splitIngredients, todayIso,
-  type Certainty, type DataSourceInfo, type Finding, type RecallInfo, type ScanProfile,
+  type Certainty, type DataSourceInfo, type Finding, type RecallCheck, type RecallInfo, type ScanProfile,
 } from './scanCommon';
 import type { ScanSource } from './scanSources';
 
@@ -47,6 +47,7 @@ export interface FoodInput {
   nutrition?: FoodNutrition | null;
   dataSource: DataSourceInfo & { collaborative?: boolean };
   recalls: RecallInfo[];
+  recallCheck?: RecallCheck | null;
 }
 
 export type Tri<T extends string> = T | 'unknown';
@@ -213,6 +214,7 @@ export interface FoodAnalysis {
   unanswered: QuestionKey[];
   askProfessional: string | null;
   recalls: RecallInfo[];
+  recallCheck: RecallCheck | null;
   recallDisclaimer: string;
   sources: ScanSource[];
   dataSource: DataSourceInfo;
@@ -431,7 +433,12 @@ export function analyzeFood(input: FoodInput, profile: ScanProfile, answers: Foo
   let verdict: FoodVerdict;
   let verdictReason: string;
   const avoid = sorted.find((x) => x.level === 'avoid');
-  if (avoid) {
+  if (!input.identity.confirmed || !input.identity.name) {
+    // Sans confirmation de l'aliment, aucune conclusion (les rappels éventuels restent affichés)
+    verdict = 'Impossible à confirmer';
+    verdictReason = impossible ?? 'L’aliment n’a pas été confirmé.';
+    certainty = 'low';
+  } else if (avoid) {
     verdict = 'À éviter pour ce profil selon la source indiquée';
     verdictReason = avoid.title;
   } else if (impossible) {
@@ -467,6 +474,7 @@ export function analyzeFood(input: FoodInput, profile: ScanProfile, answers: Foo
     unanswered: [...new Set(unanswered)],
     askProfessional,
     recalls: input.recalls,
+    recallCheck: input.recallCheck ?? null,
     recallDisclaimer: RECALL_DISCLAIMER,
     sources: findingSources(sorted, ['rappelconso']),
     dataSource: input.dataSource,

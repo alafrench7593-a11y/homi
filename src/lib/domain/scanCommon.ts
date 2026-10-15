@@ -82,6 +82,15 @@ export interface RecallInfo {
   is_demo: boolean;
 }
 
+/** État de la vérification des rappels officiels (RappelConso) pour ce produit. */
+export interface RecallCheck {
+  /** true : la base officielle a bien été interrogée ; false : vérification impossible (hors ligne, démonstration…). */
+  checked: boolean;
+  source: string;
+  error: string | null;
+  checkedOn: string;
+}
+
 export interface DataSourceInfo {
   label: string;
   url?: string | null;

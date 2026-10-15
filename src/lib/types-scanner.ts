@@ -113,10 +113,11 @@ export interface LookupResponse {
   database?: DatabaseStatus;
   product?: ProductCandidate;
   recalls: RecallRow[];
-  recall_check?: { checked: boolean; source: string; error: string | null };
+  recall_check?: { checked: boolean; source: string; error: string | null; checkedOn?: string };
+  needs_confirmation?: boolean;
 }
 
-export interface SearchResponse { candidates: ProductCandidate[]; database: DatabaseStatus }
+export interface SearchResponse { candidates: ProductCandidate[]; database: DatabaseStatus; message?: string }
 
 export interface CosingIngredient {
   inci_name: string; cas: string | null; ec: string | null; functions: string[]; restrictions: string | null; annex_refs: string[];

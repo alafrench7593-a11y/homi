@@ -60,7 +60,7 @@ Aperçu web : `npx expo start --web`.
 4. Déployez les fonctions et leurs secrets :
    ```bash
    supabase secrets set GEMINI_API_KEY=... GEMINI_MODEL=... OPENFOODFACTS_USER_AGENT=... REVENUECAT_WEBHOOK_SECRET=... EXPO_ACCESS_TOKEN=... RESEND_API_KEY=... RESEND_FROM_EMAIL=...
-   supabase functions deploy assistant revenuecat-webhook delete-account send-push product-lookup document-extract
+   supabase functions deploy assistant revenuecat-webhook delete-account send-push product-lookup scan-explain document-extract
    ```
 5. Auth › URL configuration : ajoutez `toietmoi://auth/callback` aux URL de redirection.
 
@@ -136,18 +136,19 @@ scripts/          outils (import des illustrations)
 
 **Simulé / données de démonstration** :
 - Articles du seed : rédigés pour le développement, **non relus** par des professionnels (`reviewer_name` vide) — à faire valider avant publication.
-- Produits et rappels du scanner : données marquées `is_demo`.
+- Produits, rappels et lignes CosIng / Ciqual du scanner dans le seed et le mode démo : données fictives marquées `is_demo`, affichées « Données de démonstration ».
 - Abonnement en mode démo : bascule locale, sans paiement.
 - Illustrations du bébé : images générées par IA, à faire valider par un professionnel de santé.
 
 ## 11. Services externes
 
-Supabase · Gemini API (assistant, explication du scanner, lecture de documents) · Resend (e-mails) · RevenueCat · Expo/EAS (builds, push) · Apple App Store / Google Play · Open Food Facts / Open Beauty Facts (scanner, optionnel).
+Supabase · Gemini API (assistant, explication du scanner, lecture de documents) · Resend (e-mails) · RevenueCat · Expo/EAS (builds, push) · Apple App Store / Google Play · Open Food Facts / Open Beauty Facts / Open Products Facts et RappelConso (scanner) · CosIng et Ciqual (tables importées) · Google ML Kit sur le téléphone (lecture des photos du scanner, build de développement).
 
 ## 12. Avant la mise en ligne
 
 - [ ] Faire relire tous les contenus santé par des professionnels (sage-femme, pédiatre) et renseigner les relecteurs.
 - [ ] Faire valider les illustrations du bébé.
+- [ ] Scanner : importer CosIng et Ciqual (`npm run cosing:import`, `npm run ciqual:import`), faire relire les sources marquées « to_review » dans `scanSources.ts`, vérifier en réel les champs du jeu RappelConso.
 - [ ] Supprimer les comptes et données de démonstration du seed.
 - [ ] Politique de confidentialité, CGU, mentions légales ; registre RGPD ; hébergement de données de santé (HDS) si nécessaire.
 - [ ] Vérifier les numéros d'urgence et ressources (15, 112, 3114, 119, 3919, 114).
@@ -183,3 +184,14 @@ supabase functions deploy assistant                           # vérification du
 **Sans clé IA** : aucune réponse n’est simulée. La fonction renvoie l’erreur explicite `ai_not_configured` (« Assistant IA non configuré… ») sans décompter de question. En mode démo (sans Supabase), l’assistant affiche le même message ; seule l’orientation en cas d’urgence (règles locales, sans IA) reste active.
 
 Tests : `npm test` (`src/__tests__/assistant.test.ts`, `safety.test.ts`) et `npm run db:test` (`supabase/tests/sql/33_assistant.sql`).
+
+## Scanner
+
+Routes : `/scanner` (accueil), `/scanner/product`, `/scanner/food` (« Puis-je manger ou donner cet aliment ? »), `/scanner/result/[id]`, `/scanner/history`, `/scanner/compare`. Parcours : code-barres (caméra `expo-camera`), photo, photo de la liste d’ingrédients, import d’une photo ou recherche par nom/EAN → **confirmation** (« Est-ce bien ce produit ? ») → fiche Open Food / Beauty / Products Facts (fonction `product-lookup`) → **RappelConso** → règles déterministes (`src/lib/domain/scanProduct.ts`, `scanFood.ts`, sources datées dans `scanSources.ts`) → explication en clair par **Gemini** (`scan-explain`), qui reprend le verdict des règles sans pouvoir le changer.
+
+- **Lecture locale des photos** : Google ML Kit (`@react-native-ml-kit/barcode-scanning`, `@react-native-ml-kit/text-recognition`) sur le téléphone, aucune image envoyée. Modules natifs : **build de développement nécessaire** (`npx expo run:ios|android` ou EAS). Sur le web et dans Expo Go, l’app affiche « Lecture locale indisponible ici : utilisez la saisie manuelle ».
+- **Secrets** : `OPENFOODFACTS_USER_AGENT` (active les bases Open Facts ; sans lui, aucune base n’est interrogée et l’app le dit), `GEMINI_API_KEY` (sans clé : `{ ai: 'not_configured' }`, l’app affiche l’explication des règles « Explication IA non configurée »), facultatifs `RAPPELCONSO_ENABLED`, `RAPPELCONSO_DATASET` (défaut `rappelconso-v2-gtin-espaces`).
+- **Tables de référence** (lecture seule pour les utilisateurs) : `cosing_ingredients` et `ciqual_foods`, remplies par `npm run cosing:import -- fichier.csv` et `npm run ciqual:import -- dossier --version "…" --date AAAA-MM-JJ` (fichiers officiels, `--dry-run` pour vérifier). Table vide ⇒ « information non disponible ».
+- Historique, résultats et favoris privés (RLS), quota mensuel d’analyses côté serveur ; rappels toujours gratuits, avec notification pour les produits de l’historique et des favoris.
+
+Tests : `src/__tests__/scanner.test.ts`, `scannerScreens.test.tsx`, Deno `supabase/functions/_shared/{open-facts,rappelconso,scan-explain}_test.ts`, SQL `supabase/tests/sql/34_scanner.sql`.
