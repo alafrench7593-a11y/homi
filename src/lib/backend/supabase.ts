@@ -98,6 +98,10 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
         const { error } = await client.auth.updateUser({ password });
         wrap(error);
       },
+      async exchangeCode(code) {
+        const { error } = await client.auth.exchangeCodeForSession(code);
+        wrap(error);
+      },
     },
     storage: {
       async upload(bucket, path, file) {

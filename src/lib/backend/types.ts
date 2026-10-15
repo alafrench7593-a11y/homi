@@ -26,6 +26,8 @@ export interface AuthApi {
   signOut(allDevices?: boolean): Promise<void>;
   resetPassword(email: string): Promise<void>;
   updatePassword(password: string): Promise<void>;
+  /** Lien reçu par e-mail (confirmation, réinitialisation) : échange du code PKCE contre une session. */
+  exchangeCode(code: string): Promise<void>;
 }
 
 export interface UploadFile { uri: string; mimeType: string; size: number; name?: string }

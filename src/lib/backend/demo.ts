@@ -443,6 +443,9 @@ export function createDemoBackend(): Backend {
         if (u) u.pw = fnv(password);
         persist();
       },
+      async exchangeCode() {
+        // pas de lien e-mail en mode démonstration
+      },
     },
     storage: {
       async upload(bucket, path, file) {

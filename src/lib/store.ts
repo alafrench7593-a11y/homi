@@ -42,6 +42,11 @@ export const useUiStore = create<UiState>()(
       setHaptics: (hapticsEnabled) => set({ hapticsEnabled }),
       reset: () => set({ householdId: null, subject: null, nightMode: false }),
     }),
-    { name: 'toietmoi.ui', storage: createJSONStorage(() => AsyncStorage) },
+    {
+      name: 'toietmoi.ui',
+      storage: createJSONStorage(() => AsyncStorage),
+      // Le mode nuit n'est jamais restauré au lancement : il ne vit que pendant l'écran Nuit
+      partialize: ({ nightMode: _n, ...rest }) => rest, // eslint-disable-line @typescript-eslint/no-unused-vars
+    },
   ),
 );
