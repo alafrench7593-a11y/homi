@@ -111,7 +111,7 @@ export default function SettingsScreen() {
           <Segmented label="Thème de l’application" options={APPEARANCE} value={appearance} onChange={chooseAppearance} />
           <Text variant="small" muted>
             {appearance === 'auto'
-              ? 'Rose le jour, rose nuit automatiquement le soir (à partir de 18 h 30) et la nuit.'
+              ? 'Aurore claire et chaleureuse le jour, aurore de nuit automatiquement le soir (à partir de 18 h 30).'
               : appearance === 'night'
                 ? 'Tons très sombres et chauds, pensés pour les tétées et biberons nocturnes.'
                 : appearance === 'dark' ? 'Velours de nuit en permanence.' : 'Porcelaine claire en permanence.'}

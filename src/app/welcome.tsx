@@ -10,6 +10,7 @@ import { Icon, Text } from '@/components/ui';
 import { isDemo } from '@/lib/backend';
 import { BRAND } from '@/config/brand';
 import { NACRE, palette, radius, spacing } from '@/theme/tokens';
+import { Aurora } from '@/components/Aurora';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const JOURNEY = ['Contraception', 'Projet bébé', 'Grossesse', 'Naissance', 'Enfance'];
@@ -17,10 +18,10 @@ const JOURNEY = ['Contraception', 'Projet bébé', 'Grossesse', 'Naissance', 'En
 export default function Welcome() {
   const insets = useSafeAreaInsets();
   return (
-    <View style={{ flex: 1, backgroundColor: '#140A11' }}>
+    <View style={{ flex: 1, backgroundColor: '#1C1128' }}>
       <StatusBar style="light" />
-      <LinearGradient colors={['#1A1F4A', '#140A11', '#07081A']} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
-      <StarField density={50} color="#D8BC85" />
+      <Aurora mood="evening" intensity={1.25} />
+      <StarField density={40} color="#FFF1E6" />
       <View style={{ flex: 1, paddingTop: insets.top + spacing.lg, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, justifyContent: 'space-between' }}>
         <View style={{ alignItems: 'center', gap: spacing.md }}>
           <WeeksRing week={26} size={260}>
@@ -33,7 +34,7 @@ export default function Welcome() {
             {JOURNEY.map((j, i) => (
               <View key={j} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <Text variant="small" color={i === 2 ? palette.gold : 'rgba(251,248,244,0.55)'}>{j}</Text>
-                {i < JOURNEY.length - 1 && <View style={{ width: 14, height: 1, backgroundColor: 'rgba(200,163,94,0.5)' }} />}
+                {i < JOURNEY.length - 1 && <View style={{ width: 14, height: 1, backgroundColor: 'rgba(255,179,138,0.5)' }} />}
               </View>
             ))}
           </View>

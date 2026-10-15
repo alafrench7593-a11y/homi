@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { StarField } from '@/components/StarField';
 import { Chip, haptic, Icon, Row, Text, Toggle } from '@/components/ui';
@@ -16,6 +15,7 @@ import { useActiveSubject, useAddLog, useChildren, useInvalidate, useLogs, useOp
 import { useUiStore } from '@/lib/store';
 import { formatDuration, formatTime, timeAgo } from '@/lib/domain/dates';
 import type { Breastfeed, Diaper } from '@/lib/types';
+import { Aurora } from '@/components/Aurora';
 import { radius, spacing } from '@/theme/tokens';
 
 const GOLD = '#FF8FB1';
@@ -111,10 +111,10 @@ export default function NightMode() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#070A1C' }}>
+    <View style={{ flex: 1, backgroundColor: '#0D0912' }}>
       <StatusBar style="light" />
-      <LinearGradient colors={['#05071A', '#0D1129', '#141A3D']} style={{ position: 'absolute', inset: 0 } as never} />
-      <StarField density={60} />
+      <Aurora mood="lowlight" />
+      <StarField density={40} color="#F3D6DF" />
       <View style={{ flex: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, gap: spacing.md }}>
         <Row style={{ justifyContent: 'space-between' }}>
           <Pressable accessibilityRole="button" accessibilityLabel="Quitter le mode nuit" onPress={() => router.back()} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>

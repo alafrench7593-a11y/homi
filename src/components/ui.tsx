@@ -70,14 +70,14 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
   const t = useTheme();
   const bg = {
     surface: t.colors.surface,
-    soft: t.isDark ? 'rgba(255,111,156,0.10)' : '#FFE3EB',
-    lavender: t.isDark ? 'rgba(201,181,255,0.10)' : '#EFE9FF',
+    soft: t.isDark ? 'rgba(255,134,168,0.12)' : 'rgba(255,214,226,0.62)',
+    lavender: t.isDark ? 'rgba(195,178,255,0.12)' : 'rgba(225,215,255,0.6)',
     night: '#1E0F1A',
-    gold: t.isDark ? 'rgba(255,143,177,0.10)' : '#FFF0E6',
+    gold: t.isDark ? 'rgba(255,179,138,0.12)' : 'rgba(255,226,200,0.6)',
     danger: t.colors.dangerSoft,
   }[tone];
   const content = (
-    <View style={[styles.card, { backgroundColor: bg, borderColor: t.isDark ? t.colors.border : 'transparent', padding: padded ? spacing.md : 0 }, !t.isDark && tone === 'surface' && styles.shadow, style]}>
+    <View style={[styles.card, { backgroundColor: bg, borderColor: tone === 'surface' ? t.colors.border : 'transparent', padding: padded ? spacing.md : 0 }, !t.isDark && tone === 'surface' && styles.shadow, style]}>
       {children}
     </View>
   );
@@ -262,11 +262,11 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
 export function Banner({ tone = 'info', icon, title, children, action }: { tone?: 'info' | 'warning' | 'danger' | 'demo' | 'success'; icon?: IconName; title?: string; children?: React.ReactNode; action?: React.ReactNode }) {
   const t = useTheme();
   const c = {
-    info: { bg: t.isDark ? '#2A1D3A' : '#EFE9FF', fg: t.colors.lavender, icon: 'info' as IconName },
-    warning: { bg: t.isDark ? '#3A2A1C' : '#FFF1DC', fg: t.isDark ? '#F7C77E' : '#8A5A12', icon: 'alert-triangle' as IconName },
+    info: { bg: t.isDark ? 'rgba(195,178,255,0.12)' : 'rgba(225,215,255,0.6)', fg: t.colors.lavender, icon: 'info' as IconName },
+    warning: { bg: t.isDark ? 'rgba(255,190,120,0.12)' : 'rgba(255,235,200,0.7)', fg: t.isDark ? '#F7C77E' : '#8A5A12', icon: 'alert-triangle' as IconName },
     danger: { bg: t.colors.dangerSoft, fg: t.colors.danger, icon: 'alert-octagon' as IconName },
-    demo: { bg: t.isDark ? '#2E1A27' : '#FFE9EF', fg: t.colors.textMuted, icon: 'smartphone' as IconName },
-    success: { bg: t.isDark ? '#22362A' : '#E6F0E8', fg: t.colors.success, icon: 'check-circle' as IconName },
+    demo: { bg: t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.6)', fg: t.colors.textMuted, icon: 'smartphone' as IconName },
+    success: { bg: t.isDark ? 'rgba(159,224,181,0.12)' : 'rgba(210,240,220,0.7)', fg: t.colors.success, icon: 'check-circle' as IconName },
   }[tone];
   return (
     <View style={[styles.banner, { backgroundColor: c.bg }]} accessibilityRole={tone === 'danger' ? 'alert' : undefined}>
@@ -363,7 +363,7 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
 
 const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: 1 },
-  shadow: { shadowColor: '#C2416E', shadowOpacity: 0.07, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: 2 },
+  shadow: { shadowColor: '#B4507A', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 0 },
   button: { borderRadius: radius.pill, borderWidth: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 10 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, minHeight: 40, borderRadius: radius.pill, borderWidth: 1.2 },
   segmented: { flexDirection: 'row', borderRadius: radius.pill, padding: 4, gap: 4 },

@@ -2,7 +2,7 @@
 
 Application mobile française qui accompagne les familles du désir d'enfant aux 10 ans de l'enfant : grossesse (y compris multiple), naissance, post-partum, suivi quotidien du bébé, enfants, santé de l'adulte, assistant IA, communauté modérée et partage familial.
 
-**Design** : « Rose » — mosaïque moderne, rose le jour, « rose nuit » le soir (Space Grotesk + Manrope).
+**Design** : « Aurore » — fond d’aurore boréale aux couleurs douces qui ondule lentement, cartes translucides ; clair et chaleureux le jour, aurore de nuit le soir (Space Grotesk + Manrope).
 
 **Pile technique** : React Native · Expo SDK 57 · TypeScript strict · Expo Router · Supabase (Postgres + RLS, Auth, Storage, Edge Functions) · TanStack Query (persisté, hors connexion) · Zustand · RevenueCat · Expo Notifications.
 

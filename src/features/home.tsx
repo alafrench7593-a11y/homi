@@ -28,7 +28,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
   const n = Math.max(1, babies?.length ?? 1);
   const orbSize = n === 1 ? 168 : n === 2 ? 120 : 92;
   const pct = Math.max(2, Math.min(100, Math.round((p.weeksSA / 41) * 100)));
-  const tile = { flex: 1, borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.colors.surface, borderWidth: t.isDark ? 1 : 0, borderColor: t.colors.border, gap: 2 } as const;
+  const tile = { flex: 1, borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, gap: 2 } as const;
   return (
     <View style={{ gap: spacing.xs }}>
       <Pressable
@@ -37,8 +37,8 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
         onPress={() => { haptic('selection'); router.push('/pregnancy'); }}
         style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })}
       >
-        <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, borderWidth: t.isDark ? 1 : 0, borderColor: t.colors.border, padding: spacing.md, minHeight: 236 }}>
-          <LinearGradient colors={t.isDark ? ['transparent', 'rgba(255,92,138,0.16)'] : ['#FFFFFF', '#FFE6EE']} start={{ x: 0.2, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+        <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, minHeight: 236 }}>
+          <LinearGradient colors={t.isDark ? ['rgba(255,255,255,0.02)', 'rgba(255,134,168,0.16)'] : ['rgba(255,255,255,0.55)', 'rgba(255,200,215,0.35)']} start={{ x: 0.2, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{n > 1 ? `GROSSESSE · ${n} BÉBÉS` : 'GROSSESSE'}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: spacing.md }}>
             <Text style={{ fontFamily: fonts.display, fontSize: 92, lineHeight: 90, letterSpacing: -5 }}>{p.weeksSA}</Text>
@@ -52,7 +52,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
           </View>
           <View style={{ marginTop: 'auto', paddingTop: spacing.md }}>
             <Text variant="caption" muted style={{ alignSelf: 'flex-end', marginBottom: 4 }}>{pct} %</Text>
-            <View style={{ height: 8, borderRadius: 4, backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : '#F7DCE5', overflow: 'hidden' }}>
+            <View style={{ height: 8, borderRadius: 4, backgroundColor: t.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(233,88,124,0.12)', overflow: 'hidden' }}>
               <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ width: `${pct}%`, height: '100%', borderRadius: 4 }} />
             </View>
           </View>

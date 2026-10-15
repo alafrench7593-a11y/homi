@@ -1,6 +1,5 @@
 import React from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -8,6 +7,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { IconButton, Text } from './ui';
 import { StarField } from './StarField';
+import { Aurora } from './Aurora';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -62,8 +62,8 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
   return (
     <View style={{ flex: 1, backgroundColor: t.colors.background }}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
-      <LinearGradient colors={t.colors.gradient} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
-      {(stars || t.isDark) && <StarField density={t.name === 'night' ? 46 : stars ? 28 : 14} color={t.name === 'dark' ? '#D8BC85' : undefined} />}
+      <Aurora />
+      {(stars || t.isDark) && <StarField density={t.name === 'night' ? 30 : stars ? 26 : 16} color="#FFF1E6" />}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {header}
         {body}

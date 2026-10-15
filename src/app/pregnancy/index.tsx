@@ -14,6 +14,7 @@ import { countdownLabel, multiplicityLabel, pregnancyProgress } from '@/lib/doma
 import { formatWeight, weekInfo } from '@/lib/domain/fetalWeeks';
 import { formatDateFr } from '@/lib/domain/dates';
 import type { ExpectedBaby } from '@/lib/types';
+import { Aurora } from '@/components/Aurora';
 import { spacing } from '@/theme/tokens';
 
 const HUES = ['rose', 'lavande', 'or'] as const;
@@ -64,7 +65,8 @@ export default function PregnancyUniverse() {
 
   return (
     <Screen back stars>
-      <View style={{ backgroundColor: '#1E0F1A', borderWidth: 1, borderColor: 'rgba(255,143,177,0.18)', borderRadius: 30, padding: spacing.lg, gap: spacing.sm, overflow: 'hidden' }}>
+      <View style={{ backgroundColor: 'rgba(28,17,40,0.72)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.14)', borderRadius: 32, padding: spacing.lg, gap: spacing.sm, overflow: 'hidden' }}>
+        <Aurora mood="night" intensity={1.2} />
         <Text variant="small" color={GOLD} center>{multiplicityLabel(pregnancy.multiplicity)}</Text>
         <Text variant="hero" color={TEXT} center>{w} SA</Text>
         <Text center color={MUTED}>{Math.max(0, w - 2)} semaines de grossesse, trimestre {w < 15 ? 1 : w < 29 ? 2 : 3}</Text>

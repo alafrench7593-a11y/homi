@@ -1,7 +1,7 @@
 /**
- * Direction artistique « Rose » — moderne, en mosaïque (bento).
- * Jour : rose poudré lumineux, cartes blanches, chiffres XXL en Space Grotesk.
- * Soir & nuit : « Rose nuit », prune profonde et rose néon doux.
+ * Direction artistique « Aurore » — immersive et chaleureuse.
+ * Un fond d'aurore boréale aux couleurs douces (pêche, rose, lavande, menthe) ondule derrière
+ * des cartes translucides. Jour : lumière crème et pêche. Soir & nuit : aurore lumineuse sur ciel prune.
  * Le rouge reste réservé aux urgences.
  */
 
@@ -27,7 +27,7 @@ export const palette = {
 };
 
 /** Dégradé signature (bouton +, anneau, accents). */
-export const NACRE: [string, string, string] = ['#FF9EBB', '#FF5C8A', '#FF7A6B'];
+export const NACRE: [string, string, string] = ['#FFB38A', '#FF7FA8', '#A98BFF'];
 
 export type ThemeName = 'light' | 'dark' | 'night';
 
@@ -88,26 +88,26 @@ export const themes: Record<ThemeName, Theme> = {
     name: 'light',
     isDark: false,
     colors: {
-      background: palette.mist,
-      backgroundAlt: palette.mistDeep,
-      gradient: ['#FFF7F9', '#FFF1F4', '#FFE9F0'],
-      surface: '#FFFFFF',
-      surfaceAlt: '#FFEAF0',
-      border: 'rgba(194,65,110,0.10)',
-      text: palette.ink,
-      textMuted: '#86707C',
-      primary: '#F0477D',
+      background: '#FFF6EF',
+      backgroundAlt: '#FFEDE6',
+      gradient: ['#FFF7F0', '#FFF2F1', '#F6F1FC'],
+      surface: 'rgba(255,255,255,0.68)',
+      surfaceAlt: 'rgba(255,255,255,0.46)',
+      border: 'rgba(255,255,255,0.9)',
+      text: '#2A1A26',
+      textMuted: '#7E6873',
+      primary: '#E9587C',
       primaryText: '#FFFFFF',
       accent: '#FFB3C8',
-      accentSoft: '#FFE3EB',
-      lavender: palette.lavenderInk,
-      gold: palette.goldInk,
+      accentSoft: 'rgba(255,179,200,0.35)',
+      lavender: '#7A5CE0',
+      gold: '#C2416E',
       success: '#2F8A5B',
       danger: palette.danger,
       dangerSoft: palette.dangerSoft,
-      tabBar: 'rgba(26,16,22,0.94)',
-      overlay: 'rgba(26,16,22,0.40)',
-      heart: palette.clay,
+      tabBar: 'rgba(42,26,38,0.86)',
+      overlay: 'rgba(42,26,38,0.35)',
+      heart: '#F0577F',
     },
   },
   // Soir & nuit : « Rose nuit »
@@ -115,26 +115,26 @@ export const themes: Record<ThemeName, Theme> = {
     name: 'dark',
     isDark: true,
     colors: {
-      background: palette.nightDeep,
-      backgroundAlt: '#1B0E17',
-      gradient: ['#2A1222', '#170B14', '#0E070C'],
-      surface: '#22131D',
-      surfaceAlt: '#2E1A27',
-      border: 'rgba(255,143,177,0.12)',
-      text: '#FFF1F5',
-      textMuted: '#C7A9B8',
-      primary: '#FF6F9C',
-      primaryText: '#1A0A13',
-      accent: palette.gold,
-      accentSoft: '#3A1D2E',
-      lavender: palette.lavender,
-      gold: palette.gold,
+      background: '#170F22',
+      backgroundAlt: '#1D1329',
+      gradient: ['#2A1834', '#1C1128', '#120B1C'],
+      surface: 'rgba(255,255,255,0.07)',
+      surfaceAlt: 'rgba(255,255,255,0.11)',
+      border: 'rgba(255,255,255,0.12)',
+      text: '#FFF4EE',
+      textMuted: '#CDB8C6',
+      primary: '#FF86A8',
+      primaryText: '#2A0F1E',
+      accent: '#FF9BB8',
+      accentSoft: 'rgba(255,134,168,0.16)',
+      lavender: '#C3B2FF',
+      gold: '#FFB38A',
       success: '#9FE0B5',
       danger: '#FF8A8A',
-      dangerSoft: '#3D1A22',
-      tabBar: 'rgba(34,19,29,0.94)',
-      overlay: 'rgba(0,0,0,0.6)',
-      heart: '#FF6F9C',
+      dangerSoft: 'rgba(255,90,90,0.16)',
+      tabBar: 'rgba(28,17,40,0.82)',
+      overlay: 'rgba(0,0,0,0.55)',
+      heart: '#FF86A8',
     },
   },
   // Mode nuit (suivi de bébé à 3 h du matin) : très peu de lumière, rose tamisé
