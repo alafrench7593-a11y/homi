@@ -400,7 +400,7 @@ export function createDemoBackend(): Backend {
         exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
-        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions'].map((t) => [t, view(t)])),
+        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
           ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents']
