@@ -1,70 +1,121 @@
-/** Communauté : forums séparés par parcours, sous pseudonyme. */
-import React, { useMemo, useState } from 'react';
+/**
+ * Communauté : 15 espaces séparés, ouverts à toutes et tous quel que soit le parcours.
+ * « Mes espaces » sont suggérés d'après le profil ; « Tous les espaces » restent accessibles.
+ */
+import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Banner, Button, Card, Chip, Field, Icon, IconButton, Row, SectionTitle, Text } from '@/components/ui';
-import { PostCard } from '@/features/community';
-import { useCommunityProfile, useFeed, useForums, useProfile } from '@/lib/data/hooks';
+import { Banner, Button, Card, Chip, Field, Icon, IconButton, ListRow, Loading, Row, SectionTitle, Text } from '@/components/ui';
+import { PostCard, SpaceTile, spaceIcon } from '@/features/community';
+import { useCommunityProfile, useFeed } from '@/lib/data/hooks';
+import { useCommunitySearch, useSavedPosts, useSpaces } from '@/lib/data/hooks-community';
+import type { FeedPost } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
-const ICONS: Record<string, React.ComponentProps<typeof Icon>['name']> = { shield: 'shield', sparkles: 'star', moon: 'moon', twins: 'copy', heart: 'heart', drop: 'droplet', baby: 'smile', sun: 'sun', users: 'users', map: 'map-pin' };
-const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-
 export default function Community() {
   const t = useTheme();
-  const { data: forums } = useForums();
-  const { data: profile } = useProfile();
+  const spaces = useSpaces();
   const { data: me } = useCommunityProfile();
+  const { data: saved } = useSavedPosts();
   const [forumId, setForumId] = useState<string | null>(null);
   const [q, setQ] = useState('');
-  const [savedOnly, setSavedOnly] = useState(false);
-  const { data: feed, refetch } = useFeed(forumId);
+  const [searchInSpace, setSearchInSpace] = useState(true);
+  const current = spaces.all.find((f) => f.id === forumId) ?? null;
+  const feed = useFeed(forumId);
+  const searching = q.trim().length >= 2;
+  const search = useCommunitySearch(q, current && searchInSpace ? current.id : null);
+  const titleOf = (p: FeedPost) => spaces.all.find((f) => f.id === p.forum_id)?.title;
+  const select = (id: string | null) => setForumId(forumId === id ? null : id);
 
-  const mine = useMemo(() => {
-    const j = profile?.journeys ?? [];
-    return (forums ?? []).filter((f) => !f.journeys.length || f.journeys.some((x) => j.includes(x)));
-  }, [forums, profile]);
-  const posts = (feed ?? []).filter((p) => (!savedOnly || p.saved) && (!q || norm(`${p.title} ${p.body}`).includes(norm(q))));
-  const current = forums?.find((f) => f.id === forumId);
+  const list = (posts: FeedPost[] | undefined, empty: string) =>
+    posts?.length ? posts.map((p) => <PostCard key={p.id} post={p} forumTitle={current ? undefined : titleOf(p)} />) : (
+      <Text muted center style={{ padding: spacing.lg }}>{empty}</Text>
+    );
 
   return (
-    <Screen bottomInset={96} title="Communauté" subtitle="Échanger entre parents, sous pseudonyme." right={<IconButton icon="user" label="Mon profil communauté" onPress={() => router.push('/community/profile')} />}>
+    <Screen
+      bottomInset={96}
+      title="Communauté"
+      subtitle="Tous les espaces sont ouverts, sous pseudonyme."
+      right={(
+        <Row gap={0}>
+          <IconButton icon="bookmark" label="Mes favoris" onPress={() => router.push('/community/saved')} />
+          <IconButton icon="user" label="Mon pseudonyme" onPress={() => router.push('/community/profile')} />
+        </Row>
+      )}
+    >
       {!me && (
         <Banner tone="info" title="Choisissez un pseudonyme" action={<Button label="Choisir mon pseudonyme" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => router.push('/community/profile')} />}>
-          {'Vous pouvez lire sans compte communauté. Pour publier, un pseudonyme suffit : votre nom et vos données restent privés.'}
+          {'Vous pouvez tout lire dès maintenant. Pour publier ou répondre, un pseudonyme suffit : votre nom et votre adresse e-mail restent privés.'}
         </Banner>
       )}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
-        <Chip label="Tous" selected={!forumId} onPress={() => setForumId(null)} />
-        {(mine.length ? mine : forums ?? []).concat((forums ?? []).filter((f) => !mine.includes(f))).map((f) => (
-          <Chip key={f.id} label={f.title} icon={ICONS[f.icon ?? ''] ?? 'message-square'} selected={forumId === f.id} onPress={() => setForumId(forumId === f.id ? null : f.id)} />
-        ))}
-      </ScrollView>
-      {current && (
-        <Card tone="soft">
-          <Text weight="bold">{current.title}</Text>
-          <Text variant="small" muted>{current.description}</Text>
-          {current.is_local && <Text variant="caption" muted style={{ marginTop: 4 }}>Ne publiez jamais d’adresse personnelle : indiquez une zone générale et proposez un lieu public.</Text>}
-        </Card>
-      )}
-      <Row>
-        <View style={{ flex: 1 }}><Field label="Rechercher" placeholder="Mots-clés" value={q} onChangeText={setQ} /></View>
-        <View style={{ paddingTop: 26 }}><Chip label="Enregistrées" icon="bookmark" selected={savedOnly} onPress={() => setSavedOnly(!savedOnly)} /></View>
-      </Row>
-      <Button label="Nouvelle publication" icon="edit-3" onPress={() => router.push({ pathname: '/community/new', params: { forum: forumId ?? '' } })} />
 
-      <SectionTitle title={current ? 'Dernières discussions' : 'Dans vos forums'} action="Actualiser" onAction={() => refetch()} />
-      {posts.length ? posts.map((p) => <PostCard key={p.id} post={p} forumTitle={forums?.find((f) => f.id === p.forum_id)?.title} />) : (
-        <Text muted center style={{ padding: spacing.lg }}>Aucune publication pour l’instant. Lancez la discussion !</Text>
+      <Field label="Rechercher dans la communauté" placeholder="Sommeil, purée, valise de maternité…" value={q} onChangeText={setQ} returnKeyType="search" autoCorrect={false} />
+
+      {searching ? (
+        <>
+          {current && (
+            <Row wrap>
+              <Chip label={`Dans « ${current.title} »`} icon={spaceIcon(current)} selected={searchInSpace} onPress={() => setSearchInSpace(true)} />
+              <Chip label="Tous les espaces" selected={!searchInSpace} onPress={() => setSearchInSpace(false)} />
+            </Row>
+          )}
+          <SectionTitle title={search.data ? `${search.data.length} résultat${search.data.length > 1 ? 's' : ''}` : 'Résultats'} action="Effacer" onAction={() => setQ('')} />
+          {search.isLoading ? <Loading label="Recherche…" /> : search.error ? (
+            <Banner tone="danger">{search.error instanceof Error ? search.error.message : 'Recherche impossible.'}</Banner>
+          ) : list(search.data, 'Aucune publication ne correspond. Essayez d’autres mots ou lancez la discussion !')}
+        </>
+      ) : (
+        <>
+          <Card padded={false}>
+            <ListRow icon="bookmark" title="Mes favoris" subtitle={saved?.length ? `${saved.length} publication${saved.length > 1 ? 's' : ''} enregistrée${saved.length > 1 ? 's' : ''}` : 'Enregistrez les discussions utiles'} onPress={() => router.push('/community/saved')} />
+            <ListRow icon="user" title={me ? `Mon pseudonyme : ${me.pseudonym}` : 'Mon pseudonyme'} subtitle={me ? 'Mes publications, personnes bloquées' : 'Requis pour publier'} onPress={() => router.push('/community/profile')} />
+          </Card>
+
+          <SectionTitle title="Mes espaces" />
+          {spaces.isLoading ? <Loading /> : spaces.mine.length ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm, paddingVertical: 2 }}>
+              {spaces.mine.map((f) => <SpaceTile key={f.id} forum={f} selected={forumId === f.id} onPress={() => select(f.id)} />)}
+            </ScrollView>
+          ) : (
+            <Text variant="small" muted>Indiquez votre parcours dans votre profil pour recevoir des suggestions. Tous les espaces ci-dessous vous sont ouverts.</Text>
+          )}
+
+          <SectionTitle title="Tous les espaces" />
+          <Row wrap>
+            <Chip label="Tout le fil" icon="layers" selected={!forumId} onPress={() => setForumId(null)} />
+            {spaces.all.map((f) => (
+              <Chip key={f.id} label={f.title} icon={spaceIcon(f)} selected={forumId === f.id} onPress={() => select(f.id)} />
+            ))}
+          </Row>
+
+          {current && (
+            <Card tone="soft">
+              <Row><Icon name={spaceIcon(current)} size={18} color={t.colors.primary} /><Text weight="bold" style={{ flex: 1 }}>{current.title}</Text></Row>
+              <Text variant="small" muted style={{ marginTop: 4 }}>{current.description}</Text>
+              {current.is_local && <Text variant="caption" muted style={{ marginTop: 4 }}>Ne publiez jamais d’adresse personnelle : indiquez une zone générale et proposez un lieu public.</Text>}
+            </Card>
+          )}
+          <Button
+            label={current ? `Publier dans « ${current.title} »` : 'Nouvelle publication'}
+            icon="edit-3"
+            onPress={() => router.push({ pathname: '/community/new', params: { forum: forumId ?? '' } })}
+          />
+
+          <SectionTitle title={current ? `Fil de « ${current.title} »` : 'Fil de tous les espaces'} action="Actualiser" onAction={() => feed.refetch()} />
+          {feed.isLoading ? <Loading /> : list(feed.data, current ? 'Aucune publication dans cet espace pour l’instant. Lancez la discussion !' : 'Aucune publication pour l’instant. Lancez la discussion !')}
+        </>
       )}
+
       <Card tone="soft">
         <Row><Icon name="shield" size={18} color={t.colors.lavender} /><Text weight="bold">Règles de la communauté</Text></Row>
         <Text variant="small" muted style={{ marginTop: 6 }}>
-          Bienveillance, aucun jugement, pas de conseil médical présenté comme une certitude, pas de vente, aucune donnée personnelle. Les contenus signalés plusieurs fois sont masqués en attendant la modération.
+          Bienveillance, aucun jugement, pas de conseil médical présenté comme une certitude, pas de vente, aucune donnée personnelle. Les contenus signalés trois fois sont masqués en attendant la modération ; vous pouvez bloquer une personne à tout moment.
         </Text>
       </Card>
+      <View style={{ height: spacing.md }} />
     </Screen>
   );
 }

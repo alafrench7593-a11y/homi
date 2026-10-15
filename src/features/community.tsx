@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { Pressable, Share, View } from 'react-native';
 import { router } from 'expo-router';
-import { Card, Chip, Icon, Row, Text } from '@/components/ui';
+import { Card, Chip, Icon, type IconName, Row, Text } from '@/components/ui';
 import { Sheet, useToast } from '@/components/Overlays';
-import { backend, eq } from '@/lib/backend';
-import { useInvalidate } from '@/lib/data/hooks';
-import { useUserId } from '@/lib/auth';
+import { useBlockAuthor, useReport, useToggleLike, useToggleSave } from '@/lib/data/hooks-community';
 import { timeAgo } from '@/lib/domain/dates';
-import type { FeedPost, ReportReason } from '@/lib/types';
+import type { FeedPost, Forum, ReportReason } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
-import { spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
 import { BRAND } from '@/config/brand';
 
 export const REPORT_REASONS: { key: ReportReason; label: string }[] = [
@@ -22,29 +20,60 @@ export const REPORT_REASONS: { key: ReportReason; label: string }[] = [
   { key: 'other', label: 'Autre' },
 ];
 
+const SPACE_ICONS: Record<string, IconName> = {
+  shield: 'shield', sparkles: 'star', fertility: 'activity', moon: 'moon', twins: 'copy', birth: 'sunrise', heart: 'heart', drop: 'droplet',
+  bottle: 'coffee', sleep: 'cloud', food: 'pie-chart', baby: 'smile', sun: 'sun', users: 'users', map: 'map-pin',
+};
+export const spaceIcon = (f?: Pick<Forum, 'icon'> | null): IconName => SPACE_ICONS[f?.icon ?? ''] ?? 'message-square';
+
+/** Tuile d'espace (suggestions « Mes espaces »). */
+export function SpaceTile({ forum, selected, onPress }: { forum: Forum; selected?: boolean; onPress: () => void }) {
+  const t = useTheme();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      accessibilityLabel={`Espace ${forum.title}. ${forum.description}`}
+      onPress={onPress}
+      style={{
+        width: 168, minHeight: 112, padding: spacing.sm, gap: 4, borderRadius: radius.lg, borderWidth: selected ? 2 : 1,
+        borderColor: selected ? t.colors.primary : t.colors.border, backgroundColor: t.colors.surface,
+      }}
+    >
+      <Icon name={spaceIcon(forum)} size={20} color={t.colors.primary} />
+      <Text weight="bold" numberOfLines={1}>{forum.title}</Text>
+      <Text variant="caption" muted numberOfLines={2}>{forum.description}</Text>
+    </Pressable>
+  );
+}
+
 export function ReportSheet({ visible, onClose, postId, commentId }: { visible: boolean; onClose: () => void; postId?: string; commentId?: string }) {
   const toast = useToast();
-  const inv = useInvalidate();
+  const reportM = useReport();
+  const blockM = useBlockAuthor();
   async function report(reason: ReportReason) {
     try {
-      await backend.insert('reports', { post_id: postId ?? null, comment_id: commentId ?? null, reason });
+      await reportM.mutateAsync({ postId, commentId, reason });
       toast('Merci. L’équipe de modération va examiner ce contenu.');
-      inv('forum_feed', 'comment_feed');
     } catch (e) {
       toast(e instanceof Error ? e.message : 'Signalement impossible.', 'error');
     }
     onClose();
   }
   async function block() {
-    await backend.rpc('block_author', { p_post: postId ?? null, p_comment: commentId ?? null });
-    inv('forum_feed', 'comment_feed');
-    toast('Cette personne est bloquée : vous ne verrez plus ses contenus.');
+    try {
+      await blockM.mutateAsync({ postId, commentId });
+      toast('Cette personne est bloquée : vous ne verrez plus ses contenus.');
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Blocage impossible.', 'error');
+    }
     onClose();
   }
   return (
-    <Sheet visible={visible} onClose={onClose} title="Signaler ou bloquer">
+    <Sheet visible={visible} onClose={onClose} title={commentId ? 'Signaler ce commentaire' : 'Signaler cette publication'}>
+      <Text variant="small" muted>Pourquoi ce contenu pose-t-il problème ?</Text>
       {REPORT_REASONS.map((r) => (
-        <Pressable key={r.key} accessibilityRole="button" onPress={() => report(r.key)} style={{ minHeight: 48, justifyContent: 'center' }}>
+        <Pressable key={r.key} accessibilityRole="button" disabled={reportM.isPending} onPress={() => report(r.key)} style={{ minHeight: 48, justifyContent: 'center' }}>
           <Text>{r.label}</Text>
         </Pressable>
       ))}
@@ -56,34 +85,33 @@ export function ReportSheet({ visible, onClose, postId, commentId }: { visible: 
 
 export function PostCard({ post, forumTitle, full }: { post: FeedPost; forumTitle?: string; full?: boolean }) {
   const t = useTheme();
-  const inv = useInvalidate();
-  const userId = useUserId();
+  const toast = useToast();
+  const like = useToggleLike();
+  const save = useToggleSave();
   const [reporting, setReporting] = useState(false);
 
-  async function like() {
-    if (post.liked) await backend.remove('post_likes', [eq('post_id', post.id), eq('user_id', userId)]);
-    else await backend.insert('post_likes', { post_id: post.id, user_id: userId });
-    inv('forum_feed');
-  }
-  async function save() {
-    if (post.saved) await backend.remove('saved_posts', [eq('post_id', post.id), eq('user_id', userId)]);
-    else await backend.insert('saved_posts', { post_id: post.id, user_id: userId });
-    inv('forum_feed');
+  async function toggleSave() {
+    try {
+      const saved = await save.mutateAsync(post);
+      toast(saved ? 'Ajoutée à vos favoris.' : 'Retirée de vos favoris.');
+    } catch (e) {
+      toast(e instanceof Error ? e.message : 'Action impossible.', 'error');
+    }
   }
 
   return (
     <Card onPress={full ? undefined : () => router.push(`/community/post/${post.id}`)} accessibilityLabel={`Publication de ${post.pseudonym ?? 'anonyme'} : ${post.title}`}>
       <Row style={{ justifyContent: 'space-between' }}>
-        <Text variant="caption" muted>{post.pseudonym ?? 'Membre'}, {timeAgo(post.created_at)}{forumTitle ? ` dans ${forumTitle}` : ''}</Text>
+        <Text variant="caption" muted style={{ flex: 1 }}>{post.pseudonym ?? 'Membre'}, {timeAgo(post.created_at)}{forumTitle ? ` dans ${forumTitle}` : ''}</Text>
         {post.status !== 'visible' && <Text variant="caption" color={t.colors.gold}>{post.status === 'pending_review' ? 'En relecture' : 'Masquée'}</Text>}
       </Row>
       <Text weight="bold" style={{ marginTop: 4 }}>{post.title}</Text>
       <Text variant="small" numberOfLines={full ? undefined : 3} style={{ marginTop: 2 }}>{post.body}</Text>
       {post.area_label ? <Row gap={4} style={{ marginTop: 6 }}><Icon name="map-pin" size={12} color={t.colors.textMuted} /><Text variant="caption" muted>{post.area_label}</Text></Row> : null}
       <Row style={{ marginTop: spacing.sm }} gap={spacing.xs}>
-        <Chip label={String(post.like_count)} icon="heart" selected={post.liked} onPress={like} />
+        <Chip label={String(post.like_count)} icon="heart" selected={post.liked} onPress={() => like.mutate(post)} />
         <Chip label={String(post.comment_count)} icon="message-square" onPress={() => router.push(`/community/post/${post.id}`)} />
-        <Chip label="" icon="bookmark" selected={post.saved} onPress={save} />
+        <Chip label={post.saved ? 'Favori' : ''} icon="bookmark" selected={post.saved} onPress={toggleSave} />
         <View style={{ flex: 1 }} />
         <Pressable accessibilityRole="button" accessibilityLabel="Partager" hitSlop={10} onPress={() => Share.share({ message: `« ${post.title} » — une discussion sur ${BRAND.name}` })} style={{ padding: 8 }}>
           <Icon name="share-2" size={18} color={t.colors.textMuted} />
