@@ -148,7 +148,7 @@ export function EmergencyList({ compact }: { compact?: boolean }) {
           style={({ pressed }) => [styles.emergency, { backgroundColor: t.colors.surface, borderColor: t.colors.border, opacity: pressed ? 0.85 : 1 }]}
         >
           <View style={[styles.phone, { backgroundColor: t.colors.dangerSoft }]}>
-            <Text variant="heading" color={t.colors.danger}>{r.phone}</Text>
+            <Text weight="bold" color={t.colors.danger} style={{ fontSize: 20, lineHeight: 24 }}>{r.phone}</Text>
           </View>
           <View style={{ flex: 1, gap: 2 }}>
             <Text weight="bold">{r.label}</Text>

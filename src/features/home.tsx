@@ -32,7 +32,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
       onPress={() => { haptic('selection'); router.push('/pregnancy'); }}
       style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })}
     >
-      <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: palette.night, paddingVertical: spacing.lg, paddingHorizontal: spacing.md }}>
+      <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: '#121633', borderWidth: 1, borderColor: 'rgba(216,188,133,0.28)', paddingVertical: spacing.lg, paddingHorizontal: spacing.md }}>
         <StarField density={26} />
         <View style={{ alignItems: 'center' }}>
           <WeeksRing week={p.weeksSA} size={280}>
@@ -81,7 +81,7 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
   ];
 
   return (
-    <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.xl, padding: spacing.md, gap: spacing.sm }}>
+    <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.xl, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, gap: spacing.sm }}>
       <View style={{ alignItems: 'center' }}>
         <DayClock events={events} size={compact ? 220 : 290} label={`Journée de ${child.first_name}`}>
           {openSleep ? (
@@ -146,8 +146,8 @@ export function QuickActions({ keys, childId, onCustomize }: { keys: string[]; c
         >
           {({ pressed }) => (
             <>
-              <View style={{ width: 58, height: 58, borderRadius: 29, backgroundColor: pressed ? palette.powderDeep : palette.powder, alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name={QUICK[k].icon} color={palette.night} />
+              <View style={{ width: 58, height: 58, borderRadius: 29, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name={QUICK[k].icon} color={t.colors.gold} />
               </View>
               <Text variant="caption" weight="medium" center numberOfLines={1}>{QUICK[k].label}</Text>
             </>

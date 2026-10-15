@@ -9,11 +9,12 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { BricolageGrotesque_700Bold } from '@expo-google-fonts/bricolage-grotesque/700Bold';
-import { BricolageGrotesque_500Medium } from '@expo-google-fonts/bricolage-grotesque/500Medium';
-import { Figtree_400Regular } from '@expo-google-fonts/figtree/400Regular';
-import { Figtree_500Medium } from '@expo-google-fonts/figtree/500Medium';
-import { Figtree_600SemiBold } from '@expo-google-fonts/figtree/600SemiBold';
+import { CormorantGaramond_500Medium } from '@expo-google-fonts/cormorant-garamond/500Medium';
+import { CormorantGaramond_600SemiBold } from '@expo-google-fonts/cormorant-garamond/600SemiBold';
+import { CormorantGaramond_500Medium_Italic } from '@expo-google-fonts/cormorant-garamond/500Medium_Italic';
+import { Jost_400Regular } from '@expo-google-fonts/jost/400Regular';
+import { Jost_500Medium } from '@expo-google-fonts/jost/500Medium';
+import { Jost_600SemiBold } from '@expo-google-fonts/jost/600SemiBold';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
@@ -87,7 +88,7 @@ function Navigator() {
 }
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({ BricolageGrotesque_700Bold, BricolageGrotesque_500Medium, Figtree_400Regular, Figtree_500Medium, Figtree_600SemiBold });
+  const [loaded, error] = useFonts({ CormorantGaramond_500Medium, CormorantGaramond_600SemiBold, CormorantGaramond_500Medium_Italic, Jost_400Regular, Jost_500Medium, Jost_600SemiBold });
 
   useEffect(() => {
     if (loaded || error) SplashScreen.hideAsync().catch(() => undefined);

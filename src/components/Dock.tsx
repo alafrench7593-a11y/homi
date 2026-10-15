@@ -8,8 +8,9 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from 'expo-router/tabs';
 import { Feather } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, palette, radius, spacing } from '@/theme/tokens';
+import { fonts, NACRE, palette, radius, spacing } from '@/theme/tokens';
 import { useActiveSubject, useChildren } from '@/lib/data/hooks';
 import { Sheet } from './Overlays';
 import { haptic, Icon, type IconName, Text } from './ui';
@@ -47,7 +48,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3, minHeight: 56 }}
       >
         <Feather name={TAB_ICONS[route.name] ?? 'circle'} size={21} color={focused ? palette.gold : 'rgba(251,248,244,0.62)'} />
-        <Text style={{ fontFamily: focused ? fonts.bodyBold : fonts.bodyMedium, fontSize: 10.5, lineHeight: 13 }} color={focused ? palette.milk : 'rgba(251,248,244,0.62)'} numberOfLines={1}>
+        <Text style={{ fontFamily: focused ? fonts.bodyMedium : fonts.body, fontSize: 10.5, lineHeight: 13, letterSpacing: 0.3 }} color={focused ? palette.milk : 'rgba(251,248,244,0.62)'} numberOfLines={1}>
           {label}
         </Text>
         {focused && <View style={{ position: 'absolute', top: 4, width: 4, height: 4, borderRadius: 2, backgroundColor: palette.gold }} />}
@@ -58,15 +59,16 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   return (
     <>
       <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: Math.max(insets.bottom, 10), paddingHorizontal: spacing.sm }}>
-        <View style={{ height: DOCK_HEIGHT - 10, borderRadius: radius.xl, backgroundColor: t.colors.tabBar, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4 }}>
+        <View style={{ height: DOCK_HEIGHT - 10, borderRadius: radius.xl, backgroundColor: t.colors.tabBar, borderWidth: 1, borderColor: 'rgba(216,188,133,0.28)', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4 }}>
           {left.map(renderTab)}
           <View style={{ width: 70, alignItems: 'center' }}>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Ajouter ou poser une question"
               onPress={() => { haptic('light'); setOpen(true); }}
-              style={({ pressed }) => ({ width: 58, height: 58, borderRadius: 29, marginTop: -26, backgroundColor: palette.powder, borderWidth: 5, borderColor: t.colors.background, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pressed ? 0.94 : 1 }] })}
+              style={({ pressed }) => ({ width: 60, height: 60, borderRadius: 30, marginTop: -28, borderWidth: 4, borderColor: t.colors.background, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', transform: [{ scale: pressed ? 0.94 : 1 }] })}
             >
+              <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
               <Feather name="plus" size={26} color={palette.night} />
             </Pressable>
           </View>
@@ -103,7 +105,7 @@ function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => 
       <Pressable
         accessibilityRole="button"
         onPress={go(() => router.push('/assistant/chat'))}
-        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: pressed ? palette.nightSoft : palette.night })}
+        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: 'rgba(216,188,133,0.35)', backgroundColor: pressed ? palette.nightSoft : palette.night })}
       >
         <Icon name="message-circle" color={palette.gold} />
         <View style={{ flex: 1 }}>

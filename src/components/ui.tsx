@@ -5,9 +5,10 @@ import {
   type PressableProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, MIN_TOUCH, radius, spacing, typeScale } from '@/theme/tokens';
+import { fonts, MIN_TOUCH, NACRE, radius, spacing, typeScale } from '@/theme/tokens';
 import { useUiStore } from '@/lib/store';
 
 export type IconName = React.ComponentProps<typeof Feather>['name'];
@@ -43,7 +44,7 @@ export function Text({ variant = 'body', muted, color, weight, center, italic, s
   return (
     <RNText
       maxFontSizeMultiplier={1.7}
-      style={[{ color: color ?? (muted ? t.colors.textMuted : t.colors.text), fontFamily: family, ...scale, textAlign: center ? 'center' : undefined }, variant === 'label' && { letterSpacing: 0.2 }, style]}
+      style={[{ color: color ?? (muted ? t.colors.textMuted : t.colors.text), fontFamily: family, ...scale, textAlign: center ? 'center' : undefined }, variant === 'label' && { letterSpacing: 0.5 }, style]}
       {...rest}
     />
   );
@@ -69,14 +70,14 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
   const t = useTheme();
   const bg = {
     surface: t.colors.surface,
-    soft: t.isDark ? t.colors.surfaceAlt : '#F6E3DE',
-    lavender: t.isDark ? '#2B2A50' : '#E0DAF2',
-    night: '#1E2350',
-    gold: t.isDark ? '#3A3324' : '#F3E9D2',
+    soft: t.isDark ? 'rgba(235,205,198,0.08)' : '#F7EAE6',
+    lavender: t.isDark ? 'rgba(181,168,227,0.10)' : '#EEEAF8',
+    night: '#121633',
+    gold: t.isDark ? 'rgba(216,188,133,0.10)' : '#F5EEDF',
     danger: t.colors.dangerSoft,
   }[tone];
   const content = (
-    <View style={[styles.card, { backgroundColor: bg, borderColor: tone === 'surface' ? t.colors.border : 'transparent', padding: padded ? spacing.md : 0 }, style]}>
+    <View style={[styles.card, { backgroundColor: bg, borderColor: tone === 'surface' || t.isDark ? t.colors.border : 'transparent', padding: padded ? spacing.md : 0 }, style]}>
       {children}
     </View>
   );
@@ -118,6 +119,9 @@ export function Button({ label, variant = 'primary', icon, loading, size = 'md',
     night: { bg: '#E2B884', fg: '#120F1E', border: '#E2B884' },
   }[variant];
   const h = size === 'lg' ? 58 : size === 'sm' ? 40 : MIN_TOUCH + 2;
+  // Signature : bouton principal nacré sur fond de nuit
+  const nacre = variant === 'primary' && t.name === 'dark';
+  if (nacre) palette.fg = '#121633';
   return (
     <Pressable
       accessibilityRole="button"
@@ -131,17 +135,18 @@ export function Button({ label, variant = 'primary', icon, loading, size = 'md',
       }}
       style={({ pressed }) => [
         styles.button,
-        { minHeight: h, backgroundColor: palette.bg, borderColor: palette.border, opacity: disabled ? 0.45 : pressed ? 0.85 : 1, alignSelf: full ? 'stretch' : 'auto', paddingHorizontal: size === 'sm' ? spacing.sm : spacing.lg },
+        { minHeight: h, backgroundColor: nacre ? 'transparent' : palette.bg, borderColor: nacre ? 'transparent' : palette.border, overflow: 'hidden', opacity: disabled ? 0.45 : pressed ? 0.85 : 1, alignSelf: full ? 'stretch' : 'auto', paddingHorizontal: size === 'sm' ? spacing.sm : spacing.lg },
         style,
       ]}
       {...rest}
     >
+      {nacre && <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
       {loading ? (
         <ActivityIndicator color={palette.fg} />
       ) : (
         <>
           {icon && <Icon name={icon} size={size === 'sm' ? 16 : 19} color={palette.fg} />}
-          <Text variant={size === 'sm' ? 'small' : 'body'} weight="medium" color={palette.fg} numberOfLines={2} center>
+          <Text variant={size === 'sm' ? 'small' : 'body'} weight="medium" color={palette.fg} numberOfLines={2} center style={{ letterSpacing: 0.4 }}>
             {label}
           </Text>
         </>

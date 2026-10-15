@@ -63,7 +63,7 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
     <View style={{ flex: 1, backgroundColor: t.colors.background }}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       <LinearGradient colors={t.colors.gradient} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
-      {(stars || t.name === 'night') && <StarField density={t.name === 'night' ? 46 : 28} />}
+      {(stars || t.isDark) && <StarField density={t.name === 'night' ? 46 : stars ? 28 : 14} color={t.name === 'dark' ? '#D8BC85' : undefined} />}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {header}
         {body}

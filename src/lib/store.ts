@@ -28,7 +28,7 @@ interface UiState {
 export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
-      themePreference: 'system',
+      themePreference: 'dark', // « Velours » par défaut ; « Porcelaine » disponible dans les réglages
       nightMode: false,
       nightVibrations: false,
       householdId: null,

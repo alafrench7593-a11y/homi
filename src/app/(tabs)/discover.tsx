@@ -42,14 +42,22 @@ export default function Discover() {
       <Screen title="Découvrir" subtitle="Des informations claires, sourcées et datées." bottomInset={96}>
         <Field label="Rechercher" placeholder="Allaitement, péridurale, sommeil…" value={q} onChangeText={setQ} returnKeyType="search" />
 
-        <Row wrap>
-          <Card style={{ width: '48.5%', flexGrow: 1 }} tone="soft" onPress={() => router.push('/me')}><Icon name="heart" color={t.colors.primary} /><Text weight="bold" style={{ marginTop: 6 }}>Moi aussi</Text><Text variant="caption" muted>Post-partum, émotions, rééducation</Text></Card>
-          <Card style={{ width: '48.5%', flexGrow: 1 }} tone="lavender" onPress={() => router.push('/scanner')}><Icon name="maximize" color={t.colors.lavender} /><Text weight="bold" style={{ marginTop: 6 }}>Scanner</Text><Text variant="caption" muted>Composition, précautions, rappels</Text></Card>
-        </Row>
-        <Row wrap>
-          <Card style={{ width: '48.5%', flexGrow: 1 }} onPress={() => router.push('/names')}><Icon name="star" color={t.colors.gold} /><Text weight="bold" style={{ marginTop: 6 }}>Prénoms</Text><Text variant="caption" muted>Idées, favoris, vote</Text></Card>
-          <Card style={{ width: '48.5%', flexGrow: 1 }} onPress={() => router.push('/emergency')}><Icon name="life-buoy" color={t.colors.danger} /><Text weight="bold" style={{ marginTop: 6 }}>Urgences</Text><Text variant="caption" muted>Numéros gratuits, 24 h/24</Text></Card>
-        </Row>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+          {([
+            ['heart', 'Moi aussi', 'Post-partum, émotions, rééducation', '/me', t.colors.heart],
+            ['maximize', 'Scanner', 'Composition, précautions, rappels', '/scanner', t.colors.lavender],
+            ['star', 'Prénoms', 'Idées, favoris, vote', '/names', t.colors.gold],
+            ['life-buoy', 'Urgences', 'Numéros gratuits, 24 h/24', '/emergency', t.colors.danger],
+          ] as const).map(([icon, title, sub, href, color]) => (
+            <View key={title} style={{ width: '48.5%' }}>
+              <Card onPress={() => router.push(href)} accessibilityLabel={`${title} : ${sub}`} style={{ minHeight: 118 }}>
+                <Icon name={icon} color={color} />
+                <Text variant="heading" style={{ marginTop: 6 }}>{title}</Text>
+                <Text variant="caption" muted>{sub}</Text>
+              </Card>
+            </View>
+          ))}
+        </View>
 
         {!q && !cat && forYou.length > 0 && (
           <>

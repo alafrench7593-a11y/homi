@@ -64,7 +64,7 @@ export default function PregnancyUniverse() {
 
   return (
     <Screen back stars>
-      <View style={{ backgroundColor: '#1E2350', borderRadius: 36, padding: spacing.lg, gap: spacing.sm, overflow: 'hidden' }}>
+      <View style={{ backgroundColor: '#121633', borderWidth: 1, borderColor: 'rgba(216,188,133,0.28)', borderRadius: 30, padding: spacing.lg, gap: spacing.sm, overflow: 'hidden' }}>
         <Text variant="small" color={GOLD} center>{multiplicityLabel(pregnancy.multiplicity)}</Text>
         <Text variant="hero" color={TEXT} center>{w} SA</Text>
         <Text center color={MUTED}>{Math.max(0, w - 2)} semaines de grossesse, trimestre {w < 15 ? 1 : w < 29 ? 2 : 3}</Text>
