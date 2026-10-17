@@ -195,3 +195,21 @@ Routes : `/scanner` (accueil), `/scanner/product`, `/scanner/food` (« Puis-je m
 - Historique, résultats et favoris privés (RLS), quota mensuel d’analyses côté serveur ; rappels toujours gratuits, avec notification pour les produits de l’historique et des favoris.
 
 Tests : `src/__tests__/scanner.test.ts`, `scannerScreens.test.tsx`, Deno `supabase/functions/_shared/{open-facts,rappelconso,scan-explain}_test.ts`, SQL `supabase/tests/sql/34_scanner.sql`.
+
+## Comprendre mon cycle et mes tests (parcours « Projet bébé »)
+
+Écrans : `src/app/fertility/understand.tsx` (accueil), `mucus.tsx` (glaire), `test/[kind].tsx` (photo d'un test d'ovulation ou de grossesse), `calendar.tsx` (calendrier privé), `compatible.tsx` (tests pris en charge).
+
+**Module d'analyse séparé** : `src/lib/cycleAnalysis/`
+- `decode.ts` : photo → pixels, sur l'appareil (canvas sur le web, expo-image-manipulator + jpeg-js sur mobile), 640 px max.
+- `quality.ts` : luminosité, surexposition, netteté, résolution. Si la qualité est insuffisante → « Photo inexploitable ».
+- `lines.ts` : recadrage guidé (l'utilisatrice touche l'extrémité C puis l'extrémité T de la fenêtre), profil d'intensité le long de la bande, soustraction du fond, pics significatifs (> 3 × bruit), ligne de contrôle côté C, ligne de test côté T.
+- `brands.ts` : liste FERMÉE des tests compatibles avec les règles de chaque notice (délai de lecture, règle de positivité, source et date).
+- `interpret.ts` : résultat proposé + niveau de confiance, toujours à confirmer. Résultats : Pic de LH possible / non détecté, Résultat possiblement positif / négatif, Test invalide, Résultat incertain, Photo inexploitable.
+- `mucus.ts` : catégories éducatives de la glaire, messages prudents (jamais de confirmation d'ovulation).
+- `privacy.ts` : suppression de l'image, chiffrement AES-256-GCM sur l'appareil (clé dans le trousseau), nettoyage des journaux.
+- `session.ts` : enregistrement ; l'image locale est supprimée dans tous les cas.
+
+**Serveur** : migration `20261017000100_cycle_tests.sql` (colonnes d'analyse, `cycle_preferences`, bucket privé `cycle-private` limité au dossier de l'utilisatrice), fonction `cycle-photo` (glaire uniquement, consentement obligatoire, rien n'est conservé ni journalisé). Les photos de TESTS ne quittent jamais le téléphone.
+
+**À faire avant publication** : calibrer les seuils (`QUALITY_THRESHOLDS`, `LINE_THRESHOLDS`, seuils de rapport T/C) sur un jeu de vraies photos de chaque test compatible ; vérifier les notices françaises de chaque boîte ; compte Gemini API en formule payante (Google n'utilise alors pas les données pour l'entraînement) ; build de développement pour tester la lecture d'écran (ML Kit) et le chiffrement sur téléphone.

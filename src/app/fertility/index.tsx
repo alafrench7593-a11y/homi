@@ -4,6 +4,7 @@
  */
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
+import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
 import { Banner, Button, Card, Row, SectionTitle, Text } from '@/components/ui';
@@ -14,6 +15,7 @@ import { backend } from '@/lib/backend';
 import { useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useCycleEstimates } from '@/lib/data/hooks-fertility';
+import { useCyclePreferences } from '@/lib/data/hooks-cycle';
 import { conceptionDayKind, currentCycleDay, upcomingWindow, type ConceptionDayKind } from '@/lib/domain/cycle';
 import { todayISO } from '@/lib/domain/dates';
 import { TIMING_INFO, TTC_DISCLAIMER } from '@/content/fertility';
@@ -26,6 +28,7 @@ export default function FertilityScreen() {
   const inv = useInvalidate();
   const userId = useUserId();
   const { entries, est, windows } = useCycleEstimates(4);
+  const { prefs } = useCyclePreferences();
   const today = todayISO();
   const day = currentCycleDay(entries, today);
   const w = upcomingWindow(windows, today);
@@ -89,11 +92,18 @@ export default function FertilityScreen() {
         </View>
       </Card>
 
+      <Appear kind="soft">
+        <Card onPress={() => router.push('/fertility/understand')} tone="lavender" accessibilityLabel="Comprendre mon cycle et mes tests">
+          <Text weight="bold">Comprendre mon cycle et mes tests</Text>
+          <Text variant="small" muted>Observer sa glaire, photographier un test d’ovulation ou de grossesse, calendrier privé.</Text>
+        </Card>
+      </Appear>
+
       <SectionTitle title="Mon suivi" />
       <NavCard items={[
         { icon: 'edit-3', title: 'Règles, symptômes et tests', subtitle: 'Tests d’ovulation et de grossesse compris', to: '/fertility/log' },
         { icon: 'thermometer', title: 'Température et glaire', subtitle: 'Si vous souhaitez les noter — avec un graphique', to: '/fertility/body' },
-        { icon: 'lock', title: 'Rapports', subtitle: 'Facultatif et privé : visible uniquement par vous', to: '/fertility/intimacy' },
+        ...(prefs.track_intercourse ? [{ icon: 'lock' as const, title: 'Rapports', subtitle: 'Facultatif et privé : visible uniquement par vous', to: '/fertility/intimacy' }] : []),
         { icon: 'rotate-ccw', title: 'Historique des cycles', subtitle: 'Durées et ovulations estimées a posteriori', to: '/fertility/history' },
         { icon: 'bell', title: 'Mes rappels', subtitle: 'Température, test, complément, règles…', to: '/fertility/reminders' },
       ]} />

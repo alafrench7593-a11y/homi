@@ -11,6 +11,7 @@ import { EstimateTag, fmt, PrivateBanner } from '@/components/Fertility';
 import { backend, eq } from '@/lib/backend';
 import { useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
+import { useCyclePreferences, useSaveCyclePreferences } from '@/lib/data/hooks-cycle';
 import { useAddIntercourse, useCycleEstimates, useIntercourseLogs } from '@/lib/data/hooks-fertility';
 import { upcomingWindow } from '@/lib/domain/cycle';
 import { daysBetween, formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
@@ -28,6 +29,8 @@ export default function IntimacyScreen() {
   const [error, setError] = useState<string | null>(null);
   const [showList, setShowList] = useState(false);
   const list = data ?? [];
+  const { prefs, isLoading: prefsLoading } = useCyclePreferences();
+  const savePrefs = useSaveCyclePreferences();
   const w = upcomingWindow(windows);
   const inWindow = useMemo(
     () => (w ? list.filter((l) => daysBetween(w.start, l.occurred_on) >= 0 && daysBetween(l.occurred_on, w.end) >= 0).length : 0),
@@ -59,6 +62,18 @@ export default function IntimacyScreen() {
     for (const l of list) await backend.remove('intercourse_logs', [eq('id', l.id)]);
     inv('intercourse_logs');
     toast('Saisies supprimées.');
+  }
+
+  if (!prefsLoading && !prefs.track_intercourse) {
+    return (
+      <Screen back title="Rapports" subtitle="Option désactivée">
+        <PrivateBanner>Si vous l’activez, ces informations restent visibles uniquement par vous.</PrivateBanner>
+        <Card>
+          <Text>Le suivi des rapports est désactivé. Vous pouvez l’activer si cela vous aide à repérer les jours de votre période fertile estimée.</Text>
+          <Button label="Activer le suivi des rapports" icon="lock" style={{ marginTop: spacing.sm }} loading={savePrefs.isPending} onPress={() => savePrefs.mutate({ track_intercourse: true })} />
+        </Card>
+      </Screen>
+    );
   }
 
   return (

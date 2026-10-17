@@ -58,6 +58,7 @@ const OWNER_TABLES: Record<string, string> = {
   parent_sleep_logs: 'user_id',
   // Parcours fertilité : données intimes, strictement personnelles
   intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
+  cycle_preferences: 'user_id',
 };
 
 interface DemoState {
@@ -362,6 +363,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       r.status = 'open';
     }
     if (table === 'reminders') r.updated_at = nowIso();
+    if (table === 'cycle_preferences') {
+      // Comme la base : clé primaire = user_id (une seule ligne par personne)
+      delete r.id;
+      if (T(table).some((x) => x.user_id === r.user_id)) throw new BackendError('Préférences déjà enregistrées : modifiez-les plutôt.', '23505');
+      r.track_intercourse ??= false;
+      r.updated_at = nowIso();
+    }
     if (table === 'bottle_timers') {
       r.status ??= 'active';
       r.planned_ml ??= null;
@@ -604,7 +612,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
-        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites'].map((t) => [t, view(t)])),
+        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
           ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents']
@@ -676,6 +684,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     'scan-explain': (b) => {
       if (!sanitizePayload(b)) throw new BackendError('Résultat d’analyse invalide.');
       return { ai: 'not_configured', message: 'Explication IA non configurée (mode démonstration : aucune clé Gemini côté serveur).' };
+    },
+    // Analyse de photo de glaire : aucune image ne quitte l'appareil en démonstration
+    'cycle-photo': (b) => {
+      if (b.consent !== true) throw new BackendError('Votre accord explicite est nécessaire pour envoyer la photo à l’analyse.', 'consent_required', undefined, 400);
+      throw new BackendError('Analyse de photo non disponible en mode démonstration : aucune donnée n’est envoyée.', 'ai_not_configured', undefined, 503);
     },
     'document-extract': () => ({ fields: null, status: 'unavailable', message: 'La lecture automatique nécessite un service connecté (indisponible en mode démonstration).' }),
     'delete-account': async () => {
@@ -776,12 +789,15 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     async insert<R>(table: string, input: Row | Row[], opts?: { onConflict?: string; ignoreDuplicates?: boolean }) {
       await load();
       const out: Row[] = [];
-      for (const raw of Array.isArray(input) ? input : [input]) {
+      for (let raw of Array.isArray(input) ? input : [input]) {
         const conflictCol = opts?.onConflict;
+        // Valeur par défaut user_id = auth.uid() appliquée avant la détection de conflit (comme la base)
+        const owner = OWNER_TABLES[table];
+        if (conflictCol && owner && conflictCol === owner && raw[owner] == null && state.session) raw = { ...raw, [owner]: state.session.userId };
         if (conflictCol && conflictCol.split(',').every((c) => raw[c] != null)) {
           const existing = T(table).find((r) => conflictCol.split(',').every((c) => r[c] === raw[c]));
           if (existing) {
-            if (!opts?.ignoreDuplicates) Object.assign(existing, raw);
+            if (!opts?.ignoreDuplicates) Object.assign(existing, raw, table === 'cycle_preferences' ? { updated_at: nowIso() } : {});
             out.push(existing);
             continue;
           }
@@ -813,7 +829,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
           if (r.user_id !== state.session?.userId) continue;
           if (patch.log_date && T(table).some((x) => x.id !== r.id && x.user_id === r.user_id && x.log_date === patch.log_date)) throw new BackendError('Une nuit est déjà enregistrée pour ce jour : modifiez-la plutôt.');
         }
-        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'parent_sleep_logs', 'contraception_methods', 'consultation_questions', 'bottle_timers'].includes(table) ? { updated_at: nowIso() } : {});
+        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'parent_sleep_logs', 'contraception_methods', 'consultation_questions', 'bottle_timers', 'cycle_preferences'].includes(table) ? { updated_at: nowIso() } : {});
       }
       persist();
       return JSON.parse(JSON.stringify(rows)) as R[];

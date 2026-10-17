@@ -57,6 +57,10 @@ verify_jwt = true
 [functions.document-extract]
 verify_jwt = true
 
+# Analyse pédagogique d'une photo de glaire cervicale (Gemini) : jamais stockée ni journalisée
+[functions.cycle-photo]
+verify_jwt = true
+
 # Appelées par des services externes : protégées par un secret partagé
 [functions.revenuecat-webhook]
 verify_jwt = false

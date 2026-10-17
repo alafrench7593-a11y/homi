@@ -57,10 +57,14 @@ const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet'
 
 export interface CalendarStyle { bg: string; fg?: string; label: string }
 
-export function MonthCalendar<K extends string | null>({ kindOf, styleOf, legend }: {
+export function MonthCalendar<K extends string | null>({ kindOf, styleOf, legend, dotsOf, onDayPress, selected }: {
   kindOf: (day: ISODate) => K;
   styleOf: (k: K) => CalendarStyle | null;
   legend: K[];
+  /** Pastilles de couleur sous le numéro du jour (événements notés). */
+  dotsOf?: (day: ISODate) => string[];
+  onDayPress?: (day: ISODate) => void;
+  selected?: ISODate | null;
 }) {
   const t = useTheme();
   const today = todayISO();
@@ -86,15 +90,24 @@ export function MonthCalendar<K extends string | null>({ kindOf, styleOf, legend
             const s = styleOf(k);
             const inMonth = d.startsWith(monthPrefix);
             const isToday = d === today;
-            return (
-              <View
-                key={d}
-                accessible
-                accessibilityLabel={`${formatDateFr(d)}${isToday ? ', aujourd’hui' : ''}${s ? `, ${s.label}` : ''}`}
-                style={{ flex: 1, aspectRatio: 1, maxHeight: 44, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', backgroundColor: s?.bg ?? 'transparent', borderWidth: isToday ? 1.5 : 0, borderColor: t.colors.primary, opacity: inMonth ? 1 : 0.35 }}
-              >
-                <Text variant="caption" weight={isToday ? 'bold' : 'regular'} color={s?.fg}>{Number(d.slice(8, 10))}</Text>
-              </View>
+            const dots = dotsOf?.(d) ?? [];
+            const isSel = selected === d;
+            const style = { flex: 1, aspectRatio: 1, maxHeight: 44, borderRadius: radius.sm, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: s?.bg ?? 'transparent', borderWidth: isSel ? 2 : isToday ? 1.5 : 0, borderColor: isSel ? t.colors.text : t.colors.primary, opacity: inMonth ? 1 : 0.35 };
+            const label = `${formatDateFr(d)}${isToday ? ', aujourd’hui' : ''}${s ? `, ${s.label}` : ''}${dots.length ? `, ${dots.length} élément(s) noté(s)` : ''}`;
+            const inner = (
+              <>
+                <Text variant="caption" weight={isToday || isSel ? 'bold' : 'regular'} color={s?.fg}>{Number(d.slice(8, 10))}</Text>
+                {dots.length ? (
+                  <View style={{ flexDirection: 'row', gap: 2, position: 'absolute', bottom: 3 }}>
+                    {dots.slice(0, 4).map((c, i) => <View key={i} style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: c }} />)}
+                  </View>
+                ) : null}
+              </>
+            );
+            return onDayPress ? (
+              <Pressable key={d} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: isSel }} onPress={() => onDayPress(d)} style={style}>{inner}</Pressable>
+            ) : (
+              <View key={d} accessible accessibilityLabel={label} style={style}>{inner}</View>
             );
           })}
         </Row>

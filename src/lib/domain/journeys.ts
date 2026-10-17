@@ -50,7 +50,8 @@ export function toolCategories({ journeys, hasPregnancy, childId, childCount }: 
     cats.push({
       key: 'ttc', title: 'Projet bébé', items: [
         { icon: 'calendar', label: 'Cycle et période fertile', sub: 'Règles, ovulation estimée', href: '/fertility' },
-        { icon: 'check-circle', label: 'Tests', sub: 'Ovulation et grossesse', href: '/fertility' },
+        { icon: 'search', label: 'Comprendre mon cycle et mes tests', sub: 'Glaire, photo de test, calendrier privé', href: '/fertility/understand' },
+        { icon: 'check-circle', label: 'Tests', sub: 'Ovulation et grossesse', href: '/fertility/log' },
         { icon: 'bell', label: 'Rappels', href: '/settings/reminders' },
         { icon: 'clipboard', label: 'Préparer une consultation', href: '/fertility' },
         { icon: 'book-open', label: 'Articles sur la conception', href: '/library?q=conception' },
