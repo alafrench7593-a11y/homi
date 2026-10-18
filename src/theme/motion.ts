@@ -39,7 +39,7 @@ export const stagger = (index: number, step = 45, max = 360) => Math.min(index *
 export function springTo(v: Animated.Value, toValue: number, kind: keyof typeof spring, reduce: boolean) {
   if (reduce) {
     v.setValue(toValue);
-    return { start: (cb?: () => void) => cb?.(), stop: () => undefined } as unknown as Animated.CompositeAnimation;
+    return { start: (cb?: Animated.EndCallback) => cb?.({ finished: true }), stop: () => undefined, reset: () => undefined } as unknown as Animated.CompositeAnimation;
   }
   return Animated.spring(v, { toValue, ...spring[kind], useNativeDriver: NATIVE_DRIVER });
 }
@@ -47,7 +47,7 @@ export function springTo(v: Animated.Value, toValue: number, kind: keyof typeof 
 export function timeTo(v: Animated.Value, toValue: number, ms: number, reduce: boolean, ease = easing.decelerate, native = NATIVE_DRIVER) {
   if (reduce) {
     v.setValue(toValue);
-    return { start: (cb?: () => void) => cb?.(), stop: () => undefined } as unknown as Animated.CompositeAnimation;
+    return { start: (cb?: Animated.EndCallback) => cb?.({ finished: true }), stop: () => undefined, reset: () => undefined } as unknown as Animated.CompositeAnimation;
   }
   return Animated.timing(v, { toValue, duration: ms, easing: ease, useNativeDriver: native });
 }

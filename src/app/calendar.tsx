@@ -3,12 +3,13 @@
  * Vues jour, semaine, mois et agenda. Créer, modifier, déplacer, supprimer. Export iCalendar (.ics)
  * importable dans Google Agenda, Apple Calendrier ou Outlook — sans données de santé par défaut.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/States';
 import { StaggerItem, usePop } from '@/components/Motion';
+import { Flash, SlideSwap } from '@/components/MotionKit';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { parseFrDateTime, splitLocal } from '@/features/familyLoad';
@@ -59,8 +60,11 @@ export default function FamilyCalendar() {
   const items = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(range[0]), atLocal(range[1])), [eventsQ.data, appointments, tasks, shifts, range]);
   const clashes = useMemo(() => overlaps(items), [items]);
 
+  const dir = useRef(0);
+  const [moved, setMoved] = useState<string | null>(null);
   function move(n: number) {
     haptic('selection');
+    dir.current = n;
     setCursor((c) => (view === 'day' ? addDays(c, n) : view === 'week' ? addDays(c, 7 * n) : view === 'month' ? addMonths(c, n) : c));
   }
 
@@ -98,7 +102,9 @@ export default function FamilyCalendar() {
       });
       haptic('success');
       toast(draft.id ? 'Événement modifié.' : 'Événement ajouté.');
+      dir.current = 0;
       setCursor(dayKey(new Date(starts)));
+      if (draft.id) setMoved(draft.id);
       setDraft(null);
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
@@ -128,6 +134,7 @@ export default function FamilyCalendar() {
 
   const renderItem = (i: CalendarItem, idx: number) => (
     <StaggerItem key={i.key} index={idx}>
+      <Flash on={moved === i.refId} color={t.colors.primary}>
       <Pressable accessibilityRole="button" accessibilityLabel={`${SOURCE_LABEL[i.source]} : ${i.title}, ${i.allDay ? 'toute la journée' : hm(i.starts)}`} onPress={() => openItem(i)}
         style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.sm, borderRadius: radius.md, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: clashes.has(i.key) ? t.colors.gold : t.colors.border })}>
         <Text variant="small" weight="bold" style={{ width: 48 }}>{i.allDay ? 'Jour' : hm(i.starts)}</Text>
@@ -137,12 +144,13 @@ export default function FamilyCalendar() {
           <Text variant="caption" muted numberOfLines={1}>{[SOURCE_LABEL[i.source], i.private ? 'privé' : null, i.recurring ? 'répété' : null, i.who ? labelOf(i.who) : null, i.location, clashes.has(i.key) ? 'chevauche un autre créneau' : null].filter(Boolean).join(' · ')}</Text>
         </View>
       </Pressable>
+      </Flash>
     </StaggerItem>
   );
 
   return (
     <Screen back title="Agenda familial" subtitle="Rendez-vous, activités, tâches et relais." right={<IconButton icon="plus" label="Nouvel événement" onPress={() => openNew()} />}>
-      <Segmented label="Vue" value={view} onChange={(v) => { setView(v); haptic('selection'); }} options={[{ value: 'day', label: 'Jour' }, { value: 'week', label: 'Semaine' }, { value: 'month', label: 'Mois' }, { value: 'agenda', label: 'Agenda' }]} />
+      <Segmented label="Vue" value={view} onChange={(v) => { dir.current = 0; setView(v); haptic('selection'); }} options={[{ value: 'day', label: 'Jour' }, { value: 'week', label: 'Semaine' }, { value: 'month', label: 'Mois' }, { value: 'agenda', label: 'Agenda' }]} />
       <Row style={{ justifyContent: 'space-between' }}>
         {view !== 'agenda' ? <IconButton icon="chevron-left" label="Période précédente" onPress={() => move(-1)} /> : <View />}
         <Pressable onPress={() => setCursor(todayISO())} accessibilityRole="button" accessibilityLabel={`${title}. Revenir à aujourd’hui`}>
@@ -154,6 +162,7 @@ export default function FamilyCalendar() {
 
       {eventsQ.isLoading && !eventsQ.data ? <Skeleton rows={3} /> : null}
 
+      <SlideSwap key={`${view}:${range[0]}`} dir={dir.current}>
       {view === 'month' ? (
         <MonthView cursor={cursor} items={items} onPick={(d) => { setCursor(d); setView('day'); }} />
       ) : view === 'day' ? (
@@ -178,6 +187,7 @@ export default function FamilyCalendar() {
         })
       )}
       {view === 'agenda' && !items.length ? <Card tone="soft"><Text variant="small" muted>Rien de prévu dans les 30 prochains jours.</Text></Card> : null}
+      </SlideSwap>
 
       <SectionTitle title="Partager avec un autre agenda" />
       <Card>

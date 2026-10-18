@@ -8,6 +8,7 @@ import { BarChart } from '@/components/Charts';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, EmptyStateCard, haptic, Icon, type IconName, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui-extra';
 import { Timeline, KIND_META, type LogItem } from '@/features/tracking';
+import { DayRibbon, SleepNights } from '@/features/motionViz';
 import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePregnancies, usePremium, useProfile } from '@/lib/data/hooks';
 import { lastDaysSeries } from '@/lib/domain/daily';
 import type { Bottle, Breastfeed, Diaper, LogKind, Meal, Observation, Pumping, Sleep } from '@/lib/types';
@@ -57,7 +58,6 @@ function ChildTracking({ childId }: { childId: string }) {
   const enabled = (Object.keys(KIND_META) as LogKind[]).filter((k) => k === 'observation' || child.enabled_tracking.includes(KIND_META[k].tracking));
   const chartDays = premium ? days : 7;
   const bottleSeries = lastDaysSeries(Math.min(chartDays, 7), bottles, (b) => b.at, (b) => b.consumed_ml ?? b.prepared_ml ?? 0);
-  const sleepSeries = lastDaysSeries(Math.min(chartDays, 7), sleeps.filter((s) => s.ended_at), (s) => s.started_at, (s) => Math.round(((new Date(s.ended_at!).getTime() - new Date(s.started_at).getTime()) / 3600000) * 10) / 10);
   const diaperSeries = lastDaysSeries(Math.min(chartDays, 7), diapers, (d) => d.at, () => 1);
 
   return (
@@ -95,7 +95,19 @@ function ChildTracking({ childId }: { childId: string }) {
       {logsLoading ? <Skeleton kind="list" rows={3} /> : logsError ? (
         <ErrorView error={logsError.error} onRetry={retryLogs} title="Impossible d’afficher le suivi" />
       ) : (
-        <Card><Timeline logs={todays} childId={childId} /></Card>
+        <>
+          <Card>
+            <DayRibbon events={[
+              ...sleeps.filter((x) => isToday(x.started_at) || (x.ended_at && isToday(x.ended_at)) || !x.ended_at).map((x) => ({ kind: 'sleep' as const, start: x.started_at, end: x.ended_at, nap: x.kind === 'nap' })),
+              ...bottles.filter((x) => isToday(x.at)).map((x) => ({ kind: 'feed' as const, at: x.at })),
+              ...feeds.filter((x) => isToday(x.started_at)).map((x) => ({ kind: 'feed' as const, at: x.started_at })),
+              ...meals.filter((x) => isToday(x.at)).map((x) => ({ kind: 'feed' as const, at: x.at })),
+              ...diapers.filter((x) => isToday(x.at)).map((x) => ({ kind: 'diaper' as const, at: x.at })),
+              ...obs.filter((x) => isToday(x.at)).map((x) => ({ kind: 'obs' as const, at: x.at })),
+            ]} />
+          </Card>
+          <Card><Timeline logs={todays} childId={childId} /></Card>
+        </>
       )}
 
       <SectionTitle title="Tendances" />
@@ -107,7 +119,7 @@ function ChildTracking({ childId }: { childId: string }) {
         <Card><Text weight="bold">Lait bu par jour (ml)</Text><BarChart data={bottleSeries} unit="ml" accessibilityLabel="Quantité de lait bue par jour" /></Card>
       )}
       {child.enabled_tracking.includes('sleep') && (
-        <Card><Text weight="bold">Sommeil enregistré (heures)</Text><BarChart data={sleepSeries} unit="h" accessibilityLabel="Heures de sommeil par jour" /></Card>
+        <Card><Text weight="bold">Sommeil enregistré</Text><View style={{ marginTop: spacing.xs }}><SleepNights sleeps={sleeps} days={7} /></View></Card>
       )}
       {child.enabled_tracking.includes('diaper') && (
         <Card><Text weight="bold">Changes par jour</Text><BarChart data={diaperSeries} unit="changes" accessibilityLabel="Nombre de changes par jour" /></Card>

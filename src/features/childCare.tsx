@@ -5,6 +5,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Linking, Pressable, View } from 'react-native';
 import { ProgressRing } from '@/components/Charts';
+import { usePop } from '@/components/Motion';
 import { useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, haptic, Row, Text } from '@/components/ui';
 import { backend, eq } from '@/lib/backend';
@@ -168,12 +169,7 @@ export function ToothChart({ present, onPick }: { present: Set<string>; onPick: 
       <View style={{ width: W, height: 230 }}>
         {PRIMARY_TEETH.map((d) => {
           const p = tooth(d.arch, d.index);
-          const on = present.has(d.label);
-          const size = d.label.includes('molaire') ? 26 : 22;
-          return (
-            <Pressable key={d.id} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={d.label} onPress={() => { haptic('selection'); onPick(d.label); }}
-              style={{ position: 'absolute', left: p.x - size / 2, top: p.y - size / 2, width: size, height: size, borderRadius: size / 3, borderWidth: 2, borderColor: on ? t.colors.primary : t.colors.lavender, backgroundColor: on ? t.colors.primary : t.colors.surfaceAlt }} hitSlop={4} />
-          );
+          return <ToothDot key={d.id} label={d.label} on={present.has(d.label)} x={p.x} y={p.y} size={d.label.includes('molaire') ? 26 : 22} onPick={onPick} />;
         })}
         <Text variant="caption" muted style={{ position: 'absolute', top: 104, width: W, textAlign: 'center' }}>haut ↑   ·   bas ↓</Text>
       </View>
@@ -181,5 +177,17 @@ export function ToothChart({ present, onPick }: { present: Set<string>; onPick: 
         <Chip label={`${present.size} / 20 notées`} />
       </Row>
     </View>
+  );
+}
+
+/** Une dent : s'illumine et « éclot » quand elle est notée (halo bref), reste sobre sinon. */
+function ToothDot({ label, on, x, y, size, onPick }: { label: string; on: boolean; x: number; y: number; size: number; onPick: (l: string) => void }) {
+  const t = useTheme();
+  const pop = usePop(on, 1.35);
+  return (
+    <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={label} onPress={() => { haptic('selection'); onPick(label); }} hitSlop={4}
+      style={{ position: 'absolute', left: x - size / 2, top: y - size / 2, width: size, height: size }}>
+      <Animated.View style={[{ flex: 1, borderRadius: size / 3, borderWidth: 2, borderColor: on ? t.colors.primary : t.colors.lavender, backgroundColor: on ? t.colors.primary : t.colors.surfaceAlt }, pop]} />
+    </Pressable>
   );
 }

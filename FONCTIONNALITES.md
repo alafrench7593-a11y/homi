@@ -114,6 +114,21 @@ Un relecteur distinct a revu le code ajouté. Il a trouvé 2 failles bloquantes 
 | Fichier .ics : fuseau autre que Paris non décrit | heure UTC dans ce cas |
 | Réglage de partage « rendez-vous » inutilisé | retiré |
 
+## 5. Full motion design (18 octobre 2026)
+
+Principe : chaque mouvement est piloté par une donnée réelle (horodatage, saisie, état serveur) ; aucune couleur ajoutée (palette du thème uniquement) ; aucun logo IA ; « réduire les animations » affiche l'état final immédiatement.
+
+**Composants créés**
+- `src/components/MotionKit.tsx` : `MotionNumber` (chiffres qui roulent, texte complet pour les lecteurs d'écran), `DrawCheck` (confirmation dessinée), `PulseRing` (onde lumineuse), `useProgress` (apparition des graphiques), `SlideSwap` (glisse directionnelle de période), `Flash` (élément déplacé).
+- `src/features/bottleInstrument.tsx` : `BottleInstrument` (instrument en couches : disque de verre, orbite de 60 segments = secondes de la minute, 30 perles = minutes, comète synchronisée sur la seconde réelle, séquence contraction/déploiement + onde au démarrage, pause figée avec anneau pointillé, reprise, résumé modifiable avant validation, coche dessinée) et `ReminderRibbon` (repère du prochain biberon, sans promesse d'alarme).
+- `src/features/motionViz.tsx` : `DayRibbon` (journée sur 24 h), `SleepNights` (7 nuits, nuits pleines / siestes en contour), `RelayStrip` (relais de nuit, témoin qui passe à la personne suivante), `DayAvailability` (créneaux libres « respirants », toucher pour réserver), `ScanFrame` (cadre du scanner : coins, balayage, verrouillage), `LoadBar` (tâches du jour : faites / attribuées / sans responsable — des comptes, jamais un score).
+
+**Outils améliorés** : biberon (instrument + ruban de rappel), onglet Suivi (ruban 24 h, nuits de la semaine), graphiques (barres qui poussent, courbes qui se tracent), tâches familiales (case qui se remplit, coche dessinée, trait barrant, sortie de la ligne, annulation si erreur), barre de charge du jour, relais de nuit (ruban + « Prochain relais » sur l'accueil), temps pour soi (disponibilités du jour), agenda (glisse selon la direction, halo sur l'événement déplacé), scanner (cadre vivant, résultat en cascade), dents (pastille qui « pop » à la saisie).
+
+**Correctif** : en mode « réduire les animations », les animations instantanées (`springTo`/`timeTo`) rappelaient la fin sans `{ finished: true }`, ce qui faisait planter les séquences (chaque toast faisait tomber l'écran). Corrigé, test `motionReduce.test.ts`.
+
+**Limites** : pas de transitions à élément partagé (pas de reanimated) ; caméra du scanner non testable sur le web ; pas de photos pour les souvenirs ni de courbes OMS ; les rappels restent des notifications locales, jamais une alarme garantie.
+
 ## 4. Décisions et limites documentées
 
 - **EPDS non intégrée.** Le Royal College of Psychiatrists détient les droits ; la diffusion à des tiers (ce qu'est une app) exige une autorisation écrite, et l'intégration complète a déjà été refusée à un logiciel clinique (documentation CamCOPS). Conformément au § 22.4, l'app propose un check-in de bien-être **non diagnostique**. À rouvrir uniquement avec une autorisation écrite et la version française validée (Guedeney & Fermanian, 1998).

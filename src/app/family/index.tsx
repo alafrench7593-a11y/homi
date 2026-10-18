@@ -10,6 +10,7 @@ import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { Banner, Button, Card, Chip, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { LoadBar } from '@/features/motionViz';
 import { QuickActionsGrid, RequestCard, RequestSheet, TaskRow, TaskSheet } from '@/features/familyLoad';
 import { useCareRequests, useCareShifts, useFamilyTasks, usePeople } from '@/lib/data/hooks-family-load';
 import { useParentSleepLogs } from '@/lib/data/hooks-sleep';
@@ -88,6 +89,10 @@ export default function FamilyHome() {
       {[...open, ...recent].map((r, i) => <StaggerItem key={r.id} index={i}><RequestCard r={r} tasks={tasks} /></StaggerItem>)}
 
       <SectionTitle title="Tâches" />
+      {(() => {
+        const todays = tasks.filter((x) => x.due_at && sameLocalDay(x.due_at, day) && x.status !== 'cancelled');
+        return todays.length ? <Card><LoadBar done={todays.filter((x) => x.status === 'done').length} assigned={todays.filter((x) => x.status === 'todo' && x.assignee_id).length} unassigned={todays.filter((x) => x.status === 'todo' && !x.assignee_id).length} /></Card> : null;
+      })()}
       <Row wrap>
         {([['today', 'Aujourd’hui'], ['upcoming', 'À venir'], ['unassigned', 'Sans responsable'], ['done', 'Faites']] as const).map(([v, l]) => <Chip key={v} label={l} selected={filter === v} onPress={() => setFilter(v)} />)}
       </Row>

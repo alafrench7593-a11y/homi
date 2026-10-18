@@ -12,7 +12,8 @@ import { router } from 'expo-router';
 import { CameraView, useCameraPermissions, type BarcodeScanningResult } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Chip, Divider, Field, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Divider, Field, haptic, Row, SectionTitle, Text } from '@/components/ui';
+import { ScanFrame } from '@/features/motionViz';
 import { isDemo } from '@/lib/backend';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import {
@@ -68,6 +69,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [cameraOn, setCameraOn] = useState(false);
+  const [reading, setReading] = useState(false);
   const [cameraDenied, setCameraDenied] = useState<'ask' | 'settings' | null>(null);
   const [query, setQuery] = useState('');
   const [candidates, setCandidates] = useState<ProductCandidate[]>([]);
@@ -162,8 +164,11 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
   function onScanned(e: BarcodeScanningResult) {
     if (lock.current) return;
     lock.current = true;
-    setCameraOn(false);
-    identifyBarcode(e.data, 'barcode').finally(() => { lock.current = false; });
+    // Retour immédiat : le cadre se resserre, puis la caméra se ferme et la recherche démarre
+    setReading(true);
+    haptic('success');
+    setTimeout(() => setCameraOn(false), 350);
+    identifyBarcode(e.data, 'barcode').finally(() => { lock.current = false; setReading(false); });
   }
 
   async function openCamera() {
@@ -327,7 +332,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
             cameraOn ? (
               <View style={[styles.camera, { borderColor: t.colors.border, marginTop: spacing.xs }]}>
                 <CameraView style={StyleSheet.absoluteFill} facing="back" barcodeScannerSettings={{ barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'] }} onBarcodeScanned={onScanned} />
-                <View pointerEvents="none" style={styles.frame} />
+                <ScanFrame reading={reading} />
                 <View style={styles.cameraFooter}>
                   <Button label="Fermer la caméra" size="sm" variant="secondary" style={{ backgroundColor: 'rgba(255,255,255,0.85)' }} onPress={() => setCameraOn(false)} />
                 </View>

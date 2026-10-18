@@ -3,6 +3,7 @@
  * rappels officiels, informations manquantes, niveau de certitude, explication IA (ou explication des règles).
  * Aucune note chiffrée : le moteur n'en calcule pas (score = null).
  */
+import { StaggerItem } from '@/components/Motion';
 import React from 'react';
 import { Image, Linking, View } from 'react-native';
 import { router } from 'expo-router';
@@ -290,7 +291,7 @@ export function ResultView({ a, explanation, explaining, actions }: { a: StoredA
       {a.demo ? (
         <Banner tone="demo" title={DEMO_LABEL}>{'Ce résultat repose sur des données fictives de démonstration : ce n’est pas une analyse réelle.'}</Banner>
       ) : null}
-      <Card>
+      <StaggerItem index={0}><Card>
         <Row gap={spacing.md} style={{ alignItems: 'flex-start' }}>
           {subject.imageUrl && /^https:\/\//.test(subject.imageUrl) ? (
             <Image source={{ uri: subject.imageUrl }} style={{ width: 72, height: 72, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} resizeMode="contain" accessibilityLabel="Photo du produit" />
@@ -303,16 +304,16 @@ export function ResultView({ a, explanation, explaining, actions }: { a: StoredA
           </View>
         </Row>
         {actions ? <View style={{ marginTop: spacing.sm }}>{actions}</View> : null}
-      </Card>
+      </Card></StaggerItem>
 
-      <Card>
+      <StaggerItem index={1}><Card>
         <Text variant="label">Verdict</Text>
         <View style={{ marginTop: 4 }}><VerdictBadge verdict={a.verdict} /></View>
         <Text variant="small" style={{ marginTop: 4 }}>{`Pourquoi : ${a.verdictReason}`}</Text>
         <Text variant="small" style={{ marginTop: 6 }} weight="medium">{`Niveau de certitude : ${CERTAINTY_LABEL[a.certainty]}`}</Text>
         {a.certaintyReasons.map((r) => <Text key={r} variant="caption" muted>{`• ${r}`}</Text>)}
         <Text variant="caption" muted style={{ marginTop: 6 }}>Aucune note chiffrée n’est calculée : le verdict repose uniquement sur les règles et les sources citées ci-dessous.</Text>
-      </Card>
+      </Card></StaggerItem>
 
       {a.askProfessional ? <Banner tone="info" icon="user">{a.askProfessional}</Banner> : null}
 
@@ -321,10 +322,11 @@ export function ResultView({ a, explanation, explaining, actions }: { a: StoredA
       <SectionTitle title="Constats" />
       <Card>
         {a.findings.length ? a.findings.map((f, i) => (
-          <View key={f.id}>
+          // Les constats apparaissent un à un ; aucun effet ne suggère qu'un produit est « sûr »
+          <StaggerItem key={f.id} index={i + 2}>
             {i > 0 ? <Divider /> : null}
             <FindingRow f={f} index={index} />
-          </View>
+          </StaggerItem>
         )) : <Text variant="small">Aucune des règles suivies ne s’applique d’après les informations disponibles.</Text>}
       </Card>
 

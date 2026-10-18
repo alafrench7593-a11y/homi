@@ -10,6 +10,7 @@ import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
 import { Button, Card, Field, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { parseFrDateTime } from '@/features/familyLoad';
+import { DayAvailability } from '@/features/motionViz';
 import { useAppointments } from '@/lib/data/hooks';
 import { useCareShifts, useCreateRequest, useDeleteShift, useFamilyTasks, usePeople, useSaveShifts, useUpdateShift } from '@/lib/data/hooks-family-load';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -41,6 +42,11 @@ export default function MeTime() {
   const mine = shifts.filter((s) => s.kind === 'me_time' && s.user_id === me && s.status !== 'cancelled' && Date.parse(s.ends_at) > Date.now());
   const others = shifts.filter((s) => s.kind === 'me_time' && s.user_id !== me && s.status !== 'cancelled' && Date.parse(s.ends_at) > Date.now());
   const day = which === 'today' ? todayISO() : addLocalDays(todayISO(), 1);
+  const busyList = useMemo(() => [
+    ...(appointments ?? []).map((a) => ({ starts_at: a.starts_at, ends_at: new Date(Date.parse(a.starts_at) + 3600000).toISOString() })),
+    ...shifts.filter((s) => s.status !== 'cancelled' && s.user_id === me && s.kind === 'night').map((s) => ({ starts_at: s.starts_at, ends_at: s.ends_at })),
+    ...(tasks ?? []).filter((t) => t.status === 'todo' && t.assignee_id === me && t.due_at).map((t) => ({ starts_at: t.due_at!, ends_at: new Date(Date.parse(t.due_at!) + 1800000).toISOString() })),
+  ], [appointments, shifts, tasks, me]);
   const slots = useMemo(() => {
     const busy = [
       ...(appointments ?? []).map((a) => ({ starts_at: a.starts_at, ends_at: new Date(Date.parse(a.starts_at) + 3600000).toISOString() })),
@@ -95,6 +101,10 @@ export default function MeTime() {
 
       <SectionTitle title="Créneaux libres dans l’agenda" />
       <Segmented label="Jour" value={which} onChange={setWhich} options={[{ value: 'today', label: 'Aujourd’hui' }, { value: 'tomorrow', label: 'Demain' }]} />
+      <Card>
+        <DayAvailability day={day} busy={busyList} free={slots} onPick={(f) => reserve({ starts_at: f.starts_at, ends_at: new Date(Math.min(Date.parse(f.ends_at), Date.parse(f.starts_at) + 3600000)).toISOString() }, false)}
+          reserved={shifts.filter((s) => s.kind === 'me_time' && s.user_id === me && s.status !== 'cancelled')} />
+      </Card>
       <Card>
         {slots.length === 0 ? <Text variant="small" muted>Pas de créneau d’une heure libre ce jour-là d’après l’agenda. Vous pouvez quand même en réserver un ci-dessous.</Text> : null}
         {slots.map((s) => (

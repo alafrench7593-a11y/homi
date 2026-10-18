@@ -2,22 +2,24 @@
  * Briques d'interface de l'organisation familiale : ligne de tâche, éditeur, actions rapides,
  * carte de demande. Couleurs : uniquement celles du thème existant.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, View } from 'react-native';
-import { usePop, usePressMotion } from '@/components/Motion';
+import { usePressMotion } from '@/components/Motion';
+import { DrawCheck } from '@/components/MotionKit';
+import { easing } from '@/theme/motion';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, haptic, Icon, Row, Segmented, Text, Toggle } from '@/components/ui';
 import { useChildren } from '@/lib/data/hooks';
 import { useHealthItems } from '@/lib/data/hooks-family';
 import { childAge } from '@/lib/domain/child';
 import type { Child } from '@/lib/types';
-import { useCareRequests, useCreateRequest, useDeleteTask, useFamilyTasks, usePeople, useRespondRequest, useSaveTask, type TaskInput } from '@/lib/data/hooks-family-load';
+import { useCareRequests, useCareShifts, useCreateRequest, useDeleteTask, useFamilyTasks, usePeople, useRespondRequest, useSaveTask, type TaskInput } from '@/lib/data/hooks-family-load';
 import { router } from 'expo-router';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { CATEGORIES, QUICK_ACTIONS, REQUEST_LABEL, categoryOf, sameLocalDay, type CareRequest, type FamilyTask, type RequestKind } from '@/lib/domain/familyLoad';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
-import { useTheme } from '@/theme/ThemeProvider';
+import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -44,39 +46,68 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
   const t = useTheme();
   const toast = useToast();
   const save = useSaveTask();
+  const reduce = useReduceMotion();
   const { labelOf } = usePeople();
-  const done = task.status === 'done';
-  const pop = usePop(done);
-  const press = usePressMotion({ pressed: 0.92 });
+  const [optimistic, setOptimistic] = useState<boolean | null>(null);
+  const done = optimistic ?? task.status === 'done';
+  const press = usePressMotion({ pressed: 0.9 });
+  const strike = useRef(new Animated.Value(done ? 1 : 0)).current;   // trait qui raye le titre
+  const fill = useRef(new Animated.Value(done ? 1 : 0)).current;     // remplissage de la case
+  const leave = useRef(new Animated.Value(1)).current;               // sortie de la liste
+  const [tw, setTw] = useState(0);
   const cat = categoryOf(task.category);
   const late = !done && task.due_at && Date.parse(task.due_at) < Date.now() - 3600000;
+  useEffect(() => { setOptimistic(null); strike.setValue(task.status === 'done' ? 1 : 0); fill.setValue(task.status === 'done' ? 1 : 0); leave.setValue(1); }, [task.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function toggle() {
-    haptic(done ? 'light' : 'success');
+    const next = !done;
+    haptic(next ? 'success' : 'light');
+    setOptimistic(next);
+    // La coche se remplit, le titre est rayé, puis la ligne s'efface : l'enregistrement part ensuite
+    await new Promise<void>((resolve) => {
+      if (reduce) { fill.setValue(next ? 1 : 0); strike.setValue(next ? 1 : 0); resolve(); return; }
+      Animated.sequence([
+        Animated.spring(fill, { toValue: next ? 1 : 0, tension: 300, friction: 16, useNativeDriver: false }),
+        Animated.timing(strike, { toValue: next ? 1 : 0, duration: 260, easing: easing.decelerate, useNativeDriver: false }),
+        ...(next ? [Animated.delay(160), Animated.timing(leave, { toValue: 0, duration: 220, easing: easing.accelerate, useNativeDriver: false })] : []),
+      ]).start(() => resolve());
+    });
     try {
-      await save.mutateAsync({ id: task.id, input: { status: done ? 'todo' : 'done' } });
-      if (!done) toast(task.recurrence ? 'Fait. La prochaine fois est déjà prévue.' : 'Fait.');
-    } catch (e) { toast(friendlyError(e), 'error'); }
+      await save.mutateAsync({ id: task.id, input: { status: next ? 'done' : 'todo' } });
+      if (next) toast(task.recurrence ? 'Fait. La prochaine fois est déjà prévue.' : 'Fait.');
+    } catch (e) {
+      setOptimistic(null); fill.setValue(done ? 1 : 0); strike.setValue(done ? 1 : 0); leave.setValue(1);
+      toast(friendlyError(e), 'error');
+    }
   }
 
   return (
-    <Card style={{ paddingVertical: spacing.xs }}>
-      <Row style={{ alignItems: 'center' }}>
-        <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: done }} accessibilityLabel={`${task.title} : ${done ? 'fait' : 'à faire'}`} onPress={toggle} {...press.handlers} hitSlop={8}>
-          <Animated.View style={[{ width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center', borderColor: done ? t.colors.success : t.colors.border, backgroundColor: done ? t.colors.success : 'transparent' }, pop, press.style]}>
-            {done ? <Icon name="check" size={16} color={t.colors.surface} /> : null}
-          </Animated.View>
-        </Pressable>
-        <Pressable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={`Modifier ${task.title}`} onPress={() => onEdit(task)}>
-          <Text weight="medium" style={{ textDecorationLine: done ? 'line-through' : 'none', opacity: done ? 0.6 : 1 }} numberOfLines={2}>{task.title}</Text>
-          <Text variant="caption" muted numberOfLines={1}>
-            {[cat.label, task.due_at ? fmtWhen(task.due_at) : null, labelOf(task.assignee_id), task.recurrence ? 'récurrente' : null, task.essential ? 'essentielle' : null].filter(Boolean).join(' · ')}
-          </Text>
-          {late ? <Text variant="caption" color={t.colors.gold}>En retard — pas grave, à reprogrammer si besoin</Text> : null}
-        </Pressable>
-        {onPropose && !done ? <Button label="Proposer" size="sm" variant="ghost" onPress={() => onPropose(task)} accessibilityLabel={`Proposer « ${task.title} » à quelqu’un`} /> : null}
-      </Row>
-    </Card>
+    <Animated.View style={{ opacity: leave, transform: [{ translateX: leave.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }, { scale: leave.interpolate({ inputRange: [0, 1], outputRange: [0.97, 1] }) }] }}>
+      <Card style={{ paddingVertical: spacing.xs }}>
+        <Row style={{ alignItems: 'center' }}>
+          <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: done }} accessibilityLabel={`${task.title} : ${done ? 'fait' : 'à faire'}`} onPress={toggle} {...press.handlers} hitSlop={8}>
+            <Animated.View style={[{ width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderColor: done ? t.colors.success : t.colors.border }, press.style]}>
+              <Animated.View style={{ position: 'absolute', width: 30, height: 30, borderRadius: 15, backgroundColor: t.colors.success, transform: [{ scale: fill }] }} />
+              {done ? <DrawCheck size={22} color={t.colors.surface} play={optimistic === true} /> : null}
+            </Animated.View>
+          </Pressable>
+          <Pressable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={`Modifier ${task.title}`} onPress={() => onEdit(task)}>
+            <View style={{ alignSelf: 'flex-start' }} onLayout={(e) => setTw(e.nativeEvent.layout.width)}>
+              <Animated.Text style={{ opacity: strike.interpolate({ inputRange: [0, 1], outputRange: [1, 0.55] }) }} numberOfLines={2}>
+                <Text weight="medium">{task.title}</Text>
+              </Animated.Text>
+              <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: '50%', height: 2, width: tw, backgroundColor: t.colors.textMuted, borderRadius: 1,
+                transform: [{ translateX: strike.interpolate({ inputRange: [0, 1], outputRange: [-tw / 2, 0] }) }, { scaleX: strike.interpolate({ inputRange: [0, 1], outputRange: [0.001, 1] }) }] }} />
+            </View>
+            <Text variant="caption" muted numberOfLines={1}>
+              {[cat.label, task.due_at ? fmtWhen(task.due_at) : null, labelOf(task.assignee_id), task.recurrence ? 'récurrente' : null, task.essential ? 'essentielle' : null].filter(Boolean).join(' · ')}
+            </Text>
+            {late ? <Text variant="caption" color={t.colors.gold}>En retard — pas grave, à reprogrammer si besoin</Text> : null}
+          </Pressable>
+          {onPropose && !done ? <Button label="Proposer" size="sm" variant="ghost" onPress={() => onPropose(task)} accessibilityLabel={`Proposer « ${task.title} » à quelqu’un`} /> : null}
+        </Row>
+      </Card>
+    </Animated.View>
   );
 }
 
@@ -300,12 +331,14 @@ function ChildEssentialCard({ child, large }: { child: Child; large?: boolean })
 /** Accueil : demandes qui m'attendent, mes tâches du jour, et l'accès immédiat à « Journée difficile ». */
 export function FamilyHomeCard() {
   const t = useTheme();
-  const { me } = usePeople();
+  const { me, labelOf } = usePeople();
   const { data: requests } = useCareRequests();
   const { data: tasks } = useFamilyTasks();
   const day = todayISO();
   const waiting = (requests ?? []).filter((r) => r.status === 'open' && r.from_user !== me && (!r.to_user || r.to_user === me));
   const mineToday = (tasks ?? []).filter((x) => x.status === 'todo' && x.assignee_id === me && x.due_at && sameLocalDay(x.due_at, day));
+  const { data: shifts } = useCareShifts('night');
+  const nextNight = (shifts ?? []).filter((s) => s.status !== 'cancelled' && Date.parse(s.ends_at) > Date.now()).sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1))[0];
   return (
     <View style={{ gap: spacing.xs }}>
       {waiting.length || mineToday.length ? (
@@ -316,6 +349,15 @@ export function FamilyHomeCard() {
               <Text weight="bold">{waiting.length ? `${waiting.length} demande${waiting.length > 1 ? 's' : ''} du foyer ${waiting.length > 1 ? 'attendent' : 'attend'} une réponse` : `${mineToday.length} tâche${mineToday.length > 1 ? 's' : ''} pour vous aujourd’hui`}</Text>
               <Text variant="small" muted numberOfLines={1}>{waiting.length ? REQUEST_LABEL[waiting[0].kind] : mineToday.map((x) => x.title).join(' · ')}</Text>
             </View>
+            <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
+          </Row>
+        </Card>
+      ) : null}
+      {nextNight ? (
+        <Card onPress={() => router.push('/family/nights')} accessibilityLabel="Prochain relais de nuit">
+          <Row>
+            <Icon name="moon" color={t.colors.lavender} />
+            <Text style={{ flex: 1 }}><Text weight="bold">Prochain relais : </Text>{labelOf(nextNight.user_id)} · {new Date(nextNight.starts_at).toLocaleDateString('fr-FR', { weekday: 'long' })} {new Date(nextNight.starts_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</Text>
             <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
           </Row>
         </Card>

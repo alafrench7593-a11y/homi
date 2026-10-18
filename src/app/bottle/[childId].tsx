@@ -3,10 +3,9 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Appear } from '@/components/Appear';
-import { ProgressRing } from '@/components/Charts';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { BottleStopwatch } from '@/features/childCare';
+import { BottleInstrument, ReminderRibbon } from '@/features/bottleInstrument';
 import { Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { BottleNotificationSettings, NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
@@ -16,7 +15,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { useBottleTimer, useLastBottle, useNow, useTimerScheduledHere, useUpdateBottleTimer, useStartBottleTimer } from '@/lib/data/hooks-bottle';
 import {
   atClock, cancelTimer, elapsedMinutes, formatClock, formatHM, formatRemaining, modifyInterval, parseDelay, remainingMinutes, resolveReminderChoice,
-  snoozeTimer, SNOOZE_PRESETS, timerProgress, timerSentence, updateLastBottleTime, type ReminderChoice,
+  snoozeTimer, SNOOZE_PRESETS, timerSentence, updateLastBottleTime, type ReminderChoice,
 } from '@/lib/domain/bottleTimer';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
@@ -129,19 +128,15 @@ export default function BottleTimerScreen() {
       )}
 
       {/* Chronomètre de la prise (début, pause, reprise, fin), indépendant du rappel du prochain biberon */}
-      <BottleStopwatch child={child} />
+      <BottleInstrument child={child} />
 
       {isLoading ? <Skeleton kind="detail" rows={4} /> : timerQ.isError && !timerQ.data ? (
         <ErrorView error={timerQ.error} onRetry={() => void timerQ.refetch()} title="Impossible d’afficher le minuteur" />
       ) : active ? (
         <>
           <Appear kind="scale">
-            <View style={{ alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.sm }}>
-              <ProgressRing progress={timerProgress(active, now)} size={210} label={`Temps écoulé depuis le dernier biberon de ${name} : ${formatHM(elapsedMinutes(active, now))}`}>
-                <Text variant="caption" muted>{rem > 0 ? 'rappel dans' : 'rappel prévu il y a'}</Text>
-                <Text variant="hero" accessibilityLiveRegion="polite" color={rem > 0 ? t.colors.text : t.colors.danger}>{rem > 0 ? formatRemaining(rem) : formatHM(rem)}</Text>
-                <Text variant="small" muted>{atClock(active.due_at, now)}</Text>
-              </ProgressRing>
+            <View style={{ gap: spacing.sm }}>
+              <ReminderRibbon lastAt={active.last_bottle_at} dueAt={active.due_at} now={now} overdue={rem <= 0} remainingLabel={rem > 0 ? formatRemaining(rem) : formatHM(rem)} />
               <Text center accessibilityLiveRegion="polite">{timerSentence({ childName: name, timer: active, now })}</Text>
             </View>
           </Appear>

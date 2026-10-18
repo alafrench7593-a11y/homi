@@ -3,13 +3,14 @@
  * famille monoparentale ou un réseau d'aidants. Aucun score nocturne, aucun compteur par personne.
  */
 import React, { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { EmptyState, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { RequestSheet } from '@/features/familyLoad';
+import { RelayStrip } from '@/features/motionViz';
 import { useCareShifts, useDeleteShift, usePeople, useSaveShifts, useUpdateShift } from '@/lib/data/hooks-family-load';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { planNights, shiftConflicts, type CareShift, type NightPattern } from '@/lib/domain/familyLoad';
@@ -66,6 +67,13 @@ export default function NightRelay() {
   return (
     <Screen back title="Relais de nuit" subtitle="Qui se lève, quelle nuit. Sans compter les points.">
       <SectionTitle title="Nuits prévues" />
+      {upcoming.length ? (
+        <Card padded={false} style={{ paddingVertical: spacing.sm }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md }}>
+            <RelayStrip nights={upcoming} labelOf={labelOf} />
+          </ScrollView>
+        </Card>
+      ) : null}
       {shiftsQ.isLoading && !shiftsQ.data ? <Skeleton rows={2} /> : null}
       {shiftsQ.data && upcoming.length === 0 ? <EmptyState icon="moon" title="Aucune nuit prévue" body="Préparez un planning ci-dessous : il reste modifiable à tout moment." /> : null}
       {upcoming.map((s, i) => (
