@@ -21,6 +21,16 @@ interface UiState {
   hapticsEnabled: boolean;
   /** Suggestions « pour alléger » masquées par la personne (organisation familiale). */
   overloadTipsOff: boolean;
+  /** Accueil personnalisé : ordre et cartes masquées. */
+  homeOrder: string[];
+  homeHidden: string[];
+  setHomeLayout: (order: string[], hidden: string[]) => void;
+  /** Raccourcis choisis (null = automatiques selon le parcours). */
+  quickShortcuts: string[] | null;
+  setQuickShortcuts: (keys: string[] | null) => void;
+  /** Introduction vue (ou passée) : ne se relance pas toute seule. */
+  introSeen: boolean;
+  setIntroSeen: (v: boolean) => void;
   setOverloadTipsOff: (on: boolean) => void;
   setTheme: (t: UiState['themePreference']) => void;
   setNightMode: (on: boolean) => void;
@@ -43,6 +53,13 @@ export const useUiStore = create<UiState>()(
       subject: null,
       hapticsEnabled: true,
       overloadTipsOff: false,
+      homeOrder: [],
+      homeHidden: [],
+      setHomeLayout: (homeOrder, homeHidden) => set({ homeOrder, homeHidden }),
+      quickShortcuts: null,
+      setQuickShortcuts: (quickShortcuts) => set({ quickShortcuts }),
+      introSeen: false,
+      setIntroSeen: (introSeen) => set({ introSeen }),
       setOverloadTipsOff: (overloadTipsOff) => set({ overloadTipsOff }),
       setTheme: (themePreference) => set({ themePreference }),
       setNightMode: (nightMode) => set({ nightMode }),

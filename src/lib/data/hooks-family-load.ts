@@ -5,6 +5,7 @@ import { useUserId } from '../auth';
 import { insertOrQueue } from '../offline';
 import { useHouseholdId, useHouseholdMembers, useInvalidate, useRows } from './hooks';
 import type { CareRequest, CareShift, FamilyTask, RequestKind, Routine } from '../domain/familyLoad';
+import type { FamilyEvent } from '../domain/calendar';
 import type { HouseholdMember } from '../types';
 
 export interface TaskEvent { id: string; task_id: string; household_id: string; actor_id: string | null; kind: string; detail: Record<string, unknown>; created_at: string }
@@ -152,4 +153,31 @@ export function useSaveRoutine() {
 export function useDeleteRoutine() {
   const inv = useInvalidate();
   return useMutation({ mutationFn: (id: string) => backend.remove('routines', [eq('id', id)]), onSuccess: () => inv('routines') });
+}
+
+// ---------------------------------------------------------------- agenda familial
+export function useFamilyEvents() {
+  const hid = useHouseholdId();
+  return useRows<FamilyEvent>(['family_events', hid ?? ''], hid ? { table: 'family_events', filters: [eq('household_id', hid)], order: [{ col: 'starts_at' }], limit: 1000 } : null);
+}
+
+export type EventInput = Pick<FamilyEvent, 'title' | 'kind' | 'starts_at' | 'ends_at' | 'all_day' | 'location_label' | 'notes' | 'recurrence' | 'child_id'>;
+
+export function useSaveEvent() {
+  const inv = useInvalidate();
+  const hid = useHouseholdId();
+  return useMutation({
+    mutationFn: async ({ id, input }: { id?: string; input: Partial<EventInput> }) => {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris';
+      if (id) return backend.update('family_events', input, [eq('id', id)]);
+      if (!hid) throw new Error('Créez d’abord votre foyer.');
+      return insertOrQueue('family_events', { ...input, timezone, household_id: hid });
+    },
+    onSuccess: () => inv('family_events'),
+  });
+}
+
+export function useDeleteEvent() {
+  const inv = useInvalidate();
+  return useMutation({ mutationFn: (id: string) => backend.remove('family_events', [eq('id', id)]), onSuccess: () => inv('family_events') });
 }

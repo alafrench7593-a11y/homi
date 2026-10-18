@@ -11,6 +11,7 @@ import { Text } from '@/components/ui';
 import { Aurora } from '@/components/Aurora';
 import { BRAND } from '@/config/brand';
 import { peekPendingInvite } from '@/lib/authFlow';
+import { useUiStore } from '@/lib/store';
 
 export default function Launch() {
   const { session, ready } = useAuth();
@@ -18,8 +19,14 @@ export default function Launch() {
   const t = useTheme();
   const [invite, setInvite] = useState<string | null | undefined>(undefined);
   useEffect(() => { if (session) peekPendingInvite().then(setInvite); }, [session]);
+  // Préférences locales relues avant de décider d'afficher l'introduction
+  const [hydrated, setHydrated] = useState(() => useUiStore.persist?.hasHydrated?.() ?? true);
+  useEffect(() => (hydrated ? undefined : useUiStore.persist?.onFinishHydration?.(() => setHydrated(true))), [hydrated]);
+  const introSeen = useUiStore((s) => s.introSeen);
 
-  if (ready && !session) return <Redirect href="/welcome" />;
+  // Première ouverture sans compte : introduction (toujours « Passer » possible)
+  if (ready && !session && hydrated && !introSeen) return <Redirect href="/intro" />;
+  if (ready && !session && hydrated) return <Redirect href="/welcome" />;
   // Invitation reçue avant d'avoir un compte : on la propose dès la première connexion
   if (ready && session && invite) return <Redirect href={{ pathname: '/settings/family', params: { code: invite } }} />;
   if (ready && session && invite === undefined) return <View style={{ flex: 1, backgroundColor: '#1C1128' }} />;

@@ -35,6 +35,30 @@ export async function exportJson(data: unknown): Promise<'file' | 'download' | '
   return 'text';
 }
 
+/** Fichier texte quelconque (agenda .ics, journal .csv) : partage (téléphone) ou téléchargement (web). */
+export async function exportTextFile(content: string, name: string, mimeType: string, uti?: string, dialogTitle = 'Exporter'): Promise<'file' | 'download' | 'text'> {
+  if (Platform.OS === 'web') {
+    const doc = (globalThis as { document?: Document }).document;
+    if (doc && typeof URL !== 'undefined' && URL.createObjectURL) {
+      const a = doc.createElement('a');
+      a.href = URL.createObjectURL(new Blob([content], { type: mimeType }));
+      a.download = name;
+      a.click();
+      return 'download';
+    }
+    return 'text';
+  }
+  if (await Sharing.isAvailableAsync()) {
+    const file = new File(Paths.cache, name);
+    if (file.exists) file.delete();
+    file.create();
+    file.write(content);
+    await Sharing.shareAsync(file.uri, { mimeType, dialogTitle, UTI: uti });
+    return 'file';
+  }
+  return 'text';
+}
+
 const SECTION_LABEL: Record<string, string> = {
   profile: 'Profil', personal: 'Données personnelles', households: 'Foyers', consents: 'Consentements', privacy_settings: 'Confidentialité',
   period_entries: 'Règles', symptom_logs: 'Symptômes', ovulation_tests: 'Tests d’ovulation', pregnancy_tests: 'Tests de grossesse',

@@ -14,7 +14,7 @@ import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
 import { PostpartumHomeCard } from '@/features/postpartum';
 import { FamilyHomeCard } from '@/features/familyLoad';
-import { ChildToday, CycleCard, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
+import { ChildToday, CycleCard, orderedHomeCards, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
 import { useActivePregnancy, useActiveSubject, useArticles, useChildren, useNotificationsInbox, usePremium, useProfile } from '@/lib/data/hooks';
 import { greeting } from '@/lib/domain/dates';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
@@ -42,6 +42,9 @@ export default function Home() {
   const premium = usePremium();
   const offline = useOfflineStore();
   const skyOverride = useUiStore((st) => st.skyOverride);
+  const homeOrder = useUiStore((st) => st.homeOrder);
+  const homeHidden = useUiStore((st) => st.homeHidden);
+  const quickShortcuts = useUiStore((st) => st.quickShortcuts);
   const now = skyOverride ? previewTime(skyOverride) : new Date();
 
   const journeys = profile?.journeys ?? [];
@@ -71,6 +74,50 @@ export default function Home() {
   const youngestMonths = children?.length ? Math.min(...children.map((c) => childAge(c.birth_date).months)) : null;
   const quick = quickActionsFor(subject.type === 'pregnancy' ? 'pregnancy' : subject.type === 'child' ? 'child' : subject.type === 'family' ? 'family' : 'me', journeys);
 
+  const quickKeys = (quickShortcuts?.length ? quickShortcuts : quick);
+  const cards: Record<string, React.ReactNode> = {
+    main: mainLoading ? <Skeleton kind="card" rows={1} />
+      : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); }} />
+      : subject.type === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
+      : child ? <ChildToday child={child} compact />
+        : cycleMode ? <CycleCard mode={cycleMode} />
+          : (
+            <Card onPress={() => router.push('/me')} accessibilityLabel="Ouvrir l’espace Moi aussi">
+              <Text variant="heading">Moi aussi</Text>
+              <Text variant="small" muted>Votre santé, votre sommeil et votre humeur.</Text>
+            </Card>
+          ),
+    quick: <QuickActions keys={quickKeys} childId={child?.id} onCustomize={() => router.push('/settings/home')} />,
+    upcoming: <UpcomingCard />,
+    family: <FamilyHomeCard />,
+    postpartum: <PostpartumHomeCard journeys={profile?.journeys ?? []} youngestChildMonths={youngestMonths} />,
+    article: article ? (
+      <Card onPress={() => router.push(`/article/${article.slug}`)} accessibilityLabel={`Article du jour : ${article.title}`}>
+        <Row style={{ justifyContent: 'space-between' }}>
+          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>ARTICLE DU JOUR</Text>
+          {isLocked(article, premium) && <Icon name="lock" size={14} color={t.colors.gold} />}
+        </Row>
+        <Text variant="heading" style={{ marginTop: 4 }}>{article.title}</Text>
+        <Text variant="small" muted numberOfLines={2}>{article.summary}</Text>
+      </Card>
+    ) : null,
+    assistant: (
+      <Pressable accessibilityRole="button" accessibilityLabel="Poser une question à l’assistant" onPress={() => router.push('/assistant/chat')} style={({ pressed }) => ({ borderRadius: 24, overflow: 'hidden', transform: [{ scale: pressed ? 0.98 : 1 }] })}>
+        <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, minHeight: MIN_TOUCH + 16 }}>
+          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.35)', alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="message-circle" color="#FFFFFF" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text weight="bold" color="#FFFFFF">Poser une question</Text>
+            <Text variant="caption" color="rgba(255,255,255,0.85)">Assistant d’information santé et parentalité</Text>
+          </View>
+          <Icon name="arrow-right" color="#FFFFFF" />
+        </LinearGradient>
+      </Pressable>
+    ),
+  };
+  const homeCards = orderedHomeCards(homeOrder, homeHidden);
+
   return (
     <View style={{ flex: 1 }}>
       <Screen bottomInset={96}>
@@ -95,64 +142,13 @@ export default function Home() {
         <Appear kind="soft" delay={0.1}><ProfileSwitcher /></Appear>
         {!offline.online && <Banner tone="warning" title="Hors connexion">{offline.pending.length ? `${offline.pending.length} entrée(s) en attente de synchronisation.` : 'Vos données restent consultables ; les nouvelles saisies seront synchronisées.'}</Banner>}
 
-        {/* 2. Carte principale */}
-        <Appear kind="pop" delay={0.2}>
-          {mainLoading ? <Skeleton kind="card" rows={1} />
-            : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); }} />
-            : subject.type === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
-            : child ? <ChildToday child={child} compact />
-              : cycleMode ? <CycleCard mode={cycleMode} />
-                : (
-                  <Card onPress={() => router.push('/me')} accessibilityLabel="Ouvrir l’espace Moi aussi">
-                    <Text variant="heading">Moi aussi</Text>
-                    <Text variant="small" muted>Votre santé, votre sommeil et votre humeur.</Text>
-                  </Card>
-                )}
-        </Appear>
+        {/* Cartes de l'accueil, dans l'ordre choisi (Réglages › Mon accueil) */}
+        {homeCards.map((key, i) => {
+          const node = cards[key];
+          if (!node) return null;
+          return <Appear key={key} kind={key === 'main' ? 'pop' : key === 'assistant' ? 'btn' : 'soft'} delay={0.2 + Math.min(i, 6) * 0.08}>{node}</Appear>;
+        })}
 
-        {/* 3. Actions rapides */}
-        <Appear kind="soft" delay={0.32}>
-          <QuickActions keys={quick} childId={child?.id} />
-        </Appear>
-
-        {/* 4. Prochain rappel ou rendez-vous */}
-        <Appear kind="soft" delay={0.42}><UpcomingCard /></Appear>
-
-        {/* 4 bis. Organisation familiale : demandes en attente, mes tâches, journée difficile */}
-        <Appear kind="soft" delay={0.44}><FamilyHomeCard /></Appear>
-
-        {/* 4 ter. Après la naissance (mère : invitation douce ; conjoint : ce qu'elle a choisi de partager) */}
-        <Appear kind="soft" delay={0.46}><PostpartumHomeCard journeys={profile?.journeys ?? []} youngestChildMonths={youngestMonths} /></Appear>
-
-        {/* 5. Article du jour */}
-        {article && (
-          <Appear kind="soft" delay={0.5}>
-            <Card onPress={() => router.push(`/article/${article.slug}`)} accessibilityLabel={`Article du jour : ${article.title}`}>
-              <Row style={{ justifyContent: 'space-between' }}>
-                <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>ARTICLE DU JOUR</Text>
-                {isLocked(article, premium) && <Icon name="lock" size={14} color={t.colors.gold} />}
-              </Row>
-              <Text variant="heading" style={{ marginTop: 4 }}>{article.title}</Text>
-              <Text variant="small" muted numberOfLines={2}>{article.summary}</Text>
-            </Card>
-          </Appear>
-        )}
-
-        {/* 6. Poser une question + Tous mes outils */}
-        <Appear kind="btn" delay={0.6}>
-          <Pressable accessibilityRole="button" accessibilityLabel="Poser une question à l’assistant" onPress={() => router.push('/assistant/chat')} style={({ pressed }) => ({ borderRadius: 24, overflow: 'hidden', transform: [{ scale: pressed ? 0.98 : 1 }] })}>
-            <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, minHeight: MIN_TOUCH + 16 }}>
-              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.35)', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name="message-circle" color="#FFFFFF" />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text weight="bold" color="#FFFFFF">Poser une question</Text>
-                <Text variant="caption" color="rgba(255,255,255,0.85)">Assistant d’information santé et parentalité</Text>
-              </View>
-              <Icon name="arrow-right" color="#FFFFFF" />
-            </LinearGradient>
-          </Pressable>
-        </Appear>
         <Appear kind="side" delay={0.7}>
           <Button label="Tous mes outils" icon="grid" variant="secondary" onPress={() => router.push('/tools')} full />
         </Appear>

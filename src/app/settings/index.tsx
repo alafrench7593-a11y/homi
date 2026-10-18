@@ -152,6 +152,8 @@ export default function SettingsScreen() {
       <Card>
         <ListRow icon="users" title="Famille & partage" subtitle={household ? `${household.name} · ${members?.length ?? 1} membre${(members?.length ?? 1) > 1 ? 's' : ''}` : 'Inviter un coparent, gérer les accès'} onPress={() => router.push('/settings/family')} />
         <Divider />
+        <ListRow icon="layout" title="Mon accueil" subtitle="Ordre des cartes, raccourcis, introduction" onPress={() => router.push('/settings/home')} />
+        <Divider />
         <ListRow icon="bell" title="Rappels" subtitle={activeReminders ? `${activeReminders} rappel${activeReminders > 1 ? 's' : ''} actif${activeReminders > 1 ? 's' : ''}` : 'Aucun rappel actif'} onPress={() => router.push('/settings/reminders')} />
         <Divider />
         <ListRow icon="star" title="Abonnement" subtitle={premium ? `${BRAND.name} Plus actif` : 'Version gratuite'} onPress={() => router.push('/settings/subscription')} />

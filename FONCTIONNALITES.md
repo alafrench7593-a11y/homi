@@ -66,7 +66,16 @@ Légende : ✅ fait et testé · 🟡 partiel (détail donné) · ⬜ à faire �
 Corrections au passage : les panneaux du bas ne défilaient plus quand leur contenu était long, et un message pouvait effacer le suivant (ou disparaître aussitôt avec « réduire les animations »).
 
 ### Lot C — Calendrier, journal unifié, accueil personnalisable, intro (§ 4, 5, 17, 18)
-⬜
+| Exigence | État |
+|---|---|
+| Introduction immersive : logo, lumière, mission, fonctionnalités, tableau de bord, puis onboarding ; « Passer » toujours visible ; rejouable ; mémorisée (§ 4) | ✅ `intro.tsx` (première ouverture sans compte) ; « Revoir l'introduction » dans Réglages › Mon accueil |
+| Accueil : réordonner, masquer, choisir les raccourcis (§ 5) | ✅ `settings/home.tsx` (préférence gardée sur l'appareil) |
+| Accueil : demandes de relais, tâches, post-partum partagé (§ 5) | ✅ cartes « Organisation familiale » et « Après la naissance » |
+| Agenda familial : jour, semaine, mois, agenda ; créer, modifier, déplacer, supprimer (§ 18) | ✅ `calendar.tsx`, table `family_events` (domaine « Listes et organisation ») + rendez-vous, tâches, relais, temps pour soi |
+| Récurrences, fuseaux horaires, chevauchements (§ 18) | ✅ heure locale conservée au changement d'heure (testé), chevauchements signalés |
+| Export iCalendar vers Google / Apple / Outlook (§ 18) | ✅ fichier `.ics` RFC 5545 (VTIMEZONE, RRULE, repli des lignes) — vérifié avec une bibliothèque iCalendar ; rendez-vous privés jamais exportés, santé sous titre neutre par défaut |
+| Synchronisation bidirectionnelle Google Agenda / Outlook (API OAuth) | ⬜ non faite : nécessite des identifiants OAuth Google et Microsoft côté serveur et un test réel. L'export .ics est une copie, présentée comme telle. |
+| Journal unifié : biberons, repas, sommeil, changes, observations, médicaments notés, dents, souvenirs, rendez-vous, tâches ; filtres, recherche, jour/semaine/mois, statistiques descriptives, export CSV (§ 17) | ✅ `journal.tsx` ; seules les saisies réelles, aucun historique généré |
 
 ### Lot D — Compléments du suivi de l'enfant (§ 6–16)
 Chronomètre de prise de biberon, sommeil sieste/nuit + sommeil sûr, aspect des selles / vomissements, humeur de l'enfant, schéma dentaire, développement, souvenirs avec photos, santé (observations, maladies suivies), vaccins, liste « à éviter », recommandations éditoriales. ⬜

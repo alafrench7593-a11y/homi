@@ -149,6 +149,11 @@ const QUICK: Record<string, { icon: IconName; label: string; go: (childId?: stri
   pill: { icon: 'shield', label: 'Contraception', go: () => router.push('/contraception') },
   mysleep: { icon: 'cloud', label: 'Mon sommeil', go: () => router.push('/me/sleep') },
   appointment: { icon: 'calendar', label: 'Rendez-vous', go: () => router.push('/appointments') },
+  tasks: { icon: 'check-square', label: 'Tâches', go: () => router.push('/family') },
+  agenda: { icon: 'calendar', label: 'Agenda', go: () => router.push('/calendar') },
+  journal: { icon: 'book-open', label: 'Journal', go: () => router.push('/journal') },
+  relay: { icon: 'repeat', label: 'Relais', go: () => router.push('/family') },
+  postpartum: { icon: 'sun', label: 'Pour moi', go: () => router.push('/postpartum') },
 };
 /** Le suivi du cycle s'ouvre dans le parcours choisi (concevoir ou éviter). */
 let cycleRoute: '/fertility' | '/contraception' = '/fertility';
@@ -156,35 +161,38 @@ export function setCycleRoute(r: '/fertility' | '/contraception') { cycleRoute =
 function useCycleRoute() { return cycleRoute; }
 export const QUICK_KEYS = Object.keys(QUICK);
 export const quickLabel = (k: string) => QUICK[k]?.label ?? k;
+export const quickIcon = (k: string): IconName => QUICK[k]?.icon ?? 'circle';
 
 export function QuickActions({ keys, childId, onCustomize }: { keys: string[]; childId?: string; onCustomize?: () => void }) {
   const t = useTheme();
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-      {keys.filter((k) => QUICK[k]).slice(0, 4).map((k) => (
-        <Pressable
-          key={k}
-          accessibilityRole="button"
-          accessibilityLabel={`Ajouter : ${QUICK[k].label}`}
-          onPress={() => { haptic('light'); QUICK[k].go(childId); }}
-          style={{ alignItems: 'center', gap: 6, width: 72 }}
-        >
-          {({ pressed }) => (
-            <>
-              <View style={{ width: 58, height: 58, borderRadius: 29, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name={QUICK[k].icon} color={t.colors.gold} />
-              </View>
-              <Text variant="caption" weight="medium" center numberOfLines={1}>{QUICK[k].label}</Text>
-            </>
-          )}
+    <View style={{ gap: 4 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+        {keys.filter((k) => QUICK[k]).slice(0, 4).map((k) => (
+          <Pressable
+            key={k}
+            accessibilityRole="button"
+            accessibilityLabel={`Ajouter : ${QUICK[k].label}`}
+            onPress={() => { haptic('light'); QUICK[k].go(childId); }}
+            style={{ alignItems: 'center', gap: 6, width: 72 }}
+          >
+            {({ pressed }) => (
+              <>
+                <View style={{ width: 58, height: 58, borderRadius: 29, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name={QUICK[k].icon} color={t.colors.gold} />
+                </View>
+                <Text variant="caption" weight="medium" center numberOfLines={1}>{QUICK[k].label}</Text>
+              </>
+            )}
+          </Pressable>
+        ))}
+      </View>
+      {onCustomize ? (
+        <Pressable accessibilityRole="button" accessibilityLabel="Choisir mes raccourcis et personnaliser l’accueil" onPress={onCustomize} style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 36, paddingHorizontal: 6 }}>
+          <Icon name="sliders" size={14} color={t.colors.textMuted} />
+          <Text variant="caption" muted>Personnaliser</Text>
         </Pressable>
-      ))}
-      {onCustomize && <Pressable accessibilityRole="button" accessibilityLabel="Choisir mes raccourcis" onPress={onCustomize} style={{ alignItems: 'center', gap: 6, width: 72 }}>
-        <View style={{ width: 58, height: 58, borderRadius: 29, borderWidth: 1.5, borderStyle: 'dashed', borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name="sliders" color={t.colors.textMuted} />
-        </View>
-        <Text variant="caption" muted center>Choisir</Text>
-      </Pressable>}
+      ) : null}
     </View>
   );
 }
@@ -255,4 +263,23 @@ export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' }) {
       </View>
     </Pressable>
   );
+}
+
+// ------------------------------------------------------------------ accueil personnalisable
+export const HOME_CARDS: { key: string; label: string; detail: string }[] = [
+  { key: 'main', label: 'Carte principale', detail: 'Grossesse, enfant ou cycle selon le profil actif' },
+  { key: 'quick', label: 'Raccourcis', detail: 'Quatre actions en un geste' },
+  { key: 'upcoming', label: 'Prochain rendez-vous ou rappel', detail: '' },
+  { key: 'family', label: 'Organisation familiale', detail: 'Demandes en attente, mes tâches, journée difficile' },
+  { key: 'postpartum', label: 'Après la naissance', detail: 'Point du jour, ou ce que votre partenaire partage' },
+  { key: 'article', label: 'Article du jour', detail: '' },
+  { key: 'assistant', label: 'Poser une question', detail: 'Assistant d’information' },
+];
+
+/** Ordre choisi, puis les cartes nouvelles à leur place par défaut ; sans les cartes masquées. */
+export function orderedHomeCards(order: string[], hidden: string[]): string[] {
+  const all = HOME_CARDS.map((c) => c.key);
+  const known = order.filter((k) => all.includes(k));
+  for (const k of all) if (!known.includes(k)) known.splice(Math.min(all.indexOf(k), known.length), 0, k);
+  return known.filter((k) => !hidden.includes(k));
 }
