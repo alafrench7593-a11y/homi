@@ -101,6 +101,10 @@ verify_jwt = true
 [functions.document-extract]
 verify_jwt = true
 
+# Lecture du texte d'un document (Gemini, avec accord) : transcription seule, jamais journalisée
+[functions.document-read]
+verify_jwt = true
+
 # Analyse pédagogique d'une photo de glaire cervicale (Gemini) : jamais stockée ni journalisée
 [functions.cycle-photo]
 verify_jwt = true

@@ -5,3 +5,4 @@ export { intro } from './intro';
 export { auth } from './auth';
 export { onboarding } from './onboarding';
 export { home } from './home';
+export { docs } from './docs';

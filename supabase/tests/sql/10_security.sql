@@ -101,8 +101,9 @@ select tests.throws($$insert into public.reminders (category, title, schedule) v
 
 -- Documents : métadonnées + fichier privé
 insert into storage.objects (bucket_id, name) values ('documents', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/echo-t2.pdf');
-insert into public.documents (household_id, pregnancy_id, category, title, storage_path, mime_type, size_bytes)
-values (:'FAMILLE', :'GROSSESSE', 'ultrasound', 'Échographie T2', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/echo-t2.pdf', 'application/pdf', 204800);
+-- partage avec le foyer : choix explicite (les documents sont privés par défaut depuis documents v2)
+insert into public.documents (household_id, pregnancy_id, category, title, storage_path, mime_type, size_bytes, private_to_uploader)
+values (:'FAMILLE', :'GROSSESSE', 'ultrasound', 'Échographie T2', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/echo-t2.pdf', 'application/pdf', 204800, false);
 insert into storage.objects (bucket_id, name) values ('documents', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/prise-de-sang.pdf');
 insert into public.documents (household_id, category, title, storage_path, mime_type, size_bytes, private_to_uploader)
 values (:'FAMILLE', 'blood_test', 'Prise de sang (privée)', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/prise-de-sang.pdf', 'application/pdf', 1000, true);

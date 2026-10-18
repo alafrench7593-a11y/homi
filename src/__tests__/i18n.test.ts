@@ -13,6 +13,7 @@ export const MIGRATED = [
   'src/app/intro.tsx', 'src/app/welcome.tsx', 'src/app/settings/index.tsx', 'src/app/settings/language.tsx',
   'src/app/auth/sign-in.tsx', 'src/app/auth/sign-up.tsx', 'src/app/auth/forgot.tsx', 'src/app/auth/reset.tsx', 'src/app/auth/callback.tsx', 'src/features/auth.tsx',
   'src/app/onboarding.tsx', 'src/app/journeys.tsx', 'src/app/(tabs)/index.tsx', 'src/app/(tabs)/_layout.tsx', 'src/components/Dock.tsx', 'src/app/(tabs)/profile.tsx', 'src/components/AccountActions.tsx',
+  'src/app/documents/index.tsx', 'src/app/documents/scan.tsx', 'src/app/documents/[id].tsx', 'src/app/documents/book.tsx', 'src/app/documents/export.tsx', 'src/features/documents.tsx',
 ];
 
 const forms = (m: Msg) => (typeof m === 'string' ? [m] : Object.values(m).filter((x): x is string => typeof x === 'string'));
@@ -31,7 +32,7 @@ describe('dictionnaires', () => {
     expect(Object.keys(d).length).toBe(Object.keys(FR).length);
   });
   it('les clés suivent la convention domaine.element', () => {
-    for (const k of Object.keys(FR)) expect(k).toMatch(/^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$/);
+    for (const k of Object.keys(FR)) expect(k).toMatch(/^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9_]+)+$/);
   });
   it('aucune langue « en préparation » n’est proposée comme disponible', () => {
     expect(availableLocales().map((l) => l.code).sort()).toEqual(Object.keys(DICTIONARIES).sort());

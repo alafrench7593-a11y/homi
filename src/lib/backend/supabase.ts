@@ -139,8 +139,7 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
     },
     storage: {
       async upload(bucket, path, file) {
-        const res = await fetch(file.uri);
-        const body = await res.arrayBuffer();
+        const body = file.bytes ?? (await (await fetch(file.uri)).arrayBuffer());
         const { error } = await client.storage.from(bucket).upload(path, body, { contentType: file.mimeType, upsert: false });
         wrap(error);
       },

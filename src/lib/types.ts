@@ -111,11 +111,22 @@ export type ChecklistKind = 'maternity_bag' | 'baby_items' | 'home' | 'admin' | 
 export interface Checklist { id: string; household_id: string; pregnancy_id: string | null; kind: ChecklistKind; title: string; created_at: string }
 export interface ChecklistItem { id: string; checklist_id: string; household_id: string; label: string; done: boolean; done_by: string | null; position: number; note: string | null }
 
-export type DocCategory = 'ultrasound' | 'report' | 'blood_test' | 'prescription' | 'letter' | 'photo' | 'other';
+export type { DocCategory } from './documents/taxonomy';
+import type { DocCategory } from './documents/taxonomy';
 export interface DocumentRow {
   id: string; household_id: string; uploaded_by: string; pregnancy_id: string | null; child_id: string | null;
-  category: DocCategory; title: string; doc_date: string | null; notes: string | null; storage_path: string; mime_type: string; size_bytes: number;
-  private_to_uploader: boolean; created_at: string;
+  category: DocCategory; custom_category: string | null; title: string; doc_date: string | null; notes: string | null;
+  storage_path: string; mime_type: string; size_bytes: number; page_count: number;
+  /** Privé par défaut : seule la personne qui l'a déposé le voit ; le partage avec le foyer est explicite. */
+  private_to_uploader: boolean; favorite: boolean; archived: boolean;
+  ocr_text: string | null; ocr_source: 'device' | 'server' | 'manual' | null; review_status: 'none' | 'to_verify' | 'verified';
+  created_at: string; updated_at: string;
+}
+export type ExtractionStatus = 'to_verify' | 'verified' | 'professional' | 'rejected';
+export interface DocumentExtraction {
+  id: string; document_id: string; household_id: string; kind: 'fields' | 'reading' | 'summary'; level: 'quick' | 'detailed' | 'simple' | null;
+  fields: Record<string, unknown>; status: ExtractionStatus; source: 'device' | 'server' | 'manual' | 'local' | null;
+  verified_by: string | null; verified_at: string | null; professional_note: string | null; created_at: string;
 }
 
 export interface BabyName { id: string; name: string; usage: ('feminine' | 'masculine' | 'mixed')[]; origin: string | null; meaning: string | null; popularity_rank: number | null }

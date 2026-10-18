@@ -135,6 +135,20 @@ Documentation : https://docs.expo.dev/push-notifications/overview/ · https://fi
 ## 11. Stockage des photos et documents
 ✅ Supabase Storage, compartiments **privés** (taille et types de fichiers limités, accès par foyer). Photos du cycle chiffrées ; effacement à la suppression du compte. Les URL signées sont temporaires.
 
+## 11 bis. Documents : numérisation, lecture du texte (OCR), résumé (nouveau)
+| Étape | Technologie retenue | Où | Données transmises | Coût | Statut |
+|---|---|---|---|---|---|
+| Numérisation | Photo (appareil photo ou galerie) + traitement **sur l'appareil** : détection des bords (seuil d'Otsu + plus grande zone claire), redressement de perspective (homographie), rotation, niveaux de gris, lisibilité (étirement des niveaux), alerte de flou (variance du laplacien), PDF multipage (`pdf-lib`, JavaScript pur) | Appareil | Aucune | Gratuit | ✅ Testé (Jest + navigateur). Caméra réelle et scanner natif du système (VisionKit iOS / ML Kit Document Scanner Android) **non branchés** : ils exigent un build de développement et un appareil pour être testés |
+| Lecture du texte (1) | Google ML Kit Text Recognition (déjà présent) | Appareil (build de développement) | Aucune | Gratuit | 🔧 Branché, **non testé ici** (pas d'appareil) ; absent du web et d'Expo Go |
+| Lecture du texte (2) | Gemini (fonction `document-read`), transcription seule, passages illisibles marqués | Serveur, avec l'accord « lecture automatique des documents » | Le fichier du document uniquement (ni nom, ni profil) ; texte jamais journalisé | Payant à l'usage selon l'offre Gemini | ✅ Code + 4 tests Deno (réponse inexploitable → rien d'inventé). 🔧 `GEMINI_API_KEY` à configurer ; fonction à déployer |
+| Lecture du texte (3) | Saisie ou collage du texte | Appareil | Aucune | Gratuit | ✅ Testé |
+| Repérage (dates, valeurs + unités + plages, ordonnance, vaccins, échéances) | Règles explicites (`src/lib/documents/textParse.ts`) : recopie exacte, rien de deviné | Appareil | Aucune | Gratuit | ✅ 11 tests |
+| Résumé (rapide, détaillé, explication simple) | Construit **sur l'appareil** à partir du texte lu : chaque élément est marqué « écrit dans le document », « repéré automatiquement », « explication générale » ou « incertain » ; glossaire de termes courants | Appareil | Aucune | Gratuit | ✅ Tests : chaque chiffre du résumé figure dans le document ; aucun « normal / anormal » |
+| Recherche | Règles explicites (catégorie, année, « dernier », prénom de l'enfant, mot exact) sur les documents déjà autorisés par la base | Appareil | Aucune | Gratuit | ✅ Testé |
+| Export | Dossier PDF fabriqué sur l'appareil (index + documents + résumés facultatifs), feuille de partage du téléphone ou téléchargement web ; aucun lien public | Appareil | Uniquement vers la destination choisie par la personne | Gratuit | ✅ Testé sur le web ; feuille de partage mobile non testée ici |
+
+Sécurité : documents **privés par défaut**, partage avec le foyer explicite et révocable ; texte lu, éléments et résumés soumis aux **mêmes droits que le document** (faille corrigée : ils suivaient auparavant les droits du foyer) ; suppression du document = suppression du fichier, du texte, des éléments, des résumés et des rappels liés ; 19 vérifications SQL à deux comptes (`supabase/tests/sql/47_documents_v2.sql`). Aucun audit de conformité (RGPD, hébergement de données de santé) n'a été réalisé : à prévoir avant une mise en production.
+
 ## 12. Contenus de santé publique (France)
 ✅ **Contenus locaux sourcés**, pas d'API : il n'existe pas d'API officielle pour ces contenus. Ils citent leur source et leur date, sans aucune prescription individuelle :
 - calendrier vaccinal (ministère, HAS) ;

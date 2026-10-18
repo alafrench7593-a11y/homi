@@ -37,7 +37,8 @@ export interface AuthApi {
   exchangeCode(code: string): Promise<void>;
 }
 
-export interface UploadFile { uri: string; mimeType: string; size: number; name?: string }
+/** `bytes` : contenu déjà en mémoire (PDF créé sur l'appareil) ; sinon le fichier est lu depuis `uri`. */
+export interface UploadFile { uri: string; mimeType: string; size: number; name?: string; bytes?: Uint8Array }
 
 export interface StorageApi {
   upload(bucket: string, path: string, file: UploadFile): Promise<void>;

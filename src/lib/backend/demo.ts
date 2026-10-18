@@ -440,7 +440,19 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (r.bedtime && r.wake_time && r.wake_time <= r.bedtime) throw new BackendError('Le réveil doit être après le coucher.');
       r.updated_at = nowIso();
     }
-    if (table === 'documents') r.private_to_uploader ??= false;
+    if (table === 'documents') {
+      // Même règles que la base (documents v2) : privé par défaut
+      r.private_to_uploader ??= true;
+      r.favorite ??= false; r.archived ??= false; r.page_count ??= 1; r.review_status ??= 'none';
+      r.ocr_text ??= null; r.ocr_source ??= null; r.custom_category ??= null; r.updated_at = nowIso();
+      if (r.category === 'custom' && !r.custom_category) throw new BackendError('Donnez un nom à la catégorie personnalisée.');
+    }
+    if (table === 'document_extractions') {
+      r.household_id ??= T('documents').find((d) => d.id === r.document_id)?.household_id ?? null;
+      r.kind ??= 'fields'; r.level ??= null; r.source ??= null; r.status ??= 'to_verify'; r.professional_note ??= null;
+      r.verified_by = r.status === 'verified' || r.status === 'professional' ? state.session?.userId ?? null : null; r.verified_at = r.verified_by ? nowIso() : null;
+      if (r.status === 'professional' && !r.professional_note) throw new BackendError('Indiquez où cette confirmation est documentée.');
+    }
     return r;
   }
 
@@ -764,6 +776,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (b.consent !== true) throw new BackendError('Votre accord explicite est nécessaire pour envoyer la photo à l’analyse.', 'consent_required', undefined, 400);
       throw new BackendError('Analyse de photo non disponible en mode démonstration : aucune donnée n’est envoyée.', 'ai_not_configured', undefined, 503);
     },
+    // Démonstration : aucun document n'est envoyé à un service de lecture
+    'document-read': () => ({ status: 'demo' }),
     'document-extract': () => ({ fields: null, status: 'unavailable', message: 'La lecture automatique nécessite un service connecté (indisponible en mode démonstration).' }),
     'delete-account': async () => {
       const me = uid();
@@ -858,7 +872,19 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     },
     storage: {
       async upload(bucket, path, file) {
-        T('_files').push({ id: uuid(), bucket, path, uri: file.uri, mime: file.mimeType });
+        // Démonstration : le fichier reste sur l'appareil (adresse data: pour survivre au rechargement)
+        let uri = file.uri;
+        if (file.bytes) {
+          let bin = '';
+          for (let i = 0; i < file.bytes.length; i += 0x8000) bin += String.fromCharCode(...file.bytes.subarray(i, i + 0x8000));
+          uri = `data:${file.mimeType};base64,${globalThis.btoa(bin)}`;
+        } else if (uri.startsWith('blob:')) {
+          try {
+            const blob = await (await fetch(uri)).blob();
+            uri = await new Promise<string>((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsDataURL(blob); });
+          } catch { /* garde l'adresse temporaire */ }
+        }
+        T('_files').push({ id: uuid(), bucket, path, uri, mime: file.mimeType });
         persist();
       },
       async signedUrl(_bucket, path) {
@@ -922,6 +948,21 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
           const next = { ...r, ...patch };
           if (next.prepared_ml != null && next.consumed_ml != null && next.consumed_ml > next.prepared_ml) throw new BackendError('La quantité bue ne peut pas dépasser la quantité préparée.');
         }
+        if (table === 'documents') {
+          const next = { ...r, ...patch };
+          if (next.category === 'custom' && !next.custom_category) throw new BackendError('Donnez un nom à la catégorie personnalisée.');
+          Object.assign(r, patch, { updated_at: nowIso() });
+          continue;
+        }
+        if (table === 'document_extractions') {
+          const next = { ...r, ...patch };
+          if (next.status === 'professional' && !next.professional_note) throw new BackendError('Indiquez où cette confirmation est documentée.');
+          const stamp = (next.status === 'verified' || next.status === 'professional') && next.status !== r.status;
+          Object.assign(r, patch);
+          if (stamp) { r.verified_by = state.session?.userId ?? null; r.verified_at = nowIso(); }
+          if (r.status === 'to_verify' || r.status === 'rejected') { r.verified_by = null; r.verified_at = null; }
+          continue;
+        }
         if (table === 'family_tasks') {
           const before = { ...r };
           Object.assign(r, patch, { updated_at: nowIso(), updated_by: state.session?.userId ?? null });
@@ -980,6 +1021,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (table === 'children') for (const t of CHILD_TABLES) state.tables[t] = T(t).filter((r) => !removed.some((c) => c.id === r.child_id));
       // bottle_timers.bottle_id : on delete set null
       if (table === 'bottles') T('bottle_timers').forEach((x) => { if (removed.some((b) => b.id === x.bottle_id)) x.bottle_id = null; });
+      // Documents : texte lu, champs, résumés et rappels liés disparaissent avec le document
+      if (table === 'documents') {
+        state.tables.document_extractions = T('document_extractions').filter((x) => !removed.some((d) => d.id === x.document_id));
+        state.tables.reminders = T('reminders').filter((x) => !removed.some((d) => x.deep_link === `/documents/${d.id}`));
+      }
       if (table === 'checklists') state.tables.checklist_items = T('checklist_items').filter((i) => !removed.some((c) => c.id === i.checklist_id));
       if (table === 'assistant_conversations') {
         const gone = new Set(T('assistant_messages').filter((m) => removed.some((c) => c.id === m.conversation_id)).map((m) => m.id));
