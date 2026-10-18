@@ -22,7 +22,8 @@ import { useToast } from '@/components/Overlays';
 import { Button, Field, haptic, Icon, Row, Text } from '@/components/ui';
 import { backend, eq } from '@/lib/backend';
 import { useInvalidate, useRows } from '@/lib/data/hooks';
-import { useNow } from '@/lib/data/hooks-bottle';
+import { useBottleTimer, useNow, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
+import { atClock, updateLastBottleTime } from '@/lib/domain/bottleTimer';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { bottleElapsed, formatChrono, resumePatch } from '@/lib/domain/childCare';
 import { formatDuration } from '@/lib/domain/dates';
@@ -55,6 +56,8 @@ export function BottleInstrument({ child }: { child: Child }) {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
+  const reminder = useBottleTimer(child.id);
+  const updateTimer = useUpdateBottleTimer();
   const reduce = useReduceMotion();
   const runningQ = useRows<Running>(['bottles', child.id, 'running'], { table: 'bottles', filters: [eq('child_id', child.id), eq('in_progress', true)], limit: 1 });
   const lastQ = useRows<Finished>(['bottles', child.id, 'last-finished'], { table: 'bottles', filters: [eq('child_id', child.id), eq('in_progress', false)], order: [{ col: 'at', asc: false }], limit: 1 });
@@ -154,8 +157,18 @@ export function BottleInstrument({ child }: { child: Child }) {
     const end = new Date();
     const patch = { ...resumePatch(running, end), ended_at: (running.paused_at ? new Date(running.paused_at) : end).toISOString(), in_progress: false, at: running.started_at, prepared_ml: p, consumed_ml: c, milk_type: milk.trim() || null, note: note.trim() || null };
     const seconds = bottleElapsed({ ...running, ...patch });
-    const ok = await run(() => backend.update('bottles', patch, [eq('id', running.id)]));
+    // Synchronisation : un rappel actif repart de ce biberon (même délai) — comme pour une saisie manuelle.
+    let next: string | null = null;
+    const ok = await run(async () => {
+      await backend.update('bottles', patch, [eq('id', running.id)]);
+      const active = reminder.active;
+      if (active && Date.parse(running.started_at) >= Date.parse(active.last_bottle_at)) {
+        const upd = await updateTimer.mutateAsync({ id: active.id, patch: updateLastBottleTime(active, running.started_at, end) });
+        next = (upd as { due_at?: string } | undefined)?.due_at ?? updateLastBottleTime(active, running.started_at, end).due_at;
+      }
+    }, undefined);
     if (!ok) return;
+    toast(next ? `Biberon enregistré. Prochain rappel ${atClock(next)}.` : 'Biberon enregistré.');
     haptic('success'); setPulse((x) => x + 1);
     setSummary(false); setDone({ seconds, consumed: c, prepared: p });
     setPrepared(''); setConsumed(''); setMilk(''); setNote('');

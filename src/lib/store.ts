@@ -28,6 +28,12 @@ interface UiState {
   /** Raccourcis choisis (null = automatiques selon le parcours). */
   quickShortcuts: string[] | null;
   setQuickShortcuts: (keys: string[] | null) => void;
+  /** Outils favoris (identifiants stables du catalogue), dans l'ordre choisi. */
+  toolFavorites: string[];
+  setToolFavorites: (ids: string[]) => void;
+  /** Dernier filtre choisi dans « Outils » (état conservé au retour). */
+  toolFilter: string;
+  setToolFilter: (f: string) => void;
   /** Introduction vue (ou passée) : ne se relance pas toute seule. */
   introSeen: boolean;
   setIntroSeen: (v: boolean) => void;
@@ -58,6 +64,10 @@ export const useUiStore = create<UiState>()(
       setHomeLayout: (homeOrder, homeHidden) => set({ homeOrder, homeHidden }),
       quickShortcuts: null,
       setQuickShortcuts: (quickShortcuts) => set({ quickShortcuts }),
+      toolFavorites: [],
+      setToolFavorites: (toolFavorites) => set({ toolFavorites }),
+      toolFilter: 'all',
+      setToolFilter: (toolFilter) => set({ toolFilter }),
       introSeen: false,
       setIntroSeen: (introSeen) => set({ introSeen }),
       setOverloadTipsOff: (overloadTipsOff) => set({ overloadTipsOff }),

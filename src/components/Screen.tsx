@@ -1,13 +1,17 @@
 import React from 'react';
 import { Animated, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router, useIsFocused } from 'expo-router';
+import { router, useIsFocused, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { IconButton, Text } from './ui';
 import { StarField } from './StarField';
 import { useFocusEntrance } from './Motion';
+import { ToolGlyph } from './ToolGlyph';
+import { peekToolOrigin, takeToolOrigin, type ToolOrigin } from '@/lib/toolOrigin';
+import { useReduceMotion } from '@/theme/ThemeProvider';
+import { NATIVE_DRIVER } from '@/theme/tokens';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -30,6 +34,10 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
   const focused = useIsFocused();
   // Continuité de navigation : le contenu entre en fondu et monte légèrement à chaque arrivée sur l'écran
   const entrance = useFocusEntrance(focused);
+  // Arrivée depuis une carte « Outils » : son glyphe se pose à côté du titre
+  const pathname = usePathname();
+  const [origin] = React.useState<ToolOrigin | null>(() => peekToolOrigin(pathname));
+  React.useEffect(() => { if (origin) takeToolOrigin(pathname); }, [origin, pathname]);
   const header = (title || back || right) && (
     <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
       <View style={styles.headerRow}>
@@ -42,9 +50,12 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
         {right}
       </View>
       {title ? (
-        <View style={{ paddingHorizontal: spacing.lg, gap: 4 }}>
-          <Text variant="title" accessibilityRole="header">{title}</Text>
-          {subtitle ? <Text muted>{subtitle}</Text> : null}
+        <View style={{ paddingHorizontal: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+          {origin ? <ArrivalGlyph origin={origin} /> : null}
+          <View style={{ flex: 1, gap: 4 }}>
+            <Text variant="title" accessibilityRole="header">{title}</Text>
+            {subtitle ? <Text muted>{subtitle}</Text> : null}
+          </View>
         </View>
       ) : null}
     </View>
@@ -71,6 +82,25 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
         {body}
         {footer ? <View style={{ paddingHorizontal: spacing.lg, paddingBottom: insets.bottom + spacing.sm, paddingTop: spacing.sm }}>{footer}</View> : null}
       </KeyboardAvoidingView>
+    </Animated.View>
+  );
+}
+
+/** Le glyphe de la carte touchée arrive dans l'en-tête (glisse depuis le bas, se réduit, se pose). */
+function ArrivalGlyph({ origin }: { origin: ToolOrigin }) {
+  const reduce = useReduceMotion();
+  const v = React.useRef(new Animated.Value(reduce || origin.urgent ? 1 : 0)).current;
+  const [play, setPlay] = React.useState(0);
+  React.useEffect(() => {
+    if (reduce || origin.urgent) return;
+    Animated.spring(v, { toValue: 1, tension: 140, friction: 18, useNativeDriver: NATIVE_DRIVER }).start();
+    const id = setTimeout(() => setPlay(1), 260);
+    return () => clearTimeout(id);
+  }, [v, reduce, origin.urgent]);
+  const fromY = Math.max(24, Math.min(220, (origin.y ?? 160) - 120));
+  return (
+    <Animated.View style={{ opacity: v.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, 1, 1] }), transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [fromY, 0] }) }, { scale: v.interpolate({ inputRange: [0, 1], outputRange: [1.45, 1] }) }] }}>
+      <ToolGlyph theme={origin.theme} icon={origin.icon} urgent={origin.urgent} size={44} play={play} />
     </Animated.View>
   );
 }

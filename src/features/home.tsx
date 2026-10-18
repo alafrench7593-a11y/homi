@@ -7,6 +7,8 @@ import { FetusArt } from '@/components/FetusArt';
 import { StarField } from '@/components/StarField';
 import { ClockLegend, DayClock, WeeksRing, type ClockEvent } from '@/components/DayClock';
 import { Card, haptic, Icon, type IconName, Row, Text } from '@/components/ui';
+import { ToolGlyph } from '@/components/ToolGlyph';
+import type { ToolTheme } from '@/lib/domain/toolCatalog';
 import { useAppointments, useExpectedBabies, useLogs, useOpenSleep, usePeriods, useReminders } from '@/lib/data/hooks';
 import { estimateCycle } from '@/lib/domain/cycle';
 import { countdownLabel, pregnancyProgress } from '@/lib/domain/pregnancy';
@@ -159,6 +161,12 @@ const QUICK: Record<string, { icon: IconName; label: string; go: (childId?: stri
 let cycleRoute: '/fertility' | '/contraception' = '/fertility';
 export function setCycleRoute(r: '/fertility' | '/contraception') { cycleRoute = r; }
 function useCycleRoute() { return cycleRoute; }
+/** Même langage visuel que « Outils » : chaque raccourci prend la silhouette de sa catégorie. */
+const QUICK_THEME: Record<string, ToolTheme> = {
+  bottle: 'feeding', breastfeed: 'feeding', meal: 'feeding', diaper: 'diapers', sleep: 'sleep', mysleep: 'sleep', observation: 'health', appointment: 'health',
+  question: 'resources', mood: 'mood', weight: 'pregnancy', scan: 'scanner', period: 'cycle', test: 'cycle', pill: 'cycle', postpartum: 'cycle',
+  tasks: 'tasks', agenda: 'calendar', journal: 'memories', relay: 'relay',
+};
 export const QUICK_KEYS = Object.keys(QUICK);
 export const quickLabel = (k: string) => QUICK[k]?.label ?? k;
 export const quickIcon = (k: string): IconName => QUICK[k]?.icon ?? 'circle';
@@ -169,22 +177,7 @@ export function QuickActions({ keys, childId, onCustomize }: { keys: string[]; c
     <View style={{ gap: 4 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
         {keys.filter((k) => QUICK[k]).slice(0, 4).map((k) => (
-          <Pressable
-            key={k}
-            accessibilityRole="button"
-            accessibilityLabel={`Ajouter : ${QUICK[k].label}`}
-            onPress={() => { haptic('light'); QUICK[k].go(childId); }}
-            style={{ alignItems: 'center', gap: 6, width: 72 }}
-          >
-            {({ pressed }) => (
-              <>
-                <View style={{ width: 58, height: 58, borderRadius: 29, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name={QUICK[k].icon} color={t.colors.gold} />
-                </View>
-                <Text variant="caption" weight="medium" center numberOfLines={1}>{QUICK[k].label}</Text>
-              </>
-            )}
-          </Pressable>
+          <QuickButton key={k} k={k} childId={childId} />
         ))}
       </View>
       {onCustomize ? (
@@ -194,6 +187,27 @@ export function QuickActions({ keys, childId, onCustomize }: { keys: string[]; c
         </Pressable>
       ) : null}
     </View>
+  );
+}
+
+function QuickButton({ k, childId }: { k: string; childId?: string }) {
+  const [pressed, setPressed] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
+  const [play, setPlay] = React.useState(0);
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Ajouter : ${QUICK[k].label}`}
+      onPress={() => { haptic('light'); setPlay((p) => p + 1); QUICK[k].go(childId); }}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      onHoverIn={() => { setHovered(true); setPlay((p) => p + 1); }}
+      onHoverOut={() => setHovered(false)}
+      style={{ alignItems: 'center', gap: 6, width: 72 }}
+    >
+      <ToolGlyph theme={QUICK_THEME[k] ?? 'resources'} icon={QUICK[k].icon} size={58} play={play} pressed={pressed} hovered={hovered} />
+      <Text variant="caption" weight="medium" center numberOfLines={1}>{QUICK[k].label}</Text>
+    </Pressable>
   );
 }
 

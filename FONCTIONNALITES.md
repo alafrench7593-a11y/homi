@@ -129,6 +129,23 @@ Principe : chaque mouvement est piloté par une donnée réelle (horodatage, sai
 
 **Limites** : pas de transitions à élément partagé (pas de reanimated) ; caméra du scanner non testable sur le web ; pas de photos pour les souvenirs ni de courbes OMS ; les rappels restent des notifications locales, jamais une alarme garantie.
 
+## 6. Catégorie Outils — refonte et synchronisation (18 octobre 2026)
+
+**Catalogue** (`src/lib/domain/toolCatalog.ts`) : tous les outils réels rangés en 18 catégories (alimentation, sommeil, changes, dents, croissance, santé, humeur, grossesse, cycle et post-partum, scanner, calendrier, tâches, relais, temps pour soi, surcharge, souvenirs, rappels et réglages, ressources). Source = `toolCategories` (conservé) + 14 outils existants qui n'y figuraient pas (relais de nuit, temps pour soi, routines, bilan, journal, vaccins, suivi santé, bien-être de l'enfant, produits à éviter, notifications…). Tests : aucun écran historique perdu, identifiants stables pour les favoris.
+
+**Glyphes** (`src/components/ToolGlyph.tsx`) : une silhouette par catégorie (goutte, nuage, dent, bouclier, anneau segmenté, cadre de scan, orbite, soleil, cartes empilées, page…), surface translucide + reflet + liseré, couleurs du thème uniquement (avec transparence), icône posée au centre optique. Animation propre à chaque catégorie (le lait monte, les barres poussent, le bouclier se trace, les segments du cycle s'allument, les coins du scanner se resserrent, le témoin du relais fait un demi-tour, les rayons s'étirent, la coche se dessine…), jouée au survol ou à l'ouverture, jamais en boucle. États : normal, survol, pressé, actif, désactivé (profil enfant à créer). Urgences : sans animation.
+
+**Cartes et écran** (`ToolCard.tsx`, `app/tools.tsx`) : hauteur fixe, contenu centré, zones de texte de hauteur fixe (rien ne saute), grille 2/3/4 colonnes calculée sur la largeur réellement mesurée, recherche sans accents, filtres par catégorie, favoris et « Mes raccourcis » (conservés sur l'appareil), urgences toujours visibles en haut, focus clavier visible. État utile sur les cartes à partir des vraies données (`hooks-tools.ts` : prise en cours, prochain rappel, dernier biberon, dernier change, sommeil en cours, tâches du jour, prochain relais, temps pour soi réservé, prochain rendez-vous, notifications non lues).
+
+**Navigation** : le glyphe de la carte touchée glisse jusqu'à l'en-tête de l'outil ouvert (`toolOrigin.ts` + `Screen`), sans dépendance supplémentaire. Raccourcis de l'accueil : même langage visuel.
+
+**Synchronisation ajoutée** :
+- biberon terminé au minuteur → le rappel en cours repart de ce biberon (même délai), comme pour une saisie manuelle ;
+- relais de nuit attribué, déplacé, annulé, retiré ou réattribué par un autre → la personne concernée est prévenue (migration `20261019000700_relay_notifications.sql`, test SQL 44) ; un planning de plusieurs nuits = une seule notification ; rien pour ses propres gestes ni pour le temps pour soi ; texte neutre.
+- Déjà en place et vérifié dans le navigateur : biberon → historique, onglet Suivi, accueil et cartes Outils ; temps pour soi → agenda et carte ; tâches, rendez-vous, relais → agenda (requêtes partagées, invalidation par table).
+
+**Limite** : les favoris sont conservés sur l'appareil (préférence d'interface), pas synchronisés entre appareils.
+
 ## 4. Décisions et limites documentées
 
 - **EPDS non intégrée.** Le Royal College of Psychiatrists détient les droits ; la diffusion à des tiers (ce qu'est une app) exige une autorisation écrite, et l'intégration complète a déjà été refusée à un logiciel clinique (documentation CamCOPS). Conformément au § 22.4, l'app propose un check-in de bien-être **non diagnostique**. À rouvrir uniquement avec une autorisation écrite et la version française validée (Guedeney & Fermanian, 1998).

@@ -8,7 +8,7 @@ jest.mock('react-native-safe-area-context', () => require('react-native-safe-are
 jest.mock('expo-router', () => {
   const r = { push: jest.fn(), replace: jest.fn(), back: jest.fn(), canGoBack: () => true };
   const state = { params: {} as Record<string, string> };
-  return { router: r, useRouter: () => r, useLocalSearchParams: () => state.params, useIsFocused: () => true, __state: state };
+  return { router: r, useRouter: () => r, useLocalSearchParams: () => state.params, useIsFocused: () => true, usePathname: () => '/scanner', __state: state };
 });
 jest.mock('expo-camera', () => ({ CameraView: () => null, useCameraPermissions: () => [{ granted: false, canAskAgain: true }, jest.fn(async () => ({ granted: false, canAskAgain: false }))] }));
 jest.mock('@expo/vector-icons', () => ({ Feather: () => null }));
