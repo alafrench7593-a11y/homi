@@ -15,6 +15,7 @@ import { useCommunitySearch, useSavedPosts, useSpaces } from '@/lib/data/hooks-c
 import type { FeedPost } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export default function Community() {
   const t = useTheme();
@@ -149,14 +150,15 @@ export default function Community() {
 
   return (
     <Screen
+      account
       scroll={false}
       padded={false}
-      title="Communauté"
-      subtitle="Tous les espaces sont ouverts, sous pseudonyme."
+      title={tr('screen.community.title')}
+      subtitle={tr('screen.community.sub')}
       right={(
         <Row gap={0}>
-          <IconButton icon="bookmark" label="Mes favoris" onPress={() => router.push('/community/saved')} />
-          <IconButton icon="user" label="Mon pseudonyme" onPress={() => router.push('/community/profile')} />
+          <IconButton icon="bookmark" label={tr('screen.community.saved')} onPress={() => router.push('/community/saved')} />
+          <IconButton icon="at-sign" label={tr('screen.community.pseudo')} onPress={() => router.push('/community/profile')} />
         </Row>
       )}
     >

@@ -17,6 +17,7 @@ import { timeAgo } from '@/lib/domain/dates';
 import type { Conversation, Journey } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 const preview = (s: string) => {
   const clean = s.replace(/[*_#>[\]]/g, '').replace(/\((https?:[^)]+)\)/g, '').replace(/\s+/g, ' ').replace(/^En bref\s*/i, '').trim();
@@ -173,7 +174,7 @@ export default function Ask() {
   );
 
   return (
-    <Screen scroll={false} padded={false} title="Questions" subtitle="Posez vos questions de santé et de parentalité à un assistant prudent et sourcé.">
+    <Screen account scroll={false} padded={false} title={tr('screen.ask.title')} subtitle={tr('screen.ask.sub')}>
       <VirtualList
         data={rows}
         keyExtractor={(c) => c.id}

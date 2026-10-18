@@ -26,6 +26,7 @@ import { useOfflineStore } from '@/lib/offline';
 import { useUiStore } from '@/lib/store';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, NACRE, previewTime, spacing } from '@/theme/tokens';
+import { AccountActions } from '@/components/AccountActions';
 
 export default function Home() {
   const t = useTheme();
@@ -123,21 +124,22 @@ export default function Home() {
     <View style={{ flex: 1 }}>
       <Screen bottomInset={96}>
         {/* En-tête */}
-        <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start', marginTop: spacing.xs }}>
-          <View style={{ flex: 1, gap: 2 }}>
-            <Text variant="small" muted weight="bold">{formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase())}</Text>
-            <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
-            {subtitle ? <Text variant="small" muted>{subtitle}</Text> : null}
-          </View>
-          <Row gap={0}>
-            <IconButton icon="maximize" label={tr('home.scanA11y')} onPress={() => router.push('/scanner')} />
-            <IconButton icon="life-buoy" label={tr('home.helpA11y')} color={t.colors.heart} onPress={() => router.push('/emergency')} />
-            <View>
-              <IconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} onPress={() => router.push('/notifications')} />
-              {unread > 0 && <View style={{ position: 'absolute', top: 11, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />}
-            </View>
+        {/* Ligne du haut : date à gauche ; aide, notifications, Réglages et Profil à droite. Salutation pleine largeur dessous. */}
+        <View style={{ gap: 2, marginTop: spacing.xs }}>
+          <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text variant="small" muted weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>{formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase())}</Text>
+            <Row gap={0}>
+              <IconButton icon="life-buoy" label={tr('home.helpA11y')} color={t.colors.heart} onPress={() => router.push('/emergency')} />
+              <View>
+                <IconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} onPress={() => router.push('/notifications')} />
+                {unread > 0 && <View style={{ position: 'absolute', top: 11, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />}
+              </View>
+              <AccountActions />
+            </Row>
           </Row>
-        </Row>
+          <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
+          {subtitle ? <Text variant="small" muted>{subtitle}</Text> : null}
+        </View>
 
         {/* 1. Profil actif */}
         <Appear kind="soft" delay={0.1}><ProfileSwitcher /></Appear>

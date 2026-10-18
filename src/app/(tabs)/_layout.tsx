@@ -14,10 +14,10 @@ export default function TabsLayout() {
       <Tabs.Screen name="track" options={{ title: tr('tab.track') }} />
       {/* Au centre exact de la barre ; appui long : ajout rapide (ancien bouton « + ») */}
       <Tabs.Screen name="tools" options={{ title: tr('dock.tools') }} />
+      <Tabs.Screen name="community" options={{ title: tr('tab.community') }} />
       <Tabs.Screen name="ask" options={{ title: tr('tab.ask') }} />
-      {/* Toujours accessible (Outils › Questions, lectures et communauté, liens profonds), hors de la barre pour la symétrie */}
-      <Tabs.Screen name="community" options={{ title: tr('tab.community'), href: null }} />
-      <Tabs.Screen name="profile" options={{ title: tr('tab.profile') }} />
+      {/* Le Profil s'ouvre depuis l'avatar en haut à droite ; la route reste (liens profonds), hors de la barre */}
+      <Tabs.Screen name="profile" options={{ title: tr('tab.profile'), href: null }} />
     </Tabs>
   );
 }

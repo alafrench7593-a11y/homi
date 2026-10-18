@@ -14,6 +14,7 @@ import { lastDaysSeries } from '@/lib/domain/daily';
 import type { Bottle, Breastfeed, Diaper, LogKind, Meal, Observation, Pumping, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 function ChildTracking({ childId }: { childId: string }) {
   const t = useTheme();
@@ -161,7 +162,7 @@ export default function Track() {
   const failed = childrenQ.isError && !children ? childrenQ : pregnanciesQ.isError && !pregnanciesQ.data ? pregnanciesQ : null;
   return (
     <View style={{ flex: 1 }}>
-      <Screen title="Suivi" bottomInset={96}>
+      <Screen account title={tr('screen.track.title')} bottomInset={96}>
         <ProfileSwitcher />
         {loading ? <Skeleton kind="card" rows={2} /> : failed ? (
           <ErrorView error={failed.error} onRetry={() => { void childrenQ.refetch(); void pregnanciesQ.refetch(); }} />

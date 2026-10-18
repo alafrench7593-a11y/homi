@@ -40,7 +40,7 @@ export default function ContraceptionScreen() {
   }, [t]);
 
   return (
-    <Screen back title="Je souhaite éviter une grossesse" subtitle="Comprendre son cycle et sa contraception.">
+    <Screen back account title="Je souhaite éviter une grossesse" subtitle="Comprendre son cycle et sa contraception.">
       <Banner tone="warning" title="Une grossesse reste possible à tout moment">{AVOID_DISCLAIMER}</Banner>
 
       {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (

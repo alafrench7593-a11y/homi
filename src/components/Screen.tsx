@@ -9,6 +9,7 @@ import { IconButton, Text } from './ui';
 import { StarField } from './StarField';
 import { useFocusEntrance } from './Motion';
 import { ToolGlyph } from './ToolGlyph';
+import { AccountActions } from './AccountActions';
 import { peekToolOrigin, takeToolOrigin, type ToolOrigin } from '@/lib/toolOrigin';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
@@ -20,6 +21,8 @@ interface ScreenProps {
   subtitle?: string;
   back?: boolean;
   right?: React.ReactNode;
+  /** Écran principal : accès au Profil et aux Réglages en haut à droite. */
+  account?: boolean;
   scroll?: boolean;
   padded?: boolean;
   stars?: boolean;
@@ -29,7 +32,7 @@ interface ScreenProps {
   bottomInset?: number;
 }
 
-export function Screen({ children, title, subtitle, back, right, scroll = true, padded = true, stars, footer, contentStyle, bottomInset = 0 }: ScreenProps) {
+export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars, footer, contentStyle, bottomInset = 0 }: ScreenProps) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
   const focused = useIsFocused();
@@ -39,7 +42,7 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
   const pathname = usePathname();
   const [origin] = React.useState<ToolOrigin | null>(() => peekToolOrigin(pathname));
   React.useEffect(() => { if (origin) takeToolOrigin(pathname); }, [origin, pathname]);
-  const header = (title || back || right) && (
+  const header = (title || back || right || account) && (
     <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
       <View style={styles.headerRow}>
         {back ? (
@@ -49,6 +52,7 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
         )}
         <View style={{ flex: 1 }} />
         {right}
+        {account ? <AccountActions /> : null}
       </View>
       {title ? (
         <View style={{ paddingHorizontal: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>

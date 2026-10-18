@@ -92,7 +92,7 @@ export default function CycleRoute() {
   const profileQ = useProfile();
   if (profileQ.isLoading) {
     return (
-      <Screen back title="Mon cycle" subtitle="Vos saisies, vos repères — à votre rythme.">
+      <Screen back account title="Mon cycle" subtitle="Vos saisies, vos repères — à votre rythme.">
         <Skeleton kind="card" rows={3} />
       </Screen>
     );
@@ -205,7 +205,7 @@ function CycleScreen() {
   const history = useMemo(() => entries.slice().reverse(), [entries]);
 
   return (
-    <Screen back title="Mon cycle" subtitle="Vos saisies, vos repères — à votre rythme." scroll={false} padded={false}>
+    <Screen back account title="Mon cycle" subtitle="Vos saisies, vos repères — à votre rythme." scroll={false} padded={false}>
       <VirtualList
         data={periodsLoading || periodsFailed ? [] : history}
         keyExtractor={(p) => p.id}

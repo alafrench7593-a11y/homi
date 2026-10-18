@@ -180,6 +180,15 @@ Le registre complet (statut réel, documentation, variables, limites, tests) est
 
 Reste à traduire (vague 2) : les écrans métier (suivi, enfant, grossesse, cycle détaillé, outils, communauté, réglages secondaires, assistant). Compteur du scanner : 3 285 textes en dur dans 114 fichiers (3 560 au départ).
 
+## 10. Navigation : Communauté dans la barre, Profil et Réglages en haut à droite (19 octobre 2026)
+
+- **Barre** : Accueil · Suivi · **Outils** (centre exact) · **Communauté** · Questions. Communauté ouvre la section existante (aucun doublon). Le Profil quitte la barre ; sa route reste valable (liens directs).
+- **En-tête** : à droite, Réglages (engrenage) puis l'avatar du Profil (initiale sur dégradé nacré, anneau doré quand le Profil est ouvert, retour au toucher). Il n'existe pas de photo de compte dans le modèle de données : l'avatar par défaut est utilisé partout.
+- **Écrans concernés** : Accueil, Suivi, Outils, Communauté, Questions, Mon cycle (et ses variantes « concevoir » / « éviter une grossesse »), Agenda familial, Profil. Les écrans détaillés et formulaires gardent leur bouton Retour, sans en-tête de compte.
+- **Accueil** : la date et les icônes (aide, notifications, Réglages, Profil) sur la première ligne, la salutation en pleine largeur dessous (plus de mot coupé sur petit écran). Le raccourci Scanner de l'en-tête est retiré : le scanner reste dans Outils, dans l'ajout rapide (appui long sur Outils) et dans les raccourcis de l'accueil.
+- **Profil** : bouton Retour, nouvelle entrée « Mes publications » (pseudonyme, publications et favoris de la communauté). Dans Communauté, l'icône « Mon pseudonyme » devient « @ » pour ne pas se confondre avec le Profil.
+- **Test navigateur** : `e2e/navigation.py` (39 vérifications : barre, en-têtes sur 9 écrans, profil, réglages, liens internes, brouillon conservé entre onglets, écran de 320 px, anglais).
+
 ## 4. Décisions et limites documentées
 
 - **EPDS non intégrée.** Le Royal College of Psychiatrists détient les droits ; la diffusion à des tiers (ce qu'est une app) exige une autorisation écrite, et l'intégration complète a déjà été refusée à un logiciel clinique (documentation CamCOPS). Conformément au § 22.4, l'app propose un check-in de bien-être **non diagnostique**. À rouvrir uniquement avec une autorisation écrite et la version française validée (Guedeney & Fermanian, 1998).

@@ -21,6 +21,7 @@ import { favoriteTools, groupByTheme, searchTools, statusKeyFor, THEMES, toggleF
 import { useUiStore } from '@/lib/store';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 const GAP = spacing.sm;
 /** Largeur utile maximale (tablette, ordinateur) : la grille reste lisible et centrée. */
@@ -71,7 +72,7 @@ export default function Tools() {
   const statusOf = (tool: CatalogTool) => { const k = statusKeyFor(tool); return k ? statuses[k] : undefined; };
 
   return (
-    <Screen title="Outils" subtitle="Tous vos outils, rangés par usage. Touchez l’étoile pour garder un raccourci." bottomInset={96} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
+    <Screen account title={tr('screen.tools.title')} subtitle={tr('screen.tools.sub')} bottomInset={96} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
       <View onLayout={(e) => setMeasured(Math.floor(e.nativeEvent.layout.width))} style={{ height: 0, alignSelf: 'stretch', marginBottom: -spacing.md }} />
       {urgent ? <UrgentStrip tool={urgent} /> : null}
       {/* Ajout rapide (anciennement derrière le bouton « + ») : toujours à portée */}

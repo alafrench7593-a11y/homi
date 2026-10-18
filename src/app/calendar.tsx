@@ -151,7 +151,7 @@ export default function FamilyCalendar() {
   );
 
   return (
-    <Screen back title="Agenda familial" subtitle="Rendez-vous, activités, tâches et relais." right={<IconButton icon="plus" label="Nouvel événement" onPress={() => openNew()} />}>
+    <Screen back account title="Agenda familial" subtitle="Rendez-vous, activités, tâches et relais." right={<IconButton icon="plus" label="Nouvel événement" onPress={() => openNew()} />}>
       <Segmented label="Vue" value={view} onChange={(v) => { dir.current = 0; setView(v); haptic('selection'); }} options={[{ value: 'day', label: 'Jour' }, { value: 'week', label: 'Semaine' }, { value: 'month', label: 'Mois' }, { value: 'agenda', label: 'Agenda' }]} />
       <Row style={{ justifyContent: 'space-between' }}>
         {view !== 'agenda' ? <IconButton icon="chevron-left" label="Période précédente" onPress={() => move(-1)} /> : <View />}

@@ -12,7 +12,7 @@ export const MIGRATED = [
   'src/components/Screen.tsx', 'src/components/OfflinePill.tsx', 'src/app/index.tsx', 'src/app/_layout.tsx',
   'src/app/intro.tsx', 'src/app/welcome.tsx', 'src/app/settings/index.tsx', 'src/app/settings/language.tsx',
   'src/app/auth/sign-in.tsx', 'src/app/auth/sign-up.tsx', 'src/app/auth/forgot.tsx', 'src/app/auth/reset.tsx', 'src/app/auth/callback.tsx', 'src/features/auth.tsx',
-  'src/app/onboarding.tsx', 'src/app/journeys.tsx', 'src/app/(tabs)/index.tsx', 'src/app/(tabs)/_layout.tsx', 'src/components/Dock.tsx',
+  'src/app/onboarding.tsx', 'src/app/journeys.tsx', 'src/app/(tabs)/index.tsx', 'src/app/(tabs)/_layout.tsx', 'src/components/Dock.tsx', 'src/app/(tabs)/profile.tsx', 'src/components/AccountActions.tsx',
 ];
 
 const forms = (m: Msg) => (typeof m === 'string' ? [m] : Object.values(m).filter((x): x is string => typeof x === 'string'));
