@@ -12,6 +12,7 @@ import { ToolGlyph } from './ToolGlyph';
 import { peekToolOrigin, takeToolOrigin, type ToolOrigin } from '@/lib/toolOrigin';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -42,7 +43,7 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
     <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
       <View style={styles.headerRow}>
         {back ? (
-          <IconButton icon="arrow-left" label="Retour" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
+          <IconButton icon="arrow-left" label={tr('common.back')} onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
         ) : (
           <View style={{ width: 4 }} />
         )}

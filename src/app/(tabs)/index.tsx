@@ -21,6 +21,7 @@ import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { childAge } from '@/lib/domain/child';
 import { isLocked, suggestArticles } from '@/lib/domain/content';
 import { articleOfDay, mainJourneys, quickActionsFor } from '@/lib/domain/journeys';
+import { formatDate, t as tr } from '@/i18n';
 import { useOfflineStore } from '@/lib/offline';
 import { useUiStore } from '@/lib/store';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -51,14 +52,14 @@ export default function Home() {
   const main = mainJourneys(journeys);
   const unread = inbox?.filter((n) => !n.read_at).length ?? 0;
   const child = subject.type === 'child' ? children?.find((c) => c.id === subject.id) : subject.type === 'family' ? children?.[0] : undefined;
-  const cycleMode: 'ttc' | 'avoid' | null = main.includes('ttc') ? 'ttc' : main.includes('avoid') ? 'avoid' : null;
-  setCycleRoute(cycleMode === 'avoid' ? '/contraception' : '/fertility');
+  const cycleMode: 'ttc' | 'avoid' | 'cycle' | null = main.includes('ttc') ? 'ttc' : main.includes('avoid') ? 'avoid' : main.includes('cycle') ? 'cycle' : null;
+  setCycleRoute(cycleMode === 'avoid' ? '/contraception' : cycleMode === 'cycle' ? '/cycle' : '/fertility');
 
   const subtitle = subject.type === 'child' && child
     ? `${child.first_name}, ${childAge(child.birth_date).label}`
     : subject.type === 'pregnancy' && pregnancy
       ? `${pregnancyProgress(pregnancy.due_date).label}`
-      : cycleMode === 'ttc' ? 'Projet bébé' : cycleMode === 'avoid' ? 'Mon cycle' : undefined;
+      : cycleMode === 'ttc' ? tr('home.sub.ttc') : cycleMode ? tr('home.sub.cycle') : undefined;
 
   const article = useMemo(() => {
     const list = suggestArticles(articles ?? [], {
@@ -82,9 +83,9 @@ export default function Home() {
       : child ? <ChildToday child={child} compact />
         : cycleMode ? <CycleCard mode={cycleMode} />
           : (
-            <Card onPress={() => router.push('/me')} accessibilityLabel="Ouvrir l’espace Moi aussi">
-              <Text variant="heading">Moi aussi</Text>
-              <Text variant="small" muted>Votre santé, votre sommeil et votre humeur.</Text>
+            <Card onPress={() => router.push('/me')} accessibilityLabel={tr('home.meA11y')}>
+              <Text variant="heading">{tr('home.me')}</Text>
+              <Text variant="small" muted>{tr('home.meSub')}</Text>
             </Card>
           ),
     quick: <QuickActions keys={quickKeys} childId={child?.id} onCustomize={() => router.push('/settings/home')} />,
@@ -92,9 +93,9 @@ export default function Home() {
     family: <FamilyHomeCard />,
     postpartum: <PostpartumHomeCard journeys={profile?.journeys ?? []} youngestChildMonths={youngestMonths} />,
     article: article ? (
-      <Card onPress={() => router.push(`/article/${article.slug}`)} accessibilityLabel={`Article du jour : ${article.title}`}>
+      <Card onPress={() => router.push(`/article/${article.slug}`)} accessibilityLabel={tr('home.articleA11y', { title: article.title })}>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>ARTICLE DU JOUR</Text>
+          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('home.article')}</Text>
           {isLocked(article, premium) && <Icon name="lock" size={14} color={t.colors.gold} />}
         </Row>
         <Text variant="heading" style={{ marginTop: 4 }}>{article.title}</Text>
@@ -102,14 +103,14 @@ export default function Home() {
       </Card>
     ) : null,
     assistant: (
-      <Pressable accessibilityRole="button" accessibilityLabel="Poser une question à l’assistant" onPress={() => router.push('/assistant/chat')} style={({ pressed }) => ({ borderRadius: 24, overflow: 'hidden', transform: [{ scale: pressed ? 0.98 : 1 }] })}>
+      <Pressable accessibilityRole="button" accessibilityLabel={tr('home.askA11y')} onPress={() => router.push('/assistant/chat')} style={({ pressed }) => ({ borderRadius: 24, overflow: 'hidden', transform: [{ scale: pressed ? 0.98 : 1 }] })}>
         <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, minHeight: MIN_TOUCH + 16 }}>
           <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.35)', alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="message-circle" color="#FFFFFF" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text weight="bold" color="#FFFFFF">Poser une question</Text>
-            <Text variant="caption" color="rgba(255,255,255,0.85)">Assistant d’information santé et parentalité</Text>
+            <Text weight="bold" color="#FFFFFF">{tr('home.ask')}</Text>
+            <Text variant="caption" color="rgba(255,255,255,0.85)">{tr('home.askSub')}</Text>
           </View>
           <Icon name="arrow-right" color="#FFFFFF" />
         </LinearGradient>
@@ -124,15 +125,15 @@ export default function Home() {
         {/* En-tête */}
         <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start', marginTop: spacing.xs }}>
           <View style={{ flex: 1, gap: 2 }}>
-            <Text variant="small" muted weight="bold">{now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase())}</Text>
+            <Text variant="small" muted weight="bold">{formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase())}</Text>
             <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
             {subtitle ? <Text variant="small" muted>{subtitle}</Text> : null}
           </View>
           <Row gap={0}>
-            <IconButton icon="maximize" label="Scanner un produit ou un aliment" onPress={() => router.push('/scanner')} />
-            <IconButton icon="life-buoy" label="Besoin d’aide maintenant" color={t.colors.heart} onPress={() => router.push('/emergency')} />
+            <IconButton icon="maximize" label={tr('home.scanA11y')} onPress={() => router.push('/scanner')} />
+            <IconButton icon="life-buoy" label={tr('home.helpA11y')} color={t.colors.heart} onPress={() => router.push('/emergency')} />
             <View>
-              <IconButton icon="bell" label={unread ? `Notifications, ${unread} non lues` : 'Notifications'} onPress={() => router.push('/notifications')} />
+              <IconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} onPress={() => router.push('/notifications')} />
               {unread > 0 && <View style={{ position: 'absolute', top: 11, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />}
             </View>
           </Row>
@@ -140,7 +141,7 @@ export default function Home() {
 
         {/* 1. Profil actif */}
         <Appear kind="soft" delay={0.1}><ProfileSwitcher /></Appear>
-        {!offline.online && <Banner tone="warning" title="Hors connexion">{offline.pending.length ? `${offline.pending.length} entrée(s) en attente de synchronisation.` : 'Vos données restent consultables ; les nouvelles saisies seront synchronisées.'}</Banner>}
+        {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 
         {/* Cartes de l'accueil, dans l'ordre choisi (Réglages › Mon accueil) */}
         {homeCards.map((key, i) => {
@@ -150,7 +151,7 @@ export default function Home() {
         })}
 
         <Appear kind="side" delay={0.7}>
-          <Button label="Tous mes outils" icon="grid" variant="secondary" onPress={() => router.push('/tools')} full />
+          <Button label={tr('home.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full />
         </Appear>
 
         <DemoBanner />

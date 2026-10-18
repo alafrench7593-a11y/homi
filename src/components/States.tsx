@@ -16,6 +16,7 @@ import { Button, Card, Icon, type IconName, Text } from '@/components/ui';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 // ------------------------------------------------------------------ squelettes
 export function SkeletonBlock({ height = 16, width = '100%', style }: { height?: number; width?: number | `${number}%`; style?: object }) {
@@ -30,7 +31,7 @@ export function SkeletonBlock({ height = 16, width = '100%', style }: { height?:
 /** Squelette d'écran : « list » (lignes), « card » (cartes) ou « detail » (titre + paragraphes). */
 export function Skeleton({ kind = 'list', rows = 4 }: { kind?: 'list' | 'card' | 'detail'; rows?: number }) {
   return (
-    <View accessible accessibilityLabel="Chargement…" accessibilityRole="progressbar" style={{ gap: spacing.sm }}>
+    <View accessible accessibilityLabel={tr('common.loadingA11y')} accessibilityRole="progressbar" style={{ gap: spacing.sm }}>
       {kind === 'detail' ? (
         <>
           <SkeletonBlock height={28} width="60%" />
@@ -104,7 +105,7 @@ export function ErrorView({ error, onRetry, title = 'Impossible d’afficher ces
         <Icon name="cloud-off" color={t.colors.danger} />
         <Text weight="bold" center>{title}</Text>
         <Text variant="small" muted center accessibilityLiveRegion="polite">{friendlyErrorMessage(error)}</Text>
-        {onRetry ? <Button label="Réessayer" icon="refresh-cw" size="sm" variant="secondary" style={{ marginTop: spacing.xs }} onPress={onRetry} /> : null}
+        {onRetry ? <Button label={tr('common.retry')} icon="refresh-cw" size="sm" variant="secondary" style={{ marginTop: spacing.xs }} onPress={onRetry} /> : null}
       </View>
     </Card>
     </Animated.View>

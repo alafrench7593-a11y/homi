@@ -4,16 +4,33 @@
  */
 import type { IconName } from '@/components/ui';
 import type { Journey } from '@/lib/types';
+import { formatTime, localeTag, t as tr } from '@/i18n';
 
-export type MainJourney = 'avoid' | 'ttc' | 'pregnant' | 'mother' | 'family';
+export type MainJourney = 'avoid' | 'ttc' | 'cycle' | 'pregnant' | 'mother' | 'family';
 
-export const JOURNEY_OPTIONS: { key: Journey; main: MainJourney; label: string; icon: IconName; hint: string }[] = [
-  { key: 'avoid', main: 'avoid', label: 'Je souhaite éviter une grossesse', icon: 'shield', hint: 'Cycle, contraception, rappels' },
-  { key: 'ttc', main: 'ttc', label: 'J’essaie d’avoir un enfant', icon: 'sunrise', hint: 'Cycle, période fertile estimée, tests' },
-  { key: 'pregnant', main: 'pregnant', label: 'Je suis enceinte', icon: 'moon', hint: 'Semaine après semaine' },
-  { key: 'newborn', main: 'mother', label: 'Je suis maman', icon: 'heart', hint: 'Bébé ou enfant, post-partum' },
-  { key: 'family', main: 'family', label: 'Je souhaite suivre plusieurs enfants', icon: 'users', hint: 'Fratrie, jumeaux, triplés' },
+export interface JourneyOption { key: Journey; main: MainJourney; label: string; icon: IconName; hint: string }
+const JOURNEY_DEFS: { key: Exclude<Journey, 'child'>; main: MainJourney; icon: IconName }[] = [
+  { key: 'avoid', main: 'avoid', icon: 'shield' },
+  { key: 'ttc', main: 'ttc', icon: 'sunrise' },
+  { key: 'cycle', main: 'cycle', icon: 'calendar' },
+  { key: 'pregnant', main: 'pregnant', icon: 'moon' },
+  { key: 'newborn', main: 'mother', icon: 'heart' },
+  { key: 'family', main: 'family', icon: 'users' },
 ];
+
+/** Parcours proposés, dans la langue active (calculés à l'appel : jamais figés au chargement du module). */
+export function journeyOptions(): JourneyOption[] {
+  return JOURNEY_DEFS.map((d) => ({ ...d, label: tr(`journey.${d.key}` as const), hint: tr(`journey.${d.key}.hint` as const) }));
+}
+
+/** Centres d'intérêt facultatifs (profiles.interests). */
+export type Interest = 'health' | 'community';
+export const INTERESTS: { key: Interest; icon: IconName }[] = [
+  { key: 'health', icon: 'activity' },
+  { key: 'community', icon: 'users' },
+];
+export const interestLabel = (k: Interest) => tr(`interest.${k}` as const);
+export const interestHint = (k: Interest) => tr(`interest.${k}.hint` as const);
 
 /** Parcours « principaux » actifs (l'ancien parcours « child » compte comme « maman »). */
 export function mainJourneys(journeys: Journey[] | undefined | null): MainJourney[] {
@@ -21,6 +38,7 @@ export function mainJourneys(journeys: Journey[] | undefined | null): MainJourne
   for (const j of journeys ?? []) {
     if (j === 'avoid') out.add('avoid');
     else if (j === 'ttc') out.add('ttc');
+    else if (j === 'cycle') out.add('cycle');
     else if (j === 'pregnant') out.add('pregnant');
     else if (j === 'newborn' || j === 'child') out.add('mother');
     else if (j === 'family') { out.add('family'); out.add('mother'); }
@@ -67,6 +85,15 @@ export function toolCategories({ journeys, hasPregnancy, childId, childCount }: 
         { icon: 'alert-circle', label: 'Contraception d’urgence', href: '/contraception' },
         { icon: 'clipboard', label: 'Préparer une consultation', href: '/contraception' },
         { icon: 'users', label: 'Communauté', href: '/(tabs)/community?space=eviter-grossesse' },
+      ],
+    });
+  }
+  if (m.includes('cycle') && !m.includes('ttc') && !m.includes('avoid')) {
+    cats.push({
+      key: 'cycle', title: 'Mon cycle', items: [
+        { icon: 'calendar', label: 'Mon cycle', sub: 'Règles, symptômes, estimations', href: '/cycle' },
+        { icon: 'bell', label: 'Rappels', href: '/settings/reminders' },
+        { icon: 'users', label: 'Communauté', href: '/(tabs)/community?space=fertilite' },
       ],
     });
   }
@@ -139,13 +166,14 @@ export function quickActionsFor(subject: 'pregnancy' | 'child' | 'me' | 'family'
   if (subject === 'pregnancy') return ['weight', 'mood', 'mysleep', 'appointment'];
   if (m.includes('ttc')) return ['period', 'test', 'mood', 'appointment'];
   if (m.includes('avoid')) return ['period', 'pill', 'mood', 'appointment'];
+  if (m.includes('cycle')) return ['period', 'mood', 'mysleep', 'appointment'];
   if (m.includes('mother')) return ['mysleep', 'mood', 'appointment'];
   return ['mood', 'mysleep', 'appointment'];
 }
 
 /** Questions suggérées à l'assistant selon le parcours. */
 export const SPACE_FOR: Record<MainJourney, string> = {
-  avoid: 'eviter-grossesse', ttc: 'projet-bebe', pregnant: 'grossesse', mother: 'parents-bebes', family: 'familles-nombreuses',
+  avoid: 'eviter-grossesse', ttc: 'projet-bebe', cycle: 'fertilite', pregnant: 'grossesse', mother: 'parents-bebes', family: 'familles-nombreuses',
 };
 
 /** Article du jour : stable pour une journée, tiré des suggestions. */
@@ -166,22 +194,30 @@ export interface ReminderSuggestion {
   deep_link: string;
 }
 
+const at = (hour: number, minute = 0) => formatTime(new Date(2026, 0, 5, hour, minute));
+/** Jour de semaine ISO (1 = lundi) dans la langue active. */
+const weekday = (iso: number) => new Intl.DateTimeFormat(localeTag(), { weekday: 'long' }).format(new Date(2026, 0, 4 + iso));
+
+/** Libellés et textes des rappels dans la langue active au moment de leur création. */
 export function reminderSuggestions(journeys: Journey[]): ReminderSuggestion[] {
   const m = mainJourneys(journeys);
   const out: ReminderSuggestion[] = [];
-  if (m.includes('avoid')) {
-    out.push({ key: 'pill', label: 'Prendre ma contraception (chaque jour à 21 h)', category: 'medication', title: 'Contraception', body: 'C’est l’heure prévue pour votre contraception.', schedule: { type: 'daily', hour: 21, minute: 0 }, deep_link: '/contraception' });
-  }
-  if (m.includes('ttc')) {
-    out.push({ key: 'ttc-observe', label: 'Noter mes observations du matin (8 h)', category: 'tracking', title: 'Observations du jour', body: 'Température, glaire ou symptômes : notez ce que vous souhaitez.', schedule: { type: 'daily', hour: 8, minute: 0 }, deep_link: '/fertility/body' });
-  }
+  const mk = (key: string, k: 'pill' | 'observe' | 'vitamins' | 'weight' | 'mysleep' | 'mood', category: ReminderSuggestion['category'], schedule: ReminderSuggestion['schedule'], deep_link: string): ReminderSuggestion => ({
+    key, category, schedule, deep_link,
+    label: tr(`rem.${k}.label` as const, { time: at(schedule.hour, schedule.minute), day: schedule.type === 'weekly' ? weekday(schedule.weekdays[0]) : '' }),
+    title: tr(`rem.${k}.title` as const),
+    body: tr(`rem.${k}.body` as const),
+  });
+  if (m.includes('avoid')) out.push(mk('pill', 'pill', 'medication', { type: 'daily', hour: 21, minute: 0 }, '/contraception'));
+  if (m.includes('ttc')) out.push(mk('ttc-observe', 'observe', 'tracking', { type: 'daily', hour: 8, minute: 0 }, '/fertility/body'));
+  if (m.includes('cycle') && !m.includes('ttc') && !m.includes('avoid')) out.push(mk('cycle-observe', 'observe', 'tracking', { type: 'daily', hour: 8, minute: 0 }, '/cycle'));
   if (m.includes('pregnant')) {
-    out.push({ key: 'vitamins', label: 'Mes vitamines prescrites (9 h)', category: 'medication', title: 'Vitamines', body: 'Pensez à vos vitamines, si elles vous ont été prescrites.', schedule: { type: 'daily', hour: 9, minute: 0 }, deep_link: '/me' });
-    out.push({ key: 'weight', label: 'Mon poids, une fois par semaine (lundi 8 h)', category: 'tracking', title: 'Mon poids', body: 'Si vous le souhaitez, notez votre poids de la semaine.', schedule: { type: 'weekly', weekdays: [1], hour: 8, minute: 0 }, deep_link: '/pregnancy/weight' });
+    out.push(mk('vitamins', 'vitamins', 'medication', { type: 'daily', hour: 9, minute: 0 }, '/me'));
+    out.push(mk('weight', 'weight', 'tracking', { type: 'weekly', weekdays: [1], hour: 8, minute: 0 }, '/pregnancy/weight'));
   }
   if (m.includes('mother') || m.includes('pregnant')) {
-    out.push({ key: 'mysleep', label: 'Noter ma nuit (9 h 30)', category: 'tracking', title: 'Mon sommeil', body: 'Comment s’est passée votre nuit ?', schedule: { type: 'daily', hour: 9, minute: 30 }, deep_link: '/me/sleep' });
-    out.push({ key: 'mood', label: 'Comment je me sens (dimanche 18 h)', category: 'custom', title: 'Comment te sens-tu ?', body: 'Un bilan privé et facultatif, quelques secondes.', schedule: { type: 'weekly', weekdays: [7], hour: 18, minute: 0 }, deep_link: '/me/mood' });
+    out.push(mk('mysleep', 'mysleep', 'tracking', { type: 'daily', hour: 9, minute: 30 }, '/me/sleep'));
+    out.push(mk('mood', 'mood', 'custom', { type: 'weekly', weekdays: [7], hour: 18, minute: 0 }, '/me/mood'));
   }
   return out;
 }

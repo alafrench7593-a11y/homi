@@ -1,4 +1,5 @@
 /** Dates « calendaires » (sans heure) manipulées en UTC pour éviter les décalages d'heure d'été. */
+import { t as tr } from '@/i18n';
 
 export type ISODate = string; // AAAA-MM-JJ
 
@@ -88,11 +89,7 @@ export function dayMoment(now = new Date()): DayMoment {
 }
 
 export function greeting(name: string | null | undefined, now = new Date()): string {
-  const who = name ? `, ${name}` : '';
-  switch (dayMoment(now)) {
-    case 'night': return `Douce nuit${who}`;
-    case 'morning': return `Bonjour${who}`;
-    case 'afternoon': return `Bon après-midi${who}`;
-    default: return `Bonsoir${who}`;
-  }
+  const m = dayMoment(now);
+  const k = m === 'night' ? 'night' : m === 'morning' ? 'morning' : m === 'afternoon' ? 'afternoon' : 'evening';
+  return name ? tr(`greet.${k}Named` as const, { name }) : tr(`greet.${k}` as const);
 }

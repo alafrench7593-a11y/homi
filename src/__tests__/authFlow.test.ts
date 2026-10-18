@@ -8,7 +8,7 @@ import {
   friendlyAuthError, parseAuthCallback, passwordRules, resendRemaining, RESEND_COOLDOWN_S,
   savePendingInvite, takePendingInvite, savePendingConsents, takePendingConsents, LEGAL_VERSIONS, extractInviteCode,
 } from '@/lib/authFlow';
-import { signUpSchema, passwordSchema } from '@/lib/validation';
+import { issueText, signUpSchema, passwordSchema } from '@/lib/validation';
 import { restoreDraft, serializeDraft, type OnboardingDraft } from '@/lib/onboardingDraft';
 
 describe('B5 — erreurs Supabase traduites, jamais de message technique brut', () => {
@@ -56,7 +56,7 @@ describe('B12 — 18 ans ou plus, CGU et confidentialité obligatoires à l’in
   it('refuse sans la case 18 ans', () => {
     const r = signUpSchema.safeParse({ ...base, adult: false });
     expect(r.success).toBe(false);
-    expect(JSON.stringify(r.error?.issues)).toMatch(/18 ans/);
+    expect(JSON.stringify((r.error?.issues ?? []).map((i) => issueText(i.message)))).toMatch(/18 ans/);
   });
   it('refuse sans l’acceptation des CGU', () => {
     expect(signUpSchema.safeParse({ ...base, terms: false }).success).toBe(false);
@@ -111,8 +111,13 @@ describe('B11 — onboarding sauvegardé et repris là où on s’était arrêt�
     pregnancy: { due_date: '', multiplicity: 'single' } as never, children: [{ first_name: 'Lina', birth_date: '12/03/2026', sex: null } as never],
     reminders: ['bottle'], consents: { terms: true, health_data: true, ai_assistant: true, document_reading: false, analytics: false, crash_reports: false, marketing: false },
     bottleFeeding: 'yes',
+    interests: ['community'],
   };
   it('aller-retour sans perte', () => expect(restoreDraft(serializeDraft(draft))).toEqual(draft));
+  it('ancien brouillon sans centres d’intérêt → liste vide', () => {
+    const { interests: _omit, ...old } = draft;
+    expect(restoreDraft(JSON.stringify(old))?.interests).toEqual([]);
+  });
   it('brouillon illisible ou d’une autre version → ignoré', () => {
     expect(restoreDraft('{pas du json')).toBeNull();
     expect(restoreDraft(JSON.stringify({ ...draft, v: 99 }))).toBeNull();

@@ -1,0 +1,7 @@
+export { legacy } from './legacy';
+export { common } from './common';
+export { settings } from './settings';
+export { intro } from './intro';
+export { auth } from './auth';
+export { onboarding } from './onboarding';
+export { home } from './home';

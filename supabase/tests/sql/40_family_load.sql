@@ -14,7 +14,7 @@ insert into public.household_members (household_id, user_id, role) values (:'FOY
 
 set role authenticated; set request.jwt.claim.sub = :'ANA';
 insert into public.family_tasks (household_id, title, category, assignee_id, due_at, recurrence, essential)
-  values (:'FOYER', 'Biberons de la nuit', 'feeding', :'BEN', date_trunc('day', now()) + interval '22 hours', '{"type":"daily"}', true),
+  values (:'FOYER', 'Biberons de la nuit', 'feeding', :'BEN', now() + interval '1 hour', '{"type":"daily"}', true),
          (:'FOYER', 'Courses', 'shopping', null, now() + interval '1 day', null, false);
 select tests.ok(tests.count('select * from public.family_task_events where kind = ''created''') = 2, 'tâches : création historisée');
 select tests.throws(format($$insert into public.family_tasks (household_id, title, assignee_id) values (%L, 'X', %L)$$, :'FOYER', :'CARL'), 'tâches : impossible de confier une tâche à quelqu''un hors du foyer');

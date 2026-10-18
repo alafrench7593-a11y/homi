@@ -16,16 +16,24 @@ import type { ConsentPurpose, Journey } from '@/lib/types';
 import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, PregnancyForm, validateChild, validatePregnancy, type ChildDraft } from '@/features/profiles';
 import { useTheme } from '@/theme/ThemeProvider';
 import { palette, radius, spacing } from '@/theme/tokens';
-import { JOURNEY_OPTIONS, reminderSuggestions } from '@/lib/domain/journeys';
+import { INTERESTS, interestHint, interestLabel, journeyOptions, reminderSuggestions, type Interest } from '@/lib/domain/journeys';
+import { formatList, getLocale, t as tr } from '@/i18n';
 import { BRAND } from '@/config/brand';
 import { eq } from '@/lib/backend';
 import { LEGAL_VERSIONS } from '@/lib/authFlow';
 import { CheckRow, LegalLink } from '@/features/auth';
 import { clearDraftLocally, loadDraftLocally, restoreDraft, saveDraftLocally, type BottleFeeding, type OnboardingDraft } from '@/lib/onboardingDraft';
 
-const JOURNEYS: { key: Journey; label: string; icon: IconName; hint: string }[] = JOURNEY_OPTIONS;
-
 type Step = 'intro' | 'journeys' | 'pregnancy' | 'children' | 'reminders' | 'consents';
+
+/** Accords proposés à l'inscription : clé enregistrée, clé de texte, obligatoire. */
+const CONSENT_ROWS: [ConsentPurpose, 'healthData' | 'aiAssistant' | 'documentReading' | 'crashReports' | 'analytics', boolean][] = [
+  ['health_data', 'healthData', true], ['ai_assistant', 'aiAssistant', false], ['document_reading', 'documentReading', false],
+  ['crash_reports', 'crashReports', false], ['analytics', 'analytics', false],
+];
+
+/** Résumé affiché une fois l'espace créé (écran « prêt »). */
+interface ReadySummary { journeys: string[]; pregnancy: boolean; children: number; reminders: number; cycle: boolean; community: boolean }
 
 export default function Onboarding() {
   const t = useTheme();
@@ -49,6 +57,9 @@ export default function Onboarding() {
   const [adult, setAdult] = useState(false);
   const [terms, setTerms] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [interests, setInterests] = useState<Interest[]>([]);
+  const [ready, setReady] = useState<ReadySummary | null>(null);
+  const JOURNEYS = journeyOptions();
   const finishing = useRef(false);
 
   // Reprise : brouillon le plus récent entre l'appareil et le profil
@@ -70,6 +81,7 @@ export default function Onboarding() {
       if (alive && d) {
         setName(d.name); setJourneys(d.journeys); setPregnancy(d.pregnancy); setChildren(d.children.length ? d.children : [emptyChild()]);
         setCErrors(d.children.map(() => ({}))); setReminders(d.reminders); setConsents(d.consents); setBottleFeeding(d.bottleFeeding ?? null);
+        setInterests((d.interests ?? []).filter((x): x is Interest => x === 'health' || x === 'community'));
         setStep(d.step === 'feeding' ? 'reminders' : (d.step as Step));
       }
       if (alive) setHydrated(true);
@@ -81,12 +93,12 @@ export default function Onboarding() {
   useEffect(() => {
     if (!hydrated || !userId || finishing.current) return;
     const id = setTimeout(() => {
-      const d: OnboardingDraft = { v: 1, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, savedAt: new Date().toISOString() };
+      const d: OnboardingDraft = { v: 1, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, interests, savedAt: new Date().toISOString() };
       void saveDraftLocally(userId, d);
       backend.update('profiles', { onboarding_state: d }, [eq('id', userId)]).catch(() => undefined);
     }, 500);
     return () => clearTimeout(id);
-  }, [hydrated, userId, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding]);
+  }, [hydrated, userId, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, interests]);
 
   const needsPregnancy = journeys.includes('pregnant');
   const needsChildren = journeys.some((j) => j === 'newborn' || j === 'child' || j === 'family');
@@ -96,7 +108,7 @@ export default function Onboarding() {
   const prev = () => setStep(steps[Math.max(idx - 1, 0)]);
 
   function goNext() {
-    if (step === 'journeys' && !journeys.length) return setError('Choisissez au moins une situation (vous pourrez la modifier plus tard).');
+    if (step === 'journeys' && !journeys.length) return setError(tr('onb.journeys.required'));
     if (step === 'pregnancy') {
       const v = validatePregnancy(pregnancy);
       setPErrors(v.errors);
@@ -113,8 +125,8 @@ export default function Onboarding() {
 
   async function finish() {
     if (finishing.current) return;
-    if (needSignupConsents && (!adult || !terms)) return setError('Pour continuer, confirmez avoir 18 ans ou plus et acceptez les conditions d’utilisation et la politique de confidentialité.');
-    if (!consents.health_data) return setError('Sans votre accord pour les données de santé, l’application ne peut pas enregistrer de suivi. Vous pourrez retirer cet accord à tout moment.');
+    if (needSignupConsents && (!adult || !terms)) return setError(tr('onb.consents.signupRequired'));
+    if (!consents.health_data) return setError(tr('onb.consents.healthRequired'));
     finishing.current = true;
     setSaving(true);
     setError(null);
@@ -124,12 +136,13 @@ export default function Onboarding() {
         setNeedSignupConsents(false);
       }
       await backend.insert('consents', (Object.entries(consents) as [ConsentPurpose, boolean][]).filter(([purpose]) => purpose !== 'terms').map(([purpose, granted]) => ({ user_id: userId, purpose, granted })));
-      const hid = await ensureHousehold(name ? `Famille de ${name}` : undefined);
+      const hid = await ensureHousehold(name ? tr('onb.householdName', { name }) : undefined);
       // Nouvel essai après une erreur : on ne recrée pas ce qui existe déjà
       if (needsPregnancy) {
         const active = await backend.select({ table: 'pregnancies', filters: [eq('household_id', hid), eq('status', 'active')], limit: 1 });
         if (!active.length) await createPregnancy(hid, userId, pregnancy);
       }
+      let createdChildren = 0;
       if (needsChildren) {
         const existing = await backend.select<{ first_name: string; birth_date: string }>({ table: 'children', filters: [eq('household_id', hid)] });
         for (const c of children) {
@@ -137,10 +150,11 @@ export default function Onboarding() {
           const v = validateChild(c);
           if (existing.some((e) => e.first_name.trim().toLowerCase() === c.first_name.trim().toLowerCase() && e.birth_date === v.birth)) continue;
           await createChild(hid, c);
+          createdChildren++;
         }
       }
       await backend.update('privacy_settings', { analytics_enabled: consents.analytics, crash_reports_enabled: consents.crash_reports }, [{ col: 'user_id', op: 'eq', value: userId }]);
-      await backend.update('profiles', { display_name: name.trim() || null, journeys, onboarding_completed: true, onboarding_state: null }, [{ col: 'id', op: 'eq', value: userId }]);
+      await backend.update('profiles', { display_name: name.trim() || null, journeys, interests, locale: getLocale(), onboarding_completed: true, onboarding_state: null }, [{ col: 'id', op: 'eq', value: userId }]);
       await clearDraftLocally(userId);
       const chosen = reminderSuggestions(journeys).filter((r) => reminders.includes(r.key));
       if (chosen.length) {
@@ -149,11 +163,18 @@ export default function Onboarding() {
       }
       await qc.invalidateQueries();
       haptic('success');
-      toast('Bienvenue ! Votre espace est prêt.');
-      router.replace('/(tabs)');
+      const labels = JOURNEYS.filter((o) => journeys.includes(o.key)).map((o) => o.label);
+      setReady({
+        journeys: labels,
+        pregnancy: needsPregnancy,
+        children: needsChildren ? Math.max(createdChildren, children.filter((c) => c.first_name.trim()).length) : 0,
+        reminders: chosen.length,
+        cycle: journeys.some((j) => j === 'cycle' || j === 'ttc' || j === 'avoid'),
+        community: interests.includes('community'),
+      });
     } catch (e) {
       finishing.current = false;
-      setError(e instanceof Error && e.message ? e.message : 'Enregistrement impossible. Réessayez : rien ne sera créé en double.');
+      setError(e instanceof Error && e.message ? e.message : tr('onb.saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -172,25 +193,60 @@ export default function Onboarding() {
   }
 
   const progress = (
-    <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={`Étape ${idx + 1} sur ${steps.length}`}>
+    <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={tr('onb.progress', { step: idx + 1, total: steps.length })}>
       {steps.map((s, i) => (
         <View key={s} style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: i <= idx ? t.colors.primary : t.colors.border }} />
       ))}
     </View>
   );
 
-  const footer = step === 'intro' ? (
-    <Button label="Commencer" size="lg" full onPress={goNext} />
+  const footer = ready ? (
+    <Button label={tr('onb.ready.cta')} size="lg" full onPress={() => router.replace('/(tabs)')} />
+  ) : step === 'intro' ? (
+    <Button label={tr('onb.start')} size="lg" full onPress={goNext} />
   ) : (
     <Row>
-      <Button label="Retour" variant="secondary" onPress={prev} style={{ flex: 1 }} />
+      <Button label={tr('common.back')} variant="secondary" onPress={prev} style={{ flex: 1 }} />
       {step === 'consents' ? (
-        <Button label="C’est parti" loading={saving} onPress={finish} style={{ flex: 2 }} />
+        <Button label={tr('onb.go')} loading={saving} onPress={finish} style={{ flex: 2 }} />
       ) : (
-        <Button label="Continuer" onPress={goNext} style={{ flex: 2 }} />
+        <Button label={tr('common.continue')} onPress={goNext} style={{ flex: 2 }} />
       )}
     </Row>
   );
+
+  if (ready) {
+    const lines: { icon: IconName; text: string }[] = [
+      ...(ready.journeys.length ? [{ icon: 'compass' as IconName, text: tr('onb.ready.journeys', { list: formatList(ready.journeys) }) }] : []),
+      ...(ready.pregnancy ? [{ icon: 'moon' as IconName, text: tr('onb.ready.pregnancy') }] : []),
+      ...(ready.children ? [{ icon: 'smile' as IconName, text: tr('onb.ready.children', { count: ready.children }) }] : []),
+      ...(ready.cycle ? [{ icon: 'calendar' as IconName, text: tr('onb.ready.cycle') }] : []),
+      { icon: 'bell' as IconName, text: tr('onb.ready.reminders', { count: ready.reminders }) },
+      ...(ready.community ? [{ icon: 'users' as IconName, text: tr('onb.ready.community') }] : []),
+      { icon: 'lock' as IconName, text: tr('onb.ready.privacy') },
+    ];
+    return (
+      <Screen stars footer={footer}>
+        <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: spacing.lg }}>
+          <View style={{ width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
+            <Icon name="check" size={44} color={t.colors.primaryText} />
+          </View>
+          <Text variant="title" center accessibilityRole="header">{name.trim() ? tr('onb.ready.titleNamed', { name: name.trim() }) : tr('onb.ready.title')}</Text>
+          <Text center muted style={{ maxWidth: 340 }}>{tr('onb.ready.body')}</Text>
+        </View>
+        <Card>
+          <View style={{ gap: spacing.sm }} accessibilityRole="list">
+            {lines.map((l) => (
+              <Row key={l.text} style={{ alignItems: 'flex-start' }}>
+                <Icon name={l.icon} color={t.colors.primary} />
+                <Text style={{ flex: 1 }}>{l.text}</Text>
+              </Row>
+            ))}
+          </View>
+        </Card>
+      </Screen>
+    );
+  }
 
   return (
     <Screen stars={step === 'intro'} footer={footer}>
@@ -202,21 +258,21 @@ export default function Onboarding() {
           <View style={{ width: 250, height: 250, borderRadius: 125, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             <WeeksRing week={18} size={240}><FetusOrb growth={0.5} size={180} interactive={false} /></WeeksRing>
           </View>
-          <Text variant="hero" center accessibilityRole="header">Bienvenue</Text>
+          <Text variant="hero" center accessibilityRole="header">{tr('onb.welcome')}</Text>
           <Text center muted style={{ maxWidth: 340 }}>
-            {BRAND.name} s’adapte à votre histoire. Quelques questions, toutes facultatives sauf l’essentiel, et votre espace est prêt.
+            {tr('onb.welcomeBody', { app: BRAND.name })}
           </Text>
           <View style={{ alignSelf: 'stretch' }}>
-            <Field label="Comment souhaitez-vous qu’on vous appelle ?" optional value={name} onChangeText={setName} maxLength={40} autoCapitalize="words" />
+            <Field label={tr('onb.nameLabel')} optional value={name} onChangeText={setName} maxLength={40} autoCapitalize="words" />
           </View>
-          {isDemo && <Button label="Explorer avec une famille exemple" variant="ghost" icon="eye" loading={saving} onPress={loadSample} />}
+          {isDemo && <Button label={tr('onb.sample')} variant="ghost" icon="eye" loading={saving} onPress={loadSample} />}
         </View>
       )}
 
       {step === 'journeys' && (
         <View style={{ gap: spacing.sm }}>
-          <Text variant="title" accessibilityRole="header">Où en êtes-vous ?</Text>
-          <Text muted>Plusieurs réponses possibles. Vous pourrez changer de parcours à tout moment.</Text>
+          <Text variant="title" accessibilityRole="header">{tr('onb.journeys.title')}</Text>
+          <Text muted>{tr('onb.journeys.body')}</Text>
           {JOURNEYS.map((j) => {
             const sel = journeys.includes(j.key);
             return (
@@ -239,72 +295,76 @@ export default function Onboarding() {
               </Pressable>
             );
           })}
+          <Text weight="bold" style={{ marginTop: spacing.sm }}>{tr('onb.interests.title')}</Text>
+          <Row wrap>
+            {INTERESTS.map((it) => {
+              const on = interests.includes(it.key);
+              return (
+                <Chip key={it.key} icon={it.icon} label={interestLabel(it.key)} accessibilityLabel={`${interestLabel(it.key)}. ${interestHint(it.key)}`} selected={on} onPress={() => { haptic('selection'); setInterests(on ? interests.filter((x) => x !== it.key) : [...interests, it.key]); }} />
+              );
+            })}
+          </Row>
         </View>
       )}
 
       {step === 'pregnancy' && (
         <View style={{ gap: spacing.md }}>
-          <Text variant="title" accessibilityRole="header">Votre grossesse</Text>
-          <Text muted>Ces informations servent uniquement à afficher la bonne semaine et des contenus adaptés. Elles sont modifiables et supprimables.</Text>
+          <Text variant="title" accessibilityRole="header">{tr('onb.pregnancy.title')}</Text>
+          <Text muted>{tr('onb.pregnancy.body')}</Text>
           <PregnancyForm value={pregnancy} onChange={setPregnancy} errors={pErrors} />
         </View>
       )}
 
       {step === 'children' && (
         <View style={{ gap: spacing.md }}>
-          <Text variant="title" accessibilityRole="header">{children.length > 1 ? 'Vos enfants' : 'Votre enfant'}</Text>
-          <Text muted>Le prénom et la date de naissance suffisent. Tout le reste est facultatif.</Text>
+          <Text variant="title" accessibilityRole="header">{tr('onb.children.title', { count: children.length })}</Text>
+          <Text muted>{tr('onb.children.body')}</Text>
           {children.map((c, i) => (
             <Card key={i}>
               <Row style={{ justifyContent: 'space-between', marginBottom: spacing.sm }}>
-                <Text weight="bold">Enfant {i + 1}</Text>
+                <Text weight="bold">{tr('onb.children.item', { n: i + 1 })}</Text>
                 {children.length > 1 && (
-                  <Chip label="Retirer" icon="x" onPress={() => { setChildren(children.filter((_, j) => j !== i)); setCErrors(cErrors.filter((_, j) => j !== i)); }} />
+                  <Chip label={tr('onb.children.remove')} icon="x" onPress={() => { setChildren(children.filter((_, j) => j !== i)); setCErrors(cErrors.filter((_, j) => j !== i)); }} />
                 )}
               </Row>
               <ChildForm value={c} onChange={(v) => setChildren(children.map((x, j) => (j === i ? v : x)))} errors={cErrors[i] ?? {}} />
             </Card>
           ))}
-          <Button label="Ajouter un autre enfant" variant="secondary" icon="plus" onPress={() => { setChildren([...children, emptyChild()]); setCErrors([...cErrors, {}]); }} />
+          <Button label={tr('onb.children.add')} variant="secondary" icon="plus" onPress={() => { setChildren([...children, emptyChild()]); setCErrors([...cErrors, {}]); }} />
         </View>
       )}
 
       {step === 'reminders' && (
         <View style={{ gap: spacing.md }}>
-          <Text variant="title" accessibilityRole="header">Des rappels, si vous le souhaitez</Text>
-          <Text muted>Rien n’est programmé automatiquement : vous choisissez ce qui vous aide. Le téléphone vous demandera ensuite l’autorisation d’envoyer des notifications.</Text>
+          <Text variant="title" accessibilityRole="header">{tr('onb.reminders.title')}</Text>
+          <Text muted>{tr('onb.reminders.body')}</Text>
+          {!reminderSuggestions(journeys).length ? <Text variant="small" muted>{tr('onb.reminders.none')}</Text> : null}
           <Row wrap>
             {reminderSuggestions(journeys).map((r) => (
               <Chip key={r.key} label={r.label} selected={reminders.includes(r.key)} onPress={() => setReminders(reminders.includes(r.key) ? reminders.filter((x) => x !== r.key) : [...reminders, r.key])} />
             ))}
           </Row>
-          <Banner tone="info">{'Vous pourrez créer, modifier, reporter ou supprimer chaque rappel dans Réglages › Rappels.'}</Banner>
+          <Banner tone="info">{tr('onb.reminders.where')}</Banner>
         </View>
       )}
 
       {step === 'consents' && (
         <View style={{ gap: spacing.md }}>
-          <Text variant="title" accessibilityRole="header">Vos données, vos choix</Text>
+          <Text variant="title" accessibilityRole="header">{tr('onb.consents.title')}</Text>
           {needSignupConsents ? (
             <Card>
-              <CheckRow label="J’ai 18 ans ou plus" checked={adult} onChange={setAdult}><Text variant="small">J’ai 18 ans ou plus. *</Text></CheckRow>
-              <CheckRow label="J’accepte les conditions d’utilisation et la politique de confidentialité" checked={terms} onChange={setTerms}>
-                <Text variant="small">J’accepte les conditions d’utilisation et la politique de confidentialité. *</Text>
+              <CheckRow label={tr('auth.signUp.adultA11y')} checked={adult} onChange={setAdult}><Text variant="small">{tr('auth.signUp.adult')} *</Text></CheckRow>
+              <CheckRow label={tr('auth.signUp.termsA11y')} checked={terms} onChange={setTerms}>
+                <Text variant="small">{tr('auth.signUp.terms')} *</Text>
               </CheckRow>
               <Row wrap style={{ paddingLeft: 34 }}>
-                <LegalLink doc="terms">Conditions d’utilisation</LegalLink>
-                <LegalLink doc="privacy">Confidentialité</LegalLink>
+                <LegalLink doc="terms">{tr('auth.signUp.readTerms')}</LegalLink>
+                <LegalLink doc="privacy">{tr('auth.signUp.readPrivacy')}</LegalLink>
               </Row>
             </Card>
           ) : null}
-          <Text muted>Vos informations sont privées. Personne d’autre ne peut les voir, sauf les personnes que vous invitez et uniquement ce que vous partagez.</Text>
-          {([
-            ['health_data', 'Données de santé et de suivi', 'Nécessaire pour enregistrer grossesse, mesures, suivi du bébé. Retirable à tout moment.', true],
-            ['ai_assistant', 'Assistant conversationnel', 'Vos questions sont envoyées à un service d’IA, sans nom ni document. Désactivable.', false],
-            ['document_reading', 'Lecture automatique des documents', 'Propose d’extraire la date ou le nom d’un examen. Toujours « à vérifier ».', false],
-            ['crash_reports', 'Rapports d’erreurs techniques', 'Aide à corriger les bugs. Jamais de donnée de santé.', false],
-            ['analytics', 'Statistiques d’usage anonymes', 'Aide à améliorer l’application. Jamais de donnée de santé ni de conversation.', false],
-          ] as [ConsentPurpose, string, string, boolean][]).map(([k, title, desc, required]) => (
+          <Text muted>{tr('onb.consents.private')}</Text>
+          {(CONSENT_ROWS).map(([k, msg, required]) => [k, tr(`onb.consent.${msg}` as const), tr(`onb.consent.${msg}.desc` as const), required] as const).map(([k, title, desc, required]) => (
             <Card key={k}>
               <Row>
                 <View style={{ flex: 1, gap: 2 }}>
@@ -315,7 +375,7 @@ export default function Onboarding() {
               </Row>
             </Card>
           ))}
-          <Text variant="caption" muted>* indispensable au suivi. Vous pouvez exporter ou supprimer toutes vos données dans Réglages › Confidentialité.</Text>
+          <Text variant="caption" muted>{tr('onb.consents.footnote')}</Text>
         </View>
       )}
     </Screen>

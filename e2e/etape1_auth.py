@@ -25,7 +25,7 @@ def wait_text(pg, txt, timeout=12):
     return False
 
 def new_page(b, errs):
-    ctx = b.new_context(viewport={'width': 390, 'height': 844})
+    ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR')
     pg = ctx.new_page()
     CUR[0] = pg
     pg.route('http://sb.fake.test/**', fake.route)
@@ -109,7 +109,9 @@ with sync_playwright() as p:
     for _ in range(4):
         if pg.get_by_role('button', name='C’est parti').count(): break
         pg.get_by_role('button', name='Continuer').last.click(); sleep(0.8)
-    pg.get_by_role('button', name='C’est parti').last.click(); sleep(5); shot(pg, 'a4-accueil')
+    pg.get_by_role('button', name='C’est parti').last.click(); sleep(5); shot(pg, 'a4-pret')
+    R['A_ecran_pret_personnalise'] = 'Votre espace est prêt' in T(pg) and 'Parcours :' in T(pg)
+    pg.get_by_role('button', name='Découvrir mon espace').click(); sleep(4); shot(pg, 'a4-accueil')
     R['A_onboarding_termine_accueil'] = 'Accueil' in T(pg)
     R['A_un_seul_foyer_un_enfant'] = (len([m for m in fake.t('household_members') if m['user_id'] == uid]) == 1 and len(fake.t('children')) == 1)
     R['A_foyer_renomme'] = any(h['name'] == 'Famille de Sarah' for h in fake.t('households') if h['created_by'] == uid)

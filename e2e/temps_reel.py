@@ -18,7 +18,7 @@ next(x for x in fake.t('profiles') if x['id'] == uid).update({'onboarding_comple
 hid = next(m['household_id'] for m in fake.t('household_members') if m['user_id'] == uid)
 
 with sync_playwright() as p:
-    b = p.chromium.launch(); ctx = b.new_context(viewport={'width': 390, 'height': 844}); pg = ctx.new_page()
+    b = p.chromium.launch(); ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR'); pg = ctx.new_page()
     pg.route('http://sb.fake.test/**', fake.route)
     pg.route_web_socket(re.compile(r'wss?://sb\.fake\.test/realtime/.*'), rt.attach)
     pg.route(re.compile(r'https://d8j0ntlcm91z4\.cloudfront\.net/.*'), lambda r: r.abort())

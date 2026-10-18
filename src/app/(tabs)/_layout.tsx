@@ -13,7 +13,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" options={{ title: tr('tab.home') }} />
       <Tabs.Screen name="track" options={{ title: tr('tab.track') }} />
       {/* Au centre exact de la barre ; appui long : ajout rapide (ancien bouton « + ») */}
-      <Tabs.Screen name="tools" options={{ title: 'Outils' }} />
+      <Tabs.Screen name="tools" options={{ title: tr('dock.tools') }} />
       <Tabs.Screen name="ask" options={{ title: tr('tab.ask') }} />
       {/* Toujours accessible (Outils › Questions, lectures et communauté, liens profonds), hors de la barre pour la symétrie */}
       <Tabs.Screen name="community" options={{ title: tr('tab.community'), href: null }} />

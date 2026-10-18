@@ -5,7 +5,8 @@ Ils tournent sur la version web, contre un **faux Supabase** (`fake_supabase.py`
 ```bash
 # 1. Version web pointant vers le faux serveur
 EXPO_PUBLIC_SUPABASE_URL=http://sb.fake.test EXPO_PUBLIC_SUPABASE_ANON_KEY=fake-anon-key \
-  npx expo export --platform web --output-dir /tmp/dist-e2e
+  npx expo export --platform web --clear --output-dir /tmp/dist-e2e
+# --clear : sans lui, le cache de Metro peut garder ces variables dans la version web suivante
 # 2. Serveur web (renvoie index.html pour toutes les routes)
 python3 e2e/spa_server.py /tmp/dist-e2e 8811 &
 # 3. Parcours de l'étape 1 : inscription, confirmation, lien expiré, reprise de l'onboarding,

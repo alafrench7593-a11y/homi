@@ -8,8 +8,9 @@ import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, Loading } from '@/components/ui';
 import { PasswordRules } from '@/features/auth';
 import { backend } from '@/lib/backend';
-import { passwordSchema } from '@/lib/validation';
+import { issueText, passwordSchema } from '@/lib/validation';
 import { useToast } from '@/components/Overlays';
+import { t as tr } from '@/i18n';
 
 export default function ResetPassword() {
   const { code } = useLocalSearchParams<{ code?: string }>();
@@ -38,40 +39,40 @@ export default function ResetPassword() {
   async function submit() {
     if (inFlight.current) return;
     const p = passwordSchema.safeParse(password);
-    if (!p.success) return setError(p.error.issues[0].message);
-    if (password !== confirm) return setError('Les deux mots de passe ne correspondent pas.');
+    if (!p.success) return setError(issueText(p.error.issues[0].message));
+    if (password !== confirm) return setError(tr('auth.reset.mismatch'));
     setError(null);
     inFlight.current = true;
     setLoading(true);
     try {
       await backend.auth.updatePassword(password);
-      toast('Mot de passe modifié.');
+      toast(tr('auth.reset.done'));
       router.replace('/');
     } catch (e) {
-      setError(e instanceof Error && e.message ? e.message : 'Modification impossible. Réessayez.');
+      setError(e instanceof Error && e.message ? e.message : tr('auth.reset.failed'));
     } finally {
       inFlight.current = false;
       setLoading(false);
     }
   }
 
-  if (state === 'checking') return <Screen title="Nouveau mot de passe"><Loading label="Vérification du lien…" /></Screen>;
+  if (state === 'checking') return <Screen title={tr('auth.reset.title')}><Loading label={tr('auth.reset.checking')} /></Screen>;
   if (state === 'invalid') {
     return (
-      <Screen back title="Nouveau mot de passe">
-        <Banner tone="warning" title="Ce lien n’est plus valable">Il a expiré ou a déjà été utilisé. Demandez un nouveau lien : il arrive en quelques minutes.</Banner>
-        <Button label="Recevoir un nouveau lien" onPress={() => router.replace('/auth/forgot')} />
-        <Button label="Se connecter" variant="ghost" onPress={() => router.replace('/auth/sign-in')} />
+      <Screen back title={tr('auth.reset.title')}>
+        <Banner tone="warning" title={tr('auth.link.invalidTitle')}>{tr('auth.reset.invalidBody')}</Banner>
+        <Button label={tr('auth.link.newLink')} onPress={() => router.replace('/auth/forgot')} />
+        <Button label={tr('auth.signIn')} variant="ghost" onPress={() => router.replace('/auth/sign-in')} />
       </Screen>
     );
   }
   return (
-    <Screen back title="Nouveau mot de passe">
+    <Screen back title={tr('auth.reset.title')}>
       {error ? <Banner tone="danger">{error}</Banner> : null}
-      <Field label="Nouveau mot de passe" value={password} onChangeText={setPassword} secureTextEntry revealable autoComplete="new-password" textContentType="newPassword" />
+      <Field label={tr('auth.reset.newPassword')} value={password} onChangeText={setPassword} secureTextEntry revealable autoComplete="new-password" textContentType="newPassword" />
       <PasswordRules value={password} />
-      <Field label="Confirmer le mot de passe" value={confirm} onChangeText={setConfirm} secureTextEntry revealable autoComplete="new-password" onSubmitEditing={submit} />
-      <Button label="Enregistrer" size="lg" loading={loading} disabled={loading} onPress={submit} />
+      <Field label={tr('auth.signUp.confirmPassword')} value={confirm} onChangeText={setConfirm} secureTextEntry revealable autoComplete="new-password" onSubmitEditing={submit} />
+      <Button label={tr('common.save')} size="lg" loading={loading} disabled={loading} onPress={submit} />
     </Screen>
   );
 }

@@ -10,6 +10,7 @@ import { Banner, Button, Field, Loading, Text } from '@/components/ui';
 import { ResendButton } from '@/features/auth';
 import { backend } from '@/lib/backend';
 import { parseAuthCallback } from '@/lib/authFlow';
+import { t as tr } from '@/i18n';
 
 export default function AuthCallback() {
   const params = useLocalSearchParams<Record<string, string>>();
@@ -38,33 +39,33 @@ export default function AuthCallback() {
       }
       if (r.kind === 'expired') return setState('expired');
       if (await backend.auth.getSession()) return router.replace('/');
-      setMessage(r.kind === 'error' ? r.message : 'Lien incomplet. Ouvrez à nouveau le lien reçu par e-mail, en entier.');
+      setMessage(r.kind === 'error' ? r.message : tr('auth.callback.incomplete'));
       setState('error');
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (state === 'loading') return <Screen title="Connexion"><Loading label="Activation de votre compte…" /></Screen>;
+  if (state === 'loading') return <Screen title={tr('auth.callback.title')}><Loading label={tr('auth.callback.activating')} /></Screen>;
   if (state === 'expired') {
     return (
-      <Screen title="Lien expiré">
-        <Banner tone="warning" title="Ce lien n’est plus valable">Il a expiré ou a déjà été utilisé. Recevez un nouveau lien de confirmation :</Banner>
-        <Field label="Adresse e-mail" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" />
-        <ResendButton label="Recevoir un nouveau lien" initialSentAt={null} onResend={async () => {
-          if (!email.trim()) throw new Error('Indiquez votre adresse e-mail.');
+      <Screen title={tr('auth.callback.expiredTitle')}>
+        <Banner tone="warning" title={tr('auth.link.invalidTitle')}>{tr('auth.callback.expiredBody')}</Banner>
+        <Field label={tr('auth.email')} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" />
+        <ResendButton label={tr('auth.link.newLink')} initialSentAt={null} onResend={async () => {
+          if (!email.trim()) throw new Error(tr('v.email.required'));
           await backend.auth.resendConfirmation(email.trim());
         }} />
-        <Text variant="small" muted>Si votre compte est déjà confirmé, connectez-vous simplement.</Text>
-        <Button label="Se connecter" variant="secondary" onPress={() => router.replace('/auth/sign-in')} />
+        <Text variant="small" muted>{tr('auth.callback.alreadyConfirmed')}</Text>
+        <Button label={tr('auth.signIn')} variant="secondary" onPress={() => router.replace('/auth/sign-in')} />
       </Screen>
     );
   }
   return (
-    <Screen title="Connexion">
-      <Banner tone="danger">{message || 'Ce lien ne peut pas être utilisé.'}</Banner>
-      <Button label="Se connecter" onPress={() => router.replace('/auth/sign-in')} />
-      <Button label="Mot de passe oublié ?" variant="ghost" onPress={() => router.replace('/auth/forgot')} />
+    <Screen title={tr('auth.callback.title')}>
+      <Banner tone="danger">{message || tr('auth.callback.unusable')}</Banner>
+      <Button label={tr('auth.signIn')} onPress={() => router.replace('/auth/sign-in')} />
+      <Button label={tr('auth.forgot')} variant="ghost" onPress={() => router.replace('/auth/forgot')} />
     </Screen>
   );
 }

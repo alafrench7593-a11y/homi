@@ -165,6 +165,21 @@ Le registre complet (statut réel, documentation, variables, limites, tests) est
 - **Rien n'est perdu de l'ancien « + »** : l'appui long sur « Outils » ouvre l'ajout rapide (biberon, tétée, couche, sommeil, repas, note santé, humeur, minuteur, scanner, poser une question), et ces actions sont aussi en haut de la page Outils (« Ajouter maintenant »).
 - **Communauté** quitte la barre (symétrie) mais reste accessible : carte « Communauté » dans Outils, espaces par parcours, et tous les liens directs (`/community`, `/(tabs)/community?space=…`).
 
+## 9. Langues et inscription — vague 1 FR + EN (18 octobre 2026)
+
+- **Système multilingue** (`src/i18n/`) : le français est la source ; chaque langue est typée sur ses clés (une clé manquante empêche la compilation). Pluriels par `Intl.PluralRules`, variables `{nom}`, dates/heures/nombres/unités/listes par `Intl`. Une clé absente retombe sur le français (jamais de clé brute à l'écran).
+- **Langues disponibles : français et anglais.** 36 autres sont déclarées « en préparation » (dont arabe, hébreu, persan en sens droite-à-gauche) et ne sont pas proposées tant qu'elles ne sont pas traduites et relues.
+- **Choix de la langue** : proposée d'après le téléphone (anglais si la langue du téléphone n'est pas disponible), modifiable dans l'introduction, depuis l'accueil (pastille « globe ») et dans Réglages › Langue et pays. Enregistrée sur l'appareil et dans le profil (`profiles.locale`). Le pays est distinct de la langue et fixe les numéros d'urgence affichés.
+- **Introduction immersive** : bienvenue + choix de la langue, six univers (cycle, grossesse, enfant, santé, outils, communauté), confidentialité, puis créer un compte / se connecter / essayer sans compte. Glisser pour avancer, « Passer » à tout moment.
+- **Inscription et premier parcours** traduits (connexion, inscription, mot de passe oublié/réinitialisation, lien expiré, onboarding, parcours, rappels proposés).
+- **Nouveau parcours « Je veux simplement suivre mon cycle »** (sans objectif de grossesse ni contraception) → carte « Mon cycle » neutre sur l'accueil, écran `/cycle`, raccourcis règles/humeur/sommeil/rendez-vous. Migration `20261019001100_journey_cycle.sql`.
+- **Centres d'intérêt facultatifs** (santé au quotidien, communauté) enregistrés dans `profiles.interests` (liste fermée).
+- **Écran « Votre espace est prêt »** à la fin de l'onboarding : résumé personnalisé (parcours, grossesse, enfants créés, rappels, confidentialité).
+- **Accueil et barre de navigation** traduits (salutation, en-tête, raccourcis, onglets, ajout rapide).
+- **Garde-fou** : `scripts/i18n-scan.js` repère les textes écrits en dur ; un test bloque toute régression dans les fichiers déjà traduits.
+
+Reste à traduire (vague 2) : les écrans métier (suivi, enfant, grossesse, cycle détaillé, outils, communauté, réglages secondaires, assistant). Compteur du scanner : 3 285 textes en dur dans 114 fichiers (3 560 au départ).
+
 ## 4. Décisions et limites documentées
 
 - **EPDS non intégrée.** Le Royal College of Psychiatrists détient les droits ; la diffusion à des tiers (ce qu'est une app) exige une autorisation écrite, et l'intégration complète a déjà été refusée à un logiciel clinique (documentation CamCOPS). Conformément au § 22.4, l'app propose un check-in de bien-être **non diagnostique**. À rouvrir uniquement avec une autorisation écrite et la version française validée (Guedeney & Fermanian, 1998).

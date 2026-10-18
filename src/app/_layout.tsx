@@ -10,6 +10,7 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
+import { I18nProvider } from '@/i18n/I18nProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
 import { configureNotifications, notificationsSupported, registerPushToken, snoozeLocally } from '@/lib/notifications';
@@ -53,6 +54,7 @@ const PRIVATE_KEYS = ['assistant_messages', 'assistant_conversations', 'document
 
 import { useHouseholdId } from '@/lib/data/hooks';
 import { useRealtimeSync, wireFocusAndOnline } from '@/lib/sync';
+import { t as tr } from '@/i18n';
 
 function Bootstrap() {
   const { session } = useAuth();
@@ -62,7 +64,7 @@ function Bootstrap() {
   const householdId = useHouseholdId();
   useRealtimeSync(session ? householdId : null, session?.userId ?? null);
 
-  useEffect(() => startOfflineSync((n) => toast(`${n} entrée${n > 1 ? 's' : ''} synchronisée${n > 1 ? 's' : ''}.`)), [toast]);
+  useEffect(() => startOfflineSync((n) => toast(tr('sync.done', { count: n }))), [toast]);
 
   useEffect(() => {
     if (session) {
@@ -138,15 +140,17 @@ export default function RootLayout() {
       >
         <AuthProvider>
           <ThemeProvider>
-            <ToastProvider>
-              <Bootstrap />
-              <WebFrame>
-                <Backdrop />
-                <Navigator />
-                <DemoBar />
-                <OfflinePill />
-              </WebFrame>
-            </ToastProvider>
+            <I18nProvider>
+              <ToastProvider>
+                <Bootstrap />
+                <WebFrame>
+                  <Backdrop />
+                  <Navigator />
+                  <DemoBar />
+                  <OfflinePill />
+                </WebFrame>
+              </ToastProvider>
+            </I18nProvider>
           </ThemeProvider>
         </AuthProvider>
       </PersistQueryClientProvider>

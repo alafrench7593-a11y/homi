@@ -21,6 +21,7 @@ import type { Appointment, Bottle, Breastfeed, Child, Diaper, Pregnancy, Sleep }
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, NACRE, palette, radius, spacing } from '@/theme/tokens';
 import { LinearGradient } from 'expo-linear-gradient';
+import { formatDate, t as tr } from '@/i18n';
 
 const ORB_HUES = ['rose', 'lavande', 'or'] as const;
 
@@ -136,30 +137,30 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
 }
 
 const QUICK: Record<string, { icon: IconName; label: string; go: (childId?: string) => void }> = {
-  bottle: { icon: 'coffee', label: 'Biberon', go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: c ?? '' } }) },
-  breastfeed: { icon: 'droplet', label: 'Tétée', go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'breastfeed', child: c ?? '' } }) },
-  diaper: { icon: 'wind', label: 'Couche', go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'diaper', child: c ?? '' } }) },
-  sleep: { icon: 'moon', label: 'Sommeil', go: () => router.push('/night') },
-  meal: { icon: 'feather', label: 'Repas', go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'meal', child: c ?? '' } }) },
-  observation: { icon: 'thermometer', label: 'Note santé', go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'observation', child: c ?? '' } }) },
-  question: { icon: 'message-circle', label: 'Question', go: () => router.push('/assistant/chat') },
-  mood: { icon: 'heart', label: 'Mon humeur', go: () => router.push('/me/mood') },
-  weight: { icon: 'trending-up', label: 'Mon poids', go: () => router.push('/pregnancy/weight') },
-  scan: { icon: 'maximize', label: 'Scanner', go: () => router.push('/scanner') },
-  period: { icon: 'droplet', label: 'Mes règles', go: () => router.push(useCycleRoute()) },
-  test: { icon: 'check-circle', label: 'Test', go: () => router.push('/fertility') },
-  pill: { icon: 'shield', label: 'Contraception', go: () => router.push('/contraception') },
-  mysleep: { icon: 'cloud', label: 'Mon sommeil', go: () => router.push('/me/sleep') },
-  appointment: { icon: 'calendar', label: 'Rendez-vous', go: () => router.push('/appointments') },
-  tasks: { icon: 'check-square', label: 'Tâches', go: () => router.push('/family') },
-  agenda: { icon: 'calendar', label: 'Agenda', go: () => router.push('/calendar') },
-  journal: { icon: 'book-open', label: 'Journal', go: () => router.push('/journal') },
-  relay: { icon: 'repeat', label: 'Relais', go: () => router.push('/family') },
-  postpartum: { icon: 'sun', label: 'Pour moi', go: () => router.push('/postpartum') },
+  bottle: { icon: 'coffee', get label() { return tr('quick.bottle'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: c ?? '' } }) },
+  breastfeed: { icon: 'droplet', get label() { return tr('quick.breastfeed'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'breastfeed', child: c ?? '' } }) },
+  diaper: { icon: 'wind', get label() { return tr('quick.diaper'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'diaper', child: c ?? '' } }) },
+  sleep: { icon: 'moon', get label() { return tr('quick.sleep'); }, go: () => router.push('/night') },
+  meal: { icon: 'feather', get label() { return tr('quick.meal'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'meal', child: c ?? '' } }) },
+  observation: { icon: 'thermometer', get label() { return tr('quick.observation'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'observation', child: c ?? '' } }) },
+  question: { icon: 'message-circle', get label() { return tr('quick.question'); }, go: () => router.push('/assistant/chat') },
+  mood: { icon: 'heart', get label() { return tr('quick.mood'); }, go: () => router.push('/me/mood') },
+  weight: { icon: 'trending-up', get label() { return tr('quick.weight'); }, go: () => router.push('/pregnancy/weight') },
+  scan: { icon: 'maximize', get label() { return tr('quick.scan'); }, go: () => router.push('/scanner') },
+  period: { icon: 'droplet', get label() { return tr('quick.period'); }, go: () => router.push(useCycleRoute()) },
+  test: { icon: 'check-circle', get label() { return tr('quick.test'); }, go: () => router.push('/fertility') },
+  pill: { icon: 'shield', get label() { return tr('quick.pill'); }, go: () => router.push('/contraception') },
+  mysleep: { icon: 'cloud', get label() { return tr('quick.mysleep'); }, go: () => router.push('/me/sleep') },
+  appointment: { icon: 'calendar', get label() { return tr('quick.appointment'); }, go: () => router.push('/appointments') },
+  tasks: { icon: 'check-square', get label() { return tr('quick.tasks'); }, go: () => router.push('/family') },
+  agenda: { icon: 'calendar', get label() { return tr('quick.agenda'); }, go: () => router.push('/calendar') },
+  journal: { icon: 'book-open', get label() { return tr('quick.journal'); }, go: () => router.push('/journal') },
+  relay: { icon: 'repeat', get label() { return tr('quick.relay'); }, go: () => router.push('/family') },
+  postpartum: { icon: 'sun', get label() { return tr('quick.postpartum'); }, go: () => router.push('/postpartum') },
 };
 /** Le suivi du cycle s'ouvre dans le parcours choisi (concevoir ou éviter). */
-let cycleRoute: '/fertility' | '/contraception' = '/fertility';
-export function setCycleRoute(r: '/fertility' | '/contraception') { cycleRoute = r; }
+let cycleRoute: '/fertility' | '/contraception' | '/cycle' = '/fertility';
+export function setCycleRoute(r: '/fertility' | '/contraception' | '/cycle') { cycleRoute = r; }
 function useCycleRoute() { return cycleRoute; }
 /** Même langage visuel que « Outils » : chaque raccourci prend la silhouette de sa catégorie. */
 const QUICK_THEME: Record<string, ToolTheme> = {
@@ -240,40 +241,38 @@ export function UpcomingCard() {
   );
 }
 
-/** Carte principale pour les parcours « concevoir » et « éviter une grossesse ». */
-export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' }) {
+/** Carte principale des parcours cycle : « concevoir », « éviter une grossesse » ou simple suivi. */
+export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' | 'cycle' }) {
   const t = useTheme();
   const { data: periods } = usePeriods();
   const est = estimateCycle((periods ?? []).map((p) => ({ start_date: p.start_date, end_date: p.end_date })));
   const last = periods?.length ? periods[periods.length - 1] : null;
   const day = last ? Math.floor((Date.now() - new Date(last.start_date).getTime()) / 86_400_000) + 1 : null;
-  const fmt = (d: string | null | undefined) => (d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) : '—');
-  const href = mode === 'ttc' ? '/fertility' : '/contraception';
+  const fmt = (d: string | null | undefined) => (d ? formatDate(d, { day: 'numeric', month: 'long' }) : '—');
+  const href = mode === 'ttc' ? '/fertility' : mode === 'avoid' ? '/contraception' : '/cycle';
+  const open = mode === 'ttc' ? tr('cycleCard.openTtc') : mode === 'avoid' ? tr('cycleCard.openAvoid') : tr('cycleCard.openCycle');
+  const note = mode === 'ttc' ? tr('cycleCard.noteTtc') : mode === 'avoid' ? tr('cycleCard.noteAvoid') : tr('cycleCard.noteCycle');
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={mode === 'ttc' ? 'Ouvrir mon projet bébé' : 'Ouvrir mon cycle et ma contraception'} onPress={() => { haptic('selection'); router.push(href); }} style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })}>
+    <Pressable accessibilityRole="button" accessibilityLabel={open} onPress={() => { haptic('selection'); router.push(href); }} style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })}>
       <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface, padding: spacing.md, gap: spacing.sm }}>
-        <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{mode === 'ttc' ? 'PROJET BÉBÉ' : 'MON CYCLE'}</Text>
+        <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{mode === 'ttc' ? tr('cycleCard.ttc') : tr('cycleCard.mine')}</Text>
         {day ? (
           <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-            <Text style={{ fontFamily: fonts.display, fontSize: 72, lineHeight: 74, letterSpacing: -4 }}>J{day}</Text>
-            <Text variant="small" muted style={{ marginBottom: 12, marginLeft: 8 }}>du cycle</Text>
+            <Text style={{ fontFamily: fonts.display, fontSize: 72, lineHeight: 74, letterSpacing: -4 }}>{tr('cycleCard.day', { day })}</Text>
+            <Text variant="small" muted style={{ marginBottom: 12, marginLeft: 8 }}>{tr('cycleCard.ofCycle')}</Text>
           </View>
-        ) : <Text variant="heading">Notez vos dernières règles pour commencer.</Text>}
+        ) : <Text variant="heading">{tr('cycleCard.start')}</Text>}
         <View style={{ flexDirection: 'row', gap: spacing.xs }}>
           <View style={{ flex: 1, borderRadius: radius.lg, padding: spacing.sm, backgroundColor: t.colors.surfaceAlt }}>
-            <Text variant="caption" muted>{mode === 'ttc' ? 'Période fertile (estimation)' : 'Fertilité plus élevée (estimation)'}</Text>
-            <Text weight="bold">{est.fertileWindow ? `${fmt(est.fertileWindow.start)} → ${fmt(est.fertileWindow.end)}` : 'À estimer'}</Text>
+            <Text variant="caption" muted>{mode === 'ttc' ? tr('cycleCard.fertileTtc') : tr('cycleCard.fertileAvoid')}</Text>
+            <Text weight="bold">{est.fertileWindow ? `${fmt(est.fertileWindow.start)} → ${fmt(est.fertileWindow.end)}` : tr('cycleCard.toEstimate')}</Text>
           </View>
           <View style={{ flex: 1, borderRadius: radius.lg, padding: spacing.sm, backgroundColor: t.colors.surfaceAlt }}>
-            <Text variant="caption" muted>Prochaines règles (estimation)</Text>
+            <Text variant="caption" muted>{tr('cycleCard.nextPeriod')}</Text>
             <Text weight="bold">{fmt(est.nextPeriod)}</Text>
           </View>
         </View>
-        <Text variant="caption" muted>
-          {mode === 'ttc'
-            ? 'Estimations à partir de vos saisies : elles ne garantissent pas une grossesse.'
-            : 'Une grossesse reste possible en dehors de ces dates : seule une contraception adaptée permet de l’éviter.'}
-        </Text>
+        <Text variant="caption" muted>{note}</Text>
       </View>
     </Pressable>
   );

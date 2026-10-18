@@ -9,7 +9,7 @@ import { ErrorView, Skeleton } from '@/components/States';
 import { Card, Chip, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { useActivePregnancy, useChildren, usePremium, useProfile } from '@/lib/data/hooks';
-import { JOURNEY_OPTIONS } from '@/lib/domain/journeys';
+import { journeyOptions } from '@/lib/domain/journeys';
 import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { NACRE, spacing } from '@/theme/tokens';
@@ -23,7 +23,7 @@ export default function Profile() {
   const children = childrenQ.data;
   const premium = usePremium();
   const journeys: string[] = (profile?.journeys ?? []).map((j) => (j === 'child' ? 'newborn' : j));
-  const active = JOURNEY_OPTIONS.filter((o) => journeys.includes(o.key));
+  const active = journeyOptions().filter((o) => journeys.includes(o.key));
 
   return (
     <View style={{ flex: 1 }}>

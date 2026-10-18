@@ -22,6 +22,8 @@ export interface OnboardingDraft {
   reminders: string[];
   consents: Record<ConsentPurpose, boolean>;
   bottleFeeding: BottleFeeding;
+  /** Centres d'intérêt facultatifs (santé, communauté) ; absent des anciens brouillons. */
+  interests?: string[];
   /** Horodatage de la dernière sauvegarde (pour choisir la plus récente entre l'appareil et le profil). */
   savedAt?: string;
 }
@@ -40,7 +42,8 @@ export function restoreDraft(raw: string | null | undefined | object): Onboardin
   }
   if (!d || d.v !== 1 || !Array.isArray(d.journeys) || !Array.isArray(d.children) || !d.consents) return null;
   const step = (ONBOARDING_STEPS as readonly string[]).includes(d.step as string) ? (d.step as OnboardingStep) : 'journeys';
-  return { ...(d as OnboardingDraft), step };
+  const interests = Array.isArray(d.interests) ? d.interests.filter((x): x is string => typeof x === 'string') : [];
+  return { ...(d as OnboardingDraft), step, interests };
 }
 
 const key = (userId: string) => `toietmoi.onboarding.${userId}`;

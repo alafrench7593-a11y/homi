@@ -8,16 +8,17 @@ import { BackendError } from '@/lib/backend/types';
 import { passwordRules, resendRemaining } from '@/lib/authFlow';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 /** Règles du mot de passe, cochées au fil de la saisie. */
 export function PasswordRules({ value }: { value: string }) {
   const t = useTheme();
   return (
-    <View accessibilityLabel="Règles du mot de passe" style={{ gap: 2, marginTop: -4 }}>
+    <View accessibilityLabel={tr('auth.rules.a11y')} style={{ gap: 2, marginTop: -4 }}>
       {passwordRules(value).map((r) => (
         <Row key={r.key} gap={6} style={{ alignItems: 'center' }}>
           <Icon name={r.ok ? 'check-circle' : 'circle'} size={14} color={r.ok ? t.colors.success : t.colors.textMuted} />
-          <Text variant="small" color={r.ok ? t.colors.success : t.colors.textMuted} accessibilityLabel={`${r.label} : ${r.ok ? 'respecté' : 'à compléter'}`}>{r.label}</Text>
+          <Text variant="small" color={r.ok ? t.colors.success : t.colors.textMuted} accessibilityLabel={tr(r.ok ? 'auth.rules.ok' : 'auth.rules.todo', { rule: r.label })}>{r.label}</Text>
         </Row>
       ))}
     </View>
@@ -62,7 +63,7 @@ export function SocialButtons({ onError, disabled }: { onError: (msg: string) =>
       await backend.auth.signInWithProvider(p);
       if (Platform.OS !== 'web') router.replace('/');
     } catch (e) {
-      if (!(e instanceof BackendError && e.code === 'cancelled')) onError(e instanceof Error && e.message ? e.message : 'Connexion impossible. Réessayez.');
+      if (!(e instanceof BackendError && e.code === 'cancelled')) onError(e instanceof Error && e.message ? e.message : tr('auth.signIn.failed'));
     } finally {
       setBusy(null);
     }
@@ -71,9 +72,9 @@ export function SocialButtons({ onError, disabled }: { onError: (msg: string) =>
   return (
     <View style={{ gap: spacing.xs }}>
       {Platform.OS === 'ios' ? <AppleNativeButton onPress={() => go('apple')} /> : (
-        <Button label="Continuer avec Apple" icon="smartphone" variant="secondary" loading={busy === 'apple'} disabled={disabled || !!busy} onPress={() => go('apple')} full />
+        <Button label={tr('auth.social.apple')} icon="smartphone" variant="secondary" loading={busy === 'apple'} disabled={disabled || !!busy} onPress={() => go('apple')} full />
       )}
-      <Button label="Continuer avec Google" icon="globe" variant="secondary" loading={busy === 'google'} disabled={disabled || !!busy} onPress={() => go('google')} full />
+      <Button label={tr('auth.social.google')} icon="globe" variant="secondary" loading={busy === 'google'} disabled={disabled || !!busy} onPress={() => go('google')} full />
     </View>
   );
 }
@@ -95,7 +96,7 @@ function AppleNativeButton({ onPress }: { onPress: () => void }) {
 }
 
 /** Bouton « Renvoyer l'e-mail », utilisable une fois toutes les 60 secondes. */
-export function ResendButton({ onResend, label = 'Renvoyer l’e-mail', initialSentAt = Date.now() }: { onResend: () => Promise<void>; label?: string; initialSentAt?: number | null }) {
+export function ResendButton({ onResend, label = tr('auth.resend'), initialSentAt = Date.now() }: { onResend: () => Promise<void>; label?: string; initialSentAt?: number | null }) {
   const [sentAt, setSentAt] = useState<number | null>(initialSentAt);
   const [now, setNow] = useState(Date.now());
   const [busy, setBusy] = useState(false);
@@ -114,16 +115,16 @@ export function ResendButton({ onResend, label = 'Renvoyer l’e-mail', initialS
       await onResend();
       setSentAt(Date.now());
       setNow(Date.now());
-      setMsg({ ok: true, text: 'C’est renvoyé. Pensez à vérifier vos courriers indésirables.' });
+      setMsg({ ok: true, text: tr('auth.resent') });
     } catch (e) {
-      setMsg({ ok: false, text: e instanceof Error && e.message ? e.message : 'Envoi impossible. Réessayez.' });
+      setMsg({ ok: false, text: e instanceof Error && e.message ? e.message : tr('auth.sendFailed') });
     } finally {
       setBusy(false);
     }
   }
   return (
     <View style={{ gap: 4 }}>
-      <Button label={remaining ? `${label} (dans ${remaining} s)` : label} icon="send" variant="secondary" disabled={!!remaining} loading={busy} onPress={go} />
+      <Button label={remaining ? tr('auth.resendIn', { label, seconds: remaining }) : label} icon="send" variant="secondary" disabled={!!remaining} loading={busy} onPress={go} />
       {msg ? <Text variant="small" color={msg.ok ? undefined : '#C2416E'} accessibilityLiveRegion="polite">{msg.text}</Text> : null}
     </View>
   );

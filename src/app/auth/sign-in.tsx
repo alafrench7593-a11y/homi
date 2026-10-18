@@ -5,6 +5,7 @@ import { Banner, Button, Field } from '@/components/ui';
 import { SocialButtons } from '@/features/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { fieldErrors, signInSchema } from '@/lib/validation';
+import { t as tr } from '@/i18n';
 
 export default function SignIn() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -23,7 +24,7 @@ export default function SignIn() {
       await backend.auth.signIn(parsed.data.email, parsed.data.password);
       router.replace('/');
     } catch (e) {
-      setErrors({ _: e instanceof Error && e.message ? e.message : 'Connexion impossible. Réessayez.' });
+      setErrors({ _: e instanceof Error && e.message ? e.message : tr('auth.signIn.failed') });
     } finally {
       inFlight.current = false;
       setLoading(false);
@@ -31,15 +32,15 @@ export default function SignIn() {
   }
 
   return (
-    <Screen back title="Bon retour parmi nous">
+    <Screen back title={tr('auth.signIn.title')}>
       {errors._ ? <Banner tone="danger">{errors._}</Banner> : null}
-      <Field label="Adresse e-mail" value={form.email} onChangeText={(email) => setForm((f) => ({ ...f, email }))} autoCapitalize="none" keyboardType="email-address" autoComplete="email" textContentType="username" error={errors.email} returnKeyType="next" />
-      <Field label="Mot de passe" value={form.password} onChangeText={(password) => setForm((f) => ({ ...f, password }))} secureTextEntry revealable autoComplete="current-password" textContentType="password" error={errors.password} onSubmitEditing={submit} returnKeyType="go" />
-      <Button label="Se connecter" size="lg" loading={loading} disabled={loading} onPress={submit} />
-      <Button label="Mot de passe oublié ?" variant="ghost" onPress={() => router.push('/auth/forgot')} />
+      <Field label={tr('auth.email')} value={form.email} onChangeText={(email) => setForm((f) => ({ ...f, email }))} autoCapitalize="none" keyboardType="email-address" autoComplete="email" textContentType="username" error={errors.email} returnKeyType="next" />
+      <Field label={tr('auth.password')} value={form.password} onChangeText={(password) => setForm((f) => ({ ...f, password }))} secureTextEntry revealable autoComplete="current-password" textContentType="password" error={errors.password} onSubmitEditing={submit} returnKeyType="go" />
+      <Button label={tr('auth.signIn')} size="lg" loading={loading} disabled={loading} onPress={submit} />
+      <Button label={tr('auth.forgot')} variant="ghost" onPress={() => router.push('/auth/forgot')} />
       <SocialButtons onError={(m) => setErrors({ _: m })} disabled={loading} />
-      <Button label="Créer un compte" variant="ghost" onPress={() => router.replace('/auth/sign-up')} />
-      {isDemo ? <Banner tone="demo">{'En mode démonstration, les comptes sont créés uniquement sur cet appareil.'}</Banner> : null}
+      <Button label={tr('auth.signUp')} variant="ghost" onPress={() => router.replace('/auth/sign-up')} />
+      {isDemo ? <Banner tone="demo">{tr('auth.signIn.demoNote')}</Banner> : null}
     </Screen>
   );
 }

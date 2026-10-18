@@ -1,4 +1,5 @@
-export const fr = {
+/** Clés historiques (onglets, actions communes). */
+export const legacy = {
   'tab.home': 'Accueil',
   'tab.track': 'Suivi',
   'tab.ask': 'Questions',
@@ -36,4 +37,4 @@ export const fr = {
   'night.title': 'Mode nuit',
 };
 
-export type Dictionary = typeof fr;
+

@@ -89,6 +89,15 @@ export const SUGGESTIONS_BY_JOURNEY: Record<Journey, { label: string; questions:
       'Quelle contraception est possible après un accouchement ?',
     ],
   },
+  cycle: {
+    label: 'Mon cycle',
+    questions: [
+      'Quelle est la durée habituelle d’un cycle ?',
+      'Des règles irrégulières, est-ce fréquent ?',
+      'Quels symptômes peuvent accompagner les règles ?',
+      'Quand consulter pour des règles douloureuses ?',
+    ],
+  },
   ttc: {
     label: 'Projet bébé',
     questions: [

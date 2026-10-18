@@ -14,6 +14,7 @@ import { useUiStore } from '@/lib/store';
 import { GlassSurface } from './Glass';
 import { usePop, usePressMotion, useShake, useTilt } from './Motion';
 import { duration, springTo, timeTo } from '@/theme/motion';
+import { t as tr } from '@/i18n';
 
 export type IconName = React.ComponentProps<typeof Feather>['name'];
 
@@ -346,7 +347,7 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
         {revealable ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={shown ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+            accessibilityLabel={shown ? tr('common.hidePassword') : tr('common.showPassword')}
             onPress={() => setShown((v) => !v)}
             hitSlop={8}
             style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}
@@ -414,9 +415,9 @@ export function Loading({ label = 'Chargement…' }: { label?: string }) {
 }
 
 export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () => void }) {
-  const message = error instanceof Error ? error.message : 'Une erreur est survenue.';
+  const message = error instanceof Error ? error.message : tr('common.error');
   return (
-    <Banner tone="danger" title="Impossible d’afficher ces informations" action={onRetry ? <Button label="Réessayer" size="sm" variant="secondary" onPress={onRetry} style={{ marginTop: 8, alignSelf: 'flex-start' }} /> : undefined}>
+    <Banner tone="danger" title={tr('common.cannotShow')} action={onRetry ? <Button label={tr('common.retry')} size="sm" variant="secondary" onPress={onRetry} style={{ marginTop: 8, alignSelf: 'flex-start' }} /> : undefined}>
       {message}
     </Banner>
   );

@@ -12,6 +12,7 @@ import { Aurora } from '@/components/Aurora';
 import { BRAND } from '@/config/brand';
 import { peekPendingInvite } from '@/lib/authFlow';
 import { useUiStore } from '@/lib/store';
+import { t as tr } from '@/i18n';
 
 export default function Launch() {
   const { session, ready } = useAuth();
@@ -34,12 +35,12 @@ export default function Launch() {
   if (ready && session && (profile?.onboarding_completed || isError)) return <Redirect href="/(tabs)" />;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#1C1128', alignItems: 'center', justifyContent: 'center', gap: 18 }} accessibilityLabel={`${BRAND.name}, chargement`}>
+    <View style={{ flex: 1, backgroundColor: '#1C1128', alignItems: 'center', justifyContent: 'center', gap: 18 }} accessibilityLabel={tr('common.appLoading', { app: BRAND.name })}>
       <Aurora mood="evening" intensity={1.25} />
       <StarField color="#FFF1E6" />
       <FetusOrb growth={0.6} size={180} interactive={false} />
       <Text variant="title" color="#FFF4EE">{BRAND.name}</Text>
-      <Text italic color={t.colors.gold}>{isLoading ? BRAND.tagline : ' '}</Text>
+      <Text italic color={t.colors.gold}>{isLoading ? tr('brand.tagline') : ' '}</Text>
     </View>
   );
 }

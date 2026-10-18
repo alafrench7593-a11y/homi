@@ -18,9 +18,11 @@ import { PulseRing } from './MotionKit';
 import { useActiveSubject, useChildren } from '@/lib/data/hooks';
 import { Sheet } from './Overlays';
 import { haptic, Icon, type IconName, Text } from './ui';
+import { t as tr } from '@/i18n';
 
 const TAB_ICONS: Record<string, IconName> = { index: 'home', track: 'activity', ask: 'message-circle', community: 'users', profile: 'user', tools: 'grid' };
-const SHORT: Record<string, string> = { index: 'Accueil', track: 'Suivi', ask: 'Questions', community: 'Communauté', profile: 'Profil' };
+const SHORT_KEYS = { index: 'tab.home', track: 'tab.track', ask: 'tab.ask', community: 'tab.community', profile: 'tab.profile' } as const;
+const short = (name: string) => (name in SHORT_KEYS ? tr(SHORT_KEYS[name as keyof typeof SHORT_KEYS]) : undefined);
 
 export const DOCK_HEIGHT = 74;
 /** Routes d'onglet accessibles par lien mais absentes de la barre (symétrie autour d'« Outils »). */
@@ -72,8 +74,8 @@ function ToolsOrb({ focused, sheetOpen, onPress, onLongPress }: { focused: boole
       accessibilityRole="tab"
       accessibilityState={{ selected: focused }}
       aria-selected={focused}
-      accessibilityLabel="Outils"
-      accessibilityHint="Appui long : ajout rapide (biberon, couche, sommeil…)"
+      accessibilityLabel={tr('dock.tools')}
+      accessibilityHint={tr('dock.toolsHint')}
       onPressIn={() => springTo(press, 1, 'press', reduce).start()}
       onPressOut={() => springTo(press, 0, 'release', reduce).start()}
       onPress={() => { burst(); onPress(); }}
@@ -153,7 +155,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
 
   const renderTab = (route: (typeof state.routes)[number]) => {
     const focused = focusedName === route.name;
-    const label = SHORT[route.name] ?? descriptors[route.key].options.title ?? route.name;
+    const label = short(route.name) ?? descriptors[route.key].options.title ?? route.name;
     return (
       <Pressable
         key={route.key}
@@ -199,7 +201,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
                   <ToolsOrb focused={toolsFocused} sheetOpen={open} onPress={() => go(center)} onLongPress={() => setOpen(true)} />
                 </View>
               </View>
-              <TabLabel label="Outils" focused={toolsFocused} />
+              <TabLabel label={tr('dock.tools')} focused={toolsFocused} />
             </View>
           ) : null}
           <View onLayout={(e) => { const x = e.nativeEvent.layout.x; setGroupX((g) => (g.right === x ? g : { ...g, right: x })); }} style={{ flex: 1, flexDirection: 'row' }}>{right.map(renderTab)}</View>
@@ -227,15 +229,15 @@ function useQuickAdd(onBefore?: () => void) {
   const go = (fn: () => void) => () => { if (onBefore) { onBefore(); setTimeout(fn, 180); } else fn(); };
   const track = (kind: string) => go(() => router.push({ pathname: '/track/[kind]', params: { kind, child: childId ?? '' } }));
   const items: { icon: IconName; label: string; onPress: () => void; show: boolean }[] = [
-    { icon: 'coffee', label: 'Biberon', onPress: track('bottle'), show: !!child },
-    { icon: 'droplet', label: 'Tétée', onPress: track('breastfeed'), show: !!child },
-    { icon: 'wind', label: 'Couche', onPress: track('diaper'), show: !!child },
-    { icon: 'moon', label: 'Sommeil', onPress: go(() => router.push('/night')), show: !!child },
-    { icon: 'feather', label: 'Repas', onPress: track('meal'), show: !!child },
-    { icon: 'thermometer', label: 'Note santé', onPress: track('observation'), show: !!child },
-    { icon: 'heart', label: 'Mon humeur', onPress: go(() => router.push('/me/mood')), show: true },
-    { icon: 'clock', label: 'Minuteur biberon', onPress: go(() => router.push(childId ? `/bottle/${childId}` : '/bottle')), show: !!child },
-    { icon: 'maximize', label: 'Scanner', onPress: go(() => router.push('/scanner')), show: true },
+    { icon: 'coffee', label: tr('dock.q.bottle'), onPress: track('bottle'), show: !!child },
+    { icon: 'droplet', label: tr('dock.q.breastfeed'), onPress: track('breastfeed'), show: !!child },
+    { icon: 'wind', label: tr('dock.q.diaper'), onPress: track('diaper'), show: !!child },
+    { icon: 'moon', label: tr('dock.q.sleep'), onPress: go(() => router.push('/night')), show: !!child },
+    { icon: 'feather', label: tr('dock.q.meal'), onPress: track('meal'), show: !!child },
+    { icon: 'thermometer', label: tr('dock.q.health'), onPress: track('observation'), show: !!child },
+    { icon: 'heart', label: tr('dock.q.mood'), onPress: go(() => router.push('/me/mood')), show: true },
+    { icon: 'clock', label: tr('dock.q.timer'), onPress: go(() => router.push(childId ? `/bottle/${childId}` : '/bottle')), show: !!child },
+    { icon: 'maximize', label: tr('dock.q.scanner'), onPress: go(() => router.push('/scanner')), show: true },
   ];
   return { child, go, items: items.filter((i) => i.show) };
 }
@@ -249,7 +251,7 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
         <Pressable accessibilityRole="button" onPress={go(() => router.push('/assistant/chat'))}
           style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: 'rgba(255,143,177,0.35)', backgroundColor: pressed ? palette.nightSoft : palette.night })}>
           <Icon name="message-circle" color={palette.gold} />
-          <Text weight="bold" color={palette.milk} style={{ flex: 1 }}>Poser une question</Text>
+          <Text weight="bold" color={palette.milk} style={{ flex: 1 }}>{tr('dock.ask')}</Text>
           <Icon name="chevron-right" size={18} color={palette.milk} />
         </Pressable>
       ) : null}
@@ -258,7 +260,7 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
           <Pressable
             key={i.label}
             accessibilityRole="button"
-            accessibilityLabel={`Ajouter : ${i.label}`}
+            accessibilityLabel={tr('dock.addA11y', { label: i.label })}
             onPress={() => { haptic('light'); i.onPress(); }}
             style={({ pressed }) => ({ width: compact ? '31.5%' : '23%', flexGrow: compact ? 0 : 1, minHeight: compact ? 72 : undefined, aspectRatio: compact ? undefined : 1, borderRadius: radius.lg, borderWidth: compact ? 1 : 0, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : compact ? t.colors.surface : t.colors.background, alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: compact ? spacing.xs : 0 })}
           >
@@ -274,7 +276,7 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
 function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { child, go } = useQuickAdd(onClose);
   return (
-    <Sheet visible={visible} onClose={onClose} title={child ? `Pour ${child.first_name}` : 'Ajouter'}>
+    <Sheet visible={visible} onClose={onClose} title={child ? tr('dock.forChild', { name: child.first_name }) : tr('dock.add')}>
       <Pressable
         accessibilityRole="button"
         onPress={go(() => router.push('/assistant/chat'))}
@@ -282,8 +284,8 @@ function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => 
       >
         <Icon name="message-circle" color={palette.gold} />
         <View style={{ flex: 1 }}>
-          <Text weight="bold" color={palette.milk}>Poser une question</Text>
-          <Text variant="small" color="rgba(251,248,244,0.7)">L’assistant répond avec ses sources</Text>
+          <Text weight="bold" color={palette.milk}>{tr('dock.ask')}</Text>
+          <Text variant="small" color="rgba(251,248,244,0.7)">{tr('dock.askSub')}</Text>
         </View>
       </Pressable>
       <QuickAddGrid onBefore={onClose} />

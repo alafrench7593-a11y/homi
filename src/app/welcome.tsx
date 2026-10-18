@@ -13,6 +13,8 @@ import { Button, Icon, type IconName, Text } from '@/components/ui';
 import { isDemo } from '@/lib/backend';
 import { startDemoWithoutAccount } from '@/lib/demoMode';
 import { BRAND } from '@/config/brand';
+import { getLocale, t as tr } from '@/i18n';
+import { localeInfo } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, NACRE, spacing } from '@/theme/tokens';
 
@@ -24,10 +26,10 @@ function Sparkle({ color }: { color: string }) {
   );
 }
 
-const STATS: { icon: IconName; label: string }[] = [
-  { icon: 'moon', label: '38 semaines illustrées' },
-  { icon: 'life-buoy', label: 'Urgences toujours gratuites' },
-  { icon: 'users', label: 'À vivre à deux' },
+const STATS: { icon: IconName; key: 'welcome.stat1' | 'welcome.stat2' | 'welcome.stat3' }[] = [
+  { icon: 'moon', key: 'welcome.stat1' },
+  { icon: 'life-buoy', key: 'welcome.stat2' },
+  { icon: 'users', key: 'welcome.stat3' },
 ];
 
 export default function Welcome() {
@@ -47,10 +49,16 @@ export default function Welcome() {
               <Text weight="bold" style={{ fontSize: 16, letterSpacing: -0.4 }}>{BRAND.name}</Text>
             </View>
           </Appear>
+          <Appear kind="scale" delay={0.3}>
+            <Pressable accessibilityRole="button" accessibilityLabel={tr('welcome.language', { language: localeInfo(getLocale()).native })} onPress={() => router.push('/intro')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 12, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.7 : 1 })}>
+              <Icon name="globe" size={16} color={t.colors.text} />
+              <Text variant="small" weight="medium">{localeInfo(getLocale()).native}</Text>
+            </Pressable>
+          </Appear>
           <Appear kind="scale" delay={0.34}>
-            <Pressable accessibilityRole="button" accessibilityLabel="Besoin d’aide maintenant" onPress={() => router.push('/emergency')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 14, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.95)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.6)', opacity: pressed ? 0.8 : 1 })}>
+            <Pressable accessibilityRole="button" accessibilityLabel={tr('welcome.helpA11y')} onPress={() => router.push('/emergency')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 14, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.95)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.6)', opacity: pressed ? 0.8 : 1 })}>
               <Icon name="life-buoy" size={16} color={t.colors.heart} />
-              <Text variant="small" weight="medium">Aide</Text>
+              <Text variant="small" weight="medium">{tr('welcome.help')}</Text>
             </Pressable>
           </Appear>
         </View>
@@ -59,7 +67,7 @@ export default function Welcome() {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Appear kind="pop" delay={0.2} duration={1.3}>
             <WeeksRing week={24} size={236}>
-              <FetusArt week={24} growth={0.55} size={176} interactive={false} accessibilityLabel="Illustration artistique d’un bébé à 24 semaines, pas une échographie" />
+              <FetusArt week={24} growth={0.55} size={176} interactive={false} accessibilityLabel={tr('welcome.illustrationA11y')} />
             </WeeksRing>
           </Appear>
         </View>
@@ -69,51 +77,51 @@ export default function Welcome() {
           <Appear kind="pop" delay={0.22}>
             <LinearGradient colors={t.isDark ? ['rgba(255,170,200,0.55)', 'rgba(60,30,70,0.6)', 'rgba(20,10,28,0.7)'] : ['rgba(255,170,200,0.65)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 6, marginBottom: 18 }}>
               <Sparkle color={t.isDark ? '#FFFFFF' : '#E9587C'} />
-              <Text variant="small" color={ink}>{BRAND.tagline}</Text>
+              <Text variant="small" color={ink}>{tr('brand.tagline')}</Text>
             </LinearGradient>
           </Appear>
-          <View accessibilityRole="header" accessible accessibilityLabel="Vivez chaque étape, ensemble et en douceur.">
+          <View accessibilityRole="header" accessible accessibilityLabel={tr('welcome.titleA11y')}>
             <Appear kind="mask" delay={0.42}>
               <Text center style={{ fontFamily: fonts.displayMedium, fontSize: 38, lineHeight: 44, letterSpacing: -1.6, color: ink }}>
-                Vivez chaque étape,
+                {tr('welcome.title1')}
               </Text>
             </Appear>
             <Appear kind="mask" delay={0.62}>
               <Text center style={{ fontFamily: fonts.displayMedium, fontSize: 38, lineHeight: 46, letterSpacing: -1.6, color: ink }}>
-                <Text style={{ fontFamily: fonts.serifItalic, fontSize: 43, letterSpacing: -0.8, color: t.isDark ? '#FFB3C8' : '#D9507A' }}>ensemble</Text> et en douceur.
+                <Text style={{ fontFamily: fonts.serifItalic, fontSize: 43, letterSpacing: -0.8, color: t.isDark ? '#FFB3C8' : '#D9507A' }}>{tr('welcome.title2a')}</Text>{tr('welcome.title2b')}
               </Text>
             </Appear>
           </View>
           <Appear kind="soft" delay={0.82} duration={1.25}>
             <Text center color={muted} style={{ marginTop: 14, maxWidth: 330, fontSize: 15.5, lineHeight: 24 }}>
-              Grossesse, naissance, premiers mois et enfance : une seule application qui grandit avec votre famille.
+              {tr('welcome.body')}
             </Text>
           </Appear>
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 24, alignSelf: 'stretch' }}>
             <Appear kind="btn" delay={0.96} style={{ flex: 1 }}>
-              <Button label="Commencer" onPress={() => router.push('/auth/sign-up')} full />
+              <Button label={tr('welcome.start')} onPress={() => router.push('/auth/sign-up')} full />
             </Appear>
             <Appear kind="side" delay={1.1} style={{ flex: 1 }}>
-              <Button label="J’ai un compte" variant="secondary" onPress={() => router.push('/auth/sign-in')} full />
+              <Button label={tr('welcome.haveAccount')} variant="secondary" onPress={() => router.push('/auth/sign-in')} full />
             </Appear>
           </View>
           <Appear kind="soft" delay={1.2} style={{ alignSelf: 'stretch' }}>
-            <Button label="Découvrir sans compte" variant="ghost" icon="eye" onPress={async () => { await startDemoWithoutAccount(); router.replace('/(tabs)'); }} full />
+            <Button label={tr('welcome.demo')} variant="ghost" icon="eye" onPress={async () => { await startDemoWithoutAccount(); router.replace('/(tabs)'); }} full />
           </Appear>
         </View>
 
         {/* Repères en bas */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8, marginTop: 26 }}>
           {STATS.map((s, i) => (
-            <Appear key={s.label} kind="stat" delay={1.12 + i * 0.16} style={{ flex: 1, alignItems: 'center', gap: 6 }}>
+            <Appear key={s.key} kind="stat" delay={1.12 + i * 0.16} style={{ flex: 1, alignItems: 'center', gap: 6 }}>
               <View style={{ width: 30, height: 30, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: t.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.7)' }}>
                 <Icon name={s.icon} size={15} color={ink} />
               </View>
-              <Text variant="caption" center color={muted} style={{ minHeight: 34 }}>{s.label}</Text>
+              <Text variant="caption" center color={muted} style={{ minHeight: 34 }}>{tr(s.key)}</Text>
             </Appear>
           ))}
         </View>
-        {isDemo && <Text variant="caption" center color={muted} style={{ marginTop: 4, minHeight: MIN_TOUCH / 2 }}>Mode démonstration : les données restent sur cet appareil.</Text>}
+        {isDemo && <Text variant="caption" center color={muted} style={{ marginTop: 4, minHeight: MIN_TOUCH / 2 }}>{tr('demo.banner')}</Text>}
       </View>
     </View>
   );

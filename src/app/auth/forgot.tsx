@@ -3,7 +3,8 @@ import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, Text } from '@/components/ui';
 import { ResendButton } from '@/features/auth';
 import { backend, isDemo } from '@/lib/backend';
-import { emailSchema } from '@/lib/validation';
+import { emailSchema, issueText } from '@/lib/validation';
+import { t as tr } from '@/i18n';
 
 export default function Forgot() {
   const [email, setEmail] = useState('');
@@ -13,33 +14,33 @@ export default function Forgot() {
 
   async function submit() {
     const parsed = emailSchema.safeParse(email);
-    if (!parsed.success) return setError(parsed.error.issues[0].message);
+    if (!parsed.success) return setError(issueText(parsed.error.issues[0].message));
     setError(null);
     setLoading(true);
     try {
       await backend.auth.resetPassword(parsed.data);
       setSent(true); // même réponse que le compte existe ou non (pas d'énumération des comptes)
     } catch (e) {
-      setError(e instanceof Error && e.message ? e.message : 'Envoi impossible. Réessayez.');
+      setError(e instanceof Error && e.message ? e.message : tr('auth.sendFailed'));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Screen back title="Mot de passe oublié" subtitle="Recevez un lien pour choisir un nouveau mot de passe.">
+    <Screen back title={tr('auth.forgot.title')} subtitle={tr('auth.forgot.subtitle')}>
       {sent ? (
         <>
-          <Banner tone="success" title="C’est envoyé">
-            {isDemo ? 'En mode démonstration, aucun e-mail n’est envoyé. Créez un nouveau compte local si besoin.' : `Si un compte existe pour ${email}, vous allez recevoir un e-mail dans quelques minutes. Ouvrez le lien depuis ce téléphone.`}
+          <Banner tone="success" title={tr('auth.forgot.sentTitle')}>
+            {isDemo ? tr('auth.forgot.sentDemo') : tr('auth.forgot.sent', { email })}
           </Banner>
           {!isDemo ? <ResendButton onResend={() => backend.auth.resetPassword(email.trim())} /> : null}
         </>
       ) : (
         <>
-          <Field label="Adresse e-mail" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" error={error} onSubmitEditing={submit} />
-          <Button label="Recevoir le lien" size="lg" loading={loading} disabled={loading} onPress={submit} />
-          <Text variant="small" muted>Pensez à vérifier vos courriers indésirables.</Text>
+          <Field label={tr('auth.email')} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" error={error} onSubmitEditing={submit} />
+          <Button label={tr('auth.forgot.getLink')} size="lg" loading={loading} disabled={loading} onPress={submit} />
+          <Text variant="small" muted>{tr('auth.forgot.spam')}</Text>
         </>
       )}
     </Screen>

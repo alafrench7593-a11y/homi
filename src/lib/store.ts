@@ -34,6 +34,12 @@ interface UiState {
   /** Dernier filtre choisi dans « Outils » (état conservé au retour). */
   toolFilter: string;
   setToolFilter: (f: string) => void;
+  /** Langue d'affichage choisie (null : jamais choisie → la langue du téléphone est proposée). */
+  locale: string | null;
+  setLocalePref: (code: string) => void;
+  /** Pays de résidence (indépendant de la langue) : urgences et contenus de santé. */
+  region: string | null;
+  setRegion: (code: string) => void;
   /** Introduction vue (ou passée) : ne se relance pas toute seule. */
   introSeen: boolean;
   setIntroSeen: (v: boolean) => void;
@@ -68,6 +74,10 @@ export const useUiStore = create<UiState>()(
       setToolFavorites: (toolFavorites) => set({ toolFavorites }),
       toolFilter: 'all',
       setToolFilter: (toolFilter) => set({ toolFilter }),
+      locale: null,
+      setLocalePref: (locale) => set({ locale }),
+      region: null,
+      setRegion: (region) => set({ region }),
       introSeen: false,
       setIntroSeen: (introSeen) => set({ introSeen }),
       setOverloadTipsOff: (overloadTipsOff) => set({ overloadTipsOff }),

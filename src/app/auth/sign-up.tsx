@@ -7,8 +7,9 @@ import { Banner, Button, Field, Row, Text } from '@/components/ui';
 import { CheckRow, LegalLink, PasswordRules, ResendButton, SocialButtons } from '@/features/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { LEGAL_VERSIONS, peekPendingInvite, savePendingConsents } from '@/lib/authFlow';
-import { emailSchema, fieldErrors, signUpSchema } from '@/lib/validation';
+import { emailSchema, fieldErrors, issueText, signUpSchema } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export default function SignUp() {
   const [form, setForm] = useState({ email: '', password: '', confirm: '', adult: false, terms: false });
@@ -25,8 +26,8 @@ export default function SignUp() {
 
   // Validation en direct (affichée dès qu'un champ a été quitté une fois)
   const live: Record<string, string | undefined> = {
-    email: touched.email ? (emailSchema.safeParse(form.email).success ? undefined : emailSchema.safeParse(form.email).error?.issues[0].message) : undefined,
-    confirm: touched.confirm && form.confirm && form.confirm !== form.password ? 'Les deux mots de passe ne correspondent pas.' : undefined,
+    email: touched.email ? (emailSchema.safeParse(form.email).success ? undefined : issueText(emailSchema.safeParse(form.email).error?.issues[0].message)) : undefined,
+    confirm: touched.confirm && form.confirm && form.confirm !== form.password ? tr('v.password.mismatch') : undefined,
   };
   const err = (k: string) => errors[k] ?? live[k];
 
@@ -54,7 +55,7 @@ export default function SignUp() {
       if (needsConfirmation) setSent(true);
       else router.replace('/');
     } catch (e) {
-      setErrors({ _: e instanceof Error && e.message ? e.message : 'Inscription impossible. Réessayez.' });
+      setErrors({ _: e instanceof Error && e.message ? e.message : tr('auth.signUp.failed') });
     } finally {
       inFlight.current = false;
       setLoading(false);
@@ -63,44 +64,44 @@ export default function SignUp() {
 
   if (sent) {
     return (
-      <Screen back title="Vérifiez vos e-mails">
-        <Banner tone="success" title="Plus qu’une étape">
-          {`Nous avons envoyé un lien de confirmation à ${form.email}. Ouvrez-le depuis ce téléphone : l’application s’ouvrira et votre compte sera activé.`}
+      <Screen back title={tr('auth.check.title')}>
+        <Banner tone="success" title={tr('auth.check.bannerTitle')}>
+          {tr('auth.check.body', { email: form.email })}
         </Banner>
-        <Text variant="small" muted>Rien reçu ? Vérifiez vos courriers indésirables, puis renvoyez l’e-mail. Le lien est valable 24 heures.</Text>
+        <Text variant="small" muted>{tr('auth.check.nothing')}</Text>
         <ResendButton onResend={() => backend.auth.resendConfirmation(form.email.trim())} />
-        <Button label="J’ai confirmé, me connecter" onPress={() => router.replace('/auth/sign-in')} />
-        <Button label="Modifier l’adresse e-mail" variant="ghost" onPress={() => setSent(false)} />
+        <Button label={tr('auth.check.confirmed')} onPress={() => router.replace('/auth/sign-in')} />
+        <Button label={tr('auth.check.changeEmail')} variant="ghost" onPress={() => setSent(false)} />
       </Screen>
     );
   }
 
   return (
-    <Screen back title="Créer mon compte" subtitle="Quelques secondes, et un espace rien qu’à vous.">
-      {invited ? <Banner tone="info" title="Vous avez été invité·e">Créez votre compte : vous rejoindrez ensuite le foyer qui vous a invité·e.</Banner> : null}
+    <Screen back title={tr('auth.signUp.title')} subtitle={tr('auth.signUp.subtitle')}>
+      {invited ? <Banner tone="info" title={tr('auth.signUp.invitedTitle')}>{tr('auth.signUp.invitedBody')}</Banner> : null}
       {errors._ ? <Banner tone="danger">{errors._}</Banner> : null}
-      <Field label="Adresse e-mail" value={form.email} onChangeText={set('email')} onBlur={touch('email')} autoCapitalize="none" keyboardType="email-address" autoComplete="email" textContentType="emailAddress" error={err('email')} returnKeyType="next" />
-      <Field label="Mot de passe" value={form.password} onChangeText={set('password')} onBlur={touch('password')} secureTextEntry revealable autoComplete="new-password" textContentType="newPassword" error={errors.password} />
+      <Field label={tr('auth.email')} value={form.email} onChangeText={set('email')} onBlur={touch('email')} autoCapitalize="none" keyboardType="email-address" autoComplete="email" textContentType="emailAddress" error={err('email')} returnKeyType="next" />
+      <Field label={tr('auth.password')} value={form.password} onChangeText={set('password')} onBlur={touch('password')} secureTextEntry revealable autoComplete="new-password" textContentType="newPassword" error={errors.password} />
       <PasswordRules value={form.password} />
-      <Field label="Confirmer le mot de passe" value={form.confirm} onChangeText={set('confirm')} onBlur={touch('confirm')} secureTextEntry revealable autoComplete="new-password" error={err('confirm')} onSubmitEditing={submit} returnKeyType="done" />
+      <Field label={tr('auth.signUp.confirmPassword')} value={form.confirm} onChangeText={set('confirm')} onBlur={touch('confirm')} secureTextEntry revealable autoComplete="new-password" error={err('confirm')} onSubmitEditing={submit} returnKeyType="done" />
 
       <View style={{ gap: spacing.xs }}>
-        <CheckRow label="J’ai 18 ans ou plus" checked={form.adult} onChange={set('adult')} error={errors.adult}>
-          <Text variant="small">J’ai 18 ans ou plus.</Text>
+        <CheckRow label={tr('auth.signUp.adultA11y')} checked={form.adult} onChange={set('adult')} error={errors.adult}>
+          <Text variant="small">{tr('auth.signUp.adult')}</Text>
         </CheckRow>
-        <CheckRow label="J’accepte les conditions d’utilisation et la politique de confidentialité" checked={form.terms} onChange={set('terms')} error={errors.terms}>
-          <Text variant="small">J’accepte les conditions d’utilisation et la politique de confidentialité. Je comprends que l’application informe mais ne remplace pas un professionnel de santé.</Text>
+        <CheckRow label={tr('auth.signUp.termsA11y')} checked={form.terms} onChange={set('terms')} error={errors.terms}>
+          <Text variant="small">{tr('auth.signUp.terms')}</Text>
         </CheckRow>
         <Row wrap style={{ paddingLeft: 34 }}>
-          <LegalLink doc="terms">Lire les conditions d’utilisation</LegalLink>
-          <LegalLink doc="privacy">Lire la politique de confidentialité</LegalLink>
+          <LegalLink doc="terms">{tr('auth.signUp.readTerms')}</LegalLink>
+          <LegalLink doc="privacy">{tr('auth.signUp.readPrivacy')}</LegalLink>
         </Row>
       </View>
 
-      <Button label="Créer mon compte" size="lg" loading={loading} disabled={loading} onPress={submit} />
+      <Button label={tr('auth.signUp.create')} size="lg" loading={loading} disabled={loading} onPress={submit} />
       <SocialButtons onError={(m) => setErrors({ _: m })} disabled={loading} />
-      <Text variant="caption" muted center>Avec Apple ou Google, l’âge et l’accord aux conditions vous seront demandés juste après.</Text>
-      <Button label="J’ai déjà un compte" variant="ghost" onPress={() => router.replace('/auth/sign-in')} />
+      <Text variant="caption" muted center>{tr('auth.signUp.socialNote')}</Text>
+      <Button label={tr('auth.signUp.haveAccount')} variant="ghost" onPress={() => router.replace('/auth/sign-in')} />
     </Screen>
   );
 }

@@ -3,6 +3,7 @@
  * délai de renvoi, invitation et consentements conservés pendant la confirmation de l'adresse.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { t as tr } from '@/i18n';
 
 /** Versions des documents acceptés à l'inscription (à mettre à jour à chaque nouvelle version). */
 export const LEGAL_VERSIONS = { terms: '2026-10', privacy: '2026-10' } as const;
@@ -11,7 +12,7 @@ export const RESEND_COOLDOWN_S = 60;
 
 export interface AuthLikeError { message?: unknown; code?: unknown; status?: unknown; name?: unknown }
 
-const GENERIC = 'Une erreur est survenue. Réessayez dans un instant.';
+
 
 /**
  * Message clair en français pour une erreur d'authentification Supabase.
@@ -25,23 +26,23 @@ export function friendlyAuthError(err: unknown): string {
   const name = String(e.name ?? '');
   const has = (re: RegExp) => re.test(msg);
 
-  if (name === 'AuthRetryableFetchError' || status === 0 || has(/failed to fetch|network|fetch failed|load failed/i)) return 'Pas de connexion internet pour le moment. Vérifiez votre réseau puis réessayez.';
+  if (name === 'AuthRetryableFetchError' || status === 0 || has(/failed to fetch|network|fetch failed|load failed/i)) return tr('auth.err.network');
   if (code === 'over_email_send_rate_limit' || code === 'over_request_rate_limit' || code === 'over_sms_send_rate_limit' || status === 429 || has(/rate limit|for security purposes/i)) {
     const s = msg.match(/after (\d+) seconds?/i)?.[1];
-    return s ? `Trop de tentatives. Patientez ${s} secondes avant de réessayer.` : 'Trop de tentatives. Patientez quelques minutes avant de réessayer.';
+    return s ? tr('auth.err.rateSeconds', { seconds: s }) : tr('auth.err.rate');
   }
-  if (code === 'otp_expired' || code === 'flow_state_expired' || has(/expired|has expired|invalid or has expired/i)) return 'Ce lien a expiré ou a déjà été utilisé. Demandez-en un nouveau.';
-  if (code === 'user_already_exists' || code === 'email_exists' || has(/already registered|already exists/i)) return 'Un compte existe déjà avec cette adresse. Connectez-vous ou utilisez « Mot de passe oublié ».';
-  if (code === 'same_password' || has(/should be different/i)) return 'Le nouveau mot de passe doit être différent de l’ancien.';
-  if (code === 'weak_password' || has(/password should|weak password|password is too/i)) return 'Ce mot de passe est trop faible : 8 caractères minimum, avec au moins une lettre et un chiffre.';
-  if (code === 'invalid_credentials' || has(/invalid login credentials/i)) return 'Adresse e-mail ou mot de passe incorrect.';
-  if (code === 'email_not_confirmed' || has(/email not confirmed/i)) return 'Confirmez d’abord votre adresse e-mail grâce au lien reçu.';
-  if (code === 'email_address_invalid' || has(/validate email|invalid format|email address .* invalid/i)) return 'Cette adresse e-mail ne semble pas valide.';
-  if (code === 'signup_disabled' || has(/signups not allowed/i)) return 'Les inscriptions sont momentanément fermées. Réessayez plus tard.';
-  if (code === 'session_not_found' || code === 'refresh_token_not_found' || name === 'AuthSessionMissingError' || has(/session missing|session not found|refresh token/i)) return 'Votre lien ou votre session n’est plus valable. Reconnectez-vous, ou demandez un nouveau lien.';
-  if (code === 'user_banned') return 'Ce compte est suspendu. Contactez le support.';
-  if (code === 'provider_disabled' || has(/provider is not enabled/i)) return 'Cette méthode de connexion n’est pas encore activée.';
-  return GENERIC;
+  if (code === 'otp_expired' || code === 'flow_state_expired' || has(/expired|has expired|invalid or has expired/i)) return tr('auth.err.expired');
+  if (code === 'user_already_exists' || code === 'email_exists' || has(/already registered|already exists/i)) return tr('auth.err.exists');
+  if (code === 'same_password' || has(/should be different/i)) return tr('auth.err.samePassword');
+  if (code === 'weak_password' || has(/password should|weak password|password is too/i)) return tr('auth.err.weak');
+  if (code === 'invalid_credentials' || has(/invalid login credentials/i)) return tr('auth.err.credentials');
+  if (code === 'email_not_confirmed' || has(/email not confirmed/i)) return tr('auth.err.notConfirmed');
+  if (code === 'email_address_invalid' || has(/validate email|invalid format|email address .* invalid/i)) return tr('auth.err.badEmail');
+  if (code === 'signup_disabled' || has(/signups not allowed/i)) return tr('auth.err.signupClosed');
+  if (code === 'session_not_found' || code === 'refresh_token_not_found' || name === 'AuthSessionMissingError' || has(/session missing|session not found|refresh token/i)) return tr('auth.err.session');
+  if (code === 'user_banned') return tr('auth.err.banned');
+  if (code === 'provider_disabled' || has(/provider is not enabled/i)) return tr('auth.err.provider');
+  return tr('auth.err.generic');
 }
 
 export type CallbackResult = { kind: 'code'; code: string } | { kind: 'expired' } | { kind: 'error'; message: string } | { kind: 'missing' };
@@ -70,9 +71,9 @@ export interface PasswordRule { key: 'length' | 'letter' | 'digit'; label: strin
 /** Règles affichées en direct sous le champ mot de passe. */
 export function passwordRules(pw: string): PasswordRule[] {
   return [
-    { key: 'length', label: '8 caractères minimum', ok: pw.length >= 8 },
-    { key: 'letter', label: 'Au moins une lettre', ok: /\p{L}/u.test(pw) },
-    { key: 'digit', label: 'Au moins un chiffre', ok: /[0-9]/.test(pw) },
+    { key: 'length', label: tr('auth.rules.length'), ok: pw.length >= 8 },
+    { key: 'letter', label: tr('auth.rules.letter'), ok: /\p{L}/u.test(pw) },
+    { key: 'digit', label: tr('auth.rules.digit'), ok: /[0-9]/.test(pw) },
   ];
 }
 

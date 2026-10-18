@@ -8,6 +8,7 @@ import { radius, spacing } from '@/theme/tokens';
 import { Icon, IconButton, Text } from './ui';
 import { GlassSurface } from './Glass';
 import { duration, easing, spring as SPRING, springTo, timeTo } from '@/theme/motion';
+import { t as tr } from '@/i18n';
 
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
   const t = useTheme();
@@ -29,14 +30,14 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
   return (
     <Modal visible transparent animationType="none" onRequestClose={onClose} accessibilityViewIsModal>
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay, opacity: v }]}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Fermer" accessibilityRole="button" />
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={tr('common.close')} accessibilityRole="button" />
       </Animated.View>
       <Animated.View style={[styles.sheet, { transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [420, 0] }) }] }]}>
         <GlassSurface fill={t.isDark ? t.colors.surface : '#FBF8F4'} depth={3} radius={radius.xl} style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
           <View style={[styles.grabber, { backgroundColor: t.colors.border }]} />
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg }}>
             <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{title}</Text>
-            <IconButton icon="x" label="Fermer" onPress={onClose} />
+            <IconButton icon="x" label={tr('common.close')} onPress={onClose} />
           </View>
           {/* flexShrink : le contenu long défile au lieu de dépasser de l'écran */}
           <ScrollView style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled">
@@ -122,7 +123,7 @@ export function confirm(title: string, message: string, confirmLabel = 'Confirme
   }
   return new Promise((resolve) =>
     Alert.alert(title, message, [
-      { text: 'Annuler', style: 'cancel', onPress: () => resolve(false) },
+      { text: tr('common.cancel'), style: 'cancel', onPress: () => resolve(false) },
       { text: confirmLabel, style: destructive ? 'destructive' : 'default', onPress: () => resolve(true) },
     ]),
   );
@@ -146,13 +147,13 @@ function ConfirmHost() {
   const done = (v: boolean) => { req.resolve(v); setReq(null); };
   return (
     <Modal visible transparent animationType="fade" onRequestClose={() => done(false)}>
-      <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }]} onPress={() => done(false)} accessibilityLabel="Fermer" />
+      <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }]} onPress={() => done(false)} accessibilityLabel={tr('common.close')} />
       <Animated.View style={{ position: 'absolute', left: spacing.lg, right: spacing.lg, top: '30%', borderRadius: radius.xl, padding: spacing.lg, gap: spacing.sm, backgroundColor: t.isDark ? '#22152C' : '#FFFFFF', opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] }) }, { translateY: pop.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }], shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 30, shadowOffset: { width: 0, height: 14 } }} accessibilityViewIsModal accessibilityRole="alert">
         <Text variant="heading">{req.title}</Text>
         {req.message ? <Text muted>{req.message}</Text> : null}
         <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs }}>
-          <Pressable accessibilityRole="button" accessibilityLabel="Annuler" onPress={() => done(false)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
-            <Text weight="bold">Annuler</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel={tr('common.cancel')} onPress={() => done(false)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
+            <Text weight="bold">{tr('common.cancel')}</Text>
           </Pressable>
           <Pressable accessibilityRole="button" accessibilityLabel={req.confirmLabel} onPress={() => done(true)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, backgroundColor: req.destructive ? t.colors.danger : t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
             <Text weight="bold" color="#FFFFFF">{req.confirmLabel}</Text>

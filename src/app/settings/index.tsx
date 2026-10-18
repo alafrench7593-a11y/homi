@@ -16,18 +16,15 @@ import { cancelAllLocal } from '@/lib/notifications';
 import { useUiStore } from '@/lib/store';
 import { useOfflineStore } from '@/lib/offline';
 import { setDeveloperMode, useDeveloperMode } from '@/lib/devMode';
-import { previewTime, SKY_LABEL, spacing, type SkyPhase } from '@/theme/tokens';
+import { previewTime, spacing, type SkyPhase } from '@/theme/tokens';
+import { deviceRegion, formatTime, getLocale, t as tr } from '@/i18n';
+import { defaultRegion, localeInfo, REGIONS } from '@/i18n/locales';
 
 /** « Nuit » : thème nocturne doux. Le magasin d'état l'accepte à l'exécution (ThemeProvider sait l'afficher). */
 type Appearance = 'auto' | 'light' | 'dark' | 'night';
-const APPEARANCE: { value: Appearance; label: string }[] = [
-  { value: 'auto', label: 'Auto' },
-  { value: 'light', label: 'Clair' },
-  { value: 'dark', label: 'Sombre' },
-  { value: 'night', label: 'Nuit' },
-];
+const APPEARANCE_KEYS: Appearance[] = ['auto', 'light', 'dark', 'night'];
 const PHASES: SkyPhase[] = ['dawn', 'day', 'dusk', 'night'];
-const hhmm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+const hhmm = (d: Date) => formatTime(d);
 
 export default function SettingsScreen() {
   const toast = useToast();
@@ -48,6 +45,8 @@ export default function SettingsScreen() {
   const skyOverride = useUiStore((s) => s.skyOverride);
   const setSkyOverride = useUiStore((s) => s.setSkyOverride);
   const haptics = useUiStore((s) => s.hapticsEnabled);
+  const region = useUiStore((s) => s.region);
+  const regionInfo = REGIONS.find((r) => r.code === (region ?? defaultRegion(deviceRegion()))) ?? REGIONS[0];
   const setHaptics = useUiStore((s) => s.setHaptics);
 
   const [name, setName] = useState('');
@@ -66,11 +65,11 @@ export default function SettingsScreen() {
 
   async function saveName() {
     const v = name.trim();
-    if (v.length > 40) return setNameError('40 caractères au maximum.');
+    if (v.length > 40) return setNameError(tr('settings.name.tooLong'));
     setNameError(null);
     try {
       await updateProfile.mutateAsync({ display_name: v || null });
-      toast('Prénom enregistré.');
+      toast(tr('settings.name.saved'));
     } catch (e) {
       setNameError(friendlyError(e));
     }
@@ -78,11 +77,9 @@ export default function SettingsScreen() {
 
   async function signOut(allDevices: boolean) {
     const ok = await confirm(
-      allDevices ? 'Se déconnecter partout ?' : 'Se déconnecter ?',
-      allDevices
-        ? 'Toutes vos sessions (téléphones, tablettes, navigateurs) seront fermées. Vos données restent enregistrées.'
-        : 'Vos données restent enregistrées. Les rappels programmés sur ce téléphone seront retirés jusqu’à votre prochaine connexion.',
-      'Se déconnecter',
+      allDevices ? tr('settings.signOut.confirmAll') : tr('settings.signOut.confirm'),
+      allDevices ? tr('settings.signOut.bodyAll') : tr('settings.signOut.body'),
+      tr('settings.signOut'),
     );
     if (!ok) return;
     setSigningOut(true);
@@ -101,34 +98,34 @@ export default function SettingsScreen() {
   const version = Constants.expoConfig?.version ?? '—';
 
   return (
-    <Screen back title="Réglages" subtitle={session?.email ?? undefined}>
+    <Screen back title={tr('settings.title')} subtitle={session?.email ?? undefined}>
       <DemoBanner />
 
-      <SectionTitle title="Mon profil" />
+      <SectionTitle title={tr('settings.profile')} />
       <Card>
-        <Field label="Prénom ou surnom" optional value={name} onChangeText={setName} maxLength={40} error={nameError} hint="Utilisé pour vous saluer. Jamais visible dans la communauté." returnKeyType="done" onSubmitEditing={saveName} />
-        <Button label="Enregistrer" size="sm" variant="secondary" loading={updateProfile.isPending} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={saveName} />
+        <Field label={tr('settings.name.label')} optional value={name} onChangeText={setName} maxLength={40} error={nameError} hint={tr('settings.name.hint')} returnKeyType="done" onSubmitEditing={saveName} />
+        <Button label={tr('common.save')} size="sm" variant="secondary" loading={updateProfile.isPending} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={saveName} />
       </Card>
 
-      <SectionTitle title="Apparence" />
+      <Card>
+        <ListRow icon="globe" title={tr('settings.language.row')} subtitle={tr('settings.language.rowSub', { language: localeInfo(getLocale()).native, country: getLocale() === 'fr' ? regionInfo.fr : regionInfo.en })} onPress={() => router.push('/settings/language')} />
+      </Card>
+
+      <SectionTitle title={tr('settings.appearance')} />
       <Card>
         <View style={{ gap: spacing.sm }}>
-          <Segmented label="Thème de l’application" options={APPEARANCE} value={appearance} onChange={chooseAppearance} />
+          <Segmented label={tr('settings.appearance.label')} options={APPEARANCE_KEYS.map((value) => ({ value, label: tr(`settings.appearance.${value}` as const) }))} value={appearance} onChange={chooseAppearance} />
           <Text variant="small" muted>
-            {appearance === 'auto'
-              ? 'Aurore claire et chaleureuse le jour, aurore de nuit automatiquement le soir (à partir de 18 h 30).'
-              : appearance === 'night'
-                ? 'Tons très sombres et chauds, pensés pour les tétées et biberons nocturnes.'
-                : appearance === 'dark' ? 'Velours de nuit en permanence.' : 'Porcelaine claire en permanence.'}
+            {tr(`settings.appearance.${appearance}Hint` as const)}
           </Text>
           <Divider />
-          <Text weight="medium">Aperçu du ciel</Text>
-          <Text variant="small" muted>Voir l’ambiance d’un autre moment de la journée, sans changer l’heure.</Text>
+          <Text weight="medium">{tr('settings.sky.title')}</Text>
+          <Text variant="small" muted>{tr('settings.sky.hint')}</Text>
           <Row wrap>
             {PHASES.map((p) => (
               <Chip
                 key={p}
-                label={`${SKY_LABEL[p]} · ${hhmm(previewTime(p))}`}
+                label={`${tr(`settings.sky.${p}` as const)} · ${hhmm(previewTime(p))}`}
                 selected={skyOverride === p}
                 onPress={() => {
                   if (appearance !== 'auto') setTheme('auto');
@@ -138,70 +135,70 @@ export default function SettingsScreen() {
             ))}
           </Row>
           {skyOverride ? (
-            <Button label="Revenir à l’heure réelle" icon="rotate-ccw" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => setSkyOverride(null)} />
+            <Button label={tr('settings.sky.reset')} icon="rotate-ccw" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => setSkyOverride(null)} />
           ) : null}
           <Divider />
           <Row style={{ justifyContent: 'space-between' }}>
-            <Text style={{ flex: 1 }}>Vibrations légères au toucher</Text>
-            <Toggle label="Vibrations légères au toucher" value={haptics} onChange={setHaptics} />
+            <Text style={{ flex: 1 }}>{tr('settings.haptics')}</Text>
+            <Toggle label={tr('settings.haptics')} value={haptics} onChange={setHaptics} />
           </Row>
         </View>
       </Card>
 
-      <SectionTitle title="Ma famille et mes outils" />
+      <SectionTitle title={tr('settings.familyTools')} />
       <Card>
-        <ListRow icon="users" title="Famille & partage" subtitle={household ? `${household.name} · ${members?.length ?? 1} membre${(members?.length ?? 1) > 1 ? 's' : ''}` : 'Inviter un coparent, gérer les accès'} onPress={() => router.push('/settings/family')} />
+        <ListRow icon="users" title={tr('settings.family')} subtitle={household ? tr('settings.family.members', { name: household.name, count: members?.length ?? 1 }) : tr('settings.family.invite')} onPress={() => router.push('/settings/family')} />
         <Divider />
-        <ListRow icon="layout" title="Mon accueil" subtitle="Ordre des cartes, raccourcis, introduction" onPress={() => router.push('/settings/home')} />
+        <ListRow icon="layout" title={tr('settings.home')} subtitle={tr('settings.home.sub')} onPress={() => router.push('/settings/home')} />
         <Divider />
-        <ListRow icon="bell" title="Rappels" subtitle={activeReminders ? `${activeReminders} rappel${activeReminders > 1 ? 's' : ''} actif${activeReminders > 1 ? 's' : ''}` : 'Aucun rappel actif'} onPress={() => router.push('/settings/reminders')} />
+        <ListRow icon="bell" title={tr('settings.reminders')} subtitle={activeReminders ? tr('settings.reminders.active', { count: activeReminders }) : tr('settings.reminders.none')} onPress={() => router.push('/settings/reminders')} />
         <Divider />
-        <ListRow icon="star" title="Abonnement" subtitle={premium ? `${BRAND.name} Plus actif` : 'Version gratuite'} onPress={() => router.push('/settings/subscription')} />
+        <ListRow icon="star" title={tr('settings.subscription')} subtitle={premium ? tr('settings.subscription.active', { app: BRAND.name }) : tr('settings.subscription.free')} onPress={() => router.push('/settings/subscription')} />
         <Divider />
-        <ListRow icon="user" title="Mon compte" subtitle="E-mail, mot de passe, export, suppression" onPress={() => router.push('/settings/account')} />
+        <ListRow icon="user" title={tr('settings.account')} subtitle={tr('settings.account.sub')} onPress={() => router.push('/settings/account')} />
         <Divider />
-        <ListRow icon="lock" title="Confidentialité" subtitle="Consentements et choix de partage" onPress={() => router.push('/settings/privacy')} />
+        <ListRow icon="lock" title={tr('settings.privacy')} subtitle={tr('settings.privacy.sub')} onPress={() => router.push('/settings/privacy')} />
         <Divider />
-        <ListRow icon="refresh-cw" title="Synchronisation" subtitle={offline.pending.length ? `${offline.pending.length} saisie(s) en attente` : offline.conflicts.length ? `${offline.conflicts.length} saisie(s) à vérifier` : 'Tout est envoyé'} onPress={() => router.push('/settings/sync')} />
+        <ListRow icon="refresh-cw" title={tr('settings.sync')} subtitle={offline.pending.length ? tr('settings.sync.pending', { count: offline.pending.length }) : offline.conflicts.length ? tr('sync.toCheck', { count: offline.conflicts.length }) : tr('settings.sync.allSent')} onPress={() => router.push('/settings/sync')} />
         {devMode ? (
           <>
             <Divider />
-            <ListRow icon="cpu" title="État des services" subtitle="Mode développeur" onPress={() => router.push('/settings/services')} />
+            <ListRow icon="cpu" title={tr('settings.services')} subtitle={tr('settings.services.sub')} onPress={() => router.push('/settings/services')} />
           </>
         ) : null}
         {isModerator ? (
           <>
             <Divider />
-            <ListRow icon="shield" title="Administration" subtitle="Statistiques, modération, annonces" onPress={() => router.push('/admin')} />
+            <ListRow icon="shield" title={tr('settings.admin')} subtitle={tr('settings.admin.sub')} onPress={() => router.push('/admin')} />
           </>
         ) : null}
       </Card>
 
-      <SectionTitle title="Aide" />
+      <SectionTitle title={tr('settings.help')} />
       <Card>
-        <ListRow icon="life-buoy" title="Besoin d’aide maintenant" subtitle="15, 112, 3114 — toujours gratuit" danger onPress={() => router.push('/emergency')} />
+        <ListRow icon="life-buoy" title={tr('settings.help.now')} subtitle={tr('settings.help.nowSub', { numbers: regionInfo.emergency })} danger onPress={() => router.push('/emergency')} />
         <Divider />
-        <ListRow icon="mail" title="Nous écrire" subtitle={BRAND.supportEmail} onPress={() => Linking.openURL(`mailto:${BRAND.supportEmail}`).catch(() => toast(`Écrivez-nous à ${BRAND.supportEmail}`, 'info'))} />
+        <ListRow icon="mail" title={tr('settings.help.write')} subtitle={BRAND.supportEmail} onPress={() => Linking.openURL(`mailto:${BRAND.supportEmail}`).catch(() => toast(tr('settings.help.writeTo', { email: BRAND.supportEmail }), 'info'))} />
       </Card>
-      <Banner tone="info">{'L’application informe et accompagne ; elle ne remplace jamais l’avis d’un professionnel de santé.'}</Banner>
+      <Banner tone="info">{tr('settings.disclaimer')}</Banner>
 
-      <SectionTitle title="À propos" />
+      <SectionTitle title={tr('settings.about')} />
       <Card tone="soft">
         <Text variant="heading">{BRAND.name}</Text>
-        <Text italic muted>{BRAND.tagline}</Text>
+        <Text italic muted>{tr('brand.tagline')}</Text>
         <Text variant="small" muted style={{ marginTop: spacing.xs }} onPress={() => {
           const n = versionTaps.current + 1;
           versionTaps.current = n;
-          if (n === 7) { void setDeveloperMode(!devMode); toast(devMode ? 'Mode développeur désactivé.' : 'Mode développeur activé.'); versionTaps.current = 0; }
+          if (n === 7) { void setDeveloperMode(!devMode); toast(devMode ? tr('settings.devOff') : tr('settings.devOn')); versionTaps.current = 0; }
         }}>
-          {`Version ${version}${isDemo ? ' · mode démonstration (données sur cet appareil)' : ''}`}
+          {isDemo ? tr('settings.versionDemo', { version }) : tr('settings.version', { version })}
         </Text>
       </Card>
 
       <View style={{ gap: spacing.xs, marginTop: spacing.sm }}>
-        <Button label="Se déconnecter" variant="secondary" icon="log-out" loading={signingOut} onPress={() => signOut(false)} />
-        <Button label="Se déconnecter sur tous les appareils" variant="ghost" onPress={() => signOut(true)} />
-        {isDemo ? <Text variant="caption" muted center>En mode démonstration, un seul appareil est concerné.</Text> : null}
+        <Button label={tr('settings.signOut')} variant="secondary" icon="log-out" loading={signingOut} onPress={() => signOut(false)} />
+        <Button label={tr('settings.signOutAll')} variant="ghost" onPress={() => signOut(true)} />
+        {isDemo ? <Text variant="caption" muted center>{tr('settings.signOut.demo')}</Text> : null}
       </View>
     </Screen>
   );

@@ -2,7 +2,7 @@
 import type { ReminderSchedule } from './domain/reminders';
 import type { Multiplicity } from './domain/pregnancy';
 
-export type Journey = 'avoid' | 'ttc' | 'pregnant' | 'newborn' | 'child' | 'family';
+export type Journey = 'avoid' | 'ttc' | 'cycle' | 'pregnant' | 'newborn' | 'child' | 'family';
 export type Domain = 'daily' | 'health' | 'documents' | 'pregnancy' | 'lists' | 'names' | 'profile';
 export const ALL_DOMAINS: Domain[] = ['daily', 'health', 'documents', 'pregnancy', 'lists', 'names', 'profile'];
 
