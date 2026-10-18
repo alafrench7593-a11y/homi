@@ -107,7 +107,9 @@ export function toolCategories({ journeys, hasPregnancy, childId, childCount }: 
     cats.push({
       key: 'me', title: 'Pour moi', items: [
         { icon: 'cloud', label: 'Mon propre sommeil', href: '/me/sleep' },
-        { icon: 'heart', label: 'Post-partum', href: '/me' },
+        { icon: 'heart', label: 'Après la naissance', sub: 'Point du jour, soutien', href: '/postpartum' },
+        { icon: 'users', label: 'Soutenir ma partenaire', sub: 'Espace conjoint', href: '/postpartum/partner' },
+        { icon: 'feather', label: 'Récupération physique', href: '/me' },
         { icon: 'activity', label: 'Rééducation', href: '/library?q=rééducation' },
         { icon: 'smile', label: 'Santé mentale', sub: 'Humeur, aide 24 h/24', href: '/me/mood' },
         { icon: 'message-circle', label: 'Questions', href: '/(tabs)/ask' },

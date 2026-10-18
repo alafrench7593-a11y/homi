@@ -209,7 +209,15 @@ export const EMERGENCY_CONTACTS: { label: string; phone: string; description: st
 ];
 
 // ---------------------------------------------------------------- questions pour la consultation
-export const QUESTION_SUGGESTIONS: Record<'ttc' | 'avoid', string[]> = {
+export const QUESTION_SUGGESTIONS: Record<'ttc' | 'avoid' | 'postpartum', string[]> = {
+  // Suivi post-partum : questions que la mère peut préparer pour sa sage-femme ou son médecin
+  postpartum: [
+    'Est-ce que ce que je ressens depuis la naissance mérite un suivi ?',
+    'Je dors mal même quand je pourrais me reposer : qu’en pensez-vous ?',
+    'Quand et comment commencer la rééducation du périnée ?',
+    'Ces douleurs sont-elles attendues, ou faut-il les examiner ?',
+    'Vers qui puis-je me tourner pour parler de mon moral ?',
+  ],
   ttc: [
     'Dans notre situation, au bout de combien de temps faut-il consulter ?',
     'Faut-il prendre un complément avant la grossesse (acide folique) ?',

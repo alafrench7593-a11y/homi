@@ -40,7 +40,7 @@ const SECTION_LABEL: Record<string, string> = {
   period_entries: 'Règles', symptom_logs: 'Symptômes', ovulation_tests: 'Tests d’ovulation', pregnancy_tests: 'Tests de grossesse',
   fertility_observations: 'Température et glaire', mood_checkins: 'Humeur', maternal_weights: 'Poids', bottles: 'Biberons', breastfeeds: 'Tétées',
   diapers: 'Couches', sleeps: 'Sommeil', meals: 'Repas', children: 'Enfants', pregnancies: 'Grossesses', appointments: 'Rendez-vous',
-  documents: 'Documents', reminders: 'Rappels', assistant_conversations: 'Conversations avec l’assistant', parent_sleep_logs: 'Mon sommeil',
+  documents: 'Documents', reminders: 'Rappels', assistant_conversations: 'Conversations avec l’assistant', parent_sleep_logs: 'Mon sommeil', postpartum_settings: 'Post-partum : réglages et plan de soutien', postpartum_checkins: 'Post-partum : mes points du jour', trusted_contacts: 'Contacts de confiance', postpartum_actions: 'Post-partum : mes démarches', postpartum_shared_status: 'Post-partum : ce que je partage',
 };
 
 const esc = (v: unknown) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));

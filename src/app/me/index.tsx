@@ -53,6 +53,7 @@ export default function MeSpace() {
   const nextAppt = appointments?.find((a) => a.for_parent) ?? appointments?.[0];
 
   const links: { icon: IconName; title: string; subtitle: string; to: string }[] = [
+    { icon: 'sun', title: 'Après la naissance', subtitle: 'Point du jour, plan de soutien, ce que je partage — privé par défaut', to: '/postpartum' },
     { icon: 'heart', title: 'Comment je me sens', subtitle: lastMood ? `Dernier bilan : ${new Date(lastMood.checked_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}` : 'Un bilan privé et facultatif', to: '/me/mood' },
     { icon: 'moon', title: 'Mon sommeil', subtitle: lastNight ? `${nightLabel(lastNight.log_date)}${lastNightMinutes != null ? ` · ${formatDuration(lastNightMinutes)}` : ''}` : 'Vos nuits, siestes et fatigue — privé, sans objectif', to: '/me/sleep' },
     { icon: 'circle', title: 'Mon cycle', subtitle: 'Règles, symptômes et tests — estimations sans garantie', to: '/cycle' },
@@ -75,6 +76,10 @@ export default function MeSpace() {
         {links.map((l) => (
           <ListRow key={l.to} icon={l.icon} title={l.title} subtitle={l.subtitle} onPress={() => router.push(l.to as never)} />
         ))}
+      </Card>
+
+      <Card onPress={() => router.push('/postpartum/partner')} accessibilityLabel="Espace conjoint : soutenir après la naissance">
+        <ListRow icon="users" title="Vous êtes le conjoint ou un proche ?" subtitle="Comprendre le post-partum et savoir comment aider" />
       </Card>
 
       <SectionTitle title="Récupérer après la naissance" />

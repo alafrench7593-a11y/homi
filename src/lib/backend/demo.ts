@@ -59,7 +59,21 @@ const OWNER_TABLES: Record<string, string> = {
   // Parcours fertilité : données intimes, strictement personnelles
   intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
   cycle_preferences: 'user_id',
+  // Post-partum : strictement personnel ; seule la ligne de partage est lisible par le foyer (côté serveur)
+  postpartum_settings: 'user_id', postpartum_checkins: 'user_id', trusted_contacts: 'user_id', postpartum_actions: 'user_id', postpartum_shared_status: 'user_id',
 };
+
+/** Même filtre que le déclencheur serveur postpartum_filter_shared. */
+function filterPostpartumShared(settings: Row | undefined, r: Row) {
+  if (!settings || !settings.share_household_id || settings.share_household_id !== r.household_id) {
+    throw new BackendError('Partage non autorisé : choisissez d’abord ce que vous voulez partager, et avec quel foyer.', '42501');
+  }
+  if (!settings.share_rest_need) r.rest_need = null;
+  if (!settings.share_availability) r.availability = null;
+  if (!settings.share_relay_requests) { r.relay_requested = false; r.relay_note = null; }
+  if (!settings.share_summary) r.summary = null;
+  r.updated_at = new Date().toISOString();
+}
 
 interface DemoState {
   users: { id: string; email: string; pw: string }[];
@@ -318,6 +332,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (count >= limit(quota[table])) throw new BackendError('Limite de la version gratuite atteinte.', 'P0001', 'premium_required');
     }
     if (table === 'product_scans') checkScan(r);
+    if (table === 'postpartum_shared_status') filterPostpartumShared(T('postpartum_settings').find((x) => x.user_id === r.user_id), r);
+    if (table === 'postpartum_checkins' && T(table).some((x) => x.user_id === r.user_id && x.checkin_date === r.checkin_date)) {
+      throw new BackendError('Un point est déjà enregistré pour ce jour : modifiez-le plutôt.', '23505');
+    }
     if (table === 'scan_results' || table === 'scan_favorites') {
       const scan = T('product_scans').find((x) => x.id === r.scan_id);
       if (!scan || scan.user_id !== me) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
@@ -456,6 +474,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (table === 'name_votes') return rows;
       return rows.filter((x) => x[ownerCol] === me);
     }
+    // Rendez-vous privés : réservés à la personne qui les a créés
+    if (table === 'appointments') return rows.filter((a) => !a.private_to_creator || a.created_by === me);
     if (['profiles', 'privacy_settings', 'subscriptions', 'notifications', 'assistant_usage'].includes(table)) {
       const col = table === 'profiles' ? 'id' : 'user_id';
       return rows.filter((x) => x[col] === me);
@@ -612,7 +632,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
-        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences'].map((t) => [t, view(t)])),
+        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
           ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents']
@@ -863,11 +883,29 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
           const next = { ...r, ...patch };
           if (next.prepared_ml != null && next.consumed_ml != null && next.consumed_ml > next.prepared_ml) throw new BackendError('La quantité bue ne peut pas dépasser la quantité préparée.');
         }
+        if (table === 'postpartum_shared_status') {
+          const next = { ...r, ...patch };
+          filterPostpartumShared(T('postpartum_settings').find((x) => x.user_id === r.user_id), next);
+          Object.assign(r, next);
+          continue;
+        }
+        if (table === 'postpartum_settings') {
+          const next = { ...r, ...patch };
+          Object.assign(r, next, { updated_at: nowIso() });
+          // Révocation immédiate (déclencheur postpartum_apply_revocation)
+          const shared = T('postpartum_shared_status').find((x) => x.user_id === r.user_id);
+          if (shared) {
+            if (next.share_household_id !== shared.household_id || !(next.share_rest_need || next.share_availability || next.share_relay_requests || next.share_summary)) {
+              state.tables.postpartum_shared_status = T('postpartum_shared_status').filter((x) => x !== shared);
+            } else filterPostpartumShared(next, shared);
+          }
+          continue;
+        }
         if (table === 'parent_sleep_logs') {
           if (r.user_id !== state.session?.userId) continue;
           if (patch.log_date && T(table).some((x) => x.id !== r.id && x.user_id === r.user_id && x.log_date === patch.log_date)) throw new BackendError('Une nuit est déjà enregistrée pour ce jour : modifiez-la plutôt.');
         }
-        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'parent_sleep_logs', 'contraception_methods', 'consultation_questions', 'bottle_timers', 'cycle_preferences'].includes(table) ? { updated_at: nowIso() } : {});
+        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'parent_sleep_logs', 'contraception_methods', 'consultation_questions', 'bottle_timers', 'cycle_preferences', 'postpartum_checkins'].includes(table) ? { updated_at: nowIso() } : {});
       }
       persist();
       return JSON.parse(JSON.stringify(rows)) as R[];

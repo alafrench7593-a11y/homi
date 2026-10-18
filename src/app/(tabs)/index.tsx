@@ -12,6 +12,7 @@ import { Appear } from '@/components/Appear';
 import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
+import { PostpartumHomeCard } from '@/features/postpartum';
 import { ChildToday, CycleCard, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
 import { useActivePregnancy, useActiveSubject, useArticles, useChildren, useNotificationsInbox, usePremium, useProfile } from '@/lib/data/hooks';
 import { greeting } from '@/lib/domain/dates';
@@ -66,6 +67,7 @@ export default function Home() {
     return articleOfDay(list);
   }, [articles, journeys, subject, pregnancy, child, children, main]);
 
+  const youngestMonths = children?.length ? Math.min(...children.map((c) => childAge(c.birth_date).months)) : null;
   const quick = quickActionsFor(subject.type === 'pregnancy' ? 'pregnancy' : subject.type === 'child' ? 'child' : subject.type === 'family' ? 'family' : 'me', journeys);
 
   return (
@@ -114,6 +116,9 @@ export default function Home() {
 
         {/* 4. Prochain rappel ou rendez-vous */}
         <Appear kind="soft" delay={0.42}><UpcomingCard /></Appear>
+
+        {/* 4 bis. Après la naissance (mère : invitation douce ; conjoint : ce qu'elle a choisi de partager) */}
+        <Appear kind="soft" delay={0.46}><PostpartumHomeCard journeys={profile?.journeys ?? []} youngestChildMonths={youngestMonths} /></Appear>
 
         {/* 5. Article du jour */}
         {article && (

@@ -1,9 +1,10 @@
 /** Rendez-vous du foyer : à venir et passés, ajout / modification / suppression, rappel facultatif. */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { EmptyStateCard } from '@/components/ui-extra';
-import { Banner, Button, Card, Chip, Field, haptic, Icon, type IconName, Row, SectionTitle, Segmented, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, Icon, type IconName, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { backend, eq } from '@/lib/backend';
 import { ensureHousehold, useActivePregnancy, useAppointments, useChildren, useHouseholdId, useInvalidate, useReminders } from '@/lib/data/hooks';
@@ -36,14 +37,14 @@ const LEADS: { value: string; label: string }[] = [
 type Concern = 'me' | 'pregnancy' | `child:${string}`;
 
 interface Draft {
-  id: string | null; kind: AppointmentKind; title: string; date: string; time: string; location: string; notes: string; questions: string; concern: Concern; lead: ReminderLead;
+  id: string | null; kind: AppointmentKind; title: string; date: string; time: string; location: string; notes: string; questions: string; concern: Concern; lead: ReminderLead; private: boolean;
 }
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const fmtWhen = (iso: string) => new Date(iso).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
 function emptyDraft(concern: Concern): Draft {
-  return { id: null, kind: 'consultation', title: '', date: '', time: '', location: '', notes: '', questions: '', concern, lead: 60 };
+  return { id: null, kind: 'consultation', title: '', date: '', time: '', location: '', notes: '', questions: '', concern, lead: 60, private: false };
 }
 
 export default function AppointmentsScreen() {
@@ -75,6 +76,12 @@ export default function AppointmentsScreen() {
   const concernLabel = (a: Appointment) =>
     a.child_id ? children?.find((c) => c.id === a.child_id)?.first_name ?? 'Enfant' : a.pregnancy_id ? 'Grossesse' : a.for_parent ? 'Moi' : null;
 
+  // Ouverture directe depuis l'espace post-partum : nouveau rendez-vous postnatal, privé par défaut
+  const params = useLocalSearchParams<{ new?: string }>();
+  useEffect(() => {
+    if (params.new === 'postnatal') setDraft({ ...emptyDraft('me'), kind: 'postnatal', private: true });
+  }, [params.new]);
+
   function openNew() {
     setErrors({});
     setDraft(emptyDraft(pregnancy ? 'pregnancy' : 'me'));
@@ -86,7 +93,7 @@ export default function AppointmentsScreen() {
     setDraft({
       id: a.id, kind: a.kind, title: a.title, date: toFrDate(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`), time: `${pad(d.getHours())}h${pad(d.getMinutes())}`,
       location: a.location_label ?? '', notes: a.notes ?? '', questions: a.questions.join('\n'),
-      concern: a.child_id ? `child:${a.child_id}` : a.pregnancy_id ? 'pregnancy' : 'me', lead: leadOf(reminderFor(a.id), a.starts_at),
+      concern: a.child_id ? `child:${a.child_id}` : a.pregnancy_id ? 'pregnancy' : 'me', lead: leadOf(reminderFor(a.id), a.starts_at), private: !!a.private_to_creator,
     });
   }
 
@@ -110,6 +117,8 @@ export default function AppointmentsScreen() {
       location_label: draft.location.trim() || null, notes: draft.notes.trim() || null,
       questions: draft.questions.split('\n').map((q) => q.trim()).filter(Boolean),
       for_parent: draft.concern === 'me', pregnancy_id: draft.concern === 'pregnancy' ? pregnancy?.id ?? null : null, child_id: childId,
+      // Un rendez-vous personnel peut rester privé (non visible du foyer) ; ceux d'un enfant restent partagés
+      private_to_creator: draft.concern === 'me' && draft.private,
     };
     setSaving(true);
     try {
@@ -198,6 +207,15 @@ export default function AppointmentsScreen() {
                 <Row wrap>{concerns.map((c) => <Chip key={c.value} label={c.label} selected={draft.concern === c.value} onPress={() => set('concern', c.value)} />)}</Row>
               </>
             )}
+            {draft.concern === 'me' ? (
+              <Row style={{ alignItems: 'flex-start' }}>
+                <View style={{ flex: 1 }}>
+                  <Text weight="medium">Visible uniquement par moi</Text>
+                  <Text variant="caption" muted>Sinon, ce rendez-vous apparaît aux membres du foyer qui ont accès à la santé.</Text>
+                </View>
+                <Toggle label="Visible uniquement par moi" value={draft.private} onChange={(v) => set('private', v)} />
+              </Row>
+            ) : null}
             <Field label="Lieu" optional value={draft.location} onChangeText={(v) => set('location', v)} maxLength={160} placeholder="Maternité, cabinet…" />
             <Field label="Questions à poser" optional value={draft.questions} onChangeText={(v) => set('questions', v)} multiline hint="Une question par ligne." style={{ minHeight: 90, textAlignVertical: 'top' }} />
             <Field label="Notes" optional value={draft.notes} onChangeText={(v) => set('notes', v)} multiline maxLength={4000} style={{ minHeight: 70, textAlignVertical: 'top' }} />

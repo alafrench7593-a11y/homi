@@ -1,6 +1,6 @@
 /** Types des parcours fertilité (alignés sur supabase/migrations/20261016000100_fertility.sql). */
 
-export type FertilityJourney = 'ttc' | 'avoid';
+export type FertilityJourney = 'ttc' | 'avoid' | 'postpartum';
 
 /** Rapport noté (parcours « concevoir ») : PRIVÉ, visible uniquement par la personne qui l'a saisi. */
 export interface IntercourseLog { id: string; user_id: string; occurred_on: string; note: string | null; created_at: string }
