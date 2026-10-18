@@ -244,11 +244,14 @@ interface FieldProps extends TextInputProps {
   error?: string | null;
   optional?: boolean;
   suffix?: string;
+  /** Mot de passe : bouton afficher / masquer. */
+  revealable?: boolean;
 }
 
-export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ label, hint, error, optional, suffix, style, ...rest }, ref) {
+export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ label, hint, error, optional, suffix, style, revealable, secureTextEntry, onFocus, onBlur, ...rest }, ref) {
   const t = useTheme();
   const [focused, setFocused] = React.useState(false);
+  const [shown, setShown] = React.useState(false);
   return (
     <View style={{ gap: 6 }}>
       <Text variant="label">
@@ -262,12 +265,24 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
           accessibilityLabel={label}
           accessibilityHint={hint}
           maxFontSizeMultiplier={1.6}
-          onFocus={(e) => { setFocused(true); rest.onFocus?.(e); }}
-          onBlur={(e) => { setFocused(false); rest.onBlur?.(e); }}
           style={[{ flex: 1, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, minHeight: MIN_TOUCH, paddingVertical: 10 }, style as StyleProp<TextStyle>]}
           {...rest}
+          secureTextEntry={secureTextEntry && !shown}
+          onFocus={(e) => { setFocused(true); onFocus?.(e); }}
+          onBlur={(e) => { setFocused(false); onBlur?.(e); }}
         />
         {suffix ? <Text muted>{suffix}</Text> : null}
+        {revealable ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={shown ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+            onPress={() => setShown((v) => !v)}
+            hitSlop={8}
+            style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Icon name={shown ? 'eye-off' : 'eye'} size={20} color={t.colors.textMuted} />
+          </Pressable>
+        ) : null}
       </View>
       {error ? (
         <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }} accessibilityLiveRegion="polite">

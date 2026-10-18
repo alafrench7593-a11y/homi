@@ -82,12 +82,21 @@ export function useHouseholdMembers() {
   return useRows<HouseholdMember>(['members', hid ?? ''], hid ? { table: 'household_members', filters: [eq('household_id', hid)] } : null);
 }
 
-export async function ensureHousehold(name = 'Ma famille'): Promise<string> {
+/**
+ * Foyer de la personne connectée. Depuis l'étape 1, il est créé à l'inscription (déclencheur) :
+ * on le récupère, on le rattrape s'il manque (ensure_my_account) et on le renomme si un nom est choisi.
+ */
+export async function ensureHousehold(name?: string): Promise<string> {
   const session = await backend.auth.getSession();
   if (!session) throw new Error('Connexion requise');
   const existing = await backend.select<HouseholdMember>({ table: 'household_members', filters: [eq('user_id', session.userId)], order: [{ col: 'joined_at' }] });
-  if (existing.length) return existing[0].household_id;
-  return backend.rpc<string>('create_household', { p_name: name });
+  let hid = existing[0]?.household_id;
+  if (!hid) hid = (await backend.rpc<{ household_id: string }>('ensure_my_account')).household_id;
+  if (name) {
+    const [h] = await backend.select<Household & { auto_created?: boolean }>({ table: 'households', filters: [eq('id', hid)] });
+    if (h?.auto_created && h.created_by === session.userId && h.name !== name) await backend.update('households', { name }, [eq('id', hid)]);
+  }
+  return hid;
 }
 
 // ---------------------------------------------------------------- grossesse & enfants

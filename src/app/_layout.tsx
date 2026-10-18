@@ -26,6 +26,7 @@ import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router';
 import { LiquidAurora } from '@/components/LiquidAurora';
 import { VideoBackdrop } from '@/components/VideoBackdrop';
+import { DemoBar } from '@/components/DemoBar';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 configureNotifications();
@@ -122,6 +123,7 @@ export default function RootLayout() {
               <WebFrame>
                 <Backdrop />
                 <Navigator />
+                <DemoBar />
               </WebFrame>
             </ToastProvider>
           </ThemeProvider>

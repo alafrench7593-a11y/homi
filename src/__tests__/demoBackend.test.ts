@@ -24,7 +24,7 @@ describe('moteur local : parcours essentiels', () => {
   });
 
   it('création d’une grossesse de jumeaux et de plusieurs enfants', async () => {
-    household = await db.rpc<string>('create_household', { p_name: 'Test' });
+    household = (await db.rpc<{ household_id: string }>('ensure_my_account')).household_id; // foyer créé à l’inscription (étape 1)
     const [p] = await db.insert<Pregnancy>('pregnancies', { household_id: household, due_date: '2027-01-20', multiplicity: 'twins', status: 'active' });
     await db.insert('expected_babies', [{ pregnancy_id: p.id, position: 1, nickname: 'A' }, { pregnancy_id: p.id, position: 2, nickname: 'B' }]);
     expect(await db.select({ table: 'expected_babies', filters: [eq('household_id', household)] })).toHaveLength(2);

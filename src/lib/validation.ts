@@ -4,15 +4,21 @@ import { frToISO } from './domain/dates';
 
 export const emailSchema = z.string().trim().min(1, 'Indiquez votre adresse e-mail.').email('Cette adresse e-mail ne semble pas valide.');
 
+/** Mot de passe : 8 caractères minimum, au moins une lettre et un chiffre (règles affichées en direct). */
 export const passwordSchema = z
   .string()
-  .min(10, 'Au moins 10 caractères.')
-  .regex(/[a-z]/, 'Ajoutez au moins une lettre minuscule.')
-  .regex(/[A-Z]/, 'Ajoutez au moins une lettre majuscule.')
+  .min(8, 'Au moins 8 caractères.')
+  .regex(/\p{L}/u, 'Ajoutez au moins une lettre.')
   .regex(/[0-9]/, 'Ajoutez au moins un chiffre.');
 
 export const signUpSchema = z
-  .object({ email: emailSchema, password: passwordSchema, confirm: z.string(), terms: z.literal(true, { message: 'Acceptez les conditions pour continuer.' }) })
+  .object({
+    email: emailSchema,
+    password: passwordSchema,
+    confirm: z.string(),
+    adult: z.literal(true, { message: 'Vous devez avoir 18 ans ou plus pour créer un compte.' }),
+    terms: z.literal(true, { message: 'Acceptez les conditions d’utilisation et la politique de confidentialité pour continuer.' }),
+  })
   .refine((v) => v.password === v.confirm, { path: ['confirm'], message: 'Les deux mots de passe ne correspondent pas.' });
 
 export const signInSchema = z.object({ email: emailSchema, password: z.string().min(1, 'Indiquez votre mot de passe.') });

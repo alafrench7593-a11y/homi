@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, Text } from '@/components/ui';
+import { ResendButton } from '@/features/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { emailSchema } from '@/lib/validation';
 
@@ -19,7 +20,7 @@ export default function Forgot() {
       await backend.auth.resetPassword(parsed.data);
       setSent(true); // même réponse que le compte existe ou non (pas d'énumération des comptes)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Envoi impossible.');
+      setError(e instanceof Error && e.message ? e.message : 'Envoi impossible. Réessayez.');
     } finally {
       setLoading(false);
     }
@@ -28,13 +29,16 @@ export default function Forgot() {
   return (
     <Screen back title="Mot de passe oublié" subtitle="Recevez un lien pour choisir un nouveau mot de passe.">
       {sent ? (
-        <Banner tone="success" title="C’est envoyé">
-          {isDemo ? 'En mode démonstration, aucun e-mail n’est envoyé. Créez un nouveau compte local si besoin.' : `Si un compte existe pour ${email}, vous allez recevoir un e-mail dans quelques minutes.`}
-        </Banner>
+        <>
+          <Banner tone="success" title="C’est envoyé">
+            {isDemo ? 'En mode démonstration, aucun e-mail n’est envoyé. Créez un nouveau compte local si besoin.' : `Si un compte existe pour ${email}, vous allez recevoir un e-mail dans quelques minutes. Ouvrez le lien depuis ce téléphone.`}
+          </Banner>
+          {!isDemo ? <ResendButton onResend={() => backend.auth.resetPassword(email.trim())} /> : null}
+        </>
       ) : (
         <>
-          <Field label="Adresse e-mail" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" error={error} />
-          <Button label="Recevoir le lien" size="lg" loading={loading} onPress={submit} />
+          <Field label="Adresse e-mail" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" error={error} onSubmitEditing={submit} />
+          <Button label="Recevoir le lien" size="lg" loading={loading} disabled={loading} onPress={submit} />
           <Text variant="small" muted>Pensez à vérifier vos courriers indésirables.</Text>
         </>
       )}

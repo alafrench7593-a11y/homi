@@ -1,5 +1,5 @@
 /** Écran de lancement : oriente vers l'accueil, l'onboarding ou la connexion. */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/lib/auth';
@@ -10,13 +10,19 @@ import { StarField } from '@/components/StarField';
 import { Text } from '@/components/ui';
 import { Aurora } from '@/components/Aurora';
 import { BRAND } from '@/config/brand';
+import { peekPendingInvite } from '@/lib/authFlow';
 
 export default function Launch() {
   const { session, ready } = useAuth();
   const { data: profile, isLoading, isError } = useProfile();
   const t = useTheme();
+  const [invite, setInvite] = useState<string | null | undefined>(undefined);
+  useEffect(() => { if (session) peekPendingInvite().then(setInvite); }, [session]);
 
   if (ready && !session) return <Redirect href="/welcome" />;
+  // Invitation reçue avant d'avoir un compte : on la propose dès la première connexion
+  if (ready && session && invite) return <Redirect href={{ pathname: '/settings/family', params: { code: invite } }} />;
+  if (ready && session && invite === undefined) return <View style={{ flex: 1, backgroundColor: '#1C1128' }} />;
   if (ready && session && !isLoading && (!profile || !profile.onboarding_completed) && !isError) return <Redirect href="/onboarding" />;
   if (ready && session && (profile?.onboarding_completed || isError)) return <Redirect href="/(tabs)" />;
 

@@ -621,6 +621,19 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         community: { posts: T('posts').filter((p) => p.author_id === me), comments: T('comments').filter((c) => c.author_id === me) },
       };
     },
+    ensure_my_account: () => {
+      if (!state.session) throw new BackendError('Connexion requise', '42501');
+      return ensureAccount(uid());
+    },
+    record_signup_consents: (a) => {
+      if (!state.session) throw new BackendError('Connexion requise', '42501');
+      if (a.p_is_adult !== true) throw new BackendError('Vous devez avoir 18 ans ou plus', '22023');
+      const at = nowIso();
+      for (const [purpose, version] of [['terms', a.p_terms_version], ['privacy_policy', a.p_privacy_version], ['adult_confirmation', a.p_terms_version]] as const) {
+        T('consents').push({ id: uuid(), user_id: uid(), purpose, granted: true, version: String(version), created_at: at });
+      }
+      return at;
+    },
     load_sample_family: () => {
       buildSampleFamily(uid(), T, rpcs.create_household as (a: Row) => string);
       return null;
@@ -703,11 +716,28 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     },
   };
 
+  /** Comme le déclencheur Supabase : profil, réglages ET foyer, créés ensemble à l'inscription. */
   function ensureProfile(userId: string) {
+    ensureAccount(userId);
+  }
+
+  function ensureAccount(userId: string): { profile_created: boolean; household_created: boolean; household_id: string } {
+    let profileCreated = false;
     if (!T('profiles').some((p) => p.id === userId)) {
+      profileCreated = true;
       T('profiles').push({ id: userId, display_name: null, journeys: [], interests: [], locale: 'fr', timezone: 'Europe/Paris', onboarding_completed: false, home_shortcuts: ['bottle', 'diaper', 'sleep', 'question'], hide_weight_module: false, theme: 'system' });
       T('privacy_settings').push({ user_id: userId, analytics_enabled: false, crash_reports_enabled: false, ai_history_enabled: true, community_visible: true, retention_months: 36 });
     }
+    const member = T('household_members').find((m) => m.user_id === userId);
+    if (member) return { profile_created: profileCreated, household_created: false, household_id: String(member.household_id) };
+    const id = uuid();
+    T('households').push({ id, name: 'Ma famille', created_by: userId, created_at: nowIso(), auto_created: true });
+    T('household_members').push({
+      household_id: id, user_id: userId, role: 'owner', joined_at: nowIso(),
+      can_view: ['daily', 'health', 'documents', 'pregnancy', 'lists', 'names', 'profile'],
+      can_edit: ['daily', 'health', 'documents', 'pregnancy', 'lists', 'names', 'profile'],
+    });
+    return { profile_created: profileCreated, household_created: true, household_id: id };
   }
 
   function setSession(s: Session | null) {
@@ -726,6 +756,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       onChange(cb) {
         listeners.add(cb);
         return () => listeners.delete(cb);
+      },
+      async resendConfirmation() {
+        // Aucun e-mail en mode démonstration : le compte est actif tout de suite
+      },
+      async signInWithProvider(provider) {
+        throw new BackendError(`La connexion avec ${provider === 'apple' ? 'Apple' : 'Google'} n’est pas disponible en mode démonstration : aucune donnée ne quitte cet appareil.`);
       },
       async signUp(email, password) {
         await load();

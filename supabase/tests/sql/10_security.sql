@@ -19,12 +19,12 @@ select tests.ok((select count(*) from public.profiles) = 1, 'isolation : Zoé ne
 select tests.ok(tests.count('select * from public.children') = 0, 'isolation : Zoé ne voit aucun enfant d''un autre foyer');
 select tests.ok(tests.count('select * from public.pregnancies') = 0, 'isolation : Zoé ne voit aucune grossesse d''un autre foyer');
 select tests.ok(tests.count('select * from public.bottles') = 0, 'isolation : Zoé ne voit aucun biberon d''un autre foyer');
-select tests.ok(tests.count('select * from public.households') = 0, 'isolation : Zoé ne voit aucun foyer étranger');
+select tests.ok(tests.count('select * from public.households where created_by <> auth.uid()') = 0, 'isolation : Zoé ne voit aucun foyer étranger');
 
 -- Création d'un foyer, d'une grossesse et de plusieurs enfants
 create temp table zoe_ctx as select public.create_household('Foyer de Zoé') as hid;
 grant select on zoe_ctx to authenticated;
-select tests.ok(tests.count('select * from public.household_members where user_id = auth.uid() and role = ''owner''') = 1, 'foyer : la créatrice devient propriétaire');
+select tests.ok(tests.count('select * from public.household_members where user_id = auth.uid() and role = ''owner'' and household_id = (select hid from zoe_ctx)') = 1, 'foyer : la créatrice devient propriétaire');
 
 insert into public.pregnancies (household_id, carrier_user_id, due_date, multiplicity)
   select hid, auth.uid(), current_date + 150, 'single' from zoe_ctx;

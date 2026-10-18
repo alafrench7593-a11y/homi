@@ -1,5 +1,5 @@
 /** Première ouverture : court, doux, et ne demande que l'utile. */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
@@ -18,6 +18,10 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { palette, radius, spacing } from '@/theme/tokens';
 import { JOURNEY_OPTIONS, reminderSuggestions } from '@/lib/domain/journeys';
 import { BRAND } from '@/config/brand';
+import { eq } from '@/lib/backend';
+import { LEGAL_VERSIONS } from '@/lib/authFlow';
+import { CheckRow, LegalLink } from '@/features/auth';
+import { clearDraftLocally, loadDraftLocally, restoreDraft, saveDraftLocally, type BottleFeeding, type OnboardingDraft } from '@/lib/onboardingDraft';
 
 const JOURNEYS: { key: Journey; label: string; icon: IconName; hint: string }[] = JOURNEY_OPTIONS;
 
@@ -39,6 +43,50 @@ export default function Onboarding() {
   const [consents, setConsents] = useState<Record<ConsentPurpose, boolean>>({ terms: true, health_data: true, ai_assistant: true, document_reading: false, analytics: false, crash_reports: false, marketing: false });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [bottleFeeding, setBottleFeeding] = useState<BottleFeeding>(null);
+  // Comptes Apple / Google : l'âge et les CGU n'ont pas été demandés à l'inscription
+  const [needSignupConsents, setNeedSignupConsents] = useState(false);
+  const [adult, setAdult] = useState(false);
+  const [terms, setTerms] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const finishing = useRef(false);
+
+  // Reprise : brouillon le plus récent entre l'appareil et le profil
+  useEffect(() => {
+    if (!userId) return;
+    let alive = true;
+    (async () => {
+      const local = await loadDraftLocally(userId);
+      let remote: OnboardingDraft | null = null;
+      try {
+        const [p] = await backend.select<{ onboarding_state: unknown }>({ table: 'profiles', filters: [eq('id', userId)] });
+        remote = restoreDraft((p?.onboarding_state as object) ?? null);
+      } catch { /* hors ligne : brouillon local */ }
+      try {
+        const terms = await backend.select({ table: 'consents', filters: [eq('user_id', userId), eq('purpose', 'terms'), eq('granted', true)], limit: 1 });
+        if (alive) setNeedSignupConsents(!terms.length);
+      } catch { /* on redemandera à l'envoi si besoin */ }
+      const d = [local, remote].filter(Boolean).sort((a, b) => String(b!.savedAt ?? '').localeCompare(String(a!.savedAt ?? '')))[0];
+      if (alive && d) {
+        setName(d.name); setJourneys(d.journeys); setPregnancy(d.pregnancy); setChildren(d.children.length ? d.children : [emptyChild()]);
+        setCErrors(d.children.map(() => ({}))); setReminders(d.reminders); setConsents(d.consents); setBottleFeeding(d.bottleFeeding ?? null);
+        setStep(d.step === 'feeding' ? 'reminders' : (d.step as Step));
+      }
+      if (alive) setHydrated(true);
+    })();
+    return () => { alive = false; };
+  }, [userId]);
+
+  // Sauvegarde à chaque étape et à chaque modification (après une courte pause)
+  useEffect(() => {
+    if (!hydrated || !userId || finishing.current) return;
+    const id = setTimeout(() => {
+      const d: OnboardingDraft = { v: 1, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, savedAt: new Date().toISOString() };
+      void saveDraftLocally(userId, d);
+      backend.update('profiles', { onboarding_state: d }, [eq('id', userId)]).catch(() => undefined);
+    }, 500);
+    return () => clearTimeout(id);
+  }, [hydrated, userId, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding]);
 
   const needsPregnancy = journeys.includes('pregnant');
   const needsChildren = journeys.some((j) => j === 'newborn' || j === 'child' || j === 'family');
@@ -64,16 +112,36 @@ export default function Onboarding() {
   }
 
   async function finish() {
+    if (finishing.current) return;
+    if (needSignupConsents && (!adult || !terms)) return setError('Pour continuer, confirmez avoir 18 ans ou plus et acceptez les conditions d’utilisation et la politique de confidentialité.');
     if (!consents.health_data) return setError('Sans votre accord pour les données de santé, l’application ne peut pas enregistrer de suivi. Vous pourrez retirer cet accord à tout moment.');
+    finishing.current = true;
     setSaving(true);
     setError(null);
     try {
-      await backend.insert('consents', (Object.entries(consents) as [ConsentPurpose, boolean][]).map(([purpose, granted]) => ({ user_id: userId, purpose, granted })));
-      const hid = await ensureHousehold(name ? `Famille de ${name}` : 'Ma famille');
-      if (needsPregnancy) await createPregnancy(hid, userId, pregnancy);
-      if (needsChildren) for (const c of children) if (c.first_name.trim()) await createChild(hid, c);
+      if (needSignupConsents) {
+        await backend.rpc('record_signup_consents', { p_terms_version: LEGAL_VERSIONS.terms, p_privacy_version: LEGAL_VERSIONS.privacy, p_is_adult: true });
+        setNeedSignupConsents(false);
+      }
+      await backend.insert('consents', (Object.entries(consents) as [ConsentPurpose, boolean][]).filter(([purpose]) => purpose !== 'terms').map(([purpose, granted]) => ({ user_id: userId, purpose, granted })));
+      const hid = await ensureHousehold(name ? `Famille de ${name}` : undefined);
+      // Nouvel essai après une erreur : on ne recrée pas ce qui existe déjà
+      if (needsPregnancy) {
+        const active = await backend.select({ table: 'pregnancies', filters: [eq('household_id', hid), eq('status', 'active')], limit: 1 });
+        if (!active.length) await createPregnancy(hid, userId, pregnancy);
+      }
+      if (needsChildren) {
+        const existing = await backend.select<{ first_name: string; birth_date: string }>({ table: 'children', filters: [eq('household_id', hid)] });
+        for (const c of children) {
+          if (!c.first_name.trim()) continue;
+          const v = validateChild(c);
+          if (existing.some((e) => e.first_name.trim().toLowerCase() === c.first_name.trim().toLowerCase() && e.birth_date === v.birth)) continue;
+          await createChild(hid, c);
+        }
+      }
       await backend.update('privacy_settings', { analytics_enabled: consents.analytics, crash_reports_enabled: consents.crash_reports }, [{ col: 'user_id', op: 'eq', value: userId }]);
-      await backend.update('profiles', { display_name: name.trim() || null, journeys, onboarding_completed: true }, [{ col: 'id', op: 'eq', value: userId }]);
+      await backend.update('profiles', { display_name: name.trim() || null, journeys, onboarding_completed: true, onboarding_state: null }, [{ col: 'id', op: 'eq', value: userId }]);
+      await clearDraftLocally(userId);
       const chosen = reminderSuggestions(journeys).filter((r) => reminders.includes(r.key));
       if (chosen.length) {
         await backend.insert('reminders', chosen.map((r) => ({ user_id: userId, household_id: hid, category: r.category, title: r.title, body: r.body, schedule: r.schedule, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris', enabled: true, deep_link: r.deep_link })));
@@ -84,7 +152,8 @@ export default function Onboarding() {
       toast('Bienvenue ! Votre espace est prêt.');
       router.replace('/(tabs)');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Enregistrement impossible.');
+      finishing.current = false;
+      setError(e instanceof Error && e.message ? e.message : 'Enregistrement impossible. Réessayez : rien ne sera créé en double.');
     } finally {
       setSaving(false);
     }
@@ -216,6 +285,18 @@ export default function Onboarding() {
       {step === 'consents' && (
         <View style={{ gap: spacing.md }}>
           <Text variant="title" accessibilityRole="header">Vos données, vos choix</Text>
+          {needSignupConsents ? (
+            <Card>
+              <CheckRow label="J’ai 18 ans ou plus" checked={adult} onChange={setAdult}><Text variant="small">J’ai 18 ans ou plus. *</Text></CheckRow>
+              <CheckRow label="J’accepte les conditions d’utilisation et la politique de confidentialité" checked={terms} onChange={setTerms}>
+                <Text variant="small">J’accepte les conditions d’utilisation et la politique de confidentialité. *</Text>
+              </CheckRow>
+              <Row wrap style={{ paddingLeft: 34 }}>
+                <LegalLink doc="terms">Conditions d’utilisation</LegalLink>
+                <LegalLink doc="privacy">Confidentialité</LegalLink>
+              </Row>
+            </Card>
+          ) : null}
           <Text muted>Vos informations sont privées. Personne d’autre ne peut les voir, sauf les personnes que vous invitez et uniquement ce que vous partagez.</Text>
           {([
             ['health_data', 'Données de santé et de suivi', 'Nécessaire pour enregistrer grossesse, mesures, suivi du bébé. Retirable à tout moment.', true],

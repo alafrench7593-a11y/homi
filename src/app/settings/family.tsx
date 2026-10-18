@@ -4,7 +4,9 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { Share, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useAuth } from '@/lib/auth';
+import { extractInviteCode, savePendingInvite, takePendingInvite } from '@/lib/authFlow';
 import * as Linking from 'expo-linking';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, Chip, Divider, Field, Loading, Row, Segmented, SectionTitle, Text } from '@/components/ui';
@@ -123,7 +125,36 @@ function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: 
   );
 }
 
+/**
+ * Lien d'invitation ouvert sans être connecté·e : le code est gardé pendant l'inscription
+ * (ou la connexion), puis proposé automatiquement ensuite.
+ */
+function InvitedWithoutAccount({ code }: { code: string | null }) {
+  useEffect(() => { if (code) void savePendingInvite(code); }, [code]);
+  return (
+    <Screen back title="Invitation" subtitle="Rejoindre un foyer sur Toi & Moi">
+      <Card tone="lavender">
+        <Text weight="bold">Vous êtes invité·e à rejoindre un foyer</Text>
+        <Text variant="small" style={{ marginTop: 4 }}>{code ? 'Créez votre compte ou connectez-vous : l’invitation vous attendra, puis vous la confirmerez en un geste.' : 'Ce lien d’invitation est incomplet. Demandez à la personne qui vous a invité·e de vous le renvoyer.'}</Text>
+      </Card>
+      {code ? (
+        <>
+          <Button label="Créer mon compte" size="lg" onPress={() => router.replace('/auth/sign-up')} />
+          <Button label="J’ai déjà un compte" variant="secondary" onPress={() => router.replace('/auth/sign-in')} />
+        </>
+      ) : null}
+    </Screen>
+  );
+}
+
 export default function FamilyScreen() {
+  const { session, ready } = useAuth();
+  const params = useLocalSearchParams<{ code?: string }>();
+  if (ready && !session) return <InvitedWithoutAccount code={typeof params.code === 'string' ? extractInviteCode(params.code) : null} />;
+  return <FamilyScreenSignedIn />;
+}
+
+function FamilyScreenSignedIn() {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
@@ -185,7 +216,9 @@ export default function FamilyScreen() {
     try {
       await accept.mutateAsync(c);
       setCode('');
+      await takePendingInvite(); // l'invitation en attente est utilisée
       toast('Bienvenue dans ce foyer !');
+      if (params.code) router.replace('/'); // arrivé·e par le lien : on continue (onboarding ou accueil)
     } catch (e) {
       setCodeError(friendlyError(e));
     }
@@ -228,6 +261,17 @@ export default function FamilyScreen() {
 
   return (
     <Screen back title="Famille & partage" subtitle="Suivez à plusieurs, chacun avec les accès choisis.">
+      {params.code && !isDemo ? (
+        <Card tone="lavender">
+          <Text weight="bold">Rejoindre le foyer qui vous a invité·e ?</Text>
+          <Text variant="small" style={{ marginTop: 4 }}>Vous verrez et modifierez seulement ce que la personne a choisi de partager. Vos données personnelles restent à vous.</Text>
+          <Row wrap style={{ marginTop: spacing.sm }}>
+            <Button label="Rejoindre le foyer" icon="log-in" loading={accept.isPending} onPress={join} />
+            <Button label="Plus tard" variant="ghost" onPress={async () => { await takePendingInvite(); router.replace('/'); }} />
+          </Row>
+          {codeError ? <Text variant="small" color={t.colors.danger} style={{ marginTop: 4 }}>{codeError}</Text> : null}
+        </Card>
+      ) : null}
       {isDemo ? (
         <Banner tone="demo" title="Mode démonstration">{'Un seul compte existe sur cet appareil : vous pouvez préparer une invitation, mais la rejoindre nécessite la connexion à Supabase.'}</Banner>
       ) : null}

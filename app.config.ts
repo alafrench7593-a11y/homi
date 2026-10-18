@@ -13,6 +13,8 @@ const config: ExpoConfig = {
   ios: {
     supportsTablet: false,
     bundleIdentifier: BRAND.bundleId,
+    // « Se connecter avec Apple » (obligatoire sur iOS dès qu'un autre login social est proposé)
+    usesAppleSignIn: true,
     infoPlist: {
       NSCameraUsageDescription:
         'La caméra sert uniquement à scanner un produit ou photographier un document que vous choisissez d’enregistrer.',
@@ -39,6 +41,8 @@ const config: ExpoConfig = {
     'expo-localization',
     'expo-font',
     'expo-sharing',
+    'expo-apple-authentication',
+    'expo-web-browser',
     ['expo-splash-screen', { backgroundColor: '#F6EFE6', image: './assets/icon.png', imageWidth: 120 }],
     ['expo-notifications', { color: '#C97B63' }],
     ['expo-camera', { cameraPermission: 'La caméra sert à scanner un produit ou un document.', recordAudioAndroid: false }],

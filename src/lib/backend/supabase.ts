@@ -1,6 +1,8 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { fetch as expoFetch } from 'expo/fetch';
 import { AppState, Platform } from 'react-native';
+import { friendlyAuthError } from '../authFlow';
+import { authRedirect, socialSignIn } from './socialAuth';
 import { parseSse } from '../../../supabase/functions/_shared/assistant-format';
 import { secureSessionStorage } from './secureStorage';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
@@ -28,19 +30,27 @@ function applyFilters(b: AnyBuilder, filters: Filter[] = []): AnyBuilder {
 function wrap(error: { message: string; code?: string; hint?: string } | null, status?: number): never | void {
   if (!error) return;
   const network = /network|fetch failed|Failed to fetch/i.test(error.message);
-  throw new BackendError(friendly(error.message), network ? 'network' : error.code, error.hint, status);
+  throw new BackendError(friendly(error.message, error.code), network ? 'network' : error.code, error.hint, status);
 }
 
-function friendly(msg: string): string {
+/** Messages de la base : jamais de texte technique brut (souvent en anglais). */
+export function friendly(msg: string, code?: string): string {
   if (/row-level security|permission denied/i.test(msg)) return 'Vous n’avez pas l’autorisation de faire cette action.';
-  if (/Invalid login credentials/i.test(msg)) return 'Adresse e-mail ou mot de passe incorrect.';
-  if (/Email not confirmed/i.test(msg)) return 'Confirmez d’abord votre adresse e-mail grâce au lien reçu.';
-  if (/User already registered/i.test(msg)) return 'Un compte existe déjà avec cette adresse.';
-  if (/Password should/i.test(msg)) return 'Le mot de passe ne respecte pas les règles de sécurité.';
   if (/duplicate key/i.test(msg)) return 'Cet élément existe déjà.';
-  if (/network|fetch/i.test(msg)) return 'Pas de connexion internet pour le moment.';
-  return msg;
+  if (/network|fetch|load failed/i.test(msg)) return 'Pas de connexion internet pour le moment.';
+  if (/violates check constraint|invalid input|out of range|value too long/i.test(msg)) return 'Une des valeurs saisies n’est pas acceptée. Vérifiez le formulaire.';
+  // Messages écrits par nos propres fonctions SQL (en français) : affichés tels quels
+  if (code === 'P0001' || code === '22023' || /[àâçéèêëîïôûùœ’]/i.test(msg)) return msg;
+  return 'Une erreur est survenue. Réessayez dans un instant.';
 }
+
+/** Erreur d'authentification : toujours traduite. */
+function wrapAuth(error: { message: string; code?: string; status?: number; name?: string } | null): void {
+  if (!error) return;
+  const network = error.name === 'AuthRetryableFetchError' || /fetch/i.test(error.message);
+  throw new BackendError(friendlyAuthError(error), network ? 'network' : error.code, undefined, error.status);
+}
+
 
 export function createSupabaseBackend(url: string, anonKey: string): Backend {
   const client: SupabaseClient = createClient(url, anonKey, {
@@ -75,34 +85,46 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
         const { data } = client.auth.onAuthStateChange((_e, s) => cb(toSession(s)));
         return () => data.subscription.unsubscribe();
       },
-      async signUp(email, password) {
+      async signUp(email, password, meta) {
         const { data, error } = await client.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: Platform.OS === 'web' ? undefined : 'toietmoi://auth/callback' },
+          options: { emailRedirectTo: authRedirect('/auth/callback'), data: meta ?? {} },
         });
-        wrap(error);
+        wrapAuth(error);
+        // Adresse déjà inscrite : Supabase répond sans erreur mais sans identité (anti-énumération)
+        if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+          throw new BackendError(friendlyAuthError({ code: 'user_already_exists' }), 'user_already_exists');
+        }
         return { needsConfirmation: !data.session };
+      },
+      async resendConfirmation(email) {
+        const { error } = await client.auth.resend({ type: 'signup', email, options: { emailRedirectTo: authRedirect('/auth/callback') } });
+        wrapAuth(error);
+      },
+      async signInWithProvider(provider) {
+        await socialSignIn(client, provider);
       },
       async signIn(email, password) {
         const { error } = await client.auth.signInWithPassword({ email, password });
-        wrap(error);
+        wrapAuth(error);
       },
       async signOut(allDevices) {
         const { error } = await client.auth.signOut({ scope: allDevices ? 'global' : 'local' });
-        wrap(error);
+        // Même si le serveur est injoignable, la session locale est supprimée
+        if (error) await client.auth.signOut({ scope: 'local' }).catch(() => undefined);
       },
       async resetPassword(email) {
-        const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: 'toietmoi://auth/reset' });
-        wrap(error);
+        const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: authRedirect('/auth/reset') });
+        wrapAuth(error);
       },
       async updatePassword(password) {
         const { error } = await client.auth.updateUser({ password });
-        wrap(error);
+        wrapAuth(error);
       },
       async exchangeCode(code) {
         const { error } = await client.auth.exchangeCodeForSession(code);
-        wrap(error);
+        wrapAuth(error);
       },
     },
     storage: {

@@ -8,7 +8,7 @@ Date : 18 octobre 2026. Version auditée : commit `197d56b`.
 - **Pas de simulateur iOS ni Android dans l'environnement de travail** (ni macOS, ni SDK Android). Tout ce qui est propre au téléphone est marqué « à vérifier sur téléphone ».
 
 **Gravité** : 🔴 bloquant · 🟠 gênant · 🟡 cosmétique.
-**Statut** : à corriger, avec l'étape prévue (1 à 4).
+**Statut** : à corriger, avec l'étape prévue (1 à 4). Les points corrigés sont marqués ✅ dans la section « Suivi des corrections » en fin de document.
 
 ---
 
@@ -81,3 +81,28 @@ Dettes notées lors des étapes précédentes :
 - `bottle_timers` absent de l'export RGPD ;
 - pas de notification au coparent quand un minuteur est lancé ;
 - le bouton « Copier » nécessite `expo-clipboard`.
+
+---
+
+## Suivi des corrections
+
+### Étape 1 — inscription et connexion (terminée le 18/10/2026)
+
+| # | Statut | Correction | Preuve |
+|---|---|---|---|
+| B1 | ✅ | `toietmoi://auth/reset`, `toietmoi://auth/callback`, `toietmoi://**` et les adresses web ajoutés à `additional_redirect_urls`. L'adresse de retour est calculée selon la plateforme : schéma de l'app sur téléphone, URL du site sur le web. **À recopier dans le tableau de bord Supabase de production (SETUP.md).** | parcours D (`e2e/etape1_auth.py`) |
+| B2 | ✅ | `auth/reset` vérifie le lien (code ou session) avant d'afficher le formulaire, sinon « Ce lien n'est plus valable » + nouveau lien. Confirmation du mot de passe ajoutée. | parcours D |
+| B3 | ✅ | `parseAuthCallback` lit la requête et le fragment `#` : écran « Lien expiré » avec renvoi d'un nouveau lien. | `authFlow.test.ts`, parcours B |
+| B4 | ✅ | Bouton « Renvoyer l'e-mail » avec compte à rebours de 60 s (inscription, lien expiré, mot de passe oublié). | `authFlow.test.ts`, parcours A |
+| B5 | ✅ | `friendlyAuthError` couvre 14 cas, avec un message générique en français par défaut. Les erreurs de base de données ne renvoient plus le texte brut. | 14 cas dans `authFlow.test.ts`, parcours C |
+| B6 | ✅ | 8 caractères, une lettre et un chiffre, règles cochées en direct, bouton afficher/masquer, validation de l'e-mail au départ du champ. | parcours A |
+| B7 | ✅ | Verrou contre le double envoi (bouton et touche Entrée) sur l'inscription, la connexion et le nouveau mot de passe. | parcours A : une seule inscription malgré 3 envois |
+| B8 | ✅ | Apple : natif sur iPhone (bouton officiel, jeton + nonce), par navigateur ailleurs. Google : navigateur sécurisé (OAuth + PKCE). **Fournisseurs à activer dans Supabase, essai réel sur téléphone à faire.** | code (`socialAuth.ts`) |
+| B9 | ✅ | Le déclencheur crée profil, réglages et foyer dans la même transaction. `ensure_my_account()` les rattrape à chaque connexion. | `37_account_bootstrap.sql` (52 contrôles) |
+| B10 | ✅ | La fin d'onboarding ne recrée ni la grossesse ni les enfants déjà enregistrés, et un verrou empêche le double envoi. | code + parcours A (un seul foyer, un seul enfant) |
+| B11 | ✅ | Brouillon sauvegardé à chaque modification, sur l'appareil et dans `profiles.onboarding_state`, repris à la réouverture puis effacé à la fin. | parcours A (rechargement à l'étape « enfants ») |
+| B12 | ✅ | Cases « J'ai 18 ans ou plus » et CGU / confidentialité (avec liens), horodatées par le déclencheur à l'inscription. Pour Apple et Google, l'accord est demandé à l'onboarding (`record_signup_consents`). | `38_signup_consents_metadata.sql`, parcours A |
+| B13 | ✅ | Lien ouvert sans compte : écran d'invitation, code gardé pendant l'inscription, puis proposé à la première connexion. Le foyer automatique vide de la personne invitée est supprimé quand elle rejoint le foyer. | parcours E, `37_account_bootstrap.sql` |
+| B14 | ✅ | « Découvrir sans compte » sur l'écran d'accueil. La démonstration tourne sur l'appareil (aucune requête vers la vraie base), avec un bandeau « Démonstration » permanent et un lien « Quitter ». | parcours F |
+| D1 | ✅ (partiel) | `SEND_EMAIL_HOOK_SECRET`, `PUSH_WEBHOOK_SECRET` et les variables Apple / Google ajoutés à `.env.example`. Le reste est prévu à l'étape 4. | — |
+| — | ✅ | Bug trouvé en route : l'appel de rattrapage partait depuis l'écouteur de session de Supabase, ce qui peut bloquer la session. Il est maintenant différé. | parcours D |

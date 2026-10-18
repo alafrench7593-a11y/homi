@@ -21,7 +21,12 @@ export interface Session { userId: string; email: string | null }
 export interface AuthApi {
   getSession(): Promise<Session | null>;
   onChange(cb: (s: Session | null) => void): () => void;
-  signUp(email: string, password: string): Promise<{ needsConfirmation: boolean }>;
+  /** `meta` : consentements donnés à l'inscription (CGU, confidentialité, 18 ans), gardés avec le compte. */
+  signUp(email: string, password: string, meta?: Record<string, unknown>): Promise<{ needsConfirmation: boolean }>;
+  /** Renvoie l'e-mail de confirmation d'inscription. */
+  resendConfirmation(email: string): Promise<void>;
+  /** Connexion Apple ou Google (lève une erreur en français si indisponible). */
+  signInWithProvider(provider: 'apple' | 'google'): Promise<void>;
   signIn(email: string, password: string): Promise<void>;
   signOut(allDevices?: boolean): Promise<void>;
   resetPassword(email: string): Promise<void>;

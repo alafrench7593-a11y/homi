@@ -142,7 +142,7 @@ reset role;
 -- ---------------------------------------------------------------- Export RGPD
 set role authenticated; set request.jwt.claim.sub = :'ALEX';
 select tests.ok((public.export_my_data() -> 'personal' -> 'maternal_weights') = '[]'::jsonb, 'export : ne contient aucune donnée personnelle d''autrui');
-select tests.ok(jsonb_array_length(public.export_my_data() -> 'households') = 1, 'export : contient le foyer partagé');
+select tests.ok((select count(*) from jsonb_array_elements(public.export_my_data() -> 'households') e where not (e -> 'household' ->> 'auto_created')::boolean) = 1, 'export : contient le foyer partagé');
 reset role;
 
 -- ---------------------------------------------------------------- Suppression du compte

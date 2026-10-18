@@ -11,6 +11,7 @@ import { FetusArt } from '@/components/FetusArt';
 import { WeeksRing } from '@/components/DayClock';
 import { Button, Icon, type IconName, Text } from '@/components/ui';
 import { isDemo } from '@/lib/backend';
+import { startDemoWithoutAccount } from '@/lib/demoMode';
 import { BRAND } from '@/config/brand';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, NACRE, spacing } from '@/theme/tokens';
@@ -96,6 +97,9 @@ export default function Welcome() {
               <Button label="J’ai un compte" variant="secondary" onPress={() => router.push('/auth/sign-in')} full />
             </Appear>
           </View>
+          <Appear kind="soft" delay={1.2} style={{ alignSelf: 'stretch' }}>
+            <Button label="Découvrir sans compte" variant="ghost" icon="eye" onPress={async () => { await startDemoWithoutAccount(); router.replace('/(tabs)'); }} full />
+          </Appear>
         </View>
 
         {/* Repères en bas */}

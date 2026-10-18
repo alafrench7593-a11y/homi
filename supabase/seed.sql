@@ -212,6 +212,9 @@ insert into public.households (id, name, created_by) values
 insert into public.household_members (household_id, user_id, role, can_view, can_edit) values
  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','22222222-2222-4222-8222-222222222222','coparent',
   array['daily','health','documents','pregnancy','lists','names','profile'], array['daily','lists','names']);
+-- Les comptes de démonstration rejoignent « Famille Martin » : leurs foyers créés automatiquement (vides) sont retirés
+delete from public.households where auto_created
+  and created_by in ('11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222');
 
 insert into public.pregnancies (id, household_id, carrier_user_id, due_date, multiplicity, topics) values
  ('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','11111111-1111-4111-8111-111111111111',
