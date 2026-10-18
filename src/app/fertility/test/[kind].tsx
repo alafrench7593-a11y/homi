@@ -140,7 +140,7 @@ export default function TestPhotoScreen() {
       setConfirmed(null);
       setStep('result');
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Analyse impossible', 'error');
+      toast(friendlyError(err, 'Analyse impossible sur cette photo. Reprenez une photo ou lisez le test vous-même.'), 'error');
     } finally {
       setBusy(false);
     }
@@ -154,7 +154,8 @@ export default function TestPhotoScreen() {
   }
 
   async function submit() {
-    if (!analysis || !confirmed || !userId) return;
+    if (!analysis || !confirmed) return;
+    if (!userId) return toast('Connectez-vous pour enregistrer ce résultat.', 'error');
     try {
       const testedAt = parseHour(hour)?.toISOString() ?? new Date().toISOString();
       const res = await save.mutateAsync({

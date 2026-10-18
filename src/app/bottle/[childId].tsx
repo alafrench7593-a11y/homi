@@ -5,11 +5,13 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Appear } from '@/components/Appear';
 import { ProgressRing } from '@/components/Charts';
 import { Screen } from '@/components/Screen';
-import { Banner, Button, Card, Chip, Field, haptic, ListRow, Loading, Row, SectionTitle, Text } from '@/components/ui';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
+import { Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { BottleNotificationSettings, NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { TimePicker } from '@/features/tracking';
-import { useChild, useChildren } from '@/lib/data/hooks';
+import { useChild, useChildren, useMemberships } from '@/lib/data/hooks';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { useBottleTimer, useLastBottle, useNow, useTimerScheduledHere, useUpdateBottleTimer, useStartBottleTimer } from '@/lib/data/hooks-bottle';
 import {
   atClock, cancelTimer, elapsedMinutes, formatClock, formatHM, formatRemaining, modifyInterval, parseDelay, remainingMinutes, resolveReminderChoice,
@@ -25,9 +27,15 @@ export default function BottleTimerScreen() {
   const toast = useToast();
   const params = useLocalSearchParams<{ childId: string }>();
   const childId = params.childId ?? '';
-  const { data: children, isLoading: loadingChildren } = useChildren();
+  const childrenQ = useChildren();
+  const membershipsQ = useMemberships();
+  const { data: children } = childrenQ;
+  const loadingChildren = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !children);
+  const childrenError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !children ? childrenQ : null;
   const child = useChild(childId);
-  const { active, lastInterval, isLoading } = useBottleTimer(childId);
+  const timerQ = useBottleTimer(childId);
+  const { active, lastInterval } = timerQ;
+  const isLoading = timerQ.isLoading && !timerQ.data;
   const lastBottle = useLastBottle(childId);
   const now = useNow(1000);
   const update = useUpdateBottleTimer();
@@ -45,11 +53,15 @@ export default function BottleTimerScreen() {
   if (!child) {
     return (
       <Screen back title="Minuteur biberon">
-        {loadingChildren ? <Loading /> : (
-          <>
-            <Banner tone="info">{'Ce profil est introuvable. Il a peut-être été supprimé.'}</Banner>
-            <Button label="Tous les minuteurs" onPress={() => router.replace('/bottle')} />
-          </>
+        {loadingChildren ? <Skeleton kind="detail" rows={4} /> : childrenError ? (
+          <ErrorView error={childrenError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce minuteur" />
+        ) : (
+          <EmptyState
+            icon="user-x"
+            title="Profil introuvable"
+            body="Ce profil est introuvable. Il a peut-être été supprimé."
+            action={{ label: 'Tous les minuteurs', icon: 'clock', onPress: () => router.replace('/bottle') }}
+          />
         )}
       </Screen>
     );
@@ -57,14 +69,14 @@ export default function BottleTimerScreen() {
   const name = child.first_name;
 
   async function patch(p: Parameters<typeof update.mutateAsync>[0]['patch'], message: string) {
-    if (!active) return;
+    if (!active || update.isPending) return;
     try {
       await update.mutateAsync({ id: active.id, patch: p });
       haptic('success');
       toast(message);
       setSheet(null);
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Modification impossible.', 'error');
+      toast(friendlyError(e, 'Modification impossible. Réessayez dans un instant.'), 'error');
     }
   }
 
@@ -90,7 +102,7 @@ export default function BottleTimerScreen() {
       toast(`Rappel programmé pour ${name}.`);
       setSheet(null);
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Démarrage impossible.', 'error');
+      toast(friendlyError(e, 'Démarrage impossible. Réessayez dans un instant.'), 'error');
     } finally {
       setBusy(false);
     }
@@ -115,7 +127,9 @@ export default function BottleTimerScreen() {
         </Row>
       )}
 
-      {isLoading ? <Loading /> : active ? (
+      {isLoading ? <Skeleton kind="detail" rows={4} /> : timerQ.isError && !timerQ.data ? (
+        <ErrorView error={timerQ.error} onRetry={() => void timerQ.refetch()} title="Impossible d’afficher le minuteur" />
+      ) : active ? (
         <>
           <Appear kind="scale">
             <View style={{ alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.sm }}>

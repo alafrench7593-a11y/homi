@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { PremiumGate } from '@/components/Family';
+import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, haptic, Segmented, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
@@ -28,8 +29,12 @@ export default function NewProfile() {
   const childLimit = usePlanLimit('children_count');
   const { setSubject } = useActiveSubject();
   const activePregnancy = useActivePregnancy();
-  const { data: pregnancies } = usePregnancies();
-  const { data: children } = useChildren();
+  const pregnanciesQ = usePregnancies();
+  const childrenQ = useChildren();
+  const { data: pregnancies } = pregnanciesQ;
+  const { data: children } = childrenQ;
+  const initialLoading = (pregnanciesQ.isLoading && !pregnancies) || (childrenQ.isLoading && !children);
+  const initialError = pregnanciesQ.isError && !pregnancies ? pregnanciesQ : childrenQ.isError && !children ? childrenQ : null;
   const fromPregnancy = pregnancies?.find((p) => p.id === params.fromPregnancy) ?? null;
   const { data: babies } = useExpectedBabies(fromPregnancy?.id);
 
@@ -63,6 +68,7 @@ export default function NewProfile() {
   }
 
   async function savePregnancy() {
+    if (saving) return;
     const v = validatePregnancy(pregnancy);
     setErrors([v.errors]);
     if (!v.due) return;
@@ -82,12 +88,14 @@ export default function NewProfile() {
   }
 
   async function saveChildren() {
+    if (saving) return;
     const results = drafts.map(validateChild);
     setErrors(results.map((r) => r.errors));
     if (results.some((r) => Object.keys(r.errors).length)) return;
     setSaving(true);
     setError(null);
     const created: string[] = [];
+    let linkFailed = false;
     try {
       const h = await household();
       const group = birthFlow && drafts.length > 1 ? uuid() : null;
@@ -95,13 +103,15 @@ export default function NewProfile() {
         const c = await createChild(h, d);
         created.push(c.id);
         if (birthFlow) {
-          await backend.update('children', { from_pregnancy_id: fromPregnancy!.id, multiple_group: group }, [eq('id', c.id)]).catch(() => undefined);
+          // Lien facultatif avec la grossesse : le profil est créé même si ce lien échoue, mais on le signale
+          await backend.update('children', { from_pregnancy_id: fromPregnancy!.id, multiple_group: group }, [eq('id', c.id)]).catch(() => { linkFailed = true; });
         }
       }
       inv('children', 'memberships');
       setSubject({ type: 'child', id: created[0] });
       haptic('success');
-      toast(created.length > 1 ? 'Profils créés.' : 'Profil créé.');
+      if (linkFailed) toast(`${created.length > 1 ? 'Profils créés' : 'Profil créé'}, mais le lien avec la grossesse n’a pas pu être enregistré.`, 'info');
+      else toast(created.length > 1 ? 'Profils créés.' : 'Profil créé.');
       router.replace({ pathname: '/child/[id]', params: { id: created[0] } });
     } catch (e) {
       if (created.length) inv('children');
@@ -122,7 +132,7 @@ export default function NewProfile() {
       label={kind === 'pregnancy' ? 'Ajouter la grossesse' : drafts.length > 1 ? `Créer les ${drafts.length} profils` : 'Créer le profil'}
       size="lg"
       loading={saving}
-      disabled={(kind === 'pregnancy' && !!activePregnancy) || (kind === 'child' && overLimit)}
+      disabled={initialLoading || !!initialError || (kind === 'pregnancy' && !!activePregnancy) || (kind === 'child' && overLimit)}
       onPress={kind === 'pregnancy' ? savePregnancy : saveChildren}
     />
   );
@@ -139,7 +149,9 @@ export default function NewProfile() {
       )}
       {error ? <Banner tone="danger">{error}</Banner> : null}
 
-      {kind === 'pregnancy' ? (
+      {initialLoading ? <Skeleton kind="detail" rows={5} /> : initialError ? (
+        <ErrorView error={initialError.error} onRetry={() => { void pregnanciesQ.refetch(); void childrenQ.refetch(); }} title="Impossible de préparer le formulaire" />
+      ) : kind === 'pregnancy' ? (
         activePregnancy ? (
           <Banner tone="info" title="Une grossesse est déjà en cours" action={<Button label="Modifier la grossesse" size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => router.replace('/pregnancy/edit')} />}>
             {'Pour des jumeaux ou des triplés, indiquez simplement le nombre de bébés dans la grossesse en cours.'}

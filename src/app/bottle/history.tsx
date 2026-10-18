@@ -1,14 +1,17 @@
 /** Historique des biberons d'un enfant : vue jour / semaine, modification, suppression, résumé de consultation. */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, Share, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { BarChart } from '@/components/Charts';
 import { Screen } from '@/components/Screen';
-import { Banner, Button, Card, Chip, IconButton, Loading, Row, SectionTitle, Segmented, Text } from '@/components/ui';
+import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
+import { Button, Card, Chip, IconButton, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { copyText } from '@/features/bottle';
 import { useChildren, useDeleteRow } from '@/lib/data/hooks';
 import { useBottleHistory, useRecorderLabel } from '@/lib/data/hooks-bottle';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { consultationSummary, dailySummaries, dayLabel, groupByDay, lastDays, withIntervals } from '@/lib/domain/bottleHistory';
 import { formatClock, formatHM } from '@/lib/domain/bottleTimer';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -22,10 +25,15 @@ export default function BottleHistory() {
   const t = useTheme();
   const toast = useToast();
   const params = useLocalSearchParams<{ child?: string }>();
-  const { data: children } = useChildren();
+  const insets = useSafeAreaInsets();
+  const childrenQ = useChildren();
+  const { data: children } = childrenQ;
   const childId = params.child || children?.[0]?.id || '';
   const child = children?.find((c) => c.id === childId) ?? null;
-  const { data: bottles, isLoading } = useBottleHistory(childId, 8);
+  const historyQ = useBottleHistory(childId, 8);
+  const { data: bottles } = historyQ;
+  const isLoading = historyQ.isLoading && !bottles;
+  const loadError = historyQ.isError && !bottles;
   const del = useDeleteRow('bottles');
   const recorder = useRecorderLabel();
   const [view, setView] = useState<View_>('day');
@@ -39,12 +47,13 @@ export default function BottleHistory() {
   const list = byDay.get(day) ?? [];
 
   async function remove(id: string, at: string) {
+    if (del.isPending) return;
     if (!(await confirm('Supprimer ce biberon ?', `Le biberon de ${formatClock(at)} sera supprimé pour toutes les personnes du foyer.`, 'Supprimer'))) return;
     try {
       await del.mutateAsync(id);
       toast('Biberon supprimé.');
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Suppression impossible.', 'error');
+      toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error');
     }
   }
 
@@ -56,21 +65,34 @@ export default function BottleHistory() {
   if (!childId) {
     return (
       <Screen back title="Historique des biberons">
-        <Banner tone="info">{'Ajoutez d’abord le profil d’un enfant.'}</Banner>
+        {childrenQ.isLoading && !children ? <Skeleton kind="list" rows={4} /> : childrenQ.isError && !children ? (
+          <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} title="Impossible d’afficher l’historique" />
+        ) : (
+          <EmptyState
+            icon="coffee"
+            title="Aucun enfant à suivre"
+            body="Ajoutez d’abord le profil d’un enfant."
+            action={{ label: 'Ajouter un enfant', onPress: () => router.push({ pathname: '/profiles/new', params: { kind: 'child' } }) }}
+          />
+        )}
       </Screen>
     );
   }
 
-  return (
-    <Screen back title="Historique des biberons" subtitle={child ? `${child.first_name} · 7 derniers jours` : undefined}>
+  const addBottle = () => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId } });
+  const dayRows = view === 'day' && !isLoading && !loadError ? list : [];
+
+  const header = (
+    <View style={{ gap: spacing.md, marginBottom: spacing.xxs }}>
       {children && children.length > 1 && (
         <Row wrap>
           {children.map((c) => <Chip key={c.id} label={c.first_name} selected={c.id === childId} onPress={() => router.setParams({ child: c.id })} />)}
         </Row>
       )}
       <Segmented label="Affichage" value={view} onChange={setView} options={[{ value: 'day', label: 'Jour' }, { value: 'week', label: 'Semaine' }]} />
-
-      {isLoading ? <Loading /> : view === 'day' ? (
+      {isLoading ? <Skeleton kind="list" rows={4} /> : loadError ? (
+        <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher l’historique" />
+      ) : view === 'day' ? (
         <>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
             {days.map((k, i) => (
@@ -78,34 +100,14 @@ export default function BottleHistory() {
             ))}
           </ScrollView>
           <SectionTitle title={`${dayLabel(day)[0].toUpperCase()}${dayLabel(day).slice(1)}`} />
-          {!list.length ? (
-            <Text muted center style={{ paddingVertical: spacing.lg }}>Aucun biberon enregistré ce jour-là.</Text>
-          ) : list.map((b) => {
-            const who = recorder(b.created_by);
-            return (
-              <Card key={b.id}>
-                <Row style={{ alignItems: 'flex-start' }}>
-                  <Text variant="heading" style={{ width: 74 }}>{formatClock(b.at)}</Text>
-                  <View style={{ flex: 1, gap: 2 }}>
-                    <Text weight="medium">
-                      {[b.prepared_ml != null ? `Préparé ${b.prepared_ml} ml` : null, b.consumed_ml != null ? `bu ${b.consumed_ml} ml` : null].filter(Boolean).join(' · ') || 'Quantité non renseignée'}
-                    </Text>
-                    {b.interval_minutes != null && <Text variant="small" muted>{formatHM(b.interval_minutes)} après le biberon précédent</Text>}
-                    {b.milk_type ? <Text variant="small" muted>{b.milk_type}</Text> : null}
-                    {b.planned_next_ml != null && <Text variant="small" muted>Prévu pour le suivant : {b.planned_next_ml} ml</Text>}
-                    {b.note ? <Text variant="small" italic>« {b.note} »</Text> : null}
-                    {who && <Text variant="caption" muted>Enregistré par {who}</Text>}
-                  </View>
-                  <View>
-                    <IconButton icon="edit-2" label={`Modifier le biberon de ${formatClock(b.at)}`} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, id: b.id } })} />
-                    <IconButton icon="trash-2" label={`Supprimer le biberon de ${formatClock(b.at)}`} onPress={() => remove(b.id, b.at)} />
-                  </View>
-                </Row>
-              </Card>
-            );
-          })}
         </>
-      ) : (
+      ) : null}
+    </View>
+  );
+
+  const footer = (
+    <View style={{ gap: spacing.md, marginTop: spacing.xxs }}>
+      {view === 'week' && !isLoading && !loadError ? (
         <>
           <Card>
             <Text weight="medium">Quantité bue enregistrée par jour</Text>
@@ -123,14 +125,54 @@ export default function BottleHistory() {
             ))}
           </Card>
         </>
-      )}
+      ) : null}
 
-      <Button label="Résumé pour une consultation (7 jours)" icon="file-text" variant="secondary" disabled={!child} onPress={openSummary} />
+      <Button label="Résumé pour une consultation (7 jours)" icon="file-text" variant="secondary" disabled={!child || isLoading} onPress={openSummary} />
       <Text variant="caption" muted>Relevé de vos saisies, sans interprétation. Ne remplace pas l’avis d’un professionnel de santé.</Text>
+    </View>
+  );
+
+  return (
+    <Screen scroll={false} padded={false} back title="Historique des biberons" subtitle={child ? `${child.first_name} · 7 derniers jours` : undefined}>
+      <VirtualList
+        data={dayRows}
+        keyExtractor={(b) => b.id}
+        ListHeaderComponent={header}
+        ListFooterComponent={footer}
+        ListEmptyComponent={view === 'day' && !isLoading && !loadError ? (
+          <EmptyState icon="coffee" title="Aucun biberon enregistré ce jour-là." action={{ label: 'Enregistrer un biberon', onPress: addBottle }} />
+        ) : null}
+        renderItem={({ item: b }) => {
+          const who = recorder(b.created_by);
+          return (
+            <Card>
+              <Row style={{ alignItems: 'flex-start' }}>
+                <Text variant="heading" style={{ width: 74 }}>{formatClock(b.at)}</Text>
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text weight="medium">
+                    {[b.prepared_ml != null ? `Préparé ${b.prepared_ml} ml` : null, b.consumed_ml != null ? `bu ${b.consumed_ml} ml` : null].filter(Boolean).join(' · ') || 'Quantité non renseignée'}
+                  </Text>
+                  {b.interval_minutes != null && <Text variant="small" muted>{formatHM(b.interval_minutes)} après le biberon précédent</Text>}
+                  {b.milk_type ? <Text variant="small" muted>{b.milk_type}</Text> : null}
+                  {b.planned_next_ml != null && <Text variant="small" muted>Prévu pour le suivant : {b.planned_next_ml} ml</Text>}
+                  {b.note ? <Text variant="small" italic>« {b.note} »</Text> : null}
+                  {who && <Text variant="caption" muted>Enregistré par {who}</Text>}
+                </View>
+                <View>
+                  <IconButton icon="edit-2" label={`Modifier le biberon de ${formatClock(b.at)}`} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, id: b.id } })} />
+                  <IconButton icon="trash-2" label={`Supprimer le biberon de ${formatClock(b.at)}`} onPress={() => remove(b.id, b.at)} />
+                </View>
+              </Row>
+            </Card>
+          );
+        }}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
+        showsVerticalScrollIndicator={false}
+      />
 
       <Sheet visible={summary != null} onClose={() => setSummary(null)} title="Résumé à partager">
         <Row wrap>
-          <Button label="Partager" icon="share-2" size="sm" onPress={() => Share.share({ message: summary ?? '', title: `Biberons de ${child?.first_name ?? ''}` }).catch(() => undefined)} />
+          <Button label="Partager" icon="share-2" size="sm" onPress={() => Share.share({ message: summary ?? '', title: `Biberons de ${child?.first_name ?? ''}` }).catch(() => toast('Le partage n’est pas disponible sur cet appareil. Utilisez « Copier ».', 'error'))} />
           <Button label="Copier" icon="copy" size="sm" variant="secondary" onPress={async () => {
             const ok = await copyText(summary ?? '');
             toast(ok ? 'Résumé copié.' : 'Appuyez longuement sur le texte pour le sélectionner et le copier.', ok ? 'success' : 'info');

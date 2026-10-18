@@ -7,7 +7,8 @@ import { useBlockAuthor, useReport, useToggleLike, useToggleSave } from '@/lib/d
 import { timeAgo } from '@/lib/domain/dates';
 import type { FeedPost, Forum, ReportReason } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { BRAND } from '@/config/brand';
 
 export const REPORT_REASONS: { key: ReportReason; label: string }[] = [
@@ -51,29 +52,33 @@ export function ReportSheet({ visible, onClose, postId, commentId }: { visible: 
   const toast = useToast();
   const reportM = useReport();
   const blockM = useBlockAuthor();
+  const pending = reportM.isPending || blockM.isPending;
   async function report(reason: ReportReason) {
+    if (pending) return;
     try {
       await reportM.mutateAsync({ postId, commentId, reason });
       toast('Merci. L’équipe de modération va examiner ce contenu.');
+      onClose();
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Signalement impossible.', 'error');
+      // La feuille reste ouverte pour pouvoir réessayer
+      toast(friendlyError(e, 'Signalement impossible. Réessayez dans un instant.'), 'error');
     }
-    onClose();
   }
   async function block() {
+    if (pending) return;
     try {
       await blockM.mutateAsync({ postId, commentId });
       toast('Cette personne est bloquée : vous ne verrez plus ses contenus.');
+      onClose();
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Blocage impossible.', 'error');
+      toast(friendlyError(e, 'Blocage impossible. Réessayez dans un instant.'), 'error');
     }
-    onClose();
   }
   return (
     <Sheet visible={visible} onClose={onClose} title={commentId ? 'Signaler ce commentaire' : 'Signaler cette publication'}>
       <Text variant="small" muted>Pourquoi ce contenu pose-t-il problème ?</Text>
       {REPORT_REASONS.map((r) => (
-        <Pressable key={r.key} accessibilityRole="button" disabled={reportM.isPending} onPress={() => report(r.key)} style={{ minHeight: 48, justifyContent: 'center' }}>
+        <Pressable key={r.key} accessibilityRole="button" accessibilityState={{ disabled: pending, busy: reportM.isPending }} disabled={pending} onPress={() => report(r.key)} style={{ minHeight: MIN_TOUCH, justifyContent: 'center', opacity: pending ? 0.5 : 1 }}>
           <Text>{r.label}</Text>
         </Pressable>
       ))}
@@ -91,12 +96,22 @@ export function PostCard({ post, forumTitle, full }: { post: FeedPost; forumTitl
   const [reporting, setReporting] = useState(false);
 
   async function toggleSave() {
+    if (save.isPending) return;
     try {
       const saved = await save.mutateAsync(post);
       toast(saved ? 'Ajoutée à vos favoris.' : 'Retirée de vos favoris.');
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Action impossible.', 'error');
+      toast(friendlyError(e), 'error');
     }
+  }
+
+  function toggleLike() {
+    if (like.isPending) return;
+    like.mutate(post, { onError: (e) => toast(friendlyError(e), 'error') });
+  }
+
+  function share() {
+    Share.share({ message: `« ${post.title} » — une discussion sur ${BRAND.name}` }).catch(() => toast('Le partage n’est pas disponible sur cet appareil.', 'error'));
   }
 
   return (
@@ -109,15 +124,25 @@ export function PostCard({ post, forumTitle, full }: { post: FeedPost; forumTitl
       <Text variant="small" numberOfLines={full ? undefined : 3} style={{ marginTop: 2 }}>{post.body}</Text>
       {post.area_label ? <Row gap={4} style={{ marginTop: 6 }}><Icon name="map-pin" size={12} color={t.colors.textMuted} /><Text variant="caption" muted>{post.area_label}</Text></Row> : null}
       <Row style={{ marginTop: spacing.sm }} gap={spacing.xs}>
-        <Chip label={String(post.like_count)} icon="heart" selected={post.liked} onPress={() => like.mutate(post)} />
+        <Chip label={String(post.like_count)} icon="heart" selected={post.liked} onPress={toggleLike} />
         <Chip label={String(post.comment_count)} icon="message-square" onPress={() => router.push(`/community/post/${post.id}`)} />
-        <Chip label={post.saved ? 'Favori' : ''} icon="bookmark" selected={post.saved} onPress={toggleSave} />
+        <Pressable
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: !!post.saved, busy: save.isPending }}
+          accessibilityLabel={post.saved ? 'Dans mes favoris. Retirer des favoris' : 'Enregistrer dans mes favoris'}
+          hitSlop={4}
+          disabled={save.isPending}
+          onPress={toggleSave}
+          style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: post.saved ? t.colors.primary + '1F' : 'transparent' }}
+        >
+          <Icon name="bookmark" size={18} color={post.saved ? t.colors.primary : t.colors.textMuted} />
+        </Pressable>
         <View style={{ flex: 1 }} />
-        <Pressable accessibilityRole="button" accessibilityLabel="Partager" hitSlop={10} onPress={() => Share.share({ message: `« ${post.title} » — une discussion sur ${BRAND.name}` })} style={{ padding: 8 }}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Partager" hitSlop={4} onPress={share} style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="share-2" size={18} color={t.colors.textMuted} />
         </Pressable>
         {!post.is_mine && (
-          <Pressable accessibilityRole="button" accessibilityLabel="Signaler ou bloquer" hitSlop={10} onPress={() => setReporting(true)} style={{ padding: 8 }}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Signaler ou bloquer" hitSlop={4} onPress={() => setReporting(true)} style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="flag" size={18} color={t.colors.textMuted} />
           </Pressable>
         )}

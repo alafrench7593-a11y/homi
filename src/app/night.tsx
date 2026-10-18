@@ -8,10 +8,12 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { StarField } from '@/components/StarField';
-import { Chip, haptic, Icon, Row, Text, Toggle } from '@/components/ui';
+import { Button, Chip, haptic, Icon, Row, Text, Toggle } from '@/components/ui';
+import { ErrorView, Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
 import { backend, eq } from '@/lib/backend';
 import { useActiveSubject, useAddLog, useChildren, useInvalidate, useLogs, useOpenSleep } from '@/lib/data/hooks';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { useUiStore } from '@/lib/store';
 import { formatDuration, formatTime, timeAgo } from '@/lib/domain/dates';
 import type { Breastfeed, Diaper } from '@/lib/types';
@@ -45,7 +47,9 @@ export default function NightMode() {
   const vibrations = useUiStore((s) => s.nightVibrations);
   const setVibrations = useUiStore((s) => s.setNightVibrations);
   const { subject, setSubject } = useActiveSubject();
-  const { data: children } = useChildren();
+  const childrenQ = useChildren();
+  const { data: children } = childrenQ;
+  const [busy, setBusy] = useState<string | null>(null);
   const childId = subject.type === 'child' ? subject.id : children?.[0]?.id;
   const child = children?.find((c) => c.id === childId);
   const openSleep = useOpenSleep(childId);
@@ -68,8 +72,22 @@ export default function NightMode() {
 
   const elapsedMin = openSleep ? (now - new Date(openSleep.started_at).getTime()) / 60000 : 0;
 
+  /** Une action à la fois : évite les doubles saisies dans le noir, erreur toujours affichée. */
+  async function run(key: string, fn: () => Promise<void>) {
+    if (busy) return;
+    setBusy(key);
+    try {
+      await fn();
+    } catch (e) {
+      toast(friendlyError(e, 'Action impossible. Réessayez dans un instant.'), 'error');
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function toggleSleep() {
-    if (!child) return;
+    if (!child || busy) return;
+    setBusy('sleep');
     try {
       if (openSleep) {
         await backend.update('sleeps', { ended_at: new Date().toISOString() }, [eq('id', openSleep.id)]);
@@ -81,24 +99,32 @@ export default function NightMode() {
       }
       haptic('success');
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Action impossible.', 'error');
+      toast(friendlyError(e, 'Action impossible. Réessayez dans un instant.'), 'error');
+    } finally {
+      setBusy(null);
     }
   }
 
   async function addWakeup() {
     if (!openSleep) return;
-    const current = await backend.select<{ wakeups: number }>({ table: 'sleeps', filters: [eq('id', openSleep.id)] });
-    await backend.update('sleeps', { wakeups: (current[0]?.wakeups ?? 0) + 1 }, [eq('id', openSleep.id)]);
-    inv('sleeps');
-    toast('Réveil noté.', 'info');
+    const sleepId = openSleep.id;
+    await run('wakeup', async () => {
+      const current = await backend.select<{ wakeups: number }>({ table: 'sleeps', filters: [eq('id', sleepId)] });
+      await backend.update('sleeps', { wakeups: (current[0]?.wakeups ?? 0) + 1 }, [eq('id', sleepId)]);
+      inv('sleeps');
+      toast('Réveil noté.', 'info');
+    });
   }
 
   async function feed(side: 'left' | 'right') {
     if (!child) return;
     if (feedStart && feedStart.side === side) {
-      await addFeed.mutateAsync({ child_id: child.id, household_id: child.household_id, side, started_at: feedStart.at.toISOString(), ended_at: new Date().toISOString() });
-      toast(`Tétée enregistrée (${formatDuration((Date.now() - feedStart.at.getTime()) / 60000)}).`);
-      setFeedStart(null);
+      const start = feedStart;
+      await run('feed', async () => {
+        await addFeed.mutateAsync({ child_id: child.id, household_id: child.household_id, side, started_at: start.at.toISOString(), ended_at: new Date().toISOString() });
+        toast(`Tétée enregistrée (${formatDuration((Date.now() - start.at.getTime()) / 60000)}).`);
+        setFeedStart(null);
+      });
     } else {
       setFeedStart({ side, at: new Date() });
     }
@@ -106,8 +132,10 @@ export default function NightMode() {
 
   async function diaper() {
     if (!child) return;
-    await addDiaper.mutateAsync({ child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), wet: true, stool: false });
-    toast('Couche enregistrée.');
+    await run('diaper', async () => {
+      await addDiaper.mutateAsync({ child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), wet: true, stool: false });
+      toast('Couche enregistrée.');
+    });
   }
 
   return (
@@ -132,8 +160,15 @@ export default function NightMode() {
           </Row>
         )}
 
-        {!child ? (
-          <Text color={TEXT} center style={{ marginTop: spacing.xxl }}>Ajoutez le profil d’un enfant pour utiliser le mode nuit.</Text>
+        {childrenQ.isLoading && !children ? (
+          <View style={{ marginTop: spacing.xl }}><Skeleton kind="card" rows={2} /></View>
+        ) : childrenQ.isError && !children ? (
+          <View style={{ marginTop: spacing.xl }}><ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} /></View>
+        ) : !child ? (
+          <View style={{ marginTop: spacing.xxl, gap: spacing.md, alignItems: 'center' }}>
+            <Text color={TEXT} center>Ajoutez le profil d’un enfant pour utiliser le mode nuit.</Text>
+            <Button label="Ajouter un enfant" icon="plus" variant="night" onPress={() => router.push('/profiles/new?kind=child' as never)} />
+          </View>
         ) : (
           <>
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.sm }}>
@@ -150,6 +185,7 @@ export default function NightMode() {
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={openSleep ? 'Arrêter le sommeil' : 'Démarrer le sommeil'}
+                accessibilityState={{ busy: busy === 'sleep' }}
                 onPress={toggleSleep}
                 style={({ pressed }) => ({ marginTop: spacing.md, width: 168, height: 168, borderRadius: 84, borderWidth: 2, borderColor: GOLD, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? '#1D2450' : 'rgba(226,184,132,0.08)' })}
               >

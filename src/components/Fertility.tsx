@@ -2,12 +2,14 @@
  * Composants partagés des parcours « concevoir » (/fertility) et « éviter une grossesse » (/contraception).
  * Toute date d'ovulation / de fertilité est affichée comme une ESTIMATION.
  */
+import { insertOrQueue } from '@/lib/offline';
 import React, { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { BarChart, StatPill } from './Charts';
 import { confirm, Sheet, useToast } from './Overlays';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from './ui';
+import { EmptyState, ErrorView, Skeleton, VirtualList } from './States';
 import { useUserId } from '@/lib/auth';
 import { backend, eq } from '@/lib/backend';
 import { useHouseholdId, useInvalidate, usePeriods, useReminders, useTests } from '@/lib/data/hooks';
@@ -22,7 +24,7 @@ import { QUESTION_SUGGESTIONS, type ReminderPreset } from '@/content/fertility';
 import type { PeriodEntry } from '@/lib/types';
 import type { FertilityJourney } from '@/lib/types-fertility';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 
 export const RELIABILITY_LABEL = { insufficient: 'Données insuffisantes', low: 'Fiabilité faible', moderate: 'Fiabilité modérée' } as const;
 export const fmt = (d: ISODate) => formatDateFr(d, false);
@@ -145,12 +147,15 @@ export function PeriodLogger() {
   const toast = useToast();
   const inv = useInvalidate();
   const userId = useUserId();
-  const { data: periods } = usePeriods();
+  const periodsQ = usePeriods();
+  const periods = periodsQ.data;
   const entries = useMemo(() => periods ?? [], [periods]);
   const [start, setStart] = useState(toFrDate(todayISO()));
   const [end, setEnd] = useState('');
   const [flow, setFlow] = useState<Flow>('none');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   async function add() {
     const s = frToISO(start);
@@ -162,8 +167,9 @@ export function PeriodLogger() {
     if (s && entries.some((p) => p.start_date === s)) errs.start = 'Des règles commencent déjà à cette date.';
     setErrors(errs);
     if (Object.keys(errs).length) return;
+    setSaving(true);
     try {
-      await backend.insert('period_entries', { user_id: userId, start_date: s, end_date: e, flow: flow === 'none' ? null : flow, note: null });
+      await insertOrQueue('period_entries', { user_id: userId, start_date: s, end_date: e, flow: flow === 'none' ? null : flow, note: null });
       inv('period_entries');
       haptic('success');
       setEnd('');
@@ -171,19 +177,33 @@ export function PeriodLogger() {
       toast('Règles enregistrées.');
     } catch (err) {
       toast(friendlyError(err), 'error');
+    } finally {
+      setSaving(false);
     }
   }
 
   async function endToday(p: PeriodEntry) {
-    await backend.update('period_entries', { end_date: todayISO() }, [eq('id', p.id)]);
-    inv('period_entries');
-    toast('Fin des règles enregistrée.');
+    setBusyId(p.id);
+    try {
+      await backend.update('period_entries', { end_date: todayISO() }, [eq('id', p.id)]);
+      inv('period_entries');
+      toast('Fin des règles enregistrée.');
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    } finally {
+      setBusyId(null);
+    }
   }
 
   async function remove(p: PeriodEntry) {
     if (!(await confirm('Supprimer ces règles ?', 'Cette action est définitive.', 'Supprimer'))) return;
-    await backend.remove('period_entries', [eq('id', p.id)]);
-    inv('period_entries');
+    try {
+      await backend.remove('period_entries', [eq('id', p.id)]);
+      inv('period_entries');
+      toast('Règles supprimées.');
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    }
   }
 
   return (
@@ -197,8 +217,10 @@ export function PeriodLogger() {
           <Text variant="label">Flux (facultatif)</Text>
           <Segmented label="Flux" value={flow} onChange={setFlow} options={[{ value: 'none', label: '—' }, { value: 'light', label: 'Léger' }, { value: 'medium', label: 'Moyen' }, { value: 'heavy', label: 'Abondant' }]} />
         </View>
-        <Button label="Enregistrer mes règles" icon="plus" style={{ marginTop: spacing.sm }} onPress={add} />
+        <Button label="Enregistrer mes règles" icon="plus" style={{ marginTop: spacing.sm }} loading={saving} onPress={add} />
       </Card>
+      {periodsQ.isLoading && !periods ? <Skeleton rows={2} /> : null}
+      {periodsQ.isError && !periods ? <ErrorView error={periodsQ.error} onRetry={() => void periodsQ.refetch()} title="Impossible d’afficher vos règles" /> : null}
       {entries.length ? (
         <Card>
           <Text weight="bold">Règles saisies</Text>
@@ -210,7 +232,7 @@ export function PeriodLogger() {
               subtitle={p.flow ? `Flux ${FLOW_LABEL[p.flow]}` : undefined}
               right={
                 <Row gap={0}>
-                  {!p.end_date && p.start_date <= todayISO() ? <Button label="Fin aujourd’hui" size="sm" variant="ghost" onPress={() => endToday(p)} /> : null}
+                  {!p.end_date && p.start_date <= todayISO() ? <Button label="Fin aujourd’hui" size="sm" variant="ghost" loading={busyId === p.id} onPress={() => endToday(p)} /> : null}
                   <IconButton icon="trash-2" label={`Supprimer les règles du ${formatDateFr(p.start_date)}`} onPress={() => remove(p)} />
                 </Row>
               }
@@ -229,27 +251,36 @@ export function SymptomLogger() {
   const toast = useToast();
   const inv = useInvalidate();
   const userId = useUserId();
-  const { data: logs } = useSymptomLogs(30);
+  const logsQ = useSymptomLogs(30);
+  const logs = logsQ.data;
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [note, setNote] = useState('');
+  const [saving, setSaving] = useState(false);
 
   async function save() {
     if (!symptoms.length && !note.trim()) return toast('Choisissez au moins un symptôme ou écrivez une note.', 'info');
+    setSaving(true);
     try {
-      await backend.insert('symptom_logs', { user_id: userId, logged_on: todayISO(), symptoms, note: note.trim() || null });
+      await insertOrQueue('symptom_logs', { user_id: userId, logged_on: todayISO(), symptoms, note: note.trim() || null });
       inv('symptom_logs');
       setSymptoms([]);
       setNote('');
       toast('Symptômes notés.');
     } catch (err) {
       toast(friendlyError(err), 'error');
+    } finally {
+      setSaving(false);
     }
   }
 
   async function remove(id: string) {
     if (!(await confirm('Supprimer cette saisie ?', 'Cette action est définitive.', 'Supprimer'))) return;
-    await backend.remove('symptom_logs', [eq('id', id)]);
-    inv('symptom_logs');
+    try {
+      await backend.remove('symptom_logs', [eq('id', id)]);
+      inv('symptom_logs');
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    }
   }
 
   return (
@@ -258,8 +289,10 @@ export function SymptomLogger() {
         {SYMPTOMS.map((s) => <Chip key={s} label={s} selected={symptoms.includes(s)} onPress={() => setSymptoms((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s]))} />)}
       </Row>
       <View style={{ marginTop: spacing.sm }}><Field label="Note" optional value={note} onChangeText={setNote} maxLength={2000} /></View>
-      <Button label="Noter pour aujourd’hui" variant="secondary" style={{ marginTop: spacing.sm }} onPress={save} />
+      <Button label="Noter pour aujourd’hui" variant="secondary" style={{ marginTop: spacing.sm }} loading={saving} onPress={save} />
       <Text variant="caption" muted style={{ marginTop: 6 }}>Une douleur intense, des saignements inhabituels ou de la fièvre justifient d’en parler rapidement à un professionnel.</Text>
+      {logsQ.isLoading && !logs ? <View style={{ marginTop: spacing.sm }}><Skeleton rows={2} /></View> : null}
+      {logsQ.isError && !logs ? <View style={{ marginTop: spacing.sm }}><ErrorView error={logsQ.error} onRetry={() => void logsQ.refetch()} title="Impossible d’afficher vos symptômes" /></View> : null}
       {(logs ?? []).slice(0, 8).map((l) => (
         <ListRow key={l.id} icon="clipboard" title={formatDateFr(l.logged_on)} subtitle={[l.symptoms.join(', '), l.note].filter(Boolean).join(' · ')} right={<IconButton icon="trash-2" label={`Supprimer la saisie du ${formatDateFr(l.logged_on)}`} onPress={() => remove(l.id)} />} />
       ))}
@@ -284,27 +317,36 @@ export function TestLogger({ kinds }: { kinds: TestKind[] }) {
   const userId = useUserId();
   const [kind, setKind] = useState<TestKind>(kinds[0]);
   const [result, setResult] = useState<string | null>(null);
-  const { data: ovu } = useTests('ovulation_tests');
-  const { data: preg } = useTests('pregnancy_tests');
-  const list = kind === 'ovulation_tests' ? ovu : preg;
+  const ovuQ = useTests('ovulation_tests');
+  const pregQ = useTests('pregnancy_tests');
+  const q = kind === 'ovulation_tests' ? ovuQ : pregQ;
+  const list = q.data;
   const label = (v: string) => TEST_RESULTS[kind].find((r) => r.value === v)?.label ?? v;
+  const [saving, setSaving] = useState(false);
 
   async function save() {
     if (!result) return toast('Choisissez un résultat.', 'info');
+    setSaving(true);
     try {
-      await backend.insert(kind, { user_id: userId, tested_at: new Date().toISOString(), result });
+      await insertOrQueue(kind, { user_id: userId, tested_at: new Date().toISOString(), result });
       inv(kind);
       setResult(null);
       toast('Test enregistré.');
     } catch (err) {
       toast(friendlyError(err), 'error');
+    } finally {
+      setSaving(false);
     }
   }
 
   async function remove(id: string) {
     if (!(await confirm('Supprimer ce test ?', 'Cette action est définitive.', 'Supprimer'))) return;
-    await backend.remove(kind, [eq('id', id)]);
-    inv(kind);
+    try {
+      await backend.remove(kind, [eq('id', id)]);
+      inv(kind);
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    }
   }
 
   return (
@@ -316,7 +358,9 @@ export function TestLogger({ kinds }: { kinds: TestKind[] }) {
         {TEST_RESULTS[kind].map((r) => <Chip key={r.value} label={r.label} selected={result === r.value} onPress={() => setResult(r.value)} />)}
       </Row>
       <Text variant="caption" muted style={{ marginTop: 6 }}>{TEST_HELP[kind]}</Text>
-      <Button label="Enregistrer le test" variant="secondary" style={{ marginTop: spacing.sm }} onPress={save} />
+      <Button label="Enregistrer le test" variant="secondary" style={{ marginTop: spacing.sm }} loading={saving} onPress={save} />
+      {q.isLoading && !list ? <View style={{ marginTop: spacing.sm }}><Skeleton rows={2} /></View> : null}
+      {q.isError && !list ? <View style={{ marginTop: spacing.sm }}><ErrorView error={q.error} onRetry={() => void q.refetch()} title="Impossible d’afficher vos tests" /></View> : null}
       {(list ?? []).slice(0, 10).map((x) => (
         <ListRow
           key={x.id}
@@ -330,17 +374,22 @@ export function TestLogger({ kinds }: { kinds: TestKind[] }) {
 }
 
 // ---------------------------------------------------------------- historique des cycles
-export function CycleHistoryView({ est }: { est: CycleEstimate }) {
-  const { data: periods, isLoading } = usePeriods();
+/**
+ * Historique des cycles, rendu en liste virtualisée : à placer dans un <Screen scroll={false} padded={false}>.
+ * `addRoute` : écran où noter ses règles (action de l'état vide).
+ */
+export function CycleHistoryView({ est, addRoute, bottomPadding = 0 }: { est: CycleEstimate; addRoute: string; bottomPadding?: number }) {
+  const periodsQ = usePeriods();
+  const periods = periodsQ.data;
   const history = useMemo(() => cycleHistory(periods ?? []), [periods]);
   const done = history.filter((c) => !c.current && !c.unusual && c.length != null);
   const lengths = done.map((c) => c.length as number);
-  if (isLoading) return null;
-  if (!history.length) {
-    return <Card tone="soft"><Text muted>Ajoutez vos dates de règles pour retrouver ici l’historique de vos cycles.</Text></Card>;
-  }
-  return (
-    <>
+  const loading = periodsQ.isLoading && !periods;
+  const failed = periodsQ.isError && !periods;
+  const header = loading ? <Skeleton rows={4} /> : failed ? (
+    <ErrorView error={periodsQ.error} onRetry={() => void periodsQ.refetch()} title="Impossible d’afficher l’historique" />
+  ) : history.length ? (
+    <View style={{ gap: spacing.md }}>
       {lengths.length ? (
         <Row wrap>
           <StatPill value={est.averageLength != null ? `${num(est.averageLength)} j` : '—'} label="Durée moyenne (6 derniers)" />
@@ -354,10 +403,21 @@ export function CycleHistoryView({ est }: { est: CycleEstimate }) {
           <Text variant="caption" muted>Durée de vos derniers cycles, en jours. Graphique descriptif.</Text>
         </Card>
       ) : null}
-      <Card>
-        {history.map((c) => (
+    </View>
+  ) : null;
+  return (
+    <VirtualList
+      data={loading || failed ? [] : history}
+      keyExtractor={(c) => c.start}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: bottomPadding, gap: spacing.sm }}
+      ListHeaderComponent={header}
+      ListEmptyComponent={loading || failed ? null : (
+        <EmptyState icon="rotate-ccw" title="Aucun cycle pour l’instant" body="Ajoutez vos dates de règles pour retrouver ici l’historique de vos cycles." action={{ label: 'Noter mes règles', icon: 'droplet', onPress: () => router.push(addRoute as never) }} />
+      )}
+      renderItem={({ item: c }) => (
+        <Card style={{ paddingVertical: spacing.xs }}>
           <ListRow
-            key={c.start}
             icon={c.current ? 'circle' : 'rotate-ccw'}
             title={c.current ? `Cycle en cours depuis le ${formatDateFr(c.start)}` : `Du ${fmt(c.start)} au ${formatDateFr(c.end!)}`}
             subtitle={[
@@ -366,16 +426,19 @@ export function CycleHistoryView({ est }: { est: CycleEstimate }) {
               c.ovulationEstimate ? `ovulation estimée a posteriori vers le ${fmt(c.ovulationEstimate)} (estimation)` : null,
             ].filter(Boolean).join(' · ')}
           />
-        ))}
-      </Card>
-    </>
+        </Card>
+      )}
+    />
   );
 }
 
 // ---------------------------------------------------------------- articles du parcours
 export function JourneyArticles({ journey }: { journey: FertilityJourney }) {
-  const { data } = useJourneyArticles(journey);
-  if (!data.length) return <Text variant="small" muted>Les articles de ce parcours arrivent bientôt dans la bibliothèque.</Text>;
+  const q = useJourneyArticles(journey);
+  const { data } = q;
+  if (q.isLoading && !data.length) return <Skeleton rows={2} />;
+  if (q.isError && !data.length) return <ErrorView error={q.error} onRetry={() => void q.refetch()} title="Impossible d’afficher les articles" />;
+  if (!data.length) return <EmptyState icon="book-open" title="Articles bientôt disponibles" body="Les articles de ce parcours arrivent bientôt dans la bibliothèque." action={{ label: 'Ouvrir la bibliothèque', icon: 'book-open', onPress: () => router.push('/library' as never) }} />;
   return (
     <Card>
       {data.map((a) => <ListRow key={a.id} icon="book-open" title={a.title} subtitle={a.summary} onPress={() => router.push(`/article/${a.slug}` as never)} />)}
@@ -389,8 +452,10 @@ export function ConsultationChecklist({ journey }: { journey: FertilityJourney }
   const toast = useToast();
   const inv = useInvalidate();
   const householdId = useHouseholdId();
-  const { data } = useConsultationQuestions(journey);
+  const questionsQ = useConsultationQuestions(journey);
+  const { data } = questionsQ;
   const add = useAddQuestions(journey);
+  const [savingAnswer, setSavingAnswer] = useState(false);
   const share = useShareQuestion();
   const [text, setText] = useState('');
   const [open, setOpen] = useState<string | null>(null);
@@ -412,19 +477,34 @@ export function ConsultationChecklist({ journey }: { journey: FertilityJourney }
     }
   }
 
-  async function update(id: string, patch: Record<string, unknown>) {
+  async function update(id: string, patch: Record<string, unknown>): Promise<boolean> {
     try {
       await backend.update('consultation_questions', patch, [eq('id', id)]);
+      inv('consultation_questions');
+      return true;
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+      return false;
+    }
+  }
+
+  async function remove(id: string) {
+    if (!(await confirm('Supprimer cette question ?', 'Cette action est définitive.', 'Supprimer'))) return;
+    try {
+      await backend.remove('consultation_questions', [eq('id', id)]);
       inv('consultation_questions');
     } catch (err) {
       toast(friendlyError(err), 'error');
     }
   }
 
-  async function remove(id: string) {
-    if (!(await confirm('Supprimer cette question ?', 'Cette action est définitive.', 'Supprimer'))) return;
-    await backend.remove('consultation_questions', [eq('id', id)]);
-    inv('consultation_questions');
+  async function saveAnswer(id: string) {
+    setSavingAnswer(true);
+    const ok = await update(id, { answer: answer.trim() || null });
+    setSavingAnswer(false);
+    if (!ok) return;
+    setOpen(null);
+    toast('Réponse enregistrée.');
   }
 
   return (
@@ -433,6 +513,8 @@ export function ConsultationChecklist({ journey }: { journey: FertilityJourney }
         <Field label="Ajouter une question" value={text} onChangeText={setText} maxLength={300} placeholder="ex. Combien de temps attendre avant de consulter ?" onSubmitEditing={() => addQuestions([text])} />
         <Button label="Ajouter" icon="plus" variant="secondary" style={{ marginTop: spacing.sm }} loading={add.isPending} onPress={() => addQuestions([text])} />
       </Card>
+      {questionsQ.isLoading && !data ? <Skeleton rows={3} /> : null}
+      {questionsQ.isError && !data ? <ErrorView error={questionsQ.error} onRetry={() => void questionsQ.refetch()} title="Impossible d’afficher vos questions" /> : null}
       {list.length ? (
         <Card>
           {list.map((q) => (
@@ -443,12 +525,12 @@ export function ConsultationChecklist({ journey }: { journey: FertilityJourney }
                   accessibilityState={{ checked: q.done }}
                   accessibilityLabel={`${q.question}${q.done ? ', posée' : ''}`}
                   onPress={() => update(q.id, { done: !q.done })}
-                  hitSlop={8}
+                  hitSlop={11}
                   style={{ width: 26, height: 26, borderRadius: 8, borderWidth: 1.5, borderColor: q.done ? t.colors.success : t.colors.border, backgroundColor: q.done ? t.colors.success : 'transparent', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}
                 >
                   {q.done ? <Icon name="check" size={16} color="#fff" /> : null}
                 </Pressable>
-                <Pressable style={{ flex: 1 }} accessibilityRole="button" accessibilityLabel={`Ajouter une réponse à : ${q.question}`} onPress={() => { setOpen(q.id); setAnswer(q.answer ?? ''); }}>
+                <Pressable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={`Ajouter une réponse à : ${q.question}`} onPress={() => { setOpen(q.id); setAnswer(q.answer ?? ''); }}>
                   <Text style={{ textDecorationLine: q.done ? 'line-through' : 'none' }} muted={q.done}>{q.question}</Text>
                   {q.answer ? <Text variant="small" muted>{`Réponse notée : ${q.answer}`}</Text> : null}
                   {q.shared ? <Text variant="caption" color={t.colors.lavender}>Partagée avec votre foyer</Text> : null}
@@ -486,7 +568,7 @@ export function ConsultationChecklist({ journey }: { journey: FertilityJourney }
                   try { await share.mutateAsync({ id: q.id, shared: v }); } catch (err) { toast(friendlyError(err), 'error'); }
                 }} />
               </Row>
-              <Button label="Enregistrer" onPress={async () => { await update(q.id, { answer: answer.trim() || null }); setOpen(null); toast('Réponse enregistrée.'); }} />
+              <Button label="Enregistrer" loading={savingAnswer} onPress={() => saveAnswer(q.id)} />
             </>
           );
         })()}
@@ -527,7 +609,8 @@ export function JourneyReminders({ presets, deepLink, defaultDates }: { presets:
   const toast = useToast();
   const inv = useInvalidate();
   const userId = useUserId();
-  const { data: reminders } = useReminders();
+  const remindersQ = useReminders();
+  const reminders = remindersQ.data;
   const toggle = useToggleReminder();
   const del = useDeleteReminder();
   const [preset, setPreset] = useState<ReminderPreset | null>(null);
@@ -575,9 +658,15 @@ export function JourneyReminders({ presets, deepLink, defaultDates }: { presets:
     try { await del.mutateAsync(id); } catch (err) { toast(friendlyError(err), 'error'); }
   }
 
+  async function setEnabled(id: string, enabled: boolean) {
+    try { await toggle.mutateAsync({ id, enabled }); } catch (err) { toast(friendlyError(err), 'error'); }
+  }
+
   return (
     <>
-      {mine.length ? (
+      {remindersQ.isLoading && !reminders ? <Skeleton rows={2} /> : remindersQ.isError && !reminders ? (
+        <ErrorView error={remindersQ.error} onRetry={() => void remindersQ.refetch()} title="Impossible d’afficher vos rappels" />
+      ) : mine.length ? (
         <Card>
           {mine.map((r) => (
             <Row key={r.id} style={{ paddingVertical: spacing.xs }}>
@@ -585,7 +674,7 @@ export function JourneyReminders({ presets, deepLink, defaultDates }: { presets:
                 <Text weight="medium">{r.title}</Text>
                 <Text variant="small" muted>{validateSchedule(r.schedule) ? describeSchedule(r.schedule) : 'Planification à corriger'}</Text>
               </View>
-              <Toggle label={`${r.enabled ? 'Désactiver' : 'Activer'} le rappel ${r.title}`} value={r.enabled} onChange={(v) => toggle.mutate({ id: r.id, enabled: v })} />
+              <Toggle label={`${r.enabled ? 'Désactiver' : 'Activer'} le rappel ${r.title}`} value={r.enabled} onChange={(v) => void setEnabled(r.id, v)} />
               <IconButton icon="trash-2" label={`Supprimer le rappel ${r.title}`} onPress={() => remove(r.id)} />
             </Row>
           ))}

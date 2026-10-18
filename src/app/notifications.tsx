@@ -1,13 +1,15 @@
 /** Boîte de réception : rappels, réponses de la communauté, abonnement, rappels officiels de produits. */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { EmptyStateCard } from '@/components/ui-extra';
-import { Button, ErrorState, haptic, Icon, type IconName, IconButton, Loading, Row, SectionTitle, Text } from '@/components/ui';
+import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
+import { Button, haptic, Icon, type IconName, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { useNotificationsInbox } from '@/lib/data/hooks';
 import { useDeleteNotification, useMarkAllNotificationsRead, useMarkNotificationRead } from '@/lib/data/hooks-me';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { timeAgo } from '@/lib/domain/dates';
 import type { AppNotification } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -33,7 +35,8 @@ function routeOf(n: Pick<AppNotification, 'deep_link' | 'payload'>): string | nu
 export default function NotificationsScreen() {
   const t = useTheme();
   const toast = useToast();
-  const { data, isLoading, error, refetch } = useNotificationsInbox();
+  const insets = useSafeAreaInsets();
+  const { data, isLoading, isError, isRefetching, error, refetch } = useNotificationsInbox();
   const markRead = useMarkNotificationRead();
   const markAll = useMarkAllNotificationsRead();
   const del = useDeleteNotification();
@@ -42,7 +45,7 @@ export default function NotificationsScreen() {
   const read = (data ?? []).filter((n) => n.read_at);
 
   function openNotif(n: AppNotification) {
-    if (!n.read_at) markRead.mutate(n.id);
+    if (!n.read_at) markRead.mutate(n.id, { onError: (e) => toast(friendlyError(e), 'error') });
     const to = routeOf(n);
     if (to) router.push(to as never);
   }
@@ -53,7 +56,7 @@ export default function NotificationsScreen() {
     const isUnread = !n.read_at;
     const urgent = n.category === 'product_recall';
     return (
-      <View key={n.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: isUnread ? t.colors.surface : t.colors.surfaceAlt }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: isUnread ? t.colors.surface : t.colors.surfaceAlt }}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`${isUnread ? 'Non lue. ' : ''}${meta.label} : ${n.title}${n.body ? `. ${n.body}` : ''}`}
@@ -74,28 +77,44 @@ export default function NotificationsScreen() {
           </View>
           {to && <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
         </Pressable>
-        <IconButton icon="x" label={`Supprimer la notification ${n.title}`} color={t.colors.textMuted} size={18} onPress={() => del.mutate(n.id, { onError: (e) => toast(e instanceof Error ? e.message : 'Suppression impossible.', 'error') })} />
+        <IconButton icon="x" label={`Supprimer la notification ${n.title}`} color={t.colors.textMuted} size={18} onPress={() => { if (del.isPending && del.variables === n.id) return; del.mutate(n.id, { onError: (e) => toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error') }); }} />
       </View>
     );
   }
+
+  type Item = { kind: 'section'; title: string } | { kind: 'notif'; n: AppNotification };
+  const items = useMemo<Item[]>(() => [
+    ...(unread.length ? [{ kind: 'section', title: 'Non lues' } as const] : []),
+    ...unread.map((n) => ({ kind: 'notif', n }) as const),
+    ...(read.length ? [{ kind: 'section', title: 'Déjà lues' } as const] : []),
+    ...read.map((n) => ({ kind: 'notif', n }) as const),
+  ], [unread, read]);
+  const loading = isLoading && !data;
+  const failed = isError && !data;
 
   return (
     <Screen
       back
       title="Notifications"
       subtitle={unread.length ? `${unread.length} non lue${unread.length > 1 ? 's' : ''}` : 'Vous êtes à jour.'}
-      right={unread.length > 0 ? <Button label="Tout marquer comme lu" size="sm" variant="ghost" icon="check" loading={markAll.isPending} onPress={() => markAll.mutate(undefined, { onSuccess: () => toast('Tout est marqué comme lu.') })} /> : undefined}
+      right={unread.length > 0 ? <Button label="Tout marquer comme lu" size="sm" variant="ghost" icon="check" loading={markAll.isPending} onPress={() => markAll.mutate(undefined, { onSuccess: () => toast('Tout est marqué comme lu.'), onError: (e) => toast(friendlyError(e), 'error') })} /> : undefined}
+      scroll={false}
+      padded={false}
     >
-      {isLoading && <Loading />}
-      {error && <ErrorState error={error} onRetry={() => refetch()} />}
-      {!isLoading && !error && !data?.length && (
-        <EmptyStateCard illustration="moon" title="Rien de nouveau" text="Vos rappels, les réponses de la communauté et les alertes importantes apparaîtront ici." />
-      )}
-      {unread.length > 0 && <SectionTitle title="Non lues" />}
-      {unread.map(row)}
-      {read.length > 0 && <SectionTitle title="Déjà lues" />}
-      {read.map(row)}
-      <Text variant="caption" muted center>Gérez vos rappels et autorisations de notification dans les réglages.</Text>
+      <VirtualList
+        data={loading || failed ? [] : items}
+        keyExtractor={(it) => (it.kind === 'section' ? `s-${it.title}` : it.n.id)}
+        renderItem={({ item }) => (item.kind === 'section' ? <SectionTitle title={item.title} /> : row(item.n))}
+        refreshing={isRefetching}
+        onRefresh={() => void refetch()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
+        ListHeaderComponent={loading ? <Skeleton rows={5} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} title="Impossible d’afficher vos notifications" /> : null}
+        ListEmptyComponent={loading || failed ? null : (
+          <EmptyState icon="bell" title="Rien de nouveau" body="Vos rappels, les réponses de la communauté et les alertes importantes apparaîtront ici." action={{ label: 'Gérer mes rappels', icon: 'settings', onPress: () => router.push('/settings/reminders' as never) }} />
+        )}
+        ListFooterComponent={<Text variant="caption" muted center style={{ marginTop: spacing.sm }}>Gérez vos rappels et autorisations de notification dans les réglages.</Text>}
+      />
     </Screen>
   );
 }

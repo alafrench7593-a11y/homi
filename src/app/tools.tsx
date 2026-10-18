@@ -4,6 +4,7 @@ import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
+import { ErrorView, Skeleton } from '@/components/States';
 import { Button, haptic, Icon, Text } from '@/components/ui';
 import { useActivePregnancy, useActiveSubject, useChildren, useProfile } from '@/lib/data/hooks';
 import { toolCategories } from '@/lib/domain/journeys';
@@ -12,7 +13,8 @@ import { radius, spacing } from '@/theme/tokens';
 
 export default function Tools() {
   const t = useTheme();
-  const { data: profile } = useProfile();
+  const profileQ = useProfile();
+  const { data: profile } = profileQ;
   const pregnancy = useActivePregnancy();
   const { data: children } = useChildren();
   const { subject } = useActiveSubject();
@@ -21,7 +23,9 @@ export default function Tools() {
 
   return (
     <Screen back title="Tous mes outils" subtitle="Rangés selon votre parcours. Vous pouvez en changer à tout moment.">
-      {cats.map((c, ci) => (
+      {profileQ.isLoading && !profile ? <Skeleton kind="card" rows={4} /> : profileQ.isError && !profile ? (
+        <ErrorView error={profileQ.error} onRetry={() => void profileQ.refetch()} title="Impossible d’afficher vos outils" />
+      ) : cats.map((c, ci) => (
         <Appear key={c.key} kind="soft" delay={0.05 + ci * 0.08} style={{ gap: spacing.xs }}>
           <Text variant="heading" accessibilityRole="header">{c.title}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>

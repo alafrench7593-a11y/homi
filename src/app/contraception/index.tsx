@@ -8,6 +8,7 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { EstimateLine, fmt, JourneyArticles, MonthCalendar, NavCard, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
 import { useContraceptionMethods, useCycleEstimates } from '@/lib/data/hooks-fertility';
@@ -19,8 +20,10 @@ import { spacing } from '@/theme/tokens';
 
 export default function ContraceptionScreen() {
   const t = useTheme();
-  const { entries, est, windows, margin } = useCycleEstimates(4);
-  const { data: methods } = useContraceptionMethods();
+  const cycleQ = useCycleEstimates(4);
+  const { entries, est, windows, margin } = cycleQ;
+  const methodsQ = useContraceptionMethods();
+  const { data: methods } = methodsQ;
   const today = todayISO();
   const day = currentCycleDay(entries, today);
   const w = windows.find((x) => addDays(x.end, margin) >= today) ?? null;
@@ -40,6 +43,9 @@ export default function ContraceptionScreen() {
     <Screen back title="Je souhaite éviter une grossesse" subtitle="Comprendre son cycle et sa contraception.">
       <Banner tone="warning" title="Une grossesse reste possible à tout moment">{AVOID_DISCLAIMER}</Banner>
 
+      {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (
+        <ErrorView error={cycleQ.error} onRetry={() => void cycleQ.refetch()} title="Impossible d’afficher votre cycle" />
+      ) : (
       <Appear kind="soft">
         <Card>
           <Row style={{ justifyContent: 'space-between' }}>
@@ -63,6 +69,7 @@ export default function ContraceptionScreen() {
           )}
         </Card>
       </Appear>
+      )}
 
       <Card>
         <MonthCalendar kindOf={(d) => avoidDayKind(d, entries, windows, margin, today)} styleOf={styleOf} legend={['period', 'next_period_estimate', 'higher_probability_estimate', 'ovulation_estimate', 'pregnancy_possible']} />
@@ -70,8 +77,13 @@ export default function ContraceptionScreen() {
       </Card>
 
       <SectionTitle title="Ma contraception" action="Gérer" onAction={() => router.push('/contraception/reminders' as never)} />
+      {methodsQ.isLoading && !methods ? <Skeleton rows={1} /> : methodsQ.isError && !methods ? (
+        <ErrorView error={methodsQ.error} onRetry={() => void methodsQ.refetch()} title="Impossible d’afficher votre contraception" />
+      ) : !active.length ? (
+        <EmptyState icon="shield" title="Aucune méthode renseignée" body="Vous pouvez en ajouter une et programmer vos rappels (pilule, patch, anneau, injection, renouvellement)." action={{ label: 'Ajouter une méthode', onPress: () => router.push('/contraception/reminders' as never) }} />
+      ) : (
       <Card>
-        {active.length ? active.map((m) => {
+        {active.map((m) => {
           const left = m.renewal_due_on ? daysBetween(today, m.renewal_due_on) : null;
           return (
             <ListRow
@@ -82,10 +94,9 @@ export default function ContraceptionScreen() {
               onPress={() => router.push('/contraception/reminders' as never)}
             />
           );
-        }) : (
-          <Text muted>Aucune méthode renseignée. Vous pouvez en ajouter une et programmer vos rappels (pilule, patch, anneau, injection, renouvellement).</Text>
-        )}
+        })}
       </Card>
+      )}
 
       <Card tone="gold" onPress={() => router.push('/contraception/emergency' as never)} accessibilityLabel="Contraception d’urgence : que faire ?">
         <Text weight="bold">Contraception d’urgence</Text>

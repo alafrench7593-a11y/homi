@@ -4,7 +4,9 @@
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
+import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { confirm, useToast } from '@/components/Overlays';
 import { Button, Card, Field, haptic, IconButton, ListRow, SectionTitle, Text } from '@/components/ui';
 import { EstimateTag, fmt, PrivateBanner } from '@/components/Fertility';
@@ -21,7 +23,9 @@ import { spacing } from '@/theme/tokens';
 export default function IntimacyScreen() {
   const toast = useToast();
   const inv = useInvalidate();
-  const { data } = useIntercourseLogs(120);
+  const insets = useSafeAreaInsets();
+  const logsQ = useIntercourseLogs(120);
+  const { data } = logsQ;
   const add = useAddIntercourse();
   const { windows } = useCycleEstimates(2);
   const [date, setDate] = useState(toFrDate(todayISO()));
@@ -29,7 +33,9 @@ export default function IntimacyScreen() {
   const [error, setError] = useState<string | null>(null);
   const [showList, setShowList] = useState(false);
   const list = data ?? [];
-  const { prefs, isLoading: prefsLoading } = useCyclePreferences();
+  const prefsQ = useCyclePreferences();
+  const { prefs, isLoading: prefsLoading } = prefsQ;
+  const [removing, setRemoving] = useState(false);
   const savePrefs = useSaveCyclePreferences();
   const w = upcomingWindow(windows);
   const inWindow = useMemo(
@@ -53,31 +59,66 @@ export default function IntimacyScreen() {
 
   async function remove(id: string) {
     if (!(await confirm('Supprimer cette saisie ?', 'Cette action est définitive.', 'Supprimer'))) return;
-    await backend.remove('intercourse_logs', [eq('id', id)]);
-    inv('intercourse_logs');
+    try {
+      await backend.remove('intercourse_logs', [eq('id', id)]);
+      inv('intercourse_logs');
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    }
   }
 
   async function removeAll() {
     if (!(await confirm('Tout supprimer ?', 'Toutes vos saisies de rapports seront définitivement effacées.', 'Tout supprimer'))) return;
-    for (const l of list) await backend.remove('intercourse_logs', [eq('id', l.id)]);
-    inv('intercourse_logs');
-    toast('Saisies supprimées.');
+    setRemoving(true);
+    try {
+      for (const l of list) await backend.remove('intercourse_logs', [eq('id', l.id)]);
+      toast('Saisies supprimées.');
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    } finally {
+      inv('intercourse_logs');
+      setRemoving(false);
+    }
   }
 
-  if (!prefsLoading && !prefs.track_intercourse) {
+  async function enableTracking() {
+    try {
+      await savePrefs.mutateAsync({ track_intercourse: true });
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    }
+  }
+
+  if (prefsLoading) {
+    return (
+      <Screen back title="Rapports" subtitle="Entièrement facultatif. Notez seulement si cela vous aide.">
+        <Skeleton kind="card" rows={2} />
+      </Screen>
+    );
+  }
+
+  if (prefsQ.isError && !prefsQ.data) {
+    return (
+      <Screen back title="Rapports" subtitle="Entièrement facultatif. Notez seulement si cela vous aide.">
+        <ErrorView error={prefsQ.error} onRetry={() => void prefsQ.refetch()} />
+      </Screen>
+    );
+  }
+
+  if (!prefs.track_intercourse) {
     return (
       <Screen back title="Rapports" subtitle="Option désactivée">
         <PrivateBanner>Si vous l’activez, ces informations restent visibles uniquement par vous.</PrivateBanner>
         <Card>
           <Text>Le suivi des rapports est désactivé. Vous pouvez l’activer si cela vous aide à repérer les jours de votre période fertile estimée.</Text>
-          <Button label="Activer le suivi des rapports" icon="lock" style={{ marginTop: spacing.sm }} loading={savePrefs.isPending} onPress={() => savePrefs.mutate({ track_intercourse: true })} />
+          <Button label="Activer le suivi des rapports" icon="lock" style={{ marginTop: spacing.sm }} loading={savePrefs.isPending} onPress={enableTracking} />
         </Card>
       </Screen>
     );
   }
 
-  return (
-    <Screen back title="Rapports" subtitle="Entièrement facultatif. Notez seulement si cela vous aide.">
+  const header = (
+    <View style={{ gap: spacing.md }}>
       <PrivateBanner>Ces saisies ne sont jamais partagées : ni avec votre foyer, ni avec votre coparent, ni dans aucun partage ou document. Seul votre export personnel de données (RGPD) les contient.</PrivateBanner>
 
       <Card>
@@ -95,16 +136,31 @@ export default function IntimacyScreen() {
       ) : null}
 
       <SectionTitle title="Mes saisies" action={list.length ? (showList ? 'Masquer' : 'Afficher') : undefined} onAction={() => setShowList((v) => !v)} />
-      {!list.length ? <Text muted>Aucune saisie.</Text> : !showList ? (
+      {logsQ.isLoading && !data ? <Skeleton rows={2} /> : logsQ.isError && !data ? (
+        <ErrorView error={logsQ.error} onRetry={() => void logsQ.refetch()} title="Impossible d’afficher vos saisies" />
+      ) : list.length && !showList ? (
         <Text variant="small" muted>{`${list.length} saisie${list.length > 1 ? 's' : ''}, masquée${list.length > 1 ? 's' : ''} par discrétion.`}</Text>
-      ) : (
-        <Card>
-          {list.slice(0, 60).map((l) => (
-            <ListRow key={l.id} icon="heart" title={formatDateFr(l.occurred_on)} subtitle={l.note ?? undefined} right={<IconButton icon="trash-2" label={`Supprimer la saisie du ${formatDateFr(l.occurred_on)}`} onPress={() => remove(l.id)} />} />
-          ))}
-        </Card>
-      )}
-      {list.length ? <Button label="Tout supprimer" variant="ghost" icon="trash-2" onPress={removeAll} /> : null}
+      ) : null}
+    </View>
+  );
+  const ready = !!data;
+
+  return (
+    <Screen back title="Rapports" subtitle="Entièrement facultatif. Notez seulement si cela vous aide." scroll={false} padded={false}>
+      <VirtualList
+        data={ready && showList ? list.slice(0, 60) : []}
+        keyExtractor={(l) => l.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
+        ListHeaderComponent={header}
+        ListEmptyComponent={ready && !list.length ? <EmptyState icon="lock" title="Aucune saisie" body="Notez une date ci-dessus si cela vous aide : elle reste visible uniquement par vous." /> : null}
+        renderItem={({ item: l }) => (
+          <Card style={{ paddingVertical: spacing.xs }}>
+            <ListRow icon="heart" title={formatDateFr(l.occurred_on)} subtitle={l.note ?? undefined} right={<IconButton icon="trash-2" label={`Supprimer la saisie du ${formatDateFr(l.occurred_on)}`} onPress={() => remove(l.id)} />} />
+          </Card>
+        )}
+        ListFooterComponent={list.length ? <Button label="Tout supprimer" variant="ghost" icon="trash-2" loading={removing} style={{ marginTop: spacing.sm }} onPress={removeAll} /> : null}
+      />
     </Screen>
   );
 }

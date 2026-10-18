@@ -1,6 +1,7 @@
 /** Feuille modale, notifications éphémères (toasts) et confirmation. */
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Animated, Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -48,9 +49,9 @@ function ToastView({ msg, tone, onDone }: { msg: string; tone: ToastTone; onDone
   const anim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.sequence([
-      Animated.timing(anim, { toValue: 1, duration: reduce ? 0 : 220, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 1, duration: reduce ? 0 : 220, useNativeDriver: NATIVE_DRIVER }),
       Animated.delay(2800),
-      Animated.timing(anim, { toValue: 0, duration: reduce ? 0 : 220, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 0, duration: reduce ? 0 : 220, useNativeDriver: NATIVE_DRIVER }),
     ]).start(onDone);
   }, [anim, onDone, reduce]);
   const icon = tone === 'success' ? 'check-circle' : tone === 'error' ? 'alert-circle' : 'info';

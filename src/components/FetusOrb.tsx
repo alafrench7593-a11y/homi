@@ -4,6 +4,7 @@
  * - La lueur du cœur est purement décorative : elle ne mesure rien.
  * Effet 3D : plusieurs calques en parallaxe qui tournent avec le doigt.
  */
+import { NATIVE_DRIVER } from '@/theme/tokens';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, PanResponder, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, Path, RadialGradient, Stop } from 'react-native-svg';
@@ -37,16 +38,16 @@ export function FetusOrb({ growth, size = 280, hue = 'rose', interactive = true,
   useEffect(() => {
     if (reduce) return;
     const h = Animated.loop(Animated.sequence([
-      Animated.timing(heart, { toValue: 1, duration: 700, easing: Easing.out(Easing.quad), useNativeDriver: true }),
-      Animated.timing(heart, { toValue: 0, duration: 1100, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+      Animated.timing(heart, { toValue: 1, duration: 700, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(heart, { toValue: 0, duration: 1100, easing: Easing.inOut(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
     ]));
     const f = Animated.loop(Animated.sequence([
-      Animated.timing(float, { toValue: 1, duration: 4200, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      Animated.timing(float, { toValue: 0, duration: 4200, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      Animated.timing(float, { toValue: 1, duration: 4200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(float, { toValue: 0, duration: 4200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
     ]));
     const sway = Animated.loop(Animated.sequence([
-      Animated.timing(rotation, { toValue: 0.35, duration: 7000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      Animated.timing(rotation, { toValue: -0.35, duration: 7000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      Animated.timing(rotation, { toValue: 0.35, duration: 7000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(rotation, { toValue: -0.35, duration: 7000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
     ]));
     h.start();
     f.start();
@@ -58,7 +59,7 @@ export function FetusOrb({ growth, size = 280, hue = 'rose', interactive = true,
     onMoveShouldSetPanResponder: (_e, gs) => interactive && Math.abs(gs.dx) > 4,
     onPanResponderGrant: () => rotation.stopAnimation(),
     onPanResponderMove: (_e, gs) => rotation.setValue(Math.max(-1, Math.min(1, gs.dx / (size * 0.8)))),
-    onPanResponderRelease: () => Animated.spring(rotation, { toValue: 0, useNativeDriver: true, friction: 5, tension: 30 }).start(),
+    onPanResponderRelease: () => Animated.spring(rotation, { toValue: 0, useNativeDriver: NATIVE_DRIVER, friction: 5, tension: 30 }).start(),
   }), [interactive, rotation, size]);
 
   const rotateY = rotation.interpolate({ inputRange: [-1, 1], outputRange: ['-38deg', '38deg'] });

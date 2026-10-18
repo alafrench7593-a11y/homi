@@ -5,11 +5,14 @@
 import React, { useMemo, useState } from 'react';
 import { Linking, Pressable, View } from 'react-native';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
 import { BarChart, StatPill } from '@/components/Charts';
 import { Appear } from '@/components/Appear';
+import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { useDeleteParentSleep, useParentSleepLogs, useSaveParentSleep, useSleepContext } from '@/lib/data/hooks-sleep';
 import { addDays, formatDuration, frToISO, todayISO } from '@/lib/domain/dates';
 import {
@@ -65,6 +68,7 @@ function TimeField({ label, value, onChange, error, placeholder }: { label: stri
 }
 
 function SupportBanner({ fatigue, lowMood }: { fatigue: boolean; lowMood: boolean }) {
+  const toast = useToast();
   const what = fatigue && lowMood
     ? 'Vous avez noté une grande fatigue plusieurs jours de suite, et une humeur très basse.'
     : fatigue ? 'Vous avez noté une grande fatigue plusieurs jours de suite.' : 'Vous avez noté une humeur très basse ces derniers jours.';
@@ -75,7 +79,7 @@ function SupportBanner({ fatigue, lowMood }: { fatigue: boolean; lowMood: boolea
       title="Prendre soin de vous compte aussi"
       action={
         <Row wrap style={{ marginTop: spacing.xs }}>
-          <Button label="Appeler le 3114" size="sm" variant="secondary" icon="phone" onPress={() => Linking.openURL('tel:3114')} />
+          <Button label="Appeler le 3114" size="sm" variant="secondary" icon="phone" onPress={() => Linking.openURL('tel:3114').catch(() => toast('Appel impossible depuis cet appareil. Composez le 3114.', 'error'))} />
           <Button label="Ressources d’aide" size="sm" variant="secondary" icon="life-buoy" onPress={() => router.push('/emergency')} />
         </Row>
       }
@@ -179,16 +183,20 @@ function SleepFormSheet({ initial, logs, onClose }: { initial: FormState; logs: 
       toast(f.id ? 'Nuit modifiée.' : 'Nuit enregistrée, elle reste privée.');
       onClose();
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Enregistrement impossible.', 'error');
+      toast(friendlyError(err, 'Enregistrement impossible. Réessayez dans un instant.'), 'error');
     }
   }
 
   async function remove() {
     if (!f.id) return;
     if (!(await confirm('Supprimer cette nuit ?', 'Cette action est définitive.', 'Supprimer'))) return;
-    await del.mutateAsync(f.id);
-    toast('Nuit supprimée.');
-    onClose();
+    try {
+      await del.mutateAsync(f.id);
+      toast('Nuit supprimée.');
+      onClose();
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    }
   }
 
   return (
@@ -268,7 +276,7 @@ function SleepFormSheet({ initial, logs, onClose }: { initial: FormState; logs: 
 
       {errors.form ? <Banner tone="warning">{errors.form}</Banner> : null}
       <Button label={f.id ? 'Enregistrer les modifications' : 'Enregistrer ma nuit'} onPress={submit} loading={save.isPending} full />
-      {f.id && <Button label="Supprimer cette nuit" variant="ghost" icon="trash-2" onPress={remove} />}
+      {f.id && <Button label="Supprimer cette nuit" variant="ghost" icon="trash-2" loading={del.isPending} onPress={remove} />}
     </Sheet>
   );
 }
@@ -288,7 +296,10 @@ function logSubtitle(l: ParentSleepLog): string {
 
 export default function MySleepScreen() {
   const t = useTheme();
-  const { data: logs, isLoading } = useParentSleepLogs(90);
+  const insets = useSafeAreaInsets();
+  const logsQ = useParentSleepLogs(90);
+  const { data: logs } = logsQ;
+  const [removingId, setRemovingId] = useState<string | null>(null);
   const del = useDeleteParentSleep();
   const toast = useToast();
   const ctx = useSleepContext();
@@ -302,82 +313,110 @@ export default function MySleepScreen() {
 
   async function remove(l: ParentSleepLog) {
     if (!(await confirm('Supprimer cette nuit ?', 'Cette action est définitive.', 'Supprimer'))) return;
-    await del.mutateAsync(l.id);
-    toast('Nuit supprimée.');
+    setRemovingId(l.id);
+    try {
+      await del.mutateAsync(l.id);
+      toast('Nuit supprimée.');
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    } finally {
+      setRemovingId(null);
+    }
   }
 
   const tipsTitle = ctx.postpartum && ctx.pregnant ? 'Repères pour vous, en ce moment' : ctx.postpartum ? 'Repères après la naissance' : ctx.pregnant ? 'Repères pendant la grossesse' : 'Repères pour mieux dormir';
 
+  const loading = logsQ.isLoading && !logs;
+  const failed = logsQ.isError && !logs;
+
   return (
-    <Screen back title="Mon sommeil" subtitle="Votre sommeil à vous, sans objectif ni note.">
-      <Banner tone="info" icon="lock">{'Ce carnet est visible uniquement par vous, même au sein de votre foyer. Il décrit vos nuits sans les comparer à une norme et ne pose aucun diagnostic.'}</Banner>
+    <Screen back title="Mon sommeil" subtitle="Votre sommeil à vous, sans objectif ni note." scroll={false} padded={false}>
+      <VirtualList
+        data={loading || failed ? [] : logs ?? []}
+        keyExtractor={(l) => l.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
+        ListHeaderComponent={(
+          <View style={{ gap: spacing.md }}>
+            <Banner tone="info" icon="lock">{'Ce carnet est visible uniquement par vous, même au sein de votre foyer. Il décrit vos nuits sans les comparer à une norme et ne pose aucun diagnostic.'}</Banner>
 
-      {signal.show && <SupportBanner fatigue={signal.fatigue} lowMood={signal.lowMood} />}
+            {signal.show && <SupportBanner fatigue={signal.fatigue} lowMood={signal.lowMood} />}
 
-      <Appear kind="soft">
-        <Button label={todayLog ? 'Modifier ma nuit' : 'Noter ma nuit'} icon="moon" full onPress={() => setForm(todayLog ? formFromLog(todayLog) : emptyForm())} />
-      </Appear>
+            <Appear kind="soft">
+              <Button label={todayLog ? 'Modifier ma nuit' : 'Noter ma nuit'} icon="moon" full onPress={() => setForm(todayLog ? formFromLog(todayLog) : emptyForm())} />
+            </Appear>
 
-      <SectionTitle title="Mes 7 derniers jours" />
-      <Card>
-        {week.nightsLogged > 0 ? (
-          <BarChart
-            data={week.days.map((d) => ({ label: d.label, value: d.minutes != null ? Math.round((d.minutes / 60) * 10) / 10 : 0 }))}
-            unit="h"
-            accessibilityLabel="Durée de sommeil de chaque nuit, en heures, sur les 7 derniers jours"
-          />
-        ) : (
-          <Text muted>Aucune nuit notée ces 7 derniers jours. Il n’y a aucune obligation : notez seulement si cela vous aide.</Text>
+            <SectionTitle title="Mes 7 derniers jours" />
+            {loading ? <Skeleton kind="card" rows={1} /> : failed ? (
+              <ErrorView error={logsQ.error} onRetry={() => void logsQ.refetch()} title="Impossible d’afficher vos nuits" />
+            ) : (
+            <Card>
+              {week.nightsLogged > 0 ? (
+                <BarChart
+                  data={week.days.map((d) => ({ label: d.label, value: d.minutes != null ? Math.round((d.minutes / 60) * 10) / 10 : 0 }))}
+                  unit="h"
+                  accessibilityLabel="Durée de sommeil de chaque nuit, en heures, sur les 7 derniers jours"
+                />
+              ) : (
+                <Text muted>Aucune nuit notée ces 7 derniers jours. Il n’y a aucune obligation : notez seulement si cela vous aide.</Text>
+              )}
+              <Row wrap style={{ marginTop: spacing.sm }}>
+                <StatPill value={week.avgSleepMinutes != null ? formatDuration(week.avgSleepMinutes) : '—'} label={`Durée moyenne (${week.nightsLogged} nuit${week.nightsLogged > 1 ? 's' : ''})`} />
+                <StatPill value={String(week.napsCount)} label={week.napsCount ? `Sieste${week.napsCount > 1 ? 's' : ''} · ${formatDuration(week.napMinutes)}` : 'Siestes'} />
+                <StatPill value={String(week.totalWakings)} label="Réveils nocturnes" />
+              </Row>
+              <Row wrap style={{ marginTop: spacing.xs }}>
+                <StatPill value={week.avgQuality != null ? `${String(week.avgQuality).replace('.', ',')}/5` : '—'} label="Qualité moyenne" />
+                <StatPill value={week.avgFatigue != null ? `${String(week.avgFatigue).replace('.', ',')}/5` : '—'} label="Fatigue moyenne" />
+              </Row>
+              <Text variant="caption" muted style={{ marginTop: spacing.sm }}>Ces chiffres décrivent simplement ce que vous avez noté. Chaque période de vie a ses nuits.</Text>
+            </Card>
+            )}
+
+            <SectionTitle title={tipsTitle} />
+            <Text variant="small" muted>Des idées générales, à prendre ou à laisser. Elles ne remplacent pas l’avis de votre médecin ou de votre sage-femme.</Text>
+            {tips.map((tip) => (
+              <Card key={tip.key} tone="lavender">
+                <Row style={{ alignItems: 'flex-start' }}>
+                  <Icon name={tip.icon as IconName} color={t.colors.lavender} />
+                  <View style={{ flex: 1, gap: 4 }}>
+                    <Text weight="bold">{tip.title}</Text>
+                    <Text variant="small">{tip.text}</Text>
+                  </View>
+                </Row>
+              </Card>
+            ))}
+            <Banner tone="info" title="Quand en parler ?">
+              {'Si le sommeil reste difficile même quand vous en avez l’occasion, si la fatigue pèse sur vos journées ou sur votre moral, votre médecin, votre sage-femme ou la PMI peuvent en parler avec vous.'}
+            </Banner>
+
+            <SectionTitle title="Mes nuits" />
+            {loading ? <Skeleton rows={3} /> : null}
+          </View>
         )}
-        <Row wrap style={{ marginTop: spacing.sm }}>
-          <StatPill value={week.avgSleepMinutes != null ? formatDuration(week.avgSleepMinutes) : '—'} label={`Durée moyenne (${week.nightsLogged} nuit${week.nightsLogged > 1 ? 's' : ''})`} />
-          <StatPill value={String(week.napsCount)} label={week.napsCount ? `Sieste${week.napsCount > 1 ? 's' : ''} · ${formatDuration(week.napMinutes)}` : 'Siestes'} />
-          <StatPill value={String(week.totalWakings)} label="Réveils nocturnes" />
-        </Row>
-        <Row wrap style={{ marginTop: spacing.xs }}>
-          <StatPill value={week.avgQuality != null ? `${String(week.avgQuality).replace('.', ',')}/5` : '—'} label="Qualité moyenne" />
-          <StatPill value={week.avgFatigue != null ? `${String(week.avgFatigue).replace('.', ',')}/5` : '—'} label="Fatigue moyenne" />
-        </Row>
-        <Text variant="caption" muted style={{ marginTop: spacing.sm }}>Ces chiffres décrivent simplement ce que vous avez noté. Chaque période de vie a ses nuits.</Text>
-      </Card>
-
-      <SectionTitle title={tipsTitle} />
-      <Text variant="small" muted>Des idées générales, à prendre ou à laisser. Elles ne remplacent pas l’avis de votre médecin ou de votre sage-femme.</Text>
-      {tips.map((tip) => (
-        <Card key={tip.key} tone="lavender">
-          <Row style={{ alignItems: 'flex-start' }}>
-            <Icon name={tip.icon as IconName} color={t.colors.lavender} />
-            <View style={{ flex: 1, gap: 4 }}>
-              <Text weight="bold">{tip.title}</Text>
-              <Text variant="small">{tip.text}</Text>
-            </View>
-          </Row>
-        </Card>
-      ))}
-      <Banner tone="info" title="Quand en parler ?">
-        {'Si le sommeil reste difficile même quand vous en avez l’occasion, si la fatigue pèse sur vos journées ou sur votre moral, votre médecin, votre sage-femme ou la PMI peuvent en parler avec vous.'}
-      </Banner>
-
-      <SectionTitle title="Mes nuits" />
-      <Card>
-        {isLoading && <Text muted>Chargement…</Text>}
-        {(logs ?? []).map((l) => {
+        ListEmptyComponent={loading || failed ? null : (
+          <EmptyState icon="moon" title="Aucune nuit notée pour l’instant" body="Notez seulement si cela vous aide." action={{ label: 'Noter ma nuit', icon: 'moon', onPress: () => setForm(emptyForm()) }} />
+        )}
+        renderItem={({ item: l }) => {
           const m = nightMinutes(l);
           return (
-            <ListRow
-              key={l.id}
-              icon="moon"
-              title={`${nightLabel(l.log_date)}${m != null ? ` · ${formatDuration(m)}` : ''}`}
-              subtitle={[logSubtitle(l), l.note ? (l.note.length > 80 ? `${l.note.slice(0, 80)}…` : l.note) : null].filter(Boolean).join(' — ') || undefined}
-              onPress={() => setForm(formFromLog(l))}
-              right={<Button label="Supprimer" size="sm" variant="ghost" onPress={() => remove(l)} accessibilityLabel={`Supprimer la ${nightLabel(l.log_date).toLowerCase()}`} />}
-            />
+            <Card style={{ paddingVertical: spacing.xs }}>
+              <ListRow
+                icon="moon"
+                title={`${nightLabel(l.log_date)}${m != null ? ` · ${formatDuration(m)}` : ''}`}
+                subtitle={[logSubtitle(l), l.note ? (l.note.length > 80 ? `${l.note.slice(0, 80)}…` : l.note) : null].filter(Boolean).join(' — ') || undefined}
+                onPress={() => setForm(formFromLog(l))}
+                right={<Button label="Supprimer" size="sm" variant="ghost" loading={removingId === l.id} onPress={() => remove(l)} accessibilityLabel={`Supprimer la ${nightLabel(l.log_date).toLowerCase()}`} />}
+              />
+            </Card>
           );
-        })}
-        {!isLoading && !logs?.length && <Text muted>Aucune nuit notée pour l’instant.</Text>}
-      </Card>
-
-      <ListRow icon="life-buoy" title="Besoin d’aide maintenant" subtitle="3114, 15, 112 et autres ressources gratuites" onPress={() => router.push('/emergency')} />
+        }}
+        ListFooterComponent={(
+          <View style={{ marginTop: spacing.sm }}>
+            <ListRow icon="life-buoy" title="Besoin d’aide maintenant" subtitle="3114, 15, 112 et autres ressources gratuites" onPress={() => router.push('/emergency')} />
+          </View>
+        )}
+      />
 
       {form && <SleepFormSheet key={form.id ?? 'new'} initial={form} logs={logs ?? []} onClose={() => setForm(null)} />}
     </Screen>

@@ -9,7 +9,8 @@ import { backend, eq } from '@/lib/backend';
 import { ensureHousehold, useActivePregnancy, useAppointments, useChildren, useHouseholdId, useInvalidate, useReminders } from '@/lib/data/hooks';
 import { leadOf, setAppointmentReminder, type ReminderLead } from '@/lib/data/hooks-me';
 import { frToISO } from '@/lib/domain/dates';
-import { notificationsSupported, requestPermission } from '@/lib/notifications';
+import { notificationsSupported } from '@/lib/notifications';
+import { askNotificationPermission } from '@/lib/notificationPrompt';
 import { toFrDate } from '@/lib/validation';
 import type { Appointment, AppointmentKind } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -122,7 +123,7 @@ export default function AppointmentsScreen() {
         appt = c;
         if (!hid) inv('memberships');
       }
-      if (draft.lead && notificationsSupported) await requestPermission().catch(() => undefined);
+      if (draft.lead && notificationsSupported) await askNotificationPermission('Pour vous rappeler ce rendez-vous à l’avance.').catch(() => undefined);
       await setAppointmentReminder(appt, draft.lead, reminders ?? []);
       inv('appointments', 'reminders');
       haptic('success');

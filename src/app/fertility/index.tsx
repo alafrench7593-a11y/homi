@@ -2,13 +2,15 @@
  * Parcours « Je souhaite concevoir » : cycle, fenêtre fertile ESTIMÉE, repères, suivi et préparation des consultations.
  * Aucune date n'est garantie ; aucune grossesse n'est promise.
  */
-import React, { useCallback } from 'react';
+import { insertOrQueue } from '@/lib/offline';
+import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
 import { Banner, Button, Card, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
+import { ErrorView, Skeleton } from '@/components/States';
 import { EstimateLine, fmt, JourneyArticles, MonthCalendar, NavCard, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
 import { useUserId } from '@/lib/auth';
 import { backend } from '@/lib/backend';
@@ -27,7 +29,9 @@ export default function FertilityScreen() {
   const toast = useToast();
   const inv = useInvalidate();
   const userId = useUserId();
-  const { entries, est, windows } = useCycleEstimates(4);
+  const cycleQ = useCycleEstimates(4);
+  const { entries, est, windows } = cycleQ;
+  const [saving, setSaving] = useState(false);
   const { prefs } = useCyclePreferences();
   const today = todayISO();
   const day = currentCycleDay(entries, today);
@@ -46,12 +50,15 @@ export default function FertilityScreen() {
 
   async function periodToday() {
     if (entries.some((p) => p.start_date === today)) return toast('Vos règles sont déjà notées pour aujourd’hui.', 'info');
+    setSaving(true);
     try {
-      await backend.insert('period_entries', { user_id: userId, start_date: today });
+      await insertOrQueue('period_entries', { user_id: userId, start_date: today });
       inv('period_entries');
       toast('Début des règles noté pour aujourd’hui.');
     } catch (err) {
       toast(friendlyError(err), 'error');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -59,6 +66,9 @@ export default function FertilityScreen() {
     <Screen back title="Je souhaite concevoir" subtitle="Des repères pour votre cycle, à votre rythme.">
       <Banner tone="warning" title="Estimations, sans garantie">{TTC_DISCLAIMER}</Banner>
 
+      {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (
+        <ErrorView error={cycleQ.error} onRetry={() => void cycleQ.refetch()} title="Impossible d’afficher votre cycle" />
+      ) : (
       <Appear kind="soft">
         <Card>
           <Row style={{ justifyContent: 'space-between' }}>
@@ -81,9 +91,10 @@ export default function FertilityScreen() {
           ) : (
             <Text muted style={{ marginTop: spacing.xs }}>Notez la date de vos dernières règles pour afficher des estimations.</Text>
           )}
-          <Button label="Mes règles ont commencé aujourd’hui" icon="droplet" variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={periodToday} />
+          <Button label="Mes règles ont commencé aujourd’hui" icon="droplet" variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} loading={saving} onPress={periodToday} />
         </Card>
       </Appear>
+      )}
 
       <Card>
         <MonthCalendar kindOf={(d) => conceptionDayKind(d, entries, windows, today)} styleOf={styleOf} legend={['period', 'next_period_estimate', 'fertile_estimate', 'higher_chance_estimate', 'ovulation_estimate']} />

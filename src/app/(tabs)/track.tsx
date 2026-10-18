@@ -5,9 +5,10 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { PremiumGate, ProfileSwitcher } from '@/components/Family';
 import { BarChart } from '@/components/Charts';
+import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, EmptyStateCard, haptic, Icon, type IconName, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui-extra';
 import { Timeline, KIND_META, type LogItem } from '@/features/tracking';
-import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePremium, useProfile } from '@/lib/data/hooks';
+import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePregnancies, usePremium, useProfile } from '@/lib/data/hooks';
 import { lastDaysSeries } from '@/lib/domain/daily';
 import type { Bottle, Breastfeed, Diaper, LogKind, Meal, Observation, Pumping, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -20,13 +21,24 @@ function ChildTracking({ childId }: { childId: string }) {
   const child = children?.find((c) => c.id === childId);
   const [range, setRange] = useState<'7' | '30'>('7');
   const days = Number(range);
-  const bottles = useLogs<Bottle>('bottle', childId, days).data ?? [];
-  const feeds = useLogs<Breastfeed>('breastfeed', childId, days).data ?? [];
-  const pumpings = useLogs<Pumping>('pumping', childId, days).data ?? [];
-  const diapers = useLogs<Diaper>('diaper', childId, days).data ?? [];
-  const sleeps = useLogs<Sleep>('sleep', childId, days).data ?? [];
-  const meals = useLogs<Meal>('meal', childId, days).data ?? [];
-  const obs = useLogs<Observation>('observation', childId, days).data ?? [];
+  const qBottles = useLogs<Bottle>('bottle', childId, days);
+  const qFeeds = useLogs<Breastfeed>('breastfeed', childId, days);
+  const qPumpings = useLogs<Pumping>('pumping', childId, days);
+  const qDiapers = useLogs<Diaper>('diaper', childId, days);
+  const qSleeps = useLogs<Sleep>('sleep', childId, days);
+  const qMeals = useLogs<Meal>('meal', childId, days);
+  const qObs = useLogs<Observation>('observation', childId, days);
+  const logQueries = [qBottles, qFeeds, qPumpings, qDiapers, qSleeps, qMeals, qObs];
+  const logsLoading = logQueries.some((q) => q.isLoading && !q.data);
+  const logsError = logQueries.find((q) => q.isError && !q.data);
+  const retryLogs = () => logQueries.forEach((q) => { void q.refetch(); });
+  const bottles = qBottles.data ?? [];
+  const feeds = qFeeds.data ?? [];
+  const pumpings = qPumpings.data ?? [];
+  const diapers = qDiapers.data ?? [];
+  const sleeps = qSleeps.data ?? [];
+  const meals = qMeals.data ?? [];
+  const obs = qObs.data ?? [];
   const openSleep = useOpenSleep(childId);
 
   const today = new Date().toDateString();
@@ -80,7 +92,11 @@ function ChildTracking({ childId }: { childId: string }) {
       </View>
 
       <SectionTitle title="Aujourd’hui" />
-      <Card><Timeline logs={todays} childId={childId} /></Card>
+      {logsLoading ? <Skeleton kind="list" rows={3} /> : logsError ? (
+        <ErrorView error={logsError.error} onRetry={retryLogs} title="Impossible d’afficher le suivi" />
+      ) : (
+        <Card><Timeline logs={todays} childId={childId} /></Card>
+      )}
 
       <SectionTitle title="Tendances" />
       <Segmented label="Période" value={range} onChange={setRange} options={[{ value: '7', label: '7 jours' }, { value: '30', label: '30 jours' }]} />
@@ -126,11 +142,18 @@ function PregnancyTracking() {
 export default function Track() {
   const { subject } = useActiveSubject();
   const pregnancy = useActivePregnancy();
-  const { data: children } = useChildren();
+  const childrenQ = useChildren();
+  const pregnanciesQ = usePregnancies();
+  const children = childrenQ.data;
+  const loading = (childrenQ.isLoading && !children) || (pregnanciesQ.isLoading && !pregnanciesQ.data);
+  const failed = childrenQ.isError && !children ? childrenQ : pregnanciesQ.isError && !pregnanciesQ.data ? pregnanciesQ : null;
   return (
     <View style={{ flex: 1 }}>
       <Screen title="Suivi" bottomInset={96}>
         <ProfileSwitcher />
+        {loading ? <Skeleton kind="card" rows={2} /> : failed ? (
+          <ErrorView error={failed.error} onRetry={() => { void childrenQ.refetch(); void pregnanciesQ.refetch(); }} />
+        ) : null}
         {subject.type === 'child' && <ChildTracking childId={subject.id} />}
         {subject.type === 'pregnancy' && <PregnancyTracking />}
         {subject.type === 'family' && (
@@ -151,7 +174,7 @@ export default function Track() {
             {pregnancy && <ListRow icon="trending-up" title="Mon poids" onPress={() => router.push('/pregnancy/weight')} />}
           </Card>
         )}
-        {!pregnancy && !children?.length && (
+        {!loading && !failed && !pregnancy && !children?.length && (
           <EmptyStateCard illustration="leaf" title="Rien à suivre pour l’instant" text="Ajoutez une grossesse ou le profil d’un enfant pour commencer." action={<Button label="Ajouter un profil" icon="plus" onPress={() => router.push('/profiles/new')} />} />
         )}
         {subject.type === 'child' && <Banner tone="info">{'Cette application ne remplace pas le carnet de santé officiel de votre enfant.'}</Banner>}

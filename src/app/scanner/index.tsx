@@ -3,6 +3,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { isDemo } from '@/lib/backend';
 import { useRecallWatch, useScanFavorites, useScanHistory, useScanQuota } from '@/lib/data/hooks-scanner';
@@ -13,7 +14,8 @@ import { ScanListRow } from '@/features/scanner/components';
 export default function ScannerHub() {
   const t = useTheme();
   useRecallWatch();
-  const { data: history } = useScanHistory();
+  const historyQ = useScanHistory();
+  const { data: history } = historyQ;
   const { ids: favIds } = useScanFavorites();
   const { data: quota } = useScanQuota();
   const recent = (history ?? []).slice(0, 4);
@@ -43,8 +45,10 @@ export default function ScannerHub() {
       {quota ? <Text variant="caption" muted>{`Analyses restantes ce mois-ci : ${quota.remaining} sur ${quota.quota}. Les alertes de rappel officiel sont toujours gratuites.`}</Text> : null}
 
       <SectionTitle title="Récents" action={history?.length ? 'Tout voir' : undefined} onAction={() => router.push('/scanner/history')} />
-      {recent.length ? recent.map((s) => <ScanListRow key={s.id} s={s} favorite={favIds.has(s.id)} />) : (
-        <Text variant="small" muted>Aucune analyse pour le moment.</Text>
+      {historyQ.isLoading && !history ? <Skeleton kind="card" rows={2} /> : historyQ.isError && !history ? (
+        <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher vos analyses" />
+      ) : recent.length ? recent.map((s) => <ScanListRow key={s.id} s={s} favorite={favIds.has(s.id)} />) : (
+        <EmptyState icon="maximize" title="Aucune analyse pour le moment." body="Scannez un code-barres ou recherchez un produit par son nom." action={{ label: 'Lancer un premier scan', icon: 'camera', onPress: () => router.push('/scanner/product') }} />
       )}
 
       {favorites.length ? (

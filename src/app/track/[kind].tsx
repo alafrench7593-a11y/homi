@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { EmptyState } from '@/components/States';
 import { Banner, Button, Chip, Field, haptic, Row, Segmented, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { Stepper, TimePicker, KIND_META } from '@/features/tracking';
@@ -20,7 +21,20 @@ import { spacing } from '@/theme/tokens';
 
 type Side = 'left' | 'right' | 'both';
 
-export default function TrackEntry() {
+/** Lien vers un type de saisie inconnu : écran « introuvable » au lieu d'un plantage. */
+export default function TrackEntryRoute() {
+  const params = useLocalSearchParams<{ kind: string }>();
+  if (params.kind && !(params.kind in LOG_TABLE)) {
+    return (
+      <Screen back title="Saisie introuvable">
+        <EmptyState icon="help-circle" title="Ce type de saisie n’existe pas" body="Le lien utilisé est peut-être incomplet. Choisissez ce que vous voulez noter depuis l’onglet Suivi." action={{ label: 'Aller au suivi', icon: 'activity', onPress: () => router.replace('/(tabs)/track') }} />
+      </Screen>
+    );
+  }
+  return <TrackEntry />;
+}
+
+function TrackEntry() {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();

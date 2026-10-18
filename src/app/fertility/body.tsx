@@ -9,6 +9,7 @@ import { LineChart } from '@/components/Charts';
 import { confirm, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, haptic, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { PrivateBanner } from '@/components/Fertility';
+import { ErrorView, Skeleton } from '@/components/States';
 import { backend, eq } from '@/lib/backend';
 import { useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -24,7 +25,8 @@ const mucusLabel = (v: CervicalMucus | null) => CERVICAL_MUCUS.find((m) => m.val
 export default function BodyScreen() {
   const toast = useToast();
   const inv = useInvalidate();
-  const { data } = useFertilityObservations(120);
+  const obsQ = useFertilityObservations(120);
+  const { data } = obsQ;
   const save = useSaveObservation();
   const [date, setDate] = useState(toFrDate(todayISO()));
   const [temp, setTemp] = useState('');
@@ -58,8 +60,13 @@ export default function BodyScreen() {
 
   async function remove(id: string, on: string) {
     if (!(await confirm(`Supprimer l’observation du ${formatDateFr(on)} ?`, 'Cette action est définitive.', 'Supprimer'))) return;
-    await backend.remove('fertility_observations', [eq('id', id)]);
-    inv('fertility_observations');
+    try {
+      await backend.remove('fertility_observations', [eq('id', id)]);
+      inv('fertility_observations');
+      toast('Observation supprimée.');
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    }
   }
 
   return (
@@ -81,7 +88,9 @@ export default function BodyScreen() {
       </Card>
 
       <SectionTitle title="Ma température (45 derniers jours)" />
-      {points.length >= 2 ? (
+      {obsQ.isLoading && !data ? <Skeleton kind="card" rows={1} /> : obsQ.isError && !data ? (
+        <ErrorView error={obsQ.error} onRetry={() => void obsQ.refetch()} title="Impossible d’afficher vos observations" />
+      ) : points.length >= 2 ? (
         <Card>
           <LineChart points={points} unit="°C" accessibilityLabel="Température au réveil" formatX={(x) => formatDateFr(addDays(since, x), false)} />
           <Text variant="caption" muted>Graphique descriptif de vos saisies. Une légère hausse durable de la température est souvent observée après l’ovulation, mais ce graphique ne permet ni de confirmer une ovulation, ni de prévoir une grossesse.</Text>

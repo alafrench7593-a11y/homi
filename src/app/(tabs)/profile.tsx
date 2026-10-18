@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
+import { ErrorView, Skeleton } from '@/components/States';
 import { Card, Chip, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { useActivePregnancy, useChildren, usePremium, useProfile } from '@/lib/data/hooks';
@@ -15,9 +16,11 @@ import { NACRE, spacing } from '@/theme/tokens';
 
 export default function Profile() {
   const { session } = useAuth();
-  const { data: profile } = useProfile();
+  const profileQ = useProfile();
+  const profile = profileQ.data;
   const pregnancy = useActivePregnancy();
-  const { data: children } = useChildren();
+  const childrenQ = useChildren();
+  const children = childrenQ.data;
   const premium = usePremium();
   const journeys: string[] = (profile?.journeys ?? []).map((j) => (j === 'child' ? 'newborn' : j));
   const active = JOURNEY_OPTIONS.filter((o) => journeys.includes(o.key));
@@ -37,17 +40,24 @@ export default function Profile() {
           </Row>
         </Appear>
 
+        {profileQ.isError && !profile ? (
+          <ErrorView error={profileQ.error} onRetry={() => void profileQ.refetch()} title="Impossible d’afficher votre profil" />
+        ) : null}
+
         <Appear kind="soft" delay={0.14}>
-          <Card onPress={() => router.push('/journeys')} accessibilityLabel="Changer ou ajouter un parcours">
+          {profileQ.isLoading && !profile ? <Skeleton kind="card" rows={1} /> : <Card onPress={() => router.push('/journeys')} accessibilityLabel="Changer ou ajouter un parcours">
             <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>MES PARCOURS</Text>
             <Row wrap style={{ marginTop: 6 }}>
               {active.length ? active.map((o) => <Chip key={o.key} label={o.label} icon={o.icon} selected />) : <Text muted>Aucun parcours choisi</Text>}
             </Row>
             <Text variant="small" weight="bold" color={undefined} style={{ marginTop: spacing.xs }}>Changer ou ajouter un parcours →</Text>
-          </Card>
+          </Card>}
         </Appear>
 
         <SectionTitle title="Ma famille" />
+        {childrenQ.isLoading && !children ? <Skeleton kind="list" rows={1} /> : childrenQ.isError && !children ? (
+          <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} title="Impossible d’afficher votre famille" />
+        ) : null}
         <Card>
           {pregnancy && <ListRow icon="moon" title="Grossesse" subtitle={pregnancyProgress(pregnancy.due_date).label} onPress={() => router.push('/pregnancy')} />}
           {(children ?? []).map((c) => <ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}`)} />)}

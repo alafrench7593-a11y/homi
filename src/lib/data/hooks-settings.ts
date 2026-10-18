@@ -3,6 +3,7 @@
  * Les droits sont TOUJOURS vérifiés côté serveur (RLS / fonctions security definer) :
  * ce qui suit ne fait que refléter l'état dans l'interface.
  */
+import { friendlyErrorMessage } from '../errors';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { backend, BackendError, eq, gte, inList, isDemo, type Filter } from '../backend';
@@ -17,14 +18,7 @@ import { useHouseholdId, useInvalidate, useRows } from './hooks';
 // ---------------------------------------------------------------- erreurs lisibles
 /** Message d'erreur en français, sans jargon technique. */
 export function friendlyError(e: unknown, fallback = 'Une erreur est survenue. Réessayez dans un instant.'): string {
-  if (e instanceof BackendError) {
-    if (e.isNetwork) return 'Pas de connexion internet. Réessayez une fois en ligne.';
-    if (/indisponible en mode démonstration/i.test(e.message)) return `${e.message.replace(/ : .*$/, '')}. Cette fonction nécessite la connexion à Supabase.`;
-    if (e.code === '42501') return 'Cette action est réservée au propriétaire du foyer ou à l’équipe de modération.';
-    if (e.message) return e.message;
-  }
-  if (e instanceof Error && e.message) return e.message;
-  return fallback;
+  return friendlyErrorMessage(e, fallback);
 }
 
 // ---------------------------------------------------------------- rôles

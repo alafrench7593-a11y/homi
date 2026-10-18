@@ -6,6 +6,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { ErrorView, Skeleton } from '@/components/States';
 import { EstimateLine, fmt, MonthCalendar, PrivateBanner, type CalendarStyle } from '@/components/Fertility';
 import { Banner, Button, Card, Row, SectionTitle, Text } from '@/components/ui';
 import { useCycleEstimates } from '@/lib/data/hooks-fertility';
@@ -21,7 +22,8 @@ const LH_TEST_ROUTE = '/fertility/test/ovulation';
 export default function CycleCalendarScreen() {
   const t = useTheme();
   const today = todayISO();
-  const { entries, windows, est } = useCycleEstimates(4);
+  const cycleQ = useCycleEstimates(4);
+  const { entries, windows, est } = cycleQ;
   const { input, trackIntercourse } = useCycleHistoryData();
   const events = useMemo(() => buildDayEvents(input), [input]);
   const [selected, setSelected] = useState<string | null>(today);
@@ -47,7 +49,9 @@ export default function CycleCalendarScreen() {
     <Screen back title="Mon calendrier du cycle" subtitle="Privé : visible uniquement par vous">
       <PrivateBanner>Ce calendrier n’est jamais partagé avec votre foyer, votre coparent ni la communauté.</PrivateBanner>
 
-      {crossed ? (
+      {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (
+        <ErrorView error={cycleQ.error} onRetry={() => void cycleQ.refetch()} title="Impossible d’afficher votre cycle" />
+      ) : crossed ? (
         <Card tone="lavender">
           <Text variant="caption" muted weight="bold">ESTIMATION</Text>
           <Text style={{ marginTop: 4 }}>{crossed.text}</Text>

@@ -8,13 +8,14 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { Screen } from '@/components/Screen';
 import { PremiumGate } from '@/components/Family';
-import { EmptyStateCard } from '@/components/ui-extra';
+import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, type IconName, IconButton, Row, Text, Toggle } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
 import { backend, BackendError, eq } from '@/lib/backend';
 import { ensureHousehold, useDocuments, useHouseholdId, useInvalidate, useMyMembership } from '@/lib/data/hooks';
 import { usePlanLimit } from '@/lib/data/hooks-me';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { formatDateFr, frToISO } from '@/lib/domain/dates';
 import { uuid } from '@/lib/uuid';
 import type { DocCategory, DocumentRow } from '@/lib/types';
@@ -64,7 +65,9 @@ export default function DocumentsScreen() {
   const inv = useInvalidate();
   const userId = useUserId();
   const hid = useHouseholdId();
-  const { data: docs, isLoading } = useDocuments();
+  const docsQ = useDocuments();
+  const { data: docs, isLoading } = docsQ;
+  const [removingId, setRemovingId] = useState<string | null>(null);
   const isOwner = useMyMembership()?.role === 'owner';
   const { data: limit } = usePlanLimit('documents_count');
   const [filter, setFilter] = useState<DocCategory | 'all'>('all');
@@ -80,6 +83,8 @@ export default function DocumentsScreen() {
   const [quotaHit, setQuotaHit] = useState<string | null>(null);
   const [opening, setOpening] = useState<string | null>(null);
 
+  const loading = isLoading && !docs;
+  const failed = docsQ.isError && !docs;
   const list = useMemo(() => (docs ?? []).filter((d) => filter === 'all' || d.category === filter), [docs, filter]);
   const count = docs?.length ?? 0;
   const nearLimit = typeof limit === 'number' && count >= limit;
@@ -161,7 +166,7 @@ export default function DocumentsScreen() {
         setOpen(false);
         setQuotaHit(err.message);
       } else {
-        toast(err instanceof Error ? err.message : 'Envoi impossible.', 'error');
+        toast(friendlyError(err, 'Envoi impossible. Réessayez dans un instant.'), 'error');
       }
     } finally {
       setSaving(false);
@@ -169,13 +174,14 @@ export default function DocumentsScreen() {
   }
 
   async function openDoc(d: DocumentRow) {
+    if (opening) return;
     setOpening(d.id);
     try {
       const url = await backend.storage.signedUrl(BUCKET, d.storage_path, 300);
       if (!url) throw new Error('Fichier introuvable sur cet appareil.');
       await Linking.openURL(url);
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Ouverture impossible.', 'error');
+      toast(friendlyError(err, 'Ouverture impossible. Réessayez dans un instant.'), 'error');
     } finally {
       setOpening(null);
     }
@@ -183,6 +189,7 @@ export default function DocumentsScreen() {
 
   async function remove(d: DocumentRow) {
     if (!(await confirm('Supprimer ce document ?', `« ${d.title} » sera supprimé définitivement pour tout le foyer.`, 'Supprimer'))) return;
+    setRemovingId(d.id);
     try {
       await backend.remove('documents', [eq('id', d.id)]);
       await backend.storage.remove(BUCKET, [d.storage_path]).catch(() => undefined);
@@ -190,7 +197,9 @@ export default function DocumentsScreen() {
       setQuotaHit(null);
       toast('Document supprimé.');
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Suppression impossible.', 'error');
+      toast(friendlyError(err, 'Suppression impossible. Réessayez dans un instant.'), 'error');
+    } finally {
+      setRemovingId(null);
     }
   }
 
@@ -199,47 +208,62 @@ export default function DocumentsScreen() {
       back
       title="Documents"
       subtitle="Échographies, comptes rendus, ordonnances — stockés de façon privée."
+      scroll={false}
+      padded={false}
       footer={<Button label="Ajouter un document" icon="upload" onPress={() => { reset(); setOpen(true); }} full />}
     >
-      <Banner tone="info">{'Vos documents sont accessibles uniquement aux membres de votre foyer autorisés, via un lien temporaire. Vous pouvez en garder certains pour vous seul·e.'}</Banner>
+      <VirtualList
+        data={loading || failed ? [] : list}
+        keyExtractor={(d) => d.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: spacing.lg, gap: spacing.sm }}
+        ListHeaderComponent={(
+          <View style={{ gap: spacing.md, marginBottom: spacing.xs }}>
+            <Banner tone="info">{'Vos documents sont accessibles uniquement aux membres de votre foyer autorisés, via un lien temporaire. Vous pouvez en garder certains pour vous seul·e.'}</Banner>
 
-      {(quotaHit || nearLimit) && (
-        <>
-          <Banner tone="warning" title="Coffre plein">{quotaHit ?? `Vous avez atteint la limite de ${limit} documents. Vos documents restent consultables ; supprimez-en un ou passez à l’abonnement pour en ajouter.`}</Banner>
-          <PremiumGate feature="Jusqu’à 2 000 documents dans le coffre"><View /></PremiumGate>
-        </>
-      )}
+            {(quotaHit || nearLimit) && (
+              <>
+                <Banner tone="warning" title="Coffre plein">{quotaHit ?? `Vous avez atteint la limite de ${limit} documents. Vos documents restent consultables ; supprimez-en un ou passez à l’abonnement pour en ajouter.`}</Banner>
+                <PremiumGate feature="Jusqu’à 2 000 documents dans le coffre"><View /></PremiumGate>
+              </>
+            )}
 
-      <Row wrap>
-        <Chip label="Tous" selected={filter === 'all'} onPress={() => setFilter('all')} />
-        {CATEGORIES.filter((c) => docs?.some((d) => d.category === c.value)).map((c) => (
-          <Chip key={c.value} label={c.label} icon={c.icon} selected={filter === c.value} onPress={() => setFilter(c.value)} />
-        ))}
-      </Row>
-
-      {list.map((d) => {
-        const meta = catMeta(d.category);
-        return (
-          <Card key={d.id} onPress={() => openDoc(d)} accessibilityLabel={`${d.title}, ${meta.label}. Ouvrir`} accessibilityHint="Ouvre le document dans un lien temporaire">
-            <Row>
-              <Icon name={d.mime_type === 'application/pdf' ? 'file-text' : meta.icon} color={t.colors.lavender} />
-              <View style={{ flex: 1, gap: 2 }}>
-                <Text weight="bold" numberOfLines={2}>{d.title}</Text>
-                <Text variant="caption" muted>
-                  {[meta.label, d.doc_date ? formatDateFr(d.doc_date) : null, formatSize(d.size_bytes), d.private_to_uploader ? 'Privé' : null].filter(Boolean).join(' · ')}
-                </Text>
-                {d.notes ? <Text variant="small" muted numberOfLines={2}>{d.notes}</Text> : null}
-              </View>
-              {opening === d.id ? <Text variant="caption" muted>Ouverture…</Text> : null}
-              {(d.uploaded_by === userId || isOwner) && <IconButton icon="trash-2" label={`Supprimer ${d.title}`} onPress={() => remove(d)} color={t.colors.textMuted} />}
+            <Row wrap>
+              <Chip label="Tous" selected={filter === 'all'} onPress={() => setFilter('all')} />
+              {CATEGORIES.filter((c) => docs?.some((d) => d.category === c.value)).map((c) => (
+                <Chip key={c.value} label={c.label} icon={c.icon} selected={filter === c.value} onPress={() => setFilter(c.value)} />
+              ))}
             </Row>
-          </Card>
-        );
-      })}
-      {!isLoading && !list.length && (
-        <EmptyStateCard illustration="letter" title={filter === 'all' ? 'Votre coffre est vide' : 'Aucun document dans cette catégorie'} text="Ajoutez un PDF ou une photo : comptes rendus d’échographie, résultats, ordonnances…" />
-      )}
-      {typeof limit === 'number' && count > 0 && limit < 1000 && <Text variant="caption" muted center>{count} / {limit} documents (version gratuite)</Text>}
+            {loading ? <Skeleton rows={4} /> : null}
+            {failed ? <ErrorView error={docsQ.error} onRetry={() => void docsQ.refetch()} title="Impossible d’afficher vos documents" /> : null}
+          </View>
+        )}
+        renderItem={({ item: d }) => {
+          const meta = catMeta(d.category);
+          return (
+            <Card onPress={() => openDoc(d)} accessibilityLabel={`${d.title}, ${meta.label}. Ouvrir`} accessibilityHint="Ouvre le document dans un lien temporaire">
+              <Row>
+                <Icon name={d.mime_type === 'application/pdf' ? 'file-text' : meta.icon} color={t.colors.lavender} />
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text weight="bold" numberOfLines={2}>{d.title}</Text>
+                  <Text variant="caption" muted>
+                    {[meta.label, d.doc_date ? formatDateFr(d.doc_date) : null, formatSize(d.size_bytes), d.private_to_uploader ? 'Privé' : null].filter(Boolean).join(' · ')}
+                  </Text>
+                  {d.notes ? <Text variant="small" muted numberOfLines={2}>{d.notes}</Text> : null}
+                </View>
+                {opening === d.id ? <Text variant="caption" muted>Ouverture…</Text> : null}
+                {removingId === d.id ? <Text variant="caption" muted>Suppression…</Text> : (d.uploaded_by === userId || isOwner) && <IconButton icon="trash-2" label={`Supprimer ${d.title}`} onPress={() => remove(d)} color={t.colors.textMuted} />}
+              </Row>
+            </Card>
+          );
+        }}
+        ListEmptyComponent={loading || failed ? null : filter === 'all' ? (
+          <EmptyState icon="folder" title="Votre coffre est vide" body="Ajoutez un PDF ou une photo : comptes rendus d’échographie, résultats, ordonnances…" action={{ label: 'Ajouter un document', icon: 'upload', onPress: () => { reset(); setOpen(true); } }} />
+        ) : (
+          <EmptyState icon="folder" title="Aucun document dans cette catégorie" body="Ajoutez un PDF ou une photo : comptes rendus d’échographie, résultats, ordonnances…" action={{ label: 'Voir tous les documents', icon: 'list', onPress: () => setFilter('all') }} />
+        )}
+        ListFooterComponent={typeof limit === 'number' && count > 0 && limit < 1000 ? <Text variant="caption" muted center style={{ marginTop: spacing.sm }}>{count} / {limit} documents (version gratuite)</Text> : null}
+      />
 
       <Sheet visible={open} onClose={() => setOpen(false)} title="Ajouter un document">
         <Row>

@@ -27,9 +27,17 @@ import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo
 import { LiquidAurora } from '@/components/LiquidAurora';
 import { VideoBackdrop } from '@/components/VideoBackdrop';
 import { DemoBar } from '@/components/DemoBar';
+import { OfflinePill } from '@/components/OfflinePill';
+import { AppErrorBoundary } from '@/components/AppErrorBoundary';
+import { initCrashReporting, setCrashReportingAllowed } from '@/lib/crashReporting';
+import { backend, eq } from '@/lib/backend';
+
+/** Écran d'erreur global (expo-router) : jamais d'écran blanc. */
+export const ErrorBoundary = AppErrorBoundary;
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 configureNotifications();
+initCrashReporting();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,9 +59,14 @@ function Bootstrap() {
 
   useEffect(() => {
     if (session) {
+      // Rapports de plantage : seulement avec l'accord donné dans Profil › Confidentialité
+      backend.select<{ crash_reports_enabled: boolean }>({ table: 'privacy_settings', filters: [eq('user_id', session.userId)] })
+        .then(([p]) => setCrashReportingAllowed(!!p?.crash_reports_enabled))
+        .catch(() => setCrashReportingAllowed(false));
       configurePurchases(session.userId).catch(() => undefined);
       registerPushToken().catch(() => undefined);
     } else {
+      setCrashReportingAllowed(false);
       resetPurchasesUser().catch(() => undefined);
     }
   }, [session]);
@@ -124,6 +137,7 @@ export default function RootLayout() {
                 <Backdrop />
                 <Navigator />
                 <DemoBar />
+                <OfflinePill />
               </WebFrame>
             </ToastProvider>
           </ThemeProvider>

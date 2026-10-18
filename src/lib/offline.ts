@@ -1,6 +1,7 @@
 /**
- * File d'attente hors connexion pour le suivi quotidien.
- * - Chaque entrée porte un `client_id` : la synchronisation est idempotente
+ * File d'attente hors connexion pour toutes les saisies (suivi bébé, règles, symptômes, humeur…).
+ * - Chaque entrée porte un `client_id` (tables de suivi) ou un `id` généré sur l'appareil :
+ *   la synchronisation est idempotente
  *   (renvoyer deux fois la même entrée ne crée pas de doublon).
  * - Une entrée refusée par le serveur (droits retirés, donnée invalide…)
  *   n'est JAMAIS supprimée silencieusement : elle passe dans « conflits »,
@@ -14,9 +15,27 @@ import { backend, BackendError } from './backend';
 export interface PendingOp {
   id: string;
   table: string;
-  row: Record<string, unknown> & { client_id: string };
+  row: Record<string, unknown>;
   queuedAt: string;
   error?: string;
+  /** Colonne(s) d'unicité utilisée(s) pour l'envoi (par défaut client_id, sinon id). */
+  conflict?: string;
+  /** Vrai : la saisie remplace l'existante (ex. une observation par jour). */
+  merge?: boolean;
+}
+
+function uuidLike(): string {
+  const c = (globalThis as { crypto?: { randomUUID?: () => string } }).crypto;
+  if (c?.randomUUID) return c.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (ch) => {
+    const r = (Math.random() * 16) | 0;
+    return (ch === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+
+async function send(op: Pick<PendingOp, 'table' | 'row' | 'conflict' | 'merge'>) {
+  const conflict = op.conflict ?? ('client_id' in op.row ? 'client_id' : 'id');
+  await backend.insert(op.table, op.row, { onConflict: conflict, ignoreDuplicates: !op.merge });
 }
 
 const KEY = 'toietmoi.offline.v1';
@@ -54,27 +73,34 @@ export async function loadQueue() {
   }
 }
 
-export async function enqueue(table: string, row: PendingOp['row']) {
-  useOfflineStore.setState((s) => ({ pending: [...s.pending, { id: row.client_id, table, row, queuedAt: new Date().toISOString() }] }));
+export async function enqueue(table: string, row: PendingOp['row'], opts: { conflict?: string; merge?: boolean } = {}) {
+  const id = String(row.client_id ?? row.id ?? uuidLike());
+  useOfflineStore.setState((s) => ({ pending: [...s.pending, { id, table, row, queuedAt: new Date().toISOString(), ...opts }] }));
   await save();
 }
 
-/** Insère immédiatement si possible ; sinon met en file. Renvoie 'sent' | 'queued'. */
-export async function insertOrQueue(table: string, row: PendingOp['row']): Promise<'sent' | 'queued'> {
+/**
+ * Enregistre tout de suite si possible ; sinon met en file (sans perte), envoi au retour du réseau.
+ * Une ligne sans `client_id` reçoit un `id` généré sur l'appareil (envoi répété sans doublon).
+ * Renvoie 'sent' | 'queued'.
+ */
+export async function insertOrQueue(table: string, input: Record<string, unknown>, opts: { conflict?: string; merge?: boolean } = {}): Promise<'sent' | 'queued'> {
+  const row = 'client_id' in input || 'id' in input || opts.conflict ? input : { id: uuidLike(), ...input };
+  const op = { table, row, ...opts };
   if (backend.mode === 'demo') {
-    await backend.insert(table, row, { onConflict: 'client_id', ignoreDuplicates: true });
+    await send(op);
     return 'sent';
   }
   if (!useOfflineStore.getState().online) {
-    await enqueue(table, row);
+    await enqueue(table, row, opts);
     return 'queued';
   }
   try {
-    await backend.insert(table, row, { onConflict: 'client_id', ignoreDuplicates: true });
+    await send(op);
     return 'sent';
   } catch (e) {
     if (e instanceof BackendError && e.isNetwork) {
-      await enqueue(table, row);
+      await enqueue(table, row, opts);
       return 'queued';
     }
     throw e;
@@ -90,7 +116,7 @@ export async function flushQueue(): Promise<number> {
   const conflicts: PendingOp[] = [...st.conflicts];
   for (const op of st.pending) {
     try {
-      await backend.insert(op.table, op.row, { onConflict: 'client_id', ignoreDuplicates: true });
+      await send(op);
       sent++;
     } catch (e) {
       if (e instanceof BackendError && e.isNetwork) remaining.push(op);

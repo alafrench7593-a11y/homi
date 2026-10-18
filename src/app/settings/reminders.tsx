@@ -11,7 +11,8 @@ import { friendlyError, useDeleteReminder, useSaveReminder, useToggleReminder, t
 import { describeSchedule, IOS_PENDING_LIMIT, nextOccurrence, validateSchedule, type ReminderSchedule, type Weekday } from '@/lib/domain/reminders';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
-import { getPermission, notificationsSupported, requestPermission, scheduledCount, sendTestNotification, type PermissionState } from '@/lib/notifications';
+import { askNotificationPermission } from '@/lib/notificationPrompt';
+import { getPermission, notificationsSupported, scheduledCount, sendTestNotification, type PermissionState } from '@/lib/notifications';
 import type { Reminder } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
@@ -186,7 +187,7 @@ export default function RemindersScreen() {
   useEffect(refreshStatus, [refreshStatus, reminders]);
 
   async function ask() {
-    const p = await requestPermission();
+    const p = await askNotificationPermission('Pour recevoir les rappels que vous avez choisis (biberon, rendez-vous, cycle…).');
     setPermission(p);
     if (p === 'granted') toast('Notifications autorisées.');
     refreshStatus();

@@ -7,6 +7,7 @@ import { Image, Modal, Pressable, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { confirm, useToast } from '@/components/Overlays';
 import { PrivateBanner } from '@/components/Fertility';
+import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, IconButton, ListRow, Loading, Row, SectionTitle, Text } from '@/components/ui';
 import { KeepPhotoChoice, PhotoButtons, PhotoGuide } from '@/features/cycleTests';
 import { useUserId } from '@/lib/auth';
@@ -37,7 +38,8 @@ export default function MucusScreen() {
   const userId = useUserId();
   const save = useSaveMucus();
   const delPhoto = useDeletePhoto();
-  const { data: obs } = useFertilityObservations(200);
+  const obsQ = useFertilityObservations(200);
+  const { data: obs } = obsQ;
   const { data: periods } = usePeriods();
 
   const [date, setDate] = useState(toFrDate(todayISO()));
@@ -133,6 +135,16 @@ export default function MucusScreen() {
     }
   }
 
+  async function removePhotoOnly(id: string, photoPath: string) {
+    if (!(await confirm('Supprimer la photo ?', 'L’observation est conservée, la photo est effacée définitivement.', 'Supprimer'))) return;
+    try {
+      await delPhoto.mutateAsync({ table: 'fertility_observations', id, photoPath });
+      toast('Photo supprimée.');
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    }
+  }
+
   async function view(path: string) {
     try {
       setViewing(await loadEncryptedPhoto(path));
@@ -216,7 +228,9 @@ export default function MucusScreen() {
       <Button label="Enregistrer l’observation" icon="check" loading={save.isPending} onPress={submit} full />
 
       <SectionTitle title="Au fil de mes cycles" />
-      {cycles.some((c) => c.days.length) ? (
+      {obsQ.isLoading && !obs ? <Skeleton kind="card" rows={1} /> : obsQ.isError && !obs ? (
+        <ErrorView error={obsQ.error} onRetry={() => void obsQ.refetch()} title="Impossible d’afficher vos observations" />
+      ) : cycles.some((c) => c.days.length) ? (
         <Card>
           {cycles.map((c) => (
             <View key={c.start} style={{ marginBottom: spacing.sm }}>
@@ -253,7 +267,7 @@ export default function MucusScreen() {
                 right={(
                   <Row gap={0}>
                     {o.photo_path ? <IconButton icon="eye" label="Voir la photo" onPress={() => view(o.photo_path!)} /> : null}
-                    {o.photo_path ? <IconButton icon="image" label="Supprimer la photo seulement" onPress={async () => { if (await confirm('Supprimer la photo ?', 'L’observation est conservée, la photo est effacée définitivement.', 'Supprimer')) delPhoto.mutate({ table: 'fertility_observations', id: o.id, photoPath: o.photo_path! }); }} /> : null}
+                    {o.photo_path ? <IconButton icon="image" label="Supprimer la photo seulement" onPress={() => removePhotoOnly(o.id, o.photo_path!)} /> : null}
                     <IconButton icon="trash-2" label={`Supprimer l’observation du ${formatDateFr(o.observed_on)}`} onPress={() => remove(o.id, o.observed_on, o.photo_path)} />
                   </Row>
                 )}

@@ -4,11 +4,13 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { initialsColor } from '@/components/Illustrations';
-import { Banner, Button, IconButton, Loading, Row, Text } from '@/components/ui';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
+import { Button, IconButton, Row, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { ChildTabs, CHILD_TABS, EditChildSheet, FoodsTab, GrowthTab, HealthTab, MilestonesTab, OverviewTab, type ChildTab } from '@/features/child';
 import { backend, eq } from '@/lib/backend';
-import { useActiveSubject, useChild, useChildren, useInvalidate } from '@/lib/data/hooks';
+import { useActiveSubject, useChild, useChildren, useInvalidate, useMemberships } from '@/lib/data/hooks';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { childAge, initials } from '@/lib/domain/child';
 import { formatDateFr } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
@@ -17,8 +19,12 @@ export default function ChildProfile() {
   const params = useLocalSearchParams<{ id: string; tab?: string }>();
   const toast = useToast();
   const inv = useInvalidate();
-  const { isLoading } = useChildren();
+  const childrenQ = useChildren();
+  const membershipsQ = useMemberships();
   const child = useChild(params.id);
+  const isLoading = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
+  const loadError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !childrenQ.data ? childrenQ : null;
+  const [deleting, setDeleting] = useState(false);
   const { subject, setSubject } = useActiveSubject();
   const initial = CHILD_TABS.some((x) => x.value === params.tab) ? (params.tab as ChildTab) : 'apercu';
   const [tab, setTab] = useState<ChildTab>(initial);
@@ -27,11 +33,15 @@ export default function ChildProfile() {
   if (!child) {
     return (
       <Screen back title="Profil">
-        {isLoading ? <Loading /> : (
-          <>
-            <Banner tone="info">{'Ce profil est introuvable. Il a peut-être été supprimé.'}</Banner>
-            <Button label="Retour à l’accueil" onPress={() => router.replace('/(tabs)')} />
-          </>
+        {isLoading ? <Skeleton kind="detail" rows={4} /> : loadError ? (
+          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce profil" />
+        ) : (
+          <EmptyState
+            icon="user-x"
+            title="Profil introuvable"
+            body="Ce profil est introuvable. Il a peut-être été supprimé."
+            action={{ label: 'Retour à l’accueil', icon: 'home', onPress: () => router.replace('/(tabs)') }}
+          />
         )}
       </Screen>
     );
@@ -47,6 +57,7 @@ export default function ChildProfile() {
       'Supprimer',
     );
     if (!ok) return;
+    setDeleting(true);
     try {
       await backend.remove('children', [eq('id', child.id)]);
       if (subject.type === 'child' && subject.id === child.id) setSubject(null);
@@ -54,7 +65,9 @@ export default function ChildProfile() {
       toast('Profil supprimé.');
       router.replace('/(tabs)');
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Suppression impossible.', 'error');
+      toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error');
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -84,7 +97,7 @@ export default function ChildProfile() {
       {tab === 'apercu' && (
         <View style={{ gap: spacing.xs, marginTop: spacing.md }}>
           <Button label="Modifier le profil" variant="secondary" icon="edit-2" onPress={() => setEditing(true)} />
-          <Button label="Supprimer le profil" variant="ghost" icon="trash-2" onPress={remove} />
+          <Button label="Supprimer le profil" variant="ghost" icon="trash-2" loading={deleting} onPress={remove} />
         </View>
       )}
 

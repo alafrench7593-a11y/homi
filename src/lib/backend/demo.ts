@@ -652,6 +652,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
 
   const functions: Record<string, (b: Row) => unknown> = {
     assistant: (b) => assistantCore(b).result,
+    // Démonstration : aucun service serveur n'est branché
+    'service-status': () => ({ status: 'demo', services: { gemini: false, resend: false, auth_email_hook: false, push: false, revenuecat_webhook: false, open_food_facts: false }, checked_at: nowIso() }),
     'product-lookup': (b) => {
       const action = typeof b.action === 'string' ? b.action : 'lookup';
       if (action === 'search') {

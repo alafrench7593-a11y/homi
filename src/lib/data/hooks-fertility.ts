@@ -6,6 +6,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { backend, eq } from '../backend';
+import { insertOrQueue } from '../offline';
 import { useUserId } from '../auth';
 import { useArticles, useHouseholdId, useInvalidate, usePeriods, useProfile, useRows } from './hooks';
 import { avoidMargin, estimateCycle, projectFertileWindows } from '../domain/cycle';
@@ -66,7 +67,7 @@ export function useAddIntercourse() {
   const inv = useInvalidate();
   const userId = useUserId();
   return useMutation({
-    mutationFn: (r: { occurred_on: string; note?: string | null }) => backend.insert('intercourse_logs', { user_id: userId, occurred_on: r.occurred_on, note: r.note ?? null }),
+    mutationFn: (r: { occurred_on: string; note?: string | null }) => insertOrQueue('intercourse_logs', { user_id: userId, occurred_on: r.occurred_on, note: r.note ?? null }),
     onSuccess: () => inv('intercourse_logs'),
   });
 }
@@ -77,7 +78,7 @@ export function useSaveObservation() {
   const userId = useUserId();
   return useMutation({
     mutationFn: (r: { observed_on: string; bbt_celsius: number | null; cervical_mucus: FertilityObservation['cervical_mucus']; note: string | null }) =>
-      backend.insert('fertility_observations', { user_id: userId, ...r }, { onConflict: 'user_id,observed_on' }),
+      insertOrQueue('fertility_observations', { user_id: userId, ...r }, { conflict: 'user_id,observed_on', merge: true }),
     onSuccess: () => inv('fertility_observations'),
   });
 }

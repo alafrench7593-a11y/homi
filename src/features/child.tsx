@@ -2,11 +2,13 @@
  * Onglets du profil enfant : aperçu, croissance, étapes, santé, alimentation.
  * Tout est descriptif : aucune zone « normale/anormale », aucune notion de retard.
  */
+import { insertOrQueue } from '@/lib/offline';
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { LineChart, StatPill } from '@/components/Charts';
 import { PremiumGate } from '@/components/Family';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { ChildToday } from '@/features/home';
@@ -19,6 +21,7 @@ import {
   errorMessage, type FoodIntroduction, type HealthItem, type HealthItemKind, type Milestone, type MilestoneKind,
   useFoodIntroductions, useFoods, useHealthItems, useMilestones,
 } from '@/lib/data/hooks-family';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
 import type { Bottle, Breastfeed, Child, Diaper, LogKind, Meal, Measurement, Observation, Sleep } from '@/lib/types';
 import { toFrDate } from '@/lib/validation';
@@ -59,17 +62,47 @@ export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: 
   );
 }
 
+/** Exécute une écriture : jamais d'erreur silencieuse (toast en français en cas d'échec). */
+function useSafeWrite() {
+  const toast = useToast();
+  const [pending, setPending] = useState(false);
+  const run = async (fn: () => Promise<unknown>, success?: string): Promise<boolean> => {
+    if (pending) return false;
+    setPending(true);
+    try {
+      await fn();
+      if (success) toast(success);
+      return true;
+    } catch (e) {
+      toast(friendlyError(e), 'error');
+      return false;
+    } finally {
+      setPending(false);
+    }
+  };
+  return { run, pending };
+}
+
 const num = (s: string) => Number(s.replace(',', '.').trim());
 const fmt = (n: number | null | undefined, digits = 1) => (n == null ? '—' : String(Number(n.toFixed(digits))).replace('.', ','));
 
 // ---------------------------------------------------------------- Aperçu
 export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTab) => void }) {
-  const { data: bottles } = useLogs<Bottle>('bottle', child.id, 3);
-  const { data: feeds } = useLogs<Breastfeed>('breastfeed', child.id, 3);
-  const { data: diapers } = useLogs<Diaper>('diaper', child.id, 3);
-  const { data: sleeps } = useLogs<Sleep>('sleep', child.id, 3);
-  const { data: meals } = useLogs<Meal>('meal', child.id, 3);
-  const { data: observations } = useLogs<Observation>('observation', child.id, 3);
+  const qBottles = useLogs<Bottle>('bottle', child.id, 3);
+  const qFeeds = useLogs<Breastfeed>('breastfeed', child.id, 3);
+  const qDiapers = useLogs<Diaper>('diaper', child.id, 3);
+  const qSleeps = useLogs<Sleep>('sleep', child.id, 3);
+  const qMeals = useLogs<Meal>('meal', child.id, 3);
+  const qObs = useLogs<Observation>('observation', child.id, 3);
+  const logQueries = [qBottles, qFeeds, qDiapers, qSleeps, qMeals, qObs];
+  const logsLoading = logQueries.some((q) => q.isLoading && !q.data);
+  const logsError = logQueries.find((q) => q.isError && !q.data);
+  const { data: bottles } = qBottles;
+  const { data: feeds } = qFeeds;
+  const { data: diapers } = qDiapers;
+  const { data: sleeps } = qSleeps;
+  const { data: meals } = qMeals;
+  const { data: observations } = qObs;
   const { data: measurements } = useMeasurements(child.id);
   const { data: milestones } = useMilestones(child.id);
 
@@ -100,9 +133,17 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
       </Row>
 
       <SectionTitle title="Dernières entrées" />
-      <Card>
-        {recent.length ? <Timeline logs={recent} childId={child.id} /> : <Text muted center style={{ paddingVertical: spacing.md }}>Rien d’enregistré ces trois derniers jours.</Text>}
-      </Card>
+      {logsLoading ? <Skeleton kind="list" rows={3} /> : logsError ? (
+        <ErrorView error={logsError.error} onRetry={() => logQueries.forEach((q) => { void q.refetch(); })} title="Impossible d’afficher les dernières entrées" />
+      ) : recent.length ? (
+        <Card><Timeline logs={recent} childId={child.id} /></Card>
+      ) : (
+        <EmptyState
+          icon="edit-3"
+          title="Rien d’enregistré ces trois derniers jours"
+          action={quick.length ? { label: `Noter : ${KIND_META[quick[0]].label}`, icon: 'plus', onPress: () => router.push({ pathname: '/track/[kind]', params: { kind: quick[0], child: child.id } }) } : undefined}
+        />
+      )}
 
       <SectionTitle title="En bref" />
       <Row wrap>
@@ -129,7 +170,9 @@ const METRICS: { key: Metric; label: string; unit: string; min: number; max: num
 export function GrowthTab({ child }: { child: Child }) {
   const toast = useToast();
   const inv = useInvalidate();
-  const { data: measurements } = useMeasurements(child.id);
+  const write = useSafeWrite();
+  const measurementsQ = useMeasurements(child.id);
+  const { data: measurements } = measurementsQ;
   const [metric, setMetric] = useState<Metric>('weight_kg');
   const [date, setDate] = useState(toFrDate(todayISO()));
   const [values, setValues] = useState<Record<Metric, string>>({ weight_kg: '', height_cm: '', head_cm: '' });
@@ -162,7 +205,7 @@ export function GrowthTab({ child }: { child: Child }) {
     if (Object.keys(e).length) return;
     setSaving(true);
     try {
-      await backend.insert('child_measurements', { child_id: child.id, household_id: child.household_id, measured_on: iso, ...row, source, note: note.trim() || null });
+      await insertOrQueue('child_measurements', { child_id: child.id, household_id: child.household_id, measured_on: iso, ...row, source, note: note.trim() || null });
       inv('child_measurements');
       setValues({ weight_kg: '', height_cm: '', head_cm: '' });
       setNote('');
@@ -177,9 +220,10 @@ export function GrowthTab({ child }: { child: Child }) {
 
   async function remove(x: Measurement) {
     if (!(await confirm('Supprimer cette mesure ?', 'Elle sera supprimée pour toutes les personnes du foyer.', 'Supprimer'))) return;
-    await backend.remove('child_measurements', [eq('id', x.id)]);
-    inv('child_measurements');
-    toast('Mesure supprimée.');
+    await write.run(async () => {
+      await backend.remove('child_measurements', [eq('id', x.id)]);
+      inv('child_measurements');
+    }, 'Mesure supprimée.');
   }
 
   return (
@@ -212,7 +256,9 @@ export function GrowthTab({ child }: { child: Child }) {
       </Card>
 
       <SectionTitle title="Historique" />
-      <Card>
+      {measurementsQ.isLoading && !measurements ? <Skeleton kind="list" rows={2} /> : measurementsQ.isError && !measurements ? (
+        <ErrorView error={measurementsQ.error} onRetry={() => void measurementsQ.refetch()} title="Impossible d’afficher les mesures" />
+      ) : <Card>
         {(measurements ?? []).slice().reverse().map((x) => (
           <ListRow
             key={x.id}
@@ -221,8 +267,8 @@ export function GrowthTab({ child }: { child: Child }) {
             right={<IconButton icon="trash-2" label={`Supprimer la mesure du ${formatDateFr(x.measured_on)}`} size={18} onPress={() => remove(x)} />}
           />
         ))}
-        {!measurements?.length && <Text muted>Aucune mesure.</Text>}
-      </Card>
+        {!measurements?.length && <Text muted>Aucune mesure. Utilisez le formulaire ci-dessus pour ajouter la première.</Text>}
+      </Card>}
     </>
   );
 }
@@ -240,7 +286,9 @@ const MILESTONE_IDEAS = ['Premier sourire', 'Premier éclat de rire', 'S’est r
 export function MilestonesTab({ child }: { child: Child }) {
   const toast = useToast();
   const inv = useInvalidate();
-  const { data: milestones } = useMilestones(child.id);
+  const write = useSafeWrite();
+  const milestonesQ = useMilestones(child.id);
+  const { data: milestones } = milestonesQ;
   const [open, setOpen] = useState(false);
   const [kind, setKind] = useState<MilestoneKind>('milestone');
   const [title, setTitle] = useState('');
@@ -271,7 +319,7 @@ export function MilestonesTab({ child }: { child: Child }) {
     if (Object.keys(e).length) return;
     setSaving(true);
     try {
-      await backend.insert('child_milestones', { child_id: child.id, household_id: child.household_id, kind, title: title.trim(), happened_on: iso, note: note.trim() || null });
+      await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind, title: title.trim(), happened_on: iso, note: note.trim() || null });
       inv('child_milestones');
       haptic('success');
       toast('Moment ajouté.');
@@ -285,8 +333,10 @@ export function MilestonesTab({ child }: { child: Child }) {
 
   async function remove(x: Milestone) {
     if (!(await confirm('Supprimer ce moment ?', `« ${x.title} » sera supprimé.`, 'Supprimer'))) return;
-    await backend.remove('child_milestones', [eq('id', x.id)]);
-    inv('child_milestones');
+    await write.run(async () => {
+      await backend.remove('child_milestones', [eq('id', x.id)]);
+      inv('child_milestones');
+    }, 'Moment supprimé.');
   }
 
   const meta = (k: MilestoneKind) => MILESTONE_KINDS.find((x) => x.value === k) ?? MILESTONE_KINDS[0];
@@ -302,8 +352,12 @@ export function MilestonesTab({ child }: { child: Child }) {
       </Row>
 
       <SectionTitle title="Moments notés" />
-      <Card>
-        {(milestones ?? []).map((x) => (
+      {milestonesQ.isLoading && !milestones ? <Skeleton kind="list" rows={2} /> : milestonesQ.isError && !milestones ? (
+        <ErrorView error={milestonesQ.error} onRetry={() => void milestonesQ.refetch()} title="Impossible d’afficher les moments" />
+      ) : !milestones?.length ? (
+        <EmptyState icon="star" title="Aucun moment noté pour l’instant" action={{ label: 'Noter un moment', onPress: () => start() }} />
+      ) : <Card>
+        {milestones.map((x) => (
           <ListRow
             key={x.id}
             icon={meta(x.kind).icon}
@@ -312,8 +366,7 @@ export function MilestonesTab({ child }: { child: Child }) {
             right={<IconButton icon="trash-2" label={`Supprimer ${x.title}`} size={18} onPress={() => remove(x)} />}
           />
         ))}
-        {!milestones?.length && <Text muted>Aucun moment noté pour l’instant.</Text>}
-      </Card>
+      </Card>}
 
       <Sheet visible={open} onClose={() => setOpen(false)} title="Noter un moment">
         {errors.form ? <Banner tone="danger">{errors.form}</Banner> : null}
@@ -342,7 +395,9 @@ export function HealthTab({ child }: { child: Child }) {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
-  const { data: items } = useHealthItems(child.id);
+  const write = useSafeWrite();
+  const itemsQ = useHealthItems(child.id);
+  const { data: items } = itemsQ;
   const [adding, setAdding] = useState<HealthItemKind | null>(null);
   const [label, setLabel] = useState('');
   const [details, setDetails] = useState('');
@@ -371,7 +426,7 @@ export function HealthTab({ child }: { child: Child }) {
     if (Object.keys(e).length) return;
     setSaving(true);
     try {
-      await backend.insert('child_health_items', { child_id: child.id, household_id: child.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: dueIso, done_on: null });
+      await insertOrQueue('child_health_items', { child_id: child.id, household_id: child.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: dueIso, done_on: null });
       inv('child_health_items');
       toast('Ajouté.');
       setAdding(null);
@@ -383,14 +438,18 @@ export function HealthTab({ child }: { child: Child }) {
   }
 
   async function toggleDone(x: HealthItem) {
-    await backend.update('child_health_items', { done_on: x.done_on ? null : todayISO() }, [eq('id', x.id)]);
-    inv('child_health_items');
+    await write.run(async () => {
+      await backend.update('child_health_items', { done_on: x.done_on ? null : todayISO() }, [eq('id', x.id)]);
+      inv('child_health_items');
+    });
   }
 
   async function remove(x: HealthItem) {
     if (!(await confirm('Supprimer cet élément ?', `« ${x.label} » sera supprimé.`, 'Supprimer'))) return;
-    await backend.remove('child_health_items', [eq('id', x.id)]);
-    inv('child_health_items');
+    await write.run(async () => {
+      await backend.remove('child_health_items', [eq('id', x.id)]);
+      inv('child_health_items');
+    }, 'Élément supprimé.');
   }
 
   const meta = HEALTH_KINDS.find((k) => k.value === adding);
@@ -404,7 +463,9 @@ export function HealthTab({ child }: { child: Child }) {
           <Text style={{ marginTop: 4 }}>{child.allergies_declared.join(', ')}</Text>
         </Card>
       )}
-      {HEALTH_KINDS.map((k) => {
+      {itemsQ.isLoading && !items ? <Skeleton kind="list" rows={3} /> : itemsQ.isError && !items ? (
+        <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title="Impossible d’afficher la santé" />
+      ) : HEALTH_KINDS.map((k) => {
         const list = (items ?? []).filter((x) => x.kind === k.value);
         return (
           <View key={k.value} style={{ gap: spacing.xs }}>
@@ -417,7 +478,8 @@ export function HealthTab({ child }: { child: Child }) {
                       accessibilityRole="checkbox"
                       accessibilityState={{ checked: !!x.done_on }}
                       accessibilityLabel={`${x.label} : ${x.done_on ? 'vérifié' : 'à vérifier'}`}
-                      onPress={() => { haptic('selection'); toggleDone(x); }}
+                      disabled={write.pending}
+                      onPress={() => { haptic('selection'); void toggleDone(x); }}
                       hitSlop={6}
                       style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}
                     >
@@ -470,7 +532,9 @@ function FoodsTracker({ child }: { child: Child }) {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
-  const { data: intros } = useFoodIntroductions(child.id);
+  const write = useSafeWrite();
+  const introsQ = useFoodIntroductions(child.id);
+  const { data: intros } = introsQ;
   const { data: foods } = useFoods();
   const [name, setName] = useState('');
   const [date, setDate] = useState(toFrDate(todayISO()));
@@ -498,7 +562,7 @@ function FoodsTracker({ child }: { child: Child }) {
     if (Object.keys(e).length) return;
     setSaving(true);
     try {
-      await backend.insert('food_introductions', { child_id: child.id, household_id: child.household_id, food_name: food, first_tried_on: iso, reaction_note: reaction.trim() || null });
+      await insertOrQueue('food_introductions', { child_id: child.id, household_id: child.household_id, food_name: food, first_tried_on: iso, reaction_note: reaction.trim() || null });
       inv('food_introductions');
       setName('');
       setReaction('');
@@ -513,18 +577,23 @@ function FoodsTracker({ child }: { child: Child }) {
 
   async function saveNote() {
     if (!editing) return;
-    await backend.update('food_introductions', { reaction_note: editNote.trim() || null }, [eq('id', editing.id)]);
-    inv('food_introductions');
-    setEditing(null);
-    toast('Note enregistrée.');
+    const id = editing.id;
+    const ok = await write.run(async () => {
+      await backend.update('food_introductions', { reaction_note: editNote.trim() || null }, [eq('id', id)]);
+      inv('food_introductions');
+    }, 'Note enregistrée.');
+    if (ok) setEditing(null);
   }
 
   async function remove() {
     if (!editing) return;
-    if (!(await confirm('Retirer cet aliment ?', `« ${editing.food_name} » sera retiré de la liste.`, 'Retirer'))) return;
-    await backend.remove('food_introductions', [eq('id', editing.id)]);
-    inv('food_introductions');
-    setEditing(null);
+    const { id, food_name } = editing;
+    if (!(await confirm('Retirer cet aliment ?', `« ${food_name} » sera retiré de la liste.`, 'Retirer'))) return;
+    const ok = await write.run(async () => {
+      await backend.remove('food_introductions', [eq('id', id)]);
+      inv('food_introductions');
+    }, 'Aliment retiré.');
+    if (ok) setEditing(null);
   }
 
   return (
@@ -553,7 +622,9 @@ function FoodsTracker({ child }: { child: Child }) {
       </Card>
 
       <SectionTitle title="Aliments découverts" />
-      <Card>
+      {introsQ.isLoading && !intros ? <Skeleton kind="list" rows={2} /> : introsQ.isError && !intros ? (
+        <ErrorView error={introsQ.error} onRetry={() => void introsQ.refetch()} title="Impossible d’afficher les aliments" />
+      ) : <Card>
         {(intros ?? []).map((i) => (
           <ListRow
             key={i.id}
@@ -564,14 +635,14 @@ function FoodsTracker({ child }: { child: Child }) {
           />
         ))}
         {!intros?.length && <Text muted>Les aliments notés dans les repas apparaissent aussi ici.</Text>}
-      </Card>
+      </Card>}
 
       <Sheet visible={!!editing} onClose={() => setEditing(null)} title={editing?.food_name ?? ''}>
         {editing ? <Text muted>Première fois le {formatDateFr(editing.first_tried_on)}</Text> : null}
         {editing && isAllergen(editing.food_name) ? <Text variant="small" color={t.colors.textMuted}>Allergène majeur : parlez-en à votre médecin.</Text> : null}
         <Field label="Réaction observée" optional value={editNote} onChangeText={setEditNote} multiline maxLength={1000} />
-        <Button label="Enregistrer" onPress={saveNote} />
-        <Button label="Retirer de la liste" variant="ghost" icon="trash-2" onPress={remove} />
+        <Button label="Enregistrer" loading={write.pending} onPress={saveNote} />
+        <Button label="Retirer de la liste" variant="ghost" icon="trash-2" disabled={write.pending} onPress={remove} />
       </Sheet>
     </View>
   );

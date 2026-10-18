@@ -5,6 +5,7 @@
  */
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { NATIVE_DRIVER } from '@/theme/tokens';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Defs, Ellipse, LinearGradient as SvgLinear, Path, RadialGradient, Stop } from 'react-native-svg';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
@@ -50,8 +51,8 @@ function useDrift(duration: number, reduce: boolean) {
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(v, { toValue: 1, duration, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      Animated.timing(v, { toValue: 0, duration, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      Animated.timing(v, { toValue: 1, duration, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(v, { toValue: 0, duration, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();

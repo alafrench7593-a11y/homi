@@ -6,6 +6,8 @@ import React, { useState } from 'react';
 import { Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import { ProgressRing } from '@/components/Charts';
+import { useToast } from '@/components/Overlays';
+import { Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, Icon, Row, Text, Toggle } from '@/components/ui';
 import { useBottleNotificationSettings, useBottleTimer, useNow } from '@/lib/data/hooks-bottle';
 import {
@@ -71,7 +73,7 @@ export function BottleTimerCard({ child }: { child: Child }) {
   const now = useNow(15_000);
   const { active, isLoading } = useBottleTimer(child.id);
   const open = () => router.push({ pathname: '/bottle/[childId]', params: { childId: child.id } });
-  if (isLoading) return null;
+  if (isLoading) return <Skeleton kind="list" rows={1} />;
   if (!active) {
     return (
       <Card onPress={open} accessibilityLabel={`Minuteur biberon de ${child.first_name} : aucun rappel en cours. Ouvrir.`}>
@@ -109,6 +111,7 @@ export function BottleTimerCard({ child }: { child: Child }) {
 /** État de l'autorisation + interrupteur propre à cet appareil. Le minuteur dans l'app fonctionne dans tous les cas. */
 export function BottleNotificationSettings() {
   const s = useBottleNotificationSettings();
+  const toast = useToast();
   const [asking, setAsking] = useState(false);
   if (!s.supported) {
     return (
@@ -126,13 +129,17 @@ export function BottleNotificationSettings() {
           <Text weight="medium">Notifications du minuteur biberon</Text>
           <Text variant="small" muted>Sur cet appareil uniquement. Désactivées, le minuteur reste affiché dans l’application.</Text>
         </View>
-        <Toggle value={s.enabled} onChange={(v) => { s.setEnabled(v).catch(() => undefined); }} label="Notifications du minuteur biberon sur cet appareil" />
+        <Toggle value={s.enabled} onChange={(v) => { s.setEnabled(v).catch(() => toast('Le réglage des notifications n’a pas pu être modifié. Réessayez.', 'error')); }} label="Notifications du minuteur biberon sur cet appareil" />
       </Row>
       {s.enabled && s.permission === 'granted' && <Text variant="small" muted style={{ marginTop: spacing.xs }}>Autorisation accordée : vous serez prévenu à l’heure prévue, même application fermée (selon les réglages du téléphone).</Text>}
       {s.enabled && s.permission === 'undetermined' && (
         <View style={{ gap: spacing.xs, marginTop: spacing.sm }}>
           <Text variant="small">Pour être prévenu à l’heure du rappel, même quand l’application est fermée, le téléphone doit vous demander l’autorisation d’afficher des notifications. Vous pourrez la retirer à tout moment dans les réglages.</Text>
-          <Button label="Autoriser les notifications" icon="bell" size="sm" loading={asking} style={{ alignSelf: 'flex-start' }} onPress={async () => { setAsking(true); await s.request().catch(() => undefined); setAsking(false); }} />
+          <Button label="Autoriser les notifications" icon="bell" size="sm" loading={asking} style={{ alignSelf: 'flex-start' }} onPress={async () => {
+            setAsking(true);
+            await s.request().catch(() => toast('La demande d’autorisation n’a pas abouti. Autorisez les notifications dans les réglages du téléphone.', 'error'));
+            setAsking(false);
+          }} />
         </View>
       )}
       {s.enabled && s.permission === 'denied' && (

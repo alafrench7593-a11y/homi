@@ -13,6 +13,8 @@ import { isDemo } from '@/lib/backend';
 import { useConsents, usePrivacy, useSetConsent } from '@/lib/data/hooks';
 import { friendlyError, useDeleteAccount, useExportData, useUpdatePrivacy } from '@/lib/data/hooks-settings';
 import { cancelAllLocal } from '@/lib/notifications';
+import { setCrashReportingAllowed } from '@/lib/crashReporting';
+import { wipeLocalData } from '@/lib/localWipe';
 import type { ConsentPurpose, PrivacySettings } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -86,6 +88,7 @@ export default function PrivacyScreen() {
   async function setSetting(patch: Partial<PrivacySettings>, consent?: ConsentPurpose) {
     try {
       await updatePrivacy.mutateAsync(patch);
+      if (patch.crash_reports_enabled !== undefined) setCrashReportingAllowed(patch.crash_reports_enabled);
       if (consent) await setConsent.mutateAsync({ purpose: consent, granted: Object.values(patch)[0] === true });
     } catch (e) {
       toast(friendlyError(e), 'error');
@@ -116,6 +119,7 @@ export default function PrivacyScreen() {
     try {
       await deleteAccount.mutateAsync();
       await cancelAllLocal().catch(() => undefined);
+      await wipeLocalData();
       setDeleteOpen(false);
       toast('Votre compte a été supprimé.', 'info');
       router.replace('/welcome');

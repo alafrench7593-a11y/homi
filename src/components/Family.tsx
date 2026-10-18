@@ -12,7 +12,7 @@ import { isDemo } from '@/lib/backend';
 import { t as tr } from '@/i18n';
 import { Banner, Button, Card, haptic, Icon, type IconName, Row, Text } from './ui';
 import { initialsColor } from './Illustrations';
-import { Sheet } from './Overlays';
+import { Sheet, useToast } from './Overlays';
 
 function Avatar({ label, color, icon, size = 40 }: { label?: string; color: string; icon?: IconName; size?: number }) {
   return (
@@ -135,6 +135,7 @@ export function PremiumGate({ children, feature }: { children: React.ReactNode; 
 /** Numéros d'urgence — toujours gratuits, accessibles sans connexion internet une fois chargés. */
 export function EmergencyList({ compact }: { compact?: boolean }) {
   const t = useTheme();
+  const toast = useToast();
   const { data } = useEmergencyResources();
   const list = compact ? data?.filter((r) => ['15', '112', '3114'].includes(r.phone)) : data;
   return (
@@ -144,7 +145,7 @@ export function EmergencyList({ compact }: { compact?: boolean }) {
           key={r.phone}
           accessibilityRole="button"
           accessibilityLabel={`Appeler le ${r.phone.split('').join(' ')}, ${r.label}`}
-          onPress={() => Linking.openURL(`tel:${r.phone}`)}
+          onPress={() => { Linking.openURL(`tel:${r.phone}`).catch(() => toast(`Impossible de lancer l’appel ici : composez le ${r.phone} depuis votre téléphone.`, 'error')); }}
           style={({ pressed }) => [styles.emergency, { backgroundColor: t.colors.surface, borderColor: t.colors.border, opacity: pressed ? 0.85 : 1 }]}
         >
           <View style={[styles.phone, { backgroundColor: t.colors.dangerSoft }]}>

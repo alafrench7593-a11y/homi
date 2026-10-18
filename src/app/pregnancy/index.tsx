@@ -8,8 +8,10 @@ import { WeeksRing } from '@/components/DayClock';
 import { ProgressRing } from '@/components/Charts';
 import { Banner, Button, Card, Chip, Field, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { backend, eq } from '@/lib/backend';
-import { useActivePregnancy, useExpectedBabies, useInvalidate, useProfile, useRows } from '@/lib/data/hooks';
+import { useExpectedBabies, useInvalidate, usePregnancies, useProfile, useRows } from '@/lib/data/hooks';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { countdownLabel, multiplicityLabel, pregnancyProgress } from '@/lib/domain/pregnancy';
 import { formatWeight, weekInfo } from '@/lib/domain/fetalWeeks';
 import { formatDateFr } from '@/lib/domain/dates';
@@ -27,22 +29,32 @@ function BabyNotes({ baby }: { baby: ExpectedBaby }) {
   const inv = useInvalidate();
   const [nickname, setNickname] = useState(baby.nickname ?? '');
   const [notes, setNotes] = useState(baby.notes ?? '');
+  const [saving, setSaving] = useState(false);
+  async function save() {
+    setSaving(true);
+    try {
+      await backend.update('expected_babies', { nickname: nickname.trim() || null, notes: notes.trim() || null }, [eq('id', baby.id)]);
+      inv('expected_babies');
+      toast('Enregistré.');
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    } finally {
+      setSaving(false);
+    }
+  }
   return (
     <Card>
       <Text weight="bold">Bébé {baby.position}</Text>
       <Field label="Surnom" optional value={nickname} onChangeText={setNickname} maxLength={40} />
       <Field label="Notes (ses propres notes, séparées des autres bébés)" optional value={notes} onChangeText={setNotes} multiline maxLength={4000} />
-      <Button label="Enregistrer" size="sm" variant="secondary" style={{ marginTop: spacing.xs, alignSelf: 'flex-start' }} onPress={async () => {
-        await backend.update('expected_babies', { nickname: nickname.trim() || null, notes: notes.trim() || null }, [eq('id', baby.id)]);
-        inv('expected_babies');
-        toast('Enregistré.');
-      }} />
+      <Button label="Enregistrer" size="sm" variant="secondary" style={{ marginTop: spacing.xs, alignSelf: 'flex-start' }} loading={saving} onPress={save} />
     </Card>
   );
 }
 
 export default function PregnancyUniverse() {
-  const pregnancy = useActivePregnancy();
+  const pregnanciesQ = usePregnancies();
+  const pregnancy = pregnanciesQ.data?.find((x) => x.status === 'active') ?? null;
   const { data: babies } = useExpectedBabies(pregnancy?.id);
   const { data: profile } = useProfile();
   const p = pregnancy ? pregnancyProgress(pregnancy.due_date) : null;
@@ -50,11 +62,16 @@ export default function PregnancyUniverse() {
   const [selected, setSelected] = useState(0);
   const { data: docs } = useRows<{ id: string }>(['documents', 'preg', pregnancy?.id ?? ''], pregnancy ? { table: 'documents', filters: [eq('pregnancy_id', pregnancy.id)] } : null);
 
+  if (pregnanciesQ.isLoading && !pregnanciesQ.data) {
+    return <Screen back title="Grossesse"><Skeleton kind="card" rows={3} /></Screen>;
+  }
+  if (pregnanciesQ.isError && !pregnanciesQ.data) {
+    return <Screen back title="Grossesse"><ErrorView error={pregnanciesQ.error} onRetry={() => void pregnanciesQ.refetch()} /></Screen>;
+  }
   if (!pregnancy || !p) {
     return (
       <Screen back title="Grossesse">
-        <Text muted>Aucune grossesse en cours.</Text>
-        <Button label="Ajouter une grossesse" onPress={() => router.replace('/profiles/new')} />
+        <EmptyState icon="heart" title="Aucune grossesse en cours" body="Ajoutez une grossesse pour suivre chaque semaine, le terme prévu et vos rendez-vous." action={{ label: 'Ajouter une grossesse', onPress: () => router.replace('/profiles/new') }} />
       </Screen>
     );
   }

@@ -5,6 +5,7 @@
  */
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, View, type StyleProp, type ViewStyle } from 'react-native';
+import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 
 export type AppearKind = 'scale' | 'soft' | 'mask' | 'pop' | 'btn' | 'side' | 'stat';
@@ -20,10 +21,10 @@ export function Appear({ kind = 'soft', delay = 0.08, duration = 1.05, style, ch
     const a = kind === 'pop'
       ? Animated.sequence([
         Animated.delay(delay * 1000),
-        Animated.timing(v, { toValue: 0.7, duration: duration * 700, easing: EASE, useNativeDriver: true }),
-        Animated.timing(v, { toValue: 1, duration: duration * 300, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+        Animated.timing(v, { toValue: 0.7, duration: duration * 700, easing: EASE, useNativeDriver: NATIVE_DRIVER }),
+        Animated.timing(v, { toValue: 1, duration: duration * 300, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
       ])
-      : Animated.timing(v, { toValue: 1, duration: duration * 1000, delay: delay * 1000, easing: EASE, useNativeDriver: true });
+      : Animated.timing(v, { toValue: 1, duration: duration * 1000, delay: delay * 1000, easing: EASE, useNativeDriver: NATIVE_DRIVER });
     a.start();
     return () => a.stop();
   }, [v, reduce, kind, delay, duration]);

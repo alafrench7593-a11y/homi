@@ -1,9 +1,10 @@
 /** Conversation avec l'assistant (réponses structurées, diffusion progressive, orientation urgente). */
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Markdown } from '@/components/Markdown';
 import { EmergencyList } from '@/components/Family';
 import { AssistantIntro, StructuredAnswerView, UrgentCard } from '@/components/Assistant';
@@ -16,9 +17,10 @@ import {
 import { backend, BackendError, eq } from '@/lib/backend';
 import { useUserId } from '@/lib/auth';
 import { useConsents, useConversations, useInvalidate, useMessages, useSetConsent } from '@/lib/data/hooks';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import type { AssistantMessage } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, radius, spacing } from '@/theme/tokens';
+import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 
 interface LocalMsg {
   id: string;
@@ -51,8 +53,11 @@ export default function Chat() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ id?: string; q?: string }>();
   const [conversationId, setConversationId] = useState<string | null>(params.id ?? null);
-  const { data: history } = useMessages(params.id);
-  const { data: conversations } = useConversations();
+  const historyQ = useMessages(params.id);
+  const { data: history } = historyQ;
+  const conversationsQ = useConversations();
+  const { data: conversations } = conversationsQ;
+  const [busyAction, setBusyAction] = useState(false);
   const [msgs, setMsgs] = useState<LocalMsg[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -64,7 +69,7 @@ export default function Chat() {
   const [quota, setQuota] = useState<{ used: number; limit: number } | null>(null);
   const { latest } = useConsents();
   const setConsent = useSetConsent();
-  const scroll = useRef<ScrollView>(null);
+  const scroll = useRef<FlatList<LocalMsg>>(null);
   const askedInitial = useRef(false);
   const consented = latest.get('ai_assistant') === true;
 
@@ -105,7 +110,8 @@ export default function Chat() {
         await backend.update('assistant_conversations', { context_enabled: v }, [eq('id', conversationId)]);
         inv('assistant_conversations');
       } catch {
-        // le choix sera de toute façon transmis avec la prochaine question
+        // Le choix est de toute façon transmis avec la prochaine question : on le signale sans bloquer
+        toast('Préférence non enregistrée pour l’instant : elle sera appliquée à votre prochaine question.', 'info');
       }
     }
   }
@@ -150,7 +156,7 @@ export default function Chat() {
         setMsgs((m) => m.filter((x) => x.id !== answerId));
         inv('assistant_usage');
       } else {
-        patchMsg(answerId, { streaming: false, raw: undefined, error: true, content: e instanceof Error ? e.message : 'L’assistant est indisponible pour le moment.' });
+        patchMsg(answerId, { streaming: false, raw: undefined, error: true, content: friendlyError(e, 'L’assistant est indisponible pour le moment. Réessayez dans un instant.') });
       }
     } finally {
       setSending(false);
@@ -159,7 +165,8 @@ export default function Chat() {
   }
 
   async function feedback(m: LocalMsg, value: -1 | 1) {
-    if (!m.serverId) return;
+    if (!m.serverId || busyAction) return;
+    setBusyAction(true);
     try {
       if (m.feedback === value) {
         await backend.remove('assistant_feedback', [eq('message_id', m.serverId), eq('user_id', userId)]);
@@ -171,24 +178,43 @@ export default function Chat() {
       inv('assistant_messages');
       toast('Merci pour votre retour.', 'info');
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Retour non enregistré.', 'error');
+      toast(friendlyError(e, 'Retour non enregistré. Réessayez dans un instant.'), 'error');
+    } finally {
+      setBusyAction(false);
     }
   }
 
   async function toggleSave(m: LocalMsg) {
     if (!m.serverId) return toast('Activez l’historique pour enregistrer des réponses.', 'info');
-    await backend.update('assistant_messages', { saved: !m.saved }, [eq('id', m.serverId)]);
-    patchMsg(m.id, (x) => ({ saved: !x.saved }));
-    inv('assistant_messages');
-    toast(m.saved ? 'Réponse retirée des favoris.' : 'Réponse ajoutée aux favoris.');
+    if (busyAction) return;
+    setBusyAction(true);
+    try {
+      await backend.update('assistant_messages', { saved: !m.saved }, [eq('id', m.serverId)]);
+      patchMsg(m.id, (x) => ({ saved: !x.saved }));
+      inv('assistant_messages');
+      toast(m.saved ? 'Réponse retirée des favoris.' : 'Réponse ajoutée aux favoris.');
+    } catch (e) {
+      toast(friendlyError(e, 'Favori non enregistré. Réessayez dans un instant.'), 'error');
+    } finally {
+      setBusyAction(false);
+    }
   }
 
   async function deleteConversation() {
     if (!conversationId) return router.back();
+    if (busyAction) return;
     if (!(await confirm('Supprimer cette conversation ?', 'Elle sera définitivement effacée, avec vos favoris et retours associés.', 'Supprimer'))) return;
-    await backend.remove('assistant_conversations', [eq('id', conversationId)]);
-    inv('assistant_conversations', 'assistant_messages');
-    router.back();
+    setBusyAction(true);
+    try {
+      await backend.remove('assistant_conversations', [eq('id', conversationId)]);
+      inv('assistant_conversations', 'assistant_messages');
+      toast('Conversation supprimée.');
+      router.back();
+    } catch (e) {
+      toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error');
+    } finally {
+      setBusyAction(false);
+    }
   }
 
   function newConversation() {
@@ -213,10 +239,40 @@ export default function Chat() {
           <Text style={{ marginTop: spacing.xs }}>L’assistant informe et vous aide à préparer vos rendez-vous. Il ne pose pas de diagnostic, ne prescrit rien et ne remplace pas un professionnel. Vos conversations restent privées et ne sont jamais publiées.</Text>
           <Row style={{ marginTop: spacing.md, justifyContent: 'space-between' }}>
             <Text weight="medium" style={{ flex: 1 }}>J’accepte d’utiliser l’assistant</Text>
-            <Toggle label="Accepter l’utilisation de l’assistant" value={false} onChange={() => setConsent.mutate({ purpose: 'ai_assistant', granted: true })} />
+            <Toggle
+              label="Accepter l’utilisation de l’assistant"
+              value={setConsent.isPending}
+              onChange={() => {
+                if (setConsent.isPending) return;
+                setConsent.mutate({ purpose: 'ai_assistant', granted: true }, { onError: (e) => toast(friendlyError(e, 'Votre accord n’a pas pu être enregistré. Réessayez.'), 'error') });
+              }}
+            />
           </Row>
         </Card>
         <EmergencyList compact />
+      </Screen>
+    );
+  }
+
+  // Conversation ouverte depuis l'historique : chargement, erreur, ou identifiant inconnu
+  const openingExisting = !!params.id && conversationId === params.id && !historyLoaded.current;
+  const historyLoading = openingExisting && historyQ.isLoading && !history;
+  const historyError = openingExisting && historyQ.isError && !history;
+  const notFound = !!params.id && conversationId === params.id && !msgs.length && !sending
+    && !!history && history.length === 0 && !!conversations && !conversations.some((c) => c.id === params.id);
+  if (historyLoading || historyError || notFound) {
+    return (
+      <Screen back title="Assistant">
+        {historyLoading ? <Skeleton kind="detail" rows={5} /> : historyError ? (
+          <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher cette conversation" />
+        ) : (
+          <EmptyState
+            icon="message-circle"
+            title="Conversation introuvable"
+            body="Elle a peut-être été supprimée."
+            action={{ label: 'Nouvelle conversation', icon: 'plus', onPress: newConversation }}
+          />
+        )}
       </Screen>
     );
   }
@@ -236,26 +292,40 @@ export default function Chat() {
         </Row>
       }
     >
-      <ScrollView ref={scroll} contentContainerStyle={{ gap: spacing.md, paddingBottom: spacing.lg }} onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: false })}>
-        <AssistantIntro />
+      {/* Liste virtualisée (FlatList directe : il faut une référence pour défiler jusqu'au dernier message) */}
+      <FlatList
+        ref={scroll}
+        data={msgs}
+        initialNumToRender={12}
+        maxToRenderPerBatch={12}
+        windowSize={7}
+        keyboardShouldPersistTaps="handled"
+        keyExtractor={(m) => m.id}
+        removeClippedSubviews={false}
+        contentContainerStyle={{ gap: spacing.md, paddingBottom: spacing.lg }}
+        onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: false })}
+        ListHeaderComponent={(
+          <View style={{ gap: spacing.md }}>
+            <AssistantIntro />
 
-        <Card padded>
-          <Row style={{ justifyContent: 'space-between' }}>
-            <View style={{ flex: 1, gap: 2 }}>
-              <Text weight="medium">Utiliser ma situation</Text>
-              <Text variant="caption" muted>Pour cette conversation uniquement. Vous pouvez changer d’avis à tout moment.</Text>
-            </View>
-            <Toggle label="Utiliser ma situation pour cette conversation" value={useContext} onChange={changeContext} />
-          </Row>
-          {useContext && (
-            <Pressable accessibilityRole="button" onPress={() => setShowContext((v) => !v)} style={{ marginTop: spacing.xs, minHeight: 32, justifyContent: 'center' }}>
-              <Text variant="small" color={t.colors.primary}>{showContext ? 'Masquer' : 'Voir'} ce qui est transmis</Text>
-            </Pressable>
-          )}
-          {useContext && showContext && <Text variant="small" muted>{describeContext(context)}</Text>}
-        </Card>
-
-        {msgs.map((m) =>
+            <Card padded>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text weight="medium">Utiliser ma situation</Text>
+                  <Text variant="caption" muted>Pour cette conversation uniquement. Vous pouvez changer d’avis à tout moment.</Text>
+                </View>
+                <Toggle label="Utiliser ma situation pour cette conversation" value={useContext} onChange={changeContext} />
+              </Row>
+              {useContext && (
+                <Pressable accessibilityRole="button" onPress={() => setShowContext((v) => !v)} style={{ marginTop: spacing.xs, minHeight: MIN_TOUCH, justifyContent: 'center' }}>
+                  <Text variant="small" color={t.colors.primary}>{showContext ? 'Masquer' : 'Voir'} ce qui est transmis</Text>
+                </Pressable>
+              )}
+              {useContext && showContext && <Text variant="small" muted>{describeContext(context)}</Text>}
+            </Card>
+          </View>
+        )}
+        renderItem={({ item: m }) => (
           m.role === 'user' ? (
             <View key={m.id} style={{ alignSelf: 'flex-end', maxWidth: '86%', backgroundColor: t.colors.primary, padding: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderBottomRightRadius: 6 }}>
               <Text color={t.colors.primaryText}>{m.content}</Text>
@@ -293,17 +363,16 @@ export default function Chat() {
                 </Row>
               )}
             </View>
-          ),
+          )
         )}
-
-        {(premiumNeeded || blocked) && (
+        ListFooterComponent={premiumNeeded || blocked ? (
           <Card tone="gold">
             <Text weight="bold">{premiumNeeded ?? `Vous avez utilisé vos ${limit} questions de ce mois.`}</Text>
             <Text variant="small" muted>Avec Toi & Moi Plus, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence et les numéros d’urgence restent toujours gratuits.</Text>
             <Button label="Découvrir Toi & Moi Plus" size="sm" variant="secondary" icon="star" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
           </Card>
-        )}
-      </ScrollView>
+        ) : null}
+      />
 
       <View style={{ paddingBottom: insets.bottom + spacing.sm, gap: 4 }}>
         {remaining != null && (
@@ -334,7 +403,7 @@ export default function Chat() {
             {sending ? <ActivityIndicator color={t.colors.primaryText} /> : <Icon name="arrow-up" color={t.colors.primaryText} />}
           </Pressable>
         </View>
-        <Pressable accessibilityRole="link" accessibilityLabel="Numéros d’urgence : 15, 112, SMS 114, 3114" onPress={() => router.push('/emergency')} style={{ minHeight: 32, justifyContent: 'center' }}>
+        <Pressable accessibilityRole="link" accessibilityLabel="Numéros d’urgence : 15, 112, SMS 114, 3114" onPress={() => router.push('/emergency')} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
           <Text variant="caption" color={t.colors.danger} center>Urgence : 15 ou 112 · SMS 114 (sourds, malentendants) · Détresse : 3114</Text>
         </Pressable>
       </View>

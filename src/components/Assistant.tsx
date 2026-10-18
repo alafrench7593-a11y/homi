@@ -3,8 +3,9 @@ import React from 'react';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Markdown } from './Markdown';
+import { useToast } from './Overlays';
 import { Icon, Text, type IconName } from './ui';
 import {
   ASSISTANT_INTRO, SECTION_TITLES, urgentContacts,
@@ -50,6 +51,7 @@ const formatDate = (iso: string) => {
 /** Réponse en sections : en bref, actions, à surveiller, quand consulter, sources officielles. */
 export function StructuredAnswerView({ answer, articles, streaming }: { answer: StructuredAnswer; articles?: ArticleSourceRef[]; streaming?: boolean }) {
   const t = useTheme();
+  const toast = useToast();
   const sources = answer.sources.filter((s) => isAllowedSourceUrl(s.url));
   return (
     <View style={{ gap: spacing.md }}>
@@ -67,8 +69,8 @@ export function StructuredAnswerView({ answer, articles, streaming }: { answer: 
               accessibilityRole="link"
               accessibilityLabel={`Ouvrir la source : ${s.label}`}
               accessibilityHint="Ouvre le site officiel dans le navigateur"
-              onPress={() => Linking.openURL(s.url)}
-              style={{ flexDirection: 'row', gap: 6, alignItems: 'center', minHeight: 36 }}
+              onPress={() => { Linking.openURL(s.url).catch(() => toast('Impossible d’ouvrir ce lien sur cet appareil.', 'error')); }}
+              style={{ flexDirection: 'row', gap: 6, alignItems: 'center', minHeight: MIN_TOUCH }}
             >
               <Icon name="external-link" size={14} color={t.colors.primary} />
               <Text variant="small" color={t.colors.primary} style={{ flex: 1, textDecorationLine: 'underline' }}>{s.label}</Text>
@@ -80,7 +82,7 @@ export function StructuredAnswerView({ answer, articles, streaming }: { answer: 
         <View style={{ gap: 4 }}>
           <Text weight="bold" variant="small">Articles de l’application</Text>
           {articles.map((a) => (
-            <Pressable key={a.ref} accessibilityRole="link" onPress={() => router.push(`/article/${a.slug}`)} style={{ flexDirection: 'row', gap: 6, alignItems: 'center', minHeight: 36 }}>
+            <Pressable key={a.ref} accessibilityRole="link" accessibilityLabel={`Ouvrir l’article : ${a.title}`} onPress={() => router.push(`/article/${a.slug}`)} style={{ flexDirection: 'row', gap: 6, alignItems: 'center', minHeight: MIN_TOUCH }}>
               <Icon name="book-open" size={14} color={t.colors.primary} />
               <Text variant="small" color={t.colors.primary} style={{ flex: 1 }}>[{a.ref}] {a.title}</Text>
             </Pressable>
@@ -95,6 +97,7 @@ export function StructuredAnswerView({ answer, articles, streaming }: { answer: 
 /** Carte d'orientation urgente : appel direct du 15, 112, 3114 et SMS au 114. */
 export function UrgentCard({ level, contacts, message }: { level: 'medical_urgent' | 'crisis'; contacts?: UrgentContact[]; message?: string }) {
   const t = useTheme();
+  const toast = useToast();
   const list = contacts?.length ? contacts : urgentContacts(level);
   return (
     <View accessibilityRole="alert" style={[styles.urgent, { backgroundColor: t.colors.dangerSoft, borderColor: t.colors.danger }]}>
@@ -111,7 +114,7 @@ export function UrgentCard({ level, contacts, message }: { level: 'medical_urgen
             key={c.number}
             accessibilityRole="button"
             accessibilityLabel={`${c.channel === 'sms' ? 'Envoyer un SMS au' : 'Appeler le'} ${c.number.split('').join(' ')}, ${c.label}`}
-            onPress={() => Linking.openURL(`${c.channel}:${c.number}`)}
+            onPress={() => { Linking.openURL(`${c.channel}:${c.number}`).catch(() => toast(`Impossible de lancer l’appel ici : composez le ${c.number} depuis votre téléphone.`, 'error')); }}
             style={({ pressed }) => [styles.contact, { backgroundColor: t.colors.surface, borderColor: t.colors.border, opacity: pressed ? 0.85 : 1 }]}
           >
             <Text weight="bold" color={t.colors.danger} style={{ fontSize: 20, lineHeight: 24, minWidth: 52 }}>{c.number}</Text>

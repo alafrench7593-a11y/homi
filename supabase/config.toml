@@ -123,3 +123,6 @@ secrets = "env(SEND_EMAIL_HOOK_SECRET)"
 
 [functions.auth-email]
 verify_jwt = false
+
+[functions.service-status]
+verify_jwt = true

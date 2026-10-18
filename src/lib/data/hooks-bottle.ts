@@ -3,9 +3,10 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { backend, eq, gte } from '../backend';
 import { useUserId } from '../auth';
+import { askNotificationPermission } from '../notificationPrompt';
 import { activeTimerFor, lastIntervalFor, newTimer, planReplacement, type NewTimerInput, type TimerCore } from '../domain/bottleTimer';
 import {
-  getBottleNotificationsEnabled, getPermission, notificationsSupported, requestPermission, scheduledBottleIds, setBottleNotificationsEnabled,
+  getBottleNotificationsEnabled, getPermission, notificationsSupported, scheduledBottleIds, setBottleNotificationsEnabled,
   syncBottleTimers, type PermissionState,
 } from '../notifications';
 import type { BottleRecord, BottleTimer } from '../types-bottle';
@@ -122,7 +123,7 @@ export function useBottleNotificationSettings() {
     await setBottleNotificationsEnabled(v);
   }, []);
   const request = useCallback(async () => {
-    const p = await requestPermission();
+    const p = await askNotificationPermission('Pour être prévenu·e à l’heure du prochain biberon, même quand l’application est fermée.');
     setPermission(p);
     if (p === 'granted') await syncBottleTimers().catch(() => undefined);
     return p;

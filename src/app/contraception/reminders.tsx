@@ -9,6 +9,7 @@ import { Screen } from '@/components/Screen';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { JourneyReminders, PrivateBanner } from '@/components/Fertility';
+import { ErrorView, Skeleton } from '@/components/States';
 import { backend, eq } from '@/lib/backend';
 import { useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -32,7 +33,9 @@ export default function ContraceptionRemindersScreen() {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
-  const { data: methods } = useContraceptionMethods();
+  const methodsQ = useContraceptionMethods();
+  const { data: methods } = methodsQ;
+  const [removing, setRemoving] = useState(false);
   const save = useSaveContraceptionMethod();
   const [editing, setEditing] = useState<ContraceptionMethod | 'new' | null>(null);
   const [f, setF] = useState<Form>(emptyForm);
@@ -73,9 +76,17 @@ export default function ContraceptionRemindersScreen() {
 
   async function remove(m: ContraceptionMethod) {
     if (!(await confirm('Supprimer cette méthode ?', 'Vos rappels existants ne sont pas supprimés.', 'Supprimer'))) return;
-    await backend.remove('contraception_methods', [eq('id', m.id)]);
-    inv('contraception_methods');
-    setEditing(null);
+    setRemoving(true);
+    try {
+      await backend.remove('contraception_methods', [eq('id', m.id)]);
+      inv('contraception_methods');
+      setEditing(null);
+      toast('Méthode supprimée.');
+    } catch (err) {
+      toast(friendlyError(err), 'error');
+    } finally {
+      setRemoving(false);
+    }
   }
 
   const renewalHint = CONTRACEPTION_METHODS.find((m) => m.kind === f.method)?.renewalYears;
@@ -84,6 +95,9 @@ export default function ContraceptionRemindersScreen() {
       <PrivateBanner>Votre contraception n’est jamais partagée avec votre foyer ni votre coparent.</PrivateBanner>
 
       <SectionTitle title="Ma contraception" />
+      {methodsQ.isLoading && !methods ? <Skeleton rows={1} /> : methodsQ.isError && !methods ? (
+        <ErrorView error={methodsQ.error} onRetry={() => void methodsQ.refetch()} title="Impossible d’afficher votre contraception" />
+      ) : (
       <Card>
         {list.map((m) => (
           <ListRow
@@ -97,6 +111,7 @@ export default function ContraceptionRemindersScreen() {
         {!list.length ? <Text muted>Aucune méthode renseignée.</Text> : null}
         <Button label="Ajouter une méthode" icon="plus" variant="secondary" size="sm" style={{ marginTop: spacing.xs, alignSelf: 'flex-start' }} onPress={() => open()} />
       </Card>
+      )}
 
       <SectionTitle title="Mes rappels" />
       <JourneyReminders presets={AVOID_REMINDER_PRESETS} deepLink="/contraception" defaultDates={{ renewal: renewalDue ? addDays(renewalDue, -30) : null }} />
@@ -128,7 +143,7 @@ export default function ContraceptionRemindersScreen() {
         </Row>
         <Button label="Enregistrer" loading={save.isPending} onPress={submit} />
         {editing && editing !== 'new' ? (
-          <View><Button label="Supprimer" variant="ghost" icon="trash-2" onPress={() => remove(editing)} /></View>
+          <View><Button label="Supprimer" variant="ghost" icon="trash-2" loading={removing} onPress={() => remove(editing)} /></View>
         ) : null}
         <Text variant="caption" color={t.colors.textMuted}>Changer ou arrêter une méthode se discute avec un professionnel pour éviter une période sans protection.</Text>
       </Sheet>

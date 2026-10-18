@@ -6,7 +6,8 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Banner, Button, Card, Chip, Divider, Loading, Row, SectionTitle, Text } from '@/components/ui';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
+import { Banner, Button, Card, Chip, Divider, Row, SectionTitle, Text } from '@/components/ui';
 import { useScan, useScanHistory } from '@/lib/data/hooks-scanner';
 import { CERTAINTY_LABEL, DEMO_LABEL } from '@/lib/domain/scanCommon';
 import { frDate } from '@/lib/domain/scanSources';
@@ -39,8 +40,17 @@ function lines(a: StoredAnalysis): { label: string; value: string }[] {
 }
 
 function Column({ id, onClear }: { id: string; onClear: () => void }) {
-  const { scan, result, isLoading } = useScan(id);
-  if (isLoading) return <View style={{ flex: 1 }}><Loading /></View>;
+  const { scan, result, isLoading, error, refetch } = useScan(id);
+  if (isLoading && !scan) return <View style={{ flex: 1 }}><Skeleton kind="detail" rows={4} /></View>;
+  if (error && !scan) return <View style={{ flex: 1 }}><ErrorView error={error} onRetry={refetch} title="Fiche indisponible" /></View>;
+  if (!scan) {
+    return (
+      <Card style={{ flex: 1 }}>
+        <Text variant="small" muted>Cette analyse n’existe plus.</Text>
+        <Button label="Changer" size="sm" variant="ghost" onPress={onClear} />
+      </Card>
+    );
+  }
   const a = result?.result as StoredAnalysis | undefined;
   return (
     <Card style={{ flex: 1 }}>
@@ -69,7 +79,8 @@ export default function CompareScreen() {
   const params = useLocalSearchParams<{ a?: string; b?: string }>();
   const [a, setA] = useState<string | null>(params.a ?? null);
   const [b, setB] = useState<string | null>(params.b ?? null);
-  const { data: history } = useScanHistory();
+  const historyQ = useScanHistory();
+  const { data: history } = historyQ;
   const pickable = (history ?? []).filter((s: ScanRow) => s.id !== a && s.id !== b);
 
   function pick(id: string) {
@@ -87,13 +98,12 @@ export default function CompareScreen() {
       {!a || !b ? (
         <>
           <SectionTitle title="Dans votre historique" />
-          {pickable.length ? (
+          {historyQ.isLoading && !history ? <Skeleton kind="list" rows={2} /> : historyQ.isError && !history ? (
+            <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher votre historique" />
+          ) : pickable.length ? (
             <Row wrap>{pickable.slice(0, 30).map((s) => <Chip key={s.id} label={`${s.product_snapshot?.name ?? 'Sans nom'}${s.kind === 'food' ? ' (aliment)' : ''}`} onPress={() => pick(s.id)} />)}</Row>
           ) : (
-            <>
-              <Text variant="small" muted>Analysez d’abord au moins deux produits.</Text>
-              <Button label="Scanner un produit" icon="camera" onPress={() => router.push('/scanner/product')} />
-            </>
+            <EmptyState icon="columns" title="Analysez d’abord au moins deux produits." action={{ label: 'Scanner un produit', icon: 'camera', onPress: () => router.push('/scanner/product') }} />
           )}
         </>
       ) : null}

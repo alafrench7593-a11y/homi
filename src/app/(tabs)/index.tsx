@@ -10,6 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
 import { DemoBanner, ProfileSwitcher } from '@/components/Family';
+import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
 import { ChildToday, CycleCard, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
 import { useActivePregnancy, useActiveSubject, useArticles, useChildren, useNotificationsInbox, usePremium, useProfile } from '@/lib/data/hooks';
@@ -25,10 +26,15 @@ import { MIN_TOUCH, NACRE, previewTime, spacing } from '@/theme/tokens';
 
 export default function Home() {
   const t = useTheme();
-  const { data: profile } = useProfile();
+  const profileQ = useProfile();
+  const profile = profileQ.data;
   const { subject } = useActiveSubject();
   const pregnancy = useActivePregnancy();
-  const { data: children } = useChildren();
+  const childrenQ = useChildren();
+  const children = childrenQ.data;
+  // Carte principale : squelette pendant le premier chargement, erreur avec « Réessayer » sinon
+  const mainLoading = (profileQ.isLoading && !profile) || (childrenQ.isLoading && !children);
+  const mainError = profileQ.isError && !profile ? profileQ : childrenQ.isError && !children ? childrenQ : null;
   const { data: articles } = useArticles();
   const { data: inbox } = useNotificationsInbox();
   const premium = usePremium();
@@ -88,7 +94,9 @@ export default function Home() {
 
         {/* 2. Carte principale */}
         <Appear kind="pop" delay={0.2}>
-          {subject.type === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
+          {mainLoading ? <Skeleton kind="card" rows={1} />
+            : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); }} />
+            : subject.type === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
             : child ? <ChildToday child={child} compact />
               : cycleMode ? <CycleCard mode={cycleMode} />
                 : (

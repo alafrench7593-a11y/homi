@@ -190,3 +190,7 @@ export const typeScale = {
 };
 
 export const MIN_TOUCH = 48; // zone tactile minimale (Android 48dp, iOS 44pt)
+
+/** Animations natives sur téléphone ; le web n'a pas de pilote natif (évite un avertissement console). */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+export const NATIVE_DRIVER: boolean = (require('react-native') as typeof import('react-native')).Platform.OS !== 'web';

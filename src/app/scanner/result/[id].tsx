@@ -3,7 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { confirm, useToast } from '@/components/Overlays';
 import { Screen } from '@/components/Screen';
-import { Banner, Button, Card, ErrorState, Loading, Row, Text } from '@/components/ui';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
+import { Button, Card, Row, Text } from '@/components/ui';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useDeleteScan, useExplainScan, useScan, useScanFavorites, useToggleScanFavorite } from '@/lib/data/hooks-scanner';
 import { RECALL_DISCLAIMER } from '@/lib/domain/scanCommon';
@@ -26,22 +27,30 @@ export default function ScanResultScreen() {
   useEffect(() => {
     if (!result || result.explanation || requested.current === result.id) return;
     requested.current = result.id;
-    explain.mutateAsync({ analysis: result.result, scanId: result.scan_id }).then(setExplanation).catch(() => undefined);
+    explain.mutateAsync({ analysis: result.result, scanId: result.scan_id }).then(setExplanation).catch((e) => {
+      // Pas d'échec silencieux : la carte affiche « Explication IA indisponible » et l'explication des règles reste visible
+      setExplanation({ ai: 'unavailable', message: friendlyError(e, 'L’explication n’a pas pu être générée. Les règles et sources ci-dessous restent valables.') });
+    });
   }, [result, explain]);
 
-  if (isLoading) return <Screen back title="Résultat"><Loading /></Screen>;
-  if (error) return <Screen back title="Résultat"><ErrorState error={error} onRetry={refetch} /></Screen>;
+  if (isLoading && !scan) return <Screen back title="Résultat"><Skeleton kind="detail" rows={5} /></Screen>;
+  if (error && !scan) return <Screen back title="Résultat"><ErrorView error={error} onRetry={refetch} title="Impossible d’afficher ce résultat" /></Screen>;
   if (!scan) {
     return (
       <Screen back title="Résultat">
-        <Banner tone="info">{'Ce scan n’existe plus (il a peut-être été supprimé de l’historique).'}</Banner>
-        <Button label="Retour au scanner" onPress={() => router.replace('/scanner')} />
+        <EmptyState
+          icon="search"
+          title="Analyse introuvable"
+          body="Ce scan n’existe plus (il a peut-être été supprimé de l’historique)."
+          action={{ label: 'Retour au scanner', icon: 'arrow-left', onPress: () => router.replace('/scanner') }}
+        />
       </Screen>
     );
   }
 
   const fav = favorites.has(scan.id);
   async function remove() {
+    if (del.isPending) return;
     if (!(await confirm('Supprimer cette analyse ?', 'Elle sera retirée de votre historique et de vos favoris. Le quota du mois n’est pas modifié.', 'Supprimer'))) return;
     try {
       await del.mutateAsync(scan!.id);
@@ -54,9 +63,9 @@ export default function ScanResultScreen() {
   const actions = (
     <Row wrap>
       <Button label={fav ? 'Retirer des favoris' : 'Ajouter aux favoris'} icon="star" size="sm" variant="secondary" loading={toggleFavorite.isPending}
-        onPress={() => toggleFavorite.mutate({ scanId: scan.id, favorite: !fav }, { onError: (e) => toast(friendlyError(e), 'error') })} />
+        onPress={() => !toggleFavorite.isPending && toggleFavorite.mutate({ scanId: scan.id, favorite: !fav }, { onError: (e) => toast(friendlyError(e), 'error') })} />
       <Button label="Comparer" icon="columns" size="sm" variant="ghost" onPress={() => router.push({ pathname: '/scanner/compare', params: { a: scan.id } })} />
-      <Button label="Supprimer" icon="trash-2" size="sm" variant="ghost" onPress={remove} />
+      <Button label="Supprimer" icon="trash-2" size="sm" variant="ghost" loading={del.isPending} onPress={remove} />
     </Row>
   );
 

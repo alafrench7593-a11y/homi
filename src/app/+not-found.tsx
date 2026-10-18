@@ -1,15 +1,15 @@
+/** Adresse inconnue (lien ancien ou mal copié) : on le dit clairement et on propose de repartir. */
 import React from 'react';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Button, Text } from '@/components/ui';
-import { EmptyStateCard } from '@/components/ui-extra';
+import { Button } from '@/components/ui';
+import { EmptyState } from '@/components/States';
 
 export default function NotFound() {
   return (
-    <Screen back title="Bientôt disponible">
-      <EmptyStateCard illustration="moon" title="Écran en cours de développement" text="Cette partie de l’application arrive dans la prochaine étape." />
-      <Button label="Retour à l’accueil" onPress={() => router.replace('/')} />
-      <Text variant="caption" muted center>Toi & Moi — version de développement</Text>
+    <Screen back title="Page introuvable">
+      <EmptyState icon="compass" title="Cette page n’existe pas" body="Le lien est peut-être ancien ou incomplet. Rien n’a été perdu : vos données sont intactes." action={{ label: 'Revenir à l’accueil', icon: 'home', onPress: () => router.replace('/') }} />
+      <Button label="Tous mes outils" variant="ghost" icon="grid" onPress={() => router.replace('/tools')} />
     </Screen>
   );
 }

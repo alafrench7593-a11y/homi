@@ -2,18 +2,21 @@
 import React, { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Chip, Field, Row, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { spaceIcon } from '@/features/community';
 import { useCommunityProfile } from '@/lib/data/hooks';
 import { useCreatePost, useSpaces } from '@/lib/data/hooks-community';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import type { Forum } from '@/lib/types';
 
 export default function NewPost() {
   const toast = useToast();
   const params = useLocalSearchParams<{ forum?: string }>();
   const spaces = useSpaces();
-  const { data: me } = useCommunityProfile();
+  const meQ = useCommunityProfile();
+  const { data: me } = meQ;
   const create = useCreatePost();
   const [forumId, setForumId] = useState(params.forum || '');
   const [title, setTitle] = useState('');
@@ -28,16 +31,26 @@ export default function NewPost() {
     if (title.trim().length < 3) e.title = 'Au moins 3 caractères.';
     if (!body.trim()) e.body = 'Écrivez votre message.';
     setErrors(e);
-    if (Object.keys(e).length) return;
+    if (Object.keys(e).length || create.isPending) return;
     try {
       const p = await create.mutateAsync({ forumId, title, body, areaLabel: forum?.is_local ? area : null });
       toast(p?.status === 'pending_review' ? 'Publication envoyée en relecture avant d’être visible.' : 'Publication en ligne.', p?.status === 'pending_review' ? 'info' : 'success');
       router.replace(`/community/post/${p.id}`);
     } catch (err) {
-      setErrors({ _: err instanceof Error ? err.message : 'Publication impossible.' });
+      setErrors({ _: friendlyError(err, 'Publication impossible. Réessayez dans un instant.') });
     }
   }
 
+  if (meQ.isLoading && !meQ.data) {
+    return <Screen back title="Nouvelle publication"><Skeleton kind="detail" rows={4} /></Screen>;
+  }
+  if (meQ.isError && !meQ.data) {
+    return (
+      <Screen back title="Nouvelle publication">
+        <ErrorView error={meQ.error} onRetry={() => void meQ.refetch()} title="Impossible de vérifier votre pseudonyme" />
+      </Screen>
+    );
+  }
   if (!me) {
     return (
       <Screen back title="Nouvelle publication">
@@ -54,14 +67,18 @@ export default function NewPost() {
   return (
     <Screen back title="Nouvelle publication" subtitle={`Publiée sous le pseudonyme « ${me.pseudonym} »`}>
       {errors._ ? <Banner tone="danger">{errors._}</Banner> : null}
-      {spaces.mine.length ? (
+      {spaces.isLoading && !spaces.data ? <Skeleton kind="list" rows={2} /> : spaces.isError && !spaces.data ? (
+        <ErrorView error={spaces.error} onRetry={() => void spaces.refetch()} title="Impossible d’afficher les espaces" />
+      ) : !spaces.all.length ? (
+        <EmptyState icon="message-square" title="Aucun espace disponible" body="Les espaces de discussion n’ont pas pu être chargés." action={{ label: 'Réessayer', icon: 'refresh-cw', onPress: () => void spaces.refetch() }} />
+      ) : spaces.mine.length ? (
         <>
           <Text variant="label">Mes espaces</Text>
           {chips(spaces.mine)}
           <Text variant="label">Autres espaces</Text>
         </>
       ) : <Text variant="label">Espace</Text>}
-      {chips(spaces.others)}
+      {spaces.all.length ? chips(spaces.others) : null}
       {errors.forum ? <Text variant="small" color="#B23B3B">{errors.forum}</Text> : null}
       {forum ? <Text variant="small" muted>{forum.description}</Text> : null}
       <Field label="Titre" value={title} onChangeText={setTitle} maxLength={140} error={errors.title} />

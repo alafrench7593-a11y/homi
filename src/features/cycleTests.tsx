@@ -6,6 +6,7 @@ import { Image, Platform, Pressable, View, type LayoutChangeEvent } from 'react-
 import * as ImagePicker from 'expo-image-picker';
 import { Banner, Button, Card, Icon, Row, Segmented, Text, Toggle } from '@/components/ui';
 import { canKeepPhotos } from '@/lib/cycleAnalysis/privacy';
+import { friendlyErrorMessage } from '@/lib/errors';
 import { confidenceLabel, OUTCOME_LABEL, type TestAnalysis } from '@/lib/cycleAnalysis/interpret';
 import { QUALITY_THRESHOLDS } from '@/lib/cycleAnalysis/quality';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -39,16 +40,24 @@ export function PhotoGuide({ kind }: { kind: 'test' | 'mucus' }) {
 }
 
 export function PhotoButtons({ onPicked, onError, disabled }: { onPicked: (uri: string) => void; onError: (msg: string) => void; disabled?: boolean }) {
+  const [busy, setBusy] = useState<PhotoSource | null>(null);
   async function go(source: PhotoSource) {
-    const r = await pickPhoto(source);
-    if (!r) return;
-    if ('error' in r) onError(r.error);
-    else onPicked(r.uri);
+    setBusy(source);
+    try {
+      const r = await pickPhoto(source);
+      if (!r) return;
+      if ('error' in r) onError(r.error);
+      else onPicked(r.uri);
+    } catch (err) {
+      onError(friendlyErrorMessage(err, source === 'camera' ? 'Impossible d’ouvrir l’appareil photo. Réessayez.' : 'Impossible d’ouvrir vos photos. Réessayez.'));
+    } finally {
+      setBusy(null);
+    }
   }
   return (
     <Row wrap>
-      <Button label="Prendre une photo" icon="camera" onPress={() => go('camera')} disabled={disabled} />
-      <Button label="Choisir une image" icon="image" variant="secondary" onPress={() => go('library')} disabled={disabled} />
+      <Button label="Prendre une photo" icon="camera" onPress={() => go('camera')} disabled={disabled || busy === 'library'} loading={busy === 'camera'} />
+      <Button label="Choisir une image" icon="image" variant="secondary" onPress={() => go('library')} disabled={disabled || busy === 'camera'} loading={busy === 'library'} />
     </Row>
   );
 }

@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { PremiumGate } from '@/components/Family';
-import { Banner, Button, Card, Field, haptic, Icon, IconButton, type IconName, ListRow, Loading, Row, SectionTitle, Text } from '@/components/ui';
-import { EmptyStateCard } from '@/components/ui-extra';
+import { Banner, Button, Card, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
 import { backend, eq } from '@/lib/backend';
 import { ensureHousehold, useActivePregnancy, useAllChecklistItems, useChecklistItems, useChecklists, useHouseholdId, useInvalidate, usePremium } from '@/lib/data/hooks';
-import { errorMessage, isPremiumError, usePlanLimit } from '@/lib/data/hooks-family';
+import { isPremiumError, usePlanLimit } from '@/lib/data/hooks-family';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { CHECKLIST_TEMPLATES } from '@/content/checklists';
 import type { Checklist, ChecklistItem, ChecklistKind } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -33,19 +34,26 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
   const toast = useToast();
   const inv = useInvalidate();
   const userId = useUserId();
-  const { data: items, isLoading } = useChecklistItems(list.id);
+  const itemsQ = useChecklistItems(list.id);
+  const { data: items, isLoading } = itemsQ;
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [removing, setRemoving] = useState(false);
   const [label, setLabel] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const done = (items ?? []).filter((i) => i.done).length;
 
   async function toggle(item: ChecklistItem) {
+    if (busyId === item.id) return;
     haptic(item.done ? 'selection' : 'success');
+    setBusyId(item.id);
     try {
       await backend.update('checklist_items', { done: !item.done, done_by: item.done ? null : userId }, [eq('id', item.id)]);
       inv('checklist_items');
     } catch (e) {
-      toast(errorMessage(e), 'error');
+      toast(friendlyError(e), 'error');
+    } finally {
+      setBusyId(null);
     }
   }
 
@@ -61,25 +69,40 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
       inv('checklist_items');
       setLabel('');
     } catch (e) {
-      setError(errorMessage(e));
+      setError(friendlyError(e));
     } finally {
       setAdding(false);
     }
   }
 
   async function removeItem(item: ChecklistItem) {
-    await backend.remove('checklist_items', [eq('id', item.id)]);
-    inv('checklist_items');
-    toast(`« ${item.label} » retiré.`, 'info');
+    if (busyId === item.id) return;
+    setBusyId(item.id);
+    try {
+      await backend.remove('checklist_items', [eq('id', item.id)]);
+      inv('checklist_items');
+      toast(`« ${item.label} » retiré.`, 'info');
+    } catch (e) {
+      toast(friendlyError(e), 'error');
+    } finally {
+      setBusyId(null);
+    }
   }
 
   async function removeList() {
     if (!(await confirm(`Supprimer « ${list.title} » ?`, 'La liste et tous ses éléments seront supprimés pour toutes les personnes du foyer.', 'Supprimer'))) return;
-    await backend.remove('checklist_items', [eq('checklist_id', list.id)]).catch(() => undefined);
-    await backend.remove('checklists', [eq('id', list.id)]);
-    inv('checklists', 'checklist_items');
-    toast('Liste supprimée.');
-    onClose();
+    setRemoving(true);
+    try {
+      await backend.remove('checklist_items', [eq('checklist_id', list.id)]).catch(() => undefined);
+      await backend.remove('checklists', [eq('id', list.id)]);
+      inv('checklists', 'checklist_items');
+      toast('Liste supprimée.');
+      onClose();
+    } catch (e) {
+      toast(friendlyError(e), 'error');
+    } finally {
+      setRemoving(false);
+    }
   }
 
   return (
@@ -92,7 +115,9 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
         </Row>
         <Text variant="small" muted>{done} sur {items?.length ?? 0} fait{done > 1 ? 's' : ''}</Text>
         <ProgressBar done={done} total={items?.length ?? 0} />
-        {isLoading ? <Loading /> : (
+        {isLoading && !items ? <Skeleton kind="detail" rows={4} /> : itemsQ.isError && !items ? (
+          <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title="Impossible d’afficher cette liste" />
+        ) : (
           <View>
             {(items ?? []).map((item) => (
               <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
@@ -114,7 +139,7 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
         )}
         <Field label="Ajouter un élément" value={label} onChangeText={(v) => { setLabel(v); setError(null); }} maxLength={160} error={error} onSubmitEditing={add} returnKeyType="done" />
         <Button label="Ajouter" icon="plus" size="sm" variant="secondary" loading={adding} onPress={add} style={{ alignSelf: 'flex-start' }} />
-        <Button label="Supprimer la liste" icon="trash-2" variant="ghost" size="sm" onPress={removeList} style={{ alignSelf: 'flex-start' }} />
+        <Button label="Supprimer la liste" icon="trash-2" variant="ghost" size="sm" loading={removing} onPress={removeList} style={{ alignSelf: 'flex-start' }} />
       </View>
     </Card>
   );
@@ -127,7 +152,8 @@ export default function ListsScreen() {
   const premium = usePremium();
   const limit = usePlanLimit('checklists_count');
   const pregnancy = useActivePregnancy();
-  const { data: lists, isLoading } = useChecklists();
+  const listsQ = useChecklists();
+  const { data: lists, isLoading } = listsQ;
   const { data: allItems } = useAllChecklistItems();
   const [openId, setOpenId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
@@ -155,7 +181,7 @@ export default function ListsScreen() {
       setOpenId(list.id);
     } catch (e) {
       if (isPremiumError(e)) setLimitReached(true);
-      else toast(errorMessage(e), 'error');
+      else toast(friendlyError(e), 'error');
     } finally {
       setBusy(false);
     }
@@ -183,8 +209,10 @@ export default function ListsScreen() {
         <Button label="Nouvelle liste" icon="plus" onPress={() => setCreating(true)} />
       )}
 
-      {isLoading ? <Loading /> : !lists?.length ? (
-        <EmptyStateCard illustration="leaf" title="Aucune liste pour l’instant" text="Partez d’un modèle (valise de maternité, démarches…) puis adaptez-le à votre famille." />
+      {isLoading && !lists ? <Skeleton rows={3} /> : listsQ.isError && !lists ? (
+        <ErrorView error={listsQ.error} onRetry={() => void listsQ.refetch()} title="Impossible d’afficher vos listes" />
+      ) : !lists?.length ? (
+        <EmptyState icon="check-square" title="Aucune liste pour l’instant" body="Partez d’un modèle (valise de maternité, démarches…) puis adaptez-le à votre famille." action={atLimit ? undefined : { label: 'Créer une liste', onPress: () => setCreating(true) }} />
       ) : (
         <>
           {open && <ChecklistDetail key={open.id} list={open} onClose={() => setOpenId(null)} />}

@@ -167,12 +167,16 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
   }
 
   async function openCamera() {
-    if (!permission?.granted) {
-      const p = await requestPermission();
-      if (!p.granted) { setCameraDenied(p.canAskAgain ? 'ask' : 'settings'); return; }
+    try {
+      if (!permission?.granted) {
+        const p = await requestPermission();
+        if (!p.granted) { setCameraDenied(p.canAskAgain ? 'ask' : 'settings'); return; }
+      }
+      setCameraDenied(null);
+      setCameraOn(true);
+    } catch {
+      setNotice('La caméra n’a pas pu être ouverte. Saisissez le code-barres ou le nom du produit.');
     }
-    setCameraDenied(null);
-    setCameraOn(true);
   }
 
   function applyReading(reading: TextReading) {
@@ -184,15 +188,21 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
 
   async function fromPhoto(source: 'camera' | 'library', purpose: 'product' | 'ingredients') {
     if (!localText && !localBarcode) { setNotice(LOCAL_RECOGNITION_UNAVAILABLE); return; }
-    const perm = source === 'camera' ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) {
-      if (source === 'camera') setCameraDenied(perm.canAskAgain ? 'ask' : 'settings');
-      else toast('Autorisez l’accès aux photos dans les réglages du téléphone.', 'error');
+    let res: ImagePicker.ImagePickerResult;
+    try {
+      const perm = source === 'camera' ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!perm.granted) {
+        if (source === 'camera') setCameraDenied(perm.canAskAgain ? 'ask' : 'settings');
+        else toast('Autorisez l’accès aux photos dans les réglages du téléphone.', 'error');
+        return;
+      }
+      res = source === 'camera'
+        ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.9 })
+        : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.9, allowsMultipleSelection: false });
+    } catch {
+      toast(source === 'camera' ? 'L’appareil photo n’a pas pu être ouvert.' : 'La galerie n’a pas pu être ouverte.', 'error');
       return;
     }
-    const res = source === 'camera'
-      ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.9 })
-      : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.9, allowsMultipleSelection: false });
     if (res.canceled || !res.assets?.[0]) return;
     const uri = res.assets[0].uri;
     setBusy('Lecture de la photo sur le téléphone…');

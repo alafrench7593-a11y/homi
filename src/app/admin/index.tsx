@@ -4,9 +4,11 @@
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Banner, Button, Card, Divider, Field, Loading, Row, SectionTitle, Text } from '@/components/ui';
+import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
+import { Banner, Button, Card, Divider, Field, Row, SectionTitle, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { isDemo } from '@/lib/backend';
 import {
@@ -35,6 +37,7 @@ function ModerationCard({ item }: { item: ModItem }) {
   const toast = useToast();
   const moderate = useModerate();
   const act = async (action: ModAction, label: string) => {
+    if (moderate.isPending) return;
     if (action === 'remove' && !(await confirm('Supprimer ce contenu ?', 'Il ne sera plus visible par personne. L’action est journalisée.', 'Supprimer'))) return;
     try {
       await moderate.mutateAsync({ item, action });
@@ -66,6 +69,7 @@ function ModerationCard({ item }: { item: ModItem }) {
 
 export default function AdminScreen() {
   const toast = useToast();
+  const insets = useSafeAreaInsets();
   const { isAdmin, isModerator, isEditor, isLoading } = useMyRoles();
   const [preview, setPreview] = useState(false);
   const admin = isAdmin || preview;
@@ -105,7 +109,7 @@ export default function AdminScreen() {
       `« ${title.trim()} »\n\n${body.trim()}\n\nElle apparaîtra dans le centre de notifications de chaque personne. Cette action ne peut pas être annulée.`,
       'Envoyer',
     );
-    if (!ok) return;
+    if (!ok || broadcast.isPending) return;
     try {
       const n = await broadcast.mutateAsync({ title: title.trim(), body: body.trim(), deepLink: link.trim() || null });
       toast(`Annonce envoyée à ${n} compte${n > 1 ? 's' : ''}.`);
@@ -115,7 +119,7 @@ export default function AdminScreen() {
     }
   }
 
-  if (isLoading) return <Screen back title="Administration"><Loading /></Screen>;
+  if (isLoading) return <Screen back title="Administration"><Skeleton kind="detail" rows={5} /></Screen>;
 
   if (!moderator && !editor) {
     return (
@@ -134,15 +138,19 @@ export default function AdminScreen() {
     );
   }
 
-  return (
-    <Screen back title="Administration" subtitle={admin ? 'Statistiques anonymisées, modération, annonces.' : 'Modération de la communauté.'}>
+  const queueLoading = queue.isLoading && !queue.data;
+  const queueError = queue.isError && !queue.data;
+  const queueRows = moderator && !queueLoading && !queueError ? (queue.data ?? []) : [];
+
+  const header = (
+    <View style={{ gap: spacing.md, marginBottom: spacing.xxs }}>
       {preview ? <Banner tone="demo" title="Aperçu de démonstration">{'Données de cet appareil uniquement. Une annonce n’est envoyée qu’à vous-même.'}</Banner> : null}
 
       {admin ? (
         <>
           <SectionTitle title="En chiffres" action="Actualiser" onAction={() => stats.refetch()} />
-          {stats.isLoading ? <Loading /> : stats.error ? (
-            <Banner tone="danger">{friendlyError(stats.error)}</Banner>
+          {stats.isLoading && !stats.data ? <Skeleton kind="card" rows={1} /> : stats.isError && !stats.data ? (
+            <ErrorView error={stats.error} onRetry={() => void stats.refetch()} title="Statistiques indisponibles" />
           ) : (
             <Card>
               <Row wrap>
@@ -172,20 +180,23 @@ export default function AdminScreen() {
       {moderator ? (
         <>
           <SectionTitle title="File de modération" action="Actualiser" onAction={() => queue.refetch()} />
-          {queue.isLoading ? <Loading /> : queue.error ? (
-            <Banner tone="danger">{friendlyError(queue.error)}</Banner>
-          ) : queue.data?.length ? (
-            queue.data.map((item) => <ModerationCard key={`${item.kind}-${item.id}`} item={item} />)
-          ) : (
-            <Card tone="soft"><Text variant="small">Rien à examiner pour le moment : aucun contenu signalé, masqué ou en attente.</Text></Card>
-          )}
+          {queueLoading ? <Skeleton kind="card" rows={2} /> : queueError ? (
+            <ErrorView error={queue.error} onRetry={() => void queue.refetch()} title="File de modération indisponible" />
+          ) : null}
         </>
       ) : null}
+    </View>
+  );
+
+  const footer = (
+    <View style={{ gap: spacing.md, marginTop: spacing.xxs }}>
 
       {editor ? (
         <>
           <SectionTitle title="Validation des articles" />
-          {articles.isLoading ? <Loading /> : articles.error ? <Banner tone="danger">{friendlyError(articles.error)}</Banner> : (
+          {articles.isLoading && !articles.data ? <Skeleton kind="card" rows={1} /> : articles.isError && !articles.data ? (
+            <ErrorView error={articles.error} onRetry={() => void articles.refetch()} title="Articles indisponibles" />
+          ) : (
             <Card>
               <Row wrap>
                 {Object.entries(ARTICLE_STATUS).map(([k, label]) => <Stat key={k} label={label} value={articleOverview.byStatus[k] ?? 0} />)}
@@ -220,6 +231,28 @@ export default function AdminScreen() {
           </Card>
         </>
       ) : null}
+    </View>
+  );
+
+  return (
+    <Screen back scroll={false} padded={false} title="Administration" subtitle={admin ? 'Statistiques anonymisées, modération, annonces.' : 'Modération de la communauté.'}>
+      <VirtualList
+        data={queueRows}
+        keyExtractor={(item) => `${item.kind}-${item.id}`}
+        renderItem={({ item }) => <ModerationCard item={item} />}
+        ListHeaderComponent={header}
+        ListFooterComponent={footer}
+        ListEmptyComponent={moderator && !queueLoading && !queueError ? (
+          <EmptyState
+            icon="check-circle"
+            title="Rien à examiner pour le moment"
+            body="Aucun contenu signalé, masqué ou en attente."
+            action={{ label: 'Actualiser', icon: 'refresh-cw', onPress: () => void queue.refetch() }}
+          />
+        ) : null}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
+        showsVerticalScrollIndicator={false}
+      />
     </Screen>
   );
 }

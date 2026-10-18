@@ -7,6 +7,7 @@ import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
 import { NavCard } from '@/components/Fertility';
 import { useToast } from '@/components/Overlays';
+import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Card, Icon, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { useCyclePreferences, useSaveCyclePreferences } from '@/lib/data/hooks-cycle';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -24,7 +25,8 @@ const GUARANTEES = [
 
 export default function UnderstandCycleScreen() {
   const toast = useToast();
-  const { prefs } = useCyclePreferences();
+  const prefsQ = useCyclePreferences();
+  const { prefs } = prefsQ;
   const savePrefs = useSaveCyclePreferences();
 
   return (
@@ -42,6 +44,9 @@ export default function UnderstandCycleScreen() {
       </Appear>
 
       <SectionTitle title="Options" />
+      {prefsQ.isLoading ? <Skeleton kind="card" rows={1} /> : prefsQ.isError && !prefsQ.data ? (
+        <ErrorView error={prefsQ.error} onRetry={() => void prefsQ.refetch()} title="Impossible d’afficher vos options" />
+      ) : (
       <Card>
         <Toggle
           value={prefs.track_intercourse}
@@ -52,6 +57,7 @@ export default function UnderstandCycleScreen() {
         />
         <Text variant="caption" muted style={{ marginTop: 4 }}>Désactivé par défaut. Les rapports restent strictement privés.</Text>
       </Card>
+      )}
 
       <SectionTitle title="Confidentialité renforcée" />
       <Card>

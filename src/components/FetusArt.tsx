@@ -4,6 +4,7 @@
  * sinon la semaine illustrée la plus proche en dessous, sinon l'illustration vectorielle FetusOrb.
  * Toujours une représentation ARTISTIQUE : ni une échographie, ni l'image de votre bébé.
  */
+import { NATIVE_DRIVER } from '@/theme/tokens';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, Image, PanResponder, View } from 'react-native';
 import { FOETUS_IMAGES } from '@/assets/foetus';
@@ -43,14 +44,14 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
 
   useEffect(() => {
     fade.setValue(0);
-    Animated.timing(fade, { toValue: 1, duration: reduce ? 0 : 450, useNativeDriver: true }).start();
+    Animated.timing(fade, { toValue: 1, duration: reduce ? 0 : 450, useNativeDriver: NATIVE_DRIVER }).start();
   }, [source, fade, reduce]);
 
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(float, { toValue: 1, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      Animated.timing(float, { toValue: 0, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      Animated.timing(float, { toValue: 1, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(float, { toValue: 0, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
@@ -59,7 +60,7 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
   const pan = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_e, gs) => interactive && Math.abs(gs.dx) > 4,
     onPanResponderMove: (_e, gs) => tilt.setValue(Math.max(-1, Math.min(1, gs.dx / (size * 0.8)))),
-    onPanResponderRelease: () => Animated.spring(tilt, { toValue: 0, useNativeDriver: true, friction: 5, tension: 30 }).start(),
+    onPanResponderRelease: () => Animated.spring(tilt, { toValue: 0, useNativeDriver: NATIVE_DRIVER, friction: 5, tension: 30 }).start(),
   }), [interactive, tilt, size]);
 
   const rotateY = tilt.interpolate({ inputRange: [-1, 1], outputRange: ['-22deg', '22deg'] });

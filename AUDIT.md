@@ -106,3 +106,29 @@ Dettes notées lors des étapes précédentes :
 | B14 | ✅ | « Découvrir sans compte » sur l'écran d'accueil. La démonstration tourne sur l'appareil (aucune requête vers la vraie base), avec un bandeau « Démonstration » permanent et un lien « Quitter ». | parcours F |
 | D1 | ✅ (partiel) | `SEND_EMAIL_HOOK_SECRET`, `PUSH_WEBHOOK_SECRET` et les variables Apple / Google ajoutés à `.env.example`. Le reste est prévu à l'étape 4. | — |
 | — | ✅ | Bug trouvé en route : l'appel de rattrapage partait depuis l'écouteur de session de Supabase, ce qui peut bloquer la session. Il est maintenant différé. | parcours D |
+
+### Étape 2 — fiabilité générale (terminée le 18/10/2026)
+
+| # | Statut | Correction | Preuve |
+|---|---|---|---|
+| A1 | ✅ | Écran d'erreur global (`ErrorBoundary` d'expo-router) : « Réessayer » ou « Revenir à l'accueil », plus jamais d'écran blanc. | parcours des écrans |
+| A2 | ✅ | `track/[kind]` : un type inconnu affiche « Ce type de saisie n'existe pas » avec un lien vers Suivi. | parcours des écrans (`/track/feeding`) |
+| A3 | ✅ | Page introuvable claire (« Cette page n'existe pas »), au lieu de « Bientôt disponible ». | parcours des écrans |
+| — | ✅ | **Quatre états sur tous les écrans** : squelettes au chargement, état vide avec une action utile, erreur avec « Réessayer », écrans « introuvable » pour les identifiants inconnus. Environ 80 écritures qui échouaient en silence affichent maintenant une erreur en français, avec des boutons bloqués pendant l'envoi. | composants `States.tsx`, rapports des deux passes |
+| C1 | ✅ | Sentry branché, actif seulement avec un DSN **et** l'accord de la personne. Pas d'identifiant, pas d'e-mail, pas de contenu d'écran. Messages et chemins nettoyés. | `crashReporting.test.ts` |
+| C2 | ✅ | File hors ligne étendue à toutes les saisies : suivi bébé, règles, symptômes, tests, glaire et température, humeur, poids, mesures, étapes, santé, aliments, rapports. Pastille « Hors ligne » visible partout, écran « Synchronisation » (en attente / à vérifier, réessayer, retirer). | `offlineQueue.test.ts` (5 cas) |
+| C3 | ✅ | Explication dans l'app avant chaque demande système de notifications (biberon, rendez-vous, rappels), et lien vers les réglages si les notifications sont refusées. | code |
+| C4 | ✅ | Listes longues virtualisées (`VirtualList` / `FlatList`) : historiques, fil et commentaires de la communauté, conversations, documents, notifications, bibliothèque, prénoms, scans, biberons, modération. | rapports des deux passes |
+| C5 | ✅ | Pastilles, interrupteurs et onglets annoncent leur état (`aria-checked`) ; cibles tactiles d'au moins 44 px. Contrastes vérifiés pour les 3 thèmes. **Palette de marque verrouillée à ta demande** : les 3 couleurs que j'avais assombries ont été remises à l'identique. Les écarts restants, tous dans le thème clair, sont mesurés et listés dans le test : liens roses 3,2:1, erreurs 4,3:1, texte blanc des boutons 3,4:1. Ils sont compensés par la graisse, la taille et une ombre de texte. | `contrast.test.ts` (40 contrôles) |
+| C6 | ✅ | Fond vidéo en pause quand l'app passe en arrière-plan, et désactivé en mode économie d'énergie ou « réduire les animations » : l'aurore prend le relais. | code |
+| C7 | ✅ | « Mon compte » : changement du mot de passe, export JSON **et PDF lisible**, suppression du compte avec saisie de « SUPPRIMER ». Données et photos effacées sur le serveur, plus effacement local (cache, file, brouillons, rappels, clé des photos). | code |
+| C8 | ✅ | Écran « État des services » en mode développeur (7 appuis sur la version), avec la fonction `service-status` qui ne renvoie que des booléens. | `service_status_test.ts` |
+| C9 | ✅ | Avertissement console « useNativeDriver » supprimé sur le web. | parcours des écrans |
+| D1 | ✅ | `EXPO_PUBLIC_SENTRY_DSN` ajouté à `.env.example`. | — |
+
+**À vérifier sur téléphone** (impossible ici) :
+- réception d'un rappel app fermée sur iOS et Android ;
+- VoiceOver et TalkBack ;
+- taille de texte dynamique au maximum ;
+- mode économie d'énergie ;
+- temps de démarrage sur un appareil d'entrée de gamme.

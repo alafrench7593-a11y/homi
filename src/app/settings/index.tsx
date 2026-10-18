@@ -1,5 +1,5 @@
 /** Réglages : profil, apparence, famille, rappels, abonnement, confidentialité, aide, à propos, déconnexion. */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import Constants from 'expo-constants';
@@ -14,6 +14,8 @@ import { useHousehold, useHouseholdMembers, usePremium, useProfile, useReminders
 import { friendlyError, useMyRoles } from '@/lib/data/hooks-settings';
 import { cancelAllLocal } from '@/lib/notifications';
 import { useUiStore } from '@/lib/store';
+import { useOfflineStore } from '@/lib/offline';
+import { setDeveloperMode, useDeveloperMode } from '@/lib/devMode';
 import { previewTime, SKY_LABEL, spacing, type SkyPhase } from '@/theme/tokens';
 
 /** « Nuit » : thème nocturne doux. Le magasin d'état l'accepte à l'exécution (ThemeProvider sait l'afficher). */
@@ -29,6 +31,9 @@ const hhmm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.g
 
 export default function SettingsScreen() {
   const toast = useToast();
+  const offline = useOfflineStore();
+  const devMode = useDeveloperMode();
+  const versionTaps = useRef(0);
   const { session } = useAuth();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -151,7 +156,17 @@ export default function SettingsScreen() {
         <Divider />
         <ListRow icon="star" title="Abonnement" subtitle={premium ? `${BRAND.name} Plus actif` : 'Version gratuite'} onPress={() => router.push('/settings/subscription')} />
         <Divider />
-        <ListRow icon="lock" title="Confidentialité" subtitle="Consentements, export, suppression du compte" onPress={() => router.push('/settings/privacy')} />
+        <ListRow icon="user" title="Mon compte" subtitle="E-mail, mot de passe, export, suppression" onPress={() => router.push('/settings/account')} />
+        <Divider />
+        <ListRow icon="lock" title="Confidentialité" subtitle="Consentements et choix de partage" onPress={() => router.push('/settings/privacy')} />
+        <Divider />
+        <ListRow icon="refresh-cw" title="Synchronisation" subtitle={offline.pending.length ? `${offline.pending.length} saisie(s) en attente` : offline.conflicts.length ? `${offline.conflicts.length} saisie(s) à vérifier` : 'Tout est envoyé'} onPress={() => router.push('/settings/sync')} />
+        {devMode ? (
+          <>
+            <Divider />
+            <ListRow icon="cpu" title="État des services" subtitle="Mode développeur" onPress={() => router.push('/settings/services')} />
+          </>
+        ) : null}
         {isModerator ? (
           <>
             <Divider />
@@ -172,7 +187,11 @@ export default function SettingsScreen() {
       <Card tone="soft">
         <Text variant="heading">{BRAND.name}</Text>
         <Text italic muted>{BRAND.tagline}</Text>
-        <Text variant="small" muted style={{ marginTop: spacing.xs }}>
+        <Text variant="small" muted style={{ marginTop: spacing.xs }} onPress={() => {
+          const n = versionTaps.current + 1;
+          versionTaps.current = n;
+          if (n === 7) { void setDeveloperMode(!devMode); toast(devMode ? 'Mode développeur désactivé.' : 'Mode développeur activé.'); versionTaps.current = 0; }
+        }}>
           {`Version ${version}${isDemo ? ' · mode démonstration (données sur cet appareil)' : ''}`}
         </Text>
       </Card>

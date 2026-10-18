@@ -1,28 +1,38 @@
 /** Favoris : publications enregistrées par la personne connectée (visibles d'elle seule). */
 import React from 'react';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
-import { EmptyStateCard } from '@/components/ui-extra';
-import { Button, ErrorState, Loading } from '@/components/ui';
+import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { PostCard } from '@/features/community';
 import { useForums } from '@/lib/data/hooks';
 import { useSavedPosts } from '@/lib/data/hooks-community';
+import { spacing } from '@/theme/tokens';
 
 export default function SavedPosts() {
-  const { data, isLoading, error, refetch } = useSavedPosts();
+  const insets = useSafeAreaInsets();
+  const { data, isLoading, isError, error, refetch } = useSavedPosts();
   const { data: forums } = useForums();
+  const loading = isLoading && !data;
+  const failed = isError && !data;
   return (
-    <Screen back title="Mes favoris" subtitle="Les discussions que vous avez enregistrées. Personne d’autre ne voit cette liste.">
-      {isLoading ? <Loading /> : error ? <ErrorState error={error} onRetry={() => refetch()} /> : data?.length ? (
-        data.map((p) => <PostCard key={p.id} post={p} forumTitle={forums?.find((f) => f.id === p.forum_id)?.title} />)
-      ) : (
-        <EmptyStateCard
-          illustration="chat"
-          title="Aucun favori pour l’instant"
-          text="Touchez le marque-page d’une publication pour la retrouver ici."
-          action={<Button label="Parcourir la communauté" variant="secondary" onPress={() => router.replace('/(tabs)/community')} />}
-        />
-      )}
+    <Screen back scroll={false} padded={false} title="Mes favoris" subtitle="Les discussions que vous avez enregistrées. Personne d’autre ne voit cette liste.">
+      <VirtualList
+        data={loading || failed ? [] : (data ?? [])}
+        keyExtractor={(p) => p.id}
+        renderItem={({ item: p }) => <PostCard post={p} forumTitle={forums?.find((f) => f.id === p.forum_id)?.title} />}
+        ListHeaderComponent={loading ? <Skeleton kind="card" rows={3} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} /> : null}
+        ListEmptyComponent={loading || failed ? null : (
+          <EmptyState
+            icon="bookmark"
+            title="Aucun favori pour l’instant"
+            body="Touchez le marque-page d’une publication pour la retrouver ici."
+            action={{ label: 'Parcourir la communauté', icon: 'users', onPress: () => router.replace('/(tabs)/community') }}
+          />
+        )}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
+        showsVerticalScrollIndicator={false}
+      />
     </Screen>
   );
 }

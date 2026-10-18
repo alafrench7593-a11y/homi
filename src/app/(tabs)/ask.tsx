@@ -2,14 +2,16 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
+import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { AssistantIntro } from '@/components/Assistant';
 import { Banner, Button, Card, Chip, Field, Icon, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
-import { EmptyStateCard } from '@/components/ui-extra';
 import { confirm, useToast } from '@/components/Overlays';
 import { JOURNEY_ORDER, MAX_QUESTION_LENGTH, SUGGESTIONS_BY_JOURNEY, useAssistantQuota } from '@/features/assistant';
 import { backend, eq } from '@/lib/backend';
 import { useConversations, useInvalidate, useProfile, useSavedAnswers } from '@/lib/data/hooks';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { useUserId } from '@/lib/auth';
 import { timeAgo } from '@/lib/domain/dates';
 import type { Conversation, Journey } from '@/lib/types';
@@ -28,7 +30,10 @@ export default function Ask() {
   const userId = useUserId();
   const [q, setQ] = useState('');
   const { data: profile } = useProfile();
-  const { data: conversations } = useConversations();
+  const insets = useSafeAreaInsets();
+  const convQ = useConversations();
+  const conversations = convQ.data;
+  const [busy, setBusy] = useState(false);
   const { data: saved } = useSavedAnswers();
   const { data: quota } = useAssistantQuota();
 
@@ -44,21 +49,41 @@ export default function Ask() {
   const blocked = quota?.remaining === 0;
 
   async function deleteOne(c: Conversation) {
+    if (busy) return;
     if (!(await confirm('Supprimer cette conversation ?', `« ${c.title} » sera définitivement effacée.`, 'Supprimer'))) return;
-    await backend.remove('assistant_conversations', [eq('id', c.id)]);
-    inv('assistant_conversations', 'assistant_messages');
-    toast('Conversation supprimée.');
+    setBusy(true);
+    try {
+      await backend.remove('assistant_conversations', [eq('id', c.id)]);
+      inv('assistant_conversations', 'assistant_messages');
+      toast('Conversation supprimée.');
+    } catch (e) {
+      toast(friendlyError(e), 'error');
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function clearHistory() {
+    if (busy) return;
     if (!(await confirm('Supprimer tout l’historique ?', 'Toutes vos conversations avec l’assistant seront définitivement supprimées.', 'Tout supprimer'))) return;
-    await backend.remove('assistant_conversations', [eq('user_id', userId)]);
-    inv('assistant_conversations', 'assistant_messages');
-    toast('Historique supprimé.');
+    setBusy(true);
+    try {
+      await backend.remove('assistant_conversations', [eq('user_id', userId)]);
+      inv('assistant_conversations', 'assistant_messages');
+      toast('Historique supprimé.');
+    } catch (e) {
+      toast(friendlyError(e), 'error');
+    } finally {
+      setBusy(false);
+    }
   }
 
-  return (
-    <Screen bottomInset={96} title="Questions" subtitle="Posez vos questions de santé et de parentalité à un assistant prudent et sourcé.">
+  const convLoading = convQ.isLoading && !conversations;
+  const convError = convQ.isError && !conversations;
+  const rows = convLoading || convError ? [] : (conversations ?? []);
+
+  const header = (
+    <View style={{ gap: spacing.md, marginBottom: spacing.md }}>
       <AssistantIntro />
 
       <Card tone="lavender">
@@ -132,26 +157,62 @@ export default function Ask() {
       )}
 
       <SectionTitle title="Historique privé" action={conversations?.length ? 'Tout supprimer' : undefined} onAction={clearHistory} />
-      {conversations?.length ? (
-        <Card>
-          {conversations.map((c) => (
-            <ListRow
-              key={c.id}
-              icon="clock"
-              title={c.title}
-              subtitle={timeAgo(c.updated_at)}
-              onPress={() => router.push({ pathname: '/assistant/chat', params: { id: c.id } })}
-              right={<IconButton icon="trash-2" size={18} label={`Supprimer la conversation « ${c.title} »`} onPress={() => deleteOne(c)} />}
-            />
-          ))}
-        </Card>
-      ) : (
-        <EmptyStateCard illustration="chat" title="Aucune question pour l’instant" text="Vos conversations restent privées : elles ne sont jamais publiées dans la communauté." />
-      )}
+      {convLoading ? <Skeleton kind="list" rows={3} /> : convError ? (
+        <ErrorView error={convQ.error} onRetry={() => void convQ.refetch()} title="Impossible d’afficher l’historique" />
+      ) : null}
+    </View>
+  );
+
+  const footer = (
+    <View style={{ gap: spacing.md, marginTop: spacing.md }}>
       <Text variant="caption" muted center>Vos conversations sont privées et ne sont jamais partagées dans la communauté.</Text>
       <Row style={{ justifyContent: 'center' }}>
         <Chip label="Gérer l’historique dans Confidentialité" icon="lock" onPress={() => router.push('/settings/privacy')} />
       </Row>
+    </View>
+  );
+
+  return (
+    <Screen scroll={false} padded={false} title="Questions" subtitle="Posez vos questions de santé et de parentalité à un assistant prudent et sourcé.">
+      <VirtualList
+        data={rows}
+        keyExtractor={(c) => c.id}
+        ListHeaderComponent={header}
+        ListFooterComponent={footer}
+        ListEmptyComponent={convLoading || convError ? null : (
+          <EmptyState
+            icon="message-circle"
+            title="Aucune question pour l’instant"
+            body="Vos conversations restent privées : elles ne sont jamais publiées dans la communauté."
+            action={blocked ? undefined : { label: 'Poser ma première question', icon: 'message-circle', onPress: () => go() }}
+          />
+        )}
+        renderItem={({ item: c, index }) => {
+          const first = index === 0;
+          const last = index === rows.length - 1;
+          return (
+            <View
+              style={{
+                backgroundColor: t.colors.surface, borderColor: t.colors.border, borderLeftWidth: 1, borderRightWidth: 1,
+                borderTopWidth: first ? 1 : 0, borderBottomWidth: last ? 1 : 0,
+                borderTopLeftRadius: first ? radius.lg : 0, borderTopRightRadius: first ? radius.lg : 0,
+                borderBottomLeftRadius: last ? radius.lg : 0, borderBottomRightRadius: last ? radius.lg : 0,
+                paddingHorizontal: spacing.md, paddingTop: first ? spacing.xs : 0, paddingBottom: last ? spacing.xs : 0,
+              }}
+            >
+              <ListRow
+                icon="clock"
+                title={c.title}
+                subtitle={timeAgo(c.updated_at)}
+                onPress={() => router.push({ pathname: '/assistant/chat', params: { id: c.id } })}
+                right={<IconButton icon="trash-2" size={18} label={`Supprimer la conversation « ${c.title} »`} onPress={() => deleteOne(c)} />}
+              />
+            </View>
+          );
+        }}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl + 96 }}
+        showsVerticalScrollIndicator={false}
+      />
     </Screen>
   );
 }

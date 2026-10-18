@@ -5,9 +5,10 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, haptic, SectionTitle, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { backend, eq } from '@/lib/backend';
-import { useActivePregnancy, useExpectedBabies, useInvalidate } from '@/lib/data/hooks';
-import { errorMessage } from '@/lib/data/hooks-family';
+import { useExpectedBabies, useInvalidate, usePregnancies } from '@/lib/data/hooks';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { PregnancyForm, validatePregnancy, type PregnancyDraft } from '@/features/profiles';
 import { babiesCount, multiplicityLabel } from '@/lib/domain/pregnancy';
 import { formatDateFr, todayISO } from '@/lib/domain/dates';
@@ -25,8 +26,10 @@ function toDraft(p: Pregnancy, babies: ExpectedBaby[]): PregnancyDraft {
 export default function EditPregnancy() {
   const toast = useToast();
   const inv = useInvalidate();
-  const pregnancy = useActivePregnancy();
-  const { data: babies } = useExpectedBabies(pregnancy?.id);
+  const pregnanciesQ = usePregnancies();
+  const pregnancy = pregnanciesQ.data?.find((x) => x.status === 'active') ?? null;
+  const babiesQ = useExpectedBabies(pregnancy?.id);
+  const { data: babies } = babiesQ;
   const [draft, setDraft] = useState<PregnancyDraft | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
@@ -37,16 +40,24 @@ export default function EditPregnancy() {
     if (!draft && pregnancy && babies) setDraft(toDraft(pregnancy, babies));
   }, [draft, pregnancy, babies]);
 
+  if (pregnanciesQ.isLoading && !pregnanciesQ.data) {
+    return <Screen back title="Modifier la grossesse"><Skeleton kind="card" rows={3} /></Screen>;
+  }
+  if (pregnanciesQ.isError && !pregnanciesQ.data) {
+    return <Screen back title="Modifier la grossesse"><ErrorView error={pregnanciesQ.error} onRetry={() => void pregnanciesQ.refetch()} /></Screen>;
+  }
   if (!pregnancy) {
     return (
       <Screen back title="Grossesse">
-        <Text muted>Aucune grossesse en cours.</Text>
-        <Button label="Ajouter une grossesse" onPress={() => router.replace({ pathname: '/profiles/new', params: { kind: 'pregnancy' } })} />
+        <EmptyState icon="heart" title="Aucune grossesse en cours" action={{ label: 'Ajouter une grossesse', onPress: () => router.replace({ pathname: '/profiles/new', params: { kind: 'pregnancy' } }) }} />
       </Screen>
     );
   }
+  if (babiesQ.isError && !babies) {
+    return <Screen back title="Modifier la grossesse"><ErrorView error={babiesQ.error} onRetry={() => void babiesQ.refetch()} /></Screen>;
+  }
   if (!draft || !babies) {
-    return <Screen back title="Modifier la grossesse"><Text muted>Chargement…</Text></Screen>;
+    return <Screen back title="Modifier la grossesse"><Skeleton kind="card" rows={3} /></Screen>;
   }
 
   async function save() {
@@ -81,7 +92,7 @@ export default function EditPregnancy() {
       toast('Grossesse mise à jour.');
       router.back();
     } catch (e) {
-      setError(errorMessage(e));
+      setError(friendlyError(e, 'Enregistrement impossible. Réessayez dans un instant.'));
     } finally {
       setSaving(false);
     }
@@ -105,7 +116,7 @@ export default function EditPregnancy() {
         router.replace('/(tabs)');
       }
     } catch (e) {
-      setError(errorMessage(e));
+      setError(friendlyError(e, 'Enregistrement impossible. Réessayez dans un instant.'));
     } finally {
       setEnding(null);
     }
