@@ -9,7 +9,9 @@
  *   </QueryView>
  */
 import React, { useEffect, useRef } from 'react';
-import { Animated, FlatList, type FlatListProps, View } from 'react-native';
+import { Animated, FlatList, type FlatListProps, type ListRenderItem, View } from 'react-native';
+import { Shimmer, StaggerItem, useShake } from '@/components/Motion';
+import { springTo } from '@/theme/motion';
 import { Button, Card, Icon, type IconName, Text } from '@/components/ui';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
@@ -18,18 +20,11 @@ import { radius, spacing } from '@/theme/tokens';
 // ------------------------------------------------------------------ squelettes
 export function SkeletonBlock({ height = 16, width = '100%', style }: { height?: number; width?: number | `${number}%`; style?: object }) {
   const t = useTheme();
-  const reduce = useReduceMotion();
-  const pulse = useRef(new Animated.Value(0.5)).current;
-  useEffect(() => {
-    if (reduce) return;
-    const loop = Animated.loop(Animated.sequence([
-      Animated.timing(pulse, { toValue: 1, duration: 700, useNativeDriver: false }),
-      Animated.timing(pulse, { toValue: 0.5, duration: 700, useNativeDriver: false }),
-    ]));
-    loop.start();
-    return () => loop.stop();
-  }, [pulse, reduce]);
-  return <Animated.View style={[{ height, width, borderRadius: radius.sm, backgroundColor: t.colors.border, opacity: pulse }, style]} />;
+  return (
+    <View style={[{ height, width, borderRadius: radius.sm, backgroundColor: t.colors.border, overflow: 'hidden' }, style]}>
+      <Shimmer radius={radius.sm} />
+    </View>
+  );
 }
 
 /** Squelette d'écran : « list » (lignes), « card » (cartes) ou « detail » (titre + paragraphes). */
@@ -69,12 +64,25 @@ export interface EmptyProps {
 
 export function EmptyState({ icon = 'inbox', title, body, action }: EmptyProps) {
   const t = useTheme();
+  const reduce = useReduceMotion();
+  const float = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (reduce) return;
+    const loop = Animated.loop(Animated.sequence([
+      springTo(float, 1, 'gentle', false),
+      Animated.delay(900),
+      springTo(float, 0, 'gentle', false),
+      Animated.delay(900),
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [float, reduce]);
   return (
     <Card tone="soft">
       <View style={{ alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.md }}>
-        <View style={{ width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surface }}>
+        <Animated.View style={{ width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surface, transform: [{ translateY: float.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) }] }}>
           <Icon name={icon} color={t.colors.primary} />
-        </View>
+        </Animated.View>
         <Text weight="bold" center accessibilityRole="header">{title}</Text>
         {body ? <Text variant="small" muted center>{body}</Text> : null}
         {action ? <Button label={action.label} icon={action.icon ?? 'plus'} size="sm" style={{ marginTop: spacing.xs }} onPress={action.onPress} /> : null}
@@ -86,7 +94,11 @@ export function EmptyState({ icon = 'inbox', title, body, action }: EmptyProps) 
 // ------------------------------------------------------------------ erreur
 export function ErrorView({ error, onRetry, title = 'Impossible d’afficher ces informations' }: { error: unknown; onRetry?: () => void; title?: string }) {
   const t = useTheme();
+  const [tick, setTick] = React.useState(0);
+  useEffect(() => { setTick((n) => n + 1); }, [error]);
+  const shake = useShake(tick);
   return (
+    <Animated.View style={shake}>
     <Card tone="soft" accessibilityLabel={`${title}. ${friendlyErrorMessage(error)}`}>
       <View style={{ alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.md }}>
         <Icon name="cloud-off" color={t.colors.danger} />
@@ -95,6 +107,7 @@ export function ErrorView({ error, onRetry, title = 'Impossible d’afficher ces
         {onRetry ? <Button label="Réessayer" icon="refresh-cw" size="sm" variant="secondary" style={{ marginTop: spacing.xs }} onPress={onRetry} /> : null}
       </View>
     </Card>
+    </Animated.View>
   );
 }
 
@@ -127,10 +140,15 @@ export function QueryView<T>({ query, children, empty, skeleton = 'list', rows, 
  * À utiliser à l'intérieur d'un écran qui défile : `scrollEnabled={false}` n'est PAS virtualisé,
  * on utilise donc la liste comme conteneur de défilement (prop `screen` de <Screen scroll={false}>).
  */
-function VirtualListInner<T>(props: FlatListProps<T>, ref: React.ForwardedRef<FlatList<T>>) {
+function VirtualListInner<T>({ renderItem, ...props }: FlatListProps<T>, ref: React.ForwardedRef<FlatList<T>>) {
+  // Les premières lignes apparaissent en cascade ; les suivantes arrivent déjà visibles
+  const staggered: ListRenderItem<T> | null | undefined = renderItem
+    ? (info) => <StaggerItem index={info.index}>{renderItem(info)}</StaggerItem>
+    : renderItem;
   return (
     <FlatList
       ref={ref}
+      renderItem={staggered}
       initialNumToRender={12}
       maxToRenderPerBatch={12}
       windowSize={7}

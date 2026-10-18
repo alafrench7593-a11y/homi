@@ -4,6 +4,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Image, Platform, Pressable, View, type LayoutChangeEvent } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { ProgressBar } from '@/components/Motion';
 import { Banner, Button, Card, Icon, Row, Segmented, Text, Toggle } from '@/components/ui';
 import { canKeepPhotos } from '@/lib/cycleAnalysis/privacy';
 import { friendlyErrorMessage } from '@/lib/errors';
@@ -145,9 +146,7 @@ export function ConfidenceMeter({ value }: { value: number }) {
         <Text variant="small" muted>Niveau de confiance</Text>
         <Text variant="small" weight="bold">{label}</Text>
       </Row>
-      <View style={{ height: 8, borderRadius: 4, backgroundColor: t.colors.border, overflow: 'hidden' }}>
-        <View style={{ width: `${Math.round(value * 100)}%`, height: 8, backgroundColor: value >= 0.75 ? t.colors.success : value >= 0.5 ? t.colors.gold : t.colors.heart }} />
-      </View>
+      <ProgressBar value={value} track={t.colors.border} color={value >= 0.75 ? t.colors.success : value >= 0.5 ? t.colors.gold : t.colors.heart} />
     </View>
   );
 }

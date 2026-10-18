@@ -1,4 +1,5 @@
 /** Cartes de l'accueil personnalisé. */
+import { ProgressBar } from '@/components/Motion';
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
@@ -53,9 +54,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
           </View>
           <View style={{ marginTop: 'auto', paddingTop: spacing.md }}>
             <Text variant="caption" muted style={{ alignSelf: 'flex-end', marginBottom: 4 }}>{pct} %</Text>
-            <View style={{ height: 8, borderRadius: 4, backgroundColor: t.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(233,88,124,0.12)', overflow: 'hidden' }}>
-              <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ width: `${pct}%`, height: '100%', borderRadius: 4 }} />
-            </View>
+            <ProgressBar value={pct / 100} color={NACRE[1]} gradient={NACRE} track={t.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(233,88,124,0.12)'} accessibilityLabel={`Grossesse avancée à ${pct} %`} />
           </View>
         </View>
       </Pressable>

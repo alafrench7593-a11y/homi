@@ -142,7 +142,7 @@ export function Shimmer({ radius = 10 }: { radius?: number }) {
 
 // ------------------------------------------------------------------ barre de progression
 /** Progression animée en scaleX (aucun recalcul de mise en page). `value` entre 0 et 1. */
-export function ProgressBar({ value, color, track, height = 8, accessibilityLabel }: { value: number; color: string; track: string; height?: number; accessibilityLabel?: string }) {
+export function ProgressBar({ value, color, track, height = 8, accessibilityLabel, gradient }: { value: number; color: string; track: string; height?: number; accessibilityLabel?: string; gradient?: readonly [string, string, ...string[]] }) {
   const reduce = useReduceMotion();
   const v = useRef(new Animated.Value(0)).current;
   const [w, setW] = React.useState(0);
@@ -162,8 +162,11 @@ export function ProgressBar({ value, color, track, height = 8, accessibilityLabe
         style={{
           height, width: w, borderRadius: height / 2, backgroundColor: color,
           transform: [{ translateX: v.interpolate({ inputRange: [0, 1], outputRange: [-w / 2, 0] }) }, { scaleX: v }],
+          overflow: 'hidden',
         }}
-      />
+      >
+        {gradient ? <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} /> : null}
+      </Animated.View>
     </View>
   );
 }

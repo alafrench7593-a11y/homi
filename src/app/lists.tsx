@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { ProgressBar as AnimatedProgress } from '@/components/Motion';
 import { PremiumGate } from '@/components/Family';
 import { Banner, Button, Card, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
@@ -21,12 +22,7 @@ const iconOf = (kind: ChecklistKind): IconName => (kind === 'custom' ? 'list' : 
 
 function ProgressBar({ done, total }: { done: number; total: number }) {
   const t = useTheme();
-  const pct = total ? done / total : 0;
-  return (
-    <View style={{ height: 6, borderRadius: 3, backgroundColor: t.colors.surfaceAlt, overflow: 'hidden' }} accessibilityElementsHidden importantForAccessibility="no">
-      <View style={{ width: `${Math.round(pct * 100)}%`, height: '100%', backgroundColor: t.colors.primary }} />
-    </View>
-  );
+  return <AnimatedProgress value={total ? done / total : 0} color={t.colors.primary} track={t.colors.surfaceAlt} height={6} accessibilityLabel={`${done} sur ${total} fait`} />;
 }
 
 function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => void }) {

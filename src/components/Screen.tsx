@@ -1,5 +1,5 @@
 import React from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Animated, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useIsFocused } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -7,6 +7,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { IconButton, Text } from './ui';
 import { StarField } from './StarField';
+import { useFocusEntrance } from './Motion';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -27,6 +28,8 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
   const t = useTheme();
   const insets = useSafeAreaInsets();
   const focused = useIsFocused();
+  // Continuité de navigation : le contenu entre en fondu et monte légèrement à chaque arrivée sur l'écran
+  const entrance = useFocusEntrance(focused);
   const header = (title || back || right) && (
     <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
       <View style={styles.headerRow}>
@@ -60,7 +63,7 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'transparent', opacity: focused ? 1 : 0 }} pointerEvents={focused ? 'auto' : 'none'}>
+    <Animated.View style={[{ flex: 1, backgroundColor: 'transparent' }, entrance]} pointerEvents={focused ? 'auto' : 'none'}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       {(stars || t.isDark) && <StarField density={t.name === 'night' ? 30 : stars ? 26 : 16} color="#FFF1E6" />}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -68,7 +71,7 @@ export function Screen({ children, title, subtitle, back, right, scroll = true, 
         {body}
         {footer ? <View style={{ paddingHorizontal: spacing.lg, paddingBottom: insets.bottom + spacing.sm, paddingTop: spacing.sm }}>{footer}</View> : null}
       </KeyboardAvoidingView>
-    </View>
+    </Animated.View>
   );
 }
 
