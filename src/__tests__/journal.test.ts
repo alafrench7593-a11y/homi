@@ -35,3 +35,13 @@ describe('journal unifié', () => {
     expect(csv).toMatch(/"Repas ""maison""";"purée; carottes"/);
   });
 });
+
+describe('CSV sans formules', () => {
+  it('une saisie qui commence par = + - @ est neutralisée', () => {
+    const { csvCell, safeFileName } = jest.requireActual('@/lib/csv') as typeof import('@/lib/csv');
+    expect(csvCell('=HYPERLINK("http://x")')).toBe('"\'=HYPERLINK(""http://x"")"');
+    expect(csvCell('-2')).toBe('"\'-2"');
+    expect(csvCell('Purée')).toBe('"Purée"');
+    expect(safeFileName('Glycémie — Léa')).toBe('Glycemie-Lea');
+  });
+});

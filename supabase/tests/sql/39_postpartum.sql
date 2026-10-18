@@ -17,7 +17,7 @@ insert into public.household_members (household_id, user_id, role, can_view, can
 set role authenticated; set request.jwt.claim.sub = :'IRIS';
 
 insert into public.postpartum_settings (delivery_date) values (current_date - 20);
-select tests.ok((select not (share_rest_need or share_availability or share_relay_requests or share_summary or share_appointments) and share_household_id is null and not reminders_enabled and active
+select tests.ok((select not (share_rest_need or share_availability or share_relay_requests or share_summary) and share_household_id is null and not reminders_enabled and active
                  from public.postpartum_settings), 'post-partum : rien n''est partagé ni rappelé par défaut, le suivi reste actif');
 
 insert into public.postpartum_checkins (checkin_date, feeling, mood, fatigue, stress, needs, comment, pain, recovery)

@@ -7,7 +7,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, haptic, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { DangerPanel, RecoveryWarnings, Scale, SupportPlanCard } from '@/features/postpartum';
@@ -78,8 +77,6 @@ export default function PostpartumCheckin() {
       toast(friendlyError(e, 'Enregistrement impossible. Réessayez dans un instant.'), 'error');
     }
   }
-
-  if (checkinsQ.isLoading && !checkinsQ.data) return <Screen back title="Faire le point"><Skeleton kind="detail" rows={5} /></Screen>;
 
   return (
     <Screen back title="Faire le point" subtitle="Moins d’une minute. Tout est facultatif.">

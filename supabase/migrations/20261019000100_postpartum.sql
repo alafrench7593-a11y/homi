@@ -25,7 +25,6 @@ create table public.postpartum_settings (
   share_availability boolean not null default false,
   share_relay_requests boolean not null default false,
   share_summary boolean not null default false,
-  share_appointments boolean not null default false,
   -- Plan de soutien (peut être préparé avant l'accouchement)
   plan_rest_needs text[] not null default '{}' check (cardinality(plan_rest_needs) <= 12),
   plan_tasks_to_delegate text[] not null default '{}' check (cardinality(plan_tasks_to_delegate) <= 20),

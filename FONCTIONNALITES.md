@@ -96,7 +96,25 @@ Corrections au passage : les panneaux du bas ne défilaient plus quand leur cont
 | Photos et albums de souvenirs | ⬜ non fait : nécessite un stockage privé chiffré pour les photos d'enfants (comme celui des photos de tests du cycle) ; à faire dans un lot dédié. |
 | Recommandations de produits (§ 16) | ⬜ non fait : sans catalogue éditorial vérifié, l'application ne recommande rien plutôt que d'inventer. Les données nécessaires (sources, limites, mention sponsorisé / éditorial) sont décrites dans ce document. |
 
-## 3. Décisions et limites documentées
+## 3. Relecture de sécurité indépendante (18 octobre 2026)
+
+Un relecteur distinct a revu le code ajouté. Il a trouvé 2 failles bloquantes et 13 autres points ; **tous sont corrigés**, et chaque faille a un test qui la rejoue (`supabase/tests/sql/43_security_review_fixes.sql`, 18 tests).
+
+| Point | Correction |
+|---|---|
+| Export RGPD : un rendez-vous privé d'un membre apparaissait dans l'export d'un autre (bloquant) | filtré ; l'export inclut aussi les nouvelles données du foyer, selon les droits de chacun |
+| Échange de créneau détourné pour s'approprier le temps pour soi d'un autre (bloquant) | seul un relais de nuit de l'auteur est échangeable ; le créneau visé ne change plus |
+| Temps pour soi modifiable ou supprimable par un autre membre | réservé à son propriétaire (modification et suppression) |
+| Partage post-partum encore visible après le départ du foyer | invisible au départ ; foyer choisi oublié |
+| Titre d'une tâche sur l'écran verrouillé ; notification sans contrôle des droits | texte neutre ; envoyée seulement à qui a accès à l'organisation |
+| Titre d'un rendez-vous privé dans son rappel | « Rendez-vous » |
+| « Fait par » falsifiable, demande traitée rouvrable, professionnel vide accepté | corrigés côté serveur |
+| Rappel post-partum en double, questions de sécurité masquées pendant le chargement | corrigés |
+| Export CSV : formules Excel possibles | cellules neutralisées (`src/lib/csv.ts`) |
+| Fichier .ics : fuseau autre que Paris non décrit | heure UTC dans ce cas |
+| Réglage de partage « rendez-vous » inutilisé | retiré |
+
+## 4. Décisions et limites documentées
 
 - **EPDS non intégrée.** Le Royal College of Psychiatrists détient les droits ; la diffusion à des tiers (ce qu'est une app) exige une autorisation écrite, et l'intégration complète a déjà été refusée à un logiciel clinique (documentation CamCOPS). Conformément au § 22.4, l'app propose un check-in de bien-être **non diagnostique**. À rouvrir uniquement avec une autorisation écrite et la version française validée (Guedeney & Fermanian, 1998).
 - **Ressources d'urgence par pays.** France vérifiée (3114 gratuit 24 h/24 ; 15 ou 112 en cas de risque imminent — sante.gouv.fr). Pour les autres pays, l'app affiche le 112 européen et invite à composer le numéro d'urgence local ; les lignes nationales seront ajoutées dans `emergency_resources` après vérification.

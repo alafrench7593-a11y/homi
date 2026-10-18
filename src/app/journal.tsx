@@ -21,6 +21,7 @@ import { addDays, addMonths, atLocal, weekStart } from '@/lib/domain/calendar';
 import { JOURNAL_CATEGORIES, filterJournal, journalCsv, journalStats, type JournalCategory, type JournalEntry } from '@/lib/domain/journal';
 import { todayISO } from '@/lib/domain/dates';
 import { exportTextFile } from '@/lib/exportData';
+import { safeFileName } from '@/lib/csv';
 import type { Bottle, Breastfeed, Diaper, Meal, Observation, Pumping, Sleep } from '@/lib/types';
 import { spacing } from '@/theme/tokens';
 
@@ -80,7 +81,7 @@ export default function Journal() {
   async function exportCsv() {
     if (!child) return;
     try {
-      const r = await exportTextFile(journalCsv(list, child.first_name), `journal-${child.first_name}-${fromDay}.csv`, 'text/csv', 'public.comma-separated-values-text', 'Exporter le journal');
+      const r = await exportTextFile(journalCsv(list, child.first_name), `journal-${safeFileName(child.first_name)}-${fromDay}.csv`, 'text/csv', 'public.comma-separated-values-text', 'Exporter le journal');
       toast(r === 'text' ? 'Export impossible sur cet appareil.' : 'Journal exporté (CSV).', r === 'text' ? 'error' : 'success');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }

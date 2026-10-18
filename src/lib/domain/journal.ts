@@ -2,6 +2,8 @@
  * Journal unifié : toutes les saisies réellement enregistrées, normalisées en une seule chronologie.
  * Statistiques DESCRIPTIVES (des comptes), sans interprétation : une tendance ne prouve aucune cause.
  */
+import { csvCell } from '../csv';
+
 export type JournalCategory = 'feeding' | 'sleep' | 'diaper' | 'health' | 'medication' | 'teeth' | 'memory' | 'appointment' | 'task';
 
 export const JOURNAL_CATEGORIES: { value: JournalCategory; label: string }[] = [
@@ -35,7 +37,7 @@ export function journalStats(entries: JournalEntry[]) {
 
 /** Export CSV (séparateur « ; » pour Excel en français), UTF-8 avec BOM. */
 export function journalCsv(entries: JournalEntry[], childName: string) {
-  const cell = (s: string) => `"${s.replace(/"/g, '""')}"`;
+  const cell = csvCell;
   const label = (c: JournalCategory) => JOURNAL_CATEGORIES.find((x) => x.value === c)?.label ?? c;
   const rows = [['Date', 'Heure', 'Catégorie', 'Entrée', 'Détail', 'Note'].map(cell).join(';')];
   for (const e of [...entries].sort((a, b) => (a.at < b.at ? -1 : 1))) {

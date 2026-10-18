@@ -9,7 +9,7 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
-import { Banner, Button, Card, IconButton, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { QuickActionsGrid, RequestCard, RequestSheet, TaskRow, TaskSheet } from '@/features/familyLoad';
 import { useCareRequests, useCareShifts, useFamilyTasks, usePeople } from '@/lib/data/hooks-family-load';
 import { useParentSleepLogs } from '@/lib/data/hooks-sleep';
@@ -88,7 +88,9 @@ export default function FamilyHome() {
       {[...open, ...recent].map((r, i) => <StaggerItem key={r.id} index={i}><RequestCard r={r} tasks={tasks} /></StaggerItem>)}
 
       <SectionTitle title="Tâches" />
-      <Segmented label="Afficher" value={filter} onChange={setFilter} options={[{ value: 'today', label: 'Aujourd’hui' }, { value: 'upcoming', label: 'À venir' }, { value: 'unassigned', label: 'Sans responsable' }, { value: 'done', label: 'Faites' }]} />
+      <Row wrap>
+        {([['today', 'Aujourd’hui'], ['upcoming', 'À venir'], ['unassigned', 'Sans responsable'], ['done', 'Faites']] as const).map(([v, l]) => <Chip key={v} label={l} selected={filter === v} onPress={() => setFilter(v)} />)}
+      </Row>
       {tasksQ.isLoading && !tasksQ.data ? <Skeleton rows={3} /> : null}
       {tasksQ.isError && !tasksQ.data ? <ErrorView error={tasksQ.error} onRetry={() => void tasksQ.refetch()} /> : null}
       {tasksQ.data && list.length === 0 ? (

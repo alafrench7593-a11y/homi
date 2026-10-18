@@ -4,6 +4,7 @@
  */
 import { DEV_DOMAINS } from '@/lib/domain/childCare';
 import { exportTextFile } from '@/lib/exportData';
+import { csvCell, safeFileName } from '@/lib/csv';
 import { insertOrQueue } from '@/lib/offline';
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
@@ -176,11 +177,11 @@ export function GrowthTab({ child }: { child: Child }) {
   const measurementsQ = useMeasurements(child.id);
   const { data: measurements } = measurementsQ;
   async function exportGrowth() {
-    const cell = (x: string) => `"${x.replace(/"/g, '""')}"`;
+    const cell = csvCell;
     const rows = [...(measurements ?? [])].sort((a, b) => a.measured_on.localeCompare(b.measured_on));
     const csv = `\uFEFF# Mesures de ${child.first_name} — saisies de la famille\r\n` + [['Date', 'Poids (kg)', 'Taille (cm)', 'Périmètre crânien (cm)', 'Source', 'Note'].map(cell).join(';'),
       ...rows.map((m) => [formatDateFr(m.measured_on), m.weight_kg != null ? String(m.weight_kg).replace('.', ',') : '', m.height_cm != null ? String(m.height_cm).replace('.', ',') : '', m.head_cm != null ? String(m.head_cm).replace('.', ',') : '', m.source === 'professional' ? 'Professionnel' : 'Maison', m.note ?? ''].map(cell).join(';'))].join('\r\n');
-    const r = await exportTextFile(csv, `mesures-${child.first_name}.csv`, 'text/csv', 'public.comma-separated-values-text', 'Exporter les mesures');
+    const r = await exportTextFile(csv, `mesures-${safeFileName(child.first_name)}.csv`, 'text/csv', 'public.comma-separated-values-text', 'Exporter les mesures');
     toast(r === 'text' ? 'Export impossible sur cet appareil.' : 'Mesures exportées.', r === 'text' ? 'error' : 'success');
   }
   const [metric, setMetric] = useState<Metric>('weight_kg');

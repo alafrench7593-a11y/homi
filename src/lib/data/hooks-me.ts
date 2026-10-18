@@ -55,7 +55,7 @@ export function reminderAt(startsAt: string, lead: Exclude<ReminderLead, 0>): st
  * Crée, remplace ou supprime le rappel ponctuel associé à un rendez-vous.
  * La programmation sur le téléphone se fait ensuite via useReminders (syncLocalReminders).
  */
-export async function setAppointmentReminder(appt: Pick<Appointment, 'id' | 'household_id' | 'title' | 'starts_at' | 'kind'>, lead: ReminderLead, existing: Reminder[]) {
+export async function setAppointmentReminder(appt: Pick<Appointment, 'id' | 'household_id' | 'title' | 'starts_at' | 'kind' | 'private_to_creator'>, lead: ReminderLead, existing: Reminder[]) {
   const mine = existing.filter((r) => r.appointment_id === appt.id);
   if (mine.length) await backend.remove('reminders', [eq('appointment_id', appt.id)]);
   if (lead === 0) return;
@@ -66,7 +66,8 @@ export async function setAppointmentReminder(appt: Pick<Appointment, 'id' | 'hou
     household_id: appt.household_id,
     appointment_id: appt.id,
     category: appt.kind === 'ultrasound' ? 'ultrasound' : appt.kind === 'exam' || appt.kind === 'blood_test' ? 'exam' : appt.kind === 'postnatal' || appt.kind === 'perineal_rehab' ? 'postnatal' : 'appointment',
-    title: appt.title.slice(0, 80),
+    // Rendez-vous privé : rien de son intitulé sur l'écran verrouillé
+    title: appt.private_to_creator ? 'Rendez-vous' : appt.title.slice(0, 80),
     body: `Rendez-vous ${when}`.slice(0, 240),
     schedule: { type: 'once', at },
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris',

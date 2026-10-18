@@ -21,6 +21,7 @@ import { planCheck } from '@/lib/domain/childCare';
 import { frToISO } from '@/lib/domain/dates';
 import { exportTextFile } from '@/lib/exportData';
 import { insertOrQueue } from '@/lib/offline';
+import { csvCell, safeFileName } from '@/lib/csv';
 import { spacing } from '@/theme/tokens';
 
 interface Tracker { id: string; child_id: string; kind: 'measure' | 'observation'; label: string; unit: string | null; plan_note: string | null; plan_by: string | null; plan_date: string | null; low_threshold: number | null; high_threshold: number | null; thresholds_from_plan: boolean; contexts: string[]; active: boolean }
@@ -89,10 +90,10 @@ export default function HealthTracking() {
 
   async function exportTracker(tr: Tracker) {
     const rows = (entriesQ.data ?? []).filter((e) => e.tracker_id === tr.id).sort((a, b) => (a.at < b.at ? -1 : 1));
-    const cell = (s: string) => `"${s.replace(/"/g, '""')}"`;
+    const cell = csvCell;
     const csv = `﻿# ${tr.label} — ${child?.first_name ?? ''} — saisies de la famille, à vérifier\r\n` + [['Date', 'Heure', tr.kind === 'measure' ? `Valeur (${tr.unit ?? ''})` : 'Observation', 'Contexte', 'Source', 'Note'].map(cell).join(';'),
       ...rows.map((e) => { const d = new Date(e.at); return [d.toLocaleDateString('fr-FR'), d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }), e.value != null ? String(e.value).replace('.', ',') : '', e.context ?? '', SOURCE_LABEL[e.source], e.note ?? ''].map(cell).join(';'); })].join('\r\n');
-    const r = await exportTextFile(csv, `${tr.label.replace(/\W+/g, '-')}.csv`, 'text/csv', 'public.comma-separated-values-text', 'Exporter');
+    const r = await exportTextFile(csv, `${safeFileName(`${tr.label}-${child?.first_name ?? ''}`)}.csv`, 'text/csv', 'public.comma-separated-values-text', 'Exporter');
     toast(r === 'text' ? 'Export impossible sur cet appareil.' : 'Historique exporté.', r === 'text' ? 'error' : 'success');
   }
 

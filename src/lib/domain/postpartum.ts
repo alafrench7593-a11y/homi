@@ -240,7 +240,6 @@ export interface PostpartumSettings {
   share_availability: boolean;
   share_relay_requests: boolean;
   share_summary: boolean;
-  share_appointments: boolean;
   plan_rest_needs: string[];
   plan_tasks_to_delegate: string[];
   plan_notes: string | null;
@@ -248,7 +247,7 @@ export interface PostpartumSettings {
 
 export const DEFAULT_SETTINGS: Omit<PostpartumSettings, 'user_id'> = {
   delivery_date: null, active: true, reminders_enabled: false, reminder_time: '20:00', country: 'FR',
-  share_household_id: null, share_rest_need: false, share_availability: false, share_relay_requests: false, share_summary: false, share_appointments: false,
+  share_household_id: null, share_rest_need: false, share_availability: false, share_relay_requests: false, share_summary: false,
   plan_rest_needs: [], plan_tasks_to_delegate: [], plan_notes: null,
 };
 

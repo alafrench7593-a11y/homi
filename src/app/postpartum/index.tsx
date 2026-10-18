@@ -13,7 +13,7 @@ import { Banner, Button, Card, Field, Icon, ListRow, Row, SectionTitle, Text, To
 import { DangerPanel, SupportPlanCard } from '@/features/postpartum';
 import { usePostpartumCheckins, usePostpartumSettings, useSaveSettings } from '@/lib/data/hooks-postpartum';
 import { useReminders } from '@/lib/data/hooks';
-import { friendlyError, useDeleteReminder, useSaveReminder } from '@/lib/data/hooks-settings';
+import { friendlyError, useSaveReminder, useToggleReminder } from '@/lib/data/hooks-settings';
 import { NEEDS, persistentLowDays, supportPlan } from '@/lib/domain/postpartum';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
@@ -31,7 +31,7 @@ export default function PostpartumHome() {
   const saveSettings = useSaveSettings();
   const { data: reminders } = useReminders();
   const saveReminder = useSaveReminder();
-  const deleteReminder = useDeleteReminder();
+  const toggleExisting = useToggleReminder();
   const [showDanger, setShowDanger] = useState(false);
   const [dateText, setDateText] = useState('');
 
@@ -45,11 +45,13 @@ export default function PostpartumHome() {
 
   async function toggleReminder(on: boolean) {
     try {
-      if (on) {
+      if (on && reminder) {
+        await toggleExisting.mutateAsync({ id: reminder.id, enabled: true });
+      } else if (on) {
         const [h, m] = (settings?.reminder_time ?? '20:00').split(':').map(Number);
         // Texte volontairement neutre : rien de personnel sur l'écran verrouillé
         await saveReminder.mutateAsync({ draft: { title: 'Un moment pour vous', body: 'Si vous en avez envie.', category: 'postnatal', schedule: { type: 'daily', hour: h, minute: m }, enabled: true, deep_link: CHECKIN_LINK } });
-      } else if (reminder) await deleteReminder.mutateAsync(reminder.id);
+      } else if (reminder) await toggleExisting.mutateAsync({ id: reminder.id, enabled: false });
       await saveSettings.mutateAsync({ existing: !!settings, patch: { reminders_enabled: on } });
       toast(on ? 'Rappel discret activé, chaque soir. Vous pouvez l’ignorer.' : 'Rappel désactivé.');
     } catch (e) {

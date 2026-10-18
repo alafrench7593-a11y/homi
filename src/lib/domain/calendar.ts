@@ -177,7 +177,7 @@ export function toIcs(items: CalendarItem[], o: IcsOptions = {}): string {
     const title = i.health && !o.includeHealthTitles ? 'Rendez-vous' : i.title;
     lines.push('BEGIN:VEVENT', `UID:${ev ? `event-${ev.id}` : i.key.replace(/[^A-Za-z0-9-]/g, '-')}@toietmoi`, `DTSTAMP:${stamp}`);
     if (i.allDay) lines.push(`DTSTART;VALUE=DATE:${dateOnly(starts)}`, `DTEND;VALUE=DATE:${dateOnly(new Date(Date.parse(starts) + 86400000).toISOString())}`);
-    else if (ev?.recurrence) lines.push(`DTSTART;TZID=${ev.timezone}:${localStamp(starts, ev.timezone)}`, `DTEND;TZID=${ev.timezone}:${localStamp(ends, ev.timezone)}`);
+    else if (ev?.recurrence && ev.timezone === 'Europe/Paris') lines.push(`DTSTART;TZID=${ev.timezone}:${localStamp(starts, ev.timezone)}`, `DTEND;TZID=${ev.timezone}:${localStamp(ends, ev.timezone)}`);
     else lines.push(`DTSTART:${utc(starts)}`, `DTEND:${utc(ends)}`);
     lines.push(`SUMMARY:${esc(title)}`);
     if (i.location && !(i.health && !o.includeHealthTitles)) lines.push(`LOCATION:${esc(i.location)}`);
