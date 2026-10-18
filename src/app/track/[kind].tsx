@@ -8,7 +8,10 @@ import { Banner, Button, Chip, Field, haptic, Row, Segmented, Text } from '@/com
 import { confirm, useToast } from '@/components/Overlays';
 import { Stepper, TimePicker, KIND_META } from '@/features/tracking';
 import { backend, eq } from '@/lib/backend';
-import { useAddLog, useChild, useChildren, useDeleteRow, useInvalidate, useRows } from '@/lib/data/hooks';
+import { useAddLog, useChild, useChildren, useDeleteRow, useInvalidate, useLogs, useRows } from '@/lib/data/hooks';
+import { SafeSleepCard, SafetyNoticeCard } from '@/features/childCare';
+import { STOOL_COLORS, STOOL_CONSISTENCY, digestionNotices, stoolNotice, type StoolColor } from '@/lib/domain/childCare';
+import { childAge } from '@/lib/domain/child';
 import { useBottleTimer, useStartBottleTimer, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
 import { NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { atClock, bottleDraftDefaults, formatHM, markBottleGiven, resolveReminderChoice, type ReminderChoice } from '@/lib/domain/bottleTimer';
@@ -22,6 +25,13 @@ import { spacing } from '@/theme/tokens';
 type Side = 'left' | 'right' | 'both';
 
 /** Lien vers un type de saisie inconnu : écran « introuvable » au lieu d'un plantage. */
+const DIGESTIVE: Observation['kind'][] = ['vomit', 'regurgitation', 'diarrhea', 'abdominal_pain', 'bloating', 'crying'];
+const OBS_KINDS: { value: Observation['kind']; label: string }[] = [
+  { value: 'temperature', label: 'Température' }, { value: 'vomit', label: 'Vomissement' }, { value: 'regurgitation', label: 'Régurgitation' },
+  { value: 'diarrhea', label: 'Diarrhée' }, { value: 'abdominal_pain', label: 'Douleur au ventre' }, { value: 'bloating', label: 'Ballonnements' },
+  { value: 'crying', label: 'Pleurs inhabituels' }, { value: 'symptom', label: 'Autre symptôme' }, { value: 'medication', label: 'Traitement prescrit' }, { value: 'note', label: 'Note' },
+];
+
 export default function TrackEntryRoute() {
   const params = useLocalSearchParams<{ kind: string }>();
   if (params.kind && !(params.kind in LOG_TABLE)) {
@@ -69,6 +79,12 @@ function TrackEntry() {
   const [amount, setAmount] = useState<number | null>(80);
   const [wet, setWet] = useState(true);
   const [stool, setStool] = useState(false);
+  const [stoolColor, setStoolColor] = useState<StoolColor | null>(null);
+  const [consistency, setConsistency] = useState<Diaper['stool_consistency']>(null);
+  const [blood, setBlood] = useState(false);
+  const [sleepKind, setSleepKind] = useState<'nap' | 'night' | 'unknown'>('unknown');
+  const [tempMethod, setTempMethod] = useState<Observation['temp_method']>(null);
+  const [intensity, setIntensity] = useState<Observation['intensity']>(null);
   const [end, setEnd] = useState(new Date());
   const [wakeups, setWakeups] = useState(0);
   const [description, setDescription] = useState('');
@@ -99,10 +115,10 @@ function TrackEntry() {
       case 'bottle': { const b = r as unknown as BottleRecord; setTime(new Date(b.at)); setPrepared(b.prepared_ml); setConsumed(b.consumed_ml); setMilkType(b.milk_type ?? ''); setPlannedNext(b.planned_next_ml != null ? String(b.planned_next_ml) : ''); break; }
       case 'breastfeed': { const f = r as unknown as Breastfeed; setTime(new Date(f.started_at)); setSide(f.side); if (f.ended_at) setDuration(String(Math.round((new Date(f.ended_at).getTime() - new Date(f.started_at).getTime()) / 60000))); break; }
       case 'pumping': { const p = r as unknown as Pumping; setTime(new Date(p.at)); setAmount(p.amount_ml); setSide(p.side ?? 'both'); break; }
-      case 'diaper': { const d = r as unknown as Diaper; setTime(new Date(d.at)); setWet(d.wet); setStool(d.stool); break; }
-      case 'sleep': { const s = r as unknown as Sleep; setTime(new Date(s.started_at)); setEnd(s.ended_at ? new Date(s.ended_at) : new Date()); setWakeups(s.wakeups); break; }
+      case 'diaper': { const d = r as unknown as Diaper; setTime(new Date(d.at)); setWet(d.wet); setStool(d.stool); setStoolColor(d.stool_color ?? null); setConsistency(d.stool_consistency ?? null); setBlood(!!d.blood_seen); break; }
+      case 'sleep': { const s = r as unknown as Sleep; setTime(new Date(s.started_at)); setEnd(s.ended_at ? new Date(s.ended_at) : new Date()); setWakeups(s.wakeups); setSleepKind(s.kind ?? 'unknown'); break; }
       case 'meal': { const m = r as unknown as Meal; setTime(new Date(m.at)); setDescription(m.description ?? ''); setFoods(m.foods.join(', ')); setTexture(m.texture); setReaction(m.reaction_note ?? ''); break; }
-      case 'observation': { const o = r as unknown as Observation; setTime(new Date(o.at)); setObsKind(o.kind); setTemp(o.value_num != null ? String(o.value_num).replace('.', ',') : ''); setLabel(o.label ?? ''); break; }
+      case 'observation': { const o = r as unknown as Observation; setTime(new Date(o.at)); setObsKind(o.kind); setTemp(o.value_num != null ? String(o.value_num).replace('.', ',') : ''); setLabel(o.label ?? ''); setTempMethod(o.temp_method ?? null); setIntensity(o.intensity ?? null); break; }
     }
   }, [existing, editing, kind, lastBottle]);
 
@@ -112,6 +128,15 @@ function TrackEntry() {
     const id = setInterval(() => setElapsed(Math.round((Date.now() - timerStart.getTime()) / 1000)), 1000);
     return () => clearInterval(id);
   }, [timerStart]);
+
+  // Repères de sécurité (quand consulter) à partir des saisies récentes + celle en cours
+  const recentObs = useLogs<Observation>('observation', kind === 'observation' ? childId : null, 2);
+  const recentDiapers = useLogs<Diaper>('diaper', kind === 'observation' ? childId : null, 4);
+  const notices = kind === 'observation' && child ? digestionNotices({
+    ageMonths: childAge(child.birth_date).months,
+    observations: [...(recentObs.data ?? []).filter((o) => o.id !== params.id), { at: time.toISOString(), kind: obsKind, value_num: obsKind === 'temperature' ? Number(temp.replace(',', '.')) || null : null }],
+    diapers: recentDiapers.data ?? [],
+  }) : [];
 
   function build(): Record<string, unknown> | null {
     const base = { child_id: childId, household_id: child?.household_id, note: note.trim() || null };
@@ -137,20 +162,20 @@ function TrackEntry() {
         return { ...base, at: time.toISOString(), amount_ml: amount, side };
       case 'diaper':
         if (!wet && !stool && !note.trim()) return setError('Cochez « mouillée », « selles » ou ajoutez une note.'), null;
-        return { ...base, at: time.toISOString(), wet, stool };
+        return { ...base, at: time.toISOString(), wet, stool, stool_color: stool ? stoolColor : null, stool_consistency: stool ? consistency : null, blood_seen: stool && blood };
       case 'sleep':
         if (end < time) return setError('La fin du sommeil ne peut pas précéder son début.'), null;
-        return { ...base, started_at: time.toISOString(), ended_at: end.toISOString(), wakeups };
+        return { ...base, started_at: time.toISOString(), ended_at: end.toISOString(), wakeups, kind: sleepKind === 'unknown' ? null : sleepKind };
       case 'meal':
         return { ...base, at: time.toISOString(), description: description.trim() || null, foods: foods.split(',').map((f) => f.trim()).filter(Boolean), texture, reaction_note: reaction.trim() || null };
       case 'observation': {
         if (obsKind === 'temperature') {
           const v = Number(temp.replace(',', '.'));
           if (!Number.isFinite(v) || v < 34 || v > 43) return setError('Température attendue entre 34 et 43 °C.'), null;
-          return { ...base, at: time.toISOString(), kind: obsKind, value_num: v, label: null };
+          return { ...base, at: time.toISOString(), kind: obsKind, value_num: v, label: null, temp_method: tempMethod, intensity: null };
         }
-        if (!label.trim() && !note.trim()) return setError('Ajoutez un libellé ou une note.'), null;
-        return { ...base, at: time.toISOString(), kind: obsKind, value_num: null, label: label.trim() || null };
+        if (!DIGESTIVE.includes(obsKind) && !label.trim() && !note.trim()) return setError('Ajoutez un libellé ou une note.'), null;
+        return { ...base, at: time.toISOString(), kind: obsKind, value_num: null, label: label.trim() || null, temp_method: null, intensity: DIGESTIVE.includes(obsKind) ? intensity : null };
       }
     }
   }
@@ -320,15 +345,27 @@ function TrackEntry() {
             <Chip label="Mouillée" icon="droplet" selected={wet} onPress={() => setWet(!wet)} />
             <Chip label="Selles" icon="circle" selected={stool} onPress={() => setStool(!stool)} />
           </Row>
+          {stool ? (
+            <View style={{ gap: spacing.xs }}>
+              <Text variant="label">Couleur (facultatif)</Text>
+              <Row wrap>{STOOL_COLORS.map((c) => <Chip key={c.value} label={c.label} selected={stoolColor === c.value} onPress={() => setStoolColor(stoolColor === c.value ? null : c.value)} />)}</Row>
+              <Text variant="label">Consistance (facultatif)</Text>
+              <Row wrap>{STOOL_CONSISTENCY.map((c) => <Chip key={c.value} label={c.label} selected={consistency === c.value} onPress={() => setConsistency(consistency === c.value ? null : c.value)} />)}</Row>
+              <Row wrap><Chip label="J’ai vu du sang" icon="alert-triangle" selected={blood} onPress={() => setBlood(!blood)} /></Row>
+              {stoolNotice({ stool_color: stoolColor, blood_seen: blood }) ? <SafetyNoticeCard n={stoolNotice({ stool_color: stoolColor, blood_seen: blood })!} /> : null}
+            </View>
+          ) : null}
         </>
       )}
 
       {kind === 'sleep' && (
         <>
+          <Segmented label="Type de sommeil" value={sleepKind} onChange={setSleepKind} options={[{ value: 'nap', label: 'Sieste' }, { value: 'night', label: 'Nuit' }, { value: 'unknown', label: 'Non précisé' }]} />
           <TimePicker value={time} onChange={setTime} label="Endormissement" />
           <TimePicker value={end} onChange={setEnd} label="Réveil" />
           <Text muted>Durée : {formatDuration((end.getTime() - time.getTime()) / 60000)}</Text>
           <Stepper label="Réveils pendant ce sommeil" value={wakeups} onChange={(v) => setWakeups(v ?? 0)} step={1} unit="réveil(s)" />
+          <SafeSleepCard />
         </>
       )}
 
@@ -352,10 +389,19 @@ function TrackEntry() {
 
       {kind === 'observation' && (
         <>
-          <Segmented label="Type" value={obsKind} onChange={setObsKind} options={[{ value: 'temperature', label: 'Température' }, { value: 'medication', label: 'Traitement' }, { value: 'symptom', label: 'Symptôme' }, { value: 'note', label: 'Note' }]} />
+          <Text variant="label">Type</Text>
+          <Row wrap>{OBS_KINDS.map((o) => <Chip key={o.value} label={o.label} selected={obsKind === o.value} onPress={() => setObsKind(o.value)} />)}</Row>
           <TimePicker value={time} onChange={setTime} />
           {obsKind === 'temperature' ? (
-            <Field label="Température mesurée" value={temp} onChangeText={setTemp} keyboardType="decimal-pad" suffix="°C" />
+            <>
+              <Field label="Température mesurée" value={temp} onChangeText={setTemp} keyboardType="decimal-pad" suffix="°C" />
+              <Row wrap>{([['rectal', 'Rectale'], ['axillary', 'Sous le bras'], ['ear', 'Oreille'], ['forehead', 'Front'], ['other', 'Autre']] as const).map(([k, l]) => <Chip key={k} label={l} selected={tempMethod === k} onPress={() => setTempMethod(tempMethod === k ? null : k)} />)}</Row>
+            </>
+          ) : DIGESTIVE.includes(obsKind) ? (
+            <>
+              <Text variant="label">Intensité (facultatif)</Text>
+              <Row wrap>{([[1, 'Légère'], [2, 'Moyenne'], [3, 'Forte']] as const).map(([k, l]) => <Chip key={k} label={l} selected={intensity === k} onPress={() => setIntensity(intensity === k ? null : k)} />)}</Row>
+            </>
           ) : (
             <Field
               label={obsKind === 'medication' ? 'Traitement déjà prescrit' : obsKind === 'symptom' ? 'Symptôme observé' : 'Titre'}
@@ -364,7 +410,8 @@ function TrackEntry() {
               hint={obsKind === 'medication' ? 'Uniquement un traitement prescrit par un professionnel. L’application n’indique aucune dose.' : undefined}
             />
           )}
-          <Banner tone="warning">{'Ces notes servent à préparer un rendez-vous. Elles ne sont pas interprétées. Un nourrisson de moins de 3 mois qui a de la fièvre doit être vu rapidement par un médecin : en cas de doute, appelez le 15.'}</Banner>
+          {notices.map((n) => <SafetyNoticeCard key={n.title} n={n} />)}
+          <Banner tone="warning">{'Ces notes servent à préparer un rendez-vous. Elles ne sont pas interprétées et ne disent pas ce que votre enfant a. Un comportement inhabituel qui vous inquiète, une peau très pâle ou avec des petits boutons : appelez rapidement votre médecin ou le 15.'}</Banner>
         </>
       )}
 

@@ -94,7 +94,7 @@ export default function NightMode() {
         inv('sleeps');
         toast(`Sommeil enregistré : ${formatDuration(elapsedMin)}.`);
       } else {
-        await addSleep.mutateAsync({ child_id: child.id, household_id: child.household_id, started_at: new Date().toISOString() });
+        await addSleep.mutateAsync({ child_id: child.id, household_id: child.household_id, started_at: new Date().toISOString(), kind: new Date().getHours() >= 19 || new Date().getHours() < 7 ? 'night' : 'nap' });
         toast('Bonne nuit. Le sommeil est en cours.', 'info');
       }
       haptic('success');
@@ -109,8 +109,10 @@ export default function NightMode() {
     if (!openSleep) return;
     const sleepId = openSleep.id;
     await run('wakeup', async () => {
-      const current = await backend.select<{ wakeups: number }>({ table: 'sleeps', filters: [eq('id', sleepId)] });
-      await backend.update('sleeps', { wakeups: (current[0]?.wakeups ?? 0) + 1 }, [eq('id', sleepId)]);
+      const current = await backend.select<{ wakeups: number; wake_events?: { at: string }[] }>({ table: 'sleeps', filters: [eq('id', sleepId)] });
+      // L'heure de chaque réveil est gardée (chronologie de la nuit), en plus du compteur
+      const events = [...(current[0]?.wake_events ?? []), { at: new Date().toISOString() }].slice(-50);
+      await backend.update('sleeps', { wakeups: (current[0]?.wakeups ?? 0) + 1, wake_events: events }, [eq('id', sleepId)]);
       inv('sleeps');
       toast('Réveil noté.', 'info');
     });

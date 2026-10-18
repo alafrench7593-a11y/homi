@@ -1,4 +1,5 @@
 /** Saisie rapide et chronologie du suivi quotidien. */
+import { STOOL_COLORS, STOOL_CONSISTENCY } from '@/lib/domain/childCare';
 import React, { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
@@ -107,15 +108,22 @@ export function describeLog(l: LogItem): string {
       return `Sein ${side} · ${f.ended_at ? formatDuration(minutesBetween(f.started_at, f.ended_at)) : 'en cours'}`;
     }
     case 'pumping': return `${l.data.amount_ml} ml tirés`;
-    case 'diaper': return [l.data.wet ? 'Mouillée' : null, l.data.stool ? 'Selles' : null].filter(Boolean).join(' + ') || 'Change';
+    case 'diaper': {
+      const d = l.data;
+      const color = d.stool_color ? STOOL_COLORS.find((c) => c.value === d.stool_color)?.label.toLowerCase() : null;
+      const cons = d.stool_consistency ? STOOL_CONSISTENCY.find((c) => c.value === d.stool_consistency)?.label.toLowerCase() : null;
+      const stool = d.stool ? ['Selles', color, cons, d.blood_seen ? 'sang vu' : null].filter(Boolean).join(' ') : null;
+      return [d.wet ? 'Mouillée' : null, stool].filter(Boolean).join(' + ') || 'Change';
+    }
     case 'sleep': {
       const s = l.data;
-      return s.ended_at ? `${formatDuration(minutesBetween(s.started_at, s.ended_at))}${s.wakeups ? ` · ${s.wakeups} réveil(s)` : ''}` : 'En cours';
+      const k = s.kind === 'nap' ? 'Sieste · ' : s.kind === 'night' ? 'Nuit · ' : '';
+      return s.ended_at ? `${k}${formatDuration(minutesBetween(s.started_at, s.ended_at))}${s.wakeups ? ` · ${s.wakeups} réveil(s)` : ''}` : `${k}En cours`;
     }
     case 'meal': return l.data.description || l.data.foods.join(', ') || 'Repas';
     case 'observation': {
       const o = l.data;
-      const prefix = { temperature: 'Température', medication: 'Traitement prescrit', symptom: 'Symptôme observé', note: 'Note' }[o.kind];
+      const prefix = { temperature: 'Température', medication: 'Traitement prescrit', symptom: 'Symptôme observé', note: 'Note', vomit: 'Vomissement', regurgitation: 'Régurgitation', diarrhea: 'Diarrhée', abdominal_pain: 'Douleur au ventre', bloating: 'Ballonnements', crying: 'Pleurs inhabituels' }[o.kind];
       const value = o.kind === 'temperature' && o.value_num != null ? `${String(o.value_num).replace('.', ',')} °C` : o.label ?? o.note ?? '';
       return value ? `${prefix} · ${value}` : prefix;
     }

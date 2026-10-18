@@ -4,24 +4,20 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { confirm, useToast } from '@/components/Overlays';
+import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Card, haptic, Icon, Text } from '@/components/ui';
+import { Banner, Button, Card, Field, haptic, Icon, Row, Text } from '@/components/ui';
+import { ToothChart } from '@/features/childCare';
+import { useSaveReminder } from '@/lib/data/hooks-settings';
+import { toFrDate } from '@/lib/validation';
 import { backend, eq } from '@/lib/backend';
 import { useActiveSubject, useChildren, useInvalidate } from '@/lib/data/hooks';
 import { useMilestones } from '@/lib/data/hooks-family';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { todayISO } from '@/lib/domain/dates';
+import { frToISO, todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 
-const TEETH = [
-  'Incisive centrale en bas, gauche', 'Incisive centrale en bas, droite', 'Incisive centrale en haut, gauche', 'Incisive centrale en haut, droite',
-  'Incisive latérale en haut, gauche', 'Incisive latérale en haut, droite', 'Incisive latérale en bas, gauche', 'Incisive latérale en bas, droite',
-  'Première molaire en haut, gauche', 'Première molaire en haut, droite', 'Première molaire en bas, gauche', 'Première molaire en bas, droite',
-  'Canine en haut, gauche', 'Canine en haut, droite', 'Canine en bas, gauche', 'Canine en bas, droite',
-  'Deuxième molaire en bas, gauche', 'Deuxième molaire en bas, droite', 'Deuxième molaire en haut, gauche', 'Deuxième molaire en haut, droite',
-];
 
 export default function Teeth() {
   const t = useTheme();
@@ -38,26 +34,49 @@ export default function Teeth() {
   const { data: milestones } = milestonesQ;
   const teeth = useMemo(() => (milestones ?? []).filter((m) => m.kind === 'tooth'), [milestones]);
 
-  const toggle = async (label: string) => {
+  const [picked, setPicked] = useState<string | null>(null);
+  const [date, setDate] = useState(toFrDate(todayISO()));
+  const [note, setNote] = useState('');
+  const pickedRow = picked ? teeth.find((m) => m.title === picked) : undefined;
+  const saveReminder = useSaveReminder();
+
+  const open = (label: string) => {
     if (!child || busy) return;
     haptic('selection');
     const existing = teeth.find((m) => m.title === label);
-    setBusy(label);
+    setDate(toFrDate(existing?.happened_on ?? todayISO()));
+    setNote(existing?.note ?? '');
+    setPicked(label);
+  };
+
+  async function save() {
+    if (!child || !picked) return;
+    const iso = frToISO(date);
+    if (!iso || iso > todayISO()) return toast('Date invalide (jj/mm/aaaa, pas dans le futur).', 'error');
+    setBusy(picked);
     try {
-      if (existing) {
-        if (!(await confirm('Retirer cette dent ?', `${label} (${existing.happened_on ?? 'sans date'})`, 'Retirer'))) return;
-        await backend.remove('child_milestones', [eq('id', existing.id)]);
-      } else {
-        await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind: 'tooth', title: label, happened_on: todayISO(), note: null });
-        toast('Dent notée aujourd’hui.', 'success');
-      }
+      if (pickedRow) await backend.update('child_milestones', { happened_on: iso, note: note.trim() || null }, [eq('id', pickedRow.id)]);
+      else await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind: 'tooth', title: picked, happened_on: iso, note: note.trim() || null, domain: null });
       inv('child_milestones');
+      haptic('success');
+      toast(pickedRow ? 'Dent mise à jour.' : 'Dent notée.', 'success');
+      setPicked(null);
     } catch (e) {
       toast(friendlyError(e, 'Enregistrement impossible. Réessayez dans un instant.'), 'error');
-    } finally {
-      setBusy(null);
-    }
-  };
+    } finally { setBusy(null); }
+  }
+
+  async function removeTooth() {
+    if (!pickedRow || !(await confirm('Retirer cette dent ?', `${pickedRow.title} (${pickedRow.happened_on ?? 'sans date'})`, 'Retirer'))) return;
+    try { await backend.remove('child_milestones', [eq('id', pickedRow.id)]); inv('child_milestones'); toast('Dent retirée.'); setPicked(null); } catch (e) { toast(friendlyError(e), 'error'); }
+  }
+
+  async function hygieneReminder() {
+    try {
+      await saveReminder.mutateAsync({ draft: { title: 'Brossage des dents', body: 'Petit rappel du soir.', category: 'custom', schedule: { type: 'daily', hour: 19, minute: 45 }, enabled: true, deep_link: '/teeth' } });
+      toast('Rappel quotidien de brossage à 19 h 45 (modifiable dans Rappels).');
+    } catch (e) { toast(friendlyError(e), 'error'); }
+  }
 
   return (
     <Screen back title="Dents" subtitle={child ? `${child.first_name} · ${teeth.length} dent${teeth.length > 1 ? 's' : ''} notée${teeth.length > 1 ? 's' : ''}` : 'Ajoutez d’abord un enfant.'}>
@@ -69,21 +88,42 @@ export default function Teeth() {
       ) : milestonesQ.isLoading && !milestones ? <Skeleton kind="detail" rows={6} /> : milestonesQ.isError && !milestones ? (
         <ErrorView error={milestonesQ.error} onRetry={() => void milestonesQ.refetch()} title="Impossible d’afficher les dents notées" />
       ) : (
-        <Card>
-          <View style={{ gap: 4 }}>
-            {TEETH.map((label) => {
-              const m = teeth.find((x) => x.title === label);
-              return (
-                <Pressable key={label} accessibilityRole="checkbox" accessibilityState={{ checked: !!m, busy: busy === label }} accessibilityLabel={`${label}${m ? `, apparue le ${m.happened_on}` : ''}`} onPress={() => toggle(label)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingHorizontal: spacing.xs, borderRadius: radius.md, backgroundColor: m ? t.colors.accentSoft : 'transparent', opacity: busy === label ? 0.5 : 1 }}>
-                  <Icon name={m ? 'check-circle' : 'circle'} size={20} color={m ? t.colors.primary : t.colors.textMuted} />
-                  <Text style={{ flex: 1 }}>{label}</Text>
-                  {m?.happened_on ? <Text variant="caption" muted>{new Date(m.happened_on).toLocaleDateString('fr-FR')}</Text> : null}
+        <>
+          <Card>
+            <ToothChart present={new Set(teeth.map((m) => m.title))} onPick={open} />
+            <Text variant="caption" muted center>Touchez une dent pour noter sa date d’apparition et vos observations.</Text>
+          </Card>
+          {teeth.length ? (
+            <Card>
+              {[...teeth].sort((x, y) => (x.happened_on ?? '').localeCompare(y.happened_on ?? '')).map((m) => (
+                <Pressable key={m.id} accessibilityRole="button" onPress={() => open(m.title)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
+                  <Icon name="check-circle" size={18} color={t.colors.primary} />
+                  <View style={{ flex: 1 }}>
+                    <Text>{m.title}</Text>
+                    {m.note ? <Text variant="caption" muted numberOfLines={1}>{m.note}</Text> : null}
+                  </View>
+                  {m.happened_on ? <Text variant="caption" muted>{new Date(m.happened_on).toLocaleDateString('fr-FR')}</Text> : null}
                 </Pressable>
-              );
-            })}
-          </View>
-        </Card>
+              ))}
+            </Card>
+          ) : null}
+          <Card tone="soft">
+            <Text weight="bold">Soins et rendez-vous</Text>
+            <Row wrap style={{ marginTop: spacing.xs }}>
+              <Button label="Rappel de brossage" icon="bell" size="sm" variant="secondary" onPress={hygieneReminder} loading={saveReminder.isPending} />
+              <Button label="Rendez-vous dentiste" icon="calendar" size="sm" variant="secondary" onPress={() => router.push('/appointments')} />
+            </Row>
+          </Card>
+          <Text variant="caption" muted>Fièvre, diarrhée ou fort inconfort ne sont pas automatiquement dus aux dents : si un symptôme vous inquiète ou dure, demandez un avis médical.</Text>
+        </>
       )}
+
+      <Sheet visible={!!picked} onClose={() => setPicked(null)} title={picked ?? ''}>
+        <Field label="Date d’apparition" value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" />
+        <Field label="Observations" optional multiline value={note} onChangeText={setNote} maxLength={4000} placeholder="Gencive gonflée, mâchouille beaucoup…" />
+        <Button label={pickedRow ? 'Enregistrer' : 'Noter cette dent'} onPress={save} loading={!!busy} />
+        {pickedRow ? <Button label="Retirer cette dent" variant="ghost" onPress={removeTooth} /> : null}
+      </Sheet>
     </Screen>
   );
 }

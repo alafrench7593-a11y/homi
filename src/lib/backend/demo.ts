@@ -34,7 +34,7 @@ const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_r
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
 const DEMO_RECALL_CHECK = 'Mode démonstration : la base officielle RappelConso n’est pas interrogée ; seuls des rappels fictifs de démonstration peuvent apparaître.';
-const CHILD_TABLES = ['child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers'];
+const CHILD_TABLES = ['child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations'];
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
 function checkBottleTimer(all: Row[], r: Row) {
@@ -340,6 +340,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
     if (table === 'sleeps' && !r.ended_at && T('sleeps').some((s) => s.child_id === r.child_id && !s.ended_at)) {
       throw new BackendError('Un sommeil est déjà en cours pour cet enfant.');
+    }
+    if (table === 'bottles' && r.in_progress && T('bottles').some((b) => b.child_id === r.child_id && b.in_progress)) {
+      throw new BackendError('Un biberon est déjà en cours pour cet enfant.', '23505');
+    }
+    if (table === 'child_health_trackers' && (r.low_threshold != null || r.high_threshold != null) && !(r.thresholds_from_plan && r.plan_by)) {
+      throw new BackendError('Un seuil ne peut venir que du plan écrit par le professionnel de votre enfant.');
     }
     if (table === 'bottles' && r.prepared_ml != null && r.consumed_ml != null && r.consumed_ml > r.prepared_ml) {
       throw new BackendError('La quantité bue ne peut pas dépasser la quantité préparée.');

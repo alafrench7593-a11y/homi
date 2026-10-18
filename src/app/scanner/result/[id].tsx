@@ -6,6 +6,7 @@ import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Button, Card, Row, Text } from '@/components/ui';
 import { friendlyError } from '@/lib/data/hooks-settings';
+import { AvoidBanner, AvoidButton } from '@/features/avoidList';
 import { useDeleteScan, useExplainScan, useScan, useScanFavorites, useToggleScanFavorite } from '@/lib/data/hooks-scanner';
 import { RECALL_DISCLAIMER } from '@/lib/domain/scanCommon';
 import { frDate } from '@/lib/domain/scanSources';
@@ -65,6 +66,7 @@ export default function ScanResultScreen() {
       <Button label={fav ? 'Retirer des favoris' : 'Ajouter aux favoris'} icon="star" size="sm" variant="secondary" loading={toggleFavorite.isPending}
         onPress={() => !toggleFavorite.isPending && toggleFavorite.mutate({ scanId: scan.id, favorite: !fav }, { onError: (e) => toast(friendlyError(e), 'error') })} />
       <Button label="Comparer" icon="columns" size="sm" variant="ghost" onPress={() => router.push({ pathname: '/scanner/compare', params: { a: scan.id } })} />
+      <AvoidButton barcode={scan.barcode} name={scan.product_snapshot?.name ?? 'Produit'} />
       <Button label="Supprimer" icon="trash-2" size="sm" variant="ghost" loading={del.isPending} onPress={remove} />
     </Row>
   );
@@ -72,6 +74,7 @@ export default function ScanResultScreen() {
   if (!result) {
     return (
       <Screen back title="Résultat">
+        <AvoidBanner barcode={scan.barcode} />
         <Card>
           <Text variant="heading">{scan.product_snapshot?.name ?? 'Produit'}</Text>
           <Text variant="small" muted>{[scan.product_snapshot?.brand, scan.barcode ? `EAN ${scan.barcode}` : null, frDate(scan.created_at)].filter(Boolean).join(' · ')}</Text>
@@ -85,6 +88,7 @@ export default function ScanResultScreen() {
 
   return (
     <Screen back title={scan.kind === 'food' ? 'Puis-je manger ou donner cet aliment ?' : 'Résultat du scan'}>
+      <AvoidBanner barcode={scan.barcode} />
       <ResultView a={result.result as StoredAnalysis} explanation={result.explanation ?? explanation} explaining={explain.isPending} actions={actions} />
       <Button label={scan.kind === 'food' ? 'Scanner un autre aliment' : 'Scanner un autre produit'} icon="camera" variant="secondary"
         onPress={() => router.push(scan.kind === 'food' ? '/scanner/food' : '/scanner/product')} />

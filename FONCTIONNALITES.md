@@ -78,7 +78,23 @@ Corrections au passage : les panneaux du bas ne défilaient plus quand leur cont
 | Journal unifié : biberons, repas, sommeil, changes, observations, médicaments notés, dents, souvenirs, rendez-vous, tâches ; filtres, recherche, jour/semaine/mois, statistiques descriptives, export CSV (§ 17) | ✅ `journal.tsx` ; seules les saisies réelles, aucun historique généré |
 
 ### Lot D — Compléments du suivi de l'enfant (§ 6–16)
-Chronomètre de prise de biberon, sommeil sieste/nuit + sommeil sûr, aspect des selles / vomissements, humeur de l'enfant, schéma dentaire, développement, souvenirs avec photos, santé (observations, maladies suivies), vaccins, liste « à éviter », recommandations éditoriales. ⬜
+| Exigence | État |
+|---|---|
+| Biberon : chronomètre début / pause / reprise / fin, cohérent après navigation ou fermeture (§ 6) | ✅ cercle animé sur l'écran biberon ; temps recalculé depuis les horodatages (`bottles.started_at`, `paused_seconds`) ; un seul en cours par enfant (serveur) |
+| Aucune quantité ni fréquence prescrite (§ 6) | ✅ quantités saisies par le parent, test automatique |
+| Sommeil : sieste / nuit, heure de chaque réveil, repères de couchage sûr sourcés (§ 7) | ✅ (mpedia / AFPA) |
+| Changes : couleur, consistance, sang vu ; repères « quand consulter » (§ 8) | ✅ selles pâles → urgence ; noires / rouges / sang → sans attendre (mpedia / AFPA) |
+| Vomissements, régurgitations, diarrhée, douleurs, ballonnements, pleurs, méthode de prise de température (§ 8) | ✅ repères : vomissements ou selles liquides répétés, moins de couches mouillées, fièvre avant 3 mois (Manuel MSD, ARS Normandie / carnet de santé) — jamais de diagnostic |
+| Humeur et bien-être de l'enfant (§ 9) | ✅ `child/[id]/wellbeing.tsx` |
+| Dents : schéma visuel, date choisie, observations, rappel de brossage, rendez-vous (§ 10) | ✅ `teeth.tsx` (données existantes compatibles) ; symptômes jamais attribués aux dents |
+| Développement par domaine, frise par année, recherche (§ 11) | ✅ onglet « Moments » |
+| Export des mesures de croissance (§ 11) | ✅ CSV |
+| Suivi de santé : TDAH (observations par contexte), diabète et maladies suivies (mesures, unités, contexte, consignes du professionnel), sources distinguées, export (§ 12) | ✅ `child/[id]/health-tracking.tsx` ; seuils uniquement depuis le plan du professionnel (refusé sinon, côté serveur) ; aucune dose |
+| Vaccins : registre + calendrier officiel (§ 14) | ✅ `child/[id]/vaccines.tsx` ; lien vers le calendrier vaccinal du ministère, pas d'échéances recalculées |
+| Scanner : liste « à éviter » du foyer, signalée à chaque scan (§ 15) | ✅ `scanner/avoid.tsx` |
+| Courbes de croissance de référence (OMS) | ⬜ non fait : il faut intégrer les tables officielles OMS (LMS) et les faire valider ; l'appli continue d'afficher les mesures sans zone « normale ». |
+| Photos et albums de souvenirs | ⬜ non fait : nécessite un stockage privé chiffré pour les photos d'enfants (comme celui des photos de tests du cycle) ; à faire dans un lot dédié. |
+| Recommandations de produits (§ 16) | ⬜ non fait : sans catalogue éditorial vérifié, l'application ne recommande rien plutôt que d'inventer. Les données nécessaires (sources, limites, mention sponsorisé / éditorial) sont décrites dans ce document. |
 
 ## 3. Décisions et limites documentées
 

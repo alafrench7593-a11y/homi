@@ -62,6 +62,7 @@ export default function ScannerHub() {
       <Card padded={false}>
         <ListRow icon="clock" title="Historique et favoris" subtitle="Supprimer une analyse ou tout l’historique" onPress={() => router.push('/scanner/history')} />
         <ListRow icon="columns" title="Comparer deux produits" subtitle="Côte à côte, chacun analysé séparément" onPress={() => router.push('/scanner/compare')} />
+        <ListRow icon="slash" title="Produits à éviter" subtitle="La liste de votre foyer, signalée à chaque scan" onPress={() => router.push('/scanner/avoid')} />
       </Card>
 
       <Card tone="soft">

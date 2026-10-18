@@ -2,6 +2,8 @@
  * Onglets du profil enfant : aperçu, croissance, étapes, santé, alimentation.
  * Tout est descriptif : aucune zone « normale/anormale », aucune notion de retard.
  */
+import { DEV_DOMAINS } from '@/lib/domain/childCare';
+import { exportTextFile } from '@/lib/exportData';
 import { insertOrQueue } from '@/lib/offline';
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
@@ -173,6 +175,14 @@ export function GrowthTab({ child }: { child: Child }) {
   const write = useSafeWrite();
   const measurementsQ = useMeasurements(child.id);
   const { data: measurements } = measurementsQ;
+  async function exportGrowth() {
+    const cell = (x: string) => `"${x.replace(/"/g, '""')}"`;
+    const rows = [...(measurements ?? [])].sort((a, b) => a.measured_on.localeCompare(b.measured_on));
+    const csv = `\uFEFF# Mesures de ${child.first_name} — saisies de la famille\r\n` + [['Date', 'Poids (kg)', 'Taille (cm)', 'Périmètre crânien (cm)', 'Source', 'Note'].map(cell).join(';'),
+      ...rows.map((m) => [formatDateFr(m.measured_on), m.weight_kg != null ? String(m.weight_kg).replace('.', ',') : '', m.height_cm != null ? String(m.height_cm).replace('.', ',') : '', m.head_cm != null ? String(m.head_cm).replace('.', ',') : '', m.source === 'professional' ? 'Professionnel' : 'Maison', m.note ?? ''].map(cell).join(';'))].join('\r\n');
+    const r = await exportTextFile(csv, `mesures-${child.first_name}.csv`, 'text/csv', 'public.comma-separated-values-text', 'Exporter les mesures');
+    toast(r === 'text' ? 'Export impossible sur cet appareil.' : 'Mesures exportées.', r === 'text' ? 'error' : 'success');
+  }
   const [metric, setMetric] = useState<Metric>('weight_kg');
   const [date, setDate] = useState(toFrDate(todayISO()));
   const [values, setValues] = useState<Record<Metric, string>>({ weight_kg: '', height_cm: '', head_cm: '' });
@@ -255,7 +265,7 @@ export function GrowthTab({ child }: { child: Child }) {
         </View>
       </Card>
 
-      <SectionTitle title="Historique" />
+      <SectionTitle title="Historique" action={measurements?.length ? 'Exporter (CSV)' : undefined} onAction={() => void exportGrowth()} />
       {measurementsQ.isLoading && !measurements ? <Skeleton kind="list" rows={2} /> : measurementsQ.isError && !measurements ? (
         <ErrorView error={measurementsQ.error} onRetry={() => void measurementsQ.refetch()} title="Impossible d’afficher les mesures" />
       ) : <Card>
@@ -283,6 +293,15 @@ const MILESTONE_KINDS: { value: MilestoneKind; label: string; icon: IconName }[]
 ];
 const MILESTONE_IDEAS = ['Premier sourire', 'Premier éclat de rire', 'S’est retourné·e', 'Tient assis·e', 'Premiers pas', 'Premier mot', 'Première dent', 'Premier repas à table'];
 
+function groupByYear(list: Milestone[]): [string, Milestone[]][] {
+  const map = new Map<string, Milestone[]>();
+  for (const m of list) {
+    const y = m.happened_on ? m.happened_on.slice(0, 4) : 'Sans date';
+    map.set(y, [...(map.get(y) ?? []), m]);
+  }
+  return [...map.entries()].sort((a, b) => (a[0] === 'Sans date' ? 1 : b[0] === 'Sans date' ? -1 : b[0].localeCompare(a[0])));
+}
+
 export function MilestonesTab({ child }: { child: Child }) {
   const toast = useToast();
   const inv = useInvalidate();
@@ -291,6 +310,9 @@ export function MilestonesTab({ child }: { child: Child }) {
   const { data: milestones } = milestonesQ;
   const [open, setOpen] = useState(false);
   const [kind, setKind] = useState<MilestoneKind>('milestone');
+  const [domain, setDomain] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(toFrDate(todayISO()));
   const [note, setNote] = useState('');
@@ -302,6 +324,7 @@ export function MilestonesTab({ child }: { child: Child }) {
     setKind(prefill === 'Première dent' ? 'tooth' : 'milestone');
     setDate(toFrDate(todayISO()));
     setNote('');
+    setDomain(null);
     setErrors({});
     setOpen(true);
   }
@@ -319,7 +342,7 @@ export function MilestonesTab({ child }: { child: Child }) {
     if (Object.keys(e).length) return;
     setSaving(true);
     try {
-      await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind, title: title.trim(), happened_on: iso, note: note.trim() || null });
+      await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind, title: title.trim(), happened_on: iso, note: note.trim() || null, domain });
       inv('child_milestones');
       haptic('success');
       toast('Moment ajouté.');
@@ -356,23 +379,43 @@ export function MilestonesTab({ child }: { child: Child }) {
         <ErrorView error={milestonesQ.error} onRetry={() => void milestonesQ.refetch()} title="Impossible d’afficher les moments" />
       ) : !milestones?.length ? (
         <EmptyState icon="star" title="Aucun moment noté pour l’instant" action={{ label: 'Noter un moment', onPress: () => start() }} />
-      ) : <Card>
-        {milestones.map((x) => (
-          <ListRow
-            key={x.id}
-            icon={meta(x.kind).icon}
-            title={x.title}
-            subtitle={[meta(x.kind).label, x.happened_on ? formatDateFr(x.happened_on) : null, x.note].filter(Boolean).join(' · ')}
-            right={<IconButton icon="trash-2" label={`Supprimer ${x.title}`} size={18} onPress={() => remove(x)} />}
-          />
-        ))}
-      </Card>}
+      ) : (
+        <>
+          <Field label="Rechercher un souvenir" optional value={search} onChangeText={setSearch} placeholder="premiers pas, plage…" />
+          <Row wrap>
+            <Chip label="Tous" selected={!filter} onPress={() => setFilter(null)} />
+            {DEV_DOMAINS.filter((d) => milestones.some((m) => m.domain === d.value)).map((d) => <Chip key={d.value} label={d.label} selected={filter === d.value} onPress={() => setFilter(filter === d.value ? null : d.value)} />)}
+          </Row>
+          {/* Frise : regroupée par année */}
+          {groupByYear(milestones.filter((m) => (!filter || m.domain === filter) && (!search.trim() || `${m.title} ${m.note ?? ''}`.toLowerCase().includes(search.trim().toLowerCase())))).map(([year, list]) => (
+            <View key={year} style={{ gap: spacing.xs }}>
+              <Text weight="bold">{year}</Text>
+              <Card>
+                {list.map((x) => (
+                  <ListRow
+                    key={x.id}
+                    icon={meta(x.kind).icon}
+                    title={x.title}
+                    subtitle={[meta(x.kind).label, x.domain ? DEV_DOMAINS.find((d) => d.value === x.domain)?.label : null, x.happened_on ? formatDateFr(x.happened_on) : null, x.note].filter(Boolean).join(' · ')}
+                    right={<IconButton icon="trash-2" label={`Supprimer ${x.title}`} size={18} onPress={() => remove(x)} />}
+                  />
+                ))}
+              </Card>
+            </View>
+          ))}
+          <Text variant="caption" muted>Les étapes sont des repères, pas des échéances : chaque enfant avance à son rythme. Une question ? Parlez-en à votre médecin ou à la PMI.</Text>
+        </>
+      )}
 
       <Sheet visible={open} onClose={() => setOpen(false)} title="Noter un moment">
         {errors.form ? <Banner tone="danger">{errors.form}</Banner> : null}
         <View style={{ gap: spacing.xs }}>
           <Text variant="label">Type</Text>
           <Row wrap>{MILESTONE_KINDS.map((k) => <Chip key={k.value} icon={k.icon} label={k.label} selected={kind === k.value} onPress={() => setKind(k.value)} />)}</Row>
+        </View>
+        <View style={{ gap: spacing.xs }}>
+          <Text variant="label">Domaine (facultatif)</Text>
+          <Row wrap>{DEV_DOMAINS.map((d) => <Chip key={d.value} label={d.label} selected={domain === d.value} onPress={() => setDomain(domain === d.value ? null : d.value)} />)}</Row>
         </View>
         <Field label="Titre" value={title} onChangeText={setTitle} maxLength={120} error={errors.title} placeholder="Premier sourire" />
         <Field label="Date" optional value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" error={errors.date} />
@@ -457,6 +500,12 @@ export function HealthTab({ child }: { child: Child }) {
   return (
     <>
       <Banner tone="info">{'Un aide-mémoire pour préparer vos rendez-vous. Le carnet de santé et votre médecin font référence, notamment pour le calendrier des vaccins.'}</Banner>
+      <Card>
+        <ListRow icon="shield" title="Vaccins faits" subtitle="Registre : date, vaccin, lot — et le calendrier officiel" onPress={() => router.push(`/child/${child.id}/vaccines` as never)} />
+        <ListRow icon="activity" title="Suivi de santé" subtitle="Mesures et observations, selon le plan du professionnel" onPress={() => router.push(`/child/${child.id}/health-tracking` as never)} />
+        <ListRow icon="smile" title="Humeur et bien-être" subtitle="Pleurs, énergie, appétit, sommeil, confort digestif" onPress={() => router.push(`/child/${child.id}/wellbeing` as never)} />
+        <ListRow icon="book-open" title="Journal complet" subtitle="Tout ce qui a été noté, avec filtres et export" onPress={() => router.push('/journal')} />
+      </Card>
       {child.allergies_declared.length > 0 && (
         <Card tone="gold">
           <Row><Icon name="alert-circle" size={18} /><Text weight="bold" style={{ flex: 1 }}>Allergies déclarées au profil</Text></Row>

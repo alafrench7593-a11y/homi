@@ -6,6 +6,7 @@ import { Appear } from '@/components/Appear';
 import { ProgressRing } from '@/components/Charts';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
+import { BottleStopwatch } from '@/features/childCare';
 import { Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { BottleNotificationSettings, NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
@@ -126,6 +127,9 @@ export default function BottleTimerScreen() {
           <Chip label="Tous" icon="grid" onPress={() => router.push('/bottle')} />
         </Row>
       )}
+
+      {/* Chronomètre de la prise (début, pause, reprise, fin), indépendant du rappel du prochain biberon */}
+      <BottleStopwatch child={child} />
 
       {isLoading ? <Skeleton kind="detail" rows={4} /> : timerQ.isError && !timerQ.data ? (
         <ErrorView error={timerQ.error} onRetry={() => void timerQ.refetch()} title="Impossible d’afficher le minuteur" />
