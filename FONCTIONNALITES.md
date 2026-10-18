@@ -46,7 +46,24 @@ Légende : ✅ fait et testé · 🟡 partiel (détail donné) · ⬜ à faire �
 | Aucun score, aucune comparaison, langage non culpabilisant — test automatique (22.10) | ✅ `postpartum.test.ts` (22 tests) : textes, contenus et écrans |
 
 ### Lot B — Charge familiale (§ 20, 21, 23–28)
-Tâches partagées, actions rapides de relais, relais nocturne, temps pour soi, journée difficile, urgence organisationnelle, routines, bilan hebdomadaire, signaux de surcharge. ⬜
+| Exigence | État |
+|---|---|
+| Tâches : titre, catégorie (10), échéance, responsable, priorité, fréquence, statut, notes (§ 20) | ✅ `family/index.tsx`, table `family_tasks` ; récurrence gérée par le serveur (occurrence suivante créée une seule fois) |
+| Historique des modifications (§ 20) | ✅ `family_task_events`, écrit uniquement par le serveur ; `family/history.tsx` |
+| Actions rapides : je prends le relais, besoin de repos, peux-tu prendre cette tâche, je suis disponible, échanger mon créneau, besoin d'aide aujourd'hui, demander un relais | ✅ `care_requests` ; accepter « prendre cette tâche » la réattribue, accepter un échange réattribue la nuit (côté serveur) |
+| Notifications aux membres, texte neutre sur l'écran verrouillé | ✅ catégorie `family` ; « Ouvrez l'application pour répondre » |
+| Pas de compétition | ✅ aucun compteur par personne ; test automatique |
+| Signaux de surcharge + suggestions, désactivables, non culpabilisants (§ 21) | ✅ `overloadSignals()` : retards, journée chargée, tâches sans responsable, répartition (sans nom ni chiffre), repos demandé ou fatigue déclarée |
+| Relais nocturne alterné / fixe / personnalisé, monoparental, confirmations, échanges, conflits (§ 23) | ✅ `family/nights.tsx`, aperçu avant enregistrement |
+| Temps pour soi : créneaux libres d'après l'agenda, réserver, relais, reporter, annuler (§ 24) | ✅ `family/me-time.tsx` ; chacun ne réserve que son propre temps (serveur) |
+| Journée difficile : essentiel, événements, infos enfant, report validé avant application, aide en un geste (§ 25) | ✅ `family/difficult.tsx` + raccourci sur l'accueil |
+| Urgence organisationnelle : minimal, sans animation, gros boutons (§ 26) | ✅ `family/urgent.tsx` |
+| Routines avec aperçu et validation (§ 27) | ✅ `family/routines.tsx`, 8 modèles |
+| Bilan hebdomadaire neutre ; post-partum seulement si partagé (§ 28) | ✅ `family/review.tsx` |
+| Droits | ✅ domaine existant « Listes et organisation » (aucun droit retiré ou ajouté) ; 21 tests SQL |
+| Limite | 🟡 les membres apparaissent par leur rôle (« Coparent », « Proche ») : les profils ne sont pas exposés entre membres. |
+
+Corrections au passage : les panneaux du bas ne défilaient plus quand leur contenu était long, et un message pouvait effacer le suivant (ou disparaître aussitôt avec « réduire les animations »).
 
 ### Lot C — Calendrier, journal unifié, accueil personnalisable, intro (§ 4, 5, 17, 18)
 ⬜

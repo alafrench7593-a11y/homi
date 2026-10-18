@@ -32,13 +32,14 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Fermer" accessibilityRole="button" />
       </Animated.View>
       <Animated.View style={[styles.sheet, { transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [420, 0] }) }] }]}>
-        <GlassSurface fill={t.isDark ? t.colors.surface : '#FBF8F4'} depth={3} radius={radius.xl} style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%' }}>
+        <GlassSurface fill={t.isDark ? t.colors.surface : '#FBF8F4'} depth={3} radius={radius.xl} style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
           <View style={[styles.grabber, { backgroundColor: t.colors.border }]} />
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg }}>
             <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{title}</Text>
             <IconButton icon="x" label="Fermer" onPress={onClose} />
           </View>
-          <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled">
+          {/* flexShrink : le contenu long défile au lieu de dépasser de l'écran */}
+          <ScrollView style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled">
             {children}
           </ScrollView>
         </GlassSurface>
@@ -56,7 +57,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={show}>
       {children}
-      {toast && <ToastView key={toast.key} msg={toast.msg} tone={toast.tone} onDone={() => setToast(null)} />}
+      {/* La fin d'un ancien message n'efface jamais le suivant */}
+      {toast && <ToastView key={toast.key} msg={toast.msg} tone={toast.tone} onDone={() => setToast((cur) => (cur?.key === toast.key ? null : cur))} />}
       {Platform.OS === 'web' && <ConfirmHost />}
     </ToastContext.Provider>
   );
@@ -71,14 +73,19 @@ function ToastView({ msg, tone, onDone }: { msg: string; tone: ToastTone; onDone
   const life = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const show = reduce ? Animated.timing(anim, { toValue: 1, duration: 0, useNativeDriver: NATIVE_DRIVER }) : Animated.spring(anim, { toValue: 1, ...SPRING.pop, useNativeDriver: NATIVE_DRIVER });
-    Animated.parallel([
+    let alive = true;
+    const intro = Animated.parallel([
       show,
       Animated.sequence([Animated.delay(reduce ? 0 : 120), springTo(icon, 1, 'pop', reduce)]),
-      timeTo(life, 1, 3000, reduce, Easing.linear),
-    ]).start(() => {
-      timeTo(anim, 0, duration.base, reduce, easing.accelerate).start(onDone);
+      // Avec « réduire les animations », le message reste lisible le même temps
+      reduce ? Animated.delay(3000) : timeTo(life, 1, 3000, false, Easing.linear),
+    ]);
+    intro.start(({ finished }) => {
+      if (!alive || !finished) return;
+      timeTo(anim, 0, duration.base, reduce, easing.accelerate).start(() => { if (alive) onDone(); });
     });
-  }, [anim, icon, life, onDone, reduce]);
+    return () => { alive = false; intro.stop(); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const name = tone === 'success' ? 'check-circle' : tone === 'error' ? 'alert-circle' : 'info';
   const accent = tone === 'error' ? '#F5A3A3' : '#F2DFC1';
   return (

@@ -23,6 +23,7 @@ const CATEGORY: Record<AppNotification['category'], { icon: IconName; label: str
   subscription: { icon: 'star', label: 'Abonnement' },
   product_recall: { icon: 'alert-triangle', label: 'Rappel de produit' },
   system: { icon: 'info', label: 'Toi & Moi' },
+  family: { icon: 'users', label: 'Foyer' },
 };
 
 /** Lien interne de la notification : deep_link, sinon payload.route / payload.url / payload.deep_link. */

@@ -13,6 +13,7 @@ import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
 import { PostpartumHomeCard } from '@/features/postpartum';
+import { FamilyHomeCard } from '@/features/familyLoad';
 import { ChildToday, CycleCard, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
 import { useActivePregnancy, useActiveSubject, useArticles, useChildren, useNotificationsInbox, usePremium, useProfile } from '@/lib/data/hooks';
 import { greeting } from '@/lib/domain/dates';
@@ -117,7 +118,10 @@ export default function Home() {
         {/* 4. Prochain rappel ou rendez-vous */}
         <Appear kind="soft" delay={0.42}><UpcomingCard /></Appear>
 
-        {/* 4 bis. Après la naissance (mère : invitation douce ; conjoint : ce qu'elle a choisi de partager) */}
+        {/* 4 bis. Organisation familiale : demandes en attente, mes tâches, journée difficile */}
+        <Appear kind="soft" delay={0.44}><FamilyHomeCard /></Appear>
+
+        {/* 4 ter. Après la naissance (mère : invitation douce ; conjoint : ce qu'elle a choisi de partager) */}
         <Appear kind="soft" delay={0.46}><PostpartumHomeCard journeys={profile?.journeys ?? []} youngestChildMonths={youngestMonths} /></Appear>
 
         {/* 5. Article du jour */}

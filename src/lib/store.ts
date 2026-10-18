@@ -19,6 +19,9 @@ interface UiState {
   householdId: string | null;
   subject: ActiveSubject | null;
   hapticsEnabled: boolean;
+  /** Suggestions « pour alléger » masquées par la personne (organisation familiale). */
+  overloadTipsOff: boolean;
+  setOverloadTipsOff: (on: boolean) => void;
   setTheme: (t: UiState['themePreference']) => void;
   setNightMode: (on: boolean) => void;
   setNightVibrations: (on: boolean) => void;
@@ -39,6 +42,8 @@ export const useUiStore = create<UiState>()(
       householdId: null,
       subject: null,
       hapticsEnabled: true,
+      overloadTipsOff: false,
+      setOverloadTipsOff: (overloadTipsOff) => set({ overloadTipsOff }),
       setTheme: (themePreference) => set({ themePreference }),
       setNightMode: (nightMode) => set({ nightMode }),
       setNightVibrations: (nightVibrations) => set({ nightVibrations }),

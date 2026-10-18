@@ -296,6 +296,24 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   }
   const demoRecallCheck = () => ({ checked: false, source: 'RappelConso', error: DEMO_RECALL_CHECK, checkedOn: new Date().toISOString().slice(0, 10) });
 
+  // ---------------------------------------------------------------- charge familiale (mêmes règles que les déclencheurs SQL)
+  function taskEvent(t: Row, kind: string, detail: Row = {}) {
+    T('family_task_events').push({ id: uuid(), task_id: t.id, household_id: t.household_id, actor_id: state.session?.userId ?? null, kind, detail, created_at: nowIso() });
+  }
+  function nextOccurrence(t: Row) {
+    if (t.status !== 'done' || !t.recurrence || !t.due_at) return;
+    const every = Number(t.recurrence.every ?? 1);
+    const d = new Date(t.due_at);
+    if (t.recurrence.type === 'daily') d.setUTCDate(d.getUTCDate() + every);
+    else if (t.recurrence.type === 'weekly') d.setUTCDate(d.getUTCDate() + 7 * every);
+    else d.setUTCMonth(d.getUTCMonth() + every);
+    const due = d.toISOString();
+    if (T('family_tasks').some((x) => x.household_id === t.household_id && x.title === t.title && x.due_at === due && x.status === 'todo')) return;
+    const next = { ...t, id: uuid(), due_at: due, status: 'todo', done_at: null, done_by: null, created_at: nowIso(), updated_at: nowIso() };
+    T('family_tasks').push(next);
+    taskEvent(next, 'created');
+  }
+
   // ---------------------------------------------------------------- règles d'insertion
   function beforeInsert(table: string, r: Row): Row {
     const me = state.session?.userId;
@@ -332,6 +350,20 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (count >= limit(quota[table])) throw new BackendError('Limite de la version gratuite atteinte.', 'P0001', 'premium_required');
     }
     if (table === 'product_scans') checkScan(r);
+    if (table === 'family_tasks') {
+      r.status ??= 'todo'; r.priority ??= 'normal'; r.category ??= 'other'; r.essential ??= false; r.created_by ??= me; r.updated_at = nowIso();
+      if (r.status === 'done') { r.done_at ??= nowIso(); r.done_by ??= me; }
+    }
+    if (table === 'care_requests') {
+      if (r.kind === 'take_task' && !r.task_id) throw new BackendError('Choisissez la tâche concernée.');
+      r.from_user = me; r.status = 'open'; r.responded_by = null; r.responded_at = null;
+    }
+    if (table === 'care_shifts') {
+      if (Date.parse(r.ends_at) <= Date.parse(r.starts_at) || Date.parse(r.ends_at) - Date.parse(r.starts_at) > 86400000) throw new BackendError('Un créneau dure au plus 24 heures.');
+      if (r.kind === 'me_time' && r.user_id !== me) throw new BackendError('Chacun réserve son propre temps pour soi.', '42501');
+      r.status ??= 'planned'; r.created_by ??= me;
+    }
+    if (table === 'routines' && (!Array.isArray(r.items) || r.items.length === 0)) throw new BackendError('Ajoutez au moins une étape.');
     if (table === 'postpartum_shared_status') filterPostpartumShared(T('postpartum_settings').find((x) => x.user_id === r.user_id), r);
     if (table === 'postpartum_checkins' && T(table).some((x) => x.user_id === r.user_id && x.checkin_date === r.checkin_date)) {
       throw new BackendError('Un point est déjà enregistré pour ce jour : modifiez-le plutôt.', '23505');
@@ -407,6 +439,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   }
 
   function afterInsert(table: string, r: Row) {
+    if (table === 'family_tasks') { taskEvent(r, 'created', { assignee: r.assignee_id }); nextOccurrence(r); }
     if (table === 'product_scans' && (r.barcode || r.product_id)) {
       for (const rc of T('product_recalls')) if (scanMatchesRecall(r, rc)) notifyRecall(rc, r.user_id);
     }
@@ -882,6 +915,22 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         if (table === 'bottles') {
           const next = { ...r, ...patch };
           if (next.prepared_ml != null && next.consumed_ml != null && next.consumed_ml > next.prepared_ml) throw new BackendError('La quantité bue ne peut pas dépasser la quantité préparée.');
+        }
+        if (table === 'family_tasks') {
+          const before = { ...r };
+          Object.assign(r, patch, { updated_at: nowIso(), updated_by: state.session?.userId ?? null });
+          if (r.status === 'done' && before.status !== 'done') { r.done_at = nowIso(); r.done_by = state.session?.userId ?? null; }
+          if (r.status !== 'done') { r.done_at = null; r.done_by = null; }
+          if (r.assignee_id !== before.assignee_id) taskEvent(r, r.assignee_id ? 'assigned' : 'unassigned', { from: before.assignee_id, to: r.assignee_id });
+          if (r.status !== before.status) { taskEvent(r, r.status === 'done' ? 'done' : r.status === 'cancelled' ? 'cancelled' : 'reopened'); nextOccurrence(r); }
+          else if (before.due_at && r.due_at && r.due_at > before.due_at) taskEvent(r, 'postponed', { from: before.due_at, to: r.due_at });
+          continue;
+        }
+        if (table === 'care_requests') {
+          const me = state.session?.userId;
+          if (r.from_user === me && patch.status && !['open', 'cancelled', 'done'].includes(String(patch.status))) throw new BackendError('Vous ne pouvez pas répondre à votre propre demande.', '42501');
+          Object.assign(r, patch);
+          continue;
         }
         if (table === 'postpartum_shared_status') {
           const next = { ...r, ...patch };

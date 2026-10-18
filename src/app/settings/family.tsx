@@ -27,7 +27,7 @@ const DOMAIN_LABEL: Record<Domain, { title: string; detail: string }> = {
   health: { title: 'Santé', detail: 'Mesures, rendez-vous, vaccins, traitements' },
   documents: { title: 'Documents', detail: 'Coffre de documents partagés' },
   pregnancy: { title: 'Grossesse', detail: 'Suivi de grossesse' },
-  lists: { title: 'Listes', detail: 'Valise, achats, préparatifs' },
+  lists: { title: 'Listes et organisation', detail: 'Valise, achats, tâches, relais, routines, agenda familial' },
   names: { title: 'Prénoms', detail: 'Favoris et votes' },
   profile: { title: 'Profils', detail: 'Fiches des enfants' },
 };

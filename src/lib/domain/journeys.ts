@@ -119,6 +119,9 @@ export function toolCategories({ journeys, hasPregnancy, childId, childCount }: 
   }
   cats.push({
     key: 'all', title: 'Pour tout le monde', items: [
+      { icon: 'check-square', label: 'Organisation familiale', sub: 'Tâches, relais, routines', href: '/family' },
+      { icon: 'calendar', label: 'Agenda familial', sub: 'Jour, semaine, mois', href: '/calendar' },
+      { icon: 'wind', label: 'Journée difficile', sub: 'L’essentiel seulement', href: '/family/difficult' },
       { icon: 'book-open', label: 'Bibliothèque', sub: 'Articles sourcés', href: '/library' },
       { icon: 'bell', label: 'Rappels', href: '/settings/reminders' },
       { icon: 'life-buoy', label: 'Urgences', sub: '15 · 112 · 3114', href: '/emergency' },

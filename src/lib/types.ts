@@ -101,7 +101,7 @@ export interface Reminder {
 }
 
 export interface AppNotification {
-  id: string; user_id: string; category: 'reminder' | 'community_reply' | 'community_comment' | 'assistant' | 'subscription' | 'product_recall' | 'system';
+  id: string; user_id: string; category: 'reminder' | 'community_reply' | 'community_comment' | 'assistant' | 'subscription' | 'product_recall' | 'system' | 'family';
   title: string; body: string | null; deep_link: string | null; payload: Record<string, unknown>; read_at: string | null; created_at: string;
 }
 
