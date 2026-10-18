@@ -194,6 +194,19 @@ describe('moteur de règles aliment', () => {
     expect(a.verdict).toBe('À éviter pour ce profil selon la source indiquée');
     expect(analysisText(a)).toMatch(/aucun diagnostic/);
   });
+  it('allergènes Open Food Facts en anglais, traces et données manquantes', () => {
+    const off = (over: Partial<FoodInput>) => food('Biscuits', { ingredientsText: 'Farine de blé, sucre', ingredientsOrigin: 'database', declaredAllergens: ['en:gluten'], traces: [], ...over });
+    const milk = analyzeFood(off({ declaredAllergens: ['en:milk'] }), { kind: 'adult' }, { allergies: ['lait'] }, NOW);
+    expect(milk.verdict).toBe('À éviter pour ce profil selon la source indiquée');
+    const traces = analyzeFood(off({ traces: ['en:nuts'] }), { kind: 'adult' }, { allergies: ['noisette'] }, NOW);
+    expect(traces.findings.some((f) => f.id.startsWith('allergy_trace_') && f.level === 'precaution')).toBe(true);
+    const unknown = analyzeFood(off({ declaredAllergens: null, traces: null, ingredientsText: null }), { kind: 'adult' }, { allergies: ['lait'] }, NOW);
+    expect(unknown.findings.some((f) => f.id === 'allergy_unchecked' && f.level === 'missing')).toBe(true);
+    expect(unknown.certainty).toBe('low');
+    const none = analyzeFood(off({}), { kind: 'adult' }, { allergies: ['lait'] }, NOW);
+    expect(analysisText(none)).toMatch(/ne garantit pas/);
+    expect(analysisText(none)).not.toMatch(/sans risque/i);
+  });
   it('verdicts limités aux cinq formulations prévues, jamais de promesse d’innocuité', () => {
     const names = ['Saumon fumé', 'Jambon cuit', 'Mayonnaise', 'Thon en boîte', 'Tomates cerises', 'Pop-corn', 'Réglisse', 'Œufs', 'Huîtres', 'Graines germées'];
     for (const n of names) for (const p of [PREGNANT, baby(10), { kind: 'child', ageMonths: 40 } as ScanProfile]) {

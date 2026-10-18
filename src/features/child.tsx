@@ -10,9 +10,11 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { LineChart, StatPill } from '@/components/Charts';
+import { GrowthChart } from '@/components/GrowthChart';
+import { ageInMonths, describePosition, sexForStandards, WHO_MAX_MONTHS, type GrowthIndicator } from '@/lib/domain/growthStandards';
 import { PremiumGate } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { ChildToday } from '@/features/home';
 import { BottleTimerCard } from '@/features/bottle';
@@ -164,6 +166,7 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
 
 // ---------------------------------------------------------------- Croissance
 type Metric = 'weight_kg' | 'height_cm' | 'head_cm';
+const WHO_IND: Record<Metric, GrowthIndicator> = { weight_kg: 'weight', height_cm: 'length', head_cm: 'head' };
 const METRICS: { key: Metric; label: string; unit: string; min: number; max: number; digits: number }[] = [
   { key: 'weight_kg', label: 'Poids', unit: 'kg', min: 0.3, max: 80, digits: 3 },
   { key: 'height_cm', label: 'Taille', unit: 'cm', min: 20, max: 180, digits: 1 },
@@ -193,6 +196,15 @@ export function GrowthTab({ child }: { child: Child }) {
   const [saving, setSaving] = useState(false);
 
   const m = METRICS.find((x) => x.key === metric)!;
+  const [whoOn, setWhoOn] = useState(true);
+  const whoSex = sexForStandards(child.sex);
+  const agePoints = (measurements ?? [])
+    .filter((x) => x[metric] != null)
+    .map((x) => ({ m: ageInMonths(child.birth_date, x.measured_on), y: Number(x[metric]), label: formatDateFr(x.measured_on, false) }))
+    .filter((p) => p.m >= 0 && p.m <= WHO_MAX_MONTHS);
+  const tooOld = (measurements ?? []).some((x) => x[metric] != null && ageInMonths(child.birth_date, x.measured_on) > WHO_MAX_MONTHS);
+  const lastAge = agePoints.slice().sort((a, b) => a.m - b.m).at(-1);
+  const position = whoSex && lastAge ? describePosition(WHO_IND[metric], whoSex, lastAge.m, lastAge.y) : null;
   const points = (measurements ?? [])
     .filter((x) => x[metric] != null)
     .map((x) => ({ x: new Date(x.measured_on).getTime(), y: Number(x[metric]), label: formatDateFr(x.measured_on, false) }));
@@ -240,7 +252,13 @@ export function GrowthTab({ child }: { child: Child }) {
   return (
     <>
       <Segmented label="Mesure affichée" value={metric} onChange={setMetric} options={METRICS.map((x) => ({ value: x.key, label: x.key === 'head_cm' ? 'Crâne' : x.label }))} />
-      {points.length >= 2 ? (
+      {whoOn && whoSex && agePoints.length >= 1 ? (
+        <Card>
+          <Text weight="bold">{m.label} ({m.unit}) · repères OMS</Text>
+          <GrowthChart indicator={WHO_IND[metric]} sex={whoSex} points={agePoints} unit={m.unit} accessibilityLabel={`${m.label} de ${child.first_name} et repères de l’OMS`} />
+          {position ? <Text variant="small" style={{ marginTop: spacing.xs }}>{`Dernière mesure : ${position.text.charAt(0).toLowerCase()}${position.text.slice(1)}`}</Text> : null}
+        </Card>
+      ) : points.length >= 2 ? (
         <Card>
           <Text weight="bold">{m.label} ({m.unit})</Text>
           <LineChart points={points} unit={m.unit} accessibilityLabel={`Mesures de ${m.label.toLowerCase()} de ${child.first_name}`} formatX={(x) => new Date(x).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })} />
@@ -248,7 +266,15 @@ export function GrowthTab({ child }: { child: Child }) {
       ) : (
         <Card tone="soft"><Text muted>{points.length === 1 ? 'Ajoutez une deuxième mesure pour afficher la courbe.' : 'Ajoutez au moins deux mesures pour afficher la courbe.'}</Text></Card>
       )}
-      <Text variant="caption" muted>Ce graphique reprend simplement vos mesures. Les courbes de référence figurent dans le carnet de santé : c’est votre médecin ou votre sage-femme qui les interprète avec vous.</Text>
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text variant="small" weight="medium" style={{ flex: 1 }}>Afficher les repères de l’OMS</Text>
+        <Toggle value={whoOn} onChange={setWhoOn} label="Afficher les repères de croissance de l’OMS" />
+      </Row>
+      {whoOn && !whoSex ? <Text variant="caption" muted>Les repères de l’OMS diffèrent selon le sexe de l’enfant : indiquez-le dans son profil pour les afficher.</Text> : null}
+      {whoOn && whoSex && tooOld ? <Text variant="caption" muted>Les repères de l’OMS intégrés couvrent la naissance à 5 ans. Au-delà, référez-vous aux courbes du carnet de santé.</Text> : null}
+      <Text variant="caption" muted>{whoOn
+        ? 'Repères : Standards de croissance de l’enfant de l’OMS (2006). Ils aident à situer une mesure, sans rien diagnostiquer : c’est l’évolution, lue par votre médecin ou votre sage-femme, qui compte. Le carnet de santé français utilise les courbes 2018 (AFPA–CRESS/Inserm), qui peuvent légèrement différer.'
+        : 'Ce graphique reprend simplement vos mesures. Les courbes de référence figurent dans le carnet de santé : c’est votre médecin ou votre sage-femme qui les interprète avec vous.'}</Text>
 
       <SectionTitle title="Ajouter une mesure" />
       <Card>

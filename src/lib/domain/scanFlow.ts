@@ -142,6 +142,8 @@ export function buildFoodInput(s: ConfirmedSubject, d: FoodDraft, extra: { recal
     catalogMatch: extra.catalogMatch || !!s.ciqual,
     labels: labels ? { rawMilk: labels.rawMilk, alcohol: labels.alcohol, caffeine: labels.caffeine, sweeteners: labels.sweeteners } : undefined,
     nutrition: nutritionOf(s, extra.demoMode),
+    declaredAllergens: s.candidate ? (s.candidate.allergens_known === false ? null : s.candidate.allergens) : null,
+    traces: s.candidate?.traces ?? null,
     dataSource: subjectDataSource(s, extra.demoMode),
     recalls: extra.recalls.map(toRecallInfo),
     recallCheck: extra.recallCheck,

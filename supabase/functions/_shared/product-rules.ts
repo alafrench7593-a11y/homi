@@ -4,6 +4,7 @@
  * et sa source, et des informations manquantes explicitement signalées.
  * Module pur, testé par Jest.
  */
+import { checkAllergies } from './allergens.ts';
 
 export interface ProductData {
   name: string;
@@ -11,6 +12,8 @@ export interface ProductData {
   category: string;
   ingredients?: string[] | null;
   declared_allergens?: string[] | null;
+  /** Traces « peut contenir » ; null/absent = non renseigné. */
+  traces?: string[] | null;
   attributes?: Record<string, unknown> | null;
   data_source: string;
   data_retrieved_at: string;
@@ -99,16 +102,19 @@ export function assessProduct(p: ProductData, ctx: ScanContext): Assessment {
   }
 
   const declared = (p.declared_allergens ?? []).map(norm);
-  for (const a of ctx.childDeclaredAllergies ?? []) {
-    if (declared.includes(norm(a)) || ingredients.some((i) => norm(i).includes(norm(a)))) {
-      findings.push({
-        level: 'avoid_advised',
-        title: `Contient « ${a} », allergie que vous avez déclarée`,
-        criterion: 'Correspondance entre les allergènes déclarés du produit et les allergies saisies dans le profil.',
-        source: 'Étiquetage du produit + profil de l’enfant',
-      });
-    }
+  const chk = checkAllergies({ allergies: ctx.childDeclaredAllergies ?? [], declaredTags: p.declared_allergens ?? null, tracesTags: p.traces ?? null, ingredientsText: ingredients.length ? ingredients.join(', ') : null });
+  for (const m of chk.identified) {
+    findings.push({
+      level: 'avoid_advised',
+      title: `Contient « ${m.allergy} », allergie que vous avez déclarée`,
+      criterion: m.via === 'declared' ? 'Allergène déclaré par le fabricant, correspondant à une allergie saisie dans le profil.' : 'Correspondance entre la liste des ingrédients et une allergie saisie dans le profil.',
+      source: 'Étiquetage du produit + profil de l’enfant',
+    });
   }
+  for (const m of chk.possible) {
+    findings.push({ level: 'attention', title: `Peut contenir « ${m.allergy} » (traces)`, criterion: 'Mention « peut contenir » : présence non intentionnelle possible.', source: 'Étiquetage du produit' });
+  }
+  if (chk.noMatchNote) findings.push({ level: chk.insufficient.length ? 'attention' : 'info', title: chk.insufficient.length ? 'Allergies : vérification impossible avec ces données' : 'Allergies : aucune correspondance trouvée', criterion: chk.noMatchNote, source: p.data_source });
   if (declared.length) {
     findings.push({ level: 'info', title: `Allergènes déclarés : ${p.declared_allergens!.join(', ')}`, criterion: 'Allergènes à déclaration obligatoire indiqués par le fabricant.', source: p.data_source });
   }

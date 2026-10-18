@@ -4,7 +4,7 @@
  * importable dans Google Agenda, Apple Calendrier ou Outlook — sans données de santé par défaut.
  */
 import React, { useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, View } from 'react-native';
+import { Animated, Linking, Pressable, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/States';
@@ -13,7 +13,9 @@ import { Flash, SlideSwap } from '@/components/MotionKit';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { parseFrDateTime, splitLocal } from '@/features/familyLoad';
-import { useAppointments, useChildren } from '@/lib/data/hooks';
+import { useAppointments, useChildren, useHouseholdId } from '@/lib/data/hooks';
+import { feedUrl, useCalendarFeeds, useCreateCalendarFeed, useRevokeCalendarFeed, webcalUrl } from '@/lib/data/hooks-calendar';
+import { backendUrl, isDemo } from '@/lib/backend';
 import { useCareShifts, useDeleteEvent, useFamilyEvents, useFamilyTasks, usePeople, useSaveEvent } from '@/lib/data/hooks-family-load';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import {
@@ -195,6 +197,8 @@ export default function FamilyCalendar() {
         <Button label="Exporter (.ics)" icon="download" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: spacing.xs }} onPress={() => setExportOpen(true)} />
       </Card>
 
+      <FeedCard />
+
       <Sheet visible={exportOpen} onClose={() => setExportOpen(false)} title="Exporter l’agenda">
         <View style={{ gap: spacing.sm }}>
           <Text variant="small">Événements du foyer, tâches à faire, relais et temps pour soi, du mois dernier à l’an prochain.</Text>
@@ -278,5 +282,89 @@ function DayCell({ day, out, today, count, onPress, accent }: { day: string; out
         {Array.from({ length: Math.min(count, 3) }, (_, i) => <View key={i} style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: accent, opacity: out ? 0.4 : 1 }} />)}
       </View>
     </Pressable>
+  );
+}
+
+// ------------------------------------------------------------------ abonnement (synchronisation à sens unique)
+/**
+ * Lien secret que Google Agenda, Apple Calendrier ou Outlook interrogent régulièrement.
+ * Le lien n'est montré qu'une fois ; il se révoque ici. Rien ne part en démonstration.
+ */
+function FeedCard() {
+  const t = useTheme();
+  const toast = useToast();
+  const householdId = useHouseholdId();
+  const available = !isDemo && !!backendUrl && !!householdId;
+  const feedsQ = useCalendarFeeds(available);
+  const create = useCreateCalendarFeed();
+  const revoke = useRevokeCalendarFeed();
+  const [open, setOpen] = useState(false);
+  const [health, setHealth] = useState(false);
+  const [created, setCreated] = useState<string | null>(null);
+
+  async function make() {
+    if (!householdId) return;
+    try {
+      const r = await create.mutateAsync({ householdId, includeHealthTitles: health });
+      setCreated(feedUrl(r.token));
+      haptic('success');
+    } catch (e) { toast(friendlyError(e), 'error'); }
+  }
+  async function remove(id: string) {
+    if (!(await confirm('Révoquer ce lien ?', 'Les agendas abonnés ne recevront plus aucune mise à jour. Les événements déjà copiés peuvent y rester jusqu’à ce que vous supprimiez l’abonnement.', 'Révoquer'))) return;
+    try { await revoke.mutateAsync(id); toast('Lien révoqué.'); } catch (e) { toast(friendlyError(e), 'error'); }
+  }
+  const close = () => { setOpen(false); setCreated(null); setHealth(false); };
+  const when = (iso: string) => new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+
+  return (
+    <Card>
+      <Row style={{ alignItems: 'center' }}>
+        <Icon name="refresh-cw" size={18} color={t.colors.primary} />
+        <Text weight="bold" style={{ flex: 1 }}>S’abonner depuis un autre agenda</Text>
+      </Row>
+      <Text variant="small" style={{ marginTop: 4 }}>Un lien secret que Google Agenda, Apple Calendrier ou Outlook consultent régulièrement : vos changements y apparaissent sans nouvel export. Synchronisation à sens unique (les modifications faites là-bas ne reviennent pas ici).</Text>
+      {!available ? (
+        <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{isDemo ? 'Disponible avec un compte : en démonstration, rien ne quitte cet appareil.' : 'Disponible une fois le foyer créé et le serveur configuré.'}</Text>
+      ) : (
+        <>
+          {(feedsQ.data ?? []).map((f) => (
+            <Row key={f.id} style={{ alignItems: 'center', marginTop: spacing.xs }}>
+              <View style={{ flex: 1 }}>
+                <Text variant="small" weight="medium">{f.label}{f.include_health_titles ? ' · titres de santé visibles' : ''}</Text>
+                <Text variant="caption" muted>{`Créé le ${when(f.created_at)} · ${f.last_accessed_at ? `dernière lecture le ${when(f.last_accessed_at)}` : 'pas encore consulté'}`}</Text>
+              </View>
+              <Button label="Révoquer" size="sm" variant="ghost" onPress={() => void remove(f.id)} />
+            </Row>
+          ))}
+          <Button label="Créer un lien d’abonnement" icon="link" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: spacing.xs }} onPress={() => setOpen(true)} />
+        </>
+      )}
+
+      <Sheet visible={open} onClose={close} title="Lien d’abonnement">
+        {created ? (
+          <View style={{ gap: spacing.sm }}>
+            <Banner tone="warning" icon="lock">{'Ce lien n’est affiché qu’une fois. Toute personne qui le possède voit ces événements : ne le publiez pas. Vous pourrez le révoquer à tout moment.'}</Banner>
+            <Text selectable variant="caption" style={{ padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} accessibilityLabel="Adresse du lien d’abonnement">{created}</Text>
+            <Button label="Ouvrir dans mon agenda" icon="calendar" full onPress={() => void Linking.openURL(webcalUrl(created)).catch(() => toast('Aucun agenda n’a pu ouvrir ce lien : copiez l’adresse.', 'error'))} />
+            <Button label="Partager ou copier le lien" icon="share-2" variant="secondary" full onPress={() => void Share.share({ message: created }).catch(() => undefined)} />
+            <Text variant="caption" muted>Google Agenda : « Autres agendas » › « À partir de l’URL ». Les agendas actualisent un abonnement à leur propre rythme (de quelques minutes à plusieurs heures selon le service).</Text>
+          </View>
+        ) : (
+          <View style={{ gap: spacing.sm }}>
+            <Text variant="small">Événements du foyer, tâches à faire, relais de nuit et votre temps pour soi, du mois dernier à l’an prochain — selon vos droits dans le foyer.</Text>
+            <Banner tone="info" icon="lock">{'Les rendez-vous privés d’autres personnes n’y figurent jamais. Les rendez-vous médicaux apparaissent comme « Rendez-vous », sans titre ni lieu, sauf si vous choisissez de les afficher.'}</Banner>
+            <Row style={{ alignItems: 'flex-start' }}>
+              <View style={{ flex: 1 }}>
+                <Text weight="medium">Afficher les titres des rendez-vous médicaux</Text>
+                <Text variant="caption" muted>Ils seraient visibles dans l’agenda externe et par les personnes qui y ont accès.</Text>
+              </View>
+              <Toggle label="Afficher les titres des rendez-vous médicaux" value={health} onChange={setHealth} />
+            </Row>
+            <Button label="Créer le lien" icon="link" full loading={create.isPending} onPress={make} />
+          </View>
+        )}
+      </Sheet>
+    </Card>
   );
 }

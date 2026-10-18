@@ -14,7 +14,7 @@ export const OPEN_FACTS: Record<OpenFactsKind, { host: string; label: string }> 
 
 export const OFF_FIELDS = [
   'code', 'product_name', 'product_name_fr', 'generic_name_fr', 'brands', 'image_front_url', 'image_front_small_url', 'image_url',
-  'ingredients_text', 'ingredients_text_fr', 'allergens_tags', 'categories_tags', 'labels_tags', 'nutriments',
+  'ingredients_text', 'ingredients_text_fr', 'allergens_tags', 'traces_tags', 'categories_tags', 'labels_tags', 'nutriments',
   'warning', 'warning_fr', 'conservation_conditions', 'conservation_conditions_fr', 'periods_after_opening', 'periods_after_opening_tags',
   'last_modified_t', 'quantity',
 ].join(',');
@@ -40,6 +40,10 @@ export interface NormalizedProduct {
   image_url: string | null;
   ingredients_text: string | null;
   allergens: string[];
+  /** false : champ absent de la base (≠ « aucun allergène déclaré »). */
+  allergens_known: boolean;
+  /** Traces « peut contenir » (étiquettes) ; null = non renseigné. */
+  traces: string[] | null;
   categories: string[];
   precautions_text: string | null;
   period_after_opening: string | null;
@@ -112,6 +116,8 @@ export function normalizeProductObject(p: Record<string, unknown>, kind: OpenFac
     image_url: str(p.image_front_url) ?? str(p.image_url) ?? str(p.image_front_small_url),
     ingredients_text: ingredients,
     allergens: Array.isArray(p.allergens_tags) ? (p.allergens_tags as unknown[]).map((t) => String(t).replace(/^..:/, '')) : [],
+    allergens_known: Array.isArray(p.allergens_tags),
+    traces: Array.isArray(p.traces_tags) ? (p.traces_tags as unknown[]).map((t) => String(t).replace(/^..:/, '')) : null,
     categories,
     precautions_text: precautions,
     period_after_opening: pao,
@@ -178,6 +184,8 @@ export function fromProductRow(p: LocalProductRow) {
     image_url: p.image_url && /^https:\/\//.test(p.image_url) ? p.image_url : null,
     ingredients_text: ingredients,
     allergens: Array.isArray(p.declared_allergens) ? p.declared_allergens : [],
+    allergens_known: Array.isArray(p.declared_allergens),
+    traces: null as string[] | null,
     categories: [] as string[],
     precautions_text: str(p.precautions_text),
     period_after_opening: str(p.period_after_opening),
@@ -243,4 +251,88 @@ export async function searchOpenFacts(query: string, o: OpenFactsOptions): Promi
   const out: NormalizedProduct[] = [];
   for (const k of kinds) out.push(...normalizeSearch(await getJsonWith(f, searchUrl(k, query), { 'User-Agent': o.userAgent }), k, o.today));
   return out;
+}
+
+// ---------------------------------------------------------------- cache, quotas et pannes (documentation officielle :
+// 15 lectures / min / IP, 10 recherches / min / IP ; nos appels partent d'adresses serveur partagées)
+export type FetchOutcome = { kind: 'ok'; json: unknown } | { kind: 'not_found' } | { kind: 'error' };
+
+/** Comme getJsonWith, mais distingue « absent » (404 / status 0) d'une panne (réseau, 5xx, 429, délai). */
+export async function fetchOutcome(fetchImpl: FetchLike, url: string, headers: Record<string, string>, timeoutMs = 8000): Promise<FetchOutcome> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetchImpl(url, { headers: { Accept: 'application/json', ...headers }, signal: ctrl.signal });
+    if (res.status === 404) return { kind: 'not_found' };
+    if (!res.ok) return { kind: 'error' };
+    const json = await res.json();
+    const st = (json as { status?: unknown })?.status;
+    return st === 0 || st === '0' ? { kind: 'not_found' } : { kind: 'ok', json };
+  } catch {
+    return { kind: 'error' };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export interface CacheEntry { payload: NormalizedProduct | NormalizedProduct[] | null; found: boolean; fetched_at: string }
+export interface OpenFactsStore {
+  get(key: string): Promise<CacheEntry | null>;
+  set(key: string, e: CacheEntry): Promise<void>;
+  /** Jeton de quota global (true = appel autorisé). */
+  take(bucket: 'read' | 'search'): Promise<boolean>;
+}
+export type LookupStatus = 'fresh' | 'cached' | 'stale' | 'not_found' | 'saturated' | 'unavailable';
+
+const DAY = 86400000;
+export const CACHE_TTL = { found: 7 * DAY, notFound: DAY, search: DAY };
+
+/**
+ * Fiche par code-barres avec cache et quota. Jamais d'erreur transformée en « introuvable » :
+ * panne → 'unavailable' (ou dernière fiche connue, datée, 'stale') ; quota atteint → 'saturated' (ou 'stale').
+ */
+export async function lookupOpenFactsCached(barcode: string, o: OpenFactsOptions & { store: OpenFactsStore; now?: Date }): Promise<{ product: NormalizedProduct | null; status: LookupStatus }> {
+  if (!o.userAgent.trim()) return { product: null, status: 'unavailable' };
+  const now = (o.now ?? new Date()).getTime();
+  const key = `product:${barcode}:${lookupOrder(o.hint).join(',')}`;
+  const cached = await o.store.get(key);
+  const age = cached ? now - Date.parse(cached.fetched_at) : Infinity;
+  if (cached && age < (cached.found ? CACHE_TTL.found : CACHE_TTL.notFound)) {
+    return { product: cached.found ? cached.payload as NormalizedProduct : null, status: cached.found ? 'cached' : 'not_found' };
+  }
+  const fallback = (status: LookupStatus) => (cached?.found ? { product: cached.payload as NormalizedProduct, status: 'stale' as const } : { product: null, status });
+  const f = o.fetchImpl ?? (fetch as unknown as FetchLike);
+  let sawError = false;
+  for (const kind of lookupOrder(o.hint)) {
+    if (!(await o.store.take('read'))) return fallback('saturated');
+    const r = await fetchOutcome(f, productUrl(kind, barcode), { 'User-Agent': o.userAgent });
+    if (r.kind === 'error') { sawError = true; continue; }
+    if (r.kind === 'ok') {
+      const p = normalizeOpenFacts(r.json, kind, barcode, o.today);
+      if (p) { await o.store.set(key, { payload: p, found: true, fetched_at: new Date(now).toISOString() }); return { product: p, status: 'fresh' }; }
+    }
+  }
+  if (sawError) return fallback('unavailable');
+  await o.store.set(key, { payload: null, found: false, fetched_at: new Date(now).toISOString() });
+  return { product: null, status: 'not_found' };
+}
+
+/** Recherche par nom avec cache (1 jour) et quota ; panne ou quota → liste vide signalée, jamais « aucun résultat » en silence. */
+export async function searchOpenFactsCached(query: string, o: OpenFactsOptions & { store: OpenFactsStore; now?: Date }): Promise<{ products: NormalizedProduct[]; status: LookupStatus }> {
+  if (!o.userAgent.trim()) return { products: [], status: 'unavailable' };
+  const now = (o.now ?? new Date()).getTime();
+  const kinds: OpenFactsKind[] = o.hint === 'food' ? ['food'] : o.hint === 'product' ? ['beauty', 'products'] : ['food', 'beauty'];
+  const key = `search:${kinds.join(',')}:${query.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')}`;
+  const cached = await o.store.get(key);
+  if (cached && now - Date.parse(cached.fetched_at) < CACHE_TTL.search) return { products: (cached.payload as NormalizedProduct[]) ?? [], status: 'cached' };
+  const f = o.fetchImpl ?? (fetch as unknown as FetchLike);
+  const out: NormalizedProduct[] = [];
+  for (const k of kinds) {
+    if (!(await o.store.take('search'))) return cached ? { products: (cached.payload as NormalizedProduct[]) ?? [], status: 'stale' } : { products: out, status: 'saturated' };
+    const r = await fetchOutcome(f, searchUrl(k, query), { 'User-Agent': o.userAgent });
+    if (r.kind === 'error') return cached ? { products: (cached.payload as NormalizedProduct[]) ?? [], status: 'stale' } : { products: out, status: 'unavailable' };
+    if (r.kind === 'ok') out.push(...normalizeSearch(r.json, k, o.today));
+  }
+  await o.store.set(key, { payload: out, found: out.length > 0, fetched_at: new Date(now).toISOString() });
+  return { products: out, status: out.length ? 'fresh' : 'not_found' };
 }

@@ -89,6 +89,10 @@ export interface ProductCandidate {
   image_url: string | null;
   ingredients_text: string | null;
   allergens: string[];
+  /** false : la base ne renseigne pas les allergènes (≠ « aucun allergène »). */
+  allergens_known?: boolean;
+  /** Traces (« peut contenir ») ; null = non renseigné. */
+  traces?: string[] | null;
   categories: string[];
   precautions_text: string | null;
   period_after_opening: string | null;
@@ -115,9 +119,14 @@ export interface LookupResponse {
   recalls: RecallRow[];
   recall_check?: { checked: boolean; source: string; error: string | null; checkedOn?: string };
   needs_confirmation?: boolean;
+  /** État de la base externe : 'unavailable' / 'saturated' ne veulent jamais dire « produit introuvable ». */
+  lookup_status?: LookupStatus;
+  /** Fiche servie depuis le cache car la base n'a pas pu être consultée : sa date de récupération fait foi. */
+  stale?: boolean;
 }
+export type LookupStatus = 'internal' | 'fresh' | 'cached' | 'stale' | 'not_found' | 'saturated' | 'unavailable' | 'disabled';
 
-export interface SearchResponse { candidates: ProductCandidate[]; database: DatabaseStatus; message?: string }
+export interface SearchResponse { candidates: ProductCandidate[]; database: DatabaseStatus; message?: string | null; lookup_status?: LookupStatus }
 
 export interface CosingIngredient {
   inci_name: string; cas: string | null; ec: string | null; functions: string[]; restrictions: string | null; annex_refs: string[];

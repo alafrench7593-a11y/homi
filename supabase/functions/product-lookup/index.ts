@@ -11,7 +11,7 @@
 // Sans base réelle connectée, la réponse le dit explicitement (`database: 'not_connected'`) : aucun résultat n'est inventé.
 import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shared/http.ts';
 import { assessProduct, type ProductData, type ScanContext } from '../_shared/product-rules.ts';
-import { fromProductRow, lookupOpenFacts, searchOpenFacts, type NormalizedProduct } from '../_shared/open-facts.ts';
+import { fromProductRow, lookupOpenFactsCached, searchOpenFactsCached, type LookupStatus, type NormalizedProduct, type OpenFactsStore } from '../_shared/open-facts.ts';
 import { fetchRecallRecords, matchRecalls, recallRow, sameGtin } from '../_shared/rappelconso.ts';
 
 // deno-lint-ignore no-explicit-any
@@ -28,10 +28,24 @@ function fromLocal(p: Any): Any {
   return { ...fromProductRow(p), legacy: p };
 }
 
-async function fromOpenFacts(barcode: string, hint?: unknown): Promise<NormalizedProduct | null> {
-  if (!openFactsEnabled()) return null;
-  return await lookupOpenFacts(barcode, { userAgent: userAgent(), today: today(), hint });
+/** Cache (table open_facts_cache) + quota global : marge sous les limites officielles (15 lectures, 10 recherches / min / IP). */
+function openFactsStore(admin: Any): OpenFactsStore {
+  return {
+    get: async (key) => (await admin.from('open_facts_cache').select('payload,found,fetched_at').eq('key', key).maybeSingle()).data ?? null,
+    set: async (key, e) => { await admin.from('open_facts_cache').upsert({ key, ...e }); },
+    take: (bucket) => rateLimit(admin, `openfacts:${bucket}`, bucket === 'read' ? 12 : 8, 60),
+  };
 }
+
+async function fromOpenFacts(admin: Any, barcode: string, hint?: unknown): Promise<{ product: NormalizedProduct | null; status: LookupStatus | 'disabled' }> {
+  if (!openFactsEnabled()) return { product: null, status: 'disabled' };
+  return await lookupOpenFactsCached(barcode, { userAgent: userAgent(), today: today(), hint, store: openFactsStore(admin) });
+}
+
+const UNAVAILABLE_MESSAGE: Partial<Record<LookupStatus, string>> = {
+  saturated: 'La base Open Food Facts est très sollicitée : réessayez dans une minute, ou saisissez la liste des ingrédients.',
+  unavailable: 'La base Open Food Facts ne répond pas pour le moment : le produit n’a pas pu être vérifié. Réessayez plus tard, ou saisissez la liste des ingrédients.',
+};
 
 async function checkRecalls(admin: Any, product: { barcode?: string | null; brand?: string | null; name?: string | null }) {
   const status = { checked: false, source: 'RappelConso', error: null as string | null, checkedOn: today() };
@@ -95,15 +109,19 @@ Deno.serve(async (req) => {
       ? (await admin.from('products').select('*').eq('barcode', asCode).limit(5)).data ?? []
       : (await admin.from('products').select('*').ilike('name', `%${query.replace(/[%_]/g, '')}%`).limit(8)).data ?? [];
     const candidates: Any[] = local.map((p: Any) => fromLocal(p));
+    let searchStatus: LookupStatus | 'disabled' = 'disabled';
     if (openFactsEnabled()) {
       if (/^\d{8,14}$/.test(asCode)) {
-        const p = await fromOpenFacts(asCode, body.kind);
-        if (p) candidates.push(p);
+        const r = await fromOpenFacts(admin, asCode, body.kind);
+        if (r.product) candidates.push(r.product);
+        searchStatus = r.status;
       } else {
-        candidates.push(...await searchOpenFacts(query, { userAgent: userAgent(), today: today(), hint: body.kind }));
+        const r = await searchOpenFactsCached(query, { userAgent: userAgent(), today: today(), hint: body.kind, store: openFactsStore(admin) });
+        candidates.push(...r.products);
+        searchStatus = r.status;
       }
     }
-    return json({ candidates: candidates.slice(0, 12).map(({ legacy: _l, ...c }: Any) => c), database });
+    return json({ candidates: candidates.slice(0, 12).map(({ legacy: _l, ...c }: Any) => c), database, lookup_status: searchStatus, message: UNAVAILABLE_MESSAGE[searchStatus as LookupStatus] ?? null });
   }
 
   // ------------------------------------------------------------ rappels d'un produit précis
@@ -140,15 +158,19 @@ Deno.serve(async (req) => {
   };
 
   const { data: localRow } = await admin.from('products').select('*').eq('barcode', barcode).maybeSingle();
-  const product: Any = localRow ? fromLocal(localRow) : await fromOpenFacts(barcode, body.kind);
+  const remote = localRow ? null : await fromOpenFacts(admin, barcode, body.kind);
+  const product: Any = localRow ? fromLocal(localRow) : remote!.product;
+  const lookupStatus = localRow ? 'internal' : remote!.status;
   const { recalls, status } = await checkRecalls(admin, { barcode, brand: product?.brand ?? null, name: product?.name ?? null });
 
   if (!product) {
+    const outage = UNAVAILABLE_MESSAGE[lookupStatus as LookupStatus];
     return json({
-      found: false, barcode, recalls, recall_check: status, database,
-      message: database === 'not_connected'
+      found: false, barcode, recalls, recall_check: status, database, lookup_status: lookupStatus,
+      // une panne n'est jamais présentée comme « produit introuvable »
+      message: outage ?? (database === 'not_connected'
         ? 'Aucune base de produits n’est connectée : le produit ne peut pas être identifié. Photographiez la liste des ingrédients ou saisissez-la.'
-        : 'Produit introuvable. Vous pouvez photographier la liste des ingrédients ou la saisir manuellement.',
+        : 'Produit introuvable. Vous pouvez photographier la liste des ingrédients ou la saisir manuellement.'),
     });
   }
 
@@ -160,7 +182,7 @@ Deno.serve(async (req) => {
   const { data: premium } = await auth.client.rpc('has_premium');
   const legacy: ProductData = localRow ?? {
     name: product.name ?? 'Produit sans nom', brand: product.brand, category: product.kind === 'food' ? 'food' : 'cream',
-    ingredients: product.ingredients_text ? product.ingredients_text.split(/,\s*/) : null, declared_allergens: product.allergens,
+    ingredients: product.ingredients_text ? product.ingredients_text.split(/,\s*/) : null, declared_allergens: product.allergens_known === false ? null : product.allergens, traces: product.traces ?? null,
     attributes: { raw_milk: product.labels.rawMilk ?? undefined }, data_source: product.data_source, data_retrieved_at: product.data_retrieved_at, is_demo: false,
   };
   const assessment = assessProduct(legacy, ctx);
@@ -169,6 +191,9 @@ Deno.serve(async (req) => {
     found: true,
     needs_confirmation: body.confirm !== true,
     database: localRow ? (localRow.is_demo ? 'demo' : 'internal') : database,
+    lookup_status: lookupStatus,
+    // fiche servie depuis le cache faute de pouvoir l'actualiser : la date de récupération l'indique
+    stale: lookupStatus === 'stale',
     product: {
       ...normalized,
       category: legacy.category,

@@ -1,0 +1,169 @@
+# Registre des intégrations — Toi & Moi
+
+Dernière mise à jour : 18 octobre 2026. Ce registre fait foi : une intégration n'est dite « fonctionnelle » que si elle a été testée, et on indique **comment**.
+
+**Légende des statuts**
+- ✅ **Fonctionnelle et testée** : code en place, tests automatisés au vert (tests SQL sur PostgreSQL 16, tests Deno des fonctions serveur, tests Jest, parcours navigateur contre un faux Supabase).
+- 🔧 **Code implémenté, configuration manquante** : il ne manque que des clés ou réglages dans un tableau de bord externe (listés ici).
+- 📚 **Étudiée, non intégrée** : raison et prochaine étape indiquées.
+- ⛔ **Indisponible ou non adaptée**.
+
+> Limite de l'environnement de développement : il n'a pas accès à Internet, hormis les registres de paquets. Aucun appel n'a donc été fait vers les **services réels** (Open Food Facts, Google, Resend…). Les intégrations sont testées avec des transports simulés, conformes à la documentation officielle. Une **vérification en production** reste à faire après déploiement : voir « Mise en service » en fin de document.
+
+Secrets : uniquement côté serveur (`supabase secrets set …`), jamais dans l'application. Les noms de variables sont dans `.env.example`. Ne collez jamais une clé dans une discussion.
+
+---
+
+## 1. Supabase — base de données, authentification, droits, stockage, fonctions, temps réel
+| | |
+|---|---|
+| Fonction | PostgreSQL + politiques RLS (foyer, enfant, personne), Auth (e-mail, Apple, Google), Storage privé, Edge Functions (Deno), Realtime |
+| Documentation | https://supabase.com/docs |
+| Outils concernés | Tous |
+| Statut | ✅ Base, droits et fonctions : 476 vérifications SQL, 29 tests Deno, 526 tests Jest, parcours e2e (inscription, agenda, temps réel). 🔧 Projet réel à créer et migrer |
+| Variables | `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY` (publiques), `SUPABASE_SERVICE_ROLE_KEY` (secret serveur) |
+| Coût | Offre gratuite puis payante selon l'usage (voir supabase.com/pricing) |
+| Limites | Realtime : quotas de connexions et de messages selon l'offre |
+
+**Synchronisation temps réel (nouveau)** — `src/lib/sync.ts`, migration `20261019001000_realtime_sync.sql`
+- Les tables partagées du quotidien sont publiées dans Realtime : biberons, tétées, tire-lait, changes, sommeils, repas, observations, mesures, minuteurs, rendez-vous, tâches, relais et temps pour soi, demandes, événements, listes. Les notifications aussi, filtrées par personne.
+- Ne sont **jamais publiées** : humeur, post-partum, cycle, documents, conversations, liens d'agenda, cache produits. Un test SQL le vérifie.
+- Abonnement filtré par foyer, avec la RLS appliquée par Realtime. Une rafale de changements (un planning de 7 nuits) déclenche une seule relecture.
+- Au retour dans l'application et au retour du réseau, les données périmées sont relues. Les saisies hors connexion partent à la reconnexion (mécanisme existant).
+- Test e2e `e2e/temps_reel.py` : un coparent ajoute une tâche → elle apparaît chez l'autre parent sans action. Rien ne change tant que le serveur n'a rien annoncé.
+
+## 2. Open Food Facts · Open Beauty Facts · Open Products Facts
+| | |
+|---|---|
+| Fonction | Fiche produit par code-barres et recherche par nom : nom, marque, ingrédients, allergènes déclarés, **traces (nouveau)**, nutrition, image |
+| Documentation | https://openfoodfacts.github.io/documentation/ (API v2) |
+| Outils concernés | Scanner (aliments, cosmétiques, produits), historique, comparaison, surveillance des rappels |
+| Statut | ✅ Code et tests (transport simulé). 🔧 `OPENFOODFACTS_USER_AGENT` à définir : sans lui, **aucun appel** |
+| Licence | Base sous ODbL, contenus DbCL, images CC BY-SA : la source est affichée sur chaque fiche |
+| Limites officielles | 15 lectures/min/IP, 10 recherches/min/IP, User-Agent `NomApp/Version (contact)` obligatoire |
+| Coût | Gratuit |
+
+Améliorations du 18 octobre :
+- **Cache serveur** (`open_facts_cache`, accès serveur uniquement) : fiche trouvée 7 jours, absente 1 jour, recherche 1 jour. La date de récupération d'origine est conservée et affichée.
+- **Quota global** sous les limites officielles (12 lectures et 8 recherches par minute), car nos appels partent d'adresses serveur partagées.
+- **Une panne n'est plus un « produit introuvable »** : on distingue base indisponible, base saturée, fiche ancienne (servie depuis le cache avec sa date) et produit réellement absent.
+- Tests : `_shared/open-facts-cache_test.ts` (6 cas Deno).
+
+**Fiabilité des allergènes (corrigée)** — `supabase/functions/_shared/allergens.ts`, partagé par l'application et le serveur
+- **Bug corrigé** : Open Food Facts renvoie `en:milk`, `en:peanuts`… alors que les allergies du profil sont saisies en français (« lait », « arachide »). La correspondance échouait. Elle passe maintenant par les 14 allergènes réglementaires (règlement UE 1169/2011), avec synonymes en français et en anglais.
+- Trois niveaux : **identifié** (déclaré ou dans les ingrédients), **possible** (traces, « peut contenir ») et **vérification impossible** (données manquantes, ce qui abaisse le niveau de certitude).
+- Jamais « sans risque ». Faute de correspondance, l'application rappelle que rien n'est garanti et qu'il faut vérifier l'emballage.
+- Faux positifs évités : beurre de cacao, lait de coco, noix de coco, noix de muscade.
+- Tests : 9 tests Jest (`allergens.test.ts`) et 1 dans `scanner.test.ts`.
+
+## 3. RappelConso (rappels officiels de produits)
+| | |
+|---|---|
+| Fonction | Rappels de produits pour un code-barres ou une marque et un nom ; surveillance de l'historique et des favoris |
+| Documentation | https://data.economie.gouv.fr (jeu `rappelconso-v2-gtin-espaces`) |
+| Statut | ✅ Code et 4 tests Deno (schémas v2.1 et ancien, panne → « non vérifié », jamais « aucun rappel ») |
+| Variables | `RAPPELCONSO_ENABLED` (défaut vrai), `RAPPELCONSO_DATASET` — sans clé |
+| Coût | Gratuit (Licence Ouverte) |
+
+## 4. OMS — Standards de croissance de l'enfant (nouveau)
+| | |
+|---|---|
+| Fonction | Repères de croissance de 0 à 60 mois : poids, taille (couchée jusqu'à 2 ans, debout ensuite), périmètre crânien, IMC. Position d'une mesure (z-score, centile) et courbes 3e/15e/50e/85e/97e centiles |
+| Documentation | https://www.who.int/tools/child-growth-standards |
+| Forme | **Pas d'API** : l'OMS publie des tables. Elles sont intégrées comme données statiques (`src/content/whoGrowth.ts`, générées par `scripts/build-who-growth.py` depuis les tables officielles redistribuées par pygrowup, UNICEF, licence BSD). Fonctionne hors connexion, aucune donnée envoyée |
+| Statut | ✅ Les 3 416 valeurs publiées (8 tables × 61 mois × 7 écarts-types) sont reproduites à l'arrondi près ; méthode LMS de l'OMS avec z-score restreint au-delà de ±3 ; 8 tests Jest et vérification en navigateur |
+| Outils | Profil enfant › Croissance (interrupteur « Afficher les repères de l'OMS », activé par défaut) |
+| Limites | 0–5 ans seulement : la référence OMS 2007 (5–19 ans) n'est pas intégrée. Au-delà, le carnet de santé est indiqué. Les courbes françaises 2018 (AFPA–CRESS/Inserm) du carnet peuvent différer : c'est écrit à l'écran. Formulations neutres, aucun diagnostic. Hors du 3e–97e centile : « à montrer au professionnel qui suit l'enfant » |
+
+## 5. Agenda — export, abonnement, Google, Microsoft, Apple
+| Intégration | Statut |
+|---|---|
+| **Export .ics** (RFC 5545) | ✅ Existant (rendez-vous privés exclus, titres de santé neutres par défaut) |
+| **Abonnement iCalendar** (nouveau) : un lien secret que Google Agenda, Apple Calendrier et Outlook consultent régulièrement | ✅ Code + tests. 🔧 Fonction `calendar-feed` à déployer (`verify_jwt = false`, déjà déclaré) |
+| Google Calendar API (synchronisation dans les deux sens) | 📚 Étudiée, non intégrée |
+| Microsoft Graph Calendar | 📚 Étudiée, non intégrée |
+| Apple Calendar (iCloud) | ⛔ Pas d'API serveur publique : l'abonnement iCalendar est la voie prise en charge |
+
+Abonnement iCalendar : `supabase/functions/calendar-feed`, migration `20261019000800_calendar_feeds.sql`, écran Agenda › « S'abonner depuis un autre agenda ».
+- **Jeton** : 32 octets aléatoires, montré une seule fois. La base n'en garde que l'empreinte SHA-256, illisible depuis l'application. Le lien est révocable et cesse de fonctionner si la personne quitte le foyer ; 5 liens actifs au plus ; 60 requêtes par heure et par lien.
+- **Droits de la personne propriétaire du lien** :
+  - rendez-vous de santé seulement si elle a le droit de les voir ; ses propres rendez-vous privés seulement ;
+  - temps pour soi des autres jamais inclus ;
+  - titres de santé neutres (« Rendez-vous », sans lieu) sauf choix explicite ;
+  - aucune note.
+- **Fuseau** : récurrences en heure de Paris (TZID + VTIMEZONE) ; journées entières au bon jour même si le serveur tourne en UTC ; `REFRESH-INTERVAL` d'une heure suggéré.
+- **Tests** : 16 vérifications SQL (45), 5 tests Deno (`calendar-feed_test.ts`), parcours e2e `e2e/agenda_abonnement.py` (création, affichage unique, liste sans jeton, révocation).
+- **Limite** : sens unique. Chaque agenda actualise un abonnement à son propre rythme (de quelques minutes à plusieurs heures) : c'est écrit à l'écran.
+
+Pourquoi pas encore Google ou Microsoft en deux sens :
+- **Google** : la lecture d'événements Google Agenda est citée par Google comme exemple de scope « sensible ». Il faut une application OAuth vérifiée : domaine vérifié, politique de confidentialité, vidéo de démonstration, 3 à 5 jours ouvrés (https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification).
+- **Microsoft** : il faut une application Entra ID (permission déléguée `Calendars.ReadWrite`, https://learn.microsoft.com/en-us/graph/api/resources/calendar-overview).
+- **Dans les deux cas** : stocker des jetons de rafraîchissement chiffrés côté serveur, puis gérer les conflits et doublons dans les deux sens.
+- **Prochaine étape** : fonctions `calendar-oauth` et `calendar-sync`, une table de jetons chiffrés, et un identifiant externe par événement contre les doublons. À faire une fois les applications OAuth créées.
+
+## 6. Notifications
+| Intégration | Statut |
+|---|---|
+| **Notifications locales** (expo-notifications) : minuteur biberon, rendez-vous, rappels | ✅ Existant. Fonctionnent sans réseau, indépendantes des animations ; jamais présentées comme une alarme garantie |
+| **Push serveur** via le service Expo Push (qui s'appuie sur FCM et APNs) : réponses, relais, rappels de produits | 🔧 Code existant (`send-push`). À configurer : `EXPO_ACCESS_TOKEN`, `PUSH_WEBHOOK_SECRET`, un *Database Webhook* sur `INSERT public.notifications`, et les identifiants FCM et APNs dans EAS |
+| Firebase Cloud Messaging en direct | ⛔ Non nécessaire : Expo Push l'utilise déjà pour Android ; un client FCM direct doublonnerait |
+| **Notifications de relais de nuit** (nouveau, migration `0700`) | ✅ Nuit attribuée, déplacée, annulée, retirée ou réattribuée par un autre → la personne concernée est prévenue ; un planning = une seule notification ; texte neutre (écran verrouillé). 7 vérifications SQL |
+
+Documentation : https://docs.expo.dev/push-notifications/overview/ · https://firebase.google.com/docs/cloud-messaging
+
+## 7. E-mails — Resend
+| | |
+|---|---|
+| Fonction | E-mails d'authentification en français : confirmation, connexion, mot de passe oublié (hook « Send Email » de Supabase) |
+| Documentation | https://resend.com/docs |
+| Statut | 🔧 Code existant (`auth-email`). À configurer : `RESEND_API_KEY`, `RESEND_FROM_EMAIL` (domaine vérifié chez Resend), `SEND_EMAIL_HOOK_SECRET` |
+| E-mails familiaux (invitations, plannings, bilans) | 📚 Non intégrés. Les notifications dans l'application et le push couvrent ces cas sans exposer d'adresse ; à ajouter seulement avec un consentement explicite par type d'e-mail |
+
+## 8. Intelligence artificielle — Gemini (Google)
+| | |
+|---|---|
+| Fonction | Assistant de questions, explication en français clair d'un résultat du scanner, lecture d'un document (éléments écrits seulement, « à vérifier »), analyse pédagogique d'une photo de glaire cervicale (avec consentement) |
+| Statut | 🔧 Code existant. À configurer : `GEMINI_API_KEY`, `GEMINI_MODEL`. **Sans clé : aucun faux texte**, l'application affiche les règles |
+| Données | Contexte de l'assistant **facultatif** (interrupteur) : âge, semaines après la naissance, moyenne d'humeur sur 7 jours. Jamais les réponses du point post-partum. Les photos ne sont ni stockées ni journalisées |
+
+## 9. Abonnements — RevenueCat
+🔧 Code existant (webhook signé, `subscriptions` seule source de vérité). À configurer : clés publiques par plateforme et `REVENUECAT_WEBHOOK_SECRET`.
+
+## 10. Rapports de plantage — Sentry (facultatif)
+🔧 `EXPO_PUBLIC_SENTRY_DSN`. Rien n'est envoyé sans l'accord de la personne ; aucune donnée de santé.
+
+## 11. Stockage des photos et documents
+✅ Supabase Storage, compartiments **privés** (taille et types de fichiers limités, accès par foyer). Photos du cycle chiffrées ; effacement à la suppression du compte. Les URL signées sont temporaires.
+
+## 12. Contenus de santé publique (France)
+✅ **Contenus locaux sourcés**, pas d'API : il n'existe pas d'API officielle pour ces contenus. Ils citent leur source et leur date, sans aucune prescription individuelle :
+- calendrier vaccinal (ministère, HAS) ;
+- recommandations alimentaires (Santé publique France, 1000 premiers jours, ANSES/Ciqual) ;
+- post-partum (3114, 15, 112, ressources d'accompagnement).
+
+Questionnaire EPDS : non intégré (licence et usage clinique). Le suivi émotionnel fonctionne sans aucune API externe.
+
+## 13. Recommandations de produits
+📚 **Étudiée, non intégrée.** Il n'existe pas de catalogue ouvert et vérifiable pour l'équipement, les jouets et les livres : les sources trouvées sont commerciales ou d'affiliation. Aucune recommandation inventée n'est affichée.
+- Sources utilisables plus tard, sous conditions : Open Food Facts et Open Beauty Facts pour les produits notés, avec les allergies déclarées, sans utiliser de donnée médicale pour de la publicité ; une sélection éditoriale clairement signalée.
+- Tout contenu sponsorisé devrait être étiqueté comme tel.
+
+---
+
+## Mise en service (à faire dans les tableaux de bord, sans partager les clés ici)
+1. Supabase :
+   - appliquer les migrations : `supabase db push` ;
+   - déployer toutes les fonctions : `supabase functions deploy <nom>`, dont `calendar-feed`.
+2. Secrets : `supabase secrets set OPENFOODFACTS_USER_AGENT="ToiEtMoi/1.0 (contact@votre-domaine)"`, puis les autres variables de `.env.example`.
+3. Realtime : vérifier dans Database › Replication que la publication `supabase_realtime` contient les tables listées (la migration les ajoute).
+4. Push : Database Webhook `INSERT public.notifications` → `send-push` (en-tête secret), identifiants FCM et APNs dans EAS.
+5. Vérifications en production, puisque l'environnement de développement n'a pas Internet :
+   - un code-barres réel dans le scanner ;
+   - un lien d'agenda ajouté dans Google Agenda et dans Apple Calendrier ;
+   - une notification push ;
+   - un e-mail de confirmation.
+
+## Tests (commandes)
+- `npx tsc --noEmit` · `npx jest` · `npm run db:test`
+- Fonctions serveur : `deno test --allow-env supabase/functions/_shared/` et `deno check supabase/functions/*/index.ts`
+- Parcours navigateur (voir `e2e/README.md`) : `etape1_auth.py`, `agenda_abonnement.py`, `temps_reel.py`

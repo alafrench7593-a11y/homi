@@ -51,9 +51,16 @@ const queryClient = new QueryClient({
 const persister = createAsyncStoragePersister({ storage: AsyncStorage, key: 'toietmoi.cache.v1', throttleTime: 2000 });
 const PRIVATE_KEYS = ['assistant_messages', 'assistant_conversations', 'documents', 'mood_checkins'];
 
+import { useHouseholdId } from '@/lib/data/hooks';
+import { useRealtimeSync, wireFocusAndOnline } from '@/lib/sync';
+
 function Bootstrap() {
   const { session } = useAuth();
   const toast = useToast();
+  // Synchronisation : premier plan / réseau, et temps réel du foyer (droits appliqués par le serveur)
+  useEffect(() => wireFocusAndOnline(), []);
+  const householdId = useHouseholdId();
+  useRealtimeSync(session ? householdId : null, session?.userId ?? null);
 
   useEffect(() => startOfflineSync((n) => toast(`${n} entrée${n > 1 ? 's' : ''} synchronisée${n > 1 ? 's' : ''}.`)), [toast]);
 

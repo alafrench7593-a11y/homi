@@ -14,6 +14,7 @@ import {
   type Certainty, type DataSourceInfo, type Finding, type RecallCheck, type RecallInfo, type ScanProfile,
 } from './scanCommon';
 import type { ScanSource } from './scanSources';
+import { checkAllergies } from '../../../supabase/functions/_shared/allergens';
 
 export const FOOD_VERDICTS = [
   'Adapté selon les informations disponibles',
@@ -45,6 +46,10 @@ export interface FoodInput {
   /** Caractéristiques connues par les données (et non devinées). */
   labels?: { rawMilk?: boolean | null; alcohol?: boolean | null; caffeine?: boolean | null; sweeteners?: boolean | null };
   nutrition?: FoodNutrition | null;
+  /** Allergènes déclarés par la base produit (ex. « en:milk ») ; null = non renseigné. */
+  declaredAllergens?: string[] | null;
+  /** Traces (« peut contenir ») ; null = non renseigné. */
+  traces?: string[] | null;
   dataSource: DataSourceInfo & { collaborative?: boolean };
   recalls: RecallInfo[];
   recallCheck?: RecallCheck | null;
@@ -283,12 +288,29 @@ export function analyzeFood(input: FoodInput, profile: ScanProfile, answers: Foo
     }
   }
 
-  // -- Allergies déclarées
-  const allergies = [...(profile.allergies ?? []), ...(answers.allergies ?? [])].map((a) => a.trim()).filter((a) => a.length >= 3);
-  const haystack = norm(`${input.identity.name ?? ''} ${input.ingredientsText ?? ''}`);
-  for (const a of [...new Set(allergies)]) {
-    if (haystack.includes(norm(a))) {
-      push({ id: `allergy_${norm(a)}`, level: 'avoid', title: `Contient « ${a} », allergie déclarée`, explanation: 'Correspondance entre le nom ou les ingrédients étiquetés et une allergie déjà identifiée. L’application ne pose aucun diagnostic d’allergie.', sourceIds: ['eu-inco-1169-2011'] });
+  // -- Allergies déclarées : trois niveaux (identifié, possible, impossible à vérifier), jamais « sans risque »
+  const allergies = [...(profile.allergies ?? []), ...(answers.allergies ?? [])].map((a) => a.trim()).filter((a) => a.length >= 2);
+  if (allergies.length) {
+    const fromDb = input.ingredientsOrigin === 'database' || input.declaredAllergens != null;
+    const chk = checkAllergies({
+      allergies,
+      declaredTags: input.declaredAllergens ?? (fromDb ? null : []),
+      tracesTags: input.traces ?? (fromDb ? null : []),
+      ingredientsText: input.ingredientsText ?? null,
+      nameText: input.identity.name ?? null,
+    });
+    for (const m of chk.identified) {
+      push({ id: `allergy_${norm(m.allergy)}`, level: 'avoid', title: `Contient « ${m.allergy} », allergie déclarée${m.allergen && norm(m.allergen) !== norm(m.allergy) ? ` (${m.allergen.toLowerCase()})` : ''}`,
+        explanation: `${m.via === 'declared' ? 'Allergène déclaré par le fabricant dans la base produit.' : 'Correspondance dans la liste des ingrédients étiquetés.'} L’application ne pose aucun diagnostic d’allergie.`, sourceIds: ['eu-inco-1169-2011'] });
+    }
+    for (const m of chk.possible) {
+      push({ id: `allergy_trace_${norm(m.allergy)}`, level: 'precaution', title: `Peut contenir « ${m.allergy} » (traces)`,
+        explanation: 'Mention « peut contenir » : présence non intentionnelle possible. Selon la sévérité de l’allergie, suivez les consignes de votre allergologue.', sourceIds: ['eu-inco-1169-2011'] });
+    }
+    if (chk.noMatchNote) {
+      push({ id: 'allergy_unchecked', level: chk.insufficient.length ? 'missing' : 'info', title: chk.insufficient.length ? 'Allergies : vérification impossible avec ces données' : 'Allergies : aucune correspondance trouvée', explanation: chk.noMatchNote, sourceIds: ['eu-inco-1169-2011'] });
+      if (chk.insufficient.length && !input.ingredientsText) lower('low', 'Composition inconnue : vos allergies ne peuvent pas être vérifiées.');
+      else if (chk.insufficient.length) lower('medium', `Données incomplètes pour vos allergies (${chk.insufficient.join(', ').toLowerCase()}).`);
     }
   }
 

@@ -2,7 +2,7 @@
 import json, os, time, re, sys
 from playwright.sync_api import sync_playwright
 sys.path.insert(0, os.path.dirname(__file__))
-from fake_supabase import FakeSupabase
+from fake_supabase import FakeSupabase, FakeRealtime
 
 B = os.environ.get('E2E_URL', 'http://127.0.0.1:8811')
 SHOTS = os.environ.get('E2E_SHOTS', '/tmp/toietmoi-e2e'); os.makedirs(SHOTS, exist_ok=True)
@@ -29,6 +29,7 @@ def new_page(b, errs):
     pg = ctx.new_page()
     CUR[0] = pg
     pg.route('http://sb.fake.test/**', fake.route)
+    pg.route_web_socket(re.compile(r'wss?://sb\.fake\.test/realtime/.*'), FakeRealtime().attach)
     pg.route(re.compile(r'https://d8j0ntlcm91z4\.cloudfront\.net/.*'), lambda r: r.abort())
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.on('console', lambda m: errs.append('console: ' + m.text[:160]) if m.type == 'error' and 'Failed to load resource' not in m.text else None)

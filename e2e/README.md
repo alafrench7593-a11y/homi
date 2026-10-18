@@ -14,3 +14,10 @@ python3 e2e/etape1_auth.py
 ```
 
 Le script affiche un rapport JSON : chaque clé doit valoir `true` et `erreurs` doit être vide. Les captures sont enregistrées dans `$E2E_SHOTS` (par défaut `/tmp/toietmoi-e2e`).
+
+Autres parcours (même version web, même serveur) :
+
+```bash
+python3 e2e/agenda_abonnement.py   # lien d'abonnement d'agenda : création, affichage unique, liste sans jeton, révocation
+python3 e2e/temps_reel.py          # temps réel : une tâche ajoutée par le coparent apparaît sans action (faux Realtime, WebSocket)
+```

@@ -21,6 +21,8 @@ let active: Backend = real ?? getDemo();
 export let isDemo = active.mode === 'demo';
 /** Supabase est configuré : la démonstration est alors un choix, que l'on peut quitter. */
 export const hasRealBackend = !!real;
+/** Adresse publique du projet (sans secret) : sert à construire le lien d'abonnement d'agenda. */
+export const backendUrl: string | null = url ? url.replace(/\/$/, '') : null;
 
 const DEMO_FLAG = 'toietmoi.demo-without-account.v1';
 const switchListeners = new Set<() => void>();

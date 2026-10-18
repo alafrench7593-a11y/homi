@@ -48,7 +48,7 @@ const EXPOSURES: Exposure[] = ['rinse_off', 'leave_on', 'inhaled', 'indirect'];
 const ZONES: Zone[] = ['face', 'body', 'diaper_area', 'scalp', 'lips', 'hands', 'air', 'textiles', 'surfaces'];
 
 type Step = 'input' | 'confirm' | 'details';
-interface LookupState { recalls: RecallRow[]; recall_check: LookupResponse['recall_check'] | null; database?: DatabaseStatus; message?: string }
+interface LookupState { recalls: RecallRow[]; recall_check: LookupResponse['recall_check'] | null; database?: DatabaseStatus; message?: string; stale?: boolean; outage?: boolean }
 
 export function ScanFlow({ kind }: { kind: ScanKind }) {
   const t = useTheme();
@@ -124,7 +124,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
     try {
       const r = await lookupBarcode.mutateAsync({ barcode: check.code, kind });
       setScannedBarcode(check.code);
-      setLookup({ recalls: r.recalls ?? [], recall_check: r.recall_check ?? null, database: r.database, message: r.message });
+      setLookup({ recalls: r.recalls ?? [], recall_check: r.recall_check ?? null, database: r.database, message: r.message, stale: r.stale === true, outage: r.lookup_status === 'unavailable' || r.lookup_status === 'saturated' });
       setCandidates(r.found && r.product ? [r.product] : []);
       setCiqual([]);
       setManualName('');
@@ -148,7 +148,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
       const [r, cq] = await Promise.all([search.mutateAsync({ query: q, kind }), kind === 'food' ? searchCiqual(q) : Promise.resolve([] as CiqualFood[])]);
       setCandidates(r.candidates ?? []);
       setCiqual(cq);
-      setLookup({ recalls: [], recall_check: null, database: r.database, message: r.message });
+      setLookup({ recalls: [], recall_check: null, database: r.database, message: r.message ?? undefined, outage: r.lookup_status === 'unavailable' || r.lookup_status === 'saturated' });
       setScannedBarcode(null);
       setManualName(q);
       setNotice(null);
@@ -398,7 +398,8 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
         {notice ? <Banner tone="warning">{notice}</Banner> : null}
         {recallsBlock}
         <SectionTitle title="Est-ce bien ce produit ?" />
-        {lookup.message && (nothing || lookup.database === 'demo') ? <Banner tone="info">{lookup.message}</Banner> : null}
+        {lookup.message && (nothing || lookup.database === 'demo' || lookup.outage) ? <Banner tone={lookup.outage ? 'warning' : 'info'}>{lookup.message}</Banner> : null}
+        {lookup.stale && candidates[0] ? <Banner tone="warning">{`La base Open Food Facts n’a pas pu être consultée : fiche enregistrée le ${candidates[0].data_retrieved_at.split('-').reverse().join('/')}, peut-être plus à jour. Vérifiez l’emballage.`}</Banner> : null}
         {candidates.map((c, i) => (
           <Card key={`${c.barcode}${i}`}>
             <Row gap={spacing.md} style={{ alignItems: 'flex-start' }}>

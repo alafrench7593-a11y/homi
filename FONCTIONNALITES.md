@@ -146,6 +146,17 @@ Principe : chaque mouvement est piloté par une donnée réelle (horodatage, sai
 
 **Limite** : les favoris sont conservés sur l'appareil (préférence d'interface), pas synchronisés entre appareils.
 
+## 7. Intégrations et synchronisation (18 octobre 2026)
+
+Le registre complet (statut réel, documentation, variables, limites, tests) est dans **`INTEGRATIONS.md`**. En bref :
+- **Courbes OMS** (0–5 ans) dans Croissance : tables officielles intégrées hors ligne, 3 416 valeurs vérifiées, phrases neutres, sans diagnostic.
+- **Allergènes** : correspondance français ↔ étiquettes Open Food Facts (bug corrigé), traces « peut contenir », trois niveaux, jamais « sans risque ».
+- **Open Food Facts** : cache serveur, quota sous les limites officielles, panne ≠ « introuvable », fiche ancienne datée.
+- **Agenda** : abonnement iCalendar par lien secret révocable (Google Agenda, Apple Calendrier, Outlook), droits et vie privée appliqués par la base.
+- **Temps réel** entre appareils et membres du foyer (Supabase Realtime), rafraîchissement au retour dans l'application et du réseau ; données privées jamais publiées.
+- **Relais de nuit** : notifications serveur en cas de changement par un autre membre.
+- Tests ajoutés : SQL 44–45, Deno (calendrier, cache Open Facts), Jest (OMS, allergènes, synchronisation), e2e `agenda_abonnement.py` et `temps_reel.py`.
+
 ## 4. Décisions et limites documentées
 
 - **EPDS non intégrée.** Le Royal College of Psychiatrists détient les droits ; la diffusion à des tiers (ce qu'est une app) exige une autorisation écrite, et l'intégration complète a déjà été refusée à un logiciel clinique (documentation CamCOPS). Conformément au § 22.4, l'app propose un check-in de bien-être **non diagnostique**. À rouvrir uniquement avec une autorisation écrite et la version française validée (Guedeney & Fermanian, 1998).

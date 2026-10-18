@@ -105,6 +105,11 @@ verify_jwt = true
 [functions.cycle-photo]
 verify_jwt = true
 
+# Flux d'abonnement iCalendar (Google Agenda, Apple Calendrier, Outlook) : protégé par un jeton
+# secret propre à chaque lien (empreinte en base, révocable) ; les agendas externes n'envoient pas de JWT.
+[functions.calendar-feed]
+verify_jwt = false
+
 # Appelées par des services externes : protégées par un secret partagé
 [functions.revenuecat-webhook]
 verify_jwt = false

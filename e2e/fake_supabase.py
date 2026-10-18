@@ -87,6 +87,10 @@ class FakeSupabase:
                     col, *mods = part.split('.')
                     out.sort(key=lambda r: (r.get(col) is None, str(r.get(col))), reverse='desc' in mods)
             if 'limit' in params: out = out[:int(params['limit'])]
+            sel = params.get('select', '*')
+            # comme PostgreSQL : l'empreinte du jeton d'agenda n'est pas lisible (colonne non accordée)
+            if table == 'calendar_feeds' and sel == '*': return 401, {'code': '42501', 'message': 'permission denied for table calendar_feeds'}
+            if sel != '*': out = [{k: r.get(k) for k in sel.split(',')} for r in out]
             return 200, out
         if method == 'POST':
             items = body if isinstance(body, list) else [body]
@@ -144,6 +148,18 @@ class FakeSupabase:
                     self.T['households'] = [x for x in self.t('households') if x['id'] != h['id']]
                     self.T['household_members'] = [m for m in self.t('household_members') if m['household_id'] != h['id']]
             return 200, inv['household_id']
+        if fn == 'create_calendar_feed':
+            if not any(m['household_id'] == body.get('p_household') and m['user_id'] == uid for m in self.t('household_members')):
+                return 403, {'code': '42501', 'message': 'Vous n’avez pas l’autorisation de faire cette action.'}
+            tok = base64.urlsafe_b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes).decode().rstrip('=')
+            row = {'id': str(uuid.uuid4()), 'user_id': uid, 'household_id': body['p_household'], 'label': 'Agenda familial',
+                   'include_health_titles': bool(body.get('p_include_health_titles')), 'created_at': now(), 'last_accessed_at': None, 'revoked_at': None, '_token': tok}
+            self.t('calendar_feeds').append(row)
+            return 200, [{'id': row['id'], 'token': tok}]
+        if fn == 'revoke_calendar_feed':
+            f = next((x for x in self.t('calendar_feeds') if x['id'] == body.get('p_id') and x['user_id'] == uid and not x['revoked_at']), None)
+            if not f: return 400, {'code': 'P0002', 'message': 'Lien introuvable.'}
+            f['revoked_at'] = now(); return 200, None
         if fn in ('has_premium',): return 200, False
         return 200, None
 
@@ -219,3 +235,37 @@ class FakeSupabase:
         if path.startswith('/functions/v1/'):
             return 503, {'error': 'not_configured', 'message': 'Service non configuré (essai)'}
         return 404, {'message': 'introuvable'}
+
+
+class FakeRealtime:
+    """Faux serveur Supabase Realtime (protocole Phoenix vsn 2.0.0, trames JSON en tableau)."""
+    def __init__(self):
+        self.ws = None
+        self.joins = []          # (topic, config)
+        self.bindings = {}       # table -> (topic, id)
+
+    def attach(self, ws):
+        self.ws = ws
+        ws.on_message(self.on_message)
+
+    def on_message(self, msg):
+        try: join_ref, ref, topic, event, payload = json.loads(msg)
+        except Exception: return
+        if event == 'heartbeat':
+            self.ws.send(json.dumps([None, ref, 'phoenix', 'phx_reply', {'status': 'ok', 'response': {}}])); return
+        if event == 'phx_join':
+            pcs = payload.get('config', {}).get('postgres_changes', [])
+            self.joins.append((topic, pcs))
+            out = []
+            for i, pc in enumerate(pcs):
+                bid = 1000 + len(self.bindings) + i
+                out.append({**pc, 'id': bid})
+                self.bindings[pc.get('table')] = (topic, bid, join_ref)
+            self.ws.send(json.dumps([join_ref, ref, topic, 'phx_reply', {'status': 'ok', 'response': {'postgres_changes': out}}])); return
+        if event in ('access_token', 'phx_leave'):
+            self.ws.send(json.dumps([join_ref, ref, topic, 'phx_reply', {'status': 'ok', 'response': {}}]))
+
+    def push_change(self, table, record, kind='INSERT'):
+        topic, bid, join_ref = self.bindings[table]
+        data = {'type': kind, 'schema': 'public', 'table': table, 'commit_timestamp': now(), 'record': record, 'old_record': {}, 'columns': [], 'errors': None}
+        self.ws.send(json.dumps([join_ref, None, topic, 'postgres_changes', {'ids': [bid], 'data': data}]))

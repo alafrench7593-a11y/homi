@@ -11,6 +11,8 @@ export interface Order { col: string; asc?: boolean }
 
 export interface Query {
   table: string;
+  /** Colonnes à lire (défaut : toutes). Nécessaire quand une colonne n'est pas lisible (ex. empreinte d'un jeton). */
+  columns?: string;
   filters?: Filter[];
   order?: Order[];
   limit?: number;
@@ -73,7 +75,14 @@ export interface Backend {
    * Sur les plateformes sans flux lisible, bascule automatiquement sans diffusion.
    */
   invokeStream<T>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void): Promise<T>;
+  /**
+   * Changements faits ailleurs (autre appareil, coparent) sur des tables, en temps réel.
+   * Les droits (RLS) s'appliquent côté serveur. Absent en démonstration (une seule personne, un seul appareil).
+   */
+  subscribeChanges?(specs: ChangeSpec[], onChange: (table: string) => void, onStatus?: (s: 'live' | 'offline') => void): () => void;
 }
+
+export interface ChangeSpec { table: string; /** filtre PostgREST, ex. « household_id=eq.<uuid> » */ filter?: string }
 
 export const eq = (col: string, value: unknown): Filter => ({ col, op: 'eq', value });
 export const inList = (col: string, value: unknown[]): Filter => ({ col, op: 'in', value });

@@ -76,6 +76,16 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
 
   const api: Backend = {
     mode: 'supabase',
+    subscribeChanges(specs, onChange, onStatus) {
+      // Un seul canal par appel ; chaque table est filtrée (foyer ou personne) et la RLS s'applique côté serveur
+      const name = `sync-${Math.random().toString(36).slice(2, 10)}`;
+      let ch = client.channel(name);
+      for (const sp of specs) {
+        ch = ch.on('postgres_changes' as never, { event: '*', schema: 'public', table: sp.table, ...(sp.filter ? { filter: sp.filter } : {}) } as never, () => onChange(sp.table));
+      }
+      ch.subscribe((status: string) => onStatus?.(status === 'SUBSCRIBED' ? 'live' : 'offline'));
+      return () => { void client.removeChannel(ch); };
+    },
     auth: {
       async getSession() {
         const { data } = await client.auth.getSession();
@@ -145,7 +155,7 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
       },
     },
     async select<T>(q: Query) {
-      let b: AnyBuilder = client.from(q.table).select('*');
+      let b: AnyBuilder = client.from(q.table).select(q.columns ?? '*');
       b = applyFilters(b, q.filters);
       for (const o of q.order ?? []) b = b.order(o.col, { ascending: o.asc ?? true });
       if (q.limit) b = b.limit(q.limit);
