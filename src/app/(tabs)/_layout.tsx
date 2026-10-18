@@ -12,8 +12,11 @@ export default function TabsLayout() {
     <Tabs detachInactiveScreens screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' }, freezeOnBlur: true }} tabBar={(props) => <Dock {...props} />}>
       <Tabs.Screen name="index" options={{ title: tr('tab.home') }} />
       <Tabs.Screen name="track" options={{ title: tr('tab.track') }} />
+      {/* Au centre exact de la barre ; appui long : ajout rapide (ancien bouton « + ») */}
+      <Tabs.Screen name="tools" options={{ title: 'Outils' }} />
       <Tabs.Screen name="ask" options={{ title: tr('tab.ask') }} />
-      <Tabs.Screen name="community" options={{ title: tr('tab.community') }} />
+      {/* Toujours accessible (Outils › Questions, lectures et communauté, liens profonds), hors de la barre pour la symétrie */}
+      <Tabs.Screen name="community" options={{ title: tr('tab.community'), href: null }} />
       <Tabs.Screen name="profile" options={{ title: tr('tab.profile') }} />
     </Tabs>
   );

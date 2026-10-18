@@ -85,6 +85,7 @@ function extraTools(ctx: Ctx): Omit<CatalogTool, 'id'>[] {
     { theme: 'reminders', icon: 'inbox', label: 'Notifications', href: '/notifications' },
     { theme: 'reminders', icon: 'layout', label: 'Personnaliser l’accueil', href: '/settings/home' },
     { theme: 'reminders', icon: 'settings', label: 'Réglages', href: '/settings' },
+    { theme: 'resources', icon: 'users', label: 'Communauté', sub: 'Échanger entre parents', href: '/(tabs)/community' },
   ];
   if (m.includes('mother') || ctx.childCount > 0) {
     out.push(

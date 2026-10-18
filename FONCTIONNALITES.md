@@ -157,6 +157,14 @@ Le registre complet (statut réel, documentation, variables, limites, tests) est
 - **Relais de nuit** : notifications serveur en cas de changement par un autre membre.
 - Tests ajoutés : SQL 44–45, Deno (calendrier, cache Open Facts), Jest (OMS, allergènes, synchronisation), e2e `agenda_abonnement.py` et `temps_reel.py`.
 
+## 8. Barre de navigation : « Outils » au centre (18 octobre 2026)
+
+- Barre : **Accueil · Suivi · [Outils] · Questions · Profil**. « Outils » est au centre géométrique : deux moitiés de largeur égale ; mesuré à 0 px d'écart sur téléphone, tablette et ordinateur, onglets symétriques.
+- La page Outils devient un onglet (même page, même adresse `/tools`, liens existants inchangés) : état actif visible, y compris après rechargement ou lien direct.
+- Bouton central : orbe nacrée (dégradé existant), quatre tuiles qui s'écartent puis se reposent au toucher, onde lumineuse, enfoncement en profondeur, anneau blanc quand l'onglet est actif. Réduire les animations : état final immédiat.
+- **Rien n'est perdu de l'ancien « + »** : l'appui long sur « Outils » ouvre l'ajout rapide (biberon, tétée, couche, sommeil, repas, note santé, humeur, minuteur, scanner, poser une question), et ces actions sont aussi en haut de la page Outils (« Ajouter maintenant »).
+- **Communauté** quitte la barre (symétrie) mais reste accessible : carte « Communauté » dans Outils, espaces par parcours, et tous les liens directs (`/community`, `/(tabs)/community?space=…`).
+
 ## 4. Décisions et limites documentées
 
 - **EPDS non intégrée.** Le Royal College of Psychiatrists détient les droits ; la diffusion à des tiers (ce qu'est une app) exige une autorisation écrite, et l'intégration complète a déjà été refusée à un logiciel clinique (documentation CamCOPS). Conformément au § 22.4, l'app propose un check-in de bien-être **non diagnostique**. À rouvrir uniquement avec une autorisation écrite et la version française validée (Guedeney & Fermanian, 1998).

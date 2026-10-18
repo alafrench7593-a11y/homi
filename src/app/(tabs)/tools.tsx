@@ -12,6 +12,7 @@ import { Appear } from '@/components/Appear';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
 import { ToolCard, ToolShortcut } from '@/components/ToolCard';
+import { QuickAddGrid } from '@/components/Dock';
 import { glyphColor, tint, ToolGlyph } from '@/components/ToolGlyph';
 import { Button, Chip, Field, haptic, Icon, Text } from '@/components/ui';
 import { useActivePregnancy, useActiveSubject, useChildren, useProfile } from '@/lib/data/hooks';
@@ -70,9 +71,16 @@ export default function Tools() {
   const statusOf = (tool: CatalogTool) => { const k = statusKeyFor(tool); return k ? statuses[k] : undefined; };
 
   return (
-    <Screen back title="Tous mes outils" subtitle="Tous vos outils, rangés par usage. Touchez l’étoile pour garder un raccourci." contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
+    <Screen title="Outils" subtitle="Tous vos outils, rangés par usage. Touchez l’étoile pour garder un raccourci." bottomInset={96} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
       <View onLayout={(e) => setMeasured(Math.floor(e.nativeEvent.layout.width))} style={{ height: 0, alignSelf: 'stretch', marginBottom: -spacing.md }} />
       {urgent ? <UrgentStrip tool={urgent} /> : null}
+      {/* Ajout rapide (anciennement derrière le bouton « + ») : toujours à portée */}
+      {!q && activeFilter === 'all' ? (
+        <View style={{ gap: spacing.xs }}>
+          <Text variant="heading" accessibilityRole="header">Ajouter maintenant</Text>
+          <QuickAddGrid compact />
+        </View>
+      ) : null}
 
       <Field label="Rechercher un outil" value={q} onChangeText={setQ} placeholder="Biberon, relais, vaccins…" returnKeyType="search" autoCorrect={false} accessibilityLabel="Rechercher un outil" />
 
