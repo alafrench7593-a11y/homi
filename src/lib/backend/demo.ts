@@ -17,6 +17,9 @@ import {
   parseStructuredAnswer, structuredToMarkdown, todayIso,
 } from '../../../supabase/functions/_shared/assistant-format';
 import { buildSampleFamily } from './demoSample';
+import { ALL_RECIPES } from '@/content/recipes';
+import { recipeToRows } from '../recipes/db';
+import { RECIPE_SOURCES } from '../recipes/sources';
 import { fromProductRow } from '../../../supabase/functions/_shared/open-facts';
 import { matchRecalls, type RecallRecord } from '../../../supabase/functions/_shared/rappelconso';
 import { sanitizePayload } from '../../../supabase/functions/_shared/scan-explain';
@@ -31,6 +34,23 @@ type Tables = Record<string, Row[]>;
 const KEY = 'toietmoi.demo.v1';
 /** Version des exemples de la communauté : l'augmenter ajoute les nouveaux exemples aux appareils existants. */
 const COMMUNITY_SEED_VERSION = 2;
+/** Bibliothèque de recettes : mêmes lignes que supabase/migrations/20261020000200_recipes_seed.sql. */
+function recipeSeedRows() {
+  const tables: Record<string, Row[]> = { recipes: [], recipe_ingredients: [], recipe_steps: [], recipe_photos: [], recipe_source_links: [], recipe_reviews: [], recipe_sources: [] };
+  for (const s of Object.values(RECIPE_SOURCES)) tables.recipe_sources.push({ id: s.id, title: s.title, publisher: s.publisher, url: s.url, consulted_on: s.consulted, published_on: s.date ?? null });
+  for (const r of ALL_RECIPES) {
+    const id = uuid();
+    const x = recipeToRows(r, id, { created_at: new Date().toISOString() });
+    tables.recipes.push(x.recipe as unknown as Row);
+    tables.recipe_ingredients.push(...(x.ingredients as unknown as Row[]));
+    tables.recipe_steps.push(...(x.steps as unknown as Row[]));
+    tables.recipe_photos.push(x.photo as unknown as Row);
+    tables.recipe_source_links.push(...(x.links as unknown as Row[]));
+    tables.recipe_reviews.push(...x.reviews.map((v) => ({ ...v, id: uuid() }) as unknown as Row));
+  }
+  return tables;
+}
+
 const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_resources', 'foods', 'baby_names', 'products', 'product_recalls', 'plan_limits', 'scan_sources', 'cosing_ingredients', 'ciqual_foods'] as const;
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
@@ -62,6 +82,7 @@ const OWNER_TABLES: Record<string, string> = {
   cycle_preferences: 'user_id', discharge_logs: 'user_id', bleeding_logs: 'user_id', cycle_journal: 'user_id',
   // Parcours : gérés par la personne (le foyer ne les modifie jamais)
   user_journeys: 'user_id',
+  recipe_favorites: 'user_id',
   // Post-partum : strictement personnel ; seule la ligne de partage est lisible par le foyer (côté serveur)
   postpartum_settings: 'user_id', postpartum_checkins: 'user_id', trusted_contacts: 'user_id', postpartum_actions: 'user_id', postpartum_shared_status: 'user_id',
 };
@@ -148,6 +169,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         state.tables.scan_sources = Object.values(SCAN_SOURCES).map((x) => ({ ...x }));
         state.tables.cosing_ingredients = JSON.parse(JSON.stringify(DEMO_COSING));
         state.tables.ciqual_foods = JSON.parse(JSON.stringify(DEMO_CIQUAL));
+        // Recettes : copie de la bibliothèque (mêmes lignes que la migration générée) ; conservée pour garder les validations faites dans l'administration
+        if (!(state.tables.recipes ?? []).some((r) => !r.owner_id)) seedRecipes();
         if ((state.tables._community_seed?.[0]?.version ?? 0) < COMMUNITY_SEED_VERSION) seedCommunity();
       })();
     }
@@ -194,6 +217,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   }
   const notify = (userId: string, n: Row) => T('notifications').push({ id: uuid(), user_id: userId, payload: {}, read_at: null, created_at: nowIso(), ...n });
 
+  function seedRecipes() {
+    const rows = recipeSeedRows();
+    for (const [t, list] of Object.entries(rows)) state.tables[t] = [...(state.tables[t] ?? []).filter((r) => t === 'recipes' ? !!r.owner_id : false), ...list];
+  }
   function seedCommunity() {
     const forum = (slug: string) => T('forums').find((f) => f.slug === slug)?.id;
     const others = [
@@ -660,6 +687,26 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     delete_my_cycle_data: () => {
       const me = uid();
       for (const t of ['period_entries', 'symptom_logs', 'discharge_logs', 'bleeding_logs', 'cycle_journal', 'fertility_observations', 'ovulation_tests', 'pregnancy_tests', 'intercourse_logs']) state.tables[t] = T(t).filter((r) => r.user_id !== me);
+      persist();
+      return null;
+    },
+    // Statut éditorial d'une recette (miroir de set_recipe_status : rôle « editor » ou « admin », journalisé)
+    set_recipe_status: (a) => {
+      const me = uid();
+      if (!T('user_roles').some((x) => x.user_id === me && ['editor', 'admin'].includes(x.role as string))) throw new BackendError('Réservé à l’équipe éditoriale', '42501');
+      const r = T('recipes').find((x) => x.slug === a?.p_slug && !x.owner_id);
+      if (!r) throw new BackendError('Recette introuvable', 'P0002');
+      r.status = a?.p_status;
+      if (['reviewed', 'validated'].includes(a?.p_status as string)) r.verified_on = new Date().toISOString().slice(0, 10);
+      T('recipe_reviews').push({ id: uuid(), recipe_id: r.id, status: a?.p_status, by_user: me, by_label: 'Équipe éditoriale', note: a?.p_note ?? null, created_at: new Date().toISOString() });
+      persist();
+      return null;
+    },
+    // Démonstration uniquement : s'attribuer le rôle « editor » sur cet appareil pour essayer la relecture des recettes.
+    // N'existe pas côté Supabase (les rôles y sont attribués par l'administrateur).
+    demo_grant_editor: () => {
+      const me = uid();
+      if (!T('user_roles').some((x) => x.user_id === me && x.role === 'editor')) T('user_roles').push({ user_id: me, role: 'editor', created_at: new Date().toISOString() });
       persist();
       return null;
     },

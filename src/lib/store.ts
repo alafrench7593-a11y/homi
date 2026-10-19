@@ -38,6 +38,9 @@ interface UiState {
   markAdviceSeen: (signatures: string[]) => void;
   /** Outils favoris (identifiants stables du catalogue), dans l'ordre choisi. */
   toolFavorites: string[];
+  /** Ingrédients que j'ai à la maison (« Que puis-je cuisiner ? ») : préférence de l'appareil. */
+  pantry: string[];
+  setPantry: (keys: string[]) => void;
   setToolFavorites: (ids: string[]) => void;
   /** Dernier filtre choisi dans « Outils » (état conservé au retour). */
   toolFilter: string;
@@ -90,6 +93,8 @@ export const useUiStore = create<UiState>()(
         return { adviceSeen: next.slice(-400) };
       }),
       toolFavorites: [],
+      pantry: [],
+      setPantry: (pantry) => set({ pantry }),
       setToolFavorites: (toolFavorites) => set({ toolFavorites }),
       toolFilter: 'all',
       setToolFilter: (toolFilter) => set({ toolFilter }),

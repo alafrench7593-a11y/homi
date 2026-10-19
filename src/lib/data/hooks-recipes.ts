@@ -1,0 +1,232 @@
+/**
+ * Recettes : lecture de la bibliothèque (base de données, avec la copie embarquée en secours), profil alimentaire
+ * du profil affiché, favoris, menus et listes de courses du foyer (partagés avec le coparent), réglages de l'enfant.
+ */
+import { useMemo } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { backend, eq } from '../backend';
+import { useUserId } from '../auth';
+import { ensureHousehold, useActivePregnancy, useHouseholdId, useInvalidate, useRows, useTrackedChildren, useJourneyState } from './hooks';
+import { useScope } from './hooks-scope';
+import { ALL_RECIPES } from '@/content/recipes';
+import { recipeToRows, rowsToRecipes, type IngredientRow, type LinkRow, type PhotoRow, type RecipeRow, type ReviewRow, type StepRow } from '../recipes/db';
+import { ingredientsInText, stageFor, type FoodProfile, type MenuSlot, type ShoppingLine } from '../recipes/engine';
+import type { Allergen, Recipe, Texture } from '../recipes/types';
+import { pregnancyProgress } from '../domain/pregnancy';
+import { childAge } from '../domain/child';
+import { uuid } from '../uuid';
+import type { Child } from '../types';
+
+export function useRecipes(opts: { includeRetired?: boolean } = {}) {
+  const recipes = useRows<RecipeRow>(['recipes'], { table: 'recipes', order: [{ col: 'title' }] }, { staleTime: 600_000 });
+  const ing = useRows<IngredientRow>(['recipe_ingredients'], { table: 'recipe_ingredients' }, { staleTime: 600_000 });
+  const steps = useRows<StepRow>(['recipe_steps'], { table: 'recipe_steps' }, { staleTime: 600_000 });
+  const photos = useRows<PhotoRow>(['recipe_photos'], { table: 'recipe_photos' }, { staleTime: 600_000 });
+  const links = useRows<LinkRow>(['recipe_source_links'], { table: 'recipe_source_links' }, { staleTime: 600_000 });
+  const reviews = useRows<ReviewRow>(['recipe_reviews'], { table: 'recipe_reviews' }, { staleTime: 600_000 });
+  const loading = [recipes, ing, steps, photos, links].some((q) => q.isLoading);
+  const data = useMemo(() => {
+    if (!recipes.data) return null;
+    const list = rowsToRecipes(recipes.data, ing.data ?? [], steps.data ?? [], photos.data ?? [], links.data ?? [], reviews.data ?? []);
+    // Base pas encore installée (migration non appliquée) : bibliothèque embarquée, mêmes recettes et mêmes statuts
+    const full = list.some((r) => !r.personal) ? list : [...ALL_RECIPES, ...list];
+    // Recette retirée : plus jamais proposée (seule l'administration la voit encore)
+    return opts.includeRetired ? full : full.filter((r) => r.status !== 'retired');
+  }, [recipes.data, ing.data, steps.data, photos.data, links.data, reviews.data, opts.includeRetired]);
+  return { data, loading, error: recipes.error, rows: recipes.data ?? [], refetch: () => { void recipes.refetch(); void ing.refetch(); void steps.refetch(); } };
+}
+
+/** Allergies saisies en texte libre sur la fiche de l'enfant → codes d'allergènes réglementaires. */
+const ALLERGY_WORDS: [RegExp, Allergen][] = [
+  [/lait|lactose|laitier|plv/, 'milk'], [/oeuf|œuf/, 'eggs'], [/arachide|cacahu/, 'peanuts'], [/gluten|ble|blé|seigle|orge|avoine/, 'gluten'],
+  [/poisson/, 'fish'], [/crustac|crevette|crabe|homard/, 'crustaceans'], [/noix|amande|noisette|pistache|cajou|coque|pecan/, 'nuts'],
+  [/sesame|sésame/, 'sesame'], [/soja/, 'soy'], [/moutarde/, 'mustard'], [/celeri|céleri/, 'celery'], [/sulfite/, 'sulphites'], [/lupin/, 'lupin'], [/mollusque|moule|huitre|huître|calamar/, 'molluscs'],
+];
+export function allergensFromText(list: string[]): Allergen[] {
+  const out = new Set<Allergen>();
+  for (const a of list) for (const [re, code] of ALLERGY_WORDS) if (re.test(a.toLowerCase())) out.add(code);
+  return [...out];
+}
+
+export interface ChildFoodSettings { child_id: string; household_id: string; texture: Texture | null; vegetarian: boolean; no_pork: boolean; refused: string[]; pro_advice: string | null; allergen_advice_needed: boolean }
+export function useChildFoodSettings(childId: string | null | undefined) {
+  const q = useRows<ChildFoodSettings>(['child_food_settings', childId ?? ''], childId ? { table: 'child_food_settings', filters: [eq('child_id', childId)], limit: 1 } : null);
+  return { ...q, data: q.data?.[0] ?? null };
+}
+export function useIntroducedFoods(childId: string | null | undefined) {
+  return useRows<{ id: string; food_name: string; first_tried_on: string }>(['food_introductions', childId ?? ''], childId ? { table: 'food_introductions', filters: [eq('child_id', childId)] } : null);
+}
+export function useSaveChildFoodSettings() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: async (v: Omit<ChildFoodSettings, 'household_id'> & { household_id?: string; exists: boolean }) => {
+      const { exists, ...row } = v;
+      if (exists) await backend.update('child_food_settings', { texture: row.texture, vegetarian: row.vegetarian, no_pork: row.no_pork, refused: row.refused, pro_advice: row.pro_advice, allergen_advice_needed: row.allergen_advice_needed, updated_at: new Date().toISOString() }, [eq('child_id', row.child_id)]);
+      else await backend.insert('child_food_settings', row);
+    },
+    onSuccess: () => inv('child_food_settings'),
+  });
+}
+
+/** Profil alimentaire d'un enfant (âge, texture, allergies déclarées, aliments introduits, réglages). */
+export function childFoodProfile(c: Child, kind: 'baby' | 'child', s: ChildFoodSettings | null, introduced: string[] | null): FoodProfile {
+  const months = childAge(c.birth_date).months;
+  return {
+    audience: kind, name: c.first_name, ageMonths: months, texture: kind === 'baby' ? s?.texture ?? null : null,
+    allergies: allergensFromText(c.allergies_declared ?? []), vegetarian: !!s?.vegetarian, noPork: !!s?.no_pork, refused: s?.refused ?? [],
+    introduced, allergenAdviceNeeded: !!s?.allergen_advice_needed || (c.allergies_declared ?? []).length > 0,
+  };
+}
+
+/** Profil alimentaire du profil affiché (grossesse, bébé, enfant, famille, adulte) et membres de la famille. */
+export function useFoodProfile() {
+  const scope = useScope();
+  const pregnancy = useActivePregnancy();
+  const { data: children } = useTrackedChildren();
+  const js = useJourneyState();
+  const settings = useChildFoodSettings(scope.childId);
+  const intro = useIntroducedFoods(scope.scope === 'baby' ? scope.childId : null);
+  return useMemo(() => {
+    const members: FoodProfile[] = (children ?? []).map((c) => childFoodProfile(c, js.childType(c.id) === 'baby' ? 'baby' : 'child', null, null));
+    let profile: FoodProfile;
+    if (scope.scope === 'pregnancy' && pregnancy) {
+      const w = pregnancyProgress(pregnancy.due_date).weeksSA;
+      profile = { audience: 'pregnancy', trimester: w < 15 ? 1 : w < 29 ? 2 : 3, name: undefined };
+    } else if ((scope.scope === 'baby' || scope.scope === 'child') && scope.child) {
+      const introduced = scope.scope === 'baby' && intro.data ? [...new Set(intro.data.flatMap((f) => ingredientsInText(f.food_name)))] : null;
+      profile = childFoodProfile(scope.child, scope.scope, settings.data, introduced);
+    } else if (scope.scope === 'family') profile = { audience: 'family' };
+    else profile = { audience: 'adult' };
+    return { profile, members: scope.scope === 'family' || scope.scope === 'pregnancy' || scope.scope === 'postpartum' || scope.scope === 'none' ? members : [], scope, settings: settings.data };
+  }, [scope, pregnancy, children, js, settings.data, intro.data]);
+}
+
+export const stageOf = (p: FoodProfile) => (p.ageMonths != null ? stageFor(p.ageMonths) : null);
+
+// ---------------------------------------------------------------- favoris
+export function useRecipeFavorites() {
+  const userId = useUserId();
+  const inv = useInvalidate();
+  const q = useRows<{ recipe_slug: string }>(['recipe_favorites'], userId ? { table: 'recipe_favorites', filters: [eq('user_id', userId)] } : null);
+  const slugs = useMemo(() => (q.data ?? []).map((f) => f.recipe_slug), [q.data]);
+  const toggle = useMutation({
+    mutationFn: async (slug: string) => {
+      if (slugs.includes(slug)) await backend.remove('recipe_favorites', [eq('user_id', userId), eq('recipe_slug', slug)]);
+      else await backend.insert('recipe_favorites', { user_id: userId, recipe_slug: slug });
+    },
+    onSuccess: () => inv('recipe_favorites'),
+  });
+  return { slugs, ids: slugs.map((s) => `rcp-${s}`), toggle };
+}
+
+// ---------------------------------------------------------------- menus
+export interface MealPlan { id: string; household_id: string; title: string; profile: Record<string, unknown>; start_date: string; days: number; servings: number; created_at: string }
+export interface MealPlanItem { id: string; plan_id: string; day: number; meal: MenuSlot['meal']; recipe_slug: string; servings: number; note: string | null }
+
+export function useLatestMealPlan() {
+  const hid = useHouseholdId();
+  const plans = useRows<MealPlan>(['meal_plans', hid ?? ''], hid ? { table: 'meal_plans', filters: [eq('household_id', hid)], order: [{ col: 'created_at', asc: false }], limit: 1 } : null);
+  const plan = plans.data?.[0] ?? null;
+  const items = useRows<MealPlanItem>(['meal_plan_items', plan?.id ?? ''], plan ? { table: 'meal_plan_items', filters: [eq('plan_id', plan.id)] } : null);
+  return { plan, items: items.data ?? [], loading: plans.isLoading || items.isLoading };
+}
+export const slugOf = (recipeId: string) => recipeId.replace(/^rcp-/, '');
+
+export function useSaveMealPlan() {
+  const hid = useHouseholdId();
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: async (v: { title: string; days: number; servings: number; profile: Record<string, unknown>; slots: MenuSlot[]; replaceId?: string | null }) => {
+      const h = hid ?? (await ensureHousehold());
+      if (v.replaceId) await backend.remove('meal_plans', [eq('id', v.replaceId)]);
+      const id = uuid();
+      await backend.insert('meal_plans', { id, household_id: h, title: v.title, days: v.days, servings: v.servings, profile: v.profile, start_date: new Date().toISOString().slice(0, 10) });
+      if (v.slots.length) await backend.insert('meal_plan_items', v.slots.map((s) => ({ plan_id: id, household_id: h, day: s.day, meal: s.meal, recipe_slug: slugOf(s.recipeId), servings: s.servings, note: s.note ?? null })));
+      return id;
+    },
+    onSuccess: () => inv('meal_plans', 'meal_plan_items'),
+  });
+}
+
+// ---------------------------------------------------------------- liste de courses
+export interface ShoppingList { id: string; household_id: string; plan_id: string | null; title: string; created_at: string }
+export interface ShoppingItem { id: string; list_id: string; ingredient_key: string | null; label: string; qty: number | null; unit: ShoppingLine['unit']; aisle: string; at_home: boolean; checked: boolean; checked_by: string | null; position: number }
+
+export function useLatestShoppingList() {
+  const hid = useHouseholdId();
+  const lists = useRows<ShoppingList>(['shopping_lists', hid ?? ''], hid ? { table: 'shopping_lists', filters: [eq('household_id', hid)], order: [{ col: 'created_at', asc: false }], limit: 1 } : null);
+  const list = lists.data?.[0] ?? null;
+  const items = useRows<ShoppingItem>(['shopping_items', list?.id ?? ''], list ? { table: 'shopping_items', filters: [eq('list_id', list.id)], order: [{ col: 'position' }] } : null, { staleTime: 5_000 });
+  return { list, items: items.data ?? [], loading: lists.isLoading || items.isLoading };
+}
+export function useCreateShoppingList() {
+  const hid = useHouseholdId();
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: async (v: { title: string; planId: string | null; lines: ShoppingLine[] }) => {
+      const h = hid ?? (await ensureHousehold());
+      const id = uuid();
+      await backend.insert('shopping_lists', { id, household_id: h, plan_id: v.planId, title: v.title });
+      if (v.lines.length) await backend.insert('shopping_items', v.lines.map((l, n) => ({ list_id: id, household_id: h, ingredient_key: l.key, label: l.label, qty: l.qty, unit: l.unit, aisle: l.aisle, at_home: l.atHome, checked: false, position: n })));
+      return id;
+    },
+    onSuccess: () => inv('shopping_lists', 'shopping_items'),
+  });
+}
+export function useToggleShoppingItem() {
+  const inv = useInvalidate();
+  const userId = useUserId();
+  return useMutation({
+    mutationFn: (v: { id: string; checked: boolean }) => backend.update('shopping_items', { checked: v.checked, checked_by: v.checked ? userId : null, checked_at: v.checked ? new Date().toISOString() : null }, [eq('id', v.id)]),
+    onSuccess: () => inv('shopping_items'),
+  });
+}
+export function useAddShoppingItem() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: (v: { listId: string; householdId: string; label: string; position: number }) => backend.insert('shopping_items', { list_id: v.listId, household_id: v.householdId, label: v.label, aisle: 'epicerie', position: v.position }),
+    onSuccess: () => inv('shopping_items'),
+  });
+}
+
+// ---------------------------------------------------------------- recette personnelle (et création par l'équipe éditoriale)
+export function useSavePersonalRecipe() {
+  const hid = useHouseholdId();
+  const userId = useUserId();
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: async (v: { recipe: Recipe; library?: boolean }) => {
+      const h = hid ?? (await ensureHousehold());
+      const id = uuid();
+      const rows = recipeToRows(v.recipe, id, v.library ? { status: 'ai_draft', verified_on: null } : { owner_id: userId, household_id: h, status: 'ai_draft', verified_on: null });
+      await backend.insert('recipes', rows.recipe as unknown as Record<string, unknown>);
+      await backend.insert('recipe_ingredients', rows.ingredients as unknown as Record<string, unknown>[]);
+      await backend.insert('recipe_steps', rows.steps as unknown as Record<string, unknown>[]);
+      await backend.insert('recipe_photos', rows.photo as unknown as Record<string, unknown>);
+      return v.recipe.slug;
+    },
+    onSuccess: () => inv('recipes', 'recipe_ingredients', 'recipe_steps', 'recipe_photos'),
+  });
+}
+
+// ---------------------------------------------------------------- administration
+export function useSetRecipeStatus() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: (v: { slug: string; status: Recipe['status']; note?: string | null }) => backend.rpc('set_recipe_status', { p_slug: v.slug, p_status: v.status, p_note: v.note ?? null }),
+    onSuccess: () => inv('recipes', 'recipe_reviews'),
+  });
+}
+export function useUpdateLibraryRecipe() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: async (v: { id: string; patch: Partial<RecipeRow>; steps?: string[] }) => {
+      await backend.update('recipes', v.patch as Record<string, unknown>, [eq('id', v.id)]);
+      if (v.steps) {
+        await backend.remove('recipe_steps', [eq('recipe_id', v.id)]);
+        await backend.insert('recipe_steps', v.steps.map((body, n) => ({ recipe_id: v.id, position: n + 1, body })));
+      }
+    },
+    onSuccess: () => inv('recipes', 'recipe_steps'),
+  });
+}

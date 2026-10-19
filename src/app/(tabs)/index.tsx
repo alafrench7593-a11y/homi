@@ -17,6 +17,7 @@ import { ChildToday, CycleCard, orderedHomeCards, PregnancyHero, QuickActions, s
 import { ChildHomeCard, FamilyOverview, NoJourneyCard } from '@/features/journeys';
 import { useActivePregnancy, useArticles, useJourneyState, useNotificationsInbox, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useScope } from '@/lib/data/hooks-scope';
+import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { quickAllowed, quickFor, type Scope } from '@/lib/journeys/tools';
 import type { Journey } from '@/lib/types';
 import { greeting } from '@/lib/domain/dates';
@@ -110,6 +111,7 @@ export default function Home() {
         <Text variant="small" muted numberOfLines={2} intentionalTruncation>{article.summary}</Text>
       </Card>
     ) : null,
+    recipe: <HomeRecipeCard />,
     assistant: (
       <Pressable accessibilityRole="button" accessibilityLabel={tr('home.askA11y')} onPress={() => router.push('/assistant/chat')} style={({ pressed }) => ({ borderRadius: 24, overflow: 'hidden', transform: [{ scale: pressed ? 0.98 : 1 }] })}>
         <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, minHeight: MIN_TOUCH + 16 }}>

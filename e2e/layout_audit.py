@@ -26,7 +26,7 @@ ROUTES = ['/', '/track', '/tools', '/community', '/ask', '/profile', '/me', '/me
           '/postpartum/understand', '/postpartum/sharing', '/postpartum/partner', '/pregnancy', '/pregnancy/weight', '/scanner', '/scanner/food',
           '/scanner/product', '/scanner/history', '/scanner/avoid', '/scanner/compare', '/settings', '/settings/account', '/settings/family',
           '/settings/home', '/settings/language', '/settings/privacy', '/settings/reminders', '/settings/subscription', '/settings/sync',
-          '/teeth', '/bottle', '/bottle/history', '/meals', '/pregnancy/start', '/pregnancy/end', '/postpartum/recovery', '/journeys/blocked',
+          '/teeth', '/bottle', '/bottle/history', '/meals', '/meals/menu', '/meals/shopping', '/meals/pantry', '/meals/new', '/meals/settings', '/meals/puree-lisse-carotte', '/admin/recipes', '/pregnancy/start', '/pregnancy/end', '/postpartum/recovery', '/journeys/blocked',
           '/child/:noe?tab=besoins', '/child/:noe/needs', '/child/:noe/needs?tab=treatments', '/child/:noe/needs?tab=follow', '/child/:noe/school', '/journeys/:arch', '/assistant/chat', '/community/new', '/community/profile', '/community/saved', '/profiles/new', '/night',
           '/cycle?all=1', '/cycle/calendar', '/cycle/symptoms', '/cycle/discharge', '/cycle/discharge/new', '/cycle/guides', '/cycle/guides/clear-fluid',
           '/cycle/guides/itching', '/cycle/bleeding', '/cycle/journal', '/cycle/stats', '/cycle/export', '/cycle/privacy', '/cycle/home-card',
@@ -98,6 +98,8 @@ CONFIGS = [
 ]
 if QUICK:
     CONFIGS = CONFIGS[:1]
+if os.environ.get('AUDIT_CFG'):  # une configuration par processus (exécution en parallèle)
+    CONFIGS = [CONFIGS[int(os.environ['AUDIT_CFG'])]]
 
 report, errors = {}, []
 with sync_playwright() as p:

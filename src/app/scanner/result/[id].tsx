@@ -12,6 +12,7 @@ import { RECALL_DISCLAIMER } from '@/lib/domain/scanCommon';
 import { frDate } from '@/lib/domain/scanSources';
 import type { ExplainResponse } from '@/lib/types-scanner';
 import { ResultView, type StoredAnalysis } from '@/features/scanner/components';
+import { ScanRecipes } from '@/features/recipes/ScanRecipes';
 
 export default function ScanResultScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -81,6 +82,7 @@ export default function ScanResultScreen() {
           <Text variant="small" style={{ marginTop: 6 }}>Ce produit a été recherché mais pas analysé : aucun verdict n’est disponible.</Text>
           <Text variant="caption" muted style={{ marginTop: 4 }}>{RECALL_DISCLAIMER}</Text>
         </Card>
+        {scan.kind === 'food' ? <ScanRecipes name={scan.product_snapshot?.name} /> : null}
         <Button label="Analyser un produit" onPress={() => router.push(scan.kind === 'food' ? '/scanner/food' : '/scanner/product')} />
       </Screen>
     );
@@ -90,6 +92,7 @@ export default function ScanResultScreen() {
     <Screen back title={scan.kind === 'food' ? 'Puis-je manger ou donner cet aliment ?' : 'Résultat du scan'}>
       <AvoidBanner barcode={scan.barcode} />
       <ResultView a={result.result as StoredAnalysis} explanation={result.explanation ?? explanation} explaining={explain.isPending} actions={actions} />
+      {scan.kind === 'food' ? <ScanRecipes name={scan.product_snapshot?.name} /> : null}
       <Button label={scan.kind === 'food' ? 'Scanner un autre aliment' : 'Scanner un autre produit'} icon="camera" variant="secondary"
         onPress={() => router.push(scan.kind === 'food' ? '/scanner/food' : '/scanner/product')} />
     </Screen>

@@ -263,6 +263,7 @@ export const HOME_CARDS: { key: string; label: string; detail: string }[] = [
   { key: 'quick', label: 'Raccourcis', detail: 'Trois ou quatre actions pour le profil affiché' },
   { key: 'upcoming', label: 'Prochain rendez-vous ou rappel', detail: '' },
   { key: 'article', label: 'Article recommandé', detail: '' },
+  { key: 'recipe', label: 'Recette recommandée', detail: 'Une seule idée de repas, adaptée au profil affiché' },
   { key: 'assistant', label: 'Poser une question', detail: 'Assistant d’information' },
 ];
 

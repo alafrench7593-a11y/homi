@@ -191,6 +191,7 @@ export default function AdminScreen() {
   const footer = (
     <View style={{ gap: spacing.md, marginTop: spacing.xxs }}>
 
+      {editor ? <Button label="Recettes : relecture et validation" icon="book-open" variant="secondary" onPress={() => router.push('/admin/recipes')} testID="admin-open-recipes" /> : null}
       {editor ? (
         <>
           <SectionTitle title="Validation des articles" />

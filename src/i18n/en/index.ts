@@ -9,3 +9,4 @@ export { docs } from './docs';
 export { cycle } from './cycle';
 export { advice } from './advice';
 export { parcours } from './parcours';
+export { recettes } from './recettes';
