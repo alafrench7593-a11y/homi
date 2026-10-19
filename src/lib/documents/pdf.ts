@@ -116,3 +116,31 @@ export async function buildExportPdf(items: ExportItem[], labels: ExportLabels):
   }
   return out.save();
 }
+
+export interface TextSection { heading: string; lines: string[] }
+/** PDF texte simple (rapport) : titre, sous-titre, sections ; pagination automatique, texte toujours renvoyé à la ligne. */
+export async function buildTextPdf(title: string, subtitle: string[], sections: TextSection[]): Promise<Uint8Array> {
+  const out = await PDFDocument.create();
+  out.setTitle(winAnsiSafe(title));
+  out.setProducer('Toi & Moi');
+  const font = await out.embedFont(StandardFonts.Helvetica);
+  const bold = await out.embedFont(StandardFonts.HelveticaBold);
+  let page = out.addPage([A4.w, A4.h]);
+  let y = A4.h - 56;
+  const line = (txt: string, f: PDFFont, size: number, color = rgb(0.1, 0.08, 0.15)) => {
+    for (const l of wrap(txt, f, size, A4.w - 112)) {
+      if (y < 56) { page = out.addPage([A4.w, A4.h]); y = A4.h - 56; }
+      page.drawText(l, { x: 56, y, size, font: f, color });
+      y -= size * 1.45;
+    }
+  };
+  line(title, bold, 18);
+  for (const s of subtitle) line(s, font, 9.5, rgb(0.4, 0.38, 0.45));
+  for (const sec of sections) {
+    y -= 12;
+    line(sec.heading, bold, 13);
+    y -= 2;
+    for (const l of sec.lines) line(l, font, 10.5);
+  }
+  return out.save();
+}

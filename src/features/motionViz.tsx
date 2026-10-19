@@ -235,7 +235,7 @@ export function RelayStrip({ nights, labelOf }: { nights: { id: string; user_id:
             <View key={n.id} style={{ width: NODE, alignItems: 'center', gap: 4 }}>
               <Text variant="caption" muted>{day(n.starts_at)}</Text>
               <View style={{ width: isCur ? 22 : 16, height: isCur ? 22 : 16, borderRadius: 11, borderWidth: 3, borderColor: isCur ? t.colors.primary : t.colors.lavender, backgroundColor: n.status === 'confirmed' ? t.colors.lavender : t.colors.surface }} />
-              <Text variant="small" weight={isCur ? 'bold' : 'medium'} numberOfLines={1}>{labelOf(n.user_id)}</Text>
+              <Text variant="small" weight={isCur ? 'bold' : 'medium'}>{labelOf(n.user_id)}</Text>
               <Text variant="caption" muted>{isCur ? (Date.parse(n.starts_at) <= nowMs ? 'cette nuit' : 'prochaine') : n.status === 'confirmed' ? 'confirmée' : n.status === 'swapped' ? 'échangée' : 'prévue'}</Text>
             </View>
           );
@@ -292,7 +292,7 @@ export function DayAvailability({ day, busy, free, reserved, onPick }: {
             {reserved.map((r, i) => (
               <Grow key={`r${i}`} index={i} left={X(r.starts_at)} width={X(r.ends_at) - X(r.starts_at)}>
                 <View style={{ flex: 1, margin: 4, borderRadius: 9, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
-                  <Text variant="caption" weight="bold" color={t.colors.primaryText} numberOfLines={1}>pour moi</Text>
+                  <Text variant="caption" weight="bold" color={t.colors.primaryText}>pour moi</Text>
                 </View>
               </Grow>
             ))}

@@ -262,10 +262,10 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
             accessibilityRole="button"
             accessibilityLabel={tr('dock.addA11y', { label: i.label })}
             onPress={() => { haptic('light'); i.onPress(); }}
-            style={({ pressed }) => ({ width: compact ? '31.5%' : '23%', flexGrow: compact ? 0 : 1, minHeight: compact ? 72 : undefined, aspectRatio: compact ? undefined : 1, borderRadius: radius.lg, borderWidth: compact ? 1 : 0, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : compact ? t.colors.surface : t.colors.background, alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: compact ? spacing.xs : 0 })}
+            style={({ pressed }) => ({ width: compact ? '31.5%' : '23%', flexGrow: compact ? 0 : 1, minHeight: compact ? 72 : 76, borderRadius: radius.lg, borderWidth: compact ? 1 : 0, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : compact ? t.colors.surface : t.colors.background, alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: compact ? spacing.xs : 0 })}
           >
             <Icon name={i.icon} color={t.colors.text} />
-            <Text variant="caption" weight="medium" center numberOfLines={1}>{i.label}</Text>
+            <Text variant="caption" weight="medium" center style={{ paddingHorizontal: 4 }}>{i.label}</Text>
           </Pressable>
         ))}
       </View>

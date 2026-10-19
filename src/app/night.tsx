@@ -3,7 +3,7 @@
  * Ne modifie jamais la luminosité du téléphone et laisse l'accès aux urgences visible.
  */
 import React, { useEffect, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -141,12 +141,13 @@ export default function NightMode() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0D0912' }}>
+    <View style={{ flex: 1, backgroundColor: '#0D0912', overflow: 'hidden' }}>
       <StatusBar style="light" />
       <Aurora mood="lowlight" />
       <StarField density={40} color="#F3D6DF" />
-      <View style={{ flex: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, gap: spacing.md }}>
-        <Row style={{ justifyContent: 'space-between' }}>
+      {/* Défilement : sur petit écran (ou texte agrandi) rien n'est coupé ; le décor reste à l'intérieur de l'écran */}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, gap: spacing.md }}>
+        <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <Pressable accessibilityRole="button" accessibilityLabel="Quitter le mode nuit" onPress={() => router.back()} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
             <Row gap={6}><Icon name="x" color={MUTED} size={20} /><Text color={MUTED}>Quitter</Text></Row>
           </Pressable>
@@ -173,8 +174,8 @@ export default function NightMode() {
           </View>
         ) : (
           <>
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.sm }}>
-              <Text variant="small" color={MUTED}>{child.first_name}</Text>
+            <View style={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.sm }}>
+              <Text variant="small" color={MUTED} center>{child.first_name}</Text>
               {openSleep ? (
                 <>
                   <Text variant="small" color={GOLD}>dort depuis</Text>
@@ -213,13 +214,13 @@ export default function NightMode() {
               <BigButton icon="wind" label="Couche" sub={diapers?.[0] ? `dernière : ${timeAgo(diapers[0].at)}` : undefined} onPress={diaper} />
             </Row>
             <Row style={{ justifyContent: 'space-between' }}>
-              <Text variant="small" color={MUTED}>Vibrations</Text>
+              <Text variant="small" color={MUTED} style={{ flex: 1 }}>Vibrations</Text>
               <Toggle label="Vibrations en mode nuit" value={vibrations} onChange={setVibrations} />
             </Row>
             <Text variant="caption" color={MUTED} center>Aucun son. La luminosité de votre téléphone n’est pas modifiée.</Text>
           </>
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 }

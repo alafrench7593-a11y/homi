@@ -42,8 +42,8 @@ export function SpaceTile({ forum, selected, onPress }: { forum: Forum; selected
       }}
     >
       <Icon name={spaceIcon(forum)} size={20} color={t.colors.primary} />
-      <Text weight="bold" numberOfLines={1}>{forum.title}</Text>
-      <Text variant="caption" muted numberOfLines={2}>{forum.description}</Text>
+      <Text weight="bold">{forum.title}</Text>
+      <Text variant="caption" muted>{forum.description}</Text>
     </Pressable>
   );
 }
@@ -121,9 +121,10 @@ export function PostCard({ post, forumTitle, full }: { post: FeedPost; forumTitl
         {post.status !== 'visible' && <Text variant="caption" color={t.colors.gold}>{post.status === 'pending_review' ? 'En relecture' : 'Masquée'}</Text>}
       </Row>
       <Text weight="bold" style={{ marginTop: 4 }}>{post.title}</Text>
-      <Text variant="small" numberOfLines={full ? undefined : 3} style={{ marginTop: 2 }}>{post.body}</Text>
+      {/* Aperçu volontairement limité à 3 lignes : le message complet s'ouvre en touchant la carte */}
+      <Text variant="small" numberOfLines={full ? undefined : 3} intentionalTruncation style={{ marginTop: 2 }}>{post.body}</Text>
       {post.area_label ? <Row gap={4} style={{ marginTop: 6 }}><Icon name="map-pin" size={12} color={t.colors.textMuted} /><Text variant="caption" muted>{post.area_label}</Text></Row> : null}
-      <Row style={{ marginTop: spacing.sm }} gap={spacing.xs}>
+      <Row style={{ marginTop: spacing.sm }} gap={spacing.xs} wrap>
         <Chip label={String(post.like_count)} icon="heart" selected={post.liked} onPress={toggleLike} />
         <Chip label={String(post.comment_count)} icon="message-square" onPress={() => router.push(`/community/post/${post.id}`)} />
         <Pressable
@@ -137,7 +138,7 @@ export function PostCard({ post, forumTitle, full }: { post: FeedPost; forumTitl
         >
           <Icon name="bookmark" size={18} color={post.saved ? t.colors.primary : t.colors.textMuted} />
         </Pressable>
-        <View style={{ flex: 1 }} />
+        <View style={{ flexGrow: 1 }} />
         <Pressable accessibilityRole="button" accessibilityLabel="Partager" hitSlop={4} onPress={share} style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="share-2" size={18} color={t.colors.textMuted} />
         </Pressable>

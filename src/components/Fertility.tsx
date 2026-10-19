@@ -140,7 +140,7 @@ export function NavCard({ items }: { items: { icon: IconName; title: string; sub
 }
 
 // ---------------------------------------------------------------- règles
-const FLOW_LABEL: Record<NonNullable<PeriodEntry['flow']>, string> = { light: 'léger', medium: 'moyen', heavy: 'abondant' };
+const FLOW_LABEL: Record<NonNullable<PeriodEntry['flow']>, string> = { spotting: 'très léger (spotting)', light: 'léger', medium: 'moyen', heavy: 'abondant', very_heavy: 'très abondant' };
 type Flow = NonNullable<PeriodEntry['flow']> | 'none';
 
 export function PeriodLogger() {
@@ -215,7 +215,7 @@ export function PeriodLogger() {
         </Row>
         <View style={{ gap: 6, marginTop: spacing.sm }}>
           <Text variant="label">Flux (facultatif)</Text>
-          <Segmented label="Flux" value={flow} onChange={setFlow} options={[{ value: 'none', label: '—' }, { value: 'light', label: 'Léger' }, { value: 'medium', label: 'Moyen' }, { value: 'heavy', label: 'Abondant' }]} />
+          <Segmented label="Flux" value={flow} onChange={setFlow} options={[{ value: 'none', label: '—' }, { value: 'spotting', label: 'Spotting' }, { value: 'light', label: 'Léger' }, { value: 'medium', label: 'Moyen' }, { value: 'heavy', label: 'Abondant' }, { value: 'very_heavy', label: 'Très abondant' }]} />
         </View>
         <Button label="Enregistrer mes règles" icon="plus" style={{ marginTop: spacing.sm }} loading={saving} onPress={add} />
       </Card>

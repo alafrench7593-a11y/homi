@@ -163,8 +163,8 @@ export function DayThread({ moments, empty }: { moments: SkyMoment[]; empty: str
               <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: KIND_COLOR[m.kind] }} />
               <Text variant="caption" muted>{formatTime(m.at)}</Text>
             </View>
-            <Text variant="small" weight="medium" numberOfLines={1}>{m.label}</Text>
-            {m.detail ? <Text variant="caption" muted numberOfLines={1}>{m.detail}</Text> : null}
+            <Text variant="small" weight="medium">{m.label}</Text>
+            {m.detail ? <Text variant="caption" muted>{m.detail}</Text> : null}
           </Pressable>
         </React.Fragment>
       ))}
@@ -202,7 +202,7 @@ export function UniverseGrid() {
               <View style={{ width: 54, height: 54, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
                 <Icon name={u.icon} size={21} color={u.label === 'Urgences' ? t.colors.heart : t.colors.text} />
               </View>
-              <Text variant="caption" center numberOfLines={1}>{u.label}</Text>
+              <Text variant="caption" center>{u.label}</Text>
             </>
           )}
         </Pressable>

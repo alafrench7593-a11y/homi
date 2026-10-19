@@ -152,7 +152,7 @@ export function Timeline({ logs, childId }: { logs: LogItem[]; childId: string }
           </View>
           <View style={{ flex: 1 }}>
             <Text weight="medium">{KIND_META[l.type].label}</Text>
-            <Text variant="small" muted numberOfLines={1}>{describeLog(l)}</Text>
+            <Text variant="small" muted>{describeLog(l)}</Text>
           </View>
           <Icon name="edit-2" size={14} color={t.colors.textMuted} />
         </Pressable>

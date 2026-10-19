@@ -11,6 +11,7 @@ import { Appear } from '@/components/Appear';
 import { Banner, Button, Card, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { ErrorView, Skeleton } from '@/components/States';
+import { t as tr } from '@/i18n';
 import { EstimateLine, fmt, JourneyArticles, MonthCalendar, NavCard, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
 import { useUserId } from '@/lib/auth';
 import { backend } from '@/lib/backend';
@@ -112,6 +113,7 @@ export default function FertilityScreen() {
 
       <SectionTitle title="Mon suivi" />
       <NavCard items={[
+        { icon: 'grid', title: tr('cy.nav.full'), subtitle: tr('cy.nav.full.hint'), to: '/cycle?all=1' },
         { icon: 'edit-3', title: 'Règles, symptômes et tests', subtitle: 'Tests d’ovulation et de grossesse compris', to: '/fertility/log' },
         { icon: 'thermometer', title: 'Température et glaire', subtitle: 'Si vous souhaitez les noter — avec un graphique', to: '/fertility/body' },
         ...(prefs.track_intercourse ? [{ icon: 'lock' as const, title: 'Rapports', subtitle: 'Facultatif et privé : visible uniquement par vous', to: '/fertility/intimacy' }] : []),

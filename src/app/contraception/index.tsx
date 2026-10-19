@@ -10,6 +10,7 @@ import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { t as tr } from '@/i18n';
 import { EstimateLine, fmt, JourneyArticles, MonthCalendar, NavCard, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
 import { useContraceptionMethods, useCycleEstimates } from '@/lib/data/hooks-fertility';
 import { addDays, daysBetween, formatDateFr, todayISO } from '@/lib/domain/dates';
@@ -106,6 +107,7 @@ export default function ContraceptionScreen() {
 
       <SectionTitle title="Mon suivi" />
       <NavCard items={[
+        { icon: 'grid', title: tr('cy.nav.full'), subtitle: tr('cy.nav.full.hint'), to: '/cycle?all=1' },
         { icon: 'edit-3', title: 'Règles, symptômes et test de grossesse', subtitle: 'Vos saisies, à votre rythme', to: '/contraception/log' },
         { icon: 'rotate-ccw', title: 'Historique des cycles', subtitle: 'Durées de vos cycles passés', to: '/contraception/history' },
         { icon: 'bell', title: 'Ma méthode et mes rappels', subtitle: 'Pilule, patch, anneau, injection, renouvellement', to: '/contraception/reminders' },

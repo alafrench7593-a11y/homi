@@ -5,7 +5,11 @@ import { useUserId } from '../auth';
 import { useInvalidate, useRows } from './hooks';
 import type { Appointment, Reminder } from '../types';
 
-export interface SymptomLog { id: string; user_id: string; logged_on: string; symptoms: string[]; note: string | null; created_at: string }
+export interface SymptomLog {
+  id: string; user_id: string; logged_on: string; symptoms: string[]; note: string | null; created_at: string;
+  /** Cycle v2 : clés contrôlées, intensité 1–3, échelles 1–5 (facultatives). */
+  symptom_keys?: string[]; intensities?: Record<string, number>; mood?: number | null; energy?: number | null; sleep?: number | null; stress?: number | null;
+}
 
 export function useSymptomLogs(limit = 60) {
   const userId = useUserId();

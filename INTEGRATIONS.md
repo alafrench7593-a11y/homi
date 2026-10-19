@@ -157,6 +157,24 @@ Sécurité : documents **privés par défaut**, partage avec le foyer explicite 
 
 Questionnaire EPDS : non intégré (licence et usage clinique). Le suivi émotionnel fonctionne sans aucune API externe.
 
+## 12 bis. Module cycle : contenus médicaux sur les pertes et les saignements (nouveau, 19 octobre 2026)
+**Décision : bibliothèque pédagogique interne, versionnée, sans API.** Rien n'est transmis à un service externe par ce module.
+
+| Source | API ? | Constat (vérifié le 19/10/2026) | Usage dans l'app |
+|---|---|---|---|
+| NHS (nhs.uk) | Oui : « NHS Website Content API » (v1 retirée, v2 en service) | Gratuite d'après le portail développeur, mais **inscription, abonnement par API et « base légale » d'utilisation exigés avant la mise en ligne** ; contenu en anglais britannique ; conditions de réutilisation à accepter à l'inscription (non lues ici, pas de compte créé). | **Non intégrée** : liens vers les pages publiques citées dans les fiches. Une intégration demanderait l'inscription par la propriétaire de l'app et une relecture des conditions. |
+| OMS (who.int) | Une API de **statistiques** (Global Health Observatory) | Pas d'API de contenus grand public sur les pertes ou le cycle. | Non utilisée. |
+| ACOG (acog.org) | Aucune API publique trouvée | Pages FAQ consultables, contenu protégé par le droit d'auteur. | Lien vers la FAQ « Vaginitis » seulement (aucun texte recopié). |
+| INSERM (inserm.fr) | Aucune API de contenus trouvée | Dossiers d'information consultables. | Non cité pour l'instant. |
+| Assurance Maladie (ameli.fr) | Aucune API de contenus grand public trouvée | Pages **injoignables depuis notre environnement de test** le 19/10/2026 : non vérifiées, donc **non citées**. | À ajouter après vérification manuelle. |
+
+- Fichier : `src/content/dischargeGuides.ts` — 10 fiches FR + EN rédigées pour l'app (pas de copie de texte), chacune avec : ce qui s'observe, variations, quoi noter, limites, quand demander un avis, sources (lien officiel + langue).
+- Version : `GUIDES_VERSION` / `GUIDES_CHECKED_ON` (2026-10-19), affichée sous la liste des fiches ; à revérifier au moins une fois par an ou à chaque changement de recommandation.
+- Test Jest : aucune fiche ne contient de formulation de diagnostic (« vous avez une… », « c'est une mycose… »).
+- **IA** : aucune donnée du cycle n'est envoyée à l'assistant, sauf la **phase estimée** si la personne autorise le contexte pour une conversation (déjà existant). Aucun traitement, aucun diagnostic.
+- **Traduction automatique** : non utilisée (traductions écrites et relues dans le code, FR + EN).
+- Coût externe de ce module : **aucun**.
+
 ## 13. Recommandations de produits
 📚 **Étudiée, non intégrée.** Il n'existe pas de catalogue ouvert et vérifiable pour l'équipement, les jouets et les livres : les sources trouvées sont commerciales ou d'affiliation. Aucune recommandation inventée n'est affichée.
 - Sources utilisables plus tard, sous conditions : Open Food Facts et Open Beauty Facts pour les produits notés, avec les allergies déclarées, sans utiliser de donnée médicale pour de la publicité ; une sélection éditoriale clairement signalée.

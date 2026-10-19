@@ -9,6 +9,7 @@ import { Button, Card, Chip, IconButton, Row, SectionTitle, Text, Toggle } from 
 import { HOME_CARDS, QUICK_KEYS, orderedHomeCards, quickIcon, quickLabel } from '@/features/home';
 import { useUiStore } from '@/lib/store';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export default function HomeSettings() {
   const toast = useToast();
@@ -68,6 +69,7 @@ export default function HomeSettings() {
         {shortcuts ? <Button label="Revenir aux raccourcis automatiques" size="sm" variant="ghost" onPress={() => setShortcuts(null)} style={{ alignSelf: 'flex-start' }} /> : null}
       </Card>
 
+      <Button label={tr('cy.home.customize')} variant="secondary" icon="sliders" onPress={() => router.push('/cycle/home-card' as never)} />
       <Button label="Réinitialiser l’accueil" variant="secondary" icon="rotate-ccw" onPress={() => { setLayout([], []); setShortcuts(null); toast('Accueil réinitialisé.'); }} />
       <Button label="Revoir l’introduction" variant="ghost" icon="play-circle" onPress={() => { setIntroSeen(false); router.push('/intro'); }} />
       <Text variant="caption" muted>Ces préférences sont gardées sur cet appareil.</Text>

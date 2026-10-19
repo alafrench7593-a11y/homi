@@ -33,7 +33,7 @@ export interface CycleTest {
   user_confirmed?: boolean; photo_path?: string | null; expected_period_on?: string | null;
 }
 
-export interface CyclePreferences { user_id: string; track_intercourse: boolean }
+export interface CyclePreferences { user_id: string; track_intercourse: boolean; /** Masquer les données sensibles du cycle sur l'accueil. */ hide_on_home?: boolean }
 
 export type ContraceptionMethodKind =
   | 'pill' | 'iud_copper' | 'iud_hormonal' | 'implant' | 'patch' | 'ring' | 'injection'

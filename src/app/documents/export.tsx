@@ -6,7 +6,6 @@
 import React, { useMemo, useState } from 'react';
 import { Platform, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import * as Sharing from 'expo-sharing';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
 import { Skeleton } from '@/components/States';
@@ -16,9 +15,9 @@ import { backend } from '@/lib/backend';
 import { useChildren, useDocuments } from '@/lib/data/hooks';
 import { buildExportPdf, type ExportItem } from '@/lib/documents/pdf';
 import { buildSummary } from '@/lib/documents/summary';
-import { readBytes, writeTemp } from '@/lib/documents/io';
+import { readBytes } from '@/lib/documents/io';
+import { deliverFile as deliver } from '@/lib/deliverFile';
 import { categoryLabel } from '@/lib/documents/taxonomy';
-import { discardLocalImage } from '@/lib/cycleAnalysis/privacy';
 import { DocCard, subjectLabel, subjectOf } from '@/features/documents';
 import type { DocumentRow } from '@/lib/types';
 import { formatDate, t as tr } from '@/i18n';
@@ -30,26 +29,6 @@ const EMBEDDABLE = ['application/pdf', 'image/jpeg', 'image/png'];
 async function fileBytes(doc: DocumentRow): Promise<Uint8Array> {
   const url = await backend.storage.signedUrl(BUCKET, doc.storage_path, 120);
   return readBytes(url);
-}
-
-/** Remise du fichier : feuille de partage (mobile) ou téléchargement (web). Le fichier temporaire est effacé ensuite. */
-async function deliver(bytes: Uint8Array, name: string, mime: string, dialogTitle: string) {
-  if (Platform.OS === 'web') {
-    const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type: mime }));
-    const a = document.createElement('a');
-    a.href = url; a.download = name; a.rel = 'noopener';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 30_000);
-    return;
-  }
-  const ext = mime === 'application/pdf' ? 'pdf' : mime.split('/')[1] ?? 'bin';
-  const uri = writeTemp(bytes, ext);
-  try {
-    if (!(await Sharing.isAvailableAsync())) throw new Error('share_unavailable');
-    await Sharing.shareAsync(uri, { mimeType: mime, dialogTitle, UTI: mime === 'application/pdf' ? 'com.adobe.pdf' : undefined });
-  } finally {
-    await discardLocalImage(uri);
-  }
 }
 
 export default function ExportScreen() {

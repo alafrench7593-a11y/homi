@@ -50,9 +50,11 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
         ) : (
           <View style={{ width: 4 }} />
         )}
-        <View style={{ flex: 1 }} />
-        {right}
-        {account ? <AccountActions /> : null}
+        {/* Actions groupées à droite : sur un écran étroit, elles passent à la ligne au lieu de sortir de l'écran */}
+        <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center', minWidth: 0 }}>
+          {right}
+          {account ? <AccountActions /> : null}
+        </View>
       </View>
       {title ? (
         <View style={{ paddingHorizontal: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>

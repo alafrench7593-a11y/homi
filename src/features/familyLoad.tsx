@@ -93,13 +93,13 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
           </Pressable>
           <Pressable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={`Modifier ${task.title}`} onPress={() => onEdit(task)}>
             <View style={{ alignSelf: 'flex-start' }} onLayout={(e) => setTw(e.nativeEvent.layout.width)}>
-              <Animated.Text style={{ opacity: strike.interpolate({ inputRange: [0, 1], outputRange: [1, 0.55] }) }} numberOfLines={2}>
+              <Animated.Text style={{ opacity: strike.interpolate({ inputRange: [0, 1], outputRange: [1, 0.55] }) }}>
                 <Text weight="medium">{task.title}</Text>
               </Animated.Text>
               <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, top: '50%', height: 2, width: tw, backgroundColor: t.colors.textMuted, borderRadius: 1,
                 transform: [{ translateX: strike.interpolate({ inputRange: [0, 1], outputRange: [-tw / 2, 0] }) }, { scaleX: strike.interpolate({ inputRange: [0, 1], outputRange: [0.001, 1] }) }] }} />
             </View>
-            <Text variant="caption" muted numberOfLines={1}>
+            <Text variant="caption" muted>
               {[cat.label, task.due_at ? fmtWhen(task.due_at) : null, labelOf(task.assignee_id), task.recurrence ? 'récurrente' : null, task.essential ? 'essentielle' : null].filter(Boolean).join(' · ')}
             </Text>
             {late ? <Text variant="caption" color={t.colors.gold}>En retard — pas grave, à reprogrammer si besoin</Text> : null}
@@ -210,7 +210,7 @@ function QuickTile({ label, icon, onPress, color }: { label: string; icon: React
     <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={() => { haptic('selection'); onPress(); }} {...press.handlers} style={{ width: '48.5%' }}>
       <Animated.View style={[{ minHeight: 64, padding: spacing.sm, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface, gap: 4 }, press.style]}>
         <Icon name={icon} size={18} color={color} />
-        <Text variant="small" weight="bold" numberOfLines={2}>{label}</Text>
+        <Text variant="small" weight="bold">{label}</Text>
       </Animated.View>
     </Pressable>
   );
@@ -347,7 +347,7 @@ export function FamilyHomeCard() {
             <Icon name={waiting.length ? 'bell' : 'check-square'} color={t.colors.primary} />
             <View style={{ flex: 1 }}>
               <Text weight="bold">{waiting.length ? `${waiting.length} demande${waiting.length > 1 ? 's' : ''} du foyer ${waiting.length > 1 ? 'attendent' : 'attend'} une réponse` : `${mineToday.length} tâche${mineToday.length > 1 ? 's' : ''} pour vous aujourd’hui`}</Text>
-              <Text variant="small" muted numberOfLines={1}>{waiting.length ? REQUEST_LABEL[waiting[0].kind] : mineToday.map((x) => x.title).join(' · ')}</Text>
+              <Text variant="small" muted>{waiting.length ? REQUEST_LABEL[waiting[0].kind] : mineToday.map((x) => x.title).join(' · ')}</Text>
             </View>
             <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
           </Row>

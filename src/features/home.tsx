@@ -22,6 +22,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, NACRE, palette, radius, spacing } from '@/theme/tokens';
 import { LinearGradient } from 'expo-linear-gradient';
 import { formatDate, t as tr } from '@/i18n';
+import { HomeCycleCard } from '@/features/cycle/HomeCycleCard';
 
 const ORB_HUES = ['rose', 'lavande', 'or'] as const;
 
@@ -70,7 +71,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
         <View style={tile} accessible accessibilityLabel={`Taille moyenne : environ ${info.lengthCm} centimètres, comme ${info.compare}`}>
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>TAILLE</Text>
           <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 36, letterSpacing: -1 }}>{info.lengthCm} cm</Text>
-          <Text variant="small" muted numberOfLines={1}>{info.compare}</Text>
+          <Text variant="small" muted>{info.compare}</Text>
         </View>
       </View>
       <Text variant="caption" muted center>Repères moyens · illustration artistique, pas une échographie</Text>
@@ -176,7 +177,8 @@ export function QuickActions({ keys, childId, onCustomize }: { keys: string[]; c
   const t = useTheme();
   return (
     <View style={{ gap: 4 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+      {/* 4 raccourcis qui se partagent la largeur ; sur un écran très étroit ils passent à la ligne au lieu de couper un libellé */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', rowGap: 8 }}>
         {keys.filter((k) => QUICK[k]).slice(0, 4).map((k) => (
           <QuickButton key={k} k={k} childId={childId} />
         ))}
@@ -204,10 +206,10 @@ function QuickButton({ k, childId }: { k: string; childId?: string }) {
       onPressOut={() => setPressed(false)}
       onHoverIn={() => { setHovered(true); setPlay((p) => p + 1); }}
       onHoverOut={() => setHovered(false)}
-      style={{ alignItems: 'center', gap: 6, width: 72 }}
+      style={{ alignItems: 'center', gap: 6, flexGrow: 1, flexBasis: 0, minWidth: 66, maxWidth: 120 }}
     >
       <ToolGlyph theme={QUICK_THEME[k] ?? 'resources'} icon={QUICK[k].icon} size={58} play={play} pressed={pressed} hovered={hovered} />
-      <Text variant="caption" weight="medium" center numberOfLines={1}>{QUICK[k].label}</Text>
+      <Text variant="caption" weight="medium" center style={{ alignSelf: 'stretch' }}>{QUICK[k].label}</Text>
     </Pressable>
   );
 }
@@ -242,40 +244,9 @@ export function UpcomingCard() {
 }
 
 /** Carte principale des parcours cycle : « concevoir », « éviter une grossesse » ou simple suivi. */
+/** Carte du cycle de l'accueil (personnalisable) : voir src/features/cycle/HomeCycleCard.tsx. */
 export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' | 'cycle' }) {
-  const t = useTheme();
-  const { data: periods } = usePeriods();
-  const est = estimateCycle((periods ?? []).map((p) => ({ start_date: p.start_date, end_date: p.end_date })));
-  const last = periods?.length ? periods[periods.length - 1] : null;
-  const day = last ? Math.floor((Date.now() - new Date(last.start_date).getTime()) / 86_400_000) + 1 : null;
-  const fmt = (d: string | null | undefined) => (d ? formatDate(d, { day: 'numeric', month: 'long' }) : '—');
-  const href = mode === 'ttc' ? '/fertility' : mode === 'avoid' ? '/contraception' : '/cycle';
-  const open = mode === 'ttc' ? tr('cycleCard.openTtc') : mode === 'avoid' ? tr('cycleCard.openAvoid') : tr('cycleCard.openCycle');
-  const note = mode === 'ttc' ? tr('cycleCard.noteTtc') : mode === 'avoid' ? tr('cycleCard.noteAvoid') : tr('cycleCard.noteCycle');
-  return (
-    <Pressable accessibilityRole="button" accessibilityLabel={open} onPress={() => { haptic('selection'); router.push(href); }} style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })}>
-      <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface, padding: spacing.md, gap: spacing.sm }}>
-        <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{mode === 'ttc' ? tr('cycleCard.ttc') : tr('cycleCard.mine')}</Text>
-        {day ? (
-          <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-            <Text style={{ fontFamily: fonts.display, fontSize: 72, lineHeight: 74, letterSpacing: -4 }}>{tr('cycleCard.day', { day })}</Text>
-            <Text variant="small" muted style={{ marginBottom: 12, marginLeft: 8 }}>{tr('cycleCard.ofCycle')}</Text>
-          </View>
-        ) : <Text variant="heading">{tr('cycleCard.start')}</Text>}
-        <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-          <View style={{ flex: 1, borderRadius: radius.lg, padding: spacing.sm, backgroundColor: t.colors.surfaceAlt }}>
-            <Text variant="caption" muted>{mode === 'ttc' ? tr('cycleCard.fertileTtc') : tr('cycleCard.fertileAvoid')}</Text>
-            <Text weight="bold">{est.fertileWindow ? `${fmt(est.fertileWindow.start)} → ${fmt(est.fertileWindow.end)}` : tr('cycleCard.toEstimate')}</Text>
-          </View>
-          <View style={{ flex: 1, borderRadius: radius.lg, padding: spacing.sm, backgroundColor: t.colors.surfaceAlt }}>
-            <Text variant="caption" muted>{tr('cycleCard.nextPeriod')}</Text>
-            <Text weight="bold">{fmt(est.nextPeriod)}</Text>
-          </View>
-        </View>
-        <Text variant="caption" muted>{note}</Text>
-      </View>
-    </Pressable>
-  );
+  return <HomeCycleCard mode={mode} />;
 }
 
 // ------------------------------------------------------------------ accueil personnalisable

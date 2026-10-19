@@ -33,6 +33,8 @@ export function haptic(kind: 'light' | 'success' | 'warning' | 'selection' = 'li
 // ---------------------------------------------------------------- Texte
 type Variant = 'hero' | 'title' | 'heading' | 'body' | 'small' | 'caption' | 'label';
 interface AppTextProps extends TextProps {
+  /** Aperçu volontairement limité (le contenu complet s'ouvre ailleurs) : signalé aux tests de mise en page. */
+  intentionalTruncation?: boolean;
   variant?: Variant;
   muted?: boolean;
   color?: string;
@@ -41,7 +43,7 @@ interface AppTextProps extends TextProps {
   italic?: boolean;
 }
 
-export function Text({ variant = 'body', muted, color, weight, center, italic, style, ...rest }: AppTextProps) {
+export function Text({ variant = 'body', muted, color, weight, center, italic, style, intentionalTruncation, ...rest }: AppTextProps) {
   const t = useTheme();
   const display = variant === 'hero' || variant === 'title';
   const family = italic ? fonts.displayItalic : display ? fonts.display : variant === 'heading' ? fonts.displayMedium : weight === 'bold' ? fonts.bodyBold : weight === 'medium' || variant === 'label' ? fonts.bodyMedium : fonts.body;
@@ -50,6 +52,7 @@ export function Text({ variant = 'body', muted, color, weight, center, italic, s
     <RNText
       maxFontSizeMultiplier={1.7}
       style={[{ color: color ?? (muted ? t.colors.textMuted : t.colors.text), fontFamily: family, ...scale, textAlign: center ? 'center' : undefined }, variant === 'label' && { letterSpacing: 0.5 }, style]}
+      {...(intentionalTruncation ? ({ dataSet: { truncate: 'intentional' } } as object) : null)}
       {...rest}
     />
   );
@@ -164,7 +167,7 @@ export function Button({ label, variant = 'primary', icon, loading, size = 'md',
     : { primary: t.colors.primary, secondary: t.colors.border, ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
   const h = size === 'lg' ? 58 : size === 'sm' ? 40 : MIN_TOUCH + 2;
   return (
-    <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', opacity: disabled ? 0.45 : 1 }, style, press.style]}>
+    <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', maxWidth: '100%', opacity: disabled ? 0.45 : 1 }, style, press.style]}>
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
@@ -197,9 +200,9 @@ export function Button({ label, variant = 'primary', icon, loading, size = 'md',
       {/* Survol (web) : la surface s'illumine légèrement */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.14)', opacity: press.hover }]} />
       {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur */}
-      <Animated.View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }), transform: [{ scale: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0.92] }) }] }}>
+      <Animated.View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexShrink: 1, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }), transform: [{ scale: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0.92] }) }] }}>
         {icon && <Icon name={icon} size={size === 'sm' ? 16 : 19} color={fg} />}
-        <Text variant={size === 'sm' ? 'small' : 'body'} weight="bold" color={fg} numberOfLines={2} center style={{ letterSpacing: -0.2, textShadowColor: glass && variant === 'primary' && !t.isDark ? 'rgba(160,40,80,0.35)' : 'transparent', textShadowRadius: 3, textShadowOffset: { width: 0, height: 1 } }}>
+        <Text variant={size === 'sm' ? 'small' : 'body'} weight="bold" color={fg} center style={{ flexShrink: 1, letterSpacing: -0.2, textShadowColor: glass && variant === 'primary' && !t.isDark ? 'rgba(160,40,80,0.35)' : 'transparent', textShadowRadius: 3, textShadowOffset: { width: 0, height: 1 } }}>
           {label}
         </Text>
       </Animated.View>
@@ -244,7 +247,7 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel 
   const press = usePressMotion({ pressed: 0.94, hoverLift: -1 });
   const pop = usePop(selected, 1.07);
   return (
-    <Animated.View style={[press.style, pop]}>
+    <Animated.View style={[{ maxWidth: '100%' }, press.style, pop]}>
     <Pressable
       {...(onPress ? press.handlers : {})}
       accessibilityRole={onPress ? 'checkbox' : 'text'}
@@ -255,7 +258,7 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel 
       style={[styles.chip, { borderColor: selected ? active : t.isDark ? t.colors.border : 'transparent', backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : t.colors.surface }]}
     >
       {icon && <Icon name={icon} size={15} color={filled ? t.colors.primaryText : selected ? active : t.colors.textMuted} />}
-      {label ? <Text variant="small" weight="medium" color={filled ? t.colors.primaryText : selected ? active : t.colors.text}>{label}</Text> : null}
+      {label ? <Text variant="small" weight="medium" color={filled ? t.colors.primaryText : selected ? active : t.colors.text} style={{ flexShrink: 1 }}>{label}</Text> : null}
     </Pressable>
     </Animated.View>
   );
@@ -325,7 +328,7 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
     <Animated.View style={[{ gap: 6 }, shake]}>
       <Text variant="label">
         {label}
-        {optional ? <Text variant="small" muted>{'  '}(facultatif)</Text> : null}
+        {optional ? <Text variant="small" muted>{`  (${tr('common.optional')})`}</Text> : null}
       </Text>
       <View style={[styles.input, { borderColor: error ? t.colors.danger : t.colors.border, backgroundColor: t.colors.surface }]}>
         {/* Halo de focus : liseré de la couleur principale qui apparaît en fondu */}
@@ -337,7 +340,7 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
           accessibilityLabel={label}
           accessibilityHint={hint}
           maxFontSizeMultiplier={1.6}
-          style={[{ flex: 1, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, minHeight: MIN_TOUCH, paddingVertical: 10 }, style as StyleProp<TextStyle>]}
+          style={[{ flex: 1, minWidth: 0, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, minHeight: MIN_TOUCH, paddingVertical: 10 }, style as StyleProp<TextStyle>]}
           {...rest}
           secureTextEntry={secureTextEntry && !shown}
           onFocus={(e) => { setFocused(true); onFocus?.(e); }}
@@ -359,7 +362,7 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
       {error ? (
         <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }} accessibilityLiveRegion="polite">
           <Icon name="alert-circle" size={14} color={t.colors.danger} />
-          <Text variant="small" color={t.colors.danger}>{error}</Text>
+          <Text variant="small" color={t.colors.danger} style={{ flex: 1 }}>{error}</Text>
         </View>
       ) : hint ? (
         <Text variant="small" muted>{hint}</Text>
@@ -500,7 +503,7 @@ const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: 1 },
   shadow: { shadowColor: '#B4507A', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 0 },
   button: { borderRadius: radius.pill, borderWidth: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 10 },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, minHeight: 44, borderRadius: radius.pill, borderWidth: 1.2 },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 6, minHeight: 44, maxWidth: '100%', borderRadius: radius.pill, borderWidth: 1.2 },
   segmented: { flexDirection: 'row', borderRadius: radius.pill, padding: 4, gap: 4 },
   segment: { flex: 1, minHeight: 44, borderRadius: radius.pill, justifyContent: 'center', paddingHorizontal: 8 },
   input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1.5, borderRadius: radius.md, paddingHorizontal: spacing.md, gap: spacing.xs },

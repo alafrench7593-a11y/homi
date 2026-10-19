@@ -142,8 +142,8 @@ export default function FamilyCalendar() {
         <Text variant="small" weight="bold" style={{ width: 48 }}>{i.allDay ? 'Jour' : hm(i.starts)}</Text>
         <Icon name={ICON[i.source]} size={16} color={i.source === 'appointment' ? t.colors.heart : i.source === 'event' ? t.colors.primary : t.colors.lavender} />
         <View style={{ flex: 1 }}>
-          <Text weight="medium" numberOfLines={1} style={{ textDecorationLine: i.done ? 'line-through' : 'none' }}>{i.title}</Text>
-          <Text variant="caption" muted numberOfLines={1}>{[SOURCE_LABEL[i.source], i.private ? 'privé' : null, i.recurring ? 'répété' : null, i.who ? labelOf(i.who) : null, i.location, clashes.has(i.key) ? 'chevauche un autre créneau' : null].filter(Boolean).join(' · ')}</Text>
+          <Text weight="medium" style={{ textDecorationLine: i.done ? 'line-through' : 'none' }}>{i.title}</Text>
+          <Text variant="caption" muted>{[SOURCE_LABEL[i.source], i.private ? 'privé' : null, i.recurring ? 'répété' : null, i.who ? labelOf(i.who) : null, i.location, clashes.has(i.key) ? 'chevauche un autre créneau' : null].filter(Boolean).join(' · ')}</Text>
         </View>
       </Pressable>
       </Flash>

@@ -58,7 +58,7 @@ const OWNER_TABLES: Record<string, string> = {
   parent_sleep_logs: 'user_id',
   // Parcours fertilité : données intimes, strictement personnelles
   intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
-  cycle_preferences: 'user_id',
+  cycle_preferences: 'user_id', discharge_logs: 'user_id', bleeding_logs: 'user_id', cycle_journal: 'user_id',
   // Post-partum : strictement personnel ; seule la ligne de partage est lisible par le foyer (côté serveur)
   postpartum_settings: 'user_id', postpartum_checkins: 'user_id', trusted_contacts: 'user_id', postpartum_actions: 'user_id', postpartum_shared_status: 'user_id',
 };
@@ -602,6 +602,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
 
   // ---------------------------------------------------------------- fonctions backend simulées
   const rpcs: Record<string, (a: Row) => unknown> = {
+    // Effacer toutes ses données du cycle (le compte reste)
+    delete_my_cycle_data: () => {
+      const me = uid();
+      for (const t of ['period_entries', 'symptom_logs', 'discharge_logs', 'bleeding_logs', 'cycle_journal', 'fertility_observations', 'ovulation_tests', 'pregnancy_tests', 'intercourse_logs']) state.tables[t] = T(t).filter((r) => r.user_id !== me);
+      persist();
+      return null;
+    },
     create_household: (a) => {
       const id = uuid();
       T('households').push({ id, name: a.p_name || 'Ma famille', created_by: uid(), created_at: nowIso() });

@@ -51,7 +51,7 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width }: {
   }
 
   return (
-    <Animated.View style={[{ width, height: TOOL_CARD_HEIGHT }, press.style]}>
+    <Animated.View style={[{ width, minHeight: TOOL_CARD_HEIGHT }, press.style]}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={a11y}
@@ -76,12 +76,12 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width }: {
           {t.isDark ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: tint(t.colors.background, 0.38) }} /> : null}
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.sm, paddingTop: spacing.sm, paddingBottom: spacing.sm, gap: 8 }}>
             <ToolGlyph theme={tool.theme} icon={tool.icon} play={play} hovered={hovered} pressed={pressed} active={status?.active} disabled={tool.needsChild} urgent={tool.urgent} />
-            {/* zone de titre de hauteur fixe (2 lignes) : la carte ne « saute » pas quand le texte change */}
-            <View style={{ height: 40, justifyContent: 'center', alignSelf: 'stretch' }}>
-              <Text weight="bold" center numberOfLines={2} style={{ fontSize: 14.5, lineHeight: 19 }}>{tool.label}</Text>
+            {/* zone de titre d'au moins 2 lignes : la carte ne « saute » pas, et un libellé plus long agrandit la carte au lieu d'être coupé */}
+            <View style={{ minHeight: 40, justifyContent: 'center', alignSelf: 'stretch' }}>
+              <Text weight="bold" center style={{ fontSize: 14.5, lineHeight: 19 }}>{tool.label}</Text>
             </View>
-            <View style={{ height: 17, alignSelf: 'stretch', justifyContent: 'center' }}>
-              {line ? <Text variant="caption" center numberOfLines={1} color={status?.tone === 'accent' ? c : undefined} muted={status?.tone !== 'accent'}>{line}</Text> : null}
+            <View style={{ minHeight: 17, alignSelf: 'stretch', justifyContent: 'center' }}>
+              {line ? <Text variant="caption" center color={status?.tone === 'accent' ? c : undefined} muted={status?.tone !== 'accent'}>{line}</Text> : null}
             </View>
           </View>
         </GlassSurface>
@@ -132,7 +132,7 @@ export function ToolShortcut({ tool, status }: { tool: CatalogTool; status?: Too
         style={{ width: 84, alignItems: 'center', gap: 6, paddingVertical: 4 }}
       >
         <ToolGlyph theme={tool.theme} icon={tool.icon} size={52} play={play} pressed={pressed} hovered={hovered} active={status?.active} disabled={tool.needsChild} />
-        <Text variant="caption" weight="medium" center numberOfLines={2} style={{ color: t.colors.text, minHeight: 34 }}>{tool.label}</Text>
+        <Text variant="caption" weight="medium" center style={{ color: t.colors.text, minHeight: 34 }}>{tool.label}</Text>
       </Pressable>
     </Animated.View>
   );

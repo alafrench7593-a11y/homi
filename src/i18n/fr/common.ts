@@ -4,6 +4,7 @@ export const common = {
   'common.ok': 'OK',
   'common.add': 'Ajouter',
   'common.showPassword': 'Afficher le mot de passe',
+  'common.optional': 'facultatif',
   'common.hidePassword': 'Masquer le mot de passe',
   'common.cannotShow': 'Impossible d’afficher ces informations',
   'common.appLoading': '{app}, chargement',

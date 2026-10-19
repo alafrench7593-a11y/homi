@@ -100,7 +100,7 @@ export default function Home() {
           {isLocked(article, premium) && <Icon name="lock" size={14} color={t.colors.gold} />}
         </Row>
         <Text variant="heading" style={{ marginTop: 4 }}>{article.title}</Text>
-        <Text variant="small" muted numberOfLines={2}>{article.summary}</Text>
+        <Text variant="small" muted numberOfLines={2} intentionalTruncation>{article.summary}</Text>
       </Card>
     ) : null,
     assistant: (
@@ -127,7 +127,7 @@ export default function Home() {
         {/* Ligne du haut : date à gauche ; aide, notifications, Réglages et Profil à droite. Salutation pleine largeur dessous. */}
         <View style={{ gap: 2, marginTop: spacing.xs }}>
           <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text variant="small" muted weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>{formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase())}</Text>
+            <Text variant="small" muted weight="bold" style={{ flexShrink: 1 }}>{formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase())}</Text>
             <Row gap={0}>
               <IconButton icon="life-buoy" label={tr('home.helpA11y')} color={t.colors.heart} onPress={() => router.push('/emergency')} />
               <View>

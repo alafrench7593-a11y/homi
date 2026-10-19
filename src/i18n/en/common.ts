@@ -6,6 +6,7 @@ export const common: Messages<typeof fr> = {
   'common.ok': 'OK',
   'common.add': 'Add',
   'common.showPassword': 'Show password',
+  'common.optional': 'optional',
   'common.hidePassword': 'Hide password',
   'common.cannotShow': 'We couldn’t load this',
   'common.appLoading': '{app} is loading',

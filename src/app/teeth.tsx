@@ -100,7 +100,7 @@ export default function Teeth() {
                   <Icon name="check-circle" size={18} color={t.colors.primary} />
                   <View style={{ flex: 1 }}>
                     <Text>{m.title}</Text>
-                    {m.note ? <Text variant="caption" muted numberOfLines={1}>{m.note}</Text> : null}
+                    {m.note ? <Text variant="caption" muted>{m.note}</Text> : null}
                   </View>
                   {m.happened_on ? <Text variant="caption" muted>{new Date(m.happened_on).toLocaleDateString('fr-FR')}</Text> : null}
                 </Pressable>

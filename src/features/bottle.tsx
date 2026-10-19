@@ -100,7 +100,7 @@ export function BottleTimerCard({ child }: { child: Child }) {
         <View style={{ flex: 1, gap: 2 }}>
           <Text weight="medium">Minuteur biberon · {child.first_name}</Text>
           <Text variant="heading">{rem > 0 ? `dans ${formatRemaining(rem)}` : `prévu il y a ${formatHM(rem)}`}</Text>
-          <Text variant="small" muted numberOfLines={2}>{timerSentence({ childName: child.first_name, timer: active, now })}</Text>
+          <Text variant="small" muted>{timerSentence({ childName: child.first_name, timer: active, now })}</Text>
         </View>
         <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
       </Row>

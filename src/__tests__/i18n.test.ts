@@ -14,6 +14,10 @@ export const MIGRATED = [
   'src/app/auth/sign-in.tsx', 'src/app/auth/sign-up.tsx', 'src/app/auth/forgot.tsx', 'src/app/auth/reset.tsx', 'src/app/auth/callback.tsx', 'src/features/auth.tsx',
   'src/app/onboarding.tsx', 'src/app/journeys.tsx', 'src/app/(tabs)/index.tsx', 'src/app/(tabs)/_layout.tsx', 'src/components/Dock.tsx', 'src/app/(tabs)/profile.tsx', 'src/components/AccountActions.tsx',
   'src/app/documents/index.tsx', 'src/app/documents/scan.tsx', 'src/app/documents/[id].tsx', 'src/app/documents/book.tsx', 'src/app/documents/export.tsx', 'src/features/documents.tsx',
+  'src/app/cycle/index.tsx', 'src/app/cycle/calendar.tsx', 'src/app/cycle/symptoms.tsx', 'src/app/cycle/bleeding.tsx', 'src/app/cycle/journal.tsx', 'src/app/cycle/stats.tsx',
+  'src/app/cycle/export.tsx', 'src/app/cycle/privacy.tsx', 'src/app/cycle/discharge/index.tsx', 'src/app/cycle/discharge/[id].tsx', 'src/app/cycle/guides/index.tsx',
+  'src/app/cycle/guides/[slug].tsx', 'src/features/cycle/kit.tsx', 'src/features/cycle/GuideArt.tsx', 'src/features/cycle/report.ts', 'src/features/cycle/discharge.ts',
+  'src/app/cycle/home-card.tsx', 'src/features/cycle/HomeCycleCard.tsx', 'src/features/cycle/homeCard.ts',
 ];
 
 const forms = (m: Msg) => (typeof m === 'string' ? [m] : Object.values(m).filter((x): x is string => typeof x === 'string'));

@@ -28,6 +28,10 @@ interface UiState {
   /** Raccourcis choisis (null = automatiques selon le parcours). */
   quickShortcuts: string[] | null;
   setQuickShortcuts: (keys: string[] | null) => void;
+  /** Carte « Mon cycle » de l'accueil : éléments affichés (dans l'ordre) et raccourcis (null = par défaut). */
+  cycleCardItems: string[] | null;
+  cycleCardShortcuts: string[] | null;
+  setCycleCard: (p: { items?: string[] | null; shortcuts?: string[] | null }) => void;
   /** Outils favoris (identifiants stables du catalogue), dans l'ordre choisi. */
   toolFavorites: string[];
   setToolFavorites: (ids: string[]) => void;
@@ -70,6 +74,12 @@ export const useUiStore = create<UiState>()(
       setHomeLayout: (homeOrder, homeHidden) => set({ homeOrder, homeHidden }),
       quickShortcuts: null,
       setQuickShortcuts: (quickShortcuts) => set({ quickShortcuts }),
+      cycleCardItems: null,
+      cycleCardShortcuts: null,
+      setCycleCard: (p) => set((st) => ({
+        cycleCardItems: p.items === undefined ? st.cycleCardItems : p.items,
+        cycleCardShortcuts: p.shortcuts === undefined ? st.cycleCardShortcuts : p.shortcuts,
+      })),
       toolFavorites: [],
       setToolFavorites: (toolFavorites) => set({ toolFavorites }),
       toolFilter: 'all',

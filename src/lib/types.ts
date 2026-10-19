@@ -84,7 +84,7 @@ export const LOG_TIME_COL: Record<LogKind, string> = {
 
 export interface MaternalWeight { id: string; user_id: string; pregnancy_id: string | null; measured_on: string; weight_kg: number; note: string | null; professional_note: string | null }
 export interface MoodCheckin { id: string; user_id: string; checked_at: string; mood: 1 | 2 | 3 | 4 | 5; feelings: string[]; safety_concern: boolean; journal: string | null }
-export interface PeriodEntry { id: string; user_id: string; start_date: string; end_date: string | null; flow: 'light' | 'medium' | 'heavy' | null; note: string | null }
+export interface PeriodEntry { id: string; user_id: string; start_date: string; end_date: string | null; flow: 'spotting' | 'light' | 'medium' | 'heavy' | 'very_heavy' | null; note: string | null }
 export interface TestResult { id: string; user_id: string; tested_at: string; result: string; note: string | null }
 
 export type AppointmentKind = 'consultation' | 'ultrasound' | 'exam' | 'blood_test' | 'pediatric' | 'postnatal' | 'vaccination' | 'perineal_rehab' | 'other';

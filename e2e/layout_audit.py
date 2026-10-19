@@ -1,0 +1,114 @@
+"""
+Audit automatique de mise en page sur TOUTES les pages : débordements horizontaux, textes coupés, boutons dont le libellé
+sort, éléments hors de l'écran. Version web de démonstration :
+  npx expo export --platform web --clear && python3 e2e/spa_server.py dist 8822 &
+  python3 e2e/layout_audit.py [--quick]
+Configurations : 320×568 et 390×844, français et anglais, thème clair ; 390×844 sombre (+ mouvement réduit).
+Le rapport JSON liste chaque problème (page, configuration, type, texte). Un rapport vide = aucun problème détecté.
+
+Limites (dites dans le rapport final) : le web ne reproduit ni l'agrandissement de la police du système (iOS/Android),
+ni le clavier logiciel ; la troncature volontaire (« … » avec accès au contenu complet) est signalée à part.
+"""
+import json, os, sys
+from playwright.sync_api import sync_playwright
+
+B = os.environ.get('NAV_URL', 'http://127.0.0.1:8822')
+QUICK = '--quick' in sys.argv
+ROUTES = ['/', '/track', '/tools', '/community', '/ask', '/profile', '/me', '/me/mood', '/me/sleep', '/cycle', '/fertility', '/fertility/body',
+          '/fertility/calendar', '/fertility/compatible', '/fertility/consultation', '/fertility/exams', '/fertility/history', '/fertility/intimacy',
+          '/fertility/log', '/fertility/mucus', '/fertility/reminders', '/fertility/understand', '/contraception', '/contraception/consultation',
+          '/contraception/emergency', '/contraception/history', '/contraception/log', '/contraception/methods', '/contraception/reminders',
+          '/documents', '/documents/scan', '/documents/book', '/documents/export', '/calendar', '/journal', '/journeys', '/library', '/lists',
+          '/names', '/notifications', '/emergency', '/family', '/family/nights', '/family/me-time', '/family/routines', '/family/review',
+          '/family/history', '/family/difficult', '/family/urgent', '/postpartum', '/postpartum/checkin', '/postpartum/history', '/postpartum/support',
+          '/postpartum/understand', '/postpartum/sharing', '/postpartum/partner', '/pregnancy', '/pregnancy/weight', '/scanner', '/scanner/food',
+          '/scanner/product', '/scanner/history', '/scanner/avoid', '/scanner/compare', '/settings', '/settings/account', '/settings/family',
+          '/settings/home', '/settings/language', '/settings/privacy', '/settings/reminders', '/settings/subscription', '/settings/sync',
+          '/teeth', '/bottle', '/bottle/history', '/assistant/chat', '/community/new', '/community/profile', '/community/saved', '/profiles/new', '/night',
+          '/cycle?all=1', '/cycle/calendar', '/cycle/symptoms', '/cycle/discharge', '/cycle/discharge/new', '/cycle/guides', '/cycle/guides/clear-fluid',
+          '/cycle/guides/itching', '/cycle/bleeding', '/cycle/journal', '/cycle/stats', '/cycle/export', '/cycle/privacy', '/cycle/home-card']
+PUBLIC = ['/welcome', '/intro', '/auth/sign-in', '/auth/sign-up', '/auth/forgot']
+
+# Détecteur exécuté dans la page : ne regarde que les éléments réellement visibles de l'écran actif
+DETECT = r"""() => {
+  const W = window.innerWidth, out = [];
+  const visible = (el) => {
+    const r = el.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1) return false;
+    for (let e = el; e; e = e.parentElement) {
+      const cs = getComputedStyle(e);
+      if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0' || e.getAttribute('aria-hidden') === 'true') return false;
+      if (cs.pointerEvents === 'none' && e.getAttribute('data-testid') === 'inactive') return false;
+    }
+    return true;
+  };
+  // conteneurs défilant horizontalement (listes de puces, carrousels) : un élément peut légitimement en dépasser
+  const inHScroll = (el) => { for (let e = el.parentElement; e; e = e.parentElement) { const cs = getComputedStyle(e); if ((cs.overflowX === 'auto' || cs.overflowX === 'scroll') && e.scrollWidth > e.clientWidth + 1) return true; } return false; };
+  const label = (el) => (el.innerText || el.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+  if (document.documentElement.scrollWidth > W + 1) out.push({ kind: 'page_horizontal_scroll', text: String(document.documentElement.scrollWidth) });
+  // 1. Texte coupé : contenu plus large/haut que sa boîte sans défilement, ou troncature
+  for (const el of document.querySelectorAll('div[dir="auto"], span[dir="auto"]')) {
+    if (!visible(el) || !el.innerText.trim()) continue;
+    const cs = getComputedStyle(el);
+    const clamp = cs.webkitLineClamp && cs.webkitLineClamp !== 'none';
+    const ellipsis = cs.textOverflow === 'ellipsis';
+    if ((clamp || ellipsis) && (el.scrollHeight > el.clientHeight + 2 || el.scrollWidth > el.clientWidth + 2)) { out.push({ kind: el.closest('[data-truncate="intentional"]') ? 'intentional_truncation' : 'truncated', text: label(el) }); continue; }
+    if (el.scrollWidth > el.clientWidth + 2 && cs.overflowX !== 'auto' && cs.overflowX !== 'scroll') out.push({ kind: 'text_overflow_x', text: label(el) });
+    const r = el.getBoundingClientRect();
+    if (!inHScroll(el) && (r.right > W + 1 || r.left < -1)) out.push({ kind: 'text_off_screen', text: label(el), x: Math.round(r.left), r: Math.round(r.right) });
+  }
+  // 2. Boutons : le libellé doit rester dans le bouton
+  for (const b of document.querySelectorAll('[role="button"], button, [role="tab"]')) {
+    if (!visible(b)) continue;
+    const br = b.getBoundingClientRect();
+    if (!inHScroll(b) && (br.right > W + 1 || br.left < -1)) out.push({ kind: 'button_off_screen', text: label(b), x: Math.round(br.left), r: Math.round(br.right) });
+    for (const t of b.querySelectorAll('div[dir="auto"]')) {
+      if (!visible(t)) continue;
+      const tr = t.getBoundingClientRect();
+      if (tr.right > br.right + 2 || tr.left < br.left - 2 || tr.bottom > br.bottom + 2 || tr.top < br.top - 2) { out.push({ kind: 'button_label_outside', text: label(t) }); break; }
+    }
+  }
+  // dédoublonnage
+  const seen = new Set();
+  return out.filter((o) => { const k = o.kind + o.text; if (seen.has(k)) return false; seen.add(k); return true; });
+}"""
+
+CONFIGS = [
+    {'name': '320-fr', 'vp': (320, 568), 'locale': 'fr-FR', 'scheme': 'light'},
+    {'name': '390-en', 'vp': (390, 844), 'locale': 'en-GB', 'scheme': 'light'},
+    {'name': '390-fr-sombre', 'vp': (390, 844), 'locale': 'fr-FR', 'scheme': 'dark'},
+    {'name': '320-en', 'vp': (320, 568), 'locale': 'en-GB', 'scheme': 'light'},
+]
+if QUICK:
+    CONFIGS = CONFIGS[:1]
+
+report, errors = {}, []
+with sync_playwright() as p:
+    b = p.chromium.launch()
+    for cfg in CONFIGS:
+        ctx = b.new_context(viewport={'width': cfg['vp'][0], 'height': cfg['vp'][1]}, locale=cfg['locale'], color_scheme=cfg['scheme'], reduced_motion='reduce')
+        pg = ctx.new_page()
+        pg.on('pageerror', lambda e, c=cfg['name']: errors.append(f"{c} {str(e)[:160]}"))
+        # Pages publiques (avant connexion)
+        for r in PUBLIC:
+            pg.goto(B + r); pg.wait_for_timeout(1800)
+            found = pg.evaluate(DETECT)
+            if found: report.setdefault(r, {})[cfg['name']] = found
+        pg.goto(B + '/welcome'); pg.wait_for_timeout(2000)
+        pg.get_by_text('Découvrir sans compte' if cfg['locale'].startswith('fr') else 'Try it without an account').first.click(); pg.wait_for_timeout(4000)
+        for r in ROUTES:
+            pg.goto(B + r); pg.wait_for_timeout(1700)
+            try:
+                pg.mouse.wheel(0, 2000); pg.wait_for_timeout(300)  # contenu du bas aussi rendu
+                found = pg.evaluate(DETECT)
+            except Exception as e:  # noqa: BLE001
+                found = [{'kind': 'audit_error', 'text': str(e)[:120]}]
+            if found: report.setdefault(r, {})[cfg['name']] = found
+        ctx.close()
+    b.close()
+
+summary = {}
+for r, cfgs in report.items():
+    for c, items in cfgs.items():
+        for it in items: summary[it['kind']] = summary.get(it['kind'], 0) + 1
+print(json.dumps({'pages': len(ROUTES) + len(PUBLIC), 'configurations': [c['name'] for c in CONFIGS], 'totaux': summary, 'problemes': report, 'erreurs': errors}, ensure_ascii=False, indent=1))

@@ -70,8 +70,8 @@ export function ProfileSwitcher() {
           ))}
         </View>
         <View style={{ flex: 1 }}>
-          <Text weight="bold" numberOfLines={1}>{current.label}</Text>
-          <Text variant="caption" muted numberOfLines={1}>{current.sub}</Text>
+          <Text weight="bold">{current.label}</Text>
+          <Text variant="caption" muted>{current.sub}</Text>
         </View>
         <Icon name="chevron-down" size={18} color={t.colors.textMuted} />
       </Pressable>

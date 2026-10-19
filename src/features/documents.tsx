@@ -41,10 +41,10 @@ export function DocCard({ doc, children, onPress, selected, selecting }: { doc: 
         </View>
         <View style={{ flex: 1, gap: 2 }}>
           <Row gap={6} style={{ alignItems: 'center' }}>
-            <Text weight="bold" numberOfLines={2} style={{ flexShrink: 1 }}>{doc.title}</Text>
+            <Text weight="bold" style={{ flexShrink: 1 }}>{doc.title}</Text>
             {doc.favorite ? <Icon name="star" size={14} color={t.colors.gold} /> : null}
           </Row>
-          <Text variant="caption" muted numberOfLines={1}>{[cat, date, who].join(' · ')}</Text>
+          <Text variant="caption" muted>{[cat, date, who].join(' · ')}</Text>
           <Row gap={6} wrap style={{ marginTop: 4 }}>
             <Badge icon={doc.private_to_uploader ? 'lock' : 'users'} label={doc.private_to_uploader ? tr('docs.private') : tr('docs.shared')} />
             {doc.page_count > 1 ? <Badge icon="layers" label={tr('docs.pages', { count: doc.page_count })} /> : null}
