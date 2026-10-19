@@ -11,7 +11,7 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
   const hid = T('household_members').find((m) => m.user_id === userId)?.household_id ?? createHousehold({ p_name: 'Notre famille' });
 
   const profile = T('profiles').find((p) => p.id === userId);
-  if (profile) Object.assign(profile, { display_name: profile.display_name ?? 'Camille', journeys: ['pregnant', 'child', 'family'], onboarding_completed: true });
+  if (profile) Object.assign(profile, { display_name: profile.display_name ?? 'Camille', onboarding_completed: true });
 
   const pid = uuid();
   T('pregnancies').push({ id: pid, household_id: hid, carrier_user_id: userId, due_date: addDays(today, 105), lmp_date: null, due_date_source: 'professional', multiplicity: 'twins', status: 'active', reminders_wanted: [], topics: [], created_at: iso(2000) });
@@ -26,6 +26,14 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
     { id: lina, household_id: hid, first_name: 'Lina', birth_date: addDays(today, -400), sex: 'female', photo_path: null, from_pregnancy_id: null, multiple_group: null, enabled_tracking: ['bottle', 'diaper', 'sleep', 'meal', 'growth'], allergies_declared: [], habits: null, archived: false, created_at: iso(5000) },
     { id: noe, household_id: hid, first_name: 'Noé', birth_date: addDays(today, -2200), sex: null, photo_path: null, from_pregnancy_id: null, multiple_group: null, enabled_tracking: ['sleep', 'meal', 'growth'], allergies_declared: ['arachide'], habits: null, archived: false, created_at: iso(5000) },
   );
+  // Parcours de Camille : grossesse de jumeaux en cours + Lina (bébé) + Noé (enfant) ; profiles.journeys en découle
+  if (!T('user_journeys').some((j) => j.user_id === userId && j.status === 'active')) {
+    const j = (r: Row) => T('user_journeys').push({ id: uuid(), user_id: userId, status: 'active', ended_on: null, end_reason: null, pregnancy_id: null, child_id: null, household_id: hid, created_at: iso(10), ...r });
+    j({ type: 'pregnancy', pregnancy_id: pid, started_on: addDays(today, -182) });
+    j({ type: 'baby', child_id: lina, started_on: addDays(today, -400) });
+    j({ type: 'child', child_id: noe, started_on: addDays(today, -2200) });
+  }
+  if (profile) profile.journeys = ['pregnant', 'newborn', 'child', 'family'];
   const log = (table: string, r: Row) => T(table).push({ id: uuid(), household_id: hid, created_by: userId, created_at: new Date().toISOString(), note: null, ...r });
   const lastBottle = uuid();
   T('bottles').push({ id: lastBottle, household_id: hid, created_by: userId, created_at: iso(3), note: null, child_id: lina, at: iso(3), prepared_ml: 210, consumed_ml: 180, planned_next_ml: 210, milk_type: 'Lait 2e âge' });

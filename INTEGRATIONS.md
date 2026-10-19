@@ -192,6 +192,12 @@ Sources consultées le 19/10/2026 : Service-Public (contraception d'urgence, vé
 **Notifications** : les rappels du cycle sont neutres par défaut (« Petit rappel ») ; le texte détaillé n'est utilisé que si la personne active « Notifications détaillées ». Aucun conseil n'est envoyé en notification.
 Coût externe : **aucun**.
 
+## 12 quater. Prénoms, repas et récupération (nouveau, 19 octobre 2026)
+- **Prénoms** : INSEE, *Fichier des prénoms* (état civil, France, 1900–2021), **Licence Ouverte / Etalab**, obtenu via le paquet R « prenoms » (ThinkR, licence MIT, données INSEE) sur raw.githubusercontent.com — insee.fr et data.gouv.fr n'étaient pas joignables depuis l'environnement de développement. Fichier `src/content/firstnames.json` : prénoms donnés au moins 50 fois depuis 1990 ; « mixte » = aucun sexe au-dessus de 90 % ; fréquence = naissances 2012–2021 (« naissances récentes »). Aucun site de prénoms n'est aspiré. **Origines et significations** : seulement la liste éditoriale existante (table `baby_names`) — aucune source ouverte fiable n'a pu être consultée (Wikidata non joignable) : elles ne sont donc pas inventées pour les autres prénoms.
+- **Repas** : Santé.fr (listériose, 25/04/2025 ; toxoplasmose, 13/02/2025), Santé publique France « Pas à pas, votre enfant mange comme un grand » (mangerbouger.fr). Idées générales, sans calcul de portions.
+- **Récupération post-partum** : HAS (ANAES), *Rééducation dans le cadre du post-partum* (synthèse, 2002) ; signes d'alerte AWHONN déjà utilisés.
+Coût externe : **aucun** ; rien n'est envoyé à un service externe.
+
 ## 13. Recommandations de produits
 📚 **Étudiée, non intégrée.** Il n'existe pas de catalogue ouvert et vérifiable pour l'équipement, les jouets et les livres : les sources trouvées sont commerciales ou d'affiliation. Aucune recommandation inventée n'est affichée.
 - Sources utilisables plus tard, sous conditions : Open Food Facts et Open Beauty Facts pour les produits notés, avec les allergies déclarées, sans utiliser de donnée médicale pour de la publicité ; une sélection éditoriale clairement signalée.

@@ -11,6 +11,8 @@ ni le clavier logiciel ; la troncature volontaire (« … » avec accès au cont
 """
 import json, os, sys
 from playwright.sync_api import sync_playwright
+sys.path.insert(0, os.path.dirname(__file__))
+from journey_seed import ensure  # noqa: E402
 
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8822')
 QUICK = '--quick' in sys.argv
@@ -24,7 +26,8 @@ ROUTES = ['/', '/track', '/tools', '/community', '/ask', '/profile', '/me', '/me
           '/postpartum/understand', '/postpartum/sharing', '/postpartum/partner', '/pregnancy', '/pregnancy/weight', '/scanner', '/scanner/food',
           '/scanner/product', '/scanner/history', '/scanner/avoid', '/scanner/compare', '/settings', '/settings/account', '/settings/family',
           '/settings/home', '/settings/language', '/settings/privacy', '/settings/reminders', '/settings/subscription', '/settings/sync',
-          '/teeth', '/bottle', '/bottle/history', '/assistant/chat', '/community/new', '/community/profile', '/community/saved', '/profiles/new', '/night',
+          '/teeth', '/bottle', '/bottle/history', '/meals', '/pregnancy/start', '/pregnancy/end', '/postpartum/recovery', '/journeys/blocked',
+          '/child/:noe?tab=besoins', '/child/:noe/needs', '/child/:noe/needs?tab=treatments', '/child/:noe/needs?tab=follow', '/child/:noe/school', '/journeys/:arch', '/assistant/chat', '/community/new', '/community/profile', '/community/saved', '/profiles/new', '/night',
           '/cycle?all=1', '/cycle/calendar', '/cycle/symptoms', '/cycle/discharge', '/cycle/discharge/new', '/cycle/guides', '/cycle/guides/clear-fluid',
           '/cycle/guides/itching', '/cycle/bleeding', '/cycle/journal', '/cycle/stats', '/cycle/export', '/cycle/privacy', '/cycle/home-card',
           '/cycle/intimacy', '/cycle/pain', '/cycle/advice', '/cycle/risk', '/cycle/professional?reason=sex_risk',
@@ -111,10 +114,17 @@ with sync_playwright() as p:
         pg.goto(B + '/welcome'); pg.wait_for_timeout(2000)
         pg.get_by_text('Découvrir sans compte' if cfg['locale'].startswith('fr') else 'Try it without an account').first.click(); pg.wait_for_timeout(4000)
         seeded = False
+        jstate = {}
         for r in ROUTES:
+            ensure(pg, r, jstate)  # parcours voulu pour les écrans propres à un parcours (garde d'accès)
             if not seeded and (r.startswith('/cycle/') or r == '/cycle?all=1'):
                 pg.evaluate(SEED); seeded = True  # données du cycle seulement pour les derniers écrans (les autres gardent la démo)
-            pg.goto(B + r); pg.wait_for_timeout(1700)
+            if ':noe' in r or ':arch' in r:
+                ids = pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); return [s.tables.children.find(c => c.first_name === 'Noé')?.id, (s.tables.user_journeys || []).find(j => j.status === 'archived')?.id || (s.tables.user_journeys || [])[0]?.id]; }")
+                r_go = r.replace(':noe', ids[0] or 'x').replace(':arch', ids[1] or 'x')
+            else:
+                r_go = r
+            pg.goto(B + r_go); pg.wait_for_timeout(1700)
             try:
                 pg.mouse.wheel(0, 2000); pg.wait_for_timeout(300)  # contenu du bas aussi rendu
                 found = pg.evaluate(DETECT)

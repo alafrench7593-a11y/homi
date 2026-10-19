@@ -9,7 +9,8 @@ import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, EmptyStateCard, haptic, Icon, type IconName, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui-extra';
 import { Timeline, KIND_META, type LogItem } from '@/features/tracking';
 import { DayRibbon, SleepNights } from '@/features/motionViz';
-import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePregnancies, usePremium, useProfile } from '@/lib/data/hooks';
+import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePregnancies, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useScope } from '@/lib/data/hooks-scope';
 import { lastDaysSeries } from '@/lib/domain/daily';
 import type { Bottle, Breastfeed, Diaper, LogKind, Meal, Observation, Pumping, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -153,13 +154,16 @@ function PregnancyTracking() {
 }
 
 export default function Track() {
+  // Profil affiché : un enfant né (bébé ou enfant), la grossesse, le post-partum, la famille ou moi — jamais mélangés
+  const scope = useScope();
   const { subject } = useActiveSubject();
   const pregnancy = useActivePregnancy();
-  const childrenQ = useChildren();
+  const childrenQ = useTrackedChildren();
   const pregnanciesQ = usePregnancies();
   const children = childrenQ.data;
   const loading = (childrenQ.isLoading && !children) || (pregnanciesQ.isLoading && !pregnanciesQ.data);
   const failed = childrenQ.isError && !children ? childrenQ : pregnanciesQ.isError && !pregnanciesQ.data ? pregnanciesQ : null;
+  const cycle = scope.scope === 'avoid' || scope.scope === 'ttc' || scope.scope === 'cycle';
   return (
     <View style={{ flex: 1 }}>
       <Screen account title={tr('screen.track.title')} bottomInset={96}>
@@ -167,30 +171,38 @@ export default function Track() {
         {loading ? <Skeleton kind="card" rows={2} /> : failed ? (
           <ErrorView error={failed.error} onRetry={() => { void childrenQ.refetch(); void pregnanciesQ.refetch(); }} />
         ) : null}
-        {subject.type === 'child' && <ChildTracking childId={subject.id} />}
-        {subject.type === 'pregnancy' && <PregnancyTracking />}
+        {scope.childId && <ChildTracking childId={scope.childId} />}
+        {scope.scope === 'pregnancy' && <PregnancyTracking />}
+        {scope.scope === 'postpartum' && (
+          <Card>
+            <ListRow icon="edit-3" title={tr('tool.pp_checkin')} onPress={() => router.push('/postpartum/checkin')} />
+            <ListRow icon="feather" title={tr('tool.pp_body')} onPress={() => router.push('/postpartum/recovery')} />
+            <ListRow icon="smile" title={tr('tool.mood')} onPress={() => router.push('/me/mood')} />
+            <ListRow icon="cloud" title={tr('tool.sleep')} onPress={() => router.push('/me/sleep')} />
+            {scope.babyId ? <ListRow icon="droplet" title={tr('tool.pp_feeding')} onPress={() => router.push(`/track/breastfeed?child=${scope.babyId}`)} /> : null}
+          </Card>
+        )}
         {subject.type === 'family' && (
           <View style={{ gap: spacing.md }}>
             {pregnancy && <PregnancyTracking />}
             {(children ?? []).map((c) => (
-              <Card key={c.id} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: c.id } })}>
-                <Row><Text weight="bold" style={{ flex: 1 }}>{c.first_name}</Text><Text variant="small" muted>Sélectionnez son profil pour le détail</Text></Row>
+              <Card key={c.id} onPress={() => router.push(`/child/${c.id}`)}>
+                <Row><Text weight="bold" style={{ flex: 1 }}>{c.first_name}</Text><Text variant="small" muted>{tr('pj.track.pick')}</Text></Row>
               </Card>
             ))}
           </View>
         )}
-        {subject.type === 'me' && (
+        {(cycle || scope.scope === 'none') && subject.type !== 'family' && (
           <Card>
             <ListRow icon="heart" title="Comment je me sens" subtitle="Bilan émotionnel et journal privé" onPress={() => router.push('/me/mood')} />
-            <ListRow icon="circle" title="Mon cycle" subtitle="Règles, symptômes, tests" onPress={() => router.push('/cycle')} />
-            <ListRow icon="calendar" title="Mes rendez-vous" subtitle="Postnatal, rééducation, suivi" onPress={() => router.push('/appointments')} />
-            {pregnancy && <ListRow icon="trending-up" title="Mon poids" onPress={() => router.push('/pregnancy/weight')} />}
+            {cycle ? <ListRow icon="circle" title="Mon cycle" subtitle="Règles, symptômes, tests" onPress={() => router.push(scope.scope === 'ttc' ? '/fertility' : '/cycle')} /> : null}
+            <ListRow icon="calendar" title="Mes rendez-vous" onPress={() => router.push('/appointments')} />
           </Card>
         )}
-        {!loading && !failed && !pregnancy && !children?.length && (
-          <EmptyStateCard illustration="leaf" title="Rien à suivre pour l’instant" text="Ajoutez une grossesse ou le profil d’un enfant pour commencer." action={<Button label="Ajouter un profil" icon="plus" onPress={() => router.push('/profiles/new')} />} />
+        {!loading && !failed && !pregnancy && !children?.length && !cycle && scope.scope !== 'postpartum' && (
+          <EmptyStateCard illustration="leaf" title="Rien à suivre pour l’instant" text={tr('pj.none.body')} action={<Button label={tr('pj.editJourney')} icon="compass" onPress={() => router.push('/journeys')} />} />
         )}
-        {subject.type === 'child' && <Banner tone="info">{'Cette application ne remplace pas le carnet de santé officiel de votre enfant.'}</Banner>}
+        {scope.childId && <Banner tone="info">{'Cette application ne remplace pas le carnet de santé officiel de votre enfant.'}</Banner>}
       </Screen>
     </View>
   );

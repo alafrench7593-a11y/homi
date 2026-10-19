@@ -5,8 +5,10 @@ Version web de démonstration (sans compte), servie par spa_server.py :
   python3 e2e/navigation.py
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
 """
-import json, os, re
+import json, os, re, sys
 from playwright.sync_api import sync_playwright
+sys.path.insert(0, os.path.dirname(__file__))
+from journey_seed import ensure  # noqa: E402
 
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8822')
 SHOTS = os.environ.get('E2E_SHOTS', '/tmp/toietmoi-e2e')
@@ -65,7 +67,9 @@ with sync_playwright() as p:
         R[f'3_reglage_{sub.split("/")[-1]}'] = 'introuvable' not in pg.inner_text('body').lower()
 
     # 5. En-tête sur les écrans principaux
+    seed = {}
     for path in ['/', '/track', '/tools', '/community', '/ask', '/cycle', '/calendar', '/fertility', '/contraception']:
+        ensure(pg, path, seed)  # écrans de cycle : ouverts avec le parcours correspondant (garde d'accès)
         pg.goto(B + path); pg.wait_for_timeout(1800)
         R[f'5_entete_{path.strip("/") or "accueil"}'] = header_ok(pg)
     # Écrans détaillés : bouton Retour, sans en-tête de compte imposé

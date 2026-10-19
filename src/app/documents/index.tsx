@@ -5,7 +5,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { PremiumGate } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
@@ -35,7 +35,9 @@ export default function DocumentsHome() {
   const pregnancy = useActivePregnancy();
   const { data: limit } = usePlanLimit('documents_count');
   const [query, setQuery] = useState('');
-  const [subject, setSubject] = useState<Subject | null>(null);
+  // Ouvert depuis un profil (enfant, grossesse) : ses documents d'abord ; « Tout le monde » reste à un geste
+  const qp = useLocalSearchParams<{ child?: string; for?: string }>();
+  const [subject, setSubject] = useState<Subject | null>(() => (qp.child ? { kind: 'child', id: qp.child } : qp.for === 'pregnancy' && pregnancy ? { kind: 'pregnancy', id: pregnancy.id } : null));
   const [group, setGroup] = useState<DocGroup | null>(null);
   const [flag, setFlag] = useState<Flag | null>(null);
   const [importOpen, setImportOpen] = useState(false);

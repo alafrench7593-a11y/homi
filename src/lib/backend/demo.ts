@@ -6,6 +6,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import content from '@/content/demo-content.json';
+import { legacyJourneys, type JourneyRow } from '../journeys/model';
 import { uuid } from '../uuid';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
 import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../../../supabase/functions/_shared/safety';
@@ -34,7 +35,7 @@ const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_r
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
 const DEMO_RECALL_CHECK = 'Mode démonstration : la base officielle RappelConso n’est pas interrogée ; seuls des rappels fictifs de démonstration peuvent apparaître.';
-const CHILD_TABLES = ['child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations'];
+const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations'];
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
 function checkBottleTimer(all: Row[], r: Row) {
@@ -59,6 +60,8 @@ const OWNER_TABLES: Record<string, string> = {
   // Parcours fertilité : données intimes, strictement personnelles
   intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
   cycle_preferences: 'user_id', discharge_logs: 'user_id', bleeding_logs: 'user_id', cycle_journal: 'user_id',
+  // Parcours : gérés par la personne (le foyer ne les modifie jamais)
+  user_journeys: 'user_id',
   // Post-partum : strictement personnel ; seule la ligne de partage est lisible par le foyer (côté serveur)
   postpartum_settings: 'user_id', postpartum_checkins: 'user_id', trusted_contacts: 'user_id', postpartum_actions: 'user_id', postpartum_shared_status: 'user_id',
 };
@@ -328,6 +331,18 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       r.household_id = child.household_id;
       if (r.created_by == null) r.created_by = me;
     }
+    // Valeurs par défaut de la table children (comme en SQL) : sinon un profil créé n'apparaîtrait pas (filtre archived = false)
+    if (table === 'children') {
+      r.archived ??= false; r.allergies_declared ??= []; r.photo_path ??= null; r.habits ??= null;
+      r.enabled_tracking ??= ['breastfeed', 'bottle', 'diaper', 'sleep', 'meal', 'growth'];
+    }
+    // Miroir du déclencheur reminders_journey_type : chaque rappel appartient à un parcours
+    if (table === 'reminders' && r.journey_type == null) {
+      const link = String(r.deep_link ?? '');
+      const body = T('user_journeys').find((j) => j.user_id === r.user_id && j.status === 'active' && ['avoid', 'ttc', 'cycle'].includes(j.type as string));
+      r.journey_type = r.pregnancy_id || link.startsWith('/pregnancy') ? 'pregnancy' : link.startsWith('/fertility') ? 'ttc' : link.startsWith('/contraception') ? 'avoid'
+        : link.startsWith('/cycle') ? (body?.type ?? 'cycle') : link.startsWith('/postpartum') ? 'postpartum' : r.child_id && (link.startsWith('/bottle') || link.startsWith('/track')) ? 'baby' : null;
+    }
     if (table === 'expected_babies') r.household_id = T('pregnancies').find((p) => p.id === r.pregnancy_id)?.household_id;
     if (table === 'checklist_items') r.household_id = T('checklists').find((p) => p.id === r.checklist_id)?.household_id;
     if (table === 'name_votes') r.household_id = T('name_favorites').find((p) => p.id === r.favorite_id)?.household_id;
@@ -419,6 +434,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       r.status = 'open';
     }
     if (table === 'reminders') r.updated_at = nowIso();
+    if (table === 'user_journeys') {
+      // Mêmes règles que la base : un seul parcours « corps » actif, un post-partum, un parcours par enfant
+      r.status ??= 'active'; r.started_on ??= todayIso(); r.ended_on ??= null; r.end_reason ??= null; r.pregnancy_id ??= null; r.child_id ??= null; r.household_id ??= null;
+      if (r.type === 'pregnancy' && !r.pregnancy_id) throw new BackendError('Une grossesse doit être associée à ce parcours.');
+      if (r.status === 'active') checkJourney(r);
+    }
     if (table === 'cycle_preferences') {
       // Comme la base : clé primaire = user_id (une seule ligne par personne)
       delete r.id;
@@ -463,7 +484,33 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     return r;
   }
 
+  /** Contraintes d'unicité des parcours actifs (index partiels de la base). */
+  function checkJourney(r: Row) {
+    const body = ['avoid', 'ttc', 'cycle', 'pregnancy'];
+    const clash = T('user_journeys').some((x) => x.id !== r.id && x.user_id === r.user_id && x.status === 'active' && (
+      (body.includes(r.type) && body.includes(x.type)) || (r.type === 'postpartum' && x.type === 'postpartum')
+      || (['baby', 'child'].includes(r.type) && ['baby', 'child'].includes(x.type) && r.child_id && x.child_id === r.child_id)));
+    if (clash) throw new BackendError('Un parcours de ce type est déjà actif : terminez-le d’abord.', '23505');
+  }
+  /** Déclencheur user_journeys_after : profiles.journeys recalculé ; rappels de l'ancien parcours désactivés. */
+  function afterJourney(before: Row | null, after: Row | null) {
+    const old = before;
+    if (old && old.status === 'active' && (!after || after.status === 'archived')) {
+      for (const rm of T('reminders')) {
+        if (rm.user_id !== old.user_id || !rm.enabled) continue;
+        const t = old.type as string;
+        const hit = (['baby', 'child'].includes(t) && old.child_id && rm.child_id === old.child_id && rm.journey_type === t)
+          || (t === 'pregnancy' && (rm.pregnancy_id === old.pregnancy_id || (rm.journey_type === 'pregnancy' && !rm.pregnancy_id)))
+          || (['avoid', 'ttc', 'cycle', 'postpartum'].includes(t) && rm.journey_type === t);
+        if (hit) rm.enabled = false;
+      }
+    }
+    const userId = (after ?? before)?.user_id;
+    const prof = T('profiles').find((p) => p.id === userId);
+    if (prof) prof.journeys = legacyJourneys(T('user_journeys') as JourneyRow[], userId);
+  }
   function afterInsert(table: string, r: Row) {
+    if (table === 'user_journeys') afterJourney(null, r);
     if (table === 'family_tasks') { taskEvent(r, 'created', { assignee: r.assignee_id }); nextOccurrence(r); }
     if (table === 'product_scans' && (r.barcode || r.product_id)) {
       for (const rc of T('product_recalls')) if (scanMatchesRecall(r, rc)) notifyRecall(rc, r.user_id);
@@ -613,6 +660,43 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     delete_my_cycle_data: () => {
       const me = uid();
       for (const t of ['period_entries', 'symptom_logs', 'discharge_logs', 'bleeding_logs', 'cycle_journal', 'fertility_observations', 'ovulation_tests', 'pregnancy_tests', 'intercourse_logs']) state.tables[t] = T(t).filter((r) => r.user_id !== me);
+      persist();
+      return null;
+    },
+    // Suppression définitive d'un parcours : uniquement les données datées de sa période (miroir de la fonction SQL)
+    delete_journey: (a) => {
+      const me = uid();
+      const j = T('user_journeys').find((r) => r.id === a?.p_id && r.user_id === me);
+      if (!j) throw new BackendError('Parcours introuvable', 'P0002');
+      const today = new Date().toISOString().slice(0, 10);
+      const from = j.started_on as string; const to = (j.ended_on as string | null) ?? today;
+      const cycleTypes = ['avoid', 'ttc', 'cycle'];
+      const others = T('user_journeys').filter((o) => o.user_id === me && o.id !== j.id && cycleTypes.includes(o.type as string));
+      const kept = (d: string) => others.some((o) => (o.started_on as string) <= d && d <= ((o.ended_on as string | null) ?? today));
+      const inRange = (d: unknown) => { const s = String(d ?? '').slice(0, 10); return s >= from && s <= to; };
+      if (cycleTypes.includes(j.type as string)) {
+        const cols: Record<string, string> = { period_entries: 'start_date', symptom_logs: 'logged_on', discharge_logs: 'observed_at', bleeding_logs: 'occurred_on', cycle_journal: 'entry_on', fertility_observations: 'observed_on', ovulation_tests: 'tested_at', pregnancy_tests: 'tested_at', intercourse_logs: 'occurred_on' };
+        for (const [t, c] of Object.entries(cols)) state.tables[t] = T(t).filter((r) => !(r.user_id === me && inRange(r[c]) && !kept(String(r[c]).slice(0, 10))));
+        if (!T('user_journeys').some((o) => o.user_id === me && o.id !== j.id && o.type === j.type && o.status === 'active')) T('reminders').forEach((r) => { if (r.user_id === me && r.journey_type === j.type) r.enabled = false; });
+      } else if (j.type === 'pregnancy' && j.pregnancy_id && !T('user_journeys').some((o) => o.pregnancy_id === j.pregnancy_id && o.id !== j.id && o.status === 'active')) {
+        state.tables.maternal_weights = T('maternal_weights').filter((r) => r.pregnancy_id !== j.pregnancy_id);
+        const gone = (r: Row) => r.pregnancy_id === j.pregnancy_id;
+        const lists = T('checklists').filter(gone).map((c) => c.id);
+        state.tables.checklist_items = T('checklist_items').filter((i) => !lists.includes(i.checklist_id));
+        for (const t of ['expected_babies', 'checklists', 'appointments', 'reminders']) state.tables[t] = T(t).filter((r) => !gone(r));
+        state.tables.pregnancies = T('pregnancies').filter((r) => r.id !== j.pregnancy_id);
+      } else if (j.type === 'postpartum') {
+        state.tables.postpartum_checkins = T('postpartum_checkins').filter((r) => !(r.user_id === me && inRange(r.checkin_date)));
+        state.tables.postpartum_actions = T('postpartum_actions').filter((r) => !(r.user_id === me && inRange(r.done_on)));
+        if (j.status === 'active' || !T('user_journeys').some((o) => o.user_id === me && o.id !== j.id && o.type === 'postpartum' && o.status === 'active')) {
+          state.tables.postpartum_shared_status = T('postpartum_shared_status').filter((r) => r.user_id !== me);
+          T('postpartum_settings').forEach((r) => { if (r.user_id === me) r.active = false; });
+        }
+      }
+      if (j.status === 'active') afterJourney(j, null); // supprimer un parcours actif arrête aussi ses rappels
+      state.tables.user_journeys = T('user_journeys').filter((r) => r.id !== j.id);
+      const prof = T('profiles').find((p) => p.id === me);
+      if (prof) prof.journeys = legacyJourneys(T('user_journeys') as JourneyRow[], me);
       persist();
       return null;
     },
@@ -1011,6 +1095,14 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
           }
           continue;
         }
+        if (table === 'user_journeys') {
+          const before = { ...r };
+          const next = { ...r, ...patch };
+          if (next.status === 'active') checkJourney(next);
+          Object.assign(r, patch, { updated_at: nowIso() });
+          afterJourney(before, r);
+          continue;
+        }
         if (table === 'parent_sleep_logs') {
           if (r.user_id !== state.session?.userId) continue;
           if (patch.log_date && T(table).some((x) => x.id !== r.id && x.user_id === r.user_id && x.log_date === patch.log_date)) throw new BackendError('Une nuit est déjà enregistrée pour ce jour : modifiez-la plutôt.');
@@ -1032,7 +1124,28 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         [...removed, ...replies].forEach((c) => { const p = T('posts').find((x) => x.id === c.post_id); if (p) p.comment_count = Math.max(0, p.comment_count - 1); });
       }
       // Suppressions en cascade principales
-      if (table === 'children') for (const t of CHILD_TABLES) state.tables[t] = T(t).filter((r) => !removed.some((c) => c.id === r.child_id));
+      if (table === 'children') {
+        const goneTreatments = T('child_treatments').filter((x) => removed.some((c) => c.id === x.child_id)).map((x) => x.id);
+        state.tables.treatment_logs = T('treatment_logs').filter((x) => !goneTreatments.includes(x.treatment_id));
+        state.tables.reminders = T('reminders').filter((x) => !removed.some((c) => c.id === x.child_id) && !goneTreatments.includes(x.treatment_id));
+        for (const t of [...CHILD_TABLES, 'user_journeys']) state.tables[t] = T(t).filter((r) => !removed.some((c) => c.id === r.child_id));
+      }
+      if (table === 'child_treatments') {
+        state.tables.treatment_logs = T('treatment_logs').filter((x) => !removed.some((c) => c.id === x.treatment_id));
+        state.tables.reminders = T('reminders').filter((x) => !removed.some((c) => c.id === x.treatment_id));
+      }
+      // Grossesse supprimée : bébés attendus, listes, rendez-vous, rappels et parcours liés (cascade) ; poids : lien retiré
+      if (table === 'pregnancies') {
+        const gone = (r: Row) => removed.some((p) => p.id === r.pregnancy_id);
+        const lists = T('checklists').filter(gone).map((c) => c.id);
+        state.tables.checklist_items = T('checklist_items').filter((i) => !lists.includes(i.checklist_id));
+        for (const t of ['expected_babies', 'checklists', 'appointments', 'reminders', 'user_journeys']) state.tables[t] = T(t).filter((r) => !gone(r));
+        T('maternal_weights').forEach((w) => { if (gone(w)) w.pregnancy_id = null; });
+      }
+      if (table === 'user_journeys' || table === 'pregnancies' || table === 'children') {
+        const users = new Set([...removed.map((r) => r.user_id), state.session?.userId].filter(Boolean));
+        for (const u of users) { const prof = T('profiles').find((p) => p.id === u); if (prof) prof.journeys = legacyJourneys(T('user_journeys') as JourneyRow[], u); }
+      }
       // bottle_timers.bottle_id : on delete set null
       if (table === 'bottles') T('bottle_timers').forEach((x) => { if (removed.some((b) => b.id === x.bottle_id)) x.bottle_id = null; });
       // Documents : texte lu, champs, résumés et rappels liés disparaissent avec le document

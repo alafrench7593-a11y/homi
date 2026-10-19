@@ -179,10 +179,9 @@ export function RecoveryWarnings() {
  * Sur l'accueil : pour la mère, une invitation douce (jamais insistante) ; pour le conjoint,
  * uniquement ce qu'elle a choisi de partager (demande de relais, besoin de repos).
  */
-export function PostpartumHomeCard({ youngestChildMonths, journeys }: { youngestChildMonths: number | null; journeys: string[] }) {
+export function PostpartumHomeCard({ main }: { main?: boolean }) {
   const t = useTheme();
   const shared = useSharedWithMe();
-  const { data: settings } = usePostpartumSettings();
   const checkins = usePostpartumCheckins(1);
   const ask = shared.data.find((s) => s.relay_requested || s.rest_need === 'high' || s.rest_need === 'some');
   if (ask) {
@@ -199,8 +198,8 @@ export function PostpartumHomeCard({ youngestChildMonths, journeys }: { youngest
       </Card>
     );
   }
-  const eligible = (settings?.active ?? false) || (journeys.includes('mother') && youngestChildMonths != null && youngestChildMonths < 12);
-  if (!eligible || settings?.active === false) return null;
+  // Parcours post-partum actif = carte principale ; ailleurs, seulement ce que la partenaire a choisi de partager
+  if (!main) return null;
   const doneToday = checkins.data?.[0]?.checkin_date === todayISO();
   return (
     <Card tone="soft" onPress={() => router.push('/postpartum')} accessibilityLabel="Après la naissance : votre espace privé">

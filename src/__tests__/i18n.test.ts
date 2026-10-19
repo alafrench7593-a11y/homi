@@ -12,7 +12,7 @@ export const MIGRATED = [
   'src/components/Screen.tsx', 'src/components/OfflinePill.tsx', 'src/app/index.tsx', 'src/app/_layout.tsx',
   'src/app/intro.tsx', 'src/app/welcome.tsx', 'src/app/settings/index.tsx', 'src/app/settings/language.tsx',
   'src/app/auth/sign-in.tsx', 'src/app/auth/sign-up.tsx', 'src/app/auth/forgot.tsx', 'src/app/auth/reset.tsx', 'src/app/auth/callback.tsx', 'src/features/auth.tsx',
-  'src/app/onboarding.tsx', 'src/app/journeys.tsx', 'src/app/(tabs)/index.tsx', 'src/app/(tabs)/_layout.tsx', 'src/components/Dock.tsx', 'src/app/(tabs)/profile.tsx', 'src/components/AccountActions.tsx',
+  'src/app/onboarding.tsx', 'src/app/journeys/index.tsx', 'src/app/journeys/[id].tsx', 'src/app/journeys/blocked.tsx', 'src/app/pregnancy/start.tsx', 'src/app/pregnancy/end.tsx', 'src/app/child/[id]/needs.tsx', 'src/app/child/[id]/school.tsx', 'src/app/meals.tsx', 'src/app/postpartum/recovery.tsx', 'src/features/journeys.tsx', 'src/features/needs.tsx', 'src/app/(tabs)/index.tsx', 'src/app/(tabs)/_layout.tsx', 'src/components/Dock.tsx', 'src/app/(tabs)/profile.tsx', 'src/components/AccountActions.tsx',
   'src/app/documents/index.tsx', 'src/app/documents/scan.tsx', 'src/app/documents/[id].tsx', 'src/app/documents/book.tsx', 'src/app/documents/export.tsx', 'src/features/documents.tsx',
   'src/app/cycle/index.tsx', 'src/app/cycle/calendar.tsx', 'src/app/cycle/symptoms.tsx', 'src/app/cycle/bleeding.tsx', 'src/app/cycle/journal.tsx', 'src/app/cycle/stats.tsx',
   'src/app/cycle/export.tsx', 'src/app/cycle/privacy.tsx', 'src/app/cycle/discharge/index.tsx', 'src/app/cycle/discharge/[id].tsx', 'src/app/cycle/guides/index.tsx',

@@ -50,6 +50,10 @@ def run(p):
     pg.evaluate("""() => {
       const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1'));
       for (const p of s.tables.profiles || []) p.journeys = ['cycle'];
+      // Parcours « suivre mon cycle » actif (table user_journeys) ; plus de grossesse en cours
+      const me = s.tables.profiles[0].id;
+      s.tables.user_journeys = (s.tables.user_journeys || []).filter(j => j.type === 'baby' || j.type === 'child');
+      s.tables.user_journeys.push({ id: 'j-cycle', user_id: me, household_id: null, type: 'cycle', status: 'active', started_on: '2026-01-01', ended_on: null, end_reason: null, pregnancy_id: null, child_id: null, created_at: new Date().toISOString() });
       s.tables.pregnancies = []; // pas de grossesse en cours : sinon aucune alerte de contraception d'urgence (règle voulue)
       s.tables.period_entries = []; s.tables.symptom_logs = [];
       localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s));

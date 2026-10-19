@@ -11,7 +11,7 @@ import { ToothChart } from '@/features/childCare';
 import { useSaveReminder } from '@/lib/data/hooks-settings';
 import { toFrDate } from '@/lib/validation';
 import { backend, eq } from '@/lib/backend';
-import { useActiveSubject, useChildren, useInvalidate } from '@/lib/data/hooks';
+import { useActiveSubject, useTrackedChildren, useInvalidate } from '@/lib/data/hooks';
 import { useMilestones } from '@/lib/data/hooks-family';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { frToISO, todayISO } from '@/lib/domain/dates';
@@ -25,7 +25,7 @@ export default function Teeth() {
   const inv = useInvalidate();
   const params = useLocalSearchParams<{ child?: string }>();
   const { subject } = useActiveSubject();
-  const childrenQ = useChildren();
+  const childrenQ = useTrackedChildren();
   const { data: children } = childrenQ;
   const [busy, setBusy] = useState<string | null>(null);
   const childId = (typeof params.child === 'string' && params.child) || (subject.type === 'child' ? subject.id : children?.[0]?.id);

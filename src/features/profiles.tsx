@@ -88,6 +88,20 @@ export function PregnancyForm({ value, onChange, errors }: { value: PregnancyDra
   );
 }
 
+/** Listes de préparation de base d'une NOUVELLE grossesse (modifiables ensuite ; jamais reprises d'une ancienne). */
+export async function createPregnancyChecklists(householdId: string, pregnancyId: string, n: number) {
+  const kinds: Exclude<ChecklistKind, 'custom'>[] = ['maternity_bag', 'admin', ...(n > 1 ? (['multiples'] as const) : [])];
+  for (const kind of kinds) {
+    try {
+      const tpl = CHECKLIST_TEMPLATES[kind];
+      const [list] = await backend.insert<{ id: string }>('checklists', { household_id: householdId, pregnancy_id: pregnancyId, kind, title: tpl.title });
+      await backend.insert('checklist_items', tpl.items.map((label, i) => ({ checklist_id: list.id, household_id: householdId, label, position: i })));
+    } catch {
+      // limite de la version gratuite atteinte : les listes peuvent être créées plus tard
+    }
+  }
+}
+
 export async function createPregnancy(householdId: string, userId: string, d: PregnancyDraft): Promise<Pregnancy> {
   const v = validatePregnancy(d);
   if (!v.due) throw new Error(Object.values(v.errors)[0]);
@@ -97,17 +111,7 @@ export async function createPregnancy(householdId: string, userId: string, d: Pr
   });
   const n = babiesCount(d.multiplicity);
   await backend.insert('expected_babies', Array.from({ length: n }, (_, i) => ({ pregnancy_id: p.id, household_id: householdId, position: i + 1, nickname: d.nicknames[i]?.trim() || null })));
-  // Listes de préparation de base (modifiables ensuite)
-  const kinds: Exclude<ChecklistKind, 'custom'>[] = ['maternity_bag', 'admin', ...(n > 1 ? (['multiples'] as const) : [])];
-  for (const kind of kinds) {
-    try {
-      const tpl = CHECKLIST_TEMPLATES[kind];
-      const [list] = await backend.insert<{ id: string }>('checklists', { household_id: householdId, pregnancy_id: p.id, kind, title: tpl.title });
-      await backend.insert('checklist_items', tpl.items.map((label, i) => ({ checklist_id: list.id, household_id: householdId, label, position: i })));
-    } catch {
-      // limite de la version gratuite atteinte : les listes peuvent être créées plus tard
-    }
-  }
+  await createPregnancyChecklists(householdId, p.id, n);
   return p;
 }
 

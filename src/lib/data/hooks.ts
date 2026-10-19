@@ -3,7 +3,8 @@ import { useMutation, useQuery, useQueryClient, type QueryKey } from '@tanstack/
 import { useEffect, useMemo } from 'react';
 import { backend, eq, gte, inList, type Filter, type Query } from '../backend';
 import { useAuth, useUserId } from '../auth';
-import { useUiStore } from '../store';
+import { useUiStore, type ActiveSubject } from '../store';
+import { isBody, visiblePregnancy, type JourneyRow } from '../journeys/model';
 import { insertOrQueue } from '../offline';
 import { syncLocalReminders } from '../notifications';
 import { uuid } from '../uuid';
@@ -105,9 +106,40 @@ export function usePregnancies() {
   return useRows<Pregnancy>(['pregnancies', hid ?? ''], hid ? { table: 'pregnancies', filters: [eq('household_id', hid)], order: [{ col: 'created_at', asc: false }] } : null);
 }
 
+/**
+ * Parcours visibles (les miens + les parcours familiaux du foyer : grossesse, bébé, enfant — jamais le cycle d'un autre).
+ * Source de vérité de ce qui est affiché : un parcours archivé ne s'affiche plus nulle part (sauf « Mes parcours précédents »).
+ */
+export function useJourneys() {
+  const userId = useUserId();
+  return useRows<JourneyRow>(['user_journeys'], userId ? { table: 'user_journeys', order: [{ col: 'started_on', asc: false }] } : null);
+}
+export function useJourneyState() {
+  const userId = useUserId();
+  const q = useJourneys();
+  return useMemo(() => {
+    const rows = q.data ?? [];
+    const mine = rows.filter((r) => r.user_id === userId);
+    const active = mine.filter((r) => r.status === 'active');
+    const visibleActive = rows.filter((r) => r.status === 'active');
+    return {
+      rows, mine, active,
+      archived: mine.filter((r) => r.status === 'archived'),
+      body: active.find((r) => isBody(r.type)) ?? null,
+      postpartum: active.find((r) => r.type === 'postpartum') ?? null,
+      pregnancyIds: visibleActive.filter((r) => r.type === 'pregnancy' && r.pregnancy_id).map((r) => r.pregnancy_id!),
+      childIds: visibleActive.filter((r) => (r.type === 'baby' || r.type === 'child') && r.child_id).map((r) => r.child_id!),
+      childType: (childId: string) => visibleActive.find((r) => (r.type === 'baby' || r.type === 'child') && r.child_id === childId)?.type ?? null,
+      loaded: !!q.data, query: q,
+    };
+  }, [q.data, userId]); // eslint-disable-line react-hooks/exhaustive-deps
+}
+
+/** Grossesse affichée : seulement si un parcours « grossesse » actif la référence (jamais une ancienne grossesse restée active). */
 export function useActivePregnancy() {
   const { data } = usePregnancies();
-  return data?.find((p) => p.status === 'active') ?? null;
+  const js = useJourneyState();
+  return visiblePregnancy(data, js.rows);
 }
 
 export function useExpectedBabies(pregnancyId: string | null | undefined) {
@@ -119,26 +151,40 @@ export function useChildren() {
   return useRows<Child>(['children', hid ?? ''], hid ? { table: 'children', filters: [eq('household_id', hid), eq('archived', false)], order: [{ col: 'birth_date', asc: false }] } : null);
 }
 
+/** Enfants suivis dans un parcours actif (bébé ou enfant) : ceux du sélecteur, des actions rapides et du suivi. */
+export function useTrackedChildren() {
+  const q = useChildren();
+  const js = useJourneyState();
+  const data = useMemo(() => (q.data ? q.data.filter((c) => js.childIds.includes(c.id)) : undefined), [q.data, js.childIds.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
+  return { ...q, data, isLoading: q.isLoading || js.query.isLoading };
+}
+
 export function useChild(id: string | null | undefined) {
   const { data } = useChildren();
   return data?.find((c) => c.id === id) ?? null;
 }
 
-/** Sujet actif du sélecteur de profil (grossesse / enfant / famille / moi). */
+/**
+ * Profil affiché (sélecteur) : ma grossesse, mon post-partum, chaque enfant suivi, toute la famille ou moi.
+ * Seuls les profils d'un parcours ACTIF sont proposés : un ancien parcours n'est jamais repris par défaut.
+ */
 export function useActiveSubject() {
   const subject = useUiStore((s) => s.subject);
   const setSubject = useUiStore((s) => s.setSubject);
   const pregnancy = useActivePregnancy();
-  const { data: children } = useChildren();
-  const resolved = useMemo(() => {
+  const { data: children } = useTrackedChildren();
+  const js = useJourneyState();
+  const resolved = useMemo((): ActiveSubject => {
     if (subject?.type === 'child' && children?.some((c) => c.id === subject.id)) return subject;
     if (subject?.type === 'pregnancy' && pregnancy?.id === subject.id) return subject;
-    if (subject?.type === 'family' || subject?.type === 'me') return subject;
-    if (children?.length && !pregnancy) return { type: 'child' as const, id: children[0].id };
-    if (pregnancy) return { type: 'pregnancy' as const, id: pregnancy.id };
-    if (children?.length) return { type: 'child' as const, id: children[0].id };
-    return { type: 'me' as const };
-  }, [subject, pregnancy, children]);
+    if (subject?.type === 'postpartum' && js.postpartum) return subject;
+    if (subject?.type === 'family' && (children?.length ?? 0) + (pregnancy ? 1 : 0) > 1) return subject;
+    if (subject?.type === 'me') return subject;
+    if (pregnancy) return { type: 'pregnancy', id: pregnancy.id };
+    if (children?.length) return { type: 'child', id: children[0].id };
+    if (js.postpartum) return { type: 'postpartum' };
+    return { type: 'me' };
+  }, [subject, pregnancy, children, js.postpartum]);
   return { subject: resolved, setSubject };
 }
 
@@ -194,9 +240,10 @@ export function useInsertRow<T = unknown>(table: string, extraInvalidate: string
 }
 
 // ---------------------------------------------------------------- données personnelles
-export function useMaternalWeights() {
+/** Poids de la mère pour UNE grossesse : jamais les mesures d'une grossesse précédente. */
+export function useMaternalWeights(pregnancyId?: string | null) {
   const userId = useUserId();
-  return useRows<MaternalWeight>(['maternal_weights'], userId ? { table: 'maternal_weights', filters: [eq('user_id', userId)], order: [{ col: 'measured_on' }] } : null);
+  return useRows<MaternalWeight>(['maternal_weights', pregnancyId ?? ''], userId && pregnancyId ? { table: 'maternal_weights', filters: [eq('user_id', userId), eq('pregnancy_id', pregnancyId)], order: [{ col: 'measured_on' }] } : null);
 }
 export function useMoods(limit = 30) {
   const userId = useUserId();

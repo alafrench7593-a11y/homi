@@ -5,11 +5,11 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
-import { useActivePregnancy, useActiveSubject, useChildren, useEmergencyResources, useExpectedBabies, usePremium } from '@/lib/data/hooks';
+import { useActivePregnancy, useActiveSubject, useEmergencyResources, useExpectedBabies, useJourneyState, usePremium, useTrackedChildren } from '@/lib/data/hooks';
 import { childAge, initials } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { isDemo } from '@/lib/backend';
-import { t as tr } from '@/i18n';
+import { t as tr, type TKey } from '@/i18n';
 import { Banner, Button, Card, haptic, Icon, type IconName, Row, Text } from './ui';
 import { initialsColor } from './Illustrations';
 import { Sheet, useToast } from './Overlays';
@@ -28,30 +28,36 @@ export function ProfileSwitcher() {
   const [open, setOpen] = useState(false);
   const { subject, setSubject } = useActiveSubject();
   const pregnancy = useActivePregnancy();
-  const { data: children } = useChildren();
+  const { data: children } = useTrackedChildren();
+  const js = useJourneyState();
   const { data: babies } = useExpectedBabies(pregnancy?.id);
 
   const items: { key: string; label: string; sub: string; avatar: React.ReactNode; active: boolean; onPress: () => void }[] = [];
+  // Seuls les profils d'un parcours ACTIF : ma grossesse, mon post-partum, chaque enfant suivi, la famille, moi
   if (pregnancy) {
     const p = pregnancyProgress(pregnancy.due_date);
-    const names = babies?.map((b) => b.nickname).filter(Boolean).join(' et ');
+    const names = babies?.map((b) => b.nickname).filter(Boolean).join(' · ');
     items.push({
-      key: 'preg', label: names || (pregnancy.multiplicity === 'twins' ? 'Nos jumeaux' : pregnancy.multiplicity === 'triplets' ? 'Nos triplés' : 'Grossesse'), sub: `Grossesse, ${p.label}`,
+      key: 'preg', label: tr('pj.subject.pregnancy'), sub: `${names ? `${names} · ` : ''}${p.label}`,
       avatar: <Avatar color="#E8D9B8" icon="moon" />, active: subject.type === 'pregnancy',
       onPress: () => setSubject({ type: 'pregnancy', id: pregnancy.id }),
     });
   }
+  if (js.postpartum) {
+    items.push({ key: 'pp', label: tr('pj.subject.postpartum'), sub: tr('pj.subject.postpartumSub'), avatar: <Avatar color="#F6D5DE" icon="sun" />, active: subject.type === 'postpartum', onPress: () => setSubject({ type: 'postpartum' }) });
+  }
   for (const c of children ?? []) {
+    const baby = js.childType(c.id) === 'baby';
     items.push({
-      key: c.id, label: c.first_name, sub: childAge(c.birth_date).label,
+      key: c.id, label: tr(baby ? 'pj.profile.baby' : 'pj.profile.child', { name: c.first_name }), sub: childAge(c.birth_date).label,
       avatar: <Avatar label={initials(c.first_name)} color={initialsColor(c.id)} />, active: subject.type === 'child' && subject.id === c.id,
       onPress: () => setSubject({ type: 'child', id: c.id }),
     });
   }
   if ((children?.length ?? 0) + (pregnancy ? 1 : 0) > 1) {
-    items.push({ key: 'family', label: 'Toute la famille', sub: 'Vue d’ensemble', avatar: <Avatar color="#D6CEF0" icon="users" />, active: subject.type === 'family', onPress: () => setSubject({ type: 'family' }) });
+    items.push({ key: 'family', label: tr('pj.subject.family'), sub: tr('pj.subject.familySub'), avatar: <Avatar color="#D6CEF0" icon="users" />, active: subject.type === 'family', onPress: () => setSubject({ type: 'family' }) });
   }
-  items.push({ key: 'me', label: 'Moi', sub: 'Mon espace, ma santé', avatar: <Avatar color="#F3D9D3" icon="heart" />, active: subject.type === 'me', onPress: () => setSubject({ type: 'me' }) });
+  items.push({ key: 'me', label: tr('pj.subject.me'), sub: js.body && js.body.type !== 'pregnancy' ? tr(`pj.type.${js.body.type}` as TKey) : tr('pj.subject.meSub'), avatar: <Avatar color="#F3D9D3" icon="heart" />, active: subject.type === 'me', onPress: () => setSubject({ type: 'me' }) });
   const current = items.find((i) => i.active) ?? items[0];
   const others = items.filter((i) => i !== current).slice(0, 3);
 
@@ -59,7 +65,8 @@ export function ProfileSwitcher() {
     <>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Profil affiché : ${current.label}. Changer de profil.`}
+        testID="profile-switcher"
+        accessibilityLabel={tr('pj.switcher.a11y', { name: current.label })}
         onPress={() => { haptic('selection'); setOpen(true); }}
         style={({ pressed }) => [styles.switcher, { backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderColor: t.colors.border }]}
       >
@@ -75,10 +82,11 @@ export function ProfileSwitcher() {
         </View>
         <Icon name="chevron-down" size={18} color={t.colors.textMuted} />
       </Pressable>
-      <Sheet visible={open} onClose={() => setOpen(false)} title="Qui suivez-vous ?">
+      <Sheet visible={open} onClose={() => setOpen(false)} title={tr('pj.switcher.title')}>
         {items.map((it) => (
           <Pressable
             key={it.key}
+            testID={`subject-${it.key}`}
             accessibilityRole="radio"
             accessibilityState={{ selected: it.active }}
             accessibilityLabel={`${it.label}, ${it.sub}`}
@@ -93,7 +101,7 @@ export function ProfileSwitcher() {
             {it.active && <Icon name="check" color={t.colors.text} />}
           </Pressable>
         ))}
-        <Button label="Ajouter un enfant ou une grossesse" variant="secondary" icon="plus" onPress={() => { setOpen(false); router.push('/profiles/new'); }} />
+        <Button label={tr('pj.editJourney')} variant="secondary" icon="compass" onPress={() => { setOpen(false); router.push('/journeys'); }} />
       </Sheet>
     </>
   );

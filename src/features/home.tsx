@@ -12,6 +12,7 @@ import type { ToolTheme } from '@/lib/domain/toolCatalog';
 import { useAppointments, useExpectedBabies, useLogs, useOpenSleep, usePeriods, useReminders } from '@/lib/data/hooks';
 import { estimateCycle } from '@/lib/domain/cycle';
 import { countdownLabel, pregnancyProgress } from '@/lib/domain/pregnancy';
+import { isEstimatedDue } from '@/lib/journeys/model';
 import { formatWeight, weekInfo } from '@/lib/domain/fetalWeeks';
 import { childAge } from '@/lib/domain/child';
 import { formatDuration, timeAgo } from '@/lib/domain/dates';
@@ -67,6 +68,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>TERME</Text>
           <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 36, letterSpacing: -1 }}>{p.daysToDue > 0 ? `J-${p.daysToDue}` : 'Bientôt'}</Text>
           <Text variant="small" muted>{new Date(pregnancy.due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</Text>
+          {isEstimatedDue(pregnancy) ? <Text variant="caption" weight="bold" color={t.colors.primary} testID="due-estimated">{tr('pj.due.estimated')}</Text> : null}
         </View>
         <View style={tile} accessible accessibilityLabel={`Taille moyenne : environ ${info.lengthCm} centimètres, comme ${info.compare}`}>
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>TAILLE</Text>
@@ -141,7 +143,12 @@ const QUICK: Record<string, { icon: IconName; label: string; go: (childId?: stri
   bottle: { icon: 'coffee', get label() { return tr('quick.bottle'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: c ?? '' } }) },
   breastfeed: { icon: 'droplet', get label() { return tr('quick.breastfeed'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'breastfeed', child: c ?? '' } }) },
   diaper: { icon: 'wind', get label() { return tr('quick.diaper'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'diaper', child: c ?? '' } }) },
-  sleep: { icon: 'moon', get label() { return tr('quick.sleep'); }, go: () => router.push('/night') },
+  sleep: { icon: 'moon', get label() { return tr('quick.sleep'); }, go: (c) => router.push(c ? `/night?child=${c}` : '/night') },
+  growth: { icon: 'trending-up', get label() { return tr('pj.q.growth'); }, go: (c) => router.push(c ? `/child/${c}/growth` : '/tools') },
+  treatment: { icon: 'clipboard', get label() { return tr('pj.q.treatment'); }, go: (c) => router.push(c ? `/child/${c}/needs?tab=treatments` : '/tools') },
+  checkin: { icon: 'edit-3', get label() { return tr('pj.q.checkin'); }, go: () => router.push('/postpartum/checkin') },
+  calendar: { icon: 'calendar', get label() { return tr('quick.agenda'); }, go: () => router.push('/calendar') },
+  symptom: { icon: 'activity', get label() { return tr('pj.q.symptom'); }, go: () => router.push('/cycle/symptoms') },
   meal: { icon: 'feather', get label() { return tr('quick.meal'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'meal', child: c ?? '' } }) },
   observation: { icon: 'thermometer', get label() { return tr('quick.observation'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'observation', child: c ?? '' } }) },
   question: { icon: 'message-circle', get label() { return tr('quick.question'); }, go: () => router.push('/assistant/chat') },
@@ -166,6 +173,7 @@ function useCycleRoute() { return cycleRoute; }
 /** Même langage visuel que « Outils » : chaque raccourci prend la silhouette de sa catégorie. */
 const QUICK_THEME: Record<string, ToolTheme> = {
   bottle: 'feeding', breastfeed: 'feeding', meal: 'feeding', diaper: 'diapers', sleep: 'sleep', mysleep: 'sleep', observation: 'health', appointment: 'health',
+  growth: 'growth', treatment: 'health', checkin: 'mood', calendar: 'calendar', symptom: 'cycle',
   question: 'resources', mood: 'mood', weight: 'pregnancy', scan: 'scanner', period: 'cycle', test: 'cycle', pill: 'cycle', postpartum: 'cycle',
   tasks: 'tasks', agenda: 'calendar', journal: 'memories', relay: 'relay',
 };
@@ -251,12 +259,10 @@ export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' | 'cycle' }) {
 
 // ------------------------------------------------------------------ accueil personnalisable
 export const HOME_CARDS: { key: string; label: string; detail: string }[] = [
-  { key: 'main', label: 'Carte principale', detail: 'Grossesse, enfant ou cycle selon le profil actif' },
-  { key: 'quick', label: 'Raccourcis', detail: 'Quatre actions en un geste' },
+  { key: 'main', label: 'Carte principale', detail: 'Grossesse, post-partum, enfant, famille ou cycle selon le profil affiché' },
+  { key: 'quick', label: 'Raccourcis', detail: 'Trois ou quatre actions pour le profil affiché' },
   { key: 'upcoming', label: 'Prochain rendez-vous ou rappel', detail: '' },
-  { key: 'family', label: 'Organisation familiale', detail: 'Demandes en attente, mes tâches, journée difficile' },
-  { key: 'postpartum', label: 'Après la naissance', detail: 'Point du jour, ou ce que votre partenaire partage' },
-  { key: 'article', label: 'Article du jour', detail: '' },
+  { key: 'article', label: 'Article recommandé', detail: '' },
   { key: 'assistant', label: 'Poser une question', detail: 'Assistant d’information' },
 ];
 

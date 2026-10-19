@@ -5,8 +5,8 @@
  * par thème. Les thèmes donnent à chaque outil sa propre identité visuelle et animée.
  */
 import type { IconName } from '@/components/ui';
-import type { Journey } from '@/lib/types';
-import { mainJourneys, toolCategories } from './journeys';
+import { t as tr, tMaybe } from '@/i18n';
+import { toolLabelKey, toolsFor, toolSubKey, type ScopeCtx } from '@/lib/journeys/tools';
 
 export type ToolTheme =
   | 'feeding' | 'sleep' | 'diapers' | 'teeth' | 'growth' | 'health' | 'mood' | 'pregnancy' | 'cycle'
@@ -38,63 +38,17 @@ export const THEME_TITLE = Object.fromEntries(THEMES.map((x) => [x.key, x.title]
 export interface CatalogTool {
   /** Identifiant stable (favoris) : dérivé de l'adresse sans l'identifiant d'enfant. */
   id: string;
+  /** Identifiant de l'outil dans le registre central. */
+  key: string;
   theme: ToolTheme;
   icon: IconName;
   label: string;
   sub?: string;
   href: string;
-  /** L'outil a besoin d'un profil enfant : l'adresse mène d'abord à sa création. */
-  needsChild?: boolean;
+  /** Outil « pour tout le monde », adapté au profil affiché. */
+  universal?: boolean;
   /** Urgences : jamais retardé par une animation. */
   urgent?: boolean;
-}
-
-/** Thème de chaque outil historique, par libellé (les libellés viennent de `toolCategories`). */
-const THEME_BY_LABEL: Record<string, ToolTheme> = {
-  'Scanner un produit': 'scanner', 'Scanner un aliment': 'scanner', 'Historique et favoris': 'scanner', 'Comparer deux produits': 'scanner',
-  'Cycle et période fertile': 'cycle', 'Comprendre mon cycle et mes tests': 'cycle', Tests: 'cycle', 'Mon cycle': 'cycle', Contraception: 'cycle',
-  'Contraception d’urgence': 'cycle', 'Préparer une consultation': 'cycle', 'Après la naissance': 'cycle', 'Soutenir ma partenaire': 'cycle',
-  Rappels: 'reminders',
-  'Articles sur la conception': 'resources', 'Communauté Projet bébé': 'resources', Communauté: 'resources', 'Communauté grossesse': 'resources',
-  'Communauté parents': 'resources', Questions: 'resources', 'Préparation à l’accouchement': 'resources', Bibliothèque: 'resources', Rééducation: 'resources',
-  'Évolution du bébé': 'pregnancy', 'Mon poids': 'pregnancy', 'Échographies et documents': 'pregnancy', Prénoms: 'pregnancy', Listes: 'pregnancy',
-  'Mon corps': 'health', 'Rendez-vous et examens': 'health', 'Rendez-vous': 'health', Documents: 'health', 'Récupération physique': 'health', Urgences: 'health',
-  'Mon sommeil': 'sleep', 'Mon propre sommeil': 'sleep', 'Sommeil du bébé': 'sleep',
-  'Mon humeur': 'mood', 'Santé mentale': 'mood',
-  'Mes enfants': 'growth', 'Mon bébé ou mon enfant': 'growth', Croissance: 'growth',
-  'Minuteur biberon': 'feeding', 'Biberons et allaitement': 'feeding', 'Historique des biberons': 'feeding', 'Repas et diversification': 'feeding',
-  Couches: 'diapers', Dents: 'teeth',
-  'Organisation familiale': 'tasks', 'Agenda familial': 'calendar', 'Journée difficile': 'prevention',
-};
-
-interface Ctx { journeys: Journey[]; hasPregnancy: boolean; childId?: string; childCount: number }
-
-/** Outils qui existaient sans figurer dans « Tous mes outils ». */
-function extraTools(ctx: Ctx): Omit<CatalogTool, 'id'>[] {
-  const m = mainJourneys(ctx.journeys);
-  const kid = (path: string) => (ctx.childId ? `/child/${ctx.childId}/${path}` : '/profiles/new?kind=child');
-  const out: Omit<CatalogTool, 'id'>[] = [
-    { theme: 'scanner', icon: 'slash', label: 'Produits à éviter', sub: 'Allergies, ingrédients signalés', href: '/scanner/avoid' },
-    { theme: 'tasks', icon: 'list', label: 'Routines', sub: 'Sac, coucher, courses…', href: '/family/routines' },
-    { theme: 'tasks', icon: 'clock', label: 'Historique des tâches', href: '/family/history' },
-    { theme: 'relay', icon: 'moon', label: 'Relais de nuit', sub: 'Qui se lève, quelle nuit', href: '/family/nights' },
-    { theme: 'metime', icon: 'sun', label: 'Temps pour soi', sub: 'Réserver un moment', href: '/family/me-time' },
-    { theme: 'prevention', icon: 'zap', label: 'Mode urgence organisation', sub: 'Gros boutons, l’essentiel', href: '/family/urgent' },
-    { theme: 'prevention', icon: 'bar-chart-2', label: 'Bilan de la semaine', sub: 'Par catégorie, sans classement', href: '/family/review' },
-    { theme: 'memories', icon: 'book', label: 'Journal et souvenirs', sub: 'Étapes, moments, notes', href: '/journal' },
-    { theme: 'reminders', icon: 'inbox', label: 'Notifications', href: '/notifications' },
-    { theme: 'reminders', icon: 'layout', label: 'Personnaliser l’accueil', href: '/settings/home' },
-    { theme: 'reminders', icon: 'settings', label: 'Réglages', href: '/settings' },
-    { theme: 'resources', icon: 'users', label: 'Communauté', sub: 'Échanger entre parents', href: '/(tabs)/community' },
-  ];
-  if (m.includes('mother') || ctx.childCount > 0) {
-    out.push(
-      { theme: 'mood', icon: 'sun', label: 'Bien-être de l’enfant', sub: 'Humeur, signaux observés', href: kid('wellbeing') },
-      { theme: 'health', icon: 'thermometer', label: 'Suivi santé de l’enfant', sub: 'Température, traitements notés', href: kid('health-tracking') },
-      { theme: 'health', icon: 'shield', label: 'Vaccins', sub: 'Carnet à vérifier', href: kid('vaccines') },
-    );
-  }
-  return out;
 }
 
 /** Identifiant stable : l'adresse sans identifiant d'enfant, plus le thème. */
@@ -103,20 +57,19 @@ export function toolId(theme: ToolTheme, href: string) {
   return `${theme}:${clean}`;
 }
 
-/** Tous les outils de la personne, dédoublonnés (même écran, même thème), dans l'ordre des thèmes. */
-export function toolCatalog(ctx: Ctx): CatalogTool[] {
-  const raw: Omit<CatalogTool, 'id'>[] = [];
-  for (const c of toolCategories(ctx)) {
-    for (const it of c.items) raw.push({ ...it, theme: THEME_BY_LABEL[it.label] ?? 'resources' });
-  }
-  raw.push(...extraTools(ctx));
+/**
+ * Outils AUTORISÉS pour le profil affiché, depuis le registre central (src/lib/journeys/tools.ts),
+ * dédoublonnés et rangés dans l'ordre des thèmes. Libellés dans la langue active.
+ */
+export function toolCatalog(ctx: ScopeCtx): CatalogTool[] {
   const seen = new Set<string>();
   const out: CatalogTool[] = [];
-  for (const it of raw) {
+  for (const it of toolsFor(ctx)) {
     const id = toolId(it.theme, it.href);
     if (seen.has(id)) continue;
     seen.add(id);
-    out.push({ ...it, id, needsChild: it.href.startsWith('/profiles/new'), urgent: it.href === '/emergency' });
+    const sub = tMaybe(toolSubKey(it.id));
+    out.push({ id, key: it.id, theme: it.theme, icon: it.icon, label: tr(toolLabelKey(it.id)), sub: sub || undefined, href: it.href, universal: it.universal, urgent: it.urgent });
   }
   const order = new Map(THEMES.map((x, i) => [x.key, i]));
   return out.map((x, i) => ({ x, i })).sort((a, b) => order.get(a.x.theme)! - order.get(b.x.theme)! || a.i - b.i).map((r) => r.x);

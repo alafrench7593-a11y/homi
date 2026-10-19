@@ -77,6 +77,11 @@ export function t(key: TKey, params?: Record<string, string | number>): string {
   return raw.replace(/\{(\w+)\}/g, (_, k) => (params[k] == null ? '' : typeof params[k] === 'number' ? formatNumber(params[k] as number) : String(params[k])));
 }
 
+/** Texte facultatif : null si la clé n'existe pas (ex. précision d'un outil), au lieu d'un repli lisible. */
+export function tMaybe(key: string, params?: Record<string, string | number>): string | null {
+  return resolve(key) == null ? null : t(key as TKey, params);
+}
+
 /** Jamais de clé technique à l'écran : dernier segment rendu lisible. */
 function humanize(key: string) {
   const last = key.split('.').pop() ?? key;

@@ -15,7 +15,7 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { springTo } from '@/theme/motion';
 import { fonts, NACRE, NATIVE_DRIVER, palette, radius, spacing } from '@/theme/tokens';
 import { PulseRing } from './MotionKit';
-import { useActiveSubject, useChildren } from '@/lib/data/hooks';
+import { useScope } from '@/lib/data/hooks-scope';
 import { Sheet } from './Overlays';
 import { haptic, Icon, type IconName, Text } from './ui';
 import { t as tr } from '@/i18n';
@@ -220,23 +220,30 @@ function TabLabel({ label, focused }: { label: string; focused: boolean }) {
   );
 }
 
-/** Actions d'ajout rapide (ancien bouton « + ») : feuille depuis la barre, ou grille dans la page Outils. */
+/**
+ * Actions d'ajout rapide (ancien bouton « + ») : TOUJOURS pour le profil affiché.
+ * Biberon, tétée, couche, minuteur : uniquement quand un bébé né est affiché ; jamais pour une grossesse.
+ */
 function useQuickAdd(onBefore?: () => void) {
-  const { subject } = useActiveSubject();
-  const { data: children } = useChildren();
-  const childId = subject.type === 'child' ? subject.id : children?.[0]?.id;
-  const child = children?.find((c) => c.id === childId);
+  const scope = useScope();
+  const child = scope.child;
+  const childId = scope.childId;
+  const baby = scope.scope === 'baby';
+  const kid = baby || scope.scope === 'child';
   const go = (fn: () => void) => () => { if (onBefore) { onBefore(); setTimeout(fn, 180); } else fn(); };
   const track = (kind: string) => go(() => router.push({ pathname: '/track/[kind]', params: { kind, child: childId ?? '' } }));
   const items: { icon: IconName; label: string; onPress: () => void; show: boolean }[] = [
-    { icon: 'coffee', label: tr('dock.q.bottle'), onPress: track('bottle'), show: !!child },
-    { icon: 'droplet', label: tr('dock.q.breastfeed'), onPress: track('breastfeed'), show: !!child },
-    { icon: 'wind', label: tr('dock.q.diaper'), onPress: track('diaper'), show: !!child },
-    { icon: 'moon', label: tr('dock.q.sleep'), onPress: go(() => router.push('/night')), show: !!child },
-    { icon: 'feather', label: tr('dock.q.meal'), onPress: track('meal'), show: !!child },
-    { icon: 'thermometer', label: tr('dock.q.health'), onPress: track('observation'), show: !!child },
-    { icon: 'heart', label: tr('dock.q.mood'), onPress: go(() => router.push('/me/mood')), show: true },
-    { icon: 'clock', label: tr('dock.q.timer'), onPress: go(() => router.push(childId ? `/bottle/${childId}` : '/bottle')), show: !!child },
+    { icon: 'coffee', label: tr('dock.q.bottle'), onPress: track('bottle'), show: baby },
+    { icon: 'droplet', label: tr('dock.q.breastfeed'), onPress: track('breastfeed'), show: baby },
+    { icon: 'wind', label: tr('dock.q.diaper'), onPress: track('diaper'), show: baby },
+    { icon: 'moon', label: tr('dock.q.sleep'), onPress: go(() => router.push(`/night?child=${childId}`)), show: kid },
+    { icon: 'feather', label: tr('dock.q.meal'), onPress: track('meal'), show: kid },
+    { icon: 'thermometer', label: tr('dock.q.health'), onPress: track('observation'), show: kid },
+    { icon: 'clock', label: tr('dock.q.timer'), onPress: go(() => router.push(`/bottle/${childId}`)), show: baby },
+    { icon: 'trending-up', label: tr('pj.q.weight'), onPress: go(() => router.push('/pregnancy/weight')), show: scope.scope === 'pregnancy' },
+    { icon: 'droplet', label: tr('pj.q.period'), onPress: go(() => router.push('/cycle/bleeding')), show: ['avoid', 'ttc', 'cycle'].includes(scope.scope) },
+    { icon: 'edit-3', label: tr('pj.q.checkin'), onPress: go(() => router.push('/postpartum/checkin')), show: scope.scope === 'postpartum' },
+    { icon: 'heart', label: tr('dock.q.mood'), onPress: go(() => router.push('/me/mood')), show: !kid },
     { icon: 'maximize', label: tr('dock.q.scanner'), onPress: go(() => router.push('/scanner')), show: true },
   ];
   return { child, go, items: items.filter((i) => i.show) };
@@ -244,9 +251,10 @@ function useQuickAdd(onBefore?: () => void) {
 
 export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefore?: () => void }) {
   const t = useTheme();
-  const { items, go } = useQuickAdd(onBefore);
+  const { items, go, child } = useQuickAdd(onBefore);
   return (
     <View style={{ gap: spacing.xs }}>
+      {child ? <Text variant="small" weight="bold" testID="quick-for">{tr('dock.forChild', { name: child.first_name })}</Text> : null}
       {compact ? (
         <Pressable accessibilityRole="button" onPress={go(() => router.push('/assistant/chat'))}
           style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: 'rgba(255,143,177,0.35)', backgroundColor: pressed ? palette.nightSoft : palette.night })}>

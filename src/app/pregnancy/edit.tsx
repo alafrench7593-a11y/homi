@@ -7,7 +7,7 @@ import { Banner, Button, Card, haptic, SectionTitle, Text } from '@/components/u
 import { confirm, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { backend, eq } from '@/lib/backend';
-import { useExpectedBabies, useInvalidate, usePregnancies } from '@/lib/data/hooks';
+import { useExpectedBabies, useInvalidate, useJourneyState, usePregnancies } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { PregnancyForm, validatePregnancy, type PregnancyDraft } from '@/features/profiles';
 import { babiesCount, multiplicityLabel } from '@/lib/domain/pregnancy';
@@ -15,6 +15,7 @@ import { formatDateFr, todayISO } from '@/lib/domain/dates';
 import type { ExpectedBaby, Pregnancy } from '@/lib/types';
 import { toFrDate } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 function toDraft(p: Pregnancy, babies: ExpectedBaby[]): PregnancyDraft {
   const lmpMode = p.due_date_source === 'lmp' && !!p.lmp_date;
@@ -27,14 +28,15 @@ export default function EditPregnancy() {
   const toast = useToast();
   const inv = useInvalidate();
   const pregnanciesQ = usePregnancies();
-  const pregnancy = pregnanciesQ.data?.find((x) => x.status === 'active') ?? null;
+  // Seule la grossesse d'un parcours « grossesse » actif s'affiche (jamais une ancienne grossesse)
+  const js = useJourneyState();
+  const pregnancy = pregnanciesQ.data?.find((x) => x.status === 'active' && js.pregnancyIds.includes(x.id)) ?? null;
   const babiesQ = useExpectedBabies(pregnancy?.id);
   const { data: babies } = babiesQ;
   const [draft, setDraft] = useState<PregnancyDraft | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [ending, setEnding] = useState<'born' | 'ended' | null>(null);
 
   useEffect(() => {
     if (!draft && pregnancy && babies) setDraft(toDraft(pregnancy, babies));
@@ -98,30 +100,6 @@ export default function EditPregnancy() {
     }
   }
 
-  async function end(status: 'born' | 'ended') {
-    if (!pregnancy) return;
-    const ok = status === 'born'
-      ? await confirm('Félicitations !', 'La grossesse sera archivée (rien n’est supprimé) et vous pourrez créer le profil de chaque bébé.', 'Continuer', false)
-      : await confirm('Clôturer la grossesse', 'La grossesse sera archivée. Vos notes, documents et listes restent conservés et vous pourrez les supprimer quand vous le souhaiterez.', 'Clôturer', false);
-    if (!ok) return;
-    setEnding(status);
-    try {
-      await backend.update('pregnancies', { status, ended_on: todayISO() }, [eq('id', pregnancy.id)]);
-      inv('pregnancies');
-      haptic(status === 'born' ? 'success' : 'light');
-      if (status === 'born') {
-        router.replace({ pathname: '/profiles/new', params: { kind: 'child', fromPregnancy: pregnancy.id } });
-      } else {
-        toast('La grossesse a été archivée. Prenez soin de vous.', 'info');
-        router.replace('/(tabs)');
-      }
-    } catch (e) {
-      setError(friendlyError(e, 'Enregistrement impossible. Réessayez dans un instant.'));
-    } finally {
-      setEnding(null);
-    }
-  }
-
   return (
     <Screen back title="Modifier la grossesse" subtitle={`${multiplicityLabel(pregnancy.multiplicity)} · terme actuel le ${formatDateFr(pregnancy.due_date)}`}>
       {error ? <Banner tone="danger">{error}</Banner> : null}
@@ -129,19 +107,11 @@ export default function EditPregnancy() {
       <Text variant="caption" muted>La date retenue reste celle donnée par votre sage-femme ou votre médecin : l’application l’affiche sans l’interpréter.</Text>
       <Button label="Enregistrer les modifications" size="lg" loading={saving} onPress={save} />
 
-      <SectionTitle title="Clôturer la grossesse" />
+      <SectionTitle title={tr('pj.end.title')} />
       <Card tone="soft">
         <View style={{ gap: spacing.sm }}>
-          <Text weight="bold">Bébé est né ?</Text>
-          <Text variant="small" muted>La grossesse est archivée et vous créez le profil de {babiesCount(pregnancy.multiplicity) > 1 ? 'chaque bébé' : 'votre bébé'} pour commencer le suivi.</Text>
-          <Button label={babiesCount(pregnancy.multiplicity) > 1 ? 'Les bébés sont nés' : 'Bébé est né'} icon="heart" variant="secondary" loading={ending === 'born'} onPress={() => end('born')} />
-        </View>
-      </Card>
-      <Card>
-        <View style={{ gap: spacing.sm }}>
-          <Text weight="bold">La grossesse s’est arrêtée</Text>
-          <Text variant="small" muted>Vous pouvez archiver cette grossesse à tout moment, sans avoir à expliquer pourquoi. Si vous traversez une épreuve, votre sage-femme, votre médecin ou une association peuvent vous accompagner.</Text>
-          <Button label="Archiver la grossesse" variant="ghost" loading={ending === 'ended'} onPress={() => end('ended')} />
+          <Text variant="small" muted>{tr('pj.end.editHint')}</Text>
+          <Button label={tr('pj.end.title')} icon="flag" variant="secondary" onPress={() => router.push('/pregnancy/end')} testID="go-end" />
         </View>
       </Card>
     </Screen>

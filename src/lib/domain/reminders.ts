@@ -10,8 +10,8 @@ export type Weekday = 1 | 2 | 3 | 4 | 5 | 6 | 7; // 1 = lundi … 7 = dimanche
 
 export type ReminderSchedule =
   | { type: 'once'; at: string }
-  | { type: 'daily'; hour: number; minute: number }
-  | { type: 'weekly'; weekdays: Weekday[]; hour: number; minute: number }
+  | { type: 'daily'; hour: number; minute: number; from?: string | null; until?: string | null }
+  | { type: 'weekly'; weekdays: Weekday[]; hour: number; minute: number; from?: string | null; until?: string | null }
   | { type: 'interval'; minutes: number; from_hour: number; to_hour: number };
 
 export type PlannedTrigger =
@@ -45,6 +45,25 @@ export function planReminder(schedule: ReminderSchedule, now: Date = new Date(),
   if (snoozedUntil && Date.parse(snoozedUntil) > now.getTime()) {
     out.push({ kind: 'date', date: new Date(snoozedUntil) });
     if (schedule.type === 'once') return out; // le report remplace le rappel ponctuel
+  }
+  // Fenêtre de dates (ex. traitement prescrit du … au …) : prises datées une à une, rien après la date de fin
+  if ((schedule.type === 'daily' || schedule.type === 'weekly') && (schedule.from || schedule.until)) {
+    const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const from = schedule.from ?? ymd(now);
+    const day = new Date(now); day.setHours(0, 0, 0, 0);
+    if (from > ymd(day)) { const [y, m, d] = from.split('-').map(Number); day.setFullYear(y, m - 1, d); }
+    if (!schedule.until && from <= ymd(now)) {
+      // commencé et sans fin : rappel répété classique
+    } else {
+      for (let i = 0; i < 400 && out.length < MAX_TRIGGERS_PER_REMINDER; i++, day.setDate(day.getDate() + 1)) {
+        if (schedule.until && ymd(day) > schedule.until) break;
+        const iso = ((day.getDay() + 6) % 7) + 1;
+        if (schedule.type === 'weekly' && !schedule.weekdays.includes(iso as Weekday)) continue;
+        const at = new Date(day); at.setHours(clampInt(schedule.hour, 0, 23), clampInt(schedule.minute, 0, 59), 0, 0);
+        if (at.getTime() > now.getTime()) out.push({ kind: 'date', date: at });
+      }
+      return out.slice(0, MAX_TRIGGERS_PER_REMINDER);
+    }
   }
   switch (schedule.type) {
     case 'once': {

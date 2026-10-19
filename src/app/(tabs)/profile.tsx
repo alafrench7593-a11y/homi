@@ -6,10 +6,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
 import { ErrorView, Skeleton } from '@/components/States';
-import { Card, Chip, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Button, Card, Chip, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
-import { useActivePregnancy, useChildren, usePremium, useProfile } from '@/lib/data/hooks';
-import { journeyOptions } from '@/lib/domain/journeys';
+import { useActivePregnancy, useChildren, useJourneyState, usePremium, useProfile } from '@/lib/data/hooks';
+import { JOURNEY_ICON, useJourneyProfileLabel } from '@/features/journeys';
 import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { NACRE, spacing } from '@/theme/tokens';
@@ -23,8 +23,8 @@ export default function Profile() {
   const childrenQ = useChildren();
   const children = childrenQ.data;
   const premium = usePremium();
-  const journeys: string[] = (profile?.journeys ?? []).map((j) => (j === 'child' ? 'newborn' : j));
-  const active = journeyOptions().filter((o) => journeys.includes(o.key));
+  const js = useJourneyState();
+  const profileLabel = useJourneyProfileLabel();
 
   return (
     <View style={{ flex: 1 }}>
@@ -46,12 +46,14 @@ export default function Profile() {
         ) : null}
 
         <Appear kind="soft" delay={0.14}>
-          {profileQ.isLoading && !profile ? <Skeleton kind="card" rows={1} /> : <Card onPress={() => router.push('/journeys')} accessibilityLabel={tr('profile.journeysA11y')}>
+          {js.query.isLoading && !js.loaded ? <Skeleton kind="card" rows={1} /> : <Card>
             <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('profile.journeys')}</Text>
             <Row wrap style={{ marginTop: 6 }}>
-              {active.length ? active.map((o) => <Chip key={o.key} label={o.label} icon={o.icon} selected />) : <Text muted>{tr('profile.noJourney')}</Text>}
+              {js.active.length ? js.active.map((j) => <Chip key={j.id} label={profileLabel(j, children)} icon={JOURNEY_ICON[j.type]} selected />) : <Text muted>{tr('profile.noJourney')}</Text>}
             </Row>
-            <Text variant="small" weight="bold" color={undefined} style={{ marginTop: spacing.xs }}>{tr('profile.changeJourney')}</Text>
+            {/* Bouton visible : changer, terminer ou ajouter un parcours ; anciens parcours consultables */}
+            <Button label={tr('pj.editJourney')} icon="compass" onPress={() => router.push('/journeys')} style={{ marginTop: spacing.sm }} full testID="edit-journey" />
+            {js.archived.length ? <Text variant="small" muted style={{ marginTop: 6 }}>{tr('pj.profile.previous', { count: js.archived.length })}</Text> : null}
           </Card>}
         </Appear>
 

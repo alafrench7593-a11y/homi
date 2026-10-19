@@ -35,9 +35,14 @@ export interface Pregnancy {
   carrier_user_id: string | null;
   due_date: string;
   lmp_date: string | null;
-  due_date_source: 'due_date' | 'lmp' | 'professional';
+  due_date_source: 'due_date' | 'lmp' | 'professional' | 'conception' | 'positive_test';
   multiplicity: Multiplicity;
   status: 'active' | 'born' | 'ended';
+  conception_date?: string | null;
+  positive_test_date?: string | null;
+  /** Motif de fin, choisi par la personne (« Je préfère ne pas préciser » possible). */
+  end_reason?: 'born' | 'ended' | 'unspecified' | null;
+  ended_on?: string | null;
   reminders_wanted: string[];
   topics: string[];
   created_at: string;
@@ -54,6 +59,10 @@ export interface Child {
   photo_path: string | null;
   from_pregnancy_id: string | null;
   multiple_group: string | null;
+  birth_time?: string | null;
+  birth_weight_g?: number | null;
+  birth_length_cm?: number | null;
+  birth_term_weeks?: number | null;
   enabled_tracking: string[];
   allergies_declared: string[];
   habits: string | null;
@@ -97,6 +106,7 @@ export interface Appointment {
 
 export interface Reminder {
   id: string; user_id: string; household_id: string | null; child_id: string | null; pregnancy_id: string | null; appointment_id: string | null;
+  treatment_id?: string | null; journey_type?: string | null;
   category: 'appointment' | 'ultrasound' | 'exam' | 'checklist' | 'bottle' | 'meal' | 'medication' | 'tracking' | 'postnatal' | 'custom';
   title: string; body: string | null; schedule: ReminderSchedule; timezone: string; enabled: boolean; snoozed_until: string | null; deep_link: string | null;
   created_at: string; updated_at: string;

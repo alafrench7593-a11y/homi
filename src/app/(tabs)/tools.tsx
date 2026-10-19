@@ -15,7 +15,9 @@ import { ToolCard, ToolShortcut } from '@/components/ToolCard';
 import { QuickAddGrid } from '@/components/Dock';
 import { glyphColor, tint, ToolGlyph } from '@/components/ToolGlyph';
 import { Button, Chip, Field, haptic, Icon, Text } from '@/components/ui';
-import { useActivePregnancy, useActiveSubject, useChildren, useProfile } from '@/lib/data/hooks';
+import { useProfile } from '@/lib/data/hooks';
+import { useScope } from '@/lib/data/hooks-scope';
+import { ProfileSwitcher } from '@/components/Family';
 import { useToolStatuses } from '@/lib/data/hooks-tools';
 import { favoriteTools, groupByTheme, searchTools, statusKeyFor, THEMES, toggleFavorite, toolCatalog, type CatalogTool, type ToolTheme } from '@/lib/domain/toolCatalog';
 import { useUiStore } from '@/lib/store';
@@ -33,11 +35,10 @@ export default function Tools() {
   const { width: winW } = useWindowDimensions();
   const profileQ = useProfile();
   const { data: profile } = profileQ;
-  const pregnancy = useActivePregnancy();
-  const { data: children } = useChildren();
-  const { subject } = useActiveSubject();
-  const childId = subject.type === 'child' ? subject.id : children?.[0]?.id;
-  const catalog = useMemo(() => toolCatalog({ journeys: profile?.journeys ?? [], hasPregnancy: !!pregnancy, childId, childCount: children?.length ?? 0 }), [profile, pregnancy, childId, children]);
+  // Registre central : seuls les outils autorisés pour le profil affiché (sélecteur) et son parcours
+  const scope = useScope();
+  const childId = scope.childId ?? (scope.scope === 'postpartum' ? scope.babyId : null);
+  const catalog = useMemo(() => toolCatalog(scope), [scope]);
   const { statuses } = useToolStatuses(childId);
   const favIds = useUiStore((s) => s.toolFavorites);
   const setFavIds = useUiStore((s) => s.setToolFavorites);
@@ -75,6 +76,11 @@ export default function Tools() {
     <Screen account title={tr('screen.tools.title')} subtitle={tr('screen.tools.sub')} bottomInset={96} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
       <View onLayout={(e) => setMeasured(Math.floor(e.nativeEvent.layout.width))} style={{ height: 0, alignSelf: 'stretch', marginBottom: -spacing.md }} />
       {urgent ? <UrgentStrip tool={urgent} /> : null}
+      {/* Les outils affichés dépendent du profil choisi ici (grossesse, post-partum, chaque enfant, famille, moi) */}
+      <View testID="tools-scope" accessibilityLabel={tr('pj.tools.scopeA11y')} style={{ gap: 4 }}>
+        <Text variant="caption" muted>{tr('pj.tools.for')}</Text>
+        <ProfileSwitcher />
+      </View>
       {/* Ajout rapide (anciennement derrière le bouton « + ») : toujours à portée */}
       {!q && activeFilter === 'all' ? (
         <View style={{ gap: spacing.xs }}>
@@ -118,7 +124,7 @@ export default function Tools() {
           </View>
         </Appear>
       ))}
-      <Button label="Changer ou ajouter un parcours" variant="secondary" icon="refresh-cw" onPress={() => router.push('/journeys')} full />
+      <Button label={tr('pj.editJourney')} variant="secondary" icon="refresh-cw" onPress={() => router.push('/journeys')} full />
     </Screen>
   );
 }

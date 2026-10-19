@@ -6,6 +6,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 export type ActiveSubject =
   | { type: 'pregnancy'; id: string }
   | { type: 'child'; id: string }
+  | { type: 'postpartum' }
   | { type: 'family' }
   | { type: 'me' };
 

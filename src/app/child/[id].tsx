@@ -7,6 +7,8 @@ import { initialsColor } from '@/components/Illustrations';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Button, IconButton, Row, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
+import { NeedsSummary } from '@/features/needs';
+import { ChildAvatar } from '@/features/childAvatar';
 import { ChildTabs, CHILD_TABS, EditChildSheet, FoodsTab, GrowthTab, HealthTab, MilestonesTab, OverviewTab, type ChildTab } from '@/features/child';
 import { backend, eq } from '@/lib/backend';
 import { useActiveSubject, useChild, useChildren, useInvalidate, useMemberships } from '@/lib/data/hooks';
@@ -77,12 +79,13 @@ export default function ChildProfile() {
       right={<IconButton icon="edit-2" label={`Modifier le profil de ${child.first_name}`} onPress={() => setEditing(true)} />}
     >
       <Row style={{ gap: spacing.md }}>
-        <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: initialsColor(child.id), alignItems: 'center', justifyContent: 'center' }} accessibilityElementsHidden importantForAccessibility="no">
-          <Text variant="heading" color="#2B2433">{initials(child.first_name)}</Text>
-        </View>
+        <ChildAvatar child={child} size={64} />
         <View style={{ flex: 1, gap: 2 }}>
           <Text variant="title" accessibilityRole="header">{child.first_name}</Text>
-          <Text muted>{age.label} · né{child.sex === 'female' ? 'e' : child.sex === 'male' ? '' : '·e'} le {formatDateFr(child.birth_date)}</Text>
+          <Text muted>{age.label} · né{child.sex === 'female' ? 'e' : child.sex === 'male' ? '' : '·e'} le {formatDateFr(child.birth_date)}{child.birth_time ? ` à ${child.birth_time.slice(0, 5)}` : ''}</Text>
+          {child.birth_weight_g || child.birth_length_cm || child.birth_term_weeks ? (
+            <Text variant="small" muted testID="birth-facts">{[child.birth_weight_g ? `${child.birth_weight_g} g` : null, child.birth_length_cm ? `${String(child.birth_length_cm).replace('.', ',')} cm` : null, child.birth_term_weeks ? `${child.birth_term_weeks} SA` : null].filter(Boolean).join(' · ')}</Text>
+          ) : null}
         </View>
       </Row>
 
@@ -93,6 +96,7 @@ export default function ChildProfile() {
       {tab === 'etapes' && <MilestonesTab child={child} />}
       {tab === 'sante' && <HealthTab child={child} />}
       {tab === 'alimentation' && <FoodsTab child={child} />}
+      {tab === 'besoins' && <NeedsSummary child={child} />}
 
       {tab === 'apercu' && (
         <View style={{ gap: spacing.xs, marginTop: spacing.md }}>

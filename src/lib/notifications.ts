@@ -17,6 +17,42 @@ export const notificationsSupported = Platform.OS === 'ios' || Platform.OS === '
 const MAP_KEY = 'toietmoi.scheduled.v1';
 type ScheduledMap = Record<string, { signature: string; ids: string[] }>;
 
+export const TREATMENT_CATEGORY = 'treatment';
+export const TREAT_TAKEN = 'treat-taken';
+export const TREAT_SNOOZE = 'treat-snooze';
+export const TREAT_SKIP = 'treat-skip';
+export const TREAT_NOTE = 'treat-note';
+const doseOf = (r: Reminder) => {
+  const s = r.schedule as { hour?: number; minute?: number };
+  return s.hour != null ? `${String(s.hour).padStart(2, '0')}:${String(s.minute ?? 0).padStart(2, '0')}` : null;
+};
+
+/** Prise prévue correspondant à une notification : le jour de la notification, à l'heure saisie par le parent. */
+export function doseScheduledFor(notifiedAt: number, dose: string | null): string {
+  const d = new Date(notifiedAt);
+  if (dose && /^\d{2}:\d{2}$/.test(dose)) { const [h, m] = dose.split(':').map(Number); d.setHours(h, m, 0, 0); }
+  else d.setSeconds(0, 0);
+  return d.toISOString();
+}
+
+/**
+ * Réponse à un rappel de traitement depuis la notification. L'application n'interprète rien : elle note
+ * « pris », « reporté » ou « ignoré » pour la prise prévue. « Ajouter une note » ouvre la fiche.
+ */
+export async function handleTreatmentResponse(response: Notifications.NotificationResponse): Promise<boolean> {
+  const c = response.notification.request.content;
+  const data = (c.data ?? {}) as { source?: string; treatmentId?: string; householdId?: string; dose?: string | null; url?: string };
+  if (data.source !== 'treatment' || !data.treatmentId) return false;
+  const status = response.actionIdentifier === TREAT_TAKEN ? 'taken' : response.actionIdentifier === TREAT_SKIP ? 'skipped' : response.actionIdentifier === TREAT_SNOOZE ? 'snoozed' : null;
+  if (!status) return false;
+  const scheduled_for = doseScheduledFor(response.notification.date, data.dose ?? null);
+  const existing = await backend.select<{ id: string }>({ table: 'treatment_logs', filters: [eq('treatment_id', data.treatmentId), eq('scheduled_for', scheduled_for)], limit: 1 });
+  if (existing[0]) await backend.update('treatment_logs', { status }, [eq('id', existing[0].id)]);
+  else await backend.insert('treatment_logs', { treatment_id: data.treatmentId, household_id: data.householdId, scheduled_for, status });
+  if (status === 'snoozed') await snoozeLocally(c.title ?? 'Traitement', c.body ?? undefined, data.url);
+  return true;
+}
+
 export function configureNotifications() {
   if (!notificationsSupported) return;
   Notifications.setNotificationHandler({
@@ -42,9 +78,17 @@ export function configureNotifications() {
     { identifier: BOTTLE_ACTION_SNOOZE, buttonTitle: 'Reporter 15 min', options: { opensAppToForeground: false } },
     { identifier: BOTTLE_ACTION_CANCEL, buttonTitle: 'Annuler', options: { opensAppToForeground: false, isDestructive: true } },
   ]).catch(() => undefined);
+  // Traitement prescrit d'un enfant : « Pris », « Reporter », « Ignorer », « Ajouter une note »
+  Notifications.setNotificationCategoryAsync(TREATMENT_CATEGORY, [
+    { identifier: TREAT_TAKEN, buttonTitle: 'Pris', options: { opensAppToForeground: false } },
+    { identifier: TREAT_SNOOZE, buttonTitle: 'Reporter', options: { opensAppToForeground: false } },
+    { identifier: TREAT_SKIP, buttonTitle: 'Ignorer', options: { opensAppToForeground: false } },
+    { identifier: TREAT_NOTE, buttonTitle: 'Ajouter une note', options: { opensAppToForeground: true } },
+  ]).catch(() => undefined);
   if (!bottleResponseSub) {
     bottleResponseSub = Notifications.addNotificationResponseReceivedListener((r) => {
       handleBottleNotificationResponse(r).catch(() => undefined);
+      handleTreatmentResponse(r).catch(() => undefined);
     });
   }
 }
@@ -132,8 +176,10 @@ export async function syncLocalReminders(reminders: Reminder[]): Promise<{ sched
         content: {
           title: r.title,
           body: r.body ?? undefined,
-          categoryIdentifier: 'reminder',
-          data: { url: r.deep_link ?? '/notifications', reminderId: r.id, source: 'reminder' },
+          categoryIdentifier: r.treatment_id ? TREATMENT_CATEGORY : 'reminder',
+          data: r.treatment_id
+            ? { url: r.deep_link ?? '/notifications', reminderId: r.id, source: 'treatment', treatmentId: r.treatment_id, householdId: r.household_id, dose: doseOf(r) }
+            : { url: r.deep_link ?? '/notifications', reminderId: r.id, source: 'reminder' },
         },
         trigger: toTrigger(p),
       });

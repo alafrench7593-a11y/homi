@@ -10,7 +10,7 @@ import { Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Text } f
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { BottleNotificationSettings, NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { TimePicker } from '@/features/tracking';
-import { useChild, useChildren, useMemberships } from '@/lib/data/hooks';
+import { useChild, useTrackedChildren, useMemberships } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useBottleTimer, useLastBottle, useNow, useTimerScheduledHere, useUpdateBottleTimer, useStartBottleTimer } from '@/lib/data/hooks-bottle';
 import {
@@ -27,7 +27,7 @@ export default function BottleTimerScreen() {
   const toast = useToast();
   const params = useLocalSearchParams<{ childId: string }>();
   const childId = params.childId ?? '';
-  const childrenQ = useChildren();
+  const childrenQ = useTrackedChildren();
   const membershipsQ = useMemberships();
   const { data: children } = childrenQ;
   const loadingChildren = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !children);

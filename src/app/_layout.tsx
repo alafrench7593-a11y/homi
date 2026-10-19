@@ -27,6 +27,7 @@ import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router';
 import { LiquidAurora } from '@/components/LiquidAurora';
 import { VideoBackdrop } from '@/components/VideoBackdrop';
+import { JourneyGuard } from '@/components/JourneyGuard';
 import { DemoBar } from '@/components/DemoBar';
 import { OfflinePill } from '@/components/OfflinePill';
 import { AppErrorBoundary } from '@/components/AppErrorBoundary';
@@ -50,7 +51,8 @@ const queryClient = new QueryClient({
 // Cache des données récentes sur l'appareil : consultation possible hors connexion.
 // Les conversations avec l'assistant et les documents ne sont pas mis en cache.
 const persister = createAsyncStoragePersister({ storage: AsyncStorage, key: 'toietmoi.cache.v1', throttleTime: 2000 });
-const PRIVATE_KEYS = ['assistant_messages', 'assistant_conversations', 'documents', 'mood_checkins'];
+// user_journeys : jamais repris d'un ancien cache (un parcours archivé ne doit pas réapparaître à l'ouverture)
+const PRIVATE_KEYS = ['assistant_messages', 'assistant_conversations', 'documents', 'mood_checkins', 'user_journeys'];
 
 import { useHouseholdId } from '@/lib/data/hooks';
 import { useRealtimeSync, wireFocusAndOnline } from '@/lib/sync';
@@ -92,6 +94,8 @@ function Bootstrap() {
         return;
       }
       if (response.actionIdentifier === 'done') return;
+      // Traitement : « Pris », « Reporter », « Ignorer » sont notés sans ouvrir d'écran (voir handleTreatmentResponse)
+      if (response.actionIdentifier.startsWith('treat-') && response.actionIdentifier !== 'treat-note') return;
       if (url && url.startsWith('/')) router.push(url as never);
     };
     open(Notifications.getLastNotificationResponse());
@@ -146,6 +150,7 @@ export default function RootLayout() {
                 <WebFrame>
                   <Backdrop />
                   <Navigator />
+                  <JourneyGuard />
                   <DemoBar />
                   <OfflinePill />
                 </WebFrame>

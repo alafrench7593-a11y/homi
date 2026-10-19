@@ -12,7 +12,7 @@ import { Button, Chip, haptic, Icon, Row, Text, Toggle } from '@/components/ui';
 import { ErrorView, Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
 import { backend, eq } from '@/lib/backend';
-import { useActiveSubject, useAddLog, useChildren, useInvalidate, useLogs, useOpenSleep } from '@/lib/data/hooks';
+import { useActiveSubject, useAddLog, useTrackedChildren, useInvalidate, useLogs, useOpenSleep } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useUiStore } from '@/lib/store';
 import { formatDuration, formatTime, timeAgo } from '@/lib/domain/dates';
@@ -47,7 +47,7 @@ export default function NightMode() {
   const vibrations = useUiStore((s) => s.nightVibrations);
   const setVibrations = useUiStore((s) => s.setNightVibrations);
   const { subject, setSubject } = useActiveSubject();
-  const childrenQ = useChildren();
+  const childrenQ = useTrackedChildren();
   const { data: children } = childrenQ;
   const [busy, setBusy] = useState<string | null>(null);
   const childId = subject.type === 'child' ? subject.id : children?.[0]?.id;

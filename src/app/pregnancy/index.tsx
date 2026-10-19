@@ -10,7 +10,7 @@ import { Banner, Button, Card, Chip, Field, Icon, ListRow, Row, SectionTitle, Te
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { backend, eq } from '@/lib/backend';
-import { useExpectedBabies, useInvalidate, usePregnancies, useProfile, useRows } from '@/lib/data/hooks';
+import { useExpectedBabies, useInvalidate, useJourneyState, usePregnancies, useProfile, useRows } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { countdownLabel, multiplicityLabel, pregnancyProgress } from '@/lib/domain/pregnancy';
 import { formatWeight, weekInfo } from '@/lib/domain/fetalWeeks';
@@ -54,7 +54,9 @@ function BabyNotes({ baby }: { baby: ExpectedBaby }) {
 
 export default function PregnancyUniverse() {
   const pregnanciesQ = usePregnancies();
-  const pregnancy = pregnanciesQ.data?.find((x) => x.status === 'active') ?? null;
+  // Seule la grossesse d'un parcours « grossesse » actif s'affiche (jamais une ancienne grossesse)
+  const js = useJourneyState();
+  const pregnancy = pregnanciesQ.data?.find((x) => x.status === 'active' && js.pregnancyIds.includes(x.id)) ?? null;
   const { data: babies } = useExpectedBabies(pregnancy?.id);
   const { data: profile } = useProfile();
   const p = pregnancy ? pregnancyProgress(pregnancy.due_date) : null;

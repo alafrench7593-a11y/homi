@@ -9,7 +9,9 @@ import { Banner, Button, Card, haptic, Segmented, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
 import { backend, eq } from '@/lib/backend';
-import { ensureHousehold, useActivePregnancy, useActiveSubject, useChildren, useExpectedBabies, useHouseholdId, useInvalidate, usePregnancies, usePremium } from '@/lib/data/hooks';
+import { ensureHousehold, useActivePregnancy, useActiveSubject, useChildren, useExpectedBabies, useHouseholdId, useInvalidate, useJourneyState, usePregnancies, usePremium } from '@/lib/data/hooks';
+import { runOps } from '@/lib/journeys/manager';
+import { childJourneyType, planChange } from '@/lib/journeys/model';
 import { errorMessage, isPremiumError, usePlanLimit } from '@/lib/data/hooks-family';
 import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, PregnancyForm, validateChild, validatePregnancy, type ChildDraft } from '@/features/profiles';
 import { todayISO } from '@/lib/domain/dates';
@@ -38,6 +40,12 @@ export default function NewProfile() {
   const fromPregnancy = pregnancies?.find((p) => p.id === params.fromPregnancy) ?? null;
   const { data: babies } = useExpectedBabies(fromPregnancy?.id);
 
+  const js = useJourneyState();
+  // Une grossesse se démarre depuis « J'ai un test positif » ; une naissance depuis « Terminer la grossesse »
+  useEffect(() => {
+    if (params.fromPregnancy) router.replace('/pregnancy/end?outcome=born');
+    else if (params.kind === 'pregnancy') router.replace('/pregnancy/start');
+  }, [params.fromPregnancy, params.kind]);
   const [kind, setKind] = useState<Kind>(params.kind === 'child' || params.fromPregnancy ? 'child' : params.kind === 'pregnancy' ? 'pregnancy' : 'child');
   const [pregnancy, setPregnancy] = useState(emptyPregnancy());
   const [drafts, setDrafts] = useState<ChildDraft[]>([emptyChild()]);
@@ -102,12 +110,14 @@ export default function NewProfile() {
       for (const d of drafts) {
         const c = await createChild(h, d);
         created.push(c.id);
+        // Chaque enfant a son propre parcours (bébé jusqu'à 2 ans, enfant ensuite) : ses données lui appartiennent
+        if (userId) await runOps(planChange(js.rows, userId, { type: childJourneyType(c.birth_date, todayISO()), childId: c.id, householdId: h }, 'archive', todayISO())).catch(() => undefined);
         if (birthFlow) {
           // Lien facultatif avec la grossesse : le profil est créé même si ce lien échoue, mais on le signale
           await backend.update('children', { from_pregnancy_id: fromPregnancy!.id, multiple_group: group }, [eq('id', c.id)]).catch(() => { linkFailed = true; });
         }
       }
-      inv('children', 'memberships');
+      inv('children', 'memberships', 'user_journeys', 'profile');
       setSubject({ type: 'child', id: created[0] });
       haptic('success');
       if (linkFailed) toast(`${created.length > 1 ? 'Profils créés' : 'Profil créé'}, mais le lien avec la grossesse n’a pas pu être enregistré.`, 'info');
@@ -143,7 +153,7 @@ export default function NewProfile() {
         <Segmented
           label="Type de profil"
           value={kind}
-          onChange={(v) => { setKind(v); setError(null); setErrors(v === 'child' ? drafts.map(() => ({})) : [{}]); }}
+          onChange={(v) => { if (v === 'pregnancy') { router.push('/pregnancy/start'); return; } setKind(v); setError(null); setErrors(v === 'child' ? drafts.map(() => ({})) : [{}]); }}
           options={[{ value: 'child', label: 'Un enfant' }, { value: 'pregnancy', label: 'Une grossesse' }]}
         />
       )}

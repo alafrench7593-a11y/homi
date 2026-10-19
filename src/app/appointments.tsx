@@ -7,7 +7,7 @@ import { EmptyStateCard } from '@/components/ui-extra';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, type IconName, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { backend, eq } from '@/lib/backend';
-import { ensureHousehold, useActivePregnancy, useAppointments, useChildren, useHouseholdId, useInvalidate, useReminders } from '@/lib/data/hooks';
+import { ensureHousehold, useActivePregnancy, useActiveSubject, useAppointments, useChildren, useHouseholdId, useInvalidate, useReminders } from '@/lib/data/hooks';
 import { leadOf, setAppointmentReminder, type ReminderLead } from '@/lib/data/hooks-me';
 import { frToISO } from '@/lib/domain/dates';
 import { notificationsSupported } from '@/lib/notifications';
@@ -61,11 +61,18 @@ export default function AppointmentsScreen() {
   const [saving, setSaving] = useState(false);
   const [showAllPast, setShowAllPast] = useState(false);
 
+  // Profil affiché : par défaut, seulement ses rendez-vous ; ceux d'une ancienne grossesse restent dans « Mes parcours précédents »
+  const qp = useLocalSearchParams<{ child?: string; for?: string; all?: string }>();
+  const { subject } = useActiveSubject();
+  const [everyone, setEveryone] = useState(qp.all === '1');
+  const focus: Concern | null = qp.child ? `child:${qp.child}` : qp.for === 'pregnancy' ? 'pregnancy' : subject.type === 'child' ? `child:${subject.id}` : subject.type === 'pregnancy' ? 'pregnancy' : null;
   const { upcoming, past } = useMemo(() => {
     const cutoff = Date.now() - 3600_000;
-    const all = appointments ?? [];
+    const all = (appointments ?? [])
+      .filter((a) => !a.pregnancy_id || a.pregnancy_id === pregnancy?.id)
+      .filter((a) => everyone || !focus || (focus === 'pregnancy' ? !!a.pregnancy_id : a.child_id === focus.slice(6)));
     return { upcoming: all.filter((a) => Date.parse(a.starts_at) >= cutoff), past: all.filter((a) => Date.parse(a.starts_at) < cutoff).reverse() };
-  }, [appointments]);
+  }, [appointments, pregnancy?.id, everyone, focus]);
   const reminderFor = (id: string) => reminders?.find((r) => r.appointment_id === id);
 
   const concerns: { value: Concern; label: string }[] = [
@@ -81,10 +88,11 @@ export default function AppointmentsScreen() {
   useEffect(() => {
     if (params.new === 'postnatal') setDraft({ ...emptyDraft('me'), kind: 'postnatal', private: true });
   }, [params.new]);
+  const focusLabel = focus ? (focus === 'pregnancy' ? 'Grossesse' : children?.find((c) => c.id === focus.slice(6))?.first_name ?? null) : null;
 
   function openNew() {
     setErrors({});
-    setDraft(emptyDraft(pregnancy ? 'pregnancy' : 'me'));
+    setDraft(emptyDraft(focus && (focus !== 'pregnancy' || pregnancy) ? focus : 'me'));
   }
 
   function openEdit(a: Appointment) {
@@ -176,6 +184,12 @@ export default function AppointmentsScreen() {
 
   return (
     <Screen back title="Rendez-vous" subtitle="Consultations, échographies, examens, questions à poser." footer={<Button label="Ajouter un rendez-vous" icon="plus" onPress={openNew} full />}>
+      {focusLabel ? (
+        <Row wrap>
+          <Chip label={`Pour ${focusLabel}`} selected={!everyone} onPress={() => setEveryone(false)} />
+          <Chip label="Toute la famille" selected={everyone} onPress={() => setEveryone(true)} />
+        </Row>
+      ) : null}
       <SectionTitle title="À venir" />
       {upcoming.map((a) => renderAppt(a))}
       {!isLoading && !upcoming.length && <EmptyStateCard illustration="leaf" title="Aucun rendez-vous à venir" text="Notez vos prochains rendez-vous pour les retrouver ici, avec les questions que vous voulez poser." />}

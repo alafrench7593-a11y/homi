@@ -9,7 +9,7 @@ import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/State
 import { Button, Card, Chip, IconButton, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { copyText } from '@/features/bottle';
-import { useChildren, useDeleteRow } from '@/lib/data/hooks';
+import { useTrackedChildren, useDeleteRow , useActiveSubject } from '@/lib/data/hooks';
 import { useBottleHistory, useRecorderLabel } from '@/lib/data/hooks-bottle';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { consultationSummary, dailySummaries, dayLabel, groupByDay, lastDays, withIntervals } from '@/lib/domain/bottleHistory';
@@ -26,9 +26,10 @@ export default function BottleHistory() {
   const toast = useToast();
   const params = useLocalSearchParams<{ child?: string }>();
   const insets = useSafeAreaInsets();
-  const childrenQ = useChildren();
+  const childrenQ = useTrackedChildren();
   const { data: children } = childrenQ;
-  const childId = params.child || children?.[0]?.id || '';
+  const { subject } = useActiveSubject();
+  const childId = params.child || (subject.type === 'child' && children?.some((c) => c.id === subject.id) ? subject.id : children?.[0]?.id) || '';
   const child = children?.find((c) => c.id === childId) ?? null;
   const historyQ = useBottleHistory(childId, 8);
   const { data: bottles } = historyQ;

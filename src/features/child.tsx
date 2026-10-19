@@ -34,14 +34,8 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 
 // ---------------------------------------------------------------- onglets
-export type ChildTab = 'apercu' | 'croissance' | 'etapes' | 'sante' | 'alimentation';
-export const CHILD_TABS: { value: ChildTab; label: string; icon: IconName }[] = [
-  { value: 'apercu', label: 'Aperçu', icon: 'sun' },
-  { value: 'croissance', label: 'Croissance', icon: 'trending-up' },
-  { value: 'etapes', label: 'Étapes', icon: 'star' },
-  { value: 'sante', label: 'Santé', icon: 'heart' },
-  { value: 'alimentation', label: 'Alimentation', icon: 'feather' },
-];
+export { CHILD_TABS, type ChildTab } from '@/lib/domain/childTabs';
+import { CHILD_TABS, type ChildTab } from '@/lib/domain/childTabs';
 
 export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: ChildTab) => void }) {
   const t = useTheme();

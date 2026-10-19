@@ -8,7 +8,7 @@ import { Banner, Button, Chip, Field, haptic, Row, Segmented, Text } from '@/com
 import { confirm, useToast } from '@/components/Overlays';
 import { Stepper, TimePicker, KIND_META } from '@/features/tracking';
 import { backend, eq } from '@/lib/backend';
-import { useAddLog, useChild, useChildren, useDeleteRow, useInvalidate, useLogs, useRows } from '@/lib/data/hooks';
+import { useActiveSubject, useAddLog, useChild, useTrackedChildren, useDeleteRow, useInvalidate, useLogs, useRows } from '@/lib/data/hooks';
 import { SafeSleepCard, SafetyNoticeCard } from '@/features/childCare';
 import { STOOL_COLORS, STOOL_CONSISTENCY, digestionNotices, stoolNotice, type StoolColor } from '@/lib/domain/childCare';
 import { childAge } from '@/lib/domain/child';
@@ -51,8 +51,10 @@ function TrackEntry() {
   // timer / planned : ouverture depuis le minuteur (« Marquer le biberon comme donné »)
   const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string }>();
   const kind = (params.kind ?? 'bottle') as LogKind;
-  const { data: children } = useChildren();
-  const childId = params.child || children?.[0]?.id || '';
+  const { data: children } = useTrackedChildren();
+  // Toujours l'enfant affiché (sélecteur), jamais un autre profil par défaut
+  const { subject } = useActiveSubject();
+  const childId = params.child || (subject.type === 'child' && children?.some((c) => c.id === subject.id) ? subject.id : children?.[0]?.id) || '';
   const child = useChild(childId);
   const add = useAddLog(kind);
   const del = useDeleteRow(LOG_TABLE[kind]);
@@ -275,7 +277,7 @@ function TrackEntry() {
       subtitle={child ? `Pour ${child.first_name}` : undefined}
       footer={
         <View style={{ gap: spacing.xs }}>
-          <Button label={editing ? 'Enregistrer les modifications' : 'Enregistrer'} size="lg" loading={saving} onPress={save} />
+          <Button label={editing ? 'Enregistrer les modifications' : child ? `Enregistrer pour ${child.first_name}` : 'Enregistrer'} size="lg" loading={saving} onPress={save} testID="track-save" />
           {editing && <Button label="Supprimer" variant="ghost" icon="trash-2" onPress={remove} />}
         </View>
       }
@@ -285,6 +287,12 @@ function TrackEntry() {
           {children.map((c) => <Chip key={c.id} label={c.first_name} selected={c.id === childId} onPress={() => router.setParams({ child: c.id })} />)}
         </Row>
       )}
+      {child ? (
+        <View testID="track-for" accessibilityRole="header" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text variant="caption" weight="bold" muted>PROFIL CONCERNÉ</Text>
+          <Text weight="bold">{child.first_name}</Text>
+        </View>
+      ) : null}
       {error ? <Banner tone="danger">{error}</Banner> : null}
 
       {kind === 'bottle' && (

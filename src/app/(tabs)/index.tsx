@@ -13,31 +13,40 @@ import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
 import { PostpartumHomeCard } from '@/features/postpartum';
-import { FamilyHomeCard } from '@/features/familyLoad';
 import { ChildToday, CycleCard, orderedHomeCards, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
-import { useActivePregnancy, useActiveSubject, useArticles, useChildren, useNotificationsInbox, usePremium, useProfile } from '@/lib/data/hooks';
+import { ChildHomeCard, FamilyOverview, NoJourneyCard } from '@/features/journeys';
+import { useActivePregnancy, useArticles, useJourneyState, useNotificationsInbox, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useScope } from '@/lib/data/hooks-scope';
+import { quickAllowed, quickFor, type Scope } from '@/lib/journeys/tools';
+import type { Journey } from '@/lib/types';
 import { greeting } from '@/lib/domain/dates';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { childAge } from '@/lib/domain/child';
 import { isLocked, suggestArticles } from '@/lib/domain/content';
-import { articleOfDay, mainJourneys, quickActionsFor } from '@/lib/domain/journeys';
-import { formatDate, t as tr } from '@/i18n';
+import { articleOfDay } from '@/lib/domain/journeys';
+import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useOfflineStore } from '@/lib/offline';
 import { useUiStore } from '@/lib/store';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, NACRE, previewTime, spacing } from '@/theme/tokens';
 import { AccountActions } from '@/components/AccountActions';
 
+/** Parcours historiques équivalents à la portée affichée (suggestion d'articles). */
+const LEGACY_FOR: Record<Scope, Journey[]> = {
+  avoid: ['avoid'], ttc: ['ttc'], cycle: ['cycle'], none: [], pregnancy: ['pregnant'], postpartum: ['newborn'], baby: ['newborn'], child: ['child'], family: ['family', 'child'],
+};
+
 export default function Home() {
   const t = useTheme();
   const profileQ = useProfile();
   const profile = profileQ.data;
-  const { subject } = useActiveSubject();
+  // Portée affichée = profil du sélecteur + parcours actif : seule source de l'accueil (jamais un ancien parcours)
+  const scope = useScope();
   const pregnancy = useActivePregnancy();
-  const childrenQ = useChildren();
+  const childrenQ = useTrackedChildren();
   const children = childrenQ.data;
-  // Carte principale : squelette pendant le premier chargement, erreur avec « Réessayer » sinon
-  const mainLoading = (profileQ.isLoading && !profile) || (childrenQ.isLoading && !children);
+  const js = useJourneyState();
+  const mainLoading = (profileQ.isLoading && !profile) || (childrenQ.isLoading && !children) || !scope.loaded;
   const mainError = profileQ.isError && !profile ? profileQ : childrenQ.isError && !children ? childrenQ : null;
   const { data: articles } = useArticles();
   const { data: inbox } = useNotificationsInbox();
@@ -49,50 +58,48 @@ export default function Home() {
   const quickShortcuts = useUiStore((st) => st.quickShortcuts);
   const now = skyOverride ? previewTime(skyOverride) : new Date();
 
-  const journeys = profile?.journeys ?? [];
-  const main = mainJourneys(journeys);
   const unread = inbox?.filter((n) => !n.read_at).length ?? 0;
-  const child = subject.type === 'child' ? children?.find((c) => c.id === subject.id) : subject.type === 'family' ? children?.[0] : undefined;
-  const cycleMode: 'ttc' | 'avoid' | 'cycle' | null = main.includes('ttc') ? 'ttc' : main.includes('avoid') ? 'avoid' : main.includes('cycle') ? 'cycle' : null;
+  const child = scope.child;
+  const cycleMode = scope.scope === 'avoid' || scope.scope === 'ttc' || scope.scope === 'cycle' ? scope.scope : null;
   setCycleRoute(cycleMode === 'avoid' ? '/contraception' : cycleMode === 'cycle' ? '/cycle' : '/fertility');
 
-  const subtitle = subject.type === 'child' && child
+  // La semaine d'aménorrhée n'apparaît QUE pour une grossesse active affichée
+  const subtitle = (scope.scope === 'baby' || scope.scope === 'child') && child
     ? `${child.first_name}, ${childAge(child.birth_date).label}`
-    : subject.type === 'pregnancy' && pregnancy
+    : scope.scope === 'pregnancy' && pregnancy
       ? `${pregnancyProgress(pregnancy.due_date).label}`
-      : cycleMode === 'ttc' ? tr('home.sub.ttc') : cycleMode ? tr('home.sub.cycle') : undefined;
+      : scope.scope === 'postpartum' ? tr('pj.home.sub.postpartum')
+        : scope.scope === 'family' ? tr('pj.home.sub.family')
+          : cycleMode === 'ttc' ? tr('home.sub.ttc') : cycleMode ? tr('home.sub.cycle') : undefined;
 
   const article = useMemo(() => {
     const list = suggestArticles(articles ?? [], {
-      journeys,
-      weekSA: subject.type === 'pregnancy' && pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null,
-      childAgesMonths: child ? [childAge(child.birth_date).months] : (children ?? []).map((c) => childAge(c.birth_date).months),
-      postpartum: main.includes('mother'),
-      multiple: !!pregnancy && pregnancy.multiplicity !== 'single',
+      journeys: LEGACY_FOR[scope.scope],
+      weekSA: scope.scope === 'pregnancy' && pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null,
+      childAgesMonths: child ? [childAge(child.birth_date).months] : scope.scope === 'family' ? (children ?? []).map((c) => childAge(c.birth_date).months) : [],
+      postpartum: scope.scope === 'postpartum',
+      multiple: scope.scope === 'pregnancy' && !!pregnancy && pregnancy.multiplicity !== 'single',
     }, 6);
     return articleOfDay(list);
-  }, [articles, journeys, subject, pregnancy, child, children, main]);
+  }, [articles, scope.scope, pregnancy, child, children]);
 
-  const youngestMonths = children?.length ? Math.min(...children.map((c) => childAge(c.birth_date).months)) : null;
-  const quick = quickActionsFor(subject.type === 'pregnancy' ? 'pregnancy' : subject.type === 'child' ? 'child' : subject.type === 'family' ? 'family' : 'me', journeys);
-
-  const quickKeys = (quickShortcuts?.length ? quickShortcuts : quick);
+  // Raccourcis : ceux choisis par la personne, mais seulement s'ils sont autorisés pour le profil affiché
+  const allowed = quickFor(scope);
+  const custom = (quickShortcuts ?? []).filter((k) => quickAllowed(k, scope));
+  const quickKeys = custom.length >= 3 ? custom : allowed;
+  const journeyName = js.body ? tr(`pj.type.${js.body.type}` as TKey) : null;
   const cards: Record<string, React.ReactNode> = {
     main: mainLoading ? <Skeleton kind="card" rows={1} />
       : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); }} />
-      : subject.type === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
-      : child ? <ChildToday child={child} compact />
-        : cycleMode ? <CycleCard mode={cycleMode} />
-          : (
-            <Card onPress={() => router.push('/me')} accessibilityLabel={tr('home.meA11y')}>
-              <Text variant="heading">{tr('home.me')}</Text>
-              <Text variant="small" muted>{tr('home.meSub')}</Text>
-            </Card>
-          ),
-    quick: <QuickActions keys={quickKeys} childId={child?.id} onCustomize={() => router.push('/settings/home')} />,
-    upcoming: <UpcomingCard />,
-    family: <FamilyHomeCard />,
-    postpartum: <PostpartumHomeCard journeys={profile?.journeys ?? []} youngestChildMonths={youngestMonths} />,
+      : scope.scope === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
+      : scope.scope === 'baby' && child ? <ChildToday child={child} compact />
+      : scope.scope === 'child' && child ? <ChildHomeCard child={child} />
+      : scope.scope === 'postpartum' ? <PostpartumHomeCard main />
+      : scope.scope === 'family' ? <FamilyOverview />
+      : cycleMode ? <CycleCard mode={cycleMode} />
+      : <NoJourneyCard />,
+    quick: <QuickActions keys={quickKeys} childId={scope.childId ?? scope.babyId ?? undefined} onCustomize={() => router.push('/settings/home')} />,
+    upcoming: <View style={{ gap: spacing.xs }}><PostpartumHomeCard /><UpcomingCard /></View>,
     article: article ? (
       <Card onPress={() => router.push(`/article/${article.slug}`)} accessibilityLabel={tr('home.articleA11y', { title: article.title })}>
         <Row style={{ justifyContent: 'space-between' }}>
@@ -141,8 +148,15 @@ export default function Home() {
           {subtitle ? <Text variant="small" muted>{subtitle}</Text> : null}
         </View>
 
-        {/* 1. Profil actif */}
-        <Appear kind="soft" delay={0.1}><ProfileSwitcher /></Appear>
+        {/* 1. Parcours et profil actifs */}
+        <Appear kind="soft" delay={0.1} style={{ gap: 4 }}>
+          <Pressable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 }}>
+            <Icon name="compass" size={14} color={t.colors.textMuted} />
+            <Text variant="caption" muted style={{ flex: 1 }}>{tr('pj.home.journey', { name: journeyName ?? tr('pj.none') })}</Text>
+            <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.edit')}</Text>
+          </Pressable>
+          <ProfileSwitcher />
+        </Appear>
         {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 
         {/* Cartes de l'accueil, dans l'ordre choisi (Réglages › Mon accueil) */}
@@ -153,7 +167,7 @@ export default function Home() {
         })}
 
         <Appear kind="side" delay={0.7}>
-          <Button label={tr('home.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full />
+          <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID="all-tools" />
         </Appear>
 
         <DemoBanner />

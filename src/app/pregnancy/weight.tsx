@@ -29,7 +29,7 @@ export default function WeightScreen() {
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
   const insets = useSafeAreaInsets();
-  const weightsQ = useMaternalWeights();
+  const weightsQ = useMaternalWeights(pregnancy?.id);
   const { data: weights } = weightsQ;
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -93,7 +93,8 @@ export default function WeightScreen() {
   async function stopTracking() {
     if (!(await confirm('Arrêter le suivi du poids ?', 'Toutes vos mesures seront supprimées et le module sera masqué. Vous pourrez le réactiver dans les réglages.', 'Arrêter et supprimer'))) return;
     await run('stop', async () => {
-      await backend.remove('maternal_weights', [eq('user_id', userId)]);
+      if (!pregnancy) return; // jamais les poids d'autres grossesses
+      await backend.remove('maternal_weights', [eq('user_id', userId), eq('pregnancy_id', pregnancy.id)]);
       inv('maternal_weights');
       await updateProfile.mutateAsync({ hide_weight_module: true });
       toast('Suivi du poids arrêté.');

@@ -12,6 +12,9 @@ import { useUserId } from '@/lib/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { ensureHousehold } from '@/lib/data/hooks';
 import { requestPermission } from '@/lib/notifications';
+import { runOps } from '@/lib/journeys/manager';
+import { bodyJourney, childJourneyType, closeOps, planChange, type JourneyRow } from '@/lib/journeys/model';
+import { addDays, todayISO } from '@/lib/domain/dates';
 import type { ConsentPurpose, Journey } from '@/lib/types';
 import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, PregnancyForm, validateChild, validatePregnancy, type ChildDraft } from '@/features/profiles';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -138,9 +141,19 @@ export default function Onboarding() {
       await backend.insert('consents', (Object.entries(consents) as [ConsentPurpose, boolean][]).filter(([purpose]) => purpose !== 'terms').map(([purpose, granted]) => ({ user_id: userId, purpose, granted })));
       const hid = await ensureHousehold(name ? tr('onb.householdName', { name }) : undefined);
       // Nouvel essai après une erreur : on ne recrée pas ce qui existe déjà
+      // Parcours : une vraie ligne par parcours (user_journeys) ; profiles.journeys en est déduit côté serveur
+      const today = todayISO();
+      const jrows = () => backend.select<JourneyRow>({ table: 'user_journeys', filters: [eq('user_id', userId)] });
       if (needsPregnancy) {
-        const active = await backend.select({ table: 'pregnancies', filters: [eq('household_id', hid), eq('status', 'active')], limit: 1 });
-        if (!active.length) await createPregnancy(hid, userId, pregnancy);
+        const active = await backend.select<{ id: string }>({ table: 'pregnancies', filters: [eq('household_id', hid), eq('status', 'active')], limit: 1 });
+        const pid = active[0]?.id ?? (await createPregnancy(hid, userId, pregnancy)).id;
+        const rows = await jrows();
+        if (!rows.some((r) => r.status === 'active' && r.type === 'pregnancy')) {
+          await runOps([...(bodyJourney(rows, userId) ? closeOps(bodyJourney(rows, userId)!, 'archive', 'pregnancy', today) : []), { kind: 'insert', table: 'user_journeys', row: { user_id: userId, household_id: hid, type: 'pregnancy', pregnancy_id: pid, started_on: today } }]);
+        }
+      } else {
+        const body = (['ttc', 'avoid', 'cycle'] as const).find((j) => journeys.includes(j));
+        if (body) await runOps(planChange(await jrows(), userId, { type: body }, 'archive', today));
       }
       let createdChildren = 0;
       if (needsChildren) {
@@ -152,13 +165,17 @@ export default function Onboarding() {
           await createChild(hid, c);
           createdChildren++;
         }
+        // Chaque enfant du foyer suivi dans son propre parcours (bébé < 2 ans, enfant ensuite)
+        const kids = await backend.select<{ id: string; birth_date: string }>({ table: 'children', filters: [eq('household_id', hid)] });
+        for (const k of kids) await runOps(planChange(await jrows(), userId, { type: childJourneyType(k.birth_date, today), childId: k.id, householdId: hid }, 'archive', today)).catch(() => undefined);
+        if (journeys.includes('newborn') && kids.some((k) => k.birth_date > addDays(today, -365))) await runOps(planChange(await jrows(), userId, { type: 'postpartum' }, 'archive', today)).catch(() => undefined);
       }
       await backend.update('privacy_settings', { analytics_enabled: consents.analytics, crash_reports_enabled: consents.crash_reports }, [{ col: 'user_id', op: 'eq', value: userId }]);
-      await backend.update('profiles', { display_name: name.trim() || null, journeys, interests, locale: getLocale(), onboarding_completed: true, onboarding_state: null }, [{ col: 'id', op: 'eq', value: userId }]);
+      await backend.update('profiles', { display_name: name.trim() || null, interests, locale: getLocale(), onboarding_completed: true, onboarding_state: null }, [{ col: 'id', op: 'eq', value: userId }]);
       await clearDraftLocally(userId);
       const chosen = reminderSuggestions(journeys).filter((r) => reminders.includes(r.key));
       if (chosen.length) {
-        await backend.insert('reminders', chosen.map((r) => ({ user_id: userId, household_id: hid, category: r.category, title: r.title, body: r.body, schedule: r.schedule, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris', enabled: true, deep_link: r.deep_link })));
+        await backend.insert('reminders', chosen.map((r) => ({ user_id: userId, household_id: hid, category: r.category, title: r.title, body: r.body, schedule: r.schedule, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris', enabled: true, deep_link: r.deep_link, journey_type: r.journey_type })));
         await requestPermission().catch(() => undefined);
       }
       await qc.invalidateQueries();
