@@ -7,36 +7,14 @@ import React, { useMemo } from 'react';
 import { Animated, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/States';
-import { useProgress } from '@/components/MotionKit';
 import { usePeriods } from '@/lib/data/hooks';
 import { useAllSymptomLogs } from '@/lib/data/hooks-cycle2';
 import { cycleStats } from '@/lib/domain/cycleV2';
 import { CycleIcon, Glass, Ink, Rise, useCyclePalette, type CycleIconName } from '@/features/cycle/kit';
+import { Bars } from '@/features/cycle/Bars';
 import { fmtDay } from '@/features/cycle/format';
 import { formatNumber, t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
-
-/** Barres horizontales : libellé au-dessus (passe à la ligne), barre proportionnelle, valeur écrite. */
-function Bars({ rows, label, color }: { rows: { label: string; value: number; display: string }[]; label: string; color: string }) {
-  const c = useCyclePalette();
-  const max = Math.max(1, ...rows.map((r) => r.value));
-  const grow = useProgress(rows.map((r) => r.value).join('|'), 800);
-  return (
-    <View accessible accessibilityRole="image" accessibilityLabel={`${label}. ${rows.map((r) => `${r.label} : ${r.display}`).join(', ')}`} style={{ gap: spacing.sm }}>
-      {rows.map((r) => (
-        <View key={r.label} style={{ gap: 4 }}>
-          <View style={{ flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between' }}>
-            <Ink variant="small" style={{ flex: 1 }}>{r.label}</Ink>
-            <Ink variant="small" weight="bold">{r.display}</Ink>
-          </View>
-          <View style={{ height: 10, borderRadius: 5, backgroundColor: c.pearl, overflow: 'hidden' }}>
-            <Animated.View style={{ height: 10, borderRadius: 5, backgroundColor: color, width: grow.interpolate({ inputRange: [0, 1], outputRange: ['0%', `${Math.max(4, (r.value / max) * 100)}%`] }) }} />
-          </View>
-        </View>
-      ))}
-    </View>
-  );
-}
 
 function Tile({ icon, value, label }: { icon: CycleIconName; value: string; label: string }) {
   const c = useCyclePalette();

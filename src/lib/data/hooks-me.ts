@@ -9,6 +9,9 @@ export interface SymptomLog {
   id: string; user_id: string; logged_on: string; symptoms: string[]; note: string | null; created_at: string;
   /** Cycle v2 : clés contrôlées, intensité 1–3, échelles 1–5 (facultatives). */
   symptom_keys?: string[]; intensities?: Record<string, number>; mood?: number | null; energy?: number | null; sleep?: number | null; stress?: number | null;
+  /** Douleurs (facultatif) : intensité 0–10, zones, durée, début, évolution, retentissement, signes associés, soulagement, suivi des médicaments. */
+  pain_intensity?: number | null; pain_locations?: string[]; pain_duration?: string | null; pain_onset?: string | null; pain_pattern?: string | null;
+  pain_impact?: string[]; pain_associated?: string[]; pain_pregnancy?: string | null; pain_relief?: string | null; pain_meds?: string | null;
 }
 
 export function useSymptomLogs(limit = 60) {

@@ -50,6 +50,7 @@ def run(p):
     pg.evaluate("""() => {
       const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1'));
       for (const p of s.tables.profiles || []) p.journeys = ['cycle'];
+      s.tables.pregnancies = []; // pas de grossesse en cours : sinon aucune alerte de contraception d'urgence (règle voulue)
       s.tables.period_entries = []; s.tables.symptom_logs = [];
       localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s));
       const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{"state":{},"version":0}');
@@ -103,7 +104,7 @@ def run(p):
     pick(pg, 'Modérée'); pick(pg, 'Blanc crème'); pick(pg, 'Grumeleuse')
     click(pg, 'Continuer'); pg.wait_for_timeout(600)
     pick(pg, 'Démangeaisons'); pg.wait_for_timeout(500)
-    R['4_orientation_immediate'] = 'Demandez un avis médical' in T(pg)
+    R['4_orientation_immediate'] = 'Consultation conseillée' in T(pg) and 'plusieurs causes possibles' in T(pg)
     R['4_fiches_liees'] = pg.get_by_role('button', name='Démangeaisons et irritation', exact=False).filter(visible=True).count() + pg.get_by_role('button', name='Pertes épaisses', exact=False).filter(visible=True).count() > 0
     click(pg, 'Continuer'); pg.wait_for_timeout(600)
     R['4_contexte_jour_du_cycle'] = 'Jour ' in T(pg) and 'du cycle' in T(pg)
@@ -112,6 +113,9 @@ def run(p):
     click(pg, 'Enregistrer'); pg.wait_for_timeout(1800)
     d = demo(pg, "s => s.tables.discharge_logs.map(x => [x.amount, x.color, x.textures, x.symptoms, x.note])")
     R['4_pertes_enregistrees'] = d == [['moderate', 'creamy_white', ['lumpy'], ['itching'], 'Après la piscine']]
+    t = T(pg)
+    R['4_recapitulatif_et_conseil'] = 'Récapitulatif' in t and 'Plusieurs causes sont possibles' in t and 'D’après ce que vous avez indiqué' in t and 'Démangeaisons' in t
+    pg.screenshot(path=f'{SHOTS}/cycle-recap-discharge.png', full_page=True)
 
     # 5. Fiche pédagogique : sources officielles
     pg.goto(B + '/cycle/guides/clear-fluid'); pg.wait_for_timeout(1800)
@@ -165,6 +169,109 @@ def run(p):
     t = T(pg)
     R['10_masquage'] = 'Données masquées' in t and 'Dernières règles (enregistrées)' not in t
     pg.screenshot(path=f'{SHOTS}/cycle-home-hidden.png')
+
+    # 12. Rapports : activation, rapport non protégé en période fertile estimée, puis rapport protégé, puis incertain
+    pg.goto(B + '/cycle/intimacy'); pg.wait_for_timeout(1800)
+    if 'Activer le suivi des rapports' in T(pg):
+        click(pg, 'Activer le suivi des rapports'); pg.wait_for_timeout(1500)
+    R['12_rapport_sans_detail_possible'] = pg.get_by_role('button', name='Ajouter des détails (facultatif)').filter(visible=True).count() > 0
+    from datetime import date, timedelta
+    fr = lambda d: d.strftime('%d/%m/%Y')
+    today = date.today()
+    # règles récentes pour que le jour J-1 tombe dans la fenêtre estimée : début il y a 13 jours, cycles de 28 jours
+    pg.evaluate(f"""() => {{ const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); const me = s.session?.user?.id || (s.tables.profiles[0]||{{}}).id;
+      const d = (n) => new Date(Date.now() - n*86400000).toISOString().slice(0,10);
+      s.tables.period_entries = [d(69), d(41), d(13)].map((x, i) => ({{ id: 'pp'+i, user_id: me, start_date: x, end_date: null, flow: null, note: null, created_at: new Date().toISOString() }}));
+      localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }}""")
+    pg.goto(B + '/cycle/intimacy'); pg.wait_for_timeout(1800)
+    fill(pg, 'Date', fr(today - timedelta(days=1)))
+    click(pg, 'Ajouter des détails (facultatif)'); pg.wait_for_timeout(500)
+    pg.locator('[aria-label="Préservatif"] [aria-label="Non"]').filter(visible=True).first.click()
+    pg.locator('[aria-label="Contraception habituelle"] [aria-label="Non"]').filter(visible=True).first.click()
+    pg.locator('[aria-label="Souhait de grossesse"] [aria-label="Non"]').filter(visible=True).first.click()
+    click(pg, 'Enregistrer'); pg.wait_for_timeout(2200)
+    t = T(pg)
+    R['T1_conseil_rapport_non_protege'] = 'Risque de grossesse possible' in t and 'Avis médical rapide' in t
+    R['T1_incertitude_ovulation'] = 'n’est qu’une estimation' in t and 'fenêtre fertile estimée' in t
+    R['T1_actions'] = all(pg.get_by_role('button', name=n).filter(visible=True).count() > 0 for n in ['Informations sur la contraception d’urgence', 'Trouver un professionnel de santé', 'Comprendre le risque de grossesse', 'Modifier ma réponse'])
+    R['T1_aucune_certitude'] = 'vous êtes enceinte' not in t.lower()
+    pg.screenshot(path=f'{SHOTS}/cycle-sex-risk.png', full_page=True)
+    # Trouver un professionnel : annuaire officiel, aucune intégration fictive (Test 10)
+    click(pg, 'Trouver un professionnel de santé'); pg.wait_for_timeout(1500)
+    t = T(pg)
+    R['T10_recherche_pro'] = 'Vous souhaitez en parler à un professionnel' in t and 'Centres de santé sexuelle' in t and 'Annuaire santé' in t and 'Doctolib' not in t
+    # le site s'ouvre dans un nouvel onglet : on enregistre l'adresse demandée (l'environnement de test n'a pas accès à Internet)
+    pg.evaluate("() => { window.__opened = []; window.open = (u) => { window.__opened.push(String(u)); return null; }; }")
+    click(pg, 'Rechercher un professionnel'); pg.wait_for_timeout(500)
+    opened = pg.evaluate('() => window.__opened')
+    R['T10_destination_valide'] = opened == ['https://www.questionsexualite.fr/trouver-un-professionnel']
+    # Rapport protégé sans incident : aucune alerte (Test 2)
+    pg.goto(B + '/cycle/intimacy'); pg.wait_for_timeout(1500)
+    click(pg, 'Ajouter des détails (facultatif)'); pg.wait_for_timeout(400)
+    pg.locator('[aria-label="Préservatif"] [aria-label="Oui"]').filter(visible=True).first.click(); pg.wait_for_timeout(300)
+    pg.locator('[aria-label="Incident de préservatif"] [aria-label="Aucun"]').filter(visible=True).first.click()
+    click(pg, 'Enregistrer'); pg.wait_for_timeout(2000)
+    t = T(pg)
+    R['T2_protege_aucune_alerte'] = 'Rien de particulier à signaler' in t and 'contraception d’urgence' not in t
+    # Protection incertaine (Test 3)
+    pg.goto(B + '/cycle/intimacy'); pg.wait_for_timeout(1500)
+    click(pg, 'Ajouter des détails (facultatif)'); pg.wait_for_timeout(400)
+    pg.locator('[aria-label="Préservatif"] [aria-label="Je ne sais pas"]').filter(visible=True).first.click()
+    click(pg, 'Enregistrer'); pg.wait_for_timeout(2000)
+    t = T(pg)
+    R['T3_incertain_question'] = 'Souhaitez-vous préciser la protection' in t and 'Pouvez-vous préciser' in t
+    rows = demo(pg, "s => s.tables.intercourse_logs.map(x => [x.condom, x.usual_contraception, x.pregnancy_wish])")
+    R['T3_absence_reponse_non_convertie'] = ['unsure', None, None] in [[r[0], r[1], r[2]] for r in rows]
+
+    # 13. Douleurs : jauge, zone sur la silhouette, retentissement → conseil (Tests 5, 11)
+    pg.goto(B + '/cycle/pain'); pg.wait_for_timeout(1800)
+    for _ in range(6): pg.get_by_role('button', name='Augmenter').filter(visible=True).first.click()
+    pg.locator('[aria-label="Zones (liste)"] [aria-label="Bas-ventre"]').filter(visible=True).first.click()
+    pg.wait_for_timeout(300)
+    pg.locator('[aria-label="Retentissement"] [aria-label="Travail"]').filter(visible=True).first.click()
+    pg.locator('[aria-label="Par rapport à d’habitude"] [aria-label="Habituelle"]').filter(visible=True).first.click()
+    pg.screenshot(path=f'{SHOTS}/cycle-pain.png', full_page=True)
+    click(pg, 'Enregistrer'); pg.wait_for_timeout(2000)
+    t = T(pg)
+    R['T5_douleur_quotidien_consultation'] = 'Vos douleurs méritent d’être prises au sérieux' in t and pg.get_by_role('button', name='Trouver un professionnel de santé').filter(visible=True).count() > 0
+    p = demo(pg, "s => s.tables.symptom_logs.filter(x => x.pain_intensity != null).map(x => [x.pain_intensity, x.pain_locations, x.pain_impact])")
+    R['T11_donnees_enregistrees'] = [5, ['lower_abdomen'], ['work']] in p  # 6 appuis sur « + » depuis « non renseignée » : 0 puis 1…5
+    # Douleur forte + malaise : urgence (Test 6)
+    pg.goto(B + '/cycle/pain'); pg.wait_for_timeout(1800)
+    for _ in range(3): pg.get_by_role('button', name='Augmenter').filter(visible=True).first.click()
+    click(pg, 'Préciser d’autres signes (facultatif)'); pg.wait_for_timeout(400)
+    pg.locator('[aria-label="Signes associés"] [aria-label="Malaise ou étourdissements"]').filter(visible=True).first.click()
+    click(pg, 'Enregistrer'); pg.wait_for_timeout(2000)
+    t = T(pg)
+    R['T6_urgence'] = 'Appelez les urgences' in t and 'Urgence' in t and pg.get_by_role('button', name='Numéros d’urgence').filter(visible=True).count() > 0
+
+    # 14. Mes conseils, roue du cycle, « Mes règles ont commencé » + annulation
+    pg.goto(B + '/cycle/advice'); pg.wait_for_timeout(1800)
+    t = T(pg)
+    R['14_mes_conseils'] = 'Mes conseils' in t and 'Risque de grossesse possible' in t and 'Rien n’est envoyé à un service externe' in t
+    pg.goto(B + '/cycle?all=1'); pg.wait_for_timeout(2500)
+    t = T(pg)
+    R['14_roue_du_cycle'] = pg.locator('[aria-label*="Jour 14 d’un cycle"]').count() > 0 and 'Fenêtre fertile (estimée)' in t
+    vis = lambda name: pg.get_by_role('button', name=name).filter(visible=True)
+    vis('Ovulation (estimée)').first.click(); pg.wait_for_timeout(500)
+    R['14_phase_detail'] = 'n’est confirmée par aucune mesure' in T(pg)
+    pg.screenshot(path=f'{SHOTS}/cycle-ring.png', full_page=True)
+    # fin des règles en un geste, puis annulation
+    vis('Mes règles sont terminées').first.click(); pg.wait_for_timeout(1500)
+    R['14_regles_terminees'] = demo(pg, "s => s.tables.period_entries.find(p => p.id === 'pp2').end_date") is not None and 'Fin des règles enregistrée' in T(pg)
+    vis('Annuler').first.click(); pg.wait_for_timeout(1500)
+    R['14_annulation_fin'] = demo(pg, "s => s.tables.period_entries.find(p => p.id === 'pp2').end_date") is None
+    pg.evaluate("""() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); s.tables.period_entries.find(p => p.id === 'pp2').end_date = new Date(Date.now() - 9*86400000).toISOString().slice(0,10); localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }""")
+    pg.goto(B + '/cycle?all=1'); pg.wait_for_timeout(2500)
+    before = demo(pg, "s => s.tables.period_entries.length")
+    vis('Mes règles ont commencé').first.click(); pg.wait_for_timeout(1500)
+    R['14_regles_commencees'] = demo(pg, "s => s.tables.period_entries.length") == before + 1 and 'jour 1' in T(pg)
+    vis('Annuler').first.click(); pg.wait_for_timeout(1500)
+    R['14_annulation'] = demo(pg, "s => s.tables.period_entries.length") == before
+    # Suppression d'un événement : ses conseils disparaissent (Test 9)
+    pg.evaluate("""() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); s.tables.intercourse_logs = []; localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }""")
+    pg.goto(B + '/cycle/advice'); pg.wait_for_timeout(1800)
+    R['T9_conseil_supprime_avec_l_evenement'] = 'Risque de grossesse possible' not in T(pg)
 
     # 11. Effacer toutes les données du cycle (confirmation)
     pg.goto(B + '/cycle/privacy'); pg.wait_for_timeout(1500)

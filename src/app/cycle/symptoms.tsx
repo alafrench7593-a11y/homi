@@ -88,6 +88,7 @@ export default function SymptomsScreen() {
       <Rise delay={50}>
         <Glass>
           <Choices label={tr('cy.sym.list')} options={options} value={keys} multi onChange={(v) => setKeys((v as SymptomKey[]) ?? [])} labelOf={(k) => tr(`cy.sym.${k}` as 'cy.sym.cramps')} />
+          <Button label={tr('cy.sym.toPain')} variant="ghost" icon="activity" onPress={() => router.push(`/cycle/pain?date=${iso ?? ''}` as never)} full />
           {keys.length ? <Ink variant="caption" soft>{tr('cy.sym.intensityHint')}</Ink> : null}
           {keys.map((k) => (
             <View key={k} style={{ gap: 4 }}>

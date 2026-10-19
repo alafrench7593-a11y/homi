@@ -31,7 +31,7 @@ export default function CyclePrivacy() {
   const save = useSaveCyclePreferences();
   const [busy, setBusy] = useState(false);
 
-  async function setPref(p: { hide_on_home?: boolean; track_intercourse?: boolean }) {
+  async function setPref(p: { hide_on_home?: boolean; track_intercourse?: boolean; advice_enabled?: boolean; detailed_notifications?: boolean }) {
     try { await save.mutateAsync(p); toast(tr('cy.pv.saved')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function wipe() {
@@ -72,6 +72,8 @@ export default function CyclePrivacy() {
         <Glass>
           <SwitchRow label={tr('cy.pv.hideOnHome')} hint={tr('cy.pv.hideOnHomeHint')} value={!!prefs.hide_on_home} onChange={(v) => setPref({ hide_on_home: v })} />
           <SwitchRow label={tr('cy.pv.trackSex')} hint={tr('cy.pv.trackSexHint')} value={!!prefs.track_intercourse} onChange={(v) => setPref({ track_intercourse: v })} />
+          <SwitchRow label={tr('cy.pv.advice')} hint={tr('cy.pv.adviceHint')} value={prefs.advice_enabled !== false} onChange={(v) => setPref({ advice_enabled: v })} />
+          <SwitchRow label={tr('cy.pv.detailedNotif')} hint={tr('cy.pv.detailedNotifHint')} value={!!prefs.detailed_notifications} onChange={(v) => setPref({ detailed_notifications: v })} />
         </Glass>
       </Rise>
       <Rise delay={120}>

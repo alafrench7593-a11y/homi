@@ -26,7 +26,21 @@ ROUTES = ['/', '/track', '/tools', '/community', '/ask', '/profile', '/me', '/me
           '/settings/home', '/settings/language', '/settings/privacy', '/settings/reminders', '/settings/subscription', '/settings/sync',
           '/teeth', '/bottle', '/bottle/history', '/assistant/chat', '/community/new', '/community/profile', '/community/saved', '/profiles/new', '/night',
           '/cycle?all=1', '/cycle/calendar', '/cycle/symptoms', '/cycle/discharge', '/cycle/discharge/new', '/cycle/guides', '/cycle/guides/clear-fluid',
-          '/cycle/guides/itching', '/cycle/bleeding', '/cycle/journal', '/cycle/stats', '/cycle/export', '/cycle/privacy', '/cycle/home-card']
+          '/cycle/guides/itching', '/cycle/bleeding', '/cycle/journal', '/cycle/stats', '/cycle/export', '/cycle/privacy', '/cycle/home-card',
+          '/cycle/intimacy', '/cycle/pain', '/cycle/advice', '/cycle/risk', '/cycle/professional?reason=sex_risk',
+          '/cycle/recap?type=sex&id=seed-sex', '/cycle/recap?type=pain&id=seed-pain', '/cycle/recap?type=discharge&id=seed-dis']
+
+# Données de démonstration supplémentaires pour que les écrans de conseils aient du contenu (textes les plus longs)
+SEED = """() => {
+  const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); const me = (s.tables.profiles || [])[0]?.id;
+  const d = (n) => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+  s.tables.pregnancies = [];
+  s.tables.cycle_preferences = [{ user_id: me, track_intercourse: true, hide_on_home: false, advice_enabled: true, detailed_notifications: false }];
+  s.tables.intercourse_logs = [{ id: 'seed-sex', user_id: me, occurred_on: d(1), condom: 'yes', condom_incident: 'broke', pregnancy_wish: 'no', note: null, created_at: new Date().toISOString() }];
+  s.tables.symptom_logs = [...(s.tables.symptom_logs || []), { id: 'seed-pain', user_id: me, logged_on: d(0), symptoms: [], symptom_keys: [], intensities: {}, pain_intensity: 8, pain_locations: ['lower_abdomen', 'lower_back'], pain_impact: ['work', 'sleep'], pain_associated: ['nausea'], pain_pattern: 'worse', pain_relief: 'not_helped' }];
+  s.tables.discharge_logs = [{ id: 'seed-dis', user_id: me, observed_at: new Date().toISOString(), amount: 'heavy', color: 'greenish', textures: ['lumpy'], odor: 'unpleasant', symptoms: ['itching', 'burning', 'urinary'], note: null }];
+  localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s));
+}"""
 PUBLIC = ['/welcome', '/intro', '/auth/sign-in', '/auth/sign-up', '/auth/forgot']
 
 # Détecteur exécuté dans la page : ne regarde que les éléments réellement visibles de l'écran actif
@@ -96,7 +110,10 @@ with sync_playwright() as p:
             if found: report.setdefault(r, {})[cfg['name']] = found
         pg.goto(B + '/welcome'); pg.wait_for_timeout(2000)
         pg.get_by_text('Découvrir sans compte' if cfg['locale'].startswith('fr') else 'Try it without an account').first.click(); pg.wait_for_timeout(4000)
+        seeded = False
         for r in ROUTES:
+            if not seeded and (r.startswith('/cycle/') or r == '/cycle?all=1'):
+                pg.evaluate(SEED); seeded = True  # données du cycle seulement pour les derniers écrans (les autres gardent la démo)
             pg.goto(B + r); pg.wait_for_timeout(1700)
             try:
                 pg.mouse.wheel(0, 2000); pg.wait_for_timeout(300)  # contenu du bas aussi rendu

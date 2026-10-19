@@ -3,7 +3,16 @@
 export type FertilityJourney = 'ttc' | 'avoid' | 'postpartum';
 
 /** Rapport noté (parcours « concevoir ») : PRIVÉ, visible uniquement par la personne qui l'a saisi. */
-export interface IntercourseLog { id: string; user_id: string; occurred_on: string; note: string | null; created_at: string }
+export type Answer = 'yes' | 'no' | 'unsure' | 'prefer_not';
+/** Rapport : chaque détail est FACULTATIF (null = pas de réponse, différent de « non »). */
+export interface IntercourseLog {
+  id: string; user_id: string; occurred_on: string; note: string | null; created_at: string; updated_at?: string;
+  occurred_time?: string | null; kind?: 'vaginal' | 'other' | 'prefer_not' | null;
+  condom?: Answer | null; condom_incident?: 'none' | 'broke' | 'slipped' | 'other' | 'unsure' | null;
+  usual_contraception?: Answer | null; contraception_type?: string | null;
+  contraception_incident?: 'none' | 'missed' | 'late' | 'misuse' | 'other' | 'unsure' | null;
+  ejaculation?: Answer | null; ec_taken?: 'yes' | 'no' | 'unsure' | null; pregnancy_wish?: Answer | null; professional_seen?: 'yes' | 'no' | null;
+}
 
 export type CervicalMucus = 'dry' | 'sticky' | 'creamy' | 'egg_white' | 'watery' | 'unusual' | 'unknown';
 /** Libellés alignés sur « Comprendre mon cycle et mes tests » (src/lib/cycleAnalysis/mucus.ts). */
@@ -33,7 +42,7 @@ export interface CycleTest {
   user_confirmed?: boolean; photo_path?: string | null; expected_period_on?: string | null;
 }
 
-export interface CyclePreferences { user_id: string; track_intercourse: boolean; /** Masquer les données sensibles du cycle sur l'accueil. */ hide_on_home?: boolean }
+export interface CyclePreferences { user_id: string; track_intercourse: boolean; /** Masquer les données sensibles du cycle sur l'accueil. */ hide_on_home?: boolean; /** Conseils personnalisés (activés par défaut). */ advice_enabled?: boolean; /** Notifications détaillées (désactivées par défaut : textes neutres). */ detailed_notifications?: boolean }
 
 export type ContraceptionMethodKind =
   | 'pill' | 'iud_copper' | 'iud_hormonal' | 'implant' | 'patch' | 'ring' | 'injection'

@@ -18,6 +18,8 @@ export const MIGRATED = [
   'src/app/cycle/export.tsx', 'src/app/cycle/privacy.tsx', 'src/app/cycle/discharge/index.tsx', 'src/app/cycle/discharge/[id].tsx', 'src/app/cycle/guides/index.tsx',
   'src/app/cycle/guides/[slug].tsx', 'src/features/cycle/kit.tsx', 'src/features/cycle/GuideArt.tsx', 'src/features/cycle/report.ts', 'src/features/cycle/discharge.ts',
   'src/app/cycle/home-card.tsx', 'src/features/cycle/HomeCycleCard.tsx', 'src/features/cycle/homeCard.ts',
+  'src/app/cycle/intimacy.tsx', 'src/app/cycle/pain.tsx', 'src/app/cycle/recap.tsx', 'src/app/cycle/advice.tsx', 'src/app/cycle/risk.tsx', 'src/app/cycle/professional.tsx',
+  'src/features/cycle/AdviceCard.tsx', 'src/features/cycle/CycleRing.tsx', 'src/features/cycle/PainKit.tsx', 'src/features/cycle/Bars.tsx', 'src/features/cycle/useAdvice.ts',
 ];
 
 const forms = (m: Msg) => (typeof m === 'string' ? [m] : Object.values(m).filter((x): x is string => typeof x === 'string'));

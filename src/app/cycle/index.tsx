@@ -26,6 +26,11 @@ import { toFrDate } from '@/lib/validation';
 import type { PeriodEntry } from '@/lib/types';
 import { Choices, CycleIcon, Glass, IconBadge, Ink, Rise, useCyclePalette, type CycleIconName } from '@/features/cycle/kit';
 import { fmtDay } from '@/features/cycle/format';
+import { CycleRing, ringData } from '@/features/cycle/CycleRing';
+import { AdviceCard } from '@/features/cycle/AdviceCard';
+import { useAdvice } from '@/features/cycle/useAdvice';
+import { rank } from '@/lib/advice/types';
+import { uuid } from '@/lib/uuid';
 import { formatNumber, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
@@ -33,8 +38,11 @@ type TestKind = 'ovulation_tests' | 'pregnancy_tests';
 const TEST_RESULTS: Record<TestKind, string[]> = { ovulation_tests: ['negative', 'positive', 'peak', 'invalid'], pregnancy_tests: ['negative', 'positive', 'faint', 'invalid'] };
 
 const SECTIONS: { key: string; icon: CycleIconName; href: string }[] = [
+  { key: 'advice', icon: 'guide', href: '/cycle/advice' },
   { key: 'calendar', icon: 'calendar', href: '/cycle/calendar' },
   { key: 'symptoms', icon: 'symptoms', href: '/cycle/symptoms' },
+  { key: 'pain', icon: 'pain', href: '/cycle/pain' },
+  { key: 'intimacy', icon: 'privacy', href: '/cycle/intimacy' },
   { key: 'discharge', icon: 'discharge', href: '/cycle/discharge' },
   { key: 'guides', icon: 'guide', href: '/cycle/guides' },
   { key: 'bleeding', icon: 'bleeding', href: '/cycle/bleeding' },
@@ -45,6 +53,8 @@ const SECTIONS: { key: string; icon: CycleIconName; href: string }[] = [
   { key: 'export', icon: 'export', href: '/cycle/export' },
   { key: 'privacy', icon: 'privacy', href: '/cycle/privacy' },
 ];
+
+const history0 = (list: PeriodEntry[]) => [...list].sort((a, b) => b.start_date.localeCompare(a.start_date));
 
 export default function CycleRoute() {
   const journey = useFertilityJourney();
@@ -130,11 +140,80 @@ function CycleHub() {
     });
   }
 
+  // « Mes règles ont commencé / sont terminées » : enregistrement immédiat, récapitulatif, annulation possible
+  const open = history0(entries).find((p) => !p.end_date && p.start_date <= today && daysBetween(p.start_date, today) <= 14) ?? null;
+  const [quick, setQuick] = useState<{ kind: 'start' | 'end'; id: string } | null>(null);
+  async function periodStarted() {
+    if (entries.some((p) => p.start_date === today)) return toast(tr('cy.err.duplicate'), 'info');
+    await run('quick', async () => {
+      const id = uuid();
+      await insertOrQueue('period_entries', { id, user_id: userId, start_date: today, end_date: null, flow: null, note: null });
+      inv('period_entries'); haptic('success'); setQuick({ kind: 'start', id });
+    });
+  }
+  async function periodEnded() {
+    if (!open) return;
+    await run('quick', async () => {
+      await backend.update('period_entries', { end_date: today }, [eq('id', open.id)]);
+      inv('period_entries'); haptic('success'); setQuick({ kind: 'end', id: open.id });
+    });
+  }
+  async function undoQuick() {
+    if (!quick) return;
+    await run('quick', async () => {
+      if (quick.kind === 'start') await backend.remove('period_entries', [eq('id', quick.id)]);
+      else await backend.update('period_entries', { end_date: null }, [eq('id', quick.id)]);
+      inv('period_entries'); setQuick(null); toast(tr('cy.quick.undone'));
+    });
+  }
+  const ring = ringData(entries, est, today, (ovuQ.data ?? []).filter((t) => t.result === 'positive' || t.result === 'peak').map((t) => t.tested_at.slice(0, 10)));
+  const { all: advice, isNew } = useAdvice();
+  const urgentAdvice = advice.filter((a) => rank(a.priority) >= rank('prompt') && daysBetween(a.event.date, today) <= 3);
+  const freshCount = advice.filter(isNew).length;
+
   const recentSymptoms = (symptoms ?? []).slice(0, 3).flatMap((s) => symptomKeysOf(s)).slice(0, 4);
-  const history = [...entries].sort((a, b) => b.start_date.localeCompare(a.start_date));
+  const history = history0(entries);
 
   return (
     <Screen back account title={tr('cy.title')} subtitle={tr('cy.subtitle')}>
+      {/* Situations pressantes récentes : visibles sans chercher (jamais retardées par une animation) */}
+      {urgentAdvice.slice(0, 1).map((a) => <AdviceCard key={a.signature} advice={a} compact />)}
+
+      {/* Mes règles : un geste, enregistrement immédiat, annulation possible */}
+      <Glass>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+          {open
+            ? <Button label={tr('cy.quick.ended')} icon="check" loading={busy === 'quick'} onPress={periodEnded} style={{ flexGrow: 1 }} />
+            : <Button label={tr('cy.quick.started')} icon="droplet" loading={busy === 'quick'} onPress={periodStarted} style={{ flexGrow: 1 }} />}
+        </View>
+        {quick ? (
+          <Rise key={`${quick.kind}${quick.id}`}>
+            <View accessibilityLiveRegion="polite" style={{ gap: 4, padding: spacing.sm, borderRadius: 14, backgroundColor: c.powder }}>
+              <Ink weight="bold">{quick.kind === 'start' ? tr('cy.quick.startedRecap', { date: fmtDay(today) }) : tr('cy.quick.endedRecap', { date: fmtDay(today) })}</Ink>
+              {quick.kind === 'start' && est.nextPeriod ? <Ink variant="small">{tr('cy.quick.nextAfter', { date: fmtDay(est.nextPeriod) })}</Ink> : null}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+                <Button label={tr('cy.quick.undo')} size="sm" variant="secondary" onPress={undoQuick} />
+                <Button label={tr('cy.quick.fix')} size="sm" variant="ghost" onPress={() => { const p = entries.find((x) => x.id === quick.id); if (p) edit(p); setQuick(null); }} />
+              </View>
+            </View>
+          </Rise>
+        ) : null}
+      </Glass>
+
+      {ring ? <Rise><Glass><CycleRing data={ring} /></Glass></Rise> : null}
+
+      {advice.length ? (
+        <Glass onPress={() => router.push('/cycle/advice' as never)} accessibilityLabel={tr('adv.ui.seeAll')}>
+          <View style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center' }}>
+            <IconBadge name="guide" tone="lavender" />
+            <View style={{ flex: 1, gap: 2 }}>
+              <Ink weight="bold">{tr('adv.ui.hubTitle', { count: advice.length })}</Ink>
+              {freshCount ? <Ink variant="caption" soft>{tr('adv.ui.hubNew', { count: freshCount })}</Ink> : null}
+            </View>
+          </View>
+        </Glass>
+      ) : null}
+
       {/* Vue d'ensemble : ce qui est ENREGISTRÉ d'abord, puis ce qui est ESTIMÉ (libellé comme tel) */}
       <Rise>
         <Glass>

@@ -424,8 +424,15 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       delete r.id;
       if (T(table).some((x) => x.user_id === r.user_id)) throw new BackendError('Préférences déjà enregistrées : modifiez-les plutôt.', '23505');
       r.track_intercourse ??= false;
+      r.hide_on_home ??= false;
+      r.advice_enabled ??= true;
+      r.detailed_notifications ??= false;
       r.updated_at = nowIso();
     }
+    if (table === 'symptom_logs') {
+      r.symptom_keys ??= []; r.intensities ??= {}; r.pain_locations ??= []; r.pain_impact ??= []; r.pain_associated ??= [];
+    }
+    if (table === 'discharge_logs') { r.textures ??= []; r.symptoms ??= []; }
     if (table === 'bottle_timers') {
       r.status ??= 'active';
       r.planned_ml ??= null;

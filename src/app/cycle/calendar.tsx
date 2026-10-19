@@ -117,6 +117,7 @@ export default function CycleCalendar() {
             {day.iso <= today ? (
               <View style={{ gap: spacing.xs }}>
                 <Button label={tr('cy.cal.addSymptoms')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/symptoms?date=${day.iso}` as never); }} full />
+                <Button label={tr('cy.cal.addPain')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/pain?date=${day.iso}` as never); }} full />
                 <Button label={tr('cy.cal.addDischarge')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/discharge/new?date=${day.iso}` as never); }} full />
                 <Button label={tr('cy.cal.addJournal')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/journal?date=${day.iso}` as never); }} full />
                 <Button label={tr('cy.cal.addPeriod')} variant="ghost" onPress={() => { setDay(null); router.push('/cycle?all=1' as never); }} full />

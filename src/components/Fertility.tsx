@@ -14,6 +14,7 @@ import { useUserId } from '@/lib/auth';
 import { backend, eq } from '@/lib/backend';
 import { useHouseholdId, useInvalidate, usePeriods, useReminders, useTests } from '@/lib/data/hooks';
 import { useSymptomLogs } from '@/lib/data/hooks-me';
+import { useCyclePreferences } from '@/lib/data/hooks-cycle';
 import { friendlyError, useDeleteReminder, useToggleReminder } from '@/lib/data/hooks-settings';
 import { useAddQuestions, useConsultationQuestions, useJourneyArticles, useShareQuestion } from '@/lib/data/hooks-fertility';
 import { addDays, daysBetween, formatDateFr, frToISO, todayISO, type ISODate } from '@/lib/domain/dates';
@@ -617,7 +618,9 @@ export function JourneyReminders({ presets, deepLink, defaultDates }: { presets:
   const [time, setTime] = useState('08:00');
   const [date, setDate] = useState('');
   const [weekday, setWeekday] = useState<Weekday>(1);
-  const [discreet, setDiscreet] = useState(true);
+  // Notifications neutres par défaut (texte détaillé seulement si la personne l'a explicitement choisi)
+  const { prefs: cyclePrefs } = useCyclePreferences();
+  const [discreet, setDiscreet] = useState(!cyclePrefs.detailed_notifications);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const mine = (reminders ?? []).filter((r) => r.deep_link?.startsWith(deepLink));

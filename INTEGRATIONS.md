@@ -175,6 +175,23 @@ Questionnaire EPDS : non intégré (licence et usage clinique). Le suivi émotio
 - **Traduction automatique** : non utilisée (traductions écrites et relues dans le code, FR + EN).
 - Coût externe de ce module : **aucun**.
 
+## 12 ter. Conseils personnalisés du cycle et recherche d'un professionnel (nouveau, 19 octobre 2026)
+**Moteur de conseils : interne, déterministe, sans API ni IA.** Calculé sur l'appareil à partir des saisies (`src/lib/advice/`), règles sourcées et datées, textes dans `src/i18n/{fr,en}/advice.ts`. Aucune donnée intime n'est envoyée à un service externe. Relecture par un professionnel de santé : **non faite** (`ADVICE_VALIDATED_BY = null`, affiché dans l'app).
+
+Sources consultées le 19/10/2026 : Service-Public (contraception d'urgence, vérifié le 29/06/2026 par le site), QuestionSexualité / Santé publique France (contraception d'urgence, annuaire des centres de santé sexuelle), Santé.fr (règles douloureuses), NHS (period pain, pelvic inflammatory disease, ectopic pregnancy, vaginal discharge, bleeding, pregnancy test, missed periods), ACOG (vaginitis). Pages ameli « contraception d'urgence » : non retrouvées en accès direct ; Service-Public et QuestionSexualité sont utilisés à la place.
+
+**Doctolib — vérification (19/10/2026)**
+| Point | Constat |
+|---|---|
+| API publique pour une app grand public | **Aucune trouvée.** Le portail développeurs (developers.doctolib.com) est réservé aux partenaires, accès sur identification ; aucune spécification publique, aucun SDK, aucune offre « recherche et réservation » pour une application tierce destinée aux patientes. |
+| Conditions d'utilisation (version avril 2026) | Extraction automatisée et web scraping **interdits** ; opposition à la fouille de textes et de données ; **tout lien vers la plateforme nécessite une autorisation préalable écrite** de Doctolib. |
+| Ce qui est implémenté | **Rien qui touche Doctolib** : ni lien, ni logo, ni nom dans l'interface, ni requête. Le module `src/lib/advice/professionals.ts` est prêt à recevoir une destination supplémentaire si un accord écrit est obtenu. |
+| Solution retenue | France : centres de santé sexuelle (QuestionSexualité, en premier après un rapport à risque), **Annuaire santé de l'Assurance Maladie**, pharmacien (sans rendez-vous) ; Royaume-Uni : recherche de services du NHS ; ailleurs : orientation générale. L'app ouvre seulement la page d'accueil de ces annuaires (aucun paramètre inventé) et ne transmet rien. Un rendez-vous n'est jamais présenté comme réservé. |
+| Démarche possible | Demander à Doctolib une autorisation écrite de lien (et, éventuellement, un partenariat) ; à faire par la propriétaire de l'app. |
+
+**Notifications** : les rappels du cycle sont neutres par défaut (« Petit rappel ») ; le texte détaillé n'est utilisé que si la personne active « Notifications détaillées ». Aucun conseil n'est envoyé en notification.
+Coût externe : **aucun**.
+
 ## 13. Recommandations de produits
 📚 **Étudiée, non intégrée.** Il n'existe pas de catalogue ouvert et vérifiable pour l'équipement, les jouets et les livres : les sources trouvées sont commerciales ou d'affiliation. Aucune recommandation inventée n'est affichée.
 - Sources utilisables plus tard, sous conditions : Open Food Facts et Open Beauty Facts pour les produits notés, avec les allergies déclarées, sans utiliser de donnée médicale pour de la publicité ; une sélection éditoriale clairement signalée.

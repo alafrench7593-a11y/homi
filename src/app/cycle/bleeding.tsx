@@ -5,7 +5,7 @@
  */
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, haptic, Row } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
@@ -16,6 +16,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { BLEEDING_KINDS, bleedingOrientation, DISCHARGE } from '@/lib/domain/cycleV2';
 import { toFrDate } from '@/lib/validation';
+import { uuid } from '@/lib/uuid';
 import { Choices, CycleIcon, Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
 import { useEmergencyNumbers } from '@/features/cycle/emergency';
 import { fmtDayYear } from '@/features/cycle/format';
@@ -42,6 +43,8 @@ export default function BleedingScreen() {
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  const { id: editId } = useLocalSearchParams<{ id?: string }>();
+  React.useEffect(() => { const b = editId ? logs?.find((x) => x.id === editId) : null; if (b && editing?.id !== b.id) edit(b); }, [editId, logs?.length]); // eslint-disable-line react-hooks/exhaustive-deps
   const orientation = kind ? bleedingOrientation({ kind, amount, pain: pain == null ? null : pain === 'yes', pregnancy }) : null;
 
   function reset() { setEditing(null); setKind(null); setAmount(null); setPain(null); setPregnancy(null); setDay(toFrDate(todayISO())); setNote(''); setErr(null); }
@@ -56,8 +59,10 @@ export default function BleedingScreen() {
     setErr(null); setBusy(true);
     try {
       const row = { occurred_on: d, kind, amount, pain: pain == null ? null : pain === 'yes', pregnancy, note: note.trim() || null };
-      await saveOwn('bleeding_logs', editing ? row : { user_id: userId, ...row }, editing?.id);
+      const newId = editing?.id ?? uuid();
+      await saveOwn('bleeding_logs', editing ? row : { id: newId, user_id: userId, ...row }, editing?.id);
       inv('bleeding_logs'); haptic('success'); toast(tr('cy.bl.saved')); reset();
+      router.push(`/cycle/recap?type=bleeding&id=${newId}` as never);
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
   }
   async function remove(b: BleedingLog) {

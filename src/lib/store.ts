@@ -32,6 +32,9 @@ interface UiState {
   cycleCardItems: string[] | null;
   cycleCardShortcuts: string[] | null;
   setCycleCard: (p: { items?: string[] | null; shortcuts?: string[] | null }) => void;
+  /** Conseils du cycle déjà vus (signatures) : un conseil n'est signalé « nouveau » qu'une fois, sauf si une information change. */
+  adviceSeen: string[];
+  markAdviceSeen: (signatures: string[]) => void;
   /** Outils favoris (identifiants stables du catalogue), dans l'ordre choisi. */
   toolFavorites: string[];
   setToolFavorites: (ids: string[]) => void;
@@ -80,6 +83,11 @@ export const useUiStore = create<UiState>()(
         cycleCardItems: p.items === undefined ? st.cycleCardItems : p.items,
         cycleCardShortcuts: p.shortcuts === undefined ? st.cycleCardShortcuts : p.shortcuts,
       })),
+      adviceSeen: [],
+      markAdviceSeen: (sigs) => set((st) => {
+        const next = [...new Set([...st.adviceSeen, ...sigs])];
+        return { adviceSeen: next.slice(-400) };
+      }),
       toolFavorites: [],
       setToolFavorites: (toolFavorites) => set({ toolFavorites }),
       toolFilter: 'all',

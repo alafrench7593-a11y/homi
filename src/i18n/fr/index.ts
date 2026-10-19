@@ -7,3 +7,4 @@ export { onboarding } from './onboarding';
 export { home } from './home';
 export { docs } from './docs';
 export { cycle } from './cycle';
+export { advice } from './advice';

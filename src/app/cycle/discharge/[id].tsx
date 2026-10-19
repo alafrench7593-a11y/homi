@@ -15,7 +15,7 @@ import { useInvalidate } from '@/lib/data/hooks';
 import { removeOwn, saveOwn, useDischargeLogs } from '@/lib/data/hooks-cycle2';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { frToISO, todayISO } from '@/lib/domain/dates';
-import { cycleDayOn, DISCHARGE, dischargeOrientation, guidesFor } from '@/lib/domain/cycleV2';
+import { cycleDayOn, DISCHARGE, guidesFor } from '@/lib/domain/cycleV2';
 import { estimateCycle } from '@/lib/domain/cycle';
 import { usePeriods } from '@/lib/data/hooks';
 import { daysBetween } from '@/lib/domain/dates';
@@ -23,8 +23,10 @@ import { toFrDate } from '@/lib/validation';
 import { guideBySlug } from '@/content/dischargeGuides';
 import { dl } from '@/features/cycle/discharge';
 import { Choices, Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
+import { AdviceCard } from '@/features/cycle/AdviceCard';
+import { useAdvice } from '@/features/cycle/useAdvice';
+import { uuid } from '@/lib/uuid';
 import { getLocale, t as tr } from '@/i18n';
-import { useEmergencyNumbers } from '@/features/cycle/emergency';
 import { spacing } from '@/theme/tokens';
 
 type YesNo = 'yes' | 'no';
@@ -40,7 +42,6 @@ export default function DischargeForm() {
   const isNew = id === 'new';
   const { data: logs } = useDischargeLogs();
   const existing = isNew ? null : logs?.find((l) => l.id === id) ?? null;
-  const emergency = useEmergencyNumbers();
   const { data: periods } = usePeriods();
 
   const [step, setStep] = useState(0);
@@ -71,7 +72,9 @@ export default function DischargeForm() {
   }, [existing?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const obs = { amount, color, textures, odor, symptoms, pregnancy };
-  const orientation = dischargeOrientation(obs);
+  const { preview } = useAdvice();
+  const live = preview('discharge', { id: existing?.id ?? 'draft', observed_at: `${frToISO(dayText) ?? todayISO()}T12:00:00`, ...obs });
+  const top = live[0];
   const guides = useMemo(() => guidesFor(obs).map(guideBySlug).filter(Boolean), [amount, color, textures, odor, symptoms]); // eslint-disable-line react-hooks/exhaustive-deps
   const lang = getLocale() === 'en' ? 'en' : 'fr';
 
@@ -91,11 +94,12 @@ export default function DischargeForm() {
     try {
       const observed_at = new Date(`${d}T${m[1].padStart(2, '0')}:${m[2]}:00`).toISOString();
       const row = { observed_at, amount, color, textures, odor, symptoms, pregnancy, recent_sex: bool(recentSex), contraception: bool(contraception), intimate_product: bool(product), antibiotics: bool(antibiotics), note: note.trim() || null };
-      await saveOwn('discharge_logs', existing ? row : { user_id: userId, ...row }, existing?.id);
+      const newId = existing?.id ?? uuid();
+      await saveOwn('discharge_logs', existing ? row : { id: newId, user_id: userId, ...row }, existing?.id);
       inv('discharge_logs');
       haptic('success');
       toast(tr('cy.dis.saved'));
-      router.back();
+      router.replace(`/cycle/recap?type=discharge&id=${newId}` as never);
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
   }
   async function remove() {
@@ -127,11 +131,8 @@ export default function DischargeForm() {
       {err ? <Banner tone="warning">{err}</Banner> : null}
 
       {/* Orientation : visible tout de suite, sans attendre la fin du questionnaire */}
-      {orientation === 'urgent' ? (
-        <Banner tone="danger" title={tr('cy.orient.urgentTitle')} action={<Button label={tr('cy.orient.call')} variant="danger" size="sm" onPress={() => router.push('/emergency')} />}>{tr('cy.orient.urgentDischarge', { numbers: emergency })}</Banner>
-      ) : orientation === 'see_soon' ? (
-        <Banner tone="warning" title={tr('cy.orient.seeTitle')}>{tr('cy.orient.seeDischarge')}</Banner>
-      ) : orientation === 'mention' ? <Banner tone="info">{tr('cy.orient.mention')}</Banner> : null}
+      {/* Orientation en direct, dès qu'un signe saisi la justifie (avant même l'enregistrement) */}
+      {top && (top.priority === 'emergency' || top.priority === 'prompt' || top.priority === 'consult') ? <AdviceCard advice={top} compact /> : null}
 
       <Rise key={step}>
         <Glass>

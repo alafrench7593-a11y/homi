@@ -31,11 +31,11 @@ export function symptomKeysOf(row: { symptom_keys?: string[] | null; symptoms?: 
 }
 
 export const DISCHARGE = {
-  amount: ['very_low', 'low', 'moderate', 'heavy', 'very_heavy', 'unsure'],
-  color: ['clear', 'white', 'creamy_white', 'milky', 'pink', 'brown', 'yellowish', 'greenish', 'greyish', 'other', 'unsure'],
-  textures: ['fluid', 'watery', 'creamy', 'sticky', 'elastic', 'stringy', 'slippery', 'thick', 'lumpy', 'other'],
+  amount: ['very_low', 'low', 'usual', 'moderate', 'heavy', 'very_heavy', 'unsure'],
+  color: ['clear', 'white', 'creamy_white', 'milky', 'pink', 'brown', 'blood', 'yellowish', 'greenish', 'greyish', 'other', 'unsure'],
+  textures: ['fluid', 'watery', 'creamy', 'sticky', 'elastic', 'stringy', 'slippery', 'thick', 'lumpy', 'other', 'unsure'],
   odor: ['none', 'usual_light', 'stronger', 'unusual', 'unpleasant', 'unsure'],
-  symptoms: ['none', 'itching', 'irritation', 'burning', 'pain', 'urinary', 'painful_sex', 'dryness', 'other'],
+  symptoms: ['none', 'itching', 'irritation', 'burning', 'pain', 'pelvic_pain', 'urinary', 'painful_sex', 'dryness', 'fever', 'bleeding', 'other'],
   pregnancy: ['no', 'known', 'possible', 'unknown'],
 } as const;
 
