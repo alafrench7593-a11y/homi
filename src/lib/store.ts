@@ -41,6 +41,9 @@ interface UiState {
   /** Ingrédients que j'ai à la maison (« Que puis-je cuisiner ? ») : préférence de l'appareil. */
   pantry: string[];
   setPantry: (keys: string[]) => void;
+  /** Questions préparées pour le médecin ou la PMI (aide pour la nuit), par enfant : préférence de l'appareil. */
+  nightQuestions: Record<string, string[]>;
+  setNightQuestions: (childId: string, list: string[]) => void;
   setToolFavorites: (ids: string[]) => void;
   /** Dernier filtre choisi dans « Outils » (état conservé au retour). */
   toolFilter: string;
@@ -95,6 +98,8 @@ export const useUiStore = create<UiState>()(
       toolFavorites: [],
       pantry: [],
       setPantry: (pantry) => set({ pantry }),
+      nightQuestions: {},
+      setNightQuestions: (childId, list) => set((st) => ({ nightQuestions: { ...st.nightQuestions, [childId]: list } })),
       setToolFavorites: (toolFavorites) => set({ toolFavorites }),
       toolFilter: 'all',
       setToolFilter: (toolFilter) => set({ toolFilter }),

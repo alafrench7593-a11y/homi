@@ -7,7 +7,7 @@ import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Button, haptic, Icon, type IconName, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
-import { useNotificationsInbox } from '@/lib/data/hooks';
+import { useRelevantNotifications } from '@/lib/data/hooks-scope';
 import { useDeleteNotification, useMarkAllNotificationsRead, useMarkNotificationRead } from '@/lib/data/hooks-me';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { timeAgo } from '@/lib/domain/dates';
@@ -37,7 +37,7 @@ export default function NotificationsScreen() {
   const t = useTheme();
   const toast = useToast();
   const insets = useSafeAreaInsets();
-  const { data, isLoading, isError, isRefetching, error, refetch } = useNotificationsInbox();
+  const { data, isLoading, isError, isRefetching, error, refetch } = useRelevantNotifications();
   const markRead = useMarkNotificationRead();
   const markAll = useMarkAllNotificationsRead();
   const del = useDeleteNotification();

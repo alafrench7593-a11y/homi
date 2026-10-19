@@ -129,7 +129,6 @@ export function FamilyOverview() {
     const names = babies?.map((b) => b.nickname).filter(Boolean).join(' · ');
     rows.push({ key: 'p', icon: 'moon', title: names || tr('pj.subject.pregnancy'), sub: pregnancyProgress(pregnancy.due_date).label, onPress: () => setSubject({ type: 'pregnancy', id: pregnancy.id }) });
   }
-  if (js.postpartum) rows.push({ key: 'pp', icon: 'heart', title: tr('pj.subject.postpartum'), sub: tr('pj.subject.postpartumSub'), onPress: () => setSubject({ type: 'postpartum' }) });
   for (const c of children ?? []) {
     rows.push({ key: c.id, icon: 'smile', title: tr(js.childType(c.id) === 'baby' ? 'pj.profile.baby' : 'pj.profile.child', { name: c.first_name }), sub: childAge(c.birth_date).label, onPress: () => setSubject({ type: 'child', id: c.id }) });
   }

@@ -14,6 +14,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { useUserId } from '@/lib/auth';
 import { isLocked } from '@/lib/domain/content';
 import { formatDateFr } from '@/lib/domain/dates';
+import { t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
@@ -58,22 +59,28 @@ export default function ArticleScreen() {
   }
 
   const body = <Markdown source={a.body_md} />;
+  // Relu ou validé seulement si une personne (nom + qualification) est enregistrée ; sinon « À vérifier »
+  const raw = a.editorial_status ?? 'to_review';
+  const status = (raw === 'reviewed' || raw === 'validated') && !(a.reviewer_name && a.reviewer_qualification) ? 'to_review' : raw;
   return (
     <Screen back right={<IconButton icon="bookmark" label={saved ? 'Retirer des favoris' : 'Ajouter aux favoris'} color={saved ? t.colors.primary : undefined} onPress={toggleFav} />}>
       <Text variant="title" accessibilityRole="header">{a.title}</Text>
       <Text italic color={t.colors.primary}>{a.summary}</Text>
-      {!a.reviewer_name && (
-        <Banner tone="warning" title="Contenu en attente de relecture professionnelle">
-          {'Ce texte a été rédigé à partir de sources officielles mais n’a pas encore été relu par un professionnel de santé. Il ne remplace pas un avis médical.'}
+      {/* Statut éditorial réel : jamais « relu » ou « validé » sans le nom et la qualification de la personne */}
+      <View testID="article-status">
+        <Banner tone={status === 'validated' || status === 'reviewed' ? 'success' : 'warning'} title={tr(`art.status.${status}` as TKey)}>
+          {status === 'validated' || status === 'reviewed'
+            ? tr(`art.statusBody.${status}` as TKey, { name: a.reviewer_name ?? '', qualification: a.reviewer_qualification ?? '' })
+            : `${tr(`art.statusBody.${status}` as TKey)} ${tr('art.notAdvice')}`}
         </Banner>
-      )}
+      </View>
       {isLocked(a, premium) ? <PremiumGate feature="Article réservé à l’abonnement">{body}</PremiumGate> : body}
       <Divider />
       <Card tone="soft">
-        <Text weight="bold">Sources</Text>
+        <Text weight="bold">{tr('art.references')}</Text>
         {a.sources.length ? a.sources.map((s) => (
           <Text key={s.url} variant="small" color={t.colors.primary} accessibilityRole="link" onPress={() => Linking.openURL(s.url).catch(() => toast('Impossible d’ouvrir ce lien sur cet appareil.', 'error'))} style={{ marginTop: 6, textDecorationLine: 'underline' }}>
-            {s.label}{s.consulted_on ? ` (consulté le ${formatDateFr(s.consulted_on)})` : ''}
+            {s.label}{s.published ? ` — ${tr('art.published', { date: formatDateFr(s.published) })}` : ''}{s.consulted_on ? ` (${tr('art.consulted', { date: formatDateFr(s.consulted_on) })})` : ''}
           </Text>
         )) : <Text variant="small" muted>Aucune source renseignée.</Text>}
         <View style={{ marginTop: spacing.sm, gap: 2 }}>

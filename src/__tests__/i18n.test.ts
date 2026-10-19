@@ -8,6 +8,7 @@ const { scan } = require('../../scripts/i18n-scan.js');
 
 /** Fichiers entièrement traduits : aucun texte affiché ne doit y être écrit en dur (régression bloquée). */
 export const MIGRATED = [
+  'src/app/child/[id]/vaccines.tsx', 'src/app/night/help.tsx',
   'src/app/meals/index.tsx', 'src/app/meals/[slug].tsx', 'src/app/meals/menu.tsx', 'src/app/meals/shopping.tsx', 'src/app/meals/pantry.tsx',
   'src/app/meals/settings.tsx', 'src/app/meals/new.tsx', 'src/app/admin/recipes.tsx', 'src/features/recipes/RecipeCard.tsx', 'src/features/recipes/RecipeArt.tsx',
   'src/features/recipes/HomeRecipeCard.tsx', 'src/features/recipes/ScanRecipes.tsx',

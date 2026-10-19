@@ -15,8 +15,8 @@ import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/
 import { PostpartumHomeCard } from '@/features/postpartum';
 import { ChildToday, CycleCard, orderedHomeCards, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
 import { ChildHomeCard, FamilyOverview, NoJourneyCard } from '@/features/journeys';
-import { useActivePregnancy, useArticles, useJourneyState, useNotificationsInbox, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
-import { useScope } from '@/lib/data/hooks-scope';
+import { useActivePregnancy, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { quickAllowed, quickFor, type Scope } from '@/lib/journeys/tools';
 import type { Journey } from '@/lib/types';
@@ -50,7 +50,7 @@ export default function Home() {
   const mainLoading = (profileQ.isLoading && !profile) || (childrenQ.isLoading && !children) || !scope.loaded;
   const mainError = profileQ.isError && !profile ? profileQ : childrenQ.isError && !children ? childrenQ : null;
   const { data: articles } = useArticles();
-  const { data: inbox } = useNotificationsInbox();
+  const { data: inbox } = useRelevantNotifications();
   const premium = usePremium();
   const offline = useOfflineStore();
   const skyOverride = useUiStore((st) => st.skyOverride);

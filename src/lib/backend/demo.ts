@@ -6,6 +6,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import content from '@/content/demo-content.json';
+import { EXTRA_CATEGORIES, libraryArticleRows } from '@/content/articles/rows';
 import { legacyJourneys, type JourneyRow } from '../journeys/model';
 import { uuid } from '../uuid';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
@@ -163,6 +164,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
           // stockage illisible : on repart d'un état vide
         }
         for (const t of CATALOG_TABLES) state.tables[t] = JSON.parse(JSON.stringify(catalogs[t] ?? []));
+        // Bibliothèque : nouvelles catégories et articles par parcours (statut éditorial « À vérifier »)
+        for (const c of EXTRA_CATEGORIES) if (!state.tables.content_categories.some((x) => x.slug === c.slug)) state.tables.content_categories.push({ id: `cat-${c.slug}`, ...c });
+        for (const x of state.tables.articles) x.editorial_status ??= 'to_review';
+        for (const r of libraryArticleRows(state.tables.content_categories as never)) if (!state.tables.articles.some((x) => x.slug === r.slug)) state.tables.articles.push(r as unknown as Row);
         // Scanner : données de démonstration (fictives, is_demo = true), mêmes que la section « Scanner » de supabase/seed.sql
         for (const p of DEMO_SCANNER_PRODUCTS) if (!state.tables.products.some((x) => x.barcode === p.barcode)) state.tables.products.push(JSON.parse(JSON.stringify(p)));
         for (const r of DEMO_SCANNER_RECALLS) if (!state.tables.product_recalls.some((x) => x.id === r.id)) state.tables.product_recalls.push(JSON.parse(JSON.stringify(r)));

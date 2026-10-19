@@ -97,7 +97,7 @@ export const onboarding = {
   'cycleCard.ttc': 'PROJET BÉBÉ',
   'cycleCard.mine': 'MON CYCLE',
   'cycleCard.openTtc': 'Ouvrir mon projet bébé',
-  'cycleCard.openAvoid': 'Ouvrir mon cycle et ma contraception',
+  'cycleCard.openAvoid': 'Ouvrir le calendrier de mon cycle',
   'cycleCard.openCycle': 'Ouvrir mon cycle',
   'cycleCard.day': 'J{day}',
   'cycleCard.ofCycle': 'du cycle',

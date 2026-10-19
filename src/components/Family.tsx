@@ -43,9 +43,6 @@ export function ProfileSwitcher() {
       onPress: () => setSubject({ type: 'pregnancy', id: pregnancy.id }),
     });
   }
-  if (js.postpartum) {
-    items.push({ key: 'pp', label: tr('pj.subject.postpartum'), sub: tr('pj.subject.postpartumSub'), avatar: <Avatar color="#F6D5DE" icon="sun" />, active: subject.type === 'postpartum', onPress: () => setSubject({ type: 'postpartum' }) });
-  }
   for (const c of children ?? []) {
     const baby = js.childType(c.id) === 'baby';
     items.push({

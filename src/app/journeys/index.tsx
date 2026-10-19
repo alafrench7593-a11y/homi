@@ -22,10 +22,13 @@ import { t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
-/** Les six parcours demandés, plus le simple suivi du cycle (conservé). */
+/**
+ * Parcours proposés, plus le simple suivi du cycle (conservé). Le post-partum n'est plus une catégorie indépendante :
+ * la récupération de la mère est rangée dans « Mon bébé est né » (un post-partum déjà commencé reste conservé).
+ */
 const CHOICES: { type: JourneyType; key: string }[] = [
   { type: 'avoid', key: 'avoid' }, { type: 'ttc', key: 'ttc' }, { type: 'pregnancy', key: 'pregnancy' },
-  { type: 'postpartum', key: 'postpartum' }, { type: 'baby', key: 'baby' }, { type: 'child', key: 'child' }, { type: 'cycle', key: 'cycle' },
+  { type: 'baby', key: 'baby' }, { type: 'child', key: 'child' }, { type: 'cycle', key: 'cycle' },
 ];
 
 type Pending = ChangeRequest & { target: ChangeTarget | null; closingRow: JourneyRow | null; reason: string };

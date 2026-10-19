@@ -6,6 +6,15 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, Pressable, View } from 'react-native';
 import { router } from 'expo-router';
+import { confirm, useToast } from '@/components/Overlays';
+import { backend, eq } from '@/lib/backend';
+import { useUserId } from '@/lib/auth';
+import { useInvalidate } from '@/lib/data/hooks';
+import { friendlyError } from '@/lib/data/hooks-settings';
+import { useScope } from '@/lib/data/hooks-scope';
+import { insertOrQueue } from '@/lib/offline';
+import { cycleHistory, estimateCycle, projectFertileWindows } from '@/lib/domain/cycle';
+import { dayActions, type DayAction } from '@/lib/domain/cycleCalendar';
 import { Screen } from '@/components/Screen';
 import { Button, haptic, IconButton, Row } from '@/components/ui';
 import { Sheet } from '@/components/Overlays';
@@ -34,6 +43,33 @@ export default function CycleCalendar() {
   const { data: ovu } = useTests('ovulation_tests');
   const { data: preg } = useTests('pregnancy_tests');
   const { data: appts } = useAppointments();
+  const toast = useToast();
+  const inv = useInvalidate();
+  const userId = useUserId();
+  const scope = useScope();
+  const [busy, setBusy] = useState(false);
+  const rows = useMemo(() => (periods ?? []) as { id: string; start_date: string; end_date?: string | null }[], [periods]);
+  const est = useMemo(() => estimateCycle(periods ?? [], today), [periods, today]);
+  const next = useMemo(() => projectFertileWindows(est, 1)[0] ?? null, [est]);
+  const history = useMemo(() => cycleHistory(periods ?? [], today), [periods, today]);
+  const acts = day ? dayActions(day.iso, rows, today) : { covering: null, actions: [] as DayAction[] };
+
+  /** Toucher un jour : début, fin, début plus tôt, suppression (avec confirmation). */
+  async function apply(a: DayAction) {
+    if (!day || busy) return;
+    if (a.kind === 'delete' && !(await confirm(tr('cyc.deleteTitle'), tr('cyc.deleteBody'), tr('common.delete')))) return;
+    setBusy(true);
+    try {
+      if (a.kind === 'start') await insertOrQueue('period_entries', { user_id: userId, start_date: day.iso, end_date: null, flow: null, note: null });
+      else if (a.kind === 'end') await backend.update('period_entries', { end_date: day.iso }, [eq('id', a.id)]);
+      else if (a.kind === 'moveStart') await backend.update('period_entries', { start_date: day.iso }, [eq('id', a.id)]);
+      else await backend.remove('period_entries', [eq('id', a.id)]);
+      inv('period_entries');
+      haptic('success');
+      toast(tr(`cyc.done.${a.kind}` as 'cyc.done.start'));
+      setDay(null);
+    } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
+  }
   const cells = useMemo(() => monthCells(ym.y, ym.m, {
     periods: periods ?? [], symptoms: symptoms ?? [], discharge: discharge ?? [], bleeding: bleeding ?? [], journal: journal ?? [],
     tests: [...(ovu ?? []), ...(preg ?? [])].map((x) => ({ tested_at: x.tested_at })),
@@ -101,6 +137,36 @@ export default function CycleCalendar() {
         <Ink variant="caption" soft>{tr('cy.cal.estimateNote')}</Ink>
       </Glass>
       <Button label={tr('cy.cal.today')} variant="ghost" icon="target" onPress={() => setYm({ y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 })} />
+      <Ink variant="caption" soft>{tr('cyc.tapHint')}</Ink>
+
+      {/* Estimations (approximatives) */}
+      <Glass>
+        <View testID="cal-estimates" style={{ gap: 4 }}>
+          <Ink weight="bold">{tr('cyc.estimates')}</Ink>
+          {next ? (
+            <>
+              <Ink variant="small">{tr('cyc.nextPeriod', { date: fmtDay(next.nextPeriod, { day: 'numeric', month: 'long' }) })}</Ink>
+              <Ink variant="small">{tr('cyc.fertile', { from: fmtDay(next.start, { day: 'numeric', month: 'long' }), to: fmtDay(next.end, { day: 'numeric', month: 'long' }) })}</Ink>
+            </>
+          ) : <Ink variant="small" soft>{tr('cyc.needMore')}</Ink>}
+          <Ink variant="caption" soft>{tr('cyc.approx')}</Ink>
+          {scope.scope === 'avoid' ? <View testID="cal-avoid-warning"><Ink variant="caption" weight="bold">{tr('cyc.avoidWarning')}</Ink></View> : null}
+        </View>
+      </Glass>
+
+      {/* Cycles précédents, avec leur durée */}
+      <Glass>
+        <View testID="cal-history" style={{ gap: 4 }}>
+          <Ink weight="bold">{tr('cyc.history')}</Ink>
+          {!history.length ? <Ink variant="small" soft>{tr('cyc.historyEmpty')}</Ink> : history.slice(0, 12).map((h) => (
+            <Row key={h.start} style={{ justifyContent: 'space-between' }}>
+              <Ink variant="small" style={{ flex: 1 }}>{tr('cyc.cycleFrom', { date: fmtDay(h.start, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Ink>
+              <Ink variant="small" soft>{h.current ? tr('cyc.current') : tr('cyc.length', { count: h.length ?? 0 })}{h.periodLength ? ` · ${tr('cyc.periodLength', { count: h.periodLength })}` : ''}{h.unusual ? ` · ${tr('cyc.unusual')}` : ''}</Ink>
+            </Row>
+          ))}
+          {est.averageLength ? <Ink variant="caption" soft>{tr('cyc.average', { count: Math.round(est.averageLength) })}</Ink> : null}
+        </View>
+      </Glass>
 
       <Sheet visible={!!day} onClose={() => setDay(null)} title={day ? fmtDay(day.iso, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : ''}>
         {day ? (
@@ -114,13 +180,21 @@ export default function CycleCalendar() {
             {day.tests ? <Ink>{tr('cy.cal.tests')}</Ink> : null}
             {day.journal ? <Ink>{tr('cy.cal.journal')}</Ink> : null}
             {!day.period && !day.estimatedPeriod && !daySymptoms.length && !day.discharge && !day.bleeding && !day.tests && !day.journal ? <Ink soft>{tr('cy.cal.nothing')}</Ink> : null}
+            {acts.covering ? <View testID="cal-covering"><Ink>{tr('cyc.covering', { from: fmtDay(acts.covering.start_date, { day: 'numeric', month: 'long' }), to: acts.covering.end_date ? fmtDay(acts.covering.end_date, { day: 'numeric', month: 'long' }) : tr('cyc.ongoing') })}</Ink></View> : null}
+            {acts.actions.length ? (
+              <View style={{ gap: spacing.xs }}>
+                {acts.actions.map((a) => (
+                  <Button key={a.kind + ('id' in a ? a.id : '')} label={tr(`cyc.act.${a.kind}` as 'cyc.act.start')} variant={a.kind === 'delete' ? 'ghost' : 'primary'} icon={a.kind === 'delete' ? 'trash-2' : 'droplet'} loading={busy} full testID={`cal-act-${a.kind}`} onPress={() => void apply(a)} />
+                ))}
+              </View>
+            ) : null}
             {day.iso <= today ? (
               <View style={{ gap: spacing.xs }}>
                 <Button label={tr('cy.cal.addSymptoms')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/symptoms?date=${day.iso}` as never); }} full />
                 <Button label={tr('cy.cal.addPain')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/pain?date=${day.iso}` as never); }} full />
                 <Button label={tr('cy.cal.addDischarge')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/discharge/new?date=${day.iso}` as never); }} full />
                 <Button label={tr('cy.cal.addJournal')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/journal?date=${day.iso}` as never); }} full />
-                <Button label={tr('cy.cal.addPeriod')} variant="ghost" onPress={() => { setDay(null); router.push('/cycle?all=1' as never); }} full />
+                <Button label={tr('cyc.editAll')} variant="ghost" onPress={() => { setDay(null); router.push('/cycle?all=1' as never); }} full />
               </View>
             ) : <Ink variant="caption" soft>{tr('cy.cal.future')}</Ink>}
           </View>

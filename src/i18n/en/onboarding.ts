@@ -99,7 +99,7 @@ export const onboarding: Messages<typeof fr> = {
   'cycleCard.ttc': 'BABY PROJECT',
   'cycleCard.mine': 'MY CYCLE',
   'cycleCard.openTtc': 'Open my baby project',
-  'cycleCard.openAvoid': 'Open my cycle and contraception',
+  'cycleCard.openAvoid': 'Open my cycle calendar',
   'cycleCard.openCycle': 'Open my cycle',
   'cycleCard.day': 'Day {day}',
   'cycleCard.ofCycle': 'of cycle',

@@ -97,7 +97,7 @@ def run(p):
     # ---- 8. Changer d'enfant : Noé (enfant) → outils différents
     go(pg, '/'); subject(pg, noe)
     t = tools_text(pg)
-    R['8_changement_enfant_outils'] = 'Neurodéveloppement et besoins particuliers' in t and 'Minuteur de biberon' not in t and 'École ou mode de garde' in t
+    R['8_changement_enfant_outils'] = 'Neurodéveloppement et besoins particuliers' in t and 'Minuteur de biberon' not in t and 'École ou mode de garde' not in t  # catégorie retirée le 20/10 (demande)
     go(pg, '/')
     R['8_actions_rapides_enfant'] = 'Traitement' in T(pg) and 'Biberon' not in T(pg)
 
@@ -137,7 +137,7 @@ def run(p):
     go(pg, '/', 2600)
     tid(pg, 'profile-switcher').click(); pg.wait_for_timeout(800)
     t = T(pg)
-    R['5_plus_de_grossesse_ni_SA'] = 'Ma grossesse' not in t and not SA.search(t) and 'Mon post-partum' in t
+    R['5_plus_de_grossesse_ni_SA'] = 'Ma grossesse' not in t and not SA.search(t) and 'Mon post-partum' not in t  # post-partum rangé dans « Mon bébé est né » (20/10)
     pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
     go(pg, '/pregnancy')
     R['5_ecran_grossesse_ferme'] = '/journeys/blocked' in pg.url

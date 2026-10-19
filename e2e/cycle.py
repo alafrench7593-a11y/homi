@@ -184,7 +184,7 @@ def run(p):
     today = date.today()
     # règles récentes pour que le jour J-1 tombe dans la fenêtre estimée : début il y a 13 jours, cycles de 28 jours
     pg.evaluate(f"""() => {{ const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); const me = s.session?.user?.id || (s.tables.profiles[0]||{{}}).id;
-      const d = (n) => new Date(Date.now() - n*86400000).toISOString().slice(0,10);
+      const d = (n) => {{ const x = new Date(Date.now() - n*86400000); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); }}; // date LOCALE (pas UTC)
       s.tables.period_entries = [d(69), d(41), d(13)].map((x, i) => ({{ id: 'pp'+i, user_id: me, start_date: x, end_date: null, flow: null, note: null, created_at: new Date().toISOString() }}));
       localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }}""")
     pg.goto(B + '/cycle/intimacy'); pg.wait_for_timeout(1800)
@@ -265,7 +265,7 @@ def run(p):
     R['14_regles_terminees'] = demo(pg, "s => s.tables.period_entries.find(p => p.id === 'pp2').end_date") is not None and 'Fin des règles enregistrée' in T(pg)
     vis('Annuler').first.click(); pg.wait_for_timeout(1500)
     R['14_annulation_fin'] = demo(pg, "s => s.tables.period_entries.find(p => p.id === 'pp2').end_date") is None
-    pg.evaluate("""() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); s.tables.period_entries.find(p => p.id === 'pp2').end_date = new Date(Date.now() - 9*86400000).toISOString().slice(0,10); localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }""")
+    pg.evaluate("""() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); s.tables.period_entries.find(p => p.id === 'pp2').end_date = (() => { const x = new Date(Date.now() - 9*86400000); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); })(); localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }""")
     pg.goto(B + '/cycle?all=1'); pg.wait_for_timeout(2500)
     before = demo(pg, "s => s.tables.period_entries.length")
     vis('Mes règles ont commencé').first.click(); pg.wait_for_timeout(1500)

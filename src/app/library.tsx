@@ -11,13 +11,14 @@ import { useActivePregnancy, useArticles, useCategories, useChildren, usePremium
 import { isLocked, suggestArticles } from '@/lib/domain/content';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { childAge } from '@/lib/domain/child';
+import { t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 export default function Library() {
-  const params = useLocalSearchParams<{ q?: string }>();
+  const params = useLocalSearchParams<{ q?: string; journey?: string; cat?: string }>();
   const t = useTheme();
   const insets = useSafeAreaInsets();
   const articlesQ = useArticles();
@@ -30,6 +31,10 @@ export default function Library() {
   const premium = usePremium();
   const [cat, setCat] = useState<string | null>(null);
   const [q, setQ] = useState(typeof params.q === 'string' ? params.q : '');
+  const [journey, setJourney] = useState<string | null>(typeof params.journey === 'string' ? params.journey : null);
+  // Lien vers un thème (ex. « Sexualité pendant la grossesse ») : thème choisi d'après son identifiant lisible
+  const catFromLink = typeof params.cat === 'string' ? (categories ?? []).find((c) => c.slug === params.cat)?.id ?? null : null;
+  const activeCat = cat ?? catFromLink;
 
   const forYou = useMemo(() => suggestArticles(articles ?? [], {
     journeys: profile?.journeys ?? [],
@@ -39,7 +44,9 @@ export default function Library() {
     multiple: !!pregnancy && pregnancy.multiplicity !== 'single',
   }, 3), [articles, profile, pregnancy, children]);
 
-  const list = (articles ?? []).filter((a) => (!cat || a.category_id === cat) && (!q || norm(`${a.title} ${a.summary} ${a.tags.join(' ')}`).includes(norm(q))));
+  const list = (articles ?? []).filter((a) => (!activeCat || a.category_id === activeCat)
+    && (!journey || (journey === 'parents_sleep' ? a.tags.includes('sommeil-parents') : (a.journeys as string[]).includes(journey)))
+    && (!q || norm(`${a.title} ${a.summary} ${a.tags.join(' ')}`).includes(norm(q))));
 
   const loading = articlesQ.isLoading && !articles;
   const failed = articlesQ.isError && !articles;
@@ -65,7 +72,7 @@ export default function Library() {
         ))}
       </View>
 
-      {!q && !cat && forYou.length > 0 && (
+      {!q && !activeCat && !journey && forYou.length > 0 && (
         <>
           <SectionTitle title="Pour vous en ce moment" />
           {forYou.map((a) => (
@@ -77,10 +84,15 @@ export default function Library() {
         </>
       )}
 
+      <SectionTitle title={tr('art.byJourney')} />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
+        {(['ttc', 'avoid', 'pregnant', 'newborn', 'child'] as const).map((j) => <Chip key={j} label={tr(`art.j.${j}`)} selected={journey === j} onPress={() => setJourney(journey === j ? null : j)} />)}
+        <Chip label={tr('art.parentsSleep')} selected={journey === 'parents_sleep'} onPress={() => setJourney(journey === 'parents_sleep' ? null : 'parents_sleep')} />
+      </ScrollView>
       <SectionTitle title="Thèmes" />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
-        <Chip label="Tout" selected={!cat} onPress={() => setCat(null)} />
-        {(categories ?? []).map((c) => <Chip key={c.id} label={c.label} selected={cat === c.id} onPress={() => setCat(cat === c.id ? null : c.id)} />)}
+        <Chip label="Tout" selected={!activeCat} onPress={() => { setCat(null); router.setParams({ cat: undefined } as never); }} />
+        {(categories ?? []).map((c) => <Chip key={c.id} label={c.label} selected={activeCat === c.id} onPress={() => setCat(activeCat === c.id ? null : c.id)} />)}
       </ScrollView>
       {loading ? <Skeleton rows={5} /> : null}
       {failed ? <ErrorView error={articlesQ.error} onRetry={() => void articlesQ.refetch()} title="Impossible d’afficher les articles" /> : null}
@@ -89,11 +101,17 @@ export default function Library() {
 
   const footer = (
     <View style={{ gap: spacing.md, marginTop: spacing.sm }}>
-      <SectionTitle title="Vidéos pratiques" />
+      <SectionTitle title={tr('art.videos')} />
       {videos?.length ? (
         <Card>{videos.map((v) => <ListRow key={v.id} icon="play-circle" title={v.title} />)}</Card>
       ) : (
-        <EmptyStateCard illustration="leaf" title="Bientôt des vidéos" text="Les gestes (portage, bain, allaitement, rééducation…) seront publiés uniquement après avoir été filmés ou validés par des professionnels, avec leur nom, leur qualification et la date de validation." />
+        <View testID="videos-empty">
+          <EmptyStateCard illustration="leaf" title={tr('art.videosEmpty')} text={tr('art.videosBody')} />
+          <Card>
+            {(['massage', 'bath', 'carry', 'swaddle', 'bottle'] as const).map((k) => <Text key={k} variant="small" style={{ marginTop: 4 }}>• {tr(`art.videoTopic.${k}`)} — {tr('art.status.to_review')}</Text>)}
+            <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('art.videoNote')}</Text>
+          </Card>
+        </View>
       )}
     </View>
   );
@@ -112,7 +130,7 @@ export default function Library() {
               <ListRow
                 icon={isLocked(a, premium) ? 'lock' : a.is_safety_critical ? 'shield' : 'book-open'}
                 title={a.title}
-                subtitle={a.summary}
+                subtitle={`${a.summary} · ${tr(`art.status.${a.editorial_status ?? 'to_review'}` as TKey)}`}
                 onPress={() => router.push(`/article/${a.slug}`)}
               />
             </Card>

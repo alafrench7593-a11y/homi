@@ -143,12 +143,14 @@ export interface BabyName { id: string; name: string; usage: ('feminine' | 'masc
 export interface NameFavorite { id: string; household_id: string; name: string; list_label: string; added_by: string | null; created_at: string }
 export interface NameVote { favorite_id: string; household_id: string; user_id: string; vote: -1 | 0 | 1 }
 
-export interface SourceRef { label: string; url: string; consulted_on?: string }
+export interface SourceRef { label: string; url: string; consulted_on?: string; published?: string }
 export interface Article {
   id: string; slug: string; category_id: string | null; title: string; summary: string; body_md: string; journeys: Journey[];
   min_week: number | null; max_week: number | null; min_age_months: number | null; max_age_months: number | null; postpartum: boolean; tags: string[];
   author_name: string | null; reviewer_name: string | null; reviewer_qualification: string | null; sources: SourceRef[];
   validated_at: string | null; updated_on: string; status: string; is_premium: boolean; is_safety_critical: boolean;
+  /** Statut éditorial : Brouillon généré par IA / À vérifier / Relu / Validé pour publication. */
+  editorial_status?: 'ai_draft' | 'to_review' | 'reviewed' | 'validated';
 }
 export interface Category { id: string; slug: string; label: string; icon: string | null; position: number }
 export interface EmergencyResource { id: string; country: string; label: string; phone: string; description: string; kind: string; available: string | null; position: number; active: boolean }

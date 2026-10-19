@@ -13,6 +13,8 @@ import { useAppointments, useExpectedBabies, useLogs, useOpenSleep, usePeriods, 
 import { estimateCycle } from '@/lib/domain/cycle';
 import { countdownLabel, pregnancyProgress } from '@/lib/domain/pregnancy';
 import { isEstimatedDue } from '@/lib/journeys/model';
+import { appointmentRelevant, reminderRelevant } from '@/lib/journeys/relevance';
+import { useRelevanceCtx } from '@/lib/data/hooks-scope';
 import { formatWeight, weekInfo } from '@/lib/domain/fetalWeeks';
 import { childAge } from '@/lib/domain/child';
 import { formatDuration, timeAgo } from '@/lib/domain/dates';
@@ -140,6 +142,8 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
 }
 
 const QUICK: Record<string, { icon: IconName; label: string; go: (childId?: string) => void }> = {
+  cyclecal: { icon: 'grid', get label() { return tr('quick.cyclecal'); }, go: () => router.push('/cycle/calendar') },
+  nighthelp: { icon: 'star', get label() { return tr('quick.nighthelp'); }, go: (c) => router.push(c ? `/night/help?child=${c}` : '/night/help') },
   bottle: { icon: 'coffee', get label() { return tr('quick.bottle'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: c ?? '' } }) },
   breastfeed: { icon: 'droplet', get label() { return tr('quick.breastfeed'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'breastfeed', child: c ?? '' } }) },
   diaper: { icon: 'wind', get label() { return tr('quick.diaper'); }, go: (c) => router.push({ pathname: '/track/[kind]', params: { kind: 'diaper', child: c ?? '' } }) },
@@ -172,7 +176,7 @@ export function setCycleRoute(r: '/fertility' | '/contraception' | '/cycle') { c
 function useCycleRoute() { return cycleRoute; }
 /** Même langage visuel que « Outils » : chaque raccourci prend la silhouette de sa catégorie. */
 const QUICK_THEME: Record<string, ToolTheme> = {
-  bottle: 'feeding', breastfeed: 'feeding', meal: 'feeding', diaper: 'diapers', sleep: 'sleep', mysleep: 'sleep', observation: 'health', appointment: 'health',
+  cyclecal: 'cycle', nighthelp: 'sleep', bottle: 'feeding', breastfeed: 'feeding', meal: 'feeding', diaper: 'diapers', sleep: 'sleep', mysleep: 'sleep', observation: 'health', appointment: 'health',
   growth: 'growth', treatment: 'health', checkin: 'mood', calendar: 'calendar', symptom: 'cycle',
   question: 'resources', mood: 'mood', weight: 'pregnancy', scan: 'scanner', period: 'cycle', test: 'cycle', pill: 'cycle', postpartum: 'cycle',
   tasks: 'tasks', agenda: 'calendar', journal: 'memories', relay: 'relay',
@@ -226,9 +230,11 @@ export function UpcomingCard() {
   const t = useTheme();
   const { data: appts } = useAppointments({ upcomingOnly: true });
   const { data: reminders } = useReminders();
-  const next: Appointment | undefined = appts?.[0];
+  const ctx = useRelevanceCtx();
+  // Uniquement ce qui concerne le profil affiché (jamais un rendez-vous de grossesse sur le profil d'un bébé)
+  const next: Appointment | undefined = (appts ?? []).find((a) => appointmentRelevant(a, ctx));
   const nextReminder = (reminders ?? [])
-    .filter((r) => r.enabled)
+    .filter((r) => r.enabled && reminderRelevant(r, ctx))
     .map((r) => ({ r, at: nextOccurrence(r.schedule) }))
     .filter((x) => x.at)
     .sort((a, b) => a.at!.getTime() - b.at!.getTime())[0];

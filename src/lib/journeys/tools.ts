@@ -25,7 +25,7 @@ const ADULT: Scope[] = [...ME, 'pregnancy', 'postpartum'];
 const KID: Scope[] = ['baby', 'child'];
 const ALL = SCOPES;
 /** Portées où l'organisation familiale a du sens (enfants, grossesse, post-partum, vue famille). */
-const HOME_LIFE: Scope[] = ['none', 'pregnancy', 'postpartum', 'baby', 'child', 'family'];
+const HOME_LIFE: Scope[] = ['none', 'child', 'family'];
 
 export interface ScopeCtx {
   scope: Scope;
@@ -33,6 +33,8 @@ export interface ScopeCtx {
   pregnancyId?: string | null;
   /** Un enfant de moins de 2 ans est suivi (post-partum : allaitement ou biberon seulement dans ce cas). */
   babyId?: string | null;
+  /** Un post-partum est en cours : les informations de la mère (sommeil, humeur, récupération, allaitement) sont rangées dans « Mon bébé est né ». */
+  postpartum?: boolean;
 }
 
 export interface ToolDef {
@@ -95,6 +97,7 @@ export const TOOLS: ToolDef[] = [
   // ---------------------------------------------------------------- projet bébé
   { id: 'ttc_start_pregnancy', theme: 'pregnancy', icon: 'heart', scopes: ['ttc', 'avoid', 'cycle', 'none'], href: () => '/pregnancy/start' },
   { id: 'ttc_cycle', theme: 'cycle', icon: 'calendar', scopes: ['ttc'], href: () => '/fertility' },
+  { id: 'ttc_calendar', theme: 'cycle', icon: 'grid', scopes: ['ttc'], href: () => '/cycle/calendar' },
   { id: 'ttc_periods', theme: 'cycle', icon: 'droplet', scopes: ['ttc'], href: () => '/cycle' },
   { id: 'ttc_tests', theme: 'cycle', icon: 'check-circle', scopes: ['ttc'], href: () => '/fertility/log' },
   { id: 'ttc_mucus', theme: 'cycle', icon: 'search', scopes: ['ttc'], href: () => '/fertility/mucus' },
@@ -116,20 +119,23 @@ export const TOOLS: ToolDef[] = [
   // ---------------------------------------------------------------- grossesse
   { id: 'preg_evolution', theme: 'pregnancy', icon: 'moon', scopes: ['pregnancy'], href: () => '/pregnancy' },
   { id: 'preg_weight', theme: 'pregnancy', icon: 'trending-up', scopes: ['pregnancy'], href: () => '/pregnancy/weight' },
-  { id: 'preg_body', theme: 'health', icon: 'heart', scopes: ['pregnancy'], href: () => '/me' },
   { id: 'preg_birth_prep', theme: 'pregnancy', icon: 'book-open', scopes: ['pregnancy'], href: () => '/library?q=accouchement' },
+  { id: 'preg_articles', theme: 'resources', icon: 'book', scopes: ['pregnancy'], href: () => '/library?journey=pregnant' },
+  { id: 'preg_intimacy', theme: 'resources', icon: 'heart', scopes: ['pregnancy'], href: () => '/library?cat=sexualite' },
   { id: 'preg_names', theme: 'pregnancy', icon: 'star', scopes: ['pregnancy', 'ttc'], href: () => '/names' },
   { id: 'preg_lists', theme: 'pregnancy', icon: 'check-square', scopes: ['pregnancy'], href: () => '/lists' },
   { id: 'preg_edit', theme: 'pregnancy', icon: 'edit-2', scopes: ['pregnancy'], href: () => '/pregnancy/edit' },
   { id: 'preg_end', theme: 'pregnancy', icon: 'flag', scopes: ['pregnancy'], href: () => '/pregnancy/end' },
 
-  // ---------------------------------------------------------------- post-partum
-  { id: 'pp_recovery', theme: 'cycle', icon: 'heart', scopes: ['postpartum'], href: () => '/postpartum' },
-  { id: 'pp_checkin', theme: 'mood', icon: 'edit-3', scopes: ['postpartum'], href: () => '/postpartum/checkin' },
-  { id: 'pp_body', theme: 'health', icon: 'feather', scopes: ['postpartum'], href: () => '/postpartum/recovery' },
-  { id: 'pp_mental', theme: 'mood', icon: 'cloud-drizzle', scopes: ['postpartum'], href: () => '/postpartum/understand' },
-  { id: 'pp_support', theme: 'mood', icon: 'life-buoy', scopes: ['postpartum'], href: () => '/postpartum/support' },
-  { id: 'pp_partner', theme: 'cycle', icon: 'users', scopes: ['postpartum'], href: () => '/postpartum/partner' },
+  // ---------------------------------------------------------------- post-partum de la mère (rangé dans « Mon bébé est né »)
+  // Plus de catégorie « Post-partum » indépendante : sommeil, humeur, récupération et allaitement de la mère apparaissent
+  // dans le profil du bébé (et dans « Moi ») tant qu'un post-partum est en cours.
+  { id: 'pp_recovery', theme: 'mood', icon: 'heart', scopes: ['postpartum', 'baby', 'none'], when: (c) => c.scope === 'postpartum' || !!c.postpartum, href: () => '/postpartum' },
+  { id: 'pp_checkin', theme: 'mood', icon: 'edit-3', scopes: ['postpartum', 'baby', 'none'], when: (c) => c.scope === 'postpartum' || !!c.postpartum, href: () => '/postpartum/checkin' },
+  { id: 'pp_body', theme: 'mood', icon: 'feather', scopes: ['postpartum', 'baby', 'none'], when: (c) => c.scope === 'postpartum' || !!c.postpartum, href: () => '/postpartum/recovery' },
+  { id: 'pp_mental', theme: 'mood', icon: 'cloud-drizzle', scopes: ['postpartum', 'baby', 'none'], when: (c) => c.scope === 'postpartum' || !!c.postpartum, href: () => '/postpartum/understand' },
+  { id: 'pp_support', theme: 'mood', icon: 'life-buoy', scopes: ['postpartum', 'baby', 'none'], when: (c) => c.scope === 'postpartum' || !!c.postpartum, href: () => '/postpartum/support' },
+  { id: 'pp_partner', theme: 'mood', icon: 'users', scopes: ['postpartum', 'baby'], when: (c) => c.scope === 'postpartum' || !!c.postpartum, href: () => '/postpartum/partner' },
   { id: 'pp_feeding', theme: 'feeding', icon: 'droplet', scopes: ['postpartum'], when: (c) => !!c.babyId, href: (c) => (c.babyId ? `/track/breastfeed?child=${c.babyId}` : null) },
   { id: 'pp_bottle', theme: 'feeding', icon: 'coffee', scopes: ['postpartum'], when: (c) => !!c.babyId, href: (c) => (c.babyId ? `/bottle/${c.babyId}` : null) },
 
@@ -141,6 +147,7 @@ export const TOOLS: ToolDef[] = [
   { id: 'baby_diaper', theme: 'diapers', icon: 'wind', scopes: ['baby'], href: (c) => q('/track/diaper', c) },
   { id: 'baby_daily', theme: 'diapers', icon: 'activity', scopes: ['baby'], href: () => '/(tabs)/track' },
   { id: 'baby_foods', theme: 'feeding', icon: 'feather', scopes: ['baby'], href: (c) => kid(c, '/foods') },
+  { id: 'baby_night_help', theme: 'sleep', icon: 'star', scopes: ['baby'], href: (c) => q('/night/help', c) },
 
   // ---------------------------------------------------------------- bébé et enfant
   { id: 'kid_profile', theme: 'growth', icon: 'smile', scopes: KID, href: (c) => kid(c) },
@@ -149,20 +156,18 @@ export const TOOLS: ToolDef[] = [
   { id: 'kid_vaccines', theme: 'health', icon: 'shield', scopes: KID, href: (c) => kid(c, '/vaccines') },
   { id: 'kid_teeth', theme: 'teeth', icon: 'circle', scopes: KID, href: (c) => q('/teeth', c) },
   { id: 'kid_health', theme: 'health', icon: 'thermometer', scopes: KID, href: (c) => kid(c, '/health-tracking') },
-  { id: 'kid_needs', theme: 'health', icon: 'compass', scopes: KID, href: (c) => kid(c, '/needs') },
+  { id: 'kid_needs', theme: 'health', icon: 'compass', scopes: ['child'], href: (c) => kid(c, '/needs') },
   { id: 'kid_treatments', theme: 'health', icon: 'clipboard', scopes: KID, href: (c) => kid(c, '/needs?tab=treatments') },
-  { id: 'child_school', theme: 'growth', icon: 'book', scopes: ['child'], href: (c) => kid(c, '/school') },
-  { id: 'kid_journal', theme: 'memories', icon: 'book', scopes: [...KID, 'family'], href: () => '/journal' },
 
   // ---------------------------------------------------------------- organisation familiale
   { id: 'family_tasks', theme: 'tasks', icon: 'check-square', scopes: HOME_LIFE, href: () => '/family' },
   { id: 'family_routines', theme: 'tasks', icon: 'list', scopes: HOME_LIFE, href: () => '/family/routines' },
   { id: 'family_history', theme: 'tasks', icon: 'clock', scopes: ['family'], href: () => '/family/history' },
   { id: 'family_calendar', theme: 'calendar', icon: 'calendar', scopes: HOME_LIFE, href: () => '/calendar' },
-  { id: 'family_nights', theme: 'relay', icon: 'moon', scopes: ['postpartum', 'baby', 'child', 'family'], href: () => '/family/nights' },
+  { id: 'family_nights', theme: 'relay', icon: 'moon', scopes: ['baby', 'child', 'family'], href: () => '/family/nights' },
   { id: 'family_metime', theme: 'metime', icon: 'sun', scopes: HOME_LIFE, href: () => '/family/me-time' },
   { id: 'family_difficult', theme: 'prevention', icon: 'wind', scopes: HOME_LIFE, href: () => '/family/difficult' },
-  { id: 'family_urgent', theme: 'prevention', icon: 'zap', scopes: ['postpartum', 'baby', 'child', 'family'], href: () => '/family/urgent' },
+  { id: 'family_urgent', theme: 'prevention', icon: 'zap', scopes: ['child', 'family'], href: () => '/family/urgent' },
   { id: 'family_review', theme: 'prevention', icon: 'bar-chart-2', scopes: ['family'], href: () => '/family/review' },
 ];
 
@@ -204,6 +209,7 @@ const SCREEN_RULES: { prefix: string; scopes: Scope[]; subOnly?: boolean }[] = [
   { prefix: '/fertility', scopes: ['ttc'] },
   { prefix: '/contraception', scopes: ['avoid'] },
   { prefix: '/postpartum', scopes: ['postpartum'] },
+  { prefix: '/night/help', scopes: ['baby', 'child'] },
 ];
 export function screenAllowed(path: string, activeScopes: Scope[]): boolean {
   const rule = SCREEN_RULES.find((r) => (!r.subOnly && (path === r.prefix || path.startsWith(`${r.prefix}?`))) || path.startsWith(`${r.prefix}/`));
@@ -211,7 +217,7 @@ export function screenAllowed(path: string, activeScopes: Scope[]): boolean {
 }
 
 // ---------------------------------------------------------------- actions rapides (3 ou 4, profil affiché)
-export type QuickKey = 'bottle' | 'breastfeed' | 'diaper' | 'sleep' | 'meal' | 'question' | 'mood' | 'weight' | 'period' | 'test' | 'pill' | 'mysleep' | 'appointment' | 'growth' | 'treatment' | 'checkin' | 'calendar' | 'symptom' | 'observation' | 'scan' | 'tasks' | 'agenda' | 'journal' | 'relay' | 'postpartum';
+export type QuickKey = 'cyclecal' | 'nighthelp' | 'bottle' | 'breastfeed' | 'diaper' | 'sleep' | 'meal' | 'question' | 'mood' | 'weight' | 'period' | 'test' | 'pill' | 'mysleep' | 'appointment' | 'growth' | 'treatment' | 'checkin' | 'calendar' | 'symptom' | 'observation' | 'scan' | 'tasks' | 'agenda' | 'journal' | 'relay' | 'postpartum';
 
 export function quickFor(c: ScopeCtx): QuickKey[] {
   switch (c.scope) {
@@ -219,8 +225,8 @@ export function quickFor(c: ScopeCtx): QuickKey[] {
     case 'child': return ['meal', 'sleep', 'growth', 'treatment'];
     case 'pregnancy': return ['weight', 'mood', 'mysleep', 'appointment'];
     case 'postpartum': return ['checkin', 'mood', 'mysleep', 'appointment'];
-    case 'ttc': return ['period', 'test', 'symptom', 'mood'];
-    case 'avoid': return ['period', 'pill', 'symptom', 'mood'];
+    case 'ttc': return ['cyclecal', 'period', 'test', 'symptom'];
+    case 'avoid': return ['cyclecal', 'period', 'symptom', 'pill'];
     case 'cycle': return ['period', 'symptom', 'mood', 'mysleep'];
     case 'family': return ['calendar', 'appointment', 'question'];
     default: return ['mood', 'mysleep', 'appointment'];
@@ -237,10 +243,12 @@ export function quickAllowed(k: string, c: ScopeCtx): boolean {
     case 'bottle': case 'breastfeed': case 'diaper': return c.scope === 'baby' || (c.scope === 'postpartum' && !!c.babyId && k !== 'diaper');
     case 'sleep': case 'meal': case 'observation': case 'growth': case 'treatment': return kid;
     case 'weight': return c.scope === 'pregnancy';
-    case 'period': case 'symptom': return ['avoid', 'ttc', 'cycle'].includes(c.scope);
+    case 'period': case 'symptom': case 'cyclecal': return ['avoid', 'ttc', 'cycle'].includes(c.scope);
+    case 'nighthelp': return c.scope === 'baby';
+    case 'journal': return false; // catégorie « Journal et souvenirs » retirée
     case 'test': return c.scope === 'ttc';
     case 'pill': return c.scope === 'avoid';
-    case 'checkin': case 'postpartum': return c.scope === 'postpartum';
+    case 'checkin': case 'postpartum': return c.scope === 'postpartum' || (c.scope === 'baby' && !!c.postpartum);
     case 'relay': return ['postpartum', 'baby', 'child', 'family'].includes(c.scope);
     default: return true; // humeur, sommeil de la mère, rendez-vous, question, scanner, agenda, tâches, journal
   }

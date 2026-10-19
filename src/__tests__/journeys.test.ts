@@ -111,7 +111,7 @@ describe('les 14 scénarios de parcours', () => {
     const act = activeOf(await rows(), userId);
     expect(act.map((r) => r.type).sort()).toEqual(['child', 'pregnancy']);
     expect(visiblePregnancy(await pregnancies(), await rows())?.id).toBe(pid);
-    expect(ids({ scope: 'child', childId: noe.id })).toEqual(expect.arrayContaining(['kid_growth', 'kid_needs', 'kid_treatments', 'child_school', 'kid_teeth', 'meals']));
+    expect(ids({ scope: 'child', childId: noe.id })).toEqual(expect.arrayContaining(['kid_growth', 'kid_needs', 'kid_treatments', 'kid_teeth', 'meals']));
   });
 
   it('5. Fin de grossesse : un profil par bébé, post-partum ouvert, plus de semaine d’aménorrhée ni de rappel de grossesse', async () => {
