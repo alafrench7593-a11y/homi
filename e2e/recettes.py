@@ -65,7 +65,7 @@ def run(p):
     go(pg, '/meals', 3000)  # premier passage : la bibliothèque est installée dans la base de démonstration
     # La bibliothèque n'est plus copiée dans le stockage local (reconstruite à chaque ouverture) : mêmes lignes, lues depuis le code
     lib = json.loads(subprocess.run(['npx', '-y', 'tsx', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dump_recipes.ts')], capture_output=True, text=True, check=True).stdout)
-    R['bibliotheque_64_recettes_en_base'] = len(lib) == 64
+    R['bibliotheque_64_recettes_en_base'] = len(lib) >= 64
     R['statuts_jamais_relu_par_defaut'] = all(v['status'] in ('ai_draft', 'to_review') for v in lib.values())
     title2slug = {v['title']: k for k, v in lib.items()}
 

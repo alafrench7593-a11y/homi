@@ -5,12 +5,13 @@
  * ou 'owned', avec storage_path) peut la remplacer depuis l'administration.
  */
 import React from 'react';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Text } from '@/components/ui';
 import { INGREDIENTS } from '@/lib/recipes/ingredients';
 import { STAPLES } from '@/lib/recipes/engine';
 import type { Recipe } from '@/lib/recipes/types';
+import { RECIPE_PHOTO_FILES } from './recipePhotos';
 import { t as tr } from '@/i18n';
 
 const hash = (s: string) => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
@@ -31,6 +32,20 @@ export function RecipeArt({ recipe, height = 150, label = true, rounded = 18 }: 
   const base = colors[0];
   const bg = ['#FBEFE7', '#F1F4EA', '#F6EEF7', '#EEF3F6'][hash(recipe.slug) % 4];
   const pieces = Array.from({ length: smooth ? 0 : 14 }, (_, i) => ({ x: 52 + r() * 96, y: 50 + r() * 34, rx: 4 + r() * 7, ry: 3 + r() * 5, c: colors[(i % (colors.length - 1 || 1)) + (colors.length > 1 ? 1 : 0)] ?? base, rot: r() * 180 }));
+  const file = RECIPE_PHOTO_FILES[recipe.slug];
+  if (file) {
+    // Photo générée par IA pour cette recette précise : la mention reste visible sur l'image
+    return (
+      <View style={{ height, borderRadius: rounded, overflow: 'hidden', backgroundColor: bg }} accessibilityRole="image" accessibilityLabel={recipe.photo.alt} testID={`rphoto-${recipe.slug}`}>
+        <Image source={file} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors />
+        {label ? (
+          <View style={{ position: 'absolute', left: 8, bottom: 6, backgroundColor: 'rgba(255,255,255,0.82)', borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }}>
+            <Text variant="caption" color="#4A3B42">{tr('rc.aiImage')}</Text>
+          </View>
+        ) : null}
+      </View>
+    );
+  }
   return (
     <View style={{ height, borderRadius: rounded, overflow: 'hidden', backgroundColor: bg }} accessibilityRole="image" accessibilityLabel={recipe.photo.alt}>
       <Svg width="100%" height="100%" viewBox="0 0 200 130" preserveAspectRatio="xMidYMid slice">

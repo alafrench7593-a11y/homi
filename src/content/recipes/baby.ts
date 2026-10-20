@@ -87,6 +87,21 @@ export const BABY_RECIPES = [
   }),
   // ---------------------------------------------------------------- environ 6 à 8 mois
   R({
+    slug: 'puree-carotte-pomme-de-terre', title: 'Purée carotte et pomme de terre', summary: 'Le grand classique des premières purées : douce, orange et rassurante.',
+    audiences: ['baby'], stages: ['m6_8', 'm9_12', 'm12_18'], minMonths: 6, maxMonths: 18, meals: ['lunch', 'dinner'], textures: ['smooth', 'mashed'], servings: 4, servingLabel: 'portions bébé', prepMin: 10, cookMin: 20,
+    ingredients: [i('carrot', 200, 'g', 'environ 2 carottes'), i('potato', 150, 'g', '1 pomme de terre moyenne'), i('rapeseed_oil', 2, 'cc')],
+    steps: [
+      'Lavez et épluchez les carottes et la pomme de terre, puis coupez-les en morceaux réguliers.',
+      'Faites cuire les légumes 20 minutes à la vapeur, jusqu’à ce qu’ils s’écrasent facilement à la fourchette.',
+      'Mixez finement pour une purée lisse, ou écrasez à la fourchette pour une texture écrasée, selon ce que votre bébé accepte.',
+      'Ajoutez une demi-cuillère à café d’huile de colza par portion au moment de servir.',
+    ],
+    allergens: [], tags: ['puree', 'vegetables', 'budget', 'freezer', 'batch', 'family'],
+    adaptations: ['Pour la famille : la même purée, salée à part après avoir servi le bébé.', 'Plus tard, ajoutez 10 g de poulet ou de poisson blanc cuit à cœur, mixé.'],
+    storage: FREEZE, precautions: [NO_SALT, PORTION], nutrition: 'Carotte et pomme de terre : un mélange doux et nourrissant pour découvrir les légumes ; le lait reste l’aliment principal la première année.',
+    budget: 1, seasons: 'all', temperature: 'hot', sources: S,
+  }),
+  R({
     slug: 'puree-courgette-pdt-poulet', title: 'Purée courgette, pomme de terre et poulet', summary: 'Un premier repas complet, légumes et une petite quantité de viande.',
     audiences: ['baby'], stages: ['m6_8'], minMonths: 6, maxMonths: 9, meals: ['lunch'], textures: ['smooth', 'mashed'], servings: 4, servingLabel: 'portions bébé', prepMin: 10, cookMin: 20,
     ingredients: [i('zucchini', 200, 'g'), i('potato', 150, 'g'), i('chicken', 40, 'g', 'soit environ 10 g par portion'), i('rapeseed_oil', 2, 'cc')],

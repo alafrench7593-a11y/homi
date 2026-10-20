@@ -329,4 +329,5 @@ export const recettes: Messages<typeof fr> = {
   'rc.cost.naBody': 'No price is made up: each ingredient needs a verified, dated price (Open Prices or team entry).',
   'rc.ageRange': 'Age: {from} to {to}',
   'rc.more': { one: 'Show more ({count} left)', other: 'Show more ({count} left)' },
+  'rc.aiImage': 'AI-generated image',
 };

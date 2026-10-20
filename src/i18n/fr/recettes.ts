@@ -327,4 +327,5 @@ export const recettes = {
   'rc.cost.naBody': 'Aucun prix n’est inventé : il faut un prix vérifié et daté pour chaque ingrédient (Open Prices ou saisie de l’équipe).',
   'rc.ageRange': 'Âge : {from} à {to}',
   'rc.more': { one: 'Voir plus ({count} restante)', other: 'Voir plus ({count} restantes)' },
+  'rc.aiImage': 'Image générée par IA',
 };

@@ -25,7 +25,7 @@ const clone = (r: Recipe): Recipe => JSON.parse(JSON.stringify(r));
 
 describe('bibliothèque : contrôles avant publication', () => {
   it('compte réel et répartition', () => {
-    expect(all.length).toBe(64);
+    expect(all.length).toBe(65);
     expect(all.filter((r) => r.audiences.includes('pregnancy')).length).toBeGreaterThanOrEqual(20);
     expect(all.filter((r) => r.audiences.includes('baby')).length).toBeGreaterThanOrEqual(20);
     expect(all.filter((r) => r.audiences.includes('child')).length).toBeGreaterThanOrEqual(20);
