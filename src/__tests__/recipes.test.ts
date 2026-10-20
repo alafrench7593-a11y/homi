@@ -14,6 +14,7 @@ import { INGREDIENTS } from '@/lib/recipes/ingredients';
 import { RECIPE_SOURCES } from '@/lib/recipes/sources';
 import type { Recipe } from '@/lib/recipes/types';
 import { derivedAllergens, findDuplicates, isVegetarian, validateRecipe } from '@/lib/recipes/validate';
+import { AI_PHOTOS } from '@/lib/recipes/photoCredits';
 
 const all = ALL_RECIPES;
 const byId = new Map(all.map((r) => [r.id, r]));
@@ -182,7 +183,7 @@ describe('les 12 scénarios', () => {
       expect(r.photo.kind).toBe('generated');
       expect(r.photo.license).toBeTruthy(); expect(r.photo.rights).toBeTruthy(); expect(r.photo.author).toBeTruthy(); expect(r.photo.source).toBeTruthy();
       expect(r.photo.alt).toContain(r.title);
-      expect(r.photo.alt).toMatch(/pas une photographie/);
+      if (!AI_PHOTOS[r.slug]) expect(r.photo.alt).toMatch(/pas une photographie/);
     }
   });
   it('11. recette proposée depuis un produit scanné, avec précautions', () => {

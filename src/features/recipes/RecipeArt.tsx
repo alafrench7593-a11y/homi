@@ -34,15 +34,10 @@ export function RecipeArt({ recipe, height = 150, label = true, rounded = 18 }: 
   const pieces = Array.from({ length: smooth ? 0 : 14 }, (_, i) => ({ x: 52 + r() * 96, y: 50 + r() * 34, rx: 4 + r() * 7, ry: 3 + r() * 5, c: colors[(i % (colors.length - 1 || 1)) + (colors.length > 1 ? 1 : 0)] ?? base, rot: r() * 180 }));
   const file = RECIPE_PHOTO_FILES[recipe.slug];
   if (file) {
-    // Photo générée par IA pour cette recette précise : la mention reste visible sur l'image
+    // Photo propre à cette recette (source et licence indiquées sur la fiche)
     return (
       <View style={{ height, borderRadius: rounded, overflow: 'hidden', backgroundColor: bg }} accessibilityRole="image" accessibilityLabel={recipe.photo.alt} testID={`rphoto-${recipe.slug}`}>
         <Image source={file} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors />
-        {label ? (
-          <View style={{ position: 'absolute', left: 8, bottom: 6, backgroundColor: 'rgba(255,255,255,0.82)', borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }}>
-            <Text variant="caption" color="#4A3B42">{tr('rc.aiImage')}</Text>
-          </View>
-        ) : null}
       </View>
     );
   }
