@@ -27,6 +27,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { formatDate, t as tr } from '@/i18n';
 import { HomeCycleCard } from '@/features/cycle/HomeCycleCard';
 import { Tappable } from '@/components/Tappable';
+import { useBottleTimer } from '@/lib/data/hooks-bottle';
+import { formatClock } from '@/lib/domain/bottleTimer';
 
 const ORB_HUES = ['rose', 'lavande', 'or'] as const;
 
@@ -99,10 +101,14 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
     ...(diapers ?? []).map((x) => ({ kind: 'diaper' as const, start: x.at })),
   ];
   const lastDiaper = diapers?.[0];
+  const { active: bottleReminder } = useBottleTimer(child.id);
+  // Heures (pas de « il y a … ») : l'information principale est le prochain rappel choisi par le parent
   const stats: { label: string; value: string }[] = [
-    { label: 'dernier repas', value: s.lastFeedAt ? timeAgo(s.lastFeedAt).replace('il y a ', '') : '—' },
+    { label: 'dernier repas', value: s.lastFeedAt ? formatClock(s.lastFeedAt) : '—' },
+    bottleReminder && Date.parse(bottleReminder.due_at) > Date.now()
+      ? { label: 'prochain rappel biberon', value: formatClock(bottleReminder.due_at) }
+      : { label: 'dernier change', value: lastDiaper ? formatClock(lastDiaper.at) : '—' },
     { label: 'sommeil aujourd’hui', value: formatDuration(s.sleepMinutes) },
-    { label: 'dernier change', value: lastDiaper ? timeAgo(lastDiaper.at).replace('il y a ', '') : '—' },
   ];
 
   return (

@@ -21,7 +21,11 @@ export const KIND_META: Record<LogKind, { label: string; icon: IconName; trackin
 };
 
 /** Choix de l'heure : maintenant, il y a X min, ou une heure précise (aujourd'hui / hier). */
-export function TimePicker({ value, onChange, label = 'Heure' }: { value: Date; onChange: (d: Date) => void; label?: string }) {
+/**
+ * Choix d'une heure. Par défaut : une heure passée (saisie d'un événement).
+ * `future` : heure à venir (rappel) ; une heure déjà passée aujourd'hui est lue comme demain.
+ */
+export function TimePicker({ value, onChange, label = 'Heure', future = false }: { value: Date; onChange: (d: Date) => void; label?: string; future?: boolean }) {
   const [custom, setCustom] = useState('');
   const [yesterday, setYesterday] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +39,11 @@ export function TimePicker({ value, onChange, label = 'Heure' }: { value: Date; 
     if (h > 23 || min > 59) return setError('Heure invalide.');
     const d = new Date();
     d.setHours(h, min, 0, 0);
+    if (future) {
+      if (d.getTime() <= Date.now()) d.setDate(d.getDate() + 1);
+      setError(null);
+      return onChange(d);
+    }
     if (y) d.setDate(d.getDate() - 1);
     if (d.getTime() > Date.now() + 60_000) return setError('Cette heure est dans le futur.');
     setError(null);
@@ -42,19 +51,21 @@ export function TimePicker({ value, onChange, label = 'Heure' }: { value: Date; 
   };
   return (
     <View style={{ gap: spacing.xs }}>
-      <Text variant="label">{label} : {formatTime(value)}{value.toDateString() !== new Date().toDateString() ? ' (hier)' : ''}</Text>
-      <Row wrap>
+      <Text variant="label">{label} : {formatTime(value)}{value.toDateString() !== new Date().toDateString() ? (value.getTime() > Date.now() ? ' (demain)' : ' (hier)') : ''}</Text>
+      {future ? null : <Row wrap>
         {presets.map((p) => (
           <Chip key={p.l} label={p.l} selected={!custom && Math.abs(Date.now() - p.m * 60000 - value.getTime()) < 90_000} onPress={() => { setCustom(''); setError(null); onChange(new Date(Date.now() - p.m * 60000)); }} />
         ))}
-      </Row>
+      </Row>}
       <Row>
         <View style={{ flex: 1 }}>
-          <Field label="Ou une heure précise" placeholder="14h30" value={custom} onChangeText={(v) => applyCustom(v)} error={error} keyboardType="numbers-and-punctuation" />
+          <Field label={future ? 'Heure précise' : 'Ou une heure précise'} placeholder="14h30" value={custom} onChangeText={(v) => applyCustom(v)} error={error} keyboardType="numbers-and-punctuation" />
         </View>
-        <View style={{ paddingTop: 26 }}>
-          <Chip label="Hier" selected={yesterday} onPress={() => { setYesterday(!yesterday); if (custom) applyCustom(custom, !yesterday); }} />
-        </View>
+        {future ? null : (
+          <View style={{ paddingTop: 26 }}>
+            <Chip label="Hier" selected={yesterday} onPress={() => { setYesterday(!yesterday); if (custom) applyCustom(custom, !yesterday); }} />
+          </View>
+        )}
       </Row>
     </View>
   );

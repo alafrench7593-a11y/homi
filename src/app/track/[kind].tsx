@@ -14,7 +14,9 @@ import { STOOL_COLORS, STOOL_CONSISTENCY, digestionNotices, stoolNotice, type St
 import { childAge } from '@/lib/domain/child';
 import { useBottleTimer, useStartBottleTimer, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
 import { NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
-import { atClock, bottleDraftDefaults, formatHM, markBottleGiven, resolveReminderChoice, type ReminderChoice } from '@/lib/domain/bottleTimer';
+import { atClock, bottleDraftDefaults, computeDueAt, markBottleGiven, nextReminderSentence, resolveReminderChoice, type ReminderChoice } from '@/lib/domain/bottleTimer';
+import { getPermission, notificationsSupported } from '@/lib/notifications';
+import { askNotificationPermission } from '@/lib/notificationPrompt';
 import type { BottleRecord } from '@/lib/types-bottle';
 import { uuid } from '@/lib/uuid';
 import { LOG_TABLE, type Bottle, type Breastfeed, type Diaper, type LogKind, type Meal, type Observation, type Pumping, type Sleep } from '@/lib/types';
@@ -74,6 +76,13 @@ function TrackEntry() {
   const [plannedNext, setPlannedNext] = useState(draft.planned_next_ml == null ? '' : String(draft.planned_next_ml));
   const [reminder, setReminder] = useState<ReminderChoice>(draft.reminder);
   const [milkType, setMilkType] = useState('');
+  const [moreBottle, setMoreBottle] = useState(false);
+  // Le délai habituel de CET enfant est repris (le parent l'a choisi lui-même la fois précédente) ; il reste modifiable
+  const reminderTouched = useRef(false);
+  useEffect(() => {
+    if (kind !== 'bottle' || editing || reminderTouched.current || bottleTimer.lastInterval == null) return;
+    setReminder({ kind: 'previous', minutes: bottleTimer.lastInterval });
+  }, [kind, editing, bottleTimer.lastInterval]);
   const [side, setSide] = useState<Side>('left');
   const [duration, setDuration] = useState('');
   const [timerStart, setTimerStart] = useState<Date | null>(null);
@@ -144,7 +153,6 @@ function TrackEntry() {
     const base = { child_id: childId, household_id: child?.household_id, note: note.trim() || null };
     switch (kind) {
       case 'bottle':
-        if (prepared == null && consumed == null) return setError('Indiquez au moins une quantité.'), null;
         if (prepared != null && consumed != null && consumed > prepared) return setError('La quantité bue ne peut pas dépasser la quantité préparée.'), null;
         if ((prepared ?? 0) > 500 || (consumed ?? 0) > 500) return setError('Quantité attendue entre 0 et 500 ml.'), null;
         {
@@ -231,22 +239,21 @@ function TrackEntry() {
   async function afterBottleSaved(bottleId: string | null, plannedMl: number | null): Promise<string | null> {
     const minutes = resolveReminderChoice(reminder);
     const active = bottleTimer.active;
-    const fromActiveTimer = !!active && params.timer === active.id;
     const name = child?.first_name ?? 'l’enfant';
     try {
       if (minutes == null) {
+        // Nouveau biberon sans rappel : l'ancien rappel (encore actif) est clos, jamais laissé en double
         if (!active) return null;
-        if (fromActiveTimer || (await confirm(`Un rappel est en cours pour ${name}`, `Il est prévu ${atClock(active.due_at)}. Le clore maintenant que ce biberon est enregistré ?`, 'Clore le rappel', false))) {
-          await updateTimer.mutateAsync({ id: active.id, patch: markBottleGiven() });
-          return 'Rappel en cours clos.';
-        }
-        return null;
+        await updateTimer.mutateAsync({ id: active.id, patch: markBottleGiven() });
+        return `Ancien rappel de ${name} clos, aucun nouveau rappel.`;
       }
-      if (active && !fromActiveTimer && !(await confirm('Remplacer le minuteur en cours ?', `Un rappel est déjà prévu ${atClock(active.due_at)} pour ${name}. Le remplacer par un rappel dans ${formatHM(minutes)} après ce biberon ?`, 'Remplacer', false))) {
-        return 'Le rappel en cours est conservé.';
+      // Consentement : la première fois qu'un rappel est choisi, le téléphone demande l'autorisation
+      if (notificationsSupported && (await getPermission()) === 'undetermined') {
+        await askNotificationPermission('Pour être prévenu·e à l’heure que vous avez choisie pour le prochain biberon, même quand l’application est fermée.').catch(() => undefined);
       }
+      // L'ancien rappel est annulé et remplacé par le nouveau (un seul rappel par enfant)
       const timer = await startTimer.mutateAsync({ childId, lastBottleAt: time, intervalMinutes: minutes, plannedMl, bottleId, replace: active ? 'new_bottle' : false });
-      return `Prochain rappel ${atClock(timer.due_at)}.`;
+      return nextReminderSentence(name, timer.due_at);
     } catch (e) {
       return `Rappel non programmé : ${e instanceof Error ? e.message : 'erreur inconnue'}`;
     }
@@ -298,24 +305,26 @@ function TrackEntry() {
       {kind === 'bottle' && (
         <>
           <TimePicker value={time} onChange={setTime} label="Heure du biberon" />
-          <Stepper label="Quantité préparée" value={prepared} onChange={setPrepared} presets={[60, 90, 120, 150, 180, 210, 240]} />
-          <Stepper label="Quantité bue" value={consumed} onChange={setConsumed} />
-          <Field label="Type de lait" optional value={milkType} onChangeText={setMilkType} placeholder="Lait infantile 1er âge, lait maternel…" hint="Tel que vous l’indiquez : l’application ne recommande pas de lait." />
-          <Field label="Quantité prévue pour le prochain biberon" optional value={plannedNext} onChangeText={setPlannedNext} keyboardType="number-pad" suffix="ml" hint="Celle que vous avez décidée ou qu’un professionnel vous a indiquée. Elle sera rappelée avec le minuteur." />
+          <Stepper label="Quantité préparée (facultatif)" value={prepared} onChange={setPrepared} presets={[60, 90, 120, 150, 180, 210, 240]} />
+          <Stepper label="Quantité bue (facultatif)" value={consumed} onChange={setConsumed} />
           {!editing && (
-            <View style={{ gap: spacing.xs }}>
-              <Text variant="label">Prochain rappel</Text>
-              {bottleTimer.active && (
-                <Text variant="small" muted>
-                  {params.timer === bottleTimer.active.id
-                    ? `Le rappel en cours (prévu ${atClock(bottleTimer.active.due_at)}) sera clos ou remplacé.`
-                    : `Un rappel est déjà prévu ${atClock(bottleTimer.active.due_at)} : vous pourrez choisir de le remplacer.`}
-                </Text>
-              )}
-              <ReminderChoicePicker value={reminder} onChange={setReminder} lastInterval={bottleTimer.lastInterval} />
+            <View style={{ gap: spacing.xs }} testID="bottle-reminder">
+              <Text variant="label">Prochain rappel pour {child?.first_name}</Text>
+              <ReminderChoicePicker value={reminder} onChange={(c) => { reminderTouched.current = true; setReminder(c); }} lastInterval={bottleTimer.lastInterval} />
+              {resolveReminderChoice(reminder) != null
+                ? <Banner tone="info" icon="bell">{nextReminderSentence(child?.first_name ?? '', computeDueAt(time, resolveReminderChoice(reminder)!))}</Banner>
+                : <Text variant="small" muted>Aucun rappel ne sera programmé.</Text>}
+              {bottleTimer.active ? <Text variant="small" muted>Le rappel en cours (prévu {atClock(bottleTimer.active.due_at)}) sera remplacé.</Text> : null}
               <Text variant="caption" muted>{NO_RECOMMENDATION_NOTE}</Text>
             </View>
           )}
+          <Button label={moreBottle ? 'Moins de détails' : 'Plus de détails (type de lait, quantité prévue)'} variant="ghost" size="sm" icon={moreBottle ? 'chevron-up' : 'chevron-down'} onPress={() => setMoreBottle(!moreBottle)} style={{ alignSelf: 'flex-start' }} />
+          {moreBottle || editing ? (
+            <>
+              <Field label="Type de lait" optional value={milkType} onChangeText={setMilkType} placeholder="Lait infantile 1er âge, lait maternel…" hint="Tel que vous l’indiquez : l’application ne recommande pas de lait." />
+              <Field label="Quantité prévue pour le prochain biberon" optional value={plannedNext} onChangeText={setPlannedNext} keyboardType="number-pad" suffix="ml" hint="Celle que vous avez décidée ou qu’un professionnel vous a indiquée." />
+            </>
+          ) : null}
         </>
       )}
 

@@ -65,7 +65,7 @@ describe('notifications du minuteur biberon', () => {
     expect(forLina.trigger.type).toBe('date');
     expect(forLina.trigger.channelId).toBe('bottle');
     expect(forLina.trigger.date.getTime()).toBe(now.getTime() + 210 * 60_000);
-    expect(forLina.content.body).toBe('C’est bientôt l’heure du biberon de Lina. Rappel enregistré : 150 ml.');
+    expect(forLina.content.body).toBe('Rappel choisi pour Lina : le prochain biberon était prévu maintenant.'); // quantité masquée par défaut
     expect(forLina.content.data?.url).toBe(`/bottle/${lina.id}`);
     expect(forLina.content.categoryIdentifier).toBe('bottle');
     // Idempotent : pas de doublon

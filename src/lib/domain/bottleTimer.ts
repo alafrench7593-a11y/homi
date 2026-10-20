@@ -31,11 +31,13 @@ export const MAX_ML = 500;
 /** Délais proposés au choix (aucun n'est présélectionné : c'est le parent qui choisit). */
 export const DELAY_PRESETS: { minutes: number; label: string }[] = [
   { minutes: 120, label: '2 h' },
+  { minutes: 150, label: '2 h 30' },
   { minutes: 180, label: '3 h' },
   { minutes: 210, label: '3 h 30' },
   { minutes: 240, label: '4 h' },
 ];
-export const SNOOZE_PRESETS = [15, 30];
+/** Reports proposés depuis l'écran de l'enfant (ouvert par la notification). */
+export const SNOOZE_PRESETS = [10, 15, 30, 60];
 
 const MS = 60_000;
 const toDate = (d: Date | string | number) => (d instanceof Date ? d : new Date(d));
@@ -117,6 +119,20 @@ export function snoozeTimer(timer: TimerCore, minutes: number, now: Date = new D
   if (!Number.isInteger(minutes) || minutes < 1 || minutes > 6 * 60) throw new Error('Report attendu entre 1 minute et 6 heures.');
   const base = Math.max(toDate(timer.due_at).getTime(), now.getTime());
   return { due_at: new Date(base + minutes * MS).toISOString() };
+}
+
+/**
+ * « Modifier l'heure du rappel » : le parent choisit directement l'heure du prochain rappel.
+ * Elle doit être dans le futur, après le dernier biberon, et au plus 2 jours après lui.
+ */
+export function setReminderAt(timer: Pick<TimerCore, 'last_bottle_at'>, at: Date | string, now: Date = new Date()): Pick<TimerCore, 'due_at'> {
+  const d = toDate(at);
+  if (Number.isNaN(d.getTime())) throw new Error('Heure invalide.');
+  if (d.getTime() <= now.getTime()) throw new Error('Choisissez une heure à venir.');
+  const last = toDate(timer.last_bottle_at).getTime();
+  if (d.getTime() <= last) throw new Error('Le rappel doit être après le dernier biberon.');
+  if (d.getTime() > last + 2 * 86_400_000) throw new Error('Le rappel doit être au plus 2 jours après le dernier biberon.');
+  return { due_at: d.toISOString() };
 }
 
 export const cancelTimer = (): Pick<TimerCore, 'status'> => ({ status: 'cancelled' });
@@ -227,11 +243,22 @@ export function timerSentence(opts: { childName: string; timer: Pick<TimerCore, 
   return `Le rappel pour ${childName} était prévu ${atClock(timer.due_at, now, timeZone)} (il y a ${formatHM(rem)}).${qty}`;
 }
 
-/** Contenu de la notification locale. Aucune quantité n'est inventée : seulement celle enregistrée. */
-export function notificationContent(childName: string, plannedMl: number | null | undefined): { title: string; body: string } {
+/**
+ * Phrase principale de l'écran : « Prochain rappel de biberon de Lina à 16 h 40. »
+ * (« demain à 1 h 15 » si le rappel tombe le lendemain).
+ */
+export function nextReminderSentence(childName: string, dueAt: Date | string, now: Date = new Date(), timeZone?: string): string {
+  return `Prochain rappel de biberon de ${childName} ${atClock(dueAt, now, timeZone)}.`;
+}
+
+/**
+ * Contenu de la notification locale. L'horaire est celui choisi par le parent : aucune affirmation médicale.
+ * La quantité n'apparaît que si le parent l'a autorisé (réglage « Afficher la quantité dans la notification »).
+ */
+export function notificationContent(childName: string, plannedMl: number | null | undefined, showQuantity = false): { title: string; body: string } {
   return {
     title: `Biberon de ${childName}`,
-    body: `C’est bientôt l’heure du biberon de ${childName}.${plannedMl != null ? ` Rappel enregistré : ${plannedMl} ml.` : ''}`,
+    body: `Rappel choisi pour ${childName} : le prochain biberon était prévu maintenant.${showQuantity && plannedMl != null ? ` Quantité notée : ${plannedMl} ml.` : ''}`,
   };
 }
 

@@ -1,29 +1,29 @@
-/** Minuteur biberon d'un enfant : temps écoulé, temps restant, rappel prévu, actions. */
+/**
+ * Rappel biberon d'un enfant (écran ouvert aussi par la notification) :
+ * dernier biberon enregistré, prochain rappel, « Enregistrer un biberon », « Modifier le rappel », « Annuler ».
+ * Pas de chronomètre du temps écoulé : l'horaire du rappel est celui choisi par le parent, jamais calculé par l'application.
+ */
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Appear } from '@/components/Appear';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { BottleInstrument, ReminderRibbon } from '@/features/bottleInstrument';
-import { Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, Row, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { BottleNotificationSettings, NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { TimePicker } from '@/features/tracking';
 import { useChild, useTrackedChildren, useMemberships } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { useBottleTimer, useLastBottle, useNow, useTimerScheduledHere, useUpdateBottleTimer, useStartBottleTimer } from '@/lib/data/hooks-bottle';
+import { useBottleTimer, useLastBottle, useNow, useStartBottleTimer, useTimerScheduledHere, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
 import {
-  atClock, cancelTimer, elapsedMinutes, formatClock, formatHM, formatRemaining, modifyInterval, parseDelay, remainingMinutes, resolveReminderChoice,
-  snoozeTimer, SNOOZE_PRESETS, timerSentence, updateLastBottleTime, type ReminderChoice,
+  atClock, cancelTimer, computeDueAt, formatClock, formatHM, modifyInterval, nextReminderSentence, parseDelay, remainingMinutes, resolveReminderChoice,
+  setReminderAt, snoozeTimer, SNOOZE_PRESETS, type ReminderChoice,
 } from '@/lib/domain/bottleTimer';
-import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
-type SheetKind = 'start' | 'delay' | 'time' | 'snooze' | null;
+type SheetKind = 'start' | 'edit' | null;
 
-export default function BottleTimerScreen() {
-  const t = useTheme();
+export default function BottleReminderScreen() {
   const toast = useToast();
   const params = useLocalSearchParams<{ childId: string }>();
   const childId = params.childId ?? '';
@@ -37,7 +37,7 @@ export default function BottleTimerScreen() {
   const { active, lastInterval } = timerQ;
   const isLoading = timerQ.isLoading && !timerQ.data;
   const lastBottle = useLastBottle(childId);
-  const now = useNow(1000);
+  const now = useNow(30_000);
   const update = useUpdateBottleTimer();
   const start = useStartBottleTimer();
   const scheduledHere = useTimerScheduledHere(active);
@@ -46,22 +46,16 @@ export default function BottleTimerScreen() {
   const [startAt, setStartAt] = useState(new Date());
   const [choice, setChoice] = useState<ReminderChoice>({ kind: 'none' });
   const [planned, setPlanned] = useState('');
-  const [newTime, setNewTime] = useState(new Date());
+  const [dueTime, setDueTime] = useState(new Date());
   const [snoozeText, setSnoozeText] = useState('');
-  const [busy, setBusy] = useState(false);
 
   if (!child) {
     return (
-      <Screen back title="Minuteur biberon">
+      <Screen back title="Rappel biberon">
         {loadingChildren ? <Skeleton kind="detail" rows={4} /> : childrenError ? (
-          <ErrorView error={childrenError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce minuteur" />
+          <ErrorView error={childrenError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce rappel" />
         ) : (
-          <EmptyState
-            icon="user-x"
-            title="Profil introuvable"
-            body="Ce profil est introuvable. Il a peut-être été supprimé."
-            action={{ label: 'Tous les minuteurs', icon: 'clock', onPress: () => router.replace('/bottle') }}
-          />
+          <EmptyState icon="user-x" title="Profil introuvable" body="Ce profil est introuvable. Il a peut-être été supprimé." action={{ label: 'Tous les rappels', icon: 'clock', onPress: () => router.replace('/bottle') }} />
         )}
       </Screen>
     );
@@ -69,7 +63,7 @@ export default function BottleTimerScreen() {
   const name = child.first_name;
 
   async function patch(p: Parameters<typeof update.mutateAsync>[0]['patch'], message: string) {
-    if (!active || update.isPending) return;
+    if (!active) return;
     try {
       await update.mutateAsync({ id: active.id, patch: p });
       haptic('success');
@@ -79,14 +73,23 @@ export default function BottleTimerScreen() {
       toast(friendlyError(e, 'Modification impossible. Réessayez dans un instant.'), 'error');
     }
   }
+  const tryPatch = (fn: () => Parameters<typeof update.mutateAsync>[0]['patch'], message: (p: { due_at?: string }) => string) => {
+    try { const p = fn(); return patch(p, message(p as { due_at?: string })); } catch (e) { toast(e instanceof Error ? e.message : 'Valeur invalide.', 'error'); return undefined; }
+  };
 
   function openStart() {
-    // Point de départ : le dernier biberon enregistré s'il date de moins de 12 h, sinon maintenant
     const last = lastBottle && Date.now() - Date.parse(lastBottle.at) < 12 * 3600_000 ? new Date(lastBottle.at) : new Date();
     setStartAt(last);
     setChoice(lastInterval != null ? { kind: 'previous', minutes: lastInterval } : { kind: 'none' });
-    setPlanned(lastBottle?.planned_next_ml != null && last.getTime() === Date.parse(lastBottle.at) ? String(lastBottle.planned_next_ml) : '');
+    setPlanned('');
     setSheet('start');
+  }
+  function openEdit() {
+    if (!active) return;
+    setChoice({ kind: 'delay', minutes: active.interval_minutes });
+    setDueTime(new Date(active.due_at));
+    setSnoozeText('');
+    setSheet('edit');
   }
 
   async function submitStart() {
@@ -94,135 +97,116 @@ export default function BottleTimerScreen() {
     if (minutes == null) return toast('Choisissez un délai avant le rappel.', 'error');
     const ml = parseMl(planned);
     if (ml.error) return toast(ml.error, 'error');
-    if (active && !(await confirm('Remplacer le minuteur en cours ?', `Le rappel prévu ${atClock(active.due_at)} pour ${name} sera remplacé : un seul minuteur par enfant.`, 'Remplacer', false))) return;
-    setBusy(true);
     try {
-      await start.mutateAsync({ childId, lastBottleAt: startAt, intervalMinutes: minutes, plannedMl: ml.value, bottleId: lastBottle && Date.parse(lastBottle.at) === startAt.getTime() ? lastBottle.id : null, replace: active ? 'restart' : false });
+      const timer = await start.mutateAsync({ childId, lastBottleAt: startAt, intervalMinutes: minutes, plannedMl: ml.value, bottleId: lastBottle && Date.parse(lastBottle.at) === startAt.getTime() ? lastBottle.id : null, replace: active ? 'restart' : false });
       haptic('success');
-      toast(`Rappel programmé pour ${name}.`);
+      toast(nextReminderSentence(name, timer.due_at));
       setSheet(null);
     } catch (e) {
-      toast(friendlyError(e, 'Démarrage impossible. Réessayez dans un instant.'), 'error');
-    } finally {
-      setBusy(false);
+      toast(friendlyError(e, 'Programmation impossible. Réessayez dans un instant.'), 'error');
     }
   }
 
   const others = (children ?? []).filter((c) => c.id !== childId);
-  const rem = active ? remainingMinutes(active, now) : 0;
+  const passed = active ? remainingMinutes(active, now) <= 0 : false;
 
   return (
-    <Screen
-      back
-      title={`Biberon de ${name}`}
-      subtitle="Minuteur de rappel"
-      right={<Button label="Historique" icon="list" variant="ghost" size="sm" onPress={() => router.push({ pathname: '/bottle/history', params: { child: childId } })} />}
-    >
+    <Screen back title={`Biberon de ${name}`} subtitle="Rappel du prochain biberon"
+      right={<Button label="Historique" icon="list" variant="ghost" size="sm" onPress={() => router.push({ pathname: '/bottle/history', params: { child: childId } })} />}>
       {others.length > 0 && (
         <Row wrap>
           {[child, ...others].map((c) => (
             <Chip key={c.id} label={c.first_name} selected={c.id === childId} onPress={() => router.replace({ pathname: '/bottle/[childId]', params: { childId: c.id } })} />
           ))}
-          <Chip label="Tous" icon="grid" onPress={() => router.push('/bottle')} />
         </Row>
       )}
 
-      {/* Chronomètre de la prise (début, pause, reprise, fin), indépendant du rappel du prochain biberon */}
-      <BottleInstrument child={child} />
-
-      {isLoading ? <Skeleton kind="detail" rows={4} /> : timerQ.isError && !timerQ.data ? (
-        <ErrorView error={timerQ.error} onRetry={() => void timerQ.refetch()} title="Impossible d’afficher le minuteur" />
-      ) : active ? (
-        <>
-          <Appear kind="scale">
-            <View style={{ gap: spacing.sm }}>
-              <ReminderRibbon lastAt={active.last_bottle_at} dueAt={active.due_at} now={now} overdue={rem <= 0} remainingLabel={rem > 0 ? formatRemaining(rem) : formatHM(rem)} />
-              <Text center accessibilityLiveRegion="polite">{timerSentence({ childName: name, timer: active, now })}</Text>
-            </View>
-          </Appear>
-
-          <Card>
-            <ListRow icon="coffee" title="Dernier biberon" subtitle={`${atClock(active.last_bottle_at, now)} · il y a ${formatHM(elapsedMinutes(active, now))}`} />
-            <ListRow icon="clock" title="Délai choisi" subtitle={formatHM(active.interval_minutes)} />
-            <ListRow icon="bell" title="Rappel prévu" subtitle={`${atClock(active.due_at, now)}${rem > 0 ? ` · dans ${formatRemaining(rem)}` : ''}`} />
-            {active.planned_ml != null && <ListRow icon="droplet" title="Quantité enregistrée" subtitle={`${active.planned_ml} ml (saisie par la famille)`} />}
-            {scheduledHere != null && (
-              <ListRow icon={scheduledHere ? 'check-circle' : 'bell-off'} title="Sur cet appareil" subtitle={scheduledHere ? 'Notification programmée' : rem > 0 ? 'Aucune notification programmée (voir réglages ci-dessous)' : 'Heure passée'} />
-            )}
-          </Card>
-
-          <Button label="Marquer le biberon comme donné" icon="check" size="lg" onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, timer: active.id, ...(active.planned_ml != null ? { planned: String(active.planned_ml) } : {}) } })} />
-
-          <SectionTitle title="Reporter" />
-          <Row wrap>
-            {SNOOZE_PRESETS.map((m) => (
-              <Chip key={m} icon="plus" label={`${m} min`} onPress={() => patch(snoozeTimer(active, m), `Rappel reporté de ${m} min.`)} />
-            ))}
-            <Chip icon="edit-3" label="Autre durée" onPress={() => { setSnoozeText(''); setSheet('snooze'); }} />
-          </Row>
-
-          <SectionTitle title="Modifier" />
-          <Card>
-            <ListRow icon="edit-2" title="Mettre à jour l’heure du dernier biberon" subtitle={formatClock(active.last_bottle_at)} onPress={() => { setNewTime(new Date(active.last_bottle_at)); setSheet('time'); }} />
-            <ListRow icon="sliders" title="Modifier le délai" subtitle={formatHM(active.interval_minutes)} onPress={() => { setChoice({ kind: 'delay', minutes: active.interval_minutes }); setSheet('delay'); }} />
-            <ListRow icon="refresh-cw" title="Démarrer un nouveau rappel" subtitle="Remplace le minuteur en cours" onPress={openStart} />
-            <ListRow icon="x-circle" title="Annuler le rappel" danger onPress={async () => {
-              if (await confirm('Annuler le rappel ?', `Le rappel prévu ${atClock(active.due_at)} pour ${name} sera annulé, sur tous les appareils du foyer.`, 'Annuler le rappel')) {
-                await patch(cancelTimer(), 'Rappel annulé.');
-              }
-            }} />
-          </Card>
-        </>
+      {isLoading ? <Skeleton kind="detail" rows={3} /> : timerQ.isError && !timerQ.data ? (
+        <ErrorView error={timerQ.error} onRetry={() => void timerQ.refetch()} title="Impossible d’afficher le rappel" />
       ) : (
         <Card>
-          <View style={{ alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.md }}>
-            <Text variant="heading" center>Aucun rappel en cours pour {name}</Text>
-            <Text muted center>{lastBottle ? `Dernier biberon enregistré ${atClock(lastBottle.at, now)} (il y a ${formatHM((now.getTime() - Date.parse(lastBottle.at)) / 60000)}).` : 'Aucun biberon enregistré pour l’instant.'}</Text>
-            <Button label="Démarrer un rappel" icon="play" onPress={openStart} />
-            <Button label="Enregistrer un biberon" icon="plus" variant="secondary" onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId } })} />
+          <View style={{ gap: spacing.sm }}>
+            <View testID="bottle-next" accessibilityLiveRegion="polite">
+              <Text variant="heading">
+                {active ? (passed ? `Le rappel choisi pour ${name} était prévu ${atClock(active.due_at, now)}.` : nextReminderSentence(name, active.due_at, now)) : `Aucun rappel prévu pour ${name}.`}
+              </Text>
+              {active ? <Text variant="small" muted>Délai choisi : {formatHM(active.interval_minutes)} après le biberon de {formatClock(active.last_bottle_at)}.</Text> : null}
+            </View>
+            <View testID="bottle-last">
+              <Text variant="label" muted>Dernier biberon enregistré</Text>
+              <Text style={{ marginTop: 2 }}>
+                {lastBottle
+                  ? `${atClock(lastBottle.at, now).replace(/^à /, 'Aujourd’hui à ')}${lastBottle.consumed_ml != null ? ` · ${lastBottle.consumed_ml} ml bus` : ''}${lastBottle.prepared_ml != null ? ` · ${lastBottle.prepared_ml} ml préparés` : ''}`
+                  : 'Aucun biberon enregistré pour l’instant.'}
+              </Text>
+            </View>
+            {active && scheduledHere === false && !passed ? <Text variant="caption" muted>Aucune notification programmée sur cet appareil (voir les réglages ci-dessous).</Text> : null}
           </View>
         </Card>
       )}
 
-      <SectionTitle title="Notifications" />
+      <Button label="Enregistrer un biberon" icon="plus" size="lg" testID="bottle-record"
+        onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, ...(active ? { timer: active.id } : {}) } })} />
+      {active ? (
+        <Row wrap>
+          <Button label="Modifier le rappel" icon="edit-2" variant="secondary" onPress={openEdit} testID="bottle-edit" style={{ flexGrow: 1 }} />
+          <Button label="Annuler" icon="x" variant="ghost" testID="bottle-cancel" style={{ flexGrow: 1 }} onPress={async () => {
+            if (await confirm('Annuler le rappel ?', `Le rappel prévu ${atClock(active.due_at)} pour ${name} sera annulé, sur tous les appareils du foyer.`, 'Annuler le rappel')) {
+              await patch(cancelTimer(), `Rappel de ${name} annulé.`);
+            }
+          }} />
+        </Row>
+      ) : (
+        <Button label="Programmer un rappel" icon="bell" variant="secondary" onPress={openStart} testID="bottle-program" />
+      )}
+
       <BottleNotificationSettings />
       <Text variant="caption" muted>{NO_RECOMMENDATION_NOTE}</Text>
 
-      {/* ------------------------------------------------ feuilles */}
-      <Sheet visible={sheet === 'start'} onClose={() => setSheet(null)} title={active ? 'Nouveau rappel' : 'Démarrer un rappel'}>
+      {/* ------------------------------------------------ modifier le rappel */}
+      <Sheet visible={sheet === 'edit'} onClose={() => setSheet(null)} title={`Modifier le rappel de ${name}`}>
+        {active ? (
+          <View style={{ gap: spacing.sm }}>
+            <Text variant="label">Reporter de</Text>
+            <Row wrap>
+              {SNOOZE_PRESETS.map((m) => (
+                <Chip key={m} icon="clock" label={`${m} min`} onPress={() => tryPatch(() => snoozeTimer(active, m), (p) => `Rappel reporté : ${nextReminderSentence(name, p.due_at!).replace('Prochain rappel de biberon de ', '').replace(/\.$/, '')}.`)} />
+              ))}
+            </Row>
+            <Row>
+              <View style={{ flex: 1 }}><Field label="Autre report" placeholder="20 min, 1h…" value={snoozeText} onChangeText={setSnoozeText} autoCapitalize="none" autoCorrect={false} /></View>
+              <Button label="Reporter" size="sm" variant="secondary" onPress={() => {
+                const m = parseDelay(snoozeText);
+                if (m == null || m > 360) return toast('Durée attendue entre 10 minutes et 6 heures.', 'error');
+                return tryPatch(() => snoozeTimer(active, m), () => `Rappel reporté de ${formatHM(m)}.`);
+              }} />
+            </Row>
+
+            <Text variant="label" style={{ marginTop: spacing.sm }}>Heure du rappel</Text>
+            <TimePicker value={dueTime} onChange={setDueTime} label="Rappel à" future />
+            <Button label="Enregistrer l’heure" size="sm" variant="secondary" onPress={() => tryPatch(() => setReminderAt(active, dueTime), (p) => nextReminderSentence(name, p.due_at!))} testID="bottle-set-time" />
+
+            <Text variant="label" style={{ marginTop: spacing.sm }}>Intervalle habituel</Text>
+            <Text variant="small" muted>Recalculé à partir du dernier biberon ({formatClock(active.last_bottle_at)}) et repris pour les prochains biberons.</Text>
+            <ReminderChoicePicker value={choice} onChange={setChoice} lastInterval={lastInterval} allowNone={false} />
+            {resolveReminderChoice(choice) != null ? <Text variant="small" muted>Nouveau rappel : {atClock(computeDueAt(active.last_bottle_at, resolveReminderChoice(choice)!), now)}.</Text> : null}
+            <Button label="Enregistrer l’intervalle" size="sm" testID="bottle-save-interval" onPress={() => {
+              const m = resolveReminderChoice(choice);
+              if (m == null) return toast('Choisissez un délai.', 'error');
+              return tryPatch(() => modifyInterval(active, m), (p) => nextReminderSentence(name, p.due_at!));
+            }} />
+          </View>
+        ) : null}
+      </Sheet>
+
+      {/* ------------------------------------------------ programmer un rappel sans nouveau biberon */}
+      <Sheet visible={sheet === 'start'} onClose={() => setSheet(null)} title={`Rappel pour ${name}`}>
         <TimePicker value={startAt} onChange={setStartAt} label="Heure du dernier biberon" />
         <Text variant="label">Délai avant le rappel</Text>
         <ReminderChoicePicker value={choice} onChange={setChoice} lastInterval={lastInterval} allowNone={false} />
+        {resolveReminderChoice(choice) != null ? <Banner tone="info">{nextReminderSentence(name, computeDueAt(startAt, resolveReminderChoice(choice)!), now)}</Banner> : null}
         <Field label="Quantité prévue pour le prochain biberon" optional value={planned} onChangeText={setPlanned} keyboardType="number-pad" suffix="ml" hint="Telle que vous l’avez décidée ou qu’un professionnel vous l’a indiquée." />
-        <Button label={active ? 'Remplacer le minuteur' : 'Démarrer'} loading={busy} onPress={submitStart} />
-      </Sheet>
-
-      <Sheet visible={sheet === 'delay'} onClose={() => setSheet(null)} title="Modifier le délai">
-        <Text variant="small" muted>Le rappel sera recalculé à partir du dernier biberon{active ? ` (${formatClock(active.last_bottle_at)})` : ''}.</Text>
-        <ReminderChoicePicker value={choice} onChange={setChoice} lastInterval={lastInterval} allowNone={false} />
-        <Button label="Enregistrer le délai" loading={update.isPending} onPress={() => {
-          const m = resolveReminderChoice(choice);
-          if (!active || m == null) return toast('Choisissez un délai.', 'error');
-          try { patch(modifyInterval(active, m), `Nouveau délai : ${formatHM(m)}.`); } catch (e) { toast(e instanceof Error ? e.message : 'Délai invalide.', 'error'); }
-        }} />
-      </Sheet>
-
-      <Sheet visible={sheet === 'time'} onClose={() => setSheet(null)} title="Heure du dernier biberon">
-        <TimePicker value={newTime} onChange={setNewTime} label="Dernier biberon" />
-        {active && <Text variant="small" muted>Nouveau rappel : {atClock(new Date(newTime.getTime() + active.interval_minutes * 60000), now)} (délai de {formatHM(active.interval_minutes)}).</Text>}
-        <Button label="Mettre à jour" loading={update.isPending} onPress={() => {
-          if (!active) return;
-          try { patch(updateLastBottleTime(active, newTime), 'Heure mise à jour.'); } catch (e) { toast(e instanceof Error ? e.message : 'Heure invalide.', 'error'); }
-        }} />
-      </Sheet>
-
-      <Sheet visible={sheet === 'snooze'} onClose={() => setSheet(null)} title="Reporter le rappel">
-        <Field label="Reporter de" placeholder="20 min, 1h…" value={snoozeText} onChangeText={setSnoozeText} autoCapitalize="none" autoCorrect={false} hint="Entre 10 minutes et 6 heures." />
-        <Button label="Reporter" loading={update.isPending} onPress={() => {
-          const m = parseDelay(snoozeText);
-          if (!active || m == null || m > 360) return toast('Durée attendue entre 10 minutes et 6 heures.', 'error');
-          patch(snoozeTimer(active, m), `Rappel reporté de ${formatHM(m)}.`);
-        }} />
+        <Button label="Programmer le rappel" onPress={submitStart} testID="bottle-start-save" />
       </Sheet>
     </Screen>
   );

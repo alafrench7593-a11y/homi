@@ -33,7 +33,7 @@ describe('échéance et délai de 3 h 30', () => {
     expect(formatHM(45)).toBe('45 min');
     expect(formatHM(-12)).toBe('12 min');
     expect(formatRemaining(209.2)).toBe('3 h 30'); // jamais d'annonce prématurée
-    expect(DELAY_PRESETS.map((p) => p.label)).toEqual(['2 h', '3 h', '3 h 30', '4 h']);
+    expect(DELAY_PRESETS.map((p) => p.label)).toEqual(['2 h', '2 h 30', '3 h', '3 h 30', '4 h']);
   });
 
   it('construit la phrase française de l’écran du minuteur', () => {
@@ -58,8 +58,9 @@ describe('échéance et délai de 3 h 30', () => {
   });
 
   it('notification : texte avec la seule quantité enregistrée, lien vers le bon enfant', () => {
-    expect(notificationContent('Lina', 150)).toEqual({ title: 'Biberon de Lina', body: 'C’est bientôt l’heure du biberon de Lina. Rappel enregistré : 150 ml.' });
-    expect(notificationContent('Lina', null).body).toBe('C’est bientôt l’heure du biberon de Lina.');
+    expect(notificationContent('Lina', 150)).toEqual({ title: 'Biberon de Lina', body: 'Rappel choisi pour Lina : le prochain biberon était prévu maintenant.' });
+    expect(notificationContent('Lina', 150, true).body).toBe('Rappel choisi pour Lina : le prochain biberon était prévu maintenant. Quantité notée : 150 ml.');
+    expect(notificationContent('Lina', null, true).body).toBe('Rappel choisi pour Lina : le prochain biberon était prévu maintenant.');
   });
 });
 

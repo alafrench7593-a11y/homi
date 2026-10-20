@@ -5,13 +5,12 @@
 import React, { useState } from 'react';
 import { Platform, View } from 'react-native';
 import { router } from 'expo-router';
-import { ProgressRing } from '@/components/Charts';
 import { useToast } from '@/components/Overlays';
 import { Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, Icon, Row, Text, Toggle } from '@/components/ui';
 import { useBottleNotificationSettings, useBottleTimer, useNow } from '@/lib/data/hooks-bottle';
 import {
-  DELAY_PRESETS, formatHM, formatRemaining, parseDelay, remainingMinutes, timerProgress, timerSentence, type ReminderChoice,
+  atClock, DELAY_PRESETS, formatHM, nextReminderSentence, parseDelay, remainingMinutes, type ReminderChoice,
 } from '@/lib/domain/bottleTimer';
 import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -67,40 +66,26 @@ export function ReminderChoicePicker({ value, onChange, lastInterval, allowNone 
   );
 }
 
-/** Carte « Minuteur biberon » d'un enfant (profil de l'enfant, liste de tous les minuteurs). */
+/** Carte « Rappel biberon » d'un enfant (profil de l'enfant, liste de tous les rappels) : heure du prochain rappel, pas de chronomètre. */
 export function BottleTimerCard({ child }: { child: Child }) {
   const t = useTheme();
-  const now = useNow(15_000);
+  const now = useNow(30_000);
   const { active, isLoading } = useBottleTimer(child.id);
   const open = () => router.push({ pathname: '/bottle/[childId]', params: { childId: child.id } });
   if (isLoading) return <Skeleton kind="list" rows={1} />;
-  if (!active) {
-    return (
-      <Card onPress={open} accessibilityLabel={`Minuteur biberon de ${child.first_name} : aucun rappel en cours. Ouvrir.`}>
-        <Row>
-          <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="clock" size={20} color={t.colors.primary} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text weight="medium">Minuteur biberon</Text>
-            <Text variant="small" muted>Aucun rappel en cours pour {child.first_name}.</Text>
-          </View>
-          <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
-        </Row>
-      </Card>
-    );
-  }
-  const rem = remainingMinutes(active, now);
+  const passed = !!active && remainingMinutes(active, now) <= 0;
+  const line = active
+    ? passed ? `Le rappel choisi pour ${child.first_name} était prévu ${atClock(active.due_at, now)}.` : nextReminderSentence(child.first_name, active.due_at, now)
+    : `Aucun rappel de biberon prévu pour ${child.first_name}.`;
   return (
-    <Card onPress={open} accessibilityLabel={`${timerSentence({ childName: child.first_name, timer: active, now })} Ouvrir le minuteur.`}>
+    <Card onPress={open} accessibilityLabel={`${line} Ouvrir le rappel biberon.`}>
       <Row>
-        <ProgressRing progress={timerProgress(active, now)} size={64} label={`Avancement du minuteur de ${child.first_name}`}>
-          <Icon name={rem > 0 ? 'clock' : 'bell'} size={20} color={rem > 0 ? t.colors.primary : t.colors.danger} />
-        </ProgressRing>
+        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name={active ? 'bell' : 'bell-off'} size={20} color={passed ? t.colors.danger : t.colors.primary} />
+        </View>
         <View style={{ flex: 1, gap: 2 }}>
-          <Text weight="medium">Minuteur biberon · {child.first_name}</Text>
-          <Text variant="heading">{rem > 0 ? `dans ${formatRemaining(rem)}` : `prévu il y a ${formatHM(rem)}`}</Text>
-          <Text variant="small" muted>{timerSentence({ childName: child.first_name, timer: active, now })}</Text>
+          <Text weight="medium">Rappel biberon · {child.first_name}</Text>
+          <Text variant="small" muted={!active}>{line}</Text>
         </View>
         <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
       </Row>
@@ -117,8 +102,8 @@ export function BottleNotificationSettings() {
     return (
       <Banner tone="info" icon="bell-off" title="Notifications indisponibles ici">
         {Platform.OS === 'web'
-          ? 'Sur la version web, le minuteur s’affiche dans l’application mais aucune notification n’est envoyée. Installez l’application sur votre téléphone pour être prévenu, même application fermée.'
-          : 'Ce support ne permet pas les notifications. Le minuteur reste visible dans l’application.'}
+          ? 'Sur la version web, le rappel s’affiche dans l’application mais aucune notification n’est envoyée. Installez l’application sur votre téléphone pour être prévenu, même application fermée.'
+          : 'Ce support ne permet pas les notifications. Le rappel reste visible dans l’application.'}
       </Banner>
     );
   }
@@ -126,11 +111,20 @@ export function BottleNotificationSettings() {
     <Card>
       <Row>
         <View style={{ flex: 1, gap: 2 }}>
-          <Text weight="medium">Notifications du minuteur biberon</Text>
-          <Text variant="small" muted>Sur cet appareil uniquement. Désactivées, le minuteur reste affiché dans l’application.</Text>
+          <Text weight="medium">Notifications du rappel biberon</Text>
+          <Text variant="small" muted>Sur cet appareil uniquement. Désactivées, le rappel reste affiché dans l’application.</Text>
         </View>
-        <Toggle value={s.enabled} onChange={(v) => { s.setEnabled(v).catch(() => toast('Le réglage des notifications n’a pas pu être modifié. Réessayez.', 'error')); }} label="Notifications du minuteur biberon sur cet appareil" />
+        <Toggle value={s.enabled} onChange={(v) => { s.setEnabled(v).catch(() => toast('Le réglage des notifications n’a pas pu être modifié. Réessayez.', 'error')); }} label="Notifications du rappel biberon sur cet appareil" />
       </Row>
+      {s.enabled ? (
+        <Row style={{ marginTop: spacing.sm }}>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text weight="medium">Afficher la quantité dans la notification</Text>
+            <Text variant="small" muted>Désactivé par défaut : la notification ne montre que le prénom et l’heure choisie.</Text>
+          </View>
+          <Toggle value={s.showQuantity} onChange={(v) => { s.setShowQuantity(v).catch(() => toast('Le réglage n’a pas pu être modifié. Réessayez.', 'error')); }} label="Afficher la quantité dans la notification" />
+        </Row>
+      ) : null}
       {s.enabled && s.permission === 'granted' && <Text variant="small" muted style={{ marginTop: spacing.xs }}>Autorisation accordée : vous serez prévenu à l’heure prévue, même application fermée (selon les réglages du téléphone).</Text>}
       {s.enabled && s.permission === 'undetermined' && (
         <View style={{ gap: spacing.xs, marginTop: spacing.sm }}>
@@ -143,7 +137,7 @@ export function BottleNotificationSettings() {
         </View>
       )}
       {s.enabled && s.permission === 'denied' && (
-        <Banner tone="warning" icon="bell-off">{'Les notifications sont refusées dans les réglages du téléphone. Le minuteur fonctionne dans l’application ; pour être prévenu, autorisez « Toi & Moi » dans Réglages > Notifications.'}</Banner>
+        <Banner tone="warning" icon="bell-off">{'Les notifications sont refusées dans les réglages du téléphone. Le rappel reste affiché dans l’application ; pour être prévenu, autorisez « Toi & Moi » dans Réglages > Notifications.'}</Banner>
       )}
     </Card>
   );

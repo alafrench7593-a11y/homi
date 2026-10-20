@@ -6,7 +6,7 @@ import { useUserId } from '../auth';
 import { askNotificationPermission } from '../notificationPrompt';
 import { activeTimerFor, lastIntervalFor, newTimer, planReplacement, type NewTimerInput, type TimerCore } from '../domain/bottleTimer';
 import {
-  getBottleNotificationsEnabled, getPermission, notificationsSupported, scheduledBottleIds, setBottleNotificationsEnabled,
+  getBottleNotificationsEnabled, getBottleShowQuantity, getPermission, notificationsSupported, scheduledBottleIds, setBottleNotificationsEnabled, setBottleShowQuantity,
   syncBottleTimers, type PermissionState,
 } from '../notifications';
 import type { BottleRecord, BottleTimer } from '../types-bottle';
@@ -111,16 +111,22 @@ export function useNow(intervalMs = 1000): Date {
 /** Autorisation système + interrupteur « notifications du minuteur biberon » (propre à cet appareil). */
 export function useBottleNotificationSettings() {
   const [enabled, setEnabledState] = useState(true);
+  const [showQuantity, setShowQuantityState] = useState(false);
   const [permission, setPermission] = useState<PermissionState>(notificationsSupported ? 'undetermined' : 'unsupported');
   useEffect(() => {
     let alive = true;
     getBottleNotificationsEnabled().then((v) => alive && setEnabledState(v)).catch(() => undefined);
     getPermission().then((p) => alive && setPermission(p)).catch(() => undefined);
+    getBottleShowQuantity().then((v) => alive && setShowQuantityState(v)).catch(() => undefined);
     return () => { alive = false; };
   }, []);
   const setEnabled = useCallback(async (v: boolean) => {
     setEnabledState(v);
     await setBottleNotificationsEnabled(v);
+  }, []);
+  const setShowQuantity = useCallback(async (v: boolean) => {
+    setShowQuantityState(v);
+    await setBottleShowQuantity(v);
   }, []);
   const request = useCallback(async () => {
     const p = await askNotificationPermission('Pour être prévenu·e à l’heure du prochain biberon, même quand l’application est fermée.');
@@ -128,7 +134,7 @@ export function useBottleNotificationSettings() {
     if (p === 'granted') await syncBottleTimers().catch(() => undefined);
     return p;
   }, []);
-  return { supported: notificationsSupported, enabled, setEnabled, permission, request };
+  return { supported: notificationsSupported, enabled, setEnabled, showQuantity, setShowQuantity, permission, request };
 }
 
 /** Une notification est-elle programmée sur CET appareil pour ce minuteur ? */

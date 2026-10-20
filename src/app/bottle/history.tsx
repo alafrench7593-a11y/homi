@@ -9,6 +9,7 @@ import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/State
 import { Button, Card, Chip, IconButton, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { copyText } from '@/features/bottle';
+import { BottleInstrument } from '@/features/bottleInstrument';
 import { useTrackedChildren, useDeleteRow , useActiveSubject } from '@/lib/data/hooks';
 import { useBottleHistory, useRecorderLabel } from '@/lib/data/hooks-bottle';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -32,6 +33,7 @@ export default function BottleHistory() {
   const childId = params.child || (subject.type === 'child' && children?.some((c) => c.id === subject.id) ? subject.id : children?.[0]?.id) || '';
   const child = children?.find((c) => c.id === childId) ?? null;
   const historyQ = useBottleHistory(childId, 8);
+  const [chrono, setChrono] = useState(false);
   const { data: bottles } = historyQ;
   const isLoading = historyQ.isLoading && !bottles;
   const loadError = historyQ.isError && !bottles;
@@ -90,6 +92,12 @@ export default function BottleHistory() {
           {children.map((c) => <Chip key={c.id} label={c.first_name} selected={c.id === childId} onPress={() => router.setParams({ child: c.id })} />)}
         </Row>
       )}
+      {child ? (
+        <>
+          <Button label={chrono ? 'Masquer le chronomètre de prise' : 'Chronométrer une prise (facultatif)'} variant="ghost" size="sm" icon="watch" onPress={() => setChrono(!chrono)} style={{ alignSelf: 'flex-start' }} />
+          {chrono ? <BottleInstrument child={child} /> : null}
+        </>
+      ) : null}
       <Segmented label="Affichage" value={view} onChange={setView} options={[{ value: 'day', label: 'Jour' }, { value: 'week', label: 'Semaine' }]} />
       {isLoading ? <Skeleton kind="list" rows={4} /> : loadError ? (
         <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher l’historique" />

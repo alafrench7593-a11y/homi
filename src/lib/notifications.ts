@@ -76,6 +76,7 @@ export function configureNotifications() {
   // Minuteur biberon : « Reporter 15 min » et « Annuler », traités sans ouvrir l'application quand le système le permet
   Notifications.setNotificationCategoryAsync(BOTTLE_CATEGORY, [
     { identifier: BOTTLE_ACTION_SNOOZE, buttonTitle: 'Reporter 15 min', options: { opensAppToForeground: false } },
+    { identifier: BOTTLE_ACTION_SNOOZE_30, buttonTitle: 'Reporter 30 min', options: { opensAppToForeground: false } },
     { identifier: BOTTLE_ACTION_CANCEL, buttonTitle: 'Annuler', options: { opensAppToForeground: false, isDestructive: true } },
   ]).catch(() => undefined);
   // Traitement prescrit d'un enfant : « Pris », « Reporter », « Ignorer », « Ajouter une note »
@@ -247,6 +248,7 @@ const BOTTLE_HANDLED_KEY = 'toietmoi.bottle-handled.v1';
 const BOTTLE_CHANNEL = 'bottle';
 export const BOTTLE_CATEGORY = 'bottle';
 export const BOTTLE_ACTION_SNOOZE = 'bottle-snooze-15';
+export const BOTTLE_ACTION_SNOOZE_30 = 'bottle-snooze-30';
 export const BOTTLE_ACTION_CANCEL = 'bottle-cancel';
 let bottleResponseSub: { remove: () => void } | null = null;
 
@@ -261,14 +263,29 @@ async function readJson<T>(key: string, fallback: T): Promise<T> {
   }
 }
 
+interface BottlePrefs { enabled?: boolean; showQuantity?: boolean }
+
 export async function getBottleNotificationsEnabled(): Promise<boolean> {
-  const prefs = await readJson<{ enabled?: boolean }>(BOTTLE_PREFS_KEY, {});
+  const prefs = await readJson<BottlePrefs>(BOTTLE_PREFS_KEY, {});
   return prefs.enabled !== false;
 }
 
-/** Active / désactive les notifications du minuteur biberon sur cet appareil, puis resynchronise. */
+/** La quantité notée n'apparaît dans la notification que si le parent l'a autorisé (désactivé par défaut). */
+export async function getBottleShowQuantity(): Promise<boolean> {
+  return (await readJson<BottlePrefs>(BOTTLE_PREFS_KEY, {})).showQuantity === true;
+}
+
+/** Active / désactive les notifications du rappel biberon sur cet appareil, puis resynchronise. */
 export async function setBottleNotificationsEnabled(enabled: boolean): Promise<void> {
-  await AsyncStorage.setItem(BOTTLE_PREFS_KEY, JSON.stringify({ enabled }));
+  const prefs = await readJson<BottlePrefs>(BOTTLE_PREFS_KEY, {});
+  await AsyncStorage.setItem(BOTTLE_PREFS_KEY, JSON.stringify({ ...prefs, enabled }));
+  await syncBottleTimers().catch(() => undefined);
+}
+
+/** Affiche ou masque la quantité dans la notification (les notifications déjà programmées sont refaites). */
+export async function setBottleShowQuantity(showQuantity: boolean): Promise<void> {
+  const prefs = await readJson<BottlePrefs>(BOTTLE_PREFS_KEY, {});
+  await AsyncStorage.setItem(BOTTLE_PREFS_KEY, JSON.stringify({ ...prefs, showQuantity }));
   await syncBottleTimers().catch(() => undefined);
 }
 
@@ -302,6 +319,7 @@ async function doSyncBottleTimers(): Promise<BottleSyncResult> {
 
   const session = await backend.auth.getSession().catch(() => null);
   const enabled = await getBottleNotificationsEnabled();
+  const showQty = await getBottleShowQuantity();
   let timers: BottleTimer[] = [];
   let names = new Map<string, string>();
   let fetched = !session; // déconnecté : tout est annulé
@@ -323,7 +341,7 @@ async function doSyncBottleTimers(): Promise<BottleSyncResult> {
 
   const now = Date.now();
   const wanted = new Map(timers.filter((t) => Date.parse(t.due_at) > now && names.has(t.child_id)).map((t) => [t.id, t]));
-  const sig = (t: BottleTimer) => JSON.stringify([t.due_at, t.planned_ml, names.get(t.child_id), t.child_id]);
+  const sig = (t: BottleTimer) => JSON.stringify([t.due_at, showQty ? t.planned_ml : null, names.get(t.child_id), t.child_id]);
 
   let cancelled = 0;
   for (const [id, entry] of Object.entries(map)) {
@@ -352,7 +370,7 @@ async function doSyncBottleTimers(): Promise<BottleSyncResult> {
   let scheduled = 0;
   for (const t of wanted.values()) {
     if (map[t.id]) continue;
-    const { title, body } = notificationContent(names.get(t.child_id) ?? 'votre enfant', t.planned_ml);
+    const { title, body } = notificationContent(names.get(t.child_id) ?? 'votre enfant', t.planned_ml, showQty);
     try {
       const nid = await Notifications.scheduleNotificationAsync({
         content: {
@@ -393,7 +411,8 @@ async function applyBottleAction(response: Notifications.NotificationResponse): 
   const request = response.notification.request;
   const data = (request.content.data ?? {}) as { source?: string; timerId?: string };
   const action = response.actionIdentifier;
-  if (data.source !== 'bottle' || !data.timerId || (action !== BOTTLE_ACTION_SNOOZE && action !== BOTTLE_ACTION_CANCEL)) return false;
+  if (data.source !== 'bottle' || !data.timerId || (action !== BOTTLE_ACTION_SNOOZE && action !== BOTTLE_ACTION_SNOOZE_30 && action !== BOTTLE_ACTION_CANCEL)) return false;
+  const snoozeMin = action === BOTTLE_ACTION_SNOOZE_30 ? 30 : 15;
   const key = `${request.identifier}:${action}:${response.notification.date}`;
   const done = await readJson<string[]>(BOTTLE_HANDLED_KEY, []);
   if (done.includes(key)) return false;
@@ -401,15 +420,15 @@ async function applyBottleAction(response: Notifications.NotificationResponse): 
   try {
     const [timer] = await backend.select<BottleTimer>({ table: 'bottle_timers', filters: [eq('id', data.timerId)] });
     if (!timer || timer.status !== 'active') return true;
-    const patch = action === BOTTLE_ACTION_SNOOZE ? snoozeTimer(timer, 15) : cancelTimer();
+    const patch = action === BOTTLE_ACTION_CANCEL ? cancelTimer() : snoozeTimer(timer, snoozeMin);
     await backend.update('bottle_timers', patch, [eq('id', timer.id)]);
   } catch {
     // Hors connexion : le report reste assuré par une notification ponctuelle sur cet appareil
-    if (action === BOTTLE_ACTION_SNOOZE) {
+    if (action !== BOTTLE_ACTION_CANCEL) {
       await Notifications.scheduleNotificationAsync({
         // Sans kind 'bottle' : ce report ponctuel hors connexion n'est pas annulé par la synchronisation suivante
         content: { title: request.content.title ?? 'Biberon', body: request.content.body ?? undefined, categoryIdentifier: BOTTLE_CATEGORY, data: { ...data, kind: 'bottle-offline-snooze' } },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(Date.now() + 15 * 60_000), channelId: BOTTLE_CHANNEL },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(Date.now() + snoozeMin * 60_000), channelId: BOTTLE_CHANNEL },
       }).catch(() => undefined);
     }
   }
