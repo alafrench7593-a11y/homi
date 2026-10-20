@@ -100,6 +100,6 @@ export const home = {
   'dock.q.meal': 'Repas',
   'dock.q.health': 'Note santé',
   'dock.q.mood': 'Mon humeur',
-  'dock.q.timer': 'Minuteur biberon',
+  'dock.q.timer': 'Rappel biberon',
   'dock.q.scanner': 'Scanner',
 };

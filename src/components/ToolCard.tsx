@@ -31,8 +31,10 @@ export function openTool(tool: CatalogTool, y?: number, reduce?: boolean) {
   else setTimeout(go, 110); // le temps que l'enfoncement soit perçu, pas plus
 }
 
-export function ToolCard({ tool, status, favorite, onToggleFavorite, width }: {
+export function ToolCard({ tool, status, favorite, onToggleFavorite, width, beforeOpen }: {
   tool: CatalogTool; status?: ToolStatus; favorite: boolean; onToggleFavorite: (t: CatalogTool) => void; width: number;
+  /** Outil d'un autre profil : sélectionne ce profil avant d'ouvrir l'outil. */
+  beforeOpen?: () => void;
 }) {
   const t = useTheme();
   const reduce = useReduceMotion();
@@ -48,6 +50,7 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width }: {
   function onPress(e: GestureResponderEvent) {
     haptic('selection');
     setPlay((p) => p + 1);
+    beforeOpen?.();
     openTool(tool, e.nativeEvent.pageY, reduce);
   }
 

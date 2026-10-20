@@ -121,7 +121,10 @@ def run(p):
     pg.mouse.wheel(0, 8000); pg.wait_for_timeout(500)
     t = T(pg)
     R['2_grossesse_outils_prevus'] = all(x in t for x in ['Sexualité pendant la grossesse', 'Articles et vidéos', 'Idées de prénoms'])
-    R['2_grossesse_rien_de_bebe_ne'] = not any(x in t for x in ['Biberon', 'Couches', 'Aide pour la nuit', 'Dents'])
+    # Les outils de Lina restent listés à part (« Outils des autres profils ») : rien de bébé dans la partie grossesse
+    mine = t.split('Outils des autres profils')[0]
+    R['2_grossesse_rien_de_bebe_ne'] = not any(x in mine for x in ['Biberon', 'Couches', 'Aide pour la nuit', 'Dents'])
+    R['2_outils_des_autres_profils_separes'] = 'Pour Lina' in t.split('Outils des autres profils')[-1]
     go(pg, '/library?cat=sexualite', 3000)
     pg.mouse.wheel(0, 3000); pg.wait_for_timeout(400)
     t = T(pg)

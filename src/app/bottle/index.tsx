@@ -19,9 +19,9 @@ export default function BottleTimers() {
   const sorted = [...(children ?? [])].sort((a, b) => Number(b.enabled_tracking.includes('bottle')) - Number(a.enabled_tracking.includes('bottle')));
 
   return (
-    <Screen back title="Minuteurs biberon" subtitle={activeCount ? `${activeCount} rappel${activeCount > 1 ? 's' : ''} en cours` : 'Un minuteur par enfant'}>
+    <Screen back title="Rappels biberon" subtitle={activeCount ? `${activeCount} rappel${activeCount > 1 ? 's' : ''} en cours` : 'Un rappel par enfant'}>
       {isLoading ? <Skeleton kind="card" rows={2} /> : childrenQ.isError && !children ? (
-        <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} title="Impossible d’afficher les minuteurs" />
+        <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} title="Impossible d’afficher les rappels" />
       ) : !sorted.length ? (
         <EmptyState
           icon="clock"

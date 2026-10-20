@@ -17,6 +17,8 @@ import { glyphColor, tint, ToolGlyph } from '@/components/ToolGlyph';
 import { Button, Chip, Field, haptic, Icon, Text } from '@/components/ui';
 import { useProfile } from '@/lib/data/hooks';
 import { useScope } from '@/lib/data/hooks-scope';
+import { useOtherProfileTools } from '@/lib/data/hooks-alltools';
+import { useActiveSubject } from '@/lib/data/hooks';
 import { ProfileSwitcher } from '@/components/Family';
 import { useToolStatuses } from '@/lib/data/hooks-tools';
 import { favoriteTools, groupByTheme, searchTools, statusKeyFor, THEMES, toggleFavorite, toolCatalog, type CatalogTool, type ToolTheme } from '@/lib/domain/toolCatalog';
@@ -58,6 +60,15 @@ export default function Tools() {
   }, [catalog, q, activeFilter, favIds]);
   const groups = useMemo(() => (activeFilter === 'fav' ? [{ key: 'fav' as const, title: 'Mes raccourcis', short: '', items: visible }] : groupByTheme(visible)), [visible, activeFilter]);
   const urgent = catalog.find((x) => x.urgent);
+  // Tous les outils restent visibles : ceux des autres profils (chaque enfant, grossesse, moi) sont listés ensuite
+  const { setSubject } = useActiveSubject();
+  const others = useOtherProfileTools(catalog);
+  const otherGroups = useMemo(() => others.map((o) => {
+    let list = searchTools(o.tools, q);
+    if (activeFilter === 'fav') list = favoriteTools(list, favIds);
+    else if (activeFilter !== 'all') list = list.filter((x) => x.theme === activeFilter);
+    return { ...o, tools: list };
+  }).filter((o) => o.tools.length), [others, q, activeFilter, favIds]);
 
   // grille : 2 colonnes sur téléphone, 3 sur tablette, 4 sur grand écran ; largeur MESURÉE du contenu
   // (l'application peut être affichée dans un cadre plus étroit que la fenêtre)
@@ -111,7 +122,7 @@ export default function Tools() {
 
       {profileQ.isLoading && !profile ? <Skeleton kind="card" rows={4} /> : profileQ.isError && !profile ? (
         <ErrorView error={profileQ.error} onRetry={() => void profileQ.refetch()} title="Impossible d’afficher vos outils" />
-      ) : !visible.length ? (
+      ) : !visible.length && !otherGroups.length ? (
         activeFilter === 'fav' && !q
           ? <EmptyState icon="star" title="Aucun raccourci pour l’instant" body="Touchez l’étoile d’un outil pour le retrouver ici et en haut de cette page." />
           : <EmptyState icon="search" title="Aucun outil trouvé" body="Essayez un autre mot, ou retirez le filtre." action={{ label: 'Tout afficher', onPress: () => { setQ(''); setFilter('all'); } }} />
@@ -125,6 +136,24 @@ export default function Tools() {
           </View>
         </Appear>
       ))}
+      {otherGroups.length ? (
+        <View testID="tools-other-profiles" style={{ gap: spacing.md, marginTop: spacing.md }}>
+          <View style={{ gap: 2 }}>
+            <Text variant="title" accessibilityRole="header">Outils des autres profils</Text>
+            <Text variant="small" muted>Touchez un outil : le bon profil est sélectionné avant de l’ouvrir, les données ne sont jamais mélangées.</Text>
+          </View>
+          {otherGroups.map((o) => (
+            <View key={o.key} style={{ gap: spacing.sm }} testID={`tools-for-${o.key}`}>
+              <Text variant="heading" accessibilityRole="header">{o.title}</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: GAP }}>
+                {o.tools.map((tool) => (
+                  <ToolCard key={`${o.key}-${tool.id}`} tool={tool} width={cardW} favorite={favIds.includes(tool.id)} onToggleFavorite={toggleFav} beforeOpen={() => setSubject(o.subject)} />
+                ))}
+              </View>
+            </View>
+          ))}
+        </View>
+      ) : null}
       <Button label={tr('pj.editJourney')} variant="secondary" icon="refresh-cw" onPress={() => router.push('/journeys')} full />
     </Screen>
   );

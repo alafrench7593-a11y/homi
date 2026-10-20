@@ -102,6 +102,6 @@ export const home: Messages<typeof fr> = {
   'dock.q.meal': 'Meal',
   'dock.q.health': 'Health note',
   'dock.q.mood': 'My mood',
-  'dock.q.timer': 'Bottle timer',
+  'dock.q.timer': 'Bottle reminder',
   'dock.q.scanner': 'Scanner',
 };
