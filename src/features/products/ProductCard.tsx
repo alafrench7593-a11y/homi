@@ -1,6 +1,6 @@
 /** Carte d'un produit du catalogue : photo de la base collaborative (avec crédit), marque, nom, critères, meilleur prix daté. */
 import React from 'react';
-import { Image, Pressable, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { router } from 'expo-router';
 import { haptic, Icon, Row, Text } from '@/components/ui';
 import type { KidProduct, ProductPrice } from '@/lib/data/hooks-products';
@@ -8,13 +8,14 @@ import type { CriteriaResult } from '@/lib/domain/productCriteria';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export const euro = (v: number) => `${v.toFixed(2).replace('.', ',')} €`;
 
 export function ProductCard({ p, c, price, selected, onSelect }: { p: KidProduct; c: CriteriaResult | undefined; price: ProductPrice | null; selected?: boolean; onSelect?: () => void }) {
   const t = useTheme();
   return (
-    <Pressable testID={`product-${p.barcode}`} accessibilityRole="button" accessibilityLabel={`${p.brand ?? ''} ${p.name}`} onPress={() => { haptic('selection'); router.push(`/products/${p.id}`); }}
+    <Tappable testID={`product-${p.barcode}`} accessibilityRole="button" accessibilityLabel={`${p.brand ?? ''} ${p.name}`} onPress={() => { haptic('selection'); router.push(`/products/${p.id}`); }}
       style={({ pressed }) => ({ flexDirection: 'row', gap: spacing.sm, padding: spacing.xs, borderRadius: radius.lg, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: selected ? t.colors.primary : t.colors.border })}>
       <View style={{ width: 76, height: 76, borderRadius: 12, overflow: 'hidden', backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
         {p.image_url ? <Image source={{ uri: p.image_url }} style={{ width: 76, height: 76 }} resizeMode="contain" accessibilityLabel={tr('pr.photoA11y', { name: p.name })} /> : <Icon name="package" color={t.colors.textMuted} />}
@@ -29,10 +30,10 @@ export function ProductCard({ p, c, price, selected, onSelect }: { p: KidProduct
         {p.is_demo ? <Text variant="caption" color={t.colors.danger}>{tr('pr.demoProduct')}</Text> : null}
       </View>
       {onSelect ? (
-        <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: !!selected }} accessibilityLabel={tr('pr.compareSelect')} onPress={onSelect} hitSlop={8} style={{ justifyContent: 'center' }} testID={`compare-${p.barcode}`}>
+        <Tappable accessibilityRole="checkbox" accessibilityState={{ checked: !!selected }} accessibilityLabel={tr('pr.compareSelect')} onPress={onSelect} hitSlop={8} style={{ justifyContent: 'center' }} testID={`compare-${p.barcode}`}>
           <Icon name={selected ? 'check-square' : 'square'} color={selected ? t.colors.primary : t.colors.textMuted} />
-        </Pressable>
+        </Tappable>
       ) : null}
-    </Pressable>
+    </Tappable>
   );
 }

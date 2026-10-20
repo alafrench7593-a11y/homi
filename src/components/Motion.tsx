@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Platform, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useReduceMotion } from '@/theme/ThemeProvider';
-import { duration, easing, spring, springTo, stagger, timeTo } from '@/theme/motion';
+import { duration, easing, interaction, spring, springTo, stagger, timeTo } from '@/theme/motion';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 
 const IS_WEB = Platform.OS === 'web';
@@ -20,18 +20,19 @@ export function usePressMotion(opts: { pressed?: number; hoverLift?: number } = 
   const reduce = useReduceMotion();
   const press = useRef(new Animated.Value(0)).current;
   const hover = useRef(new Animated.Value(0)).current;
-  const pressedScale = opts.pressed ?? 0.965;
-  const lift = opts.hoverLift ?? -2;
+  const pressedScale = opts.pressed ?? interaction.pressScale;
+  const lift = opts.hoverLift ?? interaction.hoverLift;
   const scale = press.interpolate({ inputRange: [0, 1], outputRange: [1, pressedScale] });
   const translateY = hover.interpolate({ inputRange: [0, 1], outputRange: [0, lift] });
   return {
     style: { transform: [{ translateY }, { scale }] },
     hover,
+    press,
     handlers: {
-      onPressIn: () => springTo(press, 1, 'press', reduce).start(),
-      onPressOut: () => springTo(press, 0, 'release', reduce).start(),
-      onHoverIn: IS_WEB ? () => springTo(hover, 1, 'gentle', reduce).start() : undefined,
-      onHoverOut: IS_WEB ? () => springTo(hover, 0, 'gentle', reduce).start() : undefined,
+      onPressIn: () => timeTo(press, 1, interaction.pressInMs, reduce, easing.standard).start(),
+      onPressOut: () => timeTo(press, 0, interaction.pressOutMs, reduce, easing.decelerate).start(),
+      onHoverIn: IS_WEB ? () => timeTo(hover, 1, interaction.hoverMs, reduce, easing.standard).start() : undefined,
+      onHoverOut: IS_WEB ? () => timeTo(hover, 0, interaction.hoverMs, reduce, easing.standard).start() : undefined,
     },
   };
 }

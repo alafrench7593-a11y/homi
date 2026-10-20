@@ -1,11 +1,12 @@
 /** Indicateur discret « Hors ligne » (et nombre de saisies en attente), visible sur tous les écrans. */
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, Text } from '@/components/ui';
 import { useOfflineStore } from '@/lib/offline';
 import { t as tr } from '@/i18n';
+import { Tappable } from '@/components/Tappable';
 
 export function OfflinePill() {
   const { online, pending, conflicts } = useOfflineStore();
@@ -16,7 +17,7 @@ export function OfflinePill() {
     : conflicts.length ? tr('sync.toCheck', { count: conflicts.length }) : tr('sync.syncing', { count: pending.length });
   return (
     <View pointerEvents="box-none" style={{ position: 'absolute', bottom: insets.bottom + 92, left: 0, right: 0, alignItems: 'center', zIndex: 40 }}>
-      <Pressable
+      <Tappable
         accessibilityRole="button"
         accessibilityLabel={tr('sync.openA11y', { label })}
         accessibilityLiveRegion="polite"
@@ -25,7 +26,7 @@ export function OfflinePill() {
       >
         <Icon name={online ? 'refresh-cw' : 'wifi-off'} size={14} color="#FFFFFF" />
         <Text variant="caption" weight="bold" color="#FFFFFF">{label}</Text>
-      </Pressable>
+      </Tappable>
     </View>
   );
 }

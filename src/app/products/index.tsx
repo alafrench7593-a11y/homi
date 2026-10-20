@@ -17,6 +17,7 @@ import { PRODUCT_CATEGORIES, type ProductCategory } from '@/lib/domain/productCr
 import { fold } from '@/lib/recipes/validate';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { ResultsFade } from '@/components/MotionKit';
 
 type AgeFilter = 'm0_6' | 'm6_12' | 'y1_3' | 'y3_10';
 const AGE: Record<AgeFilter, number> = { m0_6: 0, m6_12: 6, y1_3: 12, y3_10: 36 };
@@ -83,7 +84,7 @@ export default function Products() {
       {products.isLoading && !products.data.length ? <Skeleton rows={4} /> : !products.data.length ? (
         <View testID="products-empty"><EmptyState icon="package" title={tr('pr.empty')} body={tr('pr.emptyBody')} /></View>
       ) : !list.length ? <EmptyState icon="search" title={tr('pr.none')} /> : (
-        <View style={{ gap: spacing.xs }}>{list.map((p) => <ProductCard key={p.id} p={p} c={crit.get(p.id)} price={bestPrice(prices.data ?? [], p.id)} selected={picked.includes(p.id)} onSelect={() => togglePick(p.id)} />)}</View>
+        <ResultsFade k={list.map((p) => p.id).join()} style={{ gap: spacing.xs }}>{list.map((p) => <ProductCard key={p.id} p={p} c={crit.get(p.id)} price={bestPrice(prices.data ?? [], p.id)} selected={picked.includes(p.id)} onSelect={() => togglePick(p.id)} />)}</ResultsFade>
       )}
       <Text variant="caption" muted>{tr('pr.footer')}</Text>
     </Screen>

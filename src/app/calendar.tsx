@@ -4,7 +4,7 @@
  * importable dans Google Agenda, Apple Calendrier ou Outlook — sans données de santé par défaut.
  */
 import React, { useMemo, useRef, useState } from 'react';
-import { Animated, Linking, Pressable, Share, View } from 'react-native';
+import { Animated, Linking, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/States';
@@ -27,6 +27,7 @@ import { exportTextFile } from '@/lib/exportData';
 import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 type View_ = 'day' | 'week' | 'month' | 'agenda';
 const ICON: Record<CalendarItem['source'], IconName> = { event: 'star', appointment: 'calendar', task: 'check-square', night: 'moon', me_time: 'sun' };
@@ -137,7 +138,7 @@ export default function FamilyCalendar() {
   const renderItem = (i: CalendarItem, idx: number) => (
     <StaggerItem key={i.key} index={idx}>
       <Flash on={moved === i.refId} color={t.colors.primary}>
-      <Pressable accessibilityRole="button" accessibilityLabel={`${SOURCE_LABEL[i.source]} : ${i.title}, ${i.allDay ? 'toute la journée' : hm(i.starts)}`} onPress={() => openItem(i)}
+      <Tappable accessibilityRole="button" accessibilityLabel={`${SOURCE_LABEL[i.source]} : ${i.title}, ${i.allDay ? 'toute la journée' : hm(i.starts)}`} onPress={() => openItem(i)}
         style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.sm, borderRadius: radius.md, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: clashes.has(i.key) ? t.colors.gold : t.colors.border })}>
         <Text variant="small" weight="bold" style={{ width: 48 }}>{i.allDay ? 'Jour' : hm(i.starts)}</Text>
         <Icon name={ICON[i.source]} size={16} color={i.source === 'appointment' ? t.colors.heart : i.source === 'event' ? t.colors.primary : t.colors.lavender} />
@@ -145,7 +146,7 @@ export default function FamilyCalendar() {
           <Text weight="medium" style={{ textDecorationLine: i.done ? 'line-through' : 'none' }}>{i.title}</Text>
           <Text variant="caption" muted>{[SOURCE_LABEL[i.source], i.private ? 'privé' : null, i.recurring ? 'répété' : null, i.who ? labelOf(i.who) : null, i.location, clashes.has(i.key) ? 'chevauche un autre créneau' : null].filter(Boolean).join(' · ')}</Text>
         </View>
-      </Pressable>
+      </Tappable>
       </Flash>
     </StaggerItem>
   );
@@ -155,10 +156,10 @@ export default function FamilyCalendar() {
       <Segmented label="Vue" value={view} onChange={(v) => { dir.current = 0; setView(v); haptic('selection'); }} options={[{ value: 'day', label: 'Jour' }, { value: 'week', label: 'Semaine' }, { value: 'month', label: 'Mois' }, { value: 'agenda', label: 'Agenda' }]} />
       <Row style={{ justifyContent: 'space-between' }}>
         {view !== 'agenda' ? <IconButton icon="chevron-left" label="Période précédente" onPress={() => move(-1)} /> : <View />}
-        <Pressable onPress={() => setCursor(todayISO())} accessibilityRole="button" accessibilityLabel={`${title}. Revenir à aujourd’hui`}>
+        <Tappable onPress={() => setCursor(todayISO())} accessibilityRole="button" accessibilityLabel={`${title}. Revenir à aujourd’hui`}>
           <Text weight="bold" center>{title}</Text>
           {cursor !== todayISO() && view !== 'agenda' ? <Text variant="caption" color={t.colors.primary} center>Revenir à aujourd’hui</Text> : null}
-        </Pressable>
+        </Tappable>
         {view !== 'agenda' ? <IconButton icon="chevron-right" label="Période suivante" onPress={() => move(1)} /> : <View />}
       </Row>
 
@@ -179,9 +180,9 @@ export default function FamilyCalendar() {
           if (view === 'agenda' && !list.length) return null;
           return (
             <View key={d} style={{ gap: spacing.xs }}>
-              <Pressable onPress={() => { setCursor(d); setView('day'); }} accessibilityRole="button" accessibilityLabel={`Voir le ${longDay(d)}`}>
+              <Tappable onPress={() => { setCursor(d); setView('day'); }} accessibilityRole="button" accessibilityLabel={`Voir le ${longDay(d)}`}>
                 <Text weight="bold" color={d === todayISO() ? t.colors.primary : t.colors.text}>{longDay(d)}{d === todayISO() ? ' · aujourd’hui' : ''}</Text>
-              </Pressable>
+              </Tappable>
               {list.map(renderItem)}
               {view === 'week' && !list.length ? <Text variant="caption" muted>—</Text> : null}
             </View>
@@ -274,14 +275,14 @@ function DayCell({ day, out, today, count, onPress, accent }: { day: string; out
   const t = useTheme();
   const pop = usePop(today);
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${atLocal(day, 12).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}, ${count ? `${count} élément${count > 1 ? 's' : ''}` : 'rien de prévu'}`} onPress={onPress} style={{ flex: 1, alignItems: 'center', paddingVertical: 6, minHeight: 48 }}>
+    <Tappable accessibilityRole="button" accessibilityLabel={`${atLocal(day, 12).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}, ${count ? `${count} élément${count > 1 ? 's' : ''}` : 'rien de prévu'}`} onPress={onPress} style={{ flex: 1, alignItems: 'center', paddingVertical: 6, minHeight: 48 }}>
       <Animated.View style={[{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: today ? accent : 'transparent' }, pop]}>
         <Text variant="small" weight={today ? 'bold' : undefined} color={today ? t.colors.primaryText : out ? t.colors.textMuted : t.colors.text} style={{ opacity: out ? 0.5 : 1 }}>{Number(day.slice(8))}</Text>
       </Animated.View>
       <View style={{ flexDirection: 'row', gap: 2, height: 6, marginTop: 2 }}>
         {Array.from({ length: Math.min(count, 3) }, (_, i) => <View key={i} style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: accent, opacity: out ? 0.4 : 1 }} />)}
       </View>
-    </Pressable>
+    </Tappable>
   );
 }
 
@@ -334,7 +335,7 @@ function FeedCard() {
                 <Text variant="small" weight="medium">{f.label}{f.include_health_titles ? ' · titres de santé visibles' : ''}</Text>
                 <Text variant="caption" muted>{`Créé le ${when(f.created_at)} · ${f.last_accessed_at ? `dernière lecture le ${when(f.last_accessed_at)}` : 'pas encore consulté'}`}</Text>
               </View>
-              <Button label="Révoquer" size="sm" variant="ghost" onPress={() => void remove(f.id)} />
+              <Button label="Révoquer" size="sm" variant="ghost" onPress={() => remove(f.id)} />
             </Row>
           ))}
           <Button label="Créer un lien d’abonnement" icon="link" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: spacing.xs }} onPress={() => setOpen(true)} />
@@ -346,8 +347,8 @@ function FeedCard() {
           <View style={{ gap: spacing.sm }}>
             <Banner tone="warning" icon="lock">{'Ce lien n’est affiché qu’une fois. Toute personne qui le possède voit ces événements : ne le publiez pas. Vous pourrez le révoquer à tout moment.'}</Banner>
             <Text selectable variant="caption" style={{ padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} accessibilityLabel="Adresse du lien d’abonnement">{created}</Text>
-            <Button label="Ouvrir dans mon agenda" icon="calendar" full onPress={() => void Linking.openURL(webcalUrl(created)).catch(() => toast('Aucun agenda n’a pu ouvrir ce lien : copiez l’adresse.', 'error'))} />
-            <Button label="Partager ou copier le lien" icon="share-2" variant="secondary" full onPress={() => void Share.share({ message: created }).catch(() => undefined)} />
+            <Button label="Ouvrir dans mon agenda" icon="calendar" full onPress={() => Linking.openURL(webcalUrl(created)).catch(() => toast('Aucun agenda n’a pu ouvrir ce lien : copiez l’adresse.', 'error'))} />
+            <Button label="Partager ou copier le lien" icon="share-2" variant="secondary" full onPress={() => Share.share({ message: created }).catch(() => undefined)} />
             <Text variant="caption" muted>Google Agenda : « Autres agendas » › « À partir de l’URL ». Les agendas actualisent un abonnement à leur propre rythme (de quelques minutes à plusieurs heures selon le service).</Text>
           </View>
         ) : (

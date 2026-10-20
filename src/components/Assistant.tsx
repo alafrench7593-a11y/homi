@@ -1,6 +1,6 @@
 /** Éléments d'affichage de l'assistant : avertissement, réponse structurée, orientation urgente. */
 import React from 'react';
-import { Linking, Pressable, StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
@@ -12,6 +12,7 @@ import {
   type ArticleSourceRef, type StructuredAnswer, type UrgentContact,
 } from '@/features/assistant';
 import { isAllowedSourceUrl } from '../../supabase/functions/_shared/assistant-format';
+import { Tappable } from '@/components/Tappable';
 
 /** Avertissement affiché en tête de chaque conversation (texte imposé). */
 export function AssistantIntro() {
@@ -64,7 +65,7 @@ export function StructuredAnswerView({ answer, articles, streaming }: { answer: 
         <View style={{ gap: 4 }}>
           <Text weight="bold" variant="small" accessibilityRole="header">{SECTION_TITLES.sources}</Text>
           {sources.map((s) => (
-            <Pressable
+            <Tappable
               key={s.url}
               accessibilityRole="link"
               accessibilityLabel={`Ouvrir la source : ${s.label}`}
@@ -74,7 +75,7 @@ export function StructuredAnswerView({ answer, articles, streaming }: { answer: 
             >
               <Icon name="external-link" size={14} color={t.colors.primary} />
               <Text variant="small" color={t.colors.primary} style={{ flex: 1, textDecorationLine: 'underline' }}>{s.label}</Text>
-            </Pressable>
+            </Tappable>
           ))}
         </View>
       )}
@@ -82,10 +83,10 @@ export function StructuredAnswerView({ answer, articles, streaming }: { answer: 
         <View style={{ gap: 4 }}>
           <Text weight="bold" variant="small">Articles de l’application</Text>
           {articles.map((a) => (
-            <Pressable key={a.ref} accessibilityRole="link" accessibilityLabel={`Ouvrir l’article : ${a.title}`} onPress={() => router.push(`/article/${a.slug}`)} style={{ flexDirection: 'row', gap: 6, alignItems: 'center', minHeight: MIN_TOUCH }}>
+            <Tappable key={a.ref} accessibilityRole="link" accessibilityLabel={`Ouvrir l’article : ${a.title}`} onPress={() => router.push(`/article/${a.slug}`)} style={{ flexDirection: 'row', gap: 6, alignItems: 'center', minHeight: MIN_TOUCH }}>
               <Icon name="book-open" size={14} color={t.colors.primary} />
               <Text variant="small" color={t.colors.primary} style={{ flex: 1 }}>[{a.ref}] {a.title}</Text>
-            </Pressable>
+            </Tappable>
           ))}
         </View>
       )}
@@ -110,7 +111,7 @@ export function UrgentCard({ level, contacts, message }: { level: 'medical_urgen
       {!!message && <Markdown source={message} />}
       <View style={{ gap: spacing.xs }}>
         {list.map((c) => (
-          <Pressable
+          <Tappable
             key={c.number}
             accessibilityRole="button"
             accessibilityLabel={`${c.channel === 'sms' ? 'Envoyer un SMS au' : 'Appeler le'} ${c.number.split('').join(' ')}, ${c.label}`}
@@ -123,7 +124,7 @@ export function UrgentCard({ level, contacts, message }: { level: 'medical_urgen
               <Text variant="caption" muted>{c.detail}</Text>
             </View>
             <Icon name={c.channel === 'sms' ? 'message-square' : 'phone'} size={18} color={t.colors.danger} />
-          </Pressable>
+          </Tappable>
         ))}
       </View>
     </View>

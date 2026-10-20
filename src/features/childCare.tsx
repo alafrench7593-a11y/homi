@@ -3,7 +3,7 @@
  * cartes de repères de sécurité sourcées, repères de couchage, schéma des dents de lait.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Linking, Pressable, View } from 'react-native';
+import { Animated, Linking, View } from 'react-native';
 import { ProgressRing } from '@/components/Charts';
 import { usePop } from '@/components/Motion';
 import { useToast } from '@/components/Overlays';
@@ -17,6 +17,7 @@ import { CHILD_SOURCES, DEHYDRATION_SIGNS, SAFE_SLEEP } from '@/content/childSaf
 import type { Child } from '@/lib/types';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 // ------------------------------------------------------------------ chronomètre de biberon
 interface RunningBottle { id: string; started_at: string; paused_at: string | null; paused_seconds: number; ended_at: string | null; prepared_ml: number | null }
@@ -128,9 +129,9 @@ export function SafetyNoticeCard({ n }: { n: SafetyNotice }) {
         </View>
       ) : null}
       <Text variant="caption" muted style={{ marginTop: 4 }}>Ce repère ne dit pas ce que votre enfant a : seul un professionnel peut le faire.</Text>
-      <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+      <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
         <Text variant="caption" color={t.colors.primary}>Source : {src.publisher}</Text>
-      </Pressable>
+      </Tappable>
     </Banner>
   );
 }
@@ -144,9 +145,9 @@ export function SafeSleepCard() {
       {open ? (
         <View style={{ gap: 4, marginTop: 6 }}>
           {SAFE_SLEEP.map((s) => <Text key={s} variant="small">• {s}</Text>)}
-          <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(CHILD_SOURCES.sleep.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+          <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(CHILD_SOURCES.sleep.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
             <Text variant="caption" color={t.colors.primary}>Source : {CHILD_SOURCES.sleep.publisher}</Text>
-          </Pressable>
+          </Tappable>
         </View>
       ) : <Text variant="caption" muted>Touchez pour afficher les 7 repères.</Text>}
     </Card>
@@ -185,9 +186,9 @@ function ToothDot({ label, on, x, y, size, onPick }: { label: string; on: boolea
   const t = useTheme();
   const pop = usePop(on, 1.35);
   return (
-    <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={label} onPress={() => { haptic('selection'); onPick(label); }} hitSlop={4}
+    <Tappable accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={label} onPress={() => { haptic('selection'); onPick(label); }} hitSlop={4}
       style={{ position: 'absolute', left: x - size / 2, top: y - size / 2, width: size, height: size }}>
       <Animated.View style={[{ flex: 1, borderRadius: size / 3, borderWidth: 2, borderColor: on ? t.colors.primary : t.colors.lavender, backgroundColor: on ? t.colors.primary : t.colors.surfaceAlt }, pop]} />
-    </Pressable>
+    </Tappable>
   );
 }

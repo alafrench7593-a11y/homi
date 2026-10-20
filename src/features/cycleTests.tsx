@@ -2,7 +2,7 @@
  * Composants de « Comprendre mon cycle et mes tests » : prise de photo guidée, cadrage, résultat.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Platform, Pressable, View, type LayoutChangeEvent } from 'react-native';
+import { Image, Platform, View, type LayoutChangeEvent } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { ProgressBar } from '@/components/Motion';
 import { Banner, Button, Card, Icon, Row, Segmented, Text, Toggle } from '@/components/ui';
@@ -12,6 +12,7 @@ import { confidenceLabel, OUTCOME_LABEL, type TestAnalysis } from '@/lib/cycleAn
 import { QUALITY_THRESHOLDS } from '@/lib/cycleAnalysis/quality';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export type PhotoSource = 'camera' | 'library';
 
@@ -100,7 +101,7 @@ export function CropPicker({ uri, value, onChange }: { uri: string; value: CropV
   return (
     <View style={{ gap: spacing.xs }}>
       <Text weight="bold">{!value.c ? '1. Touchez l’extrémité de la fenêtre côté ligne de contrôle (C)' : !value.t ? '2. Touchez l’autre extrémité de la fenêtre (côté T)' : 'Cadrage prêt : la bande colorée doit couvrir les lignes'}</Text>
-      <Pressable
+      <Tappable
         ref={boxRef}
         accessibilityRole="imagebutton"
         accessibilityLabel="Photo du test : touchez les deux extrémités de la fenêtre de résultat"
@@ -120,7 +121,7 @@ export function CropPicker({ uri, value, onChange }: { uri: string; value: CropV
         )}
         {value.c && <Marker at={P(value.c)} label="C" colour={t.colors.heart} />}
         {value.t && <Marker at={P(value.t)} label="T" colour={t.colors.lavender} />}
-      </Pressable>
+      </Tappable>
       <Row wrap>
         <Button label="Recommencer le cadrage" icon="rotate-ccw" variant="secondary" size="sm" onPress={() => onChange({ ...value, c: null, t: null })} />
       </Row>

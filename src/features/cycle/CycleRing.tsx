@@ -7,7 +7,7 @@
  * Touchez une phase (ou un bouton de la légende) pour afficher son explication.
  */
 import React, { useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import Svg, { Circle, G, Path, Text as SvgText } from 'react-native-svg';
 import { AnimatedPath, useProgress } from '@/components/MotionKit';
 import { haptic } from '@/components/ui';
@@ -15,6 +15,7 @@ import { fonts, MIN_TOUCH, spacing } from '@/theme/tokens';
 import { formatNumber, t as tr, type TKey } from '@/i18n';
 import { Ink, Rise, useCyclePalette } from './kit';
 import { fmtDay } from './format';
+import { Tappable } from '@/components/Tappable';
 
 export type Phase = 'period' | 'follicular' | 'fertile' | 'ovulation' | 'luteal' | 'next';
 export interface RingData {
@@ -109,11 +110,11 @@ export function CycleRing({ data }: { data: RingData }) {
       {unsure ? <Ink variant="caption" soft center>{tr(data.reliability === 'insufficient' ? 'cy.ring.insufficient' : 'cy.ring.unsure')}</Ink> : null}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' }}>
         {LEGEND.map((p) => (
-          <Pressable key={p} accessibilityRole="button" accessibilityState={{ selected: sel === p }} onPress={() => pick(p)}
+          <Tappable key={p} accessibilityRole="button" accessibilityState={{ selected: sel === p }} onPress={() => pick(p)}
             style={({ pressed }) => ({ minHeight: MIN_TOUCH - 8, maxWidth: '100%', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, justifyContent: 'center',
               borderWidth: 1.2, borderColor: sel === p ? c.mauve : c.line, backgroundColor: sel === p ? c.lavender : pressed ? c.pearl : 'transparent' })}>
             <Ink variant="caption" weight="medium">{tr(`cy.ring.legend.${p}` as TKey)}</Ink>
-          </Pressable>
+          </Tappable>
         ))}
       </View>
       {data.measuredDays.length ? <Ink variant="caption" soft center>{tr('cy.ring.measured')}</Ink> : null}

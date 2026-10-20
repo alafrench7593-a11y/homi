@@ -4,12 +4,12 @@
  * vérification et statut réel (« À vérifier » tant qu'aucun professionnel ne l'a relue).
  */
 import React, { useState } from 'react';
-import { Linking, Pressable, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Chip, IconButton, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, FavoriteButton, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { RecipeArt } from '@/features/recipes/RecipeArt';
 import { allergenLabel, budgetLabel, mealLabel, stageLabel, statusLabel, textureLabel } from '@/features/recipes/labels';
 import { scoreBandFor, useCreateShoppingList, useFoodProfile, useIngredientPrices, useLatestShoppingList, useRecipeFavorites, useRecipes } from '@/lib/data/hooks-recipes';
@@ -25,6 +25,7 @@ import { RECIPE_SOURCES } from '@/lib/recipes/sources';
 import { formatDate, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const ageText = (m: number) => (m < 24 ? tr('vx.ageMonths', { count: m }) : tr('vx.ageYears', { count: Math.round(m / 12) }));
 
@@ -62,7 +63,7 @@ export default function RecipeDetail() {
   }
 
   return (
-    <Screen back title={r.title} right={<IconButton icon="star" label={isFav ? tr('rc.unfavorite') : tr('rc.favorite')} color={isFav ? t.colors.gold : t.colors.textMuted} onPress={() => fav.toggle.mutate(r.slug)} />}>
+    <Screen back title={r.title} right={<FavoriteButton icon="star" active={isFav} activeColor={t.colors.gold} labelOn={tr('rc.unfavorite')} labelOff={tr('rc.favorite')} onPress={() => fav.toggle.mutate(r.slug)} />}>
       <RecipeArt recipe={r} height={190} />
       <Text variant="caption" muted testID="photo-license">{tr('rc.photo.credit', { author: r.photo.author, license: r.photo.license, rights: r.photo.rights })}{r.photo.url ? ` · ${r.photo.url}` : ''}</Text>
       <Text>{r.summary}</Text>
@@ -132,15 +133,15 @@ export default function RecipeDetail() {
 
       <Row wrap>
         <Button label={tr('rc.addToMenu')} icon="calendar" variant="secondary" size="sm" onPress={() => router.push({ pathname: '/meals/menu', params: { add: r.slug } })} />
-        <Button label={tr('rc.addToShopping')} icon="shopping-cart" variant="secondary" size="sm" onPress={() => void addToShopping()} testID="add-shopping" />
+        <Button label={tr('rc.addToShopping')} icon="shopping-cart" variant="secondary" size="sm" onPress={() => addToShopping()} testID="add-shopping" />
       </Row>
 
       <SectionTitle title={tr('rc.sources')} />
       <View testID="recipe-sources" style={{ gap: 2 }}>
         {r.sources.map((s) => { const src = RECIPE_SOURCES[s]; return src ? (
-          <Pressable key={s} accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 36, justifyContent: 'center' }}>
+          <Tappable key={s} accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 36, justifyContent: 'center' }}>
             <Text variant="small" color={t.colors.primary}>{src.publisher} — {src.title}{src.date ? ` (${formatDate(src.date)})` : ''} · {tr('rc.consulted', { date: formatDate(src.consulted) })}</Text>
-          </Pressable>
+          </Tappable>
         ) : null; })}
         {r.verifiedOn ? <Text variant="caption" muted>{tr('rc.verifiedOn', { date: formatDate(r.verifiedOn) })}</Text> : null}
         {r.statusHistory.map((h, k) => <Text key={k} variant="caption" muted>{formatDate(h.on)} · {statusLabel(h.status)} · {h.by}</Text>)}

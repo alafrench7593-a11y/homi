@@ -122,10 +122,10 @@ export default function AdminRecipes() {
               <Row wrap style={{ marginTop: spacing.xs }}>
                 <Button label={tr('rc.admin.open')} size="sm" variant="ghost" onPress={() => router.push(`/meals/${r.slug}`)} />
                 <Button label={tr('rc.admin.edit')} size="sm" variant="ghost" onPress={() => setEditing(editing === r.slug ? null : r.slug)} />
-                {r.status !== 'to_review' && r.status !== 'retired' ? <Button label={tr('rc.status.to_review')} size="sm" variant="ghost" onPress={() => void change(r, 'to_review')} /> : null}
-                {r.status === 'to_review' ? <Button label={tr('rc.admin.markReviewed')} size="sm" variant="secondary" testID={`admin-review-${r.slug}`} onPress={() => void change(r, 'reviewed')} /> : null}
-                {r.status === 'reviewed' ? <Button label={tr('rc.admin.markValidated')} size="sm" testID={`admin-validate-${r.slug}`} onPress={() => void change(r, 'validated')} /> : null}
-                {r.status !== 'retired' ? <Button label={tr('rc.admin.retire')} size="sm" variant="ghost" onPress={() => void change(r, 'retired')} /> : <Button label={tr('rc.admin.restore')} size="sm" variant="ghost" onPress={() => void change(r, 'to_review')} />}
+                {r.status !== 'to_review' && r.status !== 'retired' ? <Button label={tr('rc.status.to_review')} size="sm" variant="ghost" onPress={() => change(r, 'to_review')} /> : null}
+                {r.status === 'to_review' ? <Button label={tr('rc.admin.markReviewed')} size="sm" variant="secondary" testID={`admin-review-${r.slug}`} onPress={() => change(r, 'reviewed')} /> : null}
+                {r.status === 'reviewed' ? <Button label={tr('rc.admin.markValidated')} size="sm" testID={`admin-validate-${r.slug}`} onPress={() => change(r, 'validated')} /> : null}
+                {r.status !== 'retired' ? <Button label={tr('rc.admin.retire')} size="sm" variant="ghost" onPress={() => change(r, 'retired')} /> : <Button label={tr('rc.admin.restore')} size="sm" variant="ghost" onPress={() => change(r, 'to_review')} />}
               </Row>
             </Card>
             {editing === r.slug && r.dbId ? <Editor r={r} onDone={() => setEditing(null)} /> : null}

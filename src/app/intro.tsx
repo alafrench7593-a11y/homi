@@ -8,7 +8,7 @@
  * « réduire les animations », tout s'affiche directement.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, PanResponder, Pressable, View } from 'react-native';
+import { Animated, Easing, PanResponder, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -27,6 +27,7 @@ import { useUiStore } from '@/lib/store';
 import { duration, easing, timeTo } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NACRE, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 type Universe = 'cycle' | 'pregnancy' | 'child' | 'health' | 'tools' | 'community';
 const UNIVERSES: { key: Universe; hero: ToolTheme; heroIcon: IconName; sats: [ToolTheme, IconName][]; icons: IconName[] }[] = [
@@ -162,9 +163,9 @@ export default function Intro() {
           {SLIDES.map((s, k) => <View key={s} style={{ width: k === i ? 22 : 7, height: 7, borderRadius: 4, backgroundColor: k <= i ? t.colors.primary : t.colors.border }} />)}
         </View>
         {!last ? (
-          <Pressable accessibilityRole="button" accessibilityLabel={tr('intro.skipA11y')} onPress={() => go(SLIDES.length - 1)} style={{ minHeight: 44, paddingHorizontal: spacing.sm, justifyContent: 'center' }}>
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('intro.skipA11y')} onPress={() => go(SLIDES.length - 1)} style={{ minHeight: 44, paddingHorizontal: spacing.sm, justifyContent: 'center' }}>
             <Text weight="bold" color={t.colors.primary}>{tr('intro.skip')}</Text>
-          </Pressable>
+          </Tappable>
         ) : <View style={{ minHeight: 44 }} />}
       </View>
 
@@ -180,12 +181,12 @@ export default function Intro() {
                 {availableLocales().map((l) => {
                   const on = l.code === locale;
                   return (
-                    <Pressable key={l.code} accessibilityRole="radio" accessibilityState={{ checked: on }} aria-checked={on} accessibilityLabel={l.native} onPress={() => chooseLanguage(l.code)}
+                    <Tappable key={l.code} accessibilityRole="radio" accessibilityState={{ checked: on }} aria-checked={on} accessibilityLabel={l.native} onPress={() => chooseLanguage(l.code)}
                       style={({ pressed }) => ({ minHeight: 48, minWidth: 120, paddingHorizontal: spacing.md, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6,
                         backgroundColor: on ? t.colors.primary : t.colors.surface, borderWidth: 1, borderColor: on ? t.colors.primary : t.colors.border, opacity: pressed ? 0.85 : 1 })}>
                       {on ? <Icon name="check" size={16} color={t.colors.primaryText} /> : null}
                       <Text weight="bold" color={on ? t.colors.primaryText : t.colors.text}>{l.native}</Text>
-                    </Pressable>
+                    </Tappable>
                   );
                 })}
               </View>

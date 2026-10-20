@@ -3,7 +3,7 @@
  * et où se posent les moments du jour (repas, siestes, changes, rendez-vous, rappels).
  */
 import React, { useMemo } from 'react';
-import { Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
+import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import Svg, { Circle, Defs, G, Line, Path, RadialGradient, Stop, Text as SvgText } from 'react-native-svg';
 import { Icon, type IconName, Text } from '@/components/ui';
@@ -13,6 +13,7 @@ import { nextOccurrence } from '@/lib/domain/reminders';
 import type { Bottle, Breastfeed, Diaper, Meal, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius, SKY_LABEL, spacing, type SkyPhase } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export interface SkyMoment {
   id: string;
@@ -153,7 +154,7 @@ export function DayThread({ moments, empty }: { moments: SkyMoment[]; empty: str
               <Text variant="caption" color={t.colors.gold}>maintenant</Text>
             </View>
           )}
-          <Pressable
+          <Tappable
             accessibilityRole={m.href ? 'button' : 'text'}
             accessibilityLabel={`${formatTime(m.at)}, ${m.label}${m.detail ? `, ${m.detail}` : ''}${m.upcoming ? ', à venir' : ''}`}
             onPress={m.href ? () => router.push(m.href as never) : undefined}
@@ -165,7 +166,7 @@ export function DayThread({ moments, empty }: { moments: SkyMoment[]; empty: str
             </View>
             <Text variant="small" weight="medium">{m.label}</Text>
             {m.detail ? <Text variant="caption" muted>{m.detail}</Text> : null}
-          </Pressable>
+          </Tappable>
         </React.Fragment>
       ))}
     </ScrollView>
@@ -196,7 +197,7 @@ export function UniverseGrid() {
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: spacing.md }}>
       {UNIVERSE.map((u) => (
-        <Pressable key={u.label} accessibilityRole="button" accessibilityLabel={u.label} onPress={() => router.push(u.href as never)} style={{ width: '25%', alignItems: 'center', gap: 6 }}>
+        <Tappable key={u.label} accessibilityRole="button" accessibilityLabel={u.label} onPress={() => router.push(u.href as never)} style={{ width: '25%', alignItems: 'center', gap: 6 }}>
           {({ pressed }) => (
             <>
               <View style={{ width: 54, height: 54, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
@@ -205,7 +206,7 @@ export function UniverseGrid() {
               <Text variant="caption" center>{u.label}</Text>
             </>
           )}
-        </Pressable>
+        </Tappable>
       ))}
     </View>
   );

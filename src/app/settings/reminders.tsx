@@ -1,6 +1,6 @@
 /** Rappels : liste, création, modification, suppression, activation ; notifications locales synchronisées. */
 import React, { useCallback, useEffect, useState } from 'react';
-import { Linking, Platform, Pressable, View } from 'react-native';
+import { Linking, Platform, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, Chip, Field, Loading, Row, Segmented, SectionTitle, Text, Toggle } from '@/components/ui';
 import { EmptyStateCard } from '@/components/ui-extra';
@@ -16,6 +16,7 @@ import { getPermission, notificationsSupported, scheduledCount, sendTestNotifica
 import type { Reminder } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const CATEGORIES: { value: Reminder['category']; label: string }[] = [
   { value: 'custom', label: 'Personnel' },
@@ -229,11 +230,11 @@ export default function RemindersScreen() {
             const next = r.enabled ? nextOccurrence(r.schedule) : null;
             return (
               <View key={r.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
-                <Pressable accessibilityRole="button" accessibilityLabel={`Modifier le rappel ${r.title}`} style={{ flex: 1, minHeight: 48, justifyContent: 'center', opacity: r.enabled ? 1 : 0.55 }} onPress={() => { setEditing(r); setOpen(true); }}>
+                <Tappable accessibilityRole="button" accessibilityLabel={`Modifier le rappel ${r.title}`} style={{ flex: 1, minHeight: 48, justifyContent: 'center', opacity: r.enabled ? 1 : 0.55 }} onPress={() => { setEditing(r); setOpen(true); }}>
                   <Text weight="medium">{r.title}</Text>
                   <Text variant="small" muted>{validateSchedule(r.schedule) ? describeSchedule(r.schedule) : 'Planification à corriger'}</Text>
                   {next ? <Text variant="caption" muted>{`Prochain : ${next.toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`}</Text> : null}
-                </Pressable>
+                </Tappable>
                 <Toggle label={`${r.enabled ? 'Désactiver' : 'Activer'} le rappel ${r.title}`} value={r.enabled} onChange={(v) => onToggle(r, v)} />
               </View>
             );

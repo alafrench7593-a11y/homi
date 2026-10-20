@@ -1,6 +1,6 @@
 /** Onglet Questions : accueil de l'assistant (nouvelle conversation, suggestions par parcours, favoris, historique privé). */
 import React, { useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
@@ -18,6 +18,7 @@ import type { Conversation, Journey } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { Tappable } from '@/components/Tappable';
 
 const preview = (s: string) => {
   const clean = s.replace(/[*_#>[\]]/g, '').replace(/\((https?:[^)]+)\)/g, '').replace(/\s+/g, ' ').replace(/^En bref\s*/i, '').trim();
@@ -132,7 +133,7 @@ export default function Ask() {
       </Row>
       <View style={{ gap: spacing.xs }}>
         {SUGGESTIONS_BY_JOURNEY[journey].questions.map((s) => (
-          <Pressable
+          <Tappable
             key={s}
             accessibilityRole="button"
             accessibilityLabel={`Poser : ${s}`}
@@ -142,7 +143,7 @@ export default function Ask() {
           >
             <Icon name="message-circle" size={16} color={t.colors.lavender} />
             <Text variant="small" style={{ flex: 1 }}>{s}</Text>
-          </Pressable>
+          </Tappable>
         ))}
       </View>
 

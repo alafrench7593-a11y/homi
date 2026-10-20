@@ -1,6 +1,6 @@
 /** Éléments partagés des écrans Documents : carte, choix du profil, choix de la catégorie, badges d'origine. */
 import React, { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { Card, Chip, Field, haptic, Icon, Row, Text } from '@/components/ui';
 import { formatDate, t as tr } from '@/i18n';
 import { CATEGORIES, categoryDef, categoryLabel, GROUPS, groupLabel, type DocCategory } from '@/lib/documents/taxonomy';
@@ -8,6 +8,7 @@ import type { Origin } from '@/lib/documents/summary';
 import type { Child, DocumentRow, Pregnancy } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export type Subject = { kind: 'me' } | { kind: 'child'; id: string } | { kind: 'pregnancy'; id: string };
 
@@ -102,10 +103,10 @@ export function CategoryPicker({ value, custom, onChange, suggested }: { value: 
     <View style={{ gap: spacing.xs }}>
       <Text variant="label">{tr('docs.category')}</Text>
       {suggested && suggested !== value ? (
-        <Pressable accessibilityRole="button" onPress={() => { onChange(suggested, ''); setGroup(categoryDef(suggested).group); }} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        <Tappable accessibilityRole="button" onPress={() => { onChange(suggested, ''); setGroup(categoryDef(suggested).group); }} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Icon name="cpu" size={14} />
           <Text variant="small">{tr('docs.suggested', { cat: categoryLabel(suggested) })}</Text>
-        </Pressable>
+        </Tappable>
       ) : null}
       <Row wrap>{GROUPS.map((g) => <Chip key={g} label={groupLabel(g)} selected={group === g} tone="lavender" onPress={() => setGroup(g)} />)}</Row>
       <Row wrap>

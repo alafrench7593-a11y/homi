@@ -74,7 +74,7 @@ export default function PastJourney() {
         {j.type === 'postpartum' ? <ListRow icon="sun" title={tr('pj.detail.postpartum')} onPress={() => router.push('/postpartum/history')} /> : null}
       </Card>
       <Banner tone="info">{tr('pj.detail.note')}</Banner>
-      {j.status === 'archived' ? <Button label={tr('pj.delete.button')} icon="trash-2" variant="danger" onPress={() => void remove()} loading={busy} full testID="delete-journey" /> : null}
+      {j.status === 'archived' ? <Button label={tr('pj.delete.button')} icon="trash-2" variant="danger" onPress={() => remove()} loading={busy} full testID="delete-journey" /> : null}
     </Screen>
   );
 }

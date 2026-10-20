@@ -14,6 +14,7 @@ import { haptic, Text, Toggle } from '@/components/ui';
 import { springTo } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export interface CyclePalette {
   ink: string; inkSoft: string; paper: string; glass: string; glassBorder: string; line: string;
@@ -139,7 +140,7 @@ export function Choices<T extends string>({ label, options, value, onChange, mul
         {options.map((o) => {
           const on = selected(o);
           return (
-            <Pressable key={o} accessibilityRole={multi ? 'checkbox' : 'radio'} accessibilityState={multi ? { checked: on } : { selected: on }} aria-checked={on}
+            <Tappable key={o} accessibilityRole={multi ? 'checkbox' : 'radio'} accessibilityState={multi ? { checked: on } : { selected: on }} aria-checked={on}
               accessibilityLabel={labelOf(o)}
               onPress={() => {
                 haptic('selection');
@@ -149,7 +150,7 @@ export function Choices<T extends string>({ label, options, value, onChange, mul
               style={({ pressed }) => ({ minHeight: MIN_TOUCH - 4, maxWidth: '100%', paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, justifyContent: 'center',
                 borderWidth: 1.2, borderColor: on ? c.mauve : c.line, backgroundColor: on ? c.lavender : pressed ? c.pearl : 'transparent' })}>
               <Text variant="small" weight={on ? 'bold' : 'medium'} color={c.ink} style={{ flexShrink: 1 }}>{labelOf(o)}</Text>
-            </Pressable>
+            </Tappable>
           );
         })}
       </View>
@@ -167,11 +168,11 @@ export function Scale({ label, value, onChange, low, high }: { label: string; va
         {[1, 2, 3, 4, 5].map((n) => {
           const on = value === n;
           return (
-            <Pressable key={n} accessibilityRole="button" accessibilityLabel={`${label} ${n}/5`} accessibilityState={{ selected: on }}
+            <Tappable key={n} accessibilityRole="button" accessibilityLabel={`${label} ${n}/5`} accessibilityState={{ selected: on }}
               onPress={() => { haptic('selection'); onChange(on ? null : n); }}
               style={{ flex: 1, minHeight: MIN_TOUCH, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 1.2, borderColor: on ? c.mauve : c.line, backgroundColor: on ? c.lavender : 'transparent' }}>
               <Text weight="bold" color={c.ink}>{n}</Text>
-            </Pressable>
+            </Tappable>
           );
         })}
       </View>

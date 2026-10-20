@@ -1,6 +1,6 @@
 /** Éléments partagés des écrans de connexion et d'inscription. */
 import React, { useEffect, useState } from 'react';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Icon, Row, Text } from '@/components/ui';
 import { backend, isDemo } from '@/lib/backend';
@@ -9,6 +9,7 @@ import { passwordRules, resendRemaining } from '@/lib/authFlow';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { Tappable } from '@/components/Tappable';
 
 /** Règles du mot de passe, cochées au fil de la saisie. */
 export function PasswordRules({ value }: { value: string }) {
@@ -30,7 +31,7 @@ export function CheckRow({ checked, onChange, error, children, label }: { checke
   const t = useTheme();
   return (
     <View>
-      <Pressable
+      <Tappable
         accessibilityRole="checkbox"
         accessibilityState={{ checked }}
         aria-checked={checked}
@@ -42,7 +43,7 @@ export function CheckRow({ checked, onChange, error, children, label }: { checke
           {checked && <Icon name="check" size={16} color={t.colors.primaryText} />}
         </View>
         <View style={{ flex: 1 }}>{children}</View>
-      </Pressable>
+      </Tappable>
       {error ? <Text variant="small" color={t.colors.danger} accessibilityLiveRegion="polite">{error}</Text> : null}
     </View>
   );

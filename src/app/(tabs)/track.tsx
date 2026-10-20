@@ -1,6 +1,6 @@
 /** Onglet Suivi : selon le profil choisi (enfant, grossesse, moi). */
 import React, { useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { PremiumGate, ProfileSwitcher } from '@/components/Family';
@@ -16,6 +16,7 @@ import type { Bottle, Breastfeed, Diaper, LogKind, Meal, Observation, Pumping, S
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { Tappable } from '@/components/Tappable';
 
 function ChildTracking({ childId }: { childId: string }) {
   const t = useTheme();
@@ -64,7 +65,7 @@ function ChildTracking({ childId }: { childId: string }) {
 
   return (
     <View style={{ gap: spacing.md }}>
-      <Pressable
+      <Tappable
         accessibilityRole="button"
         accessibilityLabel={openSleep ? 'Sommeil en cours. Ouvrir le mode nuit.' : 'Démarrer un sommeil en mode nuit'}
         onPress={() => { haptic('light'); router.push('/night'); }}
@@ -76,11 +77,11 @@ function ChildTracking({ childId }: { childId: string }) {
           <Text variant="small" color="#B8A88F">{openSleep ? 'Touchez pour arrêter ou noter un réveil' : 'Écran apaisé pour les nuits : sommeil, tétées, couches'}</Text>
         </View>
         <Icon name="chevron-right" color="#B8A88F" />
-      </Pressable>
+      </Tappable>
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
         {enabled.map((k) => (
-          <Pressable
+          <Tappable
             key={k}
             accessibilityRole="button"
             accessibilityLabel={`Ajouter : ${KIND_META[k].label}`}
@@ -89,7 +90,7 @@ function ChildTracking({ childId }: { childId: string }) {
           >
             <Icon name={KIND_META[k].icon as IconName} color={t.colors.primary} />
             <Text variant="small" weight="medium">{KIND_META[k].label}</Text>
-          </Pressable>
+          </Tappable>
         ))}
       </View>
 

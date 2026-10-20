@@ -4,7 +4,7 @@
  */
 import { insertOrQueue } from '@/lib/offline';
 import React, { useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { BarChart, StatPill } from './Charts';
 import { confirm, Sheet, useToast } from './Overlays';
@@ -26,6 +26,7 @@ import type { PeriodEntry } from '@/lib/types';
 import type { FertilityJourney } from '@/lib/types-fertility';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export const RELIABILITY_LABEL = { insufficient: 'Données insuffisantes', low: 'Fiabilité faible', moderate: 'Fiabilité modérée' } as const;
 export const fmt = (d: ISODate) => formatDateFr(d, false);
@@ -108,7 +109,7 @@ export function MonthCalendar<K extends string | null>({ kindOf, styleOf, legend
               </>
             );
             return onDayPress ? (
-              <Pressable key={d} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: isSel }} onPress={() => onDayPress(d)} style={style}>{inner}</Pressable>
+              <Tappable key={d} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: isSel }} onPress={() => onDayPress(d)} style={style}>{inner}</Tappable>
             ) : (
               <View key={d} accessible accessibilityLabel={label} style={style}>{inner}</View>
             );
@@ -521,7 +522,7 @@ export function ConsultationChecklist({ journey }: { journey: FertilityJourney }
           {list.map((q) => (
             <View key={q.id} style={{ paddingVertical: spacing.xs, gap: 6, borderBottomWidth: 0.5, borderColor: t.colors.border }}>
               <Row style={{ alignItems: 'flex-start' }}>
-                <Pressable
+                <Tappable
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: q.done }}
                   accessibilityLabel={`${q.question}${q.done ? ', posée' : ''}`}
@@ -530,12 +531,12 @@ export function ConsultationChecklist({ journey }: { journey: FertilityJourney }
                   style={{ width: 26, height: 26, borderRadius: 8, borderWidth: 1.5, borderColor: q.done ? t.colors.success : t.colors.border, backgroundColor: q.done ? t.colors.success : 'transparent', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}
                 >
                   {q.done ? <Icon name="check" size={16} color="#fff" /> : null}
-                </Pressable>
-                <Pressable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={`Ajouter une réponse à : ${q.question}`} onPress={() => { setOpen(q.id); setAnswer(q.answer ?? ''); }}>
+                </Tappable>
+                <Tappable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={`Ajouter une réponse à : ${q.question}`} onPress={() => { setOpen(q.id); setAnswer(q.answer ?? ''); }}>
                   <Text style={{ textDecorationLine: q.done ? 'line-through' : 'none' }} muted={q.done}>{q.question}</Text>
                   {q.answer ? <Text variant="small" muted>{`Réponse notée : ${q.answer}`}</Text> : null}
                   {q.shared ? <Text variant="caption" color={t.colors.lavender}>Partagée avec votre foyer</Text> : null}
-                </Pressable>
+                </Tappable>
                 <IconButton icon="trash-2" label={`Supprimer la question ${q.question}`} onPress={() => remove(q.id)} />
               </Row>
             </View>

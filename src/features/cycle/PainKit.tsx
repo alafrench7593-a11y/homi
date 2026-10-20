@@ -5,7 +5,7 @@
  * tout est immobile si « réduire les animations » est activé.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, PanResponder, Pressable, View, type LayoutChangeEvent } from 'react-native';
+import { Animated, PanResponder, View, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, Ellipse, G, Rect, Text as SvgText } from 'react-native-svg';
 import { haptic, Text } from '@/components/ui';
 import { AnimatedCircle } from '@/components/MotionKit';
@@ -14,6 +14,7 @@ import { useReduceMotion } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { Ink, useCyclePalette } from './kit';
+import { Tappable } from '@/components/Tappable';
 
 export const PAIN_ZONES = ['lower_abdomen', 'lower_left', 'lower_right', 'upper_abdomen', 'lower_back', 'thighs', 'chest', 'head', 'other'] as const;
 export type PainZone = (typeof PAIN_ZONES)[number];
@@ -125,9 +126,9 @@ export function IntensityMeter({ value, onChange }: { value: number | null; onCh
 function Step({ label, onPress, a11y }: { label: string; onPress: () => void; a11y: string }) {
   const c = useCyclePalette();
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={a11y} onPress={onPress} hitSlop={6}
+    <Tappable accessibilityRole="button" accessibilityLabel={a11y} onPress={onPress} hitSlop={6}
       style={({ pressed }) => ({ width: MIN_TOUCH, height: MIN_TOUCH, borderRadius: MIN_TOUCH / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1.2, borderColor: c.line, backgroundColor: pressed ? c.lavender : 'transparent' })}>
       <Text weight="bold" color={c.ink} style={{ fontSize: 20 }}>{label}</Text>
-    </Pressable>
+    </Tappable>
   );
 }

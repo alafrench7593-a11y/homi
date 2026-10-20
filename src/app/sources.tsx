@@ -15,6 +15,7 @@ import { useMyRoles } from '@/lib/data/hooks-settings';
 import { fold } from '@/lib/recipes/validate';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { ResultsFade } from '@/components/MotionKit';
 
 type AgeFilter = 'm0_6' | 'm6_12' | 'y1_3' | 'y3_10';
 const AGES: Record<AgeFilter, [number, number]> = { m0_6: [0, 6], m6_12: [6, 12], y1_3: [12, 36], y3_10: [36, 120] };
@@ -42,7 +43,7 @@ export default function Sources() {
       {all.isLoading && !all.data.length ? <Skeleton rows={4} /> : !list.length ? (
         <View testID="sources-empty"><EmptyState icon="book" title={tr('src.empty')} body={kind === 'family_recipes' ? tr('src.familyEmpty') : undefined} /></View>
       ) : (
-        <View testID="sources-list" style={{ gap: spacing.xs }}>
+        <ResultsFade k={list.map((r) => r.id).join()} testID="sources-list" style={{ gap: spacing.xs }}>
           {list.map((r) => (
             <View key={r.id} testID={`resource-${r.slug}`}><Card>
               <Text variant="caption" muted>{tr(`src.kind.${r.kind}` as TKey)} · {r.publisher}</Text>
@@ -54,10 +55,10 @@ export default function Sources() {
                 {` · ${tr('src.consulted', { date: formatDate(`${r.consulted_on}T12:00:00`) })}`}
               </Text>
               {r.references_note ? <Text variant="caption" muted>{tr('src.refs', { text: r.references_note })}</Text> : null}
-              <Button label={tr('src.open')} icon="external-link" size="sm" variant="ghost" onPress={() => void Linking.openURL(r.url)} accessibilityHint={r.url} />
+              <Button label={tr('src.open')} icon="external-link" size="sm" variant="ghost" onPress={() => Linking.openURL(r.url)} accessibilityHint={r.url} />
             </Card></View>
           ))}
-        </View>
+        </ResultsFade>
       )}
       <Text variant="caption" muted>{tr('src.noPhoto')}</Text>
       <Text variant="caption" muted>{tr('src.notOfficial')}</Text>

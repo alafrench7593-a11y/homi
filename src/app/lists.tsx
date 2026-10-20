@@ -1,6 +1,6 @@
 /** Listes de préparation : valise de maternité, affaires de bébé, démarches… */
 import React, { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { ProgressBar as AnimatedProgress } from '@/components/Motion';
 import { PremiumGate } from '@/components/Family';
@@ -16,6 +16,7 @@ import { CHECKLIST_TEMPLATES } from '@/content/checklists';
 import type { Checklist, ChecklistItem, ChecklistKind } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 type TemplateKind = Exclude<ChecklistKind, 'custom'>;
 const iconOf = (kind: ChecklistKind): IconName => (kind === 'custom' ? 'list' : (CHECKLIST_TEMPLATES[kind].icon as IconName));
@@ -117,7 +118,7 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
           <View>
             {(items ?? []).map((item) => (
               <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <Pressable
+                <Tappable
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: item.done }}
                   accessibilityLabel={item.label}
@@ -126,7 +127,7 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
                 >
                   <Icon name={item.done ? 'check-square' : 'square'} color={item.done ? t.colors.success : t.colors.textMuted} />
                   <Text style={{ flex: 1, textDecorationLine: item.done ? 'line-through' : 'none' }} muted={item.done}>{item.label}</Text>
-                </Pressable>
+                </Tappable>
                 <IconButton icon="trash-2" size={17} color={t.colors.textMuted} label={`Retirer ${item.label}`} onPress={() => removeItem(item)} />
               </View>
             ))}

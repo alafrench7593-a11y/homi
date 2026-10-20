@@ -31,6 +31,7 @@ import { useUiStore } from '@/lib/store';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, NACRE, previewTime, spacing } from '@/theme/tokens';
 import { AccountActions } from '@/components/AccountActions';
+import { Tappable } from '@/components/Tappable';
 
 /** Parcours historiques équivalents à la portée affichée (suggestion d'articles). */
 const LEGACY_FOR: Record<Scope, Journey[]> = {
@@ -152,11 +153,11 @@ export default function Home() {
 
         {/* 1. Parcours et profil actifs */}
         <Appear kind="soft" delay={0.1} style={{ gap: 4 }}>
-          <Pressable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 }}>
+          <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 }}>
             <Icon name="compass" size={14} color={t.colors.textMuted} />
             <Text variant="caption" muted style={{ flex: 1 }}>{tr('pj.home.journey', { name: journeyName ?? tr('pj.none') })}</Text>
             <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.edit')}</Text>
-          </Pressable>
+          </Tappable>
           <ProfileSwitcher />
         </Appear>
         {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}

@@ -8,7 +8,7 @@
  * Couleurs : uniquement celles passées en paramètre (thème existant).
  */
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, Text as RNText, View, type StyleProp, type TextStyle } from 'react-native';
+import { Animated, Easing, Text as RNText, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { easing } from '@/theme/motion';
@@ -137,4 +137,21 @@ export function Flash({ on, color, children }: { on: boolean; color: string; chi
       <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -3, left: -3, right: -3, bottom: -3, borderRadius: 16, borderWidth: 2, borderColor: color, opacity: v }} />
     </View>
   );
+}
+
+/**
+ * Résultats filtrés : quand la clé change (filtre, recherche, tri), la liste réapparaît en fondu avec une légère montée
+ * (200 ms). Aucun délai avant l'affichage : les résultats sont déjà là, l'animation accompagne seulement le changement.
+ */
+export function ResultsFade({ k, children, style, testID }: { k: string; children: React.ReactNode; style?: StyleProp<ViewStyle>; testID?: string }) {
+  const reduce = useReduceMotion();
+  const v = useRef(new Animated.Value(1)).current;
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    if (reduce) return;
+    v.setValue(0);
+    Animated.timing(v, { toValue: 1, duration: 200, easing: easing.decelerate, useNativeDriver: NATIVE_DRIVER }).start();
+  }, [k, reduce, v]);
+  return <Animated.View testID={testID} style={[style, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [0.35, 1] }), transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [6, 0] }) }] }]}>{children}</Animated.View>;
 }

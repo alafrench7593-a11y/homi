@@ -1,12 +1,13 @@
 /** Bandeau permanent « Démonstration » : visible sur tous les écrans tant que la démo est active. */
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui';
 import { leaveDemo, useBackendMode } from '@/lib/demoMode';
 import { useAuth } from '@/lib/auth';
 import { t as tr } from '@/i18n';
+import { Tappable } from '@/components/Tappable';
 
 export function DemoBar() {
   const { isDemo, canLeave } = useBackendMode();
@@ -18,9 +19,9 @@ export function DemoBar() {
       <View accessibilityRole="text" accessibilityLabel={tr('demo.badgeA11y')} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 3, borderRadius: 999, backgroundColor: 'rgba(122,92,224,0.92)' }}>
         <Text variant="caption" weight="bold" color="#FFFFFF">{tr('demo.badge')}</Text>
         {canLeave ? (
-          <Pressable accessibilityRole="button" accessibilityLabel={tr('demo.leaveA11y')} hitSlop={12} onPress={async () => { await leaveDemo(); router.replace('/welcome'); }}>
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('demo.leaveA11y')} hitSlop={12} onPress={async () => { await leaveDemo(); router.replace('/welcome'); }}>
             <Text variant="caption" color="#FFFFFF" style={{ textDecorationLine: 'underline' }}>{tr('demo.leave')}</Text>
-          </Pressable>
+          </Tappable>
         ) : null}
       </View>
     </View>

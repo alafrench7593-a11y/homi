@@ -1,7 +1,7 @@
 /** Dents de lait : noter la date d'apparition de chaque dent, sans comparaison ni « retard ». */
 import { insertOrQueue } from '@/lib/offline';
 import React, { useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -17,6 +17,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 
 export default function Teeth() {
@@ -96,14 +97,14 @@ export default function Teeth() {
           {teeth.length ? (
             <Card>
               {[...teeth].sort((x, y) => (x.happened_on ?? '').localeCompare(y.happened_on ?? '')).map((m) => (
-                <Pressable key={m.id} accessibilityRole="button" onPress={() => open(m.title)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
+                <Tappable key={m.id} accessibilityRole="button" onPress={() => open(m.title)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
                   <Icon name="check-circle" size={18} color={t.colors.primary} />
                   <View style={{ flex: 1 }}>
                     <Text>{m.title}</Text>
                     {m.note ? <Text variant="caption" muted>{m.note}</Text> : null}
                   </View>
                   {m.happened_on ? <Text variant="caption" muted>{new Date(m.happened_on).toLocaleDateString('fr-FR')}</Text> : null}
-                </Pressable>
+                </Tappable>
               ))}
             </Card>
           ) : null}

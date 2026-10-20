@@ -3,7 +3,7 @@
  * Ne modifie jamais la luminosité du téléphone et laisse l'accès aux urgences visible.
  */
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -19,6 +19,7 @@ import { formatDuration, formatTime, timeAgo } from '@/lib/domain/dates';
 import type { Breastfeed, Diaper } from '@/lib/types';
 import { Aurora } from '@/components/Aurora';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const GOLD = '#FF8FB1';
 const TEXT = '#F2DFC1';
@@ -26,7 +27,7 @@ const MUTED = '#B8A88F';
 
 function BigButton({ icon, label, sub, onPress }: { icon: React.ComponentProps<typeof Icon>['name']; label: string; sub?: string; onPress: () => void }) {
   return (
-    <Pressable
+    <Tappable
       accessibilityRole="button"
       accessibilityLabel={sub ? `${label}, ${sub}` : label}
       onPress={() => { haptic('light'); onPress(); }}
@@ -35,7 +36,7 @@ function BigButton({ icon, label, sub, onPress }: { icon: React.ComponentProps<t
       <Icon name={icon} color={GOLD} size={24} />
       <Text weight="medium" color={TEXT} center>{label}</Text>
       {sub ? <Text variant="caption" color={MUTED} center>{sub}</Text> : null}
-    </Pressable>
+    </Tappable>
   );
 }
 
@@ -148,13 +149,13 @@ export default function NightMode() {
       {/* Défilement : sur petit écran (ou texte agrandi) rien n'est coupé ; le décor reste à l'intérieur de l'écran */}
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, gap: spacing.md }}>
         <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
-          <Pressable accessibilityRole="button" accessibilityLabel="Quitter le mode nuit" onPress={() => router.back()} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
+          <Tappable accessibilityRole="button" accessibilityLabel="Quitter le mode nuit" onPress={() => router.back()} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
             <Row gap={6}><Icon name="x" color={MUTED} size={20} /><Text color={MUTED}>Quitter</Text></Row>
-          </Pressable>
+          </Tappable>
           <Text variant="small" color={MUTED}>{formatTime(new Date(now))}</Text>
-          <Pressable accessibilityRole="button" accessibilityLabel="Numéros d’urgence" onPress={() => router.push('/emergency')} hitSlop={10} style={{ minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' }}>
+          <Tappable accessibilityRole="button" accessibilityLabel="Numéros d’urgence" onPress={() => router.push('/emergency')} hitSlop={10} style={{ minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="life-buoy" color="#F0A0A0" size={22} />
-          </Pressable>
+          </Tappable>
         </Row>
 
         {children && children.length > 1 && (
@@ -185,7 +186,7 @@ export default function NightMode() {
               ) : (
                 <Text variant="title" color={TEXT} center>Éveil</Text>
               )}
-              <Pressable
+              <Tappable
                 accessibilityRole="button"
                 accessibilityLabel={openSleep ? 'Arrêter le sommeil' : 'Démarrer le sommeil'}
                 accessibilityState={{ busy: busy === 'sleep' }}
@@ -194,11 +195,11 @@ export default function NightMode() {
               >
                 <Icon name={openSleep ? 'sun' : 'moon'} color={GOLD} size={34} />
                 <Text weight="medium" color={TEXT} style={{ marginTop: 6 }}>{openSleep ? 'Réveil' : 'Il/elle dort'}</Text>
-              </Pressable>
+              </Tappable>
               {openSleep && (
-                <Pressable onPress={addWakeup} accessibilityRole="button" accessibilityLabel="Noter un réveil nocturne" style={{ minHeight: 48, justifyContent: 'center' }}>
+                <Tappable onPress={addWakeup} accessibilityRole="button" accessibilityLabel="Noter un réveil nocturne" style={{ minHeight: 48, justifyContent: 'center' }}>
                   <Text color={GOLD}>+ Noter un réveil</Text>
-                </Pressable>
+                </Tappable>
               )}
             </View>
 

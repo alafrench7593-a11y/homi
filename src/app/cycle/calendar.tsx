@@ -4,7 +4,7 @@
  * Chaque information a une forme ET une couleur (jamais la couleur seule) et une description pour les lecteurs d'écran.
  */
 import React, { useMemo, useRef, useState } from 'react';
-import { Animated, PanResponder, Pressable, View } from 'react-native';
+import { Animated, PanResponder, View } from 'react-native';
 import { router } from 'expo-router';
 import { confirm, useToast } from '@/components/Overlays';
 import { backend, eq } from '@/lib/backend';
@@ -28,6 +28,7 @@ import { formatDate, t as tr } from '@/i18n';
 import { springTo } from '@/theme/motion';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export default function CycleCalendar() {
   const c = useCyclePalette();
@@ -113,7 +114,7 @@ export default function CycleCalendar() {
           {Array.from({ length: cells.length / 7 }, (_, w) => (
             <View key={w} style={{ flexDirection: 'row', gap: 4 }}>
               {cells.slice(w * 7, w * 7 + 7).map((d) => (
-                <Pressable key={d.iso} accessibilityRole="button" accessibilityLabel={describe(d)} onPress={() => { haptic('selection'); setDay(d); }}
+                <Tappable key={d.iso} accessibilityRole="button" accessibilityLabel={describe(d)} onPress={() => { haptic('selection'); setDay(d); }}
                   style={({ pressed }) => ({ flex: 1, aspectRatio: 1, maxHeight: 52, minHeight: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', opacity: d.inMonth ? 1 : 0.38,
                     backgroundColor: d.period ? c.period : d.estimatedFertile ? c.fertile : pressed ? c.pearl : 'transparent',
                     borderWidth: d.estimatedPeriod ? 1.5 : d.today ? 1.5 : 0, borderStyle: d.estimatedPeriod ? 'dashed' : 'solid', borderColor: d.estimatedPeriod ? c.period : c.mauve })}>
@@ -123,7 +124,7 @@ export default function CycleCalendar() {
                     {d.discharge ? <LegendDot kind="discharge" /> : null}
                     {d.journal || d.tests || d.bleeding || d.appointment ? <LegendDot kind="note" /> : null}
                   </View>
-                </Pressable>
+                </Tappable>
               ))}
             </View>
           ))}
@@ -184,7 +185,7 @@ export default function CycleCalendar() {
             {acts.actions.length ? (
               <View style={{ gap: spacing.xs }}>
                 {acts.actions.map((a) => (
-                  <Button key={a.kind + ('id' in a ? a.id : '')} label={tr(`cyc.act.${a.kind}` as 'cyc.act.start')} variant={a.kind === 'delete' ? 'ghost' : 'primary'} icon={a.kind === 'delete' ? 'trash-2' : 'droplet'} loading={busy} full testID={`cal-act-${a.kind}`} onPress={() => void apply(a)} />
+                  <Button key={a.kind + ('id' in a ? a.id : '')} label={tr(`cyc.act.${a.kind}` as 'cyc.act.start')} variant={a.kind === 'delete' ? 'ghost' : 'primary'} icon={a.kind === 'delete' ? 'trash-2' : 'droplet'} loading={busy} full testID={`cal-act-${a.kind}`} onPress={() => apply(a)} />
                 ))}
               </View>
             ) : null}

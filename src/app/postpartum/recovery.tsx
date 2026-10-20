@@ -3,13 +3,14 @@
  * Repères généraux tirés de sources officielles ; rien ici ne remplace l'examen de la consultation postnatale.
  */
 import React from 'react';
-import { Linking, Pressable } from 'react-native';
+import { Linking } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Card, ListRow, Text } from '@/components/ui';
 import { RecoveryWarnings } from '@/features/postpartum';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
+import { Tappable } from '@/components/Tappable';
 
 const HAS = 'https://www.has-sante.fr/upload/docs/application/pdf/synthese_post_partum.pdf';
 
@@ -29,9 +30,9 @@ export default function PostpartumRecovery() {
       {section(tr('pr.perineum.title'), [tr('pr.perineum.1'), tr('pr.perineum.2'), tr('pr.perineum.3')], { slug: 'perinee-role', label: tr('pr.perineum.article') })}
       {section(tr('pr.abdo.title'), [tr('pr.abdo.1'), tr('pr.abdo.2')], { slug: 'diastasis', label: tr('pr.abdo.article') })}
       <RecoveryWarnings />
-      <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(HAS)} style={{ minHeight: 32, justifyContent: 'center' }}>
+      <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(HAS)} style={{ minHeight: 32, justifyContent: 'center' }}>
         <Text variant="caption" color={t.colors.primary}>{tr('pr.source')}</Text>
-      </Pressable>
+      </Tappable>
     </Screen>
   );
 }

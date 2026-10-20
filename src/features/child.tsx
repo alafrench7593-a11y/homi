@@ -7,7 +7,7 @@ import { exportTextFile } from '@/lib/exportData';
 import { csvCell, safeFileName } from '@/lib/csv';
 import { insertOrQueue } from '@/lib/offline';
 import React, { useMemo, useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { LineChart, StatPill } from '@/components/Charts';
 import { GrowthChart } from '@/components/GrowthChart';
@@ -36,6 +36,7 @@ import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 // ---------------------------------------------------------------- onglets
 export { CHILD_TABS, type ChildTab } from '@/lib/domain/childTabs';
 import { CHILD_TABS, type ChildTab } from '@/lib/domain/childTabs';
+import { Tappable } from '@/components/Tappable';
 
 export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: ChildTab) => void }) {
   const t = useTheme();
@@ -44,7 +45,7 @@ export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: 
       {CHILD_TABS.map((tab) => {
         const sel = tab.value === value;
         return (
-          <Pressable
+          <Tappable
             key={tab.value}
             accessibilityRole="tab"
             accessibilityState={{ selected: sel }}
@@ -54,7 +55,7 @@ export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: 
           >
             <Icon name={tab.icon} size={15} color={sel ? t.colors.primaryText : t.colors.textMuted} />
             <Text variant="small" weight="medium" color={sel ? t.colors.primaryText : t.colors.text}>{tab.label}</Text>
-          </Pressable>
+          </Tappable>
         );
       })}
     </ScrollView>
@@ -544,7 +545,7 @@ export function HealthTab({ child }: { child: Child }) {
               {list.map((x) => (
                 <View key={x.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
                   {k.value === 'vaccine_to_check' && (
-                    <Pressable
+                    <Tappable
                       accessibilityRole="checkbox"
                       accessibilityState={{ checked: !!x.done_on }}
                       accessibilityLabel={`${x.label} : ${x.done_on ? 'vérifié' : 'à vérifier'}`}
@@ -554,7 +555,7 @@ export function HealthTab({ child }: { child: Child }) {
                       style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}
                     >
                       <Icon name={x.done_on ? 'check-square' : 'square'} color={x.done_on ? t.colors.success : t.colors.textMuted} />
-                    </Pressable>
+                    </Tappable>
                   )}
                   <View style={{ flex: 1 }}>
                     <ListRow

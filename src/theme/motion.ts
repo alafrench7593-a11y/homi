@@ -25,6 +25,19 @@ export const easing = {
   accelerate: Easing.bezier(0.3, 0, 1, 1),
 };
 
+/**
+ * Interactions des boutons et zones tactiles (une seule source pour toute l'application) :
+ * pression à 0,97 en 120 ms, relâchement en 200 ms, soulèvement de 2 px au survol (web) en 180 ms.
+ */
+export const interaction = {
+  pressScale: 0.97,
+  pressInMs: 120,
+  pressOutMs: 200,
+  hoverLift: -2,
+  hoverMs: 180,
+  iconNudge: 2,
+};
+
 /** Ressorts (Animated.spring : tension / friction). */
 export const spring = {
   press: { tension: 420, friction: 26 },   // pression : ferme et immédiate

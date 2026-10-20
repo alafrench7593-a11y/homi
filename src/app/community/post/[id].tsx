@@ -1,6 +1,6 @@
 /** Publication, commentaires et réponses en fil (un niveau). */
 import React, { useMemo, useRef, useState } from 'react';
-import { Pressable, type TextInput, View } from 'react-native';
+import { type TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -16,6 +16,7 @@ import { timeAgo } from '@/lib/domain/dates';
 import type { FeedComment } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export default function PostScreen() {
   const t = useTheme();
@@ -97,9 +98,9 @@ export default function PostScreen() {
   }
 
   const action = (label: string, onPress: () => void, primary = false) => (
-    <Pressable onPress={onPress} hitSlop={4} accessibilityRole="button" accessibilityLabel={label} style={{ minHeight: MIN_TOUCH, minWidth: MIN_TOUCH, justifyContent: 'center' }}>
+    <Tappable onPress={onPress} hitSlop={4} accessibilityRole="button" accessibilityLabel={label} style={{ minHeight: MIN_TOUCH, minWidth: MIN_TOUCH, justifyContent: 'center' }}>
       <Text variant="caption" color={primary ? t.colors.primary : undefined} muted={!primary}>{label}</Text>
-    </Pressable>
+    </Tappable>
   );
 
   const renderComment = (c: FeedComment, reply: boolean, index: number) => {
@@ -149,7 +150,7 @@ export default function PostScreen() {
             <Row style={{ marginBottom: spacing.xs }}>
               <Icon name="corner-down-right" size={14} />
               <Text variant="small" style={{ flex: 1 }}>Réponse à {replyTo.pseudonym ?? 'ce commentaire'}</Text>
-              <Pressable onPress={() => setReplyTo(null)} hitSlop={4} accessibilityRole="button" accessibilityLabel="Annuler la réponse" style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={16} /></Pressable>
+              <Tappable onPress={() => setReplyTo(null)} hitSlop={4} accessibilityRole="button" accessibilityLabel="Annuler la réponse" style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={16} /></Tappable>
             </Row>
           )}
           <Field ref={inputRef} label={replyTo ? 'Votre réponse' : 'Votre commentaire'} value={body} onChangeText={setBody} multiline maxLength={4000} />

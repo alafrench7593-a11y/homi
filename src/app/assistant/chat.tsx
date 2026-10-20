@@ -1,6 +1,6 @@
 /** Conversation avec l'assistant (réponses structurées, diffusion progressive, orientation urgente). */
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
@@ -21,6 +21,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import type { AssistantMessage } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 interface LocalMsg {
   id: string;
@@ -317,9 +318,9 @@ export default function Chat() {
                 <Toggle label="Utiliser ma situation pour cette conversation" value={useContext} onChange={changeContext} />
               </Row>
               {useContext && (
-                <Pressable accessibilityRole="button" onPress={() => setShowContext((v) => !v)} style={{ marginTop: spacing.xs, minHeight: MIN_TOUCH, justifyContent: 'center' }}>
+                <Tappable accessibilityRole="button" onPress={() => setShowContext((v) => !v)} style={{ marginTop: spacing.xs, minHeight: MIN_TOUCH, justifyContent: 'center' }}>
                   <Text variant="small" color={t.colors.primary}>{showContext ? 'Masquer' : 'Voir'} ce qui est transmis</Text>
-                </Pressable>
+                </Tappable>
               )}
               {useContext && showContext && <Text variant="small" muted>{describeContext(context)}</Text>}
             </Card>
@@ -393,7 +394,7 @@ export default function Chat() {
             maxLength={MAX_QUESTION_LENGTH}
             style={{ flex: 1, minHeight: 44, maxHeight: 140, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, paddingHorizontal: spacing.sm, paddingTop: 10 }}
           />
-          <Pressable
+          <Tappable
             accessibilityRole="button"
             accessibilityLabel="Envoyer"
             disabled={sending || blocked || input.trim().length < 2}
@@ -401,11 +402,11 @@ export default function Chat() {
             style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center', opacity: sending || blocked || input.trim().length < 2 ? 0.4 : 1 }}
           >
             {sending ? <ActivityIndicator color={t.colors.primaryText} /> : <Icon name="arrow-up" color={t.colors.primaryText} />}
-          </Pressable>
+          </Tappable>
         </View>
-        <Pressable accessibilityRole="link" accessibilityLabel="Numéros d’urgence : 15, 112, SMS 114, 3114" onPress={() => router.push('/emergency')} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
+        <Tappable accessibilityRole="link" accessibilityLabel="Numéros d’urgence : 15, 112, SMS 114, 3114" onPress={() => router.push('/emergency')} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
           <Text variant="caption" color={t.colors.danger} center>Urgence : 15 ou 112 · SMS 114 (sourds, malentendants) · Détresse : 3114</Text>
-        </Pressable>
+        </Tappable>
       </View>
     </Screen>
   );

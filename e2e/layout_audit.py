@@ -85,6 +85,16 @@ DETECT = r"""() => {
       if (tr.right > br.right + 2 || tr.left < br.left - 2 || tr.bottom > br.bottom + 2 || tr.top < br.top - 2) { out.push({ kind: 'button_label_outside', text: label(t) }); break; }
     }
   }
+  // 3. Textes qui se chevauchent (deux libellés visibles l'un sur l'autre, hors décor en position absolue)
+  const leaves = [...document.querySelectorAll('div[dir="auto"]')].filter((el) => visible(el) && el.innerText.trim() && !el.querySelector('div[dir="auto"]') && !inHScroll(el));
+  const absolute = (el) => { for (let e = el; e && e !== document.body; e = e.parentElement) { if (getComputedStyle(e).position === 'absolute' || getComputedStyle(e).position === 'fixed') return true; } return false; };
+  const rects = leaves.filter((el) => !absolute(el)).map((el) => [el, el.getBoundingClientRect()]).filter(([, r]) => r.bottom > 0 && r.top < window.innerHeight * 3);
+  for (let i = 0; i < rects.length && i < 400; i++) for (let j = i + 1; j < rects.length && j < 400; j++) {
+    const [a, ra] = rects[i], [b2, rb] = rects[j];
+    if (a.contains(b2) || b2.contains(a)) continue;
+    const ox = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left), oy = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+    if (ox > 4 && oy > 4) out.push({ kind: 'text_overlap', text: label(a) + ' ⟂ ' + label(b2) });
+  }
   // dédoublonnage
   const seen = new Set();
   return out.filter((o) => { const k = o.kind + o.text; if (seen.has(k)) return false; seen.add(k); return true; });
@@ -95,6 +105,9 @@ CONFIGS = [
     {'name': '390-en', 'vp': (390, 844), 'locale': 'en-GB', 'scheme': 'light'},
     {'name': '390-fr-sombre', 'vp': (390, 844), 'locale': 'fr-FR', 'scheme': 'dark'},
     {'name': '320-en', 'vp': (320, 568), 'locale': 'en-GB', 'scheme': 'light'},
+    # Tablette et ordinateur : sans le cadre « téléphone » de la version web (rendu pleine largeur, comme une tablette)
+    {'name': '820-fr-tablette', 'vp': (820, 1180), 'locale': 'fr-FR', 'scheme': 'light', 'noframe': True},
+    {'name': '1280-fr-ordinateur', 'vp': (1280, 800), 'locale': 'fr-FR', 'scheme': 'dark', 'noframe': True},
 ]
 if QUICK:
     CONFIGS = CONFIGS[:1]
@@ -109,6 +122,8 @@ with sync_playwright() as p:
     b = p.chromium.launch()
     for cfg in CONFIGS:
         ctx = b.new_context(viewport={'width': cfg['vp'][0], 'height': cfg['vp'][1]}, locale=cfg['locale'], color_scheme=cfg['scheme'], reduced_motion='reduce')
+        if cfg.get('noframe'):
+            ctx.add_init_script("try { localStorage.setItem('toietmoi.frame', 'off') } catch (e) {}")
         pg = ctx.new_page()
         pg.on('pageerror', lambda e, c=cfg['name']: errors.append(f"{c} {str(e)[:160]}"))
         # Pages publiques (avant connexion)

@@ -4,7 +4,7 @@
  * Couleurs : uniquement celles du thème existant.
  */
 import React, { useEffect, useRef } from 'react';
-import { Animated, Linking, Pressable, View } from 'react-native';
+import { Animated, Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { StaggerItem, usePop } from '@/components/Motion';
 import { useToast } from '@/components/Overlays';
@@ -16,6 +16,7 @@ import { RECOVERY_WARNINGS, SOURCES, type Section } from '@/content/postpartum';
 import { emergencyContacts, type SupportPlan, type TrendPoint } from '@/lib/domain/postpartum';
 import { usePostpartumCheckins, usePostpartumSettings, useSharedWithMe } from '@/lib/data/hooks-postpartum';
 import { todayISO } from '@/lib/domain/dates';
+import { Tappable } from '@/components/Tappable';
 
 // ------------------------------------------------------------------ échelle 1 à 5
 export function Scale({ label, value, onChange, low, high }: { label: string; value: number | null; onChange: (v: number | null) => void; low: string; high: string }) {
@@ -37,14 +38,14 @@ function ScaleDot({ n, selected, onPress, label }: { n: number; selected: boolea
   const t = useTheme();
   const pop = usePop(selected);
   return (
-    <Pressable accessibilityRole="radio" accessibilityState={{ selected }} accessibilityLabel={label} onPress={onPress} style={{ flex: 1 }}>
+    <Tappable accessibilityRole="radio" accessibilityState={{ selected }} accessibilityLabel={label} onPress={onPress} style={{ flex: 1 }}>
       <Animated.View style={[{
         minHeight: MIN_TOUCH, borderRadius: radius.md, borderWidth: 1.2, alignItems: 'center', justifyContent: 'center',
         borderColor: selected ? t.colors.primary : t.colors.border, backgroundColor: selected ? t.colors.primary : t.colors.surface,
       }, pop]}>
         <Text weight="bold" color={selected ? t.colors.primaryText : t.colors.text}>{n}</Text>
       </Animated.View>
-    </Pressable>
+    </Tappable>
   );
 }
 
@@ -59,7 +60,7 @@ export function DangerPanel({ country = 'FR' }: { country?: string }) {
       </Text>
       <View style={{ gap: spacing.xs, marginTop: spacing.xs }}>
         {emergencyContacts(country).map((e) => (
-          <Pressable
+          <Tappable
             key={e.phone}
             accessibilityRole="button"
             accessibilityLabel={`Appeler le ${e.phone.split('').join(' ')}, ${e.label}`}
@@ -72,7 +73,7 @@ export function DangerPanel({ country = 'FR' }: { country?: string }) {
               <Text variant="caption" muted>{e.when}</Text>
             </View>
             <Icon name="phone" size={18} color={t.colors.danger} />
-          </Pressable>
+          </Tappable>
         ))}
       </View>
       <Text variant="caption" style={{ marginTop: 6 }}>L’application ne prévient personne à votre place : une notification ne remplace jamais une aide humaine.</Text>
@@ -145,9 +146,9 @@ export function SectionCard({ s, index }: { s: Section; index: number }) {
         {s.sources.length ? (
           <View style={{ marginTop: spacing.xs, gap: 2 }}>
             {s.sources.map((k) => (
-              <Pressable key={k} accessibilityRole="link" onPress={() => void Linking.openURL(SOURCES[k].url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+              <Tappable key={k} accessibilityRole="link" onPress={() => void Linking.openURL(SOURCES[k].url)} style={{ minHeight: 32, justifyContent: 'center' }}>
                 <Text variant="caption" color={t.colors.primary}>Source : {SOURCES[k].publisher} — {SOURCES[k].title}</Text>
-              </Pressable>
+              </Tappable>
             ))}
           </View>
         ) : null}
@@ -167,9 +168,9 @@ export function RecoveryWarnings() {
       <Text variant="small" weight="bold" style={{ marginTop: 6 }}>Contactez le jour même votre sage-femme ou votre médecin (sinon le 15) :</Text>
       {RECOVERY_WARNINGS.callPro.map((x) => <Text key={x} variant="small">• {x}</Text>)}
       <Text variant="caption" muted style={{ marginTop: 6 }}>Cette application ne peut pas dire si un symptôme fait partie d’une récupération normale.</Text>
-      <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+      <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
         <Text variant="caption" color={t.colors.primary}>Source : {src.publisher}</Text>
-      </Pressable>
+      </Tappable>
     </Banner>
   );
 }

@@ -22,7 +22,7 @@ import { spacing } from '@/theme/tokens';
 
 type Mode = 'explore' | 'favorites' | 'ideas';
 const norm = fold;
-const ROW_H = 64;
+const ROW_H = 84; // deux lignes de détails tiennent sans être coupées sur un petit écran
 // Base INSEE chargée à la première ouverture de l'écran
 let RAW: Parameters<typeof buildNames>[0] | null = null;
 const rawNames = () => (RAW ??= require('@/content/firstnames.json') as Parameters<typeof buildNames>[0]);
@@ -144,7 +144,7 @@ export default function NamesScreen() {
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, height: ROW_H - 8 }}>
         <View style={{ flex: 1, gap: 2 }}>
           <Text weight="medium">{n.name}</Text>
-          <Text variant="small" muted numberOfLines={1} intentionalTruncation>{meta}</Text>
+          <Text variant="small" muted numberOfLines={2} intentionalTruncation accessibilityLabel={meta}>{meta}</Text>
         </View>
         <IconButton
           icon="heart"

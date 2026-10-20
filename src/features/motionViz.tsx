@@ -7,13 +7,14 @@
  * Formes + légende textuelle : jamais d'information portée par la couleur seule.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, View } from 'react-native';
+import { Animated, View } from 'react-native';
 import { MotionNumber } from '@/components/MotionKit';
 import { Row, Text } from '@/components/ui';
 import { formatDuration } from '@/lib/domain/dates';
 import { easing } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export type RibbonEvent =
   | { kind: 'sleep'; start: string; end: string | null; nap?: boolean }
@@ -284,10 +285,10 @@ export function DayAvailability({ day, busy, free, reserved, onPick }: {
                 borderLeftWidth: 1, borderRightWidth: 1, borderColor: t.colors.textMuted }} accessibilityElementsHidden />
             ))}
             {free.map((f, i) => (
-              <Pressable key={`f${i}`} accessibilityRole="button" accessibilityLabel={`Créneau libre de ${hm(f.starts_at)} à ${hm(f.ends_at)}. Toucher pour réserver une heure.`} onPress={() => onPick(f)}
+              <Tappable key={`f${i}`} accessibilityRole="button" accessibilityLabel={`Créneau libre de ${hm(f.starts_at)} à ${hm(f.ends_at)}. Toucher pour réserver une heure.`} onPress={() => onPick(f)}
                 style={{ position: 'absolute', left: X(f.starts_at) + 2, width: Math.max(10, X(f.ends_at) - X(f.starts_at) - 4), top: 4, bottom: 4 }}>
                 <Animated.View style={{ flex: 1, borderRadius: 9, borderWidth: 2, borderStyle: 'dashed', borderColor: t.colors.primary, opacity: breathe.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] }) }} />
-              </Pressable>
+              </Tappable>
             ))}
             {reserved.map((r, i) => (
               <Grow key={`r${i}`} index={i} left={X(r.starts_at)} width={X(r.ends_at) - X(r.starts_at)}>

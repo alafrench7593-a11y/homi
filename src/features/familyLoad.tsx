@@ -21,6 +21,7 @@ import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 export const fmtWhen = (iso: string) => new Date(iso).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -91,7 +92,7 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
               {done ? <DrawCheck size={22} color={t.colors.surface} play={optimistic === true} /> : null}
             </Animated.View>
           </Pressable>
-          <Pressable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={`Modifier ${task.title}`} onPress={() => onEdit(task)}>
+          <Tappable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={`Modifier ${task.title}`} onPress={() => onEdit(task)}>
             <View style={{ alignSelf: 'flex-start' }} onLayout={(e) => setTw(e.nativeEvent.layout.width)}>
               <Animated.Text style={{ opacity: strike.interpolate({ inputRange: [0, 1], outputRange: [1, 0.55] }) }}>
                 <Text weight="medium">{task.title}</Text>
@@ -103,7 +104,7 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
               {[cat.label, task.due_at ? fmtWhen(task.due_at) : null, labelOf(task.assignee_id), task.recurrence ? 'récurrente' : null, task.essential ? 'essentielle' : null].filter(Boolean).join(' · ')}
             </Text>
             {late ? <Text variant="caption" color={t.colors.gold}>En retard — pas grave, à reprogrammer si besoin</Text> : null}
-          </Pressable>
+          </Tappable>
           {onPropose && !done ? <Button label="Proposer" size="sm" variant="ghost" onPress={() => onPropose(task)} accessibilityLabel={`Proposer « ${task.title} » à quelqu’un`} /> : null}
         </Row>
       </Card>
@@ -362,10 +363,10 @@ export function FamilyHomeCard() {
           </Row>
         </Card>
       ) : null}
-      <Pressable accessibilityRole="button" accessibilityLabel="Journée difficile : ne garder que l’essentiel" onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+      <Tappable accessibilityRole="button" accessibilityLabel="Journée difficile : ne garder que l’essentiel" onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
         <Icon name="wind" size={16} color={t.colors.primary} />
         <Text variant="small" weight="bold">Journée difficile ?</Text>
-      </Pressable>
+      </Tappable>
     </View>
   );
 }

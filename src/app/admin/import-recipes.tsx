@@ -84,7 +84,7 @@ export default function ImportRecipes() {
                 : c.errors.slice(0, 6).map((e) => <Text key={e} variant="small" color={t.colors.danger}>• {e}</Text>)}
             </Card></View>
           ))}
-          <Button label={tr('imp.import', { count: okCount })} icon="upload" onPress={() => void importValid()} disabled={!okCount} loading={busy} testID="imp-import" />
+          <Button label={tr('imp.import', { count: okCount })} icon="upload" onPress={() => importValid()} disabled={!okCount} loading={busy} testID="imp-import" />
         </View>
       ) : null}
       <Button label={tr('imp.open')} variant="ghost" onPress={() => router.push('/admin/recipes')} />

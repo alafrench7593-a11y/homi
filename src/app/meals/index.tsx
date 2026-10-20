@@ -3,7 +3,7 @@
  * enfant selon son âge, famille), recherche, filtres, favoris, accès au menu, aux courses et à « Que puis-je cuisiner ? ».
  */
 import React, { useMemo, useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { ProfileSwitcher } from '@/components/Family';
@@ -18,6 +18,8 @@ import { childAge } from '@/lib/domain/child';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
+import { ResultsFade } from '@/components/MotionKit';
 
 export default function Meals() {
   const t = useTheme();
@@ -81,9 +83,9 @@ export default function Meals() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
         {TAGS_FOR[aud].map((x) => <Chip key={x} tone="lavender" label={tagLabel(x)} selected={tag === x} onPress={() => setTag(tag === x ? null : x)} />)}
       </ScrollView>
-      <Pressable accessibilityRole="button" onPress={() => setMore(!more)} style={{ minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 6 }} testID="more-filters">
+      <Tappable accessibilityRole="button" onPress={() => setMore(!more)} style={{ minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 6 }} testID="more-filters">
         <Icon name="sliders" size={16} color={t.colors.primary} /><Text variant="small" weight="bold" color={t.colors.primary}>{more ? tr('rc.filters.less') : tr('rc.filters.more')}</Text>
-      </Pressable>
+      </Tappable>
       {more ? (
         <View style={{ gap: spacing.xs }}>
           <Row wrap>
@@ -107,10 +109,10 @@ export default function Meals() {
         <Chip label={tr('rc.sort.score')} icon="bar-chart-2" selected={byScore} onPress={() => setByScore(!byScore)} />
       </Row>
       {loading && !all ? <Skeleton rows={4} /> : !list.length ? <EmptyState icon="search" title={tr('rc.none')} body={tr('rc.noneBody')} /> : (
-        <View style={{ gap: spacing.xs }}>
+        <ResultsFade k={list.map((r) => r.id).slice(0, 40).join()} style={{ gap: spacing.xs }}>
           {list.slice(0, shown).map((r) => <RecipeCard key={r.id} r={r} favorite={fav.ids.includes(r.id)} score={scores.get(r.id)?.score} />)}
           {list.length > shown ? <Button label={tr('rc.more', { count: list.length - shown })} variant="secondary" onPress={() => setShown(shown + 30)} testID="recipes-more" /> : null}
-        </View>
+        </ResultsFade>
       )}
       <Text variant="caption" muted>{tr('rc.footer')}</Text>
     </Screen>

@@ -1,6 +1,6 @@
 /** Composants transverses : sélecteur de profil, bouton « Poser une question », accès premium, urgences. */
 import React, { useState } from 'react';
-import { Linking, Pressable, StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -13,6 +13,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { Banner, Button, Card, haptic, Icon, type IconName, Row, Text } from './ui';
 import { initialsColor } from './Illustrations';
 import { Sheet, useToast } from './Overlays';
+import { Tappable } from '@/components/Tappable';
 
 function Avatar({ label, color, icon, size = 40 }: { label?: string; color: string; icon?: IconName; size?: number }) {
   return (
@@ -60,7 +61,7 @@ export function ProfileSwitcher() {
 
   return (
     <>
-      <Pressable
+      <Tappable
         accessibilityRole="button"
         testID="profile-switcher"
         accessibilityLabel={tr('pj.switcher.a11y', { name: current.label })}
@@ -78,10 +79,10 @@ export function ProfileSwitcher() {
           <Text variant="caption" muted>{current.sub}</Text>
         </View>
         <Icon name="chevron-down" size={18} color={t.colors.textMuted} />
-      </Pressable>
+      </Tappable>
       <Sheet visible={open} onClose={() => setOpen(false)} title={tr('pj.switcher.title')}>
         {items.map((it) => (
-          <Pressable
+          <Tappable
             key={it.key}
             testID={`subject-${it.key}`}
             accessibilityRole="radio"
@@ -96,7 +97,7 @@ export function ProfileSwitcher() {
               <Text variant="small" muted>{it.sub}</Text>
             </View>
             {it.active && <Icon name="check" color={t.colors.text} />}
-          </Pressable>
+          </Tappable>
         ))}
         <Button label={tr('pj.editJourney')} variant="secondary" icon="compass" onPress={() => { setOpen(false); router.push('/journeys'); }} />
       </Sheet>
@@ -108,7 +109,7 @@ export function ProfileSwitcher() {
 export function AskFab({ bottom = 0 }: { bottom?: number }) {
   const t = useTheme();
   return (
-    <Pressable
+    <Tappable
       accessibilityRole="button"
       accessibilityLabel={tr('ask.button')}
       accessibilityHint="Ouvre l’assistant d’intelligence artificielle"
@@ -117,7 +118,7 @@ export function AskFab({ bottom = 0 }: { bottom?: number }) {
     >
       <Icon name="message-circle" size={20} color={t.colors.primaryText} />
       <Text weight="medium" color={t.colors.primaryText}>{tr('ask.button')}</Text>
-    </Pressable>
+    </Tappable>
   );
 }
 
@@ -146,7 +147,7 @@ export function EmergencyList({ compact }: { compact?: boolean }) {
   return (
     <View style={{ gap: spacing.xs }}>
       {(list ?? FALLBACK).map((r) => (
-        <Pressable
+        <Tappable
           key={r.phone}
           accessibilityRole="button"
           accessibilityLabel={`Appeler le ${r.phone.split('').join(' ')}, ${r.label}`}
@@ -162,7 +163,7 @@ export function EmergencyList({ compact }: { compact?: boolean }) {
             {r.available ? <Text variant="caption" muted>{r.available}</Text> : null}
           </View>
           <Icon name="phone" size={18} color={t.colors.danger} />
-        </Pressable>
+        </Tappable>
       ))}
     </View>
   );
@@ -184,7 +185,7 @@ export function EmergencyShortcut() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
   return (
-    <Pressable
+    <Tappable
       accessibilityRole="button"
       accessibilityLabel="Besoin d’aide maintenant : numéros d’urgence"
       onPress={() => router.push('/emergency')}
@@ -192,7 +193,7 @@ export function EmergencyShortcut() {
       style={{ position: 'absolute', top: insets.top + 6, right: spacing.md, minHeight: MIN_TOUCH, minWidth: MIN_TOUCH, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.dangerSoft }}
     >
       <Icon name="life-buoy" size={20} color={t.colors.danger} />
-    </Pressable>
+    </Tappable>
   );
 }
 

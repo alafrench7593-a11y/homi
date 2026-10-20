@@ -114,7 +114,7 @@ export default function NewRecipe() {
       ) : null}
       <Text variant="caption" muted>{library ? tr('rc.new.libraryNote') : tr('rc.new.personalNote')}</Text>
       <View style={{ gap: spacing.xs }}>
-        <Button label={tr('common.save')} loading={save.isPending} onPress={() => void submit()} full testID="new-save" />
+        <Button label={tr('common.save')} loading={save.isPending} onPress={() => submit()} full testID="new-save" />
       </View>
     </Screen>
   );

@@ -1,6 +1,6 @@
 /** Liste de courses du foyer (partagée avec le coparent) : rangée par rayon, produits à cocher, « déjà à la maison ». */
 import React, { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
@@ -13,6 +13,7 @@ import { AISLE_ORDER, formatQty } from '@/lib/recipes/engine';
 import { t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export default function Shopping() {
   const t = useTheme();
@@ -29,13 +30,13 @@ export default function Shopping() {
   const left = toBuy.filter((i) => !i.checked).length;
   const aisles = AISLE_ORDER.filter((a) => toBuy.some((i) => i.aisle === a)).concat(toBuy.some((i) => !AISLE_ORDER.includes(i.aisle as never)) ? ['epicerie'] : []);
   const row = (i: typeof items[number]) => (
-    <Pressable key={i.id} testID={`shop-${i.ingredient_key ?? i.label}`} accessibilityRole="checkbox" accessibilityState={{ checked: i.checked }} accessibilityLabel={`${i.label} ${formatQty(i.qty, i.unit)}`}
+    <Tappable key={i.id} testID={`shop-${i.ingredient_key ?? i.label}`} accessibilityRole="checkbox" accessibilityState={{ checked: i.checked }} accessibilityLabel={`${i.label} ${formatQty(i.qty, i.unit)}`}
       onPress={() => { haptic('selection'); toggle.mutate({ id: i.id, checked: !i.checked }, { onError: (e) => toast(friendlyError(e), 'error') }); }}
       style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
       <Icon name={i.checked ? 'check-square' : 'square'} color={i.checked ? t.colors.primary : t.colors.textMuted} />
       <Text style={{ flex: 1, textDecorationLine: i.checked ? 'line-through' : 'none' }} muted={i.checked}>{i.label.charAt(0).toUpperCase() + i.label.slice(1)}</Text>
       <Text variant="small" muted>{formatQty(i.qty == null ? null : Number(i.qty), i.unit)}</Text>
-    </Pressable>
+    </Tappable>
   );
   return (
     <Screen back title={list.title} subtitle={tr('rc.shopping.left', { count: left })}>

@@ -28,6 +28,7 @@ import { daysBetween, formatDateFr, frToISO, todayISO } from '@/lib/domain/dates
 import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const SIGN_COLOUR = { less_fertile: '#C9B79C', intermediate: '#F2C46D', potentially_fertile: '#7FB6E8', see_professional: '#E0607E', none: '#B9B9C6' } as const;
 
@@ -175,11 +176,11 @@ export default function MucusScreen() {
         <Text variant="label" style={{ marginTop: spacing.sm }}>Quel aspect aujourd’hui ?</Text>
         <View style={{ gap: 6, marginTop: 6 }}>
           {MUCUS_CATEGORIES.map((m) => (
-            <Pressable key={m.value} accessibilityRole="radio" accessibilityState={{ selected: category === m.value }} onPress={() => setCategory(category === m.value ? null : m.value)}
+            <Tappable key={m.value} accessibilityRole="radio" accessibilityState={{ selected: category === m.value }} onPress={() => setCategory(category === m.value ? null : m.value)}
               style={{ padding: spacing.sm, borderRadius: radius.md, borderWidth: 1.5, borderColor: category === m.value ? t.colors.primary : t.colors.border, backgroundColor: category === m.value ? t.colors.primary + '18' : 'transparent' }}>
               <Text weight="bold">{m.label}</Text>
               <Text variant="caption" muted>{m.hint}</Text>
-            </Pressable>
+            </Tappable>
           ))}
         </View>
         <Text variant="label" style={{ marginTop: spacing.sm }}>Texture</Text>

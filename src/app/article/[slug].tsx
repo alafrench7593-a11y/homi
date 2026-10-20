@@ -7,7 +7,7 @@ import { Markdown } from '@/components/Markdown';
 import { PremiumGate } from '@/components/Family';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Divider, IconButton, Row, Text } from '@/components/ui';
+import { Banner, Button, Card, Divider, FavoriteButton, IconButton, Row, Text } from '@/components/ui';
 import { backend } from '@/lib/backend';
 import { useArticles, useInvalidate, usePremium, useRows } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -63,7 +63,7 @@ export default function ArticleScreen() {
   const raw = a.editorial_status ?? 'to_review';
   const status = (raw === 'reviewed' || raw === 'validated') && !(a.reviewer_name && a.reviewer_qualification) ? 'to_review' : raw;
   return (
-    <Screen back right={<IconButton icon="bookmark" label={saved ? 'Retirer des favoris' : 'Ajouter aux favoris'} color={saved ? t.colors.primary : undefined} onPress={toggleFav} />}>
+    <Screen back right={<FavoriteButton icon="bookmark" active={!!saved} labelOn="Retirer des favoris" labelOff="Ajouter aux favoris" onPress={toggleFav} />}>
       <Text variant="title" accessibilityRole="header">{a.title}</Text>
       <Text italic color={t.colors.primary}>{a.summary}</Text>
       {/* Statut éditorial réel : jamais « relu » ou « validé » sans le nom et la qualification de la personne */}

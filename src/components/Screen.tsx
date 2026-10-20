@@ -43,7 +43,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   const [origin] = React.useState<ToolOrigin | null>(() => peekToolOrigin(pathname));
   React.useEffect(() => { if (origin) takeToolOrigin(pathname); }, [origin, pathname]);
   const header = (title || back || right || account) && (
-    <View style={[styles.header, { paddingTop: insets.top + spacing.xs }]}>
+    <View style={[styles.header, styles.wide, { paddingTop: insets.top + spacing.xs }]}>
       <View style={styles.headerRow}>
         {back ? (
           <IconButton icon="arrow-left" label={tr('common.back')} onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
@@ -70,14 +70,14 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
 
   const body = scroll ? (
     <ScrollView
-      contentContainerStyle={[{ paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? spacing.md : insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xxl + bottomInset, gap: spacing.md }, contentStyle]}
+      contentContainerStyle={[styles.wide, { paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? spacing.md : insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xxl + bottomInset, gap: spacing.md }, contentStyle]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
       {children}
     </ScrollView>
   ) : (
-    <View style={[{ flex: 1, paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? 0 : insets.top }, contentStyle]}>{children}</View>
+    <View style={[styles.wide, { flex: 1, paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? 0 : insets.top }, contentStyle]}>{children}</View>
   );
 
   return (
@@ -87,7 +87,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {header}
         {body}
-        {footer ? <View style={{ paddingHorizontal: spacing.lg, paddingBottom: insets.bottom + spacing.sm, paddingTop: spacing.sm }}>{footer}</View> : null}
+        {footer ? <View style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: insets.bottom + spacing.sm, paddingTop: spacing.sm }}>{footer}</View> : null}
       </KeyboardAvoidingView>
     </Animated.View>
   );
@@ -112,7 +112,11 @@ function ArrivalGlyph({ origin }: { origin: ToolOrigin }) {
   );
 }
 
+export const CONTENT_MAX_WIDTH = 760;
+
 const styles = StyleSheet.create({
   header: { gap: spacing.xs },
+  /** Tablette, ordinateur : colonne de lecture centrée (lignes trop longues illisibles), téléphone : pleine largeur. */
+  wide: { width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
   headerRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.sm },
 });

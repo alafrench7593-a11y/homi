@@ -4,7 +4,7 @@
  * Plusieurs parcours à la fois sont possibles (enceinte avec deux enfants, par exemple).
  */
 import React, { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Sheet, useToast } from '@/components/Overlays';
@@ -21,6 +21,7 @@ import { closeOps, planChange, type ChangeTarget, type CloseMode, type JourneyRo
 import { t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 /**
  * Parcours proposés, plus le simple suivi du cycle (conservé). Le post-partum n'est plus une catégorie indépendante :
@@ -132,7 +133,7 @@ export default function Journeys() {
             {CHOICES.map((c) => {
               const on = c.type === 'pregnancy' ? !!pregnancy : hasActive(c.type);
               return (
-                <Pressable
+                <Tappable
                   key={c.key}
                   testID={`choose-${c.type}`}
                   accessibilityRole="button"
@@ -147,7 +148,7 @@ export default function Journeys() {
                     <Text variant="small" muted>{tr(`pj.choice.${c.type}.hint` as TKey)}</Text>
                   </View>
                   {on ? <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.activeBadge')}</Text> : <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
-                </Pressable>
+                </Tappable>
               );
             })}
           </View>

@@ -4,7 +4,7 @@
  * Remplacer, déplacer, ajouter une recette, enregistrer pour le foyer, puis générer la liste de courses.
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
@@ -19,6 +19,7 @@ import { useUiStore } from '@/lib/store';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export default function MenuScreen() {
   const t = useTheme();
@@ -130,9 +131,9 @@ export default function MenuScreen() {
                 <Text variant="caption" weight="bold" muted>{mealLabel(m).toUpperCase()}</Text>
                 {r ? (
                   <>
-                    <Pressable accessibilityRole="link" onPress={() => router.push(`/meals/${r.slug}`)} style={{ minHeight: 36, justifyContent: 'center' }}>
+                    <Tappable accessibilityRole="link" onPress={() => router.push(`/meals/${r.slug}`)} style={{ minHeight: 36, justifyContent: 'center' }}>
                       <Text weight="bold" testID={`menu-slot-${d}-${m}`}>{r.title}</Text>
-                    </Pressable>
+                    </Tappable>
                     {s.note ? <Text variant="small" muted>{s.note}</Text> : null}
                     <Row wrap>
                       <Button label={tr('rc.menu.replace')} size="sm" variant="ghost" onPress={() => all && setSlots(replaceSlot(all, p, slots, idx, opts))} testID={`menu-replace-${d}-${m}`} />
@@ -154,8 +155,8 @@ export default function MenuScreen() {
 
       {slots ? (
         <View style={{ gap: spacing.xs }}>
-          <Button label={tr('rc.menu.save')} icon="save" variant="secondary" onPress={() => void persist()} loading={save.isPending} full testID="menu-save" />
-          <Button label={tr('rc.menu.toShopping')} icon="shopping-cart" onPress={() => void makeList()} loading={createList.isPending} full testID="menu-to-shopping" />
+          <Button label={tr('rc.menu.save')} icon="save" variant="secondary" onPress={() => persist()} loading={save.isPending} full testID="menu-save" />
+          <Button label={tr('rc.menu.toShopping')} icon="shopping-cart" onPress={() => makeList()} loading={createList.isPending} full testID="menu-to-shopping" />
           <Button label={tr('rc.new.open')} icon="plus" variant="ghost" onPress={() => router.push('/meals/new')} full />
         </View>
       ) : null}
@@ -165,10 +166,10 @@ export default function MenuScreen() {
           <Row key={d} wrap>
             <Text weight="bold" style={{ width: 64 }}>{tr('rc.menu.day', { n: d + 1 })}</Text>
             {meals.map((m) => (
-              <Pressable key={m} accessibilityRole="button" onPress={() => { if (slots && moving != null) setSlots(moveSlot(slots, moving, { day: d, meal: m })); setMoving(null); }}
+              <Tappable key={m} accessibilityRole="button" onPress={() => { if (slots && moving != null) setSlots(moveSlot(slots, moving, { day: d, meal: m })); setMoving(null); }}
                 style={{ paddingHorizontal: 10, minHeight: 36, justifyContent: 'center', borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border }}>
                 <Text variant="small">{mealLabel(m)}</Text>
-              </Pressable>
+              </Tappable>
             ))}
           </Row>
         ))}

@@ -5,7 +5,7 @@
  * Un cosmétique n'est jamais présenté comme un traitement ; en cas de rougeur, d'eczéma ou de lésion, on renvoie au médecin.
  */
 import React from 'react';
-import { Image, Linking, Pressable, View } from 'react-native';
+import { Image, Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, Skeleton } from '@/components/States';
@@ -18,6 +18,7 @@ import { unitPrice } from '../../../supabase/functions/_shared/open-prices';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export default function ProductDetail() {
   const t = useTheme();
@@ -77,9 +78,9 @@ export default function ProductDetail() {
       <SectionTitle title={tr('pr.composition')} />
       <Text variant="small" testID="product-composition">{p.composition ?? tr('pr.compositionUnknown')}</Text>
       {p.source_url ? (
-        <Pressable accessibilityRole="link" onPress={() => open(p.source_url!)} style={{ minHeight: 36, justifyContent: 'center' }}>
+        <Tappable accessibilityRole="link" onPress={() => open(p.source_url!)} style={{ minHeight: 36, justifyContent: 'center' }}>
           <Text variant="caption" color={t.colors.primary}>{tr(`pr.src.${p.data_source}` as TKey)}{p.data_retrieved_at ? ` · ${tr('pr.retrieved', { date: formatDate(p.data_retrieved_at) })}` : ''}</Text>
-        </Pressable>
+        </Tappable>
       ) : null}
 
       <SectionTitle title={tr('pr.prices')} />
@@ -106,9 +107,9 @@ export default function ProductDetail() {
       <Button label={tr('pr.compareWith')} icon="columns" variant="ghost" onPress={() => router.push({ pathname: '/products/compare', params: { ids: p.id } })} />
       <SectionTitle title={tr('pr.sources')} />
       {PRODUCT_CRITERIA_SOURCES.map((s) => (
-        <Pressable key={s.url} accessibilityRole="link" onPress={() => open(s.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+        <Tappable key={s.url} accessibilityRole="link" onPress={() => open(s.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
           <Text variant="caption" color={t.colors.primary}>{s.label}</Text>
-        </Pressable>
+        </Tappable>
       ))}
       <Text variant="caption" muted>{p.reviewed_by_label ? tr('pr.reviewedBy', { name: p.reviewed_by_label }) : tr('pr.notReviewed')}</Text>
     </Screen>

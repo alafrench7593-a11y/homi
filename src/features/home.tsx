@@ -26,6 +26,7 @@ import { fonts, NACRE, palette, radius, spacing } from '@/theme/tokens';
 import { LinearGradient } from 'expo-linear-gradient';
 import { formatDate, t as tr } from '@/i18n';
 import { HomeCycleCard } from '@/features/cycle/HomeCycleCard';
+import { Tappable } from '@/components/Tappable';
 
 const ORB_HUES = ['rose', 'lavande', 'or'] as const;
 
@@ -133,9 +134,9 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
         ))}
       </View>
       {openSleep && (
-        <Pressable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: radius.pill, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center' }}>
+        <Tappable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: radius.pill, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center' }}>
           <Text weight="medium" color={palette.milk}>Ouvrir le mode nuit</Text>
-        </Pressable>
+        </Tappable>
       )}
     </View>
   );
@@ -196,10 +197,10 @@ export function QuickActions({ keys, childId, onCustomize }: { keys: string[]; c
         ))}
       </View>
       {onCustomize ? (
-        <Pressable accessibilityRole="button" accessibilityLabel="Choisir mes raccourcis et personnaliser l’accueil" onPress={onCustomize} style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 36, paddingHorizontal: 6 }}>
+        <Tappable accessibilityRole="button" accessibilityLabel="Choisir mes raccourcis et personnaliser l’accueil" onPress={onCustomize} style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 36, paddingHorizontal: 6 }}>
           <Icon name="sliders" size={14} color={t.colors.textMuted} />
           <Text variant="caption" muted>Personnaliser</Text>
-        </Pressable>
+        </Tappable>
       ) : null}
     </View>
   );
@@ -240,14 +241,14 @@ export function UpcomingCard() {
     .sort((a, b) => a.at!.getTime() - b.at!.getTime())[0];
   if (!next && !nextReminder) return null;
   const row = (icon: IconName, title: string, when: string, onPress: () => void) => (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${title}, ${when}`} onPress={onPress} style={({ pressed }) => ({ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', paddingVertical: spacing.sm, opacity: pressed ? 0.7 : 1 })}>
+    <Tappable accessibilityRole="button" accessibilityLabel={`${title}, ${when}`} onPress={onPress} style={({ pressed }) => ({ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', paddingVertical: spacing.sm, opacity: pressed ? 0.7 : 1 })}>
       <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}><Icon name={icon} size={18} /></View>
       <View style={{ flex: 1 }}>
         <Text weight="bold">{title}</Text>
         <Text variant="small" muted>{when}</Text>
       </View>
       <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
-    </Pressable>
+    </Tappable>
   );
   return (
     <View>

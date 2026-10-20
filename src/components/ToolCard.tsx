@@ -19,6 +19,7 @@ import { THEME_TITLE } from '@/lib/domain/toolCatalog';
 import { markToolOpen } from '@/lib/toolOrigin';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export const TOOL_CARD_HEIGHT = 164;
 
@@ -95,7 +96,7 @@ function FavoriteButton({ on, label, color, onPress }: { on: boolean; label: str
   const t = useTheme();
   const pop = usePop(on, 1.4);
   return (
-    <Pressable
+    <Tappable
       accessibilityRole="switch"
       accessibilityState={{ checked: on }}
       accessibilityLabel={`${label} : ${on ? 'retirer des raccourcis' : 'ajouter aux raccourcis'}`}
@@ -106,7 +107,7 @@ function FavoriteButton({ on, label, color, onPress }: { on: boolean; label: str
       <Animated.View style={[pop, { width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? tint(color, 0.16) : 'transparent' }]}>
         <Icon name="star" size={15} color={on ? color : t.colors.textMuted} />
       </Animated.View>
-    </Pressable>
+    </Tappable>
   );
 }
 

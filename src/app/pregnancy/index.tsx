@@ -1,6 +1,6 @@
 /** Univers de la grossesse : illustration 3D artistique, semaine par semaine, compte à rebours. */
 import React, { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { FetusArt } from '@/components/FetusArt';
@@ -18,6 +18,7 @@ import { formatDateFr } from '@/lib/domain/dates';
 import type { ExpectedBaby } from '@/lib/types';
 import { Aurora } from '@/components/Aurora';
 import { spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const HUES = ['rose', 'lavande', 'or'] as const;
 const GOLD = '#FF8FB1';
@@ -105,9 +106,9 @@ export default function PregnancyUniverse() {
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }} accessibilityLabel="Choisir une semaine">
         {Array.from({ length: 39 }, (_, i) => i + 4).map((s) => (
-          <Pressable key={s} accessibilityRole="button" accessibilityState={{ selected: s === w }} accessibilityLabel={`Semaine ${s}`} onPress={() => setWeek(s === p.weeksSA ? null : s)} style={{ width: 46, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: s === w ? '#FF8FB1' : s === p.weeksSA ? '#3A1D2E' : 'transparent', borderWidth: 1, borderColor: '#FF8FB155' }}>
+          <Tappable key={s} accessibilityRole="button" accessibilityState={{ selected: s === w }} accessibilityLabel={`Semaine ${s}`} onPress={() => setWeek(s === p.weeksSA ? null : s)} style={{ width: 46, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: s === w ? '#FF8FB1' : s === p.weeksSA ? '#3A1D2E' : 'transparent', borderWidth: 1, borderColor: '#FF8FB155' }}>
             <Text variant="small" weight="bold" color={s === w ? '#1A0A13' : undefined}>{s}</Text>
-          </Pressable>
+          </Tappable>
         ))}
       </ScrollView>
       {week !== null && <Button label="Revenir à ma semaine" variant="ghost" size="sm" onPress={() => setWeek(null)} />}

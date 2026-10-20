@@ -1,13 +1,14 @@
 /** Saisie rapide et chronologie du suivi quotidien. */
 import { STOOL_COLORS, STOOL_CONSISTENCY } from '@/lib/domain/childCare';
 import React, { useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Chip, Field, Icon, type IconName, Row, Text } from '@/components/ui';
 import { formatDuration, formatTime } from '@/lib/domain/dates';
 import type { Bottle, Breastfeed, Diaper, LogKind, Meal, Observation, Pumping, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export const KIND_META: Record<LogKind, { label: string; icon: IconName; tracking: string }> = {
   bottle: { label: 'Biberon', icon: 'coffee', tracking: 'bottle' },
@@ -65,16 +66,16 @@ export function Stepper({ label, value, onChange, step = 10, unit = 'ml', preset
     <View style={{ gap: spacing.xs }}>
       <Text variant="label">{label}</Text>
       <Row>
-        <Pressable accessibilityRole="button" accessibilityLabel={`Diminuer de ${step} ${unit}`} onPress={() => onChange(Math.max(0, (value ?? 0) - step))} style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
+        <Tappable accessibilityRole="button" accessibilityLabel={`Diminuer de ${step} ${unit}`} onPress={() => onChange(Math.max(0, (value ?? 0) - step))} style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="minus" />
-        </Pressable>
+        </Tappable>
         <View style={{ flex: 1, alignItems: 'center' }} accessible accessibilityLabel={`${label} : ${value ?? 0} ${unit}`} accessibilityLiveRegion="polite">
           <Text variant="title">{value ?? 0}</Text>
           <Text variant="caption" muted>{unit}</Text>
         </View>
-        <Pressable accessibilityRole="button" accessibilityLabel={`Augmenter de ${step} ${unit}`} onPress={() => onChange((value ?? 0) + step)} style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
+        <Tappable accessibilityRole="button" accessibilityLabel={`Augmenter de ${step} ${unit}`} onPress={() => onChange((value ?? 0) + step)} style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="plus" />
-        </Pressable>
+        </Tappable>
       </Row>
       {presets && (
         <Row wrap style={{ justifyContent: 'center' }}>
@@ -139,7 +140,7 @@ export function Timeline({ logs, childId }: { logs: LogItem[]; childId: string }
   return (
     <View style={{ gap: 2 }}>
       {sorted.map((l) => (
-        <Pressable
+        <Tappable
           key={`${l.type}-${l.data.id}`}
           accessibilityRole="button"
           accessibilityLabel={`${KIND_META[l.type].label} à ${formatTime(logTime(l))} : ${describeLog(l)}. Modifier ou supprimer.`}
@@ -155,7 +156,7 @@ export function Timeline({ logs, childId }: { logs: LogItem[]; childId: string }
             <Text variant="small" muted>{describeLog(l)}</Text>
           </View>
           <Icon name="edit-2" size={14} color={t.colors.textMuted} />
-        </Pressable>
+        </Tappable>
       ))}
     </View>
   );

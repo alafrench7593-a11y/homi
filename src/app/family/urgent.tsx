@@ -3,7 +3,7 @@
  * Gros boutons, aucun formulaire long, aucune animation. Ne remplace pas les services d'urgence.
  */
 import React, { useState } from 'react';
-import { Linking, Pressable, ScrollView, View } from 'react-native';
+import { Linking, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useToast } from '@/components/Overlays';
@@ -16,15 +16,16 @@ import { lightenDay } from '@/lib/domain/familyLoad';
 import { todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 function Big({ icon, label, onPress, tone }: { icon: IconName; label: string; onPress: () => void; tone?: 'danger' }) {
   const t = useTheme();
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={() => { haptic('selection'); onPress(); }}
+    <Tappable accessibilityRole="button" accessibilityLabel={label} onPress={() => { haptic('selection'); onPress(); }}
       style={({ pressed }) => ({ minHeight: 76, borderRadius: radius.lg, padding: spacing.md, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: tone === 'danger' ? t.colors.dangerSoft : t.colors.surface, borderWidth: 1, borderColor: t.colors.border, opacity: pressed ? 0.85 : 1 })}>
       <Icon name={icon} size={26} color={tone === 'danger' ? t.colors.danger : t.colors.primary} />
       <Text weight="bold" style={{ fontSize: 19, flex: 1 }}>{label}</Text>
-    </Pressable>
+    </Tappable>
   );
 }
 
@@ -44,9 +45,9 @@ export default function OrgEmergency() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.sm }}>
-      <Pressable accessibilityRole="button" accessibilityLabel="Retour" onPress={() => router.back()} style={{ minHeight: 44, justifyContent: 'center' }}>
+      <Tappable accessibilityRole="button" accessibilityLabel="Retour" onPress={() => router.back()} style={{ minHeight: 44, justifyContent: 'center' }}>
         <Text weight="bold" color={t.colors.primary}>← Retour</Text>
-      </Pressable>
+      </Tappable>
       <Text variant="title" accessibilityRole="header">Respirez. Une chose à la fois.</Text>
 
       <Big icon="users" label="Demander un relais" onPress={() => send('relay', 'Demande de relais envoyée.')} />

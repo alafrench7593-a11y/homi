@@ -9,6 +9,7 @@ import { Icon, IconButton, Text } from './ui';
 import { GlassSurface } from './Glass';
 import { duration, easing, spring as SPRING, springTo, timeTo } from '@/theme/motion';
 import { t as tr } from '@/i18n';
+import { Tappable } from '@/components/Tappable';
 
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
   const t = useTheme();
@@ -152,12 +153,12 @@ function ConfirmHost() {
         <Text variant="heading">{req.title}</Text>
         {req.message ? <Text muted>{req.message}</Text> : null}
         <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs }}>
-          <Pressable accessibilityRole="button" accessibilityLabel={tr('common.cancel')} onPress={() => done(false)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('common.cancel')} onPress={() => done(false)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
             <Text weight="bold">{tr('common.cancel')}</Text>
-          </Pressable>
-          <Pressable accessibilityRole="button" accessibilityLabel={req.confirmLabel} onPress={() => done(true)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, backgroundColor: req.destructive ? t.colors.danger : t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
+          </Tappable>
+          <Tappable accessibilityRole="button" accessibilityLabel={req.confirmLabel} onPress={() => done(true)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, backgroundColor: req.destructive ? t.colors.danger : t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
             <Text weight="bold" color="#FFFFFF">{req.confirmLabel}</Text>
-          </Pressable>
+          </Tappable>
         </View>
       </Animated.View>
     </Modal>

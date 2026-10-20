@@ -3,7 +3,7 @@ import { NATIVE_DRIVER } from '@/theme/tokens';
 import React from 'react';
 import {
   ActivityIndicator, Animated, Easing, Pressable, StyleSheet, Text as RNText, TextInput, View,
-  type PressableProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle,
+  type GestureResponderEvent, type PressableProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,7 +13,7 @@ import { fonts, MIN_TOUCH, NACRE, radius, spacing, typeScale } from '@/theme/tok
 import { useUiStore } from '@/lib/store';
 import { GlassSurface } from './Glass';
 import { usePop, usePressMotion, useShake, useTilt } from './Motion';
-import { duration, springTo, timeTo } from '@/theme/motion';
+import { duration, interaction, springTo, timeTo } from '@/theme/motion';
 import { t as tr } from '@/i18n';
 
 export type IconName = React.ComponentProps<typeof Feather>['name'];
@@ -126,24 +126,42 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
 }
 
 // ---------------------------------------------------------------- Bouton
-interface ButtonProps extends Omit<PressableProps, 'style' | 'children'> {
+/**
+ * Bouton unique de l'application. Variantes : primary, secondary, outline, ghost, danger (= destructive), night.
+ * Tailles sm, md, lg ; hauteur minimale (jamais fixe) : un libellé long passe à la ligne au lieu d'être coupé.
+ * Pression 0,97, survol (web) : soulèvement, surface éclairée, icône qui s'anime légèrement.
+ * Si `onPress` renvoie une promesse, le bouton affiche le chargement et ignore les appuis suivants jusqu'à la fin
+ * (pas de double envoi). La confirmation de réussite reste à l'écran appelant, après la réussite réelle.
+ */
+interface ButtonProps extends Omit<PressableProps, 'style' | 'children' | 'onPress'> {
   label: string;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'night';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'destructive' | 'night';
   icon?: IconName;
+  /** Icône après le libellé (ex. flèche « suivant »). */
+  iconRight?: IconName;
   loading?: boolean;
   size?: 'md' | 'lg' | 'sm';
   style?: StyleProp<ViewStyle>;
   full?: boolean;
+  onPress?: (e: GestureResponderEvent) => unknown;
 }
 
-export function Button({ label, variant = 'primary', icon, loading, size = 'md', style, full, disabled, onPress, ...rest }: ButtonProps) {
+const NUDGE: Partial<Record<IconName, 'x' | 'up' | 'spin'>> = { 'arrow-right': 'x', 'chevron-right': 'x', 'external-link': 'up', send: 'x', 'log-in': 'x', upload: 'up', download: 'up', plus: 'spin', 'refresh-cw': 'spin' };
+
+export function Button({ label, variant: v = 'primary', icon, iconRight, loading, size = 'md', style, full, disabled, onPress, ...rest }: ButtonProps) {
+  const variant = v === 'destructive' ? 'danger' : v;
   const t = useTheme();
   const reduce = useReduceMotion();
-  const press = usePressMotion({ pressed: 0.965 });
+  const press = usePressMotion();
   const [w, setW] = React.useState(0);
+  const [pending, setPending] = React.useState(false);
+  const running = React.useRef(false);
+  const mounted = React.useRef(true);
+  React.useEffect(() => () => { mounted.current = false; }, []);
+  const isBusy = !!loading || pending;
   const shine = React.useRef(new Animated.Value(0)).current;
-  const busy = React.useRef(new Animated.Value(loading ? 1 : 0)).current;
-  React.useEffect(() => { timeTo(busy, loading ? 1 : 0, duration.fast, reduce).start(); }, [busy, loading, reduce]);
+  const busy = React.useRef(new Animated.Value(isBusy ? 1 : 0)).current;
+  React.useEffect(() => { timeTo(busy, isBusy ? 1 : 0, duration.fast, reduce).start(); }, [busy, isBusy, reduce]);
   const sweep = () => {
     if (reduce || !w) return;
     shine.setValue(0);
@@ -160,33 +178,50 @@ export function Button({ label, variant = 'primary', icon, loading, size = 'md',
   const fill = variant === 'primary' ? (t.isDark ? fills.primaryDark : fills.primaryLight) : t.isDark ? fills.secondaryDark : fills.secondaryLight;
   const fg = glass
     ? variant === 'primary' ? (t.isDark ? '#2A1022' : '#FFFFFF') : t.colors.text
-    : { primary: t.colors.primaryText, secondary: t.colors.text, ghost: t.colors.primary, danger: '#fff', night: '#1A0A13' }[variant];
-  const bg = glass ? 'transparent' : { primary: t.colors.primary, secondary: 'transparent', ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
+    : { primary: t.colors.primaryText, secondary: t.colors.text, outline: t.colors.primary, ghost: t.colors.primary, danger: '#fff', night: '#1A0A13' }[variant];
+  const bg = glass ? 'transparent' : { primary: t.colors.primary, secondary: 'transparent', outline: 'transparent', ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
   const border = glass
     ? variant === 'primary' ? (t.isDark ? '#FFFFFF' : 'rgba(255,255,255,0.65)') : t.isDark ? 'rgba(255,255,255,0.42)' : 'rgba(255,255,255,0.95)'
-    : { primary: t.colors.primary, secondary: t.colors.border, ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
-  const h = size === 'lg' ? 58 : size === 'sm' ? 40 : MIN_TOUCH + 2;
+    : { primary: t.colors.primary, secondary: t.colors.border, outline: t.colors.primary, ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
+  const h = size === 'lg' ? 56 : size === 'sm' ? 40 : MIN_TOUCH;
+  const iconSize = size === 'sm' ? 16 : 19;
+  const nudge = (name: IconName) => {
+    const k = NUDGE[name];
+    if (!k) return { transform: [{ scale: press.hover.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) }] };
+    if (k === 'spin') return { transform: [{ rotate: press.hover.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '90deg'] }) }] };
+    const d = press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, interaction.iconNudge] });
+    return { transform: k === 'x' ? [{ translateX: d }] : [{ translateX: d }, { translateY: Animated.multiply(d, -1) }] };
+  };
+  const handlePress = (e: GestureResponderEvent) => {
+    if (running.current || isBusy) return;
+    haptic('light');
+    const r = onPress?.(e);
+    if (r && typeof (r as Promise<unknown>).then === 'function') {
+      running.current = true;
+      setPending(true);
+      (r as Promise<unknown>).catch(() => undefined).finally(() => { running.current = false; if (mounted.current) setPending(false); });
+    }
+  };
   return (
-    <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', maxWidth: '100%', opacity: disabled ? 0.45 : 1 }, style, press.style]}>
+    <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', maxWidth: '100%', minWidth: 0, opacity: disabled ? 0.45 : 1 }, style, press.style]}>
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
-      accessibilityState={{ disabled: !!disabled || !!loading, busy: !!loading }}
-      disabled={disabled || loading}
+      accessibilityState={{ disabled: !!disabled || isBusy, busy: isBusy }}
+      disabled={disabled || isBusy}
       hitSlop={size === 'sm' ? 6 : 0}
       onLayout={(e) => setW(e.nativeEvent.layout.width)}
       onPressIn={() => { sweep(); press.handlers.onPressIn(); }}
       onPressOut={press.handlers.onPressOut}
       onHoverIn={press.handlers.onHoverIn}
       onHoverOut={press.handlers.onHoverOut}
-      onPress={(e) => {
-        haptic('light');
-        onPress?.(e);
-      }}
+      onPress={handlePress}
       style={[
         styles.button,
-        { minHeight: h, backgroundColor: bg, borderColor: border, overflow: 'hidden', paddingHorizontal: size === 'sm' ? spacing.sm : spacing.lg },
+        { minHeight: h, backgroundColor: bg, borderColor: border, overflow: 'hidden', paddingHorizontal: size === 'sm' ? spacing.sm + 2 : size === 'lg' ? spacing.xl : spacing.lg },
+        variant === 'ghost' && { paddingHorizontal: size === 'sm' ? spacing.xs + 2 : spacing.sm },
         glass && variant === 'primary' && { shadowColor: t.isDark ? '#FFC2D6' : '#E9587C', shadowOpacity: t.isDark ? 0.35 : 0.3, shadowRadius: 18, shadowOffset: { width: 0, height: 6 } },
+        variant === 'danger' && { shadowColor: t.colors.danger, shadowOpacity: 0.22, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } },
       ]}
       {...rest}
     >
@@ -197,16 +232,17 @@ export function Button({ label, variant = 'primary', icon, loading, size = 'md',
           <LinearGradient colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFill} />
         </Animated.View>
       )}
-      {/* Survol (web) : la surface s'illumine légèrement */}
-      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.14)', opacity: press.hover }]} />
+      {/* Survol (web) : la surface s'illumine légèrement (teinte du bouton pour les variantes transparentes) */}
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: variant === 'ghost' || variant === 'outline' ? t.colors.primary : 'rgba(255,255,255,1)', opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, variant === 'ghost' || variant === 'outline' ? 0.1 : 0.14] }) }]} />
       {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur */}
-      <Animated.View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexShrink: 1, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }), transform: [{ scale: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0.92] }) }] }}>
-        {icon && <Icon name={icon} size={size === 'sm' ? 16 : 19} color={fg} />}
-        <Text variant={size === 'sm' ? 'small' : 'body'} weight="bold" color={fg} center style={{ flexShrink: 1, letterSpacing: -0.2, textShadowColor: glass && variant === 'primary' && !t.isDark ? 'rgba(160,40,80,0.35)' : 'transparent', textShadowRadius: 3, textShadowOffset: { width: 0, height: 1 } }}>
+      <Animated.View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }), transform: [{ scale: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0.92] }) }] }}>
+        {icon && <Animated.View style={nudge(icon)}><Icon name={icon} size={iconSize} color={fg} /></Animated.View>}
+        <Text variant={size === 'sm' ? 'small' : 'body'} weight="bold" color={fg} center style={{ flexShrink: 1, minWidth: 0, letterSpacing: -0.2, textShadowColor: glass && variant === 'primary' && !t.isDark ? 'rgba(160,40,80,0.35)' : 'transparent', textShadowRadius: 3, textShadowOffset: { width: 0, height: 1 } }}>
           {label}
         </Text>
+        {iconRight && <Animated.View style={nudge(iconRight)}><Icon name={iconRight} size={iconSize} color={fg} /></Animated.View>}
       </Animated.View>
-      {loading ? (
+      {isBusy ? (
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', opacity: busy }]}>
           <ActivityIndicator color={fg} />
         </Animated.View>
@@ -216,26 +252,80 @@ export function Button({ label, variant = 'primary', icon, loading, size = 'md',
   );
 }
 
-export function IconButton({ icon, label, onPress, color, size = 22, style }: { icon: IconName; label: string; onPress: () => void; color?: string; size?: number; style?: StyleProp<ViewStyle> }) {
+/** Bouton icône seule (retour, fermer, menu, partager…). `tone="filled"` : pastille de fond visible. */
+export function IconButton({ icon, label, onPress, color, size = 22, style, tone = 'plain', disabled }: { icon: IconName; label: string; onPress: () => void; color?: string; size?: number; style?: StyleProp<ViewStyle>; tone?: 'plain' | 'filled' | 'primary'; disabled?: boolean }) {
   const t = useTheme();
-  const press = usePressMotion({ pressed: 0.86, hoverLift: 0 });
+  const press = usePressMotion({ pressed: 0.9, hoverLift: 0 });
+  const bg = tone === 'primary' ? t.colors.primary : tone === 'filled' ? t.colors.surfaceAlt : 'transparent';
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityState={{ disabled: !!disabled }}
+      disabled={disabled}
       onPress={() => {
         haptic('light');
         onPress();
       }}
       {...press.handlers}
       hitSlop={8}
-      style={[{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }, style]}
+      style={[{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill, opacity: disabled ? 0.45 : 1 }, style]}
     >
-      <Animated.View style={[{ width: MIN_TOUCH, height: MIN_TOUCH, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' }, press.style]}>
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.pill, backgroundColor: t.colors.surfaceAlt, opacity: press.hover }]} />
-        <Icon name={icon} size={size} color={color ?? t.colors.text} />
+      <Animated.View style={[{ width: MIN_TOUCH, height: MIN_TOUCH, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: bg }, press.style]}>
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.pill, backgroundColor: tone === 'primary' ? '#FFFFFF' : t.colors.surfaceAlt, opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, tone === 'primary' ? 0.16 : 1] }) }]} />
+        <Icon name={icon} size={size} color={color ?? (tone === 'primary' ? t.colors.primaryText : t.colors.text)} />
       </Animated.View>
     </Pressable>
+  );
+}
+
+/** Bouton d'action flottant (libellé facultatif). Le parent le positionne (position absolue). */
+export function Fab({ icon, label, onPress, style, accessibilityHint, showLabel = true }: { icon: IconName; label: string; onPress: () => void; style?: StyleProp<ViewStyle>; accessibilityHint?: string; showLabel?: boolean }) {
+  const t = useTheme();
+  const press = usePressMotion({ hoverLift: -3 });
+  return (
+    <Animated.View style={[styles.fab, { backgroundColor: t.colors.primary, shadowColor: t.colors.primary }, style, press.style]}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        accessibilityHint={accessibilityHint}
+        onPress={() => { haptic('light'); onPress(); }}
+        {...press.handlers}
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, minWidth: 52, justifyContent: 'center', paddingHorizontal: showLabel ? 18 : 0, borderRadius: radius.pill, overflow: 'hidden' }}
+      >
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#FFFFFF', opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, 0.14] }) }]} />
+        <Animated.View style={{ transform: [{ rotate: press.hover.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-8deg'] }) }] }}><Icon name={icon} size={20} color={t.colors.primaryText} /></Animated.View>
+        {showLabel ? <Text weight="medium" color={t.colors.primaryText} style={{ flexShrink: 1 }}>{label}</Text> : null}
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+/**
+ * Favori (étoile, signet, cœur) : à l'activation, l'icône « saute » et une onde part du centre.
+ * L'état affiché suit la donnée réelle (`active`), jamais un état supposé.
+ */
+export function FavoriteButton({ active, onPress, icon = 'heart', labelOn, labelOff, activeColor }: { active: boolean; onPress: () => void; icon?: IconName; labelOn: string; labelOff: string; activeColor?: string }) {
+  const t = useTheme();
+  const reduce = useReduceMotion();
+  const pop = React.useRef(new Animated.Value(1)).current;
+  const ring = React.useRef(new Animated.Value(1)).current;
+  const prev = React.useRef(active);
+  React.useEffect(() => {
+    if (active && !prev.current && !reduce) {
+      pop.setValue(1.3); springTo(pop, 1, 'pop', reduce).start();
+      ring.setValue(0); timeTo(ring, 1, 520, reduce).start();
+    }
+    prev.current = active;
+  }, [active, pop, ring, reduce]);
+  const color = active ? (activeColor ?? t.colors.primary) : t.colors.textMuted;
+  return (
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <Animated.View pointerEvents="none" style={{ position: 'absolute', width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: color, opacity: ring.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0, 0.7, 0] }), transform: [{ scale: ring.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1.5] }) }] }} />
+      <Animated.View style={{ transform: [{ scale: pop }] }}>
+        <IconButton icon={icon} label={active ? labelOn : labelOff} color={color} onPress={onPress} />
+      </Animated.View>
+    </View>
   );
 }
 
@@ -244,7 +334,7 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel 
   const t = useTheme();
   const active = tone === 'lavender' ? t.colors.lavender : t.colors.primary;
   const filled = selected && tone !== 'lavender';
-  const press = usePressMotion({ pressed: 0.94, hoverLift: -1 });
+  const press = usePressMotion({ pressed: 0.96, hoverLift: -1 });
   const pop = usePop(selected, 1.07);
   return (
     <Animated.View style={[{ maxWidth: '100%' }, press.style, pop]}>
@@ -502,6 +592,7 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
 const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: 1 },
   shadow: { shadowColor: '#B4507A', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 0 },
+  fab: { borderRadius: radius.pill, shadowOpacity: 0.32, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 6 },
   button: { borderRadius: radius.pill, borderWidth: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 10 },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 6, minHeight: 44, maxWidth: '100%', borderRadius: radius.pill, borderWidth: 1.2 },
   segmented: { flexDirection: 'row', borderRadius: radius.pill, padding: 4, gap: 4 },

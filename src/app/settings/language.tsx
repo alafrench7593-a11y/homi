@@ -4,7 +4,7 @@
  * Changer de langue ne touche ni aux données ni à la session ; la préférence est gardée sur l'appareil et dans le profil.
  */
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
 import { Banner, Card, Divider, haptic, Icon, Row, SectionTitle, Text } from '@/components/ui';
@@ -16,6 +16,7 @@ import { returnHereAfterLocaleChange } from '@/i18n/I18nProvider';
 import { availableLocales, defaultRegion, LOCALES, proposeLocale, REGIONS } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export default function LanguageScreen() {
   const t = useTheme();
@@ -51,7 +52,7 @@ export default function LanguageScreen() {
           return (
             <View key={l.code}>
               {i ? <Divider /> : null}
-              <Pressable
+              <Tappable
                 accessibilityRole="radio"
                 accessibilityState={{ checked: on }}
                 aria-checked={on}
@@ -64,7 +65,7 @@ export default function LanguageScreen() {
                   {l.code === deviceCode ? <Text variant="caption" muted>{tr('language.device')}</Text> : null}
                 </View>
                 <Icon name={on ? 'check-circle' : 'circle'} size={22} color={on ? t.colors.primary : t.colors.textMuted} />
-              </Pressable>
+              </Tappable>
             </View>
           );
         })}
@@ -88,7 +89,7 @@ export default function LanguageScreen() {
           return (
             <View key={r.code}>
               {i ? <Divider /> : null}
-              <Pressable
+              <Tappable
                 accessibilityRole="radio"
                 accessibilityState={{ checked: on }}
                 aria-checked={on}
@@ -99,7 +100,7 @@ export default function LanguageScreen() {
                 <Text weight={on ? 'bold' : 'regular'} style={{ flex: 1 }}>{regionName(r)}</Text>
                 <Text variant="caption" muted>{r.emergency}</Text>
                 <Icon name={on ? 'check-circle' : 'circle'} size={20} color={on ? t.colors.primary : t.colors.textMuted} />
-              </Pressable>
+              </Tappable>
             </View>
           );
         })}

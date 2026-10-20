@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, Share, View } from 'react-native';
+import { Share, View } from 'react-native';
 import { router } from 'expo-router';
 import { Card, Chip, Icon, type IconName, Row, Text } from '@/components/ui';
 import { Sheet, useToast } from '@/components/Overlays';
@@ -10,6 +10,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { BRAND } from '@/config/brand';
+import { Tappable } from '@/components/Tappable';
 
 export const REPORT_REASONS: { key: ReportReason; label: string }[] = [
   { key: 'harassment', label: 'Harcèlement ou propos blessants' },
@@ -31,7 +32,7 @@ export const spaceIcon = (f?: Pick<Forum, 'icon'> | null): IconName => SPACE_ICO
 export function SpaceTile({ forum, selected, onPress }: { forum: Forum; selected?: boolean; onPress: () => void }) {
   const t = useTheme();
   return (
-    <Pressable
+    <Tappable
       accessibilityRole="button"
       accessibilityState={{ selected }}
       accessibilityLabel={`Espace ${forum.title}. ${forum.description}`}
@@ -44,7 +45,7 @@ export function SpaceTile({ forum, selected, onPress }: { forum: Forum; selected
       <Icon name={spaceIcon(forum)} size={20} color={t.colors.primary} />
       <Text weight="bold">{forum.title}</Text>
       <Text variant="caption" muted>{forum.description}</Text>
-    </Pressable>
+    </Tappable>
   );
 }
 
@@ -78,9 +79,9 @@ export function ReportSheet({ visible, onClose, postId, commentId }: { visible: 
     <Sheet visible={visible} onClose={onClose} title={commentId ? 'Signaler ce commentaire' : 'Signaler cette publication'}>
       <Text variant="small" muted>Pourquoi ce contenu pose-t-il problème ?</Text>
       {REPORT_REASONS.map((r) => (
-        <Pressable key={r.key} accessibilityRole="button" accessibilityState={{ disabled: pending, busy: reportM.isPending }} disabled={pending} onPress={() => report(r.key)} style={{ minHeight: MIN_TOUCH, justifyContent: 'center', opacity: pending ? 0.5 : 1 }}>
+        <Tappable key={r.key} accessibilityRole="button" accessibilityState={{ disabled: pending, busy: reportM.isPending }} disabled={pending} onPress={() => report(r.key)} style={{ minHeight: MIN_TOUCH, justifyContent: 'center', opacity: pending ? 0.5 : 1 }}>
           <Text>{r.label}</Text>
-        </Pressable>
+        </Tappable>
       ))}
       <Chip label="Bloquer cette personne" icon="slash" onPress={block} />
       <Text variant="caption" muted>Si quelqu’un semble en danger immédiat, appelez le 15 ou le 112.</Text>
@@ -127,7 +128,7 @@ export function PostCard({ post, forumTitle, full }: { post: FeedPost; forumTitl
       <Row style={{ marginTop: spacing.sm }} gap={spacing.xs} wrap>
         <Chip label={String(post.like_count)} icon="heart" selected={post.liked} onPress={toggleLike} />
         <Chip label={String(post.comment_count)} icon="message-square" onPress={() => router.push(`/community/post/${post.id}`)} />
-        <Pressable
+        <Tappable
           accessibilityRole="checkbox"
           accessibilityState={{ checked: !!post.saved, busy: save.isPending }}
           accessibilityLabel={post.saved ? 'Dans mes favoris. Retirer des favoris' : 'Enregistrer dans mes favoris'}
@@ -137,15 +138,15 @@ export function PostCard({ post, forumTitle, full }: { post: FeedPost; forumTitl
           style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: post.saved ? t.colors.primary + '1F' : 'transparent' }}
         >
           <Icon name="bookmark" size={18} color={post.saved ? t.colors.primary : t.colors.textMuted} />
-        </Pressable>
+        </Tappable>
         <View style={{ flexGrow: 1 }} />
-        <Pressable accessibilityRole="button" accessibilityLabel="Partager" hitSlop={4} onPress={share} style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
+        <Tappable accessibilityRole="button" accessibilityLabel="Partager" hitSlop={4} onPress={share} style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="share-2" size={18} color={t.colors.textMuted} />
-        </Pressable>
+        </Tappable>
         {!post.is_mine && (
-          <Pressable accessibilityRole="button" accessibilityLabel="Signaler ou bloquer" hitSlop={4} onPress={() => setReporting(true)} style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
+          <Tappable accessibilityRole="button" accessibilityLabel="Signaler ou bloquer" hitSlop={4} onPress={() => setReporting(true)} style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="flag" size={18} color={t.colors.textMuted} />
-          </Pressable>
+          </Tappable>
         )}
       </Row>
       <ReportSheet visible={reporting} onClose={() => setReporting(false)} postId={post.id} />

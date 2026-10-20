@@ -14,6 +14,7 @@ import { filterRecipes } from '@/lib/recipes/engine';
 import { AGE_BANDS, BAND_MONTHS, bandFor, scoreRecipe, type AgeBand } from '@/lib/recipes/score';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { ResultsFade } from '@/components/MotionKit';
 
 type Kind = 'recommended' | 'cheap' | 'quick' | 'balanced';
 const KINDS: Kind[] = ['recommended', 'cheap', 'quick', 'balanced'];
@@ -55,7 +56,7 @@ export default function Rankings() {
       <Row wrap>{AGE_BANDS.map((b) => <Chip key={b} tone="lavender" label={tr(`rc.band.${b}` as TKey)} selected={band === b} onPress={() => { setBand(b); setShown(20); }} />)}</Row>
       <Text variant="caption" muted>{tr('rc.score.disclaimer')}</Text>
       {loading && !all ? <Skeleton rows={4} /> : !ranked.length ? <EmptyState icon="award" title={tr('rc.none')} body={tr('rc.noneBody')} /> : (
-        <View style={{ gap: spacing.xs }} testID="rankings-list">
+        <ResultsFade k={`${kind}-${band}`} style={{ gap: spacing.xs }} testID="rankings-list">
           {ranked.slice(0, shown).map((x, i) => (
             <View key={x.r.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
               <Text weight="bold" style={{ width: 28, textAlign: 'right' }}>{i + 1}</Text>
@@ -63,7 +64,7 @@ export default function Rankings() {
             </View>
           ))}
           {ranked.length > shown ? <Button label={tr('rc.more', { count: ranked.length - shown })} variant="secondary" onPress={() => setShown(shown + 20)} /> : null}
-        </View>
+        </ResultsFade>
       )}
     </Screen>
   );

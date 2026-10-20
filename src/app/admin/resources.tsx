@@ -54,7 +54,7 @@ export default function AdminResources() {
       </Row>
       <Field label={tr('src.admin.publishedOn')} optional value={f.published} onChangeText={(v) => setF({ ...f, published: v })} maxLength={10} />
       <Field label={tr('src.admin.consultedOn')} value={f.consulted} onChangeText={(v) => setF({ ...f, consulted: v })} maxLength={10} />
-      <Button label={tr('src.admin.save')} icon="plus" onPress={() => void add()} loading={save.isPending} testID="res-save" />
+      <Button label={tr('src.admin.save')} icon="plus" onPress={() => add()} loading={save.isPending} testID="res-save" />
 
       {all.data.map((r) => (
         <View key={r.id} testID={`res-row-${r.slug}`}><Card>
@@ -62,9 +62,9 @@ export default function AdminResources() {
           <Text weight="bold">{r.title}</Text>
           <Text variant="caption" muted>{r.publisher} · {r.url}</Text>
           <Row wrap>
-            {r.status !== 'published' ? <Button label={tr('src.admin.publish')} size="sm" variant="secondary" onPress={() => void setStatus(r, 'published')} testID={`res-publish-${r.slug}`} /> : null}
-            {r.status === 'published' ? <Button label={tr('src.admin.unpublish')} size="sm" variant="ghost" onPress={() => void setStatus(r, 'draft')} /> : null}
-            {r.status !== 'retired' ? <Button label={tr('src.admin.retire')} size="sm" variant="ghost" onPress={() => void setStatus(r, 'retired')} /> : null}
+            {r.status !== 'published' ? <Button label={tr('src.admin.publish')} size="sm" variant="secondary" onPress={() => setStatus(r, 'published')} testID={`res-publish-${r.slug}`} /> : null}
+            {r.status === 'published' ? <Button label={tr('src.admin.unpublish')} size="sm" variant="ghost" onPress={() => setStatus(r, 'draft')} /> : null}
+            {r.status !== 'retired' ? <Button label={tr('src.admin.retire')} size="sm" variant="ghost" onPress={() => setStatus(r, 'retired')} /> : null}
           </Row>
         </Card></View>
       ))}

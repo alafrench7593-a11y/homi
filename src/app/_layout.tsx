@@ -9,6 +9,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { WebInteractionStyles } from '@/components/WebInteractionStyles';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
@@ -147,6 +148,7 @@ export default function RootLayout() {
             <I18nProvider>
               <ToastProvider>
                 <Bootstrap />
+                <WebInteractionStyles />
                 <WebFrame>
                   <Backdrop />
                   <Navigator />
@@ -166,7 +168,10 @@ export default function RootLayout() {
 /** Sur un grand écran (version web), l'app garde un format téléphone centré au lieu de s'étirer. */
 function WebFrame({ children }: { children: React.ReactNode }) {
   const { width } = useWindowDimensions();
-  if (Platform.OS !== 'web' || width < 600) return <>{children}</>;
+  // Contrôle de la mise en page tablette / ordinateur (tests) : localStorage « toietmoi.frame » = « off »
+  let off = false;
+  try { off = Platform.OS === 'web' && globalThis.localStorage?.getItem('toietmoi.frame') === 'off'; } catch { off = false; }
+  if (Platform.OS !== 'web' || width < 600 || off) return <>{children}</>;
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#140D1C', padding: 24 }}>
       <Aurora mood="evening" intensity={1.3} />

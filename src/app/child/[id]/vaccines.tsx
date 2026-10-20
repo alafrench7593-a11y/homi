@@ -8,7 +8,7 @@
  * Ne remplace ni le carnet de santé ni l'avis du médecin.
  */
 import React, { useState } from 'react';
-import { Linking, Pressable, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, Skeleton } from '@/components/States';
@@ -25,6 +25,7 @@ import { toFrDate } from '@/lib/validation';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const SOURCE_KEYS: Vaccination['source'][] = ['carnet', 'professional', 'parent'];
 const ageLabel = (m: number, to?: number) => (to ? (m >= 24 ? tr('vx.ageYearsRange', { a: Math.round(m / 12), b: Math.round(to / 12) }) : tr('vx.ageMonthsRange', { a: m, b: to })) : m >= 24 ? tr('vx.ageYears', { count: Math.round(m / 12) }) : tr('vx.ageMonths', { count: m }));
@@ -118,9 +119,9 @@ export default function Vaccines() {
         <Banner tone="info" title={tr('vx.calendarTitle', { label: CALENDAR_VERSION.label })}>
           <Text variant="small">{tr('vx.calendarBody', { updated: formatDate(`${CALENDAR_VERSION.updated}T12:00:00`, { month: 'long', year: 'numeric' }), checked: fmt(CALENDAR_VERSION.checked) })}</Text>
           {Object.values(VACCINE_SOURCES).map((s) => (
-            <Pressable key={s.key} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ minHeight: 36, justifyContent: 'center' }}>
+            <Tappable key={s.key} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ minHeight: 36, justifyContent: 'center' }}>
               <Text variant="caption" color={t.colors.primary}>{s.label} ({fmt(s.published)})</Text>
-            </Pressable>
+            </Tappable>
           ))}
         </Banner>
       </View>
@@ -137,7 +138,7 @@ export default function Vaccines() {
               </View>
             ))}
             <Row wrap style={{ marginTop: spacing.xs }}>
-              <Button label={tr('vx.remind')} icon="bell" size="sm" variant="secondary" testID={`vaccine-remind-${v.months}`} loading={act.remind.isPending} onPress={() => void remindVisit(v)} />
+              <Button label={tr('vx.remind')} icon="bell" size="sm" variant="secondary" testID={`vaccine-remind-${v.months}`} loading={act.remind.isPending} onPress={() => remindVisit(v)} />
               <Button label={tr('vx.more')} size="sm" variant="ghost" onPress={() => { setVisit(v); setDoneDate(toFrDate(todayISO())); }} testID={`vaccine-open-${v.months}`} />
             </Row>
           </View>
@@ -152,7 +153,7 @@ export default function Vaccines() {
             <Text variant="small" muted>{formatDate(a.starts_at, { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</Text>
             {a.questions?.length ? <Text variant="caption" muted>{tr('vx.questionsCount', { count: a.questions.length })}</Text> : null}
             <Row wrap style={{ marginTop: spacing.xs }}>
-              <Button label={tr('vx.complete')} icon="check" size="sm" testID={`vaccine-complete-${a.id}`} onPress={() => void completeAppt(a)} />
+              <Button label={tr('vx.complete')} icon="check" size="sm" testID={`vaccine-complete-${a.id}`} onPress={() => completeAppt(a)} />
               <Button label={tr('vx.questions')} icon="help-circle" size="sm" variant="secondary" onPress={() => openQuestions(a)} testID={`vaccine-questions-${a.id}`} />
             </Row>
           </View>
@@ -162,7 +163,7 @@ export default function Vaccines() {
 
       <SectionTitle title={tr('vx.calendar')} />
       {shownVisits.map((v) => (
-        <Pressable key={`${v.months}-${v.toMonths ?? ''}`} accessibilityRole="button" onPress={() => { setVisit(v); setDoneDate(toFrDate(todayISO())); }}>
+        <Tappable key={`${v.months}-${v.toMonths ?? ''}`} accessibilityRole="button" onPress={() => { setVisit(v); setDoneDate(toFrDate(todayISO())); }}>
           <Card>
             <Row style={{ justifyContent: 'space-between' }}>
               <Text weight="bold">{ageLabel(v.months, v.toMonths)}</Text>
@@ -175,7 +176,7 @@ export default function Vaccines() {
               </View>
             ))}
           </Card>
-        </Pressable>
+        </Tappable>
       ))}
       {!showAll && shownVisits.length < visits.length ? <Button label={tr('vx.showAll')} variant="ghost" onPress={() => setShowAll(true)} /> : null}
       <Card>
@@ -213,10 +214,10 @@ export default function Vaccines() {
             <Text variant="caption" muted>{tr('vx.indicative')}</Text>
             {visit.doses.some((x) => x.state !== 'done') ? (
               <>
-                <Button label={tr('vx.remind')} icon="bell" variant="secondary" full onPress={() => void remindVisit(visit)} />
-                <Button label={tr('vx.plan')} icon="calendar" variant="secondary" full onPress={() => void planVisit(visit)} testID="vaccine-plan" />
+                <Button label={tr('vx.remind')} icon="bell" variant="secondary" full onPress={() => remindVisit(visit)} />
+                <Button label={tr('vx.plan')} icon="calendar" variant="secondary" full onPress={() => planVisit(visit)} testID="vaccine-plan" />
                 <Field label={tr('vx.doneOn')} value={doneDate} onChangeText={setDoneDate} keyboardType="numbers-and-punctuation" testID="vaccine-done-date" />
-                <Button label={tr('vx.markDone')} icon="check" full onPress={() => void markVisitDone(visit)} testID="vaccine-mark-done" />
+                <Button label={tr('vx.markDone')} icon="check" full onPress={() => markVisitDone(visit)} testID="vaccine-mark-done" />
                 <Text variant="caption" muted>{tr('vx.markDoneNote')}</Text>
               </>
             ) : null}

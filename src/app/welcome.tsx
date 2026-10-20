@@ -1,6 +1,6 @@
 /** Accueil avant connexion : aurore liquide, verre, titre qui se dévoile ligne par ligne. */
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -17,6 +17,7 @@ import { getLocale, t as tr } from '@/i18n';
 import { localeInfo } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, NACRE, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 function Sparkle({ color }: { color: string }) {
   return (
@@ -50,16 +51,16 @@ export default function Welcome() {
             </View>
           </Appear>
           <Appear kind="scale" delay={0.3}>
-            <Pressable accessibilityRole="button" accessibilityLabel={tr('welcome.language', { language: localeInfo(getLocale()).native })} onPress={() => router.push('/intro')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 12, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.7 : 1 })}>
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('welcome.language', { language: localeInfo(getLocale()).native })} onPress={() => router.push('/intro')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 12, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.7 : 1 })}>
               <Icon name="globe" size={16} color={t.colors.text} />
               <Text variant="small" weight="medium">{localeInfo(getLocale()).native}</Text>
-            </Pressable>
+            </Tappable>
           </Appear>
           <Appear kind="scale" delay={0.34}>
-            <Pressable accessibilityRole="button" accessibilityLabel={tr('welcome.helpA11y')} onPress={() => router.push('/emergency')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 14, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.95)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.6)', opacity: pressed ? 0.8 : 1 })}>
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('welcome.helpA11y')} onPress={() => router.push('/emergency')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 14, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.95)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.6)', opacity: pressed ? 0.8 : 1 })}>
               <Icon name="life-buoy" size={16} color={t.colors.heart} />
               <Text variant="small" weight="medium">{tr('welcome.help')}</Text>
-            </Pressable>
+            </Tappable>
           </Appear>
         </View>
 

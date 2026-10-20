@@ -125,7 +125,7 @@ function FollowUp({ childId }: { childId: string }) {
         <Field label={tr('nd.entry.title')} value={title} onChangeText={setTitle} maxLength={120} testID="entry-title" />
         <Field label={tr('nd.entry.date')} value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" />
         <Field label={tr('nd.entry.body')} optional value={body} onChangeText={setBody} multiline maxLength={4000} />
-        <Button label={tr('common.save')} loading={add.isPending} onPress={() => void save()} testID="entry-save" />
+        <Button label={tr('common.save')} loading={add.isPending} onPress={() => save()} testID="entry-save" />
       </Sheet>
     </View>
   );
@@ -221,9 +221,9 @@ function Treatments({ childId, childName, noteDose }: { childId: string; childNa
             {d.treatment.instructions ? <Text variant="small" muted>{d.treatment.instructions}</Text> : null}
             {d.log ? <Text variant="small" weight="bold" style={{ marginTop: 4 }} testID={`dose-status-${d.time}`}>{tr(`nd.t.status.${d.log.status}` as TKey)}{d.log.note ? ` · ${d.log.note}` : ''}</Text> : null}
             <Row wrap style={{ marginTop: spacing.xs }}>
-              <Button label={tr('nd.t.taken')} size="sm" onPress={() => void answer(d, 'taken')} testID={`dose-taken-${d.time}`} />
-              <Button label={tr('nd.t.snooze')} size="sm" variant="secondary" onPress={() => void answer(d, 'snoozed')} />
-              <Button label={tr('nd.t.skip')} size="sm" variant="secondary" onPress={() => void answer(d, 'skipped')} />
+              <Button label={tr('nd.t.taken')} size="sm" onPress={() => answer(d, 'taken')} testID={`dose-taken-${d.time}`} />
+              <Button label={tr('nd.t.snooze')} size="sm" variant="secondary" onPress={() => answer(d, 'snoozed')} />
+              <Button label={tr('nd.t.skip')} size="sm" variant="secondary" onPress={() => answer(d, 'skipped')} />
               <Button label={tr('nd.t.note')} size="sm" variant="ghost" onPress={() => { setNoteFor(d); setNote(d.log?.note ?? ''); }} />
             </Row>
           </View>
@@ -261,7 +261,7 @@ function Treatments({ childId, childName, noteDose }: { childId: string; childNa
         <Field label={tr('nd.t.prescriber')} optional value={draft.prescriber} onChangeText={(v) => set('prescriber', v)} maxLength={120} />
         <Toggle label={tr('nd.t.reminders')} value={draft.reminders} onChange={(v) => set('reminders', v)} />
         <Toggle label={tr('nd.t.active')} value={draft.active} onChange={(v) => set('active', v)} />
-        <Button label={tr('common.save')} loading={save.isPending} onPress={() => void submit()} testID="t-save" />
+        <Button label={tr('common.save')} loading={save.isPending} onPress={() => submit()} testID="t-save" />
         {editing && editing !== 'new' ? <Button label={tr('common.delete')} variant="ghost" icon="trash-2" onPress={async () => {
           if (!(await confirm(tr('nd.t.deleteTitle'), editing.name, tr('common.delete')))) return;
           await remove.mutateAsync(editing.id).catch((e) => toast(friendlyError(e), 'error'));

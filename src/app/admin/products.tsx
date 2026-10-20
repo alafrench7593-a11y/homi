@@ -79,15 +79,15 @@ function Editor({ p, onClose }: { p: KidProduct; onClose: () => void }) {
       <Field label={tr('pr.precautions')} hint={tr('pr.admin.linesHint')} value={precautions} onChangeText={setPrecautions} multiline maxLength={1200} />
       <Field label={tr('pr.admin.reviewer')} hint={tr('pr.admin.reviewerHint')} value={reviewer} onChangeText={setReviewer} maxLength={160} />
       <Row wrap style={{ marginTop: spacing.xs }}>
-        <Button label={tr('common.save')} size="sm" onPress={() => void persist()} loading={save.isPending} />
-        {p.status !== 'published' ? <Button label={tr('pr.admin.publish')} size="sm" variant="secondary" onPress={() => void persist('published')} testID="product-publish" /> : <Button label={tr('pr.admin.unpublish')} size="sm" variant="secondary" onPress={() => void persist('draft')} />}
-        {p.status !== 'retired' ? <Button label={tr('pr.admin.retire')} size="sm" variant="ghost" onPress={() => void persist('retired')} /> : null}
+        <Button label={tr('common.save')} size="sm" onPress={() => persist()} loading={save.isPending} />
+        {p.status !== 'published' ? <Button label={tr('pr.admin.publish')} size="sm" variant="secondary" onPress={() => persist('published')} testID="product-publish" /> : <Button label={tr('pr.admin.unpublish')} size="sm" variant="secondary" onPress={() => persist('draft')} />}
+        {p.status !== 'retired' ? <Button label={tr('pr.admin.retire')} size="sm" variant="ghost" onPress={() => persist('retired')} /> : null}
         <Button label={tr('common.cancel')} size="sm" variant="ghost" onPress={onClose} />
       </Row>
 
       <SectionTitle title={tr('pr.prices')} />
       {(prices.data ?? []).filter((x) => x.product_id === p.id).map((x) => <Text key={x.id} variant="small">• {x.price} € · {x.store_name} · {formatDate(`${x.observed_on}T12:00:00`)} · {tr(`pr.priceSrc.${x.source}` as TKey)}</Text>)}
-      <Button label={tr('pr.admin.fetchPrices')} icon="download" size="sm" variant="secondary" onPress={() => void loadOpenPrices()} loading={fetchPrices.isPending} testID="product-fetch-prices" />
+      <Button label={tr('pr.admin.fetchPrices')} icon="download" size="sm" variant="secondary" onPress={() => loadOpenPrices()} loading={fetchPrices.isPending} testID="product-fetch-prices" />
       {found ? (
         <View testID="open-prices-result" style={{ gap: 4 }}>
           {found.message ? <Text variant="caption" muted>{found.message}</Text> : null}
@@ -95,7 +95,7 @@ function Editor({ p, onClose }: { p: KidProduct; onClose: () => void }) {
           {found.list.map((x) => (
             <Row key={x.id} wrap style={{ alignItems: 'center' }}>
               <Text variant="small" style={{ flex: 1 }}>{x.price} € · {x.store_name}{x.store_city ? `, ${x.store_city}` : ''} · {formatDate(`${x.observed_on}T12:00:00`)}</Text>
-              <Button label={tr('pr.admin.keep')} size="sm" variant="ghost" onPress={() => void keepOpenPrice(x)} />
+              <Button label={tr('pr.admin.keep')} size="sm" variant="ghost" onPress={() => keepOpenPrice(x)} />
             </Row>
           ))}
         </View>
@@ -110,7 +110,7 @@ function Editor({ p, onClose }: { p: KidProduct; onClose: () => void }) {
       <Field label={tr('pr.admin.city')} optional value={mp.city} onChangeText={(v) => setMp({ ...mp, city: v })} maxLength={120} />
       <Field label={tr('pr.admin.productUrl')} optional value={mp.url} onChangeText={(v) => setMp({ ...mp, url: v })} autoCapitalize="none" maxLength={500} />
       <Field label={tr('pr.admin.sourceUrl')} optional value={mp.src} onChangeText={(v) => setMp({ ...mp, src: v })} autoCapitalize="none" maxLength={500} />
-      <Button label={tr('pr.admin.addPrice')} size="sm" onPress={() => void addManual()} loading={savePrice.isPending} />
+      <Button label={tr('pr.admin.addPrice')} size="sm" onPress={() => addManual()} loading={savePrice.isPending} />
     </Card>
   );
 }
@@ -157,7 +157,7 @@ export default function AdminProducts() {
         <Chip label={tr('pr.admin.kindFood')} selected={kind === 'food'} onPress={() => setKind('food')} />
       </Row>
       <Field label={tr('pr.admin.barcode')} value={code} onChangeText={setCode} keyboardType="number-pad" maxLength={14} testID="product-barcode" />
-      <Button label={tr('pr.admin.add')} icon="plus" onPress={() => void add()} loading={lookup.isPending || save.isPending} testID="product-add" />
+      <Button label={tr('pr.admin.add')} icon="plus" onPress={() => add()} loading={lookup.isPending || save.isPending} testID="product-add" />
       {products.data.map((p) => (
         <View key={p.id} style={{ gap: spacing.xs }}>
           <Card>

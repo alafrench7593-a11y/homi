@@ -3,7 +3,7 @@
  * Carnet privé (visible uniquement par vous), descriptif : aucune cible, aucune norme, aucun diagnostic.
  */
 import React, { useMemo, useState } from 'react';
-import { Linking, Pressable, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
@@ -23,6 +23,7 @@ import { toFrDate } from '@/lib/validation';
 import type { Nap, ParentSleepInput, ParentSleepLog, Scale5 } from '@/lib/types-sleep';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const QUALITY = ['Très agitée', 'Agitée', 'Moyenne', 'Plutôt reposante', 'Reposante'];
 const FATIGUE = ['Reposé·e', 'Un peu fatigué·e', 'Fatigué·e', 'Très fatigué·e', 'Épuisé·e'];
@@ -38,7 +39,7 @@ function ScalePicker({ label, labels, value, onChange }: { label: string; labels
         {([1, 2, 3, 4, 5] as Scale5[]).map((v) => {
           const sel = value === v;
           return (
-            <Pressable
+            <Tappable
               key={v}
               accessibilityRole="radio"
               accessibilityState={{ selected: sel }}
@@ -50,7 +51,7 @@ function ScalePicker({ label, labels, value, onChange }: { label: string; labels
               })}
             >
               <Text weight="bold" color={sel ? t.colors.primaryText : t.colors.text}>{v}</Text>
-            </Pressable>
+            </Tappable>
           );
         })}
       </View>

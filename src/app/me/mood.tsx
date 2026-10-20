@@ -4,7 +4,7 @@
  */
 import { insertOrQueue } from '@/lib/offline';
 import React, { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
@@ -19,6 +19,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import type { MoodCheckin } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const MOODS: { value: MoodCheckin['mood']; label: string }[] = [
   { value: 1, label: 'Très difficile' },
@@ -139,7 +140,7 @@ export default function MoodScreen() {
                 {MOODS.map((m) => {
                   const sel = mood === m.value;
                   return (
-                    <Pressable
+                    <Tappable
                       key={m.value}
                       accessibilityRole="radio"
                       accessibilityState={{ selected: sel }}
@@ -158,7 +159,7 @@ export default function MoodScreen() {
                         </View>
                         <Text weight="medium" color={sel ? t.colors.primaryText : t.colors.text}>{m.label}</Text>
                       </Row>
-                    </Pressable>
+                    </Tappable>
                   );
                 })}
               </View>

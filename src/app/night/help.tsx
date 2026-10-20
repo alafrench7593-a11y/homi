@@ -7,7 +7,7 @@
  * Aucun diagnostic, aucune promesse (« il fera ses nuits »), aucune culpabilisation. Contenu « À vérifier ».
  */
 import React, { useMemo, useState } from 'react';
-import { Linking, Pressable, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, Skeleton } from '@/components/States';
@@ -26,6 +26,7 @@ import type { Appointment, Bottle, Breastfeed, Sleep } from '@/lib/types';
 import { formatDate, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export default function NightHelp() {
   const t = useTheme();
@@ -133,15 +134,15 @@ export default function NightHelp() {
       {mine.length ? (
         <View testID="night-questions" style={{ gap: spacing.xs }}>
           <Text variant="small" weight="bold">{tr('nh.q.count', { count: mine.length })}</Text>
-          {nextAppt ? <Button label={tr('nh.q.toAppt', { title: nextAppt.title })} icon="calendar" variant="secondary" onPress={() => void addToAppointment()} /> : <Button label={tr('nh.q.newAppt')} icon="calendar" variant="secondary" onPress={() => router.push(`/appointments?child=${child.id}`)} />}
+          {nextAppt ? <Button label={tr('nh.q.toAppt', { title: nextAppt.title })} icon="calendar" variant="secondary" onPress={() => addToAppointment()} /> : <Button label={tr('nh.q.newAppt')} icon="calendar" variant="secondary" onPress={() => router.push(`/appointments?child=${child.id}`)} />}
         </View>
       ) : null}
 
       <SectionTitle title={tr('nh.sources')} />
       {Object.values(NIGHT_SOURCES).map((s) => (
-        <Pressable key={s.url} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ minHeight: 36, justifyContent: 'center' }}>
+        <Tappable key={s.url} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ minHeight: 36, justifyContent: 'center' }}>
           <Text variant="caption" color={t.colors.primary}>{s.label}{s.published ? ` (${formatDate(`${s.published}T12:00:00`)})` : ''} · {tr('rc.consulted', { date: formatDate(`${s.consulted_on}T12:00:00`) })}</Text>
-        </Pressable>
+        </Tappable>
       ))}
       <Text variant="caption" muted testID="night-status">{tr('nh.status')}</Text>
     </Screen>

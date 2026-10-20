@@ -5,7 +5,7 @@
  * Les urgences restent visibles en haut, sans animation.
  */
 import React, { useMemo, useState } from 'react';
-import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
+import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
@@ -24,6 +24,7 @@ import { useUiStore } from '@/lib/store';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { Tappable } from '@/components/Tappable';
 
 const GAP = spacing.sm;
 /** Largeur utile maximale (tablette, ordinateur) : la grille reste lisible et centrée. */
@@ -154,7 +155,7 @@ function UrgentStrip({ tool }: { tool: CatalogTool }) {
   const t = useTheme();
   const c = glyphColor(t, tool.theme, true);
   return (
-    <Pressable
+    <Tappable
       accessibilityRole="button"
       accessibilityLabel="Urgences : 15, 112, 3114. Ouvrir les numéros utiles."
       onPress={() => router.push('/emergency')}
@@ -163,7 +164,7 @@ function UrgentStrip({ tool }: { tool: CatalogTool }) {
       <Icon name="life-buoy" size={20} color={c} />
       <Text weight="bold" style={{ flex: 1, color: c }}>Urgences · 15 · 112 · 3114</Text>
       <Icon name="chevron-right" size={18} color={c} />
-    </Pressable>
+    </Tappable>
   );
 }
 

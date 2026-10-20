@@ -8,7 +8,7 @@
  * Tout le traitement d'image a lieu sur l'appareil. Les copies temporaires sont effacées.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Image, PanResponder, Platform, Pressable, View, useWindowDimensions } from 'react-native';
+import { Image, PanResponder, Platform, View, useWindowDimensions } from 'react-native';
 import Svg, { Polygon } from 'react-native-svg';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -32,6 +32,7 @@ import { uuid } from '@/lib/uuid';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const BUCKET = 'documents';
 const MAX_PAGES = 30;
@@ -332,9 +333,9 @@ export default function ScanScreen() {
             <Appear key={p.id} kind="soft" delay={0.02}>
               <Card>
                 <Row style={{ alignItems: 'flex-start' }}>
-                  <Pressable accessibilityRole="button" accessibilityLabel={tr('docs.scan.cropA11y', { n: i + 1 })} onPress={() => setEditing(p.id)}>
+                  <Tappable accessibilityRole="button" accessibilityLabel={tr('docs.scan.cropA11y', { n: i + 1 })} onPress={() => setEditing(p.id)}>
                     <Image source={{ uri: p.preview }} style={{ width: 84, height: 84 * (p.h / p.w), maxHeight: 130, borderRadius: 8, backgroundColor: '#fff' }} resizeMode="contain" />
-                  </Pressable>
+                  </Tappable>
                   <View style={{ flex: 1, gap: 6 }}>
                     <Row style={{ justifyContent: 'space-between' }}>
                       <Text weight="bold">{tr('docs.page', { n: i + 1 })}</Text>

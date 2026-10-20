@@ -3,7 +3,7 @@
  * « archiver ou supprimer les anciennes données » (archivage par défaut).
  */
 import React, { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Sheet } from '@/components/Overlays';
 import { Button, Card, haptic, Icon, type IconName, Row, Text } from '@/components/ui';
@@ -17,6 +17,7 @@ import type { Child } from '@/lib/types';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export const JOURNEY_ICON: Record<JourneyType, IconName> = {
   avoid: 'shield', ttc: 'sunrise', cycle: 'calendar', pregnancy: 'moon', postpartum: 'heart', baby: 'smile', child: 'users',
@@ -51,7 +52,7 @@ export function ChangeSheet({ req, onClose, onConfirm, busy }: { req: ChangeRequ
   React.useEffect(() => { if (req) setMode('archive'); }, [req]);
   const closing = req?.closing;
   const opt = (m: CloseMode, title: string, body: string, icon: IconName) => (
-    <Pressable
+    <Tappable
       key={m}
       testID={`mode-${m}`}
       accessibilityRole="radio"
@@ -66,7 +67,7 @@ export function ChangeSheet({ req, onClose, onConfirm, busy }: { req: ChangeRequ
         <Text variant="small" muted>{body}</Text>
       </View>
       <Icon name={mode === m ? 'check-circle' : 'circle'} color={mode === m ? t.colors.primary : t.colors.textMuted} />
-    </Pressable>
+    </Tappable>
   );
   return (
     <Sheet visible={!!req} onClose={onClose} title={req?.title ?? ''}>
@@ -94,11 +95,11 @@ export function ChildHomeCard({ child }: { child: Child }) {
   const { data: treatments } = useTreatments(child.id);
   const active = (treatments ?? []).filter((x) => x.active && (!x.end_date || x.end_date >= new Date().toISOString().slice(0, 10)));
   const link = (icon: IconName, label: string, href: string, testID?: string) => (
-    <Pressable key={href} testID={testID} accessibilityRole="button" accessibilityLabel={label} onPress={() => router.push(href as never)}
+    <Tappable key={href} testID={testID} accessibilityRole="button" accessibilityLabel={label} onPress={() => router.push(href as never)}
       style={({ pressed }) => ({ flexGrow: 1, flexBasis: '45%', flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: spacing.sm, borderRadius: radius.md, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.background })}>
       <Icon name={icon} size={18} color={t.colors.primary} />
       <Text variant="small" weight="bold" style={{ flex: 1 }}>{label}</Text>
-    </Pressable>
+    </Tappable>
   );
   return (
     <Card>
@@ -137,7 +138,7 @@ export function FamilyOverview() {
       <Card>
         <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('pj.family.title')}</Text>
         {rows.map((r) => (
-          <Pressable key={r.key} accessibilityRole="button" accessibilityLabel={`${r.title}, ${r.sub}`} onPress={() => { haptic('selection'); r.onPress(); }}
+          <Tappable key={r.key} accessibilityRole="button" accessibilityLabel={`${r.title}, ${r.sub}`} onPress={() => { haptic('selection'); r.onPress(); }}
             style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 52, opacity: pressed ? 0.7 : 1 })}>
             <Icon name={r.icon} color={t.colors.primary} />
             <View style={{ flex: 1 }}>
@@ -145,7 +146,7 @@ export function FamilyOverview() {
               <Text variant="small" muted>{r.sub}</Text>
             </View>
             <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
-          </Pressable>
+          </Tappable>
         ))}
       </Card>
       <FamilyHomeCard />

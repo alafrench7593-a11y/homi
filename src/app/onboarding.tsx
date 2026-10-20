@@ -1,6 +1,6 @@
 /** Première ouverture : court, doux, et ne demande que l'utile. */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { Screen } from '@/components/Screen';
@@ -26,6 +26,7 @@ import { eq } from '@/lib/backend';
 import { LEGAL_VERSIONS } from '@/lib/authFlow';
 import { CheckRow, LegalLink } from '@/features/auth';
 import { clearDraftLocally, loadDraftLocally, restoreDraft, saveDraftLocally, type BottleFeeding, type OnboardingDraft } from '@/lib/onboardingDraft';
+import { Tappable } from '@/components/Tappable';
 
 type Step = 'intro' | 'journeys' | 'pregnancy' | 'children' | 'reminders' | 'consents';
 
@@ -293,7 +294,7 @@ export default function Onboarding() {
           {JOURNEYS.map((j) => {
             const sel = journeys.includes(j.key);
             return (
-              <Pressable
+              <Tappable
                 key={j.key}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: sel }}
@@ -309,7 +310,7 @@ export default function Onboarding() {
                   <Text variant="small" muted>{j.hint}</Text>
                 </View>
                 {sel && <Icon name="check-circle" color={t.colors.primary} />}
-              </Pressable>
+              </Tappable>
             );
           })}
           <Text weight="bold" style={{ marginTop: spacing.sm }}>{tr('onb.interests.title')}</Text>

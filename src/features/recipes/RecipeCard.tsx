@@ -1,6 +1,6 @@
 /** Carte d'une recette dans une liste. */
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { haptic, Icon, Row, Text } from '@/components/ui';
 import { RecipeArt } from './RecipeArt';
@@ -9,11 +9,12 @@ import type { Recipe } from '@/lib/recipes/types';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export function RecipeCard({ r, favorite, score }: { r: Recipe; favorite?: boolean; score?: number | null }) {
   const t = useTheme();
   return (
-    <Pressable testID={`recipe-${r.slug}`} accessibilityRole="button" accessibilityLabel={tr('rc.card.a11y', { title: r.title, min: r.prepMin + r.cookMin })} onPress={() => { haptic('selection'); router.push(`/meals/${r.slug}`); }}
+    <Tappable testID={`recipe-${r.slug}`} accessibilityRole="button" accessibilityLabel={tr('rc.card.a11y', { title: r.title, min: r.prepMin + r.cookMin })} onPress={() => { haptic('selection'); router.push(`/meals/${r.slug}`); }}
       style={({ pressed }) => ({ flexDirection: 'row', gap: spacing.sm, padding: spacing.xs, borderRadius: radius.lg, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border })}>
       <View style={{ width: 104 }}><RecipeArt recipe={r} height={86} label={false} rounded={12} /></View>
       <View style={{ flex: 1, gap: 2, justifyContent: 'center' }}>
@@ -25,7 +26,7 @@ export function RecipeCard({ r, favorite, score }: { r: Recipe; favorite?: boole
           {score != null ? <Text variant="caption" weight="bold" testID={`score-${r.slug}`}>{tr('rc.score.badge', { n: score })}</Text> : null}
         </Row>
       </View>
-    </Pressable>
+    </Tappable>
   );
 }
 

@@ -1,6 +1,6 @@
 /** Boîte de réception : rappels, réponses de la communauté, abonnement, rappels officiels de produits. */
 import React, { useMemo } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -14,6 +14,7 @@ import { timeAgo } from '@/lib/domain/dates';
 import type { AppNotification } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const CATEGORY: Record<AppNotification['category'], { icon: IconName; label: string }> = {
   reminder: { icon: 'bell', label: 'Rappel' },
@@ -58,7 +59,7 @@ export default function NotificationsScreen() {
     const urgent = n.category === 'product_recall';
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: isUnread ? t.colors.surface : t.colors.surfaceAlt }}>
-        <Pressable
+        <Tappable
           accessibilityRole="button"
           accessibilityLabel={`${isUnread ? 'Non lue. ' : ''}${meta.label} : ${n.title}${n.body ? `. ${n.body}` : ''}`}
           accessibilityHint={to ? 'Ouvre l’écran concerné' : isUnread ? 'Marque comme lue' : undefined}
@@ -77,7 +78,7 @@ export default function NotificationsScreen() {
             <Text variant="caption" muted>{meta.label} · {timeAgo(n.created_at)}</Text>
           </View>
           {to && <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
-        </Pressable>
+        </Tappable>
         <IconButton icon="x" label={`Supprimer la notification ${n.title}`} color={t.colors.textMuted} size={18} onPress={() => { if (del.isPending && del.variables === n.id) return; del.mutate(n.id, { onError: (e) => toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error') }); }} />
       </View>
     );

@@ -4,7 +4,7 @@
  * parcours post-partum et parcours bébé créés. Ensuite : plus aucune semaine d'aménorrhée ni notification de grossesse.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Pressable, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { confirm, useToast } from '@/components/Overlays';
@@ -25,6 +25,7 @@ import { uuid } from '@/lib/uuid';
 import { t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 interface Draft { first_name: string; date: string; time: string; weight: string; length: string; term: string; sex: 'female' | 'male' | 'unspecified' | null; photo: string | null }
 const empty = (name = ''): Draft => ({ first_name: name, date: toFrDate(todayISO()), time: '', weight: '', length: '', term: '', sex: null, photo: null });
@@ -140,18 +141,18 @@ export default function EndPregnancy() {
   }
 
   const choice = (o: PregnancyOutcome, icon: React.ComponentProps<typeof Icon>['name']) => (
-    <Pressable key={o} testID={`outcome-${o}`} accessibilityRole="radio" accessibilityState={{ checked: outcome === o }} onPress={() => { haptic('selection'); setOutcome(o); }}
+    <Tappable key={o} testID={`outcome-${o}`} accessibilityRole="radio" accessibilityState={{ checked: outcome === o }} onPress={() => { haptic('selection'); setOutcome(o); }}
       style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1.5, borderColor: outcome === o ? t.colors.primary : t.colors.border, backgroundColor: outcome === o ? t.colors.accentSoft : t.colors.surface }}>
       <Icon name={icon} color={outcome === o ? t.colors.primary : t.colors.textMuted} />
       <View style={{ flex: 1 }}>
         <Text weight="bold">{tr(`pj.outcome.${o}` as TKey)}</Text>
         <Text variant="small" muted>{tr(`pj.outcome.${o}.hint` as TKey)}</Text>
       </View>
-    </Pressable>
+    </Tappable>
   );
 
   return (
-    <Screen back title={tr('pj.end.title')} subtitle={tr('pj.end.subtitle')} footer={outcome ? <Button label={outcome === 'born' ? tr(drafts.length > 1 ? 'pj.birth.submitMany' : 'pj.birth.submit', { count: drafts.length }) : tr('pj.end.confirm')} size="lg" loading={busy} onPress={() => void submit()} testID="end-submit" /> : undefined}>
+    <Screen back title={tr('pj.end.title')} subtitle={tr('pj.end.subtitle')} footer={outcome ? <Button label={outcome === 'born' ? tr(drafts.length > 1 ? 'pj.birth.submitMany' : 'pj.birth.submit', { count: drafts.length }) : tr('pj.end.confirm')} size="lg" loading={busy} onPress={() => submit()} testID="end-submit" /> : undefined}>
       {choice('born', 'heart')}
       {choice('ended', 'feather')}
       {choice('unspecified', 'circle')}
@@ -179,7 +180,7 @@ export default function EndPregnancy() {
                 </Row>
                 <Row>
                   {d.photo ? <Image source={{ uri: d.photo }} style={{ width: 56, height: 56, borderRadius: 28 }} accessibilityLabel={tr('pj.birth.photo')} /> : null}
-                  <Button label={d.photo ? tr('pj.birth.photoChange') : tr('pj.birth.photoAdd')} icon="camera" size="sm" variant="secondary" onPress={() => void addPhoto(i)} />
+                  <Button label={d.photo ? tr('pj.birth.photoChange') : tr('pj.birth.photoAdd')} icon="camera" size="sm" variant="secondary" onPress={() => addPhoto(i)} />
                   {d.photo ? <Button label={tr('pj.birth.photoRemove')} size="sm" variant="ghost" onPress={() => set(i, { photo: null })} /> : null}
                 </Row>
                 {drafts.length > 1 ? <Button label={tr('pj.birth.remove')} size="sm" variant="ghost" icon="x" onPress={() => { setDrafts((ds) => ds.filter((_, j) => j !== i)); setErrors((es) => es.filter((_, j) => j !== i)); }} /> : null}

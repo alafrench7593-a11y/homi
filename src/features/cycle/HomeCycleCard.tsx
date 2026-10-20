@@ -6,7 +6,7 @@
  *  - Mise en page fluide : tout passe à la ligne (aucune hauteur fixe, aucun texte coupé).
  */
 import React, { useMemo } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { haptic, Text } from '@/components/ui';
 import { usePeriods } from '@/lib/data/hooks';
@@ -21,6 +21,7 @@ import { fonts, MIN_TOUCH, spacing } from '@/theme/tokens';
 import { CycleIcon, Glass, Ink, useCyclePalette } from './kit';
 import { fmtDay } from './format';
 import { resolveItems, resolveShortcuts, SHORTCUT_META, type CardItem } from './homeCard';
+import { Tappable } from '@/components/Tappable';
 
 type Mode = 'ttc' | 'avoid' | 'cycle';
 
@@ -61,7 +62,7 @@ export function HomeCycleCard({ mode }: { mode: Mode }) {
 
   return (
     <Glass>
-      <Pressable accessibilityRole="button" accessibilityLabel={open} onPress={() => { haptic('selection'); router.push(href as never); }} style={{ gap: spacing.xs }}>
+      <Tappable accessibilityRole="button" accessibilityLabel={open} onPress={() => { haptic('selection'); router.push(href as never); }} style={{ gap: spacing.xs }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
           <CycleIcon name="cycle" color={c.period} size={18} />
           <Ink variant="caption" weight="bold" soft style={{ flex: 1, letterSpacing: 1.2 }}>{mode === 'ttc' ? tr('cycleCard.ttc') : tr('cycleCard.mine')}</Ink>
@@ -83,23 +84,23 @@ export function HomeCycleCard({ mode }: { mode: Mode }) {
             {items.some((k) => k === 'next' || k === 'fertile') ? <Ink variant="caption" soft>{note}</Ink> : null}
           </>
         )}
-      </Pressable>
+      </Tappable>
       {shortcuts.length ? (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.xs }}>
           {shortcuts.map((s) => (
-            <Pressable key={s} accessibilityRole="button" accessibilityLabel={tr(`cy.home.sc.${s}` as TKey)} onPress={() => { haptic('selection'); router.push(SHORTCUT_META[s].href as never); }}
+            <Tappable key={s} accessibilityRole="button" accessibilityLabel={tr(`cy.home.sc.${s}` as TKey)} onPress={() => { haptic('selection'); router.push(SHORTCUT_META[s].href as never); }}
               style={({ pressed }) => ({ flexGrow: 1, flexBasis: 120, maxWidth: '100%', minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: spacing.sm, paddingVertical: 8,
                 borderRadius: 14, backgroundColor: pressed ? c.lavender : c.pearl })}>
               <CycleIcon name={SHORTCUT_META[s].icon} color={c.mauve} size={20} />
               <Ink variant="small" weight="medium" style={{ flex: 1 }}>{tr(`cy.home.sc.${s}` as TKey)}</Ink>
-            </Pressable>
+            </Tappable>
           ))}
         </View>
       ) : null}
-      <Pressable accessibilityRole="button" accessibilityLabel={tr('cy.home.customize')} onPress={() => router.push('/cycle/home-card' as never)}
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('cy.home.customize')} onPress={() => router.push('/cycle/home-card' as never)}
         style={{ minHeight: MIN_TOUCH, justifyContent: 'center', alignSelf: 'flex-start', maxWidth: '100%' }}>
         <Ink variant="small" weight="medium" style={{ color: c.mauve }}>{tr('cy.home.customize')}</Ink>
-      </Pressable>
+      </Tappable>
     </Glass>
   );
 }

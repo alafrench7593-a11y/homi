@@ -19,6 +19,7 @@ import { useScope } from '@/lib/data/hooks-scope';
 import { Sheet } from './Overlays';
 import { haptic, Icon, type IconName, Text } from './ui';
 import { t as tr } from '@/i18n';
+import { Tappable } from '@/components/Tappable';
 
 const TAB_ICONS: Record<string, IconName> = { index: 'home', track: 'activity', ask: 'message-circle', community: 'users', profile: 'user', tools: 'grid' };
 const SHORT_KEYS = { index: 'tab.home', track: 'tab.track', ask: 'tab.ask', community: 'tab.community', profile: 'tab.profile' } as const;
@@ -157,7 +158,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
     const focused = focusedName === route.name;
     const label = short(route.name) ?? descriptors[route.key].options.title ?? route.name;
     return (
-      <Pressable
+      <Tappable
         key={route.key}
         onLayout={(e) => { const { x, width } = e.nativeEvent.layout; setTabX((m) => (m[route.name]?.x === x && m[route.name]?.w === width ? m : { ...m, [route.name]: { x, w: width } })); }}
         accessibilityRole="tab"
@@ -169,7 +170,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
       >
         <TabIcon name={TAB_ICONS[route.name] ?? 'circle'} focused={focused} />
         <TabLabel label={label} focused={focused} />
-      </Pressable>
+      </Tappable>
     );
   };
 
@@ -256,16 +257,16 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
     <View style={{ gap: spacing.xs }}>
       {child ? <Text variant="small" weight="bold" testID="quick-for">{tr('dock.forChild', { name: child.first_name })}</Text> : null}
       {compact ? (
-        <Pressable accessibilityRole="button" onPress={go(() => router.push('/assistant/chat'))}
+        <Tappable accessibilityRole="button" onPress={go(() => router.push('/assistant/chat'))}
           style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: 'rgba(255,143,177,0.35)', backgroundColor: pressed ? palette.nightSoft : palette.night })}>
           <Icon name="message-circle" color={palette.gold} />
           <Text weight="bold" color={palette.milk} style={{ flex: 1 }}>{tr('dock.ask')}</Text>
           <Icon name="chevron-right" size={18} color={palette.milk} />
-        </Pressable>
+        </Tappable>
       ) : null}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
         {items.map((i) => (
-          <Pressable
+          <Tappable
             key={i.label}
             accessibilityRole="button"
             accessibilityLabel={tr('dock.addA11y', { label: i.label })}
@@ -274,7 +275,7 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
           >
             <Icon name={i.icon} color={t.colors.text} />
             <Text variant="caption" weight="medium" center style={{ paddingHorizontal: 4 }}>{i.label}</Text>
-          </Pressable>
+          </Tappable>
         ))}
       </View>
     </View>
@@ -285,7 +286,7 @@ function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => 
   const { child, go } = useQuickAdd(onClose);
   return (
     <Sheet visible={visible} onClose={onClose} title={child ? tr('dock.forChild', { name: child.first_name }) : tr('dock.add')}>
-      <Pressable
+      <Tappable
         accessibilityRole="button"
         onPress={go(() => router.push('/assistant/chat'))}
         style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: 'rgba(255,143,177,0.35)', backgroundColor: pressed ? palette.nightSoft : palette.night })}
@@ -295,7 +296,7 @@ function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => 
           <Text weight="bold" color={palette.milk}>{tr('dock.ask')}</Text>
           <Text variant="small" color="rgba(251,248,244,0.7)">{tr('dock.askSub')}</Text>
         </View>
-      </Pressable>
+      </Tappable>
       <QuickAddGrid onBefore={onClose} />
     </Sheet>
   );

@@ -3,13 +3,14 @@
  * valeurs par portion et sources. Mention claire : ni Nutri-Score officiel, ni avis médical.
  */
 import React, { useState } from 'react';
-import { Linking, Pressable, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { Card, Chip, Row, Text } from '@/components/ui';
 import { AGE_BANDS, scoreRecipe, SCORE_SOURCES, type AgeBand } from '@/lib/recipes/score';
 import type { Recipe } from '@/lib/recipes/types';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 const fmt = (v: number, d = 1) => (Math.round(v * 10 ** d) / 10 ** d).toLocaleString('fr-FR');
 
@@ -38,9 +39,9 @@ export function ScorePanel({ recipe, band: initial }: { recipe: Recipe; band: Ag
         {s.strengths.length ? <View style={{ marginTop: spacing.xs }}><Text weight="bold">{tr('rc.score.strengths')}</Text>{s.strengths.map((k) => <Text key={k} variant="small">• {tr(`rc.score.plus.${k}` as TKey)}</Text>)}</View> : null}
         {s.improvements.length ? <View style={{ marginTop: spacing.xs }}><Text weight="bold">{tr('rc.score.improve')}</Text>{s.improvements.map((k) => <Text key={k} variant="small">• {tr(`rc.score.tip.${k}` as TKey)}</Text>)}</View> : null}
         <Text variant="small" style={{ marginTop: spacing.xs }}>{tr('rc.score.portion', { kcal: Math.round(p.kcal), prot: fmt(p.prot), fiber: fmt(p.fiber), sugar: fmt(p.addedSugar), salt: fmt(p.salt, 2), iron: fmt(p.iron), calcium: Math.round(p.calcium) })}</Text>
-        <Pressable accessibilityRole="button" onPress={() => setOpen(!open)} style={{ minHeight: 40, justifyContent: 'center' }} testID="score-details">
+        <Tappable accessibilityRole="button" onPress={() => setOpen(!open)} style={{ minHeight: 40, justifyContent: 'center' }} testID="score-details">
           <Text variant="small" weight="bold" color={t.colors.primary}>{open ? tr('rc.score.hide') : tr('rc.score.how')}</Text>
-        </Pressable>
+        </Tappable>
         {open ? (
           <View style={{ gap: 2 }}>
             {s.parts.map((x) => (
@@ -52,9 +53,9 @@ export function ScorePanel({ recipe, band: initial }: { recipe: Recipe; band: Ag
             <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('rc.score.method')}</Text>
             {s.approximations.map((a) => <Text key={a} variant="caption" muted>• {a}</Text>)}
             {SCORE_SOURCES.map((x) => (
-              <Pressable key={x.url} accessibilityRole="link" onPress={() => void Linking.openURL(x.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+              <Tappable key={x.url} accessibilityRole="link" onPress={() => void Linking.openURL(x.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
                 <Text variant="caption" color={t.colors.primary}>{x.label} ({formatDate(`${x.date}T12:00:00`)})</Text>
-              </Pressable>
+              </Tappable>
             ))}
           </View>
         ) : null}
