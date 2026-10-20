@@ -7,6 +7,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import content from '@/content/demo-content.json';
 import { EXTRA_CATEGORIES, libraryArticleRows } from '@/content/articles/rows';
+import { EXTERNAL_RESOURCES } from '@/content/resources';
 import { legacyJourneys, type JourneyRow } from '../journeys/model';
 import { uuid } from '../uuid';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
@@ -18,7 +19,7 @@ import {
   parseStructuredAnswer, structuredToMarkdown, todayIso,
 } from '../../../supabase/functions/_shared/assistant-format';
 import { buildSampleFamily } from './demoSample';
-import { ALL_RECIPES } from '@/content/recipes';
+import { ALL_RECIPES, DRAFT_RECIPES } from '@/content/recipes';
 import { recipeToRows } from '../recipes/db';
 import { RECIPE_SOURCES } from '../recipes/sources';
 import { fromProductRow } from '../../../supabase/functions/_shared/open-facts';
@@ -36,18 +37,25 @@ const KEY = 'toietmoi.demo.v1';
 /** Version des exemples de la communauté : l'augmenter ajoute les nouveaux exemples aux appareils existants. */
 const COMMUNITY_SEED_VERSION = 2;
 /** Bibliothèque de recettes : mêmes lignes que supabase/migrations/20261020000200_recipes_seed.sql. */
+/**
+ * Bibliothèque de recettes de la démonstration : reconstruite à chaque ouverture depuis l'application (identifiants
+ * stables « lib-<slug> »), sans l'enregistrer dans le stockage de l'appareil (plus de 560 recettes). Seules les
+ * corrections et les changements de statut faits dans l'administration sont conservés (table recipe_overrides).
+ */
+const LIB_TABLES = ['recipes', 'recipe_ingredients', 'recipe_steps', 'recipe_photos', 'recipe_source_links'];
+const isLibRow = (table: string, r: Row) => (table === 'recipes' ? !r.owner_id && String(r.id).startsWith('lib-') : String(r.recipe_id ?? '').startsWith('lib-'));
 function recipeSeedRows() {
   const tables: Record<string, Row[]> = { recipes: [], recipe_ingredients: [], recipe_steps: [], recipe_photos: [], recipe_source_links: [], recipe_reviews: [], recipe_sources: [] };
   for (const s of Object.values(RECIPE_SOURCES)) tables.recipe_sources.push({ id: s.id, title: s.title, publisher: s.publisher, url: s.url, consulted_on: s.consulted, published_on: s.date ?? null });
-  for (const r of ALL_RECIPES) {
-    const id = uuid();
-    const x = recipeToRows(r, id, { created_at: new Date().toISOString() });
+  for (const r of [...ALL_RECIPES, ...DRAFT_RECIPES]) {
+    const id = `lib-${r.slug}`;
+    const x = recipeToRows(r, id, { created_at: '2026-10-20T00:00:00.000Z' });
     tables.recipes.push(x.recipe as unknown as Row);
     tables.recipe_ingredients.push(...(x.ingredients as unknown as Row[]));
     tables.recipe_steps.push(...(x.steps as unknown as Row[]));
     tables.recipe_photos.push(x.photo as unknown as Row);
     tables.recipe_source_links.push(...(x.links as unknown as Row[]));
-    tables.recipe_reviews.push(...x.reviews.map((v) => ({ ...v, id: uuid() }) as unknown as Row));
+    tables.recipe_reviews.push(...x.reviews.map((v, i) => ({ ...v, id: `seed-${r.slug}-${i}` }) as unknown as Row));
   }
   return tables;
 }
@@ -175,7 +183,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         state.tables.cosing_ingredients = JSON.parse(JSON.stringify(DEMO_COSING));
         state.tables.ciqual_foods = JSON.parse(JSON.stringify(DEMO_CIQUAL));
         // Recettes : copie de la bibliothèque (mêmes lignes que la migration générée) ; conservée pour garder les validations faites dans l'administration
-        if (!(state.tables.recipes ?? []).some((r) => !r.owner_id)) seedRecipes();
+        seedRecipes();
+        // Sources et lectures : mêmes lignes que la migration 0700 (pages réellement consultées)
+        for (const r of EXTERNAL_RESOURCES) if (!T('external_resources').some((x) => x.slug === r.slug)) T('external_resources').push({ id: `res-${r.slug}`, status: 'published', created_at: `${r.consulted_on}T12:00:00Z`, ...r });
         if ((state.tables._community_seed?.[0]?.version ?? 0) < COMMUNITY_SEED_VERSION) seedCommunity();
       })();
     }
@@ -185,8 +195,18 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   function persist() {
     if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
+      for (const id of dirtyLib) {
+        const row = T('recipes').find((r) => r.id === id);
+        if (!row) continue;
+        const steps = T('recipe_steps').filter((x) => x.recipe_id === id).sort((a, b) => Number(a.position) - Number(b.position)).map((x) => x.body);
+        state.tables.recipe_overrides = [...T('recipe_overrides').filter((o) => o.recipe_id !== id), { recipe_id: id, row: { title: row.title, summary: row.summary, storage: row.storage, nutrition: row.nutrition, status: row.status, verified_on: row.verified_on }, steps }];
+      }
+      dirtyLib.clear();
       const tables: Tables = {};
-      for (const [k, v] of Object.entries(state.tables)) if (!(CATALOG_TABLES as readonly string[]).includes(k)) tables[k] = v;
+      for (const [k, v] of Object.entries(state.tables)) {
+        if ((CATALOG_TABLES as readonly string[]).includes(k)) continue;
+        tables[k] = LIB_TABLES.includes(k) ? v.filter((r) => !isLibRow(k, r)) : k === 'recipe_reviews' ? v.filter((r) => !String(r.id).startsWith('seed-')) : k === 'recipe_sources' ? [] : v;
+      }
       AsyncStorage.setItem(KEY, JSON.stringify({ ...state, tables })).catch(() => undefined);
     }, 150);
   }
@@ -222,9 +242,27 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   }
   const notify = (userId: string, n: Row) => T('notifications').push({ id: uuid(), user_id: userId, payload: {}, read_at: null, created_at: nowIso(), ...n });
 
+  /** Reconstruit la bibliothèque (hors stockage), garde les recettes personnelles et applique les corrections enregistrées. */
   function seedRecipes() {
     const rows = recipeSeedRows();
-    for (const [t, list] of Object.entries(rows)) state.tables[t] = [...(state.tables[t] ?? []).filter((r) => t === 'recipes' ? !!r.owner_id : false), ...list];
+    // Conservées : recettes personnelles et recettes importées par l'équipe (identifiant hors « lib- »)
+    const libSlugs = new Set(rows.recipes.map((r) => r.slug));
+    const personalIds = new Set(T('recipes').filter((r) => !isLibRow('recipes', r) && (r.owner_id || !libSlugs.has(r.slug))).map((r) => r.id));
+    for (const [t, list] of Object.entries(rows)) {
+      const keep = (state.tables[t] ?? []).filter((r) => (t === 'recipes' ? personalIds.has(r.id) : t === 'recipe_sources' ? false : t === 'recipe_reviews' ? !String(r.id).startsWith('seed-') && (personalIds.has(r.recipe_id) || String(r.recipe_id).startsWith('lib-')) : personalIds.has(r.recipe_id)));
+      state.tables[t] = [...keep, ...list];
+    }
+    for (const o of T('recipe_overrides')) {
+      const row = T('recipes').find((r) => r.id === o.recipe_id);
+      if (!row) continue;
+      Object.assign(row, o.row);
+      if (Array.isArray(o.steps)) state.tables.recipe_steps = [...T('recipe_steps').filter((x) => x.recipe_id !== o.recipe_id), ...(o.steps as string[]).map((body, n) => ({ recipe_id: o.recipe_id, position: n + 1, body }))];
+    }
+  }
+  const dirtyLib = new Set<string>();
+  function markLib(table: string, rows: Row[]) {
+    if (!LIB_TABLES.includes(table)) return;
+    for (const r of rows) if (isLibRow(table, r)) dirtyLib.add(String(table === 'recipes' ? r.id : r.recipe_id));
   }
   function seedCommunity() {
     const forum = (slug: string) => T('forums').find((f) => f.slug === slug)?.id;
@@ -356,6 +394,24 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     if (ownerCol && r[ownerCol] == null && me) r[ownerCol] = me;
     r.id ??= uuid();
     r.created_at ??= nowIso();
+    // Catalogue de produits : mêmes règles que la base (code-barres unique, prix datés et sourcés, jamais dans le futur)
+    if (table === 'kid_products') {
+      if (!/^[0-9]{8,14}$/.test(String(r.barcode ?? ''))) throw new BackendError('Code-barres invalide.');
+      if (T('kid_products').some((p) => p.barcode === r.barcode)) throw new BackendError('Ce produit est déjà dans le catalogue.', '23505');
+      r.status ??= 'draft'; r.benefits ??= []; r.precautions ??= []; r.updated_at ??= nowIso();
+    }
+    if (table === 'external_resources') {
+      if (!/^https:\/\//.test(String(r.url ?? ''))) throw new BackendError('Lien https obligatoire.');
+      if (String(r.description ?? '').length > 400) throw new BackendError('Résumé trop long (400 caractères maximum).');
+      if (T('external_resources').some((x) => x.slug === r.slug)) throw new BackendError('Cet identifiant existe déjà.', '23505');
+      r.status ??= 'draft'; r.topics ??= [];
+    }
+    if (table === 'product_prices' || table === 'ingredient_prices') {
+      const day = String(r.observed_on ?? r.checked_on ?? '');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || day > nowIso().slice(0, 10)) throw new BackendError('Date du prix invalide (jamais dans le futur).');
+      if (r.source === 'open_prices' && !r.source_url) throw new BackendError('Lien de la source obligatoire pour un prix Open Prices.');
+      if (table === 'product_prices' && !(Number(r.price) > 0)) throw new BackendError('Prix invalide.');
+    }
 
     if (CHILD_TABLES.includes(table)) {
       const child = T('children').find((c) => c.id === r.child_id);
@@ -704,6 +760,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       r.status = a?.p_status;
       if (['reviewed', 'validated'].includes(a?.p_status as string)) r.verified_on = new Date().toISOString().slice(0, 10);
       T('recipe_reviews').push({ id: uuid(), recipe_id: r.id, status: a?.p_status, by_user: me, by_label: 'Équipe éditoriale', note: a?.p_note ?? null, created_at: new Date().toISOString() });
+      markLib('recipes', [r]);
       persist();
       return null;
     },
@@ -893,6 +950,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         const barcode = b.barcode ? String(b.barcode).replace(/\D/g, '') : null;
         return { recalls: recallsFor({ barcode, brand: b.brand ?? null, name: b.name ?? null }), recall_check: demoRecallCheck() };
       }
+      if (action === 'prices') {
+        return { prices: [], source: 'Open Prices (Open Food Facts)', status: 'demo', message: 'Mode démonstration : Open Prices n’est consulté que par le serveur. Aucun prix n’est affiché ni inventé.' };
+      }
       if (action === 'recall_watch') {
         const me = uid();
         return { checked: T('product_scans').filter((s) => s.user_id === me && s.barcode).length, notified: T('product_recalls').reduce((n, rc) => n + notifyRecall(rc, me), 0) };
@@ -1078,6 +1138,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         const row = beforeInsert(table, { ...raw });
         T(table).push(row);
         afterInsert(table, row);
+        markLib(table, [row]);
         out.push(row);
       }
       if (table === 'assistant_feedback') out.forEach(syncFeedback);
@@ -1087,6 +1148,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     async update<R>(table: string, patch: Row, filters: Filter[]) {
       await load();
       const rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      markLib(table, rows);
       if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
       // Un scan analysé ne se réécrit pas ; seul le champ « explication IA » d'un résultat est modifiable
       if (table === 'product_scans' || (table === 'scan_results' && Object.keys(patch).some((k) => k !== 'explanation'))) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
@@ -1167,6 +1229,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     async remove(table, filters) {
       await load();
       const removed = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      markLib(table, removed);
       state.tables[table] = T(table).filter((r) => !removed.includes(r));
       if (table === 'post_likes') removed.forEach((l) => { const p = T('posts').find((x) => x.id === l.post_id); if (p) p.like_count = Math.max(0, p.like_count - 1); });
       if (table === 'comments') {

@@ -1,0 +1,5505 @@
+[
+  {
+    "slug": "gd-brochettes-fruits-dip-yaourt-citron",
+    "title": "Brochettes de fruits et dip au yaourt citronné",
+    "summary": "Des fruits de saison enfilés sur des piques à bout rond, à tremper dans un yaourt parfumé au citron.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "melon",
+        300,
+        "g",
+        "environ 1/4 de melon"
+      ],
+      [
+        "banana",
+        1,
+        "u"
+      ],
+      [
+        "strawberry",
+        150,
+        "g"
+      ],
+      [
+        "kiwi",
+        2,
+        "u"
+      ],
+      [
+        "yogurt",
+        250,
+        "g",
+        "2 pots"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus"
+      ],
+      [
+        "vanilla",
+        2,
+        "pincee",
+        "ou quelques gouttes",
+        true
+      ]
+    ],
+    "steps": [
+      "Épluchez le melon et coupez-le en cubes d’environ 2 cm ; pelez les kiwis et coupez-les de la même taille.",
+      "Équeutez les fraises et coupez-les en deux (en quatre pour les plus petits) ; pelez la banane et coupez-la en rondelles épaisses.",
+      "Enfilez les fruits sur des piques en bois à bout rond ou des pailles en alternant les couleurs ; vous pouvez retirer la pointe aux ciseaux.",
+      "Pour le dip, fouettez le yaourt avec le jus de citron et, si vous le souhaitez, la vanille.",
+      "Servez aussitôt, le dip dans un petit bol à côté des brochettes."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "quick",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans piques : servez les fruits dans un bol et le dip à part, à piquer avec une fourchette.",
+      "Selon la saison : pêche, poire bien mûre, ananas ou mangue."
+    ],
+    "storage": "Les fruits coupés se gardent 4 h au réfrigérateur dans une boîte fermée ; la banane noircit vite, ajoutez-la au dernier moment.",
+    "precautions": [
+      "Piques à bout rond seulement, et sous la surveillance d’un adulte ; retirez la pique pour les enfants qui marchent ou courent en mangeant.",
+      "Avant 4 ans : surveillez l’enfant pendant le goûter, assis, et proposez des morceaux adaptés à son âge."
+    ],
+    "nutrition": "Plusieurs fruits frais et un laitage, sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-salade-oranges-kiwis-fraises-menthe",
+    "title": "Salade d’oranges, kiwis et fraises à la menthe",
+    "summary": "Une salade de fruits acidulée et colorée, juste parfumée de menthe fraîche.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "orange",
+        2,
+        "u"
+      ],
+      [
+        "kiwi",
+        2,
+        "u"
+      ],
+      [
+        "strawberry",
+        200,
+        "g"
+      ],
+      [
+        "mint",
+        4,
+        "u",
+        "feuilles"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus",
+        true
+      ]
+    ],
+    "steps": [
+      "Pelez les oranges à vif avec un couteau en retirant la peau blanche, puis prélevez les quartiers au-dessus d’un saladier pour récupérer le jus.",
+      "Coupez les quartiers d’orange en deux ou trois morceaux.",
+      "Pelez les kiwis et coupez-les en petits dés ; équeutez les fraises et coupez-les en quatre.",
+      "Ciselez très finement les feuilles de menthe et mélangez-les aux fruits avec le jus récupéré, et un filet de citron si les fruits sont très sucrés.",
+      "Laissez reposer au frais 15 minutes avant de servir pour que les jus se mélangent."
+    ],
+    "allergens": [],
+    "tags": [
+      "quick",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Pour les plus petits, coupez les fruits en dés de 1 cm.",
+      "Hors saison des fraises : ajoutez une pomme ou une poire en dés."
+    ],
+    "storage": "À déguster dans la journée, couverte, au réfrigérateur.",
+    "precautions": [],
+    "nutrition": "Une salade de fruits frais qui apporte de la vitamine C, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "spring"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-salade-mangue-ananas-banane-coco",
+    "title": "Salade mangue, ananas et banane au lait de coco",
+    "summary": "Une salade de fruits exotiques nappée d’un trait de lait de coco.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "mango",
+        1,
+        "u"
+      ],
+      [
+        "pineapple",
+        300,
+        "g",
+        "environ 1/4 d’ananas"
+      ],
+      [
+        "banana",
+        1,
+        "u"
+      ],
+      [
+        "coconut_milk",
+        4,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus"
+      ]
+    ],
+    "steps": [
+      "Pelez la mangue, retirez la chair autour du noyau et coupez-la en petits dés.",
+      "Épluchez l’ananas, retirez le cœur fibreux et taillez la chair en petits dés.",
+      "Pelez la banane, coupez-la en demi-rondelles et arrosez-la du jus de citron pour qu’elle ne noircisse pas.",
+      "Réunissez les fruits dans des coupelles et versez une cuillerée de lait de coco bien mélangé sur chacune."
+    ],
+    "allergens": [],
+    "tags": [
+      "quick",
+      "world",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez le lait de coco par un yaourt nature pour une version plus lactée.",
+      "Retirez bien le cœur de l’ananas, plus dur, pour les plus petits."
+    ],
+    "storage": "À préparer au dernier moment ; sinon 12 h au réfrigérateur sans la banane.",
+    "precautions": [],
+    "nutrition": "Des fruits frais variés, sans sucre ajouté ; le lait de coco apporte des matières grasses.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-pasteque-melon-feta-menthe",
+    "title": "Cubes de pastèque, melon et feta à la menthe",
+    "summary": "Un goûter sucré-salé rafraîchissant pour les après-midi d’été.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "watermelon",
+        400,
+        "g",
+        "sans la peau"
+      ],
+      [
+        "melon",
+        300,
+        "g"
+      ],
+      [
+        "feta",
+        80,
+        "g"
+      ],
+      [
+        "mint",
+        4,
+        "u",
+        "feuilles"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cc",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Retirez la peau de la pastèque et enlevez soigneusement les pépins noirs, puis coupez la chair en cubes de 1,5 cm.",
+      "Épluchez le melon, retirez les graines et coupez-le en cubes de la même taille.",
+      "Émiettez la feta du bout des doigts au-dessus des fruits.",
+      "Ciselez finement la menthe, parsemez-la sur le tout et ajoutez, si vous le souhaitez, un filet d’huile d’olive."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "finger",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Moins salé : remplacez la feta par des dés de mozzarella.",
+      "Ajoutez un concombre en dés pour plus de fraîcheur."
+    ],
+    "storage": "4 h au réfrigérateur dans une boîte fermée ; la pastèque rend de l’eau, égouttez avant de servir.",
+    "precautions": [
+      "Retirez tous les pépins de pastèque pour les plus jeunes.",
+      "La feta est salée : une petite quantité suffit."
+    ],
+    "nutrition": "Des fruits riches en eau et un peu de fromage pour le calcium.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-pomme-poire-rapees-citron-cannelle",
+    "title": "Pomme et poire râpées au citron et à la cannelle",
+    "summary": "Un goûter express, croquant et frais, prêt en cinq minutes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "pear",
+        1,
+        "u",
+        "bien mûre"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Lavez la pomme et la poire, épluchez-les et retirez le trognon.",
+      "Râpez-les finement avec une râpe à petits trous au-dessus d’un bol.",
+      "Arrosez aussitôt du jus de citron et mélangez pour éviter qu’elles ne brunissent.",
+      "Saupoudrez d’une pincée de cannelle et servez à la cuillère."
+    ],
+    "allergens": [],
+    "tags": [
+      "quick",
+      "budget",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Ajoutez une cuillerée de fromage blanc pour un goûter plus complet.",
+      "Dès 4 ans, la pomme peut être proposée en fines lamelles."
+    ],
+    "storage": "À déguster tout de suite : les fruits râpés s’oxydent rapidement.",
+    "precautions": [
+      "Avant 4 ans, la pomme crue se donne râpée, jamais en gros morceaux durs."
+    ],
+    "nutrition": "Deux fruits crus râpés, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-coupe-fromage-blanc-banane-cacao",
+    "title": "Coupe de fromage blanc, banane écrasée et cacao",
+    "summary": "Un dessert lacté au goût chocolaté, sucré uniquement par la banane.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "fromage_blanc",
+        200,
+        "g"
+      ],
+      [
+        "banana",
+        1,
+        "u",
+        "bien mûre"
+      ],
+      [
+        "cocoa",
+        1,
+        "cc"
+      ],
+      [
+        "vanilla",
+        1,
+        "pincee",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Pelez la banane et écrasez-la finement à la fourchette dans un bol.",
+      "Ajoutez le fromage blanc et le cacao, puis mélangez jusqu’à obtenir une crème homogène.",
+      "Parfumez d’une pincée de vanille si vous le souhaitez.",
+      "Répartissez dans deux coupelles et servez frais."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "protein",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez le fromage blanc par un yaourt nature ou des petits-suisses.",
+      "Saupoudrez de flocons d’avoine pour un peu de croquant."
+    ],
+    "storage": "À préparer au moment : la banane brunit en quelques heures.",
+    "precautions": [],
+    "nutrition": "Un laitage et un fruit ; la banane mûre apporte la douceur, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-petits-suisses-fraises-ecrasees-vanille",
+    "title": "Petits-suisses aux fraises écrasées et à la vanille",
+    "summary": "Des fraises de saison écrasées et mélangées à des petits-suisses nature.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "petit_suisse",
+        6,
+        "u",
+        "nature"
+      ],
+      [
+        "strawberry",
+        250,
+        "g"
+      ],
+      [
+        "vanilla",
+        2,
+        "pincee"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus",
+        true
+      ]
+    ],
+    "steps": [
+      "Lavez et équeutez les fraises, puis écrasez-les grossièrement à la fourchette dans un saladier.",
+      "Ajoutez la vanille et, si les fraises sont fades, quelques gouttes de jus de citron.",
+      "Démoulez les petits-suisses dans le saladier et mélangez délicatement pour garder des marbrures roses.",
+      "Servez dans des verrines bien fraîches."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison : utilisez des framboises surgelées décongelées.",
+      "Plus tard dans l’année, essayez avec de la pêche bien mûre écrasée."
+    ],
+    "storage": "24 h au réfrigérateur, couvert.",
+    "precautions": [],
+    "nutrition": "Un produit laitier et un fruit frais, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-ananas-tranches-fines-menthe-citron",
+    "title": "Fines tranches d’ananas à la menthe et au citron",
+    "summary": "Un carpaccio d’ananas tout simple, servi bien frais en fin de repas.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "pineapple",
+        1,
+        "u",
+        "petit"
+      ],
+      [
+        "mint",
+        6,
+        "u",
+        "feuilles"
+      ],
+      [
+        "lemon",
+        1,
+        "u",
+        "zeste et jus"
+      ],
+      [
+        "coconut_milk",
+        2,
+        "cs",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Coupez le haut et la base de l’ananas, retirez l’écorce au couteau puis les « yeux » bruns.",
+      "Coupez l’ananas en quatre dans la longueur, ôtez le cœur dur et taillez de très fines tranches.",
+      "Disposez les tranches à plat sur une grande assiette.",
+      "Arrosez de jus de citron, parsemez de zeste et de menthe ciselée, et d’un filet de lait de coco si vous le souhaitez.",
+      "Placez au réfrigérateur 10 minutes avant de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "quick",
+      "world",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Pour les plus petits, recoupez les tranches en petits morceaux.",
+      "Un peu de mangue en lamelles peut accompagner l’ananas."
+    ],
+    "storage": "24 h au réfrigérateur, filmé.",
+    "precautions": [
+      "Retirez bien le cœur fibreux de l’ananas."
+    ],
+    "nutrition": "Un fruit frais servi nature, sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "winter",
+      "spring"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-raisin-comte-pain-complet",
+    "title": "Raisin coupé, bâtonnets de comté et pain complet",
+    "summary": "Un goûter « à picorer » qui associe fruit, fromage et pain.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "grapes",
+        150,
+        "g"
+      ],
+      [
+        "comte",
+        40,
+        "g"
+      ],
+      [
+        "wholemeal_bread",
+        2,
+        "u",
+        "tranches"
+      ]
+    ],
+    "steps": [
+      "Lavez le raisin et détachez les grains de la grappe.",
+      "Avant 4 ans, coupez chaque grain en quatre dans la longueur et retirez les pépins.",
+      "Retirez la croûte du comté et taillez-le en fins bâtonnets.",
+      "Coupez le pain complet en mouillettes et disposez le tout dans une assiette compartimentée."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "finger",
+      "calcium",
+      "lunchbox",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Selon la saison, remplacez le raisin par des quartiers de clémentine ou de poire.",
+      "Dès 4 ans, les grains peuvent être coupés en deux."
+    ],
+    "storage": "Le raisin coupé se garde quelques heures au frais dans une boîte fermée.",
+    "precautions": [
+      "Grains de raisin ronds : toujours coupés en quatre avant 4 ans, enfant assis et surveillé."
+    ],
+    "nutrition": "Un fruit, un produit laitier et un féculent complet réunis dans un goûter.",
+    "budget": 2,
+    "seasons": [
+      "autumn"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-clementines-cannelle-dattes",
+    "title": "Clémentines à la cannelle et aux dattes hachées",
+    "summary": "Des quartiers de clémentines parfumés à la cannelle, avec un peu de datte pour la douceur.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "clementine",
+        6,
+        "u"
+      ],
+      [
+        "dates",
+        3,
+        "u",
+        "dénoyautées"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ],
+      [
+        "orange",
+        1,
+        "u",
+        "jus"
+      ]
+    ],
+    "steps": [
+      "Pelez les clémentines, retirez les filaments blancs et séparez les quartiers ; coupez-les en deux pour les plus petits.",
+      "Vérifiez que les dattes n’ont plus de noyau, puis hachez-les en très petits morceaux.",
+      "Pressez l’orange et mélangez son jus avec la cannelle.",
+      "Versez ce jus sur les clémentines, parsemez des dattes hachées et laissez reposer 10 minutes au frais."
+    ],
+    "allergens": [],
+    "tags": [
+      "quick",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans dattes : quelques dés de pomme apportent du croquant.",
+      "Saupoudrez de poudre d’amande pour les enfants qui la tolèrent."
+    ],
+    "storage": "24 h au réfrigérateur, couvert.",
+    "precautions": [
+      "Dattes collantes : à hacher très finement avant 4 ans."
+    ],
+    "nutrition": "Des agrumes de saison et un fruit sec, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-compote-pomme-rhubarbe-vanille",
+    "title": "Compote de pommes et rhubarbe à la vanille",
+    "summary": "La rhubarbe acidulée adoucie par la pomme, avec juste un peu de sucre.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "rhubarb",
+        400,
+        "g"
+      ],
+      [
+        "apple",
+        4,
+        "u"
+      ],
+      [
+        "sugar",
+        30,
+        "g"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus",
+        true
+      ]
+    ],
+    "steps": [
+      "Épluchez la rhubarbe en tirant les fils, puis coupez les tiges en tronçons de 2 cm.",
+      "Épluchez les pommes, retirez le trognon et coupez-les en dés.",
+      "Mettez les fruits dans une casserole avec le sucre, la vanille et 3 cuillerées à soupe d’eau.",
+      "Couvrez et faites cuire à feu doux 15 à 20 minutes en remuant de temps en temps, jusqu’à ce que les fruits s’écrasent facilement.",
+      "Écrasez à la fourchette ou mixez selon la texture souhaitée, goûtez et ajoutez un peu de citron si besoin, puis laissez refroidir."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "batch",
+      "freezer",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Plus douce : remplacez une partie de la rhubarbe par des fraises en fin de cuisson.",
+      "Sans sucre : utilisez 6 pommes pour 300 g de rhubarbe."
+    ],
+    "storage": "4 jours au réfrigérateur en bocal fermé ; 3 mois au congélateur en portions.",
+    "precautions": [
+      "N’utilisez que les tiges : les feuilles de rhubarbe ne se mangent pas."
+    ],
+    "nutrition": "Une compote de fruits avec environ 5 g de sucre ajouté par portion.",
+    "budget": 1,
+    "seasons": [
+      "spring"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-compote-poire-chocolat",
+    "title": "Compote de poires au chocolat noir",
+    "summary": "Une compote fondante, avec quelques carrés de chocolat fondus pour un dessert gourmand.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "pear",
+        5,
+        "u",
+        "bien mûres"
+      ],
+      [
+        "dark_chocolate",
+        20,
+        "g",
+        "2 carrés"
+      ],
+      [
+        "vanilla",
+        1,
+        "pincee",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Épluchez les poires, retirez le cœur et coupez-les en morceaux.",
+      "Mettez-les dans une casserole avec 2 cuillerées à soupe d’eau et la vanille, couvrez et faites cuire 15 minutes à feu doux.",
+      "Hors du feu, ajoutez le chocolat cassé en petits morceaux et laissez-le fondre 2 minutes.",
+      "Écrasez à la fourchette en mélangeant pour marbrer la compote, puis servez tiède ou froide."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "compote",
+      "quick",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans chocolat : parfumez avec une pincée de cannelle.",
+      "Pour un goûter, servez avec un biscuit maison à l’avoine."
+    ],
+    "storage": "3 jours au réfrigérateur, couverte.",
+    "precautions": [
+      "Laissez tiédir avant de servir aux plus petits."
+    ],
+    "nutrition": "Une compote de fruits sans sucre ajouté, en dehors du chocolat.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-compote-abricots-peches",
+    "title": "Compote d’abricots et de pêches",
+    "summary": "Une compote d’été aux fruits à noyau, à manger nature ou sur un yaourt.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "apricot",
+        500,
+        "g"
+      ],
+      [
+        "peach",
+        3,
+        "u"
+      ],
+      [
+        "vanilla",
+        1,
+        "pincee"
+      ],
+      [
+        "sugar",
+        20,
+        "g",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Lavez les abricots, ouvrez-les en deux et retirez les noyaux.",
+      "Pelez les pêches, dénoyautez-les et coupez-les en morceaux.",
+      "Faites cuire les fruits à feu doux 12 à 15 minutes avec la vanille et un fond d’eau, à couvert.",
+      "Goûtez : ajoutez le sucre seulement si les abricots sont très acides, puis écrasez ou mixez et laissez refroidir."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "batch",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Ajoutez quelques framboises en fin de cuisson pour la couleur.",
+      "Servez-la sur du fromage blanc pour un goûter plus complet."
+    ],
+    "storage": "4 jours au réfrigérateur ; 3 mois au congélateur.",
+    "precautions": [
+      "Vérifiez qu’aucun noyau ne reste dans la compote."
+    ],
+    "nutrition": "Une compote de fruits d’été ; sucre ajouté facultatif et limité.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-compote-prunes-pommes-cannelle",
+    "title": "Compote de prunes et pommes à la cannelle",
+    "summary": "Une compote d’automne bien parfumée, sans sucre ajouté.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "plum",
+        500,
+        "g"
+      ],
+      [
+        "apple",
+        3,
+        "u"
+      ],
+      [
+        "cinnamon",
+        2,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Lavez les prunes, coupez-les en deux et retirez les noyaux.",
+      "Épluchez les pommes, ôtez le trognon et coupez-les en dés.",
+      "Faites cuire les fruits avec la cannelle et 3 cuillerées à soupe d’eau, à couvert et à feu doux, 20 minutes.",
+      "Mixez ou passez au moulin à légumes pour retirer les peaux des prunes, puis laissez refroidir."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "batch",
+      "freezer",
+      "budget",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez la cannelle par de la vanille si votre enfant n’aime pas les épices.",
+      "Avec des quetsches, la compote est plus acidulée."
+    ],
+    "storage": "4 jours au réfrigérateur ; 3 mois au congélateur.",
+    "precautions": [
+      "Vérifiez qu’aucun noyau ne reste dans la compote."
+    ],
+    "nutrition": "Une compote de deux fruits, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-compote-pommes-fruits-rouges",
+    "title": "Compote de pommes aux fruits rouges",
+    "summary": "Une compote rose vif, faisable toute l’année avec des fruits rouges surgelés.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "apple",
+        5,
+        "u"
+      ],
+      [
+        "frozen_berries",
+        200,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes, retirez le trognon et coupez-les en morceaux.",
+      "Faites-les cuire à couvert avec un fond d’eau 12 minutes à feu doux.",
+      "Ajoutez les fruits rouges sans les décongeler et poursuivez la cuisson 8 minutes.",
+      "Mixez, ajoutez le jus de citron et passez au tamis si vous voulez retirer les petits grains, puis laissez refroidir."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "batch",
+      "freezer",
+      "budget",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Avec des fraises de saison, ajoutez-les en fin de cuisson seulement.",
+      "Pour un goûter : à mélanger à un yaourt nature."
+    ],
+    "storage": "4 jours au réfrigérateur ; 3 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Une compote de fruits sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-crumble-pommes-avoine-cannelle",
+    "title": "Crumble pommes, avoine et cannelle",
+    "summary": "Un crumble croustillant aux flocons d’avoine, avec moitié moins de sucre que d’habitude.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "apple",
+        6,
+        "u"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "flour",
+        60,
+        "g"
+      ],
+      [
+        "oats",
+        60,
+        "g"
+      ],
+      [
+        "butter",
+        50,
+        "g",
+        "froid"
+      ],
+      [
+        "sugar",
+        40,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les pommes, retirez le trognon, coupez-les en dés et étalez-les dans un plat avec la cannelle.",
+      "Dans un saladier, mélangez la farine, les flocons d’avoine et le sucre.",
+      "Ajoutez le beurre froid coupé en dés et frottez entre vos doigts jusqu’à obtenir une pâte sableuse.",
+      "Répartissez le mélange sur les pommes sans tasser.",
+      "Enfournez 30 minutes, jusqu’à ce que le dessus soit doré et que les pommes soient tendres. Laissez tiédir avant de servir."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "fiber",
+      "family",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans gluten : remplacez la farine par de la poudre d’amande et utilisez des flocons d’avoine certifiés sans gluten.",
+      "Ajoutez une poignée de fruits rouges sous la pâte."
+    ],
+    "storage": "3 jours au réfrigérateur ; se réchauffe 10 minutes au four.",
+    "precautions": [
+      "Laissez tiédir : les fruits cuits restent très chauds au cœur."
+    ],
+    "nutrition": "Un dessert aux fruits avec environ 7 g de sucre ajouté par portion.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-crumble-poires-noisette",
+    "title": "Crumble de poires à la poudre de noisette",
+    "summary": "Des poires fondantes sous une pâte croustillante à la noisette.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "pear",
+        6,
+        "u"
+      ],
+      [
+        "flour",
+        80,
+        "g"
+      ],
+      [
+        "hazelnut_powder",
+        50,
+        "g"
+      ],
+      [
+        "butter",
+        60,
+        "g"
+      ],
+      [
+        "sugar",
+        40,
+        "g"
+      ],
+      [
+        "vanilla",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les poires, coupez-les en dés et répartissez-les dans un plat avec la vanille.",
+      "Mélangez la farine, la poudre de noisette et le sucre.",
+      "Incorporez le beurre mou du bout des doigts jusqu’à obtenir des miettes.",
+      "Parsemez la pâte sur les poires et enfournez 30 minutes, jusqu’à ce que le dessus soit bien doré.",
+      "Servez tiède."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "family",
+      "batch",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie aux fruits à coque : remplacez la noisette par des flocons d’avoine.",
+      "Ajoutez un carré de chocolat râpé sur les poires."
+    ],
+    "storage": "3 jours au réfrigérateur.",
+    "precautions": [
+      "La noisette est utilisée en poudre : pas de morceaux entiers."
+    ],
+    "nutrition": "Un dessert de fruits cuits avec environ 7 g de sucre ajouté par portion.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-crumble-fruits-rouges-amande",
+    "title": "Crumble de fruits rouges à l’amande",
+    "summary": "Un crumble acidulé aux fruits rouges, avec une pâte amande et avoine.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "frozen_berries",
+        500,
+        "g"
+      ],
+      [
+        "apple",
+        2,
+        "u"
+      ],
+      [
+        "almond_powder",
+        50,
+        "g"
+      ],
+      [
+        "oats",
+        50,
+        "g"
+      ],
+      [
+        "butter",
+        50,
+        "g"
+      ],
+      [
+        "sugar",
+        40,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les pommes, coupez-les en dés et mélangez-les aux fruits rouges encore surgelés dans un plat.",
+      "Mélangez la poudre d’amande, les flocons d’avoine et le sucre, puis ajoutez le beurre en dés.",
+      "Sablez du bout des doigts et répartissez sur les fruits.",
+      "Enfournez 30 minutes : le jus doit bouillonner sur les bords et le dessus être doré. Laissez tiédir."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "batch",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans fruits à coque : remplacez l’amande par de la farine.",
+      "En été, utilisez des fruits rouges frais et réduisez la cuisson."
+    ],
+    "storage": "3 jours au réfrigérateur.",
+    "precautions": [
+      "Laissez tiédir avant de servir."
+    ],
+    "nutrition": "Un dessert aux fruits rouges avec environ 7 g de sucre ajouté par portion.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-crumble-rhubarbe-fraises",
+    "title": "Crumble rhubarbe et fraises",
+    "summary": "Le duo du printemps sous une pâte sablée légère.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "rhubarb",
+        400,
+        "g"
+      ],
+      [
+        "strawberry",
+        250,
+        "g"
+      ],
+      [
+        "flour",
+        90,
+        "g"
+      ],
+      [
+        "butter",
+        60,
+        "g"
+      ],
+      [
+        "sugar",
+        50,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "u",
+        "zeste"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez la rhubarbe, coupez-la en tronçons et mélangez-la aux fraises coupées en deux dans un plat.",
+      "Mélangez la farine, le sucre et le zeste de citron.",
+      "Ajoutez le beurre en dés et sablez du bout des doigts.",
+      "Recouvrez les fruits de ce mélange et enfournez 30 minutes, jusqu’à ce que le dessus soit doré."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Pour moins d’acidité, remplacez la moitié de la rhubarbe par des pommes.",
+      "Sans gluten : farine de riz ou poudre d’amande."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [
+      "N’utilisez que les tiges de rhubarbe."
+    ],
+    "nutrition": "Un dessert aux fruits avec environ 8 g de sucre ajouté par portion.",
+    "budget": 2,
+    "seasons": [
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-pommes-au-four-avoine-dattes",
+    "title": "Pommes au four farcies avoine et dattes",
+    "summary": "Des pommes entières rôties, garnies d’un mélange avoine, datte et cannelle.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "apple",
+        4,
+        "u"
+      ],
+      [
+        "oats",
+        40,
+        "g"
+      ],
+      [
+        "dates",
+        4,
+        "u",
+        "dénoyautées"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Lavez les pommes et retirez le trognon avec un vide-pomme sans les percer jusqu’en bas.",
+      "Hachez les dattes très finement et mélangez-les avec les flocons d’avoine, le beurre mou et la cannelle.",
+      "Garnissez le centre des pommes de ce mélange et posez-les dans un plat avec un fond d’eau.",
+      "Enfournez 30 à 35 minutes, jusqu’à ce que les pommes soient tendres sous la pointe d’un couteau.",
+      "Laissez tiédir, puis coupez en morceaux et retirez la peau pour les plus jeunes."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "budget",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans datte : une cuillerée de compote dans la farce.",
+      "Servez avec un yaourt nature."
+    ],
+    "storage": "2 jours au réfrigérateur ; se réchauffent au four.",
+    "precautions": [
+      "Dattes collantes : hachées très finement avant 4 ans.",
+      "Le cœur des pommes reste brûlant : laissez tiédir."
+    ],
+    "nutrition": "Un fruit cuit garni de céréales, sucré par la datte, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-gateau-carotte-amande-cannelle",
+    "title": "Gâteau moelleux carotte, amande et cannelle",
+    "summary": "Un carrot cake familial, sans glaçage, avec peu de sucre.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 10,
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "carrot",
+        3,
+        "u",
+        "environ 250 g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "sugar",
+        70,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        80,
+        "ml"
+      ],
+      [
+        "flour",
+        150,
+        "g"
+      ],
+      [
+        "almond_powder",
+        60,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et huilez un moule à cake. Épluchez les carottes et râpez-les finement.",
+      "Fouettez les œufs avec le sucre jusqu’à ce que le mélange blanchisse, puis ajoutez l’huile.",
+      "Incorporez la farine, la poudre d’amande, la levure et la cannelle, puis les carottes râpées.",
+      "Versez dans le moule et enfournez 35 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur).",
+      "Laissez refroidir avant de démouler et de couper en tranches."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "nuts"
+    ],
+    "tags": [
+      "vegetables",
+      "batch",
+      "freezer",
+      "lunchbox",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans fruits à coque : remplacez l’amande par 50 g de farine.",
+      "Ajoutez le zeste d’une orange pour plus de parfum."
+    ],
+    "storage": "3 jours dans une boîte hermétique ; les tranches se congèlent 2 mois.",
+    "precautions": [],
+    "nutrition": "Un gâteau qui contient un légume, avec environ 7 g de sucre ajouté par part.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-gateau-courgette-chocolat",
+    "title": "Gâteau chocolat à la courgette râpée",
+    "summary": "La courgette se fait oublier et rend ce gâteau au chocolat très moelleux.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 10,
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "zucchini",
+        1,
+        "u",
+        "environ 250 g"
+      ],
+      [
+        "dark_chocolate",
+        100,
+        "g"
+      ],
+      [
+        "butter",
+        50,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "sugar",
+        50,
+        "g"
+      ],
+      [
+        "flour",
+        100,
+        "g"
+      ],
+      [
+        "cocoa",
+        1,
+        "cs"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Lavez la courgette, râpez-la finement avec la peau et pressez-la dans un torchon pour retirer l’eau.",
+      "Faites fondre le chocolat et le beurre au bain-marie ou 1 minute au micro-ondes, puis mélangez.",
+      "Fouettez les œufs avec le sucre, ajoutez le chocolat fondu, puis la farine, le cacao et la levure.",
+      "Incorporez la courgette râpée, versez dans un moule beurré et enfournez 30 à 35 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetables",
+      "picky",
+      "batch",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans lait : remplacez le beurre par de l’huile de colza et vérifiez l’étiquette du chocolat.",
+      "Le gâteau se coupe en carrés pour les boîtes à goûter."
+    ],
+    "storage": "3 jours au frais dans une boîte hermétique ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Un gâteau au chocolat qui contient un légume, avec environ 5 g de sucre ajouté par part.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-gateau-patate-douce-epices",
+    "title": "Gâteau à la patate douce et aux épices douces",
+    "summary": "Un gâteau orangé et fondant, parfumé à la cannelle et à la muscade.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 20,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "sweet_potato",
+        1,
+        "u",
+        "environ 400 g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        100,
+        "ml"
+      ],
+      [
+        "sugar",
+        50,
+        "g"
+      ],
+      [
+        "butter",
+        40,
+        "g",
+        "fondu"
+      ],
+      [
+        "flour",
+        150,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Épluchez la patate douce, coupez-la en cubes et faites-la cuire 15 minutes à la vapeur jusqu’à ce qu’elle soit très tendre, puis écrasez-la en purée.",
+      "Préchauffez le four à 180 °C. Mélangez la purée avec les œufs, le lait, le sucre et le beurre fondu.",
+      "Ajoutez la farine, la levure, la cannelle et la muscade, et mélangez juste ce qu’il faut.",
+      "Versez dans un moule beurré et enfournez 35 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetables",
+      "batch",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Même recette avec du potiron ou de la courge butternut cuits.",
+      "Sans lait de vache : boisson végétale et huile à la place du beurre."
+    ],
+    "storage": "3 jours dans une boîte hermétique ; 2 mois au congélateur en parts.",
+    "precautions": [],
+    "nutrition": "Un gâteau qui contient un légume, avec environ 6 g de sucre ajouté par part.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-cake-banane-avoine-sans-sucre",
+    "title": "Cake banane et avoine sans sucre ajouté",
+    "summary": "Un banana bread sucré uniquement par des bananes bien mûres.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 15,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "banana",
+        3,
+        "u",
+        "très mûres"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "rapeseed_oil",
+        50,
+        "ml"
+      ],
+      [
+        "flour",
+        150,
+        "g"
+      ],
+      [
+        "oats",
+        60,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 170 °C et chemisez un moule à cake de papier cuisson.",
+      "Écrasez les bananes en purée, puis fouettez-les avec les œufs, l’huile et la vanille.",
+      "Ajoutez la farine, les flocons d’avoine, la levure et la cannelle, et mélangez sans trop travailler.",
+      "Versez dans le moule et enfournez 40 à 45 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur).",
+      "Laissez refroidir sur une grille avant de trancher."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "lunchbox",
+      "budget",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Ajoutez 30 g de pépites de chocolat noir pour une version plus gourmande.",
+      "Sans œufs : remplacez-les par 100 g de compote."
+    ],
+    "storage": "3 jours dans un linge ou une boîte ; 2 mois au congélateur en tranches.",
+    "precautions": [],
+    "nutrition": "Un gâteau sans sucre ajouté : la douceur vient des bananes mûres.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-gateau-pommes-fromage-blanc",
+    "title": "Gâteau léger aux pommes et au fromage blanc",
+    "summary": "Beaucoup de pommes, peu de pâte : un gâteau fondant et frais.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 20,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "apple",
+        4,
+        "u"
+      ],
+      [
+        "fromage_blanc",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "sugar",
+        50,
+        "g"
+      ],
+      [
+        "flour",
+        100,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "lemon",
+        1,
+        "u",
+        "zeste"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les pommes et coupez-les en fines lamelles.",
+      "Fouettez les œufs avec le sucre, puis ajoutez le fromage blanc et le zeste de citron.",
+      "Incorporez la farine et la levure pour obtenir une pâte lisse.",
+      "Ajoutez les pommes, mélangez pour bien les enrober et versez dans un moule beurré.",
+      "Enfournez 40 minutes, jusqu’à ce que le dessus soit doré. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "family",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez une partie des pommes par des poires.",
+      "Saupoudrez de cannelle avant d’enfourner."
+    ],
+    "storage": "3 jours au réfrigérateur.",
+    "precautions": [],
+    "nutrition": "Un gâteau riche en fruits avec environ 6 g de sucre ajouté par part.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-moelleux-poires-amande",
+    "title": "Moelleux poires et amande",
+    "summary": "Un gâteau dense et parfumé où les poires fondent dans une pâte à l’amande.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "pear",
+        3,
+        "u"
+      ],
+      [
+        "almond_powder",
+        80,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "butter",
+        60,
+        "g",
+        "fondu"
+      ],
+      [
+        "sugar",
+        60,
+        "g"
+      ],
+      [
+        "flour",
+        60,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les poires, coupez-les en quartiers puis en tranches.",
+      "Fouettez les œufs avec le sucre, ajoutez le beurre fondu, la poudre d’amande et la farine.",
+      "Versez la pâte dans un moule beurré et enfoncez les tranches de poires à la surface.",
+      "Enfournez 35 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "family",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie aux fruits à coque : remplacez l’amande par de la farine et ajoutez un yaourt.",
+      "Délicieux aussi avec des abricots en été."
+    ],
+    "storage": "3 jours dans une boîte hermétique.",
+    "precautions": [],
+    "nutrition": "Un gâteau aux fruits avec environ 7 g de sucre ajouté par part.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-gateau-semoule-orange-yaourt",
+    "title": "Gâteau à la semoule, orange et yaourt",
+    "summary": "Un gâteau doré et parfumé à l’orange, inspiré des gâteaux de semoule du pourtour méditerranéen.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "semolina",
+        150,
+        "g"
+      ],
+      [
+        "flour",
+        50,
+        "g"
+      ],
+      [
+        "yogurt",
+        250,
+        "g",
+        "2 pots"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "sugar",
+        60,
+        "g"
+      ],
+      [
+        "olive_oil",
+        50,
+        "ml"
+      ],
+      [
+        "orange",
+        1,
+        "u",
+        "zeste et jus"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Râpez le zeste de l’orange puis pressez-la.",
+      "Fouettez les œufs avec le sucre, ajoutez les yaourts, l’huile, le zeste et la moitié du jus.",
+      "Incorporez la semoule, la farine et la levure, puis laissez reposer la pâte 10 minutes.",
+      "Versez dans un moule huilé et enfournez 35 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur).",
+      "À la sortie du four, arrosez avec le reste du jus d’orange et laissez refroidir."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "world",
+      "batch",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez l’orange par le zeste et le jus d’un citron.",
+      "Servez avec quelques quartiers d’orange."
+    ],
+    "storage": "3 jours dans une boîte hermétique.",
+    "precautions": [],
+    "nutrition": "Un gâteau de semoule avec environ 7 g de sucre ajouté par part.",
+    "budget": 1,
+    "seasons": [
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-clafoutis-prunes-cannelle",
+    "title": "Clafoutis aux prunes et à la cannelle",
+    "summary": "Un clafoutis de fin d’été avec des prunes fondantes, peu sucré.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "plum",
+        500,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "milk",
+        300,
+        "ml"
+      ],
+      [
+        "flour",
+        70,
+        "g"
+      ],
+      [
+        "sugar",
+        50,
+        "g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "butter",
+        10,
+        "g",
+        "pour le plat"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et beurrez un plat. Lavez les prunes, coupez-les en deux, retirez les noyaux et recoupez-les en quartiers.",
+      "Fouettez les œufs avec le sucre et la cannelle, puis ajoutez la farine en pluie.",
+      "Versez le lait petit à petit en fouettant pour éviter les grumeaux.",
+      "Répartissez les prunes dans le plat, versez la pâte par-dessus et enfournez 35 minutes, jusqu’à ce que le centre soit pris et doré.",
+      "Laissez tiédir avant de servir."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Avec des quetsches, plus acidulées, ou des poires en hiver.",
+      "Sans lait : boisson à l’avoine."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [
+      "Vérifiez qu’aucun noyau ne reste.",
+      "Le flan doit être bien pris au centre (œufs cuits)."
+    ],
+    "nutrition": "Un dessert aux fruits et au lait avec environ 8 g de sucre ajouté par portion.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-clafoutis-abricots-amande",
+    "title": "Clafoutis abricots et amande",
+    "summary": "Des abricots fondants dans un appareil léger à l’amande.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "apricot",
+        500,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "milk",
+        250,
+        "ml"
+      ],
+      [
+        "almond_powder",
+        40,
+        "g"
+      ],
+      [
+        "flour",
+        40,
+        "g"
+      ],
+      [
+        "sugar",
+        45,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Lavez les abricots, ouvrez-les en deux, retirez les noyaux et disposez-les face bombée vers le haut dans un plat beurré.",
+      "Fouettez les œufs avec le sucre, puis ajoutez la poudre d’amande et la farine.",
+      "Délayez avec le lait jusqu’à obtenir une pâte fluide.",
+      "Versez sur les abricots et enfournez 35 minutes, jusqu’à ce que le centre soit pris."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "family",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans fruits à coque : 80 g de farine au total.",
+      "Avec des pêches plates en août."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [
+      "Le centre doit être bien pris (œufs cuits à cœur)."
+    ],
+    "nutrition": "Un dessert aux fruits et au lait avec environ 8 g de sucre ajouté par portion.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-brownie-haricots-rouges",
+    "title": "Brownie fondant aux haricots rouges",
+    "summary": "Un brownie surprenant où les haricots rouges remplacent une grande partie du beurre et de la farine.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "kidney_beans",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "dark_chocolate",
+        100,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "cocoa",
+        2,
+        "cs"
+      ],
+      [
+        "sugar",
+        60,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        40,
+        "ml"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et chemisez un moule carré de papier cuisson.",
+      "Faites fondre le chocolat au bain-marie ou 1 minute au micro-ondes.",
+      "Mixez finement les haricots rouges avec les œufs, l’huile et le sucre jusqu’à obtenir une crème lisse, sans morceaux.",
+      "Ajoutez le chocolat fondu, le cacao et la levure, et mixez encore quelques secondes.",
+      "Versez dans le moule et enfournez 25 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur). Laissez refroidir avant de couper en carrés."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "fiber",
+      "batch",
+      "freezer",
+      "picky",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez les haricots rouges par des pois chiches ou des haricots blancs.",
+      "Coupez en 16 petits carrés pour les plus jeunes."
+    ],
+    "storage": "4 jours au réfrigérateur ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Un gâteau au chocolat qui contient des légumes secs, avec 5 g de sucre ajouté par carré.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-gateau-yaourt-framboises",
+    "title": "Gâteau au yaourt et aux framboises",
+    "summary": "Le gâteau au yaourt revisité avec des framboises et moins de sucre.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "yogurt",
+        125,
+        "g",
+        "1 pot"
+      ],
+      [
+        "flour",
+        180,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "sugar",
+        60,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        50,
+        "ml"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "raspberries",
+        150,
+        "g",
+        "fraîches ou surgelées"
+      ],
+      [
+        "lemon",
+        1,
+        "u",
+        "zeste"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Videz le yaourt dans un saladier et utilisez le pot comme mesure si vous le souhaitez.",
+      "Ajoutez les œufs, le sucre, l’huile et le zeste de citron, et fouettez.",
+      "Incorporez la farine et la levure pour obtenir une pâte lisse.",
+      "Versez la moitié de la pâte dans un moule beurré, répartissez les framboises, puis couvrez du reste de pâte.",
+      "Enfournez 35 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "family",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Avec des myrtilles ou des dés de pêche.",
+      "Sans œufs : remplacez-les par 150 g de compote et une cuillère de levure en plus."
+    ],
+    "storage": "3 jours dans une boîte hermétique ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Un gâteau familial avec environ 7 g de sucre ajouté par part.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-muffins-myrtilles-avoine",
+    "title": "Muffins aux myrtilles et à l’avoine",
+    "summary": "Des muffins moelleux, piqués de myrtilles qui fondent à la cuisson.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 15,
+    "cookMin": 22,
+    "ingredients": [
+      [
+        "blueberries",
+        150,
+        "g"
+      ],
+      [
+        "flour",
+        150,
+        "g"
+      ],
+      [
+        "oats",
+        80,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        150,
+        "ml"
+      ],
+      [
+        "rapeseed_oil",
+        60,
+        "ml"
+      ],
+      [
+        "sugar",
+        60,
+        "g"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et garnissez un moule de 12 caissettes.",
+      "Mélangez la farine, les flocons d’avoine, le sucre et la levure.",
+      "Dans un autre bol, fouettez les œufs avec le lait et l’huile, puis versez sur les ingrédients secs et mélangez brièvement.",
+      "Ajoutez les myrtilles délicatement et répartissez la pâte dans les caissettes.",
+      "Enfournez 20 à 22 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "lunchbox",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Avec des framboises ou des dés de pomme.",
+      "Les myrtilles surgelées s’utilisent sans décongélation."
+    ],
+    "storage": "2 jours dans une boîte ; 2 mois au congélateur.",
+    "precautions": [
+      "Les myrtilles éclatent et s’attendrissent à la cuisson ; avant 4 ans, écrasez celles qui resteraient entières."
+    ],
+    "nutrition": "Un gâteau individuel aux fruits et céréales avec 5 g de sucre ajouté par muffin.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-muffins-pomme-cannelle-yaourt",
+    "title": "Muffins pomme, cannelle et yaourt",
+    "summary": "Des muffins tendres avec des petits dés de pomme fondants.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 20,
+    "cookMin": 22,
+    "ingredients": [
+      [
+        "apple",
+        2,
+        "u"
+      ],
+      [
+        "flour",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "yogurt",
+        125,
+        "g",
+        "1 pot"
+      ],
+      [
+        "butter",
+        60,
+        "g",
+        "fondu"
+      ],
+      [
+        "sugar",
+        60,
+        "g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les pommes et coupez-les en tout petits dés.",
+      "Fouettez les œufs avec le sucre, le yaourt et le beurre fondu.",
+      "Ajoutez la farine, la levure et la cannelle, mélangez juste assez, puis incorporez les pommes.",
+      "Remplissez 12 caissettes aux deux tiers et enfournez 20 à 22 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "lunchbox",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez la pomme par de la poire.",
+      "Ajoutez 30 g de poudre d’amande à la place de 30 g de farine."
+    ],
+    "storage": "2 jours dans une boîte ; 2 mois au congélateur.",
+    "precautions": [
+      "Les dés de pomme sont tendres après cuisson."
+    ],
+    "nutrition": "Un gâteau individuel aux fruits avec 5 g de sucre ajouté par muffin.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-muffins-sales-courgette-feta",
+    "title": "Muffins salés courgette et feta",
+    "summary": "Un goûter salé à emporter, plein de courgette râpée.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 20,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "zucchini",
+        2,
+        "u"
+      ],
+      [
+        "feta",
+        100,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "flour",
+        180,
+        "g"
+      ],
+      [
+        "milk",
+        120,
+        "ml"
+      ],
+      [
+        "olive_oil",
+        50,
+        "ml"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ],
+      [
+        "basil",
+        6,
+        "u",
+        "feuilles"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Râpez les courgettes et pressez-les dans un torchon pour retirer l’eau.",
+      "Fouettez les œufs avec le lait et l’huile d’olive.",
+      "Ajoutez la farine et la levure, puis la courgette, la feta émiettée et le basilic ciselé.",
+      "Répartissez dans 12 caissettes et enfournez 25 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetables",
+      "lunchbox",
+      "batch",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Moins salé : remplacez la feta par de l’emmental râpé.",
+      "Ajoutez du maïs ou des dés de poivron."
+    ],
+    "storage": "2 jours au réfrigérateur ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Un goûter salé qui associe un légume, un féculent et un produit laitier.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-muffins-carotte-orange",
+    "title": "Muffins carotte et orange",
+    "summary": "Des muffins orangés, parfumés au zeste, avec une carotte râpée dans la pâte.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 20,
+    "cookMin": 22,
+    "ingredients": [
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "orange",
+        1,
+        "u",
+        "zeste et jus"
+      ],
+      [
+        "flour",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "yogurt",
+        125,
+        "g"
+      ],
+      [
+        "butter",
+        50,
+        "g",
+        "fondu"
+      ],
+      [
+        "sugar",
+        55,
+        "g"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les carottes et râpez-les finement ; prélevez le zeste de l’orange et pressez son jus.",
+      "Fouettez les œufs avec le sucre, le yaourt, le beurre fondu, le zeste et le jus.",
+      "Ajoutez la farine et la levure, puis les carottes, et mélangez juste assez.",
+      "Répartissez dans 12 caissettes et enfournez 20 à 22 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetables",
+      "batch",
+      "freezer",
+      "lunchbox",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Ajoutez une pincée de cannelle ou de gingembre en poudre.",
+      "Sans lait : yaourt végétal et huile."
+    ],
+    "storage": "2 jours dans une boîte ; 2 mois au congélateur.",
+    "precautions": [
+      "La carotte est râpée finement et cuite dans la pâte."
+    ],
+    "nutrition": "Un gâteau individuel qui contient un légume, avec moins de 5 g de sucre ajouté par muffin.",
+    "budget": 1,
+    "seasons": [
+      "winter",
+      "spring"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-muffins-cacao-banane",
+    "title": "Muffins cacao et banane sans sucre ajouté",
+    "summary": "Des muffins chocolatés sucrés seulement par la banane.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 10,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "banana",
+        3,
+        "u",
+        "très mûres"
+      ],
+      [
+        "cocoa",
+        2,
+        "cs"
+      ],
+      [
+        "flour",
+        160,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        80,
+        "ml"
+      ],
+      [
+        "rapeseed_oil",
+        50,
+        "ml"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et garnissez 10 caissettes.",
+      "Écrasez les bananes, puis fouettez-les avec les œufs, le lait et l’huile.",
+      "Ajoutez la farine, le cacao et la levure, et mélangez sans trop travailler.",
+      "Répartissez la pâte et enfournez 18 à 20 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "budget",
+      "lunchbox",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Pour les grands, ajoutez quelques pépites de chocolat noir.",
+      "Sans gluten : farine de riz et un peu de poudre d’amande."
+    ],
+    "storage": "2 jours dans une boîte ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Un gâteau au cacao sans sucre ajouté : la douceur vient de la banane.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-cookies-banane-avoine-chocolat",
+    "title": "Cookies moelleux banane, avoine et chocolat",
+    "summary": "Des cookies sans sucre ajouté, à trois ingrédients principaux, prêts en vingt minutes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "banana",
+        2,
+        "u",
+        "très mûres"
+      ],
+      [
+        "oats",
+        120,
+        "g"
+      ],
+      [
+        "dark_chocolate",
+        30,
+        "g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et couvrez une plaque de papier cuisson.",
+      "Écrasez les bananes en purée lisse, puis ajoutez les flocons d’avoine et la cannelle.",
+      "Hachez finement le chocolat et incorporez-le à la pâte ; laissez reposer 5 minutes pour que l’avoine gonfle.",
+      "Formez 12 petits tas avec une cuillère, aplatissez-les et enfournez 12 à 15 minutes, jusqu’à ce qu’ils soient dorés.",
+      "Laissez refroidir sur la plaque : ils se tiennent en refroidissant."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "budget",
+      "batch",
+      "freezer",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans chocolat : 1 cuillerée de cacao dans la pâte.",
+      "Mixez l’avoine pour une texture plus fine chez les plus petits."
+    ],
+    "storage": "3 jours dans une boîte hermétique ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Des biscuits sans sucre ajouté en dehors du chocolat : la banane apporte la douceur.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-cookies-avoine-compote-cannelle",
+    "title": "Cookies à l’avoine et à la compote de pommes",
+    "summary": "La compote remplace une partie du beurre et du sucre dans ces cookies tendres.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 16,
+    "prepMin": 15,
+    "cookMin": 14,
+    "ingredients": [
+      [
+        "oats",
+        120,
+        "g"
+      ],
+      [
+        "flour",
+        100,
+        "g"
+      ],
+      [
+        "compote_unsweetened",
+        100,
+        "g"
+      ],
+      [
+        "butter",
+        50,
+        "g",
+        "mou"
+      ],
+      [
+        "sugar",
+        50,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Mélangez le beurre mou avec le sucre, puis ajoutez l’œuf et la compote.",
+      "Incorporez la farine, les flocons d’avoine, la cannelle et la levure.",
+      "Déposez 16 petites boules de pâte sur une plaque recouverte de papier cuisson et aplatissez-les.",
+      "Enfournez 12 à 14 minutes, jusqu’à ce que les bords soient dorés.",
+      "Laissez refroidir sur une grille."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "lunchbox",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Ajoutez le zeste d’une orange.",
+      "Sans œuf : 50 g de compote en plus."
+    ],
+    "storage": "4 jours dans une boîte métallique.",
+    "precautions": [],
+    "nutrition": "Des biscuits aux céréales avec environ 3 g de sucre ajouté par cookie.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-biscuits-avoine-cacahuete-banane",
+    "title": "Biscuits avoine et beurre de cacahuète",
+    "summary": "Des biscuits tendres au goût de cacahuète, sucrés par la banane.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 10,
+    "cookMin": 14,
+    "ingredients": [
+      [
+        "oats",
+        100,
+        "g"
+      ],
+      [
+        "peanut_butter",
+        60,
+        "g",
+        "sans sucre ajouté"
+      ],
+      [
+        "banana",
+        1,
+        "u",
+        "mûre"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "baking_powder",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et couvrez une plaque de papier cuisson.",
+      "Écrasez la banane, puis mélangez-la avec le beurre de cacahuète et l’œuf.",
+      "Ajoutez les flocons d’avoine et la levure, et mélangez bien.",
+      "Formez 12 petits disques et enfournez 12 à 14 minutes, jusqu’à ce qu’ils soient bien dorés et cuits."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "peanuts"
+    ],
+    "tags": [
+      "protein",
+      "batch",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie à l’arachide : remplacez par de la purée d’amande ou de sésame, selon les allergies connues.",
+      "Vérifiez les règles de l’école avant de mettre ces biscuits dans un goûter à emporter."
+    ],
+    "storage": "3 jours dans une boîte hermétique.",
+    "precautions": [
+      "Contient de l’arachide : ne proposez pas à un enfant allergique ; servez toujours en pâte étalée, jamais en cacahuètes entières.",
+      "Arachide : à proposer seulement si elle a déjà été introduite sans réaction ; une première fois se fait à la maison, en petite quantité, quand on peut surveiller l’enfant. En cas d’allergie connue ou de doute, demandez l’avis du médecin."
+    ],
+    "nutrition": "Des biscuits sans sucre ajouté qui apportent des protéines végétales.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-cookies-noisette-chocolat-avoine",
+    "title": "Cookies noisette, chocolat noir et avoine",
+    "summary": "Des cookies croustillants à la poudre de noisette, avec moins de sucre que la recette classique.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 16,
+    "prepMin": 15,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "flour",
+        100,
+        "g"
+      ],
+      [
+        "oats",
+        60,
+        "g"
+      ],
+      [
+        "hazelnut_powder",
+        50,
+        "g"
+      ],
+      [
+        "butter",
+        70,
+        "g",
+        "mou"
+      ],
+      [
+        "sugar",
+        60,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "dark_chocolate",
+        50,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Travaillez le beurre mou avec le sucre, puis ajoutez l’œuf.",
+      "Incorporez la farine, la poudre de noisette, les flocons d’avoine et la levure.",
+      "Hachez le chocolat en petits éclats et mélangez-le à la pâte.",
+      "Formez 16 petites boules, aplatissez-les sur une plaque recouverte de papier cuisson et enfournez 10 à 12 minutes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie aux fruits à coque : remplacez la noisette par plus d’avoine.",
+      "Pour les petits, faites des mini-cookies de la taille d’une pièce."
+    ],
+    "storage": "5 jours dans une boîte métallique.",
+    "precautions": [],
+    "nutrition": "Des biscuits avec environ 4 g de sucre ajouté par cookie.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-biscuits-avoine-carotte-miel",
+    "title": "Biscuits moelleux avoine, carotte et miel",
+    "summary": "Des petits biscuits façon « carrot cake » à grignoter.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 15,
+    "prepMin": 15,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "carrot",
+        1,
+        "u"
+      ],
+      [
+        "oats",
+        100,
+        "g"
+      ],
+      [
+        "flour",
+        80,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "butter",
+        40,
+        "g",
+        "fondu"
+      ],
+      [
+        "honey",
+        2,
+        "cs"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez la carotte et râpez-la très finement.",
+      "Mélangez l’œuf, le beurre fondu et le miel, puis ajoutez la carotte.",
+      "Incorporez les flocons d’avoine, la farine, la cannelle et la levure.",
+      "Formez 15 petits tas sur une plaque recouverte de papier cuisson et enfournez 15 minutes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetables",
+      "batch",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez le miel par 30 g de sucre.",
+      "Ajoutez quelques raisins secs hachés à partir de 4 ans."
+    ],
+    "storage": "3 jours dans une boîte hermétique.",
+    "precautions": [
+      "La carotte est râpée finement puis cuite."
+    ],
+    "nutrition": "Des biscuits qui contiennent un légume, avec environ 3 g de miel par biscuit.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-yaourts-maison-vanille",
+    "title": "Yaourts maison à la vanille peu sucrés",
+    "summary": "Des yaourts faits à la maison, plus doux et moins sucrés que ceux du commerce.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "milk",
+        1000,
+        "ml",
+        "entier ou demi-écrémé"
+      ],
+      [
+        "yogurt",
+        125,
+        "g",
+        "1 pot nature (ferment)"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ],
+      [
+        "sugar",
+        40,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites chauffer le lait avec la vanille et le sucre jusqu’à ce qu’il soit tiède (environ 40 °C : un doigt doit pouvoir y rester), puis retirez du feu.",
+      "Fouettez le yaourt nature dans un bol, puis ajoutez le lait tiède petit à petit.",
+      "Répartissez dans 8 pots propres et placez-les dans la yaourtière pendant 8 à 10 heures, selon le mode d’emploi de l’appareil.",
+      "Fermez les pots et mettez-les au réfrigérateur au moins 4 heures avant de servir."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "batch",
+      "budget",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Nature : supprimez le sucre et servez avec un fruit écrasé.",
+      "Gardez un pot pour lancer la fournée suivante."
+    ],
+    "storage": "7 jours au réfrigérateur.",
+    "precautions": [
+      "Utilisez des pots et ustensiles bien propres, et gardez les yaourts au froid."
+    ],
+    "nutrition": "Un laitage maison avec 5 g de sucre ajouté par pot.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-flan-vanille-four-bain-marie",
+    "title": "Flan aux œufs à la vanille cuit au bain-marie",
+    "summary": "Des petits flans tremblotants, à la façon des œufs au lait.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "milk",
+        500,
+        "ml"
+      ],
+      [
+        "egg",
+        4,
+        "u"
+      ],
+      [
+        "sugar",
+        50,
+        "g"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 160 °C. Faites chauffer le lait avec la vanille sans le laisser bouillir.",
+      "Fouettez les œufs avec le sucre, puis versez le lait chaud dessus en fouettant.",
+      "Répartissez dans 6 ramequins, saupoudrez d’un peu de muscade et posez-les dans un plat rempli d’eau chaude à mi-hauteur.",
+      "Enfournez 35 à 40 minutes : la crème doit être prise et ne plus être liquide au centre (œufs cuits).",
+      "Laissez refroidir puis placez au réfrigérateur au moins 2 heures."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "protein",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Parfumez au zeste de citron ou à la cannelle.",
+      "Servez avec quelques fruits rouges."
+    ],
+    "storage": "2 jours au réfrigérateur, filmés.",
+    "precautions": [
+      "Les œufs doivent être bien cuits : le flan doit être pris à cœur."
+    ],
+    "nutrition": "Un dessert lacté aux œufs avec environ 8 g de sucre ajouté par ramequin.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-creme-dessert-chocolat-maison",
+    "title": "Crème dessert au chocolat maison",
+    "summary": "Une crème au chocolat onctueuse, faite avec du lait, des œufs et peu de sucre.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "milk",
+        500,
+        "ml"
+      ],
+      [
+        "dark_chocolate",
+        60,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u",
+        "jaunes seulement"
+      ],
+      [
+        "flour",
+        25,
+        "g"
+      ],
+      [
+        "sugar",
+        30,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites chauffer le lait dans une casserole et faites-y fondre le chocolat cassé en morceaux.",
+      "Dans un bol, fouettez les jaunes d’œufs avec le sucre et la farine.",
+      "Versez le lait chocolaté chaud dessus en fouettant, puis remettez le tout dans la casserole.",
+      "Faites épaissir à feu doux en remuant sans cesse 5 minutes après les premiers frémissements, pour que la crème et les œufs soient bien cuits.",
+      "Répartissez dans 6 verrines, laissez refroidir puis placez au réfrigérateur."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Gardez les blancs pour une omelette ou des financiers.",
+      "Parfumez d’une pincée de cannelle."
+    ],
+    "storage": "2 jours au réfrigérateur, filmées au contact.",
+    "precautions": [
+      "La crème doit avoir épaissi et cuit plusieurs minutes (œufs cuits)."
+    ],
+    "nutrition": "Un laitage au chocolat avec 5 g de sucre ajouté par verrine en plus du chocolat.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-riz-au-lait-coco-mangue",
+    "title": "Riz au lait de coco et mangue",
+    "summary": "Un riz au lait crémeux au lait de coco, servi avec des dés de mangue.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "round_rice",
+        100,
+        "g"
+      ],
+      [
+        "milk",
+        600,
+        "ml"
+      ],
+      [
+        "coconut_milk",
+        200,
+        "ml"
+      ],
+      [
+        "sugar",
+        40,
+        "g"
+      ],
+      [
+        "mango",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Rincez le riz rond, puis faites-le cuire 3 minutes dans de l’eau bouillante et égouttez-le.",
+      "Portez le lait et le lait de coco à frémissement, ajoutez le riz et laissez cuire à feu très doux 30 minutes en remuant souvent.",
+      "Ajoutez le sucre en fin de cuisson, quand le riz est tendre et crémeux, puis laissez refroidir.",
+      "Pelez la mangue, coupez-la en petits dés et répartissez-les sur le riz au lait au moment de servir."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "world",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez la mangue par de l’ananas ou une banane.",
+      "Tout au lait de vache si vous n’avez pas de lait de coco."
+    ],
+    "storage": "3 jours au réfrigérateur, sans la mangue. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [],
+    "nutrition": "Un dessert lacté à base de céréale avec environ 7 g de sucre ajouté par portion.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-gateau-semoule-abricots-secs",
+    "title": "Gâteau de semoule aux abricots secs",
+    "summary": "Le gâteau de semoule de nos grands-mères, avec des abricots secs à la place du caramel.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "semolina",
+        70,
+        "g"
+      ],
+      [
+        "milk",
+        600,
+        "ml"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "sugar",
+        40,
+        "g"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ],
+      [
+        "dried_apricots",
+        60,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Coupez les abricots secs en très petits morceaux.",
+      "Portez le lait à ébullition avec la vanille, versez la semoule en pluie et faites cuire 5 minutes en remuant.",
+      "Hors du feu, ajoutez le sucre, les œufs battus et les abricots, puis mélangez vivement.",
+      "Préchauffez le four à 180 °C, versez dans un moule beurré et enfournez 20 minutes, jusqu’à ce que le gâteau soit pris à cœur.",
+      "Laissez refroidir avant de démouler et de couper en parts."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "make_ahead",
+      "budget",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Avec des raisins secs hachés à partir de 4 ans.",
+      "Servez avec une compote de fruits rouges."
+    ],
+    "storage": "3 jours au réfrigérateur.",
+    "precautions": [
+      "Abricots secs coupés en tout petits morceaux avant 4 ans."
+    ],
+    "nutrition": "Un dessert lacté à base de céréale avec environ 7 g de sucre ajouté par part.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-fromage-blanc-battu-fruits-rouges-miel",
+    "title": "Fromage blanc battu, coulis de fruits rouges et miel",
+    "summary": "Un fromage blanc fouetté et léger, avec un coulis express.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 5,
+    "ingredients": [
+      [
+        "fromage_blanc",
+        400,
+        "g"
+      ],
+      [
+        "frozen_berries",
+        200,
+        "g"
+      ],
+      [
+        "honey",
+        1,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus"
+      ]
+    ],
+    "steps": [
+      "Faites chauffer les fruits rouges à feu doux 5 minutes, puis écrasez-les ou mixez-les avec le jus de citron. Laissez refroidir.",
+      "Fouettez le fromage blanc avec le miel pour le rendre mousseux.",
+      "Répartissez le fromage blanc dans 4 verrines et versez le coulis par-dessus.",
+      "Servez frais."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "protein",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans miel : le coulis seul suffit souvent à sucrer le fromage blanc.",
+      "Passez le coulis au tamis pour les enfants qui n’aiment pas les grains."
+    ],
+    "storage": "2 jours au réfrigérateur ; le coulis se congèle.",
+    "precautions": [
+      "Pas de miel avant 1 an."
+    ],
+    "nutrition": "Un laitage riche en protéines avec environ 5 g de miel par portion.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-mousse-avocat-banane-cacao",
+    "title": "Mousse chocolatée à l’avocat et à la banane",
+    "summary": "Une crème chocolatée mixée, sans œuf ni sucre ajouté.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "avocado",
+        2,
+        "u",
+        "bien mûrs"
+      ],
+      [
+        "banana",
+        2,
+        "u",
+        "très mûres"
+      ],
+      [
+        "cocoa",
+        2,
+        "cs"
+      ],
+      [
+        "vanilla",
+        1,
+        "pincee"
+      ],
+      [
+        "milk",
+        3,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Coupez les avocats en deux, retirez le noyau et prélevez la chair à la cuillère.",
+      "Pelez les bananes et coupez-les en morceaux.",
+      "Mixez l’avocat, la banane, le cacao, la vanille et le lait jusqu’à obtenir une crème très lisse.",
+      "Répartissez dans 4 petits pots et laissez reposer au frais 30 minutes avant de servir."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "picky",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans lait : utilisez de l’eau ou une boisson végétale.",
+      "Ajoutez quelques framboises écrasées sur le dessus."
+    ],
+    "storage": "24 h au réfrigérateur, filmée au contact.",
+    "precautions": [],
+    "nutrition": "Une crème au cacao sans sucre ajouté ; l’avocat apporte des matières grasses insaturées.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-riz-au-lait-pommes-cannelle",
+    "title": "Riz au lait aux pommes et à la cannelle",
+    "summary": "Un riz au lait réconfortant, avec des pommes fondantes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "round_rice",
+        100,
+        "g"
+      ],
+      [
+        "milk",
+        800,
+        "ml"
+      ],
+      [
+        "apple",
+        2,
+        "u"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "sugar",
+        30,
+        "g"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Portez le lait à frémissement avec la cannelle, ajoutez le riz rond rincé et laissez cuire à feu très doux 35 minutes en remuant souvent.",
+      "Pendant ce temps, épluchez les pommes, coupez-les en petits dés et faites-les fondre 8 minutes à la poêle avec le beurre.",
+      "Ajoutez le sucre au riz quand il est tendre et crémeux.",
+      "Servez tiède ou froid, garni des pommes fondantes."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "budget",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez les pommes par des poires.",
+      "Utilisez du lait entier pour une texture plus crémeuse."
+    ],
+    "storage": "3 jours au réfrigérateur. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [],
+    "nutrition": "Un dessert lacté aux fruits avec 5 g de sucre ajouté par portion.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-bol-smoothie-banane-myrtilles-petits-suisses",
+    "title": "Bol smoothie épais banane, myrtilles et petits-suisses",
+    "summary": "Un smoothie très épais, à manger à la cuillère, garni de pétales de maïs écrasés.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "banana",
+        1,
+        "u",
+        "congelée en rondelles de préférence"
+      ],
+      [
+        "blueberries",
+        100,
+        "g",
+        "fraîches ou surgelées"
+      ],
+      [
+        "petit_suisse",
+        4,
+        "u",
+        "nature"
+      ],
+      [
+        "corn_flakes_plain",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Pelez la banane et coupez-la en rondelles (congelées la veille, elles donnent une texture glacée).",
+      "Mixez la banane, les myrtilles et les petits-suisses jusqu’à obtenir une crème épaisse et lisse, sans myrtille entière ; raclez les parois si besoin.",
+      "Versez dans deux bols et parsemez de pétales de maïs écrasés entre les doigts.",
+      "Servez aussitôt, avec une cuillère."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez les myrtilles par des fraises ou de la mangue.",
+      "Avec un yaourt nature à la place des petits-suisses."
+    ],
+    "storage": "À servir immédiatement : les pétales ramollissent.",
+    "precautions": [
+      "Les myrtilles sont entièrement mixées avant 4 ans ; servez à la cuillère, l’enfant assis."
+    ],
+    "nutrition": "Un fruit, un laitage et une céréale, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-smoothie-mangue-ananas-yaourt",
+    "title": "Smoothie épais mangue, ananas et yaourt",
+    "summary": "Un smoothie velouté au goût d’été, épais comme une crème.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 3,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "mango",
+        1,
+        "u"
+      ],
+      [
+        "pineapple",
+        150,
+        "g"
+      ],
+      [
+        "yogurt",
+        250,
+        "g",
+        "2 pots"
+      ],
+      [
+        "orange",
+        1,
+        "u",
+        "jus"
+      ]
+    ],
+    "steps": [
+      "Pelez la mangue et coupez la chair en morceaux.",
+      "Épluchez l’ananas, retirez le cœur et coupez la chair en morceaux.",
+      "Pressez l’orange.",
+      "Mixez les fruits avec les yaourts et le jus d’orange jusqu’à obtenir un smoothie bien lisse et épais, puis servez dans des verres."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "world",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Plus épais : utilisez de la mangue surgelée.",
+      "Sans lait : yaourt végétal au soja."
+    ],
+    "storage": "À boire dans l’heure ; 12 h au réfrigérateur au maximum, en secouant avant de servir.",
+    "precautions": [],
+    "nutrition": "Deux fruits et un laitage, sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-smoothie-vert-epinards-banane-kiwi",
+    "title": "Smoothie vert épinards, banane, kiwi et pomme",
+    "summary": "Un smoothie vert doux et fruité où les épinards passent inaperçus.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 3,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "spinach",
+        30,
+        "g",
+        "jeunes pousses crues, une poignée"
+      ],
+      [
+        "banana",
+        1,
+        "u"
+      ],
+      [
+        "kiwi",
+        1,
+        "u"
+      ],
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "milk",
+        150,
+        "ml"
+      ]
+    ],
+    "steps": [
+      "Lavez soigneusement les jeunes pousses d’épinards et essorez-les.",
+      "Pelez la banane et le kiwi ; épluchez la pomme et retirez le trognon.",
+      "Mixez longuement tous les fruits avec les épinards et le lait jusqu’à obtenir un smoothie très lisse, sans morceaux de pomme.",
+      "Servez aussitôt dans des verres."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "vegetables",
+      "picky",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez le lait par un yaourt pour un smoothie plus épais.",
+      "Une demi-courgette crue mixée peut remplacer les épinards."
+    ],
+    "storage": "À boire tout de suite.",
+    "precautions": [
+      "Mixez jusqu’à ce qu’il ne reste aucun morceau de pomme crue."
+    ],
+    "nutrition": "Des fruits et un légume vert dans un même verre, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-smoothie-peche-framboise-fromage-blanc",
+    "title": "Smoothie pêche, framboise et fromage blanc",
+    "summary": "Un smoothie rose et onctueux, épaissi au fromage blanc.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 3,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "peach",
+        2,
+        "u",
+        "bien mûres"
+      ],
+      [
+        "raspberries",
+        100,
+        "g"
+      ],
+      [
+        "fromage_blanc",
+        150,
+        "g"
+      ],
+      [
+        "milk",
+        100,
+        "ml"
+      ]
+    ],
+    "steps": [
+      "Pelez les pêches, dénoyautez-les et coupez-les en morceaux.",
+      "Rincez rapidement les framboises.",
+      "Mixez les fruits avec le fromage blanc et le lait jusqu’à obtenir une texture lisse.",
+      "Passez au tamis si vous voulez retirer les grains de framboise, puis servez frais."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "protein",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison : pêches au sirop léger bien égouttées et framboises surgelées.",
+      "Avec des abricots à la place des pêches."
+    ],
+    "storage": "À boire dans l’heure.",
+    "precautions": [],
+    "nutrition": "Deux fruits et un laitage riche en protéines, sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-milkshake-banane-cacahuete-cacao",
+    "title": "Lait frappé banane, cacao et cacahuète",
+    "summary": "Un lait frappé épais et nourrissant pour les goûters après le sport.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "banana",
+        1,
+        "u",
+        "congelée de préférence"
+      ],
+      [
+        "milk",
+        250,
+        "ml"
+      ],
+      [
+        "peanut_butter",
+        1,
+        "cs",
+        "sans sucre ajouté"
+      ],
+      [
+        "cocoa",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Pelez la banane et coupez-la en rondelles.",
+      "Mettez la banane, le lait, le beurre de cacahuète et le cacao dans le blender.",
+      "Mixez jusqu’à obtenir une boisson épaisse et mousseuse.",
+      "Servez aussitôt dans deux verres."
+    ],
+    "allergens": [
+      "peanuts",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "protein",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie à l’arachide : supprimez le beurre de cacahuète et ajoutez 2 cuillerées de flocons d’avoine.",
+      "Sans cacao pour une version banane nature."
+    ],
+    "storage": "À boire tout de suite.",
+    "precautions": [
+      "Contient de l’arachide : vérifiez les allergies de tous les enfants présents.",
+      "Arachide : à proposer seulement si elle a déjà été introduite sans réaction ; une première fois se fait à la maison, en petite quantité, quand on peut surveiller l’enfant. En cas d’allergie connue ou de doute, demandez l’avis du médecin."
+    ],
+    "nutrition": "Un laitage et un fruit avec des protéines végétales, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-barres-avoine-dattes-amande",
+    "title": "Barres moelleuses avoine, dattes et amande",
+    "summary": "Des barres de céréales maison sucrées par les dattes mixées.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "dates",
+        150,
+        "g",
+        "dénoyautées"
+      ],
+      [
+        "oats",
+        150,
+        "g"
+      ],
+      [
+        "almond_powder",
+        50,
+        "g"
+      ],
+      [
+        "butter",
+        40,
+        "g",
+        "fondu"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 170 °C et chemisez un moule carré de papier cuisson.",
+      "Vérifiez que les dattes n’ont plus de noyau, couvrez-les d’eau chaude 5 minutes puis égouttez-les et mixez-les en pâte lisse.",
+      "Mélangez cette pâte avec les flocons d’avoine, la poudre d’amande, le beurre fondu et la cannelle.",
+      "Tassez fermement dans le moule sur 1,5 cm d’épaisseur et enfournez 20 minutes.",
+      "Laissez refroidir complètement dans le moule avant de couper en 12 barres."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "batch",
+      "fiber",
+      "lunchbox",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans fruits à coque : remplacez l’amande par des graines de sésame ou plus d’avoine.",
+      "Ajoutez une cuillerée de cacao à la pâte de dattes."
+    ],
+    "storage": "1 semaine dans une boîte hermétique ; 2 mois au congélateur.",
+    "precautions": [
+      "Les dattes sont entièrement mixées : pas de morceaux collants."
+    ],
+    "nutrition": "Des barres de céréales sans sucre ajouté : la douceur vient des dattes.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-barres-avoine-banane-pomme-rapee",
+    "title": "Barres tendres avoine, banane et pomme râpée",
+    "summary": "Des barres moelleuses à emporter, sucrées uniquement par les fruits.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 10,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "oats",
+        180,
+        "g"
+      ],
+      [
+        "banana",
+        2,
+        "u",
+        "mûres"
+      ],
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "vanilla",
+        1,
+        "pincee",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et chemisez un moule de papier cuisson.",
+      "Écrasez les bananes en purée ; épluchez la pomme et râpez-la finement.",
+      "Mélangez les flocons d’avoine avec la banane, la pomme râpée, l’huile, la cannelle et la vanille.",
+      "Étalez et tassez la préparation dans le moule, puis enfournez 25 minutes, jusqu’à ce que le dessus soit doré et la pomme tendre.",
+      "Laissez refroidir avant de découper en 10 barres."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "batch",
+      "fiber",
+      "lunchbox",
+      "budget",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez la pomme par une poire râpée.",
+      "À partir de 4 ans, ajoutez quelques raisins secs."
+    ],
+    "storage": "4 jours dans une boîte hermétique au frais ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Des barres de céréales sans sucre ajouté, sucrées par les fruits.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-carres-galettes-riz-cacahuete-miel",
+    "title": "Carrés croustillants galettes de riz, cacahuète et miel",
+    "summary": "Des carrés sans four à base de galettes de riz émiettées et de beurre de cacahuète.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 15,
+    "cookMin": 2,
+    "ingredients": [
+      [
+        "rice_cakes",
+        6,
+        "u"
+      ],
+      [
+        "peanut_butter",
+        100,
+        "g",
+        "sans sucre ajouté"
+      ],
+      [
+        "honey",
+        3,
+        "cs"
+      ],
+      [
+        "oats",
+        60,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Émiettez les galettes de riz en petits morceaux dans un saladier et ajoutez les flocons d’avoine.",
+      "Faites chauffer le beurre de cacahuète et le miel 30 secondes au micro-ondes, puis mélangez pour obtenir une pâte fluide.",
+      "Versez sur les céréales et mélangez pour bien les enrober.",
+      "Tassez dans un moule chemisé de papier cuisson et laissez reposer au réfrigérateur 1 heure avant de couper en 12 carrés."
+    ],
+    "allergens": [
+      "gluten",
+      "peanuts"
+    ],
+    "tags": [
+      "quick",
+      "protein",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie à l’arachide : purée de sésame ou d’amande, selon les allergies connues.",
+      "Remplacez une partie du miel par une banane écrasée."
+    ],
+    "storage": "5 jours au réfrigérateur dans une boîte hermétique.",
+    "precautions": [
+      "Contient de l’arachide : vérifiez les allergies avant de partager.",
+      "Pas de miel avant 1 an.",
+      "Arachide : à proposer seulement si elle a déjà été introduite sans réaction ; une première fois se fait à la maison, en petite quantité, quand on peut surveiller l’enfant. En cas d’allergie connue ou de doute, demandez l’avis du médecin."
+    ],
+    "nutrition": "Des carrés de céréales avec environ 5 g de miel par carré.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-roses-petales-mais-chocolat-noir",
+    "title": "Roses des sables au chocolat noir",
+    "summary": "La version maison des roses des sables, avec du chocolat noir et sans sucre ajouté.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 15,
+    "prepMin": 15,
+    "cookMin": 5,
+    "ingredients": [
+      [
+        "dark_chocolate",
+        100,
+        "g"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "corn_flakes_plain",
+        80,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites fondre le chocolat avec le beurre au bain-marie, à feu doux, en remuant.",
+      "Hors du feu, ajoutez les pétales de maïs nature et mélangez délicatement pour bien les enrober sans les casser.",
+      "Formez 15 petits tas avec deux cuillères sur une plaque recouverte de papier cuisson.",
+      "Laissez reposer au réfrigérateur 1 heure pour que le chocolat durcisse."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "family",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Choisissez un chocolat noir à 50 % pour les enfants qui le trouvent amer.",
+      "Ajoutez une cuillerée de graines de sésame."
+    ],
+    "storage": "1 semaine dans une boîte hermétique au frais.",
+    "precautions": [],
+    "nutrition": "Un petit goûter chocolaté, sans sucre ajouté en dehors du chocolat.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "gd-tartines-fromage-frais-concombre-ciboulette",
+    "title": "Tartines de fromage frais, concombre et ciboulette",
+    "summary": "Un goûter salé et frais, prêt en cinq minutes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "wholemeal_bread",
+        2,
+        "u",
+        "tranches"
+      ],
+      [
+        "cream_cheese",
+        40,
+        "g"
+      ],
+      [
+        "cucumber",
+        1,
+        "u",
+        "un tronçon de 8 cm"
+      ],
+      [
+        "chives",
+        4,
+        "u",
+        "brins"
+      ]
+    ],
+    "steps": [
+      "Étalez le fromage frais sur les tranches de pain complet.",
+      "Lavez le concombre et coupez-le en rondelles très fines, ou râpez-le pour les plus petits.",
+      "Disposez le concombre sur les tartines et parsemez de ciboulette finement ciselée.",
+      "Coupez en mouillettes ou en petits carrés faciles à attraper."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "vegetables",
+      "finger",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez le concombre par du radis râpé ou de la carotte râpée.",
+      "Sans gluten : sur des galettes de riz."
+    ],
+    "storage": "À préparer au dernier moment.",
+    "precautions": [],
+    "nutrition": "Un féculent complet, un produit laitier et un légume cru.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-houmous-doux-batonnets-legumes",
+    "title": "Houmous doux et bâtonnets de légumes pour le goûter",
+    "summary": "Un houmous léger, sans ail, à tremper avec des légumes coupés.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 5,
+    "ingredients": [
+      [
+        "chickpeas",
+        240,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "tahini",
+        1,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "cucumber",
+        1,
+        "u"
+      ],
+      [
+        "cumin",
+        1,
+        "pincee",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Mixez les pois chiches avec le tahini, le jus de citron, l’huile d’olive, le cumin et 3 à 4 cuillerées d’eau froide jusqu’à obtenir une crème très lisse.",
+      "Épluchez les carottes et coupez-les en bâtonnets ; avant 4 ans, faites-les cuire 5 minutes à la vapeur pour qu’ils soient tendres.",
+      "Coupez le concombre en bâtonnets en retirant les graines.",
+      "Servez le houmous dans un bol, entouré des bâtonnets de légumes."
+    ],
+    "allergens": [
+      "sesame"
+    ],
+    "tags": [
+      "vegetables",
+      "protein",
+      "fiber",
+      "world",
+      "lunchbox",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie au sésame : supprimez le tahini et ajoutez un peu plus d’huile.",
+      "Accompagnez de pain pita coupé en lanières."
+    ],
+    "storage": "3 jours au réfrigérateur pour le houmous ; les bâtonnets se préparent au dernier moment.",
+    "precautions": [
+      "Carottes crues dures : cuites tendres ou râpées avant 4 ans."
+    ],
+    "nutrition": "Des légumes secs et des légumes frais réunis dans un goûter salé.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-sables-comte-sesame",
+    "title": "Petits sablés salés au comté",
+    "summary": "Des biscuits apéritifs à grignoter pour le goûter, au bon goût de fromage.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 25,
+    "prepMin": 20,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "flour",
+        150,
+        "g"
+      ],
+      [
+        "comte",
+        80,
+        "g"
+      ],
+      [
+        "butter",
+        70,
+        "g",
+        "mou"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "sesame_seeds",
+        1,
+        "cs",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Râpez finement le comté.",
+      "Mélangez la farine, le comté et le beurre mou du bout des doigts, puis ajoutez l’œuf et formez une boule.",
+      "Étalez la pâte sur 4 mm et découpez des formes à l’emporte-pièce ; parsemez de graines de sésame si vous le souhaitez.",
+      "Préchauffez le four à 180 °C et enfournez 10 à 12 minutes, jusqu’à ce que les sablés soient dorés.",
+      "Laissez refroidir sur une grille."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk",
+      "sesame"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "calcium",
+      "family",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Avec de l’emmental ou du parmesan à la place du comté.",
+      "Sans sésame si l’allergie est connue."
+    ],
+    "storage": "1 semaine dans une boîte métallique ; la pâte crue se congèle.",
+    "precautions": [],
+    "nutrition": "Un goûter salé à base de céréale et de fromage, sans sel ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-roules-tortilla-dinde-fromage-frais",
+    "title": "Roulés de galette au blanc de dinde et fromage frais",
+    "summary": "Des petites spirales salées, faciles à emporter.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "tortilla",
+        2,
+        "u"
+      ],
+      [
+        "cream_cheese",
+        80,
+        "g"
+      ],
+      [
+        "turkey_ham",
+        4,
+        "u",
+        "tranches fines"
+      ],
+      [
+        "lettuce",
+        4,
+        "u",
+        "feuilles"
+      ],
+      [
+        "carrot",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Étalez le fromage frais sur toute la surface des galettes de blé.",
+      "Épluchez la carotte et râpez-la finement, puis répartissez-la sur le fromage.",
+      "Ajoutez les tranches de dinde et les feuilles de salade lavées et essorées.",
+      "Roulez bien serré, filmez et laissez reposer 15 minutes au frais, puis coupez en tronçons de 2 cm."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "lunchbox",
+      "finger",
+      "protein"
+    ],
+    "adaptations": [
+      "Version végétarienne : houmous et concombre à la place de la dinde.",
+      "Avec de l’emmental râpé pour plus de calcium."
+    ],
+    "storage": "24 h au réfrigérateur, filmés.",
+    "precautions": [
+      "Carotte crue : râpée finement avant 4 ans.",
+      "Gardez au frais jusqu’au goûter."
+    ],
+    "nutrition": "Un féculent, une protéine et des légumes crus.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-mini-cakes-mais-emmental-ciboulette",
+    "title": "Mini-cakes salés au maïs, emmental et ciboulette",
+    "summary": "Des petits cakes moelleux et dorés à glisser dans le sac du goûter.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 15,
+    "cookMin": 22,
+    "ingredients": [
+      [
+        "flour",
+        150,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "milk",
+        100,
+        "ml"
+      ],
+      [
+        "olive_oil",
+        50,
+        "ml"
+      ],
+      [
+        "corn",
+        140,
+        "g",
+        "1 petite boîte égouttée"
+      ],
+      [
+        "emmental",
+        80,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Râpez l’emmental et égouttez le maïs.",
+      "Fouettez les œufs avec le lait et l’huile, puis ajoutez la farine et la levure.",
+      "Incorporez le maïs, l’emmental et la ciboulette.",
+      "Répartissez dans 12 moules à mini-cakes ou à muffins et enfournez 20 à 22 minutes. Vérifiez la cuisson en piquant le centre avec la pointe d’un couteau : elle doit ressortir sèche (œufs cuits à cœur)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "lunchbox",
+      "batch",
+      "freezer",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Ajoutez des dés de poivron ou de courgette.",
+      "Avec des dés de blanc de dinde pour une version plus protéinée."
+    ],
+    "storage": "2 jours au réfrigérateur ; 2 mois au congélateur.",
+    "precautions": [
+      "Avant 4 ans : écrasez les grains de maïs (risque d’étouffement)."
+    ],
+    "nutrition": "Un goûter salé qui associe céréale, légume et fromage.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "gd-pain-perdu-pommes-cannelle",
+    "title": "Pain perdu aux pommes poêlées et à la cannelle",
+    "summary": "Un pain perdu sans sucre dans l’appareil, garni de pommes fondantes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "bread",
+        4,
+        "u",
+        "tranches, rassises de préférence"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        150,
+        "ml"
+      ],
+      [
+        "apple",
+        2,
+        "u"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes, coupez-les en fines lamelles et faites-les fondre 8 minutes à la poêle avec la moitié du beurre et la cannelle, jusqu’à ce qu’elles soient bien tendres.",
+      "Battez les œufs avec le lait dans une assiette creuse.",
+      "Trempez les tranches de pain de mie des deux côtés dans ce mélange.",
+      "Faites-les dorer 3 minutes de chaque côté dans le reste du beurre, jusqu’à ce que l’œuf soit bien cuit et qu’il n’y ait plus de partie liquide.",
+      "Coupez en mouillettes et servez tiède, garni des pommes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "budget",
+      "quick",
+      "family",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Avec des poires ou des bananes poêlées.",
+      "Utilisez du pain complet rassis pour éviter le gaspillage."
+    ],
+    "storage": "À déguster tiède ; les pommes poêlées se gardent 2 jours au frais.",
+    "precautions": [
+      "L’œuf doit être cuit, sans partie coulante."
+    ],
+    "nutrition": "Un goûter à base de pain et de fruit, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "gd-crepes-sarrasin-compote",
+    "title": "Crêpes au sarrasin garnies de compote",
+    "summary": "Des crêpes au goût de noisette, garnies de compote sans sucre ajouté.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "buckwheat_flour",
+        100,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "milk",
+        250,
+        "ml"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ],
+      [
+        "compote_unsweetened",
+        200,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Mélangez la farine de sarrasin et l’œuf, puis versez le lait petit à petit en fouettant pour obtenir une pâte lisse ; laissez reposer 30 minutes si possible.",
+      "Faites chauffer une poêle légèrement huilée et versez une petite louche de pâte en l’étalant finement.",
+      "Faites cuire environ 1 minute de chaque côté, jusqu’à ce que la crêpe soit bien sèche et dorée ; continuez avec le reste de la pâte.",
+      "Garnissez chaque crêpe de compote, pliez-la en quatre et coupez en triangles pour les plus jeunes."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "budget",
+      "family",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Version salée : garnissez d’emmental râpé et de blanc de dinde.",
+      "Pour l’allergie au gluten, choisissez une farine de sarrasin garantie sans traces de blé."
+    ],
+    "storage": "Les crêpes se gardent 2 jours au réfrigérateur, filmées ; réchauffez-les à la poêle.",
+    "precautions": [],
+    "nutrition": "Une céréale complète, du lait et un fruit, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  }
+]

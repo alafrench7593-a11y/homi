@@ -10,7 +10,7 @@ import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
-export function RecipeCard({ r, favorite }: { r: Recipe; favorite?: boolean }) {
+export function RecipeCard({ r, favorite, score }: { r: Recipe; favorite?: boolean; score?: number | null }) {
   const t = useTheme();
   return (
     <Pressable testID={`recipe-${r.slug}`} accessibilityRole="button" accessibilityLabel={tr('rc.card.a11y', { title: r.title, min: r.prepMin + r.cookMin })} onPress={() => { haptic('selection'); router.push(`/meals/${r.slug}`); }}
@@ -22,6 +22,7 @@ export function RecipeCard({ r, favorite }: { r: Recipe; favorite?: boolean }) {
         <Row gap={6}>
           <Text variant="caption" color={t.colors.primary}>{r.personal ? tr('rc.personal') : statusLabel(r.status)}</Text>
           {favorite ? <Icon name="star" size={13} color={t.colors.gold} /> : null}
+          {score != null ? <Text variant="caption" weight="bold" testID={`score-${r.slug}`}>{tr('rc.score.badge', { n: score })}</Text> : null}
         </Row>
       </View>
     </Pressable>

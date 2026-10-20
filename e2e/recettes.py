@@ -6,7 +6,7 @@ Démo de départ : Camille enceinte, Lina (bébé) et Noé (enfant, ~6 ans).
   python3 e2e/recettes.py
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
 """
-import json, os
+import json, os, subprocess
 from datetime import date, timedelta
 from playwright.sync_api import sync_playwright
 
@@ -63,9 +63,8 @@ def run(p):
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     noe = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Noé').id")
     go(pg, '/meals', 3000)  # premier passage : la bibliothèque est installée dans la base de démonstration
-    lib = demo(pg, """s => { const ing = s.tables.recipe_ingredients; const out = {};
-      for (const r of s.tables.recipes.filter(r => !r.owner_id)) out[r.slug] = { aud: r.audiences, tex: r.textures, al: r.allergens, tags: r.tags, title: r.title, status: r.status,
-        ings: ing.filter(i => i.recipe_id === r.id).map(i => i.ingredient_key) }; return out; }""")
+    # La bibliothèque n'est plus copiée dans le stockage local (reconstruite à chaque ouverture) : mêmes lignes, lues depuis le code
+    lib = json.loads(subprocess.run(['npx', '-y', 'tsx', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dump_recipes.ts')], capture_output=True, text=True, check=True).stdout)
     R['bibliotheque_64_recettes_en_base'] = len(lib) == 64
     R['statuts_jamais_relu_par_defaut'] = all(v['status'] in ('ai_draft', 'to_review') for v in lib.values())
     title2slug = {v['title']: k for k, v in lib.items()}
@@ -113,7 +112,8 @@ def run(p):
     lic = tid(pg, 'photo-license').inner_text()
     R['10_licence_affichee'] = 'Illustration générée' in lic and 'Création propre' in lic
     R['10_image_declaree_generee'] = 'Illustration générée' in t
-    R['10_licence_en_base'] = demo(pg, f"s => {{ const r = s.tables.recipes.find(x => x.slug === '{slug}'); const ph = s.tables.recipe_photos.find(x => x.recipe_id === r.id); return ph.generated === true && !!ph.license && !!ph.rights && !!ph.author && ph.kind === 'generated'; }}")
+    ph = lib[slug]['photo']
+    R['10_licence_en_base'] = ph.get('generated') is True and bool(ph.get('license')) and bool(ph.get('rights')) and bool(ph.get('author')) and ph.get('kind') == 'generated'
     tid(pg, 'servings').inner_text()
     before = tid(pg, f"ing-{lib[slug]['ings'][0]}").inner_text()
     pg.locator('[aria-label="Une portion de plus"]').first.click(); pg.wait_for_timeout(300)
@@ -243,7 +243,7 @@ def run(p):
     tid(pg, 'demo-grant-editor').click(); pg.wait_for_timeout(1500)
     target = preg_list[0]
     tid(pg, f'admin-review-{target}').click(); pg.wait_for_timeout(1000)
-    R['admin_marquer_relue'] = demo(pg, f"s => s.tables.recipes.find(r => r.slug === '{target}').status === 'reviewed' && s.tables.recipe_reviews.some(v => v.status === 'reviewed')")
+    R['admin_marquer_relue'] = demo(pg, f"s => s.tables.recipe_overrides.some(o => o.recipe_id === 'lib-{target}' && o.row.status === 'reviewed') && s.tables.recipe_reviews.some(v => v.status === 'reviewed')")
     go(pg, f'/meals/{target}')
     R['admin_statut_relu_sur_la_fiche'] = 'Relu' in tid(pg, 'recipe-status').inner_text()
     pg.screenshot(path=f'{SHOTS}/rc_admin.png')

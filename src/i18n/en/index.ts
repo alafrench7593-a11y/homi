@@ -11,3 +11,4 @@ export { advice } from './advice';
 export { parcours } from './parcours';
 export { recettes } from './recettes';
 export { reorg } from './reorg';
+export { produits } from './produits';

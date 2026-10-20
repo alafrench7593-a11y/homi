@@ -1,0 +1,5904 @@
+[
+  {
+    "slug": "vg-dahl-lentilles-corail-coco-riz",
+    "title": "Dahl doux de lentilles corail au lait de coco et riz",
+    "summary": "Un dahl onctueux et peu épicé, servi avec du riz pour associer légumineuse et céréale.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "red_lentils",
+        200,
+        "g"
+      ],
+      [
+        "rice",
+        200,
+        "g",
+        "basmati, poids cru"
+      ],
+      [
+        "coconut_milk",
+        200,
+        "ml"
+      ],
+      [
+        "canned_tomato",
+        200,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "carrot",
+        1,
+        "u"
+      ],
+      [
+        "curry",
+        1,
+        "cc"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Rincez les lentilles corail à l’eau froide jusqu’à ce que l’eau soit claire.",
+      "Émincez finement l’oignon et coupez la carotte en petits dés. Faites-les revenir 5 minutes dans l’huile, à feu doux, puis ajoutez le curry et mélangez 1 minute.",
+      "Ajoutez les lentilles, les tomates concassées, le lait de coco et 500 ml d’eau. Laissez mijoter 20 minutes à couvert en remuant de temps en temps, jusqu’à ce que les lentilles se défassent.",
+      "Pendant ce temps, faites cuire le riz dans une grande casserole d’eau selon le temps indiqué sur le paquet, puis égouttez-le.",
+      "Servez le dahl sur le riz ; pour les plus jeunes, écrasez légèrement les morceaux de carotte à la fourchette."
+    ],
+    "allergens": [
+      "celery",
+      "mustard"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "fiber",
+      "batch",
+      "freezer",
+      "world",
+      "budget"
+    ],
+    "adaptations": [
+      "Allergie à la moutarde ou au céleri : remplacez le curry par du curcuma et une pointe de cumin (vérifiez l’étiquette du mélange d’épices).",
+      "Pour la famille, ajoutez de la coriandre fraîche et un peu de piment dans les assiettes des adultes."
+    ],
+    "storage": "3 jours au réfrigérateur ; le dahl se congèle très bien en portions (3 mois). Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Vérifiez la température avant de servir : le dahl garde longtemps la chaleur."
+    ],
+    "nutrition": "Les lentilles et le riz réunis apportent des protéines végétales complémentaires, ainsi que des fibres.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-curry-pois-chiches-epinards-riz-complet",
+    "title": "Curry doux de pois chiches aux épinards et riz complet",
+    "summary": "Un curry tout doux, coloré au curcuma, où les pois chiches fondent dans une sauce coco.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "chickpeas",
+        400,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "frozen_spinach",
+        300,
+        "g"
+      ],
+      [
+        "coconut_milk",
+        200,
+        "ml"
+      ],
+      [
+        "brown_rice",
+        200,
+        "g",
+        "poids cru"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "turmeric",
+        1,
+        "cc"
+      ],
+      [
+        "cumin",
+        0.5,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz complet dans un grand volume d’eau 35 à 40 minutes (ou selon le paquet), puis égouttez.",
+      "Pendant ce temps, émincez l’oignon et l’ail. Faites-les revenir 5 minutes dans l’huile d’olive avec le curcuma et le cumin.",
+      "Ajoutez les épinards encore surgelés et laissez-les fondre 5 minutes en remuant.",
+      "Versez les pois chiches et le lait de coco, puis laissez mijoter 10 minutes à feu doux. Pour les enfants de moins de 4 ans, écrasez grossièrement une partie des pois chiches à la fourchette.",
+      "Servez le curry avec le riz."
+    ],
+    "allergens": [],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "iron",
+      "vegetables",
+      "world",
+      "batch"
+    ],
+    "adaptations": [
+      "Version plus rapide : utilisez du riz blanc (15 minutes de cuisson).",
+      "Pour les adultes, relevez avec du gingembre ou du piment dans l’assiette."
+    ],
+    "storage": "3 jours au réfrigérateur dans une boîte fermée ; le curry se congèle (sans le riz) jusqu’à 3 mois. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Avant 4 ans, écrasez légèrement les pois chiches : ils sont ronds et fermes."
+    ],
+    "nutrition": "Les pois chiches et le riz complet apportent ensemble des protéines végétales et des fibres ; les épinards ajoutent un légume.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-boulettes-lentilles-sauce-tomate-pates",
+    "title": "Boulettes de lentilles à la sauce tomate et coquillettes",
+    "summary": "Des boulettes moelleuses façon « spaghetti boulettes », entièrement végétales et au fromage.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 25,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "green_lentils",
+        150,
+        "g",
+        "poids cru"
+      ],
+      [
+        "oats",
+        60,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "emmental",
+        50,
+        "g",
+        "râpé"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "pasta",
+        250,
+        "g",
+        "coquillettes, poids cru"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "herbs",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les lentilles vertes 25 minutes dans de l’eau non salée, égouttez-les bien et laissez tiédir.",
+      "Mixez grossièrement les lentilles avec les flocons d’avoine, l’œuf, l’emmental râpé et la moitié de l’oignon finement haché. Formez une vingtaine de petites boulettes.",
+      "Faites dorer les boulettes 8 à 10 minutes dans 1 cuillère d’huile, en les retournant, jusqu’à ce qu’elles soient fermes et cuites à cœur.",
+      "Dans une autre casserole, faites revenir le reste de l’oignon dans l’huile restante, ajoutez les tomates concassées et les herbes de Provence, puis laissez mijoter 10 minutes. Déposez les boulettes dans la sauce.",
+      "Faites cuire les pâtes selon le paquet, égouttez-les et servez avec les boulettes en sauce, coupées en deux pour les plus petits."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "fiber",
+      "freezer",
+      "family",
+      "picky"
+    ],
+    "adaptations": [
+      "Sans œuf : remplacez l’œuf par 2 cuillères à soupe de fromage blanc et un peu plus d’avoine.",
+      "Les boulettes se congèlent crues ou cuites."
+    ],
+    "storage": "3 jours au réfrigérateur ; boulettes congelées jusqu’à 3 mois.",
+    "precautions": [
+      "Œuf cuit à cœur : les boulettes doivent être fermes au centre."
+    ],
+    "nutrition": "Les lentilles associées aux pâtes et à l’avoine forment un plat complet en protéines végétales, complété par le fromage.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-galettes-pois-chiches-courgette-sauce-ciboulette",
+    "title": "Galettes poêlées de pois chiches à la courgette, sauce ciboulette",
+    "summary": "Des galettes moelleuses aux pois chiches et à la courgette râpée, avec une sauce fraîche au fromage blanc.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 25,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "chickpeas",
+        400,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "oats",
+        50,
+        "g"
+      ],
+      [
+        "paprika",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "fromage_blanc",
+        200,
+        "g"
+      ],
+      [
+        "chives",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Râpez la courgette, pressez-la dans un torchon propre pour retirer l’eau.",
+      "Écrasez finement les pois chiches à la fourchette ou au mixeur, puis mélangez-les avec la courgette, l’œuf, les flocons d’avoine et le paprika. Laissez reposer 10 minutes pour que l’avoine gonfle.",
+      "Formez 12 petites galettes aplaties et faites-les cuire 5 minutes par face dans l’huile d’olive, à feu moyen, jusqu’à ce qu’elles soient dorées et cuites à cœur.",
+      "Mélangez le fromage blanc avec la ciboulette ciselée et servez en sauce."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "finger",
+      "lunchbox",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Sans œuf : remplacez l’œuf par 2 cuillères à soupe de fromage blanc et un peu plus d’avoine.",
+      "Servez avec du boulgour ou du riz pour un repas plus copieux."
+    ],
+    "storage": "Galettes : 2 jours au réfrigérateur ou 2 mois au congélateur. Sauce : 24 h au frais.",
+    "precautions": [
+      "Œuf cuit à cœur : les galettes doivent être fermes au centre."
+    ],
+    "nutrition": "Les pois chiches et l’avoine associent légumineuse et céréale ; le fromage blanc ajoute du calcium.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-tortilla-pommes-de-terre-courgette",
+    "title": "Tortilla épaisse aux pommes de terre et courgette",
+    "summary": "Une omelette espagnole bien prise, qui se mange chaude ou froide, en parts ou en cubes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "egg",
+        6,
+        "u"
+      ],
+      [
+        "potato",
+        500,
+        "g"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "salt",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre et coupez-les en fines lamelles ; coupez la courgette en demi-rondelles et émincez l’oignon.",
+      "Faites cuire les légumes 20 minutes à feu doux dans l’huile d’olive, à couvert, jusqu’à ce que les pommes de terre soient tendres.",
+      "Battez les œufs avec le sel, versez-les sur les légumes et laissez cuire 8 minutes à feu doux, couvercle posé.",
+      "Retournez la tortilla à l’aide d’une assiette et poursuivez la cuisson 5 minutes : les œufs doivent être cuits à cœur, sans partie liquide.",
+      "Coupez en parts ou en cubes pour les petites mains."
+    ],
+    "allergens": [
+      "eggs"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "budget",
+      "lunchbox",
+      "finger",
+      "world"
+    ],
+    "adaptations": [
+      "Remplacez la courgette par des poivrons ou des épinards selon la saison.",
+      "Sans sel pour toute la famille : ajoutez des herbes à la place."
+    ],
+    "storage": "2 jours au réfrigérateur, bien emballée.",
+    "precautions": [
+      "Œufs cuits à cœur : piquez le centre, aucune partie ne doit couler."
+    ],
+    "nutrition": "Les œufs apportent des protéines et les pommes de terre des féculents : un plat complet avec une salade.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-gratin-pates-completes-chou-fleur-comte",
+    "title": "Gratin de pâtes complètes au chou-fleur et au comté",
+    "summary": "Un gratin crémeux où le chou-fleur se cache dans une béchamel au comté.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "wholewheat_pasta",
+        250,
+        "g",
+        "poids cru"
+      ],
+      [
+        "cauliflower",
+        400,
+        "g"
+      ],
+      [
+        "milk",
+        500,
+        "ml"
+      ],
+      [
+        "flour",
+        30,
+        "g"
+      ],
+      [
+        "butter",
+        30,
+        "g"
+      ],
+      [
+        "comte",
+        80,
+        "g",
+        "râpé"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Détaillez le chou-fleur en petits bouquets et faites-les cuire 5 minutes avec les pâtes dans une grande casserole d’eau (temps total selon le paquet). Égouttez.",
+      "Préparez la béchamel : faites fondre le beurre, ajoutez la farine, puis versez le lait petit à petit en fouettant. Laissez épaissir 5 minutes à feu doux.",
+      "Hors du feu, ajoutez la muscade et les deux tiers du comté.",
+      "Mélangez pâtes, chou-fleur et sauce dans un plat, parsemez du reste de comté et faites gratiner 20 minutes."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "protein",
+      "fiber",
+      "family",
+      "picky"
+    ],
+    "adaptations": [
+      "Remplacez le comté par de l’emmental ; ajoutez des pois chiches pour plus de protéines végétales.",
+      "Les plus jeunes peuvent avoir le chou-fleur écrasé dans la sauce."
+    ],
+    "storage": "2 jours au réfrigérateur ; réchauffez au four avec un peu de lait.",
+    "precautions": [],
+    "nutrition": "Le comté et le lait apportent du calcium et des protéines ; les pâtes complètes, des fibres.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-chili-doux-haricots-rouges-riz-complet",
+    "title": "Chili doux aux haricots rouges, maïs et riz complet",
+    "summary": "Un chili sans piment, parfumé au paprika doux, avec une cuillère de fromage blanc.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "kidney_beans",
+        400,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "brown_rice",
+        200,
+        "g",
+        "poids cru"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "corn",
+        140,
+        "g"
+      ],
+      [
+        "bell_pepper",
+        1,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "cumin",
+        1,
+        "cc"
+      ],
+      [
+        "paprika",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "fromage_blanc",
+        100,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz complet 35 à 40 minutes dans un grand volume d’eau, puis égouttez.",
+      "Émincez l’oignon et coupez le poivron en petits dés. Faites-les revenir 8 minutes dans l’huile avec le cumin et le paprika.",
+      "Ajoutez les tomates concassées, les haricots rouges et le maïs égoutté. Laissez mijoter 20 minutes à feu doux. Avant 4 ans, écrasez une partie des haricots à la fourchette.",
+      "Servez le chili sur le riz avec une cuillère de fromage blanc."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "iron",
+      "batch",
+      "freezer",
+      "world"
+    ],
+    "adaptations": [
+      "Pour les adultes, ajoutez du piment dans l’assiette.",
+      "Sans lait : remplacez le fromage blanc par un dé d’avocat."
+    ],
+    "storage": "3 jours au réfrigérateur ; le chili se congèle 3 mois. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Avant 4 ans, écrasez les haricots et les grains de maïs."
+    ],
+    "nutrition": "Les haricots rouges et le riz complet associés fournissent des protéines végétales et beaucoup de fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-soupe-pois-casses-carottes-croutons",
+    "title": "Soupe veloutée de pois cassés aux carottes et croûtons",
+    "summary": "Une soupe épaisse et réconfortante, servie avec des croûtons de pain complet.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "split_peas",
+        250,
+        "g"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "potato",
+        1,
+        "u"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ],
+      [
+        "wholemeal_bread",
+        3,
+        "u",
+        "tranches"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "cream",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Rincez les pois cassés. Épluchez et coupez en morceaux les carottes, la pomme de terre et l’oignon.",
+      "Mettez le tout dans une marmite avec la feuille de laurier et 1,2 l d’eau. Portez à ébullition puis laissez cuire 45 minutes à petits bouillons, jusqu’à ce que les pois soient très tendres.",
+      "Retirez le laurier, mixez finement et ajoutez la crème.",
+      "Coupez le pain en petits dés, arrosez d’huile et faites-les dorer 5 minutes à la poêle. Servez sur la soupe."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "iron",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Sans lait : supprimez la crème ou remplacez-la par un filet d’huile d’olive.",
+      "Pour les moins de 3 ans, servez sans croûtons ou avec des croûtons ramollis dans la soupe."
+    ],
+    "storage": "3 jours au réfrigérateur ; se congèle 3 mois (sans les croûtons).",
+    "precautions": [
+      "Retirez bien la feuille de laurier avant de mixer."
+    ],
+    "nutrition": "Les pois cassés et le pain complet réunissent légumineuse et céréale ; la soupe apporte des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-salade-quinoa-pois-chiches-feta-menthe",
+    "title": "Salade de quinoa, pois chiches, feta et menthe",
+    "summary": "Une salade fraîche et complète pour l’été ou la boîte à repas.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "quinoa",
+        200,
+        "g",
+        "poids cru"
+      ],
+      [
+        "chickpeas",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "cucumber",
+        1,
+        "u"
+      ],
+      [
+        "cherry_tomato",
+        200,
+        "g"
+      ],
+      [
+        "feta",
+        100,
+        "g"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "mint",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Rincez le quinoa, puis faites-le cuire 12 à 15 minutes dans deux fois son volume d’eau. Laissez refroidir.",
+      "Coupez le concombre en petits dés et les tomates cerises en quatre (indispensable avant 4 ans).",
+      "Émiettez la feta et ciselez la menthe.",
+      "Mélangez le quinoa, les pois chiches, les légumes, la feta et la menthe ; assaisonnez avec l’huile d’olive et le jus de citron. Pour les plus jeunes, écrasez légèrement les pois chiches."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "lunchbox",
+      "make_ahead",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Sans lait : remplacez la feta par des dés d’avocat.",
+      "Hors saison, remplacez les tomates cerises par du maïs."
+    ],
+    "storage": "24 h au réfrigérateur ; dans une boîte isotherme avec un pain de glace pour l’école.",
+    "precautions": [
+      "Tomates cerises coupées en quatre et pois chiches écrasés avant 4 ans.",
+      "Gardez au frais jusqu’au repas."
+    ],
+    "nutrition": "Le quinoa et les pois chiches apportent des protéines végétales ; la feta ajoute du calcium.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-galettes-sarrasin-oeuf-epinards-emmental",
+    "title": "Galettes de sarrasin à l’œuf, aux épinards et à l’emmental",
+    "summary": "Des galettes bretonnes garnies d’un œuf bien cuit, d’épinards et de fromage fondu.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "buckwheat_flour",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        5,
+        "u"
+      ],
+      [
+        "spinach",
+        200,
+        "g",
+        "pousses ou feuilles lavées"
+      ],
+      [
+        "emmental",
+        80,
+        "g",
+        "râpé"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "salt",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Mélangez la farine de sarrasin, 1 œuf, le sel et 450 ml d’eau froide jusqu’à obtenir une pâte lisse. Laissez reposer 30 minutes si possible.",
+      "Faites tomber les épinards 3 minutes dans une poêle avec un peu de beurre, puis hachez-les.",
+      "Faites cuire une galette dans une grande poêle beurrée, 2 minutes. Retournez-la, cassez un œuf au centre, ajoutez épinards et emmental.",
+      "Couvrez et laissez cuire 4 à 5 minutes, jusqu’à ce que le blanc et le jaune soient bien pris. Rabattez les bords et répétez.",
+      "Coupez en lanières pour les plus jeunes."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "calcium",
+      "family",
+      "world"
+    ],
+    "adaptations": [
+      "Sans œuf sur la galette : remplacez-le par des dés de tofu ou du fromage frais.",
+      "Vérifiez l’étiquette de la farine de sarrasin en cas d’allergie au blé."
+    ],
+    "storage": "Pâte : 24 h au réfrigérateur. Les galettes garnies se mangent aussitôt.",
+    "precautions": [
+      "Œuf cuit à cœur : jaune bien pris pour les enfants."
+    ],
+    "nutrition": "L’œuf et l’emmental apportent des protéines et du calcium ; le sarrasin, des féculents.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-polenta-cremeuse-ragout-lentilles",
+    "title": "Polenta crémeuse et ragoût de lentilles aux carottes",
+    "summary": "Une polenta moelleuse au parmesan, nappée d’un ragoût de lentilles mijoté.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "polenta",
+        200,
+        "g"
+      ],
+      [
+        "green_lentils",
+        150,
+        "g",
+        "poids cru"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "thyme",
+        1,
+        "cc"
+      ],
+      [
+        "parmesan",
+        40,
+        "g",
+        "râpé"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Émincez l’oignon, coupez les carottes en petits dés et faites-les revenir 5 minutes dans 1 cuillère d’huile d’olive.",
+      "Ajoutez les lentilles, les tomates concassées, le thym et 400 ml d’eau. Laissez mijoter 30 minutes, jusqu’à ce que les lentilles soient tendres.",
+      "Portez 900 ml d’eau à ébullition, versez la polenta en pluie en fouettant et laissez cuire 5 minutes (polenta instantanée) en remuant.",
+      "Ajoutez à la polenta le parmesan et le reste d’huile. Servez-la nappée de ragoût."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "fiber",
+      "batch"
+    ],
+    "adaptations": [
+      "La polenta refroidie se coupe en bâtonnets à faire dorer le lendemain.",
+      "Sans lait : remplacez le parmesan par un filet d’huile d’olive."
+    ],
+    "storage": "Ragoût : 3 jours au réfrigérateur ou 3 mois au congélateur. Polenta : 2 jours au frais.",
+    "precautions": [],
+    "nutrition": "Les lentilles et la polenta associent légumineuse et céréale ; le parmesan ajoute du calcium.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-tofu-saute-brocoli-nouilles-riz",
+    "title": "Tofu sauté au brocoli et nouilles de riz au sésame",
+    "summary": "Un sauté rapide façon wok, doux et parfumé au gingembre.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "tofu",
+        300,
+        "g"
+      ],
+      [
+        "rice_noodles",
+        200,
+        "g"
+      ],
+      [
+        "broccoli",
+        300,
+        "g"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "soy_sauce",
+        1,
+        "cs"
+      ],
+      [
+        "ginger",
+        1,
+        "cc",
+        "râpé"
+      ],
+      [
+        "sesame_seeds",
+        1,
+        "cs"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Coupez le tofu en petits dés et épongez-le. Détaillez le brocoli en petits bouquets et taillez les carottes en fines lamelles.",
+      "Faites dorer le tofu 6 à 8 minutes dans 1 cuillère d’huile, puis réservez.",
+      "Faites sauter les légumes 5 minutes dans le reste d’huile avec le gingembre, ajoutez un fond d’eau et couvrez 3 minutes pour qu’ils soient tendres.",
+      "Pendant ce temps, faites tremper ou cuire les nouilles de riz selon le paquet et égouttez-les.",
+      "Mélangez nouilles, légumes, tofu et sauce soja ; parsemez de graines de sésame."
+    ],
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "quick",
+      "world",
+      "vegetables",
+      "calcium"
+    ],
+    "adaptations": [
+      "Allergie au soja : remplacez le tofu par des œufs brouillés bien cuits et la sauce soja par un peu de citron.",
+      "Coupez les nouilles aux ciseaux pour les plus jeunes."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [
+      "Coupez les nouilles en tronçons courts pour les plus jeunes."
+    ],
+    "nutrition": "Le tofu apporte des protéines végétales et du calcium ; les nouilles de riz, des féculents.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-tarte-poireaux-chevre",
+    "title": "Tarte aux poireaux fondants et au chèvre",
+    "summary": "Une tarte familiale aux poireaux doux, liée à l’œuf et au chèvre.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "shortcrust",
+        1,
+        "u",
+        "rouleau"
+      ],
+      [
+        "leek",
+        3,
+        "u"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "cream",
+        150,
+        "g"
+      ],
+      [
+        "goat_cheese_cooked",
+        100,
+        "g"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 190 °C. Lavez les poireaux, émincez-les finement et faites-les fondre 15 minutes à feu doux dans l’huile, à couvert.",
+      "Étalez la pâte brisée dans un moule et piquez-la à la fourchette.",
+      "Battez les œufs avec la crème et la muscade. Ajoutez les poireaux et versez sur la pâte.",
+      "Répartissez le chèvre en rondelles et enfournez 30 minutes : l’appareil doit être ferme et bien pris au centre."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "calcium",
+      "vegetables",
+      "family",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Remplacez le chèvre par de l’emmental pour un goût plus doux.",
+      "Ajoutez 100 g de lentilles corail cuites dans l’appareil pour plus de protéines végétales."
+    ],
+    "storage": "2 jours au réfrigérateur ; se réchauffe au four.",
+    "precautions": [
+      "Œufs cuits à cœur : la garniture ne doit plus trembler."
+    ],
+    "nutrition": "Les œufs et le fromage apportent des protéines et du calcium, les poireaux des fibres.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-lasagnes-lentilles-epinards-ricotta",
+    "title": "Lasagnes aux lentilles corail, épinards et ricotta",
+    "summary": "Des lasagnes végétariennes généreuses, à préparer à l’avance.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 30,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "lasagna_sheets",
+        250,
+        "g"
+      ],
+      [
+        "red_lentils",
+        120,
+        "g"
+      ],
+      [
+        "canned_tomato",
+        600,
+        "g"
+      ],
+      [
+        "frozen_spinach",
+        300,
+        "g"
+      ],
+      [
+        "ricotta",
+        250,
+        "g"
+      ],
+      [
+        "mozzarella",
+        125,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites revenir l’oignon émincé dans l’huile 5 minutes, ajoutez les lentilles rincées, les tomates concassées et 300 ml d’eau. Laissez mijoter 15 minutes.",
+      "Faites décongeler les épinards à la poêle 5 minutes, égouttez-les bien et mélangez-les à la ricotta.",
+      "Préchauffez le four à 180 °C. Dans un plat, alternez sauce aux lentilles, feuilles de lasagnes et ricotta aux épinards, en terminant par la sauce.",
+      "Couvrez de mozzarella en tranches et enfournez 35 minutes, jusqu’à ce que les feuilles soient tendres sous la pointe d’un couteau."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "calcium",
+      "batch",
+      "freezer",
+      "family"
+    ],
+    "adaptations": [
+      "Version sans œuf : choisissez des feuilles de lasagnes sans œuf.",
+      "Ajoutez des carottes râpées dans la sauce pour plus de légumes."
+    ],
+    "storage": "3 jours au réfrigérateur ; se congèle en parts 3 mois.",
+    "precautions": [],
+    "nutrition": "Les lentilles et les pâtes réunies forment un plat complet ; les fromages apportent du calcium.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-boulgour-pois-chiches-abricots-ras-el-hanout",
+    "title": "Boulgour aux pois chiches, carottes et abricots secs",
+    "summary": "Un pilaf doux et parfumé, inspiré des cuisines du Maghreb.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "bulgur",
+        200,
+        "g",
+        "poids cru"
+      ],
+      [
+        "chickpeas",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "dried_apricots",
+        60,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "ras_el_hanout",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "coriander",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Coupez les abricots secs en tout petits morceaux et les carottes en petits dés ; émincez l’oignon.",
+      "Faites revenir l’oignon et les carottes 5 minutes dans l’huile avec le ras-el-hanout.",
+      "Ajoutez le boulgour, les pois chiches, les abricots secs et 450 ml d’eau. Couvrez et laissez cuire 15 minutes à feu doux, jusqu’à absorption.",
+      "Laissez gonfler 5 minutes hors du feu, égrenez à la fourchette et parsemez de coriandre ciselée."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "iron",
+      "world",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Sans gluten : remplacez le boulgour par du quinoa.",
+      "Pour les moins de 4 ans, écrasez légèrement les pois chiches."
+    ],
+    "storage": "3 jours au réfrigérateur ; se mange aussi froid en salade.",
+    "precautions": [
+      "Abricots secs coupés en tout petits morceaux et pois chiches écrasés avant 4 ans."
+    ],
+    "nutrition": "Le boulgour et les pois chiches associés apportent des protéines végétales et des fibres.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-croquettes-quinoa-carottes-emmental",
+    "title": "Croquettes de quinoa aux carottes et à l’emmental",
+    "summary": "Des petites galettes dorées à manger avec les doigts, chaudes ou froides.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "quinoa",
+        150,
+        "g",
+        "poids cru"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "emmental",
+        60,
+        "g",
+        "râpé"
+      ],
+      [
+        "breadcrumbs",
+        40,
+        "g"
+      ],
+      [
+        "chives",
+        5,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le quinoa 12 à 15 minutes dans deux fois son volume d’eau, puis laissez refroidir.",
+      "Râpez finement les carottes et ciselez la ciboulette.",
+      "Mélangez le quinoa, les carottes, les œufs, l’emmental, la ciboulette et la chapelure. Formez des petites galettes.",
+      "Faites-les dorer 4 à 5 minutes par face dans l’huile, à feu moyen, jusqu’à ce qu’elles soient fermes et cuites à cœur."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "finger",
+      "protein",
+      "lunchbox",
+      "picky",
+      "freezer"
+    ],
+    "adaptations": [
+      "Sans gluten : remplacez la chapelure par de la farine de riz ou des flocons de quinoa.",
+      "Servez avec un yaourt nature aux herbes."
+    ],
+    "storage": "2 jours au réfrigérateur ; 2 mois au congélateur.",
+    "precautions": [
+      "Carottes râpées finement ; œufs cuits à cœur."
+    ],
+    "nutrition": "Le quinoa, l’œuf et l’emmental apportent des protéines ; les carottes, un légume.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-parmentier-lentilles-patate-douce",
+    "title": "Parmentier de lentilles à la purée de patate douce",
+    "summary": "Un hachis parmentier végétal, avec une purée orange douce et gratinée.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 25,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "green_lentils",
+        200,
+        "g",
+        "poids cru"
+      ],
+      [
+        "sweet_potato",
+        500,
+        "g"
+      ],
+      [
+        "potato",
+        400,
+        "g"
+      ],
+      [
+        "carrot",
+        1,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "canned_tomato",
+        200,
+        "g"
+      ],
+      [
+        "milk",
+        100,
+        "ml"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "emmental",
+        40,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Faites revenir l’oignon et la carotte en petits dés, ajoutez les lentilles, les tomates concassées et 600 ml d’eau. Laissez mijoter 25 minutes.",
+      "Pendant ce temps, faites cuire les patates douces et les pommes de terre épluchées et coupées en morceaux 20 minutes à l’eau.",
+      "Écrasez-les en purée avec le lait et le beurre.",
+      "Préchauffez le four à 200 °C. Étalez les lentilles dans un plat, couvrez de purée, parsemez d’emmental et faites gratiner 20 minutes."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "fiber",
+      "batch",
+      "freezer",
+      "family",
+      "picky"
+    ],
+    "adaptations": [
+      "Sans lait : faites la purée avec un peu de l’eau de cuisson et d’huile d’olive.",
+      "Ajoutez du cumin dans les lentilles pour les adultes."
+    ],
+    "storage": "3 jours au réfrigérateur ; 3 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Les lentilles apportent protéines végétales, fibres et fer ; la patate douce, des féculents.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-pates-pesto-haricots-blancs-courgettes",
+    "title": "Pâtes au pesto de haricots blancs et courgettes",
+    "summary": "Un pesto crémeux sans fruits à coque, épaissi aux haricots blancs.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "pasta",
+        300,
+        "g",
+        "poids cru"
+      ],
+      [
+        "white_beans",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "basil",
+        20,
+        "g"
+      ],
+      [
+        "parmesan",
+        40,
+        "g",
+        "râpé"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "zucchini",
+        2,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les pâtes selon le paquet. Coupez les courgettes en petits dés et ajoutez-les aux pâtes 5 minutes avant la fin de la cuisson.",
+      "Mixez les haricots blancs avec le basilic, l’ail, le parmesan, l’huile d’olive et 4 cuillères d’eau de cuisson.",
+      "Égouttez les pâtes et les courgettes et mélangez-les au pesto."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "protein",
+      "fiber",
+      "calcium",
+      "family",
+      "picky"
+    ],
+    "adaptations": [
+      "Sans lait : remplacez le parmesan par une cuillère de levure maltée ou supprimez-le.",
+      "Remplacez les courgettes par des petits pois en hiver."
+    ],
+    "storage": "2 jours au réfrigérateur ; le pesto se garde 3 jours seul dans un bocal.",
+    "precautions": [],
+    "nutrition": "Les haricots blancs et les pâtes forment une association légumineuse-céréale ; le parmesan apporte du calcium.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-oeufs-cocotte-epinards-mouillettes",
+    "title": "Œufs cocotte aux épinards et mouillettes de pain complet",
+    "summary": "Des œufs au four bien pris sur un lit d’épinards à la crème.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner",
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "egg",
+        4,
+        "u"
+      ],
+      [
+        "frozen_spinach",
+        200,
+        "g"
+      ],
+      [
+        "cream",
+        4,
+        "cs"
+      ],
+      [
+        "emmental",
+        40,
+        "g",
+        "râpé"
+      ],
+      [
+        "wholemeal_bread",
+        4,
+        "u",
+        "tranches"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Faites décongeler les épinards à la poêle 5 minutes, égouttez-les et mélangez-les avec la crème et la muscade.",
+      "Répartissez les épinards dans 4 ramequins, cassez un œuf dans chacun et parsemez d’emmental.",
+      "Posez les ramequins dans un plat rempli d’eau chaude et enfournez 15 minutes, jusqu’à ce que le blanc et le jaune soient complètement pris.",
+      "Coupez le pain complet en mouillettes et servez avec les œufs tiédis."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "calcium",
+      "quick"
+    ],
+    "adaptations": [
+      "Les adultes peuvent garder le jaune coulant ; pour les enfants, il doit être pris.",
+      "Remplacez les épinards par des poireaux fondus."
+    ],
+    "storage": "À consommer aussitôt.",
+    "precautions": [
+      "Jaune bien pris pour les enfants ; ramequins très chauds à la sortie du four."
+    ],
+    "nutrition": "L’œuf apporte des protéines ; le pain complet, des fibres ; les épinards, un légume.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-riz-complet-saute-oeuf-tofu-petits-pois",
+    "title": "Riz complet sauté à l’œuf, au tofu et aux petits pois",
+    "summary": "Un riz sauté façon cantonais, sans viande, idéal pour finir un reste de riz.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "brown_rice",
+        250,
+        "g",
+        "poids cru, ou 600 g de riz cuit de la veille"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "frozen_peas",
+        200,
+        "g"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "tofu",
+        200,
+        "g"
+      ],
+      [
+        "soy_sauce",
+        1,
+        "cs"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz complet 35 minutes à l’eau, égouttez-le et laissez-le refroidir (idéalement la veille).",
+      "Coupez les carottes et le tofu en petits dés. Faites-les sauter 5 minutes dans l’huile avec les petits pois.",
+      "Poussez les légumes sur le côté, versez les œufs battus et brouillez-les jusqu’à ce qu’ils soient bien cuits.",
+      "Ajoutez le riz et la sauce soja, mélangez et faites sauter encore 3 minutes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "soy"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "world",
+      "budget"
+    ],
+    "adaptations": [
+      "Allergie au soja : supprimez le tofu et la sauce soja, ajoutez un œuf de plus.",
+      "Avant 4 ans, écrasez légèrement les petits pois."
+    ],
+    "storage": "Riz cuit : à refroidir vite et à garder au réfrigérateur 24 h au maximum. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Refroidissez rapidement le riz cuit et ne le gardez pas à température ambiante.",
+      "Œufs cuits à cœur."
+    ],
+    "nutrition": "L’œuf et le tofu apportent des protéines ; le riz complet, des fibres.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-wraps-haricots-rouges-avocat-mais",
+    "title": "Wraps tièdes aux haricots rouges, avocat et maïs",
+    "summary": "Des wraps à garnir soi-même, avec une purée de haricots rouges au cumin.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "tortilla",
+        4,
+        "u"
+      ],
+      [
+        "kidney_beans",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "avocado",
+        1,
+        "u"
+      ],
+      [
+        "corn",
+        140,
+        "g"
+      ],
+      [
+        "lettuce",
+        4,
+        "u",
+        "feuilles"
+      ],
+      [
+        "emmental",
+        60,
+        "g",
+        "râpé"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "cumin",
+        0.5,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Faites chauffer les haricots rouges 5 minutes dans une casserole avec le cumin et 2 cuillères d’eau, puis écrasez-les en purée.",
+      "Écrasez l’avocat avec le jus de citron ; égouttez le maïs et émincez la salade.",
+      "Réchauffez les galettes de blé 1 minute de chaque côté à la poêle.",
+      "Étalez la purée de haricots, ajoutez avocat, maïs, salade et emmental, puis roulez les wraps et coupez-les en deux."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "quick",
+      "world",
+      "finger"
+    ],
+    "adaptations": [
+      "Pour les moins de 4 ans, écrasez aussi le maïs ou remplacez-le par des dés de tomate.",
+      "Sans lait : supprimez l’emmental."
+    ],
+    "storage": "À préparer au dernier moment ; la purée de haricots se garde 2 jours au réfrigérateur.",
+    "precautions": [
+      "Avant 4 ans, coupez les wraps en petits tronçons et écrasez les grains de maïs."
+    ],
+    "nutrition": "Les haricots rouges et la galette de blé associent légumineuse et céréale ; l’avocat apporte des matières grasses insaturées.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-gnocchis-four-tomate-courgette-mozzarella",
+    "title": "Gnocchis rôtis au four, tomate, courgette et mozzarella",
+    "summary": "Des gnocchis dorés au four puis nappés de sauce tomate et de mozzarella fondante.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "gnocchi",
+        500,
+        "g"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "mozzarella",
+        125,
+        "g"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "basil",
+        10,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Mélangez les gnocchis avec la courgette en dés et l’huile d’olive dans un plat, puis enfournez 15 minutes.",
+      "Pendant ce temps, faites mijoter les tomates concassées avec l’ail écrasé 10 minutes.",
+      "Versez la sauce sur les gnocchis, ajoutez la mozzarella en morceaux et remettez au four 10 minutes.",
+      "Parsemez de basilic ciselé. Pour les plus jeunes, coupez les gnocchis en deux."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "calcium",
+      "family",
+      "picky",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Ajoutez 200 g de haricots blancs dans la sauce pour plus de protéines végétales.",
+      "Sans gluten : choisissez des gnocchis sans blé."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [
+      "Avant 4 ans, coupez les gnocchis en deux : ils sont ronds et collants."
+    ],
+    "nutrition": "La mozzarella apporte des protéines et du calcium, les gnocchis des féculents.",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-gratin-riz-complet-courgettes-oeufs",
+    "title": "Gratin de riz complet aux courgettes, lié à l’œuf",
+    "summary": "Un gratin moelleux qui se coupe en parts, chaud ou tiède.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "brown_rice",
+        150,
+        "g",
+        "poids cru"
+      ],
+      [
+        "zucchini",
+        3,
+        "u"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "milk",
+        200,
+        "ml"
+      ],
+      [
+        "emmental",
+        60,
+        "g",
+        "râpé"
+      ],
+      [
+        "herbs",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz complet 35 minutes à l’eau et égouttez-le. Pendant ce temps, râpez les courgettes et faites-les revenir 5 minutes dans l’huile.",
+      "Préchauffez le four à 180 °C. Battez les œufs avec le lait, les herbes de Provence et la moitié de l’emmental.",
+      "Mélangez le riz, les courgettes et l’appareil aux œufs, versez dans un plat huilé et parsemez du reste d’emmental.",
+      "Enfournez 30 minutes : le gratin doit être pris et bien ferme au centre."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "calcium",
+      "vegetables",
+      "lunchbox",
+      "batch"
+    ],
+    "adaptations": [
+      "Remplacez les courgettes par des épinards ou du potiron.",
+      "Ajoutez des lentilles corail cuites pour plus de protéines végétales."
+    ],
+    "storage": "2 jours au réfrigérateur ; se réchauffe au four. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Œufs cuits à cœur."
+    ],
+    "nutrition": "Le riz complet, les œufs et l’emmental composent un plat complet avec un légume.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-minestrone-haricots-blancs-petites-pates",
+    "title": "Minestrone aux haricots blancs et petites pâtes",
+    "summary": "Une grande soupe-repas italienne, pleine de légumes et de pâtes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner",
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "white_beans",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "small_pasta",
+        100,
+        "g"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "leek",
+        1,
+        "u"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "parmesan",
+        30,
+        "g",
+        "râpé"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "basil",
+        10,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Coupez les carottes, la courgette et le poireau en petits dés. Faites-les revenir 5 minutes dans l’huile d’olive.",
+      "Ajoutez les tomates concassées et 1,2 l d’eau, puis laissez cuire 20 minutes à petits bouillons.",
+      "Ajoutez les haricots blancs et les petites pâtes et poursuivez la cuisson 8 à 10 minutes.",
+      "Servez avec le parmesan et le basilic ciselé. Pour les plus jeunes, écrasez légèrement les haricots."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "vegetables",
+      "batch",
+      "budget",
+      "world"
+    ],
+    "adaptations": [
+      "Sans lait : supprimez le parmesan.",
+      "Adaptez les légumes à la saison (chou, haricots verts, petits pois)."
+    ],
+    "storage": "3 jours au réfrigérateur ; les pâtes gonflent : rallongez avec un peu d’eau.",
+    "precautions": [],
+    "nutrition": "Les haricots blancs et les pâtes associés apportent des protéines végétales ; les légumes, des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-cake-sale-petits-pois-feta-menthe",
+    "title": "Cake salé aux petits pois, feta et menthe",
+    "summary": "Un cake frais et coloré pour le pique-nique ou la boîte à repas.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 15,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "flour",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "milk",
+        100,
+        "ml"
+      ],
+      [
+        "olive_oil",
+        80,
+        "ml"
+      ],
+      [
+        "baking_powder",
+        11,
+        "g"
+      ],
+      [
+        "frozen_peas",
+        150,
+        "g"
+      ],
+      [
+        "feta",
+        100,
+        "g"
+      ],
+      [
+        "mint",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Faites cuire les petits pois 5 minutes à l’eau, égouttez-les et écrasez-les grossièrement.",
+      "Fouettez les œufs avec le lait et l’huile. Ajoutez la farine et la levure, mélangez sans excès.",
+      "Incorporez les petits pois, la feta émiettée et la menthe ciselée.",
+      "Versez dans un moule à cake garni de papier cuisson et enfournez 40 minutes : la lame d’un couteau doit ressortir sèche."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "lunchbox",
+      "make_ahead",
+      "freezer",
+      "finger",
+      "protein"
+    ],
+    "adaptations": [
+      "Remplacez la feta par de l’emmental pour un goût plus doux.",
+      "Version sans lait : boisson végétale et sans fromage."
+    ],
+    "storage": "3 jours au réfrigérateur, emballé ; se congèle en tranches.",
+    "precautions": [
+      "Cuisson complète : centre bien sec (œufs cuits à cœur)."
+    ],
+    "nutrition": "Les œufs et la feta apportent des protéines ; les petits pois, des fibres.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-muffins-sales-epinards-emmental",
+    "title": "Muffins salés aux épinards et à l’emmental",
+    "summary": "Des petits muffins verts à glisser dans le sac pour le goûter ou le déjeuner.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "flour",
+        180,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        150,
+        "ml"
+      ],
+      [
+        "rapeseed_oil",
+        60,
+        "ml"
+      ],
+      [
+        "baking_powder",
+        8,
+        "g"
+      ],
+      [
+        "frozen_spinach",
+        150,
+        "g"
+      ],
+      [
+        "emmental",
+        80,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Faites décongeler les épinards à la poêle 5 minutes et pressez-les pour retirer l’eau.",
+      "Fouettez les œufs, le lait et l’huile. Ajoutez la farine et la levure, puis les épinards et l’emmental.",
+      "Répartissez dans 12 moules à muffins et enfournez 20 minutes, jusqu’à ce qu’ils soient gonflés et cuits à cœur."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "finger",
+      "lunchbox",
+      "freezer",
+      "picky",
+      "calcium"
+    ],
+    "adaptations": [
+      "Remplacez les épinards par des carottes râpées ou des courgettes.",
+      "Ajoutez 2 cuillères de lentilles corail cuites et écrasées."
+    ],
+    "storage": "2 jours au réfrigérateur ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "L’œuf, le lait et l’emmental apportent des protéines et du calcium ; les épinards, un légume.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-houmous-betterave-batonnets-pita",
+    "title": "Houmous rose à la betterave, bâtonnets et pain pita",
+    "summary": "Une trempette rose vif à préparer sans cuisson pour le goûter ou l’apéritif familial.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "chickpeas",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "beetroot",
+        1,
+        "u"
+      ],
+      [
+        "tahini",
+        1,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "cucumber",
+        1,
+        "u"
+      ],
+      [
+        "pita",
+        2,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Coupez la betterave en morceaux.",
+      "Mixez les pois chiches, la betterave, le tahini, le jus de citron et l’huile d’olive avec 3 cuillères d’eau froide jusqu’à obtenir une crème lisse.",
+      "Coupez le concombre en bâtonnets et les pains pita en triangles.",
+      "Servez le houmous dans un bol avec les bâtonnets de légumes et le pain."
+    ],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "quick",
+      "finger",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Allergie au sésame : supprimez le tahini et ajoutez une cuillère d’huile d’olive.",
+      "Remplacez la betterave par de la carotte cuite pour un houmous orange."
+    ],
+    "storage": "3 jours au réfrigérateur dans une boîte fermée.",
+    "precautions": [
+      "Avant 4 ans, préférez des bâtonnets de concombre fins et tendres plutôt que de la carotte crue."
+    ],
+    "nutrition": "Les pois chiches et le pain pita associent légumineuse et céréale ; le sésame apporte du calcium.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-bol-riz-complet-tofu-edamame-carotte",
+    "title": "Bol de riz complet au tofu doré, edamame et carotte râpée",
+    "summary": "Un bol coloré à composer, inspiré des « poke bowls », sans poisson cru.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "brown_rice",
+        200,
+        "g",
+        "poids cru"
+      ],
+      [
+        "tofu",
+        250,
+        "g"
+      ],
+      [
+        "edamame",
+        150,
+        "g"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "avocado",
+        1,
+        "u"
+      ],
+      [
+        "sesame_seeds",
+        1,
+        "cs"
+      ],
+      [
+        "soy_sauce",
+        1,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz complet 35 à 40 minutes à l’eau, puis égouttez.",
+      "Faites cuire les edamame 5 minutes à l’eau bouillante. Coupez le tofu en dés et faites-le dorer 8 minutes à la poêle antiadhésive.",
+      "Râpez finement les carottes et coupez l’avocat en lamelles arrosées de jus de citron.",
+      "Répartissez le riz dans des bols, ajoutez tofu, edamame, carottes et avocat, puis arrosez de sauce soja et parsemez de graines de sésame."
+    ],
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "world",
+      "vegetables",
+      "calcium"
+    ],
+    "adaptations": [
+      "Allergie au soja : remplacez tofu et edamame par des œufs durs et des petits pois.",
+      "Avant 4 ans, écrasez les edamame."
+    ],
+    "storage": "24 h au réfrigérateur (sans l’avocat). Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Avant 4 ans : carottes râpées finement et edamame écrasés."
+    ],
+    "nutrition": "Le tofu, les edamame et le riz complet apportent des protéines végétales et des fibres.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-poivrons-farcis-riz-lentilles-tomate",
+    "title": "Poivrons farcis au riz et aux lentilles, sauce tomate",
+    "summary": "Des poivrons tout fondants, garnis d’une farce végétale gratinée.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 25,
+    "cookMin": 55,
+    "ingredients": [
+      [
+        "bell_pepper",
+        4,
+        "u"
+      ],
+      [
+        "rice",
+        120,
+        "g",
+        "poids cru"
+      ],
+      [
+        "green_lentils",
+        100,
+        "g",
+        "poids cru"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "emmental",
+        60,
+        "g",
+        "râpé"
+      ],
+      [
+        "herbs",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire séparément le riz (selon le paquet) et les lentilles vertes (25 minutes) dans de l’eau non salée. Égouttez.",
+      "Faites revenir l’oignon émincé dans l’huile, ajoutez la moitié des tomates concassées et les herbes, puis mélangez avec le riz et les lentilles.",
+      "Préchauffez le four à 190 °C. Coupez le chapeau des poivrons, retirez les graines et garnissez-les de farce. Parsemez d’emmental.",
+      "Versez le reste de tomates dans le plat autour des poivrons et enfournez 40 minutes, jusqu’à ce que les poivrons soient très tendres."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "fiber",
+      "vegetables",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez les poivrons par des courgettes rondes ou des tomates.",
+      "Pour les plus jeunes, retirez la peau du poivron après cuisson."
+    ],
+    "storage": "2 jours au réfrigérateur ; la farce se congèle. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [],
+    "nutrition": "Le riz et les lentilles associés apportent des protéines végétales ; les poivrons, un légume.",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-batonnets-polenta-parmesan-trempette-yaourt",
+    "title": "Bâtonnets de polenta au parmesan et trempette yaourt-ciboulette",
+    "summary": "Des frites de polenta dorées au four, croustillantes dehors et fondantes dedans.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "dinner"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "polenta",
+        200,
+        "g"
+      ],
+      [
+        "parmesan",
+        40,
+        "g",
+        "râpé"
+      ],
+      [
+        "milk",
+        300,
+        "ml"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "yogurt",
+        200,
+        "g"
+      ],
+      [
+        "chives",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Portez le lait et 500 ml d’eau à ébullition, versez la polenta en pluie et faites cuire 5 minutes en remuant. Ajoutez le parmesan.",
+      "Étalez la polenta sur 2 cm d’épaisseur dans un plat huilé et laissez refroidir au moins 1 heure au réfrigérateur (temps de repos).",
+      "Préchauffez le four à 220 °C. Coupez la polenta en bâtonnets, badigeonnez-les d’huile d’olive et enfournez 25 minutes, en les retournant à mi-cuisson.",
+      "Mélangez le yaourt et la ciboulette ciselée et servez en trempette."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "finger",
+      "calcium",
+      "picky",
+      "make_ahead"
+    ],
+    "adaptations": [
+      "Servez avec une salade de haricots blancs pour un repas complet.",
+      "Sans lait : cuisez la polenta à l’eau et servez avec un houmous."
+    ],
+    "storage": "Polenta prise : 2 jours au réfrigérateur avant cuisson.",
+    "precautions": [],
+    "nutrition": "Le parmesan, le lait et le yaourt apportent du calcium ; la polenta, des féculents.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-shakshuka-douce-oeufs-poivrons",
+    "title": "Shakshuka douce aux œufs bien cuits et poivrons",
+    "summary": "Des œufs pochés dans une sauce tomate aux poivrons, à saucer avec de la baguette.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner",
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "egg",
+        4,
+        "u"
+      ],
+      [
+        "canned_tomato",
+        600,
+        "g"
+      ],
+      [
+        "bell_pepper",
+        2,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "cumin",
+        0.5,
+        "cc"
+      ],
+      [
+        "paprika",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "baguette",
+        0.5,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Émincez l’oignon et coupez les poivrons en lanières. Faites-les fondre 10 minutes dans l’huile d’olive.",
+      "Ajoutez le cumin, le paprika et les tomates concassées. Laissez mijoter 10 minutes.",
+      "Creusez 4 puits dans la sauce, cassez-y les œufs, couvrez et laissez cuire 8 à 10 minutes à feu doux, jusqu’à ce que le blanc et le jaune soient entièrement pris.",
+      "Servez avec la baguette coupée en morceaux."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "vegetables",
+      "world",
+      "budget",
+      "quick"
+    ],
+    "adaptations": [
+      "Ajoutez des pois chiches dans la sauce pour un plat plus copieux.",
+      "Pour les adultes, ajoutez du piment et de la coriandre."
+    ],
+    "storage": "La sauce se garde 3 jours au réfrigérateur ; les œufs se cuisent au moment.",
+    "precautions": [
+      "Œufs cuits à cœur pour les enfants : jaune bien pris."
+    ],
+    "nutrition": "Les œufs apportent des protéines, la baguette des féculents et la sauce des légumes.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-crumble-sale-legumes-lentilles-avoine",
+    "title": "Crumble salé de légumes et lentilles corail, pâte à l’avoine",
+    "summary": "Des légumes fondants et des lentilles sous une croûte croustillante au parmesan.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "zucchini",
+        2,
+        "u"
+      ],
+      [
+        "leek",
+        1,
+        "u"
+      ],
+      [
+        "red_lentils",
+        100,
+        "g"
+      ],
+      [
+        "oats",
+        80,
+        "g"
+      ],
+      [
+        "flour",
+        50,
+        "g"
+      ],
+      [
+        "butter",
+        50,
+        "g",
+        "froid"
+      ],
+      [
+        "parmesan",
+        40,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Coupez les carottes, les courgettes et le poireau en petits dés. Faites-les cuire 10 minutes à couvert avec les lentilles corail rincées et 250 ml d’eau.",
+      "Préchauffez le four à 190 °C. Sablez du bout des doigts le beurre avec la farine, les flocons d’avoine et le parmesan.",
+      "Versez les légumes et les lentilles dans un plat, couvrez de pâte à crumble.",
+      "Enfournez 25 à 30 minutes, jusqu’à ce que le dessus soit doré."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "vegetables",
+      "family",
+      "picky"
+    ],
+    "adaptations": [
+      "Sans gluten : remplacez farine et avoine par de la farine de riz et de la polenta.",
+      "Changez les légumes selon la saison (potiron, brocoli)."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [],
+    "nutrition": "Les lentilles et l’avoine associent légumineuse et céréale ; les légumes apportent des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-pates-completes-bolognaise-lentilles-corail",
+    "title": "Pâtes complètes à la bolognaise de lentilles corail",
+    "summary": "Une bolognaise végétale qui mijote vite, appréciée même des plus difficiles.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "wholewheat_pasta",
+        300,
+        "g",
+        "poids cru"
+      ],
+      [
+        "red_lentils",
+        150,
+        "g"
+      ],
+      [
+        "canned_tomato",
+        600,
+        "g"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "thyme",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "parmesan",
+        30,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Hachez finement l’oignon, l’ail et les carottes (au robot ou à la râpe). Faites-les revenir 5 minutes dans l’huile.",
+      "Ajoutez les lentilles corail rincées, les tomates concassées, le thym et 300 ml d’eau. Laissez mijoter 20 minutes.",
+      "Faites cuire les pâtes complètes selon le paquet et égouttez-les.",
+      "Servez les pâtes nappées de sauce et parsemées de parmesan."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "fiber",
+      "batch",
+      "freezer",
+      "picky",
+      "budget"
+    ],
+    "adaptations": [
+      "Sans lait : supprimez le parmesan.",
+      "Utilisez des pâtes blanches si l’enfant n’aime pas les complètes."
+    ],
+    "storage": "Sauce : 3 jours au réfrigérateur ou 3 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Les lentilles et les pâtes complètes forment une association légumineuse-céréale riche en fibres.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-couscous-legumes-pois-chiches-navet",
+    "title": "Couscous végétarien aux sept légumes doux et pois chiches",
+    "summary": "Un couscous familial mijoté, aux légumes fondants et pois chiches.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 25,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "couscous",
+        300,
+        "g"
+      ],
+      [
+        "chickpeas",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "carrot",
+        3,
+        "u"
+      ],
+      [
+        "zucchini",
+        2,
+        "u"
+      ],
+      [
+        "turnip",
+        2,
+        "u"
+      ],
+      [
+        "pumpkin",
+        300,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "canned_tomato",
+        200,
+        "g"
+      ],
+      [
+        "ras_el_hanout",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites revenir l’oignon émincé dans 2 cuillères d’huile avec le ras-el-hanout. Ajoutez les carottes et les navets en tronçons, les tomates concassées et 1,5 l d’eau.",
+      "Laissez cuire 20 minutes, puis ajoutez les courgettes, le potiron en cubes et les pois chiches. Poursuivez 20 minutes jusqu’à ce que les légumes soient tendres.",
+      "Versez sur la semoule le même volume d’eau bouillante avec le reste d’huile, couvrez 5 minutes puis égrenez à la fourchette.",
+      "Servez la semoule arrosée de bouillon avec les légumes ; écrasez les pois chiches pour les plus jeunes."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "vegetables",
+      "world",
+      "family",
+      "batch"
+    ],
+    "adaptations": [
+      "Pour les adultes, servez de la harissa à part.",
+      "Sans gluten : remplacez la semoule par du riz ou du quinoa."
+    ],
+    "storage": "3 jours au réfrigérateur ; le bouillon de légumes se congèle.",
+    "precautions": [
+      "Avant 4 ans, écrasez les pois chiches."
+    ],
+    "nutrition": "La semoule et les pois chiches associent céréale et légumineuse ; les légumes apportent des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-risotto-petits-pois-parmesan-citron",
+    "title": "Risotto crémeux aux petits pois, parmesan et citron",
+    "summary": "Un risotto doux et printanier, que les enfants peuvent remuer avec vous.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "round_rice",
+        250,
+        "g"
+      ],
+      [
+        "frozen_peas",
+        200,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "vegetable_stock",
+        1000,
+        "ml"
+      ],
+      [
+        "parmesan",
+        50,
+        "g",
+        "râpé"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "zeste"
+      ]
+    ],
+    "steps": [
+      "Faites chauffer le bouillon. Émincez l’oignon et faites-le revenir 3 minutes dans l’huile d’olive.",
+      "Ajoutez le riz rond et nacrez-le 2 minutes en remuant.",
+      "Versez le bouillon louche par louche, en attendant qu’il soit absorbé, pendant 18 à 20 minutes. Ajoutez les petits pois 5 minutes avant la fin.",
+      "Hors du feu, incorporez le beurre, le parmesan et le zeste de citron."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "celery"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "family",
+      "picky",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Pour plus de protéines, ajoutez 150 g d’edamame ou de haricots blancs.",
+      "Avant 4 ans, écrasez légèrement les petits pois."
+    ],
+    "storage": "24 h au réfrigérateur ; réchauffez avec un peu d’eau. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Choisissez un bouillon sans sel ajouté et vérifiez l’étiquette (céleri, gluten)."
+    ],
+    "nutrition": "Le parmesan apporte du calcium et des protéines ; les petits pois, des fibres.",
+    "budget": 2,
+    "seasons": [
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-croques-champignons-emmental",
+    "title": "Croque-monsieur végétariens aux champignons et emmental",
+    "summary": "Des croques dorés garnis de champignons à la crème et de fromage fondu.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "bread",
+        8,
+        "u",
+        "tranches"
+      ],
+      [
+        "mushroom",
+        250,
+        "g"
+      ],
+      [
+        "emmental",
+        100,
+        "g",
+        "râpé"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "cream",
+        2,
+        "cs"
+      ],
+      [
+        "parsley",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Émincez finement les champignons et faites-les revenir 8 minutes à la poêle jusqu’à évaporation de l’eau. Ajoutez la crème et le persil ciselé.",
+      "Préchauffez le four à 200 °C. Beurrez légèrement l’extérieur des tranches de pain de mie.",
+      "Garnissez 4 tranches de champignons et d’emmental, refermez et parsemez du reste de fromage.",
+      "Enfournez 10 à 12 minutes, jusqu’à ce que les croques soient dorés. Coupez-les en triangles."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "calcium",
+      "picky",
+      "finger"
+    ],
+    "adaptations": [
+      "Remplacez les champignons par des épinards ou des tomates.",
+      "Servez avec une soupe de lentilles pour un repas complet."
+    ],
+    "storage": "À déguster aussitôt.",
+    "precautions": [],
+    "nutrition": "L’emmental apporte des protéines et du calcium, le pain des féculents.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-oeufs-brouilles-ciboulette-tartines-tomate",
+    "title": "Œufs brouillés à la ciboulette et tartines de pain complet",
+    "summary": "Un petit-déjeuner ou un dîner rapide, avec des œufs crémeux mais bien cuits.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "egg",
+        6,
+        "u"
+      ],
+      [
+        "milk",
+        2,
+        "cs"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ],
+      [
+        "chives",
+        5,
+        "g"
+      ],
+      [
+        "wholemeal_bread",
+        4,
+        "u",
+        "tranches"
+      ],
+      [
+        "tomato",
+        2,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Battez les œufs avec le lait et la ciboulette ciselée.",
+      "Faites fondre le beurre à feu doux, versez les œufs et remuez sans arrêt 4 à 5 minutes, jusqu’à ce qu’ils soient pris et sans partie liquide.",
+      "Faites griller le pain complet et coupez les tomates en dés.",
+      "Servez les œufs sur les tartines avec les tomates."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "protein",
+      "budget",
+      "picky"
+    ],
+    "adaptations": [
+      "Ajoutez un peu d’emmental râpé dans les œufs.",
+      "Sans lait : supprimez le lait et cuisez dans l’huile d’olive."
+    ],
+    "storage": "À déguster aussitôt.",
+    "precautions": [
+      "Œufs bien cuits pour les enfants : aucune partie liquide."
+    ],
+    "nutrition": "Les œufs apportent des protéines, le pain complet des fibres et la tomate un légume.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-porridge-avoine-pomme-cannelle-amande",
+    "title": "Porridge d’avoine à la pomme fondante, cannelle et amande",
+    "summary": "Un porridge chaud et doux, sucré naturellement par la pomme.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "oats",
+        160,
+        "g"
+      ],
+      [
+        "milk",
+        600,
+        "ml"
+      ],
+      [
+        "apple",
+        2,
+        "u"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "almond_powder",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes et râpez-les.",
+      "Versez le lait et les flocons d’avoine dans une casserole avec la pomme râpée et la cannelle.",
+      "Faites cuire 6 à 8 minutes à feu doux en remuant, jusqu’à ce que le porridge soit crémeux et la pomme tendre.",
+      "Servez parsemé de poudre d’amande."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "fiber",
+      "calcium",
+      "budget"
+    ],
+    "adaptations": [
+      "Allergie aux fruits à coque : supprimez la poudre d’amande.",
+      "Remplacez la pomme par une poire ou une banane écrasée."
+    ],
+    "storage": "À consommer aussitôt ; se réchauffe avec un peu de lait.",
+    "precautions": [
+      "Poudre d’amande uniquement (jamais d’amandes entières avant 4 ans)."
+    ],
+    "nutrition": "L’avoine apporte des fibres, le lait du calcium, et la pomme une touche sucrée sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-pain-perdu-fruits-rouges",
+    "title": "Pain perdu doré aux fruits rouges",
+    "summary": "Un goûter ou un petit-déjeuner du week-end, peu sucré, avec des fruits chauds.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "bread",
+        6,
+        "u",
+        "tranches, un peu rassis"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        250,
+        "ml"
+      ],
+      [
+        "frozen_berries",
+        200,
+        "g"
+      ],
+      [
+        "cinnamon",
+        0.5,
+        "cc"
+      ],
+      [
+        "butter",
+        15,
+        "g"
+      ],
+      [
+        "sugar",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Battez les œufs avec le lait, la cannelle et le sucre.",
+      "Trempez les tranches de pain dans le mélange, des deux côtés.",
+      "Faites-les cuire 3 minutes par face dans le beurre, à feu moyen, jusqu’à ce qu’elles soient dorées et que l’œuf soit bien cuit.",
+      "Pendant ce temps, faites chauffer les fruits rouges 5 minutes dans une petite casserole. Servez-les sur le pain perdu."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "budget",
+      "calcium"
+    ],
+    "adaptations": [
+      "Sans sucre : supprimez-le, les fruits rouges suffisent.",
+      "Avec des fruits frais en été (fraises, framboises)."
+    ],
+    "storage": "À déguster aussitôt.",
+    "precautions": [
+      "Œuf cuit à cœur : le pain ne doit plus être humide au centre."
+    ],
+    "nutrition": "Les œufs et le lait apportent des protéines et du calcium ; les fruits rouges, des fibres.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-galettes-lentilles-corail-carotte-yaourt",
+    "title": "Galettes de lentilles corail et carotte, sauce yaourt au cumin",
+    "summary": "Des galettes tendres et orange, faciles à attraper.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "red_lentils",
+        150,
+        "g"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "oats",
+        50,
+        "g"
+      ],
+      [
+        "cumin",
+        0.5,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "yogurt",
+        150,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les lentilles corail 12 minutes dans 400 ml d’eau, jusqu’à absorption. Laissez tiédir.",
+      "Râpez finement les carottes. Mélangez-les avec les lentilles, l’œuf, les flocons d’avoine et une pincée du cumin.",
+      "Formez des petites galettes et faites-les dorer 4 minutes par face dans l’huile d’olive, jusqu’à ce qu’elles soient fermes et cuites à cœur.",
+      "Mélangez le yaourt avec le reste du cumin et le jus de citron pour la sauce."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "finger",
+      "protein",
+      "iron",
+      "freezer",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Sans œuf : ajoutez 2 cuillères de farine et un peu d’eau.",
+      "Servez avec du riz ou du pain pita."
+    ],
+    "storage": "2 jours au réfrigérateur ; 2 mois au congélateur.",
+    "precautions": [
+      "Carottes râpées finement ; œuf cuit à cœur."
+    ],
+    "nutrition": "Les lentilles et l’avoine associent légumineuse et céréale ; le yaourt apporte du calcium.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-tarte-fine-tomates-moutarde-comte",
+    "title": "Tarte fine aux tomates, moutarde douce et comté",
+    "summary": "Une tarte estivale toute simple, au goût doux de comté fondu.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "shortcrust",
+        1,
+        "u",
+        "rouleau"
+      ],
+      [
+        "tomato",
+        4,
+        "u"
+      ],
+      [
+        "mustard",
+        1,
+        "cs"
+      ],
+      [
+        "comte",
+        80,
+        "g",
+        "râpé"
+      ],
+      [
+        "herbs",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Étalez la pâte brisée dans un moule et piquez-la à la fourchette.",
+      "Badigeonnez le fond de moutarde douce et parsemez de la moitié du comté.",
+      "Coupez les tomates en rondelles, épongez-les et disposez-les en rosace. Ajoutez le reste du comté, les herbes de Provence et l’huile d’olive.",
+      "Enfournez 30 à 35 minutes, jusqu’à ce que la pâte soit dorée."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "mustard"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "vegetables",
+      "family",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Allergie à la moutarde : remplacez-la par du concentré de tomate.",
+      "Servez avec une salade de lentilles pour un repas complet."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [],
+    "nutrition": "Le comté apporte des protéines et du calcium ; les tomates, un légume de saison.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-clafoutis-sale-brocoli-feta",
+    "title": "Clafoutis salé au brocoli et à la feta",
+    "summary": "Un flan doré à l’œuf, parsemé de petits bouquets de brocoli.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "flour",
+        60,
+        "g"
+      ],
+      [
+        "milk",
+        300,
+        "ml"
+      ],
+      [
+        "broccoli",
+        300,
+        "g"
+      ],
+      [
+        "feta",
+        100,
+        "g"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Détaillez le brocoli en petits bouquets et faites-les cuire 5 minutes à l’eau bouillante. Égouttez.",
+      "Fouettez les œufs avec la farine, puis ajoutez le lait et la muscade.",
+      "Disposez le brocoli et la feta émiettée dans un plat huilé, versez l’appareil.",
+      "Enfournez 30 à 35 minutes : le clafoutis doit être doré et bien pris au centre."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "calcium",
+      "vegetables",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Remplacez la feta par de l’emmental pour un goût plus doux.",
+      "Ajoutez des pois chiches écrasés pour plus de protéines végétales."
+    ],
+    "storage": "2 jours au réfrigérateur ; se mange chaud ou froid.",
+    "precautions": [
+      "Œufs cuits à cœur : le centre ne doit plus trembler."
+    ],
+    "nutrition": "Les œufs, le lait et la feta apportent des protéines et du calcium.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-veloute-potiron-lentilles-corail-coco",
+    "title": "Velouté de potiron aux lentilles corail, lait de coco et gingembre",
+    "summary": "Un velouté orange tout doux, rendu plus nourrissant par les lentilles.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "pumpkin",
+        700,
+        "g"
+      ],
+      [
+        "red_lentils",
+        100,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "coconut_milk",
+        150,
+        "ml"
+      ],
+      [
+        "ginger",
+        0.5,
+        "cc",
+        "râpé"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "baguette",
+        0.5,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Épluchez le potiron et coupez-le en cubes ; émincez l’oignon et faites-le revenir 3 minutes dans l’huile d’olive.",
+      "Ajoutez le potiron, les lentilles corail rincées, le gingembre et 900 ml d’eau. Laissez cuire 25 minutes.",
+      "Ajoutez le lait de coco et mixez finement.",
+      "Servez avec des tranches de baguette."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "fiber",
+      "batch",
+      "freezer",
+      "budget"
+    ],
+    "adaptations": [
+      "Remplacez le potiron par de la courge butternut ou des carottes.",
+      "Sans lait de coco : ajoutez une cuillère de crème."
+    ],
+    "storage": "3 jours au réfrigérateur ; 3 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Les lentilles et la baguette associent légumineuse et céréale ; le potiron apporte des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-salade-lentilles-vertes-oeufs-durs-vinaigrette",
+    "title": "Salade tiède de lentilles vertes, œufs durs et carottes",
+    "summary": "Une salade de bistrot adaptée aux enfants, à la vinaigrette douce.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "green_lentils",
+        200,
+        "g",
+        "poids cru"
+      ],
+      [
+        "egg",
+        4,
+        "u"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "chives",
+        5,
+        "g"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "mustard",
+        1,
+        "cc"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "wholemeal_bread",
+        4,
+        "u",
+        "tranches"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les lentilles vertes et les carottes coupées en petits dés 25 minutes dans de l’eau non salée. Égouttez.",
+      "Faites cuire les œufs 10 minutes dans l’eau bouillante (œufs durs, jaune bien pris), refroidissez-les et écalez-les.",
+      "Préparez la vinaigrette avec la moutarde, le jus de citron et l’huile d’olive.",
+      "Mélangez les lentilles tièdes, les carottes, la vinaigrette et la ciboulette. Ajoutez les œufs en quartiers et servez avec le pain complet."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "mustard"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "fiber",
+      "budget",
+      "lunchbox",
+      "make_ahead"
+    ],
+    "adaptations": [
+      "Allergie à la moutarde : supprimez-la de la vinaigrette.",
+      "Pour les plus jeunes, écrasez les œufs à la fourchette."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [
+      "Œufs durs bien cuits ; gardez la salade au frais."
+    ],
+    "nutrition": "Les lentilles et le pain complet associent légumineuse et céréale ; les œufs complètent les protéines.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-quesadillas-patate-douce-haricots-rouges",
+    "title": "Quesadillas à la patate douce, haricots rouges et emmental",
+    "summary": "Des galettes croustillantes au fromage fondant et à la purée orange.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "tortilla",
+        4,
+        "u"
+      ],
+      [
+        "sweet_potato",
+        400,
+        "g"
+      ],
+      [
+        "kidney_beans",
+        200,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "emmental",
+        80,
+        "g",
+        "râpé"
+      ],
+      [
+        "cumin",
+        0.5,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Épluchez la patate douce, coupez-la en cubes et faites-la cuire 15 minutes à l’eau ou à la vapeur.",
+      "Écrasez-la avec les haricots rouges et le cumin.",
+      "Étalez la purée sur la moitié de chaque galette de blé, parsemez d’emmental et repliez.",
+      "Faites dorer 3 minutes par face dans une poêle légèrement huilée. Coupez en triangles."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "finger",
+      "world",
+      "picky"
+    ],
+    "adaptations": [
+      "Ajoutez du maïs écrasé ou des épinards dans la garniture.",
+      "Servez avec un yaourt et une salade."
+    ],
+    "storage": "Garniture : 2 jours au réfrigérateur.",
+    "precautions": [
+      "Laissez tiédir : le fromage fondu reste très chaud."
+    ],
+    "nutrition": "Les haricots rouges et la galette de blé associent légumineuse et céréale ; la patate douce apporte des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-nouilles-tofu-sauce-cacahuete-concombre",
+    "title": "Nouilles tièdes au tofu, sauce douce à la cacahuète et concombre",
+    "summary": "Des nouilles nappées d’une sauce onctueuse à la cacahuète, avec du tofu doré et des crudités.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "egg_noodles",
+        250,
+        "g"
+      ],
+      [
+        "tofu",
+        250,
+        "g"
+      ],
+      [
+        "peanut_butter",
+        2,
+        "cs"
+      ],
+      [
+        "cucumber",
+        1,
+        "u"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les nouilles selon le paquet, égouttez-les et rincez-les à l’eau tiède.",
+      "Coupez le tofu en dés et faites-le dorer 8 minutes dans l’huile, à feu moyen.",
+      "Délayez le beurre de cacahuète avec le jus de citron et 4 cuillères d’eau chaude jusqu’à obtenir une sauce lisse.",
+      "Râpez finement les carottes et coupez le concombre en fins bâtonnets.",
+      "Mélangez les nouilles avec la sauce, ajoutez le tofu et les crudités. Coupez les nouilles aux ciseaux pour les plus jeunes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "peanuts",
+      "soy"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "world",
+      "vegetables",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Allergie à l’arachide : remplacez le beurre de cacahuète par du tahini (sésame) ou un yaourt.",
+      "Allergie au soja : remplacez le tofu par des œufs durs."
+    ],
+    "storage": "24 h au réfrigérateur ; à servir tiède ou froid.",
+    "precautions": [
+      "Beurre de cacahuète uniquement en sauce délayée, jamais de cacahuètes entières avant 4 ans.",
+      "Carottes râpées finement et nouilles coupées courtes.",
+      "Arachide : à proposer seulement si elle a déjà été introduite sans réaction ; une première fois se fait à la maison, en petite quantité, quand on peut surveiller l’enfant. En cas d’allergie connue ou de doute, demandez l’avis du médecin."
+    ],
+    "nutrition": "Le tofu et le beurre de cacahuète apportent des protéines ; les nouilles, des féculents ; les crudités, des fibres.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-batonnets-tofu-panes-puree-carottes",
+    "title": "Bâtonnets de tofu panés aux pétales de maïs et purée de carottes",
+    "summary": "Des bâtonnets croustillants au four, façon « nuggets », avec une purée douce.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "tofu",
+        400,
+        "g"
+      ],
+      [
+        "corn_flakes_plain",
+        80,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "flour",
+        2,
+        "cs"
+      ],
+      [
+        "carrot",
+        600,
+        "g"
+      ],
+      [
+        "butter",
+        15,
+        "g"
+      ],
+      [
+        "milk",
+        50,
+        "ml"
+      ],
+      [
+        "paprika",
+        0.5,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Coupez le tofu en bâtonnets et épongez-les.",
+      "Écrasez les pétales de maïs avec le paprika. Passez chaque bâtonnet dans la farine, puis dans l’œuf battu, puis dans les pétales.",
+      "Disposez sur une plaque couverte de papier cuisson et enfournez 20 minutes, en les retournant à mi-cuisson, jusqu’à ce qu’ils soient dorés.",
+      "Pendant ce temps, faites cuire les carottes en rondelles 20 minutes à l’eau, puis écrasez-les avec le beurre et le lait."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "soy",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "calcium",
+      "finger",
+      "picky"
+    ],
+    "adaptations": [
+      "Allergie à l’œuf : trempez le tofu dans un peu de lait plutôt que dans l’œuf.",
+      "Remplacez la purée de carottes par une purée de pommes de terre."
+    ],
+    "storage": "Bâtonnets : 2 jours au réfrigérateur ; à réchauffer au four.",
+    "precautions": [
+      "Œuf de la panure cuit à cœur pendant la cuisson au four."
+    ],
+    "nutrition": "Le tofu apporte des protéines végétales et du calcium ; les carottes, des fibres.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "vg-gratin-pommes-de-terre-poireaux-haricots-blancs",
+    "title": "Gratin de pommes de terre, poireaux et haricots blancs",
+    "summary": "Un gratin fondant, plus nourrissant grâce aux haricots blancs.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 55,
+    "ingredients": [
+      [
+        "potato",
+        800,
+        "g"
+      ],
+      [
+        "leek",
+        2,
+        "u"
+      ],
+      [
+        "white_beans",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "cream",
+        150,
+        "g"
+      ],
+      [
+        "milk",
+        250,
+        "ml"
+      ],
+      [
+        "emmental",
+        60,
+        "g",
+        "râpé"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les pommes de terre et coupez-les en fines rondelles. Émincez les poireaux.",
+      "Faites chauffer le lait avec la crème et la muscade.",
+      "Dans un plat, alternez pommes de terre, poireaux et haricots blancs, puis versez le mélange lait-crème.",
+      "Parsemez d’emmental et enfournez 50 minutes, jusqu’à ce que les pommes de terre soient tendres sous la pointe d’un couteau."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "calcium",
+      "fiber",
+      "family",
+      "budget"
+    ],
+    "adaptations": [
+      "Sans lait : utilisez du bouillon de légumes et un filet d’huile d’olive.",
+      "Remplacez les poireaux par du chou-fleur."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [],
+    "nutrition": "Les haricots blancs apportent des protéines végétales et des fibres ; le fromage et le lait, du calcium.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-pizza-maison-legumes-mozzarella",
+    "title": "Pizza maison aux légumes et à la mozzarella",
+    "summary": "Une pizza à garnir en famille avec des légumes coupés finement.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "pizza_dough",
+        1,
+        "u",
+        "rouleau"
+      ],
+      [
+        "canned_tomato",
+        200,
+        "g"
+      ],
+      [
+        "mozzarella",
+        125,
+        "g"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "mushroom",
+        100,
+        "g"
+      ],
+      [
+        "bell_pepper",
+        0.5,
+        "u"
+      ],
+      [
+        "herbs",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 230 °C. Déroulez la pâte à pizza sur une plaque.",
+      "Étalez les tomates concassées égouttées et parsemez d’herbes de Provence.",
+      "Coupez la courgette, les champignons et le poivron en fines lamelles et répartissez-les avec la mozzarella en morceaux.",
+      "Arrosez d’huile d’olive et enfournez 15 à 20 minutes, jusqu’à ce que la pâte soit dorée."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "vegetables",
+      "family",
+      "picky"
+    ],
+    "adaptations": [
+      "Ajoutez un œuf au centre en fin de cuisson (bien cuit) pour plus de protéines.",
+      "Laissez les enfants composer leur propre visage de légumes."
+    ],
+    "storage": "24 h au réfrigérateur ; se réchauffe à la poêle.",
+    "precautions": [],
+    "nutrition": "La mozzarella apporte des protéines et du calcium, la pâte des féculents et la garniture des légumes.",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-dahl-pois-casses-epinards-riz-complet",
+    "title": "Dahl de pois cassés aux épinards et riz complet",
+    "summary": "Une variante du dahl indien, avec des pois cassés fondants et des épinards.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "split_peas",
+        200,
+        "g"
+      ],
+      [
+        "brown_rice",
+        200,
+        "g",
+        "poids cru"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "turmeric",
+        1,
+        "cc"
+      ],
+      [
+        "ginger",
+        0.5,
+        "cc",
+        "râpé"
+      ],
+      [
+        "spinach",
+        150,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les pois cassés rincés 45 minutes dans 1 l d’eau, jusqu’à ce qu’ils se défassent.",
+      "Pendant ce temps, faites cuire le riz complet 35 à 40 minutes dans un grand volume d’eau et égouttez-le.",
+      "Faites revenir l’oignon et l’ail émincés dans l’huile avec le curcuma et le gingembre, 5 minutes.",
+      "Ajoutez ce mélange et les épinards hachés aux pois cassés ; laissez mijoter 5 minutes. Servez avec le riz."
+    ],
+    "allergens": [],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "iron",
+      "fiber",
+      "budget",
+      "batch",
+      "freezer",
+      "world"
+    ],
+    "adaptations": [
+      "Pour une texture plus lisse, mixez le dahl.",
+      "Ajoutez un peu de lait de coco pour plus de douceur."
+    ],
+    "storage": "3 jours au réfrigérateur ; 3 mois au congélateur. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [],
+    "nutrition": "Les pois cassés et le riz complet réunissent légumineuse et céréale, avec beaucoup de fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-patates-douces-farcies-pois-chiches-fromage-blanc",
+    "title": "Patates douces rôties, farcies aux pois chiches et fromage blanc",
+    "summary": "Des patates douces fondantes, ouvertes et garnies de pois chiches au paprika.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "sweet_potato",
+        4,
+        "u",
+        "petites"
+      ],
+      [
+        "chickpeas",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "fromage_blanc",
+        200,
+        "g"
+      ],
+      [
+        "chives",
+        5,
+        "g"
+      ],
+      [
+        "paprika",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Piquez les patates douces et enfournez-les 45 minutes, jusqu’à ce qu’elles soient tendres.",
+      "Pendant ce temps, faites rissoler les pois chiches 8 minutes à la poêle dans l’huile d’olive avec le paprika ; écrasez-les légèrement pour les plus jeunes.",
+      "Mélangez le fromage blanc avec la ciboulette ciselée et le jus de citron.",
+      "Ouvrez les patates douces, garnissez de pois chiches et de sauce."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "calcium",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Ajoutez de l’avocat ou du maïs dans la garniture.",
+      "Sans lait : utilisez un yaourt végétal nature."
+    ],
+    "storage": "24 h au réfrigérateur.",
+    "precautions": [
+      "Avant 4 ans, écrasez les pois chiches."
+    ],
+    "nutrition": "Les pois chiches apportent des protéines végétales et des fibres ; le fromage blanc, du calcium.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-frittata-ricotta-courgette-petits-pois",
+    "title": "Frittata à la ricotta, courgette et petits pois",
+    "summary": "Une omelette épaisse à l’italienne, moelleuse grâce à la ricotta.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "egg",
+        6,
+        "u"
+      ],
+      [
+        "ricotta",
+        125,
+        "g"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "frozen_peas",
+        150,
+        "g"
+      ],
+      [
+        "parmesan",
+        30,
+        "g",
+        "râpé"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "basil",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Coupez la courgette en petits dés et faites-la revenir 5 minutes dans l’huile d’olive avec les petits pois, dans une poêle allant au four.",
+      "Battez les œufs avec la ricotta, le parmesan et le basilic ciselé.",
+      "Versez sur les légumes, laissez prendre 3 minutes sur le feu puis enfournez 15 minutes, jusqu’à ce que la frittata soit ferme au centre.",
+      "Coupez en parts ou en cubes."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "calcium",
+      "quick",
+      "lunchbox",
+      "finger"
+    ],
+    "adaptations": [
+      "Remplacez les petits pois par des épinards.",
+      "Servez avec du pain complet ou des pâtes."
+    ],
+    "storage": "2 jours au réfrigérateur ; se mange froide en pique-nique.",
+    "precautions": [
+      "Œufs cuits à cœur ; avant 4 ans, écrasez les petits pois."
+    ],
+    "nutrition": "Les œufs et la ricotta apportent des protéines et du calcium ; les légumes, des fibres.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-pates-completes-brocoli-pois-chiches-parmesan",
+    "title": "Pâtes complètes au brocoli, pois chiches et parmesan",
+    "summary": "Un plat de pâtes rapide où le brocoli fond en sauce.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "wholewheat_pasta",
+        300,
+        "g",
+        "poids cru"
+      ],
+      [
+        "broccoli",
+        400,
+        "g"
+      ],
+      [
+        "chickpeas",
+        200,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "parmesan",
+        40,
+        "g",
+        "râpé"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "zeste"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les pâtes complètes selon le paquet ; ajoutez le brocoli en petits bouquets 7 minutes avant la fin.",
+      "Pendant ce temps, faites dorer doucement l’ail émincé et les pois chiches 5 minutes dans l’huile d’olive.",
+      "Égouttez pâtes et brocoli, mélangez-les aux pois chiches en écrasant un peu de brocoli pour napper.",
+      "Ajoutez le parmesan et le zeste de citron. Pour les plus jeunes, écrasez les pois chiches."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "protein",
+      "fiber",
+      "calcium",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Sans lait : supprimez le parmesan et ajoutez un filet d’huile.",
+      "Remplacez le brocoli par du chou-fleur."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [
+      "Avant 4 ans, écrasez les pois chiches."
+    ],
+    "nutrition": "Les pâtes complètes et les pois chiches associent céréale et légumineuse ; le brocoli apporte des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-crepes-roulees-epinards-ricotta-gratinees",
+    "title": "Crêpes roulées aux épinards et ricotta, gratinées",
+    "summary": "Des crêpes salées garnies, façon cannellonis, gratinées à l’emmental.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 30,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "flour",
+        150,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        350,
+        "ml"
+      ],
+      [
+        "frozen_spinach",
+        300,
+        "g"
+      ],
+      [
+        "ricotta",
+        250,
+        "g"
+      ],
+      [
+        "emmental",
+        50,
+        "g",
+        "râpé"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Mélangez la farine, les œufs et le lait jusqu’à obtenir une pâte lisse. Faites cuire 8 crêpes dans une poêle légèrement beurrée, 1 minute par face.",
+      "Faites décongeler les épinards à la poêle 5 minutes, pressez-les et mélangez-les avec la ricotta et la muscade.",
+      "Préchauffez le four à 200 °C. Garnissez chaque crêpe, roulez-la et rangez-les dans un plat.",
+      "Parsemez d’emmental et faites gratiner 15 minutes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "protein",
+      "iron",
+      "family",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajoutez une sauce tomate dans le plat avant de gratiner.",
+      "Remplacez les épinards par des champignons ou des poireaux."
+    ],
+    "storage": "2 jours au réfrigérateur ; les crêpes garnies se congèlent.",
+    "precautions": [],
+    "nutrition": "La ricotta, le lait et l’emmental apportent du calcium ; les épinards, un légume vert.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-riz-au-lait-coco-mangue",
+    "title": "Riz au lait de coco et à la mangue",
+    "summary": "Un dessert crémeux au lait et au lait de coco, sucré par la mangue.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "round_rice",
+        100,
+        "g"
+      ],
+      [
+        "milk",
+        600,
+        "ml"
+      ],
+      [
+        "coconut_milk",
+        200,
+        "ml"
+      ],
+      [
+        "mango",
+        1,
+        "u"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Versez le riz rond, le lait, le lait de coco et la vanille dans une casserole.",
+      "Faites cuire 35 à 40 minutes à feu très doux, en remuant souvent, jusqu’à ce que le riz soit très tendre et crémeux.",
+      "Pendant ce temps, épluchez la mangue et coupez-la en petits dés (ou mixez-la en coulis).",
+      "Servez le riz au lait tiède ou froid, couvert de mangue."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "world",
+      "make_ahead",
+      "budget"
+    ],
+    "adaptations": [
+      "Sans lait de vache : utilisez uniquement du lait de coco allongé d’eau.",
+      "Remplacez la mangue par de l’ananas ou une compote."
+    ],
+    "storage": "3 jours au réfrigérateur. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [],
+    "nutrition": "Le lait apporte du calcium ; la mangue sucre le dessert sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-pancakes-banane-avoine-ricotta-myrtilles",
+    "title": "Pancakes moelleux banane, avoine et ricotta aux myrtilles",
+    "summary": "Des petits pancakes sans sucre ajouté, à manger avec les doigts.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "banana",
+        2,
+        "u",
+        "bien mûres"
+      ],
+      [
+        "oats",
+        100,
+        "g",
+        "mixés en farine"
+      ],
+      [
+        "ricotta",
+        125,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ],
+      [
+        "blueberries",
+        100,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Écrasez les bananes à la fourchette. Ajoutez la ricotta, les œufs, les flocons d’avoine mixés et la levure.",
+      "Écrasez les myrtilles ou coupez-les en deux (indispensable avant 4 ans) et incorporez-les.",
+      "Faites cuire de petites louches de pâte dans une poêle huilée, 2 à 3 minutes par face, jusqu’à ce que les pancakes soient bien cuits au centre."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "finger",
+      "protein",
+      "calcium",
+      "freezer"
+    ],
+    "adaptations": [
+      "Remplacez les myrtilles par des framboises ou des dés de pomme.",
+      "Sans lait : remplacez la ricotta par une deuxième banane."
+    ],
+    "storage": "2 jours au réfrigérateur ; se congèlent 2 mois.",
+    "precautions": [
+      "Myrtilles écrasées ou coupées en deux avant 4 ans ; œufs cuits à cœur."
+    ],
+    "nutrition": "L’avoine apporte des fibres, la ricotta et les œufs des protéines, la banane une saveur sucrée sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-crumble-poires-chocolat-avoine-noisette",
+    "title": "Crumble poires-chocolat à l’avoine et à la noisette",
+    "summary": "Un dessert fondant de poires sous une croûte à l’avoine, avec quelques copeaux de chocolat.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "pear",
+        5,
+        "u"
+      ],
+      [
+        "oats",
+        80,
+        "g"
+      ],
+      [
+        "flour",
+        50,
+        "g"
+      ],
+      [
+        "hazelnut_powder",
+        40,
+        "g"
+      ],
+      [
+        "butter",
+        60,
+        "g",
+        "froid"
+      ],
+      [
+        "dark_chocolate",
+        40,
+        "g"
+      ],
+      [
+        "sugar",
+        30,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les poires et coupez-les en dés dans un plat ; ajoutez le chocolat en petits morceaux.",
+      "Sablez du bout des doigts le beurre avec la farine, les flocons d’avoine, la poudre de noisette et le sucre.",
+      "Répartissez la pâte sur les fruits et enfournez 25 à 30 minutes, jusqu’à ce que le dessus soit doré."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "vegetarian",
+      "fiber",
+      "family",
+      "make_ahead"
+    ],
+    "adaptations": [
+      "Allergie aux fruits à coque : remplacez la poudre de noisette par de la farine.",
+      "Moins de sucre : les poires bien mûres suffisent souvent."
+    ],
+    "storage": "2 jours au réfrigérateur.",
+    "precautions": [
+      "Poudre de noisette uniquement, jamais de noisettes entières avant 4 ans."
+    ],
+    "nutrition": "Les poires et l’avoine apportent des fibres ; le dessert reste modéré en sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-tartines-chevre-poire-miel-thym",
+    "title": "Tartines gratinées au chèvre, poire et miel",
+    "summary": "Des tartines sucrées-salées pour un dîner léger avec une soupe.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "baguette",
+        1,
+        "u"
+      ],
+      [
+        "goat_cheese_cooked",
+        120,
+        "g"
+      ],
+      [
+        "pear",
+        2,
+        "u"
+      ],
+      [
+        "honey",
+        1,
+        "cs"
+      ],
+      [
+        "thyme",
+        0.5,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four en position gril. Coupez la baguette en tranches dans le sens de la longueur, puis en tronçons.",
+      "Épluchez les poires et coupez-les en fines lamelles ; disposez-les sur le pain.",
+      "Ajoutez une rondelle de chèvre, un filet de miel et un peu de thym.",
+      "Faites gratiner 5 à 8 minutes, jusqu’à ce que le chèvre soit doré. Laissez tiédir avant de servir."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "calcium"
+    ],
+    "adaptations": [
+      "Remplacez le chèvre par de la mozzarella pour un goût plus doux.",
+      "Servez avec un velouté de lentilles pour un repas complet."
+    ],
+    "storage": "À déguster aussitôt.",
+    "precautions": [
+      "Miel : uniquement après 1 an."
+    ],
+    "nutrition": "Le chèvre apporte des protéines et du calcium, le pain des féculents et la poire un fruit.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-veloute-butternut-haricots-blancs-croutons",
+    "title": "Velouté de butternut aux haricots blancs et croûtons",
+    "summary": "Une soupe veloutée et rassasiante, servie avec des croûtons dorés.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "butternut",
+        800,
+        "g"
+      ],
+      [
+        "white_beans",
+        250,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "vegetable_stock",
+        800,
+        "ml"
+      ],
+      [
+        "cream",
+        2,
+        "cs"
+      ],
+      [
+        "baguette",
+        0.3,
+        "u"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Épluchez la courge butternut, coupez-la en cubes ; émincez l’oignon et faites-le revenir 3 minutes dans 1 cuillère d’huile.",
+      "Ajoutez la courge et le bouillon ; laissez cuire 20 minutes. Ajoutez les haricots blancs 5 minutes avant la fin.",
+      "Mixez finement avec la crème.",
+      "Coupez la baguette en dés et faites-les dorer 5 minutes à la poêle avec le reste d’huile. Servez sur le velouté."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "celery"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "fiber",
+      "batch",
+      "freezer",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Sans lait : supprimez la crème.",
+      "Bouillon : choisissez-le sans sel ajouté ou utilisez de l’eau."
+    ],
+    "storage": "3 jours au réfrigérateur ; 3 mois au congélateur (sans croûtons).",
+    "precautions": [
+      "Vérifiez l’étiquette du bouillon (céleri, gluten)."
+    ],
+    "nutrition": "Les haricots blancs et le pain associent légumineuse et céréale ; la courge apporte des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "vg-tarte-flambee-fromage-blanc-poireaux",
+    "title": "Tarte flambée au fromage blanc et aux poireaux",
+    "summary": "Une flammekueche végétarienne, fine et croustillante.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "pizza_dough",
+        1,
+        "u",
+        "rouleau"
+      ],
+      [
+        "fromage_blanc",
+        200,
+        "g"
+      ],
+      [
+        "cream",
+        100,
+        "g"
+      ],
+      [
+        "leek",
+        2,
+        "u"
+      ],
+      [
+        "emmental",
+        40,
+        "g",
+        "râpé"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 240 °C. Émincez finement les poireaux et faites-les fondre 8 minutes à la poêle avec un fond d’eau.",
+      "Mélangez le fromage blanc, la crème et la muscade.",
+      "Étalez la pâte à pizza finement sur une plaque, couvrez de crème au fromage blanc, puis de poireaux et d’emmental.",
+      "Enfournez 10 à 12 minutes, jusqu’à ce que les bords soient dorés."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "calcium",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez les poireaux par des oignons doux fondus ou des champignons.",
+      "Servez avec une salade de lentilles."
+    ],
+    "storage": "24 h au réfrigérateur.",
+    "precautions": [],
+    "nutrition": "Le fromage blanc et l’emmental apportent des protéines et du calcium.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "vg-ratatouille-quinoa-oeufs-durs",
+    "title": "Ratatouille douce au quinoa et œufs durs",
+    "summary": "Une ratatouille mijotée servie sur du quinoa, avec des œufs durs en quartiers.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 25,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "eggplant",
+        1,
+        "u"
+      ],
+      [
+        "zucchini",
+        2,
+        "u"
+      ],
+      [
+        "bell_pepper",
+        1,
+        "u"
+      ],
+      [
+        "tomato",
+        4,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "quinoa",
+        200,
+        "g",
+        "poids cru"
+      ],
+      [
+        "egg",
+        4,
+        "u"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "herbs",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Coupez l’aubergine, les courgettes, le poivron et les tomates en petits cubes ; émincez l’oignon.",
+      "Faites revenir l’oignon et le poivron 5 minutes dans l’huile d’olive, puis ajoutez les autres légumes et les herbes de Provence. Laissez mijoter 35 minutes à couvert, jusqu’à ce que tout soit fondant.",
+      "Pendant ce temps, faites cuire le quinoa rincé 12 à 15 minutes dans deux fois son volume d’eau.",
+      "Faites cuire les œufs 10 minutes à l’eau bouillante (jaune bien pris), écalez-les et coupez-les en quartiers. Servez sur le quinoa et la ratatouille."
+    ],
+    "allergens": [
+      "eggs"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "vegetables",
+      "fiber",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Remplacez les œufs par des pois chiches.",
+      "Pour les plus jeunes, écrasez les œufs à la fourchette."
+    ],
+    "storage": "Ratatouille : 3 jours au réfrigérateur ou 3 mois au congélateur.",
+    "precautions": [
+      "Œufs durs bien cuits."
+    ],
+    "nutrition": "Le quinoa et les œufs apportent des protéines ; la ratatouille, des légumes variés.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  }
+]

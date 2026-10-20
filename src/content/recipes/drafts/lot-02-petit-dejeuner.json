@@ -1,0 +1,4824 @@
+[
+  {
+    "slug": "pd-tartine-ricotta-fraises-menthe",
+    "title": "Tartines de pain complet à la ricotta, fraises et menthe",
+    "summary": "Des tartines fraîches et colorées pour les matins de printemps.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "wholemeal_bread",
+        4,
+        "u",
+        "tranches"
+      ],
+      [
+        "ricotta",
+        120,
+        "g"
+      ],
+      [
+        "strawberry",
+        200,
+        "g"
+      ],
+      [
+        "mint",
+        4,
+        "u",
+        "feuilles",
+        true
+      ]
+    ],
+    "steps": [
+      "Lavez les fraises, équeutez-les puis coupez-les en fines lamelles (en petits dés pour les plus jeunes).",
+      "Étalez la ricotta sur les tranches de pain complet, en couche généreuse.",
+      "Disposez les lamelles de fraises sur la ricotta en les faisant se chevaucher.",
+      "Ciselez très finement la menthe et parsemez-en un peu sur les tartines, si l’enfant aime.",
+      "Coupez chaque tartine en mouillettes ou en carrés pour que l’enfant les prenne facilement à la main."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "fiber",
+      "finger",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison, remplacez les fraises par de la banane ou de la poire en lamelles.",
+      "Sans lait : une purée d’avocat remplace la ricotta."
+    ],
+    "storage": "À préparer au dernier moment ; la ricotta ouverte se garde 48 h au réfrigérateur.",
+    "precautions": [
+      "Avant 4 ans, préférez une mie souple et coupez les fraises en petits morceaux."
+    ],
+    "nutrition": "Associe un produit céréalier complet, un produit laitier et un fruit frais.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-tartine-cacahuete-banane",
+    "title": "Tartines au beurre de cacahuète et rondelles de banane",
+    "summary": "Une tartine nourrissante, sans sucre ajouté, pour les grosses faims du matin.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "wholemeal_bread",
+        4,
+        "u",
+        "tranches"
+      ],
+      [
+        "peanut_butter",
+        4,
+        "cc"
+      ],
+      [
+        "banana",
+        2,
+        "u"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Étalez une couche fine de beurre de cacahuète sur chaque tranche de pain (1 cuillère à café par tranche suffit).",
+      "Épluchez les bananes et coupez-les en rondelles fines.",
+      "Posez les rondelles de banane sur les tartines et appuyez légèrement pour qu’elles tiennent.",
+      "Saupoudrez d’une pointe de cannelle si vous le souhaitez, puis coupez en bandes."
+    ],
+    "allergens": [
+      "gluten",
+      "peanuts"
+    ],
+    "tags": [
+      "quick",
+      "protein",
+      "fiber",
+      "budget",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie à l’arachide : remplacez par de la purée d’amande ou de sésame si elles sont tolérées, ou par du fromage frais.",
+      "Vérifiez l’absence d’allergie avant la première introduction de l’arachide."
+    ],
+    "storage": "À préparer juste avant de manger (la banane noircit).",
+    "precautions": [
+      "Étalez le beurre de cacahuète en couche très fine : une couche épaisse colle au palais et peut gêner la déglutition.",
+      "Arachide : allergène majeur, à proposer seulement si l’enfant la tolère déjà.",
+      "Arachide : à proposer seulement si elle a déjà été introduite sans réaction ; une première fois se fait à la maison, en petite quantité, quand on peut surveiller l’enfant. En cas d’allergie connue ou de doute, demandez l’avis du médecin."
+    ],
+    "nutrition": "Le beurre de cacahuète apporte des protéines et des lipides, la banane des glucides et des fibres.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-tartine-fromage-frais-concombre-radis",
+    "title": "Tartines salées au fromage frais, concombre et radis râpés",
+    "summary": "Une tartine salée et croquante pour changer des petits-déjeuners sucrés.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "baguette",
+        0.5,
+        "u"
+      ],
+      [
+        "cream_cheese",
+        100,
+        "g"
+      ],
+      [
+        "cucumber",
+        0.5,
+        "u"
+      ],
+      [
+        "radish",
+        4,
+        "u"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ]
+    ],
+    "steps": [
+      "Coupez la baguette en deux dans l’épaisseur puis en tronçons de 10 cm.",
+      "Mélangez le fromage frais avec la ciboulette ciselée.",
+      "Lavez le concombre et coupez-le en très fines rondelles ; lavez les radis et râpez-les finement.",
+      "Tartinez le pain de fromage frais, puis disposez le concombre et parsemez de radis râpés."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "vegetables",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Pour un enfant qui n’aime pas le piquant du radis, utilisez seulement le concombre ou des carottes râpées.",
+      "Sans lait : houmous à la place du fromage frais."
+    ],
+    "storage": "À déguster tout de suite ; le fromage aux herbes se garde 2 jours au réfrigérateur.",
+    "precautions": [
+      "Avant 4 ans, les radis crus doivent être râpés finement, jamais en rondelles."
+    ],
+    "nutrition": "Un produit céréalier, un produit laitier et des légumes crus dès le matin.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-tartine-avocat-oeuf-dur",
+    "title": "Tartines à l’avocat écrasé et œuf dur émietté",
+    "summary": "Un petit-déjeuner salé et rassasiant pour les matins actifs ou le week-end.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "wholemeal_bread",
+        4,
+        "u",
+        "tranches"
+      ],
+      [
+        "avocado",
+        1,
+        "u",
+        "bien mûr"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Plongez les œufs dans une casserole d’eau bouillante et faites-les cuire 10 minutes : le jaune doit être entièrement pris. Refroidissez-les sous l’eau froide.",
+      "Pendant ce temps, écrasez la chair de l’avocat à la fourchette avec le jus de citron et l’huile d’olive.",
+      "Écalez les œufs et émiettez-les finement à la fourchette.",
+      "Tartinez le pain d’avocat écrasé, parsemez d’œuf émietté et coupez en mouillettes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "protein",
+      "fiber",
+      "quick",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans œuf : quelques dés de fromage frais ou de tofu émietté.",
+      "Pour les plus grands, ajoutez quelques graines de sésame."
+    ],
+    "storage": "Les œufs durs écalés se gardent 48 h au réfrigérateur ; l’avocat se prépare au dernier moment.",
+    "precautions": [
+      "Œufs toujours cuits à cœur (jaune ferme) pour les jeunes enfants."
+    ],
+    "nutrition": "L’avocat apporte des matières grasses insaturées, l’œuf des protéines.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-tartine-grillee-compote-fromage-blanc",
+    "title": "Pain grillé à la compote de pommes et fromage blanc à la cannelle",
+    "summary": "Une tartine tiède et douce, sucrée seulement par la compote.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 3,
+    "ingredients": [
+      [
+        "bread",
+        4,
+        "u",
+        "tranches"
+      ],
+      [
+        "fromage_blanc",
+        150,
+        "g"
+      ],
+      [
+        "compote_unsweetened",
+        150,
+        "g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Faites griller les tranches de pain de mie 2 à 3 minutes au grille-pain.",
+      "Mélangez le fromage blanc avec la cannelle.",
+      "Étalez le fromage blanc sur le pain grillé, puis une couche de compote.",
+      "Laissez tiédir 1 minute et coupez en triangles."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "budget",
+      "picky",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Variante : compote pomme-poire ou pomme-coing en automne.",
+      "Sans lait : yaourt végétal au soja nature."
+    ],
+    "storage": "À consommer immédiatement.",
+    "precautions": [],
+    "nutrition": "Un produit céréalier, un produit laitier et un fruit en compote, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-porridge-pomme-cannelle",
+    "title": "Porridge crémeux à la pomme fondante et à la cannelle",
+    "summary": "Le porridge réconfortant des matins d’automne et d’hiver.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "oats",
+        160,
+        "g"
+      ],
+      [
+        "milk",
+        600,
+        "ml"
+      ],
+      [
+        "apple",
+        2,
+        "u"
+      ],
+      [
+        "cinnamon",
+        0.5,
+        "cc"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes et coupez-les en petits dés.",
+      "Faites fondre le beurre dans une casserole, ajoutez les dés de pomme et la cannelle, puis laissez cuire 4 minutes à feu doux en remuant.",
+      "Versez le lait et les flocons d’avoine, portez à frémissement puis faites cuire 5 à 6 minutes en remuant jusqu’à consistance crémeuse.",
+      "Laissez tiédir avant de servir : le porridge garde la chaleur longtemps."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "fiber",
+      "calcium",
+      "budget",
+      "fatigue",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans lait : boisson à l’avoine ou au soja enrichie en calcium.",
+      "Pour les plus petits, mixez une partie des pommes pour une texture plus lisse."
+    ],
+    "storage": "24 h au réfrigérateur ; réchauffez avec un peu de lait.",
+    "precautions": [
+      "Vérifiez la température au centre du bol avant de servir."
+    ],
+    "nutrition": "L’avoine apporte des fibres et le lait du calcium.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-porridge-poire-noisette",
+    "title": "Porridge à la poire et à la poudre de noisette",
+    "summary": "Un porridge doux et parfumé, avec la poire de saison.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "oats",
+        150,
+        "g"
+      ],
+      [
+        "milk",
+        550,
+        "ml"
+      ],
+      [
+        "pear",
+        2,
+        "u",
+        "mûres"
+      ],
+      [
+        "hazelnut_powder",
+        2,
+        "cs"
+      ],
+      [
+        "vanilla",
+        0.5,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Versez le lait, la vanille et les flocons d’avoine dans une casserole et portez à frémissement.",
+      "Faites cuire 5 minutes à feu doux en remuant régulièrement.",
+      "Pendant ce temps, épluchez les poires et coupez-les en petits dés.",
+      "Ajoutez les dés de poire et la poudre de noisette, laissez cuire encore 2 minutes puis servez tiède."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "fiber",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie aux fruits à coque : supprimez la noisette et ajoutez une cuillère de graines de courge moulues ou rien du tout.",
+      "En été, la pêche remplace la poire."
+    ],
+    "storage": "24 h au réfrigérateur.",
+    "precautions": [
+      "Fruits à coque uniquement en poudre avant 4 ans, jamais entiers."
+    ],
+    "nutrition": "Céréale complète, produit laitier et fruit frais dans un même bol.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-porridge-banane-cacao",
+    "title": "Porridge banane-cacao sans sucre ajouté",
+    "summary": "Un porridge au goût chocolaté, sucré uniquement par la banane bien mûre.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 7,
+    "ingredients": [
+      [
+        "oats",
+        150,
+        "g"
+      ],
+      [
+        "milk",
+        550,
+        "ml"
+      ],
+      [
+        "banana",
+        2,
+        "u",
+        "bien mûres"
+      ],
+      [
+        "cocoa",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Écrasez une banane à la fourchette ; coupez l’autre en rondelles pour le dessus.",
+      "Dans une casserole, délayez le cacao dans un peu de lait froid, puis ajoutez le reste du lait et les flocons d’avoine.",
+      "Portez à frémissement et faites cuire 5 à 7 minutes en remuant, puis incorporez la banane écrasée.",
+      "Servez tiède, garni des rondelles de banane."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "fiber",
+      "calcium",
+      "picky",
+      "budget",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans lait : boisson végétale enrichie en calcium.",
+      "Plus la banane est mûre, plus le porridge est doux."
+    ],
+    "storage": "24 h au réfrigérateur ; la banane fonce un peu mais reste bonne.",
+    "precautions": [],
+    "nutrition": "La banane mûre apporte la douceur sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-porridge-coco-fruits-rouges",
+    "title": "Porridge au lait de coco et compotée de fruits rouges",
+    "summary": "Un porridge exotique et coloré, préparé avec des fruits rouges surgelés.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "oats",
+        140,
+        "g"
+      ],
+      [
+        "coconut_milk",
+        200,
+        "ml"
+      ],
+      [
+        "milk",
+        350,
+        "ml"
+      ],
+      [
+        "frozen_berries",
+        200,
+        "g"
+      ],
+      [
+        "sugar",
+        1,
+        "cc",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Faites cuire les fruits rouges dans une petite casserole 5 minutes à feu doux, avec le sucre si vous le souhaitez, jusqu’à obtenir une compotée.",
+      "Dans une autre casserole, versez le lait de coco, le lait et les flocons d’avoine ; portez à frémissement.",
+      "Faites cuire 5 minutes en remuant jusqu’à ce que le mélange épaississe.",
+      "Répartissez le porridge dans les bols et déposez une cuillerée de compotée de fruits rouges sur le dessus."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "fiber",
+      "world",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Le sucre est facultatif : beaucoup d’enfants aiment l’acidité des fruits rouges adoucie par le coco.",
+      "L’été, utilisez des framboises fraîches."
+    ],
+    "storage": "La compotée se garde 3 jours au réfrigérateur ; le porridge 24 h.",
+    "precautions": [
+      "Écrasez les fruits rouges les plus gros pour les moins de 4 ans."
+    ],
+    "nutrition": "Les fruits rouges apportent de la vitamine C, l’avoine des fibres.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-creme-sarrasin-banane",
+    "title": "Crème de sarrasin au lait et à la banane",
+    "summary": "Une bouillie épaisse et douce au goût de noisette du sarrasin.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "buckwheat_flour",
+        60,
+        "g"
+      ],
+      [
+        "milk",
+        600,
+        "ml"
+      ],
+      [
+        "banana",
+        2,
+        "u"
+      ],
+      [
+        "vanilla",
+        0.5,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Délayez la farine de sarrasin dans 150 ml de lait froid pour éviter les grumeaux.",
+      "Faites chauffer le reste du lait avec la vanille, puis versez la farine délayée en fouettant.",
+      "Faites cuire 5 à 6 minutes à feu doux sans cesser de remuer, jusqu’à ce que la crème nappe la cuillère.",
+      "Hors du feu, ajoutez une banane écrasée ; servez avec la seconde banane en rondelles."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "fiber",
+      "budget",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Vérifiez l’étiquette de la farine de sarrasin en cas d’allergie au blé (traces possibles).",
+      "En automne, ajoutez quelques dés de poire."
+    ],
+    "storage": "24 h au réfrigérateur ; elle épaissit en refroidissant, détendez-la avec un peu de lait.",
+    "precautions": [],
+    "nutrition": "Le sarrasin est une graine sans gluten naturellement, ici associée au lait et à un fruit.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-semoule-au-lait-orange",
+    "title": "Semoule au lait parfumée à l’orange",
+    "summary": "Une semoule onctueuse au zeste d’orange, à préparer la veille ou le matin.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "semolina",
+        70,
+        "g"
+      ],
+      [
+        "milk",
+        600,
+        "ml"
+      ],
+      [
+        "orange",
+        1,
+        "u",
+        "non traitée"
+      ],
+      [
+        "sugar",
+        2,
+        "cc"
+      ],
+      [
+        "vanilla",
+        0.5,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Prélevez le zeste de l’orange et pressez-en le jus.",
+      "Faites chauffer le lait avec le zeste, la vanille et le sucre jusqu’à frémissement.",
+      "Versez la semoule en pluie en fouettant, puis faites cuire 6 à 8 minutes à feu doux en remuant.",
+      "Hors du feu, ajoutez le jus d’orange, répartissez dans des bols et servez tiède ou froid."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "make_ahead",
+      "budget",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Pour les petits qui préfèrent sans morceaux, filtrez le zeste.",
+      "Sans lait : boisson végétale enrichie en calcium."
+    ],
+    "storage": "48 h au réfrigérateur, filmée au contact.",
+    "precautions": [],
+    "nutrition": "Le lait apporte du calcium et la semoule des glucides complexes.",
+    "budget": 1,
+    "seasons": [
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-riz-au-lait-mangue",
+    "title": "Riz au lait vanillé et dés de mangue",
+    "summary": "Un riz au lait léger à préparer la veille pour un petit-déjeuner du week-end.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "dessert"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 5,
+    "prepMin": 5,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "round_rice",
+        100,
+        "g"
+      ],
+      [
+        "milk",
+        800,
+        "ml"
+      ],
+      [
+        "mango",
+        1,
+        "u"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ],
+      [
+        "sugar",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Rincez le riz rond, puis plongez-le 2 minutes dans de l’eau bouillante et égouttez-le.",
+      "Faites chauffer le lait avec la vanille, ajoutez le riz et faites cuire 30 minutes à feu très doux en remuant souvent.",
+      "Quand le riz est tendre et crémeux, ajoutez le sucre hors du feu et laissez refroidir.",
+      "Épluchez la mangue, coupez-la en petits dés et servez-en sur chaque bol de riz au lait."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "make_ahead",
+      "world",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez la mangue par de l’ananas ou de la pêche selon la saison.",
+      "Vous pouvez réduire le sucre de moitié : la mangue est déjà très sucrée."
+    ],
+    "storage": "48 h au réfrigérateur. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [],
+    "nutrition": "Le riz au lait associe un féculent et un produit laitier ; ici avec peu de sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-overnight-oats-abricot-amande",
+    "title": "Flocons d’avoine trempés au yaourt, abricots et amande",
+    "summary": "Préparé la veille, prêt à manger ou à emporter le matin.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "oats",
+        120,
+        "g"
+      ],
+      [
+        "yogurt",
+        2,
+        "u",
+        "pots de 125 g"
+      ],
+      [
+        "milk",
+        200,
+        "ml"
+      ],
+      [
+        "apricot",
+        6,
+        "u"
+      ],
+      [
+        "almond_powder",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "La veille, mélangez les flocons d’avoine, les yaourts, le lait et la poudre d’amande dans un saladier.",
+      "Répartissez dans 4 bocaux ou bols, couvrez et placez au réfrigérateur toute la nuit.",
+      "Le matin, lavez les abricots, dénoyautez-les et coupez-les en petits dés.",
+      "Déposez les abricots sur les flocons d’avoine et mélangez au moment de manger."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "make_ahead",
+      "calcium",
+      "fiber",
+      "lunchbox",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison des abricots, utilisez de la compote ou des dés de poire.",
+      "Allergie aux fruits à coque : supprimez l’amande."
+    ],
+    "storage": "48 h au réfrigérateur sans les fruits ; ajoutez-les le matin.",
+    "precautions": [
+      "Gardez au frais jusqu’au moment du repas."
+    ],
+    "nutrition": "Avoine, yaourt et fruit frais : fibres, calcium et vitamines dans un bocal.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-overnight-oats-carrot-cake",
+    "title": "Bocaux d’avoine façon carrot cake, carotte et pomme râpées",
+    "summary": "Les saveurs du gâteau à la carotte, sans cuisson et sans sucre ajouté.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "oats",
+        120,
+        "g"
+      ],
+      [
+        "milk",
+        250,
+        "ml"
+      ],
+      [
+        "fromage_blanc",
+        200,
+        "g"
+      ],
+      [
+        "carrot",
+        1,
+        "u"
+      ],
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "cinnamon",
+        0.5,
+        "cc"
+      ],
+      [
+        "raisins",
+        30,
+        "g",
+        "hachés",
+        true
+      ]
+    ],
+    "steps": [
+      "Épluchez la carotte et la pomme, puis râpez-les finement.",
+      "Mélangez les flocons d’avoine, le lait, le fromage blanc, la cannelle, la carotte et la pomme râpées.",
+      "Hachez finement les raisins secs et ajoutez-les si vous le souhaitez.",
+      "Répartissez dans des bocaux, couvrez et laissez une nuit au réfrigérateur ; mélangez avant de servir."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "sulphites"
+    ],
+    "tags": [
+      "make_ahead",
+      "vegetables",
+      "fiber",
+      "lunchbox",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans raisins secs pour les enfants qui ne les aiment pas : ajoutez un peu de compote.",
+      "Sans lait : yaourt et boisson végétale au soja."
+    ],
+    "storage": "48 h au réfrigérateur.",
+    "precautions": [
+      "Avant 4 ans, raisins secs hachés (jamais entiers) ; carotte et pomme râpées finement."
+    ],
+    "nutrition": "Un légume au petit-déjeuner, avec des fibres et du calcium.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-bol-fromage-blanc-kiwi-clementine",
+    "title": "Bol de fromage blanc, kiwi, clémentine et pétales de maïs",
+    "summary": "Un bol d’hiver plein de vitamines, avec du croquant.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "fromage_blanc",
+        400,
+        "g"
+      ],
+      [
+        "kiwi",
+        2,
+        "u"
+      ],
+      [
+        "clementine",
+        3,
+        "u"
+      ],
+      [
+        "corn_flakes_plain",
+        40,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez les kiwis et coupez-les en petits dés.",
+      "Épluchez les clémentines, séparez les quartiers et coupez chacun en deux ou trois morceaux.",
+      "Répartissez le fromage blanc dans 4 bols et ajoutez les fruits par-dessus.",
+      "Parsemez de pétales de maïs au dernier moment pour qu’ils restent croustillants."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "picky",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans lait : yaourt végétal au soja nature.",
+      "Pour les plus jeunes, retirez la petite peau blanche des quartiers de clémentine."
+    ],
+    "storage": "À préparer au moment ; les fruits coupés se gardent 12 h au réfrigérateur.",
+    "precautions": [],
+    "nutrition": "Kiwi et clémentine apportent de la vitamine C, le fromage blanc du calcium.",
+    "budget": 1,
+    "seasons": [
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-bol-quinoa-coco-mangue-ananas",
+    "title": "Bol de quinoa au lait de coco, mangue et ananas",
+    "summary": "Un bol tiède et exotique, à préparer la veille pour le week-end.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "quinoa",
+        120,
+        "g"
+      ],
+      [
+        "coconut_milk",
+        200,
+        "ml"
+      ],
+      [
+        "milk",
+        200,
+        "ml"
+      ],
+      [
+        "mango",
+        1,
+        "u"
+      ],
+      [
+        "pineapple",
+        200,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "zeste"
+      ]
+    ],
+    "steps": [
+      "Rincez soigneusement le quinoa à l’eau froide dans une passoire fine.",
+      "Mettez-le dans une casserole avec le lait de coco et le lait, portez à frémissement et faites cuire 15 minutes à couvert, jusqu’à ce qu’il soit tendre.",
+      "Pendant ce temps, épluchez la mangue et l’ananas et coupez-les en petits dés.",
+      "Répartissez le quinoa dans les bols, ajoutez les fruits et un peu de zeste de citron."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "fiber",
+      "world",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans lait de vache : remplacez-le par de l’eau et un peu plus de lait de coco.",
+      "En été, remplacez l’ananas par de la pêche."
+    ],
+    "storage": "48 h au réfrigérateur pour le quinoa ; les fruits se coupent le matin.",
+    "precautions": [],
+    "nutrition": "Le quinoa apporte des protéines végétales et des fibres.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-bol-smoothie-banane-framboise-fromage-blanc",
+    "title": "Bol smoothie épais banane-framboise au fromage blanc et kiwi",
+    "summary": "Un smoothie si épais qu’il se mange à la cuillère, garni de kiwi et de noisette.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "banana",
+        2,
+        "u",
+        "coupées en rondelles et congelées"
+      ],
+      [
+        "raspberries",
+        200,
+        "g",
+        "fraîches ou surgelées"
+      ],
+      [
+        "fromage_blanc",
+        300,
+        "g"
+      ],
+      [
+        "kiwi",
+        1,
+        "u"
+      ],
+      [
+        "hazelnut_powder",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "La veille, coupez les bananes en rondelles et placez-les au congélateur.",
+      "Mixez la banane congelée, les framboises et le fromage blanc jusqu’à obtenir une crème épaisse et lisse.",
+      "Versez dans des bols ; la texture doit tenir à la cuillère.",
+      "Épluchez le kiwi, coupez-le en petits dés et répartissez-le sur les bols avec la poudre de noisette."
+    ],
+    "allergens": [
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "fiber",
+      "picky",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans lait : yaourt végétal au soja nature.",
+      "Allergie aux fruits à coque : remplacez la noisette par des flocons d’avoine."
+    ],
+    "storage": "À déguster immédiatement.",
+    "precautions": [
+      "Mixez finement pour qu’il ne reste pas de morceaux de fruits gelés durs ; noisette uniquement en poudre avant 4 ans."
+    ],
+    "nutrition": "Trois fruits et un produit laitier dans un bol, sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-bol-mangue-peche-petit-suisse",
+    "title": "Bol crémeux mangue-pêche aux petits-suisses et pétales de maïs",
+    "summary": "Un bol d’été doux et crémeux, sans sucre ajouté.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "mango",
+        1,
+        "u"
+      ],
+      [
+        "peach",
+        2,
+        "u"
+      ],
+      [
+        "petit_suisse",
+        6,
+        "u"
+      ],
+      [
+        "corn_flakes_plain",
+        30,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez la mangue et les pêches, puis coupez-les en morceaux.",
+      "Mixez la moitié des fruits avec les petits-suisses jusqu’à obtenir une crème épaisse.",
+      "Coupez le reste des fruits en petits dés.",
+      "Versez la crème dans les bols, ajoutez les dés de fruits et les pétales de maïs."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison, utilisez des pêches au sirop léger bien égouttées ou de la mangue surgelée.",
+      "Sans lait : yaourt végétal nature."
+    ],
+    "storage": "À consommer rapidement.",
+    "precautions": [],
+    "nutrition": "Mangue et pêche apportent des vitamines, les petits-suisses du calcium.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-smoothie-vert-epinards-kiwi",
+    "title": "Smoothie vert épais aux épinards, banane et kiwi",
+    "summary": "Un smoothie vert vif à manger à la cuillère, où les épinards se font discrets.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "spinach",
+        40,
+        "g",
+        "jeunes pousses lavées"
+      ],
+      [
+        "banana",
+        2,
+        "u"
+      ],
+      [
+        "kiwi",
+        2,
+        "u"
+      ],
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "yogurt",
+        2,
+        "u",
+        "pots de 125 g"
+      ]
+    ],
+    "steps": [
+      "Lavez et séchez soigneusement les jeunes pousses d’épinards.",
+      "Épluchez la banane, les kiwis et la pomme ; coupez-les en morceaux en retirant le trognon de la pomme.",
+      "Mixez longuement tous les fruits avec les épinards et les yaourts, jusqu’à une texture parfaitement lisse et épaisse.",
+      "Servez dans des bols avec une cuillère."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetables",
+      "calcium",
+      "quick",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Commencez par quelques feuilles d’épinards et augmentez au fil des fois.",
+      "Sans lait : yaourt végétal au soja."
+    ],
+    "storage": "À consommer dans l’heure (la couleur ternit).",
+    "precautions": [
+      "Mixez très finement : il ne doit rester aucun morceau de pomme crue avant 4 ans."
+    ],
+    "nutrition": "Un légume vert et trois fruits dès le matin.",
+    "budget": 1,
+    "seasons": [
+      "spring"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-smoothie-poire-avoine-cannelle",
+    "title": "Smoothie épais poire, avoine et cannelle",
+    "summary": "Un smoothie d’hiver onctueux grâce aux flocons d’avoine.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "pear",
+        3,
+        "u",
+        "bien mûres"
+      ],
+      [
+        "oats",
+        40,
+        "g"
+      ],
+      [
+        "milk",
+        250,
+        "ml"
+      ],
+      [
+        "yogurt",
+        1,
+        "u",
+        "pot de 125 g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Mettez les flocons d’avoine à tremper 5 minutes dans le lait.",
+      "Épluchez les poires, retirez le cœur et coupez-les en morceaux.",
+      "Mixez les poires, l’avoine trempée et son lait, le yaourt et la cannelle jusqu’à obtenir une crème épaisse.",
+      "Servez frais dans des bols, à la cuillère."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "fiber",
+      "calcium",
+      "budget",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans lait : boisson à l’avoine enrichie en calcium et yaourt végétal.",
+      "Avec une poire moins mûre, ajoutez une demi-banane pour la douceur."
+    ],
+    "storage": "12 h au réfrigérateur dans un bocal fermé ; il épaissit encore.",
+    "precautions": [],
+    "nutrition": "Fibres des poires et de l’avoine, calcium du lait et du yaourt.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-smoothie-fraise-pasteque",
+    "title": "Smoothie épais fraise-pastèque au yaourt",
+    "summary": "Une crème rafraîchissante pour les matins chauds.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "strawberry",
+        250,
+        "g"
+      ],
+      [
+        "watermelon",
+        250,
+        "g",
+        "sans pépins"
+      ],
+      [
+        "yogurt",
+        3,
+        "u",
+        "pots de 125 g"
+      ],
+      [
+        "mint",
+        3,
+        "u",
+        "feuilles",
+        true
+      ]
+    ],
+    "steps": [
+      "Lavez et équeutez les fraises.",
+      "Retirez la peau et tous les pépins de la pastèque, coupez la chair en cubes.",
+      "Mixez les fraises, la pastèque, les yaourts et la menthe jusqu’à une texture lisse.",
+      "Laissez reposer 30 minutes au congélateur pour épaissir (temps de repos), puis servez à la cuillère."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "quick",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Pour une texture plus épaisse, congelez la pastèque en cubes la veille.",
+      "Sans lait : yaourt végétal nature."
+    ],
+    "storage": "À consommer dans les 12 h.",
+    "precautions": [
+      "Retirez bien les pépins de pastèque avant de mixer."
+    ],
+    "nutrition": "Des fruits d’été riches en eau avec un produit laitier.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-granola-maison-peu-sucre",
+    "title": "Granola maison peu sucré au miel et à la noisette",
+    "summary": "Des céréales croustillantes maison, bien moins sucrées que celles du commerce.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 10,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "oats",
+        250,
+        "g"
+      ],
+      [
+        "hazelnut_powder",
+        60,
+        "g"
+      ],
+      [
+        "sesame_seeds",
+        2,
+        "cs"
+      ],
+      [
+        "honey",
+        3,
+        "cs"
+      ],
+      [
+        "rapeseed_oil",
+        3,
+        "cs"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "raisins",
+        50,
+        "g",
+        "hachés",
+        true
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 160 °C.",
+      "Mélangez les flocons d’avoine, la poudre de noisette, les graines de sésame et la cannelle.",
+      "Ajoutez le miel et l’huile, puis mélangez avec les mains pour enrober chaque flocon.",
+      "Étalez sur une plaque couverte de papier cuisson et enfournez 20 à 25 minutes en remuant toutes les 8 minutes, jusqu’à ce que le granola soit doré.",
+      "Laissez refroidir complètement sur la plaque (il durcit en refroidissant), puis ajoutez les raisins secs hachés."
+    ],
+    "allergens": [
+      "gluten",
+      "nuts",
+      "sesame",
+      "sulphites"
+    ],
+    "tags": [
+      "batch",
+      "fiber",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Servez 30 à 40 g avec du lait ou un yaourt et un fruit frais.",
+      "Allergie au sésame ou aux fruits à coque : supprimez-les et augmentez les flocons."
+    ],
+    "storage": "3 semaines dans un bocal hermétique.",
+    "precautions": [
+      "Avant 4 ans, servez le granola dans du lait pour l’attendrir et hachez les raisins secs.",
+      "Miel : jamais avant 1 an."
+    ],
+    "nutrition": "Céréales complètes et graines, avec 1 cuillère de miel environ pour 3 portions.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-avoine-au-four-myrtilles",
+    "title": "Avoine cuite au four aux myrtilles et à la banane",
+    "summary": "Un gratin de flocons moelleux à couper en parts, idéal le week-end.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "oats",
+        180,
+        "g"
+      ],
+      [
+        "milk",
+        400,
+        "ml"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "banana",
+        2,
+        "u"
+      ],
+      [
+        "blueberries",
+        150,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C.",
+      "Écrasez les bananes dans un saladier, ajoutez l’œuf battu et le lait, puis les flocons d’avoine et la levure.",
+      "Versez dans un plat à gratin et répartissez les myrtilles sur le dessus en les enfonçant légèrement.",
+      "Enfournez 30 minutes : le centre doit être ferme et l’œuf bien cuit. Laissez tiédir avant de couper en parts."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "fiber",
+      "batch",
+      "make_ahead",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison, des fruits rouges surgelés conviennent.",
+      "Sans œuf : 1 cuillère de compote supplémentaire."
+    ],
+    "storage": "3 jours au réfrigérateur ; se réchauffe 1 minute au micro-ondes ou se mange froid.",
+    "precautions": [
+      "Avant 4 ans, écrasez les myrtilles ou coupez-les en deux avant de les ajouter."
+    ],
+    "nutrition": "Céréale complète, fruit et produit laitier dans une part à emporter.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-bircher-pomme-raisin",
+    "title": "Bircher muesli à la pomme râpée et raisin frais",
+    "summary": "Le muesli suisse trempé, frais et fruité, à préparer la veille.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "oats",
+        120,
+        "g"
+      ],
+      [
+        "milk",
+        250,
+        "ml"
+      ],
+      [
+        "yogurt",
+        2,
+        "u",
+        "pots de 125 g"
+      ],
+      [
+        "apple",
+        2,
+        "u"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "grapes",
+        150,
+        "g"
+      ]
+    ],
+    "steps": [
+      "La veille, mélangez les flocons d’avoine avec le lait et les yaourts, couvrez et réservez au réfrigérateur.",
+      "Le matin, râpez les pommes avec la peau et arrosez-les aussitôt de jus de citron.",
+      "Lavez le raisin et coupez chaque grain en quatre.",
+      "Incorporez la pomme râpée au muesli et répartissez le raisin sur le dessus."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "make_ahead",
+      "fiber",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison du raisin, utilisez de la poire ou des dés de kiwi.",
+      "Sans lait : boisson et yaourt végétaux."
+    ],
+    "storage": "24 h au réfrigérateur sans les fruits.",
+    "precautions": [
+      "Avant 4 ans, grains de raisin toujours coupés en quatre ; pomme râpée."
+    ],
+    "nutrition": "Un muesli peu transformé, avec deux fruits frais.",
+    "budget": 1,
+    "seasons": [
+      "autumn"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-boules-avoine-dattes-cacao",
+    "title": "Boules d’avoine aux dattes et au cacao à emporter",
+    "summary": "Des petites bouchées sans sucre ajouté pour un petit-déjeuner sur le pouce.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 20,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "dates",
+        150,
+        "g"
+      ],
+      [
+        "oats",
+        100,
+        "g"
+      ],
+      [
+        "almond_powder",
+        50,
+        "g"
+      ],
+      [
+        "cocoa",
+        2,
+        "cs"
+      ],
+      [
+        "milk",
+        3,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Coupez les dattes en morceaux et laissez-les tremper 10 minutes dans le lait pour les ramollir.",
+      "Mixez les dattes et le lait avec les flocons d’avoine, la poudre d’amande et le cacao jusqu’à obtenir une pâte homogène.",
+      "Formez 12 petites boules aplaties avec les mains légèrement humides.",
+      "Placez au réfrigérateur au moins 30 minutes pour les raffermir (repos)."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "make_ahead",
+      "lunchbox",
+      "fiber",
+      "batch",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie aux fruits à coque : remplacez la poudre d’amande par davantage de flocons.",
+      "À accompagner d’un verre de lait et d’un fruit."
+    ],
+    "storage": "5 jours au réfrigérateur dans une boîte fermée.",
+    "precautions": [
+      "Pour les 3-4 ans, aplatissez les boules en petits palets et proposez-les assis, sous surveillance."
+    ],
+    "nutrition": "Les dattes apportent la douceur, l’avoine et l’amande des fibres.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-barres-avoine-abricot-sesame",
+    "title": "Barres moelleuses avoine, banane et abricots secs",
+    "summary": "Des barres maison à glisser dans le sac pour un petit-déjeuner à emporter.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 10,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "oats",
+        200,
+        "g"
+      ],
+      [
+        "banana",
+        3,
+        "u",
+        "bien mûres"
+      ],
+      [
+        "dried_apricots",
+        80,
+        "g"
+      ],
+      [
+        "sesame_seeds",
+        2,
+        "cs"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ],
+      [
+        "cinnamon",
+        0.5,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et chemisez un moule carré de papier cuisson.",
+      "Écrasez les bananes, ajoutez l’huile, la cannelle, les flocons d’avoine et les graines de sésame.",
+      "Coupez les abricots secs en tout petits morceaux et incorporez-les.",
+      "Tassez la pâte dans le moule et enfournez 25 minutes, jusqu’à ce que le dessus soit doré.",
+      "Laissez refroidir complètement avant de découper 10 barres."
+    ],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "tags": [
+      "lunchbox",
+      "batch",
+      "fiber",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie au sésame : supprimez les graines.",
+      "Variante : raisins secs hachés ou pomme râpée à la place des abricots."
+    ],
+    "storage": "4 jours dans une boîte hermétique ; 2 mois au congélateur, emballées une à une.",
+    "precautions": [
+      "Avant 4 ans, abricots secs coupés en très petits morceaux."
+    ],
+    "nutrition": "Sucrées uniquement par la banane et les abricots secs.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-pancakes-banane-avoine",
+    "title": "Pancakes banane-avoine sans sucre ajouté",
+    "summary": "Des pancakes moelleux sucrés seulement par la banane, faciles à prendre à la main.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "banana",
+        2,
+        "u",
+        "bien mûres"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "oats",
+        100,
+        "g",
+        "mixés en farine"
+      ],
+      [
+        "milk",
+        100,
+        "ml"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Mixez les flocons d’avoine en farine fine.",
+      "Écrasez les bananes, puis ajoutez les œufs, le lait, la farine d’avoine et la levure ; mélangez jusqu’à une pâte épaisse.",
+      "Faites chauffer une poêle huilée à feu moyen et déposez de petites louches de pâte.",
+      "Faites cuire 2 à 3 minutes de chaque côté, jusqu’à ce que les pancakes soient dorés et bien cuits au centre. Recommencez jusqu’à épuisement de la pâte."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "fiber",
+      "finger",
+      "quick",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Servez avec un fruit frais coupé ou une cuillère de yaourt.",
+      "Sans lait : boisson végétale."
+    ],
+    "storage": "2 jours au réfrigérateur ; 1 mois au congélateur, séparés par du papier cuisson.",
+    "precautions": [
+      "Vérifiez que le centre est bien cuit (œuf cuit à cœur)."
+    ],
+    "nutrition": "Avoine, œuf et banane : des fibres et des protéines sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-pancakes-yaourt-myrtilles",
+    "title": "Pancakes moelleux au yaourt et aux myrtilles",
+    "summary": "Les pancakes du week-end, épais et légers, avec très peu de sucre.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 5,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "flour",
+        200,
+        "g"
+      ],
+      [
+        "yogurt",
+        1,
+        "u",
+        "pot de 125 g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        150,
+        "ml"
+      ],
+      [
+        "blueberries",
+        125,
+        "g"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ],
+      [
+        "sugar",
+        1,
+        "cs"
+      ],
+      [
+        "butter",
+        15,
+        "g",
+        "pour la poêle"
+      ]
+    ],
+    "steps": [
+      "Mélangez la farine, la levure et le sucre dans un saladier.",
+      "Ajoutez le yaourt, les œufs et le lait, puis fouettez jusqu’à une pâte lisse et épaisse.",
+      "Coupez les myrtilles en deux et incorporez-les délicatement.",
+      "Faites fondre un peu de beurre dans une poêle et faites cuire de petites louches de pâte 2 à 3 minutes par face, jusqu’à ce qu’elles soient dorées et cuites à cœur."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "freezer",
+      "family",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison, framboises ou fruits rouges surgelés (sans les décongeler).",
+      "Pour les plus grands, ajoutez un zeste de citron."
+    ],
+    "storage": "2 jours au réfrigérateur ; 1 mois au congélateur.",
+    "precautions": [
+      "Avant 4 ans, myrtilles coupées en deux ou écrasées."
+    ],
+    "nutrition": "Seulement 1 cuillère de sucre pour 5 portions ; les myrtilles apportent la douceur.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-crepes-orange",
+    "title": "Crêpes légères parfumées au zeste d’orange",
+    "summary": "Des crêpes fines pour le petit-déjeuner du dimanche, peu sucrées.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "flour",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "milk",
+        500,
+        "ml"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ],
+      [
+        "orange",
+        1,
+        "u",
+        "non traitée"
+      ],
+      [
+        "sugar",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Dans un saladier, mélangez la farine et le sucre, creusez un puits et cassez-y les œufs.",
+      "Versez le lait petit à petit en fouettant pour éviter les grumeaux, puis ajoutez l’huile et le zeste d’orange. Laissez reposer 30 minutes si possible (repos).",
+      "Faites chauffer une poêle légèrement huilée et versez une petite louche de pâte en l’étalant finement.",
+      "Faites cuire environ 1 minute par face, jusqu’à ce que la crêpe soit dorée. Recommencez jusqu’à épuisement de la pâte.",
+      "Servez avec des quartiers d’orange pressés en jus ou en segments."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "freezer",
+      "budget",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Garniture : compote, fromage blanc, fruits frais plutôt que pâte à tartiner.",
+      "Sans lait : boisson végétale au soja."
+    ],
+    "storage": "48 h au réfrigérateur, filmées ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Une crêpe fine avec un fruit frais compose un petit-déjeuner simple.",
+    "budget": 1,
+    "seasons": [
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-crepes-sarrasin-compote",
+    "title": "Crêpes de sarrasin au lait et compote de pommes",
+    "summary": "Une version douce des crêpes bretonnes, garnies de compote.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "buckwheat_flour",
+        150,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        400,
+        "ml"
+      ],
+      [
+        "butter",
+        20,
+        "g",
+        "fondu"
+      ],
+      [
+        "compote_unsweetened",
+        300,
+        "g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Fouettez la farine de sarrasin, les œufs et la moitié du lait jusqu’à une pâte lisse.",
+      "Ajoutez le reste du lait et le beurre fondu ; la pâte doit être fluide.",
+      "Faites cuire les crêpes dans une poêle chaude légèrement graissée, environ 1 à 2 minutes par face.",
+      "Tiédissez la compote avec la cannelle, étalez-en une cuillère sur chaque crêpe et pliez en quatre."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "fiber",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "La farine de sarrasin peut contenir des traces de blé : vérifiez l’étiquette en cas d’allergie.",
+      "Variante : poire pochée écrasée à la place de la compote."
+    ],
+    "storage": "48 h au réfrigérateur ; 2 mois au congélateur sans garniture.",
+    "precautions": [],
+    "nutrition": "Le sarrasin donne des crêpes au goût de noisette, riches en fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-gaufres-legeres-vanille",
+    "title": "Gaufres légères à la vanille pour le week-end",
+    "summary": "Des gaufres croustillantes avec peu de sucre, à garnir de fruits.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "flour",
+        250,
+        "g"
+      ],
+      [
+        "milk",
+        400,
+        "ml"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "butter",
+        50,
+        "g",
+        "fondu"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ],
+      [
+        "sugar",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Mélangez la farine, la levure et le sucre.",
+      "Ajoutez les œufs, la vanille puis le lait progressivement en fouettant, et enfin le beurre fondu.",
+      "Faites chauffer le gaufrier et graissez-le légèrement.",
+      "Versez une louche de pâte et faites cuire 3 à 4 minutes, jusqu’à ce que les gaufres soient dorées.",
+      "Servez avec des fruits frais coupés ou une compote."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans lait : boisson végétale et huile à la place du beurre.",
+      "Pour plus de fibres, remplacez un tiers de la farine par des flocons d’avoine mixés."
+    ],
+    "storage": "2 jours dans une boîte ; 2 mois au congélateur, à repasser au grille-pain.",
+    "precautions": [
+      "Laissez tiédir : le gaufrier et les gaufres sortent très chauds."
+    ],
+    "nutrition": "Environ 1 cuillère à café de sucre par gaufre, garniture de fruits comprise sans ajout.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-pain-perdu-poele-poires",
+    "title": "Pain perdu à la poêle et poires poêlées à la cannelle",
+    "summary": "Une manière gourmande d’utiliser la baguette rassise le week-end.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "baguette",
+        0.5,
+        "u",
+        "rassise"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        200,
+        "ml"
+      ],
+      [
+        "pear",
+        2,
+        "u"
+      ],
+      [
+        "cinnamon",
+        0.5,
+        "cc"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Battez les œufs avec le lait et la moitié de la cannelle ; coupez la baguette en tranches épaisses.",
+      "Épluchez les poires, coupez-les en dés et faites-les revenir 5 minutes dans la moitié du beurre avec le reste de cannelle.",
+      "Trempez les tranches de baguette dans le mélange œufs-lait des deux côtés.",
+      "Faites-les cuire dans le reste du beurre 3 à 4 minutes par face, jusqu’à ce qu’elles soient bien dorées et sans partie liquide au centre.",
+      "Servez le pain perdu garni de poires poêlées."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "budget",
+      "family",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Variante : pommes ou bananes poêlées.",
+      "Sans lait : boisson végétale et huile."
+    ],
+    "storage": "À consommer tiède ; les restes se gardent 24 h au réfrigérateur.",
+    "precautions": [
+      "Œufs cuits à cœur : le centre du pain perdu ne doit plus être coulant."
+    ],
+    "nutrition": "Le fruit poêlé apporte la douceur sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-petits-pains-fromage-blanc",
+    "title": "Petits pains rapides au fromage blanc",
+    "summary": "Des petits pains moelleux sans levure de boulanger, prêts en 35 minutes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "flour",
+        300,
+        "g"
+      ],
+      [
+        "fromage_blanc",
+        250,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ],
+      [
+        "milk",
+        3,
+        "cs"
+      ],
+      [
+        "salt",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 190 °C.",
+      "Mélangez la farine, la levure et le sel, puis ajoutez le fromage blanc, l’œuf et le lait.",
+      "Pétrissez rapidement jusqu’à obtenir une boule souple ; ajoutez un peu de farine si la pâte colle.",
+      "Formez 8 petits pains, posez-les sur une plaque et enfournez 18 à 20 minutes, jusqu’à ce qu’ils soient dorés."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "calcium",
+      "budget",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Pour les grands, parsemez de graines de sésame avant cuisson.",
+      "À tartiner de beurre, de fromage frais ou de compote."
+    ],
+    "storage": "2 jours dans un torchon ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Le fromage blanc apporte des protéines et du calcium dans la pâte.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-banana-bread-peu-sucre",
+    "title": "Banana bread peu sucré à la cannelle",
+    "summary": "Un cake à la banane moelleux, qui se tranche pour les petits-déjeuners de la semaine.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 10,
+    "prepMin": 15,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "banana",
+        3,
+        "u",
+        "très mûres"
+      ],
+      [
+        "flour",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "butter",
+        60,
+        "g",
+        "fondu"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ],
+      [
+        "sugar",
+        30,
+        "g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 170 °C et beurrez un moule à cake.",
+      "Écrasez les bananes, puis ajoutez les œufs, le sucre et le beurre fondu.",
+      "Incorporez la farine, la levure et la cannelle sans trop travailler la pâte.",
+      "Versez dans le moule et enfournez 40 à 45 minutes : une lame plantée au centre doit ressortir sèche.",
+      "Laissez refroidir avant de trancher."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "lunchbox",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Le sucre peut être réduit encore si les bananes sont tachetées de noir.",
+      "Ajoutez de la poudre de noisette pour les enfants sans allergie."
+    ],
+    "storage": "4 jours emballé dans un torchon ; 2 mois au congélateur en tranches.",
+    "precautions": [],
+    "nutrition": "Environ 3 g de sucre ajouté par tranche ; les bananes apportent l’essentiel de la douceur.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-pain-epices-doux",
+    "title": "Pain d’épices doux au miel et à l’orange",
+    "summary": "Un pain d’épices maison aux épices douces, pour les matins d’hiver.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 10,
+    "prepMin": 15,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "flour",
+        250,
+        "g"
+      ],
+      [
+        "honey",
+        120,
+        "g"
+      ],
+      [
+        "milk",
+        150,
+        "ml"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ],
+      [
+        "orange",
+        1,
+        "u",
+        "zeste"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 160 °C et chemisez un moule à cake.",
+      "Faites tiédir le lait avec le miel jusqu’à ce que le miel soit fondu.",
+      "Mélangez la farine, la levure, la cannelle et le zeste d’orange, puis ajoutez l’œuf et le lait au miel.",
+      "Versez dans le moule et enfournez 40 à 45 minutes, jusqu’à ce qu’une lame ressorte sèche.",
+      "Laissez refroidir puis emballez : il est encore meilleur le lendemain."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "make_ahead",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Servez une fine tranche avec un fruit et un produit laitier.",
+      "Miel : jamais avant 1 an (cette recette est prévue à partir de 2 ans)."
+    ],
+    "storage": "1 semaine emballé dans un film ; 2 mois au congélateur.",
+    "precautions": [
+      "Miel cuit ou non : interdit avant 1 an."
+    ],
+    "nutrition": "Le miel est ici la seule source de sucre ; une tranche fine suffit au petit-déjeuner.",
+    "budget": 1,
+    "seasons": [
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-pain-mais-polenta",
+    "title": "Pain de maïs moelleux au yaourt",
+    "summary": "Un pain doré à la polenta, à servir tiède avec du fromage ou un œuf.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "polenta",
+        150,
+        "g"
+      ],
+      [
+        "flour",
+        100,
+        "g"
+      ],
+      [
+        "yogurt",
+        2,
+        "u",
+        "pots de 125 g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "rapeseed_oil",
+        4,
+        "cs"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ],
+      [
+        "corn",
+        100,
+        "g",
+        "égoutté"
+      ],
+      [
+        "salt",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et huilez un moule carré.",
+      "Mélangez la polenta, la farine, la levure et le sel.",
+      "Ajoutez les yaourts, les œufs et l’huile, puis le maïs égoutté.",
+      "Versez dans le moule et enfournez 25 à 30 minutes, jusqu’à ce que le dessus soit doré.",
+      "Laissez tiédir et coupez en carrés."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "world",
+      "lunchbox",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Version sucrée : supprimez le maïs et le sel, ajoutez de la compote.",
+      "Pour les plus grands, une pincée de paprika doux."
+    ],
+    "storage": "3 jours au réfrigérateur ; 2 mois au congélateur.",
+    "precautions": [
+      "Avant 4 ans, mixez grossièrement les grains de maïs.",
+      "Avant 4 ans : écrasez les grains de maïs (risque d’étouffement)."
+    ],
+    "nutrition": "La polenta est une céréale sans gluten, mélangée ici à un peu de farine de blé.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-scones-yaourt-pomme",
+    "title": "Scones au yaourt et aux dés de pomme",
+    "summary": "Des petits pains anglais vite faits, peu sucrés, à ouvrir en deux.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 15,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "flour",
+        250,
+        "g"
+      ],
+      [
+        "butter",
+        50,
+        "g",
+        "froid"
+      ],
+      [
+        "yogurt",
+        1,
+        "u",
+        "pot de 125 g"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ],
+      [
+        "sugar",
+        1,
+        "cs"
+      ],
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "milk",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C.",
+      "Mélangez la farine, la levure et le sucre, puis sablez du bout des doigts avec le beurre froid coupé en dés.",
+      "Épluchez la pomme, coupez-la en petits dés et ajoutez-la avec le yaourt ; rassemblez la pâte sans la travailler.",
+      "Aplatissez sur 2 cm, découpez 8 disques, badigeonnez-les de lait et enfournez 12 à 15 minutes."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "batch",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Variante d’été : framboises à la place de la pomme.",
+      "Servez avec du fromage blanc ou un peu de beurre."
+    ],
+    "storage": "2 jours dans une boîte ; 2 mois au congélateur.",
+    "precautions": [
+      "Avant 4 ans, coupez la pomme en très petits dés : elle devient tendre à la cuisson."
+    ],
+    "nutrition": "La pomme cuite apporte du moelleux et des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-muffins-avoine-carotte",
+    "title": "Muffins à l’avoine, carotte et compote à emporter",
+    "summary": "Des muffins moelleux et peu sucrés, glissés dans le sac les matins pressés.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 12,
+    "prepMin": 20,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "flour",
+        150,
+        "g"
+      ],
+      [
+        "oats",
+        80,
+        "g"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "compote_unsweetened",
+        150,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "rapeseed_oil",
+        4,
+        "cs"
+      ],
+      [
+        "baking_powder",
+        2,
+        "cc"
+      ],
+      [
+        "cinnamon",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et garnissez un moule à muffins de caissettes.",
+      "Épluchez les carottes et râpez-les finement.",
+      "Fouettez les œufs avec la compote et l’huile, puis ajoutez la farine, les flocons d’avoine, la levure et la cannelle.",
+      "Incorporez les carottes râpées et répartissez la pâte dans les caissettes.",
+      "Enfournez 20 à 25 minutes, jusqu’à ce qu’une lame ressorte sèche."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "lunchbox",
+      "freezer",
+      "vegetables",
+      "batch",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Vous pouvez ajouter des raisins secs hachés pour les plus grands.",
+      "Sans œuf : 50 g de compote en plus."
+    ],
+    "storage": "3 jours dans une boîte ; 2 mois au congélateur.",
+    "precautions": [],
+    "nutrition": "Sans sucre ajouté : la compote et la carotte suffisent à adoucir.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-oeufs-brouilles-ciboulette-mouillettes",
+    "title": "Œufs brouillés crémeux à la ciboulette et mouillettes de pain complet",
+    "summary": "Des œufs brouillés bien pris, à saucer avec des mouillettes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "egg",
+        5,
+        "u"
+      ],
+      [
+        "milk",
+        3,
+        "cs"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ],
+      [
+        "wholemeal_bread",
+        4,
+        "u",
+        "tranches"
+      ]
+    ],
+    "steps": [
+      "Battez les œufs avec le lait et la ciboulette ciselée.",
+      "Faites fondre le beurre dans une poêle à feu doux, versez les œufs et remuez sans cesse avec une spatule.",
+      "Poursuivez la cuisson 4 à 5 minutes, jusqu’à ce que les œufs soient entièrement pris, sans partie liquide.",
+      "Pendant ce temps, faites griller le pain complet et coupez-le en mouillettes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "quick",
+      "finger",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Ajoutez un peu d’emmental râpé pour les enfants qui aiment le fromage.",
+      "Sans lait : huile d’olive et un trait d’eau."
+    ],
+    "storage": "À consommer aussitôt.",
+    "precautions": [
+      "Œufs cuits à cœur : aucune partie baveuse pour les jeunes enfants."
+    ],
+    "nutrition": "Les œufs apportent des protéines complètes dès le matin.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-omelette-roulee-emmental-tomate",
+    "title": "Omelette roulée à l’emmental et à la tomate",
+    "summary": "Une omelette fine roulée et coupée en tronçons, facile à manger à la main.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "egg",
+        4,
+        "u"
+      ],
+      [
+        "milk",
+        2,
+        "cs"
+      ],
+      [
+        "emmental",
+        40,
+        "g",
+        "râpé"
+      ],
+      [
+        "tomato",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez la tomate, épépinez-la et coupez-la en tout petits dés.",
+      "Battez les œufs avec le lait, puis ajoutez l’emmental râpé.",
+      "Faites chauffer l’huile dans une grande poêle, versez les œufs en couche fine et parsemez de tomate.",
+      "Faites cuire 3 à 4 minutes à feu doux, couvercle posé, jusqu’à ce que l’omelette soit prise sur toute l’épaisseur.",
+      "Roulez-la sur elle-même, laissez tiédir et coupez en tronçons."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "calcium",
+      "finger",
+      "quick",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez la tomate par des épinards hachés ou des dés de courgette.",
+      "Sans lait : supprimez le fromage et le lait."
+    ],
+    "storage": "24 h au réfrigérateur ; se mange froide dans une boîte à repas.",
+    "precautions": [
+      "L’omelette doit être bien prise à cœur."
+    ],
+    "nutrition": "Œuf et fromage apportent des protéines et du calcium.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-muffins-oeufs-jambon-poivron",
+    "title": "Muffins aux œufs, jambon et poivron cuits au four",
+    "summary": "Des petites omelettes individuelles à préparer à l’avance et à emporter.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "egg",
+        6,
+        "u"
+      ],
+      [
+        "ham",
+        2,
+        "u",
+        "tranches"
+      ],
+      [
+        "bell_pepper",
+        0.5,
+        "u"
+      ],
+      [
+        "emmental",
+        40,
+        "g",
+        "râpé"
+      ],
+      [
+        "chives",
+        1,
+        "cs"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc",
+        "pour le moule"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et huilez 6 empreintes d’un moule à muffins.",
+      "Coupez le jambon et le poivron en tout petits dés, ciselez la ciboulette.",
+      "Battez les œufs, ajoutez l’emmental, le jambon, le poivron et la ciboulette, puis répartissez dans le moule.",
+      "Enfournez 18 à 20 minutes : les muffins doivent être gonflés et fermes au centre."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "make_ahead",
+      "lunchbox",
+      "family"
+    ],
+    "adaptations": [
+      "Version végétarienne : remplacez le jambon par des petits pois ou du maïs.",
+      "Sans porc : blanc de dinde."
+    ],
+    "storage": "3 jours au réfrigérateur ; gardez-les au frais dans la boîte à repas.",
+    "precautions": [
+      "Œufs cuits à cœur ; chaîne du froid à respecter pour l’emporter."
+    ],
+    "nutrition": "Des protéines et un légume dans une bouchée.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-brouillade-tofu-curcuma",
+    "title": "Brouillade de tofu au curcuma et tomate sur pain complet",
+    "summary": "Une alternative végétale aux œufs brouillés, douce et colorée.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "tofu",
+        250,
+        "g"
+      ],
+      [
+        "turmeric",
+        0.5,
+        "cc"
+      ],
+      [
+        "tomato",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "wholemeal_bread",
+        4,
+        "u",
+        "tranches"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "",
+        true
+      ]
+    ],
+    "steps": [
+      "Égouttez le tofu et émiettez-le à la fourchette.",
+      "Coupez la tomate en petits dés.",
+      "Faites chauffer l’huile dans une poêle, ajoutez le tofu et le curcuma et faites revenir 5 minutes en remuant.",
+      "Ajoutez la tomate et poursuivez 2 à 3 minutes, puis servez sur le pain complet, avec un peu de ciboulette."
+    ],
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "tags": [
+      "protein",
+      "quick",
+      "world",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie au soja : œufs brouillés à la place.",
+      "Ajoutez quelques épinards hachés en fin de cuisson."
+    ],
+    "storage": "24 h au réfrigérateur.",
+    "precautions": [],
+    "nutrition": "Le tofu apporte des protéines végétales et du calcium selon le coagulant utilisé.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-tartine-houmous-carotte",
+    "title": "Pita au houmous maison et carottes râpées",
+    "summary": "Un petit-déjeuner salé à la libanaise, doux et crémeux.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "chickpeas",
+        240,
+        "g",
+        "égouttés"
+      ],
+      [
+        "tahini",
+        1,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "pita",
+        2,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Rincez les pois chiches et mixez-les avec le tahini, le jus de citron, l’huile d’olive et 3 à 4 cuillères d’eau, jusqu’à une crème lisse.",
+      "Épluchez les carottes et râpez-les finement.",
+      "Ouvrez les pains pita et coupez-les en triangles.",
+      "Tartinez de houmous et garnissez de carottes râpées."
+    ],
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "tags": [
+      "protein",
+      "fiber",
+      "vegetables",
+      "world",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie au sésame : supprimez le tahini et ajoutez un peu plus d’huile.",
+      "Le houmous peut se préparer la veille."
+    ],
+    "storage": "Houmous : 3 jours au réfrigérateur dans une boîte fermée.",
+    "precautions": [
+      "Avant 4 ans, carottes râpées finement (jamais en bâtonnets crus)."
+    ],
+    "nutrition": "Les pois chiches apportent des protéines végétales et des fibres.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-tartine-sardine-fromage-frais",
+    "title": "Tartines de rillettes de sardine au fromage frais et concombre",
+    "summary": "Une tartine salée façon brunch, avec un poisson gras en conserve.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "sardines_can",
+        1,
+        "u",
+        "boîte de 115 g"
+      ],
+      [
+        "cream_cheese",
+        80,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus"
+      ],
+      [
+        "baguette",
+        0.5,
+        "u"
+      ],
+      [
+        "cucumber",
+        0.5,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Égouttez les sardines, retirez l’arête centrale et vérifiez qu’il ne reste pas de grosses arêtes.",
+      "Écrasez-les à la fourchette avec le fromage frais et le jus de citron jusqu’à obtenir une pâte lisse.",
+      "Coupez la baguette en tronçons ouverts et le concombre en fines rondelles.",
+      "Tartinez les rillettes et ajoutez le concombre."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "calcium",
+      "quick"
+    ],
+    "adaptations": [
+      "Remplacez la sardine par du maquereau en conserve ou du thon.",
+      "Sans lait : écrasez la sardine avec un peu d’avocat."
+    ],
+    "storage": "Rillettes : 48 h au réfrigérateur.",
+    "precautions": [
+      "Écrasez soigneusement le poisson : les petites arêtes ramollies sont comestibles mais pas les grosses."
+    ],
+    "nutrition": "La sardine en conserve apporte des oméga-3 et de la vitamine D.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-wrap-oeuf-comte-poivron",
+    "title": "Wrap roulé à l’œuf, comté et poivron à emporter",
+    "summary": "Un petit-déjeuner salé enroulé, pratique pour manger en chemin.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "tortilla",
+        4,
+        "u"
+      ],
+      [
+        "egg",
+        4,
+        "u"
+      ],
+      [
+        "comte",
+        50,
+        "g",
+        "râpé"
+      ],
+      [
+        "bell_pepper",
+        0.5,
+        "u"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Coupez le poivron en très petits dés.",
+      "Battez les œufs, faites fondre le beurre dans une poêle et faites cuire les œufs brouillés avec le poivron 4 à 5 minutes, jusqu’à ce qu’ils soient bien pris.",
+      "Répartissez les œufs sur les galettes, parsemez de comté râpé.",
+      "Roulez serré, coupez en deux et emballez dans du papier cuisson."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "lunchbox",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Version sans fromage : avocat écrasé.",
+      "Pour les petits, coupez le wrap en rondelles."
+    ],
+    "storage": "24 h au réfrigérateur ; transport en boîte isotherme.",
+    "precautions": [
+      "Œufs bien cuits à cœur ; gardez au frais jusqu’à la dégustation."
+    ],
+    "nutrition": "Céréale, œuf et fromage : de quoi tenir jusqu’au déjeuner.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-croque-comte-pomme",
+    "title": "Croque au comté et à la pomme",
+    "summary": "Un croque sucré-salé, doré à la poêle, pour le brunch du week-end.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "bread",
+        8,
+        "u",
+        "tranches"
+      ],
+      [
+        "comte",
+        80,
+        "g",
+        "en fines lamelles"
+      ],
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Lavez la pomme, retirez le cœur et coupez-la en lamelles très fines.",
+      "Garnissez 4 tranches de pain de mie de comté et de pomme, puis refermez avec les tranches restantes.",
+      "Beurrez légèrement l’extérieur des croques.",
+      "Faites-les dorer à la poêle 3 à 4 minutes par face, à feu moyen, jusqu’à ce que le fromage fonde."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "family",
+      "picky",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Variante : poire à la place de la pomme.",
+      "Ajoutez une tranche de jambon pour un brunch plus copieux."
+    ],
+    "storage": "À consommer chaud.",
+    "precautions": [
+      "Laissez tiédir : le fromage fondu est brûlant.",
+      "Avant 4 ans : râpez finement la pomme, ou faites-la précuire 5 minutes à la poêle avant de garnir le croque."
+    ],
+    "nutrition": "Le comté apporte du calcium et des protéines.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-galettes-riz-ricotta-kiwi-miel",
+    "title": "Galettes de riz soufflé, ricotta, kiwi et filet de miel",
+    "summary": "Un petit-déjeuner croustillant prêt en 5 minutes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "rice_cakes",
+        4,
+        "u"
+      ],
+      [
+        "ricotta",
+        120,
+        "g"
+      ],
+      [
+        "kiwi",
+        2,
+        "u"
+      ],
+      [
+        "honey",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez les kiwis et coupez-les en fines rondelles.",
+      "Étalez la ricotta sur les galettes de riz.",
+      "Disposez les rondelles de kiwi et ajoutez quelques gouttes de miel.",
+      "Servez aussitôt, avant que les galettes ne ramollissent."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Sans miel : la ricotta et le kiwi suffisent.",
+      "Pour les plus petits, cassez les galettes en morceaux."
+    ],
+    "storage": "À préparer au moment.",
+    "precautions": [
+      "Les galettes de riz s’émiettent : servez l’enfant assis.",
+      "Miel : jamais avant 1 an."
+    ],
+    "nutrition": "Le kiwi apporte de la vitamine C, la ricotta du calcium.",
+    "budget": 2,
+    "seasons": [
+      "winter",
+      "spring"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-clafoutis-abricots-amande",
+    "title": "Clafoutis léger aux abricots et à l’amande du dimanche matin",
+    "summary": "Un clafoutis peu sucré, à préparer la veille ou à servir tiède au brunch.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "dessert"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "apricot",
+        8,
+        "u"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "milk",
+        300,
+        "ml"
+      ],
+      [
+        "flour",
+        40,
+        "g"
+      ],
+      [
+        "almond_powder",
+        40,
+        "g"
+      ],
+      [
+        "sugar",
+        30,
+        "g"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et chemisez un plat de papier cuisson.",
+      "Lavez les abricots, dénoyautez-les et coupez-les en quartiers ; répartissez-les dans le plat.",
+      "Fouettez les œufs avec le sucre, la farine, la poudre d’amande et la vanille, puis ajoutez le lait.",
+      "Versez sur les abricots et enfournez 30 à 35 minutes, jusqu’à ce que le clafoutis soit pris à cœur et doré."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "family",
+      "make_ahead",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison, prunes ou poires en quartiers.",
+      "Allergie aux fruits à coque : remplacez l’amande par la même quantité de farine."
+    ],
+    "storage": "48 h au réfrigérateur.",
+    "precautions": [
+      "Laissez tiédir avant de servir ; amande uniquement en poudre."
+    ],
+    "nutrition": "Environ 5 g de sucre ajouté par part.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-verrine-rhubarbe-fraise-yaourt",
+    "title": "Verrines de compotée rhubarbe-fraise, yaourt et flocons",
+    "summary": "Un petit-déjeuner de printemps acidulé, préparé à l’avance.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "rhubarb",
+        250,
+        "g"
+      ],
+      [
+        "strawberry",
+        200,
+        "g"
+      ],
+      [
+        "sugar",
+        2,
+        "cs"
+      ],
+      [
+        "yogurt",
+        4,
+        "u",
+        "pots de 125 g"
+      ],
+      [
+        "oats",
+        4,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Épluchez la rhubarbe et coupez-la en tronçons ; équeutez les fraises.",
+      "Faites cuire la rhubarbe avec le sucre et 2 cuillères d’eau 10 minutes à feu doux, puis ajoutez les fraises coupées et poursuivez 5 minutes.",
+      "Laissez refroidir la compotée.",
+      "Dans des verres, alternez yaourt et compotée, puis parsemez de flocons d’avoine."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "make_ahead",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Si votre enfant trouve la rhubarbe trop acide, augmentez la part de fraises plutôt que le sucre.",
+      "Sans lait : yaourt végétal."
+    ],
+    "storage": "La compotée se garde 4 jours au réfrigérateur.",
+    "precautions": [],
+    "nutrition": "Seulement une demi-cuillère de sucre par verrine.",
+    "budget": 2,
+    "seasons": [
+      "spring"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-tartine-comte-raisin",
+    "title": "Tartines de pain complet au comté et au raisin frais",
+    "summary": "Une tartine d’automne simple, salée et fruitée à la fois.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "wholemeal_bread",
+        4,
+        "u",
+        "tranches"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ],
+      [
+        "comte",
+        60,
+        "g",
+        "en fines lamelles"
+      ],
+      [
+        "grapes",
+        120,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Beurrez légèrement les tranches de pain complet.",
+      "Coupez le comté en lamelles très fines avec un épluche-légumes.",
+      "Lavez le raisin, coupez chaque grain en quatre et retirez les pépins.",
+      "Disposez le comté puis les quartiers de raisin sur les tartines."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "fiber",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez le raisin par de la poire en automne ou de la pomme râpée.",
+      "Comté : fromage à pâte pressée cuite, adapté aux enfants."
+    ],
+    "storage": "À préparer au moment.",
+    "precautions": [
+      "Avant 4 ans, grains de raisin toujours coupés en quatre."
+    ],
+    "nutrition": "Le comté apporte du calcium, le pain complet des fibres.",
+    "budget": 2,
+    "seasons": [
+      "autumn"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-tartine-ricotta-peche-miel",
+    "title": "Tartines de baguette à la ricotta, pêche et miel",
+    "summary": "Une tartine fraîche de fin d’été, au fruit bien mûr.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "baguette",
+        0.5,
+        "u"
+      ],
+      [
+        "ricotta",
+        150,
+        "g"
+      ],
+      [
+        "peach",
+        2,
+        "u",
+        "mûres"
+      ],
+      [
+        "honey",
+        1,
+        "cc"
+      ],
+      [
+        "basil",
+        2,
+        "u",
+        "feuilles",
+        true
+      ]
+    ],
+    "steps": [
+      "Coupez la baguette en tronçons puis en deux dans l’épaisseur.",
+      "Lavez les pêches et coupez-les en fines lamelles (pelées pour les plus petits).",
+      "Étalez la ricotta, ajoutez les lamelles de pêche et quelques gouttes de miel.",
+      "Pour les curieux, ajoutez une feuille de basilic ciselée."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "calcium",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison : nectarine, abricot ou poire.",
+      "Sans miel : la pêche suffit."
+    ],
+    "storage": "À préparer au moment.",
+    "precautions": [
+      "Miel : jamais avant 1 an."
+    ],
+    "nutrition": "Fruit de saison et produit laitier frais sur du pain.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-bouillie-polenta-prunes",
+    "title": "Polenta au lait et compotée de prunes",
+    "summary": "Une bouillie dorée et douce avec les prunes de fin d’été.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "polenta",
+        80,
+        "g"
+      ],
+      [
+        "milk",
+        600,
+        "ml"
+      ],
+      [
+        "plum",
+        6,
+        "u"
+      ],
+      [
+        "cinnamon",
+        0.5,
+        "cc"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Lavez les prunes, dénoyautez-les et coupez-les en morceaux.",
+      "Faites-les cuire 10 minutes à feu doux avec le beurre et la cannelle, jusqu’à ce qu’elles soient fondantes.",
+      "Dans une autre casserole, portez le lait à frémissement, versez la polenta en pluie en fouettant et faites cuire 5 minutes en remuant.",
+      "Servez la polenta tiède, surmontée de compotée de prunes."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "budget",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Utilisez une polenta précuite (5 minutes) pour aller plus vite.",
+      "Hors saison : compote de pommes."
+    ],
+    "storage": "24 h au réfrigérateur ; la polenta épaissit, détendez-la au lait.",
+    "precautions": [],
+    "nutrition": "La polenta est naturellement sans gluten.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-petit-dej-japonais-riz-omelette",
+    "title": "Petit-déjeuner à la japonaise : riz, omelette fine et concombre",
+    "summary": "Un plateau salé inspiré du Japon, pour découvrir d’autres façons de commencer la journée.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "rice",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ],
+      [
+        "cucumber",
+        1,
+        "u"
+      ],
+      [
+        "soy_sauce",
+        1,
+        "cc"
+      ],
+      [
+        "sesame_seeds",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Rincez le riz et faites-le cuire 12 minutes dans deux fois son volume d’eau, à couvert, puis laissez gonfler hors du feu.",
+      "Battez les œufs, faites cuire une omelette fine dans la poêle huilée 3 minutes, jusqu’à ce qu’elle soit bien prise, puis roulez-la et coupez-la en tronçons.",
+      "Coupez le concombre en bâtonnets fins ou en rondelles.",
+      "Servez dans des petits bols : riz parsemé de graines de sésame, omelette, concombre et quelques gouttes de sauce soja."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "soy",
+      "sesame"
+    ],
+    "tags": [
+      "world",
+      "protein",
+      "vegetables",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie au sésame ou au soja : supprimez-les.",
+      "Avec un reste de riz de la veille, réchauffé à cœur."
+    ],
+    "storage": "Le riz cuit se garde 24 h au réfrigérateur, refroidi rapidement. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Sauce soja : quelques gouttes seulement, elle est très salée."
+    ],
+    "nutrition": "Un féculent, un œuf et un légume : un petit-déjeuner salé complet.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-shakshuka-douce-week-end",
+    "title": "Shakshuka douce aux poivrons pour le brunch",
+    "summary": "Des œufs cuits dans une sauce tomate aux poivrons, à saucer avec du pain.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "bell_pepper",
+        1,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "egg",
+        4,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "cumin",
+        1,
+        "pincee"
+      ],
+      [
+        "baguette",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Émincez finement l’oignon et coupez le poivron en petits dés.",
+      "Faites-les revenir 8 minutes dans l’huile d’olive, puis ajoutez les tomates concassées et le cumin et laissez mijoter 10 minutes.",
+      "Creusez 4 puits dans la sauce, cassez-y les œufs, couvrez et faites cuire 6 à 7 minutes, jusqu’à ce que les blancs et les jaunes soient entièrement pris.",
+      "Servez avec la baguette coupée en morceaux pour saucer."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "world",
+      "protein",
+      "vegetables",
+      "family",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Pour les adultes, ajoutez du piment dans leur part.",
+      "Version sans œuf : ajoutez des pois chiches."
+    ],
+    "storage": "La sauce se prépare la veille et se garde 3 jours au réfrigérateur.",
+    "precautions": [
+      "Pour les enfants, jaune bien cuit (pris à cœur)."
+    ],
+    "nutrition": "Légumes, œufs et pain dans un plat convivial.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "pd-pancakes-sales-courgette-feta",
+    "title": "Petits pancakes salés à la courgette et à la feta",
+    "summary": "Des pancakes verts et moelleux pour un petit-déjeuner salé ou un brunch.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast",
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "flour",
+        120,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        100,
+        "ml"
+      ],
+      [
+        "feta",
+        60,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "mint",
+        4,
+        "u",
+        "feuilles",
+        true
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Râpez la courgette, pressez-la dans un torchon pour en retirer l’eau.",
+      "Mélangez la farine, la levure, les œufs et le lait, puis ajoutez la courgette, la feta émiettée et la menthe ciselée.",
+      "Faites chauffer un peu d’huile dans une poêle et déposez des cuillerées de pâte.",
+      "Faites cuire 3 minutes par face, jusqu’à ce que les pancakes soient dorés et cuits à cœur."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetables",
+      "finger",
+      "freezer",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Remplacez la feta par de l’emmental râpé pour un goût plus doux.",
+      "Servez avec un yaourt nature."
+    ],
+    "storage": "2 jours au réfrigérateur ; 1 mois au congélateur.",
+    "precautions": [
+      "La feta est salée : n’ajoutez pas de sel."
+    ],
+    "nutrition": "Un légume dans une préparation que les enfants prennent à la main.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "pd-bol-yaourt-pommes-poires-poelees",
+    "title": "Yaourt aux pommes et poires poêlées, noisette en poudre",
+    "summary": "Un bol tiède d’hiver, les fruits fondants sur un yaourt frais.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "yogurt",
+        4,
+        "u",
+        "pots de 125 g"
+      ],
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "pear",
+        1,
+        "u"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ],
+      [
+        "hazelnut_powder",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Épluchez la pomme et la poire et coupez-les en petits dés.",
+      "Faites-les revenir dans le beurre avec la cannelle 6 à 8 minutes à feu doux, jusqu’à ce qu’ils soient bien tendres.",
+      "Répartissez les yaourts dans des bols et ajoutez les fruits tièdes.",
+      "Parsemez de poudre de noisette."
+    ],
+    "allergens": [
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "calcium",
+      "quick",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie aux fruits à coque : flocons d’avoine à la place de la noisette.",
+      "Sans lait : yaourt végétal et huile."
+    ],
+    "storage": "Les fruits poêlés se gardent 3 jours au réfrigérateur.",
+    "precautions": [],
+    "nutrition": "Deux fruits cuits et un produit laitier, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "pd-pate-tartiner-noisette-dattes",
+    "title": "Pâte à tartiner maison noisette-cacao aux dattes",
+    "summary": "Une pâte à tartiner sucrée par les dattes, sur une tartine de baguette.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "prepMin": 15,
+    "cookMin": 3,
+    "ingredients": [
+      [
+        "dates",
+        120,
+        "g"
+      ],
+      [
+        "milk",
+        120,
+        "ml"
+      ],
+      [
+        "hazelnut_powder",
+        80,
+        "g"
+      ],
+      [
+        "cocoa",
+        2,
+        "cs"
+      ],
+      [
+        "baguette",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Faites chauffer le lait 2 à 3 minutes sans le faire bouillir, puis versez-le sur les dattes coupées en morceaux et laissez-les ramollir 10 minutes.",
+      "Mixez les dattes et le lait avec la poudre de noisette et le cacao jusqu’à obtenir une pâte lisse et brillante.",
+      "Versez dans un pot propre.",
+      "Étalez en couche fine sur des tranches de baguette."
+    ],
+    "allergens": [
+      "gluten",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "make_ahead",
+      "picky",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Allergie aux fruits à coque : remplacez la noisette par des graines de tournesol mixées si tolérées.",
+      "Sans lait : boisson à l’avoine."
+    ],
+    "storage": "5 jours au réfrigérateur dans un pot fermé.",
+    "precautions": [
+      "Mixez longuement pour qu’il ne reste aucun morceau de datte ; étalez en couche fine."
+    ],
+    "nutrition": "Les dattes remplacent le sucre ajouté des pâtes à tartiner industrielles.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  }
+]

@@ -5,7 +5,8 @@
  * annuler une correction ou une validation faite depuis l'administration.
  */
 import { writeFileSync } from 'node:fs';
-import { ALL_RECIPES } from '../src/content/recipes';
+import { ALL_RECIPES, DRAFT_RECIPES } from '../src/content/recipes';
+import type { Recipe } from '../src/lib/recipes/types';
 import { INGREDIENTS } from '../src/lib/recipes/ingredients';
 import { RECIPE_SOURCES } from '../src/lib/recipes/sources';
 import { findDuplicates, validateRecipe } from '../src/lib/recipes/validate';
@@ -18,17 +19,18 @@ const q = (v: unknown): string => {
 };
 const arr = (a: readonly string[]) => `array[${a.map(q).join(',')}]::text[]`;
 
-const errors = ALL_RECIPES.flatMap((r) => validateRecipe(r).map((e) => `${r.slug}: ${e}`)).concat(findDuplicates(ALL_RECIPES));
+const errors = [...ALL_RECIPES, ...DRAFT_RECIPES].flatMap((r) => validateRecipe(r).map((e) => `${r.slug}: ${e}`)).concat(findDuplicates([...ALL_RECIPES, ...DRAFT_RECIPES]));
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 
+function render(list: Recipe[], header: string[], withSources: boolean): string {
 const out: string[] = [
   '-- Données de la bibliothèque de recettes — FICHIER GÉNÉRÉ par scripts/gen-recipes-seed.ts (ne pas modifier à la main).',
-  `-- ${ALL_RECIPES.length} recettes rédigées par une IA, statut « à vérifier » (to_review) : aucune n'est marquée relue ou validée.`,
+  ...header,
 ];
-for (const s of Object.values(RECIPE_SOURCES)) {
+if (withSources) for (const s of Object.values(RECIPE_SOURCES)) {
   out.push(`insert into public.recipe_sources (id, title, publisher, url, consulted_on, published_on) values (${q(s.id)}, ${q(s.title)}, ${q(s.publisher)}, ${q(s.url)}, ${q(s.consulted)}, ${q(s.date ?? null)}) on conflict (id) do nothing;`);
 }
-for (const r of ALL_RECIPES) {
+for (const r of list) {
   const id = `(select id from public.recipes where slug = ${q(r.slug)} and owner_id is null)`;
   out.push('', `-- ${r.title}`);
   out.push(`insert into public.recipes (slug, title, summary, audiences, meals, stages, min_months, max_months, textures, servings, serving_label, prep_min, cook_min, allergens, tags, adaptations, storage, precautions, nutrition, budget, seasons, temperature, family_adaptations, verified_on, status) values (${[
@@ -43,5 +45,8 @@ for (const r of ALL_RECIPES) {
   for (const s of r.sources) out.push(`insert into public.recipe_source_links (recipe_id, source_id) values (${id}, ${q(s)}) on conflict do nothing;`);
   for (const h of r.statusHistory) out.push(`insert into public.recipe_reviews (recipe_id, status, by_label, note, created_at) select ${id}, ${q(h.status)}, ${q(h.by)}, ${q(h.note ?? null)}, ${q(h.on)} where not exists (select 1 from public.recipe_reviews where recipe_id = ${id} and status = ${q(h.status)});`);
 }
-writeFileSync('supabase/migrations/20261020000200_recipes_seed.sql', `${out.join('\n')}\n`);
-console.log(`${ALL_RECIPES.length} recettes écrites`);
+return `${out.join('\n')}\n`;
+}
+writeFileSync('supabase/migrations/20261020000200_recipes_seed.sql', render(ALL_RECIPES, [`-- ${ALL_RECIPES.length} recettes rédigées par une IA, statut « à vérifier » (to_review) : aucune n'est marquée relue ou validée.`], true));
+writeFileSync('supabase/migrations/20261020000600_recipes_drafts_seed.sql', render(DRAFT_RECIPES, [`-- ${DRAFT_RECIPES.length} brouillons de recettes enfants rédigés par une IA, statut « brouillon généré par IA » (ai_draft) : invisibles des parents tant qu'une personne de l'équipe éditoriale ne les a pas relus.`], false));
+console.log(`${ALL_RECIPES.length} recettes + ${DRAFT_RECIPES.length} brouillons écrits`);

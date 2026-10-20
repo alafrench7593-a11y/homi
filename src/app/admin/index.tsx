@@ -192,6 +192,9 @@ export default function AdminScreen() {
     <View style={{ gap: spacing.md, marginTop: spacing.xxs }}>
 
       {editor ? <Button label="Recettes : relecture et validation" icon="book-open" variant="secondary" onPress={() => router.push('/admin/recipes')} testID="admin-open-recipes" /> : null}
+      {editor ? <Button label="Recettes : importer des brouillons" icon="upload" variant="secondary" onPress={() => router.push('/admin/import-recipes')} testID="admin-open-import" /> : null}
+      {editor ? <Button label="Produits enfants : catalogue et prix" icon="shopping-bag" variant="secondary" onPress={() => router.push('/admin/products')} testID="admin-open-products" /> : null}
+      {editor ? <Button label="Sources et lectures" icon="link" variant="secondary" onPress={() => router.push('/admin/resources')} testID="admin-open-resources" /> : null}
       {editor ? (
         <>
           <SectionTitle title="Validation des articles" />

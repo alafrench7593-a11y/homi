@@ -11,7 +11,7 @@ import { EmptyState, Skeleton } from '@/components/States';
 import { Banner, Button, Chip, Field, Icon, Row, Text } from '@/components/ui';
 import { RecipeCard } from '@/features/recipes/RecipeCard';
 import { allergenLabel, mealLabel, MEALS_FOR, TAGS_FOR, tagLabel, textureLabel, stageLabel } from '@/features/recipes/labels';
-import { stageOf, useFoodProfile, useRecipeFavorites, useRecipes } from '@/lib/data/hooks-recipes';
+import { meetsNeed, NEEDS, stageOf, useFoodProfile, useRecipeFavorites, useRecipes, useRecipeScores, type Need } from '@/lib/data/hooks-recipes';
 import { currentSeason, filterRecipes, type RecipeFilter } from '@/lib/recipes/engine';
 import { ALLERGENS, type Allergen, type Meal, type Tag } from '@/lib/recipes/types';
 import { childAge } from '@/lib/domain/child';
@@ -36,9 +36,16 @@ export default function Meals() {
   const [veg, setVeg] = useState(false);
   const [noPork, setNoPork] = useState(false);
   const [excl, setExcl] = useState<Allergen[]>([]);
+  const [needs, setNeeds] = useState<Need[]>([]);
+  const [byScore, setByScore] = useState(false);
+  const [shown, setShown] = useState(30);
 
   const filter: RecipeFilter = { q, meal, tag, maxMinutes: maxMin, budget, season: season ? currentSeason() : null, temperature: temp, vegetarian: veg, noPork, allergens: excl, favorites: onlyFav ? fav.ids : null };
-  const list = useMemo(() => (all ? filterRecipes(all, profile, filter) : []), [all, profile, JSON.stringify(filter)]); // eslint-disable-line react-hooks/exhaustive-deps
+  const scores = useRecipeScores(all, profile);
+  const list = useMemo(() => {
+    const base = all ? filterRecipes(all, profile, filter).filter((r) => needs.every((n) => meetsNeed(r, scores.get(r.id), n))) : [];
+    return byScore ? [...base].sort((a, b) => (scores.get(b.id)?.score ?? 0) - (scores.get(a.id)?.score ?? 0)) : base;
+  }, [all, profile, JSON.stringify(filter), needs.join(','), byScore, scores]); // eslint-disable-line react-hooks/exhaustive-deps
   const aud = profile.audience;
   const stage = stageOf(profile);
   const heading = aud === 'pregnancy' ? tr('rc.head.pregnancy') : aud === 'baby' ? tr('rc.head.baby', { name: profile.name ?? '' }) : aud === 'child' ? tr('rc.head.child', { name: profile.name ?? '' }) : aud === 'family' ? tr('rc.head.family') : tr('rc.head.adult');
@@ -59,6 +66,7 @@ export default function Meals() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
         <Button label={aud === 'pregnancy' ? tr('rc.menu.pregnancy') : tr('rc.menu.open')} icon="calendar" size="sm" variant="secondary" onPress={() => router.push('/meals/menu')} testID="open-menu" />
         <Button label={tr('rc.shopping.open')} icon="shopping-cart" size="sm" variant="secondary" onPress={() => router.push('/meals/shopping')} testID="open-shopping" />
+        <Button label={tr('rc.rank.open')} icon="award" size="sm" variant="secondary" onPress={() => router.push('/meals/rankings')} testID="open-rankings" />
         <Button label={tr('rc.pantry.open')} icon="package" size="sm" variant="secondary" onPress={() => router.push('/meals/pantry')} testID="open-pantry" />
         {aud === 'baby' && profile.name ? <Button label={tr('rc.settings.open', { name: profile.name })} icon="sliders" size="sm" variant="secondary" onPress={() => router.push('/meals/settings')} testID="open-food-settings" /> : null}
         <Button label={tr('rc.new.open')} icon="plus" size="sm" variant="ghost" onPress={() => router.push('/meals/new')} />
@@ -87,14 +95,22 @@ export default function Meals() {
             <Chip label={tr('rc.filters.veg')} selected={veg} onPress={() => setVeg(!veg)} />
             <Chip label={tr('rc.filters.noPork')} selected={noPork} onPress={() => setNoPork(!noPork)} />
           </Row>
+          <Text variant="caption" muted>{tr('rc.needs')}</Text>
+          <Row wrap>{NEEDS.map((n) => <Chip key={n} label={tr(`rc.need.${n}`)} selected={needs.includes(n)} onPress={() => setNeeds(needs.includes(n) ? needs.filter((x) => x !== n) : [...needs, n])} />)}</Row>
           <Text variant="caption" muted>{tr('rc.filters.exclude')}</Text>
           <Row wrap>{ALLERGENS.map((a) => <Chip key={a} label={allergenLabel(a)} selected={excl.includes(a)} onPress={() => setExcl(excl.includes(a) ? excl.filter((x) => x !== a) : [...excl, a])} />)}</Row>
         </View>
       ) : null}
 
-      <Text variant="small" muted testID="recipes-count">{tr('rc.count', { count: list.length })}</Text>
+      <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text variant="small" muted testID="recipes-count">{tr('rc.count', { count: list.length })}</Text>
+        <Chip label={tr('rc.sort.score')} icon="bar-chart-2" selected={byScore} onPress={() => setByScore(!byScore)} />
+      </Row>
       {loading && !all ? <Skeleton rows={4} /> : !list.length ? <EmptyState icon="search" title={tr('rc.none')} body={tr('rc.noneBody')} /> : (
-        <View style={{ gap: spacing.xs }}>{list.map((r) => <RecipeCard key={r.id} r={r} favorite={fav.ids.includes(r.id)} />)}</View>
+        <View style={{ gap: spacing.xs }}>
+          {list.slice(0, shown).map((r) => <RecipeCard key={r.id} r={r} favorite={fav.ids.includes(r.id)} score={scores.get(r.id)?.score} />)}
+          {list.length > shown ? <Button label={tr('rc.more', { count: list.length - shown })} variant="secondary" onPress={() => setShown(shown + 30)} testID="recipes-more" /> : null}
+        </View>
       )}
       <Text variant="caption" muted>{tr('rc.footer')}</Text>
     </Screen>

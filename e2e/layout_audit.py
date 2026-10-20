@@ -98,6 +98,7 @@ CONFIGS = [
 ]
 if QUICK:
     CONFIGS = CONFIGS[:1]
+ROUTES += [r for r in ['/meals/rankings', '/products', '/products/compare', '/sources', '/admin/products', '/admin/resources', '/admin/import-recipes'] if r not in ROUTES]  # nutrition 0–10 ans, produits, sources
 if os.environ.get('AUDIT_ONLY'):  # seulement certains écrans (séparés par des virgules)
     ROUTES = [r for r in ROUTES if r in os.environ['AUDIT_ONLY'].split(',')]
 if os.environ.get('AUDIT_CFG'):  # une configuration par processus (exécution en parallèle)

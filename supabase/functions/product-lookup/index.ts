@@ -4,6 +4,7 @@
 // POST { action: 'search', query }                 → candidats par nom ou EAN (base interne + Open Facts)
 // POST { action: 'recalls', barcode?, brand?, name? } → rappels RappelConso pour CE produit (cache product_recalls)
 // POST { action: 'recall_watch' }                  → vérifie les rappels des produits de l'historique et des favoris
+// POST { action: 'prices', barcode? | category_tag? } → prix relevés Open Prices (datés, avec magasin et lien de preuve)
 //
 // Variables : OPENFOODFACTS_USER_AGENT="ToiEtMoi/1.0 (contact@votre-domaine)" (active Open Food / Beauty / Products Facts ;
 //             OPEN_FACTS_ENABLED=false pour les couper), RAPPELCONSO_ENABLED (défaut true),
@@ -13,6 +14,7 @@ import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shar
 import { assessProduct, type ProductData, type ScanContext } from '../_shared/product-rules.ts';
 import { fromProductRow, lookupOpenFactsCached, searchOpenFactsCached, type LookupStatus, type NormalizedProduct, type OpenFactsStore } from '../_shared/open-facts.ts';
 import { fetchRecallRecords, matchRecalls, recallRow, sameGtin } from '../_shared/rappelconso.ts';
+import { normalizePrices, OPEN_PRICES_LABEL, pricesUrl } from '../_shared/open-prices.ts';
 
 // deno-lint-ignore no-explicit-any
 type Any = any;
@@ -122,6 +124,21 @@ Deno.serve(async (req) => {
       }
     }
     return json({ candidates: candidates.slice(0, 12).map(({ legacy: _l, ...c }: Any) => c), database, lookup_status: searchStatus, message: UNAVAILABLE_MESSAGE[searchStatus as LookupStatus] ?? null });
+  }
+
+  // ------------------------------------------------------------ prix relevés (Open Prices) : jamais inventés
+  if (action === 'prices') {
+    const url = pricesUrl({ barcode: body.barcode ? String(body.barcode).replace(/\D/g, '') : null, categoryTag: body.category_tag ? String(body.category_tag) : null });
+    if (!url) return json({ error: 'bad_query', message: 'Code-barres ou catégorie invalide.' }, 400);
+    if (!openFactsEnabled()) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'disabled', message: 'Open Prices n’est pas encore activé sur ce serveur (OPENFOODFACTS_USER_AGENT manquant).' });
+    if (!(await rateLimit(admin, 'openprices:read', 10, 60))) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'saturated', message: 'Trop de demandes de prix : réessayez dans une minute.' });
+    try {
+      const r = await fetch(url, { headers: { 'User-Agent': userAgent(), Accept: 'application/json' }, signal: AbortSignal.timeout(8000) });
+      if (!r.ok) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'unavailable', message: 'Open Prices ne répond pas pour le moment : aucun prix n’est affiché.' });
+      return json({ prices: normalizePrices(await r.json(), today()), source: OPEN_PRICES_LABEL, status: 'ok', checked_at: new Date().toISOString() });
+    } catch {
+      return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'unavailable', message: 'Open Prices ne répond pas pour le moment : aucun prix n’est affiché.' });
+    }
   }
 
   // ------------------------------------------------------------ rappels d'un produit précis

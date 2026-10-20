@@ -8,16 +8,22 @@ import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
 import { ensureHousehold, useActivePregnancy, useHouseholdId, useInvalidate, useRows, useTrackedChildren, useJourneyState } from './hooks';
 import { useScope } from './hooks-scope';
-import { ALL_RECIPES } from '@/content/recipes';
+import { ALL_RECIPES, DRAFT_RECIPES } from '@/content/recipes';
 import { recipeToRows, rowsToRecipes, type IngredientRow, type LinkRow, type PhotoRow, type RecipeRow, type ReviewRow, type StepRow } from '../recipes/db';
 import { ingredientsInText, stageFor, type FoodProfile, type MenuSlot, type ShoppingLine } from '../recipes/engine';
 import type { Allergen, Recipe, Texture } from '../recipes/types';
+import { bandFor, defaultBand, scoreRecipe, type AgeBand, type IngredientPrice, type RecipeScore } from '../recipes/score';
 import { pregnancyProgress } from '../domain/pregnancy';
 import { childAge } from '../domain/child';
 import { uuid } from '../uuid';
 import type { Child } from '../types';
 
-export function useRecipes(opts: { includeRetired?: boolean } = {}) {
+/** Recettes visibles : une recette retirée n'est plus proposée ; un brouillon IA de la bibliothèque reste invisible des parents. */
+export function visibleRecipes<R extends Pick<Recipe, 'status'> & { personal?: boolean }>(list: R[], opts: { includeRetired?: boolean; includeDrafts?: boolean } = {}): R[] {
+  return list.filter((r) => (opts.includeRetired || r.status !== 'retired') && (opts.includeDrafts || r.personal || r.status !== 'ai_draft'));
+}
+
+export function useRecipes(opts: { includeRetired?: boolean; includeDrafts?: boolean } = {}) {
   const recipes = useRows<RecipeRow>(['recipes'], { table: 'recipes', order: [{ col: 'title' }] }, { staleTime: 600_000 });
   const ing = useRows<IngredientRow>(['recipe_ingredients'], { table: 'recipe_ingredients' }, { staleTime: 600_000 });
   const steps = useRows<StepRow>(['recipe_steps'], { table: 'recipe_steps' }, { staleTime: 600_000 });
@@ -29,10 +35,11 @@ export function useRecipes(opts: { includeRetired?: boolean } = {}) {
     if (!recipes.data) return null;
     const list = rowsToRecipes(recipes.data, ing.data ?? [], steps.data ?? [], photos.data ?? [], links.data ?? [], reviews.data ?? []);
     // Base pas encore installée (migration non appliquée) : bibliothèque embarquée, mêmes recettes et mêmes statuts
-    const full = list.some((r) => !r.personal) ? list : [...ALL_RECIPES, ...list];
+    const full = list.some((r) => !r.personal) ? list : [...ALL_RECIPES, ...DRAFT_RECIPES, ...list];
     // Recette retirée : plus jamais proposée (seule l'administration la voit encore)
-    return opts.includeRetired ? full : full.filter((r) => r.status !== 'retired');
-  }, [recipes.data, ing.data, steps.data, photos.data, links.data, reviews.data, opts.includeRetired]);
+    // Brouillon généré par IA (bibliothèque) : invisible des parents tant qu'une personne de l'équipe ne l'a pas relu
+    return visibleRecipes(full, opts);
+  }, [recipes.data, ing.data, steps.data, photos.data, links.data, reviews.data, opts.includeRetired, opts.includeDrafts]);
   return { data, loading, error: recipes.error, rows: recipes.data ?? [], refetch: () => { void recipes.refetch(); void ing.refetch(); void steps.refetch(); } };
 }
 
@@ -229,4 +236,38 @@ export function useUpdateLibraryRecipe() {
     },
     onSuccess: () => inv('recipes', 'recipe_steps'),
   });
+}
+
+// ---------------------------------------------------------------- score nutritionnel et besoins alimentaires
+/** Tranche d'âge du score : celle de l'enfant affiché, sinon la plus jeune tranche de chaque recette. */
+export function scoreBandFor(r: Recipe, p: FoodProfile): AgeBand {
+  return (p.audience === 'baby' || p.audience === 'child') && p.ageMonths != null ? bandFor(p.ageMonths) : defaultBand(r);
+}
+export function useRecipeScores(all: Recipe[] | null, p: FoodProfile) {
+  return useMemo(() => new Map((all ?? []).map((r) => [r.id, scoreRecipe(r, scoreBandFor(r, p))])), [all, p.audience, p.ageMonths]); // eslint-disable-line react-hooks/exhaustive-deps
+}
+export type Need = 'no_milk' | 'no_gluten' | 'no_egg' | 'no_nuts' | 'iron' | 'calcium' | 'fiber';
+export const NEEDS: Need[] = ['no_milk', 'no_gluten', 'no_egg', 'no_nuts', 'iron', 'calcium', 'fiber'];
+export function meetsNeed(r: Recipe, s: RecipeScore | undefined, n: Need): boolean {
+  switch (n) {
+    case 'no_milk': return !r.allergens.includes('milk');
+    case 'no_gluten': return !r.allergens.includes('gluten');
+    case 'no_egg': return !r.allergens.includes('eggs');
+    case 'no_nuts': return !r.allergens.includes('nuts') && !r.allergens.includes('peanuts');
+    case 'iron': return (s?.parts.find((x) => x.key === 'iron')?.points ?? 0) >= 7;
+    case 'calcium': return (s?.parts.find((x) => x.key === 'calcium')?.points ?? 0) >= 7;
+    case 'fiber': return (s?.parts.find((x) => x.key === 'fiber')?.points ?? 0) >= 8;
+  }
+}
+
+/** Prix vérifiés et datés des ingrédients (Open Prices ou saisie de l'équipe) — jamais de prix inventé. */
+export interface IngredientPriceRow { ingredient_key: string; price_per_kg: number | null; price_per_unit: number | null; source: string; source_url: string | null; checked_on: string }
+export function useIngredientPrices() {
+  const q = useRows<IngredientPriceRow>(['ingredient_prices'], { table: 'ingredient_prices', order: [{ col: 'checked_on', asc: false }] }, { staleTime: 600_000 });
+  const map = useMemo(() => {
+    const m: Record<string, IngredientPrice> = {};
+    for (const p of q.data ?? []) if (!m[p.ingredient_key]) m[p.ingredient_key] = { key: p.ingredient_key, pricePerKg: p.price_per_kg == null ? null : Number(p.price_per_kg), pricePerUnit: p.price_per_unit == null ? null : Number(p.price_per_unit), source: p.source, checkedOn: p.checked_on };
+    return m;
+  }, [q.data]);
+  return { map, rows: q.data ?? [] };
 }

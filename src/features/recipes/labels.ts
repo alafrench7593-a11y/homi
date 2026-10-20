@@ -19,7 +19,7 @@ export const TAGS_FOR: Record<Audience, Tag[]> = {
   adult: ['quick', 'budget', 'vegetarian', 'vegetables', 'world', 'make_ahead', 'batch'],
 };
 export const MEALS_FOR: Record<Audience, Meal[]> = {
-  pregnancy: ['breakfast', 'lunch', 'dinner', 'snack'], baby: ['breakfast', 'lunch', 'dinner', 'snack'], child: ['breakfast', 'lunch', 'dinner', 'snack'],
-  family: ['breakfast', 'lunch', 'dinner', 'snack'], adult: ['breakfast', 'lunch', 'dinner', 'snack'],
+  pregnancy: ['breakfast', 'lunch', 'dinner', 'snack', 'dessert'], baby: ['breakfast', 'lunch', 'dinner', 'snack', 'dessert'], child: ['breakfast', 'lunch', 'dinner', 'snack', 'dessert'],
+  family: ['breakfast', 'lunch', 'dinner', 'snack', 'dessert'], adult: ['breakfast', 'lunch', 'dinner', 'snack', 'dessert'],
 };
 export const budgetLabel = (b: 1 | 2 | 3) => '€'.repeat(b);

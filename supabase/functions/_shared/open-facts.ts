@@ -57,6 +57,8 @@ export interface NormalizedProduct {
   last_modified: string | null;
   collaborative: true;
   is_demo: false;
+  /** Contenance indiquée (« 500 ml ») ; null si absente. */
+  quantity?: string | null;
 }
 
 const str = (v: unknown): string | null => (typeof v === 'string' && v.trim() ? v.trim() : null);
@@ -133,6 +135,7 @@ export function normalizeProductObject(p: Record<string, unknown>, kind: OpenFac
     data_source: OPEN_FACTS[kind].label,
     source_url: publicPageUrl(kind, code),
     data_retrieved_at: today,
+    quantity: str(p.quantity),
     last_modified: lastT,
     collaborative: true,
     is_demo: false,

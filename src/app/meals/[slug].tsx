@@ -12,7 +12,10 @@ import { EmptyState, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { RecipeArt } from '@/features/recipes/RecipeArt';
 import { allergenLabel, budgetLabel, mealLabel, stageLabel, statusLabel, textureLabel } from '@/features/recipes/labels';
-import { useCreateShoppingList, useFoodProfile, useLatestShoppingList, useRecipeFavorites, useRecipes } from '@/lib/data/hooks-recipes';
+import { scoreBandFor, useCreateShoppingList, useFoodProfile, useIngredientPrices, useLatestShoppingList, useRecipeFavorites, useRecipes } from '@/lib/data/hooks-recipes';
+import { useMyRoles } from '@/lib/data/hooks-settings';
+import { ScorePanel } from '@/features/recipes/ScorePanel';
+import { costPerPortion } from '@/lib/recipes/score';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { backend } from '@/lib/backend';
 import { useInvalidate } from '@/lib/data/hooks';
@@ -23,11 +26,15 @@ import { formatDate, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
+const ageText = (m: number) => (m < 24 ? tr('vx.ageMonths', { count: m }) : tr('vx.ageYears', { count: Math.round(m / 12) }));
+
 export default function RecipeDetail() {
   const t = useTheme();
   const toast = useToast();
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const { data: all, loading } = useRecipes();
+  const { isEditor } = useMyRoles();
+  const { data: all, loading } = useRecipes({ includeDrafts: isEditor, includeRetired: isEditor });
+  const prices = useIngredientPrices();
   const { profile } = useFoodProfile();
   const fav = useRecipeFavorites();
   const shopping = useLatestShoppingList();
@@ -62,6 +69,12 @@ export default function RecipeDetail() {
       <View testID="recipe-status"><Banner tone={r.status === 'validated' || r.status === 'reviewed' ? 'success' : 'warning'} title={r.personal ? tr('rc.personal') : statusLabel(r.status)}>{r.personal ? tr('rc.personalBody') : tr(`rc.statusBody.${r.status}` as never)}</Banner></View>
       {why.length && !r.personal ? <Banner tone="danger" title={tr('rc.notForProfile')}>{why.join(' · ')}</Banner> : null}
 
+      {!r.audiences.includes('pregnancy') ? <ScorePanel recipe={r} band={scoreBandFor(r, profile)} /> : null}
+      {(() => { const c = costPerPortion(r, prices.map); return (
+        <View testID="recipe-cost"><Text variant="small" muted>{c.cost != null && c.oldest ? tr('rc.cost.value', { cost: c.cost.toFixed(2).replace('.', ','), date: formatDate(`${c.oldest}T12:00:00`) }) : tr('rc.cost.na')}</Text>
+          {c.cost == null ? <Text variant="caption" muted>{tr('rc.cost.naBody')}</Text> : null}</View>
+      ); })()}
+      {r.minMonths != null ? <Text variant="small" muted>{tr('rc.ageRange', { from: ageText(r.minMonths), to: ageText(r.maxMonths ?? 120) })}</Text> : null}
       <Row wrap>
         <Chip label={tr('rc.prep', { m: r.prepMin })} />
         <Chip label={tr('rc.cook', { m: r.cookMin })} />

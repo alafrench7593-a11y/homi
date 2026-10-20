@@ -1,0 +1,4964 @@
+[
+  {
+    "slug": "po-papillote-cabillaud-courgettes-citron",
+    "title": "Papillotes de cabillaud aux courgettes et au citron, riz blanc",
+    "summary": "Le poisson cuit à la vapeur dans son petit paquet, que chaque enfant ouvre lui-même.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "white_fish",
+        480,
+        "g",
+        "4 filets"
+      ],
+      [
+        "zucchini",
+        2,
+        "u"
+      ],
+      [
+        "lemon",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "rice",
+        240,
+        "g",
+        "poids cru"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Faites cuire le riz dans une grande casserole d’eau selon le temps indiqué sur le paquet.",
+      "Lavez les courgettes et taillez-les en fines rondelles. Coupez le citron en rondelles fines.",
+      "Posez chaque filet de cabillaud sur une feuille de papier cuisson, après avoir vérifié du bout des doigts qu’il ne reste aucune arête. Ajoutez les courgettes, une rondelle de citron, un filet d’huile d’olive et un peu de thym.",
+      "Fermez les papillotes hermétiquement et enfournez 18 minutes.",
+      "Ouvrez une papillote pour contrôler la cuisson : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette. Sinon, prolongez de 3 à 5 minutes.",
+      "Retirez la rondelle de citron avant de servir avec le riz et émiettez le poisson pour les plus jeunes."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "family",
+      "quick"
+    ],
+    "adaptations": [
+      "Le cabillaud peut être remplacé par du lieu, du colin ou du merlu.",
+      "Laissez l’enfant presser lui-même un quartier de citron sur son assiette."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le poisson apporte des protéines, le riz un féculent et les courgettes des légumes.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-papillote-saumon-poireaux-creme",
+    "title": "Papillotes de saumon aux poireaux fondants et pommes de terre vapeur",
+    "summary": "Des poireaux doux et crémeux qui enveloppent un pavé de saumon.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "salmon",
+        480,
+        "g",
+        "4 pavés sans peau"
+      ],
+      [
+        "leek",
+        2,
+        "u"
+      ],
+      [
+        "cream",
+        4,
+        "cs"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ],
+      [
+        "potato",
+        800,
+        "g"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre, coupez-les en morceaux et faites-les cuire 20 minutes à la vapeur.",
+      "Lavez soigneusement les poireaux, émincez-les finement et faites-les fondre 8 minutes dans le beurre, à feu doux, puis ajoutez la crème.",
+      "Préchauffez le four à 200 °C. Vérifiez du bout des doigts que les pavés de saumon ne contiennent aucune arête.",
+      "Répartissez les poireaux sur quatre feuilles de papier cuisson, posez le saumon dessus et fermez les papillotes.",
+      "Enfournez 15 à 18 minutes : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette. Parsemez de ciboulette et servez avec les pommes de terre."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "family"
+    ],
+    "adaptations": [
+      "Allergie au lait : remplacez la crème et le beurre par une cuillerée d’huile d’olive.",
+      "Pour les petits, écrasez les pommes de terre avec la crème des poireaux."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le saumon est un poisson gras ; avec un poisson blanc dans la semaine, on varie les apports.",
+    "budget": 3,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-papillote-merlu-tomates-olives-semoule",
+    "title": "Papillotes de merlu à la tomate, olives et basilic, semoule",
+    "summary": "Un parfum de Méditerranée, doux et sans piquant.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "hake",
+        480,
+        "g",
+        "4 filets"
+      ],
+      [
+        "tomato",
+        3,
+        "u"
+      ],
+      [
+        "olives",
+        12,
+        "u"
+      ],
+      [
+        "basil",
+        6,
+        "u",
+        "feuilles"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "couscous",
+        240,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Lavez les tomates et coupez-les en dés ; coupez les olives en quatre (indispensable avant 4 ans).",
+      "Vérifiez du bout des doigts que les filets de merlu ne contiennent aucune arête, puis posez chacun sur une feuille de papier cuisson.",
+      "Répartissez les tomates, les olives et le basilic ciselé, arrosez d’un peu d’huile d’olive et fermez les papillotes.",
+      "Enfournez 15 à 18 minutes : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Pendant ce temps, versez la semoule dans un saladier, couvrez-la du même volume d’eau bouillante, laissez gonfler 5 minutes puis égrainez à la fourchette avec un filet d’huile."
+    ],
+    "allergens": [
+      "gluten",
+      "fish"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "quick",
+      "family"
+    ],
+    "adaptations": [
+      "Sans gluten : servez avec du riz ou du quinoa.",
+      "Si l’enfant n’aime pas les olives, laissez-les de côté : le basilic suffit à parfumer."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Un poisson blanc maigre, un féculent et des tomates cuites : un plat complet.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-papillote-truite-fenouil-orange-quinoa",
+    "title": "Papillotes de truite au fenouil et à l’orange, quinoa",
+    "summary": "Le fenouil cuit devient tendre et légèrement sucré avec l’orange.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "trout",
+        480,
+        "g",
+        "4 filets"
+      ],
+      [
+        "fennel",
+        1,
+        "u"
+      ],
+      [
+        "orange",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "quinoa",
+        200,
+        "g"
+      ],
+      [
+        "parsley",
+        1,
+        "cs",
+        "haché"
+      ]
+    ],
+    "steps": [
+      "Rincez le quinoa et faites-le cuire 15 minutes dans deux fois son volume d’eau, jusqu’à absorption.",
+      "Préchauffez le four à 200 °C. Émincez le fenouil très finement et faites-le précuire 5 minutes à l’eau bouillante pour qu’il soit bien tendre.",
+      "Vérifiez du bout des doigts que les filets de truite n’ont plus d’arêtes. Déposez-les sur du papier cuisson avec le fenouil, le jus de l’orange et un filet d’huile d’olive.",
+      "Fermez les papillotes et enfournez 15 minutes : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Parsemez de persil et servez avec le quinoa."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "family",
+      "world"
+    ],
+    "adaptations": [
+      "La truite peut être remplacée par du saumon.",
+      "Le fenouil peut être remplacé par des carottes en fines rondelles."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "La truite est un poisson gras d’eau douce ; le quinoa et le fenouil complètent l’assiette.",
+    "budget": 3,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-gratin-cabillaud-brocoli-bechamel",
+    "title": "Gratin de cabillaud et brocoli, béchamel à la muscade",
+    "summary": "Un gratin tout doux qui fait aimer le brocoli.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "white_fish",
+        400,
+        "g"
+      ],
+      [
+        "broccoli",
+        1,
+        "u",
+        "environ 500 g"
+      ],
+      [
+        "butter",
+        30,
+        "g"
+      ],
+      [
+        "flour",
+        30,
+        "g"
+      ],
+      [
+        "milk",
+        500,
+        "ml"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "emmental",
+        50,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Détaillez le brocoli en petits bouquets et faites-les cuire 6 minutes à l’eau bouillante ; égouttez.",
+      "Préparez la béchamel : faites fondre le beurre, ajoutez la farine, mélangez 1 minute, puis versez le lait petit à petit en fouettant jusqu’à épaississement. Ajoutez la muscade.",
+      "Coupez le cabillaud en gros cubes en vérifiant du bout des doigts qu’il ne reste aucune arête.",
+      "Disposez le poisson et le brocoli dans un plat, nappez de béchamel et parsemez d’emmental.",
+      "Enfournez 20 minutes, jusqu’à ce que le dessus soit doré et que le cabillaud soit cuit à cœur (chair opaque qui s’effeuille)."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "calcium",
+      "vegetables",
+      "family",
+      "picky"
+    ],
+    "adaptations": [
+      "Sans gluten : liez la béchamel à la fécule de maïs.",
+      "Avec du riz ou des pâtes pour un plat plus copieux."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Le lait et le fromage apportent du calcium, le poisson des protéines.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-gratin-coquillettes-thon-epinards",
+    "title": "Gratin de coquillettes au thon et aux épinards",
+    "summary": "Un plat du placard et du congélateur, prêt en une demi-heure.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "pasta",
+        300,
+        "g",
+        "coquillettes, poids cru"
+      ],
+      [
+        "tuna",
+        280,
+        "g",
+        "2 boîtes égouttées"
+      ],
+      [
+        "frozen_spinach",
+        300,
+        "g"
+      ],
+      [
+        "cream",
+        150,
+        "ml"
+      ],
+      [
+        "emmental",
+        60,
+        "g",
+        "râpé"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Faites cuire les pâtes selon le temps indiqué sur le paquet, en les gardant un peu fermes ; égouttez.",
+      "Faites cuire les épinards surgelés 8 minutes à feu moyen avec l’ail écrasé, jusqu’à ce que l’eau s’évapore.",
+      "Émiettez le thon en vérifiant qu’il ne reste aucune arête dure, puis mélangez-le avec les pâtes, les épinards et la crème.",
+      "Versez dans un plat, parsemez d’emmental et faites gratiner 15 minutes, jusqu’à ce que ce soit bien chaud et doré."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "budget",
+      "quick",
+      "family",
+      "vegetables",
+      "batch"
+    ],
+    "adaptations": [
+      "Sans lait : remplacez la crème par une sauce tomate et omettez le fromage.",
+      "Les pâtes complètes conviennent aussi."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines).",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Un féculent, des légumes verts et du poisson réunis dans un même plat.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-gratin-poisson-surgele-chou-fleur-comte",
+    "title": "Gratin de poisson blanc et chou-fleur au comté",
+    "summary": "Avec des filets surgelés, un gratin de semaine sans effort.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "frozen_fish",
+        400,
+        "g"
+      ],
+      [
+        "cauliflower",
+        1,
+        "u",
+        "environ 700 g"
+      ],
+      [
+        "milk",
+        400,
+        "ml"
+      ],
+      [
+        "butter",
+        25,
+        "g"
+      ],
+      [
+        "flour",
+        25,
+        "g"
+      ],
+      [
+        "comte",
+        50,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Faites décongeler les filets de poisson la veille au réfrigérateur, puis épongez-les.",
+      "Préchauffez le four à 200 °C. Détaillez le chou-fleur en bouquets et faites-les cuire 10 minutes à l’eau bouillante, jusqu’à ce qu’ils soient tendres.",
+      "Faites une sauce blanche : beurre fondu, farine, puis le lait versé en fouettant jusqu’à ce qu’elle nappe la cuillère.",
+      "Coupez le poisson en morceaux en vérifiant qu’il ne reste aucune arête. Répartissez-le avec le chou-fleur dans un plat, nappez de sauce et parsemez de comté.",
+      "Enfournez 20 à 25 minutes : le gratin doit bouillonner et le poisson être cuit à cœur, opaque et facile à effeuiller."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "protein",
+      "vegetables",
+      "budget",
+      "family"
+    ],
+    "adaptations": [
+      "Le chou-fleur peut être remplacé par du brocoli ou des poireaux.",
+      "Sans gluten : liez la sauce avec de la fécule de maïs."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Le comté et le lait apportent du calcium ; le chou-fleur, des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-parmentier-poisson-carottes",
+    "title": "Parmentier de poisson blanc aux carottes",
+    "summary": "Une couche de poisson et de carottes, une couche de purée maison.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 25,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "white_fish",
+        450,
+        "g"
+      ],
+      [
+        "carrot",
+        3,
+        "u"
+      ],
+      [
+        "potato",
+        900,
+        "g"
+      ],
+      [
+        "milk",
+        200,
+        "ml"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "parsley",
+        2,
+        "cs",
+        "haché"
+      ],
+      [
+        "emmental",
+        40,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre et les carottes. Faites cuire les pommes de terre 20 minutes à l’eau, et les carottes en rondelles dans la même casserole.",
+      "Pendant ce temps, faites pocher le cabillaud 8 minutes dans de l’eau frémissante : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette. Égouttez.",
+      "Émiettez le poisson avec les doigts en retirant soigneusement toutes les arêtes. Écrasez les carottes à la fourchette et mélangez-les au poisson et au persil.",
+      "Écrasez les pommes de terre avec le lait chaud et le beurre pour obtenir une purée.",
+      "Préchauffez le four à 200 °C. Étalez le poisson aux carottes dans un plat, recouvrez de purée, parsemez d’emmental et faites gratiner 15 minutes."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "family",
+      "picky",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Le poisson peut être remplacé par du merlu ou du lieu.",
+      "Avec des épinards à la place des carottes pour changer de couleur."
+    ],
+    "storage": "Réfrigérateur : 24 h. Se congèle cru ou cuit (si le poisson n’avait jamais été congelé) pour 2 mois ; réchauffez jusqu’au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Un plat complet : poisson, légumes et féculent.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-parmentier-saumon-patate-douce-poireaux",
+    "title": "Parmentier de saumon et poireaux, purée de patate douce",
+    "summary": "Une purée orange et douce sur un fond de saumon fondant.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 25,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "salmon",
+        400,
+        "g"
+      ],
+      [
+        "leek",
+        2,
+        "u"
+      ],
+      [
+        "sweet_potato",
+        600,
+        "g"
+      ],
+      [
+        "potato",
+        300,
+        "g"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "milk",
+        100,
+        "ml"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Épluchez les patates douces et les pommes de terre, coupez-les en cubes et faites-les cuire 20 minutes à l’eau.",
+      "Lavez et émincez les poireaux ; faites-les fondre 10 minutes dans la moitié du beurre.",
+      "Coupez le saumon en dés en retirant la peau et en vérifiant qu’il ne reste aucune arête ; ajoutez-le aux poireaux et faites cuire 5 minutes en remuant, jusqu’à ce qu’il soit opaque.",
+      "Écrasez les légumes avec le lait chaud, le reste du beurre et la muscade.",
+      "Préchauffez le four à 200 °C. Étalez le saumon aux poireaux dans un plat, couvrez de purée et enfournez 15 minutes, jusqu’à ce que ce soit chaud au centre."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "family",
+      "freezer"
+    ],
+    "adaptations": [
+      "Sans lait : utilisez de l’huile d’olive et un peu d’eau de cuisson pour la purée."
+    ],
+    "storage": "Réfrigérateur : 24 h. Se congèle 2 mois si le saumon était frais.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le saumon apporte des protéines ; la patate douce et les poireaux, des légumes.",
+    "budget": 3,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-brandade-douce-cabillaud",
+    "title": "Brandade douce de cabillaud frais à la purée",
+    "summary": "Une version tendre et sans sel ajouté de la brandade, avec du poisson frais.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "white_fish",
+        400,
+        "g"
+      ],
+      [
+        "potato",
+        800,
+        "g"
+      ],
+      [
+        "milk",
+        200,
+        "ml"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "parsley",
+        2,
+        "cs",
+        "haché"
+      ],
+      [
+        "lettuce",
+        1,
+        "u",
+        "petite"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre et faites-les cuire 20 minutes à l’eau.",
+      "Faites chauffer le lait avec l’ail pelé, plongez-y le cabillaud et laissez pocher 8 minutes à petits frémissements : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Égouttez le poisson (gardez le lait) et émiettez-le en retirant toutes les arêtes.",
+      "Écrasez les pommes de terre avec l’huile d’olive et un peu du lait de cuisson, puis incorporez le poisson émietté et le persil.",
+      "Préchauffez le four à 200 °C, versez la brandade dans un plat et faites dorer 10 minutes. Servez avec la salade verte."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "family",
+      "picky"
+    ],
+    "adaptations": [
+      "Retirez l’ail si l’enfant n’en aime pas le goût.",
+      "Sans lait : pochez le poisson dans de l’eau et montez la purée à l’huile d’olive."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le poisson et les pommes de terre forment un plat complet ; la salade apporte de la fraîcheur.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-croquettes-thon-pomme-de-terre",
+    "title": "Croquettes de thon et pomme de terre au four",
+    "summary": "Des croquettes croustillantes, faciles à manger avec les doigts.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 25,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "tuna",
+        280,
+        "g",
+        "2 boîtes égouttées"
+      ],
+      [
+        "potato",
+        600,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "breadcrumbs",
+        60,
+        "g"
+      ],
+      [
+        "parsley",
+        2,
+        "cs",
+        "haché"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ],
+      [
+        "carrot",
+        3,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre et faites-les cuire 20 minutes à l’eau ; écrasez-les.",
+      "Préchauffez le four à 200 °C. Mélangez la purée avec le thon émietté (vérifiez qu’il ne reste aucune arête dure), un œuf et le persil.",
+      "Formez une douzaine de croquettes. Passez-les dans l’autre œuf battu puis dans la chapelure.",
+      "Posez-les sur une plaque huilée, badigeonnez-les d’huile et enfournez 20 minutes en les retournant à mi-cuisson, jusqu’à ce qu’elles soient dorées et que l’œuf soit cuit.",
+      "Servez avec les carottes cuites à la vapeur 15 minutes, jusqu’à ce qu’elles soient bien tendres."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "fish"
+    ],
+    "tags": [
+      "finger",
+      "picky",
+      "budget",
+      "protein",
+      "freezer"
+    ],
+    "adaptations": [
+      "Sans gluten : chapelure de pétales de maïs nature écrasés.",
+      "Avant 4 ans : carottes bien cuites et tendres, coupées en bâtonnets."
+    ],
+    "storage": "Réfrigérateur : 24 h. Les croquettes cuites se congèlent 1 mois ; réchauffez au four.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines)."
+    ],
+    "nutrition": "Le thon et les œufs apportent des protéines, les pommes de terre un féculent.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-galettes-saumon-quinoa-ciboulette",
+    "title": "Galettes de saumon et quinoa à la ciboulette",
+    "summary": "De petites galettes moelleuses à poêler, pour les petites mains.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "salmon",
+        300,
+        "g"
+      ],
+      [
+        "quinoa",
+        150,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "chives",
+        2,
+        "cs",
+        "ciselée"
+      ],
+      [
+        "flour",
+        2,
+        "cs"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "cucumber",
+        1,
+        "u"
+      ],
+      [
+        "yogurt",
+        125,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le quinoa rincé 15 minutes dans deux fois son volume d’eau ; laissez tiédir.",
+      "Faites cuire le saumon 10 minutes à la vapeur : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette. Émiettez-le en retirant la peau et toutes les arêtes.",
+      "Mélangez le quinoa, le saumon, les œufs battus, la farine et la ciboulette. Formez 12 petites galettes.",
+      "Faites-les cuire à la poêle dans l’huile d’olive, 4 minutes par face à feu moyen, jusqu’à ce qu’elles soient dorées et fermes au centre.",
+      "Servez avec le concombre coupé en dés et le yaourt en sauce."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "protein",
+      "family",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Sans gluten : remplacez la farine de blé par de la farine de riz.",
+      "Le saumon peut être remplacé par de la truite ou du thon en conserve."
+    ],
+    "storage": "Réfrigérateur : 24 h ; bonnes froides dans la boîte à repas, avec un pain de glace.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le quinoa et le saumon apportent des protéines ; le yaourt, du calcium.",
+    "budget": 3,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-poisson-pane-petales-mais-haricots-verts",
+    "title": "Poisson pané aux pétales de maïs et haricots verts",
+    "summary": "Une panure croustillante sans friture, aux pétales de maïs écrasés.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "white_fish",
+        450,
+        "g"
+      ],
+      [
+        "corn_flakes_plain",
+        80,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "flour",
+        3,
+        "cs"
+      ],
+      [
+        "paprika",
+        1,
+        "pincee"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ],
+      [
+        "green_beans",
+        500,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 210 °C. Écrasez les pétales de maïs dans un sac avec un rouleau à pâtisserie et mélangez avec le paprika.",
+      "Coupez le cabillaud en bâtonnets en vérifiant du bout des doigts qu’il ne reste aucune arête.",
+      "Passez chaque bâtonnet dans la farine, puis dans l’œuf battu, puis dans les pétales de maïs.",
+      "Posez sur une plaque huilée, arrosez d’un filet d’huile et enfournez 15 minutes, jusqu’à ce que la panure soit dorée et la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Pendant ce temps, faites cuire les haricots verts 12 minutes à la vapeur. Servez avec des quartiers de citron."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "fish"
+    ],
+    "tags": [
+      "picky",
+      "finger",
+      "protein",
+      "vegetables",
+      "quick"
+    ],
+    "adaptations": [
+      "Sans gluten : utilisez de la fécule de maïs à la place de la farine de blé.",
+      "Avec des frites de pommes de terre au four pour un repas de fête."
+    ],
+    "storage": "À manger aussitôt pour garder le croustillant ; 24 h au réfrigérateur.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le poisson apporte des protéines ; les haricots verts complètent l’assiette.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-batonnets-merlu-panure-sesame-petits-pois",
+    "title": "Bâtonnets de merlu en panure au sésame, petits pois",
+    "summary": "Une panure au sésame qui change de la chapelure seule.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "hake",
+        450,
+        "g"
+      ],
+      [
+        "breadcrumbs",
+        50,
+        "g"
+      ],
+      [
+        "sesame_seeds",
+        2,
+        "cs"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "flour",
+        3,
+        "cs"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "frozen_peas",
+        400,
+        "g"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 210 °C. Mélangez la chapelure et les graines de sésame.",
+      "Coupez le merlu en bâtonnets en retirant toutes les arêtes (passez les doigts sur la chair).",
+      "Farinez les bâtonnets, trempez-les dans l’œuf battu, puis roulez-les dans le mélange au sésame.",
+      "Disposez-les sur une plaque huilée et enfournez 15 minutes : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Faites cuire les petits pois 10 minutes à l’eau, égouttez-les et ajoutez le beurre ; écrasez-les légèrement pour les plus jeunes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "fish",
+      "milk",
+      "sesame"
+    ],
+    "tags": [
+      "finger",
+      "picky",
+      "protein",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Allergie au sésame : supprimez les graines et doublez la chapelure.",
+      "Le merlu peut être remplacé par du colin ou du lieu."
+    ],
+    "storage": "À manger aussitôt ; 24 h au réfrigérateur.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le poisson et les petits pois apportent des protéines ; les petits pois aussi des fibres.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-nuggets-poisson-polenta-parmesan",
+    "title": "Nuggets de poisson en croûte de polenta et parmesan",
+    "summary": "Une panure dorée, sans gluten, pour des filets de poisson surgelés.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "frozen_fish",
+        450,
+        "g"
+      ],
+      [
+        "polenta",
+        60,
+        "g"
+      ],
+      [
+        "parmesan",
+        30,
+        "g",
+        "râpé"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "carrot",
+        4,
+        "u"
+      ],
+      [
+        "herbs",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Décongelez les filets de poisson la veille au réfrigérateur et épongez-les bien.",
+      "Préchauffez le four à 210 °C. Mélangez la polenta, le parmesan et les herbes de Provence.",
+      "Coupez le poisson en morceaux en vérifiant qu’il ne reste aucune arête, trempez-les dans l’œuf battu puis dans le mélange de polenta.",
+      "Épluchez les carottes et coupez-les en bâtonnets ; mélangez-les avec la moitié de l’huile et étalez-les sur une plaque avec les nuggets arrosés du reste d’huile.",
+      "Enfournez 20 minutes en retournant à mi-cuisson : les carottes doivent être tendres et le poisson cuit à cœur, opaque et qui s’effeuille."
+    ],
+    "allergens": [
+      "eggs",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "picky",
+      "protein",
+      "family"
+    ],
+    "adaptations": [
+      "Sans lait : remplacez le parmesan par un peu plus de polenta.",
+      "Avant 4 ans : vérifiez que les carottes sont bien tendres sous la dent."
+    ],
+    "storage": "À manger aussitôt ; 24 h au réfrigérateur, réchauffez au four.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Le poisson apporte des protéines ; les carottes rôties, des légumes.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-boulettes-sardines-sauce-tomate-semoule",
+    "title": "Boulettes de sardines à la sauce tomate et semoule",
+    "summary": "Les sardines en boîte deviennent de tendres boulettes en sauce.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "sardines",
+        230,
+        "g",
+        "2 boîtes égouttées"
+      ],
+      [
+        "bread",
+        2,
+        "u",
+        "tranches"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "parsley",
+        2,
+        "cs",
+        "haché"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "couscous",
+        240,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Ouvrez les sardines, retirez l’arête centrale et vérifiez qu’il ne reste aucune arête dure ; écrasez-les à la fourchette.",
+      "Émiettez le pain de mie et mélangez-le avec les sardines, l’œuf et le persil. Formez une vingtaine de petites boulettes.",
+      "Faites revenir l’oignon émincé dans l’huile 5 minutes, ajoutez les tomates concassées et laissez mijoter 10 minutes.",
+      "Déposez les boulettes dans la sauce, couvrez et laissez cuire 12 minutes à feu doux : l’œuf doit être cuit et les boulettes fermes à cœur.",
+      "Versez la semoule dans un saladier, couvrez du même volume d’eau bouillante, laissez gonfler 5 minutes et égrainez. Servez avec les boulettes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "budget",
+      "protein",
+      "world",
+      "family",
+      "freezer"
+    ],
+    "adaptations": [
+      "Avant 4 ans : coupez les boulettes en deux ou en quatre.",
+      "Sans gluten : remplacez le pain par des flocons de pomme de terre et la semoule par du riz."
+    ],
+    "storage": "Réfrigérateur : 24 h. Les boulettes en sauce se congèlent 1 mois.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines).",
+      "Avant 4 ans : boulettes coupées en morceaux."
+    ],
+    "nutrition": "Les sardines en conserve apportent des protéines et des oméga-3.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-pates-saumon-petits-pois-creme-citron",
+    "title": "Pâtes au saumon, petits pois et crème citronnée",
+    "summary": "Un plat de pâtes rose et vert, prêt en 20 minutes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "pasta",
+        300,
+        "g",
+        "penne, poids cru"
+      ],
+      [
+        "salmon",
+        300,
+        "g"
+      ],
+      [
+        "frozen_peas",
+        200,
+        "g"
+      ],
+      [
+        "cream",
+        120,
+        "ml"
+      ],
+      [
+        "lemon",
+        1,
+        "u",
+        "zeste et 1 cs de jus"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les pâtes selon le temps indiqué sur le paquet ; ajoutez les petits pois dans la même eau 5 minutes avant la fin.",
+      "Retirez la peau du saumon, vérifiez du bout des doigts qu’il ne reste aucune arête et coupez-le en dés.",
+      "Faites chauffer la crème dans une sauteuse, ajoutez le saumon et laissez cuire 5 minutes à feu doux en remuant : les dés doivent être opaques jusqu’au centre.",
+      "Ajoutez le zeste et le jus de citron, puis les pâtes et les petits pois égouttés. Mélangez et parsemez de ciboulette."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "protein",
+      "family",
+      "picky"
+    ],
+    "adaptations": [
+      "Sans lait : remplacez la crème par un peu d’eau de cuisson et d’huile d’olive.",
+      "Le saumon frais peut être remplacé par de la truite."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Un féculent, du poisson et des légumes dans une même assiette.",
+    "budget": 3,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-coquillettes-thon-sauce-tomate-parmesan",
+    "title": "Coquillettes à la sauce tomate au thon et parmesan",
+    "summary": "La sauce du placard : tomate, thon et herbes, prête pendant la cuisson des pâtes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "pasta",
+        300,
+        "g",
+        "coquillettes, poids cru"
+      ],
+      [
+        "tuna",
+        140,
+        "g",
+        "1 boîte égouttée"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "herbs",
+        1,
+        "pincee"
+      ],
+      [
+        "parmesan",
+        30,
+        "g",
+        "râpé"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Émincez finement l’oignon et râpez la courgette.",
+      "Faites revenir l’oignon et la courgette 5 minutes dans l’huile d’olive, ajoutez les tomates concassées et les herbes, puis laissez mijoter 15 minutes.",
+      "Pendant ce temps, faites cuire les pâtes selon le temps indiqué sur le paquet.",
+      "Émiettez le thon en vérifiant qu’il ne reste aucune arête dure, ajoutez-le à la sauce et laissez chauffer 2 minutes.",
+      "Mélangez avec les pâtes égouttées et servez avec le parmesan."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "budget",
+      "quick",
+      "family",
+      "vegetables",
+      "batch"
+    ],
+    "adaptations": [
+      "La courgette râpée disparaît dans la sauce : pratique pour les enfants qui trient les légumes.",
+      "Sans lait : sans parmesan."
+    ],
+    "storage": "Réfrigérateur : 48 h pour la sauce seule, 24 h une fois mélangée aux pâtes.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines).",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Le thon en conserve est une source de protéines pratique et économique.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-spaghetti-sardines-citron-chapelure",
+    "title": "Spaghetti aux sardines, citron et chapelure dorée",
+    "summary": "Inspiré des pâtes siciliennes : des sardines fondantes et une chapelure croustillante.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "pasta",
+        300,
+        "g",
+        "spaghetti, poids cru"
+      ],
+      [
+        "sardines",
+        230,
+        "g",
+        "2 boîtes égouttées"
+      ],
+      [
+        "lemon",
+        1,
+        "u"
+      ],
+      [
+        "breadcrumbs",
+        30,
+        "g"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "parsley",
+        3,
+        "cs",
+        "haché"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "fennel",
+        1,
+        "u",
+        "petit"
+      ]
+    ],
+    "steps": [
+      "Émincez très finement le fenouil et faites-le cuire 10 minutes à la poêle dans une cuillerée d’huile avec l’ail écrasé, à couvert, jusqu’à ce qu’il soit fondant.",
+      "Faites dorer la chapelure 2 minutes à sec dans une autre poêle, en remuant.",
+      "Faites cuire les pâtes selon le temps indiqué sur le paquet. Pour les plus jeunes, cassez les spaghetti en trois avant cuisson.",
+      "Retirez l’arête centrale des sardines, vérifiez qu’il ne reste aucune arête dure, et émiettez-les dans le fenouil avec le zeste du citron. Faites chauffer 2 minutes.",
+      "Mélangez avec les pâtes, le reste d’huile, un peu de jus de citron et le persil. Parsemez de chapelure au moment de servir."
+    ],
+    "allergens": [
+      "gluten",
+      "fish"
+    ],
+    "tags": [
+      "budget",
+      "world",
+      "family",
+      "protein"
+    ],
+    "adaptations": [
+      "Sans gluten : pâtes et chapelure sans gluten.",
+      "Le fenouil peut être remplacé par un poireau."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines)."
+    ],
+    "nutrition": "Les sardines apportent des protéines et des oméga-3 ; les pâtes, un féculent.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-lasagnes-saumon-epinards-ricotta",
+    "title": "Lasagnes au saumon, épinards et ricotta",
+    "summary": "Des lasagnes blanches et vertes, moelleuses et sans viande.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 25,
+    "cookMin": 55,
+    "ingredients": [
+      [
+        "lasagna_sheets",
+        250,
+        "g"
+      ],
+      [
+        "salmon",
+        400,
+        "g"
+      ],
+      [
+        "frozen_spinach",
+        450,
+        "g"
+      ],
+      [
+        "ricotta",
+        250,
+        "g"
+      ],
+      [
+        "milk",
+        400,
+        "ml"
+      ],
+      [
+        "butter",
+        25,
+        "g"
+      ],
+      [
+        "flour",
+        25,
+        "g"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les épinards 10 minutes à feu moyen jusqu’à évaporation de l’eau, puis mélangez-les avec la ricotta.",
+      "Coupez le saumon en fines lamelles en retirant la peau et en vérifiant qu’il ne reste aucune arête.",
+      "Préparez une béchamel : beurre fondu, farine, puis le lait en fouettant jusqu’à épaississement ; ajoutez la muscade.",
+      "Préchauffez le four à 190 °C. Dans un plat, alternez béchamel, feuilles de lasagnes, épinards à la ricotta et saumon ; terminez par feuilles et béchamel.",
+      "Enfournez 35 à 40 minutes : les pâtes doivent être tendres sous la pointe d’un couteau et le saumon cuit à cœur. Laissez reposer 5 minutes avant de couper."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "batch",
+      "freezer",
+      "calcium",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Sans gluten : feuilles de lasagnes sans gluten et béchamel liée à la fécule de maïs.",
+      "Le saumon peut être remplacé par du poisson blanc."
+    ],
+    "storage": "Réfrigérateur : 48 h. Se congèle en parts 2 mois si le saumon était frais.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "La ricotta et le lait apportent du calcium ; le saumon, des protéines.",
+    "budget": 3,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-risotto-crevettes-petits-pois",
+    "title": "Risotto crémeux aux crevettes et petits pois",
+    "summary": "Un risotto doux et onctueux, à remuer avec les enfants.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "round_rice",
+        250,
+        "g"
+      ],
+      [
+        "shrimp",
+        200,
+        "g"
+      ],
+      [
+        "frozen_peas",
+        200,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "vegetable_stock",
+        1000,
+        "ml"
+      ],
+      [
+        "parmesan",
+        30,
+        "g",
+        "râpé"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites chauffer le bouillon et gardez-le frémissant. Émincez finement l’oignon.",
+      "Faites revenir l’oignon 3 minutes dans l’huile, ajoutez le riz et remuez 1 minute jusqu’à ce qu’il devienne nacré.",
+      "Versez le bouillon louche par louche en remuant, en attendant qu’il soit absorbé avant d’en ajouter. Comptez 18 minutes en tout ; ajoutez les petits pois à mi-cuisson.",
+      "Coupez les crevettes en morceaux (en petits morceaux avant 4 ans), ajoutez-les les 3 dernières minutes pour qu’elles soient bien chaudes à cœur.",
+      "Hors du feu, incorporez le parmesan et servez aussitôt."
+    ],
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "milk",
+      "celery"
+    ],
+    "tags": [
+      "family",
+      "protein",
+      "picky"
+    ],
+    "adaptations": [
+      "Allergie aux crustacés : remplacez les crevettes par des dés de cabillaud cuits 5 minutes dans le risotto.",
+      "Sans lait : sans parmesan, avec un filet d’huile d’olive."
+    ],
+    "storage": "À manger aussitôt ; 24 h au réfrigérateur, réchauffez avec un peu d’eau jusqu’à ce que ce soit bien chaud. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Avant 4 ans : coupez les crevettes en petits morceaux (elles sont fermes et peuvent bloquer la gorge).",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Les crevettes apportent des protéines ; les petits pois, des fibres.",
+    "budget": 3,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-riz-cantonais-crevettes-oeuf",
+    "title": "Riz sauté aux crevettes, œuf et petits légumes",
+    "summary": "Une façon de cuisiner le riz de la veille, à la poêle.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "rice",
+        250,
+        "g",
+        "poids cru, cuit la veille"
+      ],
+      [
+        "shrimp",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "peas",
+        150,
+        "g"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ],
+      [
+        "soy_sauce",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz la veille selon le temps indiqué, refroidissez-le rapidement et gardez-le au réfrigérateur.",
+      "Épluchez les carottes, coupez-les en petits dés et faites-les cuire 8 minutes à l’eau avec les petits pois.",
+      "Battez les œufs et faites-les cuire en omelette fine dans une cuillerée d’huile, jusqu’à ce qu’ils soient bien pris ; coupez-la en lanières.",
+      "Faites sauter le riz 5 minutes dans le reste d’huile à feu vif, ajoutez les légumes, les crevettes coupées en morceaux et l’omelette. Remuez jusqu’à ce que tout soit très chaud.",
+      "Assaisonnez avec la sauce soja, en petite quantité."
+    ],
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "eggs",
+      "soy"
+    ],
+    "tags": [
+      "world",
+      "family",
+      "protein",
+      "make_ahead"
+    ],
+    "adaptations": [
+      "Allergie aux crustacés : remplacez les crevettes par des dés de poulet cuits à cœur.",
+      "Sans soja ni gluten : omettez la sauce soja et ajoutez un peu de ciboulette."
+    ],
+    "storage": "Le riz cuit se garde 24 h au réfrigérateur, refroidi rapidement ; réchauffez une seule fois, à cœur. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Avant 4 ans : coupez les crevettes en petits morceaux (elles sont fermes et peuvent bloquer la gorge)."
+    ],
+    "nutrition": "Un plat complet avec un féculent, des œufs, des crevettes et des légumes.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-paella-douce-poisson-crevettes",
+    "title": "Paella douce au poisson blanc et aux crevettes",
+    "summary": "Un riz jaune au curcuma, sans piment, à partager en famille.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "rice",
+        300,
+        "g",
+        "poids cru"
+      ],
+      [
+        "white_fish",
+        300,
+        "g"
+      ],
+      [
+        "shrimp",
+        150,
+        "g"
+      ],
+      [
+        "bell_pepper",
+        1,
+        "u"
+      ],
+      [
+        "frozen_peas",
+        150,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "turmeric",
+        1,
+        "cc"
+      ],
+      [
+        "canned_tomato",
+        200,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Émincez l’oignon et coupez le poivron en petits dés.",
+      "Faites-les revenir 5 minutes dans l’huile d’olive, ajoutez le riz, le curcuma et les tomates concassées, puis 700 ml d’eau chaude.",
+      "Laissez cuire 15 minutes à feu doux, sans remuer, en ajoutant les petits pois à mi-cuisson.",
+      "Coupez le cabillaud en cubes en retirant toutes les arêtes, enfoncez-les dans le riz avec les crevettes coupées en morceaux, couvrez et laissez cuire encore 6 minutes : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Laissez reposer 5 minutes hors du feu avant de servir."
+    ],
+    "allergens": [
+      "crustaceans",
+      "fish"
+    ],
+    "tags": [
+      "world",
+      "family",
+      "protein",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Allergie aux crustacés : doublez la quantité de poisson.",
+      "Pour les plus grands, ajoutez quelques moules cuites à part."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 4 ans : coupez les crevettes en petits morceaux (elles sont fermes et peuvent bloquer la gorge)."
+    ],
+    "nutrition": "Le riz, le poisson, les crevettes et les légumes forment un plat complet.",
+    "budget": 3,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-curry-doux-cabillaud-coco-carottes",
+    "title": "Curry doux de cabillaud au lait de coco et carottes",
+    "summary": "Une sauce jaune parfumée, sans piquant, avec du riz.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "white_fish",
+        450,
+        "g"
+      ],
+      [
+        "coconut_milk",
+        200,
+        "ml"
+      ],
+      [
+        "curry",
+        1,
+        "cc"
+      ],
+      [
+        "carrot",
+        3,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ],
+      [
+        "rice",
+        240,
+        "g",
+        "poids cru"
+      ],
+      [
+        "coriander",
+        1,
+        "cs",
+        "facultatif",
+        true
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz selon le temps indiqué sur le paquet.",
+      "Émincez l’oignon, épluchez les carottes et coupez-les en fines rondelles.",
+      "Faites revenir l’oignon 3 minutes dans l’huile, ajoutez le curry et les carottes, puis le lait de coco et 100 ml d’eau. Laissez mijoter 12 minutes, jusqu’à ce que les carottes soient tendres.",
+      "Coupez le cabillaud en gros cubes en vérifiant qu’il ne reste aucune arête, plongez-les dans la sauce et laissez cuire 6 minutes à petits frémissements : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Parsemez de coriandre si vous le souhaitez et servez avec le riz."
+    ],
+    "allergens": [
+      "fish",
+      "celery",
+      "mustard"
+    ],
+    "tags": [
+      "world",
+      "protein",
+      "family",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Le curry doux peut contenir de la moutarde et du céleri : vérifiez l’étiquette en cas d’allergie.",
+      "Pour les plus petits, émiettez le poisson dans la sauce."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le poisson apporte des protéines, les carottes et le riz complètent l’assiette.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-nouilles-saumon-brocoli-sesame",
+    "title": "Nouilles de riz sautées au saumon et brocoli",
+    "summary": "Un wok doux, avec des nouilles faciles à attraper à la fourchette.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "rice_noodles",
+        200,
+        "g"
+      ],
+      [
+        "salmon",
+        300,
+        "g"
+      ],
+      [
+        "broccoli",
+        1,
+        "u",
+        "petit"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "ginger",
+        1,
+        "cc",
+        "râpé"
+      ],
+      [
+        "soy_sauce",
+        1,
+        "cc"
+      ],
+      [
+        "sesame_seeds",
+        1,
+        "cs"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites tremper ou cuire les nouilles de riz selon le temps indiqué sur le paquet, puis rincez-les et coupez-les aux ciseaux en tronçons.",
+      "Détaillez le brocoli en petits bouquets et faites-le cuire 5 minutes à l’eau bouillante. Épluchez les carottes et coupez-les en julienne.",
+      "Coupez le saumon en dés en retirant la peau et toutes les arêtes. Faites-le sauter 4 minutes dans l’huile avec le gingembre, jusqu’à ce qu’il soit opaque à cœur ; réservez.",
+      "Faites sauter les carottes 4 minutes, ajoutez le brocoli, les nouilles et la sauce soja, puis remettez le saumon.",
+      "Parsemez de graines de sésame grillées et servez."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "soy",
+      "sesame"
+    ],
+    "tags": [
+      "world",
+      "protein",
+      "vegetables",
+      "quick"
+    ],
+    "adaptations": [
+      "Sans soja ni sésame : remplacez la sauce soja par un trait de citron et omettez les graines.",
+      "Avant 4 ans : carottes bien tendres, coupées très finement."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le saumon apporte des protéines ; le brocoli et les carottes, des légumes.",
+    "budget": 3,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-moules-creme-frites-four",
+    "title": "Moules à la crème et frites de pommes de terre au four",
+    "summary": "Le grand classique, en version douce pour les enfants.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 25,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "mussels",
+        1500,
+        "g"
+      ],
+      [
+        "shallot",
+        2,
+        "u"
+      ],
+      [
+        "cream",
+        100,
+        "ml"
+      ],
+      [
+        "parsley",
+        2,
+        "cs",
+        "haché"
+      ],
+      [
+        "potato",
+        1000,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 210 °C. Épluchez les pommes de terre, coupez-les en frites, mélangez-les avec l’huile d’olive et enfournez 35 minutes en les retournant à mi-cuisson.",
+      "Grattez et rincez les moules ; jetez celles qui sont cassées ou qui restent ouvertes quand on les tapote.",
+      "Faites suer les échalotes émincées 3 minutes dans une grande cocotte, ajoutez les moules, couvrez et faites cuire 6 à 8 minutes à feu vif en secouant la cocotte.",
+      "Les moules sont cuites quand elles sont toutes ouvertes et que leur chair est ferme et chaude : jetez celles qui restent fermées.",
+      "Ajoutez la crème et le persil, mélangez et servez avec les frites. Décoquillez les moules pour les plus jeunes."
+    ],
+    "allergens": [
+      "milk",
+      "molluscs"
+    ],
+    "tags": [
+      "family",
+      "protein",
+      "iron"
+    ],
+    "adaptations": [
+      "Sans lait : supprimez la crème et ajoutez un peu de jus de citron.",
+      "Avant 4 ans : moules décoquillées et coupées en morceaux."
+    ],
+    "storage": "À manger aussitôt : les moules ne se gardent pas d’un repas à l’autre.",
+    "precautions": [
+      "Moules : jetez celles qui restent ouvertes avant cuisson ou fermées après cuisson ; avant 4 ans, décoquillez-les et coupez-les en morceaux."
+    ],
+    "nutrition": "Les moules apportent des protéines et du fer.",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-moules-tomate-coquillettes",
+    "title": "Moules décoquillées à la tomate et coquillettes",
+    "summary": "Les moules sans coquilles, mélangées aux pâtes dans une sauce tomate.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 36,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "mussels",
+        1000,
+        "g"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "basil",
+        6,
+        "u",
+        "feuilles"
+      ],
+      [
+        "pasta",
+        300,
+        "g",
+        "coquillettes, poids cru"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Grattez et rincez les moules, en éliminant celles qui sont cassées ou ouvertes.",
+      "Faites-les cuire 6 minutes dans une cocotte couverte, à feu vif, jusqu’à ce qu’elles soient toutes ouvertes. Jetez celles qui restent fermées et décoquillez les autres.",
+      "Faites revenir l’ail écrasé 1 minute dans l’huile, ajoutez les tomates concassées et un peu du jus des moules filtré, puis laissez mijoter 10 minutes.",
+      "Faites cuire les pâtes selon le temps indiqué sur le paquet.",
+      "Ajoutez les moules à la sauce, réchauffez 2 minutes jusqu’à ce que tout soit bien chaud, puis mélangez avec les pâtes et le basilic."
+    ],
+    "allergens": [
+      "gluten",
+      "molluscs"
+    ],
+    "tags": [
+      "family",
+      "iron",
+      "budget",
+      "protein"
+    ],
+    "adaptations": [
+      "Avant 4 ans : coupez les moules en petits morceaux.",
+      "Le jus des moules est salé : inutile d’ajouter du sel."
+    ],
+    "storage": "À manger aussitôt.",
+    "precautions": [
+      "Moules : jetez celles qui restent ouvertes avant cuisson ou fermées après cuisson ; avant 4 ans, décoquillez-les et coupez-les en morceaux."
+    ],
+    "nutrition": "Les moules apportent des protéines et du fer ; les pâtes, un féculent.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-soupe-poisson-legumes-vermicelles",
+    "title": "Soupe de poisson aux légumes et vermicelles",
+    "summary": "Un bouillon clair avec des morceaux de poisson tendres et des petites pâtes.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "white_fish",
+        300,
+        "g"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "leek",
+        1,
+        "u"
+      ],
+      [
+        "potato",
+        2,
+        "u"
+      ],
+      [
+        "vermicelli",
+        60,
+        "g"
+      ],
+      [
+        "tomato",
+        2,
+        "u"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Épluchez les carottes et les pommes de terre, lavez le poireau ; coupez le tout en petits dés. Coupez les tomates en morceaux.",
+      "Faites revenir le poireau 3 minutes dans l’huile, ajoutez les autres légumes, la feuille de laurier et 1,2 litre d’eau. Laissez cuire 20 minutes à frémissements.",
+      "Coupez le cabillaud en petits cubes en vérifiant qu’il ne reste aucune arête.",
+      "Ajoutez les vermicelles et le poisson, et laissez cuire 5 minutes : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette. Retirez le laurier avant de servir."
+    ],
+    "allergens": [
+      "gluten",
+      "fish"
+    ],
+    "tags": [
+      "family",
+      "protein",
+      "vegetables",
+      "budget"
+    ],
+    "adaptations": [
+      "Sans gluten : remplacez les vermicelles par du riz.",
+      "Pour les plus jeunes, mixez une partie des légumes pour épaissir."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Une soupe complète avec poisson, légumes et féculents.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-veloute-potiron-crevettes",
+    "title": "Velouté de potiron et crevettes au lait de coco",
+    "summary": "Un velouté orange avec des morceaux de crevettes, un peu exotique.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "pumpkin",
+        800,
+        "g"
+      ],
+      [
+        "shrimp",
+        150,
+        "g"
+      ],
+      [
+        "coconut_milk",
+        150,
+        "ml"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "potato",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ]
+    ],
+    "steps": [
+      "Épluchez le potiron et la pomme de terre et coupez-les en cubes ; émincez l’oignon.",
+      "Faites revenir l’oignon 3 minutes dans l’huile, ajoutez les légumes et couvrez d’eau. Laissez cuire 20 minutes, jusqu’à ce qu’ils soient tendres.",
+      "Mixez finement avec le lait de coco.",
+      "Coupez les crevettes en petits morceaux et faites-les chauffer 3 minutes dans le velouté frémissant.",
+      "Servez parsemé de ciboulette."
+    ],
+    "allergens": [
+      "crustaceans"
+    ],
+    "tags": [
+      "vegetables",
+      "family",
+      "world"
+    ],
+    "adaptations": [
+      "Allergie aux crustacés : servez avec des dés de poisson blanc pochés 5 minutes dans le velouté.",
+      "Le lait de coco peut être remplacé par de la crème."
+    ],
+    "storage": "Le velouté seul se garde 48 h et se congèle ; ajoutez les crevettes au moment de servir.",
+    "precautions": [
+      "Avant 4 ans : coupez les crevettes en petits morceaux (elles sont fermes et peuvent bloquer la gorge)."
+    ],
+    "nutrition": "Le potiron apporte des fibres ; les crevettes, des protéines.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-chaudree-poisson-mais-pommes-de-terre",
+    "title": "Chaudrée de poisson au maïs et aux pommes de terre",
+    "summary": "Une soupe-repas crémeuse inspirée de la chowder nord-américaine.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "frozen_fish",
+        400,
+        "g"
+      ],
+      [
+        "potato",
+        500,
+        "g"
+      ],
+      [
+        "corn",
+        140,
+        "g"
+      ],
+      [
+        "milk",
+        500,
+        "ml"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "carrot",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Faites décongeler le poisson la veille au réfrigérateur.",
+      "Émincez l’oignon, épluchez les pommes de terre et la carotte et coupez-les en petits dés.",
+      "Faites fondre l’oignon 3 minutes dans le beurre, ajoutez les légumes, le thym, le lait et 300 ml d’eau. Laissez cuire 18 minutes à frémissements, sans faire bouillir fort.",
+      "Écrasez grossièrement quelques morceaux de pomme de terre pour épaissir. Ajoutez le maïs égoutté.",
+      "Coupez le poisson en cubes en vérifiant qu’il ne reste aucune arête et faites-le cuire 6 minutes dans la soupe : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "world",
+      "family",
+      "calcium",
+      "protein"
+    ],
+    "adaptations": [
+      "Sans lait : utilisez une boisson végétale nature enrichie en calcium."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 4 ans : écrasez les grains de maïs (risque d’étouffement)."
+    ],
+    "nutrition": "Le lait apporte du calcium ; le poisson et les pommes de terre font de cette soupe un plat complet.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-salade-riz-thon-concombre-oeuf",
+    "title": "Salade de riz au thon, concombre et œuf dur",
+    "summary": "Une salade complète pour les beaux jours et la boîte à repas.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "rice",
+        200,
+        "g",
+        "poids cru"
+      ],
+      [
+        "tuna",
+        140,
+        "g",
+        "1 boîte égouttée"
+      ],
+      [
+        "cucumber",
+        1,
+        "u"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "cherry_tomato",
+        12,
+        "u"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz selon le temps indiqué sur le paquet, rincez-le à l’eau froide et égouttez-le.",
+      "Faites cuire les œufs 10 minutes dans l’eau bouillante pour qu’ils soient durs, refroidissez-les et écalez-les.",
+      "Coupez le concombre en petits dés et les tomates cerises en quatre (indispensable avant 4 ans).",
+      "Émiettez le thon en vérifiant qu’il ne reste aucune arête dure. Mélangez riz, thon, concombre et tomates ; assaisonnez d’huile d’olive et de jus de citron.",
+      "Ajoutez les œufs coupés en quartiers au moment de servir."
+    ],
+    "allergens": [
+      "eggs",
+      "fish"
+    ],
+    "tags": [
+      "lunchbox",
+      "make_ahead",
+      "protein",
+      "budget"
+    ],
+    "adaptations": [
+      "Sans poisson : remplacez le thon par des pois chiches.",
+      "Le riz peut être remplacé par du boulgour."
+    ],
+    "storage": "24 h au réfrigérateur ; dans une boîte isotherme avec un pain de glace pour l’école. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines).",
+      "Gardez au frais jusqu’au repas (chaîne du froid)."
+    ],
+    "nutrition": "Du riz, deux sources de protéines et des légumes crus.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-salade-pommes-de-terre-maquereau-haricots",
+    "title": "Salade tiède de pommes de terre, maquereau et haricots verts",
+    "summary": "Une salade de saison avec du maquereau frais cuit au four.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "mackerel",
+        400,
+        "g",
+        "filets"
+      ],
+      [
+        "potato",
+        600,
+        "g"
+      ],
+      [
+        "green_beans",
+        300,
+        "g"
+      ],
+      [
+        "mustard",
+        1,
+        "cc"
+      ],
+      [
+        "rapeseed_oil",
+        3,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les pommes de terre 20 minutes à l’eau, puis coupez-les en rondelles. Faites cuire les haricots verts 12 minutes à la vapeur.",
+      "Préchauffez le four à 200 °C. Posez les filets de maquereau sur une plaque et enfournez 10 minutes : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Retirez la peau et effeuillez le maquereau en passant les doigts sur chaque morceau pour enlever toutes les arêtes.",
+      "Préparez la vinaigrette : moutarde, jus de citron et huile de colza.",
+      "Mélangez délicatement pommes de terre, haricots verts et maquereau, arrosez de vinaigrette et parsemez de ciboulette."
+    ],
+    "allergens": [
+      "fish",
+      "mustard"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "family"
+    ],
+    "adaptations": [
+      "Sans moutarde : vinaigrette au citron seul.",
+      "Le maquereau peut être remplacé par des sardines en conserve."
+    ],
+    "storage": "24 h au réfrigérateur ; servez tiède ou froide.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le maquereau est un poisson gras ; les haricots verts apportent des fibres.",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-salade-quinoa-saumon-avocat-concombre",
+    "title": "Salade de quinoa au saumon, avocat et concombre",
+    "summary": "Une salade fraîche aux couleurs douces, avec du saumon cuit la veille.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "quinoa",
+        200,
+        "g"
+      ],
+      [
+        "salmon",
+        300,
+        "g"
+      ],
+      [
+        "avocado",
+        1,
+        "u"
+      ],
+      [
+        "cucumber",
+        1,
+        "u"
+      ],
+      [
+        "lemon",
+        1,
+        "u",
+        "jus"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "mint",
+        6,
+        "u",
+        "feuilles"
+      ]
+    ],
+    "steps": [
+      "Rincez le quinoa et faites-le cuire 15 minutes dans deux fois son volume d’eau ; laissez refroidir.",
+      "Faites cuire le saumon 10 minutes à la vapeur : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette. Laissez refroidir, retirez la peau et émiettez-le en enlevant toutes les arêtes.",
+      "Coupez le concombre et l’avocat en petits dés ; arrosez l’avocat de jus de citron pour qu’il ne noircisse pas.",
+      "Mélangez quinoa, saumon, concombre et avocat avec l’huile d’olive, le reste du jus de citron et la menthe ciselée."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunchbox",
+      "protein",
+      "make_ahead",
+      "family"
+    ],
+    "adaptations": [
+      "La menthe peut être remplacée par de la ciboulette ou du basilic.",
+      "Le saumon frais peut être remplacé par du thon en conserve."
+    ],
+    "storage": "24 h au réfrigérateur (ajoutez l’avocat au dernier moment) ; avec un pain de glace pour l’école.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Gardez au frais jusqu’au repas (chaîne du froid)."
+    ],
+    "nutrition": "Le quinoa et le saumon apportent des protéines ; l’avocat, des lipides insaturés.",
+    "budget": 3,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-salade-boulgour-crevettes-menthe",
+    "title": "Salade de boulgour aux crevettes, concombre et menthe",
+    "summary": "Une salade façon taboulé, avec des crevettes en morceaux.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "bulgur",
+        200,
+        "g"
+      ],
+      [
+        "shrimp",
+        200,
+        "g"
+      ],
+      [
+        "cucumber",
+        1,
+        "u"
+      ],
+      [
+        "tomato",
+        2,
+        "u"
+      ],
+      [
+        "mint",
+        8,
+        "u",
+        "feuilles"
+      ],
+      [
+        "lemon",
+        1,
+        "u",
+        "jus"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le boulgour 10 minutes dans deux fois son volume d’eau, puis laissez-le refroidir en l’égrainant à la fourchette.",
+      "Coupez le concombre et les tomates en petits dés.",
+      "Coupez les crevettes en morceaux (en tout petits morceaux avant 4 ans).",
+      "Mélangez le boulgour, les légumes, les crevettes et la menthe ciselée ; assaisonnez de jus de citron et d’huile d’olive."
+    ],
+    "allergens": [
+      "gluten",
+      "crustaceans"
+    ],
+    "tags": [
+      "lunchbox",
+      "quick",
+      "make_ahead",
+      "world"
+    ],
+    "adaptations": [
+      "Sans gluten : utilisez du quinoa.",
+      "Allergie aux crustacés : remplacez par du thon en conserve ou des pois chiches."
+    ],
+    "storage": "24 h au réfrigérateur ; avec un pain de glace dans la boîte à repas.",
+    "precautions": [
+      "Gardez au frais jusqu’au repas (chaîne du froid).",
+      "Avant 4 ans : coupez les crevettes en petits morceaux (elles sont fermes et peuvent bloquer la gorge)."
+    ],
+    "nutrition": "Le boulgour est un féculent riche en fibres ; les crevettes apportent des protéines.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-salade-lentilles-sardines-carottes",
+    "title": "Salade de lentilles aux sardines et carottes râpées",
+    "summary": "Des lentilles vertes, des sardines émiettées et une vinaigrette douce.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "green_lentils",
+        200,
+        "g"
+      ],
+      [
+        "sardines",
+        230,
+        "g",
+        "2 boîtes égouttées"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "shallot",
+        1,
+        "u"
+      ],
+      [
+        "rapeseed_oil",
+        3,
+        "cs"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "parsley",
+        2,
+        "cs",
+        "haché"
+      ]
+    ],
+    "steps": [
+      "Rincez les lentilles et faites-les cuire 25 minutes dans de l’eau froide portée à frémissements, jusqu’à ce qu’elles soient tendres. Égouttez et laissez tiédir.",
+      "Épluchez les carottes et râpez-les finement (indispensable avant 4 ans).",
+      "Retirez l’arête centrale des sardines, vérifiez qu’il ne reste aucune arête dure et émiettez-les.",
+      "Émincez très finement l’échalote et mélangez-la avec l’huile de colza et le jus de citron.",
+      "Mélangez lentilles, carottes, sardines et persil avec la vinaigrette."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "iron",
+      "fiber",
+      "budget",
+      "protein",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Sans poisson : remplacez les sardines par des dés d’œuf dur.",
+      "Supprimez l’échalote si l’enfant la trouve trop forte."
+    ],
+    "storage": "48 h au réfrigérateur.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines)."
+    ],
+    "nutrition": "Les lentilles apportent des fibres et du fer, les sardines des protéines et des oméga-3.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-wraps-thon-fromage-frais-crudites",
+    "title": "Wraps au thon, fromage frais et crudités râpées",
+    "summary": "Des roulés à préparer sans cuisson pour un déjeuner rapide.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "minMonths": 30,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "tortilla",
+        4,
+        "u"
+      ],
+      [
+        "tuna",
+        140,
+        "g",
+        "1 boîte égouttée"
+      ],
+      [
+        "cream_cheese",
+        100,
+        "g"
+      ],
+      [
+        "lettuce",
+        4,
+        "u",
+        "feuilles"
+      ],
+      [
+        "carrot",
+        1,
+        "u"
+      ],
+      [
+        "corn",
+        70,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Émiettez le thon en vérifiant qu’il ne reste aucune arête dure et mélangez-le avec le fromage frais.",
+      "Épluchez la carotte et râpez-la finement (indispensable avant 4 ans). Égouttez le maïs. Lavez la salade et ciselez-la.",
+      "Étalez le mélange au thon sur chaque galette, ajoutez la carotte, le maïs et la salade.",
+      "Roulez serré, coupez en deux ou en tronçons pour les plus jeunes."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "lunchbox",
+      "finger",
+      "picky"
+    ],
+    "adaptations": [
+      "Sans gluten : galettes de maïs ou de riz.",
+      "Avant 4 ans : coupez les wraps en petites rondelles et surveillez le repas."
+    ],
+    "storage": "24 h au réfrigérateur, bien filmés ; avec un pain de glace dans la boîte à repas.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines).",
+      "Gardez au frais jusqu’au repas (chaîne du froid).",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement.",
+      "Avant 4 ans : écrasez les grains de maïs (risque d’étouffement)."
+    ],
+    "nutrition": "Une galette de blé, du thon et des crudités : un repas froid complet.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-pizza-thon-poivron-mozzarella",
+    "title": "Pizza maison au thon, poivron et mozzarella",
+    "summary": "Une pizza du vendredi soir, garnie par les enfants.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "pizza_dough",
+        1,
+        "u",
+        "rouleau"
+      ],
+      [
+        "canned_tomato",
+        200,
+        "g"
+      ],
+      [
+        "tuna",
+        140,
+        "g",
+        "1 boîte égouttée"
+      ],
+      [
+        "bell_pepper",
+        1,
+        "u"
+      ],
+      [
+        "mozzarella",
+        125,
+        "g"
+      ],
+      [
+        "herbs",
+        1,
+        "pincee"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 220 °C. Étalez la pâte sur une plaque recouverte de papier cuisson.",
+      "Étalez les tomates concassées mélangées aux herbes de Provence en laissant un bord libre.",
+      "Coupez le poivron en fines lamelles. Émiettez le thon en vérifiant qu’il ne reste aucune arête dure.",
+      "Laissez les enfants répartir le thon, le poivron et la mozzarella coupée en dés. Arrosez d’un filet d’huile d’olive.",
+      "Enfournez 15 à 18 minutes, jusqu’à ce que la pâte soit dorée et croustillante dessous."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "picky",
+      "budget"
+    ],
+    "adaptations": [
+      "Sans lait : sans mozzarella, avec quelques olives coupées en quatre.",
+      "Ajoutez des champignons émincés pour plus de légumes."
+    ],
+    "storage": "Réfrigérateur : 24 h ; réchauffez au four pour garder le croustillant.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines).",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Avec une salade verte et un fruit, le repas est équilibré.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-quiche-saumon-poireaux-emmental",
+    "title": "Quiche au saumon frais et aux poireaux",
+    "summary": "Une quiche à servir tiède avec une salade, ou froide en pique-nique.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "shortcrust",
+        1,
+        "u",
+        "rouleau"
+      ],
+      [
+        "salmon",
+        250,
+        "g"
+      ],
+      [
+        "leek",
+        2,
+        "u"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "cream",
+        200,
+        "ml"
+      ],
+      [
+        "emmental",
+        50,
+        "g",
+        "râpé"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 190 °C. Étalez la pâte brisée dans un moule et piquez le fond.",
+      "Lavez et émincez les poireaux ; faites-les fondre 10 minutes dans l’huile d’olive.",
+      "Coupez le saumon en dés en retirant la peau et en vérifiant qu’il ne reste aucune arête.",
+      "Battez les œufs avec la crème, l’emmental et la muscade.",
+      "Répartissez les poireaux et le saumon sur la pâte, versez l’appareil et enfournez 35 à 40 minutes, jusqu’à ce que le centre soit pris et le saumon cuit à cœur."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "make_ahead",
+      "family",
+      "lunchbox",
+      "protein"
+    ],
+    "adaptations": [
+      "Le saumon peut être remplacé par du thon en conserve émietté.",
+      "Sans lait : pâte sans beurre et crème végétale, sans fromage."
+    ],
+    "storage": "Réfrigérateur : 48 h ; se congèle en parts.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Les œufs et le saumon apportent des protéines ; les poireaux, des fibres.",
+    "budget": 3,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-tarte-feuilletee-thon-tomates-moutarde",
+    "title": "Tarte feuilletée au thon, tomates et moutarde douce",
+    "summary": "Une tarte fine et rapide, croustillante dès la sortie du four.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "puff_pastry",
+        1,
+        "u",
+        "rouleau"
+      ],
+      [
+        "tuna",
+        140,
+        "g",
+        "1 boîte égouttée"
+      ],
+      [
+        "tomato",
+        3,
+        "u"
+      ],
+      [
+        "mustard",
+        1,
+        "cs"
+      ],
+      [
+        "fromage_blanc",
+        100,
+        "g"
+      ],
+      [
+        "herbs",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Déroulez la pâte feuilletée sur une plaque et piquez-la à la fourchette.",
+      "Mélangez la moutarde avec le fromage blanc et étalez sur la pâte.",
+      "Émiettez le thon en vérifiant qu’il ne reste aucune arête dure et répartissez-le.",
+      "Lavez les tomates, coupez-les en fines rondelles et disposez-les dessus ; parsemez d’herbes de Provence.",
+      "Enfournez 25 minutes, jusqu’à ce que la pâte soit bien dorée et croustillante."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk",
+      "mustard"
+    ],
+    "tags": [
+      "family",
+      "budget",
+      "quick"
+    ],
+    "adaptations": [
+      "Sans moutarde : étalez seulement le fromage blanc avec un peu de basilic.",
+      "Servez avec une salade verte."
+    ],
+    "storage": "Réfrigérateur : 24 h ; se mange tiède ou froide.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines)."
+    ],
+    "nutrition": "Avec une salade et un laitage, la tarte s’intègre dans un repas équilibré.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-muffins-sales-thon-courgette",
+    "title": "Muffins salés au thon et à la courgette",
+    "summary": "De petits gâteaux salés pour un repas froid ou un pique-nique.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 22,
+    "ingredients": [
+      [
+        "flour",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "milk",
+        100,
+        "ml"
+      ],
+      [
+        "olive_oil",
+        60,
+        "ml"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "tuna",
+        140,
+        "g",
+        "1 boîte égouttée"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "emmental",
+        50,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Râpez la courgette et pressez-la dans un torchon pour retirer l’eau.",
+      "Fouettez les œufs avec le lait et l’huile d’olive. Ajoutez la farine mélangée à la levure.",
+      "Incorporez le thon émietté (vérifiez qu’il ne reste aucune arête dure), la courgette et l’emmental.",
+      "Répartissez dans 12 moules à muffins et enfournez 22 minutes, jusqu’à ce qu’une lame plantée au centre ressorte sèche (œuf cuit)."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "lunchbox",
+      "finger",
+      "make_ahead",
+      "freezer",
+      "picky"
+    ],
+    "adaptations": [
+      "La courgette peut être remplacée par une carotte râpée.",
+      "Sans lait : remplacez le lait par de l’eau et omettez le fromage."
+    ],
+    "storage": "48 h au réfrigérateur ; se congèlent 1 mois.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines).",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Avec des crudités et un fruit, les muffins composent un repas froid complet.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-galettes-sarrasin-saumon-epinards",
+    "title": "Galettes de sarrasin au saumon et épinards à la crème",
+    "summary": "Des galettes bretonnes garnies d’une fondue d’épinards et de saumon cuit.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "buckwheat_flour",
+        200,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "salmon",
+        250,
+        "g"
+      ],
+      [
+        "spinach",
+        400,
+        "g"
+      ],
+      [
+        "cream",
+        3,
+        "cs"
+      ],
+      [
+        "butter",
+        15,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Mélangez la farine de sarrasin, l’œuf et 450 ml d’eau pour obtenir une pâte fluide ; laissez reposer 30 minutes si possible.",
+      "Faites cuire les épinards 8 minutes à la poêle jusqu’à ce que l’eau s’évapore, puis ajoutez la crème.",
+      "Coupez le saumon en dés en retirant la peau et toutes les arêtes, ajoutez-le aux épinards et faites cuire 5 minutes à feu doux, jusqu’à ce qu’il soit opaque à cœur.",
+      "Faites cuire les galettes dans une poêle beurrée, 2 minutes par face.",
+      "Garnissez chaque galette d’épinards au saumon, repliez les bords et servez."
+    ],
+    "allergens": [
+      "eggs",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "iron",
+      "protein",
+      "family",
+      "vegetables"
+    ],
+    "adaptations": [
+      "La farine de sarrasin peut contenir des traces de blé : vérifiez l’étiquette en cas d’allergie.",
+      "Sans lait : huile à la place du beurre et sans crème."
+    ],
+    "storage": "Les galettes se gardent 48 h au réfrigérateur ; la garniture, 24 h.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le sarrasin et les épinards apportent des fibres ; le saumon, des protéines.",
+    "budget": 3,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-truite-amandes-haricots-verts-pommes-de-terre",
+    "title": "Truite à la poudre d’amande, haricots verts et pommes de terre",
+    "summary": "La truite aux amandes revisitée, avec de la poudre pour les petits.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "trout",
+        480,
+        "g",
+        "4 filets"
+      ],
+      [
+        "almond_powder",
+        40,
+        "g"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "green_beans",
+        400,
+        "g"
+      ],
+      [
+        "potato",
+        600,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les pommes de terre 20 minutes à l’eau et les haricots verts 12 minutes à la vapeur.",
+      "Vérifiez du bout des doigts que les filets de truite n’ont plus d’arêtes, puis passez le côté chair dans la poudre d’amande.",
+      "Faites fondre le beurre dans une poêle et faites cuire les filets 3 à 4 minutes de chaque côté, à feu moyen : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Arrosez de jus de citron et servez avec les légumes."
+    ],
+    "allergens": [
+      "fish",
+      "milk",
+      "nuts"
+    ],
+    "tags": [
+      "protein",
+      "family",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Allergie aux fruits à coque : remplacez la poudre d’amande par de la farine ou de la chapelure.",
+      "Avant 4 ans : jamais d’amandes entières ou effilées, seulement la poudre."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "La truite apporte des protéines et des oméga-3 ; les légumes complètent l’assiette.",
+    "budget": 3,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-maquereau-moutarde-carottes-semoule",
+    "title": "Maquereau rôti à la moutarde douce, carottes au cumin et semoule",
+    "summary": "Le maquereau, moelleux et doux, sous une fine couche de moutarde.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "mackerel",
+        450,
+        "g",
+        "filets"
+      ],
+      [
+        "mustard",
+        2,
+        "cc"
+      ],
+      [
+        "carrot",
+        5,
+        "u"
+      ],
+      [
+        "cumin",
+        1,
+        "pincee"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "couscous",
+        200,
+        "g"
+      ],
+      [
+        "orange",
+        1,
+        "u",
+        "jus"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Épluchez les carottes, coupez-les en bâtonnets, mélangez-les avec l’huile d’olive et le cumin et enfournez 25 minutes.",
+      "Vérifiez les filets de maquereau du bout des doigts et retirez toutes les arêtes. Badigeonnez la chair de moutarde.",
+      "Ajoutez les filets sur la plaque des carottes pour les 10 dernières minutes : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Versez la semoule dans un saladier, couvrez du même volume d’eau bouillante mélangée au jus d’orange, laissez gonfler 5 minutes et égrainez."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "mustard"
+    ],
+    "tags": [
+      "protein",
+      "budget",
+      "vegetables",
+      "world"
+    ],
+    "adaptations": [
+      "Sans moutarde : badigeonnez simplement d’un peu de citron.",
+      "Sans gluten : remplacez la semoule par du riz."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le maquereau est un poisson gras riche en oméga-3.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-tajine-merlu-carottes-pois-chiches",
+    "title": "Tajine doux de merlu, carottes et pois chiches",
+    "summary": "Un plat mijoté parfumé au ras-el-hanout, sans piment.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "hake",
+        450,
+        "g"
+      ],
+      [
+        "carrot",
+        3,
+        "u"
+      ],
+      [
+        "chickpeas",
+        240,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "ras_el_hanout",
+        1,
+        "cc"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "coriander",
+        1,
+        "cs",
+        "facultatif",
+        true
+      ],
+      [
+        "couscous",
+        200,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Émincez l’oignon, épluchez les carottes et coupez-les en rondelles.",
+      "Faites revenir l’oignon 3 minutes dans l’huile, ajoutez le ras-el-hanout, les carottes, les tomates concassées et 200 ml d’eau. Laissez mijoter 20 minutes.",
+      "Ajoutez les pois chiches rincés. Coupez le merlu en gros morceaux en retirant toutes les arêtes et déposez-les sur les légumes.",
+      "Couvrez et laissez cuire 8 minutes à feu doux : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Préparez la semoule : couvrez-la du même volume d’eau bouillante, laissez gonfler 5 minutes et égrainez. Parsemez le tajine de coriandre."
+    ],
+    "allergens": [
+      "gluten",
+      "fish"
+    ],
+    "tags": [
+      "world",
+      "fiber",
+      "protein",
+      "family"
+    ],
+    "adaptations": [
+      "Avant 4 ans : écrasez légèrement les pois chiches.",
+      "Sans gluten : servez avec du riz ou du quinoa."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 4 ans : pois chiches écrasés pour éviter qu’ils ne bloquent la gorge."
+    ],
+    "nutrition": "Les pois chiches apportent des fibres et le merlu des protéines.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-gnocchis-saumon-courgettes-basilic",
+    "title": "Gnocchis poêlés au saumon, courgettes et fromage frais",
+    "summary": "Des gnocchis dorés, une sauce fondante et des dés de saumon.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "gnocchi",
+        500,
+        "g"
+      ],
+      [
+        "salmon",
+        300,
+        "g"
+      ],
+      [
+        "zucchini",
+        2,
+        "u"
+      ],
+      [
+        "cream_cheese",
+        80,
+        "g"
+      ],
+      [
+        "basil",
+        6,
+        "u",
+        "feuilles"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Coupez les courgettes en petits dés et faites-les revenir 8 minutes dans une cuillerée d’huile.",
+      "Coupez le saumon en dés en retirant la peau et en vérifiant qu’il ne reste aucune arête ; ajoutez-le aux courgettes et faites cuire 5 minutes, jusqu’à ce qu’il soit opaque à cœur.",
+      "Dans une autre poêle, faites dorer les gnocchis 6 minutes dans le reste d’huile.",
+      "Ajoutez le fromage frais et un peu d’eau aux courgettes pour faire une sauce, puis mélangez avec les gnocchis et le basilic."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "protein",
+      "family",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Avant 4 ans : coupez les gnocchis en deux.",
+      "Le saumon peut être remplacé par du thon en conserve."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 4 ans : gnocchis coupés en deux.",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Les gnocchis apportent un féculent ; le saumon, des protéines.",
+    "budget": 3,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-frittata-thon-pommes-de-terre-petits-pois",
+    "title": "Frittata au thon, pommes de terre et petits pois",
+    "summary": "Une grosse omelette garnie, à couper en parts.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "egg",
+        6,
+        "u"
+      ],
+      [
+        "tuna",
+        140,
+        "g",
+        "1 boîte égouttée"
+      ],
+      [
+        "potato",
+        400,
+        "g"
+      ],
+      [
+        "frozen_peas",
+        150,
+        "g"
+      ],
+      [
+        "parmesan",
+        30,
+        "g",
+        "râpé"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre et coupez-les en petits cubes. Faites-les cuire 10 minutes à l’eau avec les petits pois.",
+      "Battez les œufs avec le parmesan. Ajoutez le thon émietté en vérifiant qu’il ne reste aucune arête dure.",
+      "Faites chauffer l’huile dans une poêle allant au four, ajoutez les légumes égouttés puis les œufs.",
+      "Laissez cuire 8 minutes à feu doux, puis passez 5 minutes sous le gril du four, jusqu’à ce que l’omelette soit prise à cœur."
+    ],
+    "allergens": [
+      "eggs",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "budget",
+      "quick",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Sans lait : sans parmesan.",
+      "Ajoutez des épinards ou des courgettes selon la saison."
+    ],
+    "storage": "Réfrigérateur : 24 h ; se mange chaude ou froide.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines).",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Les œufs et le thon apportent des protéines ; les pommes de terre, un féculent.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-croque-thon-emmental-salade",
+    "title": "Croque-monsieur au thon et à l’emmental, salade verte",
+    "summary": "La version poisson du croque-monsieur, dorée au four.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "bread",
+        8,
+        "u",
+        "tranches"
+      ],
+      [
+        "tuna",
+        140,
+        "g",
+        "1 boîte égouttée"
+      ],
+      [
+        "fromage_blanc",
+        80,
+        "g"
+      ],
+      [
+        "emmental",
+        80,
+        "g",
+        "râpé"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ],
+      [
+        "lettuce",
+        1,
+        "u",
+        "petite"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C.",
+      "Émiettez le thon en vérifiant qu’il ne reste aucune arête dure et mélangez-le avec le fromage blanc et la ciboulette.",
+      "Tartinez quatre tranches de pain avec le mélange, parsemez de la moitié de l’emmental, couvrez d’une autre tranche et parsemez du reste de fromage.",
+      "Enfournez 12 minutes, jusqu’à ce que le dessus soit doré et le fromage fondu.",
+      "Servez avec la salade lavée et assaisonnée d’huile de colza."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "picky",
+      "budget",
+      "calcium"
+    ],
+    "adaptations": [
+      "Sans gluten : pain sans gluten.",
+      "Pour les plus jeunes, coupez le croque en petits carrés."
+    ],
+    "storage": "À manger aussitôt.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines).",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Le fromage apporte du calcium ; la salade complète l’assiette.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-polenta-cremeuse-cabillaud-sauce-tomate",
+    "title": "Polenta crémeuse et cabillaud à la sauce tomate",
+    "summary": "Une polenta douce au parmesan, avec du poisson mijoté à la tomate.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "polenta",
+        200,
+        "g"
+      ],
+      [
+        "milk",
+        400,
+        "ml"
+      ],
+      [
+        "parmesan",
+        30,
+        "g",
+        "râpé"
+      ],
+      [
+        "white_fish",
+        450,
+        "g"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "basil",
+        6,
+        "u",
+        "feuilles"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites revenir l’ail écrasé dans l’huile 1 minute, ajoutez les tomates concassées et laissez mijoter 10 minutes.",
+      "Coupez le cabillaud en gros morceaux en vérifiant qu’il ne reste aucune arête, déposez-les dans la sauce, couvrez et laissez cuire 8 minutes : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Pendant ce temps, portez le lait et 400 ml d’eau à frémissements, versez la polenta en pluie en fouettant et laissez cuire 5 minutes en remuant.",
+      "Ajoutez le parmesan à la polenta et servez avec le poisson et le basilic ciselé."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "calcium",
+      "protein",
+      "world"
+    ],
+    "adaptations": [
+      "Sans lait : faites cuire la polenta dans de l’eau seulement, avec un filet d’huile d’olive."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "La polenta est un féculent sans gluten ; le lait et le parmesan apportent du calcium.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-poisson-epices-douces-frites-patate-douce-yaourt",
+    "title": "Poisson aux épices douces, frites de patate douce et sauce yaourt",
+    "summary": "Des frites orange au four et un poisson parfumé au paprika et au cumin.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "frozen_fish",
+        450,
+        "g"
+      ],
+      [
+        "sweet_potato",
+        800,
+        "g"
+      ],
+      [
+        "paprika",
+        1,
+        "cc"
+      ],
+      [
+        "cumin",
+        1,
+        "pincee"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "yogurt",
+        125,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ]
+    ],
+    "steps": [
+      "Décongelez les filets de poisson la veille au réfrigérateur et épongez-les.",
+      "Préchauffez le four à 210 °C. Épluchez les patates douces, coupez-les en frites, mélangez-les avec 2 cuillerées d’huile et enfournez 30 minutes.",
+      "Vérifiez qu’il ne reste aucune arête dans le poisson, badigeonnez-le du reste d’huile mélangée au paprika et au cumin.",
+      "Ajoutez le poisson sur la plaque pour les 12 dernières minutes : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette.",
+      "Mélangez le yaourt, le jus de citron et la ciboulette pour la sauce."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "picky",
+      "protein",
+      "family",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Sans lait : remplacez le yaourt par une sauce à l’avocat écrasé et au citron."
+    ],
+    "storage": "À manger aussitôt ; 24 h au réfrigérateur.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "La patate douce apporte des fibres ; le poisson, des protéines.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "po-crevettes-sautees-riz-ananas",
+    "title": "Riz aux crevettes, ananas et poivron",
+    "summary": "Un plat sucré-salé coloré, inspiré de la cuisine thaïe, sans piment.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "rice",
+        240,
+        "g",
+        "poids cru"
+      ],
+      [
+        "shrimp",
+        250,
+        "g"
+      ],
+      [
+        "pineapple",
+        200,
+        "g",
+        "frais ou au naturel"
+      ],
+      [
+        "bell_pepper",
+        1,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ],
+      [
+        "coconut_milk",
+        100,
+        "ml"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz selon le temps indiqué sur le paquet.",
+      "Émincez l’oignon, coupez le poivron et l’ananas en petits dés.",
+      "Faites revenir l’oignon et le poivron 6 minutes dans l’huile, ajoutez l’ananas et le lait de coco et laissez cuire 3 minutes.",
+      "Ajoutez les crevettes coupées en morceaux et faites chauffer 3 minutes, jusqu’à ce qu’elles soient bien chaudes à cœur.",
+      "Mélangez avec le riz et servez."
+    ],
+    "allergens": [
+      "crustaceans"
+    ],
+    "tags": [
+      "world",
+      "quick",
+      "family"
+    ],
+    "adaptations": [
+      "Allergie aux crustacés : remplacez les crevettes par des dés de poulet cuits à cœur.",
+      "Le riz peut être remplacé par des nouilles de riz."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Avant 4 ans : coupez les crevettes en petits morceaux (elles sont fermes et peuvent bloquer la gorge)."
+    ],
+    "nutrition": "Les crevettes apportent des protéines, l’ananas et le poivron de la couleur et des fibres.",
+    "budget": 3,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "po-rillettes-sardines-pain-complet-crudites",
+    "title": "Rillettes de sardines au fromage frais, pain complet et crudités",
+    "summary": "Un repas froid sans cuisson, à tartiner soi-même.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 30,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "sardines",
+        230,
+        "g",
+        "2 boîtes égouttées"
+      ],
+      [
+        "cream_cheese",
+        100,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "cs",
+        "jus"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ],
+      [
+        "wholemeal_bread",
+        8,
+        "u",
+        "tranches"
+      ],
+      [
+        "cucumber",
+        1,
+        "u"
+      ],
+      [
+        "radish",
+        6,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Ouvrez les sardines, retirez l’arête centrale et vérifiez du bout des doigts qu’il ne reste aucune arête dure.",
+      "Écrasez-les à la fourchette avec le fromage frais, le jus de citron et la ciboulette.",
+      "Coupez le concombre en bâtonnets. Râpez finement les radis (indispensable avant 4 ans) ou coupez-les en fines rondelles pour les plus grands.",
+      "Servez les rillettes avec le pain complet et les crudités, et laissez les enfants tartiner."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "budget",
+      "picky",
+      "lunchbox",
+      "calcium"
+    ],
+    "adaptations": [
+      "Sans gluten : galettes de riz soufflé à la place du pain.",
+      "Le fromage frais peut être remplacé par un avocat écrasé."
+    ],
+    "storage": "Les rillettes se gardent 24 h au réfrigérateur, bien couvertes.",
+    "precautions": [
+      "Poisson en conserve : vérifiez du bout des doigts qu’il ne reste aucune arête dure (retirez l’arête centrale des sardines).",
+      "Gardez au frais jusqu’au repas (chaîne du froid).",
+      "Avant 5 ans : fromages au lait pasteurisé ou pâtes pressées cuites uniquement."
+    ],
+    "nutrition": "Le pain complet apporte des fibres, les sardines des protéines et des oméga-3.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "santefr_3_6",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "po-merlu-poele-puree-butternut-riz-complet",
+    "title": "Merlu poêlé, purée de butternut et riz complet",
+    "summary": "Une assiette d’automne douce, avec une purée orange veloutée.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 24,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "hake",
+        450,
+        "g"
+      ],
+      [
+        "butternut",
+        800,
+        "g"
+      ],
+      [
+        "brown_rice",
+        200,
+        "g"
+      ],
+      [
+        "butter",
+        15,
+        "g"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz complet selon le temps indiqué sur le paquet (environ 30 minutes).",
+      "Épluchez la courge butternut, coupez-la en cubes et faites-la cuire 20 minutes à la vapeur ; écrasez-la avec le beurre et la muscade.",
+      "Vérifiez du bout des doigts que les filets de merlu ne contiennent aucune arête.",
+      "Faites-les cuire à la poêle dans l’huile d’olive, 3 à 4 minutes de chaque côté : la chair doit être opaque jusqu’au centre et s’effeuiller facilement à la fourchette."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "vegetables",
+      "protein",
+      "family",
+      "fiber"
+    ],
+    "adaptations": [
+      "Sans lait : écrasez la courge avec de l’huile d’olive.",
+      "Le merlu peut être remplacé par du cabillaud."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête."
+    ],
+    "nutrition": "Le riz complet et la courge apportent des fibres, le merlu des protéines.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "santefr_3_6"
+    ]
+  }
+]

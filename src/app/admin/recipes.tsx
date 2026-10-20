@@ -63,7 +63,7 @@ export default function AdminRecipes() {
   const toast = useToast();
   const inv = useInvalidate();
   const { isEditor, isLoading } = useMyRoles();
-  const { data: all, loading } = useRecipes({ includeRetired: true });
+  const { data: all, loading } = useRecipes({ includeRetired: true, includeDrafts: true });
   const setStatus = useSetRecipeStatus();
   const [filter, setFilter] = useState<RecipeStatus | 'errors' | null>(null);
   const [editing, setEditing] = useState<string | null>(null);

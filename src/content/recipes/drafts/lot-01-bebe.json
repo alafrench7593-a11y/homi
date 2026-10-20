@@ -1,0 +1,4993 @@
+[
+  {
+    "slug": "bb-puree-carotte-panais",
+    "title": "Purée lisse de carotte et panais",
+    "summary": "Une purée douce et légèrement sucrée naturellement pour les premières cuillères.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "carrot",
+        120,
+        "g",
+        "1 grosse"
+      ],
+      [
+        "parsnip",
+        80,
+        "g",
+        "1 petit"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc",
+        "1 cc par portion, ajoutée au service"
+      ]
+    ],
+    "steps": [
+      "Épluchez la carotte et le panais, rincez-les puis coupez-les en rondelles de même épaisseur.",
+      "Faites-les cuire à la vapeur 20 minutes, jusqu’à ce que la pointe d’un couteau s’enfonce sans résistance.",
+      "Mixez finement en ajoutant un peu d’eau de cuisson jusqu’à obtenir une texture bien lisse.",
+      "Répartissez en deux portions et ajoutez 1 cuillère à café d’huile de colza dans chaque portion au moment de servir, tiède."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "vegetarian",
+      "batch",
+      "freezer",
+      "budget"
+    ],
+    "adaptations": [
+      "Au début de la diversification, commencez par quelques cuillères puis augmentez selon l’appétit de bébé.",
+      "Vers 8 mois, écrasez à la fourchette plutôt que de mixer."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Deux légumes racines riches en fibres douces, avec une matière grasse ajoutée comme le recommandent les repères de diversification.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-butternut-pomme-de-terre",
+    "title": "Purée de butternut et pomme de terre au beurre",
+    "summary": "Une purée orangée, veloutée et facile à faire accepter.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "butternut",
+        150,
+        "g",
+        "épluchée, épépinée"
+      ],
+      [
+        "potato",
+        80,
+        "g",
+        "1 petite"
+      ],
+      [
+        "butter",
+        6,
+        "g",
+        "3 g par portion"
+      ]
+    ],
+    "steps": [
+      "Épluchez la courge butternut et la pomme de terre, retirez les graines de la courge et coupez le tout en cubes.",
+      "Faites cuire à la vapeur 20 minutes, jusqu’à ce que les morceaux soient très tendres.",
+      "Mixez ou passez au moulin à légumes avec un peu d’eau de cuisson pour une texture lisse.",
+      "Ajoutez le beurre dans la purée tiède et mélangez avant de servir."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "puree",
+      "vegetables",
+      "vegetarian",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Le potiron ou le potimarron peuvent remplacer la butternut.",
+      "Allergie aux protéines de lait de vache : remplacez le beurre par 1 cuillère à café d’huile de colza."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "La courge apporte des caroténoïdes et la pomme de terre de l’amidon pour une purée plus nourrissante.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-brocoli-patate-douce",
+    "title": "Purée de brocoli et patate douce",
+    "summary": "Le goût marqué du brocoli adouci par la patate douce.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "broccoli",
+        100,
+        "g",
+        "en petits bouquets"
+      ],
+      [
+        "sweet_potato",
+        120,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la patate douce et coupez-la en cubes ; détaillez le brocoli en petits bouquets en gardant une partie de la tige pelée.",
+      "Faites cuire la patate douce à la vapeur 15 minutes, en ajoutant le brocoli pour les 8 dernières minutes.",
+      "Mixez finement avec un peu d’eau de cuisson pour obtenir une purée lisse.",
+      "Ajoutez l’huile de colza au moment de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "vegetarian",
+      "freezer"
+    ],
+    "adaptations": [
+      "Pour un bébé qui découvre le brocoli, augmentez progressivement sa part par rapport à la patate douce.",
+      "Vers 8 mois, écrasez grossièrement à la fourchette."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Le brocoli apporte de la vitamine C et des folates, la patate douce des glucides et des caroténoïdes.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-haricots-verts-courgette",
+    "title": "Purée de haricots verts et courgette à l’huile d’olive",
+    "summary": "Une purée verte et douce, à préparer avec des légumes frais ou surgelés.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "green_beans",
+        120,
+        "g",
+        "frais équeutés ou surgelés"
+      ],
+      [
+        "zucchini",
+        120,
+        "g",
+        "1 petite"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Équeutez les haricots verts et coupez-les en tronçons ; lavez la courgette et coupez-la en rondelles sans l’éplucher entièrement.",
+      "Faites cuire les haricots verts à la vapeur 15 minutes, en ajoutant la courgette à mi-cuisson.",
+      "Mixez longuement : les haricots verts sont fibreux, passez la purée au tamis si des fils restent.",
+      "Incorporez l’huile d’olive et servez tiède."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "vegetarian",
+      "quick",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajoutez une petite pomme de terre pour une texture plus épaisse.",
+      "Vers 8 mois, mixez moins longtemps pour une texture moulinée."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Deux légumes verts au goût doux, avec une matière grasse végétale.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-veloute-potiron-carotte",
+    "title": "Velouté épais de potiron et carotte",
+    "summary": "Une purée d’automne à la cuillère, toute douce.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "pumpkin",
+        160,
+        "g",
+        "épluché, épépiné"
+      ],
+      [
+        "carrot",
+        60,
+        "g",
+        "1 petite"
+      ],
+      [
+        "butter",
+        6,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez le potiron et la carotte, retirez les graines du potiron et coupez le tout en morceaux.",
+      "Faites cuire à la vapeur 20 minutes, jusqu’à ce que les légumes s’écrasent facilement.",
+      "Mixez finement en ajoutant un peu d’eau de cuisson pour une texture de velouté épais.",
+      "Ajoutez le beurre, mélangez et servez à la cuillère, tiède."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "puree",
+      "vegetables",
+      "vegetarian",
+      "freezer",
+      "budget"
+    ],
+    "adaptations": [
+      "Le potimarron se cuit avec sa peau bien lavée et donne une purée plus épaisse.",
+      "Sans lait : remplacez le beurre par de l’huile de colza."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Le potiron et la carotte apportent des caroténoïdes et une saveur douce.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-chou-fleur-pomme-de-terre",
+    "title": "Purée de chou-fleur et pomme de terre",
+    "summary": "Une purée blanche et onctueuse au goût léger.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "cauliflower",
+        120,
+        "g",
+        "en bouquets"
+      ],
+      [
+        "potato",
+        100,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Détaillez le chou-fleur en petits bouquets, épluchez la pomme de terre et coupez-la en cubes.",
+      "Faites cuire à la vapeur 18 minutes : le chou-fleur cuit à la vapeur garde un goût plus doux qu’à l’eau.",
+      "Mixez finement avec un peu d’eau de cuisson.",
+      "Ajoutez l’huile de colza au moment du service."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "vegetarian",
+      "budget",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajoutez quelques brins de persil mixés pour éveiller le goût.",
+      "Vers 8 mois, écrasez à la fourchette."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Le chou-fleur apporte de la vitamine C et la pomme de terre rend la purée plus rassasiante.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-panais-poire",
+    "title": "Purée de panais et poire",
+    "summary": "Un mélange sucré-doux qui fait découvrir le panais en douceur.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "parsnip",
+        150,
+        "g",
+        "1 gros"
+      ],
+      [
+        "pear",
+        80,
+        "g",
+        "½ poire mûre"
+      ],
+      [
+        "butter",
+        6,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez le panais et la poire ; coupez le panais en rondelles et la poire en quartiers sans le cœur.",
+      "Faites cuire le panais à la vapeur 15 minutes, en ajoutant la poire pour les 5 dernières minutes.",
+      "Mixez finement jusqu’à obtenir une texture lisse.",
+      "Ajoutez le beurre et servez tiède."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "puree",
+      "vegetables",
+      "vegetarian",
+      "freezer"
+    ],
+    "adaptations": [
+      "La pomme peut remplacer la poire.",
+      "Sans lait : remplacez le beurre par de l’huile de colza."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Le panais apporte des fibres et la poire une douceur naturelle, sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-epinards-pomme-de-terre",
+    "title": "Purée d’épinards et pomme de terre au beurre",
+    "summary": "Une purée verte et douce, les épinards adoucis par la pomme de terre.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "spinach",
+        80,
+        "g",
+        "frais lavés ou surgelés en branches"
+      ],
+      [
+        "potato",
+        150,
+        "g"
+      ],
+      [
+        "butter",
+        6,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez la pomme de terre et coupez-la en cubes ; lavez soigneusement les épinards et retirez les grosses tiges.",
+      "Faites cuire la pomme de terre à la vapeur 15 minutes, en ajoutant les épinards pour les 4 dernières minutes.",
+      "Mixez finement, en ajoutant un peu d’eau de cuisson si besoin.",
+      "Incorporez le beurre et servez tiède."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "puree",
+      "vegetables",
+      "vegetarian",
+      "iron",
+      "quick"
+    ],
+    "adaptations": [
+      "Les épinards hachés surgelés conviennent aussi.",
+      "Vers 8 mois, écrasez à la fourchette au lieu de mixer."
+    ],
+    "storage": "24 h au réfrigérateur, dans un pot fermé et refroidi rapidement (les épinards se conservent mal) ; ne réchauffez qu’une fois.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Les épinards cuits se refroidissent rapidement et ne se gardent pas plus de 24 h au réfrigérateur."
+    ],
+    "nutrition": "Les épinards apportent des folates et du fer non héminique, la pomme de terre de l’amidon.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-navet-carotte",
+    "title": "Purée de navet et carotte à l’huile d’olive",
+    "summary": "Le navet tout doux des primeurs, associé à la carotte.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "turnip",
+        100,
+        "g",
+        "navet nouveau"
+      ],
+      [
+        "carrot",
+        120,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez le navet et la carotte, coupez-les en petits morceaux réguliers.",
+      "Faites cuire à la vapeur 18 minutes, jusqu’à ce qu’ils soient très tendres.",
+      "Mixez finement avec un peu d’eau de cuisson.",
+      "Ajoutez l’huile d’olive et servez tiède."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "vegetarian",
+      "budget",
+      "freezer"
+    ],
+    "adaptations": [
+      "Choisissez des navets nouveaux, plus doux ; ajoutez une pomme de terre si le goût surprend bébé."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Deux légumes racines de saison, avec une matière grasse ajoutée.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-petits-pois-menthe",
+    "title": "Purée de petits pois, pomme de terre et menthe",
+    "summary": "Une purée de printemps parfumée d’une feuille de menthe.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "peas",
+        120,
+        "g",
+        "frais écossés ou surgelés"
+      ],
+      [
+        "potato",
+        100,
+        "g"
+      ],
+      [
+        "mint",
+        2,
+        "u",
+        "feuilles"
+      ],
+      [
+        "butter",
+        6,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez la pomme de terre et coupez-la en cubes.",
+      "Faites-la cuire à la vapeur 15 minutes, en ajoutant les petits pois pour les 8 dernières minutes.",
+      "Mixez avec les feuilles de menthe lavées et un peu d’eau de cuisson, puis passez au tamis pour retirer les peaux des petits pois.",
+      "Ajoutez le beurre et servez tiède."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "puree",
+      "vegetables",
+      "vegetarian",
+      "fiber"
+    ],
+    "adaptations": [
+      "Sans menthe, la recette fonctionne aussi ; le basilic est une autre option.",
+      "Sans lait : huile de colza à la place du beurre."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Les petits pois apportent des protéines végétales et des fibres.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-ecrase-avocat-banane",
+    "title": "Écrasé cru d’avocat et banane",
+    "summary": "Une purée crue, prête en deux minutes, pour le goûter ou le dessert.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "avocado",
+        40,
+        "g",
+        "¼ d’avocat bien mûr"
+      ],
+      [
+        "banana",
+        50,
+        "g",
+        "½ petite banane mûre"
+      ]
+    ],
+    "steps": [
+      "Coupez l’avocat, retirez le noyau et prélevez la chair à la cuillère.",
+      "Épluchez la banane.",
+      "Écrasez l’avocat et la banane ensemble à la fourchette jusqu’à obtenir une purée bien lisse, ou mixez-les pour les plus jeunes.",
+      "Servez aussitôt, avant que la purée ne noircisse."
+    ],
+    "allergens": [],
+    "tags": [
+      "quick",
+      "vegetarian",
+      "puree"
+    ],
+    "adaptations": [
+      "Ajoutez une cuillère de lait infantile pour détendre la texture.",
+      "Vers 9 mois, laissez quelques petits morceaux tendres."
+    ],
+    "storage": "À préparer au dernier moment ; ne se conserve pas (oxydation).",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "L’avocat apporte des lipides insaturés et la banane des glucides.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-compote-pomme-poire-cannelle",
+    "title": "Compote lisse pomme, poire et pointe de cannelle",
+    "summary": "Une compote sans sucre ajouté, à peine parfumée.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "apple",
+        1,
+        "u",
+        "moyenne"
+      ],
+      [
+        "pear",
+        1,
+        "u",
+        "mûre"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee",
+        "facultative",
+        true
+      ]
+    ],
+    "steps": [
+      "Épluchez la pomme et la poire, retirez le cœur et les pépins, coupez-les en dés.",
+      "Faites cuire à couvert avec 2 cuillères à soupe d’eau 12 minutes, jusqu’à ce que les fruits soient fondants.",
+      "Mixez finement avec la pincée de cannelle.",
+      "Laissez tiédir avant de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "vegetarian",
+      "budget",
+      "freezer",
+      "batch"
+    ],
+    "adaptations": [
+      "Sans cannelle pour les toutes premières compotes.",
+      "Vers 9 mois, écrasez à la fourchette en laissant des petits morceaux fondants."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Des fruits cuits, sans sucre ajouté, à la texture adaptée.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-compote-peche-abricot",
+    "title": "Compote de pêche et abricot",
+    "summary": "Une compote d’été, fruitée et légèrement acidulée.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "peach",
+        1,
+        "u",
+        "mûre"
+      ],
+      [
+        "apricot",
+        3,
+        "u",
+        "mûrs"
+      ]
+    ],
+    "steps": [
+      "Lavez la pêche et les abricots, épluchez la pêche, retirez les noyaux et coupez les fruits en morceaux.",
+      "Faites cuire à couvert avec 1 cuillère à soupe d’eau 10 minutes, à feu doux.",
+      "Mixez finement ; passez au tamis si des peaux d’abricot subsistent.",
+      "Laissez refroidir avant de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "vegetarian",
+      "freezer"
+    ],
+    "adaptations": [
+      "Si la compote est trop acide pour bébé, ajoutez une demi-banane écrasée plutôt que du sucre."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Des fruits d’été cuits, sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-compote-pomme-fraise",
+    "title": "Compote de pomme et fraise",
+    "summary": "Une compote rosée de début d’été.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "strawberry",
+        100,
+        "g",
+        "bien mûres"
+      ]
+    ],
+    "steps": [
+      "Épluchez la pomme, retirez le cœur et coupez-la en dés ; rincez les fraises puis équeutez-les.",
+      "Faites cuire la pomme à couvert avec 2 cuillères à soupe d’eau 6 minutes, ajoutez les fraises et poursuivez la cuisson 4 minutes.",
+      "Mixez finement.",
+      "Servez froide ou à température ambiante."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "vegetarian",
+      "freezer"
+    ],
+    "adaptations": [
+      "Au début, proposez la fraise en petite quantité et observez la tolérance de bébé."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Les fraises apportent de la vitamine C, la pomme de la pectine.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-mangue-banane",
+    "title": "Purée crue de mangue et banane",
+    "summary": "Une purée exotique sans cuisson, très douce.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "mango",
+        60,
+        "g",
+        "bien mûre"
+      ],
+      [
+        "banana",
+        40,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez la mangue et prélevez la chair autour du noyau.",
+      "Épluchez la banane et coupez-la en rondelles.",
+      "Mixez la mangue et la banane jusqu’à obtenir une purée très lisse (les fibres de la mangue doivent disparaître).",
+      "Servez aussitôt."
+    ],
+    "allergens": [],
+    "tags": [
+      "quick",
+      "vegetarian",
+      "puree",
+      "world"
+    ],
+    "adaptations": [
+      "Vers 9 mois, écrasez simplement à la fourchette."
+    ],
+    "storage": "À servir aussitôt ; la chair de mangue restante se garde 24 h au réfrigérateur dans une boîte fermée.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Deux fruits mûrs, sans sucre ajouté, riches en vitamine C pour la mangue.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-compote-prune-pomme",
+    "title": "Compote de prunes et pomme",
+    "summary": "Une compote de fin d’été, couleur rubis.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "plum",
+        4,
+        "u",
+        "mûres"
+      ],
+      [
+        "apple",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Lavez les prunes, retirez les noyaux ; épluchez la pomme, retirez le cœur et coupez-la en dés.",
+      "Faites cuire les fruits à couvert avec 2 cuillères à soupe d’eau 12 minutes.",
+      "Mixez finement puis passez au tamis pour retirer les peaux des prunes.",
+      "Laissez refroidir avant de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "vegetarian",
+      "fiber",
+      "freezer"
+    ],
+    "adaptations": [
+      "Si la compote est trop acidulée, augmentez la part de pomme."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Les prunes apportent des fibres ; aucun sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-compote-pomme-myrtilles",
+    "title": "Compote de pomme aux myrtilles",
+    "summary": "Une compote violette au goût de sous-bois.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "apple",
+        2,
+        "u"
+      ],
+      [
+        "blueberries",
+        50,
+        "g",
+        "fraîches ou surgelées"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes, retirez le cœur et coupez-les en dés ; rincez les myrtilles.",
+      "Faites cuire les fruits à couvert avec 2 cuillères à soupe d’eau 10 minutes, jusqu’à ce que les myrtilles éclatent.",
+      "Mixez très finement : aucune myrtille entière ne doit rester.",
+      "Laissez refroidir avant de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "vegetarian",
+      "freezer"
+    ],
+    "adaptations": [
+      "Les fruits rouges surgelés peuvent remplacer les myrtilles."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Myrtilles entières : à écraser ou couper en deux avant 4 ans."
+    ],
+    "nutrition": "Des fruits cuits sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-cereales-infantiles-poire",
+    "title": "Bouillie de céréales infantiles à la poire",
+    "summary": "Un petit-déjeuner à la cuillère pour les bébés qui en ont besoin.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 5,
+    "cookMin": 3,
+    "ingredients": [
+      [
+        "infant_milk",
+        150,
+        "ml",
+        "préparé selon la boîte"
+      ],
+      [
+        "infant_cereal",
+        15,
+        "g",
+        "2 à 3 cuillères à soupe"
+      ],
+      [
+        "pear",
+        40,
+        "g",
+        "¼ de poire mûre"
+      ]
+    ],
+    "steps": [
+      "Préparez le lait infantile selon les indications de la boîte et faites-le tiédir 3 minutes à la casserole.",
+      "Versez les céréales en pluie en remuant pour éviter les grumeaux.",
+      "Épluchez la poire, râpez-la finement ou écrasez-la, puis ajoutez-la à la préparation.",
+      "Vérifiez la température sur l’intérieur du poignet avant de servir."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "vegetarian",
+      "puree"
+    ],
+    "adaptations": [
+      "Choisissez des céréales sans gluten si votre médecin le conseille.",
+      "La poire peut être remplacée par une compote maison."
+    ],
+    "storage": "À préparer au moment ; ne pas conserver un reste entamé.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Les céréales se donnent à la cuillère, pas dans le biberon, sauf avis médical."
+    ],
+    "nutrition": "Le lait infantile reste la base de l’alimentation lactée de bébé avant 1 an.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-lentilles-corail-butternut",
+    "title": "Purée de lentilles corail et butternut",
+    "summary": "Une purée végétale orangée et onctueuse.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "red_lentils",
+        30,
+        "g",
+        "crues"
+      ],
+      [
+        "butternut",
+        150,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Rincez les lentilles corail plusieurs fois à l’eau froide.",
+      "Épluchez la butternut, retirez les graines et coupez-la en cubes.",
+      "Faites cuire les lentilles et la courge dans une casserole d’eau non salée 20 minutes, jusqu’à ce que les lentilles se défassent.",
+      "Égouttez en gardant un peu d’eau, mixez finement puis ajoutez l’huile de colza."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetarian",
+      "iron",
+      "protein",
+      "fiber",
+      "budget",
+      "freezer"
+    ],
+    "adaptations": [
+      "Commencez par une petite part de lentilles et augmentez progressivement.",
+      "Vers 9 mois, écrasez à la fourchette."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Les lentilles apportent des protéines végétales, du fer et des fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-poulet-carotte-patate-douce",
+    "title": "Purée de poulet, carotte et patate douce",
+    "summary": "Un premier repas complet avec une petite part de viande.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "chicken",
+        10,
+        "g",
+        "2 cuillères à café une fois mixé"
+      ],
+      [
+        "carrot",
+        80,
+        "g"
+      ],
+      [
+        "sweet_potato",
+        80,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la carotte et la patate douce et coupez-les en cubes.",
+      "Faites-les cuire à la vapeur 20 minutes ; ajoutez le blanc de poulet pour les 12 dernières minutes et vérifiez qu’il est cuit à cœur, blanc et sans trace rosée.",
+      "Mixez finement le poulet, puis ajoutez les légumes et mixez de nouveau avec un peu d’eau de cuisson.",
+      "Ajoutez l’huile de colza et servez tiède."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "complete",
+      "protein"
+    ],
+    "adaptations": [
+      "Vers 8 mois, la quantité de poulet peut passer à 15 à 20 g par jour.",
+      "La dinde remplace facilement le poulet."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Volaille toujours cuite à cœur."
+    ],
+    "nutrition": "Une petite part de protéines animales avec deux légumes, adaptée aux quantités de 6 à 8 mois.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-colin-poireau-pomme-de-terre",
+    "title": "Purée de colin, poireau et pomme de terre",
+    "summary": "Le poisson du jour, tout doux avec le poireau fondu.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "white_fish",
+        10,
+        "g",
+        "colin sans arêtes"
+      ],
+      [
+        "leek",
+        50,
+        "g",
+        "blanc seulement"
+      ],
+      [
+        "potato",
+        100,
+        "g"
+      ],
+      [
+        "butter",
+        3,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Lavez soigneusement le blanc de poireau et émincez-le ; épluchez la pomme de terre et coupez-la en cubes.",
+      "Faites cuire les légumes à la vapeur 18 minutes ; ajoutez le colin pour les 8 dernières minutes, jusqu’à ce que la chair soit opaque et se détache en lamelles.",
+      "Vérifiez du bout des doigts qu’il ne reste aucune arête, puis mixez le poisson avec les légumes.",
+      "Ajoutez le beurre et servez tiède."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "puree",
+      "complete",
+      "protein"
+    ],
+    "adaptations": [
+      "Le cabillaud ou le merlu conviennent aussi.",
+      "Sans lait : huile de colza à la place du beurre."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson cuit à cœur et soigneusement débarrassé de ses arêtes."
+    ],
+    "nutrition": "Le poisson blanc apporte des protéines et de l’iode ; il peut être proposé dès le début de la diversification.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-boeuf-haricots-verts",
+    "title": "Purée de bœuf, haricots verts et pomme de terre",
+    "summary": "Un repas de midi avec une petite part de bœuf bien cuit.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "ground_beef",
+        10,
+        "g"
+      ],
+      [
+        "green_beans",
+        80,
+        "g"
+      ],
+      [
+        "potato",
+        80,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la pomme de terre et coupez-la en cubes ; équeutez les haricots verts.",
+      "Faites cuire les légumes à la vapeur 15 minutes.",
+      "Pendant ce temps, faites cuire le bœuf haché dans une petite poêle sans matière grasse 3 minutes en l’émiettant, jusqu’à ce qu’il soit cuit à cœur, sans trace rosée.",
+      "Mixez finement le bœuf avec les légumes et un peu d’eau de cuisson, puis ajoutez l’huile de colza."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "complete",
+      "iron",
+      "protein"
+    ],
+    "adaptations": [
+      "Le veau haché remplace le bœuf.",
+      "Vers 8 mois, mixez moins finement pour une texture moulinée."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande hachée toujours cuite à cœur."
+    ],
+    "nutrition": "Le bœuf apporte du fer héminique ; à 6–8 mois, 10 g de viande par jour suffisent.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-dinde-courgette-riz",
+    "title": "Purée de dinde, courgette et riz",
+    "summary": "Une purée de midi douce, épaissie au riz bien cuit.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "turkey",
+        10,
+        "g"
+      ],
+      [
+        "zucchini",
+        100,
+        "g"
+      ],
+      [
+        "rice",
+        15,
+        "g",
+        "cru"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz dans un grand volume d’eau non salée 20 minutes, jusqu’à ce qu’il soit très tendre.",
+      "Pendant ce temps, faites cuire la courgette en rondelles et l’escalope de dinde à la vapeur 12 minutes ; la dinde doit être blanche à cœur.",
+      "Mixez finement la dinde, puis la courgette et le riz égoutté avec un peu d’eau de cuisson.",
+      "Ajoutez l’huile d’olive et servez tiède."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "complete",
+      "protein"
+    ],
+    "adaptations": [
+      "Le poulet remplace la dinde.",
+      "Vers 8 mois, écrasez le riz à la fourchette au lieu de le mixer."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Volaille toujours cuite à cœur."
+    ],
+    "nutrition": "Un repas complet : légume, féculent et petite part de volaille.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-saumon-potiron",
+    "title": "Purée de saumon, potiron et pomme de terre",
+    "summary": "Le saumon fondant associé à la douceur du potiron.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "salmon",
+        10,
+        "g",
+        "sans peau ni arêtes"
+      ],
+      [
+        "pumpkin",
+        100,
+        "g"
+      ],
+      [
+        "potato",
+        60,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez le potiron et la pomme de terre et coupez-les en cubes.",
+      "Faites-les cuire à la vapeur 20 minutes ; ajoutez le saumon pour les 8 dernières minutes, jusqu’à ce qu’il soit opaque à cœur.",
+      "Émiettez le saumon en vérifiant l’absence d’arêtes, puis mixez-le avec les légumes.",
+      "Ajoutez l’huile de colza et servez tiède."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "puree",
+      "complete",
+      "protein"
+    ],
+    "adaptations": [
+      "Le maquereau frais est une autre option de poisson gras.",
+      "Vers 8 mois, écrasez à la fourchette."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson cuit à cœur, sans arêtes."
+    ],
+    "nutrition": "Le saumon est un poisson gras qui apporte des oméga-3 ; les repères conseillent d’alterner poissons gras et maigres.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-puree-oeuf-dur-epinards",
+    "title": "Purée d’épinards et pomme de terre à l’œuf dur",
+    "summary": "Une purée où l’œuf remplace la viande du jour.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 12,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "egg",
+        0.25,
+        "u",
+        "¼ d’œuf dur"
+      ],
+      [
+        "frozen_spinach",
+        60,
+        "g"
+      ],
+      [
+        "potato",
+        100,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Faites cuire l’œuf 10 minutes dans l’eau bouillante pour qu’il soit dur, jaune et blanc bien pris, puis refroidissez-le et écalez-le.",
+      "Faites cuire la pomme de terre en cubes et les épinards à la vapeur 15 minutes.",
+      "Mixez les légumes avec un peu d’eau de cuisson, puis écrasez finement ¼ de l’œuf dur et incorporez-le.",
+      "Ajoutez l’huile de colza et servez tiède."
+    ],
+    "allergens": [
+      "eggs"
+    ],
+    "tags": [
+      "puree",
+      "complete",
+      "vegetarian",
+      "protein"
+    ],
+    "adaptations": [
+      "À 6–8 mois, ¼ d’œuf dur remplace la portion de viande ou de poisson ; vers 1 an, un demi-œuf.",
+      "Le reste de l’œuf peut compléter le repas d’un adulte."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Œuf toujours cuit dur, jaune et blanc bien pris."
+    ],
+    "nutrition": "L’œuf apporte des protéines ; l’introduire tôt fait partie des repères de diversification actuels.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-mouline-veau-carottes-semoule",
+    "title": "Mouliné de veau, carottes et semoule fine",
+    "summary": "Un plat mouliné qui commence à avoir de la mâche.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "veal",
+        20,
+        "g"
+      ],
+      [
+        "carrot",
+        100,
+        "g"
+      ],
+      [
+        "semolina",
+        15,
+        "g"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez les carottes et coupez-les en rondelles ; coupez le veau en petits morceaux.",
+      "Faites cuire le veau et les carottes à couvert dans un fond d’eau 20 minutes, jusqu’à ce que la viande soit tendre et cuite à cœur.",
+      "Versez la semoule dans 40 ml d’eau de cuisson chaude, couvrez et laissez gonfler 5 minutes.",
+      "Passez le veau et les carottes au moulin à légumes ou mixez brièvement pour garder une texture moulinée, puis mélangez avec la semoule et l’huile d’olive."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "complete",
+      "protein",
+      "iron"
+    ],
+    "adaptations": [
+      "Vers 12 mois, coupez simplement les carottes en petits dés fondants.",
+      "Sans gluten : remplacez la semoule de blé par du riz bien cuit."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande cuite à cœur."
+    ],
+    "nutrition": "Viande, légume et féculent dans une même assiette, avec 20 g de viande comme repère vers 9–12 mois.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-petites-pates-courgette-ricotta",
+    "title": "Petites pâtes à la courgette et à la ricotta",
+    "summary": "Des petites pâtes fondantes dans une sauce verte et crémeuse.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 1,
+    "prepMin": 5,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "small_pasta",
+        25,
+        "g",
+        "étoiles, crues"
+      ],
+      [
+        "zucchini",
+        100,
+        "g"
+      ],
+      [
+        "ricotta",
+        20,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Lavez la courgette, coupez-la en petits dés et faites-la cuire à la vapeur 10 minutes.",
+      "Faites cuire les petites pâtes dans l’eau non salée quelques minutes de plus que le temps indiqué pour qu’elles soient bien tendres.",
+      "Écrasez la courgette à la fourchette avec la ricotta.",
+      "Mélangez avec les pâtes égouttées et servez tiède."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "vegetarian",
+      "complete",
+      "calcium"
+    ],
+    "adaptations": [
+      "Le fromage frais au lait pasteurisé remplace la ricotta.",
+      "Vers 12 mois, utilisez des coquillettes et laissez la courgette en petits dés."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "La ricotta apporte des protéines laitières et du calcium.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-polenta-potiron-parmesan",
+    "title": "Polenta crémeuse au potiron et parmesan",
+    "summary": "Une polenta douce et orangée à la cuillère.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "polenta",
+        30,
+        "g",
+        "précuite"
+      ],
+      [
+        "pumpkin",
+        150,
+        "g"
+      ],
+      [
+        "infant_milk",
+        100,
+        "ml"
+      ],
+      [
+        "parmesan",
+        5,
+        "g",
+        "râpé finement"
+      ]
+    ],
+    "steps": [
+      "Épluchez le potiron, coupez-le en cubes et faites-le cuire à la vapeur 15 minutes, puis écrasez-le à la fourchette.",
+      "Portez le lait infantile et 100 ml d’eau à frémissement, versez la polenta en pluie et faites cuire en remuant le temps indiqué sur le paquet.",
+      "Incorporez la purée de potiron et le parmesan râpé finement.",
+      "Laissez tiédir : la polenta épaissit en refroidissant ; détendez avec un peu d’eau si besoin."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "complete",
+      "calcium",
+      "world"
+    ],
+    "adaptations": [
+      "Pour un bébé plus grand, laissez refroidir la polenta en couche épaisse et coupez-la en bâtonnets à manger avec les doigts."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Parmesan à petite dose : c’est un fromage naturellement salé."
+    ],
+    "nutrition": "La polenta est un féculent sans gluten ; le parmesan, utilisé en petite quantité, apporte du calcium.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-quinoa-poulet-brocoli",
+    "title": "Quinoa, poulet et brocoli écrasés",
+    "summary": "Une assiette complète aux petits grains moelleux.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "quinoa",
+        20,
+        "g",
+        "cru"
+      ],
+      [
+        "chicken",
+        20,
+        "g"
+      ],
+      [
+        "broccoli",
+        80,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Rincez le quinoa à l’eau froide, puis faites-le cuire dans 3 fois son volume d’eau 15 minutes, jusqu’à ce que le germe se détache.",
+      "Faites cuire à la vapeur les bouquets de brocoli et le poulet en petits morceaux 12 minutes ; le poulet doit être blanc à cœur.",
+      "Hachez finement le poulet et écrasez le brocoli à la fourchette.",
+      "Mélangez avec le quinoa et l’huile de colza."
+    ],
+    "allergens": [],
+    "tags": [
+      "complete",
+      "protein",
+      "iron"
+    ],
+    "adaptations": [
+      "Vers 12 mois, laissez le poulet en petits morceaux tendres.",
+      "Le riz remplace le quinoa."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Volaille cuite à cœur."
+    ],
+    "nutrition": "Le quinoa apporte des fibres et des protéines végétales, en complément du poulet.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-riz-saumon-petits-pois",
+    "title": "Riz moelleux au saumon et petits pois",
+    "summary": "Un petit risotto à l’eau, sans bouillon salé.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 1,
+    "prepMin": 5,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "round_rice",
+        20,
+        "g",
+        "cru"
+      ],
+      [
+        "salmon",
+        20,
+        "g"
+      ],
+      [
+        "frozen_peas",
+        50,
+        "g"
+      ],
+      [
+        "butter",
+        4,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz rond dans 150 ml d’eau non salée 20 minutes à petit feu, en remuant, jusqu’à ce qu’il soit fondant.",
+      "Ajoutez les petits pois pour les 10 dernières minutes.",
+      "Faites cuire le saumon à la vapeur 8 minutes, jusqu’à ce qu’il soit opaque à cœur, puis émiettez-le en retirant toutes les arêtes.",
+      "Écrasez grossièrement les petits pois dans le riz, incorporez le saumon et le beurre."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "complete",
+      "protein"
+    ],
+    "adaptations": [
+      "Le cabillaud remplace le saumon ; vers 12 mois, ne plus écraser les petits pois."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson cuit à cœur, sans arêtes."
+    ],
+    "nutrition": "Un poisson gras, un légume et un féculent, avec une texture écrasée.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-lentilles-vertes-carotte-cumin",
+    "title": "Lentilles vertes et carottes fondantes au cumin",
+    "summary": "Un plat végétarien parfumé d’une pointe de cumin.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "green_lentils",
+        40,
+        "g",
+        "crues"
+      ],
+      [
+        "carrot",
+        120,
+        "g"
+      ],
+      [
+        "onion",
+        20,
+        "g"
+      ],
+      [
+        "cumin",
+        1,
+        "pincee"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Rincez les lentilles ; épluchez la carotte et l’oignon et coupez-les finement.",
+      "Mettez le tout dans une casserole avec 400 ml d’eau non salée et le cumin, et faites cuire à petit feu 30 minutes, jusqu’à ce que les lentilles s’écrasent facilement.",
+      "Égouttez en gardant un peu de jus, puis écrasez à la fourchette ou mixez brièvement.",
+      "Ajoutez l’huile d’olive et servez tiède."
+    ],
+    "allergens": [],
+    "tags": [
+      "vegetarian",
+      "iron",
+      "protein",
+      "fiber",
+      "budget",
+      "freezer"
+    ],
+    "adaptations": [
+      "Servez avec un peu de riz pour compléter les protéines végétales.",
+      "Vers 12 mois, laissez les lentilles entières si elles sont bien tendres."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Les lentilles apportent fer, fibres et protéines végétales.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-soupe-vermicelles-legumes",
+    "title": "Soupe de vermicelles aux légumes du pot-au-feu",
+    "summary": "Une soupe épaisse du soir, avec un bouillon maison sans sel.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "carrot",
+        80,
+        "g"
+      ],
+      [
+        "leek",
+        50,
+        "g"
+      ],
+      [
+        "turnip",
+        60,
+        "g"
+      ],
+      [
+        "vermicelli",
+        20,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la carotte et le navet, lavez soigneusement le poireau et coupez le tout en petits dés.",
+      "Faites cuire les légumes dans 400 ml d’eau non salée 20 minutes.",
+      "Ajoutez les vermicelles et poursuivez la cuisson 5 minutes, jusqu’à ce qu’ils soient très tendres.",
+      "Écrasez les légumes grossièrement dans la soupe, ajoutez l’huile d’olive et servez tiède."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "vegetarian",
+      "vegetables",
+      "budget"
+    ],
+    "adaptations": [
+      "Pour les plus petits, mixez les légumes avant d’ajouter les vermicelles.",
+      "Sans gluten : remplacez les vermicelles par du riz."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Une soupe de légumes épaissie d’un féculent, pour un dîner léger.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-merlu-fenouil-pomme-de-terre",
+    "title": "Écrasé de merlu, fenouil et pomme de terre",
+    "summary": "Le goût anisé et doux du fenouil fondant avec le poisson.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "hake",
+        20,
+        "g",
+        "sans arêtes"
+      ],
+      [
+        "fennel",
+        70,
+        "g"
+      ],
+      [
+        "potato",
+        100,
+        "g"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez le fenouil, retirez la base dure et émincez-le finement ; épluchez la pomme de terre et coupez-la en cubes.",
+      "Faites cuire les légumes à la vapeur 20 minutes ; ajoutez le merlu pour les 8 dernières minutes, jusqu’à ce qu’il soit opaque à cœur.",
+      "Émiettez le poisson en vérifiant qu’il ne reste aucune arête.",
+      "Écrasez le tout à la fourchette avec l’huile d’olive."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "complete",
+      "protein"
+    ],
+    "adaptations": [
+      "Le fenouil peut être remplacé par de la courgette.",
+      "Le cabillaud ou le colin conviennent aussi."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson cuit à cœur, sans arêtes."
+    ],
+    "nutrition": "Le poisson maigre apporte des protéines et de l’iode.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-agneau-courgette-semoule",
+    "title": "Petit couscous d’agneau à la courgette",
+    "summary": "Les saveurs du couscous, en version douce et écrasée.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "lamb",
+        20,
+        "g"
+      ],
+      [
+        "zucchini",
+        80,
+        "g"
+      ],
+      [
+        "carrot",
+        50,
+        "g"
+      ],
+      [
+        "couscous",
+        15,
+        "g"
+      ],
+      [
+        "ras_el_hanout",
+        1,
+        "pincee"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Coupez l’agneau en petits dés en retirant le gras ; épluchez la carotte et coupez-la avec la courgette en dés.",
+      "Faites cuire l’agneau, les légumes et le ras-el-hanout dans 200 ml d’eau non salée à petit feu 25 minutes, jusqu’à ce que la viande soit très tendre et cuite à cœur.",
+      "Versez la semoule dans un bol, couvrez de 30 ml de bouillon de cuisson chaud et laissez gonfler 5 minutes.",
+      "Hachez finement l’agneau, écrasez les légumes et servez sur la semoule avec l’huile d’olive."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "complete",
+      "protein",
+      "iron",
+      "world"
+    ],
+    "adaptations": [
+      "Le ras-el-hanout doit être sans piment ; il est facultatif.",
+      "Vers 18 mois, ajoutez quelques pois chiches écrasés."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande cuite à cœur."
+    ],
+    "nutrition": "L’agneau apporte du fer héminique ; la portion de viande reste petite à cet âge.",
+    "budget": 3,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-yaourt-banane-avoine",
+    "title": "Yaourt nature, banane écrasée et avoine fine",
+    "summary": "Un petit-déjeuner sans cuisson, à la cuillère.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 1,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "yogurt",
+        100,
+        "g",
+        "1 pot"
+      ],
+      [
+        "banana",
+        50,
+        "g",
+        "½ banane"
+      ],
+      [
+        "oats",
+        10,
+        "g",
+        "flocons fins"
+      ]
+    ],
+    "steps": [
+      "Mixez les flocons d’avoine en poudre fine.",
+      "Écrasez la banane à la fourchette.",
+      "Mélangez le yaourt, la banane et l’avoine, puis laissez reposer 5 minutes pour que l’avoine ramollisse.",
+      "Servez frais."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "vegetarian",
+      "calcium"
+    ],
+    "adaptations": [
+      "Le fromage blanc remplace le yaourt.",
+      "Remplacez la banane par une compote maison selon la saison."
+    ],
+    "storage": "À préparer au moment.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Un laitage et un fruit, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-semoule-lait-abricot",
+    "title": "Semoule au lait infantile et abricots",
+    "summary": "Un dessert lacté doux, avec des abricots fondants.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "infant_milk",
+        200,
+        "ml"
+      ],
+      [
+        "semolina",
+        20,
+        "g"
+      ],
+      [
+        "apricot",
+        3,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Lavez les abricots, retirez les noyaux et faites-les cuire à couvert avec une cuillère d’eau 8 minutes, puis écrasez-les.",
+      "Faites chauffer le lait infantile à feu doux sans le faire bouillir.",
+      "Versez la semoule en pluie et faites cuire 3 minutes en remuant, jusqu’à ce qu’elle épaississe.",
+      "Répartissez dans deux ramequins, couvrez de compote d’abricot et servez tiède ou froid."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "make_ahead"
+    ],
+    "adaptations": [
+      "Hors saison, utilisez des abricots surgelés ou une compote de pomme maison."
+    ],
+    "storage": "24 h au réfrigérateur, couvert.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Un dessert lacté à base de lait infantile, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-riz-au-lait-poire-cannelle",
+    "title": "Riz au lait infantile, poire et cannelle",
+    "summary": "Un riz au lait sans sucre, sucré par la poire.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "round_rice",
+        25,
+        "g"
+      ],
+      [
+        "infant_milk",
+        300,
+        "ml"
+      ],
+      [
+        "pear",
+        1,
+        "u",
+        "mûre"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Rincez le riz rond, puis faites-le cuire dans le lait infantile à feu très doux 30 minutes, en remuant souvent, jusqu’à ce qu’il soit crémeux.",
+      "Pendant ce temps, épluchez la poire, coupez-la en dés et faites-la cuire à couvert avec la cannelle 8 minutes.",
+      "Écrasez la poire et incorporez-la au riz.",
+      "Laissez tiédir et servez, ou réservez au frais."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "make_ahead"
+    ],
+    "adaptations": [
+      "Vers 12 mois, laissez la poire en petits dés fondants."
+    ],
+    "storage": "48 h au réfrigérateur, couvert. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Un dessert lacté sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-fromage-blanc-fraises",
+    "title": "Fromage blanc aux fraises écrasées",
+    "summary": "Un dessert de printemps sans cuisson.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 1,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "fromage_blanc",
+        80,
+        "g"
+      ],
+      [
+        "strawberry",
+        50,
+        "g",
+        "bien mûres"
+      ]
+    ],
+    "steps": [
+      "Rincez les fraises puis équeutez-les.",
+      "Écrasez-les finement à la fourchette.",
+      "Mélangez avec le fromage blanc et servez frais."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "vegetarian",
+      "calcium"
+    ],
+    "adaptations": [
+      "Les petits-suisses nature conviennent aussi.",
+      "Hors saison, utilisez des fruits rouges surgelés portés à ébullition 1 à 2 minutes puis refroidis."
+    ],
+    "storage": "À préparer au moment.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Un laitage et un fruit, sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-gratin-chou-fleur-emmental",
+    "title": "Petit gratin écrasé de chou-fleur à l’emmental",
+    "summary": "Un gratin doux et fondant pour le dîner.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "cauliflower",
+        200,
+        "g"
+      ],
+      [
+        "potato",
+        100,
+        "g"
+      ],
+      [
+        "infant_milk",
+        60,
+        "ml"
+      ],
+      [
+        "emmental",
+        15,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Détaillez le chou-fleur en bouquets, épluchez la pomme de terre et coupez-la en cubes.",
+      "Faites cuire à la vapeur 15 minutes, puis écrasez à la fourchette avec le lait infantile.",
+      "Versez dans un petit plat, parsemez d’emmental râpé et faites gratiner au four 10 minutes à 200 °C.",
+      "Laissez tiédir avant de servir."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Le brocoli remplace le chou-fleur.",
+      "Vers 12 mois, laissez des petits morceaux tendres."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Le fromage apporte du calcium, le chou-fleur de la vitamine C.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-porridge-pomme-cannelle",
+    "title": "Porridge à la pomme râpée et cannelle",
+    "summary": "Un porridge réconfortant pour les matins d’hiver.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "breakfast"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 1,
+    "prepMin": 5,
+    "cookMin": 6,
+    "ingredients": [
+      [
+        "oats",
+        20,
+        "g"
+      ],
+      [
+        "infant_milk",
+        150,
+        "ml"
+      ],
+      [
+        "apple",
+        0.5,
+        "u"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Épluchez la demi-pomme et râpez-la finement.",
+      "Faites cuire les flocons d’avoine dans le lait infantile avec la pomme râpée et la cannelle 6 minutes à feu doux, en remuant.",
+      "Écrasez les flocons à la fourchette si bébé préfère une texture plus lisse.",
+      "Laissez tiédir et servez."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "vegetarian",
+      "fiber"
+    ],
+    "adaptations": [
+      "La poire remplace la pomme.",
+      "Après 1 an, le lait de croissance peut être utilisé."
+    ],
+    "storage": "À préparer au moment.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Un petit-déjeuner avec un féculent riche en fibres et un fruit.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-flan-oeuf-carotte",
+    "title": "Petits flans de carotte à l’œuf",
+    "summary": "Des flans tendres qui se mangent à la cuillère.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "carrot",
+        150,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "infant_milk",
+        80,
+        "ml"
+      ],
+      [
+        "butter",
+        3,
+        "g",
+        "pour les moules"
+      ]
+    ],
+    "steps": [
+      "Épluchez les carottes, faites-les cuire à la vapeur 15 minutes puis mixez-les.",
+      "Battez l’œuf avec le lait infantile et mélangez à la purée de carottes.",
+      "Beurrez deux ramequins, versez la préparation et faites cuire au four au bain-marie à 180 °C environ 15 minutes, jusqu’à ce que le flan soit bien pris à cœur.",
+      "Laissez tiédir et servez à la cuillère."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein"
+    ],
+    "adaptations": [
+      "La courgette ou le potiron remplacent la carotte.",
+      "À partir de 12 mois, coupez le flan froid en cubes à prendre avec les doigts."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Flan cuit jusqu’à ce que le centre soit ferme."
+    ],
+    "nutrition": "L’œuf bien cuit apporte des protéines.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-dahl-doux-lentilles-corail",
+    "title": "Dahl doux de lentilles corail au lait de coco",
+    "summary": "Un plat végétarien du monde, doux et crémeux.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m9_12"
+    ],
+    "minMonths": 9,
+    "maxMonths": 18,
+    "textures": [
+      "mashed",
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "red_lentils",
+        40,
+        "g"
+      ],
+      [
+        "tomato",
+        1,
+        "u"
+      ],
+      [
+        "coconut_milk",
+        40,
+        "ml"
+      ],
+      [
+        "turmeric",
+        1,
+        "pincee"
+      ],
+      [
+        "rice",
+        30,
+        "g",
+        "cru"
+      ]
+    ],
+    "steps": [
+      "Rincez les lentilles et le riz ; lavez la tomate, retirez la peau et les pépins et coupez-la en dés.",
+      "Faites cuire le riz dans l’eau non salée 20 minutes, jusqu’à ce qu’il soit très tendre.",
+      "Dans une autre casserole, faites cuire les lentilles avec la tomate, le curcuma et 200 ml d’eau 15 minutes, puis ajoutez le lait de coco et poursuivez 3 minutes.",
+      "Écrasez le dahl à la fourchette et servez-le avec le riz."
+    ],
+    "allergens": [],
+    "tags": [
+      "vegetarian",
+      "world",
+      "iron",
+      "protein",
+      "family"
+    ],
+    "adaptations": [
+      "Pour les adultes, ajoutez du sel, du gingembre et de la coriandre après avoir prélevé la part de bébé."
+    ],
+    "storage": "48 h au réfrigérateur dans un pot fermé, ou 2 mois au congélateur en petites portions (bacs à glaçons) ; décongelez au réfrigérateur. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "L’association lentilles et riz apporte des protéines végétales complémentaires.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ],
+    "familyAdaptations": {
+      "baby": "Prélevez la part de bébé avant d’ajouter sel et épices piquantes."
+    }
+  },
+  {
+    "slug": "bb-boulettes-boeuf-courgette",
+    "title": "Boulettes moelleuses de bœuf et courgette",
+    "summary": "Des boulettes tendres à attraper avec les doigts.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "ground_beef",
+        50,
+        "g"
+      ],
+      [
+        "zucchini",
+        60,
+        "g"
+      ],
+      [
+        "oats",
+        15,
+        "g"
+      ],
+      [
+        "egg",
+        0.5,
+        "u",
+        "battu"
+      ],
+      [
+        "parsley",
+        1,
+        "cs",
+        "haché"
+      ]
+    ],
+    "steps": [
+      "Râpez finement la courgette et pressez-la dans un torchon pour retirer l’eau.",
+      "Mélangez le bœuf haché, la courgette, les flocons d’avoine, le demi-œuf battu et le persil.",
+      "Formez de petites boulettes allongées de la taille d’un doigt d’adulte et posez-les sur une plaque recouverte de papier cuisson.",
+      "Faites cuire au four à 180 °C 20 minutes, jusqu’à ce qu’elles soient cuites à cœur, sans trace rosée.",
+      "Laissez tiédir et coupez-les en deux dans la longueur pour les plus petits."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "finger",
+      "iron",
+      "protein",
+      "freezer"
+    ],
+    "adaptations": [
+      "Le veau ou la dinde hachée remplacent le bœuf.",
+      "Servez avec un écrasé de légumes ou de pâtes."
+    ],
+    "storage": "Cuites : 48 h au réfrigérateur ou 2 mois au congélateur.",
+    "precautions": [
+      "Viande hachée cuite à cœur.",
+      "Restez à côté de l’enfant pendant le repas."
+    ],
+    "nutrition": "Le bœuf apporte du fer héminique et l’avoine des fibres.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-croquettes-saumon-pomme-de-terre",
+    "title": "Croquettes de saumon et pomme de terre à la ciboulette",
+    "summary": "Des galettes moelleuses à manger avec les doigts.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "salmon",
+        60,
+        "g"
+      ],
+      [
+        "potato",
+        150,
+        "g"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ],
+      [
+        "egg",
+        0.5,
+        "u"
+      ],
+      [
+        "flour",
+        1,
+        "cs"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Faites cuire la pomme de terre épluchée à la vapeur 15 minutes et le saumon 8 minutes, jusqu’à ce qu’il soit opaque à cœur.",
+      "Écrasez la pomme de terre, émiettez le saumon en retirant toutes les arêtes.",
+      "Mélangez avec la ciboulette, le demi-œuf battu et la farine, puis façonnez 6 petites galettes.",
+      "Badigeonnez-les d’huile de colza et faites-les cuire au four à 200 °C 10 minutes, en les retournant à mi-cuisson."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "fish"
+    ],
+    "tags": [
+      "finger",
+      "protein",
+      "freezer"
+    ],
+    "adaptations": [
+      "Le thon au naturel remplace le saumon.",
+      "Sans gluten : remplacez la farine par de la fécule."
+    ],
+    "storage": "Cuites : 48 h au réfrigérateur ou 2 mois au congélateur.",
+    "precautions": [
+      "Poisson cuit à cœur, sans arêtes.",
+      "Œuf cuit à cœur dans la croquette."
+    ],
+    "nutrition": "Le saumon apporte des oméga-3 et des protéines.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-pancakes-epinards-ricotta",
+    "title": "Pancakes verts aux épinards et ricotta",
+    "summary": "Des petits pancakes salés et moelleux pour les doigts.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "frozen_spinach",
+        50,
+        "g",
+        "décongelés"
+      ],
+      [
+        "ricotta",
+        40,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "flour",
+        40,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "pincee"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Pressez les épinards décongelés pour retirer l’eau.",
+      "Mixez les épinards avec la ricotta et l’œuf, puis ajoutez la farine et la levure.",
+      "Faites chauffer une poêle légèrement graissée à l’huile de colza et versez de petites cuillerées de pâte.",
+      "Faites cuire 2 minutes de chaque côté, jusqu’à ce que les pancakes soient bien cuits au centre."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "iron",
+      "freezer"
+    ],
+    "adaptations": [
+      "Le fromage frais au lait pasteurisé remplace la ricotta.",
+      "Ajoutez un peu de parmesan râpé après 18 mois."
+    ],
+    "storage": "48 h au réfrigérateur ou 2 mois au congélateur, séparés par du papier cuisson.",
+    "precautions": [
+      "Pancakes cuits à cœur (l’œuf doit être bien cuit)."
+    ],
+    "nutrition": "Les épinards apportent des folates, la ricotta du calcium.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-frites-polenta-four",
+    "title": "Bâtonnets de polenta au four aux herbes",
+    "summary": "Des « frites » moelleuses à l’intérieur, dorées au four.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "polenta",
+        50,
+        "g",
+        "précuite"
+      ],
+      [
+        "parmesan",
+        10,
+        "g",
+        "râpé finement"
+      ],
+      [
+        "herbs",
+        1,
+        "pincee"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Portez 200 ml d’eau à ébullition, versez la polenta en pluie et faites cuire en remuant le temps indiqué sur le paquet.",
+      "Ajoutez le parmesan et les herbes de Provence, étalez sur 1,5 cm d’épaisseur dans un plat huilé et laissez prendre 15 minutes.",
+      "Coupez en bâtonnets de la taille d’un doigt, badigeonnez d’huile d’olive et enfournez à 200 °C 20 minutes.",
+      "Laissez tiédir : l’intérieur doit rester tendre."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "world"
+    ],
+    "adaptations": [
+      "Servez avec une sauce tomate maison ou un écrasé de légumes."
+    ],
+    "storage": "48 h au réfrigérateur avant ou après cuisson.",
+    "precautions": [
+      "Parmesan à petite dose : fromage naturellement salé."
+    ],
+    "nutrition": "La polenta est un féculent sans gluten.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-frittata-poivron-mozzarella",
+    "title": "Frittata au poivron et mozzarella en carrés",
+    "summary": "Une omelette épaisse, coupée en carrés à prendre avec les doigts.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "bell_pepper",
+        50,
+        "g"
+      ],
+      [
+        "mozzarella",
+        30,
+        "g"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez le poivron, retirez les graines et coupez-le en tout petits dés.",
+      "Faites-les cuire 8 minutes dans l’huile d’olive à feu doux, jusqu’à ce qu’ils soient fondants.",
+      "Battez les œufs, ajoutez le poivron et la mozzarella coupée en dés, versez dans un petit plat et faites cuire au four à 180 °C 12 minutes, jusqu’à ce que le centre soit ferme.",
+      "Laissez tiédir et coupez en carrés ou en bâtonnets."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "protein",
+      "quick"
+    ],
+    "adaptations": [
+      "La courgette remplace le poivron.",
+      "Pour les adultes, servez avec une salade."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Œufs cuits à cœur.",
+      "Vers 1 an : environ ½ œuf par portion."
+    ],
+    "nutrition": "Les œufs apportent des protéines et le poivron de la vitamine C.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-boulettes-pois-chiches-four",
+    "title": "Boulettes douces de pois chiches au four",
+    "summary": "Des boulettes végétales tendres, inspirées des falafels.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "chickpeas",
+        120,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "carrot",
+        40,
+        "g"
+      ],
+      [
+        "parsley",
+        1,
+        "cs"
+      ],
+      [
+        "cumin",
+        1,
+        "pincee"
+      ],
+      [
+        "flour",
+        1,
+        "cs"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Râpez finement la carotte.",
+      "Mixez les pois chiches avec la carotte, le persil, le cumin et la farine jusqu’à obtenir une pâte qui se tient.",
+      "Formez de petites galettes ovales, posez-les sur une plaque et badigeonnez-les d’huile d’olive.",
+      "Faites cuire au four à 190 °C 20 minutes en les retournant à mi-cuisson ; elles doivent rester tendres."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "protein",
+      "fiber",
+      "world",
+      "freezer"
+    ],
+    "adaptations": [
+      "Servez avec un yaourt nature.",
+      "Sans gluten : remplacez la farine de blé par de la farine de pois chiche."
+    ],
+    "storage": "Cuites : 48 h au réfrigérateur ou 2 mois au congélateur.",
+    "precautions": [
+      "Mixez bien les pois chiches : entiers, ils sont à écraser avant 4 ans."
+    ],
+    "nutrition": "Les pois chiches apportent des protéines végétales et des fibres.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-gnocchis-tomate-basilic",
+    "title": "Gnocchis fondants à la sauce tomate et basilic",
+    "summary": "Des gnocchis coupés en morceaux dans une sauce tomate maison.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "gnocchi",
+        120,
+        "g"
+      ],
+      [
+        "canned_tomato",
+        150,
+        "g"
+      ],
+      [
+        "basil",
+        3,
+        "u",
+        "feuilles"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cc"
+      ],
+      [
+        "mozzarella",
+        20,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites mijoter les tomates concassées avec l’huile d’olive 10 minutes à feu doux, puis ajoutez le basilic ciselé.",
+      "Faites cuire les gnocchis dans l’eau non salée jusqu’à ce qu’ils remontent à la surface, puis égouttez-les.",
+      "Coupez chaque gnocchi en deux ou en quatre selon l’âge.",
+      "Mélangez avec la sauce et ajoutez la mozzarella en petits dés."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "family",
+      "world"
+    ],
+    "adaptations": [
+      "Pour les adultes, salez la sauce après avoir servi l’enfant."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Gnocchis coupés en morceaux pour éviter qu’ils ne bloquent la gorge."
+    ],
+    "nutrition": "Un féculent, des tomates cuites et un peu de fromage.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ],
+    "familyAdaptations": {
+      "baby": "Coupez les gnocchis en quatre et servez la sauce non salée."
+    }
+  },
+  {
+    "slug": "bb-mijote-poulet-coco-patate-douce",
+    "title": "Mijoté de poulet, patate douce et lait de coco",
+    "summary": "Un plat doux et parfumé à partager en famille.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "chicken_thigh",
+        120,
+        "g",
+        "désossées"
+      ],
+      [
+        "sweet_potato",
+        150,
+        "g"
+      ],
+      [
+        "coconut_milk",
+        60,
+        "ml"
+      ],
+      [
+        "ginger",
+        1,
+        "pincee",
+        "râpé"
+      ],
+      [
+        "onion",
+        30,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Coupez le poulet en petits dés, épluchez l’oignon et la patate douce et coupez-les en cubes.",
+      "Faites revenir l’oignon dans l’huile de colza 3 minutes, ajoutez le poulet et le gingembre.",
+      "Ajoutez la patate douce, le lait de coco et 100 ml d’eau, couvrez et laissez mijoter 25 minutes.",
+      "Vérifiez que le poulet est cuit à cœur, puis effilochez-le et écrasez légèrement la patate douce pour les plus petits."
+    ],
+    "allergens": [],
+    "tags": [
+      "complete",
+      "protein",
+      "world",
+      "family"
+    ],
+    "adaptations": [
+      "Servez avec du riz ; ajoutez du sel et des épices à la part des adultes après avoir servi l’enfant."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Volaille cuite à cœur.",
+      "Part de l’enfant vers 1 an : 20 à 30 g de poulet ; le reste est pour les adultes."
+    ],
+    "nutrition": "Le poulet apporte des protéines, la patate douce des caroténoïdes.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-filet-mignon-panais-pomme",
+    "title": "Filet mignon fondant, purée de panais et pomme",
+    "summary": "Un plat du dimanche adapté aux tout-petits.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "pork_tenderloin",
+        60,
+        "g"
+      ],
+      [
+        "parsnip",
+        150,
+        "g"
+      ],
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "butter",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez le panais et la pomme et coupez-les en morceaux.",
+      "Faites-les cuire à la vapeur 15 minutes, puis écrasez-les avec le beurre.",
+      "Faites cuire le filet mignon de porc en tranches fines à la poêle 10 minutes à feu moyen, jusqu’à ce qu’il soit cuit à cœur, sans trace rosée.",
+      "Coupez la viande en petits morceaux tendres ou en lamelles et servez avec la purée."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "complete",
+      "protein",
+      "family"
+    ],
+    "adaptations": [
+      "Le blanc de dinde remplace le porc."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Porc cuit à cœur."
+    ],
+    "nutrition": "Une viande maigre accompagnée d’un légume racine et d’un fruit cuit.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-pot-au-feu-bebe",
+    "title": "Petit pot-au-feu fondant aux légumes",
+    "summary": "Le pot-au-feu familial, prélevé avant le sel pour les petits.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 20,
+    "cookMin": 120,
+    "ingredients": [
+      [
+        "beef_stew",
+        80,
+        "g"
+      ],
+      [
+        "carrot",
+        100,
+        "g"
+      ],
+      [
+        "turnip",
+        80,
+        "g"
+      ],
+      [
+        "leek",
+        60,
+        "g"
+      ],
+      [
+        "potato",
+        120,
+        "g"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Mettez le bœuf dans une cocotte, couvrez d’eau froide non salée, ajoutez le laurier et portez à frémissement ; écumez.",
+      "Laissez mijoter à couvert 90 minutes.",
+      "Ajoutez les carottes, le navet, le poireau et la pomme de terre épluchés et coupés en gros morceaux, et poursuivez la cuisson 30 minutes.",
+      "Retirez le laurier, effilochez finement la viande et écrasez les légumes à la fourchette pour l’enfant."
+    ],
+    "allergens": [],
+    "tags": [
+      "complete",
+      "iron",
+      "family",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Pour la famille, multipliez les quantités et salez le bouillon après avoir prélevé la part de l’enfant."
+    ],
+    "storage": "48 h au réfrigérateur ou 2 mois au congélateur.",
+    "precautions": [
+      "Viande cuite longuement, très tendre et effilochée."
+    ],
+    "nutrition": "Le bœuf mijoté apporte du fer héminique ; les légumes du bouillon des fibres.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-muffins-banane-myrtilles",
+    "title": "Muffins à la banane et aux myrtilles sans sucre ajouté",
+    "summary": "Un goûter moelleux sucré uniquement par les fruits.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "breakfast"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "banana",
+        1,
+        "u",
+        "très mûre"
+      ],
+      [
+        "blueberries",
+        40,
+        "g"
+      ],
+      [
+        "flour",
+        60,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "yogurt",
+        50,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Écrasez la banane, puis ajoutez l’œuf, le yaourt et l’huile de colza.",
+      "Incorporez la farine et la levure sans trop mélanger.",
+      "Coupez les myrtilles en deux et ajoutez-les délicatement.",
+      "Répartissez dans 8 petits moules et faites cuire au four à 180 °C 20 minutes, jusqu’à ce qu’une lame ressorte sèche."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "freezer",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Les framboises remplacent les myrtilles.",
+      "Sans œuf : remplacez-le par 2 cuillères à soupe de compote."
+    ],
+    "storage": "48 h dans une boîte hermétique ou 2 mois au congélateur.",
+    "precautions": [
+      "Myrtilles coupées en deux avant 4 ans."
+    ],
+    "nutrition": "Un goûter sans sucre ajouté, sucré par la banane mûre.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-biscuits-avoine-compote",
+    "title": "Biscuits moelleux à l’avoine et à la compote",
+    "summary": "Des biscuits tendres, faciles à tenir, sans sucre ajouté.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "oats",
+        60,
+        "g"
+      ],
+      [
+        "compote_unsweetened",
+        80,
+        "g"
+      ],
+      [
+        "flour",
+        20,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Mixez grossièrement les flocons d’avoine.",
+      "Mélangez avec la compote, la farine, l’huile de colza et la cannelle jusqu’à obtenir une pâte collante.",
+      "Formez 10 petits biscuits aplatis sur une plaque recouverte de papier cuisson.",
+      "Faites cuire au four à 180 °C 15 minutes ; ils restent moelleux en refroidissant."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "budget",
+      "lunchbox",
+      "fiber"
+    ],
+    "adaptations": [
+      "Ajoutez une banane écrasée à la place d’une partie de la compote."
+    ],
+    "storage": "3 jours dans une boîte hermétique.",
+    "precautions": [
+      "Biscuits tendres à proposer assis, sous surveillance."
+    ],
+    "nutrition": "Un goûter à base de céréales complètes et de fruit, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-tartines-avocat-oeuf",
+    "title": "Mouillettes de pain complet, avocat et œuf écrasé",
+    "summary": "Un petit-déjeuner salé à prendre avec les doigts.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 1,
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "wholemeal_bread",
+        30,
+        "g",
+        "1 tranche"
+      ],
+      [
+        "avocado",
+        30,
+        "g"
+      ],
+      [
+        "egg",
+        0.5,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Faites cuire l’œuf 10 minutes dans l’eau bouillante pour qu’il soit dur, puis refroidissez-le et écalez-le.",
+      "Écrasez l’avocat à la fourchette et tartinez-le sur le pain complet sans croûte.",
+      "Écrasez le demi-œuf dur et parsemez-le sur l’avocat.",
+      "Coupez la tartine en mouillettes de la largeur d’un doigt."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "quick",
+      "protein"
+    ],
+    "adaptations": [
+      "Retirez la croûte pour les plus petits ; vers 2 ans, gardez-la."
+    ],
+    "storage": "À préparer au moment.",
+    "precautions": [
+      "Œuf toujours cuit dur."
+    ],
+    "nutrition": "Un féculent complet, des lipides insaturés et des protéines.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-pain-perdu-cannelle",
+    "title": "Pain perdu au lait de croissance et cannelle",
+    "summary": "Un pain perdu peu sucré, en bâtonnets.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 6,
+    "ingredients": [
+      [
+        "bread",
+        40,
+        "g",
+        "2 tranches de pain de mie"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "infant_milk",
+        50,
+        "ml",
+        "lait de croissance"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ],
+      [
+        "butter",
+        3,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Battez l’œuf avec le lait de croissance et la cannelle.",
+      "Coupez le pain de mie en bâtonnets et trempez-les rapidement dans la préparation.",
+      "Faites cuire dans le beurre à feu moyen 3 minutes de chaque côté, jusqu’à ce que l’œuf soit bien cuit.",
+      "Laissez tiédir et servez avec des fruits frais coupés."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "quick"
+    ],
+    "adaptations": [
+      "Sans sucre ajouté : la cannelle suffit ; servez avec une banane écrasée."
+    ],
+    "storage": "À préparer au moment.",
+    "precautions": [
+      "Œuf cuit à cœur.",
+      "Vers 1 an : environ ½ œuf par repas ; préférez un pain sans sucre ajouté."
+    ],
+    "nutrition": "Un petit-déjeuner avec un féculent et des protéines, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-ecrase-sardines-citron",
+    "title": "Écrasé de pommes de terre aux sardines et citron",
+    "summary": "Un plat express du placard.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "potato",
+        200,
+        "g"
+      ],
+      [
+        "sardines_can",
+        50,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "cc",
+        "jus"
+      ],
+      [
+        "parsley",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les pommes de terre épluchées à la vapeur 15 minutes.",
+      "Égouttez les sardines, retirez l’arête centrale et écrasez-les à la fourchette.",
+      "Écrasez les pommes de terre et mélangez avec les sardines, le jus de citron et le persil haché.",
+      "Servez tiède."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "quick",
+      "budget",
+      "protein",
+      "calcium"
+    ],
+    "adaptations": [
+      "Le thon au naturel remplace les sardines."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir.",
+    "precautions": [
+      "Retirez l’arête centrale des sardines."
+    ],
+    "nutrition": "Les sardines apportent des oméga-3 et du calcium.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-riz-saute-legumes-oeuf",
+    "title": "Riz sauté aux légumes et à l’œuf",
+    "summary": "Le riz cantonais revisité, sans sauce salée.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 18,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "rice",
+        60,
+        "g",
+        "cru"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "frozen_peas",
+        50,
+        "g"
+      ],
+      [
+        "carrot",
+        50,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz 20 minutes dans l’eau non salée, avec les petits pois pour les 5 dernières minutes, puis égouttez.",
+      "Râpez la carotte et faites-la sauter dans l’huile de colza 3 minutes.",
+      "Ajoutez l’œuf battu et remuez jusqu’à ce qu’il soit bien cuit, puis ajoutez le riz et les petits pois.",
+      "Mélangez et servez tiède."
+    ],
+    "allergens": [
+      "eggs"
+    ],
+    "tags": [
+      "vegetarian",
+      "quick",
+      "family",
+      "world"
+    ],
+    "adaptations": [
+      "Pour les adultes, ajoutez un peu de sauce soja à leur part."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Œuf bien cuit."
+    ],
+    "nutrition": "Un féculent, des légumes et une protéine dans le même plat.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-flans-brocoli-comte",
+    "title": "Mini-flans brocoli et comté",
+    "summary": "Des petits flans à manger avec les doigts.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dinner",
+      "snack"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "broccoli",
+        100,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "cream",
+        1,
+        "cs"
+      ],
+      [
+        "comte",
+        15,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le brocoli à la vapeur 8 minutes puis hachez-le finement.",
+      "Battez l’œuf avec la crème et le comté râpé, puis ajoutez le brocoli.",
+      "Répartissez dans des moules à mini-muffins et faites cuire au four à 180 °C 12 minutes, jusqu’à ce qu’ils soient fermes.",
+      "Laissez tiédir avant de démouler."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "calcium",
+      "freezer"
+    ],
+    "adaptations": [
+      "Le chou-fleur ou la courgette remplacent le brocoli."
+    ],
+    "storage": "48 h au réfrigérateur.",
+    "precautions": [
+      "Œuf cuit à cœur."
+    ],
+    "nutrition": "Le comté apporte du calcium ; le brocoli de la vitamine C.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-truite-riz-carottes",
+    "title": "Truite, riz et carottes au citron",
+    "summary": "Un poisson tendre servi en petits morceaux.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "trout",
+        60,
+        "g"
+      ],
+      [
+        "rice",
+        50,
+        "g"
+      ],
+      [
+        "carrot",
+        100,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "cc"
+      ],
+      [
+        "butter",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz 20 minutes dans l’eau non salée.",
+      "Épluchez les carottes, coupez-les en bâtonnets et faites-les cuire à la vapeur 12 minutes.",
+      "Faites cuire la truite à la vapeur 8 minutes, jusqu’à ce qu’elle soit opaque à cœur, puis émiettez-la en retirant les arêtes.",
+      "Servez avec le beurre et quelques gouttes de jus de citron."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "complete",
+      "protein"
+    ],
+    "adaptations": [
+      "Le saumon ou le cabillaud remplacent la truite."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, bien à cœur, puis laissez tiédir. Riz cuit : refroidir en moins de 2 h, garder 24 h au réfrigérateur (48 h au plus), réchauffer une seule fois, bien chaud ; congeler la garniture sans le riz.",
+    "precautions": [
+      "Poisson cuit à cœur, sans arêtes."
+    ],
+    "nutrition": "La truite est un poisson gras qui apporte des oméga-3.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-mousse-mangue-petits-suisses",
+    "title": "Crème à la mangue et aux petits-suisses",
+    "summary": "Un dessert frais aux saveurs d’ailleurs.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "mango",
+        80,
+        "g"
+      ],
+      [
+        "petit_suisse",
+        2,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Épluchez la mangue et prélevez la chair.",
+      "Mixez-la finement.",
+      "Mélangez avec les petits-suisses et servez frais."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "vegetarian",
+      "calcium",
+      "world"
+    ],
+    "adaptations": [
+      "La pêche remplace la mangue en été."
+    ],
+    "storage": "À préparer au moment.",
+    "precautions": [],
+    "nutrition": "Un laitage et un fruit, sans sucre ajouté.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-batonnets-melon-pasteque",
+    "title": "Bâtonnets de melon et pastèque",
+    "summary": "Un goûter d’été rafraîchissant à prendre avec les doigts.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "melon",
+        100,
+        "g"
+      ],
+      [
+        "watermelon",
+        100,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Coupez le melon et la pastèque en tranches et retirez la peau.",
+      "Retirez toutes les graines de la pastèque.",
+      "Coupez en bâtonnets de la taille d’un doigt."
+    ],
+    "allergens": [],
+    "tags": [
+      "finger",
+      "quick",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Servez avec un yaourt nature."
+    ],
+    "storage": "À préparer au moment.",
+    "precautions": [
+      "Retirez toutes les graines de la pastèque."
+    ],
+    "nutrition": "Des fruits d’été riches en eau.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-pitas-pizza-courgette",
+    "title": "Mini-pizzas sur pain pita à la courgette",
+    "summary": "Une pizza maison rapide en famille.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "dinner"
+    ],
+    "stages": [
+      "y2_3"
+    ],
+    "minMonths": 24,
+    "maxMonths": 36,
+    "textures": [
+      "regular"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "pita",
+        1,
+        "u"
+      ],
+      [
+        "canned_tomato",
+        60,
+        "g"
+      ],
+      [
+        "mozzarella",
+        40,
+        "g"
+      ],
+      [
+        "zucchini",
+        50,
+        "g"
+      ],
+      [
+        "herbs",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Coupez la courgette en fines rondelles.",
+      "Étalez les tomates concassées sur le pain pita et ajoutez la courgette, la mozzarella et les herbes.",
+      "Faites cuire au four à 200 °C 10 minutes.",
+      "Coupez en petites parts."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Pour les adultes, ajoutez des olives ou du jambon."
+    ],
+    "storage": "À déguster aussitôt.",
+    "precautions": [],
+    "nutrition": "Un féculent, des légumes et du fromage.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "bb-wraps-poulet-avocat",
+    "title": "Wraps tout doux au poulet et avocat",
+    "summary": "Des wraps roulés et coupés en tronçons.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "y2_3"
+    ],
+    "minMonths": 24,
+    "maxMonths": 36,
+    "textures": [
+      "regular"
+    ],
+    "servings": 2,
+    "prepMin": 15,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "tortilla",
+        2,
+        "u"
+      ],
+      [
+        "chicken",
+        60,
+        "g"
+      ],
+      [
+        "avocado",
+        40,
+        "g"
+      ],
+      [
+        "cucumber",
+        40,
+        "g"
+      ],
+      [
+        "yogurt",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le poulet à la poêle 10 minutes, jusqu’à ce qu’il soit cuit à cœur.",
+      "Coupez-le en fines lamelles.",
+      "Étalez le yaourt et l’avocat écrasé sur les galettes de blé, ajoutez le poulet et le concombre râpé.",
+      "Roulez serré et coupez en tronçons."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "lunchbox",
+      "protein",
+      "family"
+    ],
+    "adaptations": [
+      "Le thon remplace le poulet."
+    ],
+    "storage": "24 h au réfrigérateur.",
+    "precautions": [
+      "Concombre râpé pour les plus petits."
+    ],
+    "nutrition": "Un féculent, une protéine et des légumes crus.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "inspq_etouffement"
+    ]
+  }
+]
