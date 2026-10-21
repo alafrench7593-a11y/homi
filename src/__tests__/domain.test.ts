@@ -4,7 +4,7 @@ import { childAge } from '@/lib/domain/child';
 import { estimateCycle, CYCLE_CAVEATS } from '@/lib/domain/cycle';
 import { describeSchedule, nextOccurrence, planReminder, toExpoWeekday, validateSchedule } from '@/lib/domain/reminders';
 import { summarizeDay } from '@/lib/domain/daily';
-import { weekInfo } from '@/lib/domain/fetalWeeks';
+import { FETAL_SIZE_SOURCE, formatLength, weekInfo } from '@/lib/domain/fetalWeeks';
 
 describe('dates', () => {
   it('compte les jours sans être affecté par le changement d’heure', () => {
@@ -43,8 +43,14 @@ describe('grossesse', () => {
     expect(validateDueDate('2027-02-01', '2026-10-15')).toBeNull();
   });
   it('fournit des repères de taille croissants (illustration)', () => {
-    expect(weekInfo(12).lengthCm).toBeLessThan(weekInfo(30).lengthCm);
-    expect(weekInfo(19).lengthKind).toBe('tête-fesses');
+    expect(weekInfo(12).lengthCm!).toBeLessThan(weekInfo(30).lengthCm!);
+    // valeurs publiées par la source (mpedia, 23/09/2022)
+    expect(weekInfo(20)).toMatchObject({ lengthCm: 23, weightG: 345 });
+    expect(weekInfo(28)).toMatchObject({ lengthCm: 35, weightG: 1130 });
+    expect(weekInfo(40)).toMatchObject({ lengthCm: 51.5, weightG: 3400 });
+    expect(weekInfo(5).lengthCm).toBeNull();
+    expect(formatLength(null)).toBe('moins de 5 mm');
+    expect(FETAL_SIZE_SOURCE.url).toMatch(/^https:\/\/www\.mpedia\.fr\//);
     expect(weekInfo(24).compare).toBeTruthy();
   });
 });
@@ -126,5 +132,54 @@ describe('synthèse du quotidien', () => {
     expect(s.diapers).toBe(2);
     expect(s.stools).toBe(1);
     expect(s.sleepMinutes).toBe(6 * 60 + 90); // seule la part de la nuit comprise dans la journée compte
+  });
+});
+
+import { nextRestEstimate, sleepDay, wakeWindows } from '@/lib/domain/sleepEstimate';
+describe('sommeil du bébé : estimation à partir des relevés de la famille', () => {
+  const at = (d: string, h: string) => new Date(`2026-10-${d}T${h}:00`).toISOString();
+  const logs = [
+    { started_at: at('18', '09:00'), ended_at: at('18', '10:00') }, { started_at: at('18', '12:15'), ended_at: at('18', '13:30') },
+    { started_at: at('19', '09:30'), ended_at: at('19', '10:30') }, { started_at: at('19', '12:30'), ended_at: at('19', '14:00') },
+    { started_at: at('20', '09:20'), ended_at: at('20', '10:20') }, { started_at: at('20', '12:20'), ended_at: at('20', '13:40') },
+    { started_at: at('21', '09:40'), ended_at: at('21', '10:40') },
+  ];
+  it('médiane des temps d’éveil de la famille, jamais une norme', () => {
+    expect(wakeWindows(logs, new Date(at('21', '11:00')))).toEqual([135, 120, 120]);
+    const e = nextRestEstimate(logs, new Date(at('21', '11:00')));
+    expect(e.kind).toBe('estimate');
+    if (e.kind === 'estimate') { expect(e.medianMinutes).toBe(120); expect(e.at.toISOString()).toBe(at('21', '12:40')); }
+  });
+  it('pas d’estimation avec moins de 3 relevés, ni pendant un sommeil', () => {
+    expect(nextRestEstimate(logs.slice(0, 4), new Date(at('19', '15:00'))).kind).toBe('not_enough');
+    expect(nextRestEstimate([...logs, { started_at: at('21', '12:30'), ended_at: null }], new Date(at('21', '13:00'))).kind).toBe('asleep');
+  });
+  it('totaux : siestes et nuit séparées', () => {
+    const d = sleepDay([...logs, { started_at: at('21', '20:00'), ended_at: at('21', '23:00'), wakeups: 2 }], new Date(at('21', '12:00')), new Date(at('21', '23:30')));
+    expect(d).toEqual({ naps: 1, napMinutes: 60, nightMinutes: 180, nightWakeups: 2 });
+  });
+});
+
+import { parseQuickEntry } from '@/lib/domain/quickEntry';
+describe('saisie rapide « Lina a bu 150 ml à 14 h »', () => {
+  const kids = [{ id: 'l', first_name: 'Lina' }, { id: 'n', first_name: 'Noé' }];
+  const now = new Date('2026-10-21T15:00:00');
+  it('reconnaît l’enfant, la quantité et l’heure', () => {
+    const r = parseQuickEntry('Lina a bu 150 ml à 14 h', kids, now);
+    expect(r.ok && r.value).toMatchObject({ kind: 'bottle', childId: 'l', ml: 150 });
+    if (r.ok) expect([r.value.at.getHours(), r.value.at.getMinutes()]).toEqual([14, 0]);
+    const n = parseQuickEntry('noe biberon 90 ml 13h45', kids, now);
+    expect(n.ok && n.value).toMatchObject({ childId: 'n', ml: 90 });
+    if (n.ok) expect(n.value.at.getMinutes()).toBe(45);
+  });
+  it('ne devine pas : enfant inconnu ou type absent → erreur', () => {
+    expect(parseQuickEntry('a bu 150 ml', kids, now)).toEqual({ ok: false, error: 'child' });
+    expect(parseQuickEntry('Lina a bu 150 ml', kids, now, 'l').ok).toBe(true);
+    expect(parseQuickEntry('Lina va bien', kids, now)).toEqual({ ok: false, error: 'kind' });
+    expect(parseQuickEntry('Lina a bu 900 ml', kids, now)).toEqual({ ok: false, error: 'ml' });
+  });
+  it('« 23 h » saisi après minuit = la veille', () => {
+    const r = parseQuickEntry('Lina a bu 120 ml à 23 h', kids, new Date('2026-10-21T01:00:00'));
+    expect(r.ok && r.value.at.getDate()).toBe(20);
   });
 });

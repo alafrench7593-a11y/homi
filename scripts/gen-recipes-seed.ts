@@ -5,7 +5,7 @@
  * annuler une correction ou une validation faite depuis l'administration.
  */
 import { writeFileSync } from 'node:fs';
-import { ALL_RECIPES, DRAFT_RECIPES } from '../src/content/recipes';
+import { ALL_RECIPES } from '../src/content/recipes';
 import type { Recipe } from '../src/lib/recipes/types';
 import { INGREDIENTS } from '../src/lib/recipes/ingredients';
 import { RECIPE_SOURCES } from '../src/lib/recipes/sources';
@@ -19,7 +19,7 @@ const q = (v: unknown): string => {
 };
 const arr = (a: readonly string[]) => `array[${a.map(q).join(',')}]::text[]`;
 
-const errors = [...ALL_RECIPES, ...DRAFT_RECIPES].flatMap((r) => validateRecipe(r).map((e) => `${r.slug}: ${e}`)).concat(findDuplicates([...ALL_RECIPES, ...DRAFT_RECIPES]));
+const errors = ALL_RECIPES.flatMap((r) => validateRecipe(r).map((e) => `${r.slug}: ${e}`)).concat(findDuplicates(ALL_RECIPES));
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 
 function render(list: Recipe[], header: string[], withSources: boolean): string {
@@ -33,9 +33,9 @@ if (withSources) for (const s of Object.values(RECIPE_SOURCES)) {
 for (const r of list) {
   const id = `(select id from public.recipes where slug = ${q(r.slug)} and owner_id is null)`;
   out.push('', `-- ${r.title}`);
-  out.push(`insert into public.recipes (slug, title, summary, audiences, meals, stages, min_months, max_months, textures, servings, serving_label, prep_min, cook_min, allergens, tags, adaptations, storage, precautions, nutrition, budget, seasons, temperature, family_adaptations, verified_on, status) values (${[
+  out.push(`insert into public.recipes (slug, title, summary, audiences, meals, stages, min_months, max_months, textures, servings, serving_label, prep_min, cook_min, allergens, tags, adaptations, storage, freezing, precautions, nutrition, budget, seasons, temperature, family_adaptations, verified_on, status) values (${[
     q(r.slug), q(r.title), q(r.summary), arr(r.audiences), arr(r.meals), arr(r.stages ?? []), q(r.minMonths ?? null), q(r.maxMonths ?? null), arr(r.textures),
-    q(r.servings), q(r.servingLabel ?? null), q(r.prepMin), q(r.cookMin), arr(r.allergens), arr(r.tags), arr(r.adaptations), q(r.storage), arr(r.precautions),
+    q(r.servings), q(r.servingLabel ?? null), q(r.prepMin), q(r.cookMin), arr(r.allergens), arr(r.tags), arr(r.adaptations), q(r.storage), q(r.freezing ?? null), arr(r.precautions),
     q(r.nutrition), q(r.budget), arr(r.seasons === 'all' ? [] : r.seasons), q(r.temperature), `${q(JSON.stringify(r.familyAdaptations ?? {}))}::jsonb`, q(r.verifiedOn), q(r.status),
   ].join(', ')}) on conflict (slug) do nothing;`);
   r.ingredients.forEach((x, n) => out.push(`insert into public.recipe_ingredients (recipe_id, position, ingredient_key, label, qty, unit, note, optional) values (${id}, ${n + 1}, ${q(x.key)}, ${q(INGREDIENTS[x.key].name)}, ${q(x.qty)}, ${q(x.unit)}, ${q(x.note ?? null)}, ${q(!!x.optional)}) on conflict do nothing;`));
@@ -47,6 +47,8 @@ for (const r of list) {
 }
 return `${out.join('\n')}\n`;
 }
-writeFileSync('supabase/migrations/20261020000200_recipes_seed.sql', render(ALL_RECIPES, [`-- ${ALL_RECIPES.length} recettes rédigées par une IA, statut « à vérifier » (to_review) : aucune n'est marquée relue ou validée.`], true));
-writeFileSync('supabase/migrations/20261020000600_recipes_drafts_seed.sql', render(DRAFT_RECIPES, [`-- ${DRAFT_RECIPES.length} brouillons de recettes enfants rédigés par une IA, statut « brouillon généré par IA » (ai_draft) : invisibles des parents tant qu'une personne de l'équipe éditoriale ne les a pas relus.`], false));
-console.log(`${ALL_RECIPES.length} recettes + ${DRAFT_RECIPES.length} brouillons écrits`);
+// Les anciens fichiers (20261020000200_recipes_seed.sql, 20261020000600_recipes_drafts_seed.sql) restent tels quels :
+// ce sont des migrations déjà appliquées ; 20261021000100_recettes_v2.sql supprime ensuite l'ancien catalogue.
+const v2 = ALL_RECIPES;
+writeFileSync('supabase/migrations/20261021000200_recipes_v2_seed.sql', render(v2, [`-- ${v2.length} recettes (nouveau catalogue de recettes familiales classiques + purée carotte et pomme de terre) rédigées par une IA, statut « à vérifier » (to_review) : aucune n'est marquée relue ou validée.`], true));
+console.log(`${v2.length} recettes écrites`);

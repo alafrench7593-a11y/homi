@@ -116,6 +116,9 @@ export interface ReminderDraft {
   schedule: ReminderSchedule;
   enabled: boolean;
   deep_link?: string | null;
+  /** Profil concerné : la grossesse (complément prescrit) ou un enfant ; absent = la personne elle-même */
+  pregnancy_id?: string | null;
+  child_id?: string | null;
 }
 
 /** Après chaque modification : relecture de la liste puis reprogrammation des notifications locales. */

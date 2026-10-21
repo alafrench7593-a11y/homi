@@ -13,7 +13,9 @@ import { useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useScope } from '@/lib/data/hooks-scope';
 import { insertOrQueue } from '@/lib/offline';
-import { cycleHistory, estimateCycle, projectFertileWindows } from '@/lib/domain/cycle';
+import { cycleHistory, estimateCycle, periodDelay, projectFertileWindows } from '@/lib/domain/cycle';
+import { ObjectiveRow, useObjective } from '@/features/cycle/Objective';
+import { ListRow } from '@/components/ui';
 import { dayActions, type DayAction } from '@/lib/domain/cycleCalendar';
 import { Screen } from '@/components/Screen';
 import { Button, haptic, IconButton, Row } from '@/components/ui';
@@ -53,6 +55,8 @@ export default function CycleCalendar() {
   const est = useMemo(() => estimateCycle(periods ?? [], today), [periods, today]);
   const next = useMemo(() => projectFertileWindows(est, 1)[0] ?? null, [est]);
   const history = useMemo(() => cycleHistory(periods ?? [], today), [periods, today]);
+  const delay = useMemo(() => periodDelay(periods ?? [], today), [periods, today]);
+  const objective = useObjective();
   const acts = day ? dayActions(day.iso, rows, today) : { covering: null, actions: [] as DayAction[] };
 
   /** Toucher un jour : début, fin, début plus tôt, suppression (avec confirmation). */
@@ -102,7 +106,8 @@ export default function CycleCalendar() {
   const daySymptoms = day ? (symptoms ?? []).filter((s) => s.logged_on === day.iso).flatMap((s) => symptomKeysOf(s)) : [];
 
   return (
-    <Screen back title={tr('cy.cal.title')} subtitle={tr('cy.cal.subtitle')}>
+    <Screen back title={tr('pj.cycleHub')} subtitle={tr('cy.cal.subtitle')}>
+      <ObjectiveRow />
       <Glass>
         <Row style={{ justifyContent: 'space-between' }}>
           <IconButton icon="chevron-left" label={tr('cy.cal.prev')} onPress={() => go(-1)} />
@@ -148,12 +153,54 @@ export default function CycleCalendar() {
             <>
               <Ink variant="small">{tr('cyc.nextPeriod', { date: fmtDay(next.nextPeriod, { day: 'numeric', month: 'long' }) })}</Ink>
               <Ink variant="small">{tr('cyc.fertile', { from: fmtDay(next.start, { day: 'numeric', month: 'long' }), to: fmtDay(next.end, { day: 'numeric', month: 'long' }) })}</Ink>
+              <View testID="cal-ovulation"><Ink variant="small">{tr('cyh.ovulation', { date: fmtDay(next.ovulation, { day: 'numeric', month: 'long' }) })}</Ink></View>
+              {est.averageLength ? <Ink variant="small">{tr('cyc.average', { count: Math.round(est.averageLength) })}</Ink> : null}
             </>
           ) : <Ink variant="small" soft>{tr('cyc.needMore')}</Ink>}
           <Ink variant="caption" soft>{tr('cyc.approx')}</Ink>
+          {delay ? <View testID="cal-delay"><Ink variant="small" weight="bold">{tr('cyh.late', { count: delay })}</Ink></View> : null}
           {scope.scope === 'avoid' ? <View testID="cal-avoid-warning"><Ink variant="caption" weight="bold">{tr('cyc.avoidWarning')}</Ink></View> : null}
         </View>
       </Glass>
+
+      {/* Selon l'objectif : au quotidien (tous), éviter une grossesse, concevoir */}
+      <Glass>
+        <View testID="cal-section-daily" style={{ gap: 0 }}>
+          <Ink weight="bold">{tr('cyh.section.cycle')}</Ink>
+          <ListRow icon="activity" title={tr('cyh.l.symptoms')} onPress={() => router.push('/cycle/symptoms' as never)} />
+          <ListRow icon="smile" title={tr('cyh.l.mood')} onPress={() => router.push('/me/mood' as never)} />
+          <ListRow icon="zap" title={tr('cyh.l.pain')} onPress={() => router.push('/cycle/pain' as never)} />
+          <ListRow icon="droplet" title={tr('cyh.l.discharge')} onPress={() => router.push('/cycle/discharge' as never)} />
+          <ListRow icon="lock" title={tr('cyh.l.intimacy')} onPress={() => router.push('/cycle/intimacy' as never)} />
+          <ListRow icon="edit-3" title={tr('cyh.l.journal')} onPress={() => router.push('/cycle/journal' as never)} />
+        </View>
+      </Glass>
+      {objective === 'avoid' ? (
+        <Glass>
+          <View testID="cal-section-avoid">
+            <Ink weight="bold">{tr('cyh.section.avoid')}</Ink>
+            <Ink variant="caption" weight="bold">{tr('cyh.avoidNote')}</Ink>
+            <ListRow icon="list" title={tr('cyh.l.methods')} onPress={() => router.push('/contraception/methods' as never)} />
+            <ListRow icon="bell" title={tr('cyh.l.pill')} onPress={() => router.push('/contraception/reminders' as never)} />
+            <ListRow icon="refresh-cw" title={tr('cyh.l.renewal')} onPress={() => router.push('/contraception/reminders' as never)} />
+            <ListRow icon="alert-circle" title={tr('cyh.l.emergency')} onPress={() => router.push('/contraception/emergency' as never)} />
+            <ListRow icon="clipboard" title={tr('cyh.l.consult')} onPress={() => router.push('/contraception/consultation' as never)} />
+          </View>
+        </Glass>
+      ) : null}
+      {objective === 'ttc' ? (
+        <Glass>
+          <View testID="cal-section-ttc">
+            <Ink weight="bold">{tr('cyh.section.ttc')}</Ink>
+            <ListRow icon="check-circle" title={tr('cyh.l.tests')} onPress={() => router.push('/fertility/log' as never)} />
+            <ListRow icon="search" title={tr('cyh.l.mucus')} onPress={() => router.push('/fertility/mucus' as never)} />
+            <ListRow icon="thermometer" title={tr('cyh.l.temperature')} onPress={() => router.push('/fertility/body' as never)} />
+            <ListRow icon="bell" title={tr('cyh.l.reminders')} onPress={() => router.push('/fertility/reminders' as never)} />
+            <Button label={tr('cyh.l.positive')} icon="heart" onPress={() => router.push('/pregnancy/start' as never)} testID="cal-positive" full />
+            <Ink variant="caption" soft>{tr('cyh.positiveHint')}</Ink>
+          </View>
+        </Glass>
+      ) : null}
 
       {/* Cycles précédents, avec leur durée */}
       <Glass>

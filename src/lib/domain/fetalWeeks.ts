@@ -1,43 +1,45 @@
 /**
  * Repères ÉDUCATIFS semaine par semaine (en SA).
- * Valeurs moyennes indicatives, arrondies : chaque bébé grandit à son rythme.
- * Ces repères ne sont ni une échographie ni une mesure de VOTRE bébé.
- * ⚠️ Contenu de développement : à faire valider par un professionnel
- * (sage-femme / gynécologue-obstétricien) avant publication.
+ * Taille et poids : MOYENNES GÉNÉRALES publiées par une source française, arrondies ; entre deux points
+ * publiés, la valeur est interpolée. Ce ne sont jamais les mesures de VOTRE bébé (seule l'échographie mesure).
+ * Les comparaisons avec des fruits sont seulement illustratives.
  */
+
+/** Source des tailles et poids moyens affichés. */
+export const FETAL_SIZE_SOURCE = {
+  name: 'mpedia (Association française de pédiatrie ambulatoire) — « La grossesse mois par mois »',
+  url: 'https://www.mpedia.fr/art-grossesse-mois-apres-mois/',
+  updatedOn: '2022-09-23',
+} as const;
 
 interface SizePoint {
   sa: number;
-  lengthCm: number; // avant 20 SA : longueur tête-fesses ; ensuite : tête-talons
-  weightG: number | null;
+  lengthCm: number;
+  weightG: number;
   compare: string;
 }
 
+/** Valeurs de la source (6 à 41 SA). Avant 6 SA, aucune valeur n'est affichée. */
 const SIZES: SizePoint[] = [
-  { sa: 4, lengthCm: 0.1, weightG: null, compare: 'une graine de pavot' },
-  { sa: 5, lengthCm: 0.2, weightG: null, compare: 'une graine de sésame' },
-  { sa: 6, lengthCm: 0.4, weightG: null, compare: 'un grain de riz' },
-  { sa: 7, lengthCm: 0.8, weightG: null, compare: 'une lentille' },
-  { sa: 8, lengthCm: 1.5, weightG: 1, compare: 'une myrtille' },
-  { sa: 9, lengthCm: 2.2, weightG: 2, compare: 'une framboise' },
-  { sa: 10, lengthCm: 3, weightG: 4, compare: 'une olive' },
-  { sa: 11, lengthCm: 4, weightG: 7, compare: 'une figue' },
-  { sa: 12, lengthCm: 5.5, weightG: 14, compare: 'un citron vert' },
-  { sa: 14, lengthCm: 8.5, weightG: 45, compare: 'un citron' },
-  { sa: 16, lengthCm: 11.5, weightG: 100, compare: 'un avocat' },
-  { sa: 18, lengthCm: 14, weightG: 190, compare: 'un poivron' },
-  { sa: 20, lengthCm: 25, weightG: 300, compare: 'une banane' },
-  { sa: 22, lengthCm: 28, weightG: 430, compare: 'une papaye' },
-  { sa: 24, lengthCm: 30, weightG: 600, compare: 'un épi de maïs' },
-  { sa: 26, lengthCm: 35, weightG: 760, compare: 'une laitue' },
-  { sa: 28, lengthCm: 37, weightG: 1000, compare: 'une aubergine' },
-  { sa: 30, lengthCm: 39, weightG: 1300, compare: 'un chou' },
-  { sa: 32, lengthCm: 42, weightG: 1700, compare: 'une noix de coco' },
-  { sa: 34, lengthCm: 45, weightG: 2100, compare: 'un melon' },
-  { sa: 36, lengthCm: 47, weightG: 2600, compare: 'une laitue romaine' },
-  { sa: 38, lengthCm: 49, weightG: 3000, compare: 'une petite citrouille' },
-  { sa: 40, lengthCm: 50, weightG: 3300, compare: 'une pastèque' },
-  { sa: 42, lengthCm: 51, weightG: 3500, compare: 'une pastèque' },
+  { sa: 6, lengthCm: 0.5, weightG: 1, compare: 'un grain de riz' },
+  { sa: 8, lengthCm: 1.5, weightG: 2, compare: 'une myrtille' },
+  { sa: 10, lengthCm: 3, weightG: 11, compare: 'une olive' },
+  { sa: 12, lengthCm: 5, weightG: 28, compare: 'un citron vert' },
+  { sa: 14, lengthCm: 8.5, weightG: 65, compare: 'un citron' },
+  { sa: 16, lengthCm: 13, weightG: 135, compare: 'un avocat' },
+  { sa: 18, lengthCm: 18, weightG: 200, compare: 'un poivron' },
+  { sa: 20, lengthCm: 23, weightG: 345, compare: 'une banane' },
+  { sa: 22, lengthCm: 27, weightG: 500, compare: 'une papaye' },
+  { sa: 24, lengthCm: 31, weightG: 660, compare: 'un épi de maïs' },
+  { sa: 26, lengthCm: 33, weightG: 890, compare: 'une laitue' },
+  { sa: 28, lengthCm: 35, weightG: 1130, compare: 'une aubergine' },
+  { sa: 30, lengthCm: 38, weightG: 1400, compare: 'un chou' },
+  { sa: 32, lengthCm: 41.5, weightG: 1700, compare: 'une noix de coco' },
+  { sa: 34, lengthCm: 45, weightG: 2000, compare: 'un melon' },
+  { sa: 36, lengthCm: 47, weightG: 2680, compare: 'une laitue romaine' },
+  { sa: 38, lengthCm: 50, weightG: 3000, compare: 'une petite citrouille' },
+  { sa: 40, lengthCm: 51.5, weightG: 3400, compare: 'une pastèque' },
+  { sa: 41, lengthCm: 52, weightG: 3500, compare: 'une pastèque' },
 ];
 
 interface Stage {
@@ -66,10 +68,10 @@ const STAGES: Stage[] = [
 
 export interface WeekInfo {
   sa: number;
-  lengthCm: number;
+  /** null avant 6 SA : la source ne publie pas de valeur */
+  lengthCm: number | null;
   weightG: number | null;
   compare: string;
-  lengthKind: 'tête-fesses' | 'tête-talons';
   baby: string[];
   mother: string[];
   /** 0..1 — sert uniquement à faire évoluer l'illustration */
@@ -78,31 +80,29 @@ export interface WeekInfo {
 
 export function weekInfo(sa: number): WeekInfo {
   const w = Math.max(4, Math.min(42, sa));
-  let lower = SIZES[0];
-  let upper = SIZES[SIZES.length - 1];
+  const stage = STAGES.find((x) => w >= x.from && w <= x.to) ?? STAGES[STAGES.length - 1];
+  const base = { sa: w, baby: stage.baby, mother: stage.mother, growth: Math.min(1, Math.max(0, (w - 4) / 37)) };
+  if (w < SIZES[0].sa) return { ...base, lengthCm: null, weightG: null, compare: w < 5 ? 'une graine de pavot' : 'une graine de sésame' };
+  const c = Math.min(w, SIZES[SIZES.length - 1].sa);
+  let lower = SIZES[SIZES.length - 1];
+  let upper = lower;
   for (let i = 0; i < SIZES.length - 1; i++) {
-    if (w >= SIZES[i].sa && w <= SIZES[i + 1].sa) {
-      lower = SIZES[i];
-      upper = SIZES[i + 1];
-      break;
-    }
+    if (c >= SIZES[i].sa && c <= SIZES[i + 1].sa) { lower = SIZES[i]; upper = SIZES[i + 1]; break; }
   }
-  const t = upper.sa === lower.sa ? 0 : (w - lower.sa) / (upper.sa - lower.sa);
+  const t = upper.sa === lower.sa ? 0 : (c - lower.sa) / (upper.sa - lower.sa);
   const nearest = t < 0.5 ? lower : upper;
-  const lengthCm = Math.round((lower.lengthCm + (upper.lengthCm - lower.lengthCm) * t) * 10) / 10;
-  const weightG =
-    lower.weightG != null && upper.weightG != null ? Math.round(lower.weightG + (upper.weightG - lower.weightG) * t) : nearest.weightG;
-  const stage = STAGES.find((s) => w >= s.from && w <= s.to) ?? STAGES[STAGES.length - 1];
   return {
-    sa: w,
-    lengthCm,
-    weightG,
+    ...base,
+    lengthCm: Math.round((lower.lengthCm + (upper.lengthCm - lower.lengthCm) * t) * 10) / 10,
+    weightG: Math.round(lower.weightG + (upper.weightG - lower.weightG) * t),
     compare: nearest.compare,
-    lengthKind: w < 20 ? 'tête-fesses' : 'tête-talons',
-    baby: stage.baby,
-    mother: stage.mother,
-    growth: Math.min(1, Math.max(0, (w - 4) / 37)),
   };
+}
+
+/** « environ 23 cm », ou « moins de 5 mm » avant 6 SA. */
+export function formatLength(cm: number | null): string {
+  if (cm == null) return 'moins de 5 mm';
+  return cm < 1 ? `environ ${Math.round(cm * 10)} mm` : `environ ${cm.toLocaleString('fr-FR')} cm`;
 }
 
 export function formatWeight(g: number | null): string {

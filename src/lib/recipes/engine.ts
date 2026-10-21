@@ -99,6 +99,10 @@ export interface RecipeFilter {
   texture?: Texture | null;
   ageMonths?: number | null;
   favorites?: string[] | null;
+  /** Avec du poisson (recommandations ANSES sur les espèces, la cuisson, l'âge et la grossesse appliquées à chaque recette). */
+  fish?: boolean;
+  /** Idées masquées (« Je n'aime pas cette idée »), par identifiant de recette. */
+  exclude?: string[] | null;
 }
 
 export function filterRecipes(all: Recipe[], p: FoodProfile, f: RecipeFilter = {}): Recipe[] {
@@ -116,6 +120,8 @@ export function filterRecipes(all: Recipe[], p: FoodProfile, f: RecipeFilter = {
     && (!f.texture || r.textures.includes(f.texture))
     && (f.ageMonths == null || r.minMonths == null || (f.ageMonths >= r.minMonths && (r.maxMonths == null || f.ageMonths <= r.maxMonths)))
     && (!f.favorites || f.favorites.includes(r.id))
+    && (!f.fish || r.ingredients.some((x) => INGREDIENTS[x.key]?.fish))
+    && (!f.exclude?.length || !f.exclude.includes(r.id))
     && (!q || fold(`${r.title} ${r.summary} ${r.ingredients.map((x) => INGREDIENTS[x.key].name).join(' ')}`).includes(q)));
 }
 
@@ -200,6 +206,8 @@ export interface MenuOptions {
   budget?: 1 | 2 | 3 | null;
   have?: string[];
   favorites?: string[];
+  /** Idées masquées par la personne : jamais proposées dans un menu. */
+  exclude?: string[];
   /** Pour une famille : profils des enfants (repas communs + adaptations). */
   members?: FoodProfile[];
   seed?: number;
@@ -221,7 +229,7 @@ function score(r: Recipe, p: FoodProfile, o: MenuOptions) {
 
 /** Recettes possibles pour un repas : compatibles avec le profil ET, pour une famille, avec chaque enfant ou adaptables. */
 export function candidates(all: Recipe[], p: FoodProfile, meal: Meal, o: MenuOptions) {
-  return filterRecipes(all, p, { meal, maxMinutes: o.maxMinutes, budget: o.budget })
+  return filterRecipes(all, p, { meal, maxMinutes: o.maxMinutes, budget: o.budget, exclude: o.exclude })
     .filter((r) => (o.members ?? []).every((m) => compatible(r, m) || adaptationFor(r, m) != null));
 }
 
@@ -305,10 +313,10 @@ export function shoppingList(all: Recipe[], menu: MenuSlot[], have: string[] = [
 }
 
 /** Une recette recommandée pour l'accueil : stable pour la journée, uniquement parmi les recettes compatibles. */
-export function recipeOfDay(all: Recipe[], p: FoodProfile, d = new Date()): Recipe | null {
+export function recipeOfDay(all: Recipe[], p: FoodProfile, d = new Date(), exclude: string[] = []): Recipe | null {
   const season = currentSeason(d);
-  const pool = filterRecipes(all, p).filter((r) => r.seasons === 'all' || r.seasons.includes(season));
-  const list = pool.length ? pool : filterRecipes(all, p);
+  const pool = filterRecipes(all, p, { exclude }).filter((r) => r.seasons === 'all' || r.seasons.includes(season));
+  const list = pool.length ? pool : filterRecipes(all, p, { exclude });
   if (!list.length) return null;
   const day = Math.floor(d.getTime() / 86_400_000);
   return list[day % list.length];

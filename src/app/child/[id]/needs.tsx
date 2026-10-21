@@ -17,8 +17,10 @@ import { dosesFor, needLabel, type Dose } from '@/features/needs';
 import { useChild } from '@/lib/data/hooks';
 import { useNow } from '@/lib/data/hooks-bottle';
 import { friendlyError } from '@/lib/data/hooks-settings';
+import { NEURO_ARTICLES, NEURO_UPDATED_ON, type NeuroTopic } from '@/content/articles/neuro';
+import { useUiStore } from '@/lib/store';
 import {
-  ENTRY_KINDS, NEED_KINDS, useAddNeedEntry, useChildNeeds, useDeleteNeedEntry, useDeleteTreatment, useLogDose, useNeedEntries, useSaveNeeds, useSaveTreatment,
+  ADVANCED_NEED_KINDS, ENTRY_KINDS, MAIN_NEED_KINDS, useAddNeedEntry, useChildNeeds, useDeleteNeedEntry, useDeleteTreatment, useLogDose, useNeedEntries, useSaveNeeds, useSaveTreatment,
   useTreatmentLogs, useTreatments, type EntryKind, type NeedKind, type Treatment,
 } from '@/lib/data/hooks-needs';
 import { formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
@@ -27,23 +29,72 @@ import { toFrDate } from '@/lib/validation';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
-type Tab = 'profile' | 'follow' | 'treatments';
+type Tab = 'forYou' | 'profile' | 'follow' | 'treatments';
+const FOR_YOU: Tab = 'forYou';
+
+/** Sujets d'articles mis en avant selon ce que le parent a coché (tous les articles restent accessibles à tous). */
+const TOPICS: Record<NeedKind, NeuroTopic[]> = {
+  adhd: ['adhd', 'daily', 'school', 'emotions', 'sleep', 'appointment', 'parents'],
+  asd: ['autism', 'sensory', 'food', 'daily', 'school', 'mdph', 'parents'],
+  dys: ['dys', 'school', 'mdph', 'daily'],
+  language: ['language', 'professionals', 'appointment'],
+  sensory: ['sensory', 'food', 'sleep', 'emotions'],
+  other: ['who', 'appointment', 'professionals', 'parents'],
+  questions: ['signs', 'who', 'appointment', 'professionals', 'not_alone'],
+  dcd: ['who', 'professionals', 'school', 'daily'],
+  tics: ['who', 'professionals', 'emotions', 'school'],
+  assessment: ['appointment', 'professionals', 'mdph', 'not_alone'],
+};
+const PRACTICAL: NeuroTopic[] = ['daily', 'sleep', 'food', 'emotions', 'appointment', 'parents'];
 
 export default function ChildNeeds() {
   const params = useLocalSearchParams<{ id: string; tab?: Tab; dose?: string }>();
   const child = useChild(params.id);
-  const [tab, setTab] = useState<Tab>(params.tab === 'treatments' || params.tab === 'follow' ? params.tab : 'profile');
+  const simple = useUiStore((st) => st.simpleMode);
+  const { data: needs } = useChildNeeds(params.id);
+  const [tab, setTab] = useState<Tab | null>(params.tab === 'treatments' || params.tab === 'follow' || params.tab === 'profile' || params.tab === 'forYou' ? params.tab : null);
   if (!child) return <Screen back title={tr('nd.title')}><Skeleton kind="detail" rows={4} /></Screen>;
+  const current: Tab = tab ?? (needs?.kinds.length ? 'forYou' : 'profile');
   return (
     <Screen back title={tr('nd.title')} subtitle={child.first_name}>
       <Banner tone="info">{tr('nd.disclaimer')}</Banner>
-      <Segmented label={tr('nd.title')} value={tab} onChange={setTab} options={[
-        { value: 'profile', label: tr('nd.tab.profile') }, { value: 'follow', label: tr('nd.tab.follow') }, { value: 'treatments', label: tr('nd.tab.treatments') },
+      <Segmented label={tr('nd.title')} value={current} onChange={setTab} options={[
+        { value: 'forYou', label: tr('nd.tab.forYou') }, { value: 'profile', label: tr('nd.tab.profile') },
+        ...(!simple || current === 'follow' ? [{ value: 'follow' as Tab, label: tr('nd.tab.follow') }] : []),
+        { value: 'treatments', label: tr('nd.tab.treatments') },
       ]} />
-      {tab === 'profile' && <NeedsProfile childId={child.id} />}
-      {tab === 'follow' && <FollowUp childId={child.id} />}
-      {tab === 'treatments' && <Treatments childId={child.id} childName={child.first_name} noteDose={params.dose} />}
+      {current === FOR_YOU && <ForYou childId={child.id} childName={child.first_name} kinds={needs?.kinds ?? []} onPickCategories={() => setTab('profile')} onTreatments={() => setTab('treatments')} />}
+      {current === 'profile' && <NeedsProfile childId={child.id} />}
+      {current === 'follow' && <FollowUp childId={child.id} />}
+      {current === 'treatments' && <Treatments childId={child.id} childName={child.first_name} noteDose={params.dose} />}
     </Screen>
+  );
+}
+
+// ---------------------------------------------------------------- pour vous
+function ForYou({ childId, childName, kinds, onPickCategories, onTreatments }: { childId: string; childName: string; kinds: NeedKind[]; onPickCategories: () => void; onTreatments: () => void }) {
+  const topics = [...new Set(kinds.flatMap((k) => TOPICS[k] ?? []))];
+  const chosen = topics.map((tp) => NEURO_ARTICLES.find((a) => a.topic === tp)).filter((a): a is (typeof NEURO_ARTICLES)[number] => !!a);
+  const articles = chosen.filter((a) => !PRACTICAL.includes(a.topic));
+  const tips = chosen.filter((a) => PRACTICAL.includes(a.topic));
+  const row = (a: (typeof NEURO_ARTICLES)[number]) => (
+    <View key={a.slug} testID={`neuro-${a.topic}`}>
+      <ListRow icon="book-open" title={a.title} subtitle={tr('nd.article.meta', { date: formatDateFr(NEURO_UPDATED_ON), status: tr('nd.article.toReview'), count: a.sources.length })} onPress={() => router.push(`/article/${a.slug}` as never)} />
+    </View>
+  );
+  return (
+    <View style={{ gap: spacing.sm }}>
+      {!kinds.length ? (
+        <Card><Text>{tr('nd.forYou.none')}</Text><Button label={tr('nd.tab.profile')} size="sm" variant="secondary" style={{ marginTop: spacing.xs, alignSelf: 'flex-start' }} onPress={onPickCategories} /></Card>
+      ) : <Text muted>{tr('nd.forYou.intro')}</Text>}
+      {articles.length ? <><SectionTitle title={tr('nd.forYou.articles')} /><Card>{articles.map(row)}</Card></> : null}
+      {tips.length ? <><SectionTitle title={tr('nd.forYou.tips')} /><Card>{tips.map(row)}</Card></> : null}
+      <Card>
+        <ListRow icon="calendar" title={tr('nd.forYou.appointments', { name: childName })} onPress={() => router.push(`/appointments?child=${childId}`)} />
+        <View testID="neuro-medication"><ListRow icon="bell" title={tr('nd.forYou.medication')} subtitle={tr('nd.forYou.medicationHint')} onPress={onTreatments} /></View>
+        <ListRow icon="compass" title={tr('nd.forYou.all')} onPress={() => router.push({ pathname: '/library', params: { cat: 'neurodeveloppement' } })} />
+      </Card>
+    </View>
   );
 }
 
@@ -55,15 +106,18 @@ function NeedsProfile({ childId }: { childId: string }) {
   const [kinds, setKinds] = useState<NeedKind[]>([]);
   const [other, setOther] = useState('');
   const [notes, setNotes] = useState('');
+  const [advanced, setAdvanced] = useState(false);
   useEffect(() => { if (needs) { setKinds(needs.kinds); setOther(needs.other_label ?? ''); setNotes(needs.notes ?? ''); } }, [needs]);
   if (isLoading) return <Skeleton rows={3} />;
   const toggle = (k: NeedKind) => setKinds((xs) => (xs.includes(k) ? xs.filter((x) => x !== k) : [...xs, k]));
   return (
     <View style={{ gap: spacing.sm }}>
       <Text muted>{tr('nd.profile.intro')}</Text>
-      <Row wrap>
-        {NEED_KINDS.map((k) => <Chip key={k} label={needLabel(k)} selected={kinds.includes(k)} onPress={() => { haptic('selection'); toggle(k); }} accessibilityLabel={needLabel(k)} />)}
-      </Row>
+      <View testID="needs-kinds"><Row wrap>
+        {MAIN_NEED_KINDS.map((k) => <Chip key={k} label={needLabel(k)} selected={kinds.includes(k)} onPress={() => { haptic('selection'); toggle(k); }} accessibilityLabel={needLabel(k)} />)}
+        {(advanced || kinds.some((k) => (ADVANCED_NEED_KINDS as readonly string[]).includes(k))) ? ADVANCED_NEED_KINDS.map((k) => <Chip key={k} label={needLabel(k)} selected={kinds.includes(k)} onPress={() => { haptic('selection'); toggle(k); }} accessibilityLabel={needLabel(k)} />) : null}
+      </Row></View>
+      {!advanced && !kinds.some((k) => (ADVANCED_NEED_KINDS as readonly string[]).includes(k)) ? <Button label={tr('nd.advanced')} variant="ghost" size="sm" onPress={() => setAdvanced(true)} /> : null}
       {kinds.includes('other') ? <Field label={tr('nd.profile.other')} value={other} onChangeText={setOther} maxLength={80} /> : null}
       <Field label={tr('nd.profile.notes')} optional value={notes} onChangeText={setNotes} multiline maxLength={4000} hint={tr('nd.profile.notesHint')} />
       <Button label={tr('common.save')} loading={save.isPending} testID="needs-save" onPress={async () => {

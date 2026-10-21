@@ -20,6 +20,9 @@ interface UiState {
   householdId: string | null;
   subject: ActiveSubject | null;
   hapticsEnabled: boolean;
+  /** Mode simple (par défaut) : l'essentiel seulement ; les fonctions avancées apparaissent si on le désactive. */
+  simpleMode: boolean;
+  setSimpleMode: (on: boolean) => void;
   /** Suggestions « pour alléger » masquées par la personne (organisation familiale). */
   overloadTipsOff: boolean;
   /** Accueil personnalisé : ordre et cartes masquées. */
@@ -78,6 +81,8 @@ export const useUiStore = create<UiState>()(
       householdId: null,
       subject: null,
       hapticsEnabled: true,
+      simpleMode: true,
+      setSimpleMode: (simpleMode) => set({ simpleMode }),
       overloadTipsOff: false,
       homeOrder: [],
       homeHidden: [],

@@ -14,6 +14,8 @@ export const RECIPE_SOURCES: Record<string, RecipeSource> = {
   anses_miel: { id: 'anses_miel', title: 'Pas de miel pour les enfants de moins d’un an', publisher: 'ANSES', url: 'https://www.anses.fr/fr/content/pas-de-miel-les-enfants-de-moins-dun-an', consulted: C, date: '2023-10-31' },
   lait_cru: { id: 'lait_cru', title: 'Pas de fromages au lait cru avant 5 ans (rappel des autorités sanitaires, ministère de l’Agriculture)', publisher: 'La Revue du Praticien', url: 'https://www.larevuedupraticien.fr/article/pas-de-fromages-au-lait-cru-avant-5-ans', consulted: C, date: '2023-07-31' },
   santefr_3_6: { id: 'santefr_3_6', title: 'Enfant entre 3 et 6 ans, quels sont ses besoins nutritionnels ?', publisher: 'Santé.fr (contenu mpedia)', url: 'https://www.sante.fr/node/1247621', consulted: C, date: '2023-07-27' },
+  anses_poisson: { id: 'anses_poisson', title: 'Manger du poisson : pourquoi ? comment ?', publisher: 'ANSES', url: 'https://www.anses.fr/fr/content/manger-du-poisson-pourquoi-comment', consulted: '2026-10-20', date: '2022-06-30' },
+  santefr_mercure: { id: 'santefr_mercure', title: 'Consommation de poissons et exposition au méthylmercure', publisher: 'Santé.fr', url: 'https://www.sante.fr/node/1240227', consulted: '2026-10-20', date: '2024-10-24' },
   inspq_etouffement: { id: 'inspq_etouffement', title: 'Risques d’étouffement – à surveiller jusqu’à 4 ans', publisher: 'Institut national de santé publique du Québec (repère complémentaire, hors France)', url: 'https://www.inspq.qc.ca/mieux-vivre/enfant/alimentation/aliments/risques-etouffement', consulted: C, date: '2026-02-17' },
 };
 

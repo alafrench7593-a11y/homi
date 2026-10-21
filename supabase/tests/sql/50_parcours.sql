@@ -79,6 +79,8 @@ update public.user_journeys set status = 'active', ended_on = null, end_reason =
 -- Besoins particuliers et traitement : foyer (santé) oui, personne extérieure non
 insert into public.child_needs (household_id, child_id, kinds) values (:'FAM', :'KID', array['adhd','assessment']);
 select tests.throws(format($$insert into public.child_needs (household_id, child_id, kinds) values (%L, %L, array['diagnostic_auto'])$$, :'FAM', :'KID'), 'besoins : catégorie inconnue refusée');
+update public.child_needs set kinds = array['adhd','questions'] where child_id = :'KID';
+select tests.ok((select kinds from public.child_needs where child_id = :'KID') = array['adhd','questions'], 'besoins : « Je me pose des questions » accepté, sans diagnostic');
 insert into public.child_treatments (household_id, child_id, name, dose_text, times, start_date, instructions)
   values (:'FAM', :'KID', 'Traitement prescrit', '1 gélule (dose de l''ordonnance)', array['08:00'], current_date, 'Au petit-déjeuner');
 select tests.throws(format($$insert into public.child_treatments (household_id, child_id, name, dose_text, times, start_date) values (%L, %L, 'X', 'Y', '{}', current_date)$$, :'FAM', :'KID'), 'traitement : au moins une heure de prise');

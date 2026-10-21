@@ -48,6 +48,11 @@ export default function Tools() {
   const filter = useUiStore((s) => s.toolFilter);
   const setFilter = useUiStore((s) => s.setToolFilter);
   const [q, setQ] = useState('');
+  // Mode simple : quelques outils par catégorie, « Voir plus » pour le reste
+  const simple = useUiStore((s) => s.simpleMode);
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const PREVIEW = 4;
+  const limited = (key: string, n: number) => simple && !q && !open[key] && n > PREVIEW;
 
   const favs = useMemo(() => favoriteTools(catalog, favIds), [catalog, favIds]);
   const present = useMemo(() => new Set(catalog.map((x) => x.theme)), [catalog]);
@@ -94,7 +99,7 @@ export default function Tools() {
         <ProfileSwitcher />
       </View>
       {/* Ajout rapide (anciennement derrière le bouton « + ») : toujours à portée */}
-      {!q && activeFilter === 'all' ? (
+      {!q && activeFilter === 'all' && !simple ? (
         <View style={{ gap: spacing.xs }}>
           <Text variant="heading" accessibilityRole="header">Ajouter maintenant</Text>
           <QuickAddGrid compact />
@@ -130,13 +135,20 @@ export default function Tools() {
         <Appear key={g.key} kind="soft" delay={0.05 + Math.min(gi, 6) * 0.06} style={{ gap: spacing.sm }}>
           <SectionHead theme={g.key === 'fav' ? null : g.key} title={g.title} count={g.items.length} index={gi} />
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: GAP }}>
-            {g.items.map((tool) => (
+            {(limited(g.key, g.items.length) ? g.items.slice(0, PREVIEW) : g.items).map((tool) => (
               <ToolCard key={tool.id} tool={tool} width={cardW} status={statusOf(tool)} favorite={favIds.includes(tool.id)} onToggleFavorite={toggleFav} />
             ))}
           </View>
+          {simple && !q && g.items.length > PREVIEW ? (
+            <Button label={open[g.key] ? tr('pj.tools.less') : tr('pj.tools.more', { count: g.items.length - PREVIEW })} variant="ghost" size="sm" icon={open[g.key] ? 'chevron-up' : 'chevron-down'} style={{ alignSelf: 'flex-start' }} testID={`tools-more-${g.key}`}
+              onPress={() => setOpen({ ...open, [g.key]: !open[g.key] })} />
+          ) : null}
         </Appear>
       ))}
-      {otherGroups.length ? (
+      {otherGroups.length && simple && !q && !open.__others ? (
+        <Button label={tr('pj.tools.otherShow')} icon="users" variant="secondary" onPress={() => setOpen({ ...open, __others: true })} testID="tools-other-show" full />
+      ) : null}
+      {otherGroups.length && (!simple || q || open.__others) ? (
         <View testID="tools-other-profiles" style={{ gap: spacing.md, marginTop: spacing.md }}>
           <View style={{ gap: 2 }}>
             <Text variant="title" accessibilityRole="header">Outils des autres profils</Text>

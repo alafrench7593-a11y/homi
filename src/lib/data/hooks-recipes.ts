@@ -8,7 +8,7 @@ import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
 import { ensureHousehold, useActivePregnancy, useHouseholdId, useInvalidate, useRows, useTrackedChildren, useJourneyState } from './hooks';
 import { useScope } from './hooks-scope';
-import { ALL_RECIPES, DRAFT_RECIPES } from '@/content/recipes';
+import { ALL_RECIPES } from '@/content/recipes';
 import { recipeToRows, rowsToRecipes, type IngredientRow, type LinkRow, type PhotoRow, type RecipeRow, type ReviewRow, type StepRow } from '../recipes/db';
 import { ingredientsInText, stageFor, type FoodProfile, type MenuSlot, type ShoppingLine } from '../recipes/engine';
 import type { Allergen, Recipe, Texture } from '../recipes/types';
@@ -35,7 +35,7 @@ export function useRecipes(opts: { includeRetired?: boolean; includeDrafts?: boo
     if (!recipes.data) return null;
     const list = rowsToRecipes(recipes.data, ing.data ?? [], steps.data ?? [], photos.data ?? [], links.data ?? [], reviews.data ?? []);
     // Base pas encore installée (migration non appliquée) : bibliothèque embarquée, mêmes recettes et mêmes statuts
-    const full = list.some((r) => !r.personal) ? list : [...ALL_RECIPES, ...DRAFT_RECIPES, ...list];
+    const full = list.some((r) => !r.personal) ? list : [...ALL_RECIPES, ...list];
     // Recette retirée : plus jamais proposée (seule l'administration la voit encore)
     // Brouillon généré par IA (bibliothèque) : invisible des parents tant qu'une personne de l'équipe ne l'a pas relu
     return visibleRecipes(full, opts);
@@ -122,6 +122,25 @@ export function useRecipeFavorites() {
       else await backend.insert('recipe_favorites', { user_id: userId, recipe_slug: slug });
     },
     onSuccess: () => inv('recipe_favorites'),
+  });
+  return { slugs, ids: slugs.map((s) => `rcp-${s}`), toggle };
+}
+
+/**
+ * « Je n'aime pas cette idée » : idée masquée pour cette personne (suggestions, menus, liste), jamais supprimée.
+ * On peut la réafficher à tout moment.
+ */
+export function useRecipeDislikes() {
+  const userId = useUserId();
+  const inv = useInvalidate();
+  const q = useRows<{ recipe_slug: string }>(['recipe_dislikes'], userId ? { table: 'recipe_dislikes', filters: [eq('user_id', userId)] } : null);
+  const slugs = useMemo(() => (q.data ?? []).map((f) => f.recipe_slug), [q.data]);
+  const toggle = useMutation({
+    mutationFn: async (slug: string) => {
+      if (slugs.includes(slug)) await backend.remove('recipe_dislikes', [eq('user_id', userId), eq('recipe_slug', slug)]);
+      else await backend.insert('recipe_dislikes', { user_id: userId, recipe_slug: slug });
+    },
+    onSuccess: () => inv('recipe_dislikes'),
   });
   return { slugs, ids: slugs.map((s) => `rcp-${s}`), toggle };
 }

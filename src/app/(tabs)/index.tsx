@@ -58,6 +58,7 @@ export default function Home() {
   const homeOrder = useUiStore((st) => st.homeOrder);
   const homeHidden = useUiStore((st) => st.homeHidden);
   const quickShortcuts = useUiStore((st) => st.quickShortcuts);
+  const simple = useUiStore((st) => st.simpleMode);
   const now = skyOverride ? previewTime(skyOverride) : new Date();
 
   const unread = inbox?.filter((n) => !n.read_at).length ?? 0;
@@ -101,7 +102,7 @@ export default function Home() {
       : cycleMode ? <CycleCard mode={cycleMode} />
       : <NoJourneyCard />,
     quick: <QuickActions keys={quickKeys} childId={scope.childId ?? scope.babyId ?? undefined} onCustomize={() => router.push('/settings/home')} />,
-    upcoming: <View style={{ gap: spacing.xs }}><PostpartumHomeCard /><UpcomingCard /></View>,
+    upcoming: <View style={{ gap: spacing.xs }}>{simple ? null : <PostpartumHomeCard />}<UpcomingCard single={simple} /></View>,
     article: article ? (
       <Card onPress={() => router.push(`/article/${article.slug}`)} accessibilityLabel={tr('home.articleA11y', { title: article.title })}>
         <Row style={{ justifyContent: 'space-between' }}>
@@ -153,11 +154,11 @@ export default function Home() {
 
         {/* 1. Parcours et profil actifs */}
         <Appear kind="soft" delay={0.1} style={{ gap: 4 }}>
-          <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 }}>
+          {simple ? null : <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 }}>
             <Icon name="compass" size={14} color={t.colors.textMuted} />
             <Text variant="caption" muted style={{ flex: 1 }}>{tr('pj.home.journey', { name: journeyName ?? tr('pj.none') })}</Text>
             <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.edit')}</Text>
-          </Tappable>
+          </Tappable>}
           <ProfileSwitcher />
         </Appear>
         {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
@@ -166,7 +167,7 @@ export default function Home() {
         {homeCards.map((key, i) => {
           const node = cards[key];
           if (!node) return null;
-          return <Appear key={key} kind={key === 'main' ? 'pop' : key === 'assistant' ? 'btn' : 'soft'} delay={0.2 + Math.min(i, 6) * 0.08}>{node}</Appear>;
+          return <Appear key={key} kind={key === 'main' ? 'pop' : key === 'assistant' ? 'btn' : 'soft'} delay={0.2 + Math.min(i, 6) * 0.08}><View testID={`home-card-${key}`}>{node}</View></Appear>;
         })}
 
         <Appear kind="side" delay={0.7}>

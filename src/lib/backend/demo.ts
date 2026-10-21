@@ -19,7 +19,7 @@ import {
   parseStructuredAnswer, structuredToMarkdown, todayIso,
 } from '../../../supabase/functions/_shared/assistant-format';
 import { buildSampleFamily } from './demoSample';
-import { ALL_RECIPES, DRAFT_RECIPES } from '@/content/recipes';
+import { ALL_RECIPES } from '@/content/recipes';
 import { recipeToRows } from '../recipes/db';
 import { RECIPE_SOURCES } from '../recipes/sources';
 import { fromProductRow } from '../../../supabase/functions/_shared/open-facts';
@@ -39,7 +39,7 @@ const COMMUNITY_SEED_VERSION = 2;
 /** Bibliothèque de recettes : mêmes lignes que supabase/migrations/20261020000200_recipes_seed.sql. */
 /**
  * Bibliothèque de recettes de la démonstration : reconstruite à chaque ouverture depuis l'application (identifiants
- * stables « lib-<slug> »), sans l'enregistrer dans le stockage de l'appareil (plus de 560 recettes). Seules les
+ * stables « lib-<slug> »), sans l'enregistrer dans le stockage de l'appareil (environ 150 recettes). Seules les
  * corrections et les changements de statut faits dans l'administration sont conservés (table recipe_overrides).
  */
 const LIB_TABLES = ['recipes', 'recipe_ingredients', 'recipe_steps', 'recipe_photos', 'recipe_source_links'];
@@ -47,7 +47,7 @@ const isLibRow = (table: string, r: Row) => (table === 'recipes' ? !r.owner_id &
 function recipeSeedRows() {
   const tables: Record<string, Row[]> = { recipes: [], recipe_ingredients: [], recipe_steps: [], recipe_photos: [], recipe_source_links: [], recipe_reviews: [], recipe_sources: [] };
   for (const s of Object.values(RECIPE_SOURCES)) tables.recipe_sources.push({ id: s.id, title: s.title, publisher: s.publisher, url: s.url, consulted_on: s.consulted, published_on: s.date ?? null });
-  for (const r of [...ALL_RECIPES, ...DRAFT_RECIPES]) {
+  for (const r of ALL_RECIPES) {
     const id = `lib-${r.slug}`;
     const x = recipeToRows(r, id, { created_at: '2026-10-20T00:00:00.000Z' });
     tables.recipes.push(x.recipe as unknown as Row);
@@ -91,7 +91,7 @@ const OWNER_TABLES: Record<string, string> = {
   cycle_preferences: 'user_id', discharge_logs: 'user_id', bleeding_logs: 'user_id', cycle_journal: 'user_id',
   // Parcours : gérés par la personne (le foyer ne les modifie jamais)
   user_journeys: 'user_id',
-  recipe_favorites: 'user_id',
+  recipe_favorites: 'user_id', recipe_dislikes: 'user_id',
   // Post-partum : strictement personnel ; seule la ligne de partage est lisible par le foyer (côté serveur)
   postpartum_settings: 'user_id', postpartum_checkins: 'user_id', trusted_contacts: 'user_id', postpartum_actions: 'user_id', postpartum_shared_status: 'user_id',
 };

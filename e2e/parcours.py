@@ -5,8 +5,11 @@ Démo de départ : Camille, grossesse de jumeaux en cours, Lina (bébé, ~13 moi
   python3 e2e/parcours.py
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
 """
-import json, os, re
+import json, os, re, sys
 from playwright.sync_api import sync_playwright
+
+sys.path.insert(0, os.path.dirname(__file__))
+from journey_seed import SIMPLE_OFF  # noqa: E402
 
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8822')
 SHOTS = os.environ.get('E2E_SHOTS', '/tmp/toietmoi-e2e')
@@ -59,6 +62,7 @@ def run(p):
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate(SIMPLE_OFF); pg.reload(); pg.wait_for_timeout(3000)
     me = demo(pg, "s => s.tables.profiles[0].id")
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     noe = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Noé').id")
@@ -71,7 +75,7 @@ def run(p):
     go(pg, '/')
     tid(pg, 'profile-switcher').click(); pg.wait_for_timeout(800)
     t = T(pg)
-    R['7_selecteur_grossesse_et_enfants'] = all(x in t for x in ['Ma grossesse', 'Bébé Lina', 'Enfant Noé', 'Toute la famille', 'Moi'])
+    R['7_selecteur_grossesse_et_enfants'] = all(x in t for x in ['Ma grossesse', 'Lina', 'Noé', 'Toute la famille', 'Moi', 'Ajouter un profil'])
     pg.keyboard.press('Escape'); pg.wait_for_timeout(500)
     go(pg, '/')
     subject(pg, 'preg')
@@ -98,7 +102,7 @@ def run(p):
     # ---- 8. Changer d'enfant : Noé (enfant) → outils différents
     go(pg, '/'); subject(pg, noe)
     t = tools_text(pg)
-    R['8_changement_enfant_outils'] = 'Neurodéveloppement et besoins particuliers' in t and 'Rappel biberon' not in t and 'École ou mode de garde' not in t  # catégorie retirée le 20/10 (demande)
+    R['8_changement_enfant_outils'] = 'Mon enfant a un besoin particulier' in t and 'Rappel biberon' not in t and 'École ou mode de garde' not in t  # catégorie retirée le 20/10 (demande)
     go(pg, '/')
     R['8_actions_rapides_enfant'] = 'Traitement' in T(pg) and 'Biberon' not in T(pg)
 
@@ -145,18 +149,18 @@ def run(p):
 
     # ---- 6. Retour volontaire vers Projet bébé (confirmation, archivage par défaut)
     go(pg, '/journeys')
-    tid(pg, 'choose-ttc').click(); pg.wait_for_timeout(800)
+    tid(pg, 'choose-cycle').click(); pg.wait_for_timeout(800); tid(pg, 'objective-ttc').click(); pg.wait_for_timeout(800)
     R['6_confirmation_demandee'] = tid(pg, 'change-confirm').is_visible()
     tid(pg, 'change-confirm').click(); pg.wait_for_timeout(2500)
     go(pg, '/'); subject(pg, 'me')
     t = T(pg)
-    R['6_accueil_projet_bebe'] = 'Parcours : Projet bébé' in t
+    R['6_accueil_projet_bebe'] = 'Parcours : Suivre mon cycle · concevoir' in t
 
     # ---- 1. Projet bébé : aucune SA, même avec une ancienne grossesse restée « active » sans parcours
     mutate(pg, "s => { const p = s.tables.pregnancies[0]; s.tables.pregnancies.push({ ...p, id: 'old-preg', status: 'active' }); }")
     go(pg, '/', 2600)
     t = T(pg)
-    R['1_projet_bebe_sans_SA'] = not SA.search(t) and 'Parcours : Projet bébé' in t
+    R['1_projet_bebe_sans_SA'] = not SA.search(t) and 'Parcours : Suivre mon cycle · concevoir' in t
     t = tools_text(pg)
     R['1_outils_projet_bebe'] = all(x in t for x in ['Tests d’ovulation et de grossesse', 'Glaire cervicale', 'Température (facultatif)', 'J’ai un test positif']) and 'Évolution du bébé' not in t and 'Biberons' not in t
     mutate(pg, "s => { s.tables.pregnancies = s.tables.pregnancies.filter(p => p.id !== 'old-preg'); }")
@@ -185,7 +189,7 @@ def run(p):
     # ---- 13. Données archivées conservées et consultables
     go(pg, '/journeys')
     t = T(pg)
-    R['13_parcours_precedents_listes'] = 'Mes parcours précédents' in t and t.count('Projet bébé') >= 2
+    R['13_parcours_precedents_listes'] = 'Mes parcours précédents' in t and t.count('Suivre mon cycle · concevoir') >= 1
     arch = demo(pg, f"s => s.tables.user_journeys.find(j => j.user_id === '{me}' && j.type === 'ttc' && j.status === 'archived' && j.end_reason === 'pregnancy').id")
     go(pg, f'/journeys/{arch}')
     t = T(pg)
@@ -193,7 +197,7 @@ def run(p):
     pg.screenshot(path=f'{SHOTS}/parcours-precedent.png', full_page=True)
 
     # ---- 4. Nouvelle grossesse de jumeaux (date du test seule → terme estimé)
-    go(pg, '/journeys'); tid(pg, 'choose-ttc').click(); pg.wait_for_timeout(800)
+    go(pg, '/journeys'); tid(pg, 'choose-cycle').click(); pg.wait_for_timeout(800); tid(pg, 'objective-ttc').click(); pg.wait_for_timeout(800)
     R['6_note_grossesse_fermee'] = 'marquée comme terminée' in T(pg)
     tid(pg, 'change-confirm').click(); pg.wait_for_timeout(2500)
     R['6_grossesse_fermee_sans_precision'] = demo(pg, "s => s.tables.pregnancies.filter(p => p.end_reason === 'unspecified').length") == 1

@@ -12,7 +12,7 @@ import { EmptyState, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, FavoriteButton, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { RecipeArt } from '@/features/recipes/RecipeArt';
 import { allergenLabel, budgetLabel, mealLabel, stageLabel, statusLabel, textureLabel } from '@/features/recipes/labels';
-import { scoreBandFor, useCreateShoppingList, useFoodProfile, useIngredientPrices, useLatestShoppingList, useRecipeFavorites, useRecipes } from '@/lib/data/hooks-recipes';
+import { scoreBandFor, useCreateShoppingList, useFoodProfile, useIngredientPrices, useLatestShoppingList, useRecipeDislikes, useRecipeFavorites, useRecipes } from '@/lib/data/hooks-recipes';
 import { useMyRoles } from '@/lib/data/hooks-settings';
 import { ScorePanel } from '@/features/recipes/ScorePanel';
 import { costPerPortion } from '@/lib/recipes/score';
@@ -38,6 +38,7 @@ export default function RecipeDetail() {
   const prices = useIngredientPrices();
   const { profile } = useFoodProfile();
   const fav = useRecipeFavorites();
+  const dislikes = useRecipeDislikes();
   const shopping = useLatestShoppingList();
   const createList = useCreateShoppingList();
   const inv = useInvalidate();
@@ -129,12 +130,21 @@ export default function RecipeDetail() {
         </Card></View>
       ) : null}
       <Card><Text weight="bold">{tr('rc.storage')}</Text><Text variant="small" style={{ marginTop: 4 }}>{r.storage}</Text></Card>
+      {r.freezing ? <View testID="rc-freezing"><Card><Text weight="bold">{tr('rc.freezing')}</Text><Text variant="small" style={{ marginTop: 4 }}>{r.freezing}</Text></Card></View> : null}
+      {r.ingredients.some((x) => INGREDIENTS[x.key]?.fish) ? <Text variant="caption" muted testID="rc-fish-note">{tr('rc.fishNote')}</Text> : null}
       {r.nutrition ? <Card><Text weight="bold">{tr('rc.nutrition')}</Text><Text variant="small" style={{ marginTop: 4 }}>{r.nutrition}</Text><Text variant="caption" muted style={{ marginTop: 4 }}>{tr('rc.nutritionNote')}</Text></Card> : null}
 
       <Row wrap>
         <Button label={tr('rc.addToMenu')} icon="calendar" variant="secondary" size="sm" onPress={() => router.push({ pathname: '/meals/menu', params: { add: r.slug } })} />
         <Button label={tr('rc.addToShopping')} icon="shopping-cart" variant="secondary" size="sm" onPress={() => addToShopping()} testID="add-shopping" />
       </Row>
+      {!r.personal ? (
+        <View style={{ gap: 4 }}>
+          {dislikes.slugs.includes(r.slug) ? <Text variant="small" muted testID="rc-disliked">{tr('rc.dislike.hint')}</Text> : null}
+          <Button label={dislikes.slugs.includes(r.slug) ? tr('rc.dislike.undo') : tr('rc.dislike')} icon={dislikes.slugs.includes(r.slug) ? 'eye' : 'thumbs-down'} variant="ghost" size="sm" testID="rc-dislike"
+            onPress={() => dislikes.toggle.mutate(r.slug, { onSuccess: () => { if (!dislikes.slugs.includes(r.slug)) toast(tr('rc.dislike.done'), 'info'); }, onError: (e) => toast(friendlyError(e), 'error') })} />
+        </View>
+      ) : null}
 
       <SectionTitle title={tr('rc.sources')} />
       <View testID="recipe-sources" style={{ gap: 2 }}>

@@ -41,6 +41,7 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
   const tilt = useRef(new Animated.Value(0)).current;
   const float = useRef(new Animated.Value(0)).current;
   const fade = useRef(new Animated.Value(0)).current;
+  const beat = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     fade.setValue(0);
@@ -56,6 +57,19 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
     loop.start();
     return () => loop.stop();
   }, [reduce, float]);
+
+  // Lueur du cœur : animation décorative (≈ 1 battement/s pour rester douce), ne mesure rien
+  useEffect(() => {
+    if (reduce) return;
+    const loop = Animated.loop(Animated.sequence([
+      Animated.timing(beat, { toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(beat, { toValue: 0.35, duration: 160, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(beat, { toValue: 0.85, duration: 160, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(beat, { toValue: 0, duration: 500, easing: Easing.in(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [reduce, beat]);
 
   const pan = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_e, gs) => interactive && Math.abs(gs.dx) > 4,
@@ -76,6 +90,12 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
     >
       <Animated.View style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', opacity: fade, transform: [{ perspective: 800 }, { translateY }, { rotateY }] }}>
         <Image source={source} style={{ width: size, height: size }} resizeMode="cover" />
+        <Animated.View testID="fetus-heart" pointerEvents="none" style={{
+          position: 'absolute', left: size * 0.47, top: size * 0.47, width: size * 0.07, height: size * 0.07, borderRadius: size,
+          backgroundColor: 'rgba(255,120,150,0.9)', shadowColor: '#FF7896', shadowOpacity: 0.9, shadowRadius: size * 0.05, shadowOffset: { width: 0, height: 0 },
+          opacity: reduce ? 0.7 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.45, 1] }),
+          transform: [{ scale: reduce ? 1 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1.35] }) }],
+        }} />
       </Animated.View>
     </View>
   );

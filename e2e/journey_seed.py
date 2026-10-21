@@ -37,3 +37,10 @@ def ensure(pg, path, state):
     need = body_for(path)
     if need and state.get('cur') != need:
         pg.evaluate(SET_BODY, list(need)); state['cur'] = need
+
+
+# Mode complet (les suites historiques vérifient tout le contenu ; le mode simple est vérifié par essentiels.py)
+SIMPLE_OFF = """() => {
+  const raw = localStorage.getItem('toietmoi.ui'); const v = raw ? JSON.parse(raw) : { state: {}, version: 0 };
+  v.state = { ...(v.state || {}), simpleMode: false }; localStorage.setItem('toietmoi.ui', JSON.stringify(v));
+}"""

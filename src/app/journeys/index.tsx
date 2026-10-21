@@ -22,14 +22,17 @@ import { t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { ObjectivePicker } from '@/features/cycle/Objective';
 
 /**
  * Parcours proposés, plus le simple suivi du cycle (conservé). Le post-partum n'est plus une catégorie indépendante :
  * la récupération de la mère est rangée dans « Mon bébé est né » (un post-partum déjà commencé reste conservé).
  */
+const HUB_KEY = 'cycleHub';
 const CHOICES: { type: JourneyType; key: string }[] = [
-  { type: 'avoid', key: 'avoid' }, { type: 'ttc', key: 'ttc' }, { type: 'pregnancy', key: 'pregnancy' },
-  { type: 'baby', key: 'baby' }, { type: 'child', key: 'child' }, { type: 'cycle', key: 'cycle' },
+  // « Suivre mon cycle » : une seule catégorie ; l'objectif (suivre, éviter une grossesse, concevoir) se choisit ensuite
+  { type: 'cycle', key: 'cycleHub' }, { type: 'pregnancy', key: 'pregnancy' },
+  { type: 'baby', key: 'baby' }, { type: 'child', key: 'child' },
 ];
 
 type Pending = ChangeRequest & { target: ChangeTarget | null; closingRow: JourneyRow | null; reason: string };
@@ -47,6 +50,7 @@ export default function Journeys() {
   const { run, busy } = useRunJourneyOps();
   const [pending, setPending] = useState<Pending | null>(null);
   const [pickChild, setPickChild] = useState<'baby' | 'child' | null>(null);
+  const [objOpen, setObjOpen] = useState(false);
 
   const hasActive = (type: JourneyType) => js.active.some((r) => r.type === type);
 
@@ -131,21 +135,24 @@ export default function Journeys() {
           <SectionTitle title={tr('pj.manager.choose')} />
           <View style={{ gap: spacing.xs }} accessibilityRole="list">
             {CHOICES.map((c) => {
-              const on = c.type === 'pregnancy' ? !!pregnancy : hasActive(c.type);
+              const hub = c.key === HUB_KEY;
+              const on = hub ? !!js.body && js.body.type !== 'pregnancy' : c.type === 'pregnancy' ? !!pregnancy : hasActive(c.type);
+              const label = hub ? tr('pj.cycleHub') : tr(`pj.choice.${c.type}` as TKey);
+              const hint = hub ? tr('pj.cycleHub.hint') : tr(`pj.choice.${c.type}.hint` as TKey);
               return (
                 <Tappable
                   key={c.key}
                   testID={`choose-${c.type}`}
                   accessibilityRole="button"
                   accessibilityState={{ selected: on }}
-                  accessibilityLabel={`${tr(`pj.choice.${c.type}` as TKey)}. ${tr(`pj.choice.${c.type}.hint` as TKey)}`}
-                  onPress={() => choose(c.type)}
+                  accessibilityLabel={`${label}. ${hint}`}
+                  onPress={() => (hub ? setObjOpen(true) : choose(c.type))}
                   style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1.5, borderColor: on ? t.colors.primary : t.colors.border, backgroundColor: on ? t.colors.accentSoft : pressed ? t.colors.surfaceAlt : t.colors.surface })}
                 >
                   <Icon name={JOURNEY_ICON[c.type]} color={on ? t.colors.primary : t.colors.textMuted} />
                   <View style={{ flex: 1 }}>
-                    <Text weight="bold">{tr(`pj.choice.${c.type}` as TKey)}</Text>
-                    <Text variant="small" muted>{tr(`pj.choice.${c.type}.hint` as TKey)}</Text>
+                    <Text weight="bold">{label}</Text>
+                    <Text variant="small" muted>{hint}</Text>
                   </View>
                   {on ? <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.activeBadge')}</Text> : <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
                 </Tappable>
@@ -173,6 +180,7 @@ export default function Journeys() {
         ))}
         <Button label={tr('pj.addChild')} icon="plus" variant="secondary" onPress={() => { setPickChild(null); router.push('/profiles/new?kind=child'); }} full testID="add-child" />
       </Sheet>
+      <ObjectivePicker visible={objOpen} onClose={() => setObjOpen(false)} onPick={(o) => choose(o)} />
     </Screen>
   );
 }

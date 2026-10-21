@@ -26,7 +26,10 @@ const clone = (r: Recipe): Recipe => JSON.parse(JSON.stringify(r));
 
 describe('bibliothèque : contrôles avant publication', () => {
   it('compte réel et répartition', () => {
-    expect(all.length).toBe(65);
+    // nouveau catalogue (150 recettes) + la purée carotte et pomme de terre conservée pour sa photo
+    expect(all.length).toBe(151);
+    expect(all.filter((r) => r.tags.includes('classic')).length).toBeGreaterThanOrEqual(80);
+    for (const r of all) expect(r.freezing && r.freezing.length > 10).toBe(true);
     expect(all.filter((r) => r.audiences.includes('pregnancy')).length).toBeGreaterThanOrEqual(20);
     expect(all.filter((r) => r.audiences.includes('baby')).length).toBeGreaterThanOrEqual(20);
     expect(all.filter((r) => r.audiences.includes('child')).length).toBeGreaterThanOrEqual(20);
@@ -47,7 +50,7 @@ describe('bibliothèque : contrôles avant publication', () => {
     for (const r of all) for (const s of r.sources) { expect(RECIPE_SOURCES[s]).toBeDefined(); expect(RECIPE_SOURCES[s].consulted).toMatch(/^\d{4}-\d{2}-\d{2}$/); }
   });
   it('le contrôle détecte les erreurs volontaires', () => {
-    const r = clone(all.find((x) => x.audiences.includes('pregnancy') && x.ingredients.some((i) => INGREDIENTS[i.key].mustCook))!);
+    const r = clone(all.find((x) => x.audiences.includes('pregnancy') && x.allergens.length > 0 && x.ingredients.some((i) => INGREDIENTS[i.key].mustCook))!);
     // quantité manquante
     expect(validateRecipe({ ...r, ingredients: r.ingredients.map((x, n) => (n === 0 ? { ...x, qty: null } : x)) }).join()).toMatch(/quantité manquante/);
     // ingrédient jamais utilisé dans les étapes

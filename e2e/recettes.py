@@ -200,7 +200,7 @@ def run(p):
 
     # ---- « Que puis-je cuisiner avec ce que j'ai ? »
     go(pg, '/meals/pantry')
-    for name in ['lentilles corail', 'carotte']:
+    for name in ['pomme de terre', 'carotte', 'oignon']:
         tid(pg, 'pantry-search').fill(name.split()[0]); pg.wait_for_timeout(300)
         pg.locator(f'[aria-label^="J’ai {name}"]').first.click(); pg.wait_for_timeout(300)
     tid(pg, 'pantry-search').fill('')

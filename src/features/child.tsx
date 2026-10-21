@@ -28,6 +28,8 @@ import {
 } from '@/lib/data/hooks-family';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
+import { BabySleepCard } from './sleep';
+import { childAge } from '@/lib/domain/child';
 import type { Bottle, Breastfeed, Child, Diaper, LogKind, Meal, Measurement, Observation, Sleep } from '@/lib/types';
 import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -38,6 +40,7 @@ export { CHILD_TABS, type ChildTab } from '@/lib/domain/childTabs';
 import { CHILD_TABS, type ChildTab } from '@/lib/domain/childTabs';
 import { Tappable } from '@/components/Tappable';
 import { isBottleChild } from '@/lib/domain/bottleTimer';
+import { useUiStore } from '@/lib/store';
 
 export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: ChildTab) => void }) {
   const t = useTheme();
@@ -127,6 +130,7 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
     <>
       <ChildToday child={child} compact />
       {isBottleChild(child.birth_date, js.childType(child.id)) && <BottleTimerCard child={child} />}
+      {child.enabled_tracking.includes('sleep') && childAge(child.birth_date).months < 36 && <BabySleepCard child={child} />}
       <Row wrap>
         {quick.map((k) => (
           <Chip key={k} icon={KIND_META[k].icon} label={KIND_META[k].label} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: k, child: child.id } })} />
@@ -459,6 +463,7 @@ const HEALTH_KINDS: { value: HealthItemKind; label: string; icon: IconName; hint
 ];
 
 export function HealthTab({ child }: { child: Child }) {
+  const simple = useUiStore((st) => st.simpleMode);
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
@@ -528,7 +533,7 @@ export function HealthTab({ child }: { child: Child }) {
         <ListRow icon="shield" title="Vaccins faits" subtitle="Registre : date, vaccin, lot — et le calendrier officiel" onPress={() => router.push(`/child/${child.id}/vaccines` as never)} />
         <ListRow icon="activity" title="Suivi de santé" subtitle="Mesures et observations, selon le plan du professionnel" onPress={() => router.push(`/child/${child.id}/health-tracking` as never)} />
         <ListRow icon="smile" title="Humeur et bien-être" subtitle="Pleurs, énergie, appétit, sommeil, confort digestif" onPress={() => router.push(`/child/${child.id}/wellbeing` as never)} />
-        <ListRow icon="book-open" title="Journal complet" subtitle="Tout ce qui a été noté, avec filtres et export" onPress={() => router.push('/journal')} />
+        {simple ? null : <ListRow icon="book-open" title="Journal complet" subtitle="Tout ce qui a été noté, avec filtres et export" onPress={() => router.push('/journal')} />}
       </Card>
       {child.allergies_declared.length > 0 && (
         <Card tone="gold">

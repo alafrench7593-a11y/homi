@@ -5,6 +5,7 @@
  * personne de l'équipe éditoriale ne l'a pas relue (statut « Relu » ou « Validé pour publication »).
  */
 import { generatedPhoto } from './build';
+import { AI_PHOTOS } from './photoCredits';
 import { INGREDIENTS } from './ingredients';
 import { RECIPE_SOURCES } from './sources';
 import { ALLERGENS, MEALS, STAGES, TAGS, TEXTURES, type Recipe, type RecipeIngredient, type Unit } from './types';
@@ -18,7 +19,7 @@ export interface RecipeDraft {
   minMonths?: number; maxMonths?: number; textures: Recipe['textures'];
   servings: number; servingLabel?: string; prepMin: number; cookMin: number;
   ingredients: DraftIngredient[]; steps: string[]; allergens: Recipe['allergens']; tags: Recipe['tags'];
-  adaptations: string[]; storage: string; precautions: string[]; nutrition: string;
+  adaptations: string[]; storage: string; freezing?: string; precautions: string[]; nutrition: string;
   budget: 1 | 2 | 3; seasons: Recipe['seasons']; temperature: 'hot' | 'cold';
   familyAdaptations?: Recipe['familyAdaptations']; sources: string[];
 }
@@ -61,7 +62,7 @@ export function draftToRecipe(d: RecipeDraft, o: DraftOrigin): Recipe {
   const ingredients: RecipeIngredient[] = d.ingredients.map(([key, qty, unit, note, optional]) => ({ key, qty, unit, ...(note ? { note } : {}), ...(optional ? { optional: true } : {}) }));
   const status = o.status ?? 'ai_draft';
   return {
-    ...d, ingredients, id: `rcp-${d.slug}`, photo: generatedPhoto(d.title), verifiedOn: o.on, status,
+    ...d, ingredients, id: `rcp-${d.slug}`, photo: AI_PHOTOS[d.slug] ?? generatedPhoto(d.title), verifiedOn: o.on, status,
     statusHistory: [
       { status: 'ai_draft', by: o.by, on: o.on, ...(o.note ? { note: o.note } : {}) },
       ...(status !== 'ai_draft' ? [{ status, by: 'Contrôles automatiques de l’application', on: o.on }] : []),

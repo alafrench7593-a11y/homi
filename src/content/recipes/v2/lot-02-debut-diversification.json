@@ -1,0 +1,1918 @@
+[
+  {
+    "slug": "dd-puree-courgette",
+    "title": "Purée de courgette toute douce",
+    "summary": "Une première purée verte, fondante et délicate, idéale pour découvrir les légumes.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "zucchini",
+        300,
+        "g",
+        "environ 1 grosse courgette"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez la courgette, épluchez-la (la peau est parfois amère au début) et coupez-la en rondelles.",
+      "Faites-la cuire 12 minutes à la vapeur, jusqu’à ce qu’elle soit très tendre.",
+      "Mixez très finement pour obtenir une purée bien lisse, selon ce que votre bébé accepte ; la courgette rend beaucoup d’eau, inutile d’en ajouter.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Plus tard, laissez la peau d’une courgette bien lavée : elle apporte des fibres."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "La courgette, douce et riche en eau, est un légume facile pour découvrir les premières saveurs.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-haricots-verts",
+    "title": "Purée de haricots verts bien lisse",
+    "summary": "Le grand classique des premières purées vertes, mixé finement et passé au tamis pour une texture toute douce.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "green_beans",
+        300,
+        "g",
+        "frais ou surgelés, extra-fins"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Équeutez et lavez les haricots verts (inutile si vous utilisez des surgelés).",
+      "Faites-les cuire 15 minutes à la vapeur, jusqu’à ce qu’ils s’écrasent très facilement.",
+      "Mixez très longuement avec un peu d’eau de cuisson, puis passez au tamis pour retirer les fibres et obtenir une purée bien lisse.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Si la purée paraît trop fibreuse, ajoutez une petite pomme de terre cuite avec les haricots."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Les haricots verts apportent des fibres et une saveur douce que les bébés acceptent facilement.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-potiron",
+    "title": "Purée de potiron toute douce",
+    "summary": "Une purée orange, naturellement sucrée et veloutée, qui plaît dès les premières cuillères.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "pumpkin",
+        350,
+        "g",
+        "chair sans peau ni graines"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez le potiron, retirez la peau et les graines, puis coupez la chair en cubes.",
+      "Faites cuire 15 minutes à la vapeur, jusqu’à ce que la chair soit très tendre.",
+      "Mixez très finement pour obtenir une purée bien lisse, selon ce que votre bébé accepte.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Le potimarron ou la courge butternut se préparent exactement de la même façon."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Le potiron, doux et légèrement sucré, apporte des fibres et du bêta-carotène.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-panais",
+    "title": "Purée de panais veloutée",
+    "summary": "Un légume d’hiver à la saveur douce et légèrement sucrée, pour varier les découvertes.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "parsnip",
+        300,
+        "g",
+        "environ 2 panais"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez et épluchez les panais, retirez le cœur s’il est dur, puis coupez-les en rondelles.",
+      "Faites cuire 15 minutes à la vapeur, jusqu’à ce qu’ils s’écrasent très facilement.",
+      "Mixez très finement avec un peu d’eau de cuisson pour obtenir une purée bien lisse.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Mélangez-le avec de la carotte ou de la pomme de terre pour une saveur encore plus douce."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Le panais est une racine douce, source de fibres, qui fait découvrir un nouveau goût.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-carotte",
+    "title": "Purée de carotte fondante",
+    "summary": "Une purée orange vif, douce et sucrée, que presque tous les bébés adorent.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "carrot",
+        300,
+        "g",
+        "environ 3 carottes"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez et épluchez les carottes, puis coupez-les en rondelles.",
+      "Faites-les cuire 20 minutes à la vapeur, jusqu’à ce qu’elles s’écrasent très facilement.",
+      "Mixez très finement avec un peu d’eau de cuisson pour obtenir une purée bien lisse, selon ce que votre bébé accepte.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Avec un peu de cumin plus tard, elle fera découvrir une nouvelle saveur."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante.",
+      "Carottes crues : jamais en morceaux avant 4 ans ; ici, elles sont cuites et mixées."
+    ],
+    "nutrition": "La carotte, douce et sucrée, apporte des fibres et du bêta-carotène.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-patate-douce",
+    "title": "Purée de patate douce onctueuse",
+    "summary": "Une purée naturellement sucrée et crémeuse, qui se mixe en un instant.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "sweet_potato",
+        300,
+        "g",
+        "environ 1 patate douce"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez et épluchez la patate douce, puis coupez-la en cubes.",
+      "Faites-la cuire 15 minutes à la vapeur, jusqu’à ce qu’elle soit très tendre.",
+      "Mixez finement en ajoutant un peu d’eau de cuisson si besoin, pour obtenir une purée bien lisse.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Mélangez-la à de la carotte ou du potiron pour varier les goûts."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "La patate douce apporte de l’énergie, des fibres et du bêta-carotène.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-courgette-pomme-de-terre",
+    "title": "Purée courgette et pomme de terre",
+    "summary": "Un mélange tout doux et onctueux, parfait pour passer des purées d’un seul légume aux premiers mélanges.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "zucchini",
+        200,
+        "g"
+      ],
+      [
+        "potato",
+        150,
+        "g",
+        "1 pomme de terre moyenne"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez et épluchez la courgette et la pomme de terre, puis coupez-les en dés.",
+      "Faites cuire les légumes 15 minutes à la vapeur, jusqu’à ce qu’ils s’écrasent très facilement.",
+      "Mixez finement pour obtenir une purée bien lisse, selon ce que votre bébé accepte.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "La pomme de terre donne de l’onctuosité et de l’énergie, la courgette sa douceur.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-brocoli-pomme-de-terre",
+    "title": "Purée de brocoli et pomme de terre",
+    "summary": "Une purée bien verte, adoucie par la pomme de terre, pour apprivoiser le brocoli en douceur.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "broccoli",
+        150,
+        "g",
+        "en petits bouquets"
+      ],
+      [
+        "potato",
+        150,
+        "g",
+        "1 pomme de terre moyenne"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez le brocoli et détaillez-le en petits bouquets ; épluchez la pomme de terre et coupez-la en dés.",
+      "Faites cuire la pomme de terre 8 minutes à la vapeur, ajoutez le brocoli et poursuivez 10 minutes.",
+      "Mixez très finement pour obtenir une purée bien lisse, selon ce que votre bébé accepte.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Le brocoli apporte des fibres et de la vitamine C ; la pomme de terre adoucit son goût.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-petits-pois-pomme-de-terre",
+    "title": "Purée de petits pois et pomme de terre",
+    "summary": "Une purée vert tendre au goût légèrement sucré, passée au tamis pour une texture parfaitement lisse.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "frozen_peas",
+        150,
+        "g"
+      ],
+      [
+        "potato",
+        150,
+        "g",
+        "1 pomme de terre moyenne"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la pomme de terre et coupez-la en dés.",
+      "Faites cuire la pomme de terre et les petits pois 15 minutes à la vapeur, jusqu’à ce que tout soit très tendre.",
+      "Mixez longuement avec un peu d’eau de cuisson, puis passez au tamis pour retirer les peaux des petits pois.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante.",
+      "Petits pois entiers : jamais tels quels à cet âge ; ils sont ici mixés et tamisés."
+    ],
+    "nutrition": "Les petits pois apportent des fibres et un peu de protéines végétales, dans une saveur douce.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-poireau-pomme-de-terre",
+    "title": "Purée de poireau et pomme de terre",
+    "summary": "Une purée douce comme une soupe de grand-mère, avec le blanc du poireau tout fondant.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "leek",
+        150,
+        "g",
+        "le blanc seulement"
+      ],
+      [
+        "potato",
+        200,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Fendez le blanc de poireau en deux, rincez-le soigneusement entre les feuilles et émincez-le ; épluchez la pomme de terre et coupez-la en dés.",
+      "Faites cuire les légumes 15 minutes à la vapeur, jusqu’à ce qu’ils soient très tendres.",
+      "Mixez très finement pour obtenir une purée bien lisse, selon ce que votre bébé accepte.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Le poireau apporte des fibres et une saveur douce, la pomme de terre l’onctuosité.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-chou-fleur-pomme-de-terre",
+    "title": "Purée de chou-fleur et pomme de terre au beurre",
+    "summary": "Une purée blanche et crémeuse, adoucie par une noisette de beurre.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "cauliflower",
+        150,
+        "g",
+        "en petits bouquets"
+      ],
+      [
+        "potato",
+        150,
+        "g",
+        "1 pomme de terre moyenne"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Lavez le chou-fleur et détaillez-le en petits bouquets ; épluchez la pomme de terre et coupez-la en dés.",
+      "Faites cuire les légumes 15 minutes à la vapeur, jusqu’à ce qu’ils s’écrasent très facilement.",
+      "Mixez très finement pour obtenir une purée bien lisse, selon ce que votre bébé accepte.",
+      "Au moment de servir, ajoutez une petite noisette de beurre par portion et mélangez."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Sans lait : remplacez le beurre par une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Le chou-fleur apporte des fibres et de la vitamine C ; le beurre, une matière grasse utile aux tout-petits.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-puree-butternut-carotte",
+    "title": "Purée de butternut et carotte",
+    "summary": "Une purée orange, douce et légèrement sucrée, qui sent bon l’automne.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "butternut",
+        200,
+        "g",
+        "chair sans peau ni graines"
+      ],
+      [
+        "carrot",
+        100,
+        "g",
+        "1 carotte"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la courge butternut, retirez les graines et coupez la chair en cubes ; lavez, épluchez et coupez la carotte en rondelles.",
+      "Faites cuire les légumes 18 minutes à la vapeur, jusqu’à ce qu’ils s’écrasent très facilement.",
+      "Mixez très finement pour obtenir une purée bien lisse, selon ce que votre bébé accepte.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille ou directement à feu doux en remuant ; ne recongelez jamais une purée décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Courge et carotte apportent des fibres et du bêta-carotène, dans une saveur douce que les bébés apprécient.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-avocat-ecrase",
+    "title": "Avocat écrasé tout doux",
+    "summary": "Une purée crémeuse prête en deux minutes, sans cuisson, avec un avocat bien mûr.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "snack"
+    ],
+    "stages": [
+      "start",
+      "m6_8"
+    ],
+    "minMonths": 4,
+    "maxMonths": 8,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 2,
+    "servingLabel": "portions bébé",
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "avocado",
+        1,
+        "u",
+        "bien mûr"
+      ]
+    ],
+    "steps": [
+      "Lavez l’avocat, coupez-le en deux, retirez le noyau et prélevez la chair à la cuillère.",
+      "Écrasez-la finement à la fourchette ou mixez-la pour une texture parfaitement lisse, selon ce que votre bébé accepte.",
+      "Servez aussitôt : l’avocat noircit vite à l’air."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "quick"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Mélangez-le à une cuillère de purée de courgette ou de banane écrasée pour varier."
+    ],
+    "storage": "À préparer au dernier moment ; ne conservez pas les restes de la portion entamée. La moitié non utilisée, avec son noyau et filmée, se garde 24 h au réfrigérateur.",
+    "freezing": "Ne se congèle pas : l’avocat noircit et devient aqueux. Préparez-le juste avant le repas.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Bébé mange assis bien droit, toujours sous la surveillance d’un adulte."
+    ],
+    "nutrition": "L’avocat apporte des matières grasses de bonne qualité, dans une texture naturellement onctueuse.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-compote-pomme",
+    "title": "Compote de pomme toute lisse",
+    "summary": "La première compote, douce et parfumée, sans aucun sucre ajouté.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "start",
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 4,
+    "maxMonths": 12,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "apple",
+        400,
+        "g",
+        "environ 3 pommes douces (golden, gala)"
+      ]
+    ],
+    "steps": [
+      "Lavez, épluchez et épépinez les pommes, puis coupez-les en morceaux.",
+      "Faites-les cuire 15 minutes à la vapeur ou à couvert avec 2 cuillères à soupe d’eau, jusqu’à ce qu’elles soient très tendres.",
+      "Mixez finement pour obtenir une compote bien lisse, sans ajouter de sucre.",
+      "Laissez tiédir avant de servir, ou gardez au frais."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "batch",
+      "freezer",
+      "budget"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Choisissez des variétés douces : les pommes acidulées font parfois grimacer les bébés."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille et consommez dans les 24 heures ; ne recongelez jamais une compote décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Pas de miel avant 1 an, même pour adoucir.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin."
+    ],
+    "nutrition": "La pomme cuite est douce et facile à digérer ; une première découverte des fruits.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-compote-poire",
+    "title": "Compote de poire fondante",
+    "summary": "Une compote très douce et parfumée, faite avec des poires bien mûres.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "start",
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 4,
+    "maxMonths": 12,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "pear",
+        400,
+        "g",
+        "environ 3 poires bien mûres"
+      ]
+    ],
+    "steps": [
+      "Lavez, épluchez et épépinez les poires, puis coupez-les en morceaux.",
+      "Faites-les cuire 10 minutes à la vapeur ou à couvert avec 1 cuillère à soupe d’eau, jusqu’à ce qu’elles soient très tendres.",
+      "Mixez finement pour obtenir une compote bien lisse.",
+      "Laissez tiédir avant de servir, ou gardez au frais."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "batch",
+      "freezer",
+      "budget"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille et consommez dans les 24 heures ; ne recongelez jamais une compote décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Pas de miel avant 1 an, même pour adoucir.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin."
+    ],
+    "nutrition": "La poire, fondante et naturellement sucrée, apporte des fibres.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-compote-pomme-banane",
+    "title": "Compote pomme et banane",
+    "summary": "Une compote onctueuse et naturellement sucrée, où la banane mûre adoucit la pomme cuite.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "start",
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 4,
+    "maxMonths": 12,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "apple",
+        250,
+        "g",
+        "environ 2 pommes douces"
+      ],
+      [
+        "banana",
+        1,
+        "u",
+        "bien mûre"
+      ]
+    ],
+    "steps": [
+      "Lavez, épluchez et épépinez les pommes, puis coupez-les en morceaux.",
+      "Faites-les cuire 15 minutes à la vapeur ou à couvert avec 2 cuillères à soupe d’eau, jusqu’à ce qu’elles soient très tendres.",
+      "Épluchez la banane, coupez-la en rondelles et mixez-la finement avec la compote de pomme encore tiède.",
+      "Servez aussitôt, ou gardez au frais dans un pot fermé."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "batch",
+      "freezer",
+      "budget"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Plus tard, écrasez simplement la banane à la fourchette dans la compote de pomme."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille et consommez dans les 24 heures ; ne recongelez jamais une compote décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Pas de miel avant 1 an, même pour adoucir.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin."
+    ],
+    "nutrition": "La banane apporte une texture crémeuse et de l’énergie ; la pomme cuite, sa douceur.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-compote-peche",
+    "title": "Compote de pêche d’été",
+    "summary": "Une compote parfumée comme un été au verger, avec des pêches bien mûres.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "start",
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 4,
+    "maxMonths": 12,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "peach",
+        400,
+        "g",
+        "3 à 4 pêches bien mûres"
+      ]
+    ],
+    "steps": [
+      "Plongez les pêches 30 secondes dans l’eau bouillante, puis dans l’eau froide : la peau s’enlève toute seule. Coupez-les en morceaux en retirant le noyau.",
+      "Faites cuire les morceaux 10 minutes à couvert, à feu doux, jusqu’à ce qu’ils soient très tendres.",
+      "Mixez finement pour obtenir une compote bien lisse.",
+      "Laissez tiédir avant de servir, ou gardez au frais."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "batch",
+      "freezer",
+      "budget"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Mélangez-la à une compote de pomme si votre bébé la trouve trop parfumée."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille et consommez dans les 24 heures ; ne recongelez jamais une compote décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Pas de miel avant 1 an, même pour adoucir.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin."
+    ],
+    "nutrition": "La pêche est un fruit d’été juteux et parfumé, source de vitamine C.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-compote-abricot",
+    "title": "Compote d’abricot toute douce",
+    "summary": "Une compote orange et parfumée, adoucie en choisissant des abricots bien mûrs.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "start",
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 4,
+    "maxMonths": 12,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "apricot",
+        400,
+        "g",
+        "environ 8 abricots bien mûrs"
+      ]
+    ],
+    "steps": [
+      "Lavez les abricots, coupez-les en deux et retirez les noyaux.",
+      "Faites-les cuire 10 minutes à couvert avec 1 cuillère à soupe d’eau, à feu doux, jusqu’à ce qu’ils soient très tendres.",
+      "Mixez finement, puis passez au tamis pour retirer les petites peaux et obtenir une compote bien lisse.",
+      "Laissez tiédir avant de servir, ou gardez au frais."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "batch",
+      "freezer",
+      "budget"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte.",
+      "Si votre bébé fait la grimace, mélangez moitié abricot, moitié compote de pomme."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille et consommez dans les 24 heures ; ne recongelez jamais une compote décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Pas de miel avant 1 an, même pour adoucir.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin."
+    ],
+    "nutrition": "L’abricot apporte du bêta-carotène et des fibres ; son goût acidulé fait découvrir une nouvelle saveur.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-compote-pomme-prune",
+    "title": "Compote pomme et prune",
+    "summary": "Une compote de fin d’été à la jolie couleur rosée, douce grâce à la pomme.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "start",
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 4,
+    "maxMonths": 12,
+    "textures": [
+      "smooth"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "apple",
+        250,
+        "g",
+        "environ 2 pommes douces"
+      ],
+      [
+        "plum",
+        150,
+        "g",
+        "environ 4 prunes bien mûres"
+      ]
+    ],
+    "steps": [
+      "Lavez les fruits. Épluchez et épépinez les pommes ; coupez les prunes en deux et retirez les noyaux.",
+      "Faites cuire le tout 12 minutes à couvert avec 2 cuillères à soupe d’eau, à feu doux, jusqu’à ce que les fruits soient très tendres.",
+      "Mixez finement, puis passez au tamis pour retirer les peaux des prunes.",
+      "Laissez tiédir avant de servir, ou gardez au frais."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "batch",
+      "freezer",
+      "budget"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 48 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, et jetez les restes de l’assiette.",
+    "freezing": "Se congèle très bien en bacs à glaçons ou en petits pots : jusqu’à 1 mois. Décongelez au réfrigérateur la veille et consommez dans les 24 heures ; ne recongelez jamais une compote décongelée.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Pas de miel avant 1 an, même pour adoucir.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin."
+    ],
+    "nutrition": "La prune apporte des fibres et une saveur nouvelle, adoucie par la pomme.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-patate-douce-courgette-poulet",
+    "title": "Patate douce, courgette et poulet tout doux",
+    "summary": "Un premier repas complet, doux et sucré, avec une toute petite quantité de poulet bien cuit.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 9,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "sweet_potato",
+        200,
+        "g"
+      ],
+      [
+        "zucchini",
+        150,
+        "g"
+      ],
+      [
+        "chicken",
+        60,
+        "g",
+        "soit environ 15 g par portion"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la patate douce et la courgette et coupez-les en dés ; coupez le blanc de poulet en petits morceaux.",
+      "Faites cuire la patate douce, la courgette et le poulet 15 minutes à la vapeur : le poulet doit être cuit à cœur, blanc jusqu’au centre, sans partie rosée.",
+      "Mixez très finement le tout avec un peu d’eau de cuisson, jusqu’à obtenir une purée bien lisse, selon ce que votre bébé accepte.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "complete",
+      "protein",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 24 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, jusqu’à ce qu’elle soit bien chaude, puis laissez tiédir. Jetez les restes de l’assiette.",
+    "freezing": "Se congèle en petits pots dès qu’elle a refroidi : jusqu’à 1 mois. Décongelez au réfrigérateur la veille, réchauffez jusqu’à ce que ce soit bien chaud puis laissez tiédir ; ne recongelez jamais.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Viande cuite à cœur, sans partie rosée, puis mixée très finement.",
+      "Lavez la planche et le couteau après avoir coupé le poulet cru.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Une petite quantité de volaille apporte des protéines et du fer ; la patate douce, de l’énergie.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-cabillaud-courgette-riz",
+    "title": "Cabillaud, courgette et riz mixés",
+    "summary": "Un premier poisson tout doux, avec de la courgette et un peu de riz pour l’onctuosité.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 9,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "white_fish",
+        60,
+        "g",
+        "cabillaud sans arêtes, soit environ 15 g par portion"
+      ],
+      [
+        "zucchini",
+        250,
+        "g"
+      ],
+      [
+        "rice",
+        40,
+        "g",
+        "poids cru"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz 15 minutes dans une casserole d’eau, sans sel, jusqu’à ce qu’il soit très tendre ; égouttez-le.",
+      "Pendant ce temps, lavez et épluchez la courgette, coupez-la en dés et faites-la cuire 10 minutes à la vapeur avec le cabillaud.",
+      "Vérifiez que la chair du poisson est opaque jusqu’au centre, puis émiettez-la en retirant la moindre arête.",
+      "Mixez finement le poisson, la courgette et le riz avec un peu d’eau de cuisson, selon ce que votre bébé accepte. Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "puree",
+      "complete",
+      "protein",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 24 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, jusqu’à ce qu’elle soit bien chaude, puis laissez tiédir. Jetez les restes de l’assiette.",
+    "freezing": "Se congèle en petits pots dès qu’elle a refroidi : jusqu’à 1 mois. Décongelez au réfrigérateur la veille, réchauffez jusqu’à ce que ce soit bien chaud puis laissez tiédir ; ne recongelez jamais.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Poisson cuit à cœur : chair opaque jusqu’au centre, qui s’effeuille facilement.",
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Le cabillaud est un poisson maigre, source de protéines et d’iode ; une petite quantité suffit à cet âge.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "dd-saumon-carotte-pomme-de-terre",
+    "title": "Saumon, carotte et pomme de terre mixés",
+    "summary": "Une purée orange et douce avec un peu de saumon bien cuit, pour découvrir un poisson gras.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 9,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "salmon",
+        60,
+        "g",
+        "sans peau ni arêtes, soit environ 15 g par portion"
+      ],
+      [
+        "carrot",
+        150,
+        "g"
+      ],
+      [
+        "potato",
+        150,
+        "g",
+        "1 pomme de terre moyenne"
+      ]
+    ],
+    "steps": [
+      "Lavez et épluchez la carotte et la pomme de terre, puis coupez-les en dés.",
+      "Faites cuire les légumes 15 minutes à la vapeur, ajoutez le saumon et poursuivez 8 à 10 minutes, jusqu’à ce que sa chair soit opaque jusqu’au centre.",
+      "Émiettez le saumon en vérifiant soigneusement qu’il ne reste aucune arête.",
+      "Mixez finement le tout avec un peu d’eau de cuisson, selon ce que votre bébé accepte."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "puree",
+      "complete",
+      "protein",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 24 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, jusqu’à ce qu’elle soit bien chaude, puis laissez tiédir. Jetez les restes de l’assiette.",
+    "freezing": "Se congèle en petits pots dès qu’elle a refroidi : jusqu’à 1 mois. Décongelez au réfrigérateur la veille, réchauffez jusqu’à ce que ce soit bien chaud puis laissez tiédir ; ne recongelez jamais.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Poisson cuit à cœur : chair opaque jusqu’au centre, qui s’effeuille facilement.",
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Saumon frais uniquement, jamais fumé ni cru.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Le saumon est un poisson gras, source d’oméga 3 ; il remplace ici l’huile ajoutée.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "dd-boeuf-haricots-verts-pomme-de-terre",
+    "title": "Bœuf, haricots verts et pomme de terre",
+    "summary": "Un petit repas complet et doux, avec une toute petite quantité de bœuf bien cuit et mixé.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 9,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "ground_beef",
+        60,
+        "g",
+        "soit environ 15 g par portion"
+      ],
+      [
+        "green_beans",
+        200,
+        "g",
+        "extra-fins"
+      ],
+      [
+        "potato",
+        150,
+        "g",
+        "1 pomme de terre moyenne"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Équeutez et lavez les haricots verts ; épluchez la pomme de terre et coupez-la en dés.",
+      "Faites cuire les légumes 15 minutes à la vapeur.",
+      "Pendant ce temps, faites cuire le bœuf haché 10 minutes à la vapeur ou dans une petite casserole avec un peu d’eau, en l’émiettant : il doit être cuit à cœur, sans partie rosée.",
+      "Mixez très finement le bœuf et les légumes avec un peu d’eau de cuisson, selon ce que votre bébé accepte. Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "complete",
+      "protein",
+      "iron",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 24 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, jusqu’à ce qu’elle soit bien chaude, puis laissez tiédir. Jetez les restes de l’assiette.",
+    "freezing": "Se congèle en petits pots dès qu’elle a refroidi : jusqu’à 1 mois. Décongelez au réfrigérateur la veille, réchauffez jusqu’à ce que ce soit bien chaud puis laissez tiédir ; ne recongelez jamais.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Viande cuite à cœur, sans partie rosée, puis mixée très finement.",
+      "Lavez la planche et les ustensiles après avoir manipulé la viande crue.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Le bœuf apporte du fer et des protéines en petite quantité ; les légumes complètent l’assiette.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "dd-merlu-potiron-pomme-de-terre",
+    "title": "Merlu, potiron et pomme de terre",
+    "summary": "Une purée orange et veloutée avec un peu de merlu, un poisson blanc très tendre.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 9,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "hake",
+        60,
+        "g",
+        "sans arêtes, soit environ 15 g par portion"
+      ],
+      [
+        "pumpkin",
+        200,
+        "g",
+        "chair sans peau ni graines"
+      ],
+      [
+        "potato",
+        100,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez le potiron, retirez la peau et les graines et coupez la chair en cubes ; épluchez la pomme de terre et coupez-la en dés.",
+      "Faites cuire les légumes 10 minutes à la vapeur, ajoutez le merlu et poursuivez 8 minutes, jusqu’à ce que sa chair soit opaque jusqu’au centre.",
+      "Émiettez le poisson en retirant la moindre arête.",
+      "Mixez finement le tout avec un peu d’eau de cuisson, selon ce que votre bébé accepte. Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "puree",
+      "complete",
+      "protein",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 24 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, jusqu’à ce qu’elle soit bien chaude, puis laissez tiédir. Jetez les restes de l’assiette.",
+    "freezing": "Se congèle en petits pots dès qu’elle a refroidi : jusqu’à 1 mois. Décongelez au réfrigérateur la veille, réchauffez jusqu’à ce que ce soit bien chaud puis laissez tiédir ; ne recongelez jamais.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Poisson cuit à cœur : chair opaque jusqu’au centre, qui s’effeuille facilement.",
+      "Poisson : passez les doigts sur toute la chair, avant et après cuisson, et retirez la moindre arête.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "Le merlu, poisson maigre, apporte des protéines ; le potiron, sa douceur et du bêta-carotène.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "dd-dinde-brocoli-pomme-de-terre",
+    "title": "Dinde, brocoli et pomme de terre",
+    "summary": "Une purée verte et douce, avec une petite quantité de dinde bien cuite pour un repas complet.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch"
+    ],
+    "stages": [
+      "m6_8"
+    ],
+    "minMonths": 6,
+    "maxMonths": 9,
+    "textures": [
+      "smooth",
+      "mashed"
+    ],
+    "servings": 4,
+    "servingLabel": "portions bébé",
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "turkey",
+        60,
+        "g",
+        "soit environ 15 g par portion"
+      ],
+      [
+        "broccoli",
+        150,
+        "g",
+        "en petits bouquets"
+      ],
+      [
+        "potato",
+        150,
+        "g",
+        "1 pomme de terre moyenne"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez le brocoli et détaillez-le en petits bouquets ; épluchez la pomme de terre et coupez-la en dés ; coupez l’escalope de dinde en petits morceaux.",
+      "Faites cuire la pomme de terre et la dinde 8 minutes à la vapeur, ajoutez le brocoli et poursuivez 10 minutes : la dinde doit être cuite à cœur, sans partie rosée.",
+      "Mixez très finement le tout avec un peu d’eau de cuisson, selon ce que votre bébé accepte.",
+      "Au moment de servir, ajoutez une demi-cuillère à café d’huile de colza par portion."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "complete",
+      "protein",
+      "freezer"
+    ],
+    "adaptations": [
+      "En grandissant, mixez moins finement puis écrasez à la fourchette, selon ce que votre bébé accepte."
+    ],
+    "storage": "Réfrigérateur : 24 h au plus dans un petit pot fermé ; réchauffez seulement la portion du repas, une seule fois, jusqu’à ce qu’elle soit bien chaude, puis laissez tiédir. Jetez les restes de l’assiette.",
+    "freezing": "Se congèle en petits pots dès qu’elle a refroidi : jusqu’à 1 mois. Décongelez au réfrigérateur la veille, réchauffez jusqu’à ce que ce soit bien chaud puis laissez tiédir ; ne recongelez jamais.",
+    "precautions": [
+      "Sans sel ni sucre ajoutés avant 1 an : le goût naturel des aliments suffit.",
+      "Viande cuite à cœur, sans partie rosée, puis mixée très finement.",
+      "Lavez la planche et le couteau après avoir coupé la viande crue.",
+      "Proposez quelques cuillères au début, puis augmentez selon ce que votre bébé accepte ; en cas de question, parlez-en à son médecin.",
+      "Vérifiez la température avant de servir : la purée doit être tiède, jamais brûlante."
+    ],
+    "nutrition": "La dinde, viande maigre, apporte des protéines en petite quantité ; le brocoli, des fibres et de la vitamine C.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  }
+]

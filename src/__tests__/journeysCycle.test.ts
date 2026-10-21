@@ -9,7 +9,7 @@ afterEach(() => setLocale('fr'));
 describe('parcours « suivre mon cycle »', () => {
   it('est proposé, sans objectif de grossesse', () => {
     const o = journeyOptions().find((x) => x.key === 'cycle');
-    expect(o?.label).toBe('Je veux simplement suivre mon cycle');
+    expect(o?.label).toBe('Suivre mon cycle');
     expect(mainJourneys(['cycle'])).toEqual(['cycle']);
   });
   it('mène à l’écran de cycle neutre et à des raccourcis adaptés', () => {

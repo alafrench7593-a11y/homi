@@ -1,9 +1,10 @@
-/** Bibliothèque de recettes de l'application (données de départ ; la base Supabase en garde une copie modifiable par l'administration). */
-import { BABY_RECIPES } from './baby';
-import { CHILD_RECIPES } from './child';
-import { PREGNANCY_RECIPES } from './pregnancy';
+/**
+ * Bibliothèque de recettes de l'application (données de départ ; la base Supabase en garde une copie modifiable par
+ * l'administration). L'ancien catalogue a été supprimé définitivement (octobre 2026) ; seule la purée carotte et
+ * pomme de terre, dont la photo a été fournie, est conservée.
+ */
+import { PHOTO_RECIPES } from './photo';
+import { V2_RECIPES } from './v2';
 
-export const ALL_RECIPES = [...PREGNANCY_RECIPES, ...BABY_RECIPES, ...CHILD_RECIPES];
-/** Bibliothèque complète : recettes « À vérifier » + brouillons IA en attente de relecture. */
-export { DRAFT_RECIPES } from './drafts';
-export { PREGNANCY_RECIPES, BABY_RECIPES, CHILD_RECIPES };
+export const ALL_RECIPES = [...PHOTO_RECIPES, ...V2_RECIPES];
+export { V2_LOTS, V2_ORIGIN } from './v2';

@@ -8,6 +8,7 @@ import { BarChart } from '@/components/Charts';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, EmptyStateCard, haptic, Icon, type IconName, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui-extra';
 import { Timeline, KIND_META, type LogItem } from '@/features/tracking';
+import { QuickEntry } from '@/features/quickEntry';
 import { DayRibbon, SleepNights } from '@/features/motionViz';
 import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePregnancies, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useScope } from '@/lib/data/hooks-scope';
@@ -172,6 +173,7 @@ export default function Track() {
         {loading ? <Skeleton kind="card" rows={2} /> : failed ? (
           <ErrorView error={failed.error} onRetry={() => { void childrenQ.refetch(); void pregnanciesQ.refetch(); }} />
         ) : null}
+        {(scope.childId || subject.type === 'family') && <QuickEntry activeChildId={scope.childId} />}
         {scope.childId && <ChildTracking childId={scope.childId} />}
         {scope.scope === 'pregnancy' && <PregnancyTracking />}
         {scope.scope === 'postpartum' && (

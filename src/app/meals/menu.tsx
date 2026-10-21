@@ -11,7 +11,7 @@ import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { mealLabel } from '@/features/recipes/labels';
-import { useCreateShoppingList, useFoodProfile, useLatestMealPlan, useRecipeFavorites, useRecipes, useSaveMealPlan } from '@/lib/data/hooks-recipes';
+import { useCreateShoppingList, useFoodProfile, useLatestMealPlan, useRecipeDislikes, useRecipeFavorites, useRecipes, useSaveMealPlan } from '@/lib/data/hooks-recipes';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { generateMenu, moveSlot, replaceSlot, shoppingList, type MenuOptions, type MenuSlot } from '@/lib/recipes/engine';
 import { MEALS, type Meal } from '@/lib/recipes/types';
@@ -28,6 +28,7 @@ export default function MenuScreen() {
   const { data: all } = useRecipes();
   const { profile, members } = useFoodProfile();
   const fav = useRecipeFavorites();
+  const dislikes = useRecipeDislikes();
   const pantry = useUiStore((s) => s.pantry);
   const saved = useLatestMealPlan();
   const save = useSaveMealPlan();
@@ -46,7 +47,7 @@ export default function MenuScreen() {
   const [adding, setAdding] = useState<string | null>(params.add ?? null);
   const byId = useMemo(() => new Map((all ?? []).map((r) => [r.id, r])), [all]);
   const p = { ...profile, trimester };
-  const opts: MenuOptions = { days, meals, servings, budget, maxMinutes: maxMin, have: useHave ? pantry : [], favorites: fav.ids, members: withKids ? members : [], seed: 11 };
+  const opts: MenuOptions = { days, meals, servings, budget, maxMinutes: maxMin, have: useHave ? pantry : [], favorites: fav.ids, exclude: dislikes.ids, members: withKids ? members : [], seed: 11 };
 
   // Le profil affiché se charge après le premier rendu : valeurs par défaut adaptées à ce profil
   useEffect(() => {

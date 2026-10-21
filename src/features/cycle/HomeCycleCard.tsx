@@ -43,7 +43,8 @@ export function HomeCycleCard({ mode }: { mode: Mode }) {
   const day = cycleDayOn(entries, today);
   const last = entries.length ? [...entries].sort((a, b) => b.start_date.localeCompare(a.start_date))[0] : null;
   // « Éviter une grossesse » : le calendrier du cycle est l'outil principal
-  const href = mode === 'ttc' ? '/fertility' : mode === 'avoid' ? '/cycle/calendar' : '/cycle';
+  // « Suivre mon cycle » : le calendrier est l'écran principal, quel que soit l'objectif
+  const href = '/cycle/calendar';
   const open = mode === 'ttc' ? tr('cycleCard.openTtc') : mode === 'avoid' ? tr('cycleCard.openAvoid') : tr('cycleCard.openCycle');
   const note = mode === 'ttc' ? tr('cycleCard.noteTtc') : mode === 'avoid' ? tr('cycleCard.noteAvoid') : tr('cycleCard.noteCycle');
   const recent = (symptoms ?? []).filter((s) => s.logged_on >= isoMinus(today, 3)).flatMap((s) => symptomKeysOf(s));

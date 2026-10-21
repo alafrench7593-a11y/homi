@@ -21,7 +21,7 @@ export type Aisle = 'fruits_legumes' | 'cremerie' | 'frais' | 'boucherie' | 'poi
 
 export const TAGS = [
   'quick', 'budget', 'vegetarian', 'nausea', 'fatigue', 'iron', 'calcium', 'protein', 'fiber', 'b9',
-  'puree', 'compote', 'complete', 'finger', 'family', 'batch', 'freezer', 'lunchbox', 'vegetables', 'world', 'picky', 'make_ahead',
+  'puree', 'compote', 'complete', 'finger', 'family', 'batch', 'freezer', 'lunchbox', 'vegetables', 'world', 'picky', 'make_ahead', 'classic',
 ] as const;
 export type Tag = (typeof TAGS)[number];
 
@@ -88,6 +88,8 @@ export interface Recipe {
   tags: Tag[];
   adaptations: string[];
   storage: string;
+  /** Congélation : possible ou non, durée, décongélation (texte rédigé). */
+  freezing?: string;
   /** Précautions grossesse ou âge (étouffement, cuisson…). */
   precautions: string[];
   nutrition: string;

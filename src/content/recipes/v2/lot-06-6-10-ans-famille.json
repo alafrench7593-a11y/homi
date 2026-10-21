@@ -1,0 +1,2818 @@
+[
+  {
+    "slug": "fa-cuisses-poulet-roties-pommes-de-terre",
+    "title": "Poulet rôti du dimanche et pommes de terre fondantes",
+    "summary": "Des cuisses de poulet dorées et des pommes de terre confites dans le jus : le repas de famille par excellence.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "chicken_thigh",
+        4,
+        "u"
+      ],
+      [
+        "potato",
+        800,
+        "g",
+        "grenaille ou à chair ferme"
+      ],
+      [
+        "garlic",
+        4,
+        "u",
+        "gousses en chemise"
+      ],
+      [
+        "thyme",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Lavez les pommes de terre et coupez les plus grosses en deux.",
+      "Disposez les cuisses de poulet et les pommes de terre dans un grand plat, ajoutez les gousses d’ail, le thym et l’huile, puis mélangez.",
+      "Enfournez 50 minutes en arrosant de jus à mi-cuisson : la peau doit être dorée, le jus qui s’écoule de la viande doit être clair, sans trace rosée près de l’os.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût."
+    ],
+    "allergens": [],
+    "tags": [
+      "classic",
+      "protein",
+      "complete",
+      "family"
+    ],
+    "adaptations": [
+      "Ajoutez des carottes en tronçons dans le plat.",
+      "Un poulet entier de 1,5 kg demande environ 1 h 15 de cuisson."
+    ],
+    "storage": "48 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "La viande désossée se congèle 3 mois ; les pommes de terre se congèlent mal. Décongelez au réfrigérateur et réchauffez jusqu’à ce que ce soit bien chaud.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Retirez la peau, les os et les cartilages de la part des enfants.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Une volaille et des pommes de terre, à compléter par un légume vert.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant tout salage, prélevez un peu de poulet sans peau et de pomme de terre : mixez finement vers 8 mois, écrasez à la fourchette vers 10 mois, puis proposez de petits morceaux tendres après 1 an.",
+      "child": "Viande détachée de l’os et coupée en morceaux ; pommes de terre servies avec un peu de jus."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-boeuf-carottes-mijote",
+    "title": "Bœuf carottes mijoté comme autrefois",
+    "summary": "Un bœuf fondant qui mijote doucement avec des carottes sucrées, encore meilleur réchauffé le lendemain.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 150,
+    "ingredients": [
+      [
+        "beef_stew",
+        1000,
+        "g"
+      ],
+      [
+        "carrot",
+        8,
+        "u"
+      ],
+      [
+        "onion",
+        2,
+        "u"
+      ],
+      [
+        "garlic",
+        2,
+        "u",
+        "gousses"
+      ],
+      [
+        "thyme",
+        1,
+        "cc"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ],
+      [
+        "flour",
+        1,
+        "cs"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Coupez le bœuf en gros cubes, émincez les oignons et l’ail, épluchez les carottes et coupez-les en rondelles épaisses.",
+      "Faites dorer la viande 10 minutes dans l’huile, dans une cocotte, puis ajoutez les oignons et l’ail. Saupoudrez de farine et mélangez.",
+      "Ajoutez les carottes, le thym et le laurier, puis couvrez d’eau à hauteur. Laissez mijoter 2 h 15 à couvert, à feu très doux, jusqu’à ce que la viande se défasse à la fourchette.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "classic",
+      "iron",
+      "protein",
+      "batch",
+      "freezer",
+      "family"
+    ],
+    "adaptations": [
+      "Servez avec des pommes de terre vapeur, des pâtes fraîches ou une purée.",
+      "À l’autocuiseur, comptez environ 50 minutes."
+    ],
+    "storage": "3 jours au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Se congèle très bien, jusqu’à 3 mois, avec sa sauce. Décongelez une nuit au réfrigérateur, puis réchauffez à feu doux jusqu’à ce que ce soit bien chaud à cœur.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Retirez la feuille de laurier avant de servir.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Une viande rouge riche en fer et des carottes en quantité.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant de saler, prélevez de la viande très fondante et des carottes : mixez avec un peu de jus de cuisson vers 8 mois, puis effilochez finement et écrasez les carottes en grandissant.",
+      "child": "Viande effilochée en petits morceaux et carottes fondantes, avec de la sauce."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-blanquette-de-veau",
+    "title": "Blanquette de veau à l’ancienne",
+    "summary": "Une sauce blanche onctueuse, un veau tendre et des champignons : la blanquette qui rassemble toute la table.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 25,
+    "cookMin": 105,
+    "ingredients": [
+      [
+        "veal",
+        1000,
+        "g"
+      ],
+      [
+        "carrot",
+        3,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "mushroom",
+        250,
+        "g"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "butter",
+        30,
+        "g"
+      ],
+      [
+        "flour",
+        30,
+        "g"
+      ],
+      [
+        "cream",
+        3,
+        "cs"
+      ],
+      [
+        "lemon",
+        0.5,
+        "u"
+      ],
+      [
+        "potato",
+        1000,
+        "g",
+        "à chair ferme"
+      ]
+    ],
+    "steps": [
+      "Mettez le veau dans une cocotte, couvrez d’eau froide, portez à ébullition et écumez. Ajoutez les carottes en rondelles, l’oignon, le laurier et le thym, puis laissez cuire 1 h 15 à petits frémissements.",
+      "Faites revenir les champignons émincés 5 minutes dans une noix de beurre. Épluchez les pommes de terre et faites-les cuire 25 minutes à la vapeur.",
+      "Égouttez la viande et les carottes en gardant le bouillon. Faites fondre le reste du beurre, ajoutez la farine, puis versez 60 cl de bouillon en fouettant et laissez épaissir 10 minutes.",
+      "Remettez la viande, les carottes et les champignons dans la sauce, ajoutez la crème et quelques gouttes de citron, puis réchauffez 5 minutes.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "classic",
+      "protein",
+      "complete",
+      "family"
+    ],
+    "adaptations": [
+      "Ajoutez des petits oignons grelots en fin de cuisson.",
+      "Remplacez le veau par du poulet (45 minutes de cuisson) ou servez avec du riz."
+    ],
+    "storage": "48 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Se congèle 3 mois sans les pommes de terre. Décongelez une nuit au réfrigérateur, puis réchauffez à feu doux en remuant : la sauce redevient lisse.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Retirez la feuille de laurier avant de servir.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Une viande tendre, des légumes et des pommes de terre pour un repas complet.",
+    "budget": 3,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Prélevez la viande et les carottes avant de saler et avant d’ajouter le citron : mixez avec un peu de pomme de terre et de bouillon vers 8 mois, puis hachez finement en grandissant.",
+      "child": "Viande coupée en petits morceaux, pommes de terre écrasées dans la sauce."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-gratin-dauphinois",
+    "title": "Gratin dauphinois crémeux",
+    "summary": "Des pommes de terre fondantes cuites lentement dans le lait et la crème, avec une croûte dorée.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 75,
+    "ingredients": [
+      [
+        "potato",
+        1200,
+        "g",
+        "à chair ferme"
+      ],
+      [
+        "milk",
+        500,
+        "ml"
+      ],
+      [
+        "cream",
+        150,
+        "ml"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ],
+      [
+        "butter",
+        15,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 160 °C. Frottez un plat à gratin avec la gousse d’ail coupée en deux, puis beurrez-le.",
+      "Épluchez les pommes de terre et coupez-les en fines rondelles, sans les rincer.",
+      "Faites chauffer le lait avec la crème, la muscade et la feuille de laurier, ajoutez les pommes de terre et laissez cuire 10 minutes en remuant délicatement.",
+      "Retirez le laurier, versez le tout dans le plat et enfournez 1 h 05 : le dessus doit être doré et la pointe d’un couteau doit traverser les pommes de terre sans résistance.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "classic",
+      "calcium",
+      "budget",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Servez avec une viande grillée ou une salade verte.",
+      "Ajoutez une couche de poireaux fondus pour une version plus végétale."
+    ],
+    "storage": "48 h au réfrigérateur, filmé ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Se congèle 2 mois en portions, avec une texture un peu moins fondante. Décongelez au réfrigérateur et réchauffez au four à 170 °C.",
+    "precautions": [
+      "Le lait de vache en quantité, cuit dans un plat, se propose à partir de 1 an.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Un féculent onctueux qui apporte du calcium, à associer à un légume.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Dès 1 an, prélevez une part avant de saler et écrasez-la à la fourchette ; proposez-la avec un légume vert écrasé.",
+      "child": "Une part avec une viande ou un œuf et des haricots verts."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-pates-bolognaise-maison",
+    "title": "Pâtes à la bolognaise maison",
+    "summary": "Une sauce qui mijote longtemps avec des légumes cachés, pour des spaghettis comme en Italie.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "pasta",
+        500,
+        "g",
+        "spaghettis ou penne"
+      ],
+      [
+        "ground_beef",
+        500,
+        "g"
+      ],
+      [
+        "canned_tomato",
+        800,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "herbs",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Hachez finement l’oignon et l’ail, râpez les carottes.",
+      "Faites revenir les légumes 5 minutes dans l’huile, puis ajoutez le bœuf et faites-le cuire en l’émiettant jusqu’à ce qu’il ne soit plus rosé.",
+      "Ajoutez les tomates concassées et les herbes, puis laissez mijoter 35 minutes à feu doux en remuant de temps en temps.",
+      "Faites cuire les pâtes selon le temps indiqué sur le paquet.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût. Servez la sauce sur les pâtes."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "classic",
+      "iron",
+      "batch",
+      "freezer",
+      "complete",
+      "budget",
+      "family"
+    ],
+    "adaptations": [
+      "Ajoutez une courgette râpée dans la sauce.",
+      "Servez avec un peu d’emmental râpé."
+    ],
+    "storage": "3 jours au réfrigérateur pour la sauce ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "La sauce se congèle très bien, 3 mois, en portions. Décongelez une nuit au réfrigérateur et réchauffez à feu doux jusqu’à ébullition.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Une viande riche en fer, des légumes et des pâtes : un plat complet.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant de saler, prélevez de la sauce et mixez-la avec quelques petites pâtes bien cuites vers 8 mois ; après 1 an, proposez des pâtes courtes nappées de sauce.",
+      "child": "Pâtes courtes plus faciles à piquer que les spaghettis, sauce bien mélangée."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-chili-doux-familial",
+    "title": "Chili doux familial",
+    "summary": "Un chili tout en douceur, sans piment, aux haricots rouges et aux épices parfumées.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "ground_beef",
+        400,
+        "g"
+      ],
+      [
+        "kidney_beans",
+        400,
+        "g",
+        "égouttés"
+      ],
+      [
+        "canned_tomato",
+        800,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "bell_pepper",
+        1,
+        "u"
+      ],
+      [
+        "corn",
+        150,
+        "g",
+        "égoutté"
+      ],
+      [
+        "cumin",
+        1,
+        "cc"
+      ],
+      [
+        "paprika",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "rice",
+        300,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Émincez l’oignon et coupez le poivron en petits dés. Faites-les revenir 5 minutes dans l’huile.",
+      "Ajoutez le bœuf et faites-le cuire en l’émiettant jusqu’à ce qu’il ne soit plus rosé, puis ajoutez le cumin et le paprika.",
+      "Versez les tomates concassées, les haricots rouges rincés et le maïs, puis laissez mijoter 30 minutes à couvert.",
+      "Faites cuire le riz selon le temps indiqué sur le paquet.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût. Les grands peuvent ajouter du piment dans leur assiette."
+    ],
+    "allergens": [],
+    "tags": [
+      "classic",
+      "iron",
+      "fiber",
+      "batch",
+      "freezer",
+      "complete",
+      "budget",
+      "family"
+    ],
+    "adaptations": [
+      "Version végétarienne : remplacez le bœuf par des lentilles vertes cuites.",
+      "Servez dans des galettes de blé pour changer."
+    ],
+    "storage": "3 jours au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Se congèle 3 mois sans le riz. Décongelez une nuit au réfrigérateur et réchauffez à feu doux jusqu’à ce que ce soit bien chaud à cœur.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Avant 4 ans, écrasez les grains de maïs et les haricots rouges (risque d’étouffement).",
+      "Aucun piment dans la marmite : chacun en ajoute dans son assiette."
+    ],
+    "nutrition": "Des légumineuses riches en fibres, une viande riche en fer et du riz.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Prélevez une part avant de saler, sans maïs, et mixez-la avec un peu de riz vers 8 mois ; en grandissant, écrasez bien les haricots et le maïs à la fourchette.",
+      "child": "Servi avec le riz et un peu de fromage blanc pour adoucir."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-couscous-poulet-legumes",
+    "title": "Couscous au poulet et aux légumes",
+    "summary": "Un couscous généreux, doux et parfumé, avec des légumes fondants et un bouillon à verser sur la semoule.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 25,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "chicken_thigh",
+        6,
+        "u"
+      ],
+      [
+        "couscous",
+        400,
+        "g"
+      ],
+      [
+        "carrot",
+        4,
+        "u"
+      ],
+      [
+        "zucchini",
+        2,
+        "u"
+      ],
+      [
+        "turnip",
+        2,
+        "u"
+      ],
+      [
+        "chickpeas",
+        250,
+        "g",
+        "égouttés"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "canned_tomato",
+        200,
+        "g"
+      ],
+      [
+        "ras_el_hanout",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites dorer les cuisses de poulet 10 minutes dans l’huile, dans un grand faitout, avec l’oignon émincé et le ras-el-hanout.",
+      "Ajoutez les carottes et les navets coupés en tronçons, les tomates concassées et 1,5 litre d’eau. Laissez mijoter 25 minutes.",
+      "Ajoutez les courgettes en tronçons et les pois chiches, puis poursuivez la cuisson 15 minutes : le poulet doit se détacher de l’os, sans trace rosée.",
+      "Préparez la semoule : versez dessus le même volume d’eau bouillante, couvrez 5 minutes, puis égrainez à la fourchette avec un filet d’huile.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût. Servez la semoule arrosée de bouillon, avec la viande et les légumes."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "classic",
+      "world",
+      "vegetables",
+      "complete",
+      "protein",
+      "family"
+    ],
+    "adaptations": [
+      "Ajoutez des raisins secs gonflés dans le bouillon pour les grands.",
+      "Version végétarienne : doublez les pois chiches et retirez le poulet."
+    ],
+    "storage": "48 h au réfrigérateur, semoule et bouillon séparés ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Le bouillon avec la viande et les légumes se congèle 3 mois ; la semoule se prépare au moment. Décongelez au réfrigérateur et portez à ébullition.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Retirez la peau et les os de la part des enfants.",
+      "Avant 4 ans, écrasez les pois chiches (risque d’étouffement)."
+    ],
+    "nutrition": "Une volaille, cinq légumes et des légumineuses : un plat très complet.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant de saler, prélevez des légumes, des pois chiches et du poulet sans peau : mixez avec un peu de bouillon et de semoule vers 8 mois, puis écrasez à la fourchette en grandissant.",
+      "child": "Semoule bien arrosée de bouillon, légumes et viande coupés en morceaux."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-minestrone-legumes",
+    "title": "Soupe minestrone aux petites pâtes",
+    "summary": "Une grande soupe italienne pleine de légumes, de haricots et de petites pâtes, presque un plat complet.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "smooth",
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "servingLabel": "bols",
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "potato",
+        2,
+        "u"
+      ],
+      [
+        "green_beans",
+        150,
+        "g"
+      ],
+      [
+        "white_beans",
+        250,
+        "g",
+        "égouttés"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "small_pasta",
+        80,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "basil",
+        6,
+        "u",
+        "feuilles"
+      ]
+    ],
+    "steps": [
+      "Coupez la carotte, la courgette et les pommes de terre en petits dés, les haricots verts en tronçons. Émincez l’oignon et l’ail.",
+      "Faites revenir l’oignon et l’ail 3 minutes dans l’huile, ajoutez les légumes et les tomates concassées, puis 1,5 litre d’eau. Laissez cuire 20 minutes.",
+      "Ajoutez les haricots blancs et les petites pâtes, puis poursuivez la cuisson 10 minutes, jusqu’à ce que les pâtes soient tendres.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût. Parsemez de basilic ciselé au moment de servir."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "classic",
+      "world",
+      "vegetables",
+      "fiber",
+      "batch",
+      "budget",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Ajoutez un peu d’emmental râpé dans les bols des grands.",
+      "Toutes les saisons conviennent : utilisez les légumes du moment."
+    ],
+    "storage": "3 jours au réfrigérateur dans un récipient fermé ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Se congèle 3 mois, de préférence sans les pâtes, à ajouter au réchauffage. Décongelez au réfrigérateur et portez à ébullition.",
+    "precautions": [
+      "Avant 4 ans, écrasez les haricots blancs et vérifiez que les légumes sont bien tendres (risque d’étouffement).",
+      "Vérifiez la température avant de servir."
+    ],
+    "nutrition": "Des légumes variés, des légumineuses et des pâtes pour un repas riche en fibres.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant de saler, prélevez une louche et mixez-la finement vers 8 mois ; à partir de 10 mois, écrasez simplement à la fourchette.",
+      "child": "Un grand bol avec du pain, puis un fromage et un fruit."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-poulet-basquaise",
+    "title": "Poulet basquaise aux poivrons",
+    "summary": "Un poulet mijoté dans une sauce tomate et poivrons pleine de soleil, servi avec du riz.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "chicken_thigh",
+        6,
+        "u"
+      ],
+      [
+        "bell_pepper",
+        3,
+        "u"
+      ],
+      [
+        "tomato",
+        4,
+        "u"
+      ],
+      [
+        "onion",
+        2,
+        "u"
+      ],
+      [
+        "garlic",
+        2,
+        "u",
+        "gousses"
+      ],
+      [
+        "paprika",
+        1,
+        "cc"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "rice",
+        300,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites dorer les cuisses de poulet 10 minutes dans l’huile, dans une cocotte, puis réservez-les.",
+      "Dans la même cocotte, faites revenir les oignons émincés, l’ail et les poivrons en lanières pendant 10 minutes.",
+      "Ajoutez les tomates coupées en dés, le paprika, le thym et le laurier, remettez le poulet, couvrez et laissez mijoter 30 minutes : la viande doit se détacher de l’os, sans trace rosée.",
+      "Faites cuire le riz selon le temps indiqué sur le paquet.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût."
+    ],
+    "allergens": [],
+    "tags": [
+      "classic",
+      "protein",
+      "vegetables",
+      "complete",
+      "family"
+    ],
+    "adaptations": [
+      "Hors saison, utilisez 800 g de tomates concassées en conserve.",
+      "Les grands peuvent relever leur assiette de piment d’Espelette."
+    ],
+    "storage": "48 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Se congèle 3 mois sans le riz. Décongelez une nuit au réfrigérateur et réchauffez à feu doux jusqu’à ce que ce soit bien chaud à cœur.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Retirez la peau, les os et la feuille de laurier avant de servir les enfants.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Une volaille et beaucoup de légumes du soleil, avec du riz.",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant de saler, prélevez du poulet sans peau et des légumes bien cuits, retirez la peau des poivrons et mixez avec un peu de riz vers 8 mois ; écrasez à la fourchette en grandissant.",
+      "child": "Poulet désossé en petits morceaux, sauce sur le riz."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-saumon-papillote-fondue-poireaux",
+    "title": "Saumon en papillote et fondue de poireaux",
+    "summary": "Un saumon tout moelleux cuit en papillote sur un lit de poireaux fondants, avec du riz.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "salmon",
+        4,
+        "u",
+        "pavés sans peau"
+      ],
+      [
+        "leek",
+        3,
+        "u"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "cream",
+        2,
+        "cs"
+      ],
+      [
+        "lemon",
+        0.5,
+        "u"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ],
+      [
+        "rice",
+        250,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Émincez finement les poireaux et faites-les fondre 15 minutes dans le beurre, à couvert et à feu doux, puis ajoutez la crème.",
+      "Préchauffez le four à 200 °C. Faites cuire le riz selon le temps indiqué sur le paquet.",
+      "Répartissez la fondue de poireaux sur 4 feuilles de papier cuisson, posez un pavé de saumon sur chacune, ajoutez la ciboulette et refermez en papillotes.",
+      "Enfournez 15 minutes : la chair doit être opaque à cœur et s’effeuiller facilement. Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût. Les adultes ajoutent un filet de jus de citron."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "complete",
+      "family"
+    ],
+    "adaptations": [
+      "La truite ou le cabillaud conviennent aussi.",
+      "Remplacez le riz par des pommes de terre vapeur."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Congélation possible 1 mois pour le saumon cuit et les poireaux, mais la texture devient plus sèche. Décongelez au réfrigérateur et réchauffez doucement.",
+    "precautions": [
+      "Poisson cuit à cœur (chair opaque qui s’effeuille) ; retirez soigneusement toutes les arêtes.",
+      "Variez les espèces de poisson au fil des semaines et alternez poissons gras et maigres, deux fois par semaine.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Un poisson gras riche en oméga-3, un légume doux et du riz.",
+    "budget": 3,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Prélevez une part de saumon sans arêtes et de poireaux avant de saler et sans citron : mixez avec du riz vers 8 mois, puis émiettez finement en grandissant.",
+      "child": "Saumon émietté sans arêtes, poireaux et riz mélangés."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "fa-navarin-agneau-printanier",
+    "title": "Navarin d’agneau printanier",
+    "summary": "Un ragoût d’agneau tendre aux légumes nouveaux, pour fêter l’arrivée du printemps en famille.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 25,
+    "cookMin": 100,
+    "ingredients": [
+      [
+        "lamb",
+        1000,
+        "g"
+      ],
+      [
+        "carrot",
+        4,
+        "u"
+      ],
+      [
+        "turnip",
+        3,
+        "u"
+      ],
+      [
+        "potato",
+        600,
+        "g"
+      ],
+      [
+        "frozen_peas",
+        200,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "tomato_paste",
+        1,
+        "cs"
+      ],
+      [
+        "flour",
+        1,
+        "cs"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Coupez l’agneau en morceaux en retirant l’excès de gras. Faites-le dorer 10 minutes dans l’huile, dans une cocotte, avec l’oignon émincé.",
+      "Saupoudrez de farine, ajoutez le concentré de tomate, le thym et le laurier, puis couvrez d’eau à hauteur. Laissez mijoter 50 minutes à couvert.",
+      "Ajoutez les carottes, les navets et les pommes de terre coupés en morceaux, puis poursuivez la cuisson 30 minutes.",
+      "Ajoutez les petits pois 10 minutes avant la fin : la viande doit être fondante et les légumes tendres.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "classic",
+      "iron",
+      "protein",
+      "vegetables",
+      "complete",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez l’agneau par du veau pour un goût plus doux.",
+      "Ajoutez des haricots verts avec les petits pois."
+    ],
+    "storage": "48 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Se congèle 3 mois. Décongelez une nuit au réfrigérateur et réchauffez à feu doux jusqu’à ce que ce soit bien chaud à cœur.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Retirez la feuille de laurier et les petits os éventuels.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Une viande riche en fer et quatre légumes dans la même cocotte.",
+    "budget": 3,
+    "seasons": [
+      "spring"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant de saler, prélevez de la viande très tendre et des légumes : mixez avec un peu de jus vers 8 mois, puis effilochez et écrasez en grandissant.",
+      "child": "Viande coupée en petits morceaux, légumes avec la sauce."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-ratatouille-mijotee",
+    "title": "Ratatouille mijotée",
+    "summary": "Les légumes du soleil cuits longuement jusqu’à devenir fondants : un plat qui se partage chaud ou froid.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "smooth",
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 25,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "eggplant",
+        1,
+        "u"
+      ],
+      [
+        "zucchini",
+        2,
+        "u"
+      ],
+      [
+        "bell_pepper",
+        2,
+        "u"
+      ],
+      [
+        "tomato",
+        4,
+        "u"
+      ],
+      [
+        "onion",
+        2,
+        "u"
+      ],
+      [
+        "garlic",
+        2,
+        "u",
+        "gousses"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "basil",
+        6,
+        "u",
+        "feuilles"
+      ]
+    ],
+    "steps": [
+      "Coupez l’aubergine, les courgettes et les poivrons en dés, les tomates en morceaux. Émincez les oignons et l’ail.",
+      "Faites revenir les oignons et les poivrons 10 minutes dans l’huile, dans une cocotte.",
+      "Ajoutez l’aubergine, les courgettes, l’ail, les tomates et le thym. Couvrez et laissez mijoter 40 minutes à feu doux, en remuant de temps en temps, jusqu’à ce que tout soit fondant.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût. Ajoutez le basilic ciselé au moment de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "classic",
+      "vegetables",
+      "fiber",
+      "batch",
+      "freezer",
+      "budget",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Servez avec du riz, de la semoule, des pâtes ou un œuf au plat bien cuit.",
+      "Encore meilleure le lendemain, froide ou réchauffée."
+    ],
+    "storage": "3 jours au réfrigérateur dans un récipient fermé ; se mange froide ou réchauffée une seule fois.",
+    "freezing": "Se congèle très bien, 3 mois, en portions. Décongelez au réfrigérateur et réchauffez à feu doux.",
+    "precautions": [
+      "Retirez les peaux de poivron et de tomate pour les plus jeunes ; légumes bien fondants avant 4 ans (risque d’étouffement)."
+    ],
+    "nutrition": "Cinq légumes d’été riches en fibres et en vitamines.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant de saler, prélevez une part et mixez-la finement vers 8 mois (retirez les peaux de poivron) ; à partir de 10 mois, écrasez à la fourchette et ajoutez du riz.",
+      "child": "Avec des pâtes ou du riz, et un peu de fromage râpé."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-filet-mignon-pommes-fondantes",
+    "title": "Filet mignon de porc aux pommes",
+    "summary": "Un filet mignon tendre et des pommes caramélisées, le sucré-salé doux que les enfants adorent.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "pork_tenderloin",
+        600,
+        "g"
+      ],
+      [
+        "apple",
+        3,
+        "u"
+      ],
+      [
+        "potato",
+        600,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre et faites-les cuire 20 minutes à la vapeur.",
+      "Faites dorer le filet mignon de porc 8 minutes de tous côtés dans le beurre, dans une cocotte, avec l’oignon émincé.",
+      "Ajoutez les pommes épluchées et coupées en quartiers, le thym et un demi-verre d’eau. Couvrez et laissez cuire 25 minutes à feu doux : la viande doit être cuite à cœur, sans partie rosée.",
+      "Tranchez la viande et servez-la avec les pommes, les pommes de terre et le jus. Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "classic",
+      "protein",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez les pommes de terre par une purée de céleri ou de patate douce.",
+      "Ajoutez une cuillerée de crème dans le jus pour les grands."
+    ],
+    "storage": "48 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "La viande tranchée se congèle 2 mois avec son jus ; les pommes se congèlent aussi. Décongelez au réfrigérateur et réchauffez doucement.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Une viande maigre, des fruits cuits et des pommes de terre.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant de saler, prélevez de la viande, des pommes cuites et des pommes de terre : mixez vers 8 mois, puis hachez finement la viande et écrasez le reste en grandissant.",
+      "child": "Viande coupée en petits morceaux, pommes fondantes en accompagnement."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-cabillaud-four-tomates-pommes-de-terre",
+    "title": "Cabillaud au four, tomates et pommes de terre",
+    "summary": "Un plat de poisson tout-en-un au parfum de Provence, prêt dès que le four a fait son travail.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 8,
+    "textures": [
+      "mashed",
+      "pieces",
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "white_fish",
+        600,
+        "g"
+      ],
+      [
+        "potato",
+        600,
+        "g"
+      ],
+      [
+        "tomato",
+        3,
+        "u"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "herbs",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "lemon",
+        0.5,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Coupez les pommes de terre en fines rondelles, mélangez-les avec 2 cuillerées d’huile, l’ail écrasé et les herbes, puis étalez-les dans un plat.",
+      "Enfournez 25 minutes, jusqu’à ce que les pommes de terre soient presque tendres.",
+      "Posez le cabillaud sur les pommes de terre, entourez-le de tomates en rondelles, arrosez du reste d’huile et enfournez 15 minutes : la chair doit être opaque et s’effeuiller.",
+      "Prélevez la part du bébé avant de saler, puis salez légèrement le reste du plat à votre goût. Les adultes ajoutent un filet de jus de citron."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "protein",
+      "complete",
+      "family"
+    ],
+    "adaptations": [
+      "Le merlu ou le lieu conviennent aussi.",
+      "Ajoutez des olives dans la part des adultes."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Congélation déconseillée une fois cuit : le poisson devient sec et les pommes de terre farineuses.",
+    "precautions": [
+      "Poisson cuit à cœur (chair opaque qui s’effeuille) ; retirez soigneusement toutes les arêtes.",
+      "Variez les espèces de poisson au fil des semaines et alternez poissons gras et maigres, deux fois par semaine.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Un poisson maigre, des légumes et des pommes de terre dans le même plat.",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant de saler et sans citron, prélevez du poisson sans arêtes, des pommes de terre et des tomates sans peau : mixez vers 8 mois, puis écrasez à la fourchette en grandissant.",
+      "child": "Poisson émietté sans arêtes, avec les pommes de terre et un peu de jus."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "fa-tarte-aux-pommes-normande",
+    "title": "Tarte aux pommes à la compote",
+    "summary": "Une pâte croustillante, une couche de compote et des pommes en rosace : la tarte du goûter familial.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "textures": [
+      "mashed",
+      "regular"
+    ],
+    "servings": 8,
+    "servingLabel": "parts",
+    "prepMin": 20,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "shortcrust",
+        1,
+        "u",
+        "rouleau"
+      ],
+      [
+        "apple",
+        5,
+        "u"
+      ],
+      [
+        "compote_unsweetened",
+        200,
+        "g"
+      ],
+      [
+        "sugar",
+        20,
+        "g"
+      ],
+      [
+        "butter",
+        15,
+        "g",
+        "fondu"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 190 °C. Déroulez la pâte brisée dans un moule et piquez le fond à la fourchette.",
+      "Étalez la compote sur le fond de tarte.",
+      "Épluchez les pommes, coupez-les en fines lamelles et disposez-les en rosace. Badigeonnez de beurre fondu, puis saupoudrez de sucre et de cannelle.",
+      "Enfournez 40 minutes, jusqu’à ce que la pâte soit dorée et les pommes tendres."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "classic",
+      "make_ahead",
+      "budget",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez la moitié des pommes par des poires.",
+      "Pour les plus jeunes, servez une part sans la croûte la plus dure."
+    ],
+    "storage": "3 jours à température ambiante, sous une cloche, ou au réfrigérateur.",
+    "freezing": "Se congèle 2 mois une fois cuite, en parts. Décongelez à température ambiante, puis repassez 10 minutes au four pour la rendre croustillante.",
+    "precautions": [
+      "Le sucre ajouté n’est pas proposé avant 1 an ; ensuite, une petite part de temps en temps.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Un dessert à base de fruits, peu sucré grâce à la compote.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "familyAdaptations": {
+      "baby": "Avant 1 an, proposez seulement des pommes cuites et de la compote sans sucre ; dès 1 an, une petite part de garniture écrasée, sans la croûte dure.",
+      "child": "Une part au goûter avec un verre de lait."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-crumble-pommes-poires",
+    "title": "Crumble pommes-poires",
+    "summary": "Des fruits fondants sous une pâte sablée croustillante : le dessert réconfortant de l’automne.",
+    "audiences": [
+      "family",
+      "baby"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "textures": [
+      "mashed",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "apple",
+        3,
+        "u"
+      ],
+      [
+        "pear",
+        3,
+        "u"
+      ],
+      [
+        "flour",
+        100,
+        "g"
+      ],
+      [
+        "oats",
+        30,
+        "g"
+      ],
+      [
+        "butter",
+        70,
+        "g",
+        "froid"
+      ],
+      [
+        "sugar",
+        50,
+        "g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les pommes et les poires, coupez-les en dés et répartissez-les dans un plat avec la cannelle.",
+      "Mélangez du bout des doigts la farine, les flocons d’avoine, le sucre et le beurre froid en dés, jusqu’à obtenir une pâte sableuse.",
+      "Parsemez cette pâte sur les fruits.",
+      "Enfournez 35 minutes, jusqu’à ce que le dessus soit doré et les fruits fondants."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "classic",
+      "fiber",
+      "make_ahead",
+      "budget",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Changez de fruits selon la saison : prunes, rhubarbe, fruits rouges.",
+      "Réduisez le sucre à 30 g avec des fruits bien mûrs."
+    ],
+    "storage": "3 jours au réfrigérateur, filmé ; réchauffez au four pour retrouver le croustillant.",
+    "freezing": "Se congèle 3 mois, cuit ou cru. Faites cuire le crumble cru sans décongeler en ajoutant 10 minutes ; décongelez le crumble cuit au réfrigérateur avant de le réchauffer.",
+    "precautions": [
+      "Le sucre ajouté n’est pas proposé avant 1 an ; ensuite, une petite part de temps en temps.",
+      "Avant 4 ans : coupez les aliments en petits morceaux tendres, faites asseoir l’enfant et restez près de lui pendant le repas (risque d’étouffement)."
+    ],
+    "nutrition": "Un dessert riche en fruits, avec des flocons d’avoine pour les fibres.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Avant 1 an, prélevez des fruits cuits sans pâte et écrasez-les ; après 1 an, une petite part avec un peu de pâte ramollie.",
+      "child": "Une part tiède, avec un yaourt nature."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "santefr_3_6"
+    ]
+  },
+  {
+    "slug": "fa-quiche-poireaux-courgettes",
+    "title": "Quiche poireaux et courgettes",
+    "summary": "Une quiche dorée et généreuse, garnie de légumes fondants : à servir chaude avec une salade.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 72,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "shortcrust",
+        1,
+        "u",
+        "rouleau"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "milk",
+        200,
+        "ml"
+      ],
+      [
+        "cream",
+        100,
+        "ml"
+      ],
+      [
+        "leek",
+        2,
+        "u"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "emmental",
+        60,
+        "g",
+        "râpé"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Émincez les poireaux et coupez la courgette en petits dés. Faites-les fondre 15 minutes dans le beurre.",
+      "Préchauffez le four à 180 °C. Déroulez la pâte brisée dans un moule et piquez le fond.",
+      "Battez les œufs avec le lait et la crème, ajoutez les légumes et l’emmental.",
+      "Versez sur la pâte et enfournez 35 minutes : l’appareil doit être bien pris au centre et doré."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "classic",
+      "vegetables",
+      "lunchbox",
+      "budget",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Ajoutez des dés de jambon ou de saumon.",
+      "Remplacez les légumes par des épinards et du chèvre au lait pasteurisé."
+    ],
+    "storage": "48 h au réfrigérateur ; se mange froide ou réchauffée une seule fois.",
+    "freezing": "Se congèle 2 mois en parts. Décongelez au réfrigérateur et réchauffez 15 minutes au four à 180 °C.",
+    "precautions": [
+      "Œufs bien cuits : le jaune et le blanc doivent être fermes, sans partie coulante."
+    ],
+    "nutrition": "Des légumes, des œufs et du fromage, à compléter par une salade verte.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Une part avec une salade de tomates ou de carottes râpées, puis un fruit."
+    },
+    "sources": [
+      "santefr_3_6",
+      "lait_cru",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "fa-poisson-pane-maison-potatoes",
+    "title": "Poisson pané maison et potatoes au four",
+    "summary": "Des bâtonnets de poisson croustillants faits maison, bien meilleurs que ceux du commerce.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 72,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "white_fish",
+        500,
+        "g"
+      ],
+      [
+        "flour",
+        40,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "breadcrumbs",
+        80,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        3,
+        "cs"
+      ],
+      [
+        "potato",
+        700,
+        "g"
+      ],
+      [
+        "paprika",
+        1,
+        "cc"
+      ],
+      [
+        "lemon",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 210 °C. Coupez les pommes de terre en quartiers, mélangez-les avec 2 cuillerées d’huile et le paprika, puis enfournez 30 minutes en les retournant à mi-cuisson.",
+      "Coupez le cabillaud en bâtonnets en retirant les arêtes. Passez-les dans la farine, puis dans l’œuf battu, puis dans la chapelure.",
+      "Faites dorer les bâtonnets 3 à 4 minutes de chaque côté dans le reste d’huile : le poisson doit être opaque et s’effeuiller au centre.",
+      "Servez avec les potatoes et des quartiers de citron."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "fish"
+    ],
+    "tags": [
+      "classic",
+      "protein",
+      "picky",
+      "family"
+    ],
+    "adaptations": [
+      "Ajoutez un peu d’emmental râpé dans la chapelure.",
+      "Servez avec une sauce au fromage blanc et à la ciboulette."
+    ],
+    "storage": "24 h au réfrigérateur ; réchauffez au four pour garder le croustillant.",
+    "freezing": "Les bâtonnets panés crus se congèlent 2 mois à plat ; faites-les cuire sans décongeler, 2 minutes de plus par face. Les potatoes se congèlent mal.",
+    "precautions": [
+      "Poisson cuit à cœur (chair opaque qui s’effeuille) ; retirez soigneusement toutes les arêtes.",
+      "Variez les espèces de poisson au fil des semaines et alternez poissons gras et maigres, deux fois par semaine.",
+      "Œufs bien cuits : le jaune et le blanc doivent être fermes, sans partie coulante."
+    ],
+    "nutrition": "Un poisson maigre, des pommes de terre et une cuisson à la poêle peu grasse.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Avec une salade de carottes râpées ou des haricots verts pour compléter."
+    },
+    "sources": [
+      "santefr_3_6",
+      "lait_cru",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "fa-gaufres-maison",
+    "title": "Gaufres maison croustillantes",
+    "summary": "Des gaufres dorées et légères pour un goûter de fête ou un dimanche pluvieux.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "snack",
+      "breakfast"
+    ],
+    "minMonths": 72,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 10,
+    "servingLabel": "gaufres",
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "flour",
+        250,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "milk",
+        400,
+        "ml"
+      ],
+      [
+        "butter",
+        80,
+        "g",
+        "fondu"
+      ],
+      [
+        "sugar",
+        30,
+        "g"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Mélangez la farine, la levure et le sucre dans un saladier. Ajoutez les œufs, puis le lait petit à petit en fouettant.",
+      "Incorporez le beurre fondu et la vanille. Laissez reposer la pâte 30 minutes si possible.",
+      "Faites chauffer le gaufrier et graissez-le légèrement. Versez une louche de pâte et faites cuire 3 à 4 minutes, jusqu’à ce que la gaufre soit bien dorée.",
+      "Servez aussitôt avec des fruits frais, une compote ou un peu de sucre glace."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "classic",
+      "make_ahead",
+      "budget",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez 50 g de farine par de la farine de sarrasin.",
+      "Garnissez de fruits rouges et de fromage blanc plutôt que de pâte à tartiner."
+    ],
+    "storage": "48 h dans une boîte hermétique ; réchauffez au grille-pain.",
+    "freezing": "Se congèlent 2 mois, séparées par du papier cuisson. Réchauffez sans décongeler au grille-pain ou au four.",
+    "precautions": [
+      "Œufs bien cuits : le jaune et le blanc doivent être fermes, sans partie coulante.",
+      "Gardez les enfants à distance du gaufrier chaud."
+    ],
+    "nutrition": "Un goûter festif, à accompagner d’un fruit plutôt que de garnitures très sucrées.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Les enfants peuvent verser la pâte avec l’aide d’un adulte et choisir leurs fruits."
+    },
+    "sources": [
+      "santefr_3_6",
+      "lait_cru",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "fa-salade-pates-thon-crudites",
+    "title": "Salade de pâtes au thon et crudités",
+    "summary": "Une salade fraîche et colorée, parfaite pour les pique-niques et les soirs d’été.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 72,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "pasta",
+        250,
+        "g",
+        "torsades"
+      ],
+      [
+        "tuna",
+        140,
+        "g",
+        "égoutté"
+      ],
+      [
+        "cherry_tomato",
+        200,
+        "g"
+      ],
+      [
+        "cucumber",
+        0.5,
+        "u"
+      ],
+      [
+        "corn",
+        140,
+        "g",
+        "égoutté"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ],
+      [
+        "lemon",
+        0.5,
+        "u"
+      ],
+      [
+        "basil",
+        6,
+        "u",
+        "feuilles"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les pâtes selon le temps indiqué sur le paquet, rincez-les à l’eau froide et égouttez-les.",
+      "Coupez les tomates cerises en deux et le concombre en petits dés.",
+      "Émiettez le thon et mélangez-le avec les pâtes, les crudités et le maïs.",
+      "Assaisonnez avec l’huile, le jus de citron et le basilic ciselé. Gardez au frais jusqu’au repas."
+    ],
+    "allergens": [
+      "gluten",
+      "fish"
+    ],
+    "tags": [
+      "classic",
+      "lunchbox",
+      "complete",
+      "quick",
+      "budget",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez le thon par des sardines, du maquereau ou des œufs durs pour varier.",
+      "Ajoutez des dés de fromage ou des olives pour les grands."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée ; en pique-nique, transportez-la dans un sac isotherme.",
+    "freezing": "Congélation impossible : les crudités et les pâtes deviennent molles et aqueuses.",
+    "precautions": [
+      "Le thon est un poisson prédateur : à proposer de temps en temps seulement et en variant les espèces de poisson d’une semaine à l’autre.",
+      "Variez les espèces de poisson au fil des semaines et alternez poissons gras et maigres, deux fois par semaine.",
+      "Ne laissez pas la salade plus de 2 heures hors du frais."
+    ],
+    "nutrition": "Un plat froid complet : féculents, poisson et crudités.",
+    "budget": 1,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "familyAdaptations": {
+      "child": "Les enfants peuvent choisir et couper les crudités avec un couteau adapté."
+    },
+    "sources": [
+      "santefr_3_6",
+      "lait_cru",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "fa-wraps-poulet-crudites",
+    "title": "Wraps au poulet et crudités",
+    "summary": "Des galettes roulées garnies de poulet doré, de crudités et d’une sauce au fromage frais.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 72,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "tortilla",
+        4,
+        "u"
+      ],
+      [
+        "chicken",
+        300,
+        "g"
+      ],
+      [
+        "lettuce",
+        4,
+        "u",
+        "feuilles"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "cucumber",
+        0.5,
+        "u"
+      ],
+      [
+        "cream_cheese",
+        100,
+        "g"
+      ],
+      [
+        "paprika",
+        1,
+        "pincee"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Coupez le poulet en lamelles, saupoudrez de paprika et faites-les dorer 8 minutes dans l’huile : aucune trace rosée ne doit rester.",
+      "Râpez les carottes, coupez le concombre en bâtonnets et lavez les feuilles de salade.",
+      "Tartinez chaque galette de fromage frais, garnissez de salade, de crudités et de poulet.",
+      "Roulez bien serré et coupez en deux en biais."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "lunchbox",
+      "protein",
+      "vegetables",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez le poulet par des restes de poulet rôti ou des pois chiches écrasés.",
+      "Ajoutez de l’avocat en lamelles."
+    ],
+    "storage": "12 h au réfrigérateur, filmés ; à transporter au frais.",
+    "freezing": "Congélation déconseillée une fois garnis ; le poulet cuit seul se congèle 3 mois et se décongèle au réfrigérateur.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Lavez soigneusement les crudités."
+    ],
+    "nutrition": "Une volaille, des crudités et un féculent dans un repas à manger avec les mains.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "familyAdaptations": {
+      "child": "Chacun compose son wrap : posez les garnitures au centre de la table."
+    },
+    "sources": [
+      "santefr_3_6",
+      "lait_cru",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "fa-tomates-farcies-riz",
+    "title": "Tomates farcies et leur riz",
+    "summary": "Des tomates gorgées de soleil farcies de viande, avec un riz qui cuit dans leur jus.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 72,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 25,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "tomato",
+        8,
+        "u",
+        "grosses"
+      ],
+      [
+        "ground_beef",
+        400,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "parsley",
+        2,
+        "cs",
+        "ciselé"
+      ],
+      [
+        "breadcrumbs",
+        30,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "rice",
+        200,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Coupez un chapeau sur chaque tomate et videz-les à la cuillère en gardant la pulpe.",
+      "Mélangez le bœuf, l’oignon et l’ail hachés, le persil, la chapelure et l’œuf. Remplissez les tomates de farce et replacez les chapeaux.",
+      "Versez le riz cru et la pulpe hachée au fond d’un plat, ajoutez 30 cl d’eau et l’huile, puis posez les tomates dessus.",
+      "Enfournez 50 minutes : la farce doit être bien cuite à cœur, sans trace rosée, et le riz tendre."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "classic",
+      "iron",
+      "protein",
+      "complete",
+      "family"
+    ],
+    "adaptations": [
+      "Mélangez moitié bœuf, moitié chair à saucisse pour la version traditionnelle.",
+      "Farcissez aussi des courgettes rondes ou des poivrons."
+    ],
+    "storage": "48 h au réfrigérateur dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Se congèlent 2 mois une fois cuites, avec leur riz. Décongelez une nuit au réfrigérateur et réchauffez au four jusqu’à ce que ce soit bien chaud à cœur.",
+    "precautions": [
+      "Viande cuite à cœur : aucune trace rosée, jus clair.",
+      "Œufs bien cuits : le jaune et le blanc doivent être fermes, sans partie coulante."
+    ],
+    "nutrition": "Une viande riche en fer, des tomates et du riz dans le même plat.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Une tomate par enfant, coupée en deux, avec beaucoup de riz."
+    },
+    "sources": [
+      "santefr_3_6",
+      "lait_cru",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "fa-gnocchis-gratines-tomate-mozzarella",
+    "title": "Gnocchis gratinés à la tomate et mozzarella",
+    "summary": "Des gnocchis moelleux dans une sauce tomate au basilic, gratinés sous la mozzarella fondante.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "minMonths": 72,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "gnocchi",
+        500,
+        "g"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "mozzarella",
+        125,
+        "g"
+      ],
+      [
+        "basil",
+        6,
+        "u",
+        "feuilles"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Faites revenir l’oignon et l’ail émincés 3 minutes dans l’huile.",
+      "Ajoutez les tomates concassées et le basilic ciselé, puis laissez mijoter 10 minutes.",
+      "Mélangez les gnocchis crus avec la sauce dans un plat et couvrez de mozzarella en tranches.",
+      "Enfournez 12 minutes, jusqu’à ce que la mozzarella soit fondue et dorée."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "quick",
+      "picky",
+      "world",
+      "budget",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Ajoutez des dés de courgette ou d’aubergine dans la sauce.",
+      "Remplacez les gnocchis par des pâtes courtes cuites."
+    ],
+    "storage": "24 h au réfrigérateur ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud à cœur.",
+    "freezing": "Congélation possible 1 mois, mais les gnocchis deviennent plus mous. Décongelez au réfrigérateur et réchauffez au four.",
+    "precautions": [
+      "Laissez tiédir : la mozzarella fondue reste brûlante."
+    ],
+    "nutrition": "Un plat végétarien à compléter par une salade verte et un fruit.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Coupez les gnocchis en deux et servez avec une salade de concombre."
+    },
+    "sources": [
+      "santefr_3_6",
+      "lait_cru",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "fa-gateau-chocolat-fondant",
+    "title": "Gâteau au chocolat fondant",
+    "summary": "Le gâteau d’anniversaire préféré des enfants, fondant au cœur et facile à réussir.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 72,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 8,
+    "servingLabel": "parts",
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "dark_chocolate",
+        200,
+        "g"
+      ],
+      [
+        "butter",
+        120,
+        "g"
+      ],
+      [
+        "sugar",
+        100,
+        "g"
+      ],
+      [
+        "egg",
+        4,
+        "u"
+      ],
+      [
+        "flour",
+        50,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et beurrez un moule.",
+      "Faites fondre le chocolat et le beurre au bain-marie ou quelques secondes au micro-ondes, puis mélangez.",
+      "Fouettez les œufs avec le sucre, ajoutez le chocolat fondu puis la farine.",
+      "Versez dans le moule et enfournez 25 minutes : le dessus doit être craquelé et la lame d’un couteau doit ressortir avec quelques miettes humides, sans pâte liquide."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "classic",
+      "quick",
+      "make_ahead",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Ajoutez 50 g de poudre d’amande pour un gâteau encore plus moelleux.",
+      "Réduisez le sucre à 70 g avec un chocolat à 52 %."
+    ],
+    "storage": "4 jours sous une cloche à température ambiante.",
+    "freezing": "Se congèle 3 mois, entier ou en parts. Décongelez 2 heures à température ambiante.",
+    "precautions": [
+      "Œufs bien cuits : prolongez la cuisson de quelques minutes si le centre reste liquide.",
+      "Gâteau très sucré : une part pour les grandes occasions."
+    ],
+    "nutrition": "Un dessert plaisir à réserver aux anniversaires et aux goûters de fête.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "familyAdaptations": {
+      "child": "Les enfants peuvent casser le chocolat et mélanger la pâte."
+    },
+    "sources": [
+      "santefr_3_6",
+      "lait_cru",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "fa-clafoutis-cerises",
+    "title": "Clafoutis aux cerises",
+    "summary": "Le dessert du début de l’été : des cerises juteuses prises dans un flan doré à la vanille.",
+    "audiences": [
+      "child",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "minMonths": 72,
+    "maxMonths": 120,
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "cherries",
+        500,
+        "g"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "flour",
+        80,
+        "g"
+      ],
+      [
+        "milk",
+        300,
+        "ml"
+      ],
+      [
+        "sugar",
+        70,
+        "g"
+      ],
+      [
+        "butter",
+        15,
+        "g"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C et beurrez un plat. Lavez les cerises, équeutez-les et dénoyautez-les.",
+      "Fouettez les œufs avec le sucre, ajoutez la farine, puis le lait et la vanille pour obtenir une pâte lisse.",
+      "Répartissez les cerises dans le plat et versez la pâte dessus.",
+      "Enfournez 40 minutes : le clafoutis doit être doré et bien pris au centre. Servez tiède ou froid."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "classic",
+      "make_ahead",
+      "vegetarian",
+      "family"
+    ],
+    "adaptations": [
+      "Hors saison, utilisez des pommes, des poires ou des abricots.",
+      "Réduisez le sucre à 50 g avec des cerises bien mûres."
+    ],
+    "storage": "48 h au réfrigérateur, filmé.",
+    "freezing": "Congélation déconseillée : le flan devient spongieux et les fruits rendent leur jus.",
+    "precautions": [
+      "Dénoyautez toutes les cerises et vérifiez qu’il ne reste aucun noyau dans la part des enfants.",
+      "Œufs bien cuits : le jaune et le blanc doivent être fermes, sans partie coulante."
+    ],
+    "nutrition": "Un dessert aux fruits de saison, avec des œufs et du lait.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "familyAdaptations": {
+      "child": "Les enfants peuvent dénoyauter les cerises avec un dénoyauteur, sous surveillance."
+    },
+    "sources": [
+      "santefr_3_6",
+      "lait_cru",
+      "inspq_etouffement"
+    ]
+  }
+]

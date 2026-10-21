@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Card, Row, Text } from '@/components/ui';
-import { useFoodProfile, useRecipes } from '@/lib/data/hooks-recipes';
+import { useFoodProfile, useRecipeDislikes, useRecipes } from '@/lib/data/hooks-recipes';
 import { recipeOfDay } from '@/lib/recipes/engine';
 import { t as tr } from '@/i18n';
 import { RecipeArt } from './RecipeArt';
@@ -12,8 +12,9 @@ import { RECIPE_PHOTO_FILES } from './recipePhotos';
 export function HomeRecipeCard() {
   const { data: all } = useRecipes();
   const { profile } = useFoodProfile();
+  const dislikes = useRecipeDislikes();
   // Une recette avec une vraie photo (générée pour elle) passe en premier si elle convient au profil
-  const r = useMemo(() => (all ? recipeOfDay(all.filter((x) => RECIPE_PHOTO_FILES[x.slug]), profile) ?? recipeOfDay(all, profile) : null), [all, profile]);
+  const r = useMemo(() => (all ? recipeOfDay(all.filter((x) => RECIPE_PHOTO_FILES[x.slug]), profile, undefined, dislikes.ids) ?? recipeOfDay(all, profile, undefined, dislikes.ids) : null), [all, profile, dislikes.ids.join()]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!r) return null;
   const photo = !!RECIPE_PHOTO_FILES[r.slug];
   return (

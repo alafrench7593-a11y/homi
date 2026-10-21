@@ -52,7 +52,7 @@ function TrackEntry() {
   const toast = useToast();
   const inv = useInvalidate();
   // timer / planned : ouverture depuis le minuteur (« Marquer le biberon comme donné »)
-  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string }>();
+  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string }>();
   const kind = (params.kind ?? 'bottle') as LogKind;
   const { data: tracked } = useTrackedChildren();
   const { data: bottleChildren } = useBottleChildren();
@@ -76,9 +76,12 @@ function TrackEntry() {
   // Valeurs initiales : rien n'est suggéré (seule la quantité prévue saisie sur le minuteur pré-remplit « préparée »)
   const draft = bottleDraftDefaults({ plannedMl: params.planned != null && params.planned !== '' && Number.isInteger(Number(params.planned)) ? Number(params.planned) : null });
 
-  const [time, setTime] = useState(new Date());
+  // Saisie rapide (« Lina a bu 150 ml à 14 h ») : heure et quantité bue pré-remplies, à vérifier avant d'enregistrer
+  const quickAt = params.at && !Number.isNaN(Date.parse(params.at)) ? new Date(params.at) : null;
+  const quickMl = params.ml != null && /^\d{1,3}$/.test(params.ml) ? Number(params.ml) : null;
+  const [time, setTime] = useState(quickAt ?? new Date());
   const [prepared, setPrepared] = useState<number | null>(draft.prepared_ml);
-  const [consumed, setConsumed] = useState<number | null>(draft.consumed_ml);
+  const [consumed, setConsumed] = useState<number | null>(quickMl ?? draft.consumed_ml);
   const [plannedNext, setPlannedNext] = useState(draft.planned_next_ml == null ? '' : String(draft.planned_next_ml));
   const [reminder, setReminder] = useState<ReminderChoice>(draft.reminder);
   const [milkType, setMilkType] = useState('');

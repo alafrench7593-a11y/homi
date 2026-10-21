@@ -7,7 +7,7 @@ insert into auth.users (id, email) values (:'PAR', 'n-par@exemple.test'), (:'EDI
 insert into public.profiles (id, display_name) values (:'PAR', 'Parent'), (:'EDI', 'Éditeur') on conflict (id) do nothing;
 insert into public.user_roles (user_id, role) values (:'EDI', 'editor');
 
-select tests.ok(tests.count('select * from public.recipes where owner_id is null and status = ''ai_draft''') >= 450, 'brouillons : au moins 450 brouillons importés');
+select tests.ok(tests.count('select * from public.recipes where owner_id is null and status = ''ai_draft''') = 0, 'ancien catalogue : les 499 brouillons ont été supprimés définitivement');
 select tests.ok(tests.count('select * from public.recipes r where owner_id is null and not exists (select 1 from public.recipe_steps s where s.recipe_id = r.id)') = 0, 'brouillons : chaque recette a ses étapes');
 select tests.ok(tests.count('select * from public.recipes where meals @> array[''dessert'']') > 0, 'recettes : repas « dessert » accepté');
 
@@ -19,7 +19,7 @@ select tests.throws($$insert into public.kid_products (barcode, category, name, 
 reset role;
 
 set role authenticated; set request.jwt.claim.sub = :'EDI';
-select tests.ok(tests.count('select * from public.recipes where status = ''ai_draft'' and owner_id is null') >= 450, 'brouillons : visibles de l''équipe éditoriale');
+select tests.ok(tests.count('select * from public.recipes where owner_id is null') = 151, 'bibliothèque : entièrement visible de l''équipe éditoriale');
 select tests.throws($$insert into public.ingredient_prices (ingredient_key, price_per_kg, source, checked_on) values ('carrot', 1.5, 'open_prices', current_date)$$, 'prix Open Prices : lien de la source obligatoire');
 insert into public.ingredient_prices (ingredient_key, price_per_kg, source, source_url, checked_on) values ('carrot', 1.49, 'open_prices', 'https://prices.openfoodfacts.org/prices/1', current_date);
 insert into public.kid_products (barcode, category, name, data_source, status) values ('3000000000002', 'wash', 'Gel lavant test', 'manual', 'draft');

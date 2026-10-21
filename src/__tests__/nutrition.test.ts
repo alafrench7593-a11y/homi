@@ -4,7 +4,7 @@
  */
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 
-import { ALL_RECIPES, DRAFT_RECIPES } from '@/content/recipes';
+import { ALL_RECIPES } from '@/content/recipes';
 import { EXTERNAL_RESOURCES, RESOURCE_KINDS } from '@/content/resources';
 import { LIBRARY_SOURCES } from '@/content/articles/library';
 import { meetsNeed, NEEDS, visibleRecipes } from '@/lib/data/hooks-recipes';
@@ -24,15 +24,13 @@ const base = ALL_RECIPES.find((r) => r.audiences.includes('child'))!;
 const withIngredients = (ingredients: Recipe['ingredients']): Recipe => ({ ...base, ingredients });
 
 describe('bibliothèque de recettes 0–10 ans', () => {
-  it('plus de 500 recettes documentées (publiées + brouillons validés par les contrôles), sans doublon', () => {
-    const all = [...ALL_RECIPES, ...DRAFT_RECIPES];
-    expect(DRAFT_RECIPES.length).toBeGreaterThanOrEqual(499);
-    expect(all.length).toBeGreaterThan(500);
-    expect(new Set(all.map((r) => r.slug)).size).toBe(all.length);
+  it('ancien catalogue supprimé : 151 recettes, sans doublon', () => {
+    expect(ALL_RECIPES.length).toBe(151);
+    expect(new Set(ALL_RECIPES.map((r) => r.slug)).size).toBe(ALL_RECIPES.length);
   });
-  it('chaque brouillon est au statut « Brouillon IA », avec ingrédients, quantités, étapes, temps, allergènes et sources', () => {
-    for (const r of DRAFT_RECIPES) {
-      expect(r.status).toBe('ai_draft');
+  it('chaque recette est « À vérifier », avec ingrédients, quantités, étapes, temps, allergènes, sources et congélation', () => {
+    for (const r of ALL_RECIPES) {
+      expect(r.status).toBe('to_review');
       expect(r.ingredients.length).toBeGreaterThan(0);
       expect(r.steps.length).toBeGreaterThan(0);
       expect(r.prepMin + r.cookMin).toBeGreaterThan(0);
@@ -43,7 +41,7 @@ describe('bibliothèque de recettes 0–10 ans', () => {
     }
   });
   it('tous les repas sont couverts, dessert compris', () => {
-    for (const m of MEALS) expect([...ALL_RECIPES, ...DRAFT_RECIPES].filter((r) => r.meals.includes(m)).length).toBeGreaterThan(10);
+    for (const m of MEALS) expect(ALL_RECIPES.filter((r) => r.meals.includes(m)).length).toBeGreaterThan(m === 'breakfast' ? 0 : 5);
   });
   it('chaque ingrédient du dictionnaire a une composition nutritionnelle (CALNUT)', () => {
     for (const k of Object.keys(INGREDIENTS)) expect(NUTRITION[k]).toBeDefined();
@@ -64,7 +62,7 @@ describe('score nutritionnel éditorial (sur 100)', () => {
     expect(bandFor(100)).toBe('y7_10');
   });
   it('toutes les recettes ont un score entier entre 0 et 100, avec détail et nutriments par portion', () => {
-    for (const r of [...ALL_RECIPES, ...DRAFT_RECIPES]) {
+    for (const r of ALL_RECIPES) {
       const s = scoreRecipe(r);
       expect(Number.isInteger(s.score)).toBe(true);
       expect(s.score).toBeGreaterThanOrEqual(0);

@@ -11,7 +11,7 @@ from datetime import date, datetime, timedelta
 from playwright.sync_api import sync_playwright
 
 sys.path.insert(0, os.path.dirname(__file__))
-from journey_seed import SET_BODY  # noqa: E402
+from journey_seed import SET_BODY, SIMPLE_OFF  # noqa: E402
 
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8822')
 SHOTS = os.environ.get('E2E_SHOTS', '/tmp/toietmoi-e2e')
@@ -76,6 +76,7 @@ def run(p):
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate(SIMPLE_OFF); pg.reload(); pg.wait_for_timeout(3000)
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     preg = demo(pg, "s => (s.tables.pregnancies.find(p => p.status === 'active') || {}).id")
     tomorrow = (datetime.now() + timedelta(days=1)).replace(hour=10, minute=0, second=0, microsecond=0).isoformat()

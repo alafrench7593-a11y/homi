@@ -5,7 +5,8 @@ import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, Chip, Field, Loading, Row, Segmented, SectionTitle, Text, Toggle } from '@/components/ui';
 import { EmptyStateCard } from '@/components/ui-extra';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
-import { useProfile, useReminders } from '@/lib/data/hooks';
+import { useActivePregnancy, useProfile, useReminders } from '@/lib/data/hooks';
+import { useLocalSearchParams } from 'expo-router';
 import { reminderSuggestions } from '@/lib/domain/journeys';
 import { friendlyError, useDeleteReminder, useSaveReminder, useToggleReminder, type ReminderDraft } from '@/lib/data/hooks-settings';
 import { describeSchedule, IOS_PENDING_LIMIT, nextOccurrence, validateSchedule, type ReminderSchedule, type Weekday } from '@/lib/domain/reminders';
@@ -44,15 +45,15 @@ function parseTime(s: string): { hour: number; minute: number } | null {
 }
 
 interface Form {
-  title: string; body: string; category: Reminder['category']; kind: Kind;
+  title: string; body: string; category: Reminder['category']; kind: Kind; forPregnancy: boolean;
   date: string; time: string; weekdays: Weekday[]; every: number; from: string; to: string;
 }
 
 function toForm(r?: Reminder): Form {
-  const base: Form = { title: '', body: '', category: 'custom', kind: 'daily', date: toFrDate(todayISO()), time: '09:00', weekdays: [1, 2, 3, 4, 5], every: 180, from: '7', to: '21' };
+  const base: Form = { forPregnancy: false, title: '', body: '', category: 'custom', kind: 'daily', date: toFrDate(todayISO()), time: '09:00', weekdays: [1, 2, 3, 4, 5], every: 180, from: '7', to: '21' };
   if (!r) return base;
   const s = r.schedule;
-  const f: Form = { ...base, title: r.title, body: r.body ?? '', category: r.category, kind: s.type };
+  const f: Form = { ...base, title: r.title, body: r.body ?? '', category: r.category, kind: s.type, forPregnancy: !!r.pregnancy_id };
   if (s.type === 'once') {
     const d = new Date(s.at);
     f.date = toFrDate(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`);
@@ -94,16 +95,17 @@ function buildSchedule(f: Form): { schedule?: ReminderSchedule; errors: Record<s
   return { schedule, errors };
 }
 
-function ReminderEditor({ reminder, visible, onClose }: { reminder?: Reminder; visible: boolean; onClose: (result?: { skipped: number }) => void }) {
+function ReminderEditor({ reminder, visible, onClose, supplement }: { reminder?: Reminder; visible: boolean; onClose: (result?: { skipped: number }) => void; supplement?: boolean }) {
   const t = useTheme();
+  const pregnancy = useActivePregnancy();
   const toast = useToast();
   const save = useSaveReminder();
   const del = useDeleteReminder();
   const [f, setF] = useState<Form>(() => toForm(reminder));
   const [errors, setErrors] = useState<Record<string, string>>({});
   useEffect(() => {
-    if (visible) { setF(toForm(reminder)); setErrors({}); }
-  }, [visible, reminder]);
+    if (visible) { setF(reminder ? toForm(reminder) : supplement ? { ...toForm(), category: 'medication', kind: 'daily', forPregnancy: !!pregnancy } : toForm()); setErrors({}); }
+  }, [visible, reminder, supplement, pregnancy?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
 
   async function submit() {
@@ -112,7 +114,11 @@ function ReminderEditor({ reminder, visible, onClose }: { reminder?: Reminder; v
     if (f.body.length > 240) e.body = '240 caractères au maximum.';
     setErrors(e);
     if (Object.keys(e).length || !schedule) return;
-    const draft: ReminderDraft = { title: f.title.trim().slice(0, 80), body: f.body.trim() || null, category: f.category, schedule, enabled: reminder?.enabled ?? true };
+    const draft: ReminderDraft = {
+      title: f.title.trim().slice(0, 80), body: f.body.trim() || null, category: f.category, schedule, enabled: reminder?.enabled ?? true,
+      // toujours rattaché au bon profil : la grossesse en cours, sinon la personne elle-même
+      pregnancy_id: f.forPregnancy ? (reminder?.pregnancy_id ?? pregnancy?.id ?? null) : null,
+    };
     try {
       const res = await save.mutateAsync({ id: reminder?.id, draft });
       toast(reminder ? 'Rappel modifié.' : 'Rappel créé.');
@@ -137,7 +143,17 @@ function ReminderEditor({ reminder, visible, onClose }: { reminder?: Reminder; v
   const preview = buildSchedule(f).schedule;
   return (
     <Sheet visible={visible} onClose={() => onClose()} title={reminder ? 'Modifier le rappel' : 'Nouveau rappel'}>
-      <Field label="Titre" value={f.title} onChangeText={(v) => set('title', v)} maxLength={80} error={errors.title} placeholder="ex. Vitamine D" />
+      {f.category === 'medication' ? <Banner tone="info">{'Enregistrez uniquement un médicament ou un complément déjà prescrit ou conseillé par votre professionnel de santé, avec la dose qu’il a indiquée. L’application ne propose et ne calcule aucune dose. Pour un enfant : sa fiche › Besoins particuliers › Traitements.'}</Banner> : null}
+      {pregnancy || f.forPregnancy ? (
+        <View style={{ gap: 6 }}>
+          <Text variant="label">Pour qui ?</Text>
+          <Row wrap>
+            <Chip label="Moi" selected={!f.forPregnancy} onPress={() => set('forPregnancy', false)} />
+            <Chip label="Ma grossesse" selected={f.forPregnancy} onPress={() => set('forPregnancy', true)} />
+          </Row>
+        </View>
+      ) : null}
+      <Field label="Titre" value={f.title} onChangeText={(v) => set('title', v)} maxLength={80} error={errors.title} placeholder={f.category === 'medication' ? 'ex. Fer, comme prescrit' : 'ex. Vitamine D'} testID="rem-title" />
       <Field label="Note" optional value={f.body} onChangeText={(v) => set('body', v)} maxLength={240} error={errors.body} hint="Affichée dans la notification. Évitez les informations trop personnelles : l’écran verrouillé peut être vu." />
       <Text variant="label">Catégorie</Text>
       <Row wrap>{CATEGORIES.map((c) => <Chip key={c.value} label={c.label} selected={f.category === c.value} onPress={() => set('category', c.value)} />)}</Row>
@@ -150,7 +166,7 @@ function ReminderEditor({ reminder, visible, onClose }: { reminder?: Reminder; v
           {errors.weekdays ? <Text variant="small" color={t.colors.danger}>{errors.weekdays}</Text> : null}
         </View>
       ) : null}
-      {f.kind !== 'interval' ? <Field label="Heure" value={f.time} onChangeText={(v) => set('time', v)} keyboardType="numbers-and-punctuation" error={errors.time} placeholder="HH:MM" /> : (
+      {f.kind !== 'interval' ? <Field label="Heure" value={f.time} onChangeText={(v) => set('time', v)} keyboardType="numbers-and-punctuation" error={errors.time} placeholder="HH:MM" testID="rem-time" /> : (
         <View style={{ gap: spacing.sm }}>
           <Text variant="label">Toutes les</Text>
           <Row wrap>{INTERVALS.map((m) => <Chip key={m} label={m < 60 ? `${m} min` : `${m / 60} h`} selected={f.every === m} onPress={() => set('every', m)} />)}</Row>
@@ -180,6 +196,9 @@ export default function RemindersScreen() {
   const [editing, setEditing] = useState<Reminder | undefined>();
   const [open, setOpen] = useState(false);
   const [skipped, setSkipped] = useState(0);
+  const qp = useLocalSearchParams<{ new?: string }>();
+  const [supplement, setSupplement] = useState(false);
+  useEffect(() => { if (qp.new === 'supplement') { setSupplement(true); setEditing(undefined); setOpen(true); } }, [qp.new]);
 
   const refreshStatus = useCallback(() => {
     getPermission().then(setPermission).catch(() => undefined);
@@ -207,7 +226,7 @@ export default function RemindersScreen() {
   const list = reminders ?? [];
   const suggestions = reminderSuggestions(profile?.journeys ?? []).filter((sg) => !list.some((r) => r.title === sg.title));
   return (
-    <Screen back title="Rappels" subtitle="Des notifications sur ce téléphone, même hors connexion." footer={<Button label="Nouveau rappel" icon="plus" onPress={() => { setEditing(undefined); setOpen(true); }} />}>
+    <Screen back title="Rappels" subtitle="Des notifications sur ce téléphone, même hors connexion." footer={<Button label="Nouveau rappel" icon="plus" onPress={() => { setEditing(undefined); setSupplement(false); setOpen(true); }} testID="reminder-new" />}>
       {permission === 'unsupported' ? (
         <Banner tone="info">{'Les notifications de rappel s’affichent sur téléphone (iOS et Android). Vous pouvez préparer vos rappels ici : ils seront programmés à la prochaine ouverture de l’application sur votre téléphone.'}</Banner>
       ) : permission === 'undetermined' ? (
@@ -231,7 +250,7 @@ export default function RemindersScreen() {
             return (
               <View key={r.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
                 <Tappable accessibilityRole="button" accessibilityLabel={`Modifier le rappel ${r.title}`} style={{ flex: 1, minHeight: 48, justifyContent: 'center', opacity: r.enabled ? 1 : 0.55 }} onPress={() => { setEditing(r); setOpen(true); }}>
-                  <Text weight="medium">{r.title}</Text>
+                  <Text weight="medium">{r.title}{r.pregnancy_id ? ' · Ma grossesse' : ''}</Text>
                   <Text variant="small" muted>{validateSchedule(r.schedule) ? describeSchedule(r.schedule) : 'Planification à corriger'}</Text>
                   {next ? <Text variant="caption" muted>{`Prochain : ${next.toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`}</Text> : null}
                 </Tappable>
@@ -277,7 +296,7 @@ export default function RemindersScreen() {
         <Button label="Envoyer une notification de test" variant="secondary" icon="bell" onPress={async () => { await sendTestNotification(); toast('Notification de test envoyée dans 3 secondes.', 'info'); }} />
       ) : null}
 
-      <ReminderEditor reminder={editing} visible={open} onClose={(res) => { setOpen(false); if (res) setSkipped(res.skipped); refreshStatus(); }} />
+      <ReminderEditor reminder={editing} visible={open} supplement={supplement} onClose={(res) => { setOpen(false); setSupplement(false); if (res) setSkipped(res.skipped); refreshStatus(); }} />
     </Screen>
   );
 }

@@ -20,6 +20,9 @@ export const hasPork = (r: Pick<Recipe, 'ingredients'>) => r.ingredients.some((x
 
 const COOK_WORDS = /(cui(re|t|s|son)|enfourn|grill|mijot|revenir|chauff|gratin|dor(er|ee)|frem|bouill|saut)/;
 
+/** Espèces à limiter pour les femmes enceintes ou allaitantes et les enfants de moins de 3 ans (ANSES 2022). */
+export const LIMITED_FISH = ['tuna'];
+
 export function validateRecipe(r: Recipe): string[] {
   const e: string[] = [];
   const steps = fold(r.steps.join(' \n '));
@@ -51,6 +54,10 @@ export function validateRecipe(r: Recipe): string[] {
   if (!r.photo.license || !r.photo.rights || !r.photo.author || !r.photo.source) e.push('licence de l’image incomplète');
   if (!r.verifiedOn) e.push('date de vérification');
   if (r.tags.includes('vegetarian') && !isVegetarian(r)) e.push('étiquetée végétarienne mais contient viande ou poisson');
+  // Poissons (ANSES, « Manger du poisson : pourquoi ? comment ? », 30/06/2022 ; Santé.fr, méthylmercure) :
+  // espèces prédatrices sauvages à limiter (thon…) jamais proposées pendant la grossesse ni avant 3 ans
+  const limitedFish = r.ingredients.filter((x) => LIMITED_FISH.includes(x.key));
+  if (limitedFish.length && (r.audiences.includes('pregnancy') || r.audiences.includes('baby') || (r.minMonths ?? 999) < 36)) e.push('poisson prédateur à limiter (thon) : pas pour la grossesse ni avant 3 ans');
   // Grossesse
   if (r.audiences.includes('pregnancy')) {
     for (const x of r.ingredients) if (INGREDIENTS[x.key].pregnancyAvoid) e.push(`grossesse : ${INGREDIENTS[x.key].name} à éviter`);

@@ -291,15 +291,19 @@ export default function Onboarding() {
         <View style={{ gap: spacing.sm }}>
           <Text variant="title" accessibilityRole="header">{tr('onb.journeys.title')}</Text>
           <Text muted>{tr('onb.journeys.body')}</Text>
-          {JOURNEYS.map((j) => {
-            const sel = journeys.includes(j.key);
+          {JOURNEYS.filter((j) => j.key !== 'avoid' && j.key !== 'ttc').map((j) => {
+            // « Suivre mon cycle » : une seule carte ; l'objectif se choisit juste en dessous
+            const BODY = ['cycle', 'avoid', 'ttc'] as Journey[];
+            const isCycle = j.key === 'cycle';
+            const sel = isCycle ? journeys.some((x) => BODY.includes(x)) : journeys.includes(j.key);
             return (
+              <View key={j.key} style={{ gap: spacing.xs }}>
               <Tappable
                 key={j.key}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: sel }}
                 accessibilityLabel={`${j.label}. ${j.hint}`}
-                onPress={() => { haptic('selection'); setJourneys(sel ? journeys.filter((x) => x !== j.key) : [...journeys, j.key]); }}
+                onPress={() => { haptic('selection'); setJourneys(isCycle ? (sel ? journeys.filter((x) => !BODY.includes(x)) : [...journeys, 'cycle']) : sel ? journeys.filter((x) => x !== j.key) : [...journeys, j.key]); }}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1.4, borderColor: sel ? t.colors.primary : t.colors.border, backgroundColor: sel ? t.colors.surface : 'transparent' }}
               >
                 <View style={{ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: sel ? t.colors.primary : t.colors.surfaceAlt }}>
@@ -311,6 +315,17 @@ export default function Onboarding() {
                 </View>
                 {sel && <Icon name="check-circle" color={t.colors.primary} />}
               </Tappable>
+              {isCycle && sel ? (
+                <View testID="onb-objective" style={{ gap: 4, paddingLeft: spacing.md }}>
+                  <Text variant="small" weight="bold">{tr('pj.objective.title')}</Text>
+                  <Row wrap>
+                    {(['cycle', 'avoid', 'ttc'] as const).map((o) => (
+                      <Chip key={o} label={tr(`pj.choice.${o}`)} selected={journeys.includes(o)} onPress={() => setJourneys([...journeys.filter((x) => !BODY.includes(x)), o])} />
+                    ))}
+                  </Row>
+                </View>
+              ) : null}
+              </View>
             );
           })}
           <Text weight="bold" style={{ marginTop: spacing.sm }}>{tr('onb.interests.title')}</Text>

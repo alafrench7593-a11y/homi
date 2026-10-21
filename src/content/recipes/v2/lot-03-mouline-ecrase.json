@@ -1,0 +1,1994 @@
+[
+  {
+    "slug": "me-patate-douce-poulet",
+    "title": "Écrasé de patate douce au poulet",
+    "summary": "Une assiette orangée toute douce, où le poulet se cache dans la patate douce fondante.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "sweet_potato",
+        150,
+        "g",
+        "épluchée"
+      ],
+      [
+        "chicken",
+        30,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la patate douce et coupez-la en cubes ; coupez le blanc de poulet en petits dés.",
+      "Faites cuire la patate douce à la vapeur 15 minutes en ajoutant le poulet pour les 10 dernières minutes : il doit être blanc et bien cuit à cœur.",
+      "Mixez finement le poulet, puis écrasez la patate douce à la fourchette et mélangez le tout avec un peu d’eau de cuisson.",
+      "Ajoutez l’huile de colza au moment de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "puree",
+      "protein",
+      "freezer",
+      "classic"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "La dinde remplace très bien le poulet."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Se congèle très bien : jusqu’à 2 mois en petites portions (bacs à glaçons ou pots hermétiques). Décongelez au réfrigérateur la veille, réchauffez bien et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande bien cuite à cœur, sans trace rosée."
+    ],
+    "nutrition": "La patate douce apporte du bêta-carotène et le poulet des protéines : environ 15 g de poulet par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-cabillaud-riz-courgette",
+    "title": "Cabillaud, riz et courgette moulinés",
+    "summary": "Un petit plat de poisson tout doux, à la texture moulinée qui prépare aux premiers grains.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "white_fish",
+        30,
+        "g",
+        "sans peau ni arêtes"
+      ],
+      [
+        "rice",
+        25,
+        "g"
+      ],
+      [
+        "zucchini",
+        150,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz 15 minutes dans une grande casserole d’eau, en le laissant un peu plus tendre que d’habitude, puis égouttez.",
+      "Pendant ce temps, lavez la courgette, coupez-la en rondelles et faites-la cuire à la vapeur 10 minutes ; ajoutez le cabillaud pour les 8 dernières minutes.",
+      "Effeuillez le poisson en vérifiant qu’il ne reste aucune arête, puis passez poisson, courgette et riz au moulin à légumes (ou mixez par à-coups) pour garder une texture moulinée.",
+      "Ajoutez l’huile d’olive au moment de servir."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "protein",
+      "classic",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Le colin ou le merlu remplacent le cabillaud."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation possible jusqu’à 2 mois si le poisson n’avait pas déjà été congelé cru. Décongelez au réfrigérateur la veille, réchauffez bien à cœur et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête."
+    ],
+    "nutrition": "Le poisson blanc apporte des protéines légères et la courgette beaucoup d’eau et de douceur : environ 15 g de poisson par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "me-saumon-carotte-pomme-de-terre",
+    "title": "Saumon fondant, carotte et pomme de terre",
+    "summary": "Un trio familier et réconfortant, avec le saumon bien cuit qui fond dans la purée.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "salmon",
+        30,
+        "g",
+        "sans peau ni arêtes"
+      ],
+      [
+        "carrot",
+        100,
+        "g"
+      ],
+      [
+        "potato",
+        100,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la carotte et la pomme de terre et coupez-les en petits morceaux.",
+      "Faites-les cuire à la vapeur 20 minutes, jusqu’à ce qu’elles soient très tendres ; ajoutez le saumon pour les 10 dernières minutes.",
+      "Effeuillez le saumon en retirant soigneusement les arêtes : il doit être opaque jusqu’au centre.",
+      "Écrasez carotte, pomme de terre et saumon à la fourchette avec un peu d’eau de cuisson, puis ajoutez l’huile de colza."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "protein",
+      "puree",
+      "classic",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "La truite remplace le saumon."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation possible jusqu’à 2 mois si le poisson n’avait pas déjà été congelé cru. Décongelez au réfrigérateur la veille, réchauffez bien à cœur et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête."
+    ],
+    "nutrition": "Le saumon, poisson gras, apporte des oméga-3 ; la carotte et la pomme de terre font une base douce : environ 15 g de saumon par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "me-merlu-brocoli",
+    "title": "Merlu au brocoli et pomme de terre écrasés",
+    "summary": "Un écrasé vert tendre où le merlu, poisson très doux, se marie au brocoli.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "hake",
+        30,
+        "g",
+        "sans peau ni arêtes"
+      ],
+      [
+        "broccoli",
+        100,
+        "g",
+        "en petits bouquets"
+      ],
+      [
+        "potato",
+        80,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la pomme de terre et coupez-la en cubes ; détaillez le brocoli en petits bouquets.",
+      "Faites cuire la pomme de terre à la vapeur 20 minutes, en ajoutant le brocoli et le merlu pour les 10 dernières minutes.",
+      "Effeuillez le merlu en vérifiant l’absence d’arêtes, puis écrasez le tout à la fourchette avec un peu d’eau de cuisson.",
+      "Ajoutez l’huile d’olive juste avant de servir."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Le chou-fleur remplace le brocoli pour un goût plus doux."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation possible jusqu’à 2 mois si le poisson n’avait pas déjà été congelé cru. Décongelez au réfrigérateur la veille, réchauffez bien à cœur et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête."
+    ],
+    "nutrition": "Le brocoli apporte de la vitamine C et des fibres, le merlu des protéines maigres : environ 15 g de merlu par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "me-poulet-haricots-verts",
+    "title": "Poulet et haricots verts moulinés",
+    "summary": "Un grand classique des petits pots, fait maison en quelques minutes.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "chicken",
+        30,
+        "g"
+      ],
+      [
+        "green_beans",
+        120,
+        "g"
+      ],
+      [
+        "potato",
+        60,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Équeutez les haricots verts, épluchez la pomme de terre et coupez-la en cubes ; coupez le poulet en dés.",
+      "Faites cuire les légumes à la vapeur 18 minutes, en ajoutant le poulet pour les 10 dernières minutes : il doit être bien cuit à cœur.",
+      "Passez le tout au moulin à légumes pour retenir les fils des haricots, en ajoutant un peu d’eau de cuisson.",
+      "Ajoutez l’huile de colza au moment de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "protein",
+      "classic",
+      "freezer",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Hors saison, les haricots verts surgelés conviennent très bien."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Se congèle très bien : jusqu’à 2 mois en petites portions (bacs à glaçons ou pots hermétiques). Décongelez au réfrigérateur la veille, réchauffez bien et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande bien cuite à cœur, sans trace rosée."
+    ],
+    "nutrition": "Les haricots verts apportent des fibres douces et le poulet des protéines : environ 15 g de poulet par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-boeuf-carottes-mijote",
+    "title": "Bœuf carottes mijoté et mixé",
+    "summary": "Le bœuf carottes du dimanche, mijoté longtemps puis mouliné pour les petits.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "ground"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 75,
+    "ingredients": [
+      [
+        "beef_stew",
+        120,
+        "g",
+        "en petits cubes"
+      ],
+      [
+        "carrot",
+        300,
+        "g"
+      ],
+      [
+        "potato",
+        100,
+        "g"
+      ],
+      [
+        "onion",
+        20,
+        "g"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Coupez le bœuf en petits cubes en retirant le gras et les nerfs ; épluchez les carottes, la pomme de terre et l’oignon, puis coupez-les en morceaux.",
+      "Mettez le bœuf, les carottes, l’oignon, le thym et la feuille de laurier dans une cocotte, couvrez d’eau et laissez mijoter à couvert 75 minutes à petit feu.",
+      "Ajoutez la pomme de terre pour les 20 dernières minutes et poursuivez la cuisson jusqu’à ce que la viande s’effiloche à la fourchette.",
+      "Retirez la feuille de laurier, puis mixez par à-coups une part de viande avec une part de légumes et un peu de jus pour obtenir une texture moulinée."
+    ],
+    "allergens": [],
+    "tags": [
+      "iron",
+      "protein",
+      "classic",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Le reste de la cocotte fait un plat pour les grands : ils salent dans leur assiette."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Se congèle très bien : jusqu’à 2 mois en petites portions (bacs à glaçons ou pots hermétiques). Décongelez au réfrigérateur la veille, réchauffez bien et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande bien cuite à cœur, sans trace rosée."
+    ],
+    "nutrition": "Le bœuf apporte du fer bien assimilé et les carottes leur douceur : environ 20 g de bœuf par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois), en gardant le reste de viande pour un autre repas.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-dinde-petits-pois-carotte",
+    "title": "Dinde aux petits pois et carotte",
+    "summary": "Des petits pois-carottes tout doux avec un peu de dinde, comme à la maison.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "turkey",
+        30,
+        "g"
+      ],
+      [
+        "frozen_peas",
+        80,
+        "g"
+      ],
+      [
+        "carrot",
+        80,
+        "g"
+      ],
+      [
+        "butter",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez la carotte et coupez-la en rondelles ; coupez la dinde en petits dés.",
+      "Faites cuire la carotte et les petits pois à la vapeur 15 minutes, en ajoutant la dinde pour les 10 dernières minutes : elle doit être bien cuite à cœur.",
+      "Passez le tout au moulin à légumes pour retenir les peaux des petits pois, avec un peu d’eau de cuisson.",
+      "Ajoutez la noisette de beurre au moment de servir."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "classic",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Le poulet remplace la dinde."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Se congèle très bien : jusqu’à 2 mois en petites portions (bacs à glaçons ou pots hermétiques). Décongelez au réfrigérateur la veille, réchauffez bien et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande bien cuite à cœur, sans trace rosée."
+    ],
+    "nutrition": "Les petits pois apportent des fibres et un peu de protéines végétales, la dinde des protéines maigres : environ 15 g de dinde par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-lentilles-corail-butternut",
+    "title": "Lentilles corail et courge butternut",
+    "summary": "Un écrasé orange et velouté, végétarien et plein de douceur.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "red_lentils",
+        30,
+        "g",
+        "rincées"
+      ],
+      [
+        "butternut",
+        180,
+        "g",
+        "épluchée"
+      ],
+      [
+        "cumin",
+        1,
+        "pincee",
+        "facultatif",
+        true
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Rincez les lentilles corail ; épluchez la courge butternut, retirez les graines et coupez-la en cubes.",
+      "Mettez la courge et les lentilles dans une casserole, couvrez juste d’eau et faites cuire à petit feu 18 minutes, jusqu’à ce que les lentilles se défassent.",
+      "Écrasez à la fourchette, en ajoutant si vous le souhaitez une toute petite pincée de cumin.",
+      "Ajoutez l’huile d’olive au moment de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "vegetarian",
+      "fiber",
+      "iron",
+      "puree",
+      "budget",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Le potiron ou la patate douce remplacent la courge butternut."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Se congèle très bien : jusqu’à 2 mois en petites portions (bacs à glaçons ou pots hermétiques). Décongelez au réfrigérateur la veille, réchauffez bien et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Introduisez les légumineuses en petite quantité au début, selon ce que votre enfant accepte."
+    ],
+    "nutrition": "Les lentilles corail apportent des protéines végétales, du fer et des fibres ; la courge, du bêta-carotène. Avec environ 15 g de lentilles sèches par portion, ce repas peut remplacer la viande ou le poisson.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-oeuf-epinards-pomme-de-terre",
+    "title": "Œuf dur écrasé aux épinards",
+    "summary": "Une purée verte toute douce avec un œuf bien cuit, pour varier les protéines.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 18,
+    "ingredients": [
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "frozen_spinach",
+        100,
+        "g"
+      ],
+      [
+        "potato",
+        120,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Faites cuire l’œuf 10 minutes dans l’eau bouillante pour qu’il soit bien dur, puis refroidissez-le et écalez-le.",
+      "Épluchez la pomme de terre, coupez-la en cubes et faites-la cuire à la vapeur 18 minutes avec les épinards.",
+      "Écrasez pomme de terre et épinards à la fourchette avec un peu d’eau de cuisson et l’huile de colza.",
+      "Écrasez finement l’œuf dur (blanc et jaune) et mélangez-le à la purée : environ un demi-œuf par portion."
+    ],
+    "allergens": [
+      "eggs"
+    ],
+    "tags": [
+      "protein",
+      "iron",
+      "budget",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Les épinards frais conviennent aussi, bien lavés et équeutés."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation déconseillée : l’œuf cuit devient caoutchouteux. Préparez au moment du repas.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Œuf toujours bien cuit : blanc et jaune fermes."
+    ],
+    "nutrition": "L’œuf est une protéine complète et pratique : environ un demi-œuf par portion, qui remplace la viande ou le poisson du repas. Les épinards apportent de la vitamine B9.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-petites-pates-legumes",
+    "title": "Petites pâtes étoiles aux petits légumes",
+    "summary": "Des petites étoiles fondantes dans une sauce de légumes du soleil.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "small_pasta",
+        30,
+        "g"
+      ],
+      [
+        "zucchini",
+        80,
+        "g"
+      ],
+      [
+        "carrot",
+        80,
+        "g"
+      ],
+      [
+        "tomato",
+        80,
+        "g",
+        "pelée et épépinée"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la carotte, lavez la courgette, pelez et épépinez la tomate, puis coupez le tout en petits morceaux.",
+      "Faites cuire les légumes à couvert avec un fond d’eau 15 minutes, jusqu’à ce qu’ils soient très tendres, puis écrasez-les à la fourchette.",
+      "Faites cuire les petites pâtes dans l’eau bouillante 2 minutes de plus que le temps indiqué sur le paquet pour qu’elles soient bien fondantes, puis égouttez.",
+      "Mélangez les pâtes aux légumes écrasés et ajoutez l’huile d’olive."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "vegetarian",
+      "vegetables",
+      "budget",
+      "classic"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Ajoutez 15 g de poulet ou de poisson cuit et mixé pour un repas complet."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Se congèle très bien : jusqu’à 2 mois en petites portions (bacs à glaçons ou pots hermétiques). Décongelez au réfrigérateur la veille, réchauffez bien et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Les petites pâtes apportent l’énergie des féculents et les légumes des vitamines ; ajoutez une petite part de protéines au même repas ou à l’autre repas de la journée.",
+    "budget": 1,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-semoule-legumes-couscous",
+    "title": "Semoule fine aux légumes du couscous",
+    "summary": "Les légumes du couscous, fondants et parfumés, avec une semoule toute fine.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "semolina",
+        25,
+        "g"
+      ],
+      [
+        "zucchini",
+        80,
+        "g"
+      ],
+      [
+        "carrot",
+        80,
+        "g"
+      ],
+      [
+        "turnip",
+        50,
+        "g"
+      ],
+      [
+        "ras_el_hanout",
+        1,
+        "pincee",
+        "facultatif",
+        true
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la carotte et le navet, lavez la courgette et coupez le tout en petits cubes.",
+      "Faites cuire les légumes dans une petite casserole d’eau 20 minutes, avec une toute petite pincée de ras-el-hanout si vous le souhaitez.",
+      "Prélevez un peu de bouillon de cuisson bien chaud, versez-le sur la semoule et laissez gonfler 5 minutes à couvert.",
+      "Écrasez les légumes à la fourchette, mélangez-les à la semoule et ajoutez l’huile d’olive."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "vegetarian",
+      "vegetables",
+      "budget",
+      "world"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Ajoutez quelques pois chiches bien cuits, sans peau et écrasés, vers 10 mois."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Se congèle très bien : jusqu’à 2 mois en petites portions (bacs à glaçons ou pots hermétiques). Décongelez au réfrigérateur la veille, réchauffez bien et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "La semoule apporte l’énergie des céréales et les légumes des fibres douces ; complétez avec une petite part de protéines dans la journée.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-compote-pomme-poire",
+    "title": "Compote pomme-poire écrasée",
+    "summary": "La compote de tous les goûters, écrasée à la fourchette pour garder un peu de texture.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "pear",
+        1,
+        "u",
+        "bien mûre"
+      ]
+    ],
+    "steps": [
+      "Épluchez la pomme et la poire, retirez le cœur et les pépins, puis coupez-les en morceaux.",
+      "Faites-les cuire à couvert avec un fond d’eau 12 minutes, jusqu’à ce qu’elles soient très tendres.",
+      "Écrasez à la fourchette, plus ou moins finement, et laissez tiédir avant de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "budget",
+      "classic",
+      "vegetarian",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Une pointe de cannelle parfume joliment la compote."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Se congèle très bien : jusqu’à 3 mois en petites portions. Décongelez au réfrigérateur et consommez dans les 48 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Fruits cuits jusqu’à être bien tendres : la pomme crue est un aliment à risque d’étouffement avant 4 ans."
+    ],
+    "nutrition": "Les fruits cuits apportent leur sucre naturel et des fibres douces, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-ecrase-abricot-banane",
+    "title": "Écrasé d’abricots et banane",
+    "summary": "Un dessert d’été doux et acidulé, où la banane adoucit l’abricot.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "apricot",
+        4,
+        "u",
+        "bien mûrs"
+      ],
+      [
+        "banana",
+        0.5,
+        "u",
+        "bien mûre"
+      ]
+    ],
+    "steps": [
+      "Lavez les abricots, ouvrez-les et retirez les noyaux, puis faites-les cuire à couvert avec un fond d’eau 8 minutes.",
+      "Retirez la peau si elle se détache, puis écrasez les abricots à la fourchette.",
+      "Écrasez la demi-banane et mélangez-la aux abricots juste avant de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "vegetarian",
+      "quick"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "La pêche remplace l’abricot."
+    ],
+    "storage": "24 h au réfrigérateur sans la banane, que vous écrasez au moment de servir.",
+    "freezing": "Les abricots compotés se congèlent jusqu’à 3 mois ; la banane noircit à la congélation : ajoutez-la au moment de servir, après décongélation au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "L’abricot apporte du bêta-carotène et la banane de l’énergie, sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-yaourt-banane",
+    "title": "Yaourt nature à la banane écrasée",
+    "summary": "Le dessert minute des premiers mois : un yaourt nature adouci par la banane.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "dessert",
+      "breakfast"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 3,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "yogurt",
+        125,
+        "g"
+      ],
+      [
+        "banana",
+        0.5,
+        "u",
+        "bien mûre"
+      ]
+    ],
+    "steps": [
+      "Écrasez finement la demi-banane à la fourchette.",
+      "Mélangez-la au yaourt nature et servez aussitôt."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "quick",
+      "vegetarian",
+      "classic"
+    ],
+    "adaptations": [
+      "Remplacez la banane par une poire très mûre écrasée.",
+      "Pour un enfant qui découvre les laitages, commencez par quelques cuillères."
+    ],
+    "storage": "À servir aussitôt ; ne se conserve pas une fois préparé.",
+    "freezing": "Ne se congèle pas : le laitage se sépare et le fruit noircit. Préparez au moment de servir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Un yaourt nature au lait pasteurisé, sans sucre ajouté."
+    ],
+    "nutrition": "Le yaourt apporte du calcium et des protéines, la banane une douceur naturelle sans sucre ajouté.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-fromage-blanc-poire",
+    "title": "Fromage blanc et poire fondante",
+    "summary": "Un dessert crémeux avec une poire juste compotée et écrasée.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "fromage_blanc",
+        100,
+        "g"
+      ],
+      [
+        "pear",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Épluchez la poire, retirez le cœur et coupez-la en morceaux.",
+      "Faites-la cuire à couvert avec un fond d’eau 8 minutes, puis écrasez-la à la fourchette et laissez refroidir.",
+      "Mélangez la poire écrasée au fromage blanc juste avant de servir."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "vegetarian",
+      "quick"
+    ],
+    "adaptations": [
+      "Une poire très mûre peut être simplement écrasée crue.",
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise."
+    ],
+    "storage": "La poire écrasée se garde 48 h au réfrigérateur ; mélangez au moment de servir.",
+    "freezing": "Seule la poire compotée se congèle (jusqu’à 3 mois) ; mélangez-la au fromage blanc après décongélation au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Le fromage blanc apporte du calcium et des protéines ; la poire, des fibres et une douceur naturelle.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-petits-suisses-fraises",
+    "title": "Petits-suisses aux fraises écrasées",
+    "summary": "Un dessert de printemps rose et frais, sans sucre ajouté.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 0,
+    "ingredients": [
+      [
+        "petit_suisse",
+        2,
+        "u"
+      ],
+      [
+        "strawberry",
+        80,
+        "g",
+        "bien mûres"
+      ]
+    ],
+    "steps": [
+      "Lavez les fraises, équeutez-les et écrasez-les très finement à la fourchette.",
+      "Mélangez-les aux petits-suisses et servez aussitôt."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "calcium",
+      "quick",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Hors saison, utilisez des fruits rouges surgelés compotés quelques minutes puis refroidis.",
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise."
+    ],
+    "storage": "À servir aussitôt ; ne se conserve pas une fois préparé.",
+    "freezing": "Ne se congèle pas : le laitage se sépare et le fruit noircit. Préparez au moment de servir.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an."
+    ],
+    "nutrition": "Les petits-suisses apportent du calcium ; les fraises de la vitamine C et leur goût sucré naturel.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-veau-panais-carotte",
+    "title": "Veau mijoté, panais et carotte",
+    "summary": "Une viande tendre et des légumes racines au goût légèrement sucré.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "ground"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "veal",
+        120,
+        "g",
+        "en petits cubes"
+      ],
+      [
+        "parsnip",
+        150,
+        "g"
+      ],
+      [
+        "carrot",
+        200,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        3,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Coupez le veau en petits cubes en retirant le gras ; épluchez le panais et les carottes et coupez-les en rondelles.",
+      "Mettez le tout dans une casserole, couvrez d’eau et laissez mijoter à couvert 45 minutes, jusqu’à ce que la viande soit très tendre et bien cuite à cœur.",
+      "Égouttez en gardant le jus, puis mixez par à-coups la viande avec les légumes et un peu de jus pour une texture moulinée.",
+      "Ajoutez l’huile de colza au moment de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "protein",
+      "iron",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Le panais peut être remplacé par de la pomme de terre."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Se congèle très bien : jusqu’à 2 mois en petites portions (bacs à glaçons ou pots hermétiques). Décongelez au réfrigérateur la veille, réchauffez bien et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande bien cuite à cœur, sans trace rosée."
+    ],
+    "nutrition": "Le veau apporte du fer et des protéines ; le panais et la carotte, des fibres douces : environ 20 g de veau par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois), le reste se congèle en portions.",
+    "budget": 3,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-truite-poireau-pomme-de-terre",
+    "title": "Truite, poireau et pomme de terre écrasés",
+    "summary": "Une fondue de poireau toute douce avec une truite bien cuite.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "trout",
+        30,
+        "g",
+        "sans peau ni arêtes"
+      ],
+      [
+        "leek",
+        80,
+        "g",
+        "le blanc"
+      ],
+      [
+        "potato",
+        120,
+        "g"
+      ],
+      [
+        "butter",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Lavez soigneusement le blanc de poireau et émincez-le finement ; épluchez la pomme de terre et coupez-la en cubes.",
+      "Faites cuire poireau et pomme de terre à la vapeur 20 minutes, en ajoutant la truite pour les 8 dernières minutes.",
+      "Effeuillez la truite en retirant toutes les arêtes, puis écrasez le tout à la fourchette avec un peu d’eau de cuisson.",
+      "Ajoutez la noisette de beurre au moment de servir."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "classic",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Le saumon remplace la truite."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation possible jusqu’à 2 mois si le poisson n’avait pas déjà été congelé cru. Décongelez au réfrigérateur la veille, réchauffez bien à cœur et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête."
+    ],
+    "nutrition": "La truite apporte des oméga-3 et des protéines, le poireau des fibres douces : environ 15 g de truite par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "me-poulet-potiron-riz",
+    "title": "Poulet au potiron et riz rond",
+    "summary": "Une assiette d’automne orangée et crémeuse, grâce au riz rond bien cuit.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "chicken",
+        30,
+        "g"
+      ],
+      [
+        "pumpkin",
+        150,
+        "g",
+        "épluché"
+      ],
+      [
+        "round_rice",
+        25,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Rincez le riz rond ; épluchez le potiron, retirez les graines et coupez-le en cubes ; coupez le poulet en petits dés.",
+      "Faites cuire le riz et le potiron ensemble dans une casserole d’eau 20 minutes, jusqu’à ce que le riz soit très tendre ; ajoutez le poulet pour les 10 dernières minutes.",
+      "Égouttez en gardant un peu d’eau de cuisson, puis mixez par à-coups pour une texture moulinée.",
+      "Ajoutez l’huile de colza au moment de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "protein",
+      "complete",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "La courge butternut remplace le potiron."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Se congèle très bien : jusqu’à 2 mois en petites portions (bacs à glaçons ou pots hermétiques). Décongelez au réfrigérateur la veille, réchauffez bien et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande bien cuite à cœur, sans trace rosée."
+    ],
+    "nutrition": "Un repas complet : le riz pour l’énergie, le potiron pour le bêta-carotène et le poulet pour les protéines, environ 15 g de poulet par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-colin-fenouil",
+    "title": "Colin au fenouil et pomme de terre",
+    "summary": "Le fenouil cuit devient tout doux et parfume délicatement le poisson.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "white_fish",
+        30,
+        "g",
+        "colin sans peau ni arêtes"
+      ],
+      [
+        "fennel",
+        100,
+        "g"
+      ],
+      [
+        "potato",
+        100,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Émincez finement le fenouil ; épluchez la pomme de terre et coupez-la en cubes.",
+      "Faites cuire fenouil et pomme de terre à la vapeur 20 minutes, en ajoutant le colin pour les 8 dernières minutes.",
+      "Effeuillez le poisson en vérifiant qu’il ne reste aucune arête, puis mixez par à-coups avec les légumes et un peu d’eau de cuisson.",
+      "Ajoutez l’huile d’olive au moment de servir."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Le cabillaud ou le merlu remplacent le colin."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation possible jusqu’à 2 mois si le poisson n’avait pas déjà été congelé cru. Décongelez au réfrigérateur la veille, réchauffez bien à cœur et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête."
+    ],
+    "nutrition": "Le colin apporte des protéines maigres et le fenouil des fibres et un goût anisé très doux : environ 15 g de poisson par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "me-saumon-petits-pois-riz",
+    "title": "Saumon, petits pois et riz moulinés",
+    "summary": "Une assiette printanière où le saumon et les petits pois s’accordent tout naturellement.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "ground"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "salmon",
+        30,
+        "g",
+        "sans peau ni arêtes"
+      ],
+      [
+        "frozen_peas",
+        80,
+        "g"
+      ],
+      [
+        "rice",
+        25,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz dans une casserole d’eau 15 minutes en le laissant bien tendre, puis égouttez.",
+      "Faites cuire les petits pois à la vapeur 12 minutes, en ajoutant le saumon pour les 8 dernières minutes.",
+      "Effeuillez le saumon en retirant les arêtes, puis passez saumon, petits pois et riz au moulin à légumes avec un peu d’eau de cuisson."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "protein",
+      "complete",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Le saumon étant naturellement gras, inutile d’ajouter de l’huile."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation possible jusqu’à 2 mois si le poisson n’avait pas déjà été congelé cru. Décongelez au réfrigérateur la veille, réchauffez bien à cœur et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête."
+    ],
+    "nutrition": "Le saumon apporte des oméga-3, les petits pois des fibres et le riz de l’énergie : environ 15 g de saumon par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "me-boeuf-courgette-polenta",
+    "title": "Bœuf haché, courgette et polenta crémeuse",
+    "summary": "Une polenta douce comme une purée, avec une courgette fondante et un peu de bœuf.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 16,
+    "ingredients": [
+      [
+        "ground_beef",
+        30,
+        "g"
+      ],
+      [
+        "zucchini",
+        120,
+        "g"
+      ],
+      [
+        "polenta",
+        20,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Lavez la courgette et coupez-la en dés ; faites-la cuire à couvert avec un fond d’eau 10 minutes.",
+      "Ajoutez le bœuf haché en l’émiettant et poursuivez la cuisson 6 minutes, jusqu’à ce qu’il soit bien cuit, sans trace rosée.",
+      "Pendant ce temps, versez la polenta en pluie dans 100 ml d’eau frémissante et faites cuire 5 minutes en remuant.",
+      "Écrasez la courgette et le bœuf à la fourchette, servez sur la polenta et ajoutez l’huile d’olive."
+    ],
+    "allergens": [],
+    "tags": [
+      "iron",
+      "protein",
+      "quick"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Mixez la viande à part si votre enfant préfère une texture plus lisse."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Le mélange bœuf-courgette se congèle jusqu’à 2 mois (décongélation au réfrigérateur, réchauffage à cœur) ; la polenta se prépare au moment.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande bien cuite à cœur, sans trace rosée."
+    ],
+    "nutrition": "Le bœuf apporte du fer bien assimilé, la polenta (sans gluten) de l’énergie : environ 15 g de bœuf par portion, un repère à ajuster selon l’âge (une dizaine de grammes vers 7-8 mois, une vingtaine vers 12 mois).",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-pois-chiches-carotte-cumin",
+    "title": "Écrasé de pois chiches et carottes au cumin",
+    "summary": "Une purée dorée, végétarienne et douce, à peine parfumée au cumin.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 8,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "chickpeas",
+        50,
+        "g",
+        "cuits, rincés"
+      ],
+      [
+        "carrot",
+        150,
+        "g"
+      ],
+      [
+        "cumin",
+        1,
+        "pincee",
+        "facultatif",
+        true
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez les carottes et coupez-les en rondelles ; rincez les pois chiches et retirez leur peau en les pinçant entre deux doigts.",
+      "Faites cuire les carottes à la vapeur 15 minutes, en ajoutant les pois chiches pour les 5 dernières minutes.",
+      "Écrasez finement le tout à la fourchette avec un peu d’eau de cuisson, une toute petite pincée de cumin si vous le souhaitez et l’huile d’olive."
+    ],
+    "allergens": [],
+    "tags": [
+      "vegetarian",
+      "fiber",
+      "iron",
+      "budget"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Choisissez des pois chiches en conserve sans sel ajouté, ou faites-les cuire vous-même."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Se congèle très bien : jusqu’à 2 mois en petites portions (bacs à glaçons ou pots hermétiques). Décongelez au réfrigérateur la veille, réchauffez bien et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Pois chiches pelés et bien écrasés : entiers, ils sont à risque d’étouffement avant 4 ans."
+    ],
+    "nutrition": "Les pois chiches apportent des protéines végétales, du fer et des fibres ; environ 25 g de pois chiches cuits par portion pour commencer, selon ce que votre enfant accepte.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-pomme-myrtilles-compotees",
+    "title": "Pommes et myrtilles compotées",
+    "summary": "Une compote violette surprenante, douce et fruitée.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 7,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 12,
+    "ingredients": [
+      [
+        "apple",
+        2,
+        "u"
+      ],
+      [
+        "blueberries",
+        60,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes, retirez le cœur et coupez-les en morceaux.",
+      "Faites cuire les pommes et les myrtilles à couvert avec un fond d’eau 12 minutes, jusqu’à ce que les myrtilles éclatent.",
+      "Mixez par à-coups ou écrasez finement : aucune myrtille ne doit rester entière dans la compote."
+    ],
+    "allergens": [],
+    "tags": [
+      "compote",
+      "vegetarian",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise.",
+      "Les myrtilles surgelées conviennent toute l’année."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Se congèle très bien : jusqu’à 3 mois en petites portions. Décongelez au réfrigérateur et consommez dans les 48 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Myrtilles toujours écrasées : entières, elles sont à risque d’étouffement avant 4 ans."
+    ],
+    "nutrition": "Les myrtilles apportent des antioxydants et de la vitamine C, la pomme des fibres, le tout sans sucre ajouté.",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "me-porridge-avoine-pomme",
+    "title": "Bouillie d’avoine à la pomme cuite",
+    "summary": "Un petit-déjeuner chaud et réconfortant, adouci par la pomme.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "stages": [
+      "m6_8",
+      "m9_12"
+    ],
+    "minMonths": 8,
+    "maxMonths": 12,
+    "textures": [
+      "mashed"
+    ],
+    "servings": 1,
+    "prepMin": 3,
+    "cookMin": 6,
+    "ingredients": [
+      [
+        "oats",
+        15,
+        "g"
+      ],
+      [
+        "apple",
+        0.5,
+        "u"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee",
+        "facultatif",
+        true
+      ]
+    ],
+    "steps": [
+      "Épluchez la demi-pomme et râpez-la finement.",
+      "Mettez les flocons d’avoine, la pomme râpée et 120 ml d’eau dans une petite casserole et faites cuire à feu doux 6 minutes en remuant, jusqu’à obtenir une bouillie épaisse.",
+      "Écrasez à la fourchette, ajoutez si vous le souhaitez une pincée de cannelle, et laissez tiédir."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "fiber",
+      "quick",
+      "vegetarian",
+      "budget"
+    ],
+    "adaptations": [
+      "Préparez-la avec le lait habituel de votre enfant au lieu de l’eau.",
+      "Ajustez la texture selon ce que votre enfant accepte : plus fine au début, plus grumeleuse quand il est à l’aise."
+    ],
+    "storage": "À préparer au moment ; 24 h au réfrigérateur au maximum, à réchauffer avec un peu d’eau.",
+    "freezing": "Congélation déconseillée : la bouillie devient pâteuse. Elle se prépare en quelques minutes.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Pomme râpée puis cuite jusqu’à être tendre."
+    ],
+    "nutrition": "L’avoine apporte des fibres et de l’énergie qui dure ; la pomme, sa douceur naturelle sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  }
+]

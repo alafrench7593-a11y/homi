@@ -211,6 +211,15 @@ Coût externe : **aucun** ; rien n'est envoyé à un service externe.
 - **Sources et lectures** : 22 pages consultées (liste dans `src/content/resources.ts`) ; aucune API, aucune photo de tiers.
 Coût externe : **aucun**. Aucune donnée personnelle ou de santé n'est envoyée : seuls un code-barres et l'identifiant de l'application partent vers Open Food Facts / Open Prices.
 
+## 12 septies. Réorganisation (nouveau, 21 octobre 2026)
+
+- **Taille et poids moyens du fœtus** : mpedia (AFPA), « La grossesse mois par mois », https://www.mpedia.fr/art-grossesse-mois-apres-mois/ (mis à jour le 23/09/2022). Valeurs recopiées dans `src/lib/domain/fetalWeeks.ts` ; aucune requête réseau.
+- **Articles neurodéveloppement** : Santé.fr, Mon Parcours Handicap, Maison de l'autisme, handicap.gouv.fr, Éducation nationale, Caf, ARS (liens et dates dans `src/content/articles/neuro.ts`) ; pages de la HAS non lisibles automatiquement, donc non citées. Migration : `20261021000300_neuro_articles_seed.sql`.
+- **Recettes** : `20261021000100_recettes_v2.sql` (colonne `freezing`, table `recipe_dislikes` avec RLS « personnel », suppression définitive de l'ancien catalogue), `20261021000200_recipes_v2_seed.sql` (généré par `scripts/gen-recipes-seed.ts`). Sources poissons : ANSES (30/06/2022) et Santé.fr (méthylmercure, 24/10/2024).
+- **Besoin particulier** : `20261021000400_besoin_particulier.sql` (choix « questions »).
+- **Dictée** : API Web Speech du navigateur (web uniquement, aucune clé, aucun envoi par l'application) ; sur téléphone, la dictée du clavier du système.
+- **Photos de recettes** : une seule photo réelle (purée carotte et pomme de terre). Les autres recettes gardent leur illustration générée par programme en attendant le choix du service de génération (Gemini demandé : aucun connecteur Gemini disponible ici).
+
 ## 13. Recommandations de produits
 ✅ **Catalogue éditorial intégré (20 octobre 2026)**, voir 12 sexies : produits réels ajoutés par l'équipe à partir des bases ouvertes, critères objectifs expliqués, aucune recommandation inventée. Équipement, jouets et livres : toujours non couverts (pas de catalogue ouvert vérifiable). Tout contenu sponsorisé devrait être étiqueté comme tel.
 

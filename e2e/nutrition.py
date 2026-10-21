@@ -5,7 +5,7 @@ catalogue de produits vide puis ajout d'un produit FICTIF de démonstration (sig
   npx expo export --platform web --clear && python3 e2e/spa_server.py dist 8822 &
   python3 e2e/nutrition.py
 """
-import glob, json, os
+import glob, json, os, subprocess
 from playwright.sync_api import sync_playwright
 
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8822')
@@ -13,8 +13,13 @@ SHOTS = os.environ.get('E2E_SHOTS', '/tmp/toietmoi-e2e')
 os.makedirs(SHOTS, exist_ok=True)
 R, errs = {}, []
 HERE = os.path.dirname(os.path.abspath(__file__))
-DRAFTS = [d for f in sorted(glob.glob(os.path.join(HERE, '..', 'src', 'content', 'recipes', 'drafts', 'lot-*.json'))) for d in json.load(open(f))]
-DRAFT_SLUGS = {d['slug'] for d in DRAFTS}
+# Nouveau catalogue (l'ancien, brouillons compris, a été supprimé définitivement)
+DRAFTS = [d for f in sorted(glob.glob(os.path.join(HERE, '..', 'src', 'content', 'recipes', 'v2', 'lot-*.json'))) for d in json.load(open(f))]
+CATALOG = {d['slug'] for d in DRAFTS} | {'puree-carotte-pomme-de-terre'}
+DRAFT = 'e2e-brouillon-ia'
+# Brouillon IA de bibliothèque (copie d'une recette, statut « brouillon ») pour vérifier qui le voit
+DRAFT_ROWS = json.loads(subprocess.run(['npx', '-y', 'tsx', os.path.join(HERE, 'draft_rows.ts'), DRAFT], capture_output=True, text=True, check=True).stdout)
+INJECT_DRAFT = "s => { const rows = " + json.dumps(DRAFT_ROWS) + "; for (const t of Object.keys(rows)) s.tables[t] = [...(s.tables[t] || []).filter(x => (x.id || x.recipe_id) !== 'e2e-draft-row'), ...rows[t]]; }"
 
 
 def demo(pg, js):
@@ -56,7 +61,8 @@ def run(p):
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
-    R['brouillons_dans_le_depot'] = len(DRAFTS) >= 499
+    R['ancien_catalogue_supprime'] = not os.path.isdir(os.path.join(HERE, '..', 'src', 'content', 'recipes', 'drafts')) and len(DRAFTS) == 150
+    pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); (" + INJECT_DRAFT + ")(s); localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }")
 
     # ---- Liste des recettes (profil de Noé, ~6 ans) : score visible, aucun brouillon IA pour un parent
     noe = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Noé').id")
@@ -64,7 +70,7 @@ def run(p):
     go(pg, '/meals', 3000)
     slugs = listed(pg)
     R['liste_score_visible'] = pg.locator('[data-testid^="score-"]').count() > 0
-    R['liste_sans_brouillon_ia'] = bool(slugs) and not (set(slugs) & DRAFT_SLUGS)
+    R['liste_sans_brouillon_ia'] = bool(slugs) and DRAFT not in slugs and set(s for s in slugs if not s.startswith('score')) - {'status', 'sources', 'allergens', 'precautions', 'cost'} <= CATALOG
     first = next(s for s in slugs if s not in ('status', 'sources', 'allergens', 'precautions', 'score', 'cost') and not s.startswith('score'))
     go(pg, f'/meals/{first}')
     R['fiche_score_sur_100'] = has(pg, 'recipe-score') and '/100' in tid(pg, 'recipe-score').inner_text()
@@ -81,7 +87,7 @@ def run(p):
     pg.screenshot(path=f'{SHOTS}/nu_classements.png')
 
     # ---- Brouillon IA : introuvable pour un parent
-    draft = DRAFTS[0]['slug']
+    draft = DRAFT
     go(pg, f'/meals/{draft}')
     R['brouillon_invisible_parent'] = not has(pg, 'recipe-score')
 
@@ -104,8 +110,9 @@ def run(p):
     R['brouillon_visible_equipe'] = has(pg, 'recipe-score') and 'Brouillon' in T(pg)
 
     # ---- Import d'un lot JSON
-    d = dict(DRAFTS[0]); d['slug'] = 'import-e2e-puree'; d['title'] = 'Purée importée de test'
-    bad = dict(DRAFTS[0]); bad['slug'] = 'import-e2e-ko'; bad['ingredients'] = [['licorne', 1, 'u']]
+    base = next(x for x in DRAFTS if 'pregnancy' not in x['audiences'])
+    d = dict(base); d['slug'] = 'import-e2e-puree'; d['title'] = 'Purée importée de test'
+    bad = dict(base); bad['slug'] = 'import-e2e-ko'; bad['ingredients'] = [['licorne', 1, 'u']]
     go(pg, '/admin/import-recipes')
     tid(pg, 'imp-text').fill(json.dumps([d, bad, DRAFTS[1]], ensure_ascii=False))
     tid(pg, 'imp-check').click(); pg.wait_for_timeout(800)

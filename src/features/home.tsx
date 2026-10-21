@@ -15,7 +15,7 @@ import { countdownLabel, pregnancyProgress } from '@/lib/domain/pregnancy';
 import { isEstimatedDue } from '@/lib/journeys/model';
 import { appointmentRelevant, reminderRelevant } from '@/lib/journeys/relevance';
 import { useRelevanceCtx } from '@/lib/data/hooks-scope';
-import { formatWeight, weekInfo } from '@/lib/domain/fetalWeeks';
+import { formatLength, formatWeight, weekInfo } from '@/lib/domain/fetalWeeks';
 import { childAge } from '@/lib/domain/child';
 import { formatDuration, timeAgo } from '@/lib/domain/dates';
 import { summarizeDay, suggestedNextSide } from '@/lib/domain/daily';
@@ -75,13 +75,13 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
           <Text variant="small" muted>{new Date(pregnancy.due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</Text>
           {isEstimatedDue(pregnancy) ? <Text variant="caption" weight="bold" color={t.colors.primary} testID="due-estimated">{tr('pj.due.estimated')}</Text> : null}
         </View>
-        <View style={tile} accessible accessibilityLabel={`Taille moyenne : environ ${info.lengthCm} centimètres, comme ${info.compare}`}>
+        <View style={tile} accessible accessibilityLabel={`Taille moyenne : ${formatLength(info.lengthCm)}, comme ${info.compare}`}>
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>TAILLE</Text>
-          <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 36, letterSpacing: -1 }}>{info.lengthCm} cm</Text>
-          <Text variant="small" muted>{info.compare}</Text>
+          <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 36, letterSpacing: -1 }}>{info.lengthCm == null ? '< 5 mm' : `${info.lengthCm} cm`}</Text>
+          <Text variant="small" muted>{formatWeight(info.weightG)} · {info.compare}</Text>
         </View>
       </View>
-      <Text variant="caption" muted center>Repères moyens · illustration artistique, pas une échographie</Text>
+      <Text variant="caption" muted center>Moyennes générales sourcées (mpedia), pas les mesures de votre bébé · illustration artistique</Text>
     </View>
   );
 }
@@ -233,7 +233,8 @@ function QuickButton({ k, childId }: { k: string; childId?: string }) {
   );
 }
 
-export function UpcomingCard() {
+/** Prochain rendez-vous ou rappel du profil affiché. `single` (mode simple) : seulement le plus proche des deux. */
+export function UpcomingCard({ single = false }: { single?: boolean } = {}) {
   const t = useTheme();
   const { data: appts } = useAppointments({ upcomingOnly: true });
   const { data: reminders } = useReminders();
@@ -258,8 +259,8 @@ export function UpcomingCard() {
   );
   return (
     <View>
-      {next && row('calendar', next.title, new Date(next.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }), () => router.push('/appointments'))}
-      {nextReminder && row('bell', nextReminder.r.title, `Rappel ${nextReminder.at!.toLocaleString('fr-FR', { weekday: 'long', hour: '2-digit', minute: '2-digit' })}`, () => router.push('/settings/reminders'))}
+      {next && (!single || !nextReminder || Date.parse(next.starts_at) <= nextReminder.at!.getTime()) && row('calendar', next.title, new Date(next.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }), () => router.push('/appointments'))}
+      {nextReminder && (!single || !next || nextReminder.at!.getTime() < Date.parse(next.starts_at)) && row('bell', nextReminder.r.title, `Rappel ${nextReminder.at!.toLocaleString('fr-FR', { weekday: 'long', hour: '2-digit', minute: '2-digit' })}`, () => router.push('/settings/reminders'))}
     </View>
   );
 }

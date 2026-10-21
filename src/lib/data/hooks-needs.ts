@@ -11,7 +11,10 @@ import { syncLocalReminders } from '../notifications';
 import { useUserId } from '../auth';
 import type { Reminder } from '../types';
 
-export const NEED_KINDS = ['adhd', 'asd', 'dys', 'language', 'dcd', 'tics', 'sensory', 'assessment', 'other'] as const;
+export const NEED_KINDS = ['adhd', 'asd', 'dys', 'language', 'dcd', 'tics', 'sensory', 'assessment', 'other', 'questions'] as const;
+/** Choix proposés d'emblée ; les autres (TDC, tics, diagnostic en cours) restent accessibles via « Plus de catégories ». */
+export const MAIN_NEED_KINDS = ['adhd', 'asd', 'dys', 'language', 'sensory', 'other', 'questions'] as const;
+export const ADVANCED_NEED_KINDS = ['dcd', 'tics', 'assessment'] as const;
 export type NeedKind = (typeof NEED_KINDS)[number];
 export const ENTRY_KINDS = ['appointment', 'assessment', 'professional', 'observation', 'progress', 'emotion', 'sleep', 'routine', 'school'] as const;
 export type EntryKind = (typeof ENTRY_KINDS)[number];

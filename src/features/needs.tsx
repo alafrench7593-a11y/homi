@@ -10,6 +10,7 @@ import { useChildNeeds, useNeedEntries, useTreatments, type NeedKind, type Treat
 import type { Child } from '@/lib/types';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { useUiStore } from '@/lib/store';
 
 export const needLabel = (k: NeedKind) => tr(`nd.kind.${k}` as TKey);
 
@@ -38,6 +39,7 @@ export function dosesFor(day: Date, treatments: Treatment[], logs: TreatmentLog[
 
 /** Onglet « Besoins particuliers » de la fiche enfant : résumé et accès au carnet complet. */
 export function NeedsSummary({ child }: { child: Child }) {
+  const simple = useUiStore((st) => st.simpleMode);
   const { data: needs } = useChildNeeds(child.id);
   const { data: entries } = useNeedEntries(child.id);
   const { data: treatments } = useTreatments(child.id);
@@ -55,8 +57,9 @@ export function NeedsSummary({ child }: { child: Child }) {
       <Card>
         <ListRow icon="clipboard" title={tr('nd.tab.treatments')} subtitle={active.length ? tr('nd.treatments.count', { count: active.length }) : tr('nd.treatments.none')} onPress={() => router.push(`/child/${child.id}/needs?tab=treatments`)} />
         <ListRow icon="list" title={tr('nd.tab.follow')} subtitle={tr('nd.entries.count', { count: entries?.length ?? 0 })} onPress={() => router.push(`/child/${child.id}/needs?tab=follow`)} />
-        <ListRow icon="book" title={tr('tool.child_school')} onPress={() => router.push(`/child/${child.id}/school`)} />
-        <ListRow icon="folder" title={tr('tool.documents')} onPress={() => router.push(`/documents?child=${child.id}`)} />
+        {/* Mode simple : ni école, ni documents à importer (aucun bilan demandé aux parents) */}
+        {simple ? null : <ListRow icon="book" title={tr('tool.child_school')} onPress={() => router.push(`/child/${child.id}/school`)} />}
+        {simple ? null : <ListRow icon="folder" title={tr('tool.documents')} onPress={() => router.push(`/documents?child=${child.id}`)} />}
       </Card>
       <Button label={tr('nd.open')} icon="compass" onPress={() => router.push(`/child/${child.id}/needs`)} full testID="open-needs" />
     </View>

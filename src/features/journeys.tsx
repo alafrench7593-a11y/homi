@@ -110,7 +110,6 @@ export function ChildHomeCard({ child }: { child: Child }) {
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.sm }}>
         {link('trending-up', tr('tool.kid_growth'), `/child/${child.id}/growth`)}
         {link('compass', tr('tool.kid_needs'), `/child/${child.id}/needs`, 'home-needs')}
-        {link('book', tr('tool.child_school'), `/child/${child.id}/school`)}
         {link('smile', tr('pj.child.profile'), `/child/${child.id}`)}
       </View>
     </Card>

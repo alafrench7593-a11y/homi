@@ -34,7 +34,8 @@ export function ProfileSwitcher() {
   const { data: babies } = useExpectedBabies(pregnancy?.id);
 
   const items: { key: string; label: string; sub: string; avatar: React.ReactNode; active: boolean; onPress: () => void }[] = [];
-  // Seuls les profils d'un parcours ACTIF : ma grossesse, mon post-partum, chaque enfant suivi, la famille, moi
+  // Ordre : Moi, Ma grossesse, chaque enfant (prénom seul), la famille ; puis « Ajouter un profil »
+  items.push({ key: 'me', label: tr('pj.subject.me'), sub: js.body && js.body.type !== 'pregnancy' ? tr(`pj.type.${js.body.type}` as TKey) : tr('pj.subject.meSub'), avatar: <Avatar color="#F3D9D3" icon="heart" />, active: subject.type === 'me', onPress: () => setSubject({ type: 'me' }) });
   if (pregnancy) {
     const p = pregnancyProgress(pregnancy.due_date);
     const names = babies?.map((b) => b.nickname).filter(Boolean).join(' · ');
@@ -47,7 +48,7 @@ export function ProfileSwitcher() {
   for (const c of children ?? []) {
     const baby = js.childType(c.id) === 'baby';
     items.push({
-      key: c.id, label: tr(baby ? 'pj.profile.baby' : 'pj.profile.child', { name: c.first_name }), sub: childAge(c.birth_date).label,
+      key: c.id, label: c.first_name, sub: `${tr(baby ? 'pj.kind.baby' : 'pj.kind.child')} · ${childAge(c.birth_date).label}`,
       avatar: <Avatar label={initials(c.first_name)} color={initialsColor(c.id)} />, active: subject.type === 'child' && subject.id === c.id,
       onPress: () => setSubject({ type: 'child', id: c.id }),
     });
@@ -55,7 +56,6 @@ export function ProfileSwitcher() {
   if ((children?.length ?? 0) + (pregnancy ? 1 : 0) > 1) {
     items.push({ key: 'family', label: tr('pj.subject.family'), sub: tr('pj.subject.familySub'), avatar: <Avatar color="#D6CEF0" icon="users" />, active: subject.type === 'family', onPress: () => setSubject({ type: 'family' }) });
   }
-  items.push({ key: 'me', label: tr('pj.subject.me'), sub: js.body && js.body.type !== 'pregnancy' ? tr(`pj.type.${js.body.type}` as TKey) : tr('pj.subject.meSub'), avatar: <Avatar color="#F3D9D3" icon="heart" />, active: subject.type === 'me', onPress: () => setSubject({ type: 'me' }) });
   const current = items.find((i) => i.active) ?? items[0];
   const others = items.filter((i) => i !== current).slice(0, 3);
 
@@ -99,7 +99,16 @@ export function ProfileSwitcher() {
             {it.active && <Icon name="check" color={t.colors.text} />}
           </Tappable>
         ))}
-        <Button label={tr('pj.editJourney')} variant="secondary" icon="compass" onPress={() => { setOpen(false); router.push('/journeys'); }} />
+        <Tappable
+          testID="subject-add"
+          accessibilityRole="button"
+          accessibilityLabel={tr('pj.switcher.add')}
+          onPress={() => { setOpen(false); router.push('/journeys'); }}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.sm, borderRadius: radius.lg }}
+        >
+          <Avatar color={t.colors.surfaceAlt} icon="plus" />
+          <Text weight="bold" color={t.colors.primary}>{tr('pj.switcher.add')}</Text>
+        </Tappable>
       </Sheet>
     </>
   );

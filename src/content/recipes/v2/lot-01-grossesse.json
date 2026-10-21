@@ -1,0 +1,2484 @@
+[
+  {
+    "slug": "gr-poulet-roti-pommes-de-terre-haricots-verts",
+    "title": "Poulet rôti, pommes de terre et haricots verts",
+    "summary": "Le repas du dimanche par excellence : une volaille dorée, des pommes de terre fondantes et des haricots verts croquants.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "chicken_thigh",
+        4,
+        "u",
+        "environ 1 kg"
+      ],
+      [
+        "potato",
+        800,
+        "g",
+        "à chair ferme"
+      ],
+      [
+        "green_beans",
+        400,
+        "g",
+        "frais ou surgelés"
+      ],
+      [
+        "garlic",
+        3,
+        "u",
+        "gousses"
+      ],
+      [
+        "thyme",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        3,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Épluchez les pommes de terre, coupez-les en quartiers et mettez-les dans un grand plat avec les gousses d’ail en chemise, 2 cuillères à soupe d’huile d’olive et le thym.",
+      "Posez les cuisses de poulet par-dessus, badigeonnez-les avec le reste d’huile et enfournez pour 45 minutes, en arrosant la viande à mi-cuisson avec le jus du plat.",
+      "Pendant ce temps, équeutez et lavez les haricots verts, puis faites-les cuire 10 à 12 minutes à la vapeur : ils doivent rester légèrement croquants.",
+      "Vérifiez la cuisson du poulet en piquant la partie la plus épaisse, près de l’os : le jus doit couler clair et la chair ne doit plus être rosée. Sinon, prolongez de 5 à 10 minutes.",
+      "Servez le poulet bien doré avec les pommes de terre rôties et les haricots verts."
+    ],
+    "allergens": [],
+    "tags": [
+      "protein",
+      "vegetables",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Avec un poulet entier d’environ 1,5 kg, comptez 1 h 15 de cuisson à 200 °C et vérifiez le jus à la jointure de la cuisse.",
+      "Remplacez les haricots verts par des carottes, rôties avec les pommes de terre."
+    ],
+    "storage": "Réfrigérateur : 2 jours dans une boîte fermée, la viande retirée de l’os ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "freezing": "Le poulet cuit, retiré de l’os, se congèle jusqu’à 3 mois ; décongelez-le une nuit au réfrigérateur et réchauffez-le bien à cœur. Les pommes de terre rôties et les haricots verts supportent mal la congélation.",
+    "precautions": [
+      "Grossesse : le poulet doit être cuit à cœur, sans aucune trace rosée près de l’os.",
+      "Utilisez une planche et un couteau réservés à la viande crue, puis lavez-les à l’eau chaude savonneuse avant de toucher aux légumes.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Un repas complet et classique : la volaille apporte des protéines, les pommes de terre un féculent et les haricots verts des fibres.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Retirez la peau, coupez la viande en petits morceaux et écrasez les pommes de terre pour les plus petits."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-hachis-parmentier",
+    "title": "Hachis parmentier bien gratiné",
+    "summary": "Une purée maison onctueuse sur une viande hachée bien cuite : le plat réconfortant qui met tout le monde d’accord.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 25,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "ground_beef",
+        600,
+        "g"
+      ],
+      [
+        "potato",
+        1200,
+        "g",
+        "à chair farineuse"
+      ],
+      [
+        "onion",
+        2,
+        "u"
+      ],
+      [
+        "carrot",
+        2,
+        "u"
+      ],
+      [
+        "milk",
+        200,
+        "ml"
+      ],
+      [
+        "butter",
+        30,
+        "g"
+      ],
+      [
+        "emmental",
+        60,
+        "g",
+        "râpé"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "parsley",
+        2,
+        "cs",
+        "ciselé",
+        true
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre, coupez-les en morceaux et faites-les cuire 20 minutes dans une grande casserole d’eau bouillante, jusqu’à ce qu’elles soient bien tendres.",
+      "Pendant ce temps, épluchez et hachez finement les oignons et les carottes, puis faites-les revenir 5 minutes dans une sauteuse avec la moitié du beurre.",
+      "Ajoutez le bœuf haché et faites-le cuire 10 minutes à feu moyen en l’émiettant, jusqu’à ce qu’il soit entièrement cuit, sans aucune partie rosée. Ajoutez le persil lavé et ciselé.",
+      "Préchauffez le four à 200 °C. Égouttez les pommes de terre et écrasez-les au presse-purée avec le lait chaud, le reste du beurre et la muscade.",
+      "Étalez la viande dans un plat, couvrez de purée, parsemez d’emmental et enfournez 25 minutes, jusqu’à ce que le dessus soit bien doré et le centre brûlant."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "iron",
+      "classic",
+      "family",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Pour changer, remplacez une partie des pommes de terre par de la patate douce ou du potiron.",
+      "Restes de pot-au-feu ou de bœuf bouilli : hachez-les finement à la place de la viande crue."
+    ],
+    "storage": "Réfrigérateur : 2 jours, couvert ; réchauffez une seule fois au four, jusqu’à ce que le centre soit brûlant.",
+    "freezing": "Se congèle très bien, en plat ou en parts, jusqu’à 3 mois ; décongelez une nuit au réfrigérateur puis réchauffez au four à 180 °C jusqu’à ce que le centre soit brûlant.",
+    "precautions": [
+      "Grossesse : la viande hachée doit être cuite à cœur, sans aucune trace rosée, avant d’être mise au four.",
+      "Utilisez une planche et un couteau réservés à la viande crue, puis lavez-les à l’eau chaude savonneuse avant de toucher aux légumes.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose).",
+      "Lait, crème et fromages au lait pasteurisé uniquement."
+    ],
+    "nutrition": "Viande, féculent et légumes réunis dans un plat familial : le bœuf apporte des protéines et du fer, les pommes de terre l’énergie du repas.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Servez une part tiédie ; c’est souvent le plat préféré des enfants, tel quel."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-saumon-pommes-de-terre-vapeur",
+    "title": "Saumon bien cuit, pommes de terre vapeur et sauce ciboulette",
+    "summary": "Un pavé de saumon cuit au four, des pommes de terre vapeur et une sauce fraîche au fromage blanc : simple et plein de saveurs.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "salmon",
+        4,
+        "u",
+        "4 pavés d’environ 120 g, sans peau"
+      ],
+      [
+        "potato",
+        800,
+        "g",
+        "à chair ferme"
+      ],
+      [
+        "fromage_blanc",
+        200,
+        "g"
+      ],
+      [
+        "chives",
+        2,
+        "cs",
+        "ciselée"
+      ],
+      [
+        "lemon",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Lavez les pommes de terre, coupez-les en deux et faites-les cuire 20 à 25 minutes à la vapeur, jusqu’à ce que la pointe d’un couteau s’y enfonce sans résistance.",
+      "Préchauffez le four à 180 °C. Posez les pavés de saumon dans un plat, arrosez-les d’huile d’olive et d’un filet de jus de citron, puis enfournez 15 à 18 minutes.",
+      "Vérifiez la cuisson : la chair du saumon doit être opaque jusqu’au centre et se détacher en lamelles à la fourchette. Sinon, prolongez de quelques minutes.",
+      "Mélangez le fromage blanc avec la ciboulette lavée et ciselée et le reste du jus de citron.",
+      "Servez le saumon avec les pommes de terre vapeur et la sauce bien fraîche."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez le saumon par de la truite, cuite de la même façon.",
+      "Ajoutez des haricots verts ou des courgettes vapeur pour une assiette plus verte."
+    ],
+    "storage": "Réfrigérateur : 24 h pour le saumon cuit, dans une boîte fermée ; réchauffez-le une seule fois, bien chaud. Préparez la sauce au dernier moment.",
+    "freezing": "Le saumon cuit se congèle jusqu’à 2 mois ; décongelez-le au réfrigérateur et réchauffez-le bien chaud. La sauce au fromage blanc et les pommes de terre vapeur ne se congèlent pas.",
+    "precautions": [
+      "Grossesse : poisson frais uniquement, jamais cru, mariné ni fumé ; il doit être cuit à cœur, avec une chair opaque jusqu’au centre.",
+      "Passez les doigts sur la chair avant de servir et retirez la moindre arête.",
+      "Fromage blanc au lait pasteurisé, gardé au réfrigérateur jusqu’au service.",
+      "Repères poisson : deux fois par semaine, dont un poisson gras, en variant les espèces au fil des semaines.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Le saumon est un poisson gras, source d’oméga 3 ; avec les pommes de terre et la sauce au fromage blanc, le repas est complet.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Émiettez le saumon en vérifiant l’absence d’arêtes et écrasez les pommes de terre avec un peu de sauce."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "gr-gratin-dauphinois",
+    "title": "Gratin dauphinois fondant",
+    "summary": "Des pommes de terre cuites doucement dans le lait et la crème, dorées au four : l’accompagnement qui fait plaisir à toute la table.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 75,
+    "ingredients": [
+      [
+        "potato",
+        1200,
+        "g",
+        "à chair ferme"
+      ],
+      [
+        "milk",
+        500,
+        "ml"
+      ],
+      [
+        "cream",
+        200,
+        "ml"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 160 °C. Lavez et épluchez les pommes de terre, puis coupez-les en rondelles fines d’environ 3 mm, sans les rincer ensuite pour garder leur amidon.",
+      "Frottez un plat à gratin avec la gousse d’ail coupée en deux, puis beurrez-le généreusement avec le beurre.",
+      "Dans une grande casserole, portez à frémissement le lait avec la crème et la muscade. Ajoutez les rondelles de pommes de terre et laissez cuire 10 minutes à feu doux, en remuant délicatement.",
+      "Versez le tout dans le plat et enfournez pour 1 heure, jusqu’à ce que le dessus soit bien doré et que la lame d’un couteau traverse les pommes de terre sans résistance.",
+      "Laissez reposer 10 minutes avant de servir."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Servez-le avec un rôti, une volaille ou un poisson blanc, et une salade verte bien lavée.",
+      "Version plus légère : remplacez la crème par la même quantité de lait."
+    ],
+    "storage": "Réfrigérateur : 2 jours, couvert ; réchauffez une seule fois au four, jusqu’à ce que ce soit bien chaud au centre.",
+    "freezing": "Se congèle, mais les pommes de terre deviennent un peu farineuses : jusqu’à 2 mois, en parts ; décongelez au réfrigérateur et réchauffez au four jusqu’à ce que ce soit bien chaud.",
+    "precautions": [
+      "Lait, crème et fromages au lait pasteurisé uniquement. Servez le gratin bien chaud.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose).",
+      "Restes : refroidis rapidement, couverts au réfrigérateur, puis réchauffés une seule fois jusqu’à être bien chauds à cœur (listériose)."
+    ],
+    "nutrition": "Un accompagnement classique et réconfortant ; le lait et la crème apportent du calcium. À associer à une viande ou un poisson et à des légumes.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Laissez tiédir et coupez en petits morceaux."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-soupe-legumes-maison",
+    "title": "Soupe de légumes maison",
+    "summary": "La bonne soupe de légumes d’autrefois, douce et veloutée, qui réchauffe les soirs de semaine.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "carrot",
+        3,
+        "u"
+      ],
+      [
+        "leek",
+        1,
+        "u"
+      ],
+      [
+        "potato",
+        300,
+        "g"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Lavez soigneusement tous les légumes. Épluchez les carottes, les pommes de terre et l’oignon ; fendez le poireau en deux et rincez-le entre les feuilles pour retirer la terre.",
+      "Coupez les carottes, le poireau, les pommes de terre, la courgette et l’oignon en morceaux.",
+      "Dans une grande casserole, faites revenir l’oignon et le poireau 5 minutes dans l’huile d’olive, sans les colorer.",
+      "Ajoutez le reste des légumes, couvrez d’eau à hauteur (environ 1,5 litre) et laissez cuire 25 minutes à frémissement, jusqu’à ce que tout soit très tendre.",
+      "Mixez finement et ajustez l’épaisseur avec un peu d’eau chaude si besoin. Salez légèrement au moment de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "vegetarian",
+      "vegetables",
+      "fiber",
+      "budget",
+      "batch",
+      "freezer",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Changez les légumes selon la saison : potiron, navet ou céleri en hiver, haricots verts en été.",
+      "Pour un repas complet, servez avec du pain complet et un morceau de fromage à pâte dure au lait pasteurisé."
+    ],
+    "storage": "Réfrigérateur : 3 jours dans une bouteille ou une boîte fermée ; réchauffez seulement la quantité nécessaire, jusqu’à ébullition.",
+    "freezing": "Se congèle très bien en portions, jusqu’à 3 mois ; décongelez une nuit au réfrigérateur ou directement à feu doux, puis portez à ébullition.",
+    "precautions": [
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose).",
+      "Restes : refroidis rapidement, couverts au réfrigérateur, puis réchauffés une seule fois jusqu’à être bien chauds à cœur (listériose)."
+    ],
+    "nutrition": "Une soupe simple pour faire le plein de légumes et de fibres, à compléter avec du pain et un produit laitier.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Dès le début de la diversification : prélevez une louche avant de saler et mixez très finement."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-lentilles-carottes",
+    "title": "Lentilles vertes mijotées aux carottes",
+    "summary": "Un plat de ménage tout simple, fondant et parfumé au thym, qui cale bien et ne coûte presque rien.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "green_lentils",
+        250,
+        "g"
+      ],
+      [
+        "carrot",
+        3,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "parsley",
+        1,
+        "cs",
+        "ciselé",
+        true
+      ]
+    ],
+    "steps": [
+      "Rincez les lentilles vertes à l’eau froide. Lavez et épluchez les carottes et l’oignon, puis coupez les carottes en rondelles et l’oignon en petits dés.",
+      "Dans une cocotte, faites revenir l’oignon 3 minutes dans 1 cuillère à soupe d’huile d’olive.",
+      "Ajoutez les lentilles, les carottes, la feuille de laurier et le thym, puis couvrez de trois fois leur volume d’eau froide.",
+      "Portez à ébullition et laissez cuire 25 à 30 minutes à frémissement, jusqu’à ce que les lentilles soient tendres mais encore entières.",
+      "Égouttez si besoin, retirez le laurier, arrosez du reste d’huile d’olive et parsemez de persil lavé et ciselé."
+    ],
+    "allergens": [],
+    "tags": [
+      "vegetarian",
+      "iron",
+      "fiber",
+      "b9",
+      "budget",
+      "batch",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Servez avec du riz ou du pain complet pour un repas végétarien complet.",
+      "Version non végétarienne : accompagnez d’une saucisse de volaille ou d’un morceau de poulet cuit à cœur."
+    ],
+    "storage": "Réfrigérateur : 3 jours dans une boîte fermée ; réchauffez une seule fois avec un peu d’eau, jusqu’à ce que ce soit bien chaud.",
+    "freezing": "Se congèle très bien jusqu’à 3 mois ; décongelez une nuit au réfrigérateur et réchauffez à feu doux avec un peu d’eau.",
+    "precautions": [
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose).",
+      "Restes : refroidis rapidement, couverts au réfrigérateur, puis réchauffés une seule fois jusqu’à être bien chauds à cœur (listériose)."
+    ],
+    "nutrition": "Les lentilles sont des légumineuses, sources de protéines végétales, de fibres et de folates (vitamine B9).",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Vers 8 mois : mixez quelques cuillères de lentilles et de carottes avant d’ajouter l’huile et le sel."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-omelette-courgette-poivron",
+    "title": "Omelette bien cuite à la courgette et au poivron",
+    "summary": "Une omelette dorée et généreuse, garnie de légumes fondants, prête en moins de trente minutes.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "egg",
+        4,
+        "u"
+      ],
+      [
+        "zucchini",
+        1,
+        "u"
+      ],
+      [
+        "bell_pepper",
+        0.5,
+        "u"
+      ],
+      [
+        "onion",
+        0.5,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée",
+        true
+      ]
+    ],
+    "steps": [
+      "Lavez la courgette, le poivron et la ciboulette. Coupez la courgette et le poivron en petits dés et émincez l’oignon.",
+      "Faites revenir les légumes 8 minutes dans l’huile d’olive, à feu moyen, jusqu’à ce qu’ils soient tendres.",
+      "Battez les œufs en omelette avec la ciboulette ciselée et versez-les sur les légumes.",
+      "Laissez cuire 5 minutes à feu doux, couvercle posé, puis retournez l’omelette à l’aide d’une assiette et poursuivez 2 minutes : elle doit être entièrement prise, sans aucune partie baveuse."
+    ],
+    "allergens": [
+      "eggs"
+    ],
+    "tags": [
+      "vegetarian",
+      "protein",
+      "quick",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Ajoutez quelques champignons ou des épinards selon ce que vous avez.",
+      "Servez avec une salade bien lavée et du pain complet."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; mangez-la froide ou réchauffée jusqu’à ce qu’elle soit bien chaude.",
+    "freezing": "Ne se congèle pas : l’omelette devient caoutchouteuse et rend de l’eau. Préparez-la au moment du repas.",
+    "precautions": [
+      "Grossesse : l’omelette doit être bien cuite et entièrement prise, sans partie baveuse.",
+      "Lavez-vous les mains après avoir cassé les œufs.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Les œufs apportent des protéines de qualité ; les légumes ajoutent couleur, fibres et vitamines.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Coupez l’omelette en petits carrés faciles à attraper."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-pates-saumon-creme",
+    "title": "Pâtes au saumon bien cuit et petits pois",
+    "summary": "Des pâtes crémeuses au saumon et aux petits pois, un plat du soir rapide que les enfants adorent aussi.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "pasta",
+        320,
+        "g",
+        "tagliatelles ou penne"
+      ],
+      [
+        "salmon",
+        2,
+        "u",
+        "2 pavés d’environ 130 g, sans peau"
+      ],
+      [
+        "frozen_peas",
+        150,
+        "g"
+      ],
+      [
+        "cream",
+        150,
+        "ml"
+      ],
+      [
+        "lemon",
+        0.5,
+        "u"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les pâtes dans une grande casserole d’eau bouillante selon le temps indiqué sur le paquet, en ajoutant les petits pois 5 minutes avant la fin.",
+      "Pendant ce temps, coupez le saumon en cubes de 2 cm et faites-le cuire 6 à 8 minutes dans une poêle antiadhésive, à feu moyen, en le retournant : il doit être opaque jusqu’au centre.",
+      "Ajoutez la crème et le jus du citron, puis laissez frémir 2 minutes.",
+      "Égouttez les pâtes et les petits pois, mélangez-les à la sauce au saumon et parsemez de ciboulette lavée et ciselée."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "quick",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez le saumon par de la truite ou du cabillaud, cuits de la même façon.",
+      "Ajoutez une poignée d’épinards en fin de cuisson."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud.",
+    "freezing": "La sauce au saumon, sans les pâtes, se congèle jusqu’à 1 mois ; décongelez-la au réfrigérateur et réchauffez-la jusqu’à frémissement. Les pâtes se préparent au moment.",
+    "precautions": [
+      "Grossesse : poisson frais uniquement, jamais cru, mariné ni fumé ; il doit être cuit à cœur, avec une chair opaque jusqu’au centre.",
+      "Jamais de saumon fumé pendant la grossesse : utilisez uniquement du saumon frais, bien cuit.",
+      "Lait, crème et fromages au lait pasteurisé uniquement.",
+      "Repères poisson : deux fois par semaine, dont un poisson gras, en variant les espèces au fil des semaines.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Pâtes, poisson gras et légumes dans une même assiette : un plat complet, à accompagner d’un fruit.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Coupez les pâtes et émiettez le saumon pour les plus petits."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "gr-quiche-poireaux",
+    "title": "Quiche aux poireaux bien cuite",
+    "summary": "Une quiche dorée aux poireaux fondants, aussi bonne chaude que tiède avec une salade.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 45,
+    "ingredients": [
+      [
+        "shortcrust",
+        1,
+        "u",
+        "rouleau"
+      ],
+      [
+        "leek",
+        3,
+        "u"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "cream",
+        200,
+        "ml"
+      ],
+      [
+        "milk",
+        150,
+        "ml"
+      ],
+      [
+        "emmental",
+        80,
+        "g",
+        "râpé"
+      ],
+      [
+        "butter",
+        15,
+        "g"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Fendez les poireaux en deux, lavez-les soigneusement entre les feuilles, puis émincez-les finement.",
+      "Faites fondre les poireaux 10 minutes dans le beurre, à feu doux et à couvert, jusqu’à ce qu’ils soient tendres.",
+      "Étalez la pâte brisée dans un moule, piquez le fond à la fourchette et répartissez les poireaux.",
+      "Battez les œufs avec la crème, le lait et la muscade, versez sur les poireaux et parsemez d’emmental.",
+      "Enfournez 35 minutes : la quiche doit être dorée et l’appareil entièrement pris au centre (la lame d’un couteau ressort sèche). Sinon, prolongez de 5 minutes."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Variez la garniture : courgettes, brocoli ou champignons bien revenus.",
+      "Servez avec une grande salade verte bien lavée."
+    ],
+    "storage": "Réfrigérateur : 2 jours, couverte ; réchauffez une seule fois jusqu’à ce qu’elle soit bien chaude au centre.",
+    "freezing": "Se congèle cuite, entière ou en parts, jusqu’à 2 mois ; décongelez au réfrigérateur et réchauffez au four à 180 °C jusqu’à ce que le centre soit bien chaud.",
+    "precautions": [
+      "Grossesse : la quiche doit être bien cuite, l’appareil aux œufs entièrement pris jusqu’au centre.",
+      "Lait, crème et fromages au lait pasteurisé uniquement.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Les œufs, le lait et le fromage apportent protéines et calcium ; les poireaux, des fibres.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Coupez une part en bâtonnets tièdes, faciles à prendre avec les doigts."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-blanquette-veau",
+    "title": "Blanquette de veau à l’ancienne et riz blanc",
+    "summary": "Le grand classique mijoté, avec sa sauce blanche onctueuse, ses carottes et ses champignons.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 25,
+    "cookMin": 110,
+    "ingredients": [
+      [
+        "veal",
+        1000,
+        "g",
+        "épaule ou tendron, en morceaux"
+      ],
+      [
+        "carrot",
+        3,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "mushroom",
+        250,
+        "g"
+      ],
+      [
+        "butter",
+        30,
+        "g"
+      ],
+      [
+        "flour",
+        30,
+        "g"
+      ],
+      [
+        "cream",
+        150,
+        "ml"
+      ],
+      [
+        "lemon",
+        0.5,
+        "u"
+      ],
+      [
+        "rice",
+        360,
+        "g",
+        "poids cru"
+      ]
+    ],
+    "steps": [
+      "Mettez les morceaux de veau dans une cocotte, couvrez d’eau froide, portez à ébullition et retirez l’écume.",
+      "Ajoutez les carottes épluchées et coupées en tronçons, l’oignon épluché, le laurier et le thym. Laissez mijoter 1 h 30 à couvert, à feu doux, jusqu’à ce que la viande soit très tendre et cuite à cœur.",
+      "Pendant ce temps, nettoyez les champignons, coupez-les en quartiers et faites-les cuire 10 minutes dans une petite casserole avec une louche du liquide de cuisson de la viande. Faites cuire le riz selon le temps indiqué sur le paquet.",
+      "Égouttez la viande et les carottes en gardant 60 cl de liquide de cuisson. Dans la cocotte, faites fondre le beurre, ajoutez la farine et remuez 2 minutes, puis versez le liquide en fouettant et laissez épaissir 5 minutes.",
+      "Hors du feu, ajoutez la crème et le jus du citron, puis remettez la viande, les carottes et les champignons. Réchauffez doucement 5 minutes sans faire bouillir et servez avec le riz."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "classic",
+      "family",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Remplacez le veau par des hauts de cuisse de poulet : 45 minutes de mijotage suffisent.",
+      "Servez avec des pommes de terre vapeur à la place du riz."
+    ],
+    "storage": "Réfrigérateur : 2 jours pour la blanquette, dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud.",
+    "freezing": "La blanquette, sans le riz, se congèle jusqu’à 3 mois ; décongelez-la une nuit au réfrigérateur et réchauffez-la doucement, en fouettant la sauce si elle a tranché.",
+    "precautions": [
+      "Grossesse : la viande doit être cuite à cœur ; après 1 h 30 de mijotage, elle est très tendre et sans partie rosée.",
+      "Lait, crème et fromages au lait pasteurisé uniquement.",
+      "Riz cuit : refroidi en moins de 2 heures, gardé 24 h au réfrigérateur et réchauffé une seule fois, bien chaud.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Le veau apporte des protéines, le riz l’énergie du repas et les carottes et champignons des légumes : un plat complet.",
+    "budget": 3,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Effilochez la viande et mélangez-la au riz nappé de sauce."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-chili-con-carne",
+    "title": "Chili con carne doux et riz blanc",
+    "summary": "Un chili familial, généreux et doux en épices, qui mijote tout seul et se réchauffe encore mieux le lendemain.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 15,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "ground_beef",
+        500,
+        "g"
+      ],
+      [
+        "kidney_beans",
+        500,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "canned_tomato",
+        800,
+        "g"
+      ],
+      [
+        "onion",
+        2,
+        "u"
+      ],
+      [
+        "bell_pepper",
+        1,
+        "u"
+      ],
+      [
+        "garlic",
+        2,
+        "u",
+        "gousses"
+      ],
+      [
+        "cumin",
+        1,
+        "cc"
+      ],
+      [
+        "paprika",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "rice",
+        360,
+        "g",
+        "poids cru"
+      ]
+    ],
+    "steps": [
+      "Épluchez et hachez les oignons et l’ail ; lavez le poivron et coupez-le en petits dés.",
+      "Dans une cocotte, faites revenir les oignons, l’ail et le poivron 5 minutes dans l’huile d’olive.",
+      "Ajoutez le bœuf haché et faites-le cuire 8 minutes en l’émiettant, jusqu’à ce qu’il ne reste aucune partie rosée. Ajoutez le cumin et le paprika.",
+      "Versez les tomates concassées et les haricots rouges rincés, mélangez et laissez mijoter 30 minutes à couvert, en remuant de temps en temps.",
+      "Pendant ce temps, faites cuire le riz selon le temps indiqué sur le paquet. Servez le chili bien chaud avec le riz."
+    ],
+    "allergens": [],
+    "tags": [
+      "protein",
+      "iron",
+      "fiber",
+      "family",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Version végétarienne : remplacez le bœuf par 200 g de lentilles vertes cuites et doublez le poivron.",
+      "Pour les grands amateurs d’épices, ajoutez du piment à table, dans l’assiette."
+    ],
+    "storage": "Réfrigérateur : 3 jours pour le chili, dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud.",
+    "freezing": "Le chili, sans le riz, se congèle très bien jusqu’à 3 mois ; décongelez-le une nuit au réfrigérateur et réchauffez-le à feu doux jusqu’à frémissement.",
+    "precautions": [
+      "Grossesse : la viande hachée doit être cuite à cœur, sans aucune trace rosée.",
+      "Utilisez une planche et un couteau réservés à la viande crue, puis lavez-les à l’eau chaude savonneuse avant de toucher aux légumes.",
+      "Riz cuit : refroidi en moins de 2 heures, gardé 24 h au réfrigérateur et réchauffé une seule fois, bien chaud.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Viande, légumineuses et légumes dans un même plat : un repas riche en protéines et en fibres, doux en épices pour toute la famille.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Écrasez légèrement les haricots rouges à la fourchette pour les plus petits."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-curry-pois-chiches-epinards",
+    "title": "Curry doux de pois chiches aux épinards",
+    "summary": "Un curry végétarien crémeux au lait de coco, doux et parfumé, prêt en un peu plus d’une demi-heure.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "chickpeas",
+        500,
+        "g",
+        "égouttés et rincés"
+      ],
+      [
+        "coconut_milk",
+        200,
+        "ml"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "frozen_spinach",
+        200,
+        "g"
+      ],
+      [
+        "curry",
+        2,
+        "cc"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ],
+      [
+        "rice",
+        280,
+        "g",
+        "poids cru"
+      ]
+    ],
+    "steps": [
+      "Épluchez et émincez l’oignon et l’ail, puis faites-les revenir 5 minutes dans l’huile de colza, dans une sauteuse.",
+      "Ajoutez le curry et remuez 1 minute, puis versez les tomates concassées, le lait de coco et les pois chiches rincés.",
+      "Ajoutez les épinards encore surgelés et laissez mijoter 15 minutes à feu doux, en remuant de temps en temps.",
+      "Pendant ce temps, faites cuire le riz selon le temps indiqué sur le paquet, puis servez avec le curry bien chaud."
+    ],
+    "allergens": [
+      "celery",
+      "mustard"
+    ],
+    "tags": [
+      "vegetarian",
+      "fiber",
+      "iron",
+      "b9",
+      "family",
+      "batch"
+    ],
+    "adaptations": [
+      "Ajoutez des dés de patate douce avec les tomates pour un curry plus consistant (prolongez la cuisson de 10 minutes).",
+      "Servez avec du pain naan ou des galettes de blé à la place du riz."
+    ],
+    "storage": "Réfrigérateur : 3 jours pour le curry, dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud.",
+    "freezing": "Le curry, sans le riz, se congèle jusqu’à 3 mois ; décongelez-le au réfrigérateur et réchauffez-le à feu doux jusqu’à frémissement.",
+    "precautions": [
+      "Riz cuit : refroidi en moins de 2 heures, gardé 24 h au réfrigérateur et réchauffé une seule fois, bien chaud.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose).",
+      "Le curry doux peut contenir de la moutarde et du céleri : vérifiez l’étiquette."
+    ],
+    "nutrition": "Les pois chiches apportent des protéines végétales et des fibres, les épinards des folates (vitamine B9) ; le riz complète l’assiette.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Écrasez quelques pois chiches dans la sauce et servez avec beaucoup de riz."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-riz-cantonais-poulet",
+    "title": "Riz cantonais maison au poulet",
+    "summary": "Le riz sauté préféré des enfants, version maison avec du poulet, des œufs brouillés bien cuits et des petits légumes.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "rice",
+        280,
+        "g",
+        "poids cru"
+      ],
+      [
+        "egg",
+        3,
+        "u"
+      ],
+      [
+        "chicken",
+        250,
+        "g"
+      ],
+      [
+        "frozen_peas",
+        150,
+        "g"
+      ],
+      [
+        "carrot",
+        1,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz selon le temps indiqué sur le paquet, égouttez-le et étalez-le sur un plat pour qu’il refroidisse vite (ou utilisez du riz cuit la veille, gardé au réfrigérateur).",
+      "Coupez le poulet en petits dés ; épluchez la carotte et l’oignon et taillez-les en petits dés.",
+      "Battez les œufs et faites-les cuire 3 minutes dans une grande poêle avec un filet d’huile, en remuant, jusqu’à obtenir des œufs brouillés bien pris et secs. Réservez.",
+      "Dans la même poêle, faites sauter le poulet, la carotte et l’oignon 8 minutes avec le reste d’huile, jusqu’à ce que le poulet soit cuit à cœur, sans partie rosée. Ajoutez les petits pois et poursuivez 3 minutes.",
+      "Ajoutez le riz et les œufs, puis faites sauter le tout 5 minutes à feu vif en remuant, jusqu’à ce que le riz soit bien chaud."
+    ],
+    "allergens": [
+      "eggs"
+    ],
+    "tags": [
+      "protein",
+      "quick",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez le poulet par des dés de blanc de dinde cuits à cœur.",
+      "Ajoutez quelques gouttes de sauce soja réduite en sel à table, pour les adultes."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée, refroidi en moins de 2 heures ; réchauffez une seule fois, jusqu’à ce que ce soit brûlant.",
+    "freezing": "Se congèle jusqu’à 1 mois, en portions ; décongelez au réfrigérateur et réchauffez à la poêle jusqu’à ce que ce soit brûlant. Ne recongelez pas.",
+    "precautions": [
+      "Grossesse : œufs brouillés bien pris et secs, poulet cuit à cœur sans trace rosée.",
+      "Riz cuit : refroidi en moins de 2 heures, gardé 24 h au réfrigérateur et réchauffé une seule fois, bien chaud.",
+      "Utilisez une planche et un couteau réservés à la viande crue, puis lavez-les à l’eau chaude savonneuse avant de toucher aux légumes.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Féculent, volaille, œufs et légumes dans une même poêle : un plat complet et rapide.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Servez dans un bol avec une cuillère ; c’est un plat que les enfants mangent facilement seuls."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-compote-pommes-cannelle",
+    "title": "Compote de pommes maison à la cannelle",
+    "summary": "Une compote rustique, juste parfumée à la cannelle, sans sucre ajouté : la douceur vient des pommes.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "textures": [
+      "mashed",
+      "smooth"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "apple",
+        1000,
+        "g",
+        "environ 6 pommes douces (golden, gala)"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee",
+        null,
+        true
+      ]
+    ],
+    "steps": [
+      "Lavez, épluchez et épépinez les pommes, puis coupez-les en morceaux.",
+      "Mettez-les dans une casserole avec 10 cl d’eau et la cannelle, couvrez et laissez cuire 15 à 20 minutes à feu doux, en remuant de temps en temps.",
+      "Écrasez à la fourchette pour une compote rustique, ou mixez pour une texture lisse. Servez tiède ou froide."
+    ],
+    "allergens": [],
+    "tags": [
+      "vegetarian",
+      "compote",
+      "budget",
+      "batch",
+      "freezer",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Mélangez moitié pommes, moitié poires, ou ajoutez une poignée de fruits rouges en fin de cuisson.",
+      "Servez avec un yaourt nature pour un goûter complet."
+    ],
+    "storage": "Réfrigérateur : 4 jours dans un bocal propre et fermé.",
+    "freezing": "Se congèle très bien en pots, jusqu’à 3 mois ; décongelez au réfrigérateur et consommez sous 48 heures.",
+    "precautions": [
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Un dessert fruité sans sucre ajouté, source de fibres ; une bonne façon de terminer le repas.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "cold",
+    "familyAdaptations": {
+      "baby": "Dès le début de la diversification : sans cannelle, mixée très finement."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_limiter"
+    ]
+  },
+  {
+    "slug": "gr-crumble-pommes",
+    "title": "Crumble aux pommes tout doré",
+    "summary": "Des pommes fondantes sous une pâte sablée croustillante : le dessert de famille qui embaume la cuisine.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "dessert"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "apple",
+        1000,
+        "g",
+        "environ 6 pommes"
+      ],
+      [
+        "flour",
+        150,
+        "g"
+      ],
+      [
+        "butter",
+        100,
+        "g",
+        "froid"
+      ],
+      [
+        "sugar",
+        80,
+        "g"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee",
+        null,
+        true
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Lavez, épluchez et épépinez les pommes, coupez-les en dés et répartissez-les dans un plat avec la cannelle.",
+      "Dans un saladier, mélangez la farine et le sucre, ajoutez le beurre froid coupé en dés et travaillez du bout des doigts jusqu’à obtenir un sable grossier.",
+      "Parsemez ce mélange sur les pommes, sans tasser.",
+      "Enfournez 35 minutes, jusqu’à ce que le dessus soit bien doré et les pommes fondantes. Servez tiède."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez la moitié des pommes par des poires, des prunes ou des fruits rouges selon la saison.",
+      "Ajoutez 30 g de flocons d’avoine à la pâte pour plus de croquant."
+    ],
+    "storage": "Réfrigérateur : 2 jours, couvert ; réchauffez quelques minutes au four avant de servir.",
+    "freezing": "Se congèle cru ou cuit, jusqu’à 3 mois ; faites cuire le crumble cru sans le décongeler (10 minutes de plus), ou réchauffez le crumble cuit au four à 160 °C.",
+    "precautions": [
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose).",
+      "Dessert sucré : à garder pour les jours de fête ou à partager en petite part."
+    ],
+    "nutrition": "Un dessert gourmand : les pommes apportent des fibres, la pâte du beurre et du sucre ; une petite part suffit.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Une petite part tiède, sans ajout de sucre à table."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_limiter"
+    ]
+  },
+  {
+    "slug": "gr-cabillaud-four-puree",
+    "title": "Dos de cabillaud au four et purée maison",
+    "summary": "Un poisson blanc nacré, une purée onctueuse au beurre : le repas tout doux que l’on aime retrouver.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "white_fish",
+        4,
+        "u",
+        "4 dos de cabillaud d’environ 130 g"
+      ],
+      [
+        "potato",
+        1000,
+        "g",
+        "à chair farineuse"
+      ],
+      [
+        "milk",
+        200,
+        "ml"
+      ],
+      [
+        "butter",
+        30,
+        "g"
+      ],
+      [
+        "lemon",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "parsley",
+        2,
+        "cs",
+        "ciselé"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre, coupez-les en morceaux et faites-les cuire 20 minutes dans une casserole d’eau bouillante.",
+      "Préchauffez le four à 200 °C. Déposez les dos de cabillaud dans un plat, arrosez-les d’huile d’olive et du jus du citron, puis enfournez 12 à 15 minutes.",
+      "Vérifiez la cuisson : la chair doit être opaque jusqu’au centre et s’effeuiller facilement. Retirez les éventuelles arêtes.",
+      "Égouttez les pommes de terre et écrasez-les avec le lait chaud et le beurre pour obtenir une purée bien lisse.",
+      "Servez le poisson parsemé de persil lavé et ciselé, avec la purée."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Le cabillaud peut être remplacé par du colin ou du merlu.",
+      "Ajoutez des carottes vapeur ou des épinards à la crème pour compléter l’assiette."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "freezing": "Le poisson cuit se congèle jusqu’à 2 mois et la purée jusqu’à 1 mois ; décongelez au réfrigérateur et réchauffez jusqu’à ce que ce soit bien chaud.",
+    "precautions": [
+      "Grossesse : poisson frais uniquement, jamais cru, mariné ni fumé ; il doit être cuit à cœur, avec une chair opaque jusqu’au centre.",
+      "Passez les doigts sur la chair avant de servir et retirez la moindre arête.",
+      "Lait, crème et fromages au lait pasteurisé uniquement.",
+      "Repères poisson : deux fois par semaine, dont un poisson gras, en variant les espèces au fil des semaines.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Le cabillaud est un poisson maigre, source de protéines et d’iode ; la purée apporte le féculent du repas.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Vers 6 à 8 mois : mixez 10 à 20 g de cabillaud sans arêtes avec un peu de purée, avant d’ajouter le sel."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "gr-merlu-papillote-carottes",
+    "title": "Merlu en papillote, carottes fondantes et riz",
+    "summary": "Un poisson tendre cuit dans son petit paquet, sur un lit de carottes, pour un dîner léger et sans odeur de cuisson.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "hake",
+        4,
+        "u",
+        "4 filets d’environ 130 g"
+      ],
+      [
+        "carrot",
+        4,
+        "u"
+      ],
+      [
+        "lemon",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "rice",
+        240,
+        "g",
+        "poids cru"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Épluchez les carottes, taillez-les en fines rondelles et faites-les cuire 10 minutes à la vapeur.",
+      "Faites cuire le riz selon le temps indiqué sur le paquet.",
+      "Sur 4 feuilles de papier cuisson, répartissez les carottes, posez un filet de merlu, une rondelle de citron, un filet d’huile d’olive et un peu de thym. Fermez bien les papillotes.",
+      "Enfournez 15 à 18 minutes. Ouvrez une papillote pour vérifier : la chair du merlu doit être opaque jusqu’au centre et se détacher facilement. Sinon, prolongez de quelques minutes.",
+      "Servez les papillotes avec le riz, en retirant la rondelle de citron."
+    ],
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez les carottes par des courgettes ou des poireaux émincés.",
+      "Le merlu peut être remplacé par du cabillaud ou du colin."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud.",
+    "freezing": "Le poisson cuit et les carottes se congèlent jusqu’à 2 mois, sans le riz ; décongelez au réfrigérateur et réchauffez jusqu’à ce que ce soit bien chaud.",
+    "precautions": [
+      "Grossesse : poisson frais uniquement, jamais cru, mariné ni fumé ; il doit être cuit à cœur, avec une chair opaque jusqu’au centre.",
+      "Passez les doigts sur la chair avant de servir et retirez la moindre arête.",
+      "Riz cuit : refroidi en moins de 2 heures, gardé 24 h au réfrigérateur et réchauffé une seule fois, bien chaud.",
+      "Repères poisson : deux fois par semaine, dont un poisson gras, en variant les espèces au fil des semaines.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Le merlu, poisson maigre, apporte des protéines ; les carottes des légumes et le riz l’énergie du repas.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Laissez l’enfant ouvrir sa papillote (une fois tiédie) et émiettez le poisson."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "gr-truite-fondue-poireaux",
+    "title": "Truite à la fondue de poireaux, pommes de terre vapeur",
+    "summary": "Des filets de truite cuits doucement sur des poireaux fondants à la crème : un plat de poisson simple et raffiné.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "trout",
+        4,
+        "u",
+        "4 filets d’environ 120 g"
+      ],
+      [
+        "leek",
+        3,
+        "u"
+      ],
+      [
+        "cream",
+        100,
+        "ml"
+      ],
+      [
+        "butter",
+        15,
+        "g"
+      ],
+      [
+        "potato",
+        800,
+        "g",
+        "à chair ferme"
+      ]
+    ],
+    "steps": [
+      "Lavez soigneusement les poireaux entre les feuilles et émincez-les. Faites-les fondre 15 minutes à couvert dans le beurre, à feu doux.",
+      "Pendant ce temps, épluchez les pommes de terre et faites-les cuire 20 minutes à la vapeur.",
+      "Ajoutez la crème aux poireaux. Posez les filets de truite côté peau sur la fondue, couvrez et laissez cuire 8 à 10 minutes à feu doux.",
+      "Vérifiez la cuisson : la chair de la truite doit être opaque jusqu’au centre et s’effeuiller facilement. Sinon, prolongez de quelques minutes.",
+      "Servez avec les pommes de terre vapeur."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "vegetables",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez la truite par du saumon frais, cuit de la même façon.",
+      "Servez avec du riz à la place des pommes de terre."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud.",
+    "freezing": "La fondue de poireaux se congèle jusqu’à 3 mois ; le poisson cuit jusqu’à 2 mois. Décongelez au réfrigérateur et réchauffez jusqu’à ce que ce soit bien chaud ; les pommes de terre vapeur ne se congèlent pas.",
+    "precautions": [
+      "Grossesse : poisson frais uniquement, jamais cru, mariné ni fumé ; il doit être cuit à cœur, avec une chair opaque jusqu’au centre.",
+      "Passez les doigts sur la chair avant de servir et retirez la moindre arête.",
+      "Lait, crème et fromages au lait pasteurisé uniquement.",
+      "Repères poisson : deux fois par semaine, dont un poisson gras, en variant les espèces au fil des semaines.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "La truite apporte des protéines et des oméga 3, les poireaux des fibres et les pommes de terre le féculent du repas.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Retirez la peau, émiettez la truite et écrasez-la avec les pommes de terre et un peu de fondue."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "gr-boeuf-carottes",
+    "title": "Bœuf carottes mijoté comme chez mamie",
+    "summary": "Une viande fondante qui mijote longuement avec des carottes sucrées : le plat de famille par excellence.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 160,
+    "ingredients": [
+      [
+        "beef_stew",
+        1000,
+        "g"
+      ],
+      [
+        "carrot",
+        800,
+        "g"
+      ],
+      [
+        "onion",
+        2,
+        "u"
+      ],
+      [
+        "garlic",
+        2,
+        "u",
+        "gousses"
+      ],
+      [
+        "flour",
+        1,
+        "cs"
+      ],
+      [
+        "tomato_paste",
+        1,
+        "cs"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "parsley",
+        1,
+        "cs",
+        "ciselé",
+        true
+      ]
+    ],
+    "steps": [
+      "Coupez le bœuf en gros cubes. Épluchez les oignons et l’ail et émincez-les ; épluchez les carottes et coupez-les en rondelles épaisses.",
+      "Dans une cocotte, faites dorer la viande 10 minutes dans l’huile d’olive, sur toutes les faces, puis ajoutez les oignons et l’ail et laissez revenir 3 minutes.",
+      "Saupoudrez de farine, mélangez, puis ajoutez le concentré de tomate, le laurier, le thym et 1 litre d’eau.",
+      "Couvrez et laissez mijoter 1 h 30 à feu doux. Ajoutez les carottes et poursuivez 1 heure, jusqu’à ce que la viande soit fondante et cuite à cœur.",
+      "Retirez le laurier, parsemez de persil lavé et ciselé et servez bien chaud, avec des pommes de terre vapeur ou des pâtes."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "protein",
+      "iron",
+      "classic",
+      "family",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "À l’autocuiseur : comptez environ 45 minutes après la mise en rotation de la soupape.",
+      "Ajoutez quelques champignons de Paris en fin de cuisson."
+    ],
+    "storage": "Réfrigérateur : 3 jours, dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "freezing": "Se congèle très bien jusqu’à 3 mois ; décongelez une nuit au réfrigérateur et réchauffez doucement à couvert, jusqu’à frémissement.",
+    "precautions": [
+      "Grossesse : après 2 h 30 de mijotage, la viande est cuite à cœur et fondante ; aucune partie ne doit rester rosée.",
+      "Utilisez une planche et un couteau réservés à la viande crue, puis lavez-les à l’eau chaude savonneuse avant de toucher aux légumes.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Le bœuf apporte des protéines et du fer, les carottes des fibres ; servez avec un féculent pour un repas complet.",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Effilochez la viande et écrasez les carottes avec un peu de sauce."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-poulet-basquaise",
+    "title": "Poulet basquaise et riz",
+    "summary": "Des cuisses de poulet mijotées avec poivrons et tomates : un plat ensoleillé, coloré et très parfumé.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 20,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "chicken_thigh",
+        4,
+        "u",
+        "environ 1 kg"
+      ],
+      [
+        "bell_pepper",
+        2,
+        "u"
+      ],
+      [
+        "tomato",
+        4,
+        "u"
+      ],
+      [
+        "onion",
+        2,
+        "u"
+      ],
+      [
+        "garlic",
+        2,
+        "u",
+        "gousses"
+      ],
+      [
+        "paprika",
+        1,
+        "cc"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "rice",
+        280,
+        "g",
+        "poids cru"
+      ]
+    ],
+    "steps": [
+      "Lavez les poivrons et les tomates. Épépinez les poivrons et coupez-les en lanières, coupez les tomates en morceaux, émincez les oignons et l’ail.",
+      "Dans une cocotte, faites dorer les cuisses de poulet 10 minutes dans l’huile d’olive, sur toutes les faces, puis réservez-les.",
+      "Faites revenir les oignons, l’ail et les poivrons 10 minutes dans la même cocotte, puis ajoutez les tomates et le paprika.",
+      "Remettez le poulet, couvrez et laissez mijoter 30 minutes à feu doux. Vérifiez que la chair près de l’os est cuite à cœur, sans trace rosée.",
+      "Pendant ce temps, faites cuire le riz selon le temps indiqué sur le paquet et servez-le avec le poulet et sa sauce."
+    ],
+    "allergens": [],
+    "tags": [
+      "protein",
+      "vegetables",
+      "classic",
+      "family",
+      "freezer"
+    ],
+    "adaptations": [
+      "Hors saison, remplacez les tomates fraîches par 400 g de tomates concassées en conserve.",
+      "Servez avec des pommes de terre vapeur à la place du riz."
+    ],
+    "storage": "Réfrigérateur : 2 jours, dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud au centre.",
+    "freezing": "Le poulet et sa sauce, sans le riz, se congèlent jusqu’à 3 mois ; décongelez une nuit au réfrigérateur et réchauffez à couvert jusqu’à frémissement.",
+    "precautions": [
+      "Grossesse : le poulet doit être cuit à cœur, sans trace rosée près de l’os.",
+      "Utilisez une planche et un couteau réservés à la viande crue, puis lavez-les à l’eau chaude savonneuse avant de toucher aux légumes.",
+      "Riz cuit : refroidi en moins de 2 heures, gardé 24 h au réfrigérateur et réchauffé une seule fois, bien chaud.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Volaille, légumes du soleil et riz : un plat complet, riche en légumes.",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Retirez la peau, effilochez la viande et mélangez-la au riz avec la sauce."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-lasagnes-bolognaise",
+    "title": "Lasagnes à la bolognaise maison",
+    "summary": "Des couches de sauce tomate à la viande et de béchamel, gratinées au four : le plat que l’on partage en famille.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 30,
+    "cookMin": 75,
+    "ingredients": [
+      [
+        "lasagna_sheets",
+        250,
+        "g"
+      ],
+      [
+        "ground_beef",
+        500,
+        "g"
+      ],
+      [
+        "canned_tomato",
+        800,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "carrot",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "butter",
+        40,
+        "g"
+      ],
+      [
+        "flour",
+        40,
+        "g"
+      ],
+      [
+        "milk",
+        600,
+        "ml"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "emmental",
+        80,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Épluchez et hachez finement l’oignon et la carotte, puis faites-les revenir 5 minutes dans l’huile d’olive, dans une sauteuse.",
+      "Ajoutez le bœuf haché et faites-le cuire 8 minutes en l’émiettant, jusqu’à ce qu’il ne reste aucune partie rosée. Versez les tomates concassées et laissez mijoter 20 minutes à feu doux.",
+      "Préparez la béchamel : faites fondre le beurre dans une casserole, ajoutez la farine et remuez 1 minute, puis versez le lait petit à petit en fouettant. Laissez épaissir 5 minutes à feu doux et ajoutez la muscade.",
+      "Préchauffez le four à 180 °C. Dans un plat, alternez sauce bolognaise, feuilles de lasagnes et béchamel, en terminant par la béchamel. Parsemez d’emmental.",
+      "Enfournez 35 minutes, jusqu’à ce que le dessus soit doré et que les lasagnes soient tendres sous la pointe d’un couteau."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "calcium",
+      "classic",
+      "family",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Version végétarienne : remplacez la viande par des lentilles vertes cuites et des dés de courgette.",
+      "Préparez la sauce la veille : les lasagnes se montent ensuite en 10 minutes."
+    ],
+    "storage": "Réfrigérateur : 3 jours, couvertes ; réchauffez une seule fois au four, jusqu’à ce que le centre soit brûlant.",
+    "freezing": "Se congèlent très bien, cuites, en plat ou en parts, jusqu’à 3 mois ; décongelez une nuit au réfrigérateur et réchauffez au four à 180 °C jusqu’à ce que le centre soit brûlant.",
+    "precautions": [
+      "Grossesse : la viande hachée doit être cuite à cœur, sans aucune trace rosée.",
+      "Lait, crème et fromages au lait pasteurisé uniquement.",
+      "Utilisez une planche et un couteau réservés à la viande crue, puis lavez-les à l’eau chaude savonneuse avant de toucher aux légumes.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose)."
+    ],
+    "nutrition": "Un plat complet : pâtes, viande, légumes de la sauce et produits laitiers de la béchamel.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Coupez une part en petits morceaux et laissez bien tiédir."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-veloute-potiron",
+    "title": "Velouté de potiron à la muscade",
+    "summary": "Un velouté orange tout doux, onctueux et légèrement muscadé, pour les soirées d’automne.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "pumpkin",
+        1000,
+        "g"
+      ],
+      [
+        "potato",
+        200,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "cream",
+        4,
+        "cs",
+        null,
+        true
+      ]
+    ],
+    "steps": [
+      "Lavez le potiron, retirez les graines et la peau, puis coupez la chair en cubes. Épluchez la pomme de terre et l’oignon et coupez-les en morceaux.",
+      "Faites revenir l’oignon 3 minutes dans l’huile d’olive, dans une grande casserole.",
+      "Ajoutez le potiron et la pomme de terre, couvrez d’eau à hauteur et laissez cuire 20 minutes, jusqu’à ce que tout soit très tendre.",
+      "Mixez finement avec la muscade et la crème, en ajoutant un peu d’eau chaude si le velouté est trop épais."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "vegetables",
+      "budget",
+      "batch",
+      "freezer",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Le potiron peut être remplacé par du potimarron (inutile de l’éplucher) ou de la courge butternut.",
+      "Servez avec des croûtons de pain et un peu d’emmental râpé."
+    ],
+    "storage": "Réfrigérateur : 3 jours dans une boîte fermée ; réchauffez seulement la quantité nécessaire, jusqu’à ébullition.",
+    "freezing": "Se congèle très bien jusqu’à 3 mois, de préférence sans la crème ; décongelez au réfrigérateur et portez à ébullition, puis ajoutez la crème.",
+    "precautions": [
+      "Lait, crème et fromages au lait pasteurisé uniquement.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose).",
+      "Restes : refroidis rapidement, couverts au réfrigérateur, puis réchauffés une seule fois jusqu’à être bien chauds à cœur (listériose)."
+    ],
+    "nutrition": "Le potiron apporte des fibres et du bêta-carotène ; complétez avec du pain et un produit laitier.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Prélevez une portion avant d’ajouter la crème et la muscade, mixée très finement et sans sel."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-gratin-chou-fleur",
+    "title": "Gratin de chou-fleur à la béchamel",
+    "summary": "Des bouquets de chou-fleur nappés d’une béchamel onctueuse et gratinés : même les moins fans de légumes se resservent.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "cauliflower",
+        1,
+        "u",
+        "environ 1 kg"
+      ],
+      [
+        "butter",
+        30,
+        "g"
+      ],
+      [
+        "flour",
+        30,
+        "g"
+      ],
+      [
+        "milk",
+        500,
+        "ml"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "emmental",
+        60,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Lavez le chou-fleur, détaillez-le en bouquets et faites-le cuire 10 minutes à la vapeur : il doit rester légèrement ferme.",
+      "Préparez la béchamel : faites fondre le beurre, ajoutez la farine et remuez 1 minute, puis versez le lait en fouettant et laissez épaissir 5 minutes à feu doux. Ajoutez la muscade.",
+      "Préchauffez le four à 200 °C. Répartissez le chou-fleur dans un plat, nappez de béchamel et parsemez d’emmental.",
+      "Enfournez 20 minutes, jusqu’à ce que le gratin soit bien doré et bouillonnant."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "vegetables",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Mélangez chou-fleur et brocoli pour un gratin bicolore.",
+      "Servez avec une tranche de jambon ou un œuf dur bien cuit pour un repas complet."
+    ],
+    "storage": "Réfrigérateur : 2 jours, couvert ; réchauffez une seule fois au four, jusqu’à ce que ce soit bien chaud.",
+    "freezing": "Se congèle moyennement (le chou-fleur rend un peu d’eau) : jusqu’à 2 mois ; décongelez au réfrigérateur et réchauffez au four jusqu’à ce que ce soit bien chaud.",
+    "precautions": [
+      "Lait, crème et fromages au lait pasteurisé uniquement.",
+      "Lavez soigneusement les légumes, les fruits et les herbes aromatiques, puis lavez-vous les mains après les avoir épluchés (toxoplasmose).",
+      "Restes : refroidis rapidement, couverts au réfrigérateur, puis réchauffés une seule fois jusqu’à être bien chauds à cœur (listériose)."
+    ],
+    "nutrition": "Le chou-fleur apporte des fibres et de la vitamine C, la béchamel et le fromage du calcium.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Écrasez les bouquets avec la sauce pour les plus petits."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-dinde-creme-champignons",
+    "title": "Escalopes de dinde à la crème et aux champignons",
+    "summary": "Des escalopes dorées dans une sauce crémeuse aux champignons, servies avec du riz : un classique rapide de semaine.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "textures": [
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "turkey",
+        4,
+        "u",
+        "4 escalopes d’environ 120 g"
+      ],
+      [
+        "mushroom",
+        300,
+        "g"
+      ],
+      [
+        "shallot",
+        1,
+        "u"
+      ],
+      [
+        "cream",
+        150,
+        "ml"
+      ],
+      [
+        "butter",
+        15,
+        "g"
+      ],
+      [
+        "rice",
+        280,
+        "g",
+        "poids cru"
+      ],
+      [
+        "parsley",
+        1,
+        "cs",
+        "ciselé",
+        true
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz selon le temps indiqué sur le paquet.",
+      "Nettoyez les champignons et émincez-les ; épluchez et hachez l’échalote.",
+      "Faites dorer les escalopes de dinde 4 à 5 minutes de chaque côté dans le beurre, jusqu’à ce qu’elles soient cuites à cœur, sans partie rosée au centre. Réservez-les au chaud.",
+      "Dans la même poêle, faites revenir l’échalote et les champignons 8 minutes, puis ajoutez la crème et laissez frémir 2 minutes.",
+      "Remettez les escalopes dans la sauce 1 minute pour les réchauffer, parsemez de persil lavé et ciselé et servez avec le riz."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "quick",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Remplacez la dinde par des escalopes de poulet ou de veau.",
+      "Servez avec des pâtes fraîches ou des haricots verts."
+    ],
+    "storage": "Réfrigérateur : 24 h dans une boîte fermée ; réchauffez une seule fois, jusqu’à ce que ce soit bien chaud.",
+    "freezing": "La dinde en sauce, sans le riz, se congèle jusqu’à 2 mois ; décongelez une nuit au réfrigérateur et réchauffez à feu doux jusqu’à frémissement.",
+    "precautions": [
+      "Grossesse : les escalopes doivent être cuites à cœur, sans partie rosée au centre.",
+      "Lait, crème et fromages au lait pasteurisé uniquement.",
+      "Utilisez une planche et un couteau réservés à la viande crue, puis lavez-les à l’eau chaude savonneuse avant de toucher aux légumes.",
+      "Riz cuit : refroidi en moins de 2 heures, gardé 24 h au réfrigérateur et réchauffé une seule fois, bien chaud."
+    ],
+    "nutrition": "La dinde est une viande maigre riche en protéines ; avec le riz et les champignons, le repas est complet.",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "child": "Coupez la dinde en lamelles fines et mélangez-la au riz avec la sauce."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_equilibre"
+    ]
+  },
+  {
+    "slug": "gr-riz-au-lait-vanille",
+    "title": "Riz au lait à la vanille",
+    "summary": "Le dessert de grand-mère, crémeux et vanillé, à déguster bien frais.",
+    "audiences": [
+      "pregnancy",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "textures": [
+      "mashed"
+    ],
+    "servings": 6,
+    "prepMin": 5,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "round_rice",
+        120,
+        "g"
+      ],
+      [
+        "milk",
+        1000,
+        "ml"
+      ],
+      [
+        "sugar",
+        70,
+        "g"
+      ],
+      [
+        "vanilla",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Rincez le riz rond, puis faites-le blanchir 2 minutes dans une casserole d’eau bouillante. Égouttez.",
+      "Portez le lait à frémissement avec la vanille, ajoutez le riz et laissez cuire 35 minutes à feu très doux, en remuant souvent, jusqu’à ce que le riz soit fondant et crémeux.",
+      "Ajoutez le sucre hors du feu, mélangez, puis répartissez dans des ramequins. Laissez refroidir avant de placer au réfrigérateur."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "calcium",
+      "budget",
+      "classic",
+      "family"
+    ],
+    "adaptations": [
+      "Servez avec une compote de fruits ou quelques fruits rouges.",
+      "Réduisez le sucre à 50 g : la vanille apporte déjà beaucoup de douceur."
+    ],
+    "storage": "Réfrigérateur : 2 jours, en ramequins couverts.",
+    "freezing": "Ne se congèle pas : le riz durcit et la texture devient granuleuse. Conservez-le au réfrigérateur.",
+    "precautions": [
+      "Grossesse : lait pasteurisé ou UHT uniquement ; refroidissez rapidement avant de mettre au réfrigérateur.",
+      "Dessert sucré : une petite portion suffit."
+    ],
+    "nutrition": "Un dessert lacté source de calcium, à servir en petite portion car il est sucré.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "familyAdaptations": {
+      "child": "Une petite portion, éventuellement avec moins de sucre."
+    },
+    "sources": [
+      "santefr_listeria",
+      "santefr_toxo",
+      "santefr_limiter"
+    ]
+  }
+]

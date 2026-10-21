@@ -1,0 +1,2448 @@
+[
+  {
+    "slug": "mo-boulettes-cabillaud-puree-carotte",
+    "title": "Boulettes de cabillaud et purée de carotte",
+    "summary": "De petites boulettes de poisson moelleuses à attraper, avec une purée de carotte toute douce.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 10,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 15,
+    "cookMin": 28,
+    "ingredients": [
+      [
+        "white_fish",
+        80,
+        "g",
+        "sans peau ni arêtes"
+      ],
+      [
+        "potato",
+        80,
+        "g"
+      ],
+      [
+        "egg",
+        0.5,
+        "u",
+        "battu"
+      ],
+      [
+        "parsley",
+        1,
+        "cs",
+        "haché finement"
+      ],
+      [
+        "carrot",
+        200,
+        "g"
+      ],
+      [
+        "butter",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez la pomme de terre et les carottes ; coupez-les en morceaux et faites-les cuire à la vapeur 20 minutes, en ajoutant le cabillaud pour les 8 dernières minutes.",
+      "Effeuillez le poisson en retirant toutes les arêtes, puis écrasez-le avec la pomme de terre, le demi-œuf battu et le persil.",
+      "Formez de petites boulettes allongées et faites-les cuire dans une poêle antiadhésive 8 minutes à feu moyen en les retournant, jusqu’à ce que l’œuf soit bien pris.",
+      "Écrasez les carottes avec la noisette de beurre et servez avec les boulettes tiédies."
+    ],
+    "allergens": [
+      "fish",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "protein",
+      "freezer"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Le merlu ou le colin remplacent le cabillaud."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation possible jusqu’à 2 mois si le poisson n’avait pas déjà été congelé cru. Décongelez au réfrigérateur la veille, réchauffez bien à cœur et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête.",
+      "Œuf toujours bien cuit : blanc et jaune fermes.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Le poisson apporte des protéines et de l’iode, la carotte du bêta-carotène : environ 20 g de poisson par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans).",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "mo-mini-parmentier-merlu",
+    "title": "Mini-parmentier de merlu",
+    "summary": "Un parmentier de poisson gratiné, fondant sous la fourchette, pour les petits gourmands.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "hake",
+        60,
+        "g",
+        "sans peau ni arêtes"
+      ],
+      [
+        "potato",
+        250,
+        "g"
+      ],
+      [
+        "butter",
+        10,
+        "g"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "emmental",
+        15,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre, coupez-les en morceaux et faites-les cuire à la vapeur 20 minutes ; ajoutez le merlu pour les 8 dernières minutes.",
+      "Effeuillez le merlu en vérifiant qu’il ne reste aucune arête et répartissez-le dans deux petits plats.",
+      "Écrasez les pommes de terre avec le beurre, la muscade et un peu d’eau de cuisson, puis étalez la purée sur le poisson.",
+      "Parsemez d’emmental et faites gratiner au four à 200 °C 10 minutes ; laissez tiédir avant de servir."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "classic",
+      "freezer"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Glissez une couche d’épinards hachés entre le poisson et la purée."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation possible jusqu’à 2 mois si le poisson n’avait pas déjà été congelé cru. Décongelez au réfrigérateur la veille, réchauffez bien à cœur et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête.",
+      "Fromage à pâte pressée cuite, fondu dans le plat (pas de fromage au lait cru avant 5 ans)."
+    ],
+    "nutrition": "Un plat complet : la pomme de terre pour l’énergie et le merlu pour les protéines, environ 30 g de merlu par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans).",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "mo-gratin-coquillettes-brocoli",
+    "title": "Gratin de coquillettes au brocoli",
+    "summary": "Le gratin de pâtes familial, avec du brocoli fondant caché dans la béchamel.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 30,
+    "ingredients": [
+      [
+        "pasta",
+        250,
+        "g",
+        "coquillettes"
+      ],
+      [
+        "broccoli",
+        300,
+        "g"
+      ],
+      [
+        "butter",
+        25,
+        "g"
+      ],
+      [
+        "flour",
+        25,
+        "g"
+      ],
+      [
+        "milk",
+        500,
+        "ml"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "emmental",
+        60,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Faites cuire les coquillettes dans l’eau bouillante 10 minutes ; ajoutez le brocoli en petits bouquets pour les 6 dernières minutes, puis égouttez.",
+      "Pour la béchamel, faites fondre le beurre, ajoutez la farine et remuez 1 minute, puis versez le lait petit à petit en fouettant jusqu’à ce que la sauce épaississe ; ajoutez la muscade.",
+      "Mélangez pâtes, brocoli et béchamel dans un plat, parsemez d’emmental et faites gratiner au four à 200 °C 15 minutes.",
+      "Pour l’enfant, écrasez légèrement les bouquets de brocoli et laissez bien tiédir."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "classic",
+      "vegetarian",
+      "calcium",
+      "batch"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Ajoutez des dés de jambon ou de poulet cuit dans la part des grands."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Se congèle bien : jusqu’à 2 mois en portions individuelles. Décongelez au réfrigérateur la veille et réchauffez bien à cœur ; ne recongelez pas.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Fromage à pâte pressée cuite, fondu dans le plat (pas de fromage au lait cru avant 5 ans).",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Les pâtes apportent l’énergie, la béchamel du calcium et le brocoli de la vitamine C ; ajoutez une petite part de protéines à l’autre repas de la journée.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter",
+      "spring"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Servez la part de l’enfant avant de saler, avec des coquillettes bien cuites et un brocoli écrasé.",
+      "child": "Laissez-le parsemer lui-même le fromage avant de passer au four."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "mo-omelette-courgette-lanieres",
+    "title": "Omelette à la courgette en lanières",
+    "summary": "Une omelette bien cuite, coupée en lanières faciles à attraper avec les doigts.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m9_12",
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 9,
+    "maxMonths": 24,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 8,
+    "ingredients": [
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "zucchini",
+        40,
+        "g",
+        "râpée finement"
+      ],
+      [
+        "chives",
+        1,
+        "cc",
+        "ciselée",
+        true
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Râpez finement la courgette et pressez-la entre vos mains pour retirer l’eau.",
+      "Battez l’œuf avec la courgette et, si vous le souhaitez, un peu de ciboulette ciselée.",
+      "Faites chauffer l’huile de colza dans une petite poêle, versez le mélange et faites cuire à feu doux à couvert 6 minutes, puis retournez l’omelette et poursuivez 2 minutes : elle doit être bien prise, sans partie baveuse.",
+      "Laissez tiédir et coupez en lanières de la taille d’un doigt d’adulte."
+    ],
+    "allergens": [
+      "eggs"
+    ],
+    "tags": [
+      "finger",
+      "protein",
+      "quick",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Remplacez la courgette par des épinards hachés bien égouttés."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation déconseillée : l’œuf cuit devient caoutchouteux. Préparez au moment du repas.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Œuf toujours bien cuit : blanc et jaune fermes.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "L’œuf est une protéine complète : environ un demi-œuf par portion, une part qui remplace la viande ou le poisson du repas, selon ce que votre enfant accepte.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-poulet-legumes-des-fondants",
+    "title": "Poulet et petits légumes en dés fondants",
+    "summary": "Une assiette colorée de petits dés tendres à picorer à la main ou à la cuillère.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m9_12",
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 10,
+    "maxMonths": 24,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "chicken",
+        50,
+        "g"
+      ],
+      [
+        "carrot",
+        80,
+        "g"
+      ],
+      [
+        "zucchini",
+        80,
+        "g"
+      ],
+      [
+        "potato",
+        80,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la carotte et la pomme de terre, lavez la courgette et coupez tous les légumes en dés d’environ 1 cm ; coupez le poulet en petits dés.",
+      "Faites cuire la carotte et la pomme de terre à la vapeur 10 minutes, puis ajoutez la courgette et le poulet et poursuivez 10 minutes.",
+      "Vérifiez que le poulet est bien cuit à cœur et que chaque dé de légume s’écrase facilement entre deux doigts.",
+      "Arrosez d’huile d’olive et laissez tiédir avant de servir."
+    ],
+    "allergens": [],
+    "tags": [
+      "finger",
+      "protein",
+      "complete"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Effilochez le poulet plutôt que de le couper en dés si votre enfant mâche encore peu."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Se congèle bien : jusqu’à 2 mois en portions individuelles. Décongelez au réfrigérateur la veille et réchauffez bien à cœur ; ne recongelez pas.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Viande bien cuite à cœur, sans trace rosée.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Un repas complet, coloré et simple : environ 25 g de poulet par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans).",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-risotto-petits-legumes",
+    "title": "Risotto crémeux aux petits légumes",
+    "summary": "Un risotto onctueux aux courgettes et petits pois, à partager en famille.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "round_rice",
+        240,
+        "g",
+        "riz rond pour risotto"
+      ],
+      [
+        "onion",
+        60,
+        "g"
+      ],
+      [
+        "zucchini",
+        200,
+        "g"
+      ],
+      [
+        "frozen_peas",
+        150,
+        "g"
+      ],
+      [
+        "olive_oil",
+        2,
+        "cs"
+      ],
+      [
+        "parmesan",
+        40,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Épluchez et hachez finement l’oignon ; lavez la courgette et coupez-la en petits dés. Faites chauffer un litre d’eau dans une casserole.",
+      "Faites revenir l’oignon dans l’huile d’olive 3 minutes, ajoutez le riz et remuez jusqu’à ce qu’il devienne translucide.",
+      "Versez l’eau chaude louche par louche en remuant, en attendant qu’elle soit absorbée avant d’en ajouter ; au bout de 10 minutes, ajoutez la courgette et les petits pois.",
+      "Poursuivez la cuisson 10 minutes, jusqu’à ce que le riz soit très tendre et crémeux, puis ajoutez le parmesan hors du feu."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "vegetarian",
+      "vegetables",
+      "classic"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Les petits pois peuvent être légèrement écrasés dans la part de l’enfant."
+    ],
+    "storage": "24 h au réfrigérateur, à réchauffer une seule fois avec un peu d’eau.",
+    "freezing": "Congélation déconseillée : le riz devient farineux. Les restes se gardent 24 h au réfrigérateur et se réchauffent avec un peu d’eau.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Fromage à pâte pressée cuite, fondu dans le plat (pas de fromage au lait cru avant 5 ans).",
+      "Petits pois bien cuits et écrasés pour les plus jeunes."
+    ],
+    "nutrition": "Le riz apporte l’énergie, les petits pois des protéines végétales et des fibres, le parmesan du calcium ; complétez avec une petite part de protéines.",
+    "budget": 2,
+    "seasons": [
+      "spring",
+      "summer"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Prélevez la part de l’enfant avant de saler ; écrasez légèrement les petits pois.",
+      "child": "Laissez-le ajouter le parmesan et remuer lui-même son assiette."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "mo-galettes-legumes-moelleuses",
+    "title": "Galettes de légumes moelleuses",
+    "summary": "Des petites galettes dorées de courgette et carotte, à manger avec les doigts.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 10,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 3,
+    "servingLabel": "10 petites galettes",
+    "prepMin": 15,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "zucchini",
+        150,
+        "g"
+      ],
+      [
+        "carrot",
+        100,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "flour",
+        30,
+        "g"
+      ],
+      [
+        "emmental",
+        20,
+        "g",
+        "râpé"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Râpez finement la courgette et la carotte, puis pressez la courgette dans un torchon pour retirer l’eau.",
+      "Mélangez les légumes râpés avec l’œuf, la farine et l’emmental.",
+      "Faites chauffer l’huile d’olive dans une poêle, déposez de petites cuillerées de pâte en les aplatissant et faites cuire 5 minutes de chaque côté à feu moyen, jusqu’à ce qu’elles soient bien cuites au centre.",
+      "Laissez tiédir sur du papier absorbant avant de servir."
+    ],
+    "allergens": [
+      "eggs",
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "vegetables",
+      "freezer",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Remplacez la carotte par de la patate douce râpée."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Se congèlent bien : jusqu’à 2 mois, séparées par du papier cuisson. Décongelez au réfrigérateur et réchauffez à la poêle ou au four.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Œuf toujours bien cuit : blanc et jaune fermes.",
+      "Fromage à pâte pressée cuite, fondu dans le plat (pas de fromage au lait cru avant 5 ans).",
+      "Carotte râpée finement et cuite jusqu’à être tendre. Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Une façon ludique de manger des légumes ; l’œuf et le fromage apportent un peu de protéines et de calcium.",
+    "budget": 1,
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "mo-petits-flans-carotte",
+    "title": "Petits flans de carotte au fromage frais",
+    "summary": "Des flans orangés et fondants, qui se mangent à la cuillère ou en petits cubes.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 10,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "carrot",
+        250,
+        "g"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "cream_cheese",
+        40,
+        "g"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Épluchez les carottes, coupez-les en rondelles et faites-les cuire à la vapeur 15 minutes, puis mixez-les finement.",
+      "Mélangez la purée avec les œufs battus, le fromage frais et la muscade.",
+      "Répartissez dans quatre ramequins et faites cuire au bain-marie au four à 180 °C 25 minutes, jusqu’à ce qu’une lame plantée au centre ressorte sèche.",
+      "Laissez tiédir avant de démouler ou de servir dans le ramequin."
+    ],
+    "allergens": [
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "vegetarian",
+      "vegetables",
+      "protein"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Le potiron ou le brocoli remplacent la carotte."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Congélation déconseillée : les flans rendent de l’eau en décongelant. Ils se gardent 48 h au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Œuf toujours bien cuit : blanc et jaune fermes."
+    ],
+    "nutrition": "La carotte apporte du bêta-carotène et l’œuf des protéines : un demi-œuf environ par flan, une part adaptée vers 1 an.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-crepes-compote",
+    "title": "Crêpes moelleuses et compote de pommes",
+    "summary": "Des crêpes sans sucre roulées autour d’une compote, pour un goûter de fête simple.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "breakfast",
+      "dessert"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 4,
+    "servingLabel": "8 crêpes",
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "flour",
+        100,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "milk",
+        250,
+        "ml"
+      ],
+      [
+        "butter",
+        10,
+        "g",
+        "fondu"
+      ],
+      [
+        "compote_unsweetened",
+        200,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Versez la farine dans un saladier, creusez un puits, ajoutez l’œuf et le lait petit à petit en fouettant, puis le beurre fondu.",
+      "Laissez reposer la pâte 30 minutes si vous avez le temps.",
+      "Faites cuire les crêpes dans une poêle antiadhésive chaude 1 minute de chaque côté, jusqu’à ce qu’elles soient bien dorées et cuites.",
+      "Tartinez chaque crêpe de compote, roulez-la et coupez-la en tronçons pour l’enfant."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "classic",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Remplacez la compote par une banane écrasée."
+    ],
+    "storage": "48 h au réfrigérateur, filmées ; garnissez au moment de servir.",
+    "freezing": "Les crêpes nature se congèlent jusqu’à 2 mois, séparées par du papier cuisson ; décongelez au réfrigérateur et garnissez au moment.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Œuf toujours bien cuit : blanc et jaune fermes.",
+      "Installez l’enfant assis bien droit et restez à côté de lui pendant tout le repas."
+    ],
+    "nutrition": "Un goûter qui associe féculent, laitage et fruit, sans sucre ajouté : la compote suffit à adoucir.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-biscuits-banane-avoine",
+    "title": "Biscuits banane-avoine sans sucre ajouté",
+    "summary": "Des biscuits tendres à deux ingrédients principaux, sucrés seulement par la banane.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "breakfast"
+    ],
+    "stages": [
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 10,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 4,
+    "servingLabel": "12 biscuits",
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "banana",
+        1,
+        "u",
+        "très mûre"
+      ],
+      [
+        "oats",
+        70,
+        "g",
+        "flocons fins"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee",
+        "facultatif",
+        true
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Écrasez la banane en purée à la fourchette.",
+      "Ajoutez les flocons d’avoine, l’huile de colza et la cannelle si vous le souhaitez, puis laissez gonfler 5 minutes.",
+      "Formez de petits biscuits épais sur une plaque recouverte de papier cuisson.",
+      "Faites cuire 15 minutes : ils restent moelleux. Laissez refroidir sur une grille."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "budget",
+      "lunchbox",
+      "freezer"
+    ],
+    "adaptations": [
+      "Ajoutez une cuillerée de compote si la pâte est trop sèche.",
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher."
+    ],
+    "storage": "3 jours dans une boîte hermétique au réfrigérateur.",
+    "freezing": "Se congèlent bien : jusqu’à 2 mois dans une boîte. Décongelez à température ambiante en une heure.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Biscuits tendres qui fondent en bouche ; Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "L’avoine apporte des fibres et la banane de l’énergie : un goûter sans sucre ajouté, adapté dès que votre enfant mâche les morceaux fondants.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-mini-pancakes-banane",
+    "title": "Mini-pancakes à la banane",
+    "summary": "Des petits pancakes moelleux, faciles à tenir dans la main.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "breakfast",
+      "snack"
+    ],
+    "stages": [
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 10,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "servingLabel": "10 mini-pancakes",
+    "prepMin": 5,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "banana",
+        1,
+        "u",
+        "bien mûre"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "flour",
+        40,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Écrasez la banane en purée, puis ajoutez l’œuf et la farine en fouettant pour obtenir une pâte épaisse.",
+      "Huilez légèrement une poêle antiadhésive avec l’huile de colza et faites-la chauffer à feu moyen.",
+      "Versez de petites cuillerées de pâte et faites cuire 2 minutes de chaque côté, jusqu’à ce que les pancakes soient bien cuits au centre.",
+      "Laissez tiédir avant de servir, entiers ou coupés en deux."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "finger",
+      "quick",
+      "vegetarian"
+    ],
+    "adaptations": [
+      "La farine d’avoine (flocons mixés) remplace la farine de blé.",
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher."
+    ],
+    "storage": "24 h au réfrigérateur.",
+    "freezing": "Se congèlent bien : jusqu’à 2 mois. Réchauffez quelques secondes à la poêle après décongélation au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Œuf toujours bien cuit : blanc et jaune fermes.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "La banane remplace le sucre et l’œuf apporte des protéines : un petit-déjeuner ou un goûter complet avec un laitage.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-pates-saumon-courgette",
+    "title": "Pâtes au saumon et à la courgette",
+    "summary": "Un plat de pâtes crémeux et familial, avec un saumon bien cuit en petits morceaux.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "pasta",
+        250,
+        "g",
+        "penne ou coquillettes"
+      ],
+      [
+        "salmon",
+        250,
+        "g",
+        "sans peau ni arêtes"
+      ],
+      [
+        "zucchini",
+        250,
+        "g"
+      ],
+      [
+        "cream",
+        3,
+        "cs"
+      ],
+      [
+        "lemon",
+        0.5,
+        "u",
+        "zeste"
+      ],
+      [
+        "chives",
+        1,
+        "cs",
+        "ciselée",
+        true
+      ]
+    ],
+    "steps": [
+      "Lavez la courgette et coupez-la en petits dés ; coupez le saumon en cubes en vérifiant qu’il ne reste aucune arête.",
+      "Faites cuire les pâtes dans l’eau bouillante 11 minutes, en les laissant bien tendres pour la part de l’enfant.",
+      "Pendant ce temps, faites cuire la courgette à couvert avec un fond d’eau 6 minutes, ajoutez le saumon et poursuivez 6 minutes à feu doux, jusqu’à ce qu’il soit opaque et se détache en lamelles.",
+      "Hors du feu, ajoutez la crème et le zeste de citron, mélangez aux pâtes égouttées et parsemez de ciboulette."
+    ],
+    "allergens": [
+      "gluten",
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "protein",
+      "quick",
+      "classic"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "La truite remplace le saumon."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation possible jusqu’à 2 mois si le poisson n’avait pas déjà été congelé cru. Décongelez au réfrigérateur la veille, réchauffez bien à cœur et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Le saumon apporte des oméga-3 et des protéines : environ 30 g de saumon par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans), le reste pour les grands.",
+    "budget": 3,
+    "seasons": [
+      "spring",
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Effeuillez le saumon en petits morceaux et coupez les pâtes en deux ; ne salez pas sa part.",
+      "child": "Servez la sauce à part s’il préfère ses pâtes nature."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "mo-hachis-parmentier-carottes",
+    "title": "Hachis parmentier aux carottes fondantes",
+    "summary": "Le hachis parmentier de toujours, avec des carottes glissées dans la viande pour tous.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 5,
+    "prepMin": 20,
+    "cookMin": 40,
+    "ingredients": [
+      [
+        "ground_beef",
+        350,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "carrot",
+        200,
+        "g"
+      ],
+      [
+        "potato",
+        800,
+        "g"
+      ],
+      [
+        "milk",
+        150,
+        "ml"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "emmental",
+        40,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Épluchez les pommes de terre et faites-les cuire à l’eau 20 minutes ; pendant ce temps, épluchez l’oignon et les carottes et hachez-les finement.",
+      "Faites cuire l’oignon et les carottes dans une poêle avec un fond d’eau 8 minutes, puis ajoutez le bœuf haché et faites cuire 8 minutes en l’émiettant, jusqu’à ce qu’il ne reste aucune trace rosée.",
+      "Écrasez les pommes de terre avec le lait chaud, le beurre et la muscade.",
+      "Étalez la viande dans un plat, couvrez de purée, parsemez d’emmental et faites gratiner au four à 200 °C 15 minutes."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "classic",
+      "iron",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Une partie de la purée peut être faite avec de la patate douce."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Se congèle bien : jusqu’à 2 mois en portions individuelles. Décongelez au réfrigérateur la veille et réchauffez bien à cœur ; ne recongelez pas.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Viande bien cuite à cœur, sans trace rosée.",
+      "Fromage à pâte pressée cuite, fondu dans le plat (pas de fromage au lait cru avant 5 ans)."
+    ],
+    "nutrition": "Le bœuf apporte du fer bien assimilé et la purée l’énergie : environ 25 g de bœuf par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans).",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Prélevez sa part avant de saler et écrasez bien la viande dans la purée.",
+      "child": "Servez-le dans un petit ramequin individuel, comme un « vrai » parmentier."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "mo-dinde-semoule-legumes",
+    "title": "Dinde, semoule et légumes fondants",
+    "summary": "Une assiette façon couscous doux, avec de petits morceaux tendres.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "turkey",
+        60,
+        "g"
+      ],
+      [
+        "couscous",
+        50,
+        "g"
+      ],
+      [
+        "zucchini",
+        100,
+        "g"
+      ],
+      [
+        "carrot",
+        100,
+        "g"
+      ],
+      [
+        "cumin",
+        1,
+        "pincee",
+        "facultatif",
+        true
+      ],
+      [
+        "olive_oil",
+        2,
+        "cc"
+      ]
+    ],
+    "steps": [
+      "Épluchez la carotte, lavez la courgette et coupez-les en petits dés ; coupez la dinde en petits morceaux.",
+      "Faites cuire la carotte dans une casserole d’eau 10 minutes, ajoutez la courgette, la dinde et une pincée de cumin si vous le souhaitez, puis poursuivez 10 minutes.",
+      "Versez un peu de bouillon de cuisson bien chaud sur la semoule, couvrez et laissez gonfler 5 minutes, puis égrainez avec l’huile d’olive.",
+      "Servez la semoule avec la dinde bien cuite à cœur et les légumes fondants."
+    ],
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "protein",
+      "complete",
+      "world"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Le poulet remplace la dinde."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "La dinde et les légumes se congèlent jusqu’à 2 mois (décongélation au réfrigérateur, réchauffage à cœur) ; la semoule se prépare au moment.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Viande bien cuite à cœur, sans trace rosée.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Un repas complet et doux : environ 25 g de dinde par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans).",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-boeuf-carottes-fondant",
+    "title": "Bœuf carottes fondant en famille",
+    "summary": "Le plat mijoté du dimanche, si tendre qu’il s’effiloche pour les petits.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 20,
+    "cookMin": 130,
+    "ingredients": [
+      [
+        "beef_stew",
+        700,
+        "g",
+        "en cubes"
+      ],
+      [
+        "carrot",
+        700,
+        "g"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "thyme",
+        2,
+        "pincee"
+      ],
+      [
+        "bay_leaf",
+        1,
+        "u"
+      ]
+    ],
+    "steps": [
+      "Épluchez les carottes et coupez-les en rondelles ; épluchez et émincez l’oignon.",
+      "Faites dorer les cubes de bœuf dans l’huile d’olive en cocotte, ajoutez l’oignon et laissez revenir 3 minutes.",
+      "Ajoutez les carottes, le thym, la feuille de laurier et de l’eau à hauteur, couvrez et laissez mijoter à petit feu 120 minutes, jusqu’à ce que la viande s’effiloche à la fourchette.",
+      "Retirez le laurier ; pour l’enfant, effilochez la viande et écrasez légèrement les carottes."
+    ],
+    "allergens": [],
+    "tags": [
+      "family",
+      "classic",
+      "iron",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Servez avec des pommes de terre vapeur ou des pâtes."
+    ],
+    "storage": "48 h au réfrigérateur ; c’est encore meilleur réchauffé.",
+    "freezing": "Se congèle bien : jusqu’à 2 mois en portions individuelles. Décongelez au réfrigérateur la veille et réchauffez bien à cœur ; ne recongelez pas.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Viande bien cuite à cœur, sans trace rosée.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Le bœuf apporte du fer bien assimilé : environ 25 g de bœuf par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans).",
+    "budget": 2,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Effilochez la viande très finement et écrasez les carottes ; ne salez pas sa part.",
+      "child": "Coupez la viande en petits morceaux et servez avec des pâtes."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-frites-polenta-four",
+    "title": "Frites de polenta au four",
+    "summary": "Des bâtonnets dorés dehors, fondants dedans, parfaits à attraper.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner",
+      "snack"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 3,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "polenta",
+        100,
+        "g"
+      ],
+      [
+        "parmesan",
+        20,
+        "g",
+        "râpé"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ]
+    ],
+    "steps": [
+      "Versez la polenta en pluie dans 400 ml d’eau frémissante et faites cuire 5 minutes en remuant, puis ajoutez le parmesan.",
+      "Étalez la polenta sur 1,5 cm d’épaisseur dans un plat recouvert de papier cuisson et laissez prendre au réfrigérateur (repos d’au moins 60 minutes).",
+      "Préchauffez le four à 200 °C, coupez la polenta en bâtonnets de la taille d’un doigt d’adulte et badigeonnez-les d’huile d’olive.",
+      "Faites cuire 20 minutes en les retournant à mi-cuisson, puis laissez tiédir."
+    ],
+    "allergens": [
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "lunchbox"
+    ],
+    "adaptations": [
+      "Servez avec une sauce tomate maison ou un écrasé de légumes.",
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Les bâtonnets cuits se congèlent jusqu’à 2 mois ; réchauffez-les directement au four après décongélation au réfrigérateur.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Fromage à pâte pressée cuite, fondu dans le plat (pas de fromage au lait cru avant 5 ans).",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "La polenta, sans gluten, apporte l’énergie des céréales ; associez-la à des légumes et à une petite part de protéines.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "mo-poisson-pane-maison",
+    "title": "Poisson pané maison au four",
+    "summary": "Des bâtonnets de poisson croustillants, faits maison et cuits au four, pour toute la famille.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "white_fish",
+        400,
+        "g",
+        "cabillaud ou colin, sans arêtes"
+      ],
+      [
+        "flour",
+        30,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "breadcrumbs",
+        60,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        1,
+        "cs"
+      ],
+      [
+        "lemon",
+        0.5,
+        "u",
+        "facultatif",
+        true
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 200 °C. Coupez le poisson en bâtonnets épais en vérifiant du bout des doigts qu’il ne reste aucune arête.",
+      "Passez chaque bâtonnet dans la farine, puis dans l’œuf battu, puis dans la chapelure.",
+      "Posez-les sur une plaque recouverte de papier cuisson, arrosez d’un filet d’huile de colza et faites cuire 15 minutes, jusqu’à ce que le poisson soit opaque à cœur.",
+      "Servez avec un quartier de citron pour les grands ; pour l’enfant, coupez en petits morceaux."
+    ],
+    "allergens": [
+      "fish",
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "family",
+      "finger",
+      "classic",
+      "protein"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Servez avec une purée maison ou des légumes vapeur."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congelez les bâtonnets panés crus (si le poisson était frais) jusqu’à 2 mois et faites-les cuire directement au four sans décongeler, 5 minutes de plus ; cuits, ils se gardent 24 h au réfrigérateur.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête.",
+      "Œuf toujours bien cuit : blanc et jaune fermes.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Le poisson blanc apporte des protéines et de l’iode : environ 30 g de poisson par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans).",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Retirez la panure si elle est trop croustillante pour lui et effeuillez le poisson.",
+      "child": "Laissez-le paner lui-même quelques bâtonnets."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "mo-truite-riz-haricots-verts",
+    "title": "Truite, riz et haricots verts en petits morceaux",
+    "summary": "Une assiette simple à picorer : riz tendre, haricots fondants et truite effeuillée.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m9_12",
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 10,
+    "maxMonths": 24,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 10,
+    "cookMin": 15,
+    "ingredients": [
+      [
+        "trout",
+        60,
+        "g",
+        "sans peau ni arêtes"
+      ],
+      [
+        "rice",
+        50,
+        "g"
+      ],
+      [
+        "green_beans",
+        120,
+        "g"
+      ],
+      [
+        "butter",
+        5,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Faites cuire le riz dans l’eau bouillante 15 minutes en le laissant bien tendre, puis égouttez.",
+      "Équeutez les haricots verts, coupez-les en tronçons de 1 cm et faites-les cuire à la vapeur 15 minutes ; ajoutez la truite pour les 8 dernières minutes.",
+      "Effeuillez la truite en retirant toutes les arêtes.",
+      "Mélangez le riz avec la noisette de beurre et servez avec les haricots verts fondants et la truite."
+    ],
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "tags": [
+      "protein",
+      "complete",
+      "finger"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Le saumon ou le cabillaud remplacent la truite."
+    ],
+    "storage": "24 h au réfrigérateur dans un récipient fermé, à réchauffer une seule fois.",
+    "freezing": "Congélation possible jusqu’à 2 mois si le poisson n’avait pas déjà été congelé cru. Décongelez au réfrigérateur la veille, réchauffez bien à cœur et consommez dans les 24 h, sans recongeler.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Poisson bien cuit, opaque et qui se détache en lamelles ; vérifiez du bout des doigts qu’il ne reste aucune arête.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "La truite apporte des oméga-3 et le riz l’énergie : environ 25 g de truite par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans).",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "anses_poisson",
+      "santefr_mercure"
+    ]
+  },
+  {
+    "slug": "mo-gratin-chou-fleur-pommes-de-terre",
+    "title": "Gratin de chou-fleur et pommes de terre",
+    "summary": "Un gratin crémeux et doux, où le chou-fleur se fait tout petit.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 4,
+    "prepMin": 15,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "cauliflower",
+        400,
+        "g"
+      ],
+      [
+        "potato",
+        300,
+        "g"
+      ],
+      [
+        "butter",
+        20,
+        "g"
+      ],
+      [
+        "flour",
+        20,
+        "g"
+      ],
+      [
+        "milk",
+        400,
+        "ml"
+      ],
+      [
+        "nutmeg",
+        1,
+        "pincee"
+      ],
+      [
+        "emmental",
+        50,
+        "g",
+        "râpé"
+      ]
+    ],
+    "steps": [
+      "Détaillez le chou-fleur en petits bouquets, épluchez les pommes de terre et coupez-les en rondelles, puis faites-les cuire à la vapeur 15 minutes.",
+      "Pour la béchamel, faites fondre le beurre, ajoutez la farine, puis le lait petit à petit en fouettant jusqu’à épaississement ; ajoutez la muscade.",
+      "Disposez les légumes dans un plat, nappez de béchamel et parsemez d’emmental.",
+      "Faites gratiner au four à 200 °C 20 minutes et laissez tiédir avant de servir."
+    ],
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "vegetarian",
+      "calcium",
+      "vegetables",
+      "classic"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Ajoutez des dés de jambon dans la part des grands."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Se congèle bien : jusqu’à 2 mois en portions individuelles. Décongelez au réfrigérateur la veille et réchauffez bien à cœur ; ne recongelez pas.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Fromage à pâte pressée cuite, fondu dans le plat (pas de fromage au lait cru avant 5 ans).",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Le chou-fleur apporte de la vitamine C et la béchamel du calcium ; associez une petite part de protéines au repas.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Écrasez légèrement sa part à la fourchette, avant de saler celle des grands.",
+      "child": "Servez-le avec un œuf dur ou une tranche de jambon pour un repas complet."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement",
+      "lait_cru"
+    ]
+  },
+  {
+    "slug": "mo-dahl-lentilles-corail-coco",
+    "title": "Dahl doux de lentilles corail au lait de coco",
+    "summary": "Un plat végétarien doré et fondant, servi avec du riz, que les petits adorent.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 5,
+    "prepMin": 10,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "red_lentils",
+        200,
+        "g",
+        "rincées"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "carrot",
+        150,
+        "g"
+      ],
+      [
+        "canned_tomato",
+        200,
+        "g"
+      ],
+      [
+        "coconut_milk",
+        200,
+        "ml"
+      ],
+      [
+        "turmeric",
+        1,
+        "cc"
+      ],
+      [
+        "cumin",
+        1,
+        "cc"
+      ],
+      [
+        "rice",
+        250,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Émincez finement l’oignon et râpez la carotte ; faites-les cuire dans une casserole avec un fond d’eau 5 minutes.",
+      "Ajoutez les lentilles, les tomates concassées, le lait de coco, le curcuma, le cumin et 400 ml d’eau, puis laissez mijoter 20 minutes en remuant, jusqu’à ce que les lentilles se défassent.",
+      "Pendant ce temps, faites cuire le riz dans l’eau bouillante 15 minutes et égouttez-le.",
+      "Servez le dahl avec le riz ; pour l’enfant, mélangez les deux pour une texture fondante."
+    ],
+    "allergens": [],
+    "tags": [
+      "family",
+      "vegetarian",
+      "iron",
+      "fiber",
+      "world",
+      "budget",
+      "batch"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Les grands ajoutent un peu de piment ou de coriandre dans leur assiette."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Le dahl se congèle jusqu’à 3 mois (décongélation au réfrigérateur, réchauffage avec un peu d’eau) ; le riz se cuit au moment.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Carotte râpée et bien cuite dans la sauce."
+    ],
+    "nutrition": "Les lentilles corail associées au riz apportent des protéines végétales complètes, du fer et des fibres ; environ 25 g de lentilles sèches par portion pour l’enfant.",
+    "budget": 1,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Mélangez le dahl et le riz et écrasez légèrement ; ne salez pas sa part.",
+      "child": "Servez avec un pain pita pour tremper."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-muffins-pomme-avoine",
+    "title": "Muffins pomme-avoine sans sucre ajouté",
+    "summary": "Des muffins moelleux et fruités pour les goûters, sucrés seulement par la pomme.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "breakfast"
+    ],
+    "stages": [
+      "m9_12",
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 10,
+    "maxMonths": 36,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 6,
+    "servingLabel": "18 mini-muffins",
+    "prepMin": 15,
+    "cookMin": 20,
+    "ingredients": [
+      [
+        "apple",
+        2,
+        "u"
+      ],
+      [
+        "oats",
+        60,
+        "g"
+      ],
+      [
+        "flour",
+        80,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "yogurt",
+        125,
+        "g"
+      ],
+      [
+        "rapeseed_oil",
+        2,
+        "cs"
+      ],
+      [
+        "baking_powder",
+        1,
+        "cc"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Épluchez les pommes et râpez-les finement.",
+      "Mélangez l’œuf, le yaourt et l’huile de colza, puis ajoutez les pommes râpées.",
+      "Ajoutez les flocons d’avoine, la farine, la levure et la cannelle, et mélangez sans trop travailler la pâte.",
+      "Répartissez dans des moules à mini-muffins et faites cuire 20 minutes, jusqu’à ce qu’une lame ressorte sèche."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs",
+      "milk"
+    ],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "lunchbox",
+      "freezer",
+      "batch"
+    ],
+    "adaptations": [
+      "Remplacez une pomme par une poire bien mûre.",
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher."
+    ],
+    "storage": "3 jours dans une boîte hermétique.",
+    "freezing": "Se congèlent très bien : jusqu’à 3 mois. Décongelez à température ambiante en une heure ou quelques secondes au four.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Pomme râpée finement et cuite dans la pâte. Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Un goûter qui associe céréales, laitage et fruit, sans sucre ajouté.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-clafoutis-abricots",
+    "title": "Clafoutis aux abricots sans sucre ajouté",
+    "summary": "Un dessert d’été moelleux où les abricots bien mûrs font toute la douceur.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "dessert",
+      "snack"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 6,
+    "prepMin": 10,
+    "cookMin": 35,
+    "ingredients": [
+      [
+        "apricot",
+        8,
+        "u",
+        "bien mûrs"
+      ],
+      [
+        "egg",
+        2,
+        "u"
+      ],
+      [
+        "flour",
+        40,
+        "g"
+      ],
+      [
+        "milk",
+        250,
+        "ml"
+      ],
+      [
+        "butter",
+        5,
+        "g",
+        "pour le moule"
+      ]
+    ],
+    "steps": [
+      "Préchauffez le four à 180 °C. Beurrez un moule ; lavez les abricots, ouvrez-les, retirez les noyaux et coupez-les en quartiers.",
+      "Fouettez les œufs avec la farine, puis ajoutez le lait petit à petit pour obtenir une pâte lisse.",
+      "Disposez les abricots dans le moule, versez la pâte et faites cuire 35 minutes, jusqu’à ce que le centre soit bien pris.",
+      "Laissez tiédir et coupez en petits carrés fondants pour l’enfant."
+    ],
+    "allergens": [
+      "eggs",
+      "gluten",
+      "milk"
+    ],
+    "tags": [
+      "family",
+      "classic",
+      "vegetarian",
+      "calcium"
+    ],
+    "adaptations": [
+      "Les pêches ou les prunes remplacent les abricots.",
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Congélation déconseillée : le clafoutis rend de l’eau. Il se garde 48 h au réfrigérateur.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Œuf toujours bien cuit : blanc et jaune fermes.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Les abricots apportent du bêta-carotène, l’œuf et le lait des protéines et du calcium.",
+    "budget": 2,
+    "seasons": [
+      "summer"
+    ],
+    "temperature": "cold",
+    "familyAdaptations": {
+      "baby": "Choisissez des abricots très mûrs et coupez sa part en petits carrés.",
+      "child": "Les grands peuvent ajouter un peu de sucre dans leur part au moment de servir."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-batonnets-poire-pomme-vapeur",
+    "title": "Bâtonnets de poire et pomme fondants",
+    "summary": "Des fruits cuits juste ce qu’il faut pour être tendres, à attraper avec les doigts.",
+    "audiences": [
+      "baby"
+    ],
+    "meals": [
+      "snack",
+      "dessert"
+    ],
+    "stages": [
+      "m9_12",
+      "m12_18",
+      "m18_24"
+    ],
+    "minMonths": 9,
+    "maxMonths": 24,
+    "textures": [
+      "pieces"
+    ],
+    "servings": 2,
+    "prepMin": 5,
+    "cookMin": 10,
+    "ingredients": [
+      [
+        "pear",
+        1,
+        "u"
+      ],
+      [
+        "apple",
+        1,
+        "u"
+      ],
+      [
+        "cinnamon",
+        1,
+        "pincee",
+        "facultatif",
+        true
+      ]
+    ],
+    "steps": [
+      "Épluchez la poire et la pomme, retirez le cœur et coupez-les en bâtonnets épais de la taille d’un doigt d’adulte.",
+      "Faites-les cuire à la vapeur 10 minutes, jusqu’à ce qu’ils s’écrasent facilement entre le pouce et l’index.",
+      "Saupoudrez d’une pincée de cannelle si vous le souhaitez et laissez tiédir."
+    ],
+    "allergens": [],
+    "tags": [
+      "finger",
+      "vegetarian",
+      "budget",
+      "quick"
+    ],
+    "adaptations": [
+      "Une poire très mûre peut se servir crue, épluchée, en bâtonnets.",
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher."
+    ],
+    "storage": "24 h au réfrigérateur dans une boîte fermée.",
+    "freezing": "Congélation déconseillée : les bâtonnets deviennent mous. Ils se gardent 24 h au réfrigérateur.",
+    "precautions": [
+      "Sans sel, sans sucre et sans miel ajoutés avant 1 an.",
+      "Pomme toujours cuite jusqu’à être tendre : crue et dure, elle est à risque d’étouffement avant 4 ans. Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Des fruits pour les fibres et la vitamine C, et un bon exercice pour apprendre à porter les aliments à la bouche.",
+    "budget": 1,
+    "seasons": [
+      "autumn",
+      "winter"
+    ],
+    "temperature": "cold",
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-poulet-basquaise-doux",
+    "title": "Poulet basquaise tout doux",
+    "summary": "Le poulet aux poivrons et tomates, sans piment, mijoté jusqu’à être fondant.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 5,
+    "prepMin": 20,
+    "cookMin": 50,
+    "ingredients": [
+      [
+        "chicken_thigh",
+        800,
+        "g",
+        "sans peau"
+      ],
+      [
+        "bell_pepper",
+        2,
+        "u"
+      ],
+      [
+        "tomato",
+        4,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "garlic",
+        1,
+        "u",
+        "gousse"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "thyme",
+        1,
+        "pincee"
+      ],
+      [
+        "rice",
+        250,
+        "g"
+      ]
+    ],
+    "steps": [
+      "Épluchez l’oignon et la gousse d’ail ; émincez l’oignon, épépinez les poivrons et coupez-les en lanières, puis coupez les tomates en morceaux.",
+      "Faites dorer le poulet dans l’huile d’olive en cocotte, ajoutez l’oignon, l’ail écrasé et les poivrons, et laissez revenir 5 minutes.",
+      "Ajoutez les tomates et le thym, couvrez et laissez mijoter 40 minutes, jusqu’à ce que le poulet soit bien cuit et se détache de l’os ; pendant ce temps, faites cuire le riz 15 minutes dans l’eau bouillante.",
+      "Pour l’enfant, retirez les os, effilochez le poulet, retirez la peau des poivrons si elle se détache et servez avec le riz."
+    ],
+    "allergens": [],
+    "tags": [
+      "family",
+      "classic",
+      "protein",
+      "vegetables"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "Hors saison, remplacez les tomates fraîches par des tomates concassées en conserve."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Se congèle bien : jusqu’à 2 mois en portions individuelles. Décongelez au réfrigérateur la veille et réchauffez bien à cœur ; ne recongelez pas.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Viande bien cuite à cœur, sans trace rosée.",
+      "Vérifiez qu’il ne reste aucun os ni morceau de peau dans la part de l’enfant. Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Les poivrons apportent de la vitamine C et le poulet des protéines : environ 25 g de poulet par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans).",
+    "budget": 2,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Effilochez le poulet, écrasez les légumes et mélangez avec le riz ; ne salez pas sa part.",
+      "child": "Servez la sauce à côté du riz s’il préfère."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  },
+  {
+    "slug": "mo-boulettes-boeuf-tomate-coquillettes",
+    "title": "Boulettes de bœuf à la tomate et coquillettes",
+    "summary": "Des boulettes tendres mijotées dans une sauce tomate, avec des coquillettes : le repas qui met tout le monde d’accord.",
+    "audiences": [
+      "baby",
+      "family"
+    ],
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "stages": [
+      "m12_18",
+      "m18_24",
+      "y2_3"
+    ],
+    "minMonths": 12,
+    "maxMonths": 36,
+    "textures": [
+      "pieces",
+      "regular"
+    ],
+    "servings": 5,
+    "prepMin": 20,
+    "cookMin": 25,
+    "ingredients": [
+      [
+        "ground_beef",
+        400,
+        "g"
+      ],
+      [
+        "breadcrumbs",
+        30,
+        "g"
+      ],
+      [
+        "egg",
+        1,
+        "u"
+      ],
+      [
+        "onion",
+        1,
+        "u"
+      ],
+      [
+        "canned_tomato",
+        400,
+        "g"
+      ],
+      [
+        "olive_oil",
+        1,
+        "cs"
+      ],
+      [
+        "basil",
+        4,
+        "u",
+        "feuilles",
+        true
+      ],
+      [
+        "pasta",
+        300,
+        "g",
+        "coquillettes"
+      ]
+    ],
+    "steps": [
+      "Épluchez et hachez très finement l’oignon. Mélangez la moitié avec le bœuf haché, la chapelure et l’œuf, puis formez de petites boulettes.",
+      "Faites revenir le reste de l’oignon dans l’huile d’olive 3 minutes, ajoutez les tomates concassées et le basilic, puis déposez les boulettes dans la sauce.",
+      "Couvrez et laissez mijoter 20 minutes à feu doux, jusqu’à ce que les boulettes soient bien cuites à cœur, sans trace rosée ; pendant ce temps, faites cuire les pâtes (coquillettes) 10 minutes dans l’eau bouillante.",
+      "Pour l’enfant, coupez les boulettes en quatre et mélangez-les aux coquillettes et à la sauce."
+    ],
+    "allergens": [
+      "gluten",
+      "eggs"
+    ],
+    "tags": [
+      "family",
+      "classic",
+      "iron",
+      "batch",
+      "freezer"
+    ],
+    "adaptations": [
+      "Coupez plus ou moins finement selon ce que votre enfant accepte et sa façon de mâcher.",
+      "La dinde hachée remplace le bœuf."
+    ],
+    "storage": "48 h au réfrigérateur dans un récipient fermé.",
+    "freezing": "Les boulettes en sauce se congèlent jusqu’à 2 mois (décongélation au réfrigérateur, réchauffage à cœur) ; les coquillettes se cuisent au moment.",
+    "precautions": [
+      "Pas de sel ni de sucre dans la part de l’enfant : les adultes salent dans leur assiette.",
+      "Viande bien cuite à cœur, sans trace rosée.",
+      "Œuf toujours bien cuit : blanc et jaune fermes.",
+      "Morceaux fondants qui s’écrasent facilement entre le pouce et l’index ; restez toujours à côté de l’enfant pendant le repas (risque d’étouffement à surveiller jusqu’à 4 ans)."
+    ],
+    "nutrition": "Le bœuf apporte du fer bien assimilé et les pâtes l’énergie : environ 25 g de bœuf par portion pour l’enfant, un repère à ajuster selon l’âge (une vingtaine de grammes vers 1 an, une trentaine vers 2 ans).",
+    "budget": 2,
+    "seasons": "all",
+    "temperature": "hot",
+    "familyAdaptations": {
+      "baby": "Écrasez les boulettes coupées dans la sauce et servez avec des coquillettes bien cuites ; ne salez pas sa part.",
+      "child": "Laissez-le piquer les boulettes avec une fourchette adaptée."
+    },
+    "sources": [
+      "spf_diversification",
+      "anses_miel",
+      "inspq_etouffement"
+    ]
+  }
+]

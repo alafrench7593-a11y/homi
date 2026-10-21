@@ -280,3 +280,17 @@ export function consultationGuidance(i: ConsultationInput): ConsultationGuidance
   if (i.age != null && i.age >= 40) reasons.push('À partir de 40 ans, un échange rapide avec un professionnel est généralement conseillé.');
   return { thresholdMonths, suggestTalkingNow: reasons.length > 0, reasons };
 }
+
+/**
+ * Retard éventuel par rapport à la prévision : jours écoulés depuis la date estimée des prochaines règles,
+ * si aucune règle n'a été notée depuis (null s'il n'y a pas de retard ou pas assez d'informations).
+ * Une estimation seulement : les cycles varient.
+ */
+export function periodDelay(entries: PeriodEntry[], today: ISODate = todayISO()): number | null {
+  const starts = [...new Set(entries.map((e) => e.start_date))].filter((d) => d <= today).sort();
+  if (!starts.length) return null;
+  const est = estimateCycle(entries, today);
+  const expected = addDays(starts[starts.length - 1], Math.round(est.averageLength ?? 28));
+  const late = daysBetween(expected, today);
+  return late >= 1 && late <= 60 ? late : null;
+}

@@ -19,6 +19,8 @@ export default function HomeSettings() {
   const shortcuts = useUiStore((s) => s.quickShortcuts);
   const setShortcuts = useUiStore((s) => s.setQuickShortcuts);
   const setIntroSeen = useUiStore((s) => s.setIntroSeen);
+  const simple = useUiStore((s) => s.simpleMode);
+  const setSimple = useUiStore((s) => s.setSimpleMode);
 
   const full = orderedHomeCards(order, []);
   const move = (key: string, d: -1 | 1) => {
@@ -39,6 +41,15 @@ export default function HomeSettings() {
 
   return (
     <Screen back title="Mon accueil" subtitle="Ce que vous voyez en premier, dans l’ordre qui vous convient.">
+      <Card>
+        <Row>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text weight="bold">{tr('pj.simple.title')}</Text>
+            <Text variant="small" muted>{tr('pj.simple.body')}</Text>
+          </View>
+          <Toggle label={tr('pj.simple.title')} value={simple} onChange={setSimple} />
+        </Row>
+      </Card>
       <SectionTitle title="Cartes" />
       {full.map((key, i) => {
         const c = HOME_CARDS.find((x) => x.key === key)!;

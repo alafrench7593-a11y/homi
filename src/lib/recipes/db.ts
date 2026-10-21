@@ -6,7 +6,7 @@ import type { Allergen, Audience, Meal, PhotoInfo, Recipe, RecipeStatus, Season,
 export interface RecipeRow {
   id: string; slug: string; title: string; summary: string; audiences: Audience[]; meals: Meal[]; stages: Stage[]; min_months: number | null; max_months: number | null;
   textures: Texture[]; servings: number; serving_label: string | null; prep_min: number; cook_min: number; allergens: Allergen[]; tags: Tag[]; adaptations: string[];
-  storage: string; precautions: string[]; nutrition: string; budget: 1 | 2 | 3; seasons: Season[]; temperature: 'hot' | 'cold'; family_adaptations: Recipe['familyAdaptations'];
+  storage: string; freezing?: string | null; precautions: string[]; nutrition: string; budget: 1 | 2 | 3; seasons: Season[]; temperature: 'hot' | 'cold'; family_adaptations: Recipe['familyAdaptations'];
   verified_on: string | null; status: RecipeStatus; owner_id: string | null; household_id: string | null; created_at?: string; updated_at?: string;
 }
 export interface IngredientRow { recipe_id: string; position: number; ingredient_key: string; label: string; qty: number | null; unit: Unit | null; note: string | null; optional: boolean }
@@ -19,7 +19,7 @@ export function recipeToRows(r: Recipe, id: string, extra: Partial<RecipeRow> = 
   const row: RecipeRow = {
     id, slug: r.slug, title: r.title, summary: r.summary, audiences: r.audiences as Audience[], meals: r.meals, stages: r.stages ?? [], min_months: r.minMonths ?? null, max_months: r.maxMonths ?? null,
     textures: r.textures, servings: r.servings, serving_label: r.servingLabel ?? null, prep_min: r.prepMin, cook_min: r.cookMin, allergens: r.allergens, tags: r.tags, adaptations: r.adaptations,
-    storage: r.storage, precautions: r.precautions, nutrition: r.nutrition, budget: r.budget, seasons: r.seasons === 'all' ? [] : r.seasons, temperature: r.temperature,
+    storage: r.storage, freezing: r.freezing ?? null, precautions: r.precautions, nutrition: r.nutrition, budget: r.budget, seasons: r.seasons === 'all' ? [] : r.seasons, temperature: r.temperature,
     family_adaptations: r.familyAdaptations ?? {}, verified_on: r.verifiedOn || null, status: r.status, owner_id: null, household_id: null, ...extra,
   };
   return {
@@ -41,7 +41,7 @@ export function rowsToRecipes(rows: RecipeRow[], ing: IngredientRow[], steps: St
     prepMin: r.prep_min, cookMin: r.cook_min,
     ingredients: (I.get(r.id) ?? []).sort((a, b) => a.position - b.position).map((x) => ({ key: x.ingredient_key, qty: x.qty == null ? null : Number(x.qty), unit: x.unit, ...(x.note ? { note: x.note } : {}), ...(x.optional ? { optional: true } : {}) })),
     steps: (S.get(r.id) ?? []).sort((a, b) => a.position - b.position).map((x) => x.body),
-    allergens: r.allergens, tags: r.tags, adaptations: r.adaptations, storage: r.storage, precautions: r.precautions, nutrition: r.nutrition, budget: r.budget,
+    allergens: r.allergens, tags: r.tags, adaptations: r.adaptations, storage: r.storage, ...(r.freezing ? { freezing: r.freezing } : {}), precautions: r.precautions, nutrition: r.nutrition, budget: r.budget,
     seasons: r.seasons?.length ? r.seasons : 'all', temperature: r.temperature, familyAdaptations: r.family_adaptations && Object.keys(r.family_adaptations).length ? r.family_adaptations : undefined,
     photo: (() => { const p = P.get(r.id)?.[0]; return p ? { kind: p.kind, source: p.source, author: p.author, license: p.license, url: p.url, rights: p.rights, generated: p.generated, alt: p.alt } : generatedPhoto(r.title); })(),
     sources: (L.get(r.id) ?? []).map((x) => x.source_id), verifiedOn: r.verified_on ?? '', status: r.status,

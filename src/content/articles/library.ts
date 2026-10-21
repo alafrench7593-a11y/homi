@@ -7,7 +7,7 @@ export interface LibArticle {
   summary: string;           // one sentence
   body_md: string;
   journeys: ArticleJourney[];
-  category: 'grossesse' | 'accouchement' | 'post-partum' | 'sante-mentale' | 'bebe' | 'alimentation' | 'enfant' | 'cycle' | 'reeducation' | 'sexualite' | 'sommeil';
+  category: 'grossesse' | 'accouchement' | 'post-partum' | 'sante-mentale' | 'bebe' | 'alimentation' | 'enfant' | 'cycle' | 'reeducation' | 'sexualite' | 'sommeil' | 'neurodeveloppement';
   tags: string[];
   min_week?: number; max_week?: number;              // pregnancy weeks (SA) if relevant
   min_age_months?: number; max_age_months?: number;  // child age if relevant
