@@ -33,7 +33,7 @@ function Cell({ v }: { v: string | boolean }) {
   return <Text variant="small" center style={{ flex: 1 }}>{v}</Text>;
 }
 
-const BENEFITS: PremiumFeature[] = ['sleep_insights', 'coparent_invite', 'summaries', 'weekly_menu', 'voice_entry', 'assistant_more', 'scanner_compare', 'cycle_insights'];
+const BENEFITS: PremiumFeature[] = ['sleep_insights', 'coparent_invite', 'summaries', 'weekly_menu', 'community_groups', 'voice_entry', 'assistant_more', 'scanner_compare', 'cycle_insights'];
 
 export default function SubscriptionScreen() {
   const t = useTheme();
@@ -85,6 +85,15 @@ export default function SubscriptionScreen() {
     { label: 'Documents dans le coffre', free: docs.free, plus: docs.plus },
     { label: 'Listes de préparation', free: lists.free, plus: lists.plus },
     { label: 'Suivi de la diversification, export des mesures', free: false, plus: true },
+    { label: 'Communauté : profil, publications avec photos, commentaires, réactions, suivre des membres et des catégories', free: true, plus: true },
+    { label: 'Groupes thématiques et par mois de naissance, sondages, notifications de réponses', free: true, plus: true },
+    { label: 'Signaler, bloquer, règles et informations de sécurité', free: true, plus: true },
+    { label: 'Profil personnalisé (couleur, bannière, présentation) et badge facultatif', free: false, plus: true },
+    { label: 'Groupes privés et invitations', free: false, plus: true },
+    { label: 'Albums photo privés ou partagés', free: false, plus: true },
+    { label: 'Filtres et recherche avancés, dossiers d’enregistrements, journal d’activité', free: false, plus: true },
+    { label: 'Résumé et traduction des longues discussions', free: false, plus: true },
+    { label: 'Ateliers et rencontres réservés aux abonné·es', free: false, plus: true },
   ];
 
   async function buy(plan: Plan) {
@@ -240,6 +249,9 @@ export default function SubscriptionScreen() {
           ))}
           <Button label="Voir les numéros d’urgence" size="sm" variant="ghost" icon="life-buoy" style={{ alignSelf: 'flex-start', marginTop: 4 }} onPress={() => router.push('/emergency')} />
         </Card>
+        <Text variant="caption" muted style={{ marginTop: spacing.xs }} testID="no-targeted-ads">
+          Vos profils privés, les données de vos enfants et vos données de santé ne servent jamais à afficher de la publicité ciblée. Il n’y a aujourd’hui aucun contenu sponsorisé dans l’application.
+        </Text>
       </View>
 
       <View style={{ gap: spacing.xs }}>

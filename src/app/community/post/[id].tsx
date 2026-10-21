@@ -5,7 +5,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
-import { Banner, Button, Card, Field, Icon, Row, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, Icon, Row, Text } from '@/components/ui';
+import { ScrollView } from 'react-native';
+import { AiSummaryCard, MentionText, PremiumBadge } from '@/features/communitySocial';
+import { useGroup, useNoteTopicView, useSearchMembers } from '@/lib/data/hooks-social';
+import { completeMention, mentionQuery } from '@/lib/domain/communitySocial';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Avatar, PostCard, ReportSheet } from '@/features/community';
 import { useCommunityProfile, useForums, usePost } from '@/lib/data/hooks';
@@ -38,9 +42,15 @@ export default function PostScreen() {
   const rows = useMemo(() => threads.flatMap(({ root, replies }) => [{ c: root, reply: false }, ...replies.map((r) => ({ c: r, reply: true }))]), [threads]);
   const { data: forums } = useForums();
   const { data: me } = useCommunityProfile();
+  // Sujet consulté : sert uniquement à classer « Pour vous » (visible et effaçable dans « Moi »)
+  useNoteTopicView(id);
+  const groupQ = useGroup(postQ.data?.group_id ?? null);
   const create = useCreateComment(id);
   const del = useDeleteComment();
   const [body, setBody] = useState('');
+  const mq = mentionQuery(body);
+  const mentionSearch = useSearchMembers(mq && mq.length >= 2 ? mq : '');
+  const mentionHits = mq ? (mentionSearch.data ?? []).slice(0, 6) : [];
   const [replyTo, setReplyTo] = useState<FeedComment | null>(null);
   const [reportComment, setReportComment] = useState<string | null>(null);
   // Lien depuis une notification : défilement jusqu'au commentaire concerné, mis en évidence
@@ -127,11 +137,14 @@ export default function PostScreen() {
               <Avatar path={c.avatar_path} preset={c.avatar_preset} anonymous={c.anonymous} size={30} />
             </Tappable>
             <View style={{ flex: 1 }}>
-              <Text variant="small" weight="bold" numberOfLines={1}>{who}{c.is_op && !c.anonymous ? ' · auteur·rice' : ''}</Text>
+              <Row gap={6} style={{ flexWrap: 'nowrap' }}>
+                <Text variant="small" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>{who}{c.is_op && !c.anonymous ? ' · auteur·rice' : ''}</Text>
+                {c.author_badge ? <PremiumBadge /> : null}
+              </Row>
               <Text variant="caption" muted numberOfLines={1}>{[c.author_handle ? `@${c.author_handle}` : null, timeAgo(c.created_at), c.edited_at ? 'modifié' : null, c.status !== 'visible' ? 'en relecture' : null].filter(Boolean).join(' · ')}</Text>
             </View>
           </Row>
-          <Text variant="small">{c.body}</Text>
+          <MentionText text={c.body} style={{ fontSize: 14 }} />
           <Row gap={spacing.md}>
             {me && c.status === 'visible' ? action('Répondre', () => { setReplyTo(c); inputRef.current?.focus(); }, true) : null}
             {c.is_mine ? action('Modifier', () => { setEditing(c); setEditBody(c.body); }) : null}
@@ -145,7 +158,9 @@ export default function PostScreen() {
   const canComment = post.status === 'visible' && !!me;
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.md }}>
-      <PostCard post={post} full forum={forums?.find((f) => f.id === post.forum_id) ?? null} onCommentPress={() => inputRef.current?.focus()} />
+      <PostCard post={post} full forum={forums?.find((f) => f.id === post.forum_id) ?? null} onCommentPress={() => inputRef.current?.focus()}
+        canPin={!!groupQ.data?.is_owner && groupQ.data.kind === 'private'} />
+      <AiSummaryCard postId={post.id} commentCount={post.comment_count} />
       <Text variant="heading">{post.comment_count} commentaire{post.comment_count > 1 ? 's' : ''}</Text>
       {commentsLoading ? <Skeleton kind="list" rows={2} /> : commentsError ? (
         <ErrorView error={commentsQ.error} onRetry={() => void commentsQ.refetch()} title="Impossible d’afficher les commentaires" />
@@ -167,6 +182,11 @@ export default function PostScreen() {
             </Row>
           )}
           <Field ref={inputRef} label={replyTo ? 'Votre réponse' : 'Votre commentaire'} value={body} onChangeText={setBody} multiline maxLength={4000} testID="comment-input" />
+          {mentionHits.length ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingTop: spacing.xs }} testID="comment-mentions">
+              {mentionHits.map((m) => <Chip key={m.handle} label={`@${m.handle}`} icon="at-sign" onPress={() => setBody((b) => completeMention(b, m.handle))} />)}
+            </ScrollView>
+          ) : null}
           <Button label={replyTo ? 'Répondre' : 'Publier'} style={{ marginTop: spacing.sm }} loading={create.isPending} disabled={!body.trim()} onPress={send} testID="comment-send" />
           <Text variant="caption" muted style={{ marginTop: 4 }}>{post.anonymous && post.is_mine ? 'Vos réponses à votre publication anonyme restent anonymes.' : 'Bienveillance avant tout : partagez votre expérience, pas un diagnostic.'}</Text>
         </Card>

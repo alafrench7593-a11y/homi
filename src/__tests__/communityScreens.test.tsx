@@ -37,6 +37,9 @@ import PostScreen from '@/app/community/post/[id]';
 import MemberProfile from '@/app/community/u/[handle]';
 import ProfileEditor from '@/app/community/profile';
 import { ChildTrackCards, PregnancyTrackCards } from '@/features/trackCards';
+import Groups from '@/app/community/groups';
+import Today from '@/app/today';
+import NotificationSettings from '@/app/community/notifications';
 import type { Child } from '@/lib/types';
 
 const routerState = (ExpoRouter as unknown as { __state: { params: Record<string, string> } }).__state;
@@ -72,7 +75,9 @@ describe(`nouveaux écrans (${Platform.OS})`, () => {
   let child: Child;
   beforeAll(async () => {
     await backend.auth.signUp(`ecrans.communaute.${Platform.OS}@exemple.test`, 'MotDePasse!2026');
-    const hid = await backend.rpc<string>('create_household', { p_name: 'Test' });
+    // Foyer actif de la personne (celui que lisent les écrans), créé à l'inscription si besoin
+    const [first] = await backend.select<{ household_id: string }>({ table: 'household_members' });
+    const hid = first?.household_id ?? await backend.rpc<string>('create_household', { p_name: 'Test' });
     [child] = await backend.insert<Child>('children', { household_id: hid, first_name: 'Zélie', birth_date: '2026-01-10', enabled_tracking: ['bottle', 'diaper', 'sleep', 'meal'] });
   });
 
@@ -159,6 +164,42 @@ describe(`nouveaux écrans (${Platform.OS})`, () => {
     t = allText(r);
     for (const x of ['Abonnement', 'Notifications', 'Confidentialité', 'Personnes bloquées', 'Sécurité', 'Aide', 'Exporter mes données', 'Supprimer mon compte', 'Se déconnecter', 'Ajouter un profil']) expect(t).toContain(x);
     r.unmount();
+  });
+
+  it('communauté : fils « Abonnements », groupes, recherche de membres', async () => {
+    const r = await render(<CommunityTab />);
+    const t = allText(r);
+    for (const x of ['Pour vous', 'Abonnements', 'Récent', 'Enregistrés', 'Groupes', 'Filtres']) expect(t).toContain(x);
+    await type(r, 'community-search', '@papa');
+    await flush(200);
+    expect(allText(r)).toContain('@papadenour');
+    r.unmount();
+  });
+
+  it('groupes : groupe du mois de naissance proposé (mois seulement), groupe privé Premium', async () => {
+    const r = await render(<Groups />);
+    await flush(400);
+    const t = allText(r);
+    expect(t).toContain('Bébés nés en janvier 2026');
+    expect(t).not.toContain('Zélie');
+    expect(t).toContain('Créez votre groupe privé de parents');
+    await pressId(r, 'join-cohort-birth-2026-01');
+    await flush(200);
+    const groups = await backend.rpc<{ name: string; is_member: boolean }[]>('community_groups_overview');
+    expect(groups.find((g) => g.name === 'Bébés nés en janvier 2026')?.is_member).toBe(true);
+    r.unmount();
+  });
+
+  it('résumé du jour et réglages des notifications', async () => {
+    const r = await render(<Today />);
+    const t = allText(r);
+    expect(t).toMatch(/Résumé du (matin|soir)/);
+    expect(t).toContain('Choisir mes notifications');
+    r.unmount();
+    const n = await render(<NotificationSettings />);
+    const nt = allText(n);
+    for (const x of ['Résumé du matin', 'Résumé du soir', 'Question du jour', 'Mentions', 'Publications des membres suivis', 'Activité de mes groupes privés']) expect(nt).toContain(x);
+    n.unmount();
   });
 
   it('cartes de suivi : bébé en diversification, puis grossesse sans biberon ni couche', async () => {

@@ -6,7 +6,6 @@
 import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Card, Chip, Icon, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
@@ -17,11 +16,14 @@ import { JOURNEY_LABELS, joinedLabel } from '@/lib/domain/communityRules';
 import { timeAgo } from '@/lib/domain/dates';
 import type { FeedComment, FeedPhoto, FeedPost } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
-import { NACRE, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { accentOf, MentionText, PremiumBadge, ProfileBannerView } from '@/features/communitySocial';
 
 export interface ProfileHeaderData {
   pseudonym: string; handle?: string | null; bio?: string | null; journey_label?: string | null; avatar_path?: string | null; avatar_preset?: string | null;
   joined?: string | null; posts?: number | null; comments?: number | null; photos?: number | null; minimal?: boolean;
+  /** Personnalisation (Premium) et badge facultatif */
+  accent?: string | null; banner?: string | null; about?: string | null; badge?: boolean;
 }
 
 function Stat({ value, label }: { value: number; label: string }) {
@@ -35,18 +37,23 @@ function Stat({ value, label }: { value: number; label: string }) {
 
 export function ProfileHeader({ p, actions }: { p: ProfileHeaderData; actions?: React.ReactNode }) {
   const t = useTheme();
+  const accent = accentOf(p.accent);
   return (
-    <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border }} testID="profile-header">
-      <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ height: 84, opacity: 0.75 }} />
+    <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, borderWidth: 1, borderColor: accent ?? t.colors.border }} testID="profile-header">
+      <ProfileBannerView banner={p.banner} />
       <View style={{ paddingHorizontal: spacing.md, paddingBottom: spacing.md, marginTop: -40, gap: 6 }}>
         <Row style={{ alignItems: 'flex-end' }}>
-          <View style={{ borderRadius: 48, borderWidth: 4, borderColor: t.colors.background }}>
+          <View style={{ borderRadius: 48, borderWidth: 4, borderColor: accent ?? t.colors.background }}>
             <Avatar path={p.avatar_path} preset={p.avatar_preset ?? 'moon'} size={84} label={`Avatar de ${p.pseudonym}`} />
           </View>
         </Row>
-        <Text variant="heading" testID="profile-pseudonym" numberOfLines={2}>{p.pseudonym}</Text>
+        <Row gap={6}>
+          <Text variant="heading" testID="profile-pseudonym" numberOfLines={2} style={{ flexShrink: 1 }}>{p.pseudonym}</Text>
+          {p.badge ? <PremiumBadge /> : null}
+        </Row>
         {p.handle ? <Text muted testID="profile-handle">{`@${p.handle}`}</Text> : null}
         {p.bio ? <Text testID="profile-bio">{p.bio}</Text> : null}
+        {p.about ? <MentionText text={p.about} style={{ color: t.colors.textMuted }} /> : null}
         {/* Actions sous la présentation : elles passent à la ligne au lieu de sortir de l'écran sur un petit téléphone */}
         {actions ? <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>{actions}</View> : null}
         <Row wrap gap={spacing.sm}>
@@ -94,7 +101,7 @@ function PhotosGrid({ posts }: { posts: FeedPost[] }) {
 
 type Tab = 'posts' | 'replies' | 'photos' | 'saved';
 
-function ProfileTab({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+export function ProfileTab({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   const t = useTheme();
   return (
     <Tappable accessibilityRole="tab" accessibilityState={{ selected }} onPress={onPress} testID={`profile-tab-${label}`}

@@ -2,6 +2,7 @@
  * Écrire ou modifier une publication : catégorie, question ou témoignage, titre facultatif, texte, jusqu'à 4 photos
  * (recompressées, sans géolocalisation ni métadonnées), pseudonyme habituel ou publication anonyme, aperçu,
  * avertissement avant de publier une information sensible, puis « Publier ».
+ * Aussi : publier dans un groupe, ajouter un sondage (2 à 6 choix, votes anonymes), mentionner un membre (@identifiant).
  * Rien n'est jamais publié automatiquement (ni conversation avec l'assistant, ni donnée de suivi, ni photo privée).
  */
 import React, { useEffect, useMemo, useState } from 'react';
@@ -15,6 +16,9 @@ import { Tappable } from '@/components/Tappable';
 import { Avatar, CategorySheet, CommunityImage, spaceIcon } from '@/features/community';
 import { useCommunityProfile, usePost } from '@/lib/data/hooks';
 import { useCreatePost, useSpaces, useUpdatePost, type DraftPhoto } from '@/lib/data/hooks-community';
+import { useGroup, useSearchMembers } from '@/lib/data/hooks-social';
+import { completeMention, mentionQuery, pollOptionsError } from '@/lib/domain/communitySocial';
+import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { sensitiveHints } from '@/lib/domain/communityRules';
 import { MAX_PHOTOS, prepareCommunityPhoto } from '@/lib/community/photos';
@@ -28,8 +32,10 @@ interface LocalPhoto extends DraftPhoto { previewUri: string }
 export default function Composer() {
   const t = useTheme();
   const toast = useToast();
-  const params = useLocalSearchParams<{ forum?: string; edit?: string }>();
+  const params = useLocalSearchParams<{ forum?: string; edit?: string; group?: string; title?: string; kind?: string }>();
   const editId = typeof params.edit === 'string' && params.edit ? params.edit : null;
+  const groupId = !editId && typeof params.group === 'string' && params.group ? params.group : null;
+  const groupQ = useGroup(groupId);
   const spaces = useSpaces();
   const meQ = useCommunityProfile();
   const me = meQ.data;
@@ -37,8 +43,12 @@ export default function Composer() {
   const create = useCreatePost();
   const update = useUpdatePost();
   const [forumId, setForumId] = useState(typeof params.forum === 'string' ? params.forum : '');
-  const [kind, setKind] = useState<'question' | 'testimony'>('question');
-  const [title, setTitle] = useState('');
+  const [kind, setKind] = useState<'question' | 'testimony'>(params.kind === 'testimony' ? 'testimony' : 'question');
+  const [title, setTitle] = useState(typeof params.title === 'string' ? params.title.slice(0, 140) : '');
+  const [pollOn, setPollOn] = useState(false);
+  const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
+  const [pollMultiple, setPollMultiple] = useState(false);
+  const [pollDays, setPollDays] = useState<number | null>(null);
   const [body, setBody] = useState('');
   const [anonymous, setAnonymous] = useState(false);
   const [kept, setKept] = useState<FeedPhoto[]>([]);
@@ -56,6 +66,12 @@ export default function Composer() {
     setForumId(p.forum_id); setKind(p.kind ?? 'question'); setTitle(p.title ?? ''); setBody(p.body); setAnonymous(!!p.anonymous); setKept(p.photos ?? []);
   }, [editId, existing.data?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Publication dans un groupe : catégorie « Questions générales » par défaut (modifiable)
+  useEffect(() => {
+    if (groupId && !forumId) { const f = spaces.all.find((x) => x.slug === 'questions-generales'); if (f) setForumId(f.id); }
+  }, [groupId, forumId, spaces.all]);
+  const mq = mentionQuery(body);
+  const mentionResults = useSearchMembers(mq && mq.length >= 2 ? mq : '');
   const forum = spaces.all.find((f) => f.id === forumId) ?? null;
   const hints = useMemo(() => sensitiveHints(`${title} ${body}`), [title, body]);
   const photoCount = kept.length + added.length;
@@ -85,6 +101,7 @@ export default function Composer() {
     if (!forumId) e.forum = 'Choisissez une catégorie.';
     if (title.trim() && title.trim().length < 3) e.title = 'Au moins 3 caractères, ou laissez vide.';
     if (!body.trim()) e.body = 'Écrivez votre message.';
+    if (pollOn && !editId) { const pe = pollOptionsError(pollOptions); if (pe) e.poll = pe; }
     setErrors(e);
     return !Object.keys(e).length;
   }
@@ -97,7 +114,8 @@ export default function Composer() {
     try {
       const res = editId
         ? await update.mutateAsync({ id: editId, forumId, title, body, kind, removePaths: removed, addPhotos: added, keptCount: kept.length })
-        : await create.mutateAsync({ forumId, title, body, kind, anonymous, photos: added });
+        : await create.mutateAsync({ forumId, title, body, kind, anonymous, photos: added, groupId,
+          poll: pollOn ? { options: pollOptions.map((o) => o.trim()).filter(Boolean), multiple: pollMultiple, closesInDays: pollDays } : null });
       const review = res?.status === 'pending_review';
       toast(review ? 'Publication envoyée en relecture avant d’être visible.' : editId ? 'Publication modifiée.' : 'Publication en ligne.', review ? 'info' : 'success');
       router.replace(`/community/post/${res.id}`);
@@ -122,6 +140,9 @@ export default function Composer() {
   return (
     <Screen back title={editId ? 'Modifier la publication' : 'Nouvelle publication'}>
       {errors._ ? <Banner tone="danger">{errors._}</Banner> : null}
+      {groupId && groupQ.data ? (
+        <Banner tone="info" title={`Dans le groupe « ${groupQ.data.name} »`}>{groupQ.data.kind === 'private' ? 'Visible uniquement par les membres du groupe.' : 'Visible par tous les membres de la communauté.'}</Banner>
+      ) : null}
       <Segmented label="Mode" value={preview ? 'preview' : 'write'} onChange={(v) => setPreview(v === 'preview')} options={[{ value: 'write', label: 'Écrire' }, { value: 'preview', label: 'Aperçu' }]} />
 
       {preview ? (
@@ -145,6 +166,7 @@ export default function Composer() {
             </Row>
             {title.trim() ? <Text weight="bold" style={{ marginTop: 6 }}>{title.trim()}</Text> : null}
             <Text style={{ marginTop: 4 }}>{body.trim() || '…'}</Text>
+            {pollOn ? <View style={{ gap: 4, marginTop: spacing.xs }}>{pollOptions.filter((o) => o.trim()).map((o, i) => <Text key={i} variant="small">{`○ ${o.trim()}`}</Text>)}</View> : null}
             {photoCount ? (
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: spacing.sm }}>
                 {kept.map((p) => <CommunityImage key={p.path} path={p.path} style={{ width: '48%', aspectRatio: 1, borderRadius: radius.md }} />)}
@@ -167,7 +189,33 @@ export default function Composer() {
           <Field label="Titre" optional value={title} onChangeText={setTitle} maxLength={140} error={errors.title} testID="composer-title" />
           <Field label={kind === 'testimony' ? 'Votre témoignage' : 'Votre question'} value={body} onChangeText={setBody} multiline maxLength={8000} error={errors.body} style={{ minHeight: 140, textAlignVertical: 'top' }} testID="composer-body"
             hint={`${body.length} / 8000`} />
+          {mq && mentionResults.data?.length ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }} testID="composer-mentions">
+              {mentionResults.data.slice(0, 6).map((m) => <Chip key={m.handle} label={`@${m.handle}`} icon="at-sign" onPress={() => setBody((b) => completeMention(b, m.handle))} />)}
+            </ScrollView>
+          ) : null}
           {hints.length ? <Text variant="small" color={hints.some((h) => h.blocking) ? t.colors.danger : t.colors.textMuted} testID="composer-hint">{hints[0].text}</Text> : null}
+          {!editId ? (
+            <Card tone="soft" testID="composer-poll">
+              <ToggleRow label="Ajouter un sondage" hint="2 à 6 choix ; les votes sont anonymes, seuls les totaux sont visibles." value={pollOn} onChange={setPollOn} />
+              {pollOn ? (
+                <View style={{ gap: spacing.xs, marginTop: spacing.xs }}>
+                  {pollOptions.map((o, i) => (
+                    <Row key={i}>
+                      <View style={{ flex: 1 }}><Field label={`Choix ${i + 1}`} value={o} maxLength={80} onChangeText={(v) => setPollOptions((list) => list.map((x, j) => (j === i ? v : x)))} testID={`composer-poll-${i}`} /></View>
+                      {pollOptions.length > 2 ? <Tappable accessibilityRole="button" accessibilityLabel={`Retirer le choix ${i + 1}`} onPress={() => setPollOptions((list) => list.filter((_, j) => j !== i))} style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={16} color={t.colors.textMuted} /></Tappable> : null}
+                    </Row>
+                  ))}
+                  {pollOptions.length < 6 ? <Button label="Ajouter un choix" icon="plus" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => setPollOptions((list) => [...list, ''])} testID="composer-poll-add" /> : null}
+                  <ToggleRow label="Plusieurs choix possibles" value={pollMultiple} onChange={setPollMultiple} />
+                  <Row wrap gap={6}>
+                    {([[null, 'Sans fin'], [1, '1 jour'], [3, '3 jours'], [7, '7 jours']] as const).map(([d, l]) => <Chip key={l} label={l} selected={pollDays === d} onPress={() => setPollDays(d)} />)}
+                  </Row>
+                  {errors.poll ? <Text variant="small" color={t.colors.danger}>{errors.poll}</Text> : null}
+                </View>
+              ) : null}
+            </Card>
+          ) : null}
 
           <Text variant="label">{`Photos (${photoCount}/${MAX_PHOTOS})`}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }} testID="composer-photos">

@@ -4,11 +4,20 @@ import { Tabs } from 'expo-router/tabs';
 import { useAuth } from '@/lib/auth';
 import { Dock } from '@/components/Dock';
 import { t as tr } from '@/i18n';
+import { useDigestSync } from '@/lib/data/hooks-social';
+
+/** Notifications du résumé quotidien : reprogrammées selon les réglages (nouvel appareil, réinstallation). */
+function DigestSync() {
+  useDigestSync();
+  return null;
+}
 
 export default function TabsLayout() {
   const { session, ready } = useAuth();
   if (ready && !session) return <Redirect href="/welcome" />;
   return (
+    <>
+    {session ? <DigestSync /> : null}
     <Tabs detachInactiveScreens screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' }, freezeOnBlur: true }} tabBar={(props) => <Dock {...props} />}>
       <Tabs.Screen name="index" options={{ title: tr('tab.home') }} />
       <Tabs.Screen name="track" options={{ title: tr('tab.track') }} />
@@ -21,5 +30,6 @@ export default function TabsLayout() {
       {/* Le Profil s'ouvre depuis l'avatar en haut à droite ; la route reste (liens profonds), hors de la barre */}
       <Tabs.Screen name="profile" options={{ title: tr('tab.profile'), href: null }} />
     </Tabs>
+    </>
   );
 }

@@ -2,6 +2,7 @@
  * Profil communautaire d'un membre : uniquement ce qu'il a choisi de rendre public (fonction serveur community_member).
  * Bloquer, débloquer ou signaler le membre. Un membre qui m'a bloquée apparaît « indisponible ».
  */
+import { FollowButton } from '@/features/communitySocial';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -45,12 +46,13 @@ export default function MemberProfile() {
   const actions = m.is_me
     ? <Button label="Modifier" size="sm" variant="secondary" icon="edit-3" onPress={() => router.push('/community/profile')} />
     : (
-      <Row gap={6}>
+      <>
+        {!m.blocked ? <FollowButton handle={m.handle} following={!!m.is_following} onNeedProfile={() => router.push('/community/profile')} /> : null}
         {m.blocked
           ? <Button label="Débloquer" size="sm" variant="secondary" icon="unlock" onPress={doUnblock} testID="member-unblock" />
           : <Button label="Bloquer" size="sm" variant="ghost" icon="slash" onPress={doBlock} testID="member-block" />}
         <Button label="Signaler" size="sm" variant="ghost" icon="flag" onPress={() => setReporting(true)} testID="member-report" />
-      </Row>
+      </>
     );
 
   return (
@@ -59,6 +61,7 @@ export default function MemberProfile() {
         <ProfileHeader actions={actions} p={{
           pseudonym: m.pseudonym, handle: m.handle, bio: m.bio, journey_label: m.journey_label, avatar_path: m.avatar_path, avatar_preset: m.avatar_preset,
           joined: m.joined_month, posts: m.posts_count, comments: m.comments_count, photos: m.photos_count, minimal: m.visibility === 'minimal' && !m.is_me,
+          accent: m.accent, banner: m.banner, about: m.about, badge: m.premium_badge,
         }} />
         {m.blocked ? <Banner tone="info">{'Vous avez bloqué ce membre : ses contenus sont masqués pour vous.'}</Banner> : <ProfileTabs handle={m.handle} mine={false} />}
       </View>

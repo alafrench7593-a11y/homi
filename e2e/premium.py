@@ -72,12 +72,12 @@ def run(p):
 
     # ================================================================ Version gratuite : pas de blocage à l'ouverture
     subject(pg, lina)
-    R['ouverture_sans_paywall'] = not has(pg, 'premium-preview') and 'Poser une question' in T(pg)
+    R['ouverture_sans_paywall'] = not has(pg, 'premium-preview') and has(pg, 'home-card-main')
     go(pg, f'/child/{lina}', 3000)
     R['sommeil_gratuit_boutons'] = has(pg, 'sleep-asleep') or has(pg, 'sleep-awake')
     tid(pg, 'premium-sleep').click(); pg.wait_for_timeout(900)
     prev = tid(pg, 'premium-preview-real').inner_text()
-    R['apercu_reel_avant_abonnement'] = has(pg, 'premium-preview') and 'Le planning de sommeil de Lina' in T(pg) and bool(re.search(r'\d+ temps d’éveil déjà notés', prev))
+    R['apercu_reel_avant_abonnement'] = has(pg, 'premium-preview') and 'Découvrez le rythme personnalisé de Lina' in T(pg) and bool(re.search(r'\d+ temps d’éveil déjà notés', prev))
     R['apercu_gratuit_vs_premium'] = 'Gratuit :' in T(pg) and 'Premium :' in T(pg)
     pg.screenshot(path=f'{SHOTS}/premium_apercu.png')
     tid(pg, 'premium-later').click(); pg.wait_for_timeout(600)
@@ -87,7 +87,7 @@ def run(p):
 
     # ================================================================ Écran d'abonnement
     t = T(pg)
-    R['abonnement_fonction_essayee'] = has(pg, 'sub-tried') and 'Le planning de sommeil' in tid(pg, 'sub-tried').inner_text()
+    R['abonnement_fonction_essayee'] = has(pg, 'sub-tried') and 'rythme personnalisé' in tid(pg, 'sub-tried').inner_text()
     R['abonnement_annuel_mis_en_valeur'] = has(pg, 'plan-annual') and 'Le plus avantageux' in tid(pg, 'plan-annual').inner_text() and tid(pg, 'plan-annual').bounding_box()['y'] < tid(pg, 'plan-monthly').bounding_box()['y']
     terms = tid(pg, 'plan-terms-annual').inner_text()
     R['abonnement_prix_total_essai_renouvellement'] = '39,99 € facturés une fois par an' in terms and '7 jours gratuits' in terms and 'Renouvellement automatique le' in terms

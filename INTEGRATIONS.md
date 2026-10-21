@@ -238,6 +238,14 @@ Coût externe : **aucun**. Aucune donnée personnelle ou de santé n'est envoyé
 - **Suppression du compte** : la fonction `delete-account` efface aussi `community/<identifiant>/…`.
 - **Limites** : vérifié sur le web, en rendu React Native (préréglages iOS et Android de jest-expo) et par compilation des paquets natifs iOS et Android (`expo export`) ; pas encore essayé sur un vrai téléphone (nécessite une version compilée et installée).
 
+## 12 decies. Mini-réseau social et résumé des discussions (nouveau, 23 octobre 2026)
+
+- **Fonction `community-ai`** (Premium) : résumé d'une discussion d'au moins 6 réponses et traduction d'un message, via **Gemini** (même client et même secret `GEMINI_API_KEY` que l'assistant ; aucune nouvelle clé). Vérifications serveur : connexion, `has_premium`, quota `community_ai_per_month` (0 gratuit / 200 Premium), limite horaire, contenu lu **avec les droits de la personne** (vues `forum_feed` / `comment_feed`). Données envoyées : uniquement les textes déjà visibles pour elle, mentions, adresses e-mail et numéros neutralisés, **jamais** de pseudonyme ni de donnée de l'application. Contrôle de prudence de la réponse (promesses, posologies, pseudonymes → refus). Sans clé : « non configuré », jamais de faux résumé. Statut : 🔧 code + tests Jest avec un service simulé ; fonction à déployer, non appelée en conditions réelles depuis cet environnement. En démonstration : extraits des réponses étiquetés « sans IA ».
+- **Albums** : même compartiment privé `community` (`<identifiant>/album-…`), photos nettoyées sur l'appareil ; lecture réservée à la propriétaire et aux membres choisis.
+- **Notifications** : nouvelles catégories `community_follow`, `community_mention`, `community_group` (même texte neutre sur l'écran verrouillé) ; résumé du matin et du soir en **notifications locales** programmées sur le téléphone (expo-notifications, déclencheur quotidien), uniquement si la personne l'a choisi.
+- **Ateliers** : table `community_events` alimentée par l'équipe (administration) ; aucun service de visio intégré, le lien est transmis aux inscrit·es.
+- **Limites** : vérifié sur le web, en rendu React Native (préréglages iOS et Android) et par compilation des paquets natifs ; pas encore essayé sur un vrai téléphone.
+
 ## 13. Recommandations de produits
 ✅ **Catalogue éditorial intégré (20 octobre 2026)**, voir 12 sexies : produits réels ajoutés par l'équipe à partir des bases ouvertes, critères objectifs expliqués, aucune recommandation inventée. Équipement, jouets et livres : toujours non couverts (pas de catalogue ouvert vérifiable). Tout contenu sponsorisé devrait être étiqueté comme tel.
 

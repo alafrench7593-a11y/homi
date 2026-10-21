@@ -115,7 +115,7 @@ export interface Reminder {
 }
 
 export interface AppNotification {
-  id: string; user_id: string; category: 'reminder' | 'community_reply' | 'community_comment' | 'community_like' | 'community_saved' | 'community_moderation' | 'assistant' | 'subscription' | 'product_recall' | 'system' | 'family';
+  id: string; user_id: string; category: 'reminder' | 'community_reply' | 'community_comment' | 'community_like' | 'community_saved' | 'community_moderation' | 'community_follow' | 'community_mention' | 'community_group' | 'assistant' | 'subscription' | 'product_recall' | 'system' | 'family';
   title: string; body: string | null; deep_link: string | null; payload: Record<string, unknown>; read_at: string | null; created_at: string;
 }
 
@@ -174,25 +174,49 @@ export interface FeedPost {
   area_label: string | null; status: string; like_count: number; comment_count: number;
   created_at: string; edited_at: string | null; pseudonym: string | null; author_handle?: string | null; avatar_path?: string | null; avatar_preset?: string | null;
   is_mine: boolean; liked: boolean; saved: boolean; photos?: FeedPhoto[];
+  /** Mini-réseau social */
+  group_id?: string | null; group_name?: string | null; group_kind?: 'theme' | 'cohort' | 'private' | null; pinned_at?: string | null;
+  following_author?: boolean; author_badge?: boolean; author_accent?: string | null; saved_folder_id?: string | null; poll?: PollSummary | null;
 }
+export interface PollSummary { multiple: boolean; closes_at: string | null; closed: boolean; total: number; options: { id: string; label: string; votes: number; mine: boolean }[] }
 export interface FeedComment {
   id: string; post_id: string; parent_id: string | null; body: string; status: string; created_at: string; edited_at?: string | null;
   pseudonym: string | null; author_handle?: string | null; avatar_path?: string | null; avatar_preset?: string | null;
-  is_mine: boolean; is_op?: boolean; anonymous?: boolean; post_title?: string | null; post_excerpt?: string | null;
+  is_mine: boolean; is_op?: boolean; anonymous?: boolean; post_title?: string | null; post_excerpt?: string | null; author_badge?: boolean;
 }
 export interface CommunityProfile {
   user_id: string; pseudonym: string; handle?: string; area_label: string | null; suspended_until: string | null;
   bio?: string | null; avatar_path?: string | null; avatar_preset?: string | null; journey_label?: string | null; visibility?: 'members' | 'minimal';
   rules_accepted_at?: string | null; created_at?: string;
   posts_count?: number; comments_count?: number; photos_count?: number; likes_count?: number; saved_count?: number;
+  accent?: string | null; banner?: string | null; about?: string | null; show_premium_badge?: boolean; premium?: boolean; premium_badge?: boolean;
+  following_count?: number; followers_count?: number;
 }
 /** Profil d'un membre tel que la personne a choisi de le montrer (fonction community_member). */
 export interface CommunityMember {
   handle: string; pseudonym: string; avatar_path?: string | null; avatar_preset?: string | null; is_me: boolean; blocked: boolean; unavailable: boolean;
   visibility?: 'members' | 'minimal'; bio?: string | null; journey_label?: string | null; joined_month?: string | null;
   posts_count?: number; comments_count?: number; photos_count?: number;
+  is_following?: boolean; premium_badge?: boolean; accent?: string | null; banner?: string | null; about?: string | null;
 }
-export interface CommunityNotifPrefs { user_id?: string; post_comment: boolean; comment_reply: boolean; reaction: boolean; saved_reply: boolean; moderation: boolean }
+export interface CommunityNotifPrefs {
+  user_id?: string; post_comment: boolean; comment_reply: boolean; reaction: boolean; saved_reply: boolean; moderation: boolean;
+  mention?: boolean; new_follower?: boolean; followed_post?: boolean; group_activity?: boolean; group_invite?: boolean;
+}
+export interface MemberCard { handle: string; pseudonym: string; avatar_path?: string | null; avatar_preset?: string | null; is_following?: boolean; since?: string | null; role?: string }
+export interface CommunityGroup {
+  id: string; slug: string | null; name: string; description: string | null; kind: 'theme' | 'cohort' | 'private'; cohort_type: 'birth' | 'due' | null; cohort_month: string | null;
+  icon: string | null; member_count: number; is_member: boolean; is_owner: boolean; pending_invitation: string | null; last_post_at?: string | null;
+  can_invite?: boolean | null; members?: MemberCard[] | null; invitations?: { id: string; handle: string; status: string; created_at: string }[] | null;
+}
+export interface CommunityAlbum {
+  id: string; title: string; description: string | null; created_at: string; is_mine: boolean; owner_handle: string | null; owner_pseudonym: string | null;
+  photo_count: number; cover: string | null; shared_with: string[] | null;
+}
+export interface SavedFolder { id: string; user_id: string; name: string; created_at: string }
+export interface ActivityItem { kind: 'post' | 'comment' | 'like' | 'save'; at: string; post_id: string; label: string }
+export interface CommunityEvent { id: string; title: string; description: string | null; kind: 'atelier' | 'rencontre'; starts_at: string; ends_at: string | null; premium_only: boolean; capacity: number | null }
+export interface DigestPrefs { user_id?: string; morning: boolean; morning_time: string; evening: boolean; evening_time: string; question: boolean; hidden_items: string[] }
 export type ReportReason = 'harassment' | 'medical_misinformation' | 'spam' | 'personal_data' | 'danger' | 'inappropriate' | 'other';
 export interface ReportRow { id: string; reporter_id: string; post_id: string | null; comment_id: string | null; reason: ReportReason; details: string | null; status: string; created_at: string }
 

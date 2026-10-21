@@ -79,12 +79,12 @@ with sync_playwright() as p:
     # 6. Fluidité : une recherche saisie dans Communauté survit à un changement d'onglet
     pg.goto(B + '/'); pg.wait_for_timeout(1500)
     pg.get_by_role('tab', name='Communauté').click(); pg.wait_for_timeout(1500)
-    box = pg.get_by_placeholder('Sommeil, purée, valise de maternité…')
+    box = pg.get_by_placeholder('Sommeil, purée… ou @membre')
     if box.count():
         box.fill('Brouillon conservé ?')
         pg.get_by_role('tab', name='Suivi').click(); pg.wait_for_timeout(1000)
         pg.get_by_role('tab', name='Communauté').click(); pg.wait_for_timeout(1000)
-        R['6_pas_de_reinitialisation'] = pg.get_by_placeholder('Sommeil, purée, valise de maternité…').input_value() == 'Brouillon conservé ?'
+        R['6_pas_de_reinitialisation'] = pg.get_by_placeholder('Sommeil, purée… ou @membre').input_value() == 'Brouillon conservé ?'
     else:
         R['6_pas_de_reinitialisation'] = False
 

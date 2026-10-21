@@ -213,6 +213,11 @@ def run(p):
     R['pantry_resultats_adaptes'] = len(res) > 0 and all('pregnancy' in lib[s]['aud'] for s in res)
 
     # ---- 12. Accueil : une seule recette recommandée, adaptée
+    # Accueil court : la carte « Recette recommandée » est masquée par défaut ; on l'active dans Réglages › Mon accueil
+    go(pg, '/settings/home', 2500)
+    sw = pg.get_by_role('switch', name='Afficher « Recette recommandée »')
+    R['12_carte_recette_activable'] = sw.count() == 1
+    if sw.count() and sw.first.get_attribute('aria-checked') != 'true': sw.first.click(); pg.wait_for_timeout(500)
     go(pg, '/', 2800)
     pg.mouse.wheel(0, 3000); pg.wait_for_timeout(400)
     R['12_une_seule_recette_accueil'] = pg.locator('[data-testid="home-recipe"]').count() == 1

@@ -19,6 +19,9 @@ import type { FeedPhoto, FeedPost, Forum, ReportReason } from '@/lib/types';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { BRAND } from '@/config/brand';
+import { accentOf, FolderSheet, MentionText, PollView, PremiumBadge, Tag } from '@/features/communitySocial';
+import { useCommunityAi, useFollowMember, usePinPost } from '@/lib/data/hooks-social';
+import { usePremiumAccess } from '@/lib/data/hooks-premium';
 
 export const REPORT_REASONS: { key: ReportReason; label: string }[] = [
   { key: 'harassment', label: 'Harcèlement ou propos blessants' },
@@ -221,7 +224,7 @@ function ActionButton({ icon, label, count, active, onPress, testID, activeColor
   );
 }
 
-export function PostCard({ post, forum, full, onCommentPress }: { post: FeedPost; forum?: Pick<Forum, 'title' | 'slug' | 'icon'> | null; full?: boolean; onCommentPress?: () => void }) {
+export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: FeedPost; forum?: Pick<Forum, 'title' | 'slug' | 'icon'> | null; full?: boolean; onCommentPress?: () => void; canPin?: boolean }) {
   const t = useTheme();
   const toast = useToast();
   const reduce = useReduceMotion();
@@ -231,6 +234,13 @@ export function PostCard({ post, forum, full, onCommentPress }: { post: FeedPost
   const [menu, setMenu] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [viewer, setViewer] = useState<number | null>(null);
+  const [folders, setFolders] = useState(false);
+  const [translated, setTranslated] = useState<string | null>(null);
+  const follow = useFollowMember();
+  const pin = usePinPost();
+  const ai = useCommunityAi();
+  const aiAccess = usePremiumAccess('community_ai');
+  const accent = post.anonymous ? null : accentOf(post.author_accent);
   const author = post.anonymous ? (post.is_mine ? 'Anonyme (vous)' : 'Membre anonyme') : post.pseudonym ?? 'Membre';
   const openPost = () => router.push(`/community/post/${post.id}`);
   const openProfile = () => { if (post.author_handle) router.push(`/community/u/${post.author_handle}` as never); };
@@ -249,6 +259,27 @@ export function PostCard({ post, forum, full, onCommentPress }: { post: FeedPost
     if (!post.liked && !reduce) haptic('light');
     like.mutate(post, { onError: (e) => toast(friendlyError(e), 'error') });
   }
+  async function toggleFollow() {
+    if (!post.author_handle) return;
+    setMenu(false);
+    try {
+      await follow.mutateAsync({ handle: post.author_handle, follow: !post.following_author });
+      toast(post.following_author ? `Vous ne suivez plus @${post.author_handle}.` : `Vous suivez @${post.author_handle}.`);
+    } catch (e) { toast(friendlyError(e), 'error'); }
+  }
+  async function togglePin() {
+    setMenu(false);
+    try { await pin.mutateAsync({ postId: post.id, pin: !post.pinned_at }); toast(post.pinned_at ? 'Publication désépinglée.' : 'Publication épinglée en haut du groupe.'); }
+    catch (e) { toast(friendlyError(e), 'error'); }
+  }
+  async function translate() {
+    setMenu(false);
+    if (!aiAccess.require()) return;
+    try {
+      const r = await ai.mutateAsync({ action: 'translate', postId: post.id, target: 'en' });
+      if ('text' in r) setTranslated(r.text); else toast(('message' in r && r.message) || 'Traduction indisponible.', 'error');
+    } catch (e) { toast(friendlyError(e), 'error'); }
+  }
   async function remove() {
     setMenu(false);
     if (!(await confirm('Supprimer définitivement cette publication ?', 'Ses photos, commentaires et réponses seront supprimés. Cette action est irréversible.', 'Supprimer'))) return;
@@ -263,12 +294,17 @@ export function PostCard({ post, forum, full, onCommentPress }: { post: FeedPost
     <Card onPress={full ? undefined : openPost} accessibilityLabel={`Publication de ${author}${post.title ? ` : ${post.title}` : ''}`} testID={full ? 'post-full' : `post-${post.id}`}>
       <Row style={{ alignItems: 'center' }}>
         <Tappable accessibilityRole={post.author_handle ? 'button' : 'image'} accessibilityLabel={post.author_handle ? `Voir le profil de ${author}` : author} disabled={!post.author_handle} onPress={openProfile} testID="post-author-avatar">
-          <Avatar path={post.avatar_path} preset={post.avatar_preset} anonymous={post.anonymous} size={38} />
+          <View style={accent ? { borderRadius: 22, borderWidth: 2, borderColor: accent, padding: 1 } : undefined}>
+            <Avatar path={post.avatar_path} preset={post.avatar_preset} anonymous={post.anonymous} size={accent ? 34 : 38} />
+          </View>
         </Tappable>
         <View style={{ flex: 1, minWidth: 0 }}>
           <Tappable accessibilityRole={post.author_handle ? 'link' : 'text'} disabled={!post.author_handle} onPress={openProfile} testID="post-author">
             {/* Pseudonyme complet sur le profil du membre */}
-            <Text weight="bold" numberOfLines={1} intentionalTruncation>{author}</Text>
+            <Row gap={6} style={{ flexWrap: 'nowrap' }}>
+              <Text weight="bold" numberOfLines={1} intentionalTruncation style={{ flexShrink: 1 }}>{author}</Text>
+              {post.author_badge && !post.anonymous ? <PremiumBadge /> : null}
+            </Row>
           </Tappable>
           <Text variant="caption" muted numberOfLines={2}>
             {[post.author_handle ? `@${post.author_handle}` : null, timeAgo(post.created_at), post.edited_at ? 'modifiée' : null].filter(Boolean).join(' · ')}
@@ -279,12 +315,17 @@ export function PostCard({ post, forum, full, onCommentPress }: { post: FeedPost
         </Tappable>
       </Row>
       <Row wrap gap={6} style={{ marginTop: 6 }}>
+        {post.pinned_at ? <Tag icon="bookmark" label="Épinglée" color={t.colors.primary} /> : null}
+        {post.group_name ? <Tag icon={post.group_kind === 'private' ? 'lock' : 'users'} label={post.group_name} color={t.colors.lavender} /> : null}
+        {post.poll ? <Tag icon="bar-chart-2" label="Sondage" /> : null}
         {forum ? <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, backgroundColor: t.colors.primary + '14' }}><Icon name={spaceIcon(forum)} size={12} color={t.colors.primary} /><Text variant="caption" color={t.colors.primary}>{forum.title}</Text></View> : null}
         {post.kind === 'testimony' ? <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, backgroundColor: t.colors.lavender + '33' }}><Text variant="caption">Témoignage</Text></View> : null}
         {post.status !== 'visible' ? <Text variant="caption" color={t.colors.gold}>{post.status === 'pending_review' ? 'En relecture' : post.status === 'hidden' ? 'Masquée par la modération' : 'Retirée'}</Text> : null}
       </Row>
       {post.title ? <Text weight="bold" style={{ marginTop: 6 }}>{post.title}</Text> : null}
-      <Text numberOfLines={full ? undefined : 5} intentionalTruncation style={{ marginTop: 4 }}>{post.body}</Text>
+      <MentionText text={post.body} numberOfLines={full ? undefined : 5} style={{ marginTop: 4 }} />
+      {translated ? <View style={{ marginTop: 6, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} testID="post-translation"><Text variant="caption" muted>Traduction automatique</Text><Text variant="small">{translated}</Text></View> : null}
+      <PollView post={post} />
       <PhotoGrid photos={post.photos ?? []} onOpen={(i) => setViewer(i)} />
       {post.area_label ? <Row gap={4} style={{ marginTop: 6 }}><Icon name="map-pin" size={12} color={t.colors.textMuted} /><Text variant="caption" muted>{post.area_label}</Text></Row> : null}
       {medical && full ? <Text variant="caption" muted style={{ marginTop: 6 }} testID="post-testimony-note">Témoignage personnel d’un membre, pas un avis médical. Pour une décision de santé, demandez à un professionnel.</Text> : null}
@@ -296,6 +337,9 @@ export function PostCard({ post, forum, full, onCommentPress }: { post: FeedPost
         <ActionButton icon="share-2" label="Partager le lien" onPress={() => sharePost(post).catch(() => toast('Le partage n’est pas disponible sur cet appareil.', 'error'))} testID="post-share" />
       </Row>
       <Sheet visible={menu} onClose={() => setMenu(false)} title="Publication">
+        {post.saved ? <Chip label="Ranger dans un dossier" icon="folder" onPress={() => { setMenu(false); setFolders(true); }} testID="post-folder" /> : null}
+        {canPin ? <Chip label={post.pinned_at ? 'Désépingler' : 'Épingler'} icon="bookmark" onPress={() => void togglePin()} testID="post-pin" /> : null}
+        {full ? <Chip label="Traduire en anglais" icon="globe" onPress={() => void translate()} testID="post-translate" /> : null}
         {post.is_mine ? (
           <>
             <Chip label="Modifier" icon="edit-3" onPress={() => { setMenu(false); router.push({ pathname: '/community/new', params: { edit: post.id } }); }} />
@@ -304,12 +348,14 @@ export function PostCard({ post, forum, full, onCommentPress }: { post: FeedPost
         ) : (
           <>
             {post.author_handle ? <Chip label="Voir le profil" icon="user" onPress={() => { setMenu(false); openProfile(); }} /> : null}
+            {post.author_handle ? <Chip label={post.following_author ? `Ne plus suivre @${post.author_handle}` : `Suivre @${post.author_handle}`} icon={post.following_author ? 'user-minus' : 'user-plus'} onPress={() => void toggleFollow()} testID="post-follow" /> : null}
             <Chip label="Signaler ou bloquer" icon="flag" onPress={() => { setMenu(false); setReporting(true); }} />
           </>
         )}
         <Chip label="Partager le lien" icon="share-2" onPress={() => { setMenu(false); sharePost(post).catch(() => undefined); }} />
       </Sheet>
       <ReportSheet visible={reporting} onClose={() => setReporting(false)} postId={post.id} />
+      {folders ? <FolderSheet visible={folders} onClose={() => setFolders(false)} post={post} /> : null}
       <PhotoViewer photos={post.photos ?? []} index={viewer} onClose={() => setViewer(null)} />
     </Card>
   );

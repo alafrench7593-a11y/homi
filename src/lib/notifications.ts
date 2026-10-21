@@ -3,6 +3,7 @@
  * et PUSH (réponses du forum, abonnement, rappels officiels de produits).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DIGEST_NOTIFICATION, parseTime } from './domain/dailyDigest';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -511,4 +512,36 @@ async function doSyncSleep(childId: string, wanted: SleepNotificationRequest[]) 
   if (ids.length) map[childId] = { signature, ids }; else delete map[childId];
   await AsyncStorage.setItem(SLEEP_MAP_KEY, JSON.stringify(map));
   return { scheduled: ids.length, cancelled };
+}
+
+// ---------------------------------------------------------------- résumé du matin et du soir (choisis par la personne)
+const DIGEST_KEY = 'toietmoi.digest-notifs.v1';
+
+/**
+ * Programme (ou retire) les notifications quotidiennes du résumé. Contenu générique : aucun détail personnel sur l'écran
+ * verrouillé ; ouvrir la notification affiche le résumé à jour (/today). Rien n'est programmé si la personne ne l'a pas choisi.
+ */
+export async function syncDigestNotifications(prefs: { morning: boolean; morning_time: string; evening: boolean; evening_time: string } | null): Promise<number> {
+  if (!notificationsSupported) return 0;
+  let saved: { signature: string; ids: string[] } = { signature: '', ids: [] };
+  try { saved = JSON.parse((await AsyncStorage.getItem(DIGEST_KEY)) ?? '{"signature":"","ids":[]}'); } catch { /* état local perdu : on reprogramme */ }
+  const signature = JSON.stringify(prefs ? [prefs.morning, prefs.morning_time, prefs.evening, prefs.evening_time] : null);
+  if (signature === saved.signature) return saved.ids.length;
+  await Promise.all(saved.ids.map((nid) => Notifications.cancelScheduledNotificationAsync(nid).catch(() => undefined)));
+  const ids: string[] = [];
+  for (const moment of ['morning', 'evening'] as const) {
+    if (!prefs?.[moment]) continue;
+    const t = parseTime(prefs[`${moment}_time`]);
+    if (!t) continue;
+    try {
+      ids.push(await Notifications.scheduleNotificationAsync({
+        content: { ...DIGEST_NOTIFICATION[moment], data: { url: `/today?moment=${moment}`, source: 'digest', kind: 'digest' } },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: t.hour, minute: t.minute, channelId: 'reminders' },
+      }));
+    } catch {
+      // refusée par le système (permission) : reprogrammée à la prochaine ouverture
+    }
+  }
+  await AsyncStorage.setItem(DIGEST_KEY, JSON.stringify({ signature, ids }));
+  return ids.length;
 }

@@ -246,9 +246,8 @@ export function UpcomingCard({ single = false }: { single?: boolean } = {}) {
     .map((r) => ({ r, at: nextOccurrence(r.schedule) }))
     .filter((x) => x.at)
     .sort((a, b) => a.at!.getTime() - b.at!.getTime())[0];
-  if (!next && !nextReminder) return null;
-  const row = (icon: IconName, title: string, when: string, onPress: () => void) => (
-    <Tappable accessibilityRole="button" accessibilityLabel={`${title}, ${when}`} onPress={onPress} style={({ pressed }) => ({ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', paddingVertical: spacing.sm, opacity: pressed ? 0.7 : 1 })}>
+  const row = (icon: IconName, title: string, when: string, onPress: () => void, testID?: string) => (
+    <Tappable accessibilityRole="button" accessibilityLabel={`${title}, ${when}`} onPress={onPress} testID={testID} style={({ pressed }) => ({ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', paddingVertical: spacing.sm, opacity: pressed ? 0.7 : 1 })}>
       <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}><Icon name={icon} size={18} /></View>
       <View style={{ flex: 1 }}>
         <Text weight="bold">{title}</Text>
@@ -261,6 +260,8 @@ export function UpcomingCard({ single = false }: { single?: boolean } = {}) {
     <View>
       {next && (!single || !nextReminder || Date.parse(next.starts_at) <= nextReminder.at!.getTime()) && row('calendar', next.title, new Date(next.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }), () => router.push('/appointments'))}
       {nextReminder && (!single || !next || nextReminder.at!.getTime() < Date.parse(next.starts_at)) && row('bell', nextReminder.r.title, `Rappel ${nextReminder.at!.toLocaleString('fr-FR', { weekday: 'long', hour: '2-digit', minute: '2-digit' })}`, () => router.push('/settings/reminders'))}
+      {/* Résumé du jour : rendez-vous, sieste estimée, biberon, réponses, nouveautés (sans notification si on ne l'a pas choisie) */}
+      {row('sun', 'Résumé du jour', new Date().getHours() >= 17 ? 'La journée en bref' : 'Ce qui compte aujourd’hui', () => router.push('/today' as never), 'home-today')}
     </View>
   );
 }
@@ -272,19 +273,39 @@ export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' | 'cycle' }) {
 }
 
 // ------------------------------------------------------------------ accueil personnalisable
-export const HOME_CARDS: { key: string; label: string; detail: string }[] = [
+/**
+ * Accueil volontairement court : carte principale, les 4 actions du quotidien, le prochain rappel, UNE publication
+ * de la communauté, UNE recommandation et « Voir la communauté ». Les autres cartes restent disponibles
+ * (Réglages › Mon accueil) mais sont masquées par défaut.
+ */
+export const HOME_CARDS: { key: string; label: string; detail: string; defaultHidden?: boolean }[] = [
   { key: 'main', label: 'Carte principale', detail: 'Grossesse, post-partum, enfant, famille ou cycle selon le profil affiché' },
-  { key: 'quick', label: 'Raccourcis', detail: 'Trois ou quatre actions pour le profil affiché' },
+  { key: 'quick', label: 'Les 4 actions du quotidien', detail: 'Les suivis les plus utiles pour le profil affiché' },
   { key: 'upcoming', label: 'Prochain rendez-vous ou rappel', detail: '' },
-  { key: 'article', label: 'Article recommandé', detail: '' },
-  { key: 'recipe', label: 'Recette recommandée', detail: 'Une seule idée de repas, adaptée au profil affiché' },
-  { key: 'assistant', label: 'Poser une question', detail: 'Assistant d’information' },
+  { key: 'community', label: 'Dans la communauté', detail: 'Une publication choisie pour vous et « Voir la communauté »' },
+  { key: 'recommendation', label: 'Recommandation du jour', detail: 'Un article ou une idée de repas adaptés' },
+  { key: 'article', label: 'Article recommandé', detail: '', defaultHidden: true },
+  { key: 'recipe', label: 'Recette recommandée', detail: 'Une seule idée de repas, adaptée au profil affiché', defaultHidden: true },
+  { key: 'assistant', label: 'Poser une question', detail: 'Assistant d’information', defaultHidden: true },
 ];
 
-/** Ordre choisi, puis les cartes nouvelles à leur place par défaut ; sans les cartes masquées. */
-export function orderedHomeCards(order: string[], hidden: string[]): string[] {
+/** Cartes masquées : choix de la personne + cartes masquées par défaut qu'elle n'a jamais placées dans son ordre. */
+export function effectiveHidden(order: string[], hidden: string[]): string[] {
+  const defaults = HOME_CARDS.filter((c) => c.defaultHidden && !order.includes(c.key)).map((c) => c.key);
+  return [...new Set([...hidden, ...defaults])];
+}
+
+/** Toutes les cartes : ordre choisi, puis les cartes nouvelles à leur place par défaut. */
+export function homeCardOrder(order: string[]): string[] {
   const all = HOME_CARDS.map((c) => c.key);
   const known = order.filter((k) => all.includes(k));
   for (const k of all) if (!known.includes(k)) known.splice(Math.min(all.indexOf(k), known.length), 0, k);
-  return known.filter((k) => !hidden.includes(k));
+  return known;
+}
+
+/** Ordre choisi, puis les cartes nouvelles à leur place par défaut ; sans les cartes masquées. */
+export function orderedHomeCards(order: string[], hidden: string[]): string[] {
+  const known = homeCardOrder(order);
+  const off = effectiveHidden(order, hidden);
+  return known.filter((k) => !off.includes(k));
 }

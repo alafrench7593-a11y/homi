@@ -6,7 +6,7 @@ import { Screen } from '@/components/Screen';
 import { StaggerItem } from '@/components/Motion';
 import { useToast } from '@/components/Overlays';
 import { Button, Card, Chip, IconButton, Row, SectionTitle, Text, Toggle } from '@/components/ui';
-import { HOME_CARDS, QUICK_KEYS, orderedHomeCards, quickIcon, quickLabel } from '@/features/home';
+import { effectiveHidden, homeCardOrder, HOME_CARDS, QUICK_KEYS, orderedHomeCards, quickIcon, quickLabel } from '@/features/home';
 import { useUiStore } from '@/lib/store';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -14,7 +14,7 @@ import { t as tr } from '@/i18n';
 export default function HomeSettings() {
   const toast = useToast();
   const order = useUiStore((s) => s.homeOrder);
-  const hidden = useUiStore((s) => s.homeHidden);
+  const storedHidden = useUiStore((s) => s.homeHidden);
   const setLayout = useUiStore((s) => s.setHomeLayout);
   const shortcuts = useUiStore((s) => s.quickShortcuts);
   const setShortcuts = useUiStore((s) => s.setQuickShortcuts);
@@ -22,7 +22,9 @@ export default function HomeSettings() {
   const simple = useUiStore((s) => s.simpleMode);
   const setSimple = useUiStore((s) => s.setSimpleMode);
 
-  const full = orderedHomeCards(order, []);
+  // Toutes les cartes ; celles masquées par défaut le restent tant qu'on ne les active pas
+  const full = homeCardOrder(order);
+  const hidden = effectiveHidden(order, storedHidden);
   const move = (key: string, d: -1 | 1) => {
     const i = full.indexOf(key);
     const j = i + d;

@@ -15,9 +15,11 @@ export interface GeminiConfig { apiKey: string; model: string }
 
 /** Lit la configuration ; renvoie null si la clé n'est pas configurée (aucune simulation de succès). */
 export function geminiConfig(): GeminiConfig | null {
-  const apiKey = Deno.env.get('GEMINI_API_KEY') ?? '';
+  // Lecture via globalThis : ce module est aussi importé par les tests Jest (Node), où Deno n'existe pas
+  const env = (globalThis as { Deno?: { env: { get(name: string): string | undefined } } }).Deno?.env;
+  const apiKey = env?.get('GEMINI_API_KEY') ?? '';
   if (!apiKey) return null;
-  return { apiKey, model: Deno.env.get('GEMINI_MODEL') || DEFAULT_GEMINI_MODEL };
+  return { apiKey, model: env?.get('GEMINI_MODEL') || DEFAULT_GEMINI_MODEL };
 }
 
 export interface GeminiTurn { role: 'user' | 'model'; text: string }

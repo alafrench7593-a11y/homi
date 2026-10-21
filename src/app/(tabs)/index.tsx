@@ -1,7 +1,7 @@
 /**
- * Accueil simple : profil actif, une carte principale adaptée, 3 ou 4 actions rapides,
- * le prochain rappel ou rendez-vous, l'article du jour et « Poser une question ».
- * Tout le reste est rangé dans « Tous mes outils ».
+ * Accueil volontairement court : carte principale du profil affiché, les 4 actions du quotidien, le prochain rappel,
+ * une publication de la communauté choisie pour vous (+ « Voir la communauté »), une recommandation (article ou repas).
+ * La communauté complète reste dans son onglet ; les autres cartes se réactivent dans Réglages › Mon accueil.
  */
 import React, { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
@@ -19,6 +19,8 @@ import { useActivePregnancy, useArticles, useJourneyState, usePremium, useProfil
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { SleepNowCard } from '@/features/sleep';
+import { ChildTrackCards, PregnancyTrackCards } from '@/features/trackCards';
+import { HomeCommunityCard } from '@/features/communitySocial';
 import { quickAllowed, quickFor, type Scope } from '@/lib/journeys/tools';
 import type { Journey } from '@/lib/types';
 import { greeting } from '@/lib/domain/dates';
@@ -102,7 +104,11 @@ export default function Home() {
       : scope.scope === 'family' ? <FamilyOverview />
       : cycleMode ? <CycleCard mode={cycleMode} />
       : <NoJourneyCard />,
-    quick: <QuickActions keys={quickKeys} childId={scope.childId ?? scope.babyId ?? undefined} onCustomize={() => router.push('/settings/home')} />,
+    // Les 4 actions du quotidien : cartes de suivi pour un enfant ou une grossesse, sinon les raccourcis du profil
+    quick: (scope.scope === 'baby' || scope.scope === 'child') && child ? <ChildTrackCards child={child} journey={scope.scope} />
+      : scope.scope === 'pregnancy' && pregnancy ? <PregnancyTrackCards pregnancyId={pregnancy.id} />
+      : <QuickActions keys={quickKeys} childId={scope.childId ?? scope.babyId ?? undefined} onCustomize={() => router.push('/settings/home')} />,
+    community: <HomeCommunityCard />,
     upcoming: <View style={{ gap: spacing.xs }}>{simple ? null : <PostpartumHomeCard />}<UpcomingCard single={simple} /></View>,
     article: article ? (
       <Card onPress={() => router.push(`/article/${article.slug}`)} accessibilityLabel={tr('home.articleA11y', { title: article.title })}>
@@ -115,6 +121,7 @@ export default function Home() {
       </Card>
     ) : null,
     recipe: <HomeRecipeCard />,
+    recommendation: null as React.ReactNode,
     assistant: (
       <Pressable accessibilityRole="button" accessibilityLabel={tr('home.askA11y')} onPress={() => router.push('/assistant/chat')} style={({ pressed }) => ({ borderRadius: 24, overflow: 'hidden', transform: [{ scale: pressed ? 0.98 : 1 }] })}>
         <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, minHeight: MIN_TOUCH + 16 }}>
@@ -131,6 +138,8 @@ export default function Home() {
     ),
   };
   const homeCards = orderedHomeCards(homeOrder, homeHidden);
+  // Recommandation du jour : l'article adapté s'il existe, sinon une idée de repas — sans doublon si ces cartes sont déjà affichées
+  cards.recommendation = (!homeCards.includes('article') ? cards.article : null) ?? (!homeCards.includes('recipe') ? cards.recipe : null);
 
   return (
     <View style={{ flex: 1 }}>

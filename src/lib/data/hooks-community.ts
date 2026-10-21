@@ -147,11 +147,11 @@ export function useCommunityImage(path: string | null | undefined) {
   });
 }
 
-export const DEFAULT_NOTIF_PREFS: CommunityNotifPrefs = { post_comment: true, comment_reply: true, reaction: true, saved_reply: true, moderation: true };
+export const DEFAULT_NOTIF_PREFS: CommunityNotifPrefs = { post_comment: true, comment_reply: true, reaction: true, saved_reply: true, moderation: true, mention: true, new_follower: true, followed_post: false, group_activity: true, group_invite: true };
 export function useCommunityNotifPrefs() {
   const userId = useUserId();
   const q = useRows<CommunityNotifPrefs>(['community_notification_prefs'], userId ? { table: 'community_notification_prefs', filters: [eq('user_id', userId)] } : null);
-  return { ...q, data: q.data?.[0] ?? DEFAULT_NOTIF_PREFS, saved: !!q.data?.[0] };
+  return { ...q, data: { ...DEFAULT_NOTIF_PREFS, ...(q.data?.[0] ?? {}) } as CommunityNotifPrefs, saved: !!q.data?.[0] };
 }
 export function useSaveNotifPrefs() {
   const inv = useInvalidate();
@@ -181,9 +181,15 @@ export function useCreatePost() {
   const inv = useInvalidate();
   const userId = useUserId();
   return useMutation({
-    mutationFn: async (p: { forumId: string; title?: string | null; body: string; kind: 'question' | 'testimony'; anonymous: boolean; photos: DraftPhoto[] }) => {
+    mutationFn: async (p: { forumId: string; title?: string | null; body: string; kind: 'question' | 'testimony'; anonymous: boolean; photos: DraftPhoto[];
+      groupId?: string | null; poll?: { options: string[]; multiple: boolean; closesInDays?: number | null } | null }) => {
       const [row] = await backend.insert<{ id: string; status: string }>('posts',
-        { forum_id: p.forumId, title: p.title?.trim() || null, body: p.body.trim(), kind: p.kind, anonymous: p.anonymous }, { returning: 'id,status' });
+        { forum_id: p.forumId, title: p.title?.trim() || null, body: p.body.trim(), kind: p.kind, anonymous: p.anonymous, group_id: p.groupId ?? null }, { returning: 'id,status' });
+      if (p.poll) {
+        const closes = p.poll.closesInDays ? new Date(Date.now() + p.poll.closesInDays * 86_400_000).toISOString() : null;
+        await backend.insert('post_polls', { post_id: row.id, multiple: p.poll.multiple, closes_at: closes }, { returning: 'post_id' });
+        await backend.insert('poll_options', p.poll.options.map((label, position) => ({ post_id: row.id, label: label.trim(), position })), { returning: 'id' });
+      }
       if (p.photos.length && userId) {
         const uploaded = await uploadPhotos(userId, p.photos);
         await backend.insert('post_photos', uploaded.map((u, position) => ({ post_id: row.id, path: u.path, width: u.width, height: u.height, position })), { returning: 'id' });

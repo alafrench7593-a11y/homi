@@ -1332,6 +1332,30 @@
             "free_value": 5,
             "description": "Rappels personnels actifs (hors médicaments prescrits, biberons et vaccins)",
             "premium_value": 300
+        },
+        {
+            "key": "private_groups_count",
+            "free_value": 0,
+            "description": "Groupes privés créés",
+            "premium_value": 10
+        },
+        {
+            "key": "albums_count",
+            "free_value": 0,
+            "description": "Albums photo de la communauté",
+            "premium_value": 50
+        },
+        {
+            "key": "saved_folders_count",
+            "free_value": 0,
+            "description": "Dossiers d'enregistrements",
+            "premium_value": 50
+        },
+        {
+            "key": "community_ai_per_month",
+            "free_value": 0,
+            "description": "Résumés et traductions de discussions par mois",
+            "premium_value": 200
         }
     ],
     "product_recalls": [

@@ -56,13 +56,21 @@ function MyCommunity() {
   return (
     <View style={{ gap: spacing.md }} testID="moi-community">
       <ProfileHeader
-        p={{ pseudonym: me.pseudonym, handle: me.handle, bio: me.bio, journey_label: me.journey_label, avatar_path: me.avatar_path, avatar_preset: me.avatar_preset, joined: me.created_at?.slice(0, 7), posts: me.posts_count, comments: me.comments_count, photos: me.photos_count }}
+        p={{ pseudonym: me.pseudonym, handle: me.handle, bio: me.bio, journey_label: me.journey_label, avatar_path: me.avatar_path, avatar_preset: me.avatar_preset, joined: me.created_at?.slice(0, 7), posts: me.posts_count, comments: me.comments_count, photos: me.photos_count,
+          accent: me.accent, banner: me.banner, about: me.about, badge: me.premium_badge }}
         actions={<Button label="Modifier" size="sm" variant="secondary" icon="edit-3" onPress={() => router.push('/community/profile')} testID="moi-edit-profile" />}
       />
       <Text variant="caption" muted testID="moi-visibility">
         {me.visibility === 'minimal' ? 'Profil discret : les autres membres voient seulement votre pseudonyme, votre identifiant et votre avatar.' : 'Les membres connectés voient votre présentation, votre parcours (si indiqué), votre date d’inscription et vos chiffres.'}
         {` ${me.likes_count ?? 0} publication(s) aimée(s), ${me.saved_count ?? 0} enregistrée(s).`}
       </Text>
+      <Card testID="moi-social">
+        <ListRow icon="user-check" title="Membres que je suis" subtitle={`${me.following_count ?? 0} membre(s) · ${me.followers_count ?? 0} personne(s) suivent vos publications (visible par vous seule)`} onPress={() => router.push('/community/following' as never)} testID="moi-following" />
+        <ListRow icon="users" title="Mes groupes" subtitle="Thèmes, mois de naissance, groupes privés" onPress={() => router.push('/community/groups' as never)} testID="moi-groups" />
+        <ListRow icon="image" title="Albums photo" subtitle="Privés ou partagés avec des membres choisis" onPress={() => router.push('/community/albums' as never)} testID="moi-albums" />
+        <ListRow icon="clock" title="Journal d’activité" subtitle={me.premium ? 'Chronologie complète' : 'Premium'} onPress={() => router.push('/community/activity' as never)} testID="moi-activity" />
+        <ListRow icon="sun" title="Résumé du jour" subtitle="Matin et soir, à l’heure choisie" onPress={() => router.push('/today' as never)} testID="moi-today" />
+      </Card>
       {me.suspended_until && me.suspended_until > new Date().toISOString() ? <Banner tone="warning">{`Votre compte communauté est suspendu jusqu’au ${new Date(me.suspended_until).toLocaleDateString('fr-FR')}.`}</Banner> : null}
       <ProfileTabs handle={me.handle ?? null} mine />
     </View>
