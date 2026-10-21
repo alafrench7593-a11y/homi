@@ -197,3 +197,16 @@ describe('rappel du prochain biberon : notifications', () => {
     expect(notifFor(noe)).toHaveLength(1);
   });
 });
+
+describe('profils concernés par le biberon', () => {
+  const today = new Date('2026-10-21T12:00:00Z');
+  it('bébé de 0 à 2 ans ou profil « Mon bébé est né » : oui ; enfant plus grand : non', async () => {
+    const { isBottleChild } = require('@/lib/domain/bottleTimer') as typeof import('@/lib/domain/bottleTimer');
+    expect(isBottleChild('2026-09-01', null, today)).toBe(true);
+    expect(isBottleChild('2025-09-01', 'child', today)).toBe(true); // 13 mois
+    expect(isBottleChild('2024-10-22', null, today)).toBe(true); // 23 mois
+    expect(isBottleChild('2024-10-21', null, today)).toBe(false); // 2 ans pile
+    expect(isBottleChild('2020-11-01', 'child', today)).toBe(false); // ~6 ans (Noé)
+    expect(isBottleChild('2023-01-01', 'baby', today)).toBe(true); // profil « Mon bébé est né » choisi par le parent
+  });
+});

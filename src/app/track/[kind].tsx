@@ -12,7 +12,7 @@ import { useActiveSubject, useAddLog, useChild, useTrackedChildren, useDeleteRow
 import { SafeSleepCard, SafetyNoticeCard } from '@/features/childCare';
 import { STOOL_COLORS, STOOL_CONSISTENCY, digestionNotices, stoolNotice, type StoolColor } from '@/lib/domain/childCare';
 import { childAge } from '@/lib/domain/child';
-import { useBottleTimer, useStartBottleTimer, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
+import { useBottleChildren, useBottleTimer, useStartBottleTimer, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
 import { NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { atClock, bottleDraftDefaults, computeDueAt, markBottleGiven, nextReminderSentence, resolveReminderChoice, type ReminderChoice } from '@/lib/domain/bottleTimer';
 import { getPermission, notificationsSupported } from '@/lib/notifications';
@@ -25,6 +25,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
 type Side = 'left' | 'right' | 'both';
+const editing0 = (id: string | undefined) => !!id;
 
 /** Lien vers un type de saisie inconnu : écran « introuvable » au lieu d'un plantage. */
 const DIGESTIVE: Observation['kind'][] = ['vomit', 'regurgitation', 'diarrhea', 'abdominal_pain', 'bloating', 'crying'];
@@ -53,10 +54,15 @@ function TrackEntry() {
   // timer / planned : ouverture depuis le minuteur (« Marquer le biberon comme donné »)
   const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string }>();
   const kind = (params.kind ?? 'bottle') as LogKind;
-  const { data: children } = useTrackedChildren();
+  const { data: tracked } = useTrackedChildren();
+  const { data: bottleChildren } = useBottleChildren();
+  // Biberon : seulement les bébés (0 à 2 ans ou « Mon bébé est né »)
+  const children = kind === 'bottle' ? bottleChildren : tracked;
   // Toujours l'enfant affiché (sélecteur), jamais un autre profil par défaut
   const { subject } = useActiveSubject();
-  const childId = params.child || (subject.type === 'child' && children?.some((c) => c.id === subject.id) ? subject.id : children?.[0]?.id) || '';
+  const requested = params.child && (kind !== 'bottle' || !bottleChildren || bottleChildren.some((c) => c.id === params.child)) ? params.child : null;
+  const notBottleChild = kind === 'bottle' && !!params.child && !!bottleChildren && !requested && !editing0(params.id);
+  const childId = requested || (subject.type === 'child' && children?.some((c) => c.id === subject.id) ? subject.id : children?.[0]?.id) || '';
   const child = useChild(childId);
   const add = useAddLog(kind);
   const del = useDeleteRow(LOG_TABLE[kind]);
@@ -266,10 +272,17 @@ function TrackEntry() {
     router.back();
   }
 
+  if (notBottleChild) {
+    return (
+      <Screen back title={KIND_META[kind].label}>
+        <Banner tone="info">{'Le biberon concerne les bébés jusqu’à 2 ans (profil « Mon bébé est né »). Ce profil n’est pas concerné.'}</Banner>
+      </Screen>
+    );
+  }
   if (!childId) {
     return (
       <Screen back title={KIND_META[kind].label}>
-        <Banner tone="info">{'Ajoutez d’abord le profil d’un enfant.'}</Banner>
+        <Banner tone="info">{kind === 'bottle' ? 'Le rappel biberon concerne les bébés jusqu’à 2 ans : ajoutez le profil d’un bébé.' : 'Ajoutez d’abord le profil d’un enfant.'}</Banner>
         <Button label="Ajouter un profil" onPress={() => router.replace('/profiles/new')} />
       </Screen>
     );

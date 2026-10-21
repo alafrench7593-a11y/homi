@@ -70,8 +70,15 @@ def run(p):
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     hid = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').household_id")
     # Deuxième bébé suivi au biberon (jumeaux, fratrie rapprochée)
-    mutate(pg, f"s => {{ s.tables.children.push({{ id: 'e2e-malo', household_id: '{hid}', first_name: 'Malo', birth_date: '2026-08-01', sex: 'male', photo_path: null, from_pregnancy_id: null, multiple_group: null, enabled_tracking: ['bottle', 'diaper', 'sleep'], allergies_declared: [], habits: null, archived: false, created_at: new Date().toISOString() }}); s.tables.bottle_timers = (s.tables.bottle_timers || []).filter(t => t.child_id !== '{lina}'); }}")
+    mutate(pg, f"s => {{ s.tables.children.push({{ id: 'e2e-malo', household_id: '{hid}', first_name: 'Malo', birth_date: '2026-08-01', sex: 'male', photo_path: null, from_pregnancy_id: null, multiple_group: null, enabled_tracking: ['bottle', 'diaper', 'sleep'], allergies_declared: [], habits: null, archived: false, created_at: new Date().toISOString() }}); const me = s.tables.user_journeys.find(j => j.child_id === '{lina}').user_id; s.tables.user_journeys.push({{ id: 'e2e-j-malo', user_id: me, status: 'active', ended_on: null, end_reason: null, pregnancy_id: null, child_id: 'e2e-malo', household_id: '{hid}', type: 'baby', started_on: '2026-08-01', created_at: new Date().toISOString() }}); s.tables.bottle_timers = (s.tables.bottle_timers || []).filter(t => t.child_id !== '{lina}'); }}")
+    noe = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Noé').id")
+    # Biberon seulement pour les bébés (0 à 2 ans ou « Mon bébé est né ») : jamais pour Noé (~6 ans)
+    go(pg, f'/bottle/{noe}')
+    R['0_pas_de_biberon_pour_noe'] = 'Pas de biberon pour Noé' in pg.inner_text('body')
+    go(pg, f'/track/bottle?child={noe}')
+    R['0_saisie_refusee_pour_noe'] = 'Ce profil n’est pas concerné' in pg.inner_text('body')
     go(pg, f'/bottle/{lina}')
+    R['0_noe_absent_des_choix'] = pg.get_by_text('Noé', exact=True).count() == 0
     R['ecran_sans_rappel'] = 'Aucun rappel prévu pour Lina' in next_text(pg)
     R['pas_de_chronometre_principal'] = 'il y a' not in pg.inner_text('body')
 
@@ -123,6 +130,9 @@ def run(p):
     go(pg, '/bottle/e2e-malo')
     R['5_malo_conserve'] = 'Malo à 17 h 10' in next_text(pg)
 
+    # Fiche de Noé : aucune carte ni action biberon
+    go(pg, f'/child/{noe}')
+    R['6_fiche_noe_sans_biberon'] = 'Rappel biberon' not in pg.inner_text('body') and 'Prochain rappel de biberon' not in pg.inner_text('body')
     # 6. fiche de l'enfant (Malo)
     go(pg, '/child/e2e-malo')
     body = pg.inner_text('body')

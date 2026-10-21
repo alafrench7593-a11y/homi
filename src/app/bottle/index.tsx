@@ -6,11 +6,12 @@ import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Button, SectionTitle, Text } from '@/components/ui';
 import { BottleNotificationSettings, BottleTimerCard, NO_RECOMMENDATION_NOTE } from '@/features/bottle';
-import { useTrackedChildren } from '@/lib/data/hooks';
+
 import { useBottleTimers } from '@/lib/data/hooks-bottle';
+import { useBottleChildren } from '@/lib/data/hooks-bottle';
 
 export default function BottleTimers() {
-  const childrenQ = useTrackedChildren();
+  const childrenQ = useBottleChildren();
   const { data: children } = childrenQ;
   const isLoading = childrenQ.isLoading && !children;
   const { data: timers } = useBottleTimers();

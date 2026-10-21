@@ -4,13 +4,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { backend, eq, gte } from '../backend';
 import { useUserId } from '../auth';
 import { askNotificationPermission } from '../notificationPrompt';
-import { activeTimerFor, lastIntervalFor, newTimer, planReplacement, type NewTimerInput, type TimerCore } from '../domain/bottleTimer';
+import { activeTimerFor, isBottleChild, lastIntervalFor, newTimer, planReplacement, type NewTimerInput, type TimerCore } from '../domain/bottleTimer';
 import {
   getBottleNotificationsEnabled, getBottleShowQuantity, getPermission, notificationsSupported, scheduledBottleIds, setBottleNotificationsEnabled, setBottleShowQuantity,
   syncBottleTimers, type PermissionState,
 } from '../notifications';
 import type { BottleRecord, BottleTimer } from '../types-bottle';
-import { useHouseholdId, useHouseholdMembers, useInvalidate, useRows } from './hooks';
+import { useHouseholdId, useHouseholdMembers, useInvalidate, useJourneyState, useRows, useTrackedChildren } from './hooks';
 
 /** Minuteurs actifs de tous les enfants du foyer (vue « tous les minuteurs »). */
 export function useBottleTimers() {
@@ -150,4 +150,12 @@ export function useTimerScheduledHere(timer: Pick<BottleTimer, 'id' | 'due_at'> 
     return () => { alive = false; clearTimeout(t); };
   }, [id, due]);
   return scheduled;
+}
+
+/** Enfants concernés par le biberon : profil bébé (« Mon bébé est né ») ou moins de 2 ans. Jamais un enfant plus grand. */
+export function useBottleChildren() {
+  const q = useTrackedChildren();
+  const js = useJourneyState();
+  const data = useMemo(() => q.data?.filter((c) => isBottleChild(c.birth_date, js.childType(c.id))), [q.data, js]);
+  return { ...q, data };
 }

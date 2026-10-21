@@ -288,3 +288,14 @@ export interface BottleDraft {
 export function bottleDraftDefaults(from?: { plannedMl?: number | null }): BottleDraft {
   return { prepared_ml: from?.plannedMl ?? null, consumed_ml: null, planned_next_ml: null, reminder: { kind: 'none' } };
 }
+
+// ---------------------------------------------------------------- profils concernés
+/** Le biberon ne concerne que les bébés : profil « Mon bébé est né » (parcours bébé) ou enfant de moins de 2 ans. */
+export const BOTTLE_MAX_MONTHS = 24;
+export function isBottleChild(birthDate: string, journeyType: string | null | undefined, today: Date = new Date()): boolean {
+  if (journeyType === 'baby') return true;
+  const b = new Date(`${birthDate}T12:00:00Z`);
+  if (Number.isNaN(b.getTime())) return false;
+  const months = (today.getUTCFullYear() - b.getUTCFullYear()) * 12 + (today.getUTCMonth() - b.getUTCMonth()) - (today.getUTCDate() < b.getUTCDate() ? 1 : 0);
+  return months < BOTTLE_MAX_MONTHS;
+}

@@ -10,8 +10,8 @@ import { Button, Card, Chip, IconButton, Row, SectionTitle, Segmented, Text } fr
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { copyText } from '@/features/bottle';
 import { BottleInstrument } from '@/features/bottleInstrument';
-import { useTrackedChildren, useDeleteRow , useActiveSubject } from '@/lib/data/hooks';
-import { useBottleHistory, useRecorderLabel } from '@/lib/data/hooks-bottle';
+import { useDeleteRow, useActiveSubject } from '@/lib/data/hooks';
+import { useBottleChildren, useBottleHistory, useRecorderLabel } from '@/lib/data/hooks-bottle';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { consultationSummary, dailySummaries, dayLabel, groupByDay, lastDays, withIntervals } from '@/lib/domain/bottleHistory';
 import { formatClock, formatHM } from '@/lib/domain/bottleTimer';
@@ -27,7 +27,7 @@ export default function BottleHistory() {
   const toast = useToast();
   const params = useLocalSearchParams<{ child?: string }>();
   const insets = useSafeAreaInsets();
-  const childrenQ = useTrackedChildren();
+  const childrenQ = useBottleChildren();
   const { data: children } = childrenQ;
   const { subject } = useActiveSubject();
   const childId = params.child || (subject.type === 'child' && children?.some((c) => c.id === subject.id) ? subject.id : children?.[0]?.id) || '';

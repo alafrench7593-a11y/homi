@@ -12,9 +12,9 @@ import { Banner, Button, Card, Chip, Field, haptic, Row, Text } from '@/componen
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { BottleNotificationSettings, NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { TimePicker } from '@/features/tracking';
-import { useChild, useTrackedChildren, useMemberships } from '@/lib/data/hooks';
+import { useChild, useMemberships } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { useBottleTimer, useLastBottle, useNow, useStartBottleTimer, useTimerScheduledHere, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
+import { useBottleChildren, useBottleTimer, useLastBottle, useNow, useStartBottleTimer, useTimerScheduledHere, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
 import {
   atClock, cancelTimer, computeDueAt, formatClock, formatHM, modifyInterval, nextReminderSentence, parseDelay, remainingMinutes, resolveReminderChoice,
   setReminderAt, snoozeTimer, SNOOZE_PRESETS, type ReminderChoice,
@@ -27,12 +27,14 @@ export default function BottleReminderScreen() {
   const toast = useToast();
   const params = useLocalSearchParams<{ childId: string }>();
   const childId = params.childId ?? '';
-  const childrenQ = useTrackedChildren();
+  const childrenQ = useBottleChildren();
   const membershipsQ = useMemberships();
   const { data: children } = childrenQ;
   const loadingChildren = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !children);
   const childrenError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !children ? childrenQ : null;
-  const child = useChild(childId);
+  const anyChild = useChild(childId);
+  // Seulement un bébé (0 à 2 ans ou profil « Mon bébé est né ») : jamais un enfant plus grand
+  const child = anyChild && (children ?? []).some((c) => c.id === anyChild.id) ? anyChild : null;
   const timerQ = useBottleTimer(childId);
   const { active, lastInterval } = timerQ;
   const isLoading = timerQ.isLoading && !timerQ.data;
@@ -55,7 +57,11 @@ export default function BottleReminderScreen() {
         {loadingChildren ? <Skeleton kind="detail" rows={4} /> : childrenError ? (
           <ErrorView error={childrenError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce rappel" />
         ) : (
-          <EmptyState icon="user-x" title="Profil introuvable" body="Ce profil est introuvable. Il a peut-être été supprimé." action={{ label: 'Tous les rappels', icon: 'clock', onPress: () => router.replace('/bottle') }} />
+          anyChild ? (
+            <EmptyState icon="info" title={`Pas de biberon pour ${anyChild.first_name}`} body="Le rappel biberon concerne les bébés jusqu’à 2 ans (profil « Mon bébé est né »)." action={{ label: 'Retour', icon: 'arrow-left', onPress: () => router.back() }} />
+          ) : (
+            <EmptyState icon="user-x" title="Profil introuvable" body="Ce profil est introuvable. Il a peut-être été supprimé." action={{ label: 'Tous les rappels', icon: 'clock', onPress: () => router.replace('/bottle') }} />
+          )
         )}
       </Screen>
     );

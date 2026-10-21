@@ -21,7 +21,7 @@ import { BottleTimerCard } from '@/features/bottle';
 import { KIND_META, Timeline, type LogItem, logTime } from '@/features/tracking';
 import { ChildForm, childToDraft, validateChild, type ChildDraft } from '@/features/profiles';
 import { backend, eq } from '@/lib/backend';
-import { useInvalidate, useLogs, useMeasurements } from '@/lib/data/hooks';
+import { useInvalidate, useLogs, useMeasurements, useJourneyState } from '@/lib/data/hooks';
 import {
   errorMessage, type FoodIntroduction, type HealthItem, type HealthItemKind, type Milestone, type MilestoneKind,
   useFoodIntroductions, useFoods, useHealthItems, useMilestones,
@@ -37,6 +37,7 @@ import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 export { CHILD_TABS, type ChildTab } from '@/lib/domain/childTabs';
 import { CHILD_TABS, type ChildTab } from '@/lib/domain/childTabs';
 import { Tappable } from '@/components/Tappable';
+import { isBottleChild } from '@/lib/domain/bottleTimer';
 
 export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: ChildTab) => void }) {
   const t = useTheme();
@@ -105,6 +106,7 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
   const { data: observations } = qObs;
   const { data: measurements } = useMeasurements(child.id);
   const { data: milestones } = useMilestones(child.id);
+  const js = useJourneyState();
 
   const recent = useMemo<LogItem[]>(() => {
     const all: LogItem[] = [
@@ -119,12 +121,12 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
   }, [bottles, feeds, diapers, sleeps, meals, observations]);
 
   const last = measurements?.length ? measurements[measurements.length - 1] : null;
-  const quick = (['bottle', 'breastfeed', 'diaper', 'meal', 'observation'] as LogKind[]).filter((k) => k === 'observation' || child.enabled_tracking.includes(KIND_META[k].tracking));
+  const quick = (['bottle', 'breastfeed', 'diaper', 'meal', 'observation'] as LogKind[]).filter((k) => (k === 'observation' || child.enabled_tracking.includes(KIND_META[k].tracking)) && (k !== 'bottle' || isBottleChild(child.birth_date, js.childType(child.id))));
 
   return (
     <>
       <ChildToday child={child} compact />
-      {(child.enabled_tracking.includes('bottle') || !!bottles?.length) && <BottleTimerCard child={child} />}
+      {isBottleChild(child.birth_date, js.childType(child.id)) && <BottleTimerCard child={child} />}
       <Row wrap>
         {quick.map((k) => (
           <Chip key={k} icon={KIND_META[k].icon} label={KIND_META[k].label} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: k, child: child.id } })} />
