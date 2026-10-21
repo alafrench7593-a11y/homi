@@ -13,14 +13,14 @@ update public.profiles set journeys = '{pregnant}' where id = :'LEA';
 
 -- ---------------------------------------------------------------- Espaces
 set role authenticated; set request.jwt.claim.sub = :'INES';
-select tests.ok(tests.count('select * from public.forums') = 15, 'espaces : les 15 espaces sont visibles par chaque membre');
+select tests.ok(tests.count('select * from public.forums') = 14, 'catégories : les 14 catégories sont visibles par chaque membre');
 select tests.ok((select string_agg(title, ' · ' order by position) from public.forums) =
-  'Éviter une grossesse · Projet bébé · Fertilité · Grossesse · Jumeaux et triplés · Accouchement · Post-partum · Allaitement · Biberon · Sommeil · Diversification · Parents de bébés · Parents d’enfants · Familles nombreuses · Rencontres locales',
-  'espaces : titres et ordre attendus');
-select tests.ok((select bool_and(is_local = (slug = 'rencontres-locales')) from public.forums), 'espaces : seul « Rencontres locales » est un espace local');
+  'Suivi du cycle · Projet bébé · Grossesse · Jumeaux et triplés · Nouveau-né · Allaitement · Biberon · Sommeil · Diversification et repas · Santé et développement · Troubles neurodéveloppementaux · Post-partum et bien-être de la mère · Parents de plusieurs enfants · Questions générales',
+  'catégories : titres et ordre attendus');
+select tests.ok(not exists (select 1 from public.forums where slug in ('fertilite', 'accouchement', 'rencontres-locales')), 'catégories : les anciens espaces fusionnés ne sont plus proposés');
 
 -- Pseudonyme obligatoire, jamais le prénom
-select tests.throws($$insert into public.posts (forum_id, title, body) values ((select id from public.forums where slug='parents-bebes'), 'Sans pseudo', 'Message')$$,
+select tests.throws($$insert into public.posts (forum_id, title, body) values ((select id from public.forums where slug='nouveau-ne'), 'Sans pseudo', 'Message')$$,
   'pseudonyme : requis avant de publier');
 select tests.throws($$insert into public.community_profiles (user_id, pseudonym) values ('a5a5a5a5-5555-4555-8555-555555555555', 'inès')$$,
   'pseudonyme : le prénom du profil est refusé');
@@ -28,19 +28,19 @@ insert into public.community_profiles (user_id, pseudonym) values (auth.uid(), '
 
 -- Parcours « Projet bébé » mais publication dans « Parents de bébés » : autorisé
 insert into public.posts (forum_id, title, body) values
- ((select id from public.forums where slug='parents-bebes'), 'Question d’une future maman', 'Comment avez-vous organisé la chambre de bébé ?');
+ ((select id from public.forums where slug='nouveau-ne'), 'Question d’une future maman', 'Comment avez-vous organisé la chambre de bébé ?');
 select tests.ok(tests.count($$select * from public.forum_feed where title = 'Question d’une future maman' and status = 'visible'$$) = 1,
   'espaces : publication possible dans un espace hors de son parcours');
 insert into public.posts (forum_id, title, body, area_label) values
- ((select id from public.forums where slug='rencontres-locales'), 'Balade poussette à Nantes', 'Qui serait partant pour une balade au Jardin des plantes ?', 'Nantes');
-select tests.ok(tests.count($$select * from public.forum_feed where area_label = 'Nantes'$$) = 1, 'espaces : publication dans « Rencontres locales » avec zone générale');
+ ((select id from public.forums where slug='questions-generales'), 'Balade poussette à Nantes', 'Qui serait partant pour une balade au Jardin des plantes ?', 'Nantes');
+select tests.ok(tests.count($$select * from public.forum_feed where area_label = 'Nantes'$$) = 1, 'catégories : publication avec zone générale');
 reset role;
 
 set role authenticated; set request.jwt.claim.sub = :'HUGO';
 select tests.throws($$insert into public.community_profiles (user_id, pseudonym) values ('a6a6a6a6-6666-4666-8666-666666666666', 'hugo.martin')$$,
   'pseudonyme : l''identifiant de l''adresse e-mail est refusé');
 insert into public.community_profiles (user_id, pseudonym) values (auth.uid(), 'PapaHugo');
-select tests.ok(tests.count($$select * from public.forum_feed where title = 'Question d’une future maman'$$) = 1, 'espaces : un parent d''enfant voit la publication de l''espace « Parents de bébés »');
+select tests.ok(tests.count($$select * from public.forum_feed where title = 'Question d’une future maman'$$) = 1, 'catégories : un parent d''enfant voit la publication de « Nouveau-né »');
 insert into public.comments (post_id, body)
   values ((select id from public.posts where title = 'Question d’une future maman'), 'Nous avons tout gardé simple : un lit, une commode.');
 insert into public.posts (forum_id, title, body) values
@@ -95,7 +95,7 @@ reset role;
 set role authenticated; set request.jwt.claim.sub = :'INES';
 select tests.ok(tests.count($$select * from public.search_posts('réveil')$$) >= 1, 'recherche : plein texte en français (« réveil » trouve « Réveils »)');
 select tests.ok(tests.count($$select * from public.search_posts('poussette', (select id from public.forums where slug='sommeil'))$$) = 0
-  and tests.count($$select * from public.search_posts('poussette', (select id from public.forums where slug='rencontres-locales'))$$) = 1,
+  and tests.count($$select * from public.search_posts('poussette', (select id from public.forums where slug='questions-generales'))$$) = 1,
   'recherche : filtrage par espace');
 -- Termes interdits : mise en relecture
 insert into public.posts (forum_id, title, body) values ((select id from public.forums where slug='allaitement'), 'Surplus', 'Je vends mon lait maternel congelé');

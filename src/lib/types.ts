@@ -115,7 +115,7 @@ export interface Reminder {
 }
 
 export interface AppNotification {
-  id: string; user_id: string; category: 'reminder' | 'community_reply' | 'community_comment' | 'assistant' | 'subscription' | 'product_recall' | 'system' | 'family';
+  id: string; user_id: string; category: 'reminder' | 'community_reply' | 'community_comment' | 'community_like' | 'community_saved' | 'community_moderation' | 'assistant' | 'subscription' | 'product_recall' | 'system' | 'family';
   title: string; body: string | null; deep_link: string | null; payload: Record<string, unknown>; read_at: string | null; created_at: string;
 }
 
@@ -168,12 +168,31 @@ export interface AssistantMessage {
 export interface AssistantFeedback { id: string; message_id: string; user_id: string; value: -1 | 1; reason: string | null; created_at: string; updated_at: string }
 
 export interface Forum { id: string; slug: string; title: string; description: string; journeys: Journey[]; icon: string | null; is_local: boolean; position: number }
+export interface FeedPhoto { path: string; width: number | null; height: number | null }
 export interface FeedPost {
-  id: string; forum_id: string; title: string; body: string; area_label: string | null; status: string; like_count: number; comment_count: number;
-  created_at: string; edited_at: string | null; pseudonym: string | null; is_mine: boolean; liked: boolean; saved: boolean;
+  id: string; forum_id: string; forum_slug?: string | null; title: string | null; body: string; kind?: 'question' | 'testimony'; anonymous?: boolean;
+  area_label: string | null; status: string; like_count: number; comment_count: number;
+  created_at: string; edited_at: string | null; pseudonym: string | null; author_handle?: string | null; avatar_path?: string | null; avatar_preset?: string | null;
+  is_mine: boolean; liked: boolean; saved: boolean; photos?: FeedPhoto[];
 }
-export interface FeedComment { id: string; post_id: string; parent_id: string | null; body: string; status: string; created_at: string; pseudonym: string | null; is_mine: boolean }
-export interface CommunityProfile { user_id: string; pseudonym: string; area_label: string | null; suspended_until: string | null }
+export interface FeedComment {
+  id: string; post_id: string; parent_id: string | null; body: string; status: string; created_at: string; edited_at?: string | null;
+  pseudonym: string | null; author_handle?: string | null; avatar_path?: string | null; avatar_preset?: string | null;
+  is_mine: boolean; is_op?: boolean; anonymous?: boolean; post_title?: string | null; post_excerpt?: string | null;
+}
+export interface CommunityProfile {
+  user_id: string; pseudonym: string; handle?: string; area_label: string | null; suspended_until: string | null;
+  bio?: string | null; avatar_path?: string | null; avatar_preset?: string | null; journey_label?: string | null; visibility?: 'members' | 'minimal';
+  rules_accepted_at?: string | null; created_at?: string;
+  posts_count?: number; comments_count?: number; photos_count?: number; likes_count?: number; saved_count?: number;
+}
+/** Profil d'un membre tel que la personne a choisi de le montrer (fonction community_member). */
+export interface CommunityMember {
+  handle: string; pseudonym: string; avatar_path?: string | null; avatar_preset?: string | null; is_me: boolean; blocked: boolean; unavailable: boolean;
+  visibility?: 'members' | 'minimal'; bio?: string | null; journey_label?: string | null; joined_month?: string | null;
+  posts_count?: number; comments_count?: number; photos_count?: number;
+}
+export interface CommunityNotifPrefs { user_id?: string; post_comment: boolean; comment_reply: boolean; reaction: boolean; saved_reply: boolean; moderation: boolean }
 export type ReportReason = 'harassment' | 'medical_misinformation' | 'spam' | 'personal_data' | 'danger' | 'inappropriate' | 'other';
 export interface ReportRow { id: string; reporter_id: string; post_id: string | null; comment_id: string | null; reason: ReportReason; details: string | null; status: string; created_at: string }
 

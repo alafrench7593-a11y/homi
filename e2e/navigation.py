@@ -38,10 +38,10 @@ with sync_playwright() as p:
 
     # 1. Barre : Communauté présente, Profil retiré, Outils au centre
     t = tabs(pg)
-    R['1_barre_onglets'] = t == ['Accueil', 'Suivi', 'Outils', 'Communauté', 'Questions']
+    R['1_barre_onglets'] = t == ['Accueil', 'Suivi', 'Outils', 'Communauté', 'Moi']
     R['1_pas_de_profil_dans_la_barre'] = 'Profil' not in t
     pg.get_by_role('tab', name='Communauté').click(); pg.wait_for_timeout(1800)
-    R['1_communaute_ouvre_la_vraie_section'] = pg.url.endswith('/community') and 'Tous les espaces sont ouverts' in pg.inner_text('body')
+    R['1_communaute_ouvre_la_vraie_section'] = pg.url.endswith('/community') and 'forum des parents' in pg.inner_text('body')
     R['1_onglet_actif'] = pg.get_by_role('tab', name='Communauté').get_attribute('aria-selected') == 'true'
     pg.screenshot(path=f'{SHOTS}/nav-communaute.png')
 
@@ -76,15 +76,15 @@ with sync_playwright() as p:
     pg.goto(B + '/settings/privacy'); pg.wait_for_timeout(1200)
     R['5_ecran_detail_sans_entete_compte'] = pg.get_by_role('button', name='Retour').count() >= 1 and pg.get_by_role('button', name=re.compile('^Mon profil')).count() == 0
 
-    # 6. Fluidité : un brouillon saisi dans Questions survit à un changement d'onglet
+    # 6. Fluidité : une recherche saisie dans Communauté survit à un changement d'onglet
     pg.goto(B + '/'); pg.wait_for_timeout(1500)
-    pg.get_by_role('tab', name='Questions').click(); pg.wait_for_timeout(1500)
-    box = pg.locator('textarea, input[type="text"]').last
+    pg.get_by_role('tab', name='Communauté').click(); pg.wait_for_timeout(1500)
+    box = pg.get_by_placeholder('Sommeil, purée, valise de maternité…')
     if box.count():
         box.fill('Brouillon conservé ?')
+        pg.get_by_role('tab', name='Suivi').click(); pg.wait_for_timeout(1000)
         pg.get_by_role('tab', name='Communauté').click(); pg.wait_for_timeout(1000)
-        pg.get_by_role('tab', name='Questions').click(); pg.wait_for_timeout(1000)
-        R['6_pas_de_reinitialisation'] = pg.locator('textarea, input[type="text"]').last.input_value() == 'Brouillon conservé ?'
+        R['6_pas_de_reinitialisation'] = pg.get_by_placeholder('Sommeil, purée, valise de maternité…').input_value() == 'Brouillon conservé ?'
     else:
         R['6_pas_de_reinitialisation'] = False
 
@@ -104,7 +104,7 @@ with sync_playwright() as p:
     ctx = b.new_context(viewport={'width': 320, 'height': 568}, locale='fr-FR'); pg = ctx.new_page()
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
-    boxes = [pg.get_by_role('tab', name=n).bounding_box() for n in ['Accueil', 'Suivi', 'Communauté', 'Questions']]
+    boxes = [pg.get_by_role('tab', name=n).bounding_box() for n in ['Accueil', 'Suivi', 'Communauté', 'Moi']]
     R['8_onglets_dans_l_ecran'] = all(bb and bb['x'] >= 0 and bb['x'] + bb['width'] <= 320 and bb['width'] >= 44 for bb in boxes)
     orb = pg.get_by_role('tab', name='Outils').bounding_box()
     R['8_outils_centre'] = bool(orb) and abs(orb['x'] + orb['width'] / 2 - 160) < 1.5
@@ -116,10 +116,10 @@ with sync_playwright() as p:
     pg.goto(B + '/settings/language'); pg.wait_for_timeout(1800)
     pg.get_by_role('radio', name='English').click(); pg.wait_for_timeout(2000)
     pg.goto(B + '/'); pg.wait_for_timeout(2500)
-    R['9_barre_en_anglais'] = tabs(pg) == ['Home', 'Tracking', 'Tools', 'Community', 'Questions']
+    R['9_barre_en_anglais'] = tabs(pg) == ['Home', 'Tracking', 'Tools', 'Community', 'Me']
     R['9_entete_en_anglais'] = header_ok(pg, re.compile('^My profile'))
     pg.goto(B + '/community'); pg.wait_for_timeout(1800)
-    R['9_communaute_en_anglais'] = 'Every space is open' in pg.inner_text('body')
+    R['9_communaute_en_anglais'] = 'parents’ forum' in pg.inner_text('body')
     pg.screenshot(path=f'{SHOTS}/nav-en.png')
     ctx.close(); b.close()
 

@@ -162,16 +162,16 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
       wrap(error, status);
       return (data ?? []) as T[];
     },
-    async insert<T>(table: string, rows: Record<string, unknown> | Record<string, unknown>[], opts?: { onConflict?: string; ignoreDuplicates?: boolean }) {
+    async insert<T>(table: string, rows: Record<string, unknown> | Record<string, unknown>[], opts?: { onConflict?: string; ignoreDuplicates?: boolean; returning?: string }) {
       const b: AnyBuilder = opts?.onConflict
         ? client.from(table).upsert(rows, { onConflict: opts.onConflict, ignoreDuplicates: opts.ignoreDuplicates ?? false })
         : client.from(table).insert(rows);
-      const { data, error, status } = await b.select();
+      const { data, error, status } = await b.select(opts?.returning ?? '*');
       wrap(error, status);
       return (data ?? []) as T[];
     },
-    async update<T>(table: string, patch: Record<string, unknown>, filters: Filter[]) {
-      const { data, error, status } = await applyFilters(client.from(table).update(patch), filters).select();
+    async update<T>(table: string, patch: Record<string, unknown>, filters: Filter[], opts?: { returning?: string }) {
+      const { data, error, status } = await applyFilters(client.from(table).update(patch), filters).select(opts?.returning ?? '*');
       wrap(error, status);
       return (data ?? []) as T[];
     },

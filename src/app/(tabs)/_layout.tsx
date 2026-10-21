@@ -15,7 +15,9 @@ export default function TabsLayout() {
       {/* Au centre exact de la barre ; appui long : ajout rapide (ancien bouton « + ») */}
       <Tabs.Screen name="tools" options={{ title: tr('dock.tools') }} />
       <Tabs.Screen name="community" options={{ title: tr('tab.community') }} />
-      <Tabs.Screen name="ask" options={{ title: tr('tab.ask') }} />
+      <Tabs.Screen name="moi" options={{ title: tr('tab.me') }} />
+      {/* L'assistant s'ouvre depuis l'accueil et les outils ; la route reste (liens profonds), hors de la barre */}
+      <Tabs.Screen name="ask" options={{ title: tr('tab.ask'), href: null }} />
       {/* Le Profil s'ouvre depuis l'avatar en haut à droite ; la route reste (liens profonds), hors de la barre */}
       <Tabs.Screen name="profile" options={{ title: tr('tab.profile'), href: null }} />
     </Tabs>

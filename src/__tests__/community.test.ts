@@ -11,8 +11,9 @@ import { pseudonymError, splitSpaces, threadComments } from '@/lib/data/hooks-co
 import type { AppNotification, FeedComment, FeedPost, Forum } from '@/lib/types';
 
 const SPACES = [
-  'Éviter une grossesse', 'Projet bébé', 'Fertilité', 'Grossesse', 'Jumeaux et triplés', 'Accouchement', 'Post-partum', 'Allaitement',
-  'Biberon', 'Sommeil', 'Diversification', 'Parents de bébés', 'Parents d’enfants', 'Familles nombreuses', 'Rencontres locales',
+  'Suivi du cycle', 'Projet bébé', 'Grossesse', 'Jumeaux et triplés', 'Nouveau-né', 'Allaitement', 'Biberon', 'Sommeil',
+  'Diversification et repas', 'Santé et développement', 'Troubles neurodéveloppementaux', 'Post-partum et bien-être de la mère',
+  'Parents de plusieurs enfants', 'Questions générales',
 ];
 const PW = 'MotDePasse!2026';
 
@@ -32,10 +33,9 @@ describe('communauté (moteur local)', () => {
   let hugoComment: FeedComment;
   let inesReply: FeedComment;
 
-  it('15 espaces séparés, dans l’ordre, un seul espace local', async () => {
+  it('14 catégories, dans l’ordre', async () => {
     forums = await db.select<Forum>({ table: 'forums', order: [{ col: 'position' }] });
     expect(forums.map((f) => f.title)).toEqual(SPACES);
-    expect(forums.filter((f) => f.is_local).map((f) => f.slug)).toEqual(['rencontres-locales']);
     // Les exemples de la démonstration sont répartis dans les nouveaux espaces
     await db.auth.signUp('lea@exemple.test', PW);
     const posts = await feed();
@@ -45,9 +45,9 @@ describe('communauté (moteur local)', () => {
 
   it('« Mes espaces » d’après le parcours, tous les autres restent ouverts', () => {
     const { mine, others } = splitSpaces(forums, ['ttc']);
-    expect(mine.map((f) => f.slug)).toEqual(['projet-bebe', 'fertilite']);
+    expect(mine.map((f) => f.slug)).toEqual(['projet-bebe']);
     expect(others).toHaveLength(13);
-    expect(others.map((f) => f.slug)).toContain('parents-bebes');
+    expect(others.map((f) => f.slug)).toContain('nouveau-ne');
     expect(splitSpaces(forums, []).mine).toHaveLength(0);
   });
 
@@ -64,13 +64,13 @@ describe('communauté (moteur local)', () => {
     await db.insert('community_profiles', { user_id: await me(), pseudonym: 'Ines_en_projet' });
   });
 
-  it('publication dans un espace hors de son parcours (Projet bébé → Parents de bébés)', async () => {
-    [post] = await db.insert<FeedPost>('posts', { forum_id: space('parents-bebes').id, title: 'Organiser la chambre', body: 'Comment avez-vous organisé la chambre de bébé ?' });
+  it('publication dans un espace hors de son parcours (Projet bébé → Nouveau-né)', async () => {
+    [post] = await db.insert<FeedPost>('posts', { forum_id: space('nouveau-ne').id, title: 'Organiser la chambre', body: 'Comment avez-vous organisé la chambre de bébé ?' });
     expect(post.status).toBe('visible');
     const mine = (await feed()).find((p) => p.id === post.id)!;
     expect(mine).toMatchObject({ is_mine: true, pseudonym: 'Ines_en_projet' });
     expect(JSON.stringify(mine)).not.toMatch(/ines@exemple/);
-    const perSpace = await db.select<FeedPost>({ table: 'forum_feed', filters: [eq('forum_id', space('parents-bebes').id)] });
+    const perSpace = await db.select<FeedPost>({ table: 'forum_feed', filters: [eq('forum_id', space('nouveau-ne').id)] });
     expect(perSpace.map((p) => p.id)).toContain(post.id);
   });
 
@@ -78,7 +78,7 @@ describe('communauté (moteur local)', () => {
     const r1 = await db.rpc<FeedPost[]>('search_posts', { p_query: 'CHAMBRE' });
     expect(r1.map((p) => p.id)).toContain(post.id);
     const r2 = await db.rpc<FeedPost[]>('search_posts', { p_query: 'reveil' });
-    expect(r2.some((p) => p.title.startsWith('Réveils'))).toBe(true);
+    expect(r2.some((p) => (p.title ?? '').startsWith('Réveils'))).toBe(true);
     expect(await db.rpc<FeedPost[]>('search_posts', { p_query: 'chambre', p_forum: space('sommeil').id })).toHaveLength(0);
     expect(await db.rpc<FeedPost[]>('search_posts', { p_query: 'c' })).toHaveLength(0);
   });
@@ -90,7 +90,7 @@ describe('communauté (moteur local)', () => {
     await as('ines@exemple.test');
     const n = await notifs('community_comment');
     expect(n).toHaveLength(1);
-    expect(n[0]).toMatchObject({ title: 'PapaHugo a commenté votre publication', deep_link: `/community/post/${post.id}` });
+    expect(n[0]).toMatchObject({ title: 'PapaHugo a commenté votre publication', deep_link: `/community/post/${post.id}?comment=${hugoComment.id}` });
   });
 
   it('réponse à un commentaire → notification community_reply', async () => {

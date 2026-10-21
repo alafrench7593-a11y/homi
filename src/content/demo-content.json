@@ -132,16 +132,17 @@
     "forums": [
         {
             "id": "d5aa7ca4-8bd9-4d71-ac0e-edf5216317ee",
-            "icon": "shield",
-            "slug": "eviter-grossesse",
-            "title": "Éviter une grossesse",
+            "icon": "cycle",
+            "slug": "suivi-cycle",
+            "title": "Suivi du cycle",
             "archived": false,
             "is_local": false,
             "journeys": [
-                "avoid"
+                "avoid",
+                "cycle"
             ],
             "position": 1,
-            "description": "Contraception, oublis, questions avant une consultation, ressentis."
+            "description": "Cycle, règles, contraception, symptômes : partager son expérience."
         },
         {
             "id": "22c21383-2f1a-4e4f-bb09-676f4924c059",
@@ -154,20 +155,7 @@
                 "ttc"
             ],
             "position": 2,
-            "description": "Essayer d'avoir un enfant, attendre, espérer, se soutenir."
-        },
-        {
-            "id": "a55ded38-392a-42ab-ba7c-477e9ee68563",
-            "icon": "fertility",
-            "slug": "fertilite",
-            "title": "Fertilité",
-            "archived": false,
-            "is_local": false,
-            "journeys": [
-                "ttc"
-            ],
-            "position": 3,
-            "description": "Parcours de PMA, examens, attente et soutien entre personnes concernées."
+            "description": "Essayer d'avoir un enfant, parcours de PMA, attendre, espérer, se soutenir."
         },
         {
             "id": "5add4f3a-9ef7-41aa-a4f8-5acf7c40ed8d",
@@ -179,8 +167,8 @@
             "journeys": [
                 "pregnant"
             ],
-            "position": 4,
-            "description": "Questions et partages pendant la grossesse."
+            "position": 3,
+            "description": "Questions et témoignages pendant la grossesse, jusqu'à l'accouchement."
         },
         {
             "id": "0b5ae06f-ed12-4447-a4ec-0b5a71179539",
@@ -194,34 +182,21 @@
                 "newborn",
                 "child"
             ],
-            "position": 5,
+            "position": 4,
             "description": "Grossesses multiples et familles de jumeaux ou triplés."
         },
         {
-            "id": "7485a2f7-0dc9-40ca-8bfc-19c67f473951",
-            "icon": "birth",
-            "slug": "accouchement",
-            "title": "Accouchement",
-            "archived": false,
-            "is_local": false,
-            "journeys": [
-                "pregnant"
-            ],
-            "position": 6,
-            "description": "Se préparer, raconter son accouchement, projet de naissance."
-        },
-        {
-            "id": "11ebc4a3-7f9e-4b88-ab38-ac59eabf915d",
-            "icon": "heart",
-            "slug": "post-partum",
-            "title": "Post-partum",
+            "id": "04e9a53b-455c-46ef-b26f-29417d2dc1f3",
+            "icon": "baby",
+            "slug": "nouveau-ne",
+            "title": "Nouveau-né",
             "archived": false,
             "is_local": false,
             "journeys": [
                 "newborn"
             ],
-            "position": 7,
-            "description": "Après la naissance : récupération, émotions, quotidien."
+            "position": 5,
+            "description": "Les premières semaines et les premiers mois avec bébé."
         },
         {
             "id": "3cb702bd-07ea-479b-917c-2d09666465a7",
@@ -233,8 +208,8 @@
             "journeys": [
                 "newborn"
             ],
-            "position": 8,
-            "description": "Allaitement, tire-lait, sevrage, et allaitement mixte."
+            "position": 6,
+            "description": "Allaitement, tire-lait, sevrage, allaitement mixte."
         },
         {
             "id": "f1d39b6a-e00a-45f0-81ee-d06d28e4db58",
@@ -246,7 +221,7 @@
             "journeys": [
                 "newborn"
             ],
-            "position": 9,
+            "position": 7,
             "description": "Préparation, quantités, choix du lait, passage au biberon."
         },
         {
@@ -260,74 +235,86 @@
                 "newborn",
                 "child"
             ],
-            "position": 10,
+            "position": 8,
             "description": "Nuits, siestes, rituels du coucher, fatigue des parents."
         },
         {
             "id": "abc484d9-46d8-4d1a-b8ae-4591d3358351",
             "icon": "food",
             "slug": "diversification",
-            "title": "Diversification",
+            "title": "Diversification et repas",
             "archived": false,
             "is_local": false,
             "journeys": [
                 "newborn",
+                "child"
+            ],
+            "position": 9,
+            "description": "Premiers repas, textures, idées de menus, repas en famille."
+        },
+        {
+            "id": "6f1c2a4e-8b3d-4e5f-9a10-2b3c4d5e6f70",
+            "icon": "health",
+            "slug": "sante-developpement",
+            "title": "Santé et développement",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
+                "newborn",
+                "child"
+            ],
+            "position": 10,
+            "description": "Croissance, étapes, petits soucis du quotidien : des témoignages, pas des diagnostics."
+        },
+        {
+            "id": "7a2d3b5f-9c4e-4f60-8b21-3c4d5e6f7081",
+            "icon": "brain",
+            "slug": "neurodeveloppement",
+            "title": "Troubles neurodéveloppementaux",
+            "archived": false,
+            "is_local": false,
+            "journeys": [
                 "child"
             ],
             "position": 11,
-            "description": "Premiers repas, textures, allergènes, idées de menus."
+            "description": "TDAH, TSA, DYS, langage… parcours, démarches et soutien entre parents."
         },
         {
-            "id": "04e9a53b-455c-46ef-b26f-29417d2dc1f3",
-            "icon": "baby",
-            "slug": "parents-bebes",
-            "title": "Parents de bébés",
+            "id": "11ebc4a3-7f9e-4b88-ab38-ac59eabf915d",
+            "icon": "heart",
+            "slug": "post-partum",
+            "title": "Post-partum et bien-être de la mère",
             "archived": false,
             "is_local": false,
             "journeys": [
-                "newborn",
-                "child"
+                "newborn"
             ],
             "position": 12,
-            "description": "Le quotidien avec un bébé de 0 à 2 ans."
-        },
-        {
-            "id": "0b593782-4d84-4e18-bbbc-56a498fec134",
-            "icon": "sun",
-            "slug": "parents-enfants",
-            "title": "Parents d’enfants",
-            "archived": false,
-            "is_local": false,
-            "journeys": [
-                "child",
-                "family"
-            ],
-            "position": 13,
-            "description": "De 2 à 10 ans : école, émotions, organisation."
+            "description": "Après la naissance : récupération, émotions, fatigue, se faire aider."
         },
         {
             "id": "ad7ae9e1-3a77-4b40-a4f1-017144073f93",
             "icon": "users",
-            "slug": "familles-nombreuses",
-            "title": "Familles nombreuses",
+            "slug": "plusieurs-enfants",
+            "title": "Parents de plusieurs enfants",
             "archived": false,
             "is_local": false,
             "journeys": [
                 "family"
             ],
-            "position": 14,
-            "description": "Organiser la vie avec plusieurs enfants."
+            "position": 13,
+            "description": "Organiser la vie avec plusieurs enfants, fratrie, jalousie."
         },
         {
-            "id": "9f5651f6-fc01-49a0-aadf-831a5f2b2520",
-            "icon": "map",
-            "slug": "rencontres-locales",
-            "title": "Rencontres locales",
+            "id": "8b3e4c6a-0d5f-4a71-9c32-4d5e6f708192",
+            "icon": "chat",
+            "slug": "questions-generales",
+            "title": "Questions générales",
             "archived": false,
-            "is_local": true,
+            "is_local": false,
             "journeys": [],
-            "position": 15,
-            "description": "Proposer une rencontre dans un lieu public, par zone générale uniquement."
+            "position": 14,
+            "description": "Tout le reste : organisation, école, mode de garde, vie de famille."
         }
     ],
     "articles": [

@@ -1,5 +1,5 @@
 /**
- * Barre de navigation flottante : Accueil · Suivi · [Outils] · Questions · Profil.
+ * Barre de navigation flottante : Accueil · Suivi · [Outils] · Communauté · Moi.
  * « Outils » est au centre GÉOMÉTRIQUE (deux moitiés de largeur égale). Appui long sur « Outils » :
  * ajout rapide (ancien bouton « + »), aussi présent en haut de la page Outils.
  */
@@ -21,13 +21,13 @@ import { haptic, Icon, type IconName, Text } from './ui';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
 
-const TAB_ICONS: Record<string, IconName> = { index: 'home', track: 'activity', ask: 'message-circle', community: 'users', profile: 'user', tools: 'grid' };
-const SHORT_KEYS = { index: 'tab.home', track: 'tab.track', ask: 'tab.ask', community: 'tab.community', profile: 'tab.profile' } as const;
+const TAB_ICONS: Record<string, IconName> = { index: 'home', track: 'activity', ask: 'message-circle', community: 'users', profile: 'user', tools: 'grid', moi: 'user' };
+const SHORT_KEYS = { index: 'tab.home', track: 'tab.track', ask: 'tab.ask', community: 'tab.community', profile: 'tab.profile', moi: 'tab.me' } as const;
 const short = (name: string) => (name in SHORT_KEYS ? tr(SHORT_KEYS[name as keyof typeof SHORT_KEYS]) : undefined);
 
 export const DOCK_HEIGHT = 74;
 /** Routes d'onglet accessibles par lien mais absentes de la barre : le Profil s'ouvre depuis l'avatar de l'en-tête. */
-const HIDDEN_FROM_BAR = new Set(['profile']);
+const HIDDEN_FROM_BAR = new Set(['profile', 'ask']);
 
 /** Icône d'onglet : petit rebond quand l'onglet devient actif. */
 function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {

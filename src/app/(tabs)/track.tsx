@@ -7,7 +7,8 @@ import { PremiumGate, ProfileSwitcher } from '@/components/Family';
 import { BarChart } from '@/components/Charts';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, EmptyStateCard, haptic, Icon, type IconName, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui-extra';
-import { Timeline, KIND_META, type LogItem } from '@/features/tracking';
+import { Timeline, type LogItem } from '@/features/tracking';
+import { ChildTrackCards, PregnancyTrackCards } from '@/features/trackCards';
 import { QuickEntry } from '@/features/quickEntry';
 import { DayRibbon, SleepNights } from '@/features/motionViz';
 import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePregnancies, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
@@ -19,7 +20,7 @@ import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
 
-function ChildTracking({ childId }: { childId: string }) {
+function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby' | 'child' | null }) {
   const t = useTheme();
   const premium = usePremium();
   const { data: children } = useChildren();
@@ -59,13 +60,14 @@ function ChildTracking({ childId }: { childId: string }) {
   ], [bottles, feeds, pumpings, diapers, sleeps, meals, obs]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!child) return null;
-  const enabled = (Object.keys(KIND_META) as LogKind[]).filter((k) => k === 'observation' || child.enabled_tracking.includes(KIND_META[k].tracking));
   const chartDays = premium ? days : 7;
   const bottleSeries = lastDaysSeries(Math.min(chartDays, 7), bottles, (b) => b.at, (b) => b.consumed_ml ?? b.prepared_ml ?? 0);
   const diaperSeries = lastDaysSeries(Math.min(chartDays, 7), diapers, (d) => d.at, () => 1);
 
   return (
     <View style={{ gap: spacing.md }}>
+      {/* Cartes de suivi en premier : quatre actions utiles au profil, les autres dans « Voir tous les suivis » */}
+      <ChildTrackCards child={child} journey={journey} />
       <Tappable
         accessibilityRole="button"
         accessibilityLabel={openSleep ? 'Sommeil en cours. Ouvrir le mode nuit.' : 'Démarrer un sommeil en mode nuit'}
@@ -80,20 +82,7 @@ function ChildTracking({ childId }: { childId: string }) {
         <Icon name="chevron-right" color="#B8A88F" />
       </Tappable>
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
-        {enabled.map((k) => (
-          <Tappable
-            key={k}
-            accessibilityRole="button"
-            accessibilityLabel={`Ajouter : ${KIND_META[k].label}`}
-            onPress={() => { haptic('light'); k === 'sleep' ? router.push('/night') : router.push({ pathname: '/track/[kind]', params: { kind: k, child: childId } }); }}
-            style={({ pressed }) => ({ width: '31%', flexGrow: 1, paddingVertical: spacing.md, borderRadius: radius.lg, alignItems: 'center', gap: 6, backgroundColor: pressed ? t.colors.accentSoft : t.colors.surface, borderWidth: 1, borderColor: t.colors.border })}
-          >
-            <Icon name={KIND_META[k].icon as IconName} color={t.colors.primary} />
-            <Text variant="small" weight="medium">{KIND_META[k].label}</Text>
-          </Tappable>
-        ))}
-      </View>
+      <QuickEntry activeChildId={childId} />
 
       <SectionTitle title="Aujourd’hui" />
       {logsLoading ? <Skeleton kind="list" rows={3} /> : logsError ? (
@@ -141,9 +130,12 @@ function ChildTracking({ childId }: { childId: string }) {
   );
 }
 
-function PregnancyTracking() {
+function PregnancyTracking({ cards }: { cards?: boolean }) {
   const { data: profile } = useProfile();
+  const pregnancy = useActivePregnancy();
   return (
+    <View style={{ gap: spacing.md }}>
+    {cards ? <PregnancyTrackCards pregnancyId={pregnancy?.id ?? null} /> : null}
     <Card>
       <ListRow icon="moon" title="Semaine après semaine" subtitle="Développement, changements possibles, compte à rebours" onPress={() => router.push('/pregnancy')} />
       {!profile?.hide_weight_module && <ListRow icon="trending-up" title="Mon poids" subtitle="Suivi facultatif et bienveillant" onPress={() => router.push('/pregnancy/weight')} />}
@@ -152,6 +144,7 @@ function PregnancyTracking() {
       <ListRow icon="folder" title="Documents" subtitle="Échographies, comptes rendus, résultats" onPress={() => router.push('/documents')} />
       <ListRow icon="star" title="Idées de prénoms" subtitle="Favoris et vote à deux" onPress={() => router.push('/names')} />
     </Card>
+    </View>
   );
 }
 
@@ -173,9 +166,9 @@ export default function Track() {
         {loading ? <Skeleton kind="card" rows={2} /> : failed ? (
           <ErrorView error={failed.error} onRetry={() => { void childrenQ.refetch(); void pregnanciesQ.refetch(); }} />
         ) : null}
-        {(scope.childId || subject.type === 'family') && <QuickEntry activeChildId={scope.childId} />}
-        {scope.childId && <ChildTracking childId={scope.childId} />}
-        {scope.scope === 'pregnancy' && <PregnancyTracking />}
+        {subject.type === 'family' && <QuickEntry activeChildId={scope.childId} />}
+        {scope.childId && <ChildTracking childId={scope.childId} journey={scope.scope === 'baby' ? 'baby' : scope.scope === 'child' ? 'child' : null} />}
+        {scope.scope === 'pregnancy' && <PregnancyTracking cards />}
         {scope.scope === 'postpartum' && (
           <Card>
             <ListRow icon="edit-3" title={tr('tool.pp_checkin')} onPress={() => router.push('/postpartum/checkin')} />

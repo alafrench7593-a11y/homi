@@ -85,7 +85,7 @@ export const home: Messages<typeof fr> = {
   'screen.ask.title': 'Questions',
   'screen.ask.sub': 'Ask your health and parenting questions to a careful assistant that cites its sources.',
   'screen.community.title': 'Community',
-  'screen.community.sub': 'Every space is open, under a pseudonym.',
+  'screen.community.sub': 'The parents’ forum, under a pseudonym.',
   'screen.community.saved': 'Saved posts',
   'screen.community.pseudo': 'My pseudonym',
   'dock.tools': 'Tools',

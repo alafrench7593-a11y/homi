@@ -5,6 +5,7 @@ export const legacy: Messages<typeof fr> = {
   'tab.home': 'Home',
   'tab.track': 'Tracking',
   'tab.ask': 'Questions',
+  'tab.me': 'Me',
   'tab.discover': 'Discover',
   'tab.profile': 'Profile',
   'tab.community': 'Community',

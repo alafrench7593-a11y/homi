@@ -117,6 +117,7 @@ with sync_playwright() as p:
     R['A_foyer_renomme'] = any(h['name'] == 'Famille de Sarah' for h in fake.t('households') if h['created_by'] == uid)
     R['A_brouillon_efface'] = prof.get('onboarding_state') is None
     # invitation créée par Sarah
+    fake.premium_users.add(uid)  # l'invitation d'un coparent est réservée à Premium
     pg.goto(B + '/settings/family'); sleep(3)
     pg.get_by_role('button', name='Créer l’invitation').click(); sleep(2)
     token = fake.t('household_invitations')[-1]['token'] if fake.t('household_invitations') else None

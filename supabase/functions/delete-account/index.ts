@@ -1,5 +1,6 @@
 // Suppression définitive du compte. POST { confirm: "SUPPRIMER" }
-// 1) efface les photos chiffrées du cycle (« cycle-private/<uid>/… ») ;
+// 1) efface les photos chiffrées du cycle (« cycle-private/<uid>/… ») et les photos de la communauté
+//    (« community/<uid>/… » : avatar et photos publiées) ;
 // 2) supprime les données (transfert d'un foyer partagé au coparent) ;
 // 3) efface les fichiers privés correspondants du stockage « documents ».
 // Aucun nom de fichier n'est journalisé.
@@ -9,8 +10,8 @@ import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shar
 const PAGE = 100;
 
 /** Liste (par pages) puis supprime (par lots de 100) tous les fichiers du dossier de la personne. */
-async function removeCyclePhotos(admin: SupabaseClient, userId: string): Promise<{ ok: boolean; count: number }> {
-  const bucket = admin.storage.from('cycle-private');
+async function removeUserFolder(admin: SupabaseClient, bucketId: string, userId: string): Promise<{ ok: boolean; count: number }> {
+  const bucket = admin.storage.from(bucketId);
   const paths: string[] = [];
   for (let offset = 0; ; offset += PAGE) {
     const { data, error } = await bucket.list(userId, { limit: PAGE, offset, sortBy: { column: 'name', order: 'asc' } });
@@ -38,8 +39,9 @@ Deno.serve(async (req) => {
 
   // Photos intimes d'abord : en cas d'échec, le compte n'est pas supprimé et la personne peut réessayer
   // (évite de laisser des fichiers orphelins impossibles à rattacher à quelqu'un).
-  const cycle = await removeCyclePhotos(admin, auth.user.id);
-  if (!cycle.ok) {
+  const cycle = await removeUserFolder(admin, 'cycle-private', auth.user.id);
+  const community = await removeUserFolder(admin, 'community', auth.user.id);
+  if (!cycle.ok || !community.ok) {
     console.error('delete_account_cycle_storage_error');
     return json({ error: 'server_error' }, 500);
   }
@@ -53,5 +55,5 @@ Deno.serve(async (req) => {
   for (let i = 0; i < files.length; i += PAGE) {
     await admin.storage.from('documents').remove(files.slice(i, i + PAGE));
   }
-  return json({ ok: true, files_removed: files.length + cycle.count });
+  return json({ ok: true, files_removed: files.length + cycle.count + community.count });
 });

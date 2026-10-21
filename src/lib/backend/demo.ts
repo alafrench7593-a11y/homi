@@ -19,6 +19,7 @@ import {
   parseStructuredAnswer, structuredToMarkdown, todayIso,
 } from '../../../supabase/functions/_shared/assistant-format';
 import { buildSampleFamily } from './demoSample';
+import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
 import { ALL_RECIPES } from '@/content/recipes';
 import { recipeToRows } from '../recipes/db';
 import { RECIPE_SOURCES } from '../recipes/sources';
@@ -35,7 +36,14 @@ type Tables = Record<string, Row[]>;
 
 const KEY = 'toietmoi.demo.v1';
 /** Version des exemples de la communauté : l'augmenter ajoute les nouveaux exemples aux appareils existants. */
-const COMMUNITY_SEED_VERSION = 2;
+const COMMUNITY_SEED_VERSION = 3;
+/** Anciens espaces fusionnés (migration 20261022000100) → catégorie d'accueil. */
+const MERGED_FORUMS: Record<string, string> = {
+  'a55ded38-392a-42ab-ba7c-477e9ee68563': '22c21383-2f1a-4e4f-bb09-676f4924c059', // fertilité → projet bébé
+  '7485a2f7-0dc9-40ca-8bfc-19c67f473951': '5add4f3a-9ef7-41aa-a4f8-5acf7c40ed8d', // accouchement → grossesse
+  '0b593782-4d84-4e18-bbbc-56a498fec134': '8b3e4c6a-0d5f-4a71-9c32-4d5e6f708192', // parents d'enfants → questions générales
+  '9f5651f6-fc01-49a0-aadf-831a5f2b2520': '8b3e4c6a-0d5f-4a71-9c32-4d5e6f708192', // rencontres locales → questions générales
+};
 /** Bibliothèque de recettes : mêmes lignes que supabase/migrations/20261020000200_recipes_seed.sql. */
 /**
  * Bibliothèque de recettes de la démonstration : reconstruite à chaque ouverture depuis l'application (identifiants
@@ -80,7 +88,7 @@ function checkBottleTimer(all: Row[], r: Row) {
 const OWNER_TABLES: Record<string, string> = {
   period_entries: 'user_id', symptom_logs: 'user_id', ovulation_tests: 'user_id', pregnancy_tests: 'user_id', maternal_weights: 'user_id',
   mood_checkins: 'user_id', reminders: 'user_id', favorites: 'user_id', product_scans: 'user_id', push_devices: 'user_id',
-  assistant_conversations: 'user_id', assistant_messages: 'user_id', assistant_feedback: 'user_id', consents: 'user_id', posts: 'author_id', comments: 'author_id',
+  assistant_conversations: 'user_id', assistant_messages: 'user_id', assistant_feedback: 'user_id', consents: 'user_id', posts: 'author_id', comments: 'author_id', post_photos: 'author_id', community_notification_prefs: 'user_id',
   post_likes: 'user_id', saved_posts: 'user_id', reports: 'reporter_id', user_blocks: 'blocker_id', notes: 'author_id',
   documents: 'uploaded_by', name_votes: 'user_id',
   // Scanner : historique, résultats et favoris strictement personnels
@@ -186,6 +194,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         seedRecipes();
         // Sources et lectures : mêmes lignes que la migration 0700 (pages réellement consultées)
         for (const r of EXTERNAL_RESOURCES) if (!T('external_resources').some((x) => x.slug === r.slug)) T('external_resources').push({ id: `res-${r.slug}`, status: 'published', created_at: `${r.consulted_on}T12:00:00Z`, ...r });
+        // Communauté v2 : publications des espaces fusionnés rattachées à leur nouvelle catégorie, identifiants « @ »
+        for (const post of T('posts')) if (MERGED_FORUMS[post.forum_id]) post.forum_id = MERGED_FORUMS[post.forum_id];
+        for (const cp of T('community_profiles')) if (!cp.handle) cp.handle = uniqueHandle(handleBase(cp.pseudonym), cp.user_id);
         if ((state.tables._community_seed?.[0]?.version ?? 0) < COMMUNITY_SEED_VERSION) seedCommunity();
       })();
     }
@@ -225,6 +236,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     return l ? (isPremium() ? l.premium_value : l.free_value) : Infinity;
   };
   let replyTarget: string | null = null;
+  const isModerator = () => T('user_roles').some((x) => x.user_id === state.session?.userId && ['moderator', 'admin'].includes(x.role as string));
   const blockedBetween = (a: string, b: string) => T('user_blocks').some((x) => (x.blocker_id === a && x.blocked_id === b) || (x.blocker_id === b && x.blocked_id === a));
   /** Pseudonyme : format, unicité, jamais le prénom du profil ni l'identifiant de l'e-mail. */
   function checkPseudonym(r: Row, creating: boolean) {
@@ -241,6 +253,54 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
   }
   const notify = (userId: string, n: Row) => T('notifications').push({ id: uuid(), user_id: userId, payload: {}, read_at: null, created_at: nowIso(), ...n });
+  /** Même règle que community_notify : chaque type se désactive séparément. */
+  const PREF_OF: Record<string, string> = { community_comment: 'post_comment', community_reply: 'comment_reply', community_like: 'reaction', community_saved: 'saved_reply', community_moderation: 'moderation' };
+  const communityNotify = (userId: string | null | undefined, n: Row) => {
+    if (!userId) return;
+    const prefs = T('community_notification_prefs').find((x) => x.user_id === userId);
+    if (prefs && prefs[PREF_OF[n.category]] === false) return;
+    notify(userId, n);
+  };
+  /** Jamais l'identité de l'auteur d'une publication anonyme. */
+  const actorLabel = (userId: string, postId: string) => {
+    const post = T('posts').find((x) => x.id === postId);
+    if (post?.anonymous && post.author_id === userId) return 'L’auteur·rice de la publication';
+    return T('community_profiles').find((x) => x.user_id === userId)?.pseudonym ?? 'Quelqu’un';
+  };
+  function uniqueHandle(base: string, owner: string) {
+    let h = base; let n = 0;
+    while (T('community_profiles').some((x) => x.handle === h && x.user_id !== owner)) { n += 1; h = `${base.slice(0, 15)}_${100 + Math.floor(Math.random() * 900)}`; if (n > 50) h = `membre_${uuid().slice(0, 8)}`; }
+    return h;
+  }
+  /** Identifiant « @ », avatar, présentation : mêmes contrôles que community_profile_guard. */
+  function checkCommunityProfile(r: Row, existing?: Row) {
+    const owner = existing?.user_id ?? r.user_id ?? state.session?.userId;
+    if (r.handle == null || String(r.handle).trim() === '') {
+      if (!existing) r.handle = uniqueHandle(handleBase(String(r.pseudonym ?? 'membre')), owner);
+      else if ('handle' in r) r.handle = existing.handle;
+    } else {
+      const err = handleError(String(r.handle));
+      if (err) throw new BackendError(err, 'P0001', 'handle_invalid');
+      r.handle = normalizeHandle(String(r.handle));
+      if (T('community_profiles').some((x) => x.handle === r.handle && x.user_id !== owner)) throw new BackendError('Cet identifiant est déjà pris.', '23505');
+    }
+    if (r.avatar_path && String(r.avatar_path).split('/')[0] !== owner) throw new BackendError('Photo de profil invalide.', '42501');
+    if (r.bio != null) { r.bio = String(r.bio).trim() || null; if (r.bio && r.bio.length > 280) throw new BackendError('Présentation : 280 caractères au plus.'); }
+    if (r.visibility != null && !['members', 'minimal'].includes(r.visibility)) throw new BackendError('Visibilité invalide.');
+    r.updated_at = nowIso();
+  }
+  /** Masquage ou rétablissement par la modération : l'autrice est informée (on_moderated). */
+  function moderationNotice(kind: 'post' | 'comment', target: Row, before: string) {
+    if (target.status === before) return;
+    const postId = kind === 'post' ? target.id : target.post_id;
+    const link = kind === 'post' ? `/community/post/${postId}` : `/community/post/${postId}?comment=${target.id}`;
+    const what = kind === 'post' ? 'Votre publication' : 'Votre commentaire';
+    if (['hidden', 'removed'].includes(target.status) && ['visible', 'pending_review'].includes(before)) {
+      communityNotify(target.author_id, { category: 'community_moderation', title: `${what} ${target.status === 'removed' ? 'a été retiré par la modération' : 'a été masqué en attendant la modération'}`, body: 'Il ne respecte peut-être pas les règles de la communauté. Vous pouvez le retrouver dans « Moi ».', deep_link: link, payload: { post_id: postId, status: target.status } });
+    } else if (target.status === 'visible' && ['pending_review', 'hidden'].includes(before)) {
+      communityNotify(target.author_id, { category: 'community_moderation', title: `${what} est maintenant visible`, body: null, deep_link: link, payload: { post_id: postId, status: target.status } });
+    }
+  }
 
   /** Reconstruit la bibliothèque (hors stockage), garde les recettes personnelles et applique les corrections enregistrées. */
   function seedRecipes() {
@@ -267,31 +327,37 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   function seedCommunity() {
     const forum = (slug: string) => T('forums').find((f) => f.slug === slug)?.id;
     const others = [
-      { user_id: 'demo-voisine-1', pseudonym: 'Maïa_et_Sohan', area_label: 'Lyon' },
-      { user_id: 'demo-voisin-2', pseudonym: 'PapaDeNour', area_label: 'Lille' },
-      { user_id: 'demo-voisine-3', pseudonym: 'Clem.2026', area_label: 'Nantes' },
+      { user_id: 'demo-voisine-1', pseudonym: 'Maïa_et_Sohan', handle: 'maia_et_sohan', area_label: 'Lyon', bio: 'Maman de Sohan, 8 mois. Toujours partante pour échanger sur le sommeil.', avatar_preset: 'flower', journey_label: 'bebe', visibility: 'members' },
+      { user_id: 'demo-voisin-2', pseudonym: 'PapaDeNour', handle: 'papadenour', area_label: 'Lille', bio: 'Papa de jumeaux et d’une grande sœur. On s’organise comme on peut !', avatar_preset: 'whale', journey_label: 'jumeaux', visibility: 'members' },
+      { user_id: 'demo-voisine-3', pseudonym: 'Clem.2026', handle: 'clem_2026', area_label: 'Nantes', bio: null, avatar_preset: 'moon', journey_label: null, visibility: 'minimal' },
     ];
     // Amorçage additif : un appareil qui avait déjà la démo reçoit les nouveaux exemples sans perdre ses données
-    for (const o of others) if (!T('community_profiles').some((x) => x.user_id === o.user_id)) T('community_profiles').push({ ...o, suspended_until: null, created_at: nowIso() });
-    const p = (slugF: string, author: string, title: string, body: string, hoursAgo: number, likes = 0) => ({
-      id: uuid(), forum_id: forum(slugF), author_id: author, title, body, area_label: null, status: 'visible', report_count: 0,
+    for (const o of others) {
+      const existing = T('community_profiles').find((x) => x.user_id === o.user_id);
+      if (existing) { for (const [k, v] of Object.entries(o)) if (existing[k] == null) existing[k] = v; existing.handle = o.handle; }
+      else T('community_profiles').push({ ...o, suspended_until: null, created_at: new Date(Date.now() - 200 * 86_400_000).toISOString() });
+    }
+    const p = (slugF: string, author: string, title: string | null, body: string, hoursAgo: number, likes = 0) => ({
+      id: uuid(), forum_id: forum(slugF), author_id: author, title, body, area_label: null as string | null, kind: 'question', anonymous: false, status: 'visible', report_count: 0,
       like_count: likes, comment_count: 0, created_at: new Date(Date.now() - hoursAgo * 3600_000).toISOString(), edited_at: null,
     });
     const samples = [
       p('post-partum', 'demo-voisine-1', 'Trois semaines après : on en parle ?', 'Je pensais être plus en forme. Les nuits sont longues et je pleure facilement. Vous avez vécu ça aussi ?', 5, 12),
       p('jumeaux-triples', 'demo-voisin-2', 'Tableau de relais pour les nuits', 'Avec ma compagne on a fait un tableau : 22h-2h pour moi, 2h-6h pour elle. Ça nous a sauvés. Et vous ?', 20, 31),
       p('grossesse', 'demo-voisine-3', 'Valise : vous l’avez préparée quand ?', 'Je suis à 30 SA et je n’ai encore rien fait. Pas de panique ?', 30, 7),
-      p('parents-enfants', 'demo-voisin-2', 'Préparer un aîné à l’arrivée du bébé', 'Notre fille de 4 ans pose plein de questions. Des livres à conseiller ?', 52, 18),
+      p('plusieurs-enfants', 'demo-voisin-2', 'Préparer un aîné à l’arrivée du bébé', 'Notre fille de 4 ans pose plein de questions. Des livres à conseiller ?', 52, 18),
       p('sommeil', 'demo-voisine-1', 'Réveils à 5 h du matin', 'Notre fils de 15 mois se réveille tous les jours à 5 h. Des idées pour décaler un peu le réveil ?', 8, 9),
       p('diversification', 'demo-voisine-3', 'Premières purées : par quoi commencer ?', 'On démarre la diversification la semaine prochaine. Carotte, courgette… vous avez commencé par quoi ?', 26, 14),
       p('projet-bebe', 'demo-voisine-1', 'Un an d’essais, comment tenir le moral ?', 'Chaque mois l’attente puis la déception. Comment faites-vous pour garder le moral à deux ?', 40, 22),
-      p('fertilite', 'demo-voisine-3', 'Premier rendez-vous en centre de PMA', 'Rendez-vous dans deux semaines. Quelles questions avez-vous posées la première fois ?', 70, 6),
+      p('projet-bebe', 'demo-voisine-3', 'Premier rendez-vous en centre de PMA', 'Rendez-vous dans deux semaines. Quelles questions avez-vous posées la première fois ?', 70, 6),
       p('biberon', 'demo-voisin-2', 'Biberons la nuit : vos astuces ?', 'Eau prête à température, doses de lait préparées… comment vous organisez-vous la nuit ?', 12, 5),
-      { ...p('rencontres-locales', 'demo-voisine-1', 'Balade poussette au parc de la Tête d’Or', 'Une balade samedi matin, entre parents de bébés ? Rendez-vous devant l’entrée principale.', 16, 3), area_label: 'Lyon' },
+      { ...p('questions-generales', 'demo-voisine-1', 'Balade poussette au parc de la Tête d’Or', 'Une balade samedi matin, entre parents de bébés ? Rendez-vous devant l’entrée principale.', 16, 3), area_label: 'Lyon' },
+      { ...p('nouveau-ne', 'demo-voisin-2', null, 'Témoignage : les deux premières semaines avec les jumeaux, je dormais par tranches de deux heures. Ce qui nous a aidés : accepter l’aide de la famille et préparer les biberons à l’avance. Courage à celles et ceux qui commencent !', 3, 25), kind: 'testimony' },
+      { ...p('post-partum', 'demo-voisine-3', null, 'Je me sens loin de mon bébé certains jours et ça me fait peur. J’en ai parlé à ma sage-femme hier. Est-ce que d’autres ont ressenti ça ?', 10, 16), kind: 'testimony', anonymous: true },
     ];
     const added = new Set<number>();
     samples.forEach((s, i) => {
-      if (!s.forum_id || T('posts').some((x) => x.title === s.title)) return;
+      if (!s.forum_id || T('posts').some((x) => (s.title ? x.title === s.title : x.body === s.body))) return;
       T('posts').push(s);
       added.add(i);
     });
@@ -307,6 +373,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     if (first) c(0, 'demo-voisine-1', 'Merci, je vais lui en parler au prochain rendez-vous.', first.id);
     c(1, 'demo-voisine-1', 'Excellente idée, on va essayer !');
     c(4, 'demo-voisin-2', 'On a décalé le coucher de 20 minutes, ça a aidé au bout d’une semaine.');
+    const anonReply = c(12, 'demo-voisine-1', 'Oui, les premières semaines surtout. En parler m’a beaucoup aidée, tu as bien fait.');
+    if (anonReply) c(12, 'demo-voisine-3', 'Merci, ça me rassure de lire ça.', anonReply.id);
     state.tables._community_seed = [{ version: COMMUNITY_SEED_VERSION }];
   }
 
@@ -501,14 +569,31 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (table === 'scan_favorites' && T('scan_favorites').some((x) => x.scan_id === r.scan_id && x.user_id === me)) throw new BackendError('Déjà dans vos favoris.', '23505');
       if (table === 'scan_results') r.explanation ??= null;
     }
-    if (table === 'community_profiles') checkPseudonym(r, true);
+    if (table === 'community_profiles') {
+      checkPseudonym(r, true);
+      checkCommunityProfile(r);
+      r.visibility ??= 'members'; r.bio ??= null; r.avatar_path ??= null; r.avatar_preset ??= null; r.journey_label ??= null; r.suspended_until = null; r.created_at ??= nowIso();
+    }
+    if (table === 'post_photos') {
+      const post = T('posts').find((x) => x.id === r.post_id);
+      if (!post || post.author_id !== me || String(r.path ?? '').split('/')[0] !== me) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
+      if (T('post_photos').filter((x) => x.post_id === r.post_id).length >= 4) throw new BackendError('4 photos au maximum par publication.');
+      r.position ??= 0; r.created_at = nowIso();
+    }
+    if (table === 'community_notification_prefs') {
+      delete r.id;
+      if (T(table).some((x) => x.user_id === r.user_id)) throw new BackendError('Préférences déjà enregistrées.', '23505');
+      for (const k of ['post_comment', 'comment_reply', 'reaction', 'saved_reply', 'moderation']) r[k] ??= true;
+    }
     if (table === 'posts' || table === 'comments') {
       const profile = T('community_profiles').find((p) => p.user_id === me);
       if (!profile) throw new BackendError('Choisissez un pseudonyme avant de publier.', 'P0001', 'pseudonym_required');
       if (profile.suspended_until && profile.suspended_until > nowIso()) throw new BackendError('Votre compte communauté est suspendu.', '42501');
-      if (table === 'posts' && !T('forums').some((f) => f.id === r.forum_id)) throw new BackendError('Choisissez un espace.');
+      if (table === 'posts' && !T('forums').some((f) => f.id === r.forum_id && !f.archived)) throw new BackendError('Choisissez une catégorie.');
+      if (table === 'posts' && T('posts').some((x) => x.author_id === me && x.body === r.body && Date.now() - Date.parse(x.created_at) < 86_400_000)) throw new BackendError('Vous avez déjà publié ce message.', 'P0001', 'duplicate');
+      if (table === 'comments' && T('comments').some((x) => x.author_id === me && x.post_id === r.post_id && x.body === r.body && Date.now() - Date.parse(x.created_at) < 600_000)) throw new BackendError('Vous avez déjà envoyé ce commentaire.', 'P0001', 'duplicate');
       const text = `${r.title ?? ''} ${r.body ?? ''}`;
-      let status = PERSONAL_DATA.test(text) ? 'pending_review' : 'visible';
+      let status = PERSONAL_DATA.test(text) || textNeedsReview(text) ? 'pending_review' : 'visible';
       for (const term of DEMO_TERMS) {
         if (!term.pattern.test(text)) continue;
         if (term.action === 'block') throw new BackendError(`Ce contenu ne respecte pas les règles de la communauté (${term.reason}).`);
@@ -516,7 +601,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       }
       r.status = status;
       r.report_count = 0;
-      if (table === 'posts') Object.assign(r, { like_count: 0, comment_count: 0, edited_at: null });
+      if (table === 'posts') { Object.assign(r, { like_count: 0, comment_count: 0, edited_at: null }); r.title = r.title?.trim() || null; r.kind ??= 'question'; r.anonymous = !!r.anonymous; r.area_label ??= null; }
+      if (table === 'comments') r.edited_at = null;
       if (table === 'comments') {
         const post = T('posts').find((p) => p.id === r.post_id);
         if (!post || post.status !== 'visible') throw new BackendError('Cette publication n’accepte plus de commentaires.', '42501');
@@ -624,17 +710,23 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       const post = T('posts').find((p) => p.id === r.post_id);
       if (post) {
         post.comment_count += 1;
-        // Mêmes règles que le déclencheur on_comment : réponse → community_reply, sinon community_comment
+        // Mêmes règles que on_comment / comment_thread_guard : réponse, commentaire, publication enregistrée
         if (r.status === 'visible') {
-          const who = T('community_profiles').find((p) => p.user_id === r.author_id)?.pseudonym ?? 'Quelqu’un';
+          const who = actorLabel(r.author_id, post.id);
+          const link = `/community/post/${post.id}?comment=${r.id}`;
+          const body = r.body.slice(0, 120);
           const payload = { post_id: post.id, comment_id: r.id, parent_id: r.parent_id };
-          const notified = new Set<string>([r.author_id]);
-          if (replyTarget && !notified.has(replyTarget) && !blockedBetween(replyTarget, r.author_id)) {
-            notify(replyTarget, { category: 'community_reply', title: `${who} a répondu à votre commentaire`, body: r.body.slice(0, 120), deep_link: `/community/post/${post.id}`, payload });
-            notified.add(replyTarget);
+          const done = new Set<string>([r.author_id]);
+          const rootAuthor = r.parent_id ? T('comments').find((x) => x.id === r.parent_id)?.author_id : null;
+          for (const target of [replyTarget, rootAuthor]) {
+            if (target && !done.has(target) && !blockedBetween(target, r.author_id)) communityNotify(target, { category: 'community_reply', title: `${who} a répondu à votre commentaire`, body, deep_link: link, payload });
+            if (target) done.add(target);
           }
-          if (!notified.has(post.author_id) && !blockedBetween(post.author_id, r.author_id)) {
-            notify(post.author_id, { category: 'community_comment', title: `${who} a commenté votre publication`, body: r.body.slice(0, 120), deep_link: `/community/post/${post.id}`, payload });
+          if (!done.has(post.author_id) && !blockedBetween(post.author_id, r.author_id)) communityNotify(post.author_id, { category: 'community_comment', title: `${who} a commenté votre publication`, body, deep_link: link, payload });
+          done.add(post.author_id);
+          for (const s2 of T('saved_posts').filter((x) => x.post_id === post.id)) {
+            if (!done.has(s2.user_id) && !blockedBetween(s2.user_id, r.author_id)) communityNotify(s2.user_id, { category: 'community_saved', title: 'Nouvelle réponse dans une publication enregistrée', body, deep_link: link, payload });
+            done.add(s2.user_id);
           }
         }
       }
@@ -642,13 +734,25 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
     if (table === 'post_likes') {
       const post = T('posts').find((p) => p.id === r.post_id);
-      if (post) post.like_count += 1;
+      if (post) {
+        post.like_count += 1;
+        const recent = T('notifications').some((n) => n.user_id === post.author_id && n.category === 'community_like' && n.payload?.post_id === post.id && Date.now() - Date.parse(n.created_at) < 86_400_000);
+        if (post.author_id !== r.user_id && !blockedBetween(post.author_id, r.user_id) && !recent) {
+          const who = T('community_profiles').find((x) => x.user_id === r.user_id)?.pseudonym ?? 'Quelqu’un';
+          communityNotify(post.author_id, { category: 'community_like', title: `${who} a aimé votre publication`, body: null, deep_link: `/community/post/${post.id}`, payload: { post_id: post.id } });
+        }
+      }
     }
     if (table === 'reports') {
       const target = r.post_id ? T('posts').find((p) => p.id === r.post_id) : T('comments').find((c) => c.id === r.comment_id);
       if (target) {
         target.report_count += 1;
-        if (target.report_count >= 3) target.status = 'hidden';
+        const before = target.status;
+        if (target.report_count >= 3 && target.status === 'visible') {
+          target.status = 'hidden';
+          T('moderation_actions').push({ id: uuid(), moderator_id: null, post_id: r.post_id ?? null, comment_id: r.comment_id ?? null, action: 'auto_hide', reason: '3 signalements', created_at: nowIso() });
+          moderationNotice(r.post_id ? 'post' : 'comment', target, before);
+        }
       }
     }
   }
@@ -658,27 +762,59 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     const me = state.session?.userId;
     // Blocage dans les deux sens, comme is_blocked_between côté Supabase
     const blocked = new Set(T('user_blocks').flatMap((b) => (b.blocker_id === me ? [b.blocked_id] : b.blocked_id === me ? [b.blocker_id] : [])));
-    const pseudo = (id: string) => T('community_profiles').find((p) => p.user_id === id)?.pseudonym ?? null;
+    const prof = (id: string) => T('community_profiles').find((p) => p.user_id === id);
+    const mod = isModerator();
+    // Même condition que la vue forum_feed (droits du propriétaire + règles de la RLS)
+    const readablePost = (p: Row) => (p.status === 'visible' && !blocked.has(p.author_id)) || p.author_id === me || mod;
     if (table === 'forum_feed') {
+      if (!me) return [];
       return T('posts')
-        .filter((p) => (p.status === 'visible' && !blocked.has(p.author_id)) || p.author_id === me)
-        .map((p) => ({
-          id: p.id, forum_id: p.forum_id, title: p.title, body: p.body, area_label: p.area_label, status: p.status,
-          like_count: p.like_count, comment_count: p.comment_count, created_at: p.created_at, edited_at: p.edited_at,
-          pseudonym: pseudo(p.author_id), is_mine: p.author_id === me,
-          liked: T('post_likes').some((l) => l.post_id === p.id && l.user_id === me),
-          saved: T('saved_posts').some((l) => l.post_id === p.id && l.user_id === me),
-        }));
+        .filter(readablePost)
+        .map((p) => {
+          const cp = p.anonymous ? null : prof(p.author_id);
+          return {
+            id: p.id, forum_id: p.forum_id, forum_slug: T('forums').find((f) => f.id === p.forum_id)?.slug ?? null, title: p.title ?? null, body: p.body,
+            kind: p.kind ?? 'question', anonymous: !!p.anonymous, area_label: p.area_label ?? null, status: p.status,
+            like_count: p.like_count, comment_count: p.comment_count, created_at: p.created_at, edited_at: p.edited_at ?? null,
+            pseudonym: cp?.pseudonym ?? null, author_handle: cp?.handle ?? null, avatar_path: cp?.avatar_path ?? null, avatar_preset: cp?.avatar_preset ?? null,
+            is_mine: p.author_id === me,
+            liked: T('post_likes').some((l) => l.post_id === p.id && l.user_id === me),
+            saved: T('saved_posts').some((l) => l.post_id === p.id && l.user_id === me),
+            photos: T('post_photos').filter((ph) => ph.post_id === p.id).sort((x, y) => x.position - y.position).map((ph) => ({ path: ph.path, width: ph.width ?? null, height: ph.height ?? null })),
+          };
+        });
     }
     if (table === 'comment_feed') {
+      if (!me) return [];
       return T('comments')
-        .filter((c) => (c.status === 'visible' && !blocked.has(c.author_id)) || c.author_id === me)
-        .map((c) => ({ id: c.id, post_id: c.post_id, parent_id: c.parent_id, body: c.body, status: c.status, created_at: c.created_at, pseudonym: pseudo(c.author_id), is_mine: c.author_id === me }));
+        .filter((c) => {
+          const post = T('posts').find((x) => x.id === c.post_id);
+          return !!post && (((c.status === 'visible' && !blocked.has(c.author_id)) && readablePost(post)) || c.author_id === me || mod);
+        })
+        .map((c) => {
+          const post = T('posts').find((x) => x.id === c.post_id)!;
+          const anon = !!post.anonymous && c.author_id === post.author_id;
+          const cp = anon ? null : prof(c.author_id);
+          return {
+            id: c.id, post_id: c.post_id, parent_id: c.parent_id, body: c.body, status: c.status, created_at: c.created_at, edited_at: c.edited_at ?? null,
+            is_op: c.author_id === post.author_id, anonymous: anon, pseudonym: cp?.pseudonym ?? null, author_handle: cp?.handle ?? null,
+            avatar_path: cp?.avatar_path ?? null, avatar_preset: cp?.avatar_preset ?? null, is_mine: c.author_id === me,
+            post_title: post.title ?? null, post_excerpt: String(post.body).slice(0, 140),
+          };
+        });
+    }
+    if (table === 'post_photos') {
+      return T('post_photos').filter((ph) => { const post = T('posts').find((x) => x.id === ph.post_id); return !!post && readablePost(post); })
+        .map(({ author_id: _a, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
+    }
+    if (table === 'community_profiles') {
+      // Lecture directe : seulement les colonnes publiques (le reste via my_community_profile / community_member)
+      return T('community_profiles').map((p) => ({ user_id: p.user_id, pseudonym: p.pseudonym, handle: p.handle, avatar_path: p.avatar_path ?? null, avatar_preset: p.avatar_preset ?? null, created_at: p.created_at }));
     }
     const rows = T(table);
     const ownerCol = OWNER_TABLES[table];
     // Données personnelles : uniquement celles du compte connecté
-    if (ownerCol && !['posts', 'comments'].includes(table)) {
+    if (ownerCol && !['posts', 'comments', 'post_photos'].includes(table)) {
       if (table === 'documents') return rows.filter((d) => !d.private_to_uploader || d.uploaded_by === me);
       if (table === 'notes') return rows.filter((n) => !n.private_to_author || n.author_id === me);
       if (table === 'name_votes') return rows;
@@ -888,6 +1024,61 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       return null;
     },
     premium_article_teasers: () => T('articles').filter((x) => x.status === 'published' && x.is_premium && !x.is_safety_critical).map((x) => ({ id: x.id, slug: x.slug, title: x.title, summary: x.summary, category_id: x.category_id, journeys: x.journeys, is_premium: true })),
+    my_community_profile: () => {
+      const me = uid();
+      const v = T('community_profiles').find((p) => p.user_id === me);
+      if (!v) return null;
+      return {
+        ...v,
+        posts_count: T('posts').filter((p) => p.author_id === me && p.status !== 'removed').length,
+        comments_count: T('comments').filter((c) => c.author_id === me && c.status !== 'removed').length,
+        photos_count: T('post_photos').filter((ph) => ph.author_id === me).length,
+        likes_count: T('post_likes').filter((l) => l.user_id === me).length,
+        saved_count: T('saved_posts').filter((x) => x.user_id === me).length,
+      };
+    },
+    community_member: (a) => {
+      const me = uid();
+      const v = T('community_profiles').find((p) => p.handle === normalizeHandle(String(a.p_handle ?? '')));
+      if (!v) return null;
+      if (v.user_id !== me && T('user_blocks').some((b) => b.blocker_id === v.user_id && b.blocked_id === me)) return { handle: v.handle, pseudonym: v.pseudonym, unavailable: true, is_me: false, blocked: false };
+      const out: Row = { handle: v.handle, pseudonym: v.pseudonym, avatar_path: v.avatar_path ?? null, avatar_preset: v.avatar_preset ?? null, is_me: v.user_id === me,
+        blocked: T('user_blocks').some((b) => b.blocker_id === me && b.blocked_id === v.user_id), visibility: v.visibility ?? 'members', unavailable: false };
+      if ((v.visibility ?? 'members') === 'members' || v.user_id === me) {
+        const posts = T('posts').filter((p) => p.author_id === v.user_id && p.status === 'visible' && !p.anonymous);
+        Object.assign(out, {
+          bio: v.bio ?? null, journey_label: v.journey_label ?? null, joined_month: String(v.created_at ?? nowIso()).slice(0, 7),
+          posts_count: posts.length,
+          comments_count: T('comments').filter((c) => { const post = T('posts').find((x) => x.id === c.post_id); return c.author_id === v.user_id && c.status === 'visible' && !(post?.anonymous && post.author_id === c.author_id); }).length,
+          photos_count: T('post_photos').filter((ph) => posts.some((p) => p.id === ph.post_id)).length,
+        });
+      }
+      return out;
+    },
+    block_member: (a) => {
+      const me = uid();
+      const v = T('community_profiles').find((p) => p.handle === normalizeHandle(String(a.p_handle ?? '')));
+      if (!v || v.user_id === me) throw new BackendError('Membre introuvable.');
+      if (!T('user_blocks').some((b) => b.blocker_id === me && b.blocked_id === v.user_id)) T('user_blocks').push({ blocker_id: me, blocked_id: v.user_id, created_at: nowIso() });
+      return null;
+    },
+    report_member: (a) => {
+      const me = uid();
+      const v = T('community_profiles').find((p) => p.handle === normalizeHandle(String(a.p_handle ?? '')));
+      if (!v || v.user_id === me) throw new BackendError('Membre introuvable.');
+      if (T('reports').some((r) => r.reporter_id === me && r.reported_user === v.user_id && r.status === 'open')) throw new BackendError('Vous avez déjà signalé ce membre.');
+      T('reports').push({ id: uuid(), reporter_id: me, post_id: null, comment_id: null, reported_user: v.user_id, reason: a.p_reason, details: a.p_details ?? null, status: 'open', created_at: nowIso() });
+      return null;
+    },
+    moderation_queue: () => {
+      const flagged = (x: Row) => ['hidden', 'pending_review'].includes(x.status) || (x.status === 'visible' && x.report_count > 0);
+      return {
+        posts: T('posts').filter(flagged).map((p) => ({ id: p.id, title: p.title, body: p.body, status: p.status, report_count: p.report_count, created_at: p.created_at, author_id: p.author_id, anonymous: !!p.anonymous })),
+        comments: T('comments').filter(flagged).map((c) => ({ id: c.id, post_id: c.post_id, body: c.body, status: c.status, report_count: c.report_count, created_at: c.created_at, author_id: c.author_id })),
+        members: T('reports').filter((r) => r.reported_user && r.status === 'open').map((r) => { const cp = T('community_profiles').find((x) => x.user_id === r.reported_user); return { report_id: r.id, handle: cp?.handle ?? null, pseudonym: cp?.pseudonym ?? null, user_id: r.reported_user, reason: r.reason, details: r.details, created_at: r.created_at }; }),
+        history: [...T('moderation_actions')].reverse().slice(0, 100).map((m) => ({ action: m.action, reason: m.reason, post_id: m.post_id, comment_id: m.comment_id, created_at: m.created_at, automatic: !m.moderator_id })),
+      };
+    },
     block_author: (a) => {
       const author = a.p_post ? T('posts').find((p) => p.id === a.p_post)?.author_id : T('comments').find((c) => c.id === a.p_comment)?.author_id;
       if (author && author !== uid() && !T('user_blocks').some((b) => b.blocker_id === uid() && b.blocked_id === author)) {
@@ -900,13 +1091,17 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       const q = fold(String(a.p_query ?? '').trim());
       if (q.length < 2) return [];
       return view('forum_feed')
-        .filter((p) => p.status === 'visible' && (!a.p_forum || p.forum_id === a.p_forum) && fold(`${p.title} ${p.body}`).includes(q))
+        .filter((p) => p.status === 'visible' && (!a.p_forum || p.forum_id === a.p_forum) && fold(`${p.title ?? ""} ${p.body}`).includes(q))
         .sort((x, y) => (x.created_at < y.created_at ? 1 : -1))
         .slice(0, Math.min(Math.max(Number(a.p_limit) || 50, 1), 100));
     },
     moderate: (a) => {
       const target = a.p_post ? T('posts').find((p) => p.id === a.p_post) : T('comments').find((c) => c.id === a.p_comment);
-      if (target && ['hide', 'restore', 'remove'].includes(a.p_action)) target.status = a.p_action === 'hide' ? 'hidden' : a.p_action === 'remove' ? 'removed' : 'visible';
+      if (target && ['hide', 'restore', 'remove'].includes(a.p_action)) {
+        const before = target.status;
+        target.status = a.p_action === 'hide' ? 'hidden' : a.p_action === 'remove' ? 'removed' : 'visible';
+        moderationNotice(a.p_post ? 'post' : 'comment', target, before);
+      }
       T('reports').filter((r) => r.post_id === a.p_post || r.comment_id === a.p_comment).forEach((r) => (r.status = a.p_action === 'dismiss_report' ? 'dismissed' : 'resolved'));
       T('moderation_actions').push({ id: uuid(), moderator_id: uid(), post_id: a.p_post ?? null, comment_id: a.p_comment ?? null, action: a.p_action, reason: a.p_reason ?? null, created_at: nowIso() });
       return null;
@@ -1168,7 +1363,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (q.limit) rows = rows.slice(0, q.limit);
       return JSON.parse(JSON.stringify(rows)) as R[];
     },
-    async insert<R>(table: string, input: Row | Row[], opts?: { onConflict?: string; ignoreDuplicates?: boolean }) {
+    async insert<R>(table: string, input: Row | Row[], opts?: { onConflict?: string; ignoreDuplicates?: boolean; returning?: string }) {
       await load();
       const out: Row[] = [];
       for (let raw of Array.isArray(input) ? input : [input]) {
@@ -1196,7 +1391,39 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     },
     async update<R>(table: string, patch: Row, filters: Filter[]) {
       await load();
-      const rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      let rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      // Communauté : chacun ne modifie que ses propres contenus (RLS), sans changer statut, anonymat ni compteurs
+      if (['posts', 'comments', 'community_profiles', 'post_photos'].includes(table) && !isModerator()) {
+        const me = state.session?.userId;
+        rows = rows.filter((r) => (table === 'community_profiles' ? r.user_id : r.author_id) === me);
+        if (table === 'posts' || table === 'comments') {
+          if (patch.status != null && rows.some((r) => patch.status !== r.status && patch.status !== 'removed')) throw new BackendError('Modification du statut interdite', '42501');
+          for (const r of rows) {
+            const before = { ...r };
+            for (const k of ['title', 'body', 'kind', 'forum_id', 'status']) if (k in patch && (table === 'posts' || ['body', 'status'].includes(k))) r[k] = k === 'title' ? (String(patch.title ?? '').trim() || null) : patch[k];
+            if (table === 'posts' && !T('forums').some((f) => f.id === r.forum_id && !f.archived)) r.forum_id = before.forum_id;
+            if (r.body !== before.body || r.title !== before.title) {
+              r.edited_at = nowIso();
+              const text = `${r.title ?? ''} ${r.body}`;
+              if (r.status === 'visible' && (PERSONAL_DATA.test(text) || textNeedsReview(text) || DEMO_TERMS.some((x) => x.pattern.test(text)))) r.status = 'pending_review';
+              if (DEMO_TERMS.some((x) => x.action === 'block' && x.pattern.test(text))) { Object.assign(r, before); throw new BackendError('Ce contenu ne respecte pas les règles de la communauté.'); }
+            }
+          }
+          persist();
+          return JSON.parse(JSON.stringify(rows)) as R[];
+        }
+        if (table === 'community_profiles') {
+          for (const r of rows) {
+            const next: Row = { ...patch };
+            delete next.suspended_until; delete next.user_id; delete next.created_at;
+            if (next.pseudonym != null) checkPseudonym({ ...next, user_id: r.user_id }, false);
+            checkCommunityProfile(next, r);
+            Object.assign(r, next);
+          }
+          persist();
+          return JSON.parse(JSON.stringify(rows)) as R[];
+        }
+      }
       markLib(table, rows);
       if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
       if (table === 'assistant_messages' && patch.saved === true && rows.some((r) => !r.saved) && !isPremium()) throw new BackendError('Fonction Premium (assistant_saved)', 'P0001', 'premium_required');
@@ -1278,7 +1505,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     },
     async remove(table, filters) {
       await load();
-      const removed = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      let removed = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      if (['posts', 'comments', 'post_photos'].includes(table) && !isModerator()) removed = removed.filter((r) => r.author_id === state.session?.userId);
       markLib(table, removed);
       state.tables[table] = T(table).filter((r) => !removed.includes(r));
       if (table === 'post_likes') removed.forEach((l) => { const p = T('posts').find((x) => x.id === l.post_id); if (p) p.like_count = Math.max(0, p.like_count - 1); });
@@ -1325,7 +1553,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         state.tables.assistant_feedback = T('assistant_feedback').filter((f) => !gone.has(f.message_id));
       }
       if (table === 'assistant_feedback') removed.forEach((f) => { const m = T('assistant_messages').find((x) => x.id === f.message_id); if (m) m.feedback = null; });
-      if (table === 'posts') state.tables.comments = T('comments').filter((c) => !removed.some((p) => p.id === c.post_id));
+      if (table === 'posts') {
+        state.tables.comments = T('comments').filter((c) => !removed.some((p) => p.id === c.post_id));
+        state.tables.post_photos = T('post_photos').filter((ph) => !removed.some((p) => p.id === ph.post_id));
+        for (const t of ['post_likes', 'saved_posts', 'reports']) state.tables[t] = T(t).filter((x) => !removed.some((p) => p.id === x.post_id));
+      }
       if (table === 'product_scans') {
         state.tables.scan_results = T('scan_results').filter((x) => !removed.some((s) => s.id === x.scan_id));
         state.tables.scan_favorites = T('scan_favorites').filter((x) => !removed.some((s) => s.id === x.scan_id));

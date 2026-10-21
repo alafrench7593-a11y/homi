@@ -63,8 +63,9 @@ export interface Backend {
   auth: AuthApi;
   storage: StorageApi;
   select<T>(q: Query): Promise<T[]>;
-  insert<T>(table: string, rows: Record<string, unknown> | Record<string, unknown>[], opts?: { onConflict?: string; ignoreDuplicates?: boolean }): Promise<T[]>;
-  update<T>(table: string, patch: Record<string, unknown>, filters: Filter[]): Promise<T[]>;
+  /** `returning` : colonnes renvoyées (tables dont certaines colonnes sont illisibles, ex. l'auteur d'une publication). */
+  insert<T>(table: string, rows: Record<string, unknown> | Record<string, unknown>[], opts?: { onConflict?: string; ignoreDuplicates?: boolean; returning?: string }): Promise<T[]>;
+  update<T>(table: string, patch: Record<string, unknown>, filters: Filter[], opts?: { returning?: string }): Promise<T[]>;
   remove(table: string, filters: Filter[]): Promise<void>;
   rpc<T>(fn: string, args?: Record<string, unknown>): Promise<T>;
   invoke<T>(fn: string, body: unknown): Promise<T>;

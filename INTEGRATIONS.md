@@ -230,6 +230,14 @@ Coût externe : **aucun**. Aucune donnée personnelle ou de santé n'est envoyé
 - **Sources du couchage sûr** : Santé.fr — « Le sommeil de bébé » (Santé publique France, 1000 premiers jours), https://www.sante.fr/node/1875883, publié le 05/12/2024, consulté le 21/10/2026 ; ameli.fr — « Comment bien coucher un bébé ? », publié le 10/10/2024. Textes reformulés dans `src/content/safeSleep.ts`.
 - **Base** : `20261021000600_sleep_planner.sql`. Limite connue : les notifications d'un appareil sont recalculées quand l'application s'ouvre ; une saisie faite par le coparent sur son propre téléphone est prise en compte à la prochaine ouverture.
 
+## 12 nonies. Forum parental (nouveau, 22 octobre 2026)
+
+- **Stockage** : compartiment Supabase privé `community` (3 Mo, JPEG / PNG / WebP), créé par la migration `20261022000100_community_v2.sql`. Aucune clé ni service tiers. Les photos sont nettoyées sur l'appareil (ré-encodage) : aucune métadonnée n'est envoyée.
+- **Notifications push** : la fonction existante `send-push` envoie les nouvelles catégories (`community_like`, `community_saved`, `community_moderation`) avec le même texte neutre sur l'écran verrouillé (« Ouvrez l'application pour lire le message »).
+- **Liens internes** : `expo-linking` (`toietmoi://community/post/…` sur téléphone, adresse web sur le web).
+- **Suppression du compte** : la fonction `delete-account` efface aussi `community/<identifiant>/…`.
+- **Limites** : vérifié sur le web, en rendu React Native (préréglages iOS et Android de jest-expo) et par compilation des paquets natifs iOS et Android (`expo export`) ; pas encore essayé sur un vrai téléphone (nécessite une version compilée et installée).
+
 ## 13. Recommandations de produits
 ✅ **Catalogue éditorial intégré (20 octobre 2026)**, voir 12 sexies : produits réels ajoutés par l'équipe à partir des bases ouvertes, critères objectifs expliqués, aucune recommandation inventée. Équipement, jouets et livres : toujours non couverts (pas de catalogue ouvert vérifiable). Tout contenu sponsorisé devrait être étiqueté comme tel.
 

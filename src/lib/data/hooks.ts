@@ -348,10 +348,16 @@ export function usePost(id: string | null | undefined) {
 export function useComments(postId: string | null | undefined) {
   return useRows<FeedComment>(['comment_feed', postId ?? ''], postId ? { table: 'comment_feed', filters: [eq('post_id', postId)], order: [{ col: 'created_at' }] } : null);
 }
+/** Mon profil communautaire complet (présentation, visibilité, chiffres) : lu par une fonction serveur, jamais par la table. */
 export function useCommunityProfile() {
   const userId = useUserId();
-  const q = useRows<CommunityProfile>(['community_profiles'], userId ? { table: 'community_profiles', filters: [eq('user_id', userId)] } : null);
-  return { ...q, data: q.data?.[0] ?? null };
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: [session?.userId, 'community_profiles', 'mine'],
+    queryFn: () => backend.rpc<CommunityProfile | null>('my_community_profile'),
+    enabled: !!userId,
+    staleTime: 30_000,
+  });
 }
 
 // ---------------------------------------------------------------- abonnement & confidentialité

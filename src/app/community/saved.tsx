@@ -20,7 +20,7 @@ export default function SavedPosts() {
       <VirtualList
         data={loading || failed ? [] : (data ?? [])}
         keyExtractor={(p) => p.id}
-        renderItem={({ item: p }) => <PostCard post={p} forumTitle={forums?.find((f) => f.id === p.forum_id)?.title} />}
+        renderItem={({ item: p }) => <PostCard post={p} forum={forums?.find((f) => f.id === p.forum_id) ?? null} />}
         ListHeaderComponent={loading ? <Skeleton kind="card" rows={3} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} /> : null}
         ListEmptyComponent={loading || failed ? null : (
           <EmptyState

@@ -18,23 +18,22 @@ insert into public.emergency_resources (country, label, phone, description, kind
 -- ---------------------------------------------------------------------
 -- Forums
 -- ---------------------------------------------------------------------
--- Les 15 espaces sont aussi créés par la migration 20261016000300 : upsert par slug.
+-- Les 14 catégories sont aussi créées par la migration 20261022000100 : upsert par slug.
 insert into public.forums (slug, title, description, journeys, icon, is_local, position) values
- ('eviter-grossesse','Éviter une grossesse','Contraception, oublis, questions avant une consultation, ressentis.','{avoid}','shield',false,1),
- ('projet-bebe','Projet bébé','Essayer d''avoir un enfant, attendre, espérer, se soutenir.','{ttc}','sparkles',false,2),
- ('fertilite','Fertilité','Parcours de PMA, examens, attente et soutien entre personnes concernées.','{ttc}','fertility',false,3),
- ('grossesse','Grossesse','Questions et partages pendant la grossesse.','{pregnant}','moon',false,4),
- ('jumeaux-triples','Jumeaux et triplés','Grossesses multiples et familles de jumeaux ou triplés.','{pregnant,newborn,child}','twins',false,5),
- ('accouchement','Accouchement','Se préparer, raconter son accouchement, projet de naissance.','{pregnant}','birth',false,6),
- ('post-partum','Post-partum','Après la naissance : récupération, émotions, quotidien.','{newborn}','heart',false,7),
- ('allaitement','Allaitement','Allaitement, tire-lait, sevrage, et allaitement mixte.','{newborn}','drop',false,8),
- ('biberon','Biberon','Préparation, quantités, choix du lait, passage au biberon.','{newborn}','bottle',false,9),
- ('sommeil','Sommeil','Nuits, siestes, rituels du coucher, fatigue des parents.','{newborn,child}','sleep',false,10),
- ('diversification','Diversification','Premiers repas, textures, allergènes, idées de menus.','{newborn,child}','food',false,11),
- ('parents-bebes','Parents de bébés','Le quotidien avec un bébé de 0 à 2 ans.','{newborn,child}','baby',false,12),
- ('parents-enfants','Parents d’enfants','De 2 à 10 ans : école, émotions, organisation.','{child,family}','sun',false,13),
- ('familles-nombreuses','Familles nombreuses','Organiser la vie avec plusieurs enfants.','{family}','users',false,14),
- ('rencontres-locales','Rencontres locales','Proposer une rencontre dans un lieu public, par zone générale uniquement.','{}','map',true,15)
+ ('suivi-cycle','Suivi du cycle','Cycle, règles, contraception, symptômes : partager son expérience.','{avoid,cycle}','cycle',false,1),
+ ('projet-bebe','Projet bébé','Essayer d''avoir un enfant, parcours de PMA, attendre, espérer, se soutenir.','{ttc}','sparkles',false,2),
+ ('grossesse','Grossesse','Questions et témoignages pendant la grossesse, jusqu''à l''accouchement.','{pregnant}','moon',false,3),
+ ('jumeaux-triples','Jumeaux et triplés','Grossesses multiples et familles de jumeaux ou triplés.','{pregnant,newborn,child}','twins',false,4),
+ ('nouveau-ne','Nouveau-né','Les premières semaines et les premiers mois avec bébé.','{newborn}','baby',false,5),
+ ('allaitement','Allaitement','Allaitement, tire-lait, sevrage, allaitement mixte.','{newborn}','drop',false,6),
+ ('biberon','Biberon','Préparation, quantités, choix du lait, passage au biberon.','{newborn}','bottle',false,7),
+ ('sommeil','Sommeil','Nuits, siestes, rituels du coucher, fatigue des parents.','{newborn,child}','sleep',false,8),
+ ('diversification','Diversification et repas','Premiers repas, textures, idées de menus, repas en famille.','{newborn,child}','food',false,9),
+ ('sante-developpement','Santé et développement','Croissance, étapes, petits soucis du quotidien : des témoignages, pas des diagnostics.','{newborn,child}','health',false,10),
+ ('neurodeveloppement','Troubles neurodéveloppementaux','TDAH, TSA, DYS, langage… parcours, démarches et soutien entre parents.','{child}','brain',false,11),
+ ('post-partum','Post-partum et bien-être de la mère','Après la naissance : récupération, émotions, fatigue, se faire aider.','{newborn}','heart',false,12),
+ ('plusieurs-enfants','Parents de plusieurs enfants','Organiser la vie avec plusieurs enfants, fratrie, jalousie.','{family}','users',false,13),
+ ('questions-generales','Questions générales','Tout le reste : organisation, école, mode de garde, vie de famille.','{}','chat',false,14)
 on conflict (slug) do update set
   title = excluded.title, description = excluded.description, journeys = excluded.journeys, icon = excluded.icon,
   is_local = excluded.is_local, position = excluded.position, archived = false;

@@ -332,7 +332,7 @@ export function FavoriteButton({ active, onPress, icon = 'heart', labelOn, label
 }
 
 // ---------------------------------------------------------------- Pastilles
-export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel }: { label: string; selected?: boolean; onPress?: () => void; icon?: IconName; tone?: 'lavender' | 'primary'; accessibilityLabel?: string }) {
+export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel, testID }: { label: string; selected?: boolean; onPress?: () => void; icon?: IconName; tone?: 'lavender' | 'primary'; accessibilityLabel?: string; testID?: string }) {
   const t = useTheme();
   const active = tone === 'lavender' ? t.colors.lavender : t.colors.primary;
   const filled = selected && tone !== 'lavender';
@@ -346,6 +346,7 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel 
       accessibilityState={{ checked: !!selected }}
       aria-checked={onPress ? !!selected : undefined}
       accessibilityLabel={accessibilityLabel ?? label}
+      testID={testID}
       onPress={onPress ? () => { haptic('selection'); onPress(); } : undefined}
       style={[styles.chip, { borderColor: selected ? active : t.isDark ? t.colors.border : 'transparent', backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : t.colors.surface }]}
     >
@@ -527,7 +528,7 @@ export function Divider() {
   return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: t.colors.border, marginVertical: spacing.xs }} />;
 }
 
-export function ListRow({ icon, title, subtitle, onPress, right, danger }: { icon?: IconName; title: string; subtitle?: string; onPress?: () => void; right?: React.ReactNode; danger?: boolean }) {
+export function ListRow({ icon, title, subtitle, onPress, right, danger, testID }: { icon?: IconName; title: string; subtitle?: string; onPress?: () => void; right?: React.ReactNode; danger?: boolean; testID?: string }) {
   const t = useTheme();
   const inner = (
     <View style={[styles.listRow]}>
@@ -544,15 +545,15 @@ export function ListRow({ icon, title, subtitle, onPress, right, danger }: { ico
     </View>
   );
   return onPress ? (
-    <ListRowPress label={subtitle ? `${title}, ${subtitle}` : title} onPress={onPress}>{inner}</ListRowPress>
+    <ListRowPress label={subtitle ? `${title}, ${subtitle}` : title} onPress={onPress} testID={testID}>{inner}</ListRowPress>
   ) : inner;
 }
 
-function ListRowPress({ label, onPress, children }: { label: string; onPress: () => void; children: React.ReactNode }) {
+function ListRowPress({ label, onPress, children, testID }: { label: string; onPress: () => void; children: React.ReactNode; testID?: string }) {
   const press = usePressMotion({ pressed: 0.985, hoverLift: 0 });
   const t = useTheme();
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={() => { haptic('selection'); onPress(); }} {...press.handlers}>
+    <Pressable accessibilityRole="button" accessibilityLabel={label} testID={testID} onPress={() => { haptic('selection'); onPress(); }} {...press.handlers}>
       <Animated.View style={press.style}>
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, opacity: press.hover, marginHorizontal: -8 }]} />
         {children}

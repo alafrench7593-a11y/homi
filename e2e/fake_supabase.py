@@ -17,6 +17,7 @@ class FakeSupabase:
         self.T = {}              # tables
         self.calls = []          # (method, path) journal
         self.signup_bodies = []
+        self.premium_users = set()  # comptes Premium (has_premium)
         self.resend_count = 0
         self.recover_bodies = []
         self.rate_limit_resend = False
@@ -132,7 +133,11 @@ class FakeSupabase:
             return 200, now()
         if fn == 'create_household':
             return 200, self.new_household(uid, body.get('p_name') or 'Ma famille', False)
+        if fn == 'has_premium':
+            return 200, uid in self.premium_users
         if fn == 'create_household_invitation':
+            # Même règle que la base : l'invitation d'un coparent est une fonction Premium
+            if uid not in self.premium_users: return 400, {'code': 'P0001', 'message': 'Fonction Premium (coparent_invite)', 'hint': 'premium_required'}
             tok = uuid.uuid4().hex + uuid.uuid4().hex[:8]
             self.t('household_invitations').append({'id': str(uuid.uuid4()), 'household_id': body['p_household'], 'token': tok, 'role': body.get('p_role', 'coparent'),
                 'can_view': body.get('p_can_view', []), 'can_edit': body.get('p_can_edit', []), 'created_at': now(), 'expires_at': '2099-01-01T00:00:00Z', 'accepted_at': None, 'revoked_at': None})

@@ -83,7 +83,7 @@ export const home = {
   'screen.ask.title': 'Questions',
   'screen.ask.sub': 'Posez vos questions de santé et de parentalité à un assistant prudent et sourcé.',
   'screen.community.title': 'Communauté',
-  'screen.community.sub': 'Tous les espaces sont ouverts, sous pseudonyme.',
+  'screen.community.sub': 'Le forum des parents, sous pseudonyme.',
   'screen.community.saved': 'Mes favoris',
   'screen.community.pseudo': 'Mon pseudonyme',
   'dock.tools': 'Outils',

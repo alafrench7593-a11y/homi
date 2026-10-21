@@ -272,7 +272,7 @@ export interface ModItem {
   created_at: string;
 }
 
-interface RawPost { id: string; title: string; body: string; status: string; report_count: number | null; created_at: string }
+interface RawPost { id: string; title: string | null; body: string; status: string; report_count: number | null; created_at: string }
 interface RawComment { id: string; post_id: string; body: string; status: string; report_count: number | null; created_at: string }
 
 /** File de modération : contenus masqués, en attente de relecture ou signalés. */
@@ -283,17 +283,11 @@ export function useModerationQueue(enabled: boolean) {
     enabled: enabled && !!session,
     retry: false,
     queryFn: async () => {
-      const flagged: Filter[] = [inList('status', ['hidden', 'pending_review'])];
-      const reported: Filter[] = [eq('status', 'visible'), { col: 'report_count', op: 'gt', value: 0 }];
-      const [p1, p2, c1, c2] = await Promise.all([
-        backend.select<RawPost>({ table: 'posts', filters: flagged, order: [{ col: 'created_at', asc: false }], limit: 100 }),
-        backend.select<RawPost>({ table: 'posts', filters: reported, order: [{ col: 'created_at', asc: false }], limit: 100 }),
-        backend.select<RawComment>({ table: 'comments', filters: flagged, order: [{ col: 'created_at', asc: false }], limit: 100 }),
-        backend.select<RawComment>({ table: 'comments', filters: reported, order: [{ col: 'created_at', asc: false }], limit: 100 }),
-      ]);
+      // Lecture réservée aux modérateurs (fonction serveur) : l'auteur réel n'est pas lisible autrement
+      const q = await backend.rpc<{ posts: RawPost[]; comments: RawComment[] }>('moderation_queue');
       const items: ModItem[] = [
-        ...[...p1, ...p2].map((p) => ({ kind: 'post' as const, id: p.id, title: p.title, body: p.body, status: p.status, report_count: p.report_count ?? 0, created_at: p.created_at })),
-        ...[...c1, ...c2].map((c) => ({ kind: 'comment' as const, id: c.id, post_id: c.post_id, title: null, body: c.body, status: c.status, report_count: c.report_count ?? 0, created_at: c.created_at })),
+        ...q.posts.map((p) => ({ kind: 'post' as const, id: p.id, title: p.title, body: p.body, status: p.status, report_count: p.report_count ?? 0, created_at: p.created_at })),
+        ...q.comments.map((c) => ({ kind: 'comment' as const, id: c.id, post_id: c.post_id, title: null, body: c.body, status: c.status, report_count: c.report_count ?? 0, created_at: c.created_at })),
       ];
       const seen = new Set<string>();
       return items
