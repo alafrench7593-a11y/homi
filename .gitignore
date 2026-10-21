@@ -9,3 +9,4 @@ android/
 .env.local
 expo-env.d.ts
 .claude/
+__pycache__/
