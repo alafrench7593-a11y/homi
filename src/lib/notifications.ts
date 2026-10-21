@@ -68,6 +68,8 @@ export function configureNotifications() {
     Notifications.setNotificationChannelAsync('reminders', { name: 'Rappels', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200], lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
     Notifications.setNotificationChannelAsync('community', { name: 'Communauté', importance: Notifications.AndroidImportance.DEFAULT }).catch(() => undefined);
     Notifications.setNotificationChannelAsync('alerts', { name: 'Alertes officielles', importance: Notifications.AndroidImportance.HIGH }).catch(() => undefined);
+    // Sommeil : estimations choisies par le parent, contenu masqué sur l'écran verrouillé, importance normale
+    Notifications.setNotificationChannelAsync(SLEEP_CHANNEL, { name: 'Sommeil (estimations)', importance: Notifications.AndroidImportance.DEFAULT, lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
     Notifications.setNotificationChannelAsync(BOTTLE_CHANNEL, { name: 'Biberons', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200], lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
   }
   Notifications.setNotificationCategoryAsync('reminder', [
@@ -212,7 +214,7 @@ export async function snoozeLocally(title: string, body: string | undefined, url
 export async function cancelAllLocal() {
   if (!notificationsSupported) return;
   await Notifications.cancelAllScheduledNotificationsAsync();
-  await AsyncStorage.multiRemove([MAP_KEY, BOTTLE_MAP_KEY]);
+  await AsyncStorage.multiRemove([MAP_KEY, BOTTLE_MAP_KEY, SLEEP_MAP_KEY]);
 }
 
 /** Notification de test immédiate : permet de vérifier la réception sur l'appareil. */
@@ -450,4 +452,63 @@ async function applyBottleAction(response: Notifications.NotificationResponse): 
     }
   }
   return true;
+}
+
+// =====================================================================
+// Sommeil : notifications LOCALES issues du planning estimé (déclencheur DATE)
+// =====================================================================
+/**
+ * Le planning est recalculé à chaque relevé (endormissement, réveil, modification, suppression) : la liste voulue
+ * remplace alors entièrement l'ancienne pour CET enfant (annulation puis reprogrammation). Les notifications d'un
+ * autre enfant, les rappels, biberons, rendez-vous ou forum ne sont jamais touchés. Rien n'est envoyé à un serveur :
+ * tout est programmé sur l'appareil.
+ */
+export const SLEEP_CHANNEL = 'sleep';
+const SLEEP_MAP_KEY = 'toietmoi.sleep-notifs.v1';
+type SleepMap = Record<string, { signature: string; ids: string[] }>;
+export interface SleepNotificationRequest { id: string; at: number; title: string; body: string; kind: string }
+let sleepChain: Promise<unknown> = Promise.resolve();
+
+export function syncSleepNotifications(childId: string, wanted: SleepNotificationRequest[]): Promise<{ scheduled: number; cancelled: number }> {
+  const run = sleepChain.then(() => doSyncSleep(childId, wanted), () => doSyncSleep(childId, wanted));
+  sleepChain = run.catch(() => undefined);
+  return run;
+}
+
+async function doSyncSleep(childId: string, wanted: SleepNotificationRequest[]) {
+  if (!notificationsSupported) return { scheduled: 0, cancelled: 0 };
+  const map = await readJson<SleepMap>(SLEEP_MAP_KEY, {});
+  const future = wanted.filter((n) => n.at > Date.now());
+  const signature = JSON.stringify(future.map((n) => [n.id, n.at, n.body]));
+  if (map[childId]?.signature === signature) return { scheduled: 0, cancelled: 0 };
+  let cancelled = 0;
+  const previous = map[childId]?.ids ?? [];
+  await Promise.all(previous.map((nid) => Notifications.cancelScheduledNotificationAsync(nid).catch(() => undefined)));
+  cancelled += previous.length;
+  // Orphelines de CET enfant (carte locale perdue) : uniquement data.kind === 'sleep' et data.childId identique
+  try {
+    for (const n of await Notifications.getAllScheduledNotificationsAsync()) {
+      const d = (n.content.data ?? {}) as { kind?: string; childId?: string };
+      if (d.kind === 'sleep' && d.childId === childId && !previous.includes(n.identifier)) {
+        await Notifications.cancelScheduledNotificationAsync(n.identifier).catch(() => undefined);
+        cancelled++;
+      }
+    }
+  } catch {
+    // liste indisponible : rien d'autre n'est annulé
+  }
+  const ids: string[] = [];
+  for (const n of future) {
+    try {
+      ids.push(await Notifications.scheduleNotificationAsync({
+        content: { title: n.title, body: n.body, data: { url: `/sleep/${childId}`, source: 'sleep', kind: 'sleep', childId, estimate: n.kind } },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(n.at), channelId: SLEEP_CHANNEL },
+      }));
+    } catch {
+      // refusée par le système : reprogrammée au prochain recalcul
+    }
+  }
+  if (ids.length) map[childId] = { signature, ids }; else delete map[childId];
+  await AsyncStorage.setItem(SLEEP_MAP_KEY, JSON.stringify(map));
+  return { scheduled: ids.length, cancelled };
 }

@@ -18,6 +18,7 @@ import { ChildHomeCard, FamilyOverview, NoJourneyCard } from '@/features/journey
 import { useActivePregnancy, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
+import { SleepNowCard } from '@/features/sleep';
 import { quickAllowed, quickFor, type Scope } from '@/lib/journeys/tools';
 import type { Journey } from '@/lib/types';
 import { greeting } from '@/lib/domain/dates';
@@ -95,8 +96,8 @@ export default function Home() {
     main: mainLoading ? <Skeleton kind="card" rows={1} />
       : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); }} />
       : scope.scope === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
-      : scope.scope === 'baby' && child ? <ChildToday child={child} compact />
-      : scope.scope === 'child' && child ? <ChildHomeCard child={child} />
+      : scope.scope === 'baby' && child ? <View style={{ gap: spacing.sm }}><ChildToday child={child} compact />{child.enabled_tracking.includes('sleep') ? <SleepNowCard child={child} /> : null}</View>
+      : scope.scope === 'child' && child ? <View style={{ gap: spacing.sm }}><ChildHomeCard child={child} />{child.enabled_tracking.includes('sleep') ? <SleepNowCard child={child} /> : null}</View>
       : scope.scope === 'postpartum' ? <PostpartumHomeCard main />
       : scope.scope === 'family' ? <FamilyOverview />
       : cycleMode ? <CycleCard mode={cycleMode} />

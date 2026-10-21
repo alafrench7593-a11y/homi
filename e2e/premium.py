@@ -77,7 +77,7 @@ def run(p):
     R['sommeil_gratuit_boutons'] = has(pg, 'sleep-asleep') or has(pg, 'sleep-awake')
     tid(pg, 'premium-sleep').click(); pg.wait_for_timeout(900)
     prev = tid(pg, 'premium-preview-real').inner_text()
-    R['apercu_reel_avant_abonnement'] = has(pg, 'premium-preview') and 'Comprendre le rythme de sommeil de Lina' in T(pg) and bool(re.search(r'\d+ jour\(s\) noté\(s\)', prev))
+    R['apercu_reel_avant_abonnement'] = has(pg, 'premium-preview') and 'Le planning de sommeil de Lina' in T(pg) and bool(re.search(r'\d+ temps d’éveil déjà notés', prev))
     R['apercu_gratuit_vs_premium'] = 'Gratuit :' in T(pg) and 'Premium :' in T(pg)
     pg.screenshot(path=f'{SHOTS}/premium_apercu.png')
     tid(pg, 'premium-later').click(); pg.wait_for_timeout(600)
@@ -87,7 +87,7 @@ def run(p):
 
     # ================================================================ Écran d'abonnement
     t = T(pg)
-    R['abonnement_fonction_essayee'] = has(pg, 'sub-tried') and 'Comprendre le rythme de sommeil' in tid(pg, 'sub-tried').inner_text()
+    R['abonnement_fonction_essayee'] = has(pg, 'sub-tried') and 'Le planning de sommeil' in tid(pg, 'sub-tried').inner_text()
     R['abonnement_annuel_mis_en_valeur'] = has(pg, 'plan-annual') and 'Le plus avantageux' in tid(pg, 'plan-annual').inner_text() and tid(pg, 'plan-annual').bounding_box()['y'] < tid(pg, 'plan-monthly').bounding_box()['y']
     terms = tid(pg, 'plan-terms-annual').inner_text()
     R['abonnement_prix_total_essai_renouvellement'] = '39,99 € facturés une fois par an' in terms and '7 jours gratuits' in terms and 'Renouvellement automatique le' in terms
@@ -122,8 +122,9 @@ def run(p):
     go(pg, '/settings/subscription', 2600)
     tid(pg, 'plan-buy-annual').click(); pg.wait_for_timeout(2500)
     R['essai_actif_date_fin'] = 'Essai gratuit jusqu’au' in tid(pg, 'sub-message').inner_text()
-    go(pg, f'/sleep/{lina}', 3000)
+    go(pg, f'/sleep/{lina}?tab=trends', 3000)
     R['premium_sommeil_debloque'] = has(pg, 'sleep-rhythm') and has(pg, 'sleep-changes') and has(pg, 'sleep-weekly') and 'Nuit :' in tid(pg, 'sleep-rhythm').inner_text()
+    go(pg, f'/sleep/{lina}?tab=profile', 3000)
     tid(pg, 'routine-time').fill('19:45')
     pg.get_by_text('+ Bain', exact=True).first.click(); pg.get_by_text('+ Histoire', exact=True).first.click()
     tid(pg, 'routine-save').click(); pg.wait_for_timeout(1500)
@@ -139,7 +140,7 @@ def run(p):
 
     # ================================================================ Fin d'essai : retour gratuit, données toujours lisibles
     set_sub(pg, 'trial', -1)
-    go(pg, f'/sleep/{lina}', 3000)
+    go(pg, f'/sleep/{lina}?tab=trends', 3000)
     R['fin_essai_retour_gratuit'] = has(pg, 'premium-sleep_insights') and not has(pg, 'sleep-rhythm')
     go(pg, '/settings/subscription', 2500)
     R['fin_essai_message_donnees'] = 'Vos données restent consultables' in tid(pg, 'sub-message').inner_text()
@@ -154,10 +155,10 @@ def run(p):
     set_sub(pg, 'cancelled', 3)
     go(pg, '/settings/subscription', 2500)
     R['annule_actif_jusqu_echeance'] = 'sans renouvellement' in tid(pg, 'sub-message').inner_text()
-    go(pg, f'/sleep/{lina}', 2800)
+    go(pg, f'/sleep/{lina}?tab=trends', 2800)
     R['annule_fonctions_encore_actives'] = has(pg, 'sleep-rhythm')
     set_sub(pg, 'expired', -1)
-    go(pg, f'/sleep/{lina}', 2800)
+    go(pg, f'/sleep/{lina}?tab=trends', 2800)
     R['expire_fonctions_en_pause'] = not has(pg, 'sleep-rhythm') and has(pg, 'premium-sleep_insights')
 
     # ================================================================ Toujours gratuit après expiration

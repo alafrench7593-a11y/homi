@@ -15,6 +15,7 @@ import { I18nProvider } from '@/i18n/I18nProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
 import { PremiumPreviewHost } from '@/components/Premium';
+import { SleepNotificationsHost } from '@/features/sleep';
 import { configureNotifications, notificationRoute, notificationsSupported, registerPushToken, snoozeLocally } from '@/lib/notifications';
 import { startOfflineSync } from '@/lib/offline';
 import { configurePurchases, resetPurchasesUser } from '@/lib/purchases';
@@ -118,6 +119,7 @@ function Navigator() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="track/[kind]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="night" options={{ animation: 'fade', gestureEnabled: false }} />
+      <Stack.Screen name="sleep/tonight" options={{ animation: 'fade' }} />
       <Stack.Screen name="emergency" options={{ presentation: 'modal' }} />
       <Stack.Screen name="assistant/chat" options={{ presentation: Platform.OS === 'ios' ? 'modal' : 'card' }} />
     </Stack>
@@ -157,6 +159,7 @@ export default function RootLayout() {
                   <DemoBar />
                   <OfflinePill />
                   <PremiumPreviewHost />
+                  <SleepNotificationsHost />
                 </WebFrame>
               </ToastProvider>
             </I18nProvider>

@@ -26,7 +26,7 @@ ROUTES = ['/', '/track', '/tools', '/community', '/ask', '/profile', '/me', '/me
           '/postpartum/understand', '/postpartum/sharing', '/postpartum/partner', '/pregnancy', '/pregnancy/weight', '/scanner', '/scanner/food',
           '/scanner/product', '/scanner/history', '/scanner/avoid', '/scanner/compare', '/settings', '/settings/account', '/settings/family',
           '/settings/home', '/settings/language', '/settings/privacy', '/settings/reminders', '/settings/subscription', '/settings/sync',
-          '/teeth', '/bottle', '/bottle/history', '/meals', '/meals/menu', '/meals/shopping', '/meals/pantry', '/meals/new', '/meals/settings', '/meals/fa-gratin-dauphinois', '/meals/puree-carotte-pomme-de-terre', '/sleep/:noe', '/summary', '/summary?period=week', '/summary?family=1', '/admin/recipes', '/pregnancy/start', '/pregnancy/end', '/postpartum/recovery', '/journeys/blocked',
+          '/teeth', '/bottle', '/bottle/history', '/meals', '/meals/menu', '/meals/shopping', '/meals/pantry', '/meals/new', '/meals/settings', '/meals/fa-gratin-dauphinois', '/meals/puree-carotte-pomme-de-terre', '/sleep/:noe', '/sleep/:lina', '/sleep/:lina?tab=profile', '/sleep/:lina?tab=alerts', '/sleep/:lina?tab=trends', '/sleep/:lina?tab=safety', '/sleep/tonight', '/summary', '/summary?period=week', '/summary?family=1', '/admin/recipes', '/pregnancy/start', '/pregnancy/end', '/postpartum/recovery', '/journeys/blocked',
           '/child/:noe?tab=besoins', '/child/:noe/needs', '/child/:noe/needs?tab=treatments', '/child/:noe/needs?tab=follow', '/child/:noe/school', '/journeys/:arch', '/assistant/chat', '/community/new', '/community/profile', '/community/saved', '/profiles/new', '/night', '/night/help?child=:noe', '/child/:noe/vaccines', '/library?cat=sexualite', '/article/rapports-pendant-la-grossesse-faq',
           '/cycle?all=1', '/cycle/calendar', '/cycle/symptoms', '/cycle/discharge', '/cycle/discharge/new', '/cycle/guides', '/cycle/guides/clear-fluid',
           '/cycle/guides/itching', '/cycle/bleeding', '/cycle/journal', '/cycle/stats', '/cycle/export', '/cycle/privacy', '/cycle/home-card',
@@ -139,9 +139,9 @@ with sync_playwright() as p:
             ensure(pg, r, jstate)  # parcours voulu pour les écrans propres à un parcours (garde d'accès)
             if not seeded and (r.startswith('/cycle/') or r == '/cycle?all=1'):
                 pg.evaluate(SEED); seeded = True  # données du cycle seulement pour les derniers écrans (les autres gardent la démo)
-            if ':noe' in r or ':arch' in r:
-                ids = pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); return [s.tables.children.find(c => c.first_name === 'Noé')?.id, (s.tables.user_journeys || []).find(j => j.status === 'archived')?.id || (s.tables.user_journeys || [])[0]?.id]; }")
-                r_go = r.replace(':noe', ids[0] or 'x').replace(':arch', ids[1] or 'x')
+            if ':noe' in r or ':arch' in r or ':lina' in r:
+                ids = pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); return [s.tables.children.find(c => c.first_name === 'Noé')?.id, (s.tables.user_journeys || []).find(j => j.status === 'archived')?.id || (s.tables.user_journeys || [])[0]?.id, s.tables.children.find(c => c.first_name === 'Lina')?.id]; }")
+                r_go = r.replace(':noe', ids[0] or 'x').replace(':arch', ids[1] or 'x').replace(':lina', ids[2] or 'x')
             else:
                 r_go = r
             pg.goto(B + r_go); pg.wait_for_timeout(1700)

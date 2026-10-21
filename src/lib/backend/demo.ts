@@ -64,7 +64,7 @@ const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_r
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
 const DEMO_RECALL_CHECK = 'Mode démonstration : la base officielle RappelConso n’est pas interrogée ; seuls des rappels fictifs de démonstration peuvent apparaître.';
-const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations'];
+const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback'];
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
 function checkBottleTimer(all: Row[], r: Row) {
@@ -441,6 +441,16 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (![1, -1].includes(r.value)) throw new BackendError('Valeur invalide.');
       r.updated_at = nowIso();
     }
+    // Planificateur de sommeil : un profil par enfant, un avis par estimation (mêmes contraintes qu'en SQL)
+    if (table === 'sleep_profiles') {
+      if (T('sleep_profiles').some((x) => x.child_id === r.child_id)) throw new BackendError('Un profil de sommeil existe déjà pour cet enfant.', '23505');
+      r.use_corrected ??= false; r.routine_minutes ??= 20; r.difficulties ??= []; r.notify ??= { enabled: false }; r.updated_at = nowIso();
+    }
+    if (table === 'sleep_feedback') {
+      if (!['nap', 'bedtime'].includes(r.target) || !['right', 'early', 'late'].includes(r.verdict)) throw new BackendError('Avis invalide.');
+      if (T('sleep_feedback').some((x) => x.child_id === r.child_id && x.target === r.target && x.estimated_for === r.estimated_for)) throw new BackendError('Avis déjà enregistré pour cette estimation.', '23505');
+      r.created_at ??= nowIso();
+    }
     if (table === 'sleeps' && !r.ended_at && T('sleeps').some((s) => s.child_id === r.child_id && !s.ended_at)) {
       throw new BackendError('Un sommeil est déjà en cours pour cet enfant.');
     }
@@ -460,7 +470,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
     if (table === 'product_scans') checkScan(r);
     // Fonctions Premium : mêmes règles que les déclencheurs serveur (20261021000500_premium.sql)
-    const PREMIUM_INSERT: Record<string, string> = { meal_plans: 'weekly_menu', bedtime_routines: 'bedtime_routine', food_introductions: 'diversification' };
+    const PREMIUM_INSERT: Record<string, string> = { meal_plans: 'weekly_menu', bedtime_routines: 'bedtime_routine', food_introductions: 'diversification', sleep_feedback: 'sleep_insights' };
     if (PREMIUM_INSERT[table] && !isPremium()) throw new BackendError(`Fonction Premium (${PREMIUM_INSERT[table]})`, 'P0001', 'premium_required');
     if (table === 'reminders' && r.category === 'custom' && !r.treatment_id) {
       const active = T('reminders').filter((x) => x.user_id === (r.user_id ?? me) && x.category === 'custom' && !x.treatment_id && x.enabled !== false).length;
@@ -923,7 +933,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
-          ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents']
+          ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines']
             .map((t) => [t, byHousehold(t).filter((r) => r.household_id === h.id)])),
         })),
         community: { posts: T('posts').filter((p) => p.author_id === me), comments: T('comments').filter((c) => c.author_id === me) },
@@ -1194,7 +1204,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (table === 'product_scans' || (table === 'scan_results' && Object.keys(patch).some((k) => k !== 'explanation'))) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
       for (const r of rows) {
         if (table === 'community_profiles' && patch.pseudonym != null) checkPseudonym({ ...patch, user_id: r.user_id }, false);
-        if (table === 'sleeps' && patch.ended_at && patch.ended_at < r.started_at) throw new BackendError('La fin du sommeil ne peut pas précéder son début.');
+        if (table === 'sleeps' && patch.ended_at && Date.parse(patch.ended_at) < Date.parse(patch.started_at ?? r.started_at)) throw new BackendError('La fin du sommeil ne peut pas précéder son début.');
         if (table === 'bottle_timers') checkBottleTimer(T(table), { ...r, ...patch, id: r.id });
         if (table === 'bottles') {
           const next = { ...r, ...patch };

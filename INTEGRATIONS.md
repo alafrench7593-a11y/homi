@@ -224,6 +224,12 @@ Coût externe : **aucun**. Aucune donnée personnelle ou de santé n'est envoyé
 - **Dictée** : API Web Speech du navigateur (web uniquement, aucune clé, aucun envoi par l'application) ; sur téléphone, la dictée du clavier du système.
 - **Photos de recettes** : une seule photo réelle (purée carotte et pomme de terre). Les autres recettes gardent leur illustration générée par programme en attendant le choix du service de génération (Gemini demandé : aucun connecteur Gemini disponible ici).
 
+## 12 octies. Planificateur de sommeil (nouveau, 21 octobre 2026)
+
+- **Aucun service externe** : calculs sur l'appareil (`src/lib/domain/sleepPlanner.ts`), notifications locales `expo-notifications` (déclencheur DATE, canal Android `sleep`). Aucune clé, aucun envoi de données de sommeil à un tiers. L'assistant n'est sollicité que si le parent touche « Demander à l'assistant d'expliquer » (moyennes et âge seulement).
+- **Sources du couchage sûr** : Santé.fr — « Le sommeil de bébé » (Santé publique France, 1000 premiers jours), https://www.sante.fr/node/1875883, publié le 05/12/2024, consulté le 21/10/2026 ; ameli.fr — « Comment bien coucher un bébé ? », publié le 10/10/2024. Textes reformulés dans `src/content/safeSleep.ts`.
+- **Base** : `20261021000600_sleep_planner.sql`. Limite connue : les notifications d'un appareil sont recalculées quand l'application s'ouvre ; une saisie faite par le coparent sur son propre téléphone est prise en compte à la prochaine ouverture.
+
 ## 13. Recommandations de produits
 ✅ **Catalogue éditorial intégré (20 octobre 2026)**, voir 12 sexies : produits réels ajoutés par l'équipe à partir des bases ouvertes, critères objectifs expliqués, aucune recommandation inventée. Équipement, jouets et livres : toujours non couverts (pas de catalogue ouvert vérifiable). Tout contenu sponsorisé devrait être étiqueté comme tel.
 

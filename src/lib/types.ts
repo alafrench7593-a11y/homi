@@ -80,7 +80,7 @@ export interface Bottle extends LogBase { at: string; prepared_ml: number | null
 export interface Breastfeed extends LogBase { side: 'left' | 'right' | 'both'; started_at: string; ended_at: string | null }
 export interface Pumping extends LogBase { at: string; amount_ml: number; side: 'left' | 'right' | 'both' | null }
 export interface Diaper extends LogBase { at: string; wet: boolean; stool: boolean; stool_color?: StoolColor | null; stool_consistency?: 'liquid' | 'soft' | 'formed' | 'hard' | null; blood_seen?: boolean }
-export interface Sleep extends LogBase { started_at: string; ended_at: string | null; wakeups: number; kind?: 'nap' | 'night' | null; wake_events?: { at: string; minutes?: number }[] }
+export interface Sleep extends LogBase { started_at: string; ended_at: string | null; wakeups: number; kind?: 'nap' | 'night' | null; wake_events?: { at: string; minutes?: number; back_at?: string; open?: boolean }[] }
 export interface Meal extends LogBase { at: string; description: string | null; foods: string[]; texture: 'smooth' | 'mashed' | 'pieces' | 'family' | null; reaction_note: string | null }
 export type ObservationKind = 'temperature' | 'medication' | 'symptom' | 'note' | 'vomit' | 'regurgitation' | 'diarrhea' | 'abdominal_pain' | 'bloating' | 'crying';
 export interface Observation extends LogBase { at: string; kind: ObservationKind; value_num: number | null; label: string | null; temp_method?: 'rectal' | 'axillary' | 'ear' | 'forehead' | 'other' | null; intensity?: 1 | 2 | 3 | null }

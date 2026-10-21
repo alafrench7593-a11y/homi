@@ -72,9 +72,10 @@ interface CardProps {
   accessibilityLabel?: string;
   accessibilityHint?: string;
   padded?: boolean;
+  testID?: string;
 }
 
-export function Card({ children, onPress, tone = 'surface', style, accessibilityLabel, accessibilityHint, padded = true }: CardProps) {
+export function Card({ children, onPress, tone = 'surface', style, accessibilityLabel, accessibilityHint, padded = true, testID }: CardProps) {
   const t = useTheme();
   const press = usePressMotion({ pressed: 0.982, hoverLift: -3 });
   const tilt = useTilt(2.2);
@@ -105,7 +106,7 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
       {children}
     </View>
   );
-  if (!onPress) return content;
+  if (!onPress) return testID ? <View testID={testID}>{content}</View> : content;
   return (
     <Pressable
       onPress={() => {
@@ -117,6 +118,7 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
+      testID={testID}
     >
       <Animated.View style={[press.style, tilt.style]} {...(tilt.webHandlers as object)}>
         {content}
@@ -516,8 +518,8 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
   );
 }
 
-export function Row({ children, gap = spacing.sm, style, wrap }: { children: React.ReactNode; gap?: number; style?: StyleProp<ViewStyle>; wrap?: boolean }) {
-  return <View style={[{ flexDirection: 'row', alignItems: 'center', gap, flexWrap: wrap ? 'wrap' : 'nowrap' }, style]}>{children}</View>;
+export function Row({ children, gap = spacing.sm, style, wrap, testID }: { children: React.ReactNode; gap?: number; style?: StyleProp<ViewStyle>; wrap?: boolean; testID?: string }) {
+  return <View testID={testID} style={[{ flexDirection: 'row', alignItems: 'center', gap, flexWrap: wrap ? 'wrap' : 'nowrap' }, style]}>{children}</View>;
 }
 
 export function Divider() {
