@@ -48,7 +48,7 @@ const TOPICS: Record<NeedKind, NeuroTopic[]> = {
 const PRACTICAL: NeuroTopic[] = ['daily', 'sleep', 'food', 'emotions', 'appointment', 'parents'];
 
 export default function ChildNeeds() {
-  const params = useLocalSearchParams<{ id: string; tab?: Tab; dose?: string }>();
+  const params = useLocalSearchParams<{ id: string; tab?: Tab; dose?: string; time?: string }>();
   const child = useChild(params.id);
   const simple = useUiStore((st) => st.simpleMode);
   const { data: needs } = useChildNeeds(params.id);
@@ -66,7 +66,7 @@ export default function ChildNeeds() {
       {current === FOR_YOU && <ForYou childId={child.id} childName={child.first_name} kinds={needs?.kinds ?? []} onPickCategories={() => setTab('profile')} onTreatments={() => setTab('treatments')} />}
       {current === 'profile' && <NeedsProfile childId={child.id} />}
       {current === 'follow' && <FollowUp childId={child.id} />}
-      {current === 'treatments' && <Treatments childId={child.id} childName={child.first_name} noteDose={params.dose} />}
+      {current === 'treatments' && <Treatments childId={child.id} childName={child.first_name} noteDose={params.dose} askTime={params.time} />}
     </Screen>
   );
 }
@@ -212,7 +212,7 @@ function validateT(d: TDraft): { errors: Record<string, string>; row?: Omit<Trea
   };
 }
 
-function Treatments({ childId, childName, noteDose }: { childId: string; childName: string; noteDose?: string }) {
+function Treatments({ childId, childName, noteDose, askTime }: { childId: string; childName: string; noteDose?: string; askTime?: string }) {
   const toast = useToast();
   const now = useNow(60_000);
   const { data: treatments, isLoading } = useTreatments(childId);
@@ -266,6 +266,22 @@ function Treatments({ childId, childName, noteDose }: { childId: string; childNa
   return (
     <View style={{ gap: spacing.sm }}>
       <Banner tone="warning">{tr('nd.t.rule')}</Banner>
+      {askTime && /^([01]\d|2[0-3]):[0-5]\d$/.test(askTime) ? (
+        <View testID="treatment-ask-time">
+          <Card tone="soft">
+            <Text weight="bold">{tr('nd.t.askTime', { time: askTime, name: childName })}</Text>
+            {(treatments ?? []).filter((x) => x.active).length ? (
+              <>
+                <Text variant="small" muted>{tr('nd.t.askChoose')}</Text>
+                {(treatments ?? []).filter((x) => x.active).map((x) => (
+                  <Button key={x.id} label={`${x.name} · ${x.dose_text}`} size="sm" variant="secondary" style={{ marginTop: 6, alignSelf: 'flex-start' }}
+                    onPress={() => { edit(x); setDraft((d) => ({ ...d, frequency: d.frequency === 'as_prescribed' ? 'daily' : d.frequency, times: [...new Set([...d.times.split(/[,;\s]+/).filter(Boolean), askTime])].sort().join(', ') })); }} />
+                ))}
+              </>
+            ) : <Text variant="small">{tr('nd.t.askNone', { name: childName })}</Text>}
+          </Card>
+        </View>
+      ) : null}
       <SectionTitle title={tr('nd.t.today')} />
       {isLoading ? <Skeleton rows={2} /> : !doses.length ? <Text muted>{tr('nd.t.noDose')}</Text> : doses.map((d) => (
         <Card key={`${d.treatment.id}-${d.time}`}>

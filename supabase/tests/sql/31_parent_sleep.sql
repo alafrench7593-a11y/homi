@@ -10,9 +10,11 @@ insert into auth.users (id, email) values (:'MAYA', 'maya@exemple.test'), (:'NOA
 set role authenticated; set request.jwt.claim.sub = :'MAYA';
 create temp table maya_ctx as select public.create_household('Foyer de Maya') as hid;
 grant select on maya_ctx to authenticated;
+select tests.set_premium(auth.uid(), true);
 create temp table maya_inv as select public.create_household_invitation((select hid from maya_ctx), 'coparent',
   array['daily','health','documents','pregnancy','lists','names','profile'],
   array['daily','health','documents','pregnancy','lists','names','profile']) as token;
+select tests.set_premium(auth.uid(), false);
 grant select on maya_inv to authenticated;
 
 insert into public.parent_sleep_logs (log_date, bedtime, wake_time, night_wakings, waking_details, sleep_minutes, naps, quality, fatigue, mood, note)

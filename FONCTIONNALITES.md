@@ -306,6 +306,31 @@ Reste à traduire (vague 2) : les écrans métier (suivi, enfant, grossesse, cyc
 - **Rappels toujours rattachés au bon profil** : médicaments de l'enfant (`child_id`), complément de grossesse (`pregnancy_id`), vaccins et rendez-vous de chaque enfant ; la contraception reste dans le suivi du cycle.
 - **Non fait (trop lourd ou impossible ici)** : widget d'écran d'accueil (nécessite une version native compilée), partage coparent en temps réel au-delà de l'existant, résumé de rendez-vous généré, alertes de rappels de produits nouvelles.
 
+## 21. Offre Premium (21 octobre 2026)
+
+Règle : le Premium **ajoute** analyse, automatisation et partage ; il ne retire jamais l'accès aux données déjà créées ni à la sécurité. Aucun blocage à l'ouverture : l'aperçu apparaît quand on essaie une fonction, avec un **aperçu réel** calculé sur ses propres données, ce qui reste gratuit, puis « Voir les formules » ou « Plus tard ».
+
+| Fonction | Gratuit | Premium |
+|---|---|---|
+| Sommeil | « Il dort » / « Il est réveillé », siestes, nuits, réveils, totaux du jour, mode nuit | Rythme moyen 7 j, prochain repos estimé (relevés de la famille), changements d'habitude (constats), graphiques 7/30 j, routine du coucher + rappel, récapitulatifs, repères d'âge |
+| Assistant IA | 5 questions / mois, sources visibles | 300 / mois, réponses enregistrées, questions suggérées selon la SA ou l'âge exact |
+| Scanner | 10 analyses / mois, alertes officielles illimitées | Analyses étendues, comparaison, filtres par profil |
+| Coparent | Retirer un membre, quitter un foyer, choisir les profils partagés | Inviter (choix des profils Lina / Noé / grossesse, lecture ou modification), « noté par » sur chaque saisie |
+| Saisie vocale ou en une phrase | 3 / mois | Étendue ; biberon, sommeil, couche, rendez-vous, rappel d'un médicament DÉJÀ prescrit ; confirmation obligatoire, rien d'inventé |
+| Rappel du prochain biberon | Complet (noter, reporter, modifier, annuler depuis la notification) | — |
+| Résumés | Résumé du jour | Semaine, avant rendez-vous, résumé familial ; export PDF / partage (1 / mois en gratuit) |
+| Recettes | Bibliothèque, favoris, filtres, courses d'une recette | Menus de la semaine, courses automatiques |
+| Cycle | Calendrier, saisies, estimations | Statistiques et tendances, export PDF |
+| Rappels personnels | 5 actifs ; médicaments prescrits, biberons, vaccins, rendez-vous illimités | Étendus |
+| Profils, documents, listes | 3 enfants, coffre et listes limités | Étendus |
+
+- **Écran d'abonnement** : fonction essayée, bénéfices, formule annuelle mise en valeur, prix réellement facturé, essai et date du premier prélèvement, date de renouvellement, conditions d'annulation, restauration des achats, lien de gestion App Store / Google Play, comparaison Gratuit / Premium, liste « Toujours gratuit ». État expliqué : essai (date de fin), actif (renouvellement), annulé (jusqu'à l'échéance), grâce, paiement refusé, expiré (« vos données restent consultables »).
+- **Fin d'abonnement** : lecture conservée de tout (menus, routine, aliments notés en lecture seule, rappels, résumés) ; seules les nouvelles créations Premium sont en pause.
+- **Toujours gratuit** : urgences, ressources post-partum, rappels officiels de produits, suppression du compte et export légal, consentements, signalement, accès aux données déjà créées, rappels de médicaments prescrits, de biberon et de vaccins.
+- **Choix volontaires** : les sources de l'assistant restent visibles en gratuit (information de santé : la source doit toujours être vérifiable) ; les données de suivi ne sont jamais masquées pour vendre un « historique étendu ».
+- **Widgets** : les données et la règle de confidentialité sont prêtes (`src/lib/premium/widgets.ts` : rien de sensible sur l'écran verrouillé sans accord) ; les widgets natifs iOS / Android nécessitent une version compilée et ne sont pas encore construits. Notifications Android en visibilité « privée » sur l'écran verrouillé.
+- **Contenus premium** : aucun guide approfondi ni vidéo validée n'existe encore ; le texte d'un futur contenu premium est protégé côté serveur.
+
 ## 4. Décisions et limites documentées
 
 - **EPDS non intégrée.** Le Royal College of Psychiatrists détient les droits ; la diffusion à des tiers (ce qu'est une app) exige une autorisation écrite, et l'intégration complète a déjà été refusée à un logiciel clinique (documentation CamCOPS). Conformément au § 22.4, l'app propose un check-in de bien-être **non diagnostique**. À rouvrir uniquement avec une autorisation écrite et la version française validée (Guedeney & Fermanian, 1998).

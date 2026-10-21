@@ -27,6 +27,14 @@ end $$;
 create or replace function tests.count(p_sql text) returns bigint language plpgsql as $$
 declare v bigint; begin execute 'select count(*) from (' || p_sql || ') q' into v; return v; end $$;
 
+-- Abonnement de test (seul le serveur écrit les abonnements ; ce raccourci n'existe que dans les tests)
+create or replace function tests.set_premium(p_user uuid, p_on boolean) returns void language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.subscriptions (user_id, status, store, period_type, expires_at, will_renew)
+  values (p_user, case when p_on then 'active' else 'expired' end, 'test', 'monthly', case when p_on then now() + interval '30 days' else now() - interval '1 day' end, p_on)
+  on conflict (user_id) do update set status = excluded.status, expires_at = excluded.expires_at, will_renew = excluded.will_renew;
+end $$;
+
 grant execute on all functions in schema tests to anon, authenticated, service_role;
 
 -- Identités utilisées dans les tests

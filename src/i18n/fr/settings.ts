@@ -37,7 +37,7 @@ export const settings = {
   'settings.reminders.active': { one: '{count} rappel actif', other: '{count} rappels actifs' },
   'settings.reminders.none': 'Aucun rappel actif',
   'settings.subscription': 'Abonnement',
-  'settings.subscription.active': '{app} Plus actif',
+  'settings.subscription.active': '{app} Premium actif',
   'settings.subscription.free': 'Version gratuite',
   'settings.account': 'Mon compte',
   'settings.account.sub': 'E-mail, mot de passe, export, suppression',

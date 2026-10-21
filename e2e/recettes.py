@@ -6,9 +6,12 @@ Démo de départ : Camille enceinte, Lina (bébé) et Noé (enfant, ~6 ans).
   python3 e2e/recettes.py
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
 """
-import json, os, subprocess
+import json, os, subprocess, sys
 from datetime import date, timedelta
 from playwright.sync_api import sync_playwright
+
+sys.path.insert(0, os.path.dirname(__file__))
+from journey_seed import PREMIUM_ON  # noqa: E402
 
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8822')
 SHOTS = os.environ.get('E2E_SHOTS', '/tmp/toietmoi-e2e')
@@ -60,6 +63,7 @@ def run(p):
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate(PREMIUM_ON)  # menus hebdomadaires : fonction Premium (le parcours gratuit est vérifié par premium.py)
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     noe = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Noé').id")
     go(pg, '/meals', 3000)  # premier passage : la bibliothèque est installée dans la base de démonstration

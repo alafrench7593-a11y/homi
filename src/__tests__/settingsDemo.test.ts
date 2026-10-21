@@ -18,7 +18,11 @@ describe('moteur local : écrans de réglages', () => {
   });
 
   it('invitation : création d’un code, acceptation refusée avec un message explicite', async () => {
+    // Inviter un coparent est une fonction Premium (vérifiée côté serveur) : refusée en gratuit, possible abonné·e
+    await expect(db.rpc('create_household_invitation', { p_household: household, p_role: 'coparent', p_can_view: ['daily'], p_can_edit: [] })).rejects.toMatchObject({ hint: 'premium_required' });
+    await db.rpc('set_demo_subscription', { state: 'active', expires_in_days: 30 });
     const token = await db.rpc<string>('create_household_invitation', { p_household: household, p_role: 'coparent', p_can_view: ['daily'], p_can_edit: [] });
+    await db.rpc('set_demo_subscription', { active: false });
     expect(token.length).toBeGreaterThanOrEqual(16);
     expect(await db.select({ table: 'household_invitations', filters: [eq('household_id', household)] })).toHaveLength(1);
     await expect(db.rpc('accept_household_invitation', { p_token: token })).rejects.toThrow(/mode démonstration/);

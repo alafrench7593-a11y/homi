@@ -141,7 +141,7 @@ export function PremiumGate({ children, feature }: { children: React.ReactNode; 
         <Icon name="star" size={18} />
         <Text weight="bold" style={{ flex: 1 }}>{feature}</Text>
       </Row>
-      <Text variant="small" muted style={{ marginTop: 6 }}>Cette fonction fait partie de Toi & Moi Plus. Le suivi essentiel, la communauté et toutes les informations de sécurité restent gratuits.</Text>
+      <Text variant="small" muted style={{ marginTop: 6 }}>Cette fonction fait partie de Toi & Moi Premium. Le suivi essentiel, la communauté et toutes les informations de sécurité restent gratuits.</Text>
       <Button label="Découvrir l’abonnement" variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
     </Card>
   );

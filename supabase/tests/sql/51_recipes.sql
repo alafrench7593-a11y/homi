@@ -33,7 +33,9 @@ insert into public.recipes (slug, title, audiences, meals, servings, prep_min, c
 select tests.throws(format($$insert into public.recipes (slug, title, audiences, meals, servings, prep_min, cook_min, owner_id, household_id, status) values ('triche', 'Recette validée', array['family'], array['dinner'], 2, 5, 5, %L, %L, 'validated')$$, :'ANA', :'HH'),
   'recettes personnelles : impossible de se donner le statut « validée »');
 -- Menu et liste de courses
+select tests.set_premium(auth.uid(), true);
 insert into public.meal_plans (id, household_id, title, days, servings) values ('c0c0a000-0000-4000-8000-0000000000a1', :'HH', 'Semaine', 7, 3);
+select tests.set_premium(auth.uid(), false);
 insert into public.meal_plan_items (plan_id, household_id, day, meal, recipe_slug, servings) values ('c0c0a000-0000-4000-8000-0000000000a1', :'HH', 0, 'dinner', 'fa-gratin-dauphinois', 3);
 insert into public.shopping_lists (id, household_id, plan_id, title) values ('c0c0a000-0000-4000-8000-0000000000b1', :'HH', 'c0c0a000-0000-4000-8000-0000000000a1', 'Courses');
 insert into public.shopping_items (list_id, household_id, ingredient_key, label, qty, unit, aisle) values ('c0c0a000-0000-4000-8000-0000000000b1', :'HH', 'pumpkin', 'potiron', 600, 'g', 'fruits_legumes');

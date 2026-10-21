@@ -14,9 +14,10 @@ import { confirm, useToast } from '@/components/Overlays';
 import { BRAND } from '@/config/brand';
 import { useUserId } from '@/lib/auth';
 import { isDemo } from '@/lib/backend';
-import { ensureHousehold, useHousehold, useHouseholdId, useHouseholdMembers, useInvalidate, useMyMembership } from '@/lib/data/hooks';
+import { ensureHousehold, useActivePregnancy, useChildren, useHousehold, useHouseholdId, useHouseholdMembers, useInvalidate, useMyMembership } from '@/lib/data/hooks';
+import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import {
-  friendlyError, useAcceptInvitation, useCreateInvitation, useInvitations, useRemoveMember, useRenameHousehold, useRevokeInvitation, useUpdateMemberRights,
+  friendlyError, useAcceptInvitation, useCreateInvitation, useInvitations, useRemoveMember, useRenameHousehold, useRevokeInvitation, useSetMemberScope, useUpdateMemberRights,
 } from '@/lib/data/hooks-settings';
 import { ALL_DOMAINS, type Domain, type HouseholdMember } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -36,6 +37,31 @@ const DEFAULT_VIEW: Domain[] = [...ALL_DOMAINS];
 const DEFAULT_EDIT: Domain[] = ['daily', 'lists', 'names'];
 
 type Rights = { view: Domain[]; edit: Domain[] };
+/** Profils partagés : null = tous les enfants (actuels et à venir). */
+type Scope = { children: string[] | null; pregnancy: boolean };
+
+/** Choix des profils accessibles (Lina, Noé, la grossesse). Retirer un profil coupe l'accès à ses données immédiatement. */
+function ProfileScopePicker({ value, onChange, disabled }: { value: Scope; onChange: (s: Scope) => void; disabled?: boolean }) {
+  const { data: children } = useChildren();
+  const pregnancy = useActivePregnancy();
+  const kids = children ?? [];
+  const all = value.children == null;
+  const has = (id: string) => all || value.children!.includes(id);
+  const toggle = (id: string) => {
+    const cur = all ? kids.map((k) => k.id) : value.children!;
+    onChange({ ...value, children: cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id] });
+  };
+  return (
+    <View style={{ gap: 6 }} testID="profile-scope">
+      <Text variant="label">Profils partagés</Text>
+      <Row wrap>
+        <Chip label="Tous les enfants" selected={all} onPress={disabled ? undefined : () => onChange({ ...value, children: all ? kids.map((k) => k.id) : null })} />
+        {kids.map((k) => <Chip key={k.id} label={k.first_name} selected={has(k.id)} onPress={disabled ? undefined : () => toggle(k.id)} />)}
+        {pregnancy ? <Chip label="Ma grossesse" selected={value.pregnancy} onPress={disabled ? undefined : () => onChange({ ...value, pregnancy: !value.pregnancy })} /> : null}
+      </Row>
+    </View>
+  );
+}
 
 /** Tableau Voir / Modifier par domaine. Modifier implique Voir. */
 function PermissionMatrix({ value, onChange, disabled }: { value: Rights; onChange: (r: Rights) => void; disabled?: boolean }) {
@@ -70,6 +96,8 @@ function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: 
   const update = useUpdateMemberRights();
   const remove = useRemoveMember();
   const [rights, setRights] = useState<Rights>({ view: member.can_view, edit: member.can_edit });
+  const [scope, setScope] = useState<Scope>({ children: member.child_scope ?? null, pregnancy: member.pregnancy_access ?? true });
+  const setMemberScope = useSetMemberScope();
   const [open, setOpen] = useState(false);
   useEffect(() => setRights({ view: member.can_view, edit: member.can_edit }), [member.can_view, member.can_edit]);
   const dirty = rights.view.join() !== member.can_view.join() || rights.edit.join() !== member.can_edit.join();
@@ -79,6 +107,15 @@ function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: 
     try {
       await update.mutateAsync({ householdId: member.household_id, userId: member.user_id, canView: rights.view, canEdit: rights.edit });
       toast('Droits mis à jour.');
+    } catch (e) {
+      toast(friendlyError(e), 'error');
+    }
+  }
+
+  async function saveScope() {
+    try {
+      await setMemberScope.mutateAsync({ householdId: member.household_id, userId: member.user_id, childScope: scope.children, pregnancyAccess: scope.pregnancy });
+      toast('Profils partagés mis à jour.');
     } catch (e) {
       toast(friendlyError(e), 'error');
     }
@@ -110,6 +147,8 @@ function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: 
       </Row>
       {open ? (
         <View style={{ marginTop: spacing.sm, gap: spacing.sm }}>
+          <ProfileScopePicker value={scope} onChange={setScope} disabled={!editable} />
+          {editable ? <Button label="Enregistrer les profils partagés" size="sm" variant="secondary" loading={setMemberScope.isPending} onPress={saveScope} style={{ alignSelf: 'flex-start' }} /> : null}
           <PermissionMatrix value={rights} onChange={setRights} disabled={!editable} />
           {editable ? (
             <Row wrap>
@@ -174,6 +213,9 @@ function FamilyScreenSignedIn() {
 
   const [role, setRole] = useState<'coparent' | 'caregiver'>('coparent');
   const [rights, setRights] = useState<Rights>({ view: DEFAULT_VIEW, edit: DEFAULT_EDIT });
+  const [scope, setScope] = useState<Scope>({ children: null, pregnancy: true });
+  const inviteAccess = usePremiumAccess('coparent_invite');
+  const { data: kidsForPreview } = useChildren();
   const [token, setToken] = useState<string | null>(null);
   const [code, setCode] = useState(typeof params.code === 'string' ? params.code : '');
   const [codeError, setCodeError] = useState<string | null>(null);
@@ -193,8 +235,11 @@ function FamilyScreenSignedIn() {
   async function invite() {
     if (!hid) return;
     if (!rights.view.length) return toast('Choisissez au moins un domaine visible.', 'error');
+    if (scope.children && !scope.children.length && !scope.pregnancy) return toast('Choisissez au moins un profil à partager.', 'error');
+    const names = (kidsForPreview ?? []).filter((k) => scope.children == null || scope.children.includes(k.id)).map((k) => k.first_name);
+    if (!inviteAccess.require(<Text variant="small">{`${names.join(' et ') || 'Vos profils'} : biberons, sommeil, couches et rendez-vous synchronisés sur les deux téléphones, avec « qui a noté » sur chaque saisie.`}</Text>)) return;
     try {
-      const tk = await createInvitation.mutateAsync({ householdId: hid, role, canView: rights.view, canEdit: rights.edit });
+      const tk = await createInvitation.mutateAsync({ householdId: hid, role, canView: rights.view, canEdit: rights.edit, childScope: scope.children, pregnancyAccess: scope.pregnancy });
       setToken(tk);
     } catch (e) {
       toast(friendlyError(e), 'error');
@@ -303,8 +348,10 @@ function FamilyScreenSignedIn() {
                 <View style={{ gap: spacing.sm }}>
                   <Segmented label="Rôle de la personne invitée" value={role} onChange={setRole} options={[{ value: 'coparent', label: 'Coparent' }, { value: 'caregiver', label: 'Proche ou garde' }]} />
                   <Text variant="small" muted>Choisissez ce que cette personne pourra voir et modifier. Vous pourrez changer ces droits à tout moment.</Text>
+                  <ProfileScopePicker value={scope} onChange={setScope} />
                   <PermissionMatrix value={rights} onChange={setRights} />
-                  <Button label="Créer l’invitation" icon="user-plus" loading={createInvitation.isPending} onPress={invite} />
+                  <Button label="Créer l’invitation" icon="user-plus" loading={createInvitation.isPending} onPress={invite} testID="invite-create" />
+                  {!inviteAccess.premium ? <Text variant="caption" muted>Inviter un coparent fait partie de Premium. Retirer un membre ou quitter un foyer reste toujours possible.</Text> : null}
                 </View>
               </Card>
               {token ? (

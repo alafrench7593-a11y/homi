@@ -127,7 +127,11 @@ Documentation : https://docs.expo.dev/push-notifications/overview/ · https://fi
 | Données | Contexte de l'assistant **facultatif** (interrupteur) : âge, semaines après la naissance, moyenne d'humeur sur 7 jours. Jamais les réponses du point post-partum. Les photos ne sont ni stockées ni journalisées |
 
 ## 9. Abonnements — RevenueCat
-🔧 Code existant (webhook signé, `subscriptions` seule source de vérité). À configurer : clés publiques par plateforme et `REVENUECAT_WEBHOOK_SECRET`.
+🔧 Code prêt, **non testé avec de vrais achats** (aucune clé ni boutique configurée ici). Achats simulés en démonstration uniquement.
+- **Droits** : table `subscriptions`, écrite SEULEMENT par le webhook `revenuecat-webhook` (secret `REVENUECAT_WEBHOOK_SECRET`, clé facultative `REVENUECAT_SECRET_API_KEY` pour relire l'état chez RevenueCat). `has_premium()` fait foi : essai, actif, grâce ou annulé jusqu'à l'échéance. Événements en retard ignorés. Logique testée : `supabase/functions/_shared/revenuecat.ts` (Jest).
+- **Fonctions Premium vérifiées côté serveur** (`20261021000500_premium.sql`) : quotas mensuels `consume_feature_quota` (saisie vocale 3 / mois, exports de résumé 1 / mois en gratuit), menus hebdomadaires, routine du coucher, diversification, invitation du coparent, réponses enregistrées de l'assistant, rappels personnels (5 actifs en gratuit), articles premium (texte protégé par RLS, aperçu via `premium_article_teasers`). Partage par profil : `child_scope`, `pregnancy_access`, `set_member_scope`, politiques restrictives sur toutes les tables portant un enfant ou une grossesse.
+- **À configurer** (tableaux de bord, sans partager les clés ici) : produits `toietmoi_premium_monthly` et `toietmoi_premium_annual` (essai de 7 jours sur l'annuel si souhaité) dans App Store Connect et Google Play ; droit (« entitlement ») `premium` et offre courante dans RevenueCat ; clés publiques `EXPO_PUBLIC_REVENUECAT_APPLE_KEY` / `EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY` ; URL du webhook et son secret ; version compilée (EAS) — les achats intégrés ne fonctionnent pas dans la version web.
+- **Prix affichés** : ceux de la boutique en production ; 5,99 € / mois et 39,99 € / an ne sont que des valeurs de démonstration à remplacer par vos vrais prix.
 
 ## 10. Rapports de plantage — Sentry (facultatif)
 🔧 `EXPO_PUBLIC_SENTRY_DSN`. Rien n'est envoyé sans l'accord de la personne ; aucune donnée de santé.

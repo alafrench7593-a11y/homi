@@ -84,10 +84,17 @@ export default function AppointmentsScreen() {
     a.child_id ? children?.find((c) => c.id === a.child_id)?.first_name ?? 'Enfant' : a.pregnancy_id ? 'Grossesse' : a.for_parent ? 'Moi' : null;
 
   // Ouverture directe depuis l'espace post-partum : nouveau rendez-vous postnatal, privé par défaut
-  const params = useLocalSearchParams<{ new?: string }>();
+  const params = useLocalSearchParams<{ new?: string; title?: string; at?: string; child?: string }>();
   useEffect(() => {
     if (params.new === 'postnatal') setDraft({ ...emptyDraft('me'), kind: 'postnatal', private: true });
-  }, [params.new]);
+    // Saisie vocale (« Ajouter le rendez-vous du pédiatre mardi à 15 h ») : formulaire pré-rempli, à vérifier avant d'enregistrer
+    if (params.new === 'quick' && params.at && !Number.isNaN(Date.parse(params.at))) {
+      const d = new Date(params.at);
+      const title = String(params.title ?? '').slice(0, 80);
+      setDraft({ ...emptyDraft(params.child ? `child:${params.child}` : 'me'), kind: /p[eé]diatre/i.test(title) ? 'pediatric' : 'consultation', title,
+        date: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`, time: `${pad(d.getHours())}:${pad(d.getMinutes())}` });
+    }
+  }, [params.new, params.at]); // eslint-disable-line react-hooks/exhaustive-deps
   const focusLabel = focus ? (focus === 'pregnancy' ? 'Grossesse' : children?.find((c) => c.id === focus.slice(6))?.first_name ?? null) : null;
 
   function openNew() {

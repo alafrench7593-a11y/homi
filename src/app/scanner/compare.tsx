@@ -5,6 +5,8 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import { PremiumSection } from '@/components/Premium';
+import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Divider, Row, SectionTitle, Text } from '@/components/ui';
@@ -81,6 +83,7 @@ export default function CompareScreen() {
   const [b, setB] = useState<string | null>(params.b ?? null);
   const historyQ = useScanHistory();
   const { data: history } = historyQ;
+  const compareAccess = usePremiumAccess('scanner_compare');
   const pickable = (history ?? []).filter((s: ScanRow) => s.id !== a && s.id !== b);
 
   function pick(id: string) {
@@ -91,9 +94,12 @@ export default function CompareScreen() {
   return (
     <Screen back title="Comparer deux produits" subtitle="Chaque produit est analysé séparément, avec ses propres sources.">
       <Banner tone="info">{'Aucun classement ni note globale : comparez les verdicts et les informations de chaque fiche. Deux analyses faites pour des profils différents ne sont pas comparables.'}</Banner>
+      {a && b && !compareAccess.premium ? (
+        <PremiumSection feature="scanner_compare" preview={<Text variant="small">{`${(history ?? []).find((x: ScanRow) => x.id === a)?.product_snapshot?.name ?? 'Produit 1'} et ${(history ?? []).find((x: ScanRow) => x.id === b)?.product_snapshot?.name ?? 'Produit 2'} : composition, allergènes et précautions côte à côte.`}</Text>}><View /></PremiumSection>
+      ) : null}
       <Row style={{ alignItems: 'flex-start' }}>
-        {a ? <Column id={a} onClear={() => setA(null)} /> : <Card style={{ flex: 1 }}><Text variant="small" muted>Choisissez un premier produit ci-dessous.</Text></Card>}
-        {b ? <Column id={b} onClear={() => setB(null)} /> : <Card style={{ flex: 1 }}><Text variant="small" muted>Choisissez un second produit ci-dessous.</Text></Card>}
+        {a && (b == null || compareAccess.premium) ? <Column id={a} onClear={() => setA(null)} /> : <Card style={{ flex: 1 }}><Text variant="small" muted>Choisissez un premier produit ci-dessous.</Text></Card>}
+        {b && compareAccess.premium ? <Column id={b} onClear={() => setB(null)} /> : b ? <Card style={{ flex: 1 }}><Text variant="small">{(history ?? []).find((x: ScanRow) => x.id === b)?.product_snapshot?.name ?? 'Second produit'}</Text><Button label="Changer" size="sm" variant="ghost" onPress={() => setB(null)} /></Card> : <Card style={{ flex: 1 }}><Text variant="small" muted>Choisissez un second produit ci-dessous.</Text></Card>}
       </Row>
       {!a || !b ? (
         <>

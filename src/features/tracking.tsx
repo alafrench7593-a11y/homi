@@ -1,5 +1,7 @@
 /** Saisie rapide et chronologie du suivi quotidien. */
 import { STOOL_COLORS, STOOL_CONSISTENCY } from '@/lib/domain/childCare';
+import { useRecorderLabel } from '@/lib/data/hooks-bottle';
+import { useHouseholdMembers } from '@/lib/data/hooks';
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -144,6 +146,10 @@ export function describeLog(l: LogItem): string {
 
 export function Timeline({ logs, childId }: { logs: LogItem[]; childId: string }) {
   const t = useTheme();
+  // « Qui a noté » : affiché seulement quand plusieurs personnes partagent le foyer
+  const recorder = useRecorderLabel();
+  const { data: members } = useHouseholdMembers();
+  const shared = (members?.length ?? 0) > 1;
   const sorted = useMemo(() => [...logs].sort((a, b) => logTime(b).localeCompare(logTime(a))), [logs]);
   if (!sorted.length) {
     return <Text muted center style={{ paddingVertical: spacing.lg }}>Rien d’enregistré pour l’instant aujourd’hui.</Text>;
@@ -165,6 +171,7 @@ export function Timeline({ logs, childId }: { logs: LogItem[]; childId: string }
           <View style={{ flex: 1 }}>
             <Text weight="medium">{KIND_META[l.type].label}</Text>
             <Text variant="small" muted>{describeLog(l)}</Text>
+            {shared && recorder(l.data.created_by) ? <Text variant="caption" muted>{`noté par ${recorder(l.data.created_by)}`}</Text> : null}
           </View>
           <Icon name="edit-2" size={14} color={t.colors.textMuted} />
         </Tappable>

@@ -10,6 +10,9 @@ Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
 import json, os, subprocess, sys
 from playwright.sync_api import sync_playwright
 
+sys.path.insert(0, os.path.dirname(__file__))
+from journey_seed import PREMIUM_ON  # noqa: E402
+
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8822')
 SHOTS = os.environ.get('E2E_SHOTS', '/tmp/toietmoi-e2e')
 os.makedirs(SHOTS, exist_ok=True)
@@ -45,6 +48,7 @@ def run(p):
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate(PREMIUM_ON)  # statistiques et export PDF du cycle : fonctions Premium (parcours gratuit : premium.py)
 
     # Parcours « suivre mon cycle » et profil « moi » (pour la carte d'accueil)
     pg.evaluate("""() => {

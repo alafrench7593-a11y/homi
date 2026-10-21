@@ -7,8 +7,10 @@ import { EmptyStateCard } from '@/components/ui-extra';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { useActivePregnancy, useProfile, useReminders } from '@/lib/data/hooks';
 import { useLocalSearchParams } from 'expo-router';
+import { usePremiumAccess } from '@/lib/data/hooks-premium';
+import { isPremiumRequired } from '@/lib/premium/features';
 import { reminderSuggestions } from '@/lib/domain/journeys';
-import { friendlyError, useDeleteReminder, useSaveReminder, useToggleReminder, type ReminderDraft } from '@/lib/data/hooks-settings';
+import { usePlanLimits, friendlyError, useDeleteReminder, useSaveReminder, useToggleReminder, type ReminderDraft } from '@/lib/data/hooks-settings';
 import { describeSchedule, IOS_PENDING_LIMIT, nextOccurrence, validateSchedule, type ReminderSchedule, type Weekday } from '@/lib/domain/reminders';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
@@ -98,6 +100,8 @@ function buildSchedule(f: Form): { schedule?: ReminderSchedule; errors: Record<s
 function ReminderEditor({ reminder, visible, onClose, supplement }: { reminder?: Reminder; visible: boolean; onClose: (result?: { skipped: number }) => void; supplement?: boolean }) {
   const t = useTheme();
   const pregnancy = useActivePregnancy();
+  const moreReminders = usePremiumAccess('more_reminders');
+  const remLimit = usePlanLimits().data?.find((l) => l.key === 'custom_reminders_count')?.free_value ?? 5;
   const toast = useToast();
   const save = useSaveReminder();
   const del = useDeleteReminder();
@@ -124,6 +128,8 @@ function ReminderEditor({ reminder, visible, onClose, supplement }: { reminder?:
       toast(reminder ? 'Rappel modifié.' : 'Rappel créé.');
       onClose(res);
     } catch (err) {
+      // Limite des rappels personnels (jamais pour un médicament prescrit, un biberon, un vaccin ou un rendez-vous)
+      if (isPremiumRequired(err)) { moreReminders.showPreview(<Text variant="small">{`« ${draft.title} » est prêt : avec Premium, il s’ajoute à vos autres rappels personnels.`}</Text>, { used: remLimit, quota: remLimit, unit: 'rappels personnels actifs', monthly: false }); return; }
       toast(friendlyError(err), 'error');
     }
   }

@@ -44,3 +44,13 @@ SIMPLE_OFF = """() => {
   const raw = localStorage.getItem('toietmoi.ui'); const v = raw ? JSON.parse(raw) : { state: {}, version: 0 };
   v.state = { ...(v.state || {}), simpleMode: false }; localStorage.setItem('toietmoi.ui', JSON.stringify(v));
 }"""
+
+
+# Abonnement Premium actif (démonstration, 30 jours) : pour les suites qui vérifient des fonctions Premium
+# (menus, statistiques et export du cycle). Le parcours gratuit → aperçu → abonnement est vérifié par premium.py.
+PREMIUM_ON = """() => {
+  const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); const me = s.session.userId;
+  s.tables.subscriptions = (s.tables.subscriptions || []).filter(x => x.user_id !== me);
+  s.tables.subscriptions.push({ user_id: me, status: 'active', product_id: 'toietmoi_premium_annual', store: 'test', period_type: 'annual', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), will_renew: true });
+  localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s));
+}"""

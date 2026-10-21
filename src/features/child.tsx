@@ -12,7 +12,6 @@ import { router } from 'expo-router';
 import { LineChart, StatPill } from '@/components/Charts';
 import { GrowthChart } from '@/components/GrowthChart';
 import { ageInMonths, describePosition, sexForStandards, WHO_MAX_MONTHS, type GrowthIndicator } from '@/lib/domain/growthStandards';
-import { PremiumGate } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -21,7 +20,7 @@ import { BottleTimerCard } from '@/features/bottle';
 import { KIND_META, Timeline, type LogItem, logTime } from '@/features/tracking';
 import { ChildForm, childToDraft, validateChild, type ChildDraft } from '@/features/profiles';
 import { backend, eq } from '@/lib/backend';
-import { useInvalidate, useLogs, useMeasurements, useJourneyState } from '@/lib/data/hooks';
+import { useInvalidate, useLogs, useMeasurements, useJourneyState, usePremium } from '@/lib/data/hooks';
 import {
   errorMessage, type FoodIntroduction, type HealthItem, type HealthItemKind, type Milestone, type MilestoneKind,
   useFoodIntroductions, useFoods, useHealthItems, useMilestones,
@@ -29,7 +28,8 @@ import {
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
 import { BabySleepCard } from './sleep';
-import { childAge } from '@/lib/domain/child';
+import { usePremiumAccess } from '@/lib/data/hooks-premium';
+import { PremiumSection } from '@/components/Premium';
 import type { Bottle, Breastfeed, Child, Diaper, LogKind, Meal, Measurement, Observation, Sleep } from '@/lib/types';
 import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -130,7 +130,7 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
     <>
       <ChildToday child={child} compact />
       {isBottleChild(child.birth_date, js.childType(child.id)) && <BottleTimerCard child={child} />}
-      {child.enabled_tracking.includes('sleep') && childAge(child.birth_date).months < 36 && <BabySleepCard child={child} />}
+      {child.enabled_tracking.includes('sleep') && <BabySleepCard child={child} />}
       <Row wrap>
         {quick.map((k) => (
           <Chip key={k} icon={KIND_META[k].icon} label={KIND_META[k].label} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: k, child: child.id } })} />
@@ -180,7 +180,9 @@ export function GrowthTab({ child }: { child: Child }) {
   const write = useSafeWrite();
   const measurementsQ = useMeasurements(child.id);
   const { data: measurements } = measurementsQ;
+  const growthAccess = usePremiumAccess('growth_export', child.first_name);
   async function exportGrowth() {
+    if (!growthAccess.require(<Text variant="small">{`${(measurements ?? []).length} mesure(s) de ${child.first_name} prêtes pour un tableur. Elles figurent aussi, gratuitement, dans l’export complet de vos données (Réglages › Confidentialité).`}</Text>)) return;
     const cell = csvCell;
     const rows = [...(measurements ?? [])].sort((a, b) => a.measured_on.localeCompare(b.measured_on));
     const csv = `\uFEFF# Mesures de ${child.first_name} — saisies de la famille\r\n` + [['Date', 'Poids (kg)', 'Taille (cm)', 'Périmètre crânien (cm)', 'Source', 'Note'].map(cell).join(';'),
@@ -596,17 +598,22 @@ export function HealthTab({ child }: { child: Child }) {
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
 
 export function FoodsTab({ child }: { child: Child }) {
+  const premium = usePremium();
+  const { data: intros } = useFoodIntroductions(child.id);
+  // Fin d'abonnement : les aliments déjà notés restent consultables (lecture seule) ; jamais de perte silencieuse
+  const readOnly = !premium && !!intros?.length;
   return (
     <>
-      <PremiumGate feature="Suivi de la diversification">
-        <FoodsTracker child={child} />
-      </PremiumGate>
+      {premium || readOnly ? <FoodsTracker child={child} readOnly={readOnly} /> : null}
+      {!premium ? (
+        <PremiumSection feature="diversification" name={child.first_name} preview={<Text variant="small">{`Chaque aliment découvert par ${child.first_name}, sa date et la réaction observée, au même endroit.`}</Text>}><View /></PremiumSection>
+      ) : null}
       <Banner tone="danger" title="Réaction importante ?">{'Gêne pour respirer, gonflement du visage ou des lèvres, vomissements répétés, malaise : appelez le 15 ou le 112 immédiatement.'}</Banner>
     </>
   );
 }
 
-function FoodsTracker({ child }: { child: Child }) {
+function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boolean }) {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
@@ -682,8 +689,9 @@ function FoodsTracker({ child }: { child: Child }) {
         <StatPill value={String((intros ?? []).filter((i) => isAllergen(i.food_name)).length)} label="dont allergènes majeurs" />
       </Row>
 
-      <SectionTitle title="Nouvel aliment" />
-      <Card>
+      {readOnly ? <Banner tone="info">{'Vos aliments déjà notés restent consultables. Ajouter de nouveaux aliments fait partie de Premium.'}</Banner> : null}
+      {readOnly ? null : <SectionTitle title="Nouvel aliment" />}
+      {readOnly ? null : <Card>
         <View style={{ gap: spacing.sm }}>
           {errors.form ? <Banner tone="danger">{errors.form}</Banner> : null}
           <Field label="Aliment" value={name} onChangeText={setName} maxLength={60} error={errors.name} placeholder="Courgette, banane…" />
@@ -697,7 +705,7 @@ function FoodsTracker({ child }: { child: Child }) {
           <Field label="Réaction observée" optional value={reaction} onChangeText={setReaction} multiline maxLength={1000} hint="Ce que vous avez remarqué, tel quel. L’application ne l’interprète pas." />
           <Button label="Ajouter" icon="plus" loading={saving} onPress={add} />
         </View>
-      </Card>
+      </Card>}
 
       <SectionTitle title="Aliments découverts" />
       {introsQ.isLoading && !intros ? <Skeleton kind="list" rows={2} /> : introsQ.isError && !intros ? (

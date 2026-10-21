@@ -1327,6 +1327,24 @@
             "free_value": 10,
             "description": "Scans détaillés de produits par mois",
             "premium_value": 1000
+        },
+        {
+            "key": "voice_entries_per_month",
+            "free_value": 3,
+            "description": "Saisies vocales ou en une phrase par mois",
+            "premium_value": 1000
+        },
+        {
+            "key": "summary_exports_per_month",
+            "free_value": 1,
+            "description": "Résumés exportés en PDF ou partagés par mois",
+            "premium_value": 200
+        },
+        {
+            "key": "custom_reminders_count",
+            "free_value": 5,
+            "description": "Rappels personnels actifs (hors médicaments prescrits, biberons et vaccins)",
+            "premium_value": 300
         }
     ],
     "product_recalls": [

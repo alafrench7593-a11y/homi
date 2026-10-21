@@ -25,7 +25,7 @@ type SheetKind = 'start' | 'edit' | null;
 
 export default function BottleReminderScreen() {
   const toast = useToast();
-  const params = useLocalSearchParams<{ childId: string }>();
+  const params = useLocalSearchParams<{ childId: string; edit?: string }>();
   const childId = params.childId ?? '';
   const childrenQ = useBottleChildren();
   const membershipsQ = useMemberships();
@@ -50,6 +50,11 @@ export default function BottleReminderScreen() {
   const [planned, setPlanned] = useState('');
   const [dueTime, setDueTime] = useState(new Date());
   const [snoozeText, setSnoozeText] = useState('');
+  // Ouverture depuis la notification (« Modifier l'intervalle ») : la feuille de modification s'ouvre directement
+  const editOpened = React.useRef(false);
+  React.useEffect(() => {
+    if (params.edit === '1' && active && !editOpened.current) { editOpened.current = true; openEdit(); }
+  }, [params.edit, active]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!child) {
     return (

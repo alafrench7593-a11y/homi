@@ -9,6 +9,7 @@ import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/State
 import { Button, Chip, IconButton, Row, Text } from '@/components/ui';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useDeleteAllScans, useDeleteScan, useScanFavorites, useScanHistory, useToggleScanFavorite } from '@/lib/data/hooks-scanner';
+import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { ScanListRow } from '@/features/scanner/components';
 import { spacing } from '@/theme/tokens';
 
@@ -29,7 +30,14 @@ export default function ScanHistoryScreen() {
   const toggle = useToggleScanFavorite();
   const delOne = useDeleteScan();
   const delAll = useDeleteAllScans();
-  const rows = (data ?? []).filter((s) => (filter === 'all' ? true : filter === 'favorites' ? favorites.has(s.id) : s.kind === filter));
+  // Filtre par profil (grossesse, bébé, enfant) : Premium
+  const [profile, setProfile] = useState<string | null>(null);
+  const profAccess = usePremiumAccess('scanner_more');
+  const PROFILES: { value: string[]; key: string; label: string }[] = [
+    { key: 'pregnant', value: ['pregnant', 'breastfeeding'], label: 'Grossesse et allaitement' }, { key: 'baby', value: ['newborn', 'baby'], label: 'Bébé' }, { key: 'child', value: ['child'], label: 'Enfant' },
+  ];
+  const rows = (data ?? []).filter((s) => (filter === 'all' ? true : filter === 'favorites' ? favorites.has(s.id) : s.kind === filter))
+    .filter((s) => !profile || (PROFILES.find((p) => p.key === profile)?.value ?? []).includes(String((s as { target_profile?: string }).target_profile ?? '')));
 
   async function removeOne(id: string) {
     if (!(await confirm('Supprimer cette analyse ?', 'Elle sera retirée de l’historique et des favoris.', 'Supprimer'))) return;
@@ -68,6 +76,8 @@ export default function ScanHistoryScreen() {
         ListHeaderComponent={(
           <View style={{ gap: spacing.md, marginBottom: spacing.xxs }}>
             <Row wrap>{FILTERS.map((f) => <Chip key={f.value} label={f.label} selected={filter === f.value} onPress={() => setFilter(f.value)} />)}</Row>
+            <View testID="scan-profile-filter"><Row wrap>{PROFILES.map((p) => <Chip key={p.key} icon={profAccess.premium ? undefined : 'star'} label={p.label} selected={profile === p.key}
+              onPress={() => { if (profile === p.key) { setProfile(null); return; } if (profAccess.require(<Text variant="small">{`${(data ?? []).filter((x) => p.value.includes(String((x as { target_profile?: string }).target_profile ?? ''))).length} analyse(s) faites pour « ${p.label} » dans votre historique.`}</Text>)) setProfile(p.key); }} />)}</Row></View>
             {isLoading ? <Skeleton kind="card" rows={3} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} /> : null}
           </View>
         )}

@@ -14,6 +14,7 @@ import {
   MAX_QUESTION_LENGTH, describeContext, parseStructuredAnswer, useAssistantContext, useAssistantQuota,
   type AskResponse, type StructuredAnswer, type UrgentContact,
 } from '@/features/assistant';
+import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { backend, BackendError, eq } from '@/lib/backend';
 import { useUserId } from '@/lib/auth';
 import { useConsents, useConversations, useInvalidate, useMessages, useSetConsent } from '@/lib/data/hooks';
@@ -185,9 +186,12 @@ export default function Chat() {
     }
   }
 
+  const saveAccess = usePremiumAccess('assistant_saved');
   async function toggleSave(m: LocalMsg) {
     if (!m.serverId) return toast('Activez l’historique pour enregistrer des réponses.', 'info');
     if (busyAction) return;
+    // Enregistrer une nouvelle réponse : Premium (retirer ou relire une réponse déjà enregistrée reste gratuit)
+    if (!m.saved && !saveAccess.require(<Text variant="small" numberOfLines={3}>{`« ${m.content.slice(0, 160)}${m.content.length > 160 ? '…' : ''} » serait gardée dans « Mes réponses favorites ».`}</Text>)) return;
     setBusyAction(true);
     try {
       await backend.update('assistant_messages', { saved: !m.saved }, [eq('id', m.serverId)]);
@@ -369,8 +373,8 @@ export default function Chat() {
         ListFooterComponent={premiumNeeded || blocked ? (
           <Card tone="gold">
             <Text weight="bold">{premiumNeeded ?? `Vous avez utilisé vos ${limit} questions de ce mois.`}</Text>
-            <Text variant="small" muted>Avec Toi & Moi Plus, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence et les numéros d’urgence restent toujours gratuits.</Text>
-            <Button label="Découvrir Toi & Moi Plus" size="sm" variant="secondary" icon="star" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
+            <Text variant="small" muted>Avec Toi & Moi Premium, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence et les numéros d’urgence restent toujours gratuits.</Text>
+            <Button label="Découvrir Toi & Moi Premium" size="sm" variant="secondary" icon="star" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
           </Card>
         ) : null}
       />

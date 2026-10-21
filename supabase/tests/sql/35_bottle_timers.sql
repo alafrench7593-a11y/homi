@@ -16,11 +16,13 @@ set role authenticated; set request.jwt.claim.sub = :'ROSE';
 create temp table bt_ctx as select public.create_household('Foyer de Rose') as hid;
 grant select on bt_ctx to authenticated;
 -- Paul : coparent avec le suivi quotidien (lecture + écriture)
+select tests.set_premium(auth.uid(), true);
 create temp table bt_inv_paul as select public.create_household_invitation((select hid from bt_ctx), 'coparent', array['daily','profile'], array['daily']) as token;
 -- Nina : coparent SANS le domaine 'daily'
 create temp table bt_inv_nina as select public.create_household_invitation((select hid from bt_ctx), 'coparent', array['profile','lists'], array['lists']) as token;
 -- Oscar : proche en lecture seule sur le suivi quotidien
 create temp table bt_inv_oscar as select public.create_household_invitation((select hid from bt_ctx), 'caregiver', array['daily'], array[]::text[]) as token;
+select tests.set_premium(auth.uid(), false);
 grant select on bt_inv_paul, bt_inv_nina, bt_inv_oscar to authenticated;
 
 insert into public.children (household_id, first_name, birth_date) select hid, 'Jade', current_date - 40 from bt_ctx;

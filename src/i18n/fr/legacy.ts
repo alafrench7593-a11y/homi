@@ -26,7 +26,7 @@ export const legacy = {
   'ask.disclaimer': 'Assistant d’intelligence artificielle. Il ne remplace pas un professionnel de santé.',
   'emergency.title': 'Besoin d’aide maintenant',
   'emergency.subtitle': 'Ces numéros sont gratuits et accessibles sans compte.',
-  'premium.title': 'Toi & Moi Plus',
+  'premium.title': 'Toi & Moi Premium',
   'premium.locked': 'Disponible avec l’abonnement',
   'demo.banner': 'Mode démonstration : vos données restent sur cet appareil.',
   'auth.signIn': 'Se connecter',

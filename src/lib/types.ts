@@ -27,6 +27,8 @@ export interface HouseholdMember {
   can_view: Domain[];
   can_edit: Domain[];
   joined_at: string;
+  /** Profils partagés (null = tous les enfants) ; accès à la grossesse */
+  child_scope?: string[] | null; pregnancy_access?: boolean;
 }
 
 export interface Pregnancy {

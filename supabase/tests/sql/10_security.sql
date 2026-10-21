@@ -74,7 +74,9 @@ select tests.throws($$insert into public.assistant_messages (conversation_id, ro
   'assistant : le client ne peut pas fabriquer une réponse');
 
 -- Invitation coparent (Zoé invite Camille)
+select tests.set_premium(auth.uid(), true);
 create temp table zoe_inv as select public.create_household_invitation((select hid from zoe_ctx), 'coparent', array['daily','profile'], array['daily']) as token;
+select tests.set_premium(auth.uid(), false);
 grant select on zoe_inv to authenticated;
 reset role;
 

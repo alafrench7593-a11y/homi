@@ -11,6 +11,7 @@ import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { mealLabel } from '@/features/recipes/labels';
+import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { useCreateShoppingList, useFoodProfile, useLatestMealPlan, useRecipeDislikes, useRecipeFavorites, useRecipes, useSaveMealPlan } from '@/lib/data/hooks-recipes';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { generateMenu, moveSlot, replaceSlot, shoppingList, type MenuOptions, type MenuSlot } from '@/lib/recipes/engine';
@@ -65,7 +66,17 @@ export default function MenuScreen() {
     setDays(saved.plan.days);
   }, [saved.plan, saved.items, aud]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const generate = () => { if (all) setSlots(generateMenu(all, p, opts)); };
+  const menuAccess = usePremiumAccess('weekly_menu', profile.name);
+  const generate = () => {
+    if (!all) return;
+    if (!menuAccess.premium) {
+      // Aperçu réel : les premiers repas que le menu proposerait pour ce profil
+      const first = generateMenu(all, p, { ...opts, days: 2 }).map((x) => byId.get(x.recipeId)?.title).filter(Boolean).slice(0, 3);
+      menuAccess.showPreview(<View style={{ gap: 2 }}>{first.map((tt) => <Text key={tt} variant="small">{`• ${tt}`}</Text>)}<Text variant="small" muted>{tr('pm.menuMore')}</Text></View>);
+      return;
+    }
+    setSlots(generateMenu(all, p, opts));
+  };
   const toggleMeal = (m: Meal) => setMeals((xs) => (xs.includes(m) ? xs.filter((x) => x !== m) : [...xs, m]));
 
   async function persist() {

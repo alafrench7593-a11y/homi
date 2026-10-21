@@ -64,20 +64,24 @@ export function configureNotifications() {
     }),
   });
   if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('reminders', { name: 'Rappels', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200] }).catch(() => undefined);
+    // Écran verrouillé : contenu masqué (PRIVATE) par défaut ; le système affiche « contenu masqué » si l'utilisatrice l'a choisi
+    Notifications.setNotificationChannelAsync('reminders', { name: 'Rappels', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200], lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
     Notifications.setNotificationChannelAsync('community', { name: 'Communauté', importance: Notifications.AndroidImportance.DEFAULT }).catch(() => undefined);
     Notifications.setNotificationChannelAsync('alerts', { name: 'Alertes officielles', importance: Notifications.AndroidImportance.HIGH }).catch(() => undefined);
-    Notifications.setNotificationChannelAsync(BOTTLE_CHANNEL, { name: 'Biberons', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200] }).catch(() => undefined);
+    Notifications.setNotificationChannelAsync(BOTTLE_CHANNEL, { name: 'Biberons', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200], lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
   }
   Notifications.setNotificationCategoryAsync('reminder', [
     { identifier: 'snooze', buttonTitle: 'Reporter de 30 min', options: { opensAppToForeground: false } },
     { identifier: 'done', buttonTitle: 'C’est fait', options: { opensAppToForeground: false } },
   ]).catch(() => undefined);
-  // Minuteur biberon : « Reporter 15 min » et « Annuler », traités sans ouvrir l'application quand le système le permet
+  // Minuteur biberon : « Noter le biberon » (ouvre la saisie), « Reporter 15 min », « Annuler » (sans ouvrir l'application),
+  // « Modifier l'intervalle » (ouvre le minuteur). Android n'affiche que les 3 premiers boutons : un appui sur la
+  // notification ouvre aussi le minuteur, où l'intervalle se modifie.
   Notifications.setNotificationCategoryAsync(BOTTLE_CATEGORY, [
+    { identifier: BOTTLE_ACTION_RECORD, buttonTitle: 'Noter le biberon', options: { opensAppToForeground: true } },
     { identifier: BOTTLE_ACTION_SNOOZE, buttonTitle: 'Reporter 15 min', options: { opensAppToForeground: false } },
-    { identifier: BOTTLE_ACTION_SNOOZE_30, buttonTitle: 'Reporter 30 min', options: { opensAppToForeground: false } },
     { identifier: BOTTLE_ACTION_CANCEL, buttonTitle: 'Annuler', options: { opensAppToForeground: false, isDestructive: true } },
+    { identifier: BOTTLE_ACTION_EDIT, buttonTitle: 'Modifier l’intervalle', options: { opensAppToForeground: true } },
   ]).catch(() => undefined);
   // Traitement prescrit d'un enfant : « Pris », « Reporter », « Ignorer », « Ajouter une note »
   Notifications.setNotificationCategoryAsync(TREATMENT_CATEGORY, [
@@ -250,6 +254,19 @@ export const BOTTLE_CATEGORY = 'bottle';
 export const BOTTLE_ACTION_SNOOZE = 'bottle-snooze-15';
 export const BOTTLE_ACTION_SNOOZE_30 = 'bottle-snooze-30';
 export const BOTTLE_ACTION_CANCEL = 'bottle-cancel';
+export const BOTTLE_ACTION_RECORD = 'bottle-record';
+export const BOTTLE_ACTION_EDIT = 'bottle-edit';
+
+/** Écran à ouvrir pour une réponse à une notification ; null = action traitée sans ouvrir d'écran. */
+export function notificationRoute(actionIdentifier: string, data: { url?: string; source?: string; childId?: string } | undefined): string | null {
+  const url = data?.url && data.url.startsWith('/') ? data.url : null;
+  if (actionIdentifier === 'snooze' || actionIdentifier === 'done') return null;
+  if (actionIdentifier.startsWith('treat-') && actionIdentifier !== 'treat-note') return null;
+  if (actionIdentifier === BOTTLE_ACTION_RECORD && data?.childId) return `/track/bottle?child=${data.childId}`;
+  if (actionIdentifier === BOTTLE_ACTION_EDIT && data?.childId) return `/bottle/${data.childId}?edit=1`;
+  if (actionIdentifier.startsWith('bottle-')) return null; // reporter, annuler : traités sans ouvrir l'application
+  return url;
+}
 let bottleResponseSub: { remove: () => void } | null = null;
 
 type BottleScheduledMap = Record<string, { signature: string; ids: string[] }>;

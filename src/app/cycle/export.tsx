@@ -10,6 +10,7 @@ import { Screen } from '@/components/Screen';
 import { Banner, Button, haptic } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { usePeriods, useTests } from '@/lib/data/hooks';
+import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { useAllSymptomLogs, useBleedingLogs, useCycleJournal, useDischargeLogs } from '@/lib/data/hooks-cycle2';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { todayISO } from '@/lib/domain/dates';
@@ -32,6 +33,7 @@ function fromOf(r: Range, today: string): string | null {
 }
 
 export default function CycleExport() {
+  const access = usePremiumAccess('cycle_export');
   const toast = useToast();
   const periods = usePeriods();
   const symptoms = useAllSymptomLogs();
@@ -50,6 +52,7 @@ export default function CycleExport() {
 
   async function make() {
     if (!parts.length) return toast(tr('cy.ex.chooseOne'), 'info');
+    if (!access.require(<Ink variant="small">{tr('pm.cycleExport', { periods: (periods.data ?? []).length, days: (symptoms.data ?? []).length })}</Ink>)) return;
     setBusy(true); setDone(false);
     try {
       const today = todayISO();

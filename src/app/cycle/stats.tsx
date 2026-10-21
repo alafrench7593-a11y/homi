@@ -8,6 +8,7 @@ import { Animated, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/States';
 import { usePeriods } from '@/lib/data/hooks';
+import { PremiumSection } from '@/components/Premium';
 import { useAllSymptomLogs } from '@/lib/data/hooks-cycle2';
 import { cycleStats } from '@/lib/domain/cycleV2';
 import { CycleIcon, Glass, Ink, Rise, useCyclePalette, type CycleIconName } from '@/features/cycle/kit';
@@ -40,6 +41,8 @@ export default function StatsScreen() {
 
   return (
     <Screen back title={tr('cy.st.title')} subtitle={tr('cy.st.subtitle')}>
+      <PremiumSection feature="cycle_insights" preview={<Ink variant="small">{`${tr('pm.cycleStats', { count: s.cycles.length })}${s.averageLength != null ? ` ${tr('pm.cycleStatsAvg', { days: days(s.averageLength) })}` : ''}`}</Ink>}>
+      <View style={{ gap: spacing.sm }}>
       <Rise>
         <Glass>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
@@ -88,6 +91,8 @@ export default function StatsScreen() {
           {s.wellbeing.days ? <Ink variant="caption" soft>{tr('cy.st.basedOn', { count: s.wellbeing.days })}</Ink> : null}
         </Glass>
       </Rise>
+      </View>
+      </PremiumSection>
       <Ink variant="caption" soft>{tr('cy.st.notice')}</Ink>
     </Screen>
   );

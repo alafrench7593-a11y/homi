@@ -459,6 +459,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (count >= limit(quota[table])) throw new BackendError('Limite de la version gratuite atteinte.', 'P0001', 'premium_required');
     }
     if (table === 'product_scans') checkScan(r);
+    // Fonctions Premium : mêmes règles que les déclencheurs serveur (20261021000500_premium.sql)
+    const PREMIUM_INSERT: Record<string, string> = { meal_plans: 'weekly_menu', bedtime_routines: 'bedtime_routine', food_introductions: 'diversification' };
+    if (PREMIUM_INSERT[table] && !isPremium()) throw new BackendError(`Fonction Premium (${PREMIUM_INSERT[table]})`, 'P0001', 'premium_required');
+    if (table === 'reminders' && r.category === 'custom' && !r.treatment_id) {
+      const active = T('reminders').filter((x) => x.user_id === (r.user_id ?? me) && x.category === 'custom' && !x.treatment_id && x.enabled !== false).length;
+      if (active >= limit('custom_reminders_count')) throw new BackendError('Limite de la version gratuite atteinte (custom_reminders_count)', 'P0001', 'premium_required');
+    }
     if (table === 'family_tasks') {
       r.status ??= 'todo'; r.priority ??= 'normal'; r.category ??= 'other'; r.essential ??= false; r.created_by ??= me; r.updated_at = nowIso();
       if (r.status === 'done') { r.done_at ??= nowIso(); r.done_by ??= me; }
@@ -820,8 +827,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       return id;
     },
     create_household_invitation: (a) => {
+      if (!isPremium()) throw new BackendError('Fonction Premium (coparent_invite)', 'P0001', 'premium_required');
       const token = uuid().replace(/-/g, '');
-      T('household_invitations').push({ id: uuid(), household_id: a.p_household, token_hash: fnv(token), role: a.p_role ?? 'coparent', can_view: a.p_can_view, can_edit: a.p_can_edit, created_at: nowIso(), expires_at: new Date(Date.now() + 7 * 86400_000).toISOString() });
+      T('household_invitations').push({ id: uuid(), household_id: a.p_household, token_hash: fnv(token), role: a.p_role ?? 'coparent', can_view: a.p_can_view, can_edit: a.p_can_edit, child_scope: a.p_child_scope ?? null, pregnancy_access: a.p_pregnancy_access ?? true, created_at: nowIso(), expires_at: new Date(Date.now() + 7 * 86400_000).toISOString() });
       return token;
     },
     accept_household_invitation: () => {
@@ -848,6 +856,28 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       return [{ used, quota, remaining: Math.max(0, quota - used) }];
     },
     plan_limit: (a) => limit(a.p_key),
+    feature_quota_status: (a) => {
+      const month = new Date().toISOString().slice(0, 7);
+      const used = T('feature_usage').find((x) => x.user_id === uid() && x.feature === a.p_key && x.month === month)?.used ?? 0;
+      const quota = limit(String(a.p_key));
+      return [{ used, quota, remaining: Math.max(0, quota - used) }];
+    },
+    consume_feature_quota: (a) => {
+      if (!['voice_entries_per_month', 'summary_exports_per_month'].includes(String(a.p_key))) throw new BackendError('Quota inconnu', '22023');
+      const month = new Date().toISOString().slice(0, 7);
+      let row = T('feature_usage').find((x) => x.user_id === uid() && x.feature === a.p_key && x.month === month);
+      if (!row) { row = { user_id: uid(), feature: a.p_key, month, used: 0 }; T('feature_usage').push(row); }
+      const quota = limit(String(a.p_key));
+      if (row.used >= quota) return [{ allowed: false, used: row.used, quota }];
+      row.used += 1;
+      return [{ allowed: true, used: row.used, quota }];
+    },
+    set_member_scope: (a) => {
+      const m = T('household_members').find((x) => x.household_id === a.p_household && x.user_id === a.p_user && x.role !== 'owner');
+      if (m) { m.child_scope = a.p_child_scope ?? null; m.pregnancy_access = a.p_pregnancy_access ?? true; }
+      return null;
+    },
+    premium_article_teasers: () => T('articles').filter((x) => x.status === 'published' && x.is_premium && !x.is_safety_critical).map((x) => ({ id: x.id, slug: x.slug, title: x.title, summary: x.summary, category_id: x.category_id, journeys: x.journeys, is_premium: true })),
     block_author: (a) => {
       const author = a.p_post ? T('posts').find((p) => p.id === a.p_post)?.author_id : T('comments').find((c) => c.id === a.p_comment)?.author_id;
       if (author && author !== uid() && !T('user_blocks').some((b) => b.blocker_id === uid() && b.blocked_id === author)) {
@@ -919,6 +949,15 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     set_demo_subscription: (a) => {
       const subs = T('subscriptions');
       const idx = subs.findIndex((s) => s.user_id === uid());
+      // Simulation des états (démonstration et tests) : essai, actif, annulé, grâce, problème de paiement, expiré
+      if (typeof a.state === 'string') {
+        const days = Number(a.expires_in_days ?? 30);
+        const st = String(a.state);
+        const row = { user_id: uid(), status: st, product_id: a.product_id ?? (a.period === 'annual' ? 'toietmoi_premium_annual' : 'toietmoi_premium_monthly'), store: 'test',
+          period_type: st === 'trial' ? 'trial' : a.period ?? 'monthly', expires_at: new Date(Date.now() + days * 86400_000).toISOString(), will_renew: st === 'trial' || st === 'active' || st === 'grace' };
+        if (idx >= 0) subs[idx] = row; else subs.push(row);
+        return row;
+      }
       const row = a.active
         ? { user_id: uid(), status: a.trial ? 'trial' : 'active', product_id: a.product_id ?? 'toietmoi_premium_monthly', store: 'test', period_type: a.trial ? 'trial' : a.period ?? 'monthly', expires_at: new Date(Date.now() + (a.period === 'annual' ? 365 : 30) * 86400_000).toISOString(), will_renew: true }
         : { user_id: uid(), status: 'expired', product_id: null, store: 'test', period_type: null, expires_at: nowIso(), will_renew: false };
@@ -1150,6 +1189,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       const rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
       markLib(table, rows);
       if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
+      if (table === 'assistant_messages' && patch.saved === true && rows.some((r) => !r.saved) && !isPremium()) throw new BackendError('Fonction Premium (assistant_saved)', 'P0001', 'premium_required');
       // Un scan analysé ne se réécrit pas ; seul le champ « explication IA » d'un résultat est modifiable
       if (table === 'product_scans' || (table === 'scan_results' && Object.keys(patch).some((k) => k !== 'explanation'))) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
       for (const r of rows) {

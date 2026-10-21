@@ -127,7 +127,9 @@ select tests.ok((select count(*) from public.household_members where household_i
 -- ---------------------------------------------------------------- Invitation et foyer automatique
 -- 1) Bastien (foyer automatique vide) rejoint le foyer d'Anaïs → son foyer vide disparaît
 set role authenticated; set request.jwt.claim.sub = :'ANAIS';
+select tests.set_premium(auth.uid(), true);
 create temp table bs_inv_b as select public.create_household_invitation((select anais_hid from bs_ctx)) as token;
+select tests.set_premium(auth.uid(), false);
 grant select on bs_inv_b to authenticated;
 reset role;
 set role authenticated; set request.jwt.claim.sub = :'BASTIEN';
@@ -143,7 +145,9 @@ set role authenticated; set request.jwt.claim.sub = :'CHLOE';
 insert into public.children (household_id, first_name, birth_date) select chloe_hid, 'Jade', current_date - 60 from bs_ctx;
 reset role;
 set role authenticated; set request.jwt.claim.sub = :'DIANE';
+select tests.set_premium(auth.uid(), true);
 create temp table bs_inv_c as select public.create_household_invitation((select (r ->> 'household_id')::uuid from bs_repair)) as token;
+select tests.set_premium(auth.uid(), false);
 grant select on bs_inv_c to authenticated;
 reset role;
 set role authenticated; set request.jwt.claim.sub = :'CHLOE';
@@ -155,7 +159,9 @@ select tests.ok((select count(*) from public.children where household_id = (sele
 
 -- 3) Diane (foyer automatique sans donnée mais avec Chloé comme membre) rejoint Anaïs → foyer conservé
 set role authenticated; set request.jwt.claim.sub = :'ANAIS';
+select tests.set_premium(auth.uid(), true);
 create temp table bs_inv_d as select public.create_household_invitation((select anais_hid from bs_ctx)) as token;
+select tests.set_premium(auth.uid(), false);
 grant select on bs_inv_d to authenticated;
 reset role;
 set role authenticated; set request.jwt.claim.sub = :'DIANE';

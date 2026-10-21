@@ -26,13 +26,17 @@ export interface Plan {
   price: string;
   detail: string;
   trialLabel?: string;
+  /** Durée de l'essai gratuit en jours (0 ou absent : pas d'essai) */
+  trialDays?: number;
+  /** Ce qui est réellement facturé, en clair (« 39,99 € facturés une fois par an ») */
+  billed: string;
   pkg?: PurchasesPackage;
 }
 
 // Prix affichés en mode test uniquement ; en production ils viennent de la boutique
 const TEST_PLANS: Plan[] = [
-  { id: 'toietmoi_premium_monthly', period: 'monthly', title: 'Mensuel', price: '5,99 €', detail: 'par mois, sans engagement' },
-  { id: 'toietmoi_premium_annual', period: 'annual', title: 'Annuel', price: '39,99 €', detail: 'par an — soit environ 3,33 € par mois', trialLabel: '7 jours offerts' },
+  { id: 'toietmoi_premium_monthly', period: 'monthly', title: 'Mensuel', price: '5,99 €', detail: 'par mois, sans engagement', billed: '5,99 € facturés chaque mois' },
+  { id: 'toietmoi_premium_annual', period: 'annual', title: 'Annuel', price: '39,99 €', detail: 'par an — soit environ 3,33 € par mois', trialLabel: '7 jours offerts', trialDays: 7, billed: '39,99 € facturés une fois par an' },
 ];
 
 let configuredFor: string | null = null;
@@ -68,6 +72,8 @@ export async function getPlans(): Promise<Plan[]> {
       price: p.product.priceString,
       detail: p.packageType === 'ANNUAL' ? 'par an' : 'par mois, sans engagement',
       trialLabel: p.product.introPrice?.price === 0 ? `${p.product.introPrice.periodNumberOfUnits} ${p.product.introPrice.periodUnit === 'DAY' ? 'jours' : p.product.introPrice.periodUnit === 'WEEK' ? 'semaines' : 'mois'} offerts` : undefined,
+      trialDays: p.product.introPrice?.price === 0 ? p.product.introPrice.periodNumberOfUnits * (p.product.introPrice.periodUnit === 'WEEK' ? 7 : p.product.introPrice.periodUnit === 'MONTH' ? 30 : 1) : 0,
+      billed: p.packageType === 'ANNUAL' ? `${p.product.priceString} facturés une fois par an` : `${p.product.priceString} facturés chaque mois`,
       pkg: p,
     }));
 }
@@ -88,6 +94,17 @@ export async function restore(): Promise<boolean> {
   if (purchaseMode !== 'store') throw new Error('Les achats ne sont pas encore configurés pour cette version.');
   await Purchases.restorePurchases();
   return waitForServerEntitlement();
+}
+
+/** Pages officielles de gestion des abonnements (résiliation, moyen de paiement). */
+export const MANAGE_URLS = { ios: 'https://apps.apple.com/account/subscriptions', android: 'https://play.google.com/store/account/subscriptions' } as const;
+
+/** Date du premier prélèvement et du renouvellement suivant, à partir d'aujourd'hui (affichage honnête). */
+export function billingDates(plan: Pick<Plan, 'period' | 'trialDays'>, from: Date = new Date()) {
+  const first = new Date(from.getTime() + (plan.trialDays ?? 0) * 86_400_000);
+  const renew = new Date(first);
+  if (plan.period === 'annual') renew.setFullYear(renew.getFullYear() + 1); else renew.setMonth(renew.getMonth() + 1);
+  return { firstCharge: first, renewal: renew };
 }
 
 export async function manageSubscription() {

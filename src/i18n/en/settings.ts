@@ -39,7 +39,7 @@ export const settings: Messages<typeof fr> = {
   'settings.reminders.active': { one: '{count} active reminder', other: '{count} active reminders' },
   'settings.reminders.none': 'No active reminders',
   'settings.subscription': 'Subscription',
-  'settings.subscription.active': '{app} Plus is active',
+  'settings.subscription.active': '{app} Premium is active',
   'settings.subscription.free': 'Free version',
   'settings.account': 'My account',
   'settings.account.sub': 'Email, password, export, deletion',

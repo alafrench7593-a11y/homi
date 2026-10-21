@@ -35,7 +35,9 @@ describe('écrans famille (mode démonstration)', () => {
     await db.insert('child_milestones', { child_id: child.id, household_id: child.household_id, kind: 'milestone', title: 'Premier sourire', happened_on: '2025-10-20', note: null });
     const [h] = await db.insert<{ id: string; done_on: string | null }>('child_health_items', { child_id: child.id, household_id: child.household_id, kind: 'vaccine_to_check', label: 'Rappel', details: null, due_on: null, done_on: null });
     await db.update('child_health_items', { done_on: '2026-02-01' }, [eq('id', h.id)]);
+    await db.rpc('set_demo_subscription', { state: 'active', expires_in_days: 30 }); // suivi de la diversification : Premium
     await db.insert('food_introductions', { child_id: child.id, household_id: child.household_id, food_name: 'Courgette', first_tried_on: '2026-03-01', reaction_note: null });
+    await db.rpc('set_demo_subscription', { active: false });
     for (const t of ['child_measurements', 'child_milestones', 'child_health_items', 'food_introductions']) {
       expect(await db.select({ table: t, filters: [eq('child_id', child.id)] })).toHaveLength(1);
     }

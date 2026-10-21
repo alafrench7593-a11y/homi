@@ -61,7 +61,9 @@ select tests.throws($$update public.assistant_feedback set message_id = 'e1e1e1e
   'retour : impossible de le déplacer vers la réponse d''une autre personne');
 
 -- Favoris et intégrité des réponses
+select tests.set_premium(auth.uid(), true);
 update public.assistant_messages set saved = true where id = :'R_Z';
+select tests.set_premium(auth.uid(), false);
 select tests.ok((select saved from public.assistant_messages where id = :'R_Z'), 'favori : réponse enregistrée');
 select tests.throws($$update public.assistant_messages set content = 'réponse modifiée' where id = 'e1e1e1e1-0000-4000-8000-000000000002'$$,
   'assistant : le client ne peut pas réécrire une réponse');

@@ -51,9 +51,19 @@ export function useInvitations(householdId: string | null, enabled: boolean) {
 export function useCreateInvitation() {
   const inv = useInvalidate();
   return useMutation({
-    mutationFn: (a: { householdId: string; role: 'coparent' | 'caregiver'; canView: Domain[]; canEdit: Domain[] }) =>
-      backend.rpc<string>('create_household_invitation', { p_household: a.householdId, p_role: a.role, p_can_view: a.canView, p_can_edit: a.canEdit }),
+    mutationFn: (a: { householdId: string; role: 'coparent' | 'caregiver'; canView: Domain[]; canEdit: Domain[]; childScope?: string[] | null; pregnancyAccess?: boolean }) =>
+      backend.rpc<string>('create_household_invitation', { p_household: a.householdId, p_role: a.role, p_can_view: a.canView, p_can_edit: a.canEdit, p_email: null, p_child_scope: a.childScope ?? null, p_pregnancy_access: a.pregnancyAccess ?? true }),
     onSuccess: () => inv('household_invitations'),
+  });
+}
+
+/** Profils partagés avec un membre (le propriétaire seul ; effet immédiat côté serveur). Toujours gratuit. */
+export function useSetMemberScope() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: (a: { householdId: string; userId: string; childScope: string[] | null; pregnancyAccess: boolean }) =>
+      backend.rpc('set_member_scope', { p_household: a.householdId, p_user: a.userId, p_child_scope: a.childScope, p_pregnancy_access: a.pregnancyAccess }),
+    onSuccess: () => inv('members', 'memberships'),
   });
 }
 

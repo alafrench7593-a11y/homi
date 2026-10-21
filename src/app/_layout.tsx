@@ -14,7 +14,8 @@ import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
-import { configureNotifications, notificationsSupported, registerPushToken, snoozeLocally } from '@/lib/notifications';
+import { PremiumPreviewHost } from '@/components/Premium';
+import { configureNotifications, notificationRoute, notificationsSupported, registerPushToken, snoozeLocally } from '@/lib/notifications';
 import { startOfflineSync } from '@/lib/offline';
 import { configurePurchases, resetPurchasesUser } from '@/lib/purchases';
 import { SpaceGrotesk_500Medium } from '@expo-google-fonts/space-grotesk/500Medium';
@@ -94,10 +95,10 @@ function Bootstrap() {
         snoozeLocally(content.title ?? 'Rappel', content.body ?? undefined, url).catch(() => undefined);
         return;
       }
-      if (response.actionIdentifier === 'done') return;
-      // Traitement : « Pris », « Reporter », « Ignorer » sont notés sans ouvrir d'écran (voir handleTreatmentResponse)
-      if (response.actionIdentifier.startsWith('treat-') && response.actionIdentifier !== 'treat-note') return;
-      if (url && url.startsWith('/')) router.push(url as never);
+      // Traitement (« Pris »…) et biberon (« Reporter », « Annuler ») : notés sans ouvrir d'écran ;
+      // « Noter le biberon » et « Modifier l'intervalle » ouvrent l'écran du bon enfant
+      const route = notificationRoute(response.actionIdentifier, content.data as never);
+      if (route) router.push(route as never);
     };
     open(Notifications.getLastNotificationResponse());
     const sub = Notifications.addNotificationResponseReceivedListener(open);
@@ -155,6 +156,7 @@ export default function RootLayout() {
                   <JourneyGuard />
                   <DemoBar />
                   <OfflinePill />
+                  <PremiumPreviewHost />
                 </WebFrame>
               </ToastProvider>
             </I18nProvider>

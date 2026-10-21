@@ -19,11 +19,47 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
+import { PremiumSection } from '@/components/Premium';
+import { useActivePregnancy, useActiveSubject, useTrackedChildren } from '@/lib/data/hooks';
+import { usePremiumAccess } from '@/lib/data/hooks-premium';
+import { childSuggestions, pregnancySuggestions } from '@/lib/premium/suggestions';
+import { childAge } from '@/lib/domain/child';
+import { pregnancyProgress } from '@/lib/domain/pregnancy';
 
 const preview = (s: string) => {
   const clean = s.replace(/[*_#>[\]]/g, '').replace(/\((https?:[^)]+)\)/g, '').replace(/\s+/g, ' ').replace(/^En bref\s*/i, '').trim();
   return clean.length > 80 ? clean.slice(0, 79) + '…' : clean;
 };
+
+/** Questions suggérées pour le profil affiché (semaine de grossesse ou âge exact) : Premium ; aperçu réel sinon. */
+function PersonalSuggestions({ onAsk, disabled }: { onAsk: (q: string) => void; disabled: boolean }) {
+  const t = useTheme();
+  const { subject } = useActiveSubject();
+  const { data: children } = useTrackedChildren();
+  const pregnancy = useActivePregnancy();
+  const child = subject.type === 'child' ? (children ?? []).find((c) => c.id === subject.id) : null;
+  const list = child ? childSuggestions(child.first_name, childAge(child.birth_date).months)
+    : subject.type === 'pregnancy' && pregnancy ? pregnancySuggestions(pregnancyProgress(pregnancy.due_date).weeksSA, pregnancy.multiplicity !== 'single' && pregnancy.multiplicity !== 'unknown') : [];
+  if (!list.length) return null;
+  const name = child?.first_name ?? null;
+  const title = child ? `Pour ${child.first_name}, en ce moment` : `Pour votre ${pregnancyProgress(pregnancy!.due_date).weeksSA}e semaine`;
+  return (
+    <View testID="ask-personal">
+      <SectionTitle title={title} />
+      <PremiumSection feature="assistant_suggestions" name={name} preview={<Text variant="small">{`« ${list[0]} »`}</Text>}>
+        <View style={{ gap: spacing.xs }}>
+          {list.map((s) => (
+            <Tappable key={s} accessibilityRole="button" accessibilityLabel={`Poser : ${s}`} disabled={disabled} onPress={() => onAsk(s)}
+              style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.sm, minHeight: 44, borderRadius: radius.md, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+              <Icon name="star" size={16} color={t.colors.gold} />
+              <Text variant="small" style={{ flex: 1 }}>{s}</Text>
+            </Tappable>
+          ))}
+        </View>
+      </PremiumSection>
+    </View>
+  );
+}
 
 export default function Ask() {
   const t = useTheme();
@@ -38,6 +74,7 @@ export default function Ask() {
   const [busy, setBusy] = useState(false);
   const { data: saved } = useSavedAnswers();
   const { data: quota } = useAssistantQuota();
+  const assistantAccess = usePremiumAccess('assistant_more');
 
   // Parcours de la personne en premier, puis les autres
   const journeys = useMemo<Journey[]>(() => {
@@ -115,15 +152,17 @@ export default function Ask() {
           tone="warning"
           icon="star"
           title="Limite mensuelle atteinte"
-          action={<Button label="Découvrir Toi & Moi Plus" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => router.push('/settings/subscription')} />}
+          action={<Button label="Découvrir Toi & Moi Premium" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => assistantAccess.showPreview(undefined, quota ? { used: quota.quota - quota.remaining, quota: quota.quota, unit: 'questions' } : null)} />}
         >
-          {'Avec Toi & Moi Plus, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence reste toujours gratuite.'}
+          {'Avec Toi & Moi Premium, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence reste toujours gratuite.'}
         </Banner>
       )}
 
       <Banner tone="danger" title="Urgence ?" action={<Button label="Numéros d’urgence" size="sm" variant="secondary" icon="phone" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => router.push('/emergency')} />}>
         {'Danger immédiat : 15 ou 112 (SMS au 114 pour les personnes sourdes ou malentendantes). Détresse psychologique ou idées suicidaires : 3114, 24 h/24.'}
       </Banner>
+
+      <PersonalSuggestions onAsk={(s) => go(s)} disabled={blocked} />
 
       <SectionTitle title="Idées de questions" />
       <Row wrap>
