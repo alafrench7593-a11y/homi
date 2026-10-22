@@ -28,6 +28,8 @@ const FREQS: Frequency[] = ['once', 'several', 'continuous'];
 const symLabel = (k: string) => tr(`care.sym.${k}` as TKey);
 
 interface Draft { id?: string; symptoms: SymptomKey[]; intensity: Intensity | null; time: string; frequency: Frequency | null; note: string; worried: boolean }
+/** Heure locale « HH:MM » (formatDate ajoute la date : le champ ne serait plus valide en modification). */
+const hhmm = (iso: string) => { const x = new Date(iso); return `${String(x.getHours()).padStart(2, '0')}:${String(x.getMinutes()).padStart(2, '0')}`; };
 const EMPTY: Draft = { symptoms: [], intensity: null, time: '', frequency: null, note: '', worried: false };
 
 export default function Feel() {
@@ -65,7 +67,7 @@ export default function Feel() {
   }
   function edit(l: PregnancySymptomLog) {
     setCards(null);
-    setD({ id: l.id, symptoms: [l.symptom as SymptomKey], intensity: l.intensity, time: l.started_at ? formatDate(l.started_at, { hour: '2-digit', minute: '2-digit' }) : '', frequency: l.frequency, note: l.note ?? '', worried: false });
+    setD({ id: l.id, symptoms: [l.symptom as SymptomKey], intensity: l.intensity, time: l.started_at ? hhmm(l.started_at) : '', frequency: l.frequency, note: l.note ?? '', worried: false });
   }
   async function remove(l: PregnancySymptomLog) {
     if (!(await confirm(tr('care.feel.deleteTitle'), symLabel(l.symptom), tr('common.delete')))) return;
@@ -77,7 +79,7 @@ export default function Feel() {
       {cards ? (
         <View style={{ gap: spacing.sm }} testID="feel-cards">
           {cards.map((c) => <SymptomInfo key={c.symptom} c={c} week={week} />)}
-          <Button label={tr('care.feel.another')} variant="ghost" icon="plus" onPress={() => setCards(null)} />
+          <Button label={tr('care.feel.another')} variant="ghost" icon="plus" onPress={() => setCards(null)} testID="feel-another" />
         </View>
       ) : (
         <Card>
