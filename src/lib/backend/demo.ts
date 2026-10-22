@@ -11,6 +11,7 @@ import { EXTERNAL_RESOURCES } from '@/content/resources';
 import { legacyJourneys, type JourneyRow } from '../journeys/model';
 import { uuid } from '../uuid';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
+import { STEP_BY_KEY } from '@/content/discoveries/steps';
 import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../../../supabase/functions/_shared/safety';
 import { assessProduct, type ProductData } from '../../../supabase/functions/_shared/product-rules';
 import { ASSISTANT_FOOTER } from '../../../supabase/functions/_shared/assistant-prompt';
@@ -74,7 +75,7 @@ const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_r
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
 const DEMO_RECALL_CHECK = 'Mode démonstration : la base officielle RappelConso n’est pas interrogée ; seuls des rappels fictifs de démonstration peuvent apparaître.';
-const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements'];
+const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements', 'food_tastings', 'child_steps'];
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
 function checkBottleTimer(all: Row[], r: Row) {
@@ -98,6 +99,8 @@ const OWNER_TABLES: Record<string, string> = {
   parent_sleep_logs: 'user_id',
   // Grossesse : « Comment je me sens aujourd'hui ? » (jamais visible du foyer)
   pregnancy_symptom_logs: 'user_id',
+  // Près de chez moi : favoris et signalements strictement personnels (aucune position enregistrée)
+  place_favorites: 'user_id', place_reports: 'user_id',
   // Parcours fertilité : données intimes, strictement personnelles
   intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
   cycle_preferences: 'user_id', discharge_logs: 'user_id', bleeding_logs: 'user_id', cycle_journal: 'user_id',
@@ -241,6 +244,14 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     const l = T('plan_limits').find((p) => p.key === key);
     return l ? (isPremium() ? l.premium_value : l.free_value) : Infinity;
   };
+  /** « Je grandis » : étapes du catalogue, statuts sans jugement, suivi complet Premium (« ne pas suivre » toujours possible). */
+  function checkChildStep(r: Row) {
+    const step = STEP_BY_KEY[r.step_key as string];
+    if (!step) throw new BackendError('Étape inconnue.');
+    if (!['observed', 'in_progress', 'not_yet', 'not_tracked'].includes(r.status as string)) throw new BackendError('Statut d’étape invalide.');
+    if (r.status !== 'not_tracked' && !step.main && !isPremium()) throw new BackendError('Fonction Premium (development_full)', 'P0001', 'premium_required');
+    r.updated_at = nowIso();
+  }
   /** Cycle (miroir de 20261024000100_cycle_v3.sql) : étiquettes, suivi intime volontaire, préférences Premium. */
   const CYCLE_MOODS = ['happy', 'calm', 'energetic', 'sensitive', 'irritable', 'anxious', 'sad', 'stressed', 'low', 'stable'];
   const CYCLE_HABITS = ['sport', 'walk', 'hydration', 'alcohol', 'tobacco', 'stress_day', 'travel', 'night_work', 'illness', 'event'];
@@ -570,8 +581,19 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
     if (table === 'product_scans') checkScan(r);
     // Fonctions Premium : mêmes règles que les déclencheurs serveur (20261021000500_premium.sql)
-    const PREMIUM_INSERT: Record<string, string> = { meal_plans: 'weekly_menu', bedtime_routines: 'bedtime_routine', food_introductions: 'diversification', sleep_feedback: 'sleep_insights' };
+    const PREMIUM_INSERT: Record<string, string> = { meal_plans: 'weekly_menu', bedtime_routines: 'bedtime_routine', sleep_feedback: 'sleep_insights' };
     if (PREMIUM_INSERT[table] && !isPremium()) throw new BackendError(`Fonction Premium (${PREMIUM_INSERT[table]})`, 'P0001', 'premium_required');
+    // « Ses découvertes » : quelques aliments gratuits par enfant (20261027000100_discoveries_grow_nearby.sql)
+    if (table === 'food_introductions') {
+      r.status ??= 'tasted'; r.reaction ??= false; r.favorite ??= false; r.created_at ??= nowIso(); r.updated_at = nowIso();
+      if (!['not_yet', 'tasted', 'liked', 'refused'].includes(r.status as string)) throw new BackendError('Statut d’aliment invalide.');
+      if (r.status !== 'not_yet' && !r.first_tried_on) throw new BackendError('Indiquez la date de découverte.');
+      if (r.food_key && T('food_introductions').some((x) => x.child_id === r.child_id && x.food_key === r.food_key)) throw new BackendError('Cet aliment a déjà sa fiche.', '23505');
+      const n = T('food_introductions').filter((x) => x.child_id === r.child_id).length;
+      if (n >= limit('food_discoveries_per_child')) throw new BackendError('Limite de la version gratuite atteinte (food_discoveries_per_child)', 'P0001', 'premium_required');
+    }
+    if (table === 'food_tastings' && !['tasted', 'liked', 'refused'].includes(r.status as string)) throw new BackendError('Statut invalide.');
+    if (table === 'child_steps') checkChildStep(r);
     if (table === 'reminders' && r.category === 'custom' && !r.treatment_id) {
       const active = T('reminders').filter((x) => x.user_id === (r.user_id ?? me) && x.category === 'custom' && !x.treatment_id && x.enabled !== false).length;
       if (active >= limit('custom_reminders_count')) throw new BackendError('Limite de la version gratuite atteinte (custom_reminders_count)', 'P0001', 'premium_required');
@@ -1264,10 +1286,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
-        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback', 'cycle_shares', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status', 'pregnancy_symptom_logs'].map((t) => [t, view(t)])),
+        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback', 'cycle_shares', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status', 'pregnancy_symptom_logs', 'place_favorites', 'place_reports'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
-          ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines']
+          ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines', 'food_introductions', 'food_tastings', 'child_steps']
             .map((t) => [t, byHousehold(t).filter((r) => r.household_id === h.id)])),
         })),
         community: {
@@ -1547,6 +1569,16 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     async update<R>(table: string, patch: Row, filters: Filter[]) {
       await load();
       let rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      // « Je grandis » / « Ses découvertes » : mêmes contrôles qu'à la création
+      if (table === 'child_steps' && 'status' in patch) for (const r of rows) checkChildStep({ ...r, ...patch });
+      if (table === 'food_introductions') {
+        for (const r of rows) {
+          const next = { ...r, ...patch };
+          if (!['not_yet', 'tasted', 'liked', 'refused'].includes(next.status as string)) throw new BackendError('Statut d’aliment invalide.');
+          if (next.status !== 'not_yet' && !next.first_tried_on) throw new BackendError('Indiquez la date de découverte.');
+        }
+        patch = { ...patch, updated_at: nowIso() };
+      }
       // Communauté : chacun ne modifie que ses propres contenus (RLS), sans changer statut, anonymat ni compteurs
       if (['posts', 'comments', 'community_profiles', 'post_photos'].includes(table) && !isModerator()) {
         const me = state.session?.userId;

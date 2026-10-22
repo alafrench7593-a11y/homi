@@ -1328,6 +1328,12 @@
             "premium_value": 200
         },
         {
+            "key": "food_discoveries_per_child",
+            "free_value": 15,
+            "description": "Aliments suivis par enfant dans « Ses découvertes »",
+            "premium_value": 1000
+        },
+        {
             "key": "custom_reminders_count",
             "free_value": 5,
             "description": "Rappels personnels actifs (hors médicaments prescrits, biberons et vaccins)",

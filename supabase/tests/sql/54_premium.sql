@@ -44,7 +44,9 @@ select tests.throws($$select public.consume_feature_quota('autre_chose_per_month
 select tests.throws($$insert into public.feature_usage (user_id, feature, month, used) values (auth.uid(), 'voice_entries_per_month', current_date, 0)$$, 'quota : impossible de remettre son compteur à zéro');
 select tests.throws($$insert into public.meal_plans (household_id, title, days, servings) select hid, 'Semaine', 7, 2 from pm_ctx$$, 'menu hebdomadaire : réservé au Premium (vérifié côté serveur)');
 select tests.throws($$select public.create_household_invitation((select hid from pm_ctx))$$, 'invitation du coparent : réservée au Premium');
-select tests.throws($$insert into public.food_introductions (child_id, household_id, food_name, first_tried_on) select id, (select hid from pm_ctx), 'Courgette', current_date from pm_kids where first_name = 'Lina'$$, 'diversification : ajouter un aliment est Premium');
+-- Diversification : quelques aliments gratuits (quota par enfant, 61_discoveries_grow_nearby.sql), catalogue complet Premium
+insert into public.food_introductions (child_id, household_id, food_name, first_tried_on) select id, (select hid from pm_ctx), 'Courgette', current_date from pm_kids where first_name = 'Lina';
+select tests.ok(tests.count('select * from public.food_introductions') = 1, 'diversification : quelques aliments suivis gratuitement');
 select tests.throws($$insert into public.bedtime_routines (household_id, child_id, steps) select (select hid from pm_ctx), id, array['Bain'] from pm_kids where first_name = 'Lina'$$, 'routine du coucher : réservée au Premium');
 insert into public.reminders (user_id, household_id, category, title, schedule) select auth.uid(), null, 'custom', 'Perso ' || g, '{"type":"daily","hour":9,"minute":0}'::jsonb from generate_series(1, 5) g;
 select tests.throws($$insert into public.reminders (user_id, category, title, schedule) values (auth.uid(), 'custom', 'Perso 6', '{"type":"daily","hour":9,"minute":0}'::jsonb)$$, 'rappels personnels : 5 actifs en version gratuite');
@@ -68,7 +70,7 @@ reset role;
 select tests.set_premium(:'MERE', false);
 
 set role authenticated; set request.jwt.claim.sub = :'MERE';
-select tests.ok(tests.count('select * from public.meal_plans') = 1 and tests.count('select * from public.bedtime_routines') = 1 and tests.count('select * from public.reminders') = 7 and tests.count('select * from public.food_introductions') = 1,
+select tests.ok(tests.count('select * from public.meal_plans') = 1 and tests.count('select * from public.bedtime_routines') = 1 and tests.count('select * from public.reminders') = 7 and tests.count('select * from public.food_introductions') = 2,
   'fin d''abonnement : menus, routine et rappels déjà créés restent consultables');
 select tests.throws($$insert into public.meal_plans (household_id, title, days, servings) select hid, 'Nouvelle semaine', 7, 2 from pm_ctx$$, 'fin d''abonnement : nouveau menu hebdomadaire réservé au Premium');
 update public.bedtime_routines set steps = array['Bain', 'Histoire'];
