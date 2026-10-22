@@ -17,6 +17,8 @@ insert into public.household_members (household_id, user_id, role, can_view, can
 
 -- ================================================================ INÈS
 set role authenticated; set request.jwt.claim.sub = :'INES';
+-- Le suivi de la vie sexuelle est facultatif : il s'active explicitement avant toute saisie
+insert into public.cycle_preferences (track_intercourse) values (true) on conflict (user_id) do update set track_intercourse = true;
 insert into public.intercourse_logs (occurred_on, note) values (current_date - 2, 'note privée'), (current_date - 1, null);
 insert into public.fertility_observations (observed_on, bbt_celsius, cervical_mucus) values (current_date - 2, 36.45, 'creamy'), (current_date - 1, 36.70, 'egg_white');
 insert into public.contraception_methods (method, started_on, renewal_due_on) values ('implant', current_date - 30, current_date + 1065);

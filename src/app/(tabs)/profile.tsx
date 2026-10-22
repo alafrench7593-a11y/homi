@@ -75,6 +75,8 @@ export default function Profile() {
           <ListRow icon="smile" title={tr('profile.mood')} onPress={() => router.push('/me/mood')} />
           <ListRow icon="folder" title={tr('profile.documents')} onPress={() => router.push('/documents')} />
           <ListRow icon="message-square" title={tr('profile.posts')} subtitle={tr('profile.postsSub')} onPress={() => router.push('/community/profile')} />
+          <ListRow icon="at-sign" title={tr('profile.community')} subtitle={tr('profile.communitySub')} onPress={() => router.push('/moi' as never)} testID="profile-community" />
+          <ListRow icon="lock" title={tr('profile.account')} subtitle={tr('profile.accountSub')} onPress={() => router.push({ pathname: '/moi', params: { tab: 'account' } } as never)} testID="profile-account" />
           <ListRow icon="grid" title={tr('profile.tools')} onPress={() => router.push('/tools')} />
         </Card>
 

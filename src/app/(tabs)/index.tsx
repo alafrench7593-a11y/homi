@@ -1,5 +1,6 @@
 /**
- * Accueil volontairement court : carte principale du profil affiché, les 4 actions du quotidien, le prochain rappel,
+ * Accueil volontairement court (profil « Suivre mon cycle » : calendrier, 5 raccourcis, une carte intelligente et le prochain
+ * rappel seulement) : carte principale du profil affiché, les 4 actions du quotidien, le prochain rappel,
  * une publication de la communauté choisie pour vous (+ « Voir la communauté »), une recommandation (article ou repas).
  * La communauté complète reste dans son onglet ; les autres cartes se réactivent dans Réglages › Mon accueil.
  */
@@ -13,7 +14,7 @@ import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
 import { PostpartumHomeCard } from '@/features/postpartum';
-import { ChildToday, CycleCard, orderedHomeCards, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
+import { ChildToday, orderedHomeCards, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
 import { ChildHomeCard, FamilyOverview, NoJourneyCard } from '@/features/journeys';
 import { useActivePregnancy, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
@@ -21,6 +22,7 @@ import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { SleepNowCard } from '@/features/sleep';
 import { ChildTrackCards, PregnancyTrackCards } from '@/features/trackCards';
 import { HomeCommunityCard } from '@/features/communitySocial';
+import { CycleHome } from '@/features/cycle3/CycleHome';
 import { quickAllowed, quickFor, type Scope } from '@/lib/journeys/tools';
 import type { Journey } from '@/lib/types';
 import { greeting } from '@/lib/domain/dates';
@@ -102,7 +104,7 @@ export default function Home() {
       : scope.scope === 'child' && child ? <View style={{ gap: spacing.sm }}><ChildHomeCard child={child} />{child.enabled_tracking.includes('sleep') ? <SleepNowCard child={child} /> : null}</View>
       : scope.scope === 'postpartum' ? <PostpartumHomeCard main />
       : scope.scope === 'family' ? <FamilyOverview />
-      : cycleMode ? <CycleCard mode={cycleMode} />
+      : cycleMode ? <CycleHome goal={cycleMode} />
       : <NoJourneyCard />,
     // Les 4 actions du quotidien : cartes de suivi pour un enfant ou une grossesse, sinon les raccourcis du profil
     quick: (scope.scope === 'baby' || scope.scope === 'child') && child ? <ChildTrackCards child={child} journey={scope.scope} />
@@ -137,7 +139,8 @@ export default function Home() {
       </Pressable>
     ),
   };
-  const homeCards = orderedHomeCards(homeOrder, homeHidden);
+  // « Suivre mon cycle » : l'accueil ne montre que le calendrier, les 5 raccourcis, une carte intelligente et le prochain rappel
+  const homeCards = cycleMode && !mainLoading && !mainError ? ['main'] : orderedHomeCards(homeOrder, homeHidden);
   // Recommandation du jour : l'article adapté s'il existe, sinon une idée de repas — sans doublon si ces cartes sont déjà affichées
   cards.recommendation = (!homeCards.includes('article') ? cards.article : null) ?? (!homeCards.includes('recipe') ? cards.recipe : null);
 

@@ -143,7 +143,7 @@ def run(p):
     pg.evaluate(SET_BODY, ['avoid', False])
     subject(pg, 'me')
     t = T(pg)
-    R['3_eviter_calendrier_depuis_accueil'] = 'Calendrier' in t
+    R['3_eviter_calendrier_depuis_accueil'] = pg.locator('[data-testid="cycle-calendar"]').count() > 0
     R['3_eviter_pas_de_SA'] = not SA.search(t)
     mutate(pg, "s => { s.tables.period_entries = []; }")
     go(pg, '/cycle/calendar', 2600)
@@ -179,7 +179,7 @@ def run(p):
     pg.evaluate(SET_BODY, ['ttc', False])
     subject(pg, 'me')
     t = T(pg)
-    R['3_projet_bebe_calendrier_accueil'] = 'Calendrier' in t and not SA.search(t)
+    R['3_projet_bebe_calendrier_accueil'] = pg.locator('[data-testid="cycle-calendar"]').count() > 0 and not SA.search(t)
     go(pg, '/tools', 2600)
     pg.mouse.wheel(0, 8000); pg.wait_for_timeout(500)
     t = T(pg)

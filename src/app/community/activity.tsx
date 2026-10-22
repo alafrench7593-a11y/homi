@@ -49,7 +49,7 @@ export default function Activity() {
           </View>
         ) : <EmptyState icon="clock" title="Rien pour l’instant" />}
       </PremiumSection>
-      <Text variant="caption" muted>Vos publications, réponses, publications aimées et enregistrées restent toutes consultables gratuitement dans « Moi ».</Text>
+      <Text variant="caption" muted>Vos publications, réponses, publications aimées et enregistrées restent toutes consultables gratuitement dans votre profil communautaire.</Text>
     </Screen>
   );
 }

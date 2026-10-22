@@ -28,6 +28,8 @@ import { Choices, CycleIcon, Glass, IconBadge, Ink, Rise, useCyclePalette, type 
 import { fmtDay } from '@/features/cycle/format';
 import { CycleRing, ringData } from '@/features/cycle/CycleRing';
 import { AdviceCard } from '@/features/cycle/AdviceCard';
+import { HomeCycleCard } from '@/features/cycle/HomeCycleCard';
+import { ObjectiveRow, useObjective } from '@/features/cycle/Objective';
 import { useAdvice } from '@/features/cycle/useAdvice';
 import { rank } from '@/lib/advice/types';
 import { uuid } from '@/lib/uuid';
@@ -52,6 +54,7 @@ const SECTIONS: { key: string; icon: CycleIconName; href: string }[] = [
   { key: 'reminders', icon: 'reminders', href: '/settings/reminders' },
   { key: 'export', icon: 'export', href: '/cycle/export' },
   { key: 'privacy', icon: 'privacy', href: '/cycle/privacy' },
+  { key: 'emergency', icon: 'guide', href: '/cycle/emergency' },
 ];
 
 const history0 = (list: PeriodEntry[]) => [...list].sort((a, b) => b.start_date.localeCompare(a.start_date));
@@ -67,6 +70,7 @@ export default function CycleRoute() {
 }
 
 function CycleHub() {
+  const objective = useObjective();
   const c = useCyclePalette();
   const toast = useToast();
   const inv = useInvalidate();
@@ -178,6 +182,10 @@ function CycleHub() {
     <Screen back account title={tr('cy.title')} subtitle={tr('cy.subtitle')}>
       {/* Situations pressantes récentes : visibles sans chercher (jamais retardées par une animation) */}
       {urgentAdvice.slice(0, 1).map((a) => <AdviceCard key={a.signature} advice={a} compact />)}
+
+      {/* Objectif (changeable sans perdre l'historique) et carte de synthèse personnalisable (Réglages de la carte) */}
+      <ObjectiveRow />
+      <HomeCycleCard mode={objective ?? 'cycle'} />
 
       {/* Mes règles : un geste, enregistrement immédiat, annulation possible */}
       <Glass>

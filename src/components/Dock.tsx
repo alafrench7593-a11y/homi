@@ -27,7 +27,7 @@ const short = (name: string) => (name in SHORT_KEYS ? tr(SHORT_KEYS[name as keyo
 
 export const DOCK_HEIGHT = 74;
 /** Routes d'onglet accessibles par lien mais absentes de la barre : le Profil s'ouvre depuis l'avatar de l'en-tête. */
-const HIDDEN_FROM_BAR = new Set(['profile', 'ask']);
+const HIDDEN_FROM_BAR = new Set(['profile', 'moi']);
 
 /** Icône d'onglet : petit rebond quand l'onglet devient actif. */
 function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {

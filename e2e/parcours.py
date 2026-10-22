@@ -155,13 +155,13 @@ def run(p):
     tid(pg, 'change-confirm').click(); pg.wait_for_timeout(2500)
     go(pg, '/'); subject(pg, 'me')
     t = T(pg)
-    R['6_accueil_projet_bebe'] = 'Parcours : Suivre mon cycle · concevoir' in t
+    R['6_accueil_projet_bebe'] = 'Parcours : Suivre mon cycle · essayer de concevoir' in t
 
     # ---- 1. Projet bébé : aucune SA, même avec une ancienne grossesse restée « active » sans parcours
     mutate(pg, "s => { const p = s.tables.pregnancies[0]; s.tables.pregnancies.push({ ...p, id: 'old-preg', status: 'active' }); }")
     go(pg, '/', 2600)
     t = T(pg)
-    R['1_projet_bebe_sans_SA'] = not SA.search(t) and 'Parcours : Suivre mon cycle · concevoir' in t
+    R['1_projet_bebe_sans_SA'] = not SA.search(t) and 'Parcours : Suivre mon cycle · essayer de concevoir' in t
     t = tools_text(pg)
     R['1_outils_projet_bebe'] = all(x in t for x in ['Tests d’ovulation et de grossesse', 'Glaire cervicale', 'Température (facultatif)', 'J’ai un test positif']) and 'Évolution du bébé' not in t and 'Biberons' not in t
     mutate(pg, "s => { s.tables.pregnancies = s.tables.pregnancies.filter(p => p.id !== 'old-preg'); }")
@@ -190,7 +190,7 @@ def run(p):
     # ---- 13. Données archivées conservées et consultables
     go(pg, '/journeys')
     t = T(pg)
-    R['13_parcours_precedents_listes'] = 'Mes parcours précédents' in t and t.count('Suivre mon cycle · concevoir') >= 1
+    R['13_parcours_precedents_listes'] = 'Mes parcours précédents' in t and t.count('Suivre mon cycle · essayer de concevoir') >= 1
     arch = demo(pg, f"s => s.tables.user_journeys.find(j => j.user_id === '{me}' && j.type === 'ttc' && j.status === 'archived' && j.end_reason === 'pregnancy').id")
     go(pg, f'/journeys/{arch}')
     t = T(pg)

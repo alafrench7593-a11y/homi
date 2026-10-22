@@ -1,11 +1,11 @@
 /** Premier parcours : situations, rappels, consentements, écran « prêt ». */
 export const onboarding = {
-  'journey.avoid': 'Je souhaite éviter une grossesse',
-  'journey.avoid.hint': 'Cycle, contraception, rappels',
-  'journey.ttc': 'J’essaie d’avoir un enfant',
+  'journey.avoid': 'Gérer ma contraception',
+  'journey.avoid.hint': 'Prises, oublis, incidents et rappels',
+  'journey.ttc': 'Essayer de concevoir',
   'journey.ttc.hint': 'Cycle, période fertile estimée, tests',
   'journey.cycle': 'Suivre mon cycle',
-  'journey.cycle.hint': 'Calendrier des règles, puis votre objectif : suivre, éviter une grossesse ou concevoir',
+  'journey.cycle.hint': 'Calendrier des règles, puis votre objectif : suivre simplement mon cycle, essayer de concevoir ou gérer ma contraception',
   'journey.pregnant': 'Je suis enceinte',
   'journey.pregnant.hint': 'Semaine après semaine',
   'journey.newborn': 'Je suis maman',

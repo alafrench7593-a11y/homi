@@ -31,7 +31,7 @@ export default function Moi() {
   const [space, setSpace] = useState<Space>(params.tab === 'account' ? 'account' : 'community');
   return (
     <View style={{ flex: 1 }}>
-      <Screen account title="Moi" bottomInset={96}>
+      <Screen back account title="Mon espace" bottomInset={96}>
         <Segmented label="Espace" value={space} onChange={setSpace} options={[{ value: 'community', label: 'Profil communautaire' }, { value: 'account', label: 'Compte privé' }]} />
         {space === 'community' ? <MyCommunity /> : <PrivateAccount />}
       </Screen>

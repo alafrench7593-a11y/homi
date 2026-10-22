@@ -215,6 +215,9 @@ describe('mode démonstration : données intimes', () => {
   it('rapports et observations : propres au compte, une observation par jour, présents dans l’export personnel', async () => {
     await db.auth.signUp('ines@exemple.test', 'MotDePasse!2026');
     const me = (await db.auth.getSession())!.userId;
+    // Suivi intime : uniquement après activation volontaire
+    await expect(db.insert('intercourse_logs', { occurred_on: '2026-10-15' })).rejects.toMatchObject({ hint: 'intimate_optin_required' });
+    await db.insert('cycle_preferences', { user_id: me, track_intercourse: true }, { onConflict: 'user_id' });
     await db.insert('intercourse_logs', { occurred_on: '2026-10-15' });
     await db.insert('fertility_observations', { user_id: me, observed_on: '2026-10-15', bbt_celsius: 36.4, cervical_mucus: null, note: null }, { onConflict: 'user_id,observed_on' });
     await db.insert('fertility_observations', { user_id: me, observed_on: '2026-10-15', bbt_celsius: 36.6, cervical_mucus: 'creamy', note: null }, { onConflict: 'user_id,observed_on' });

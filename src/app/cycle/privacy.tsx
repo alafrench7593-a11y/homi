@@ -3,15 +3,17 @@
  * suivi facultatif de la sexualité, ce que l'assistant peut recevoir, export, et effacement de TOUTES les données du cycle
  * (règles, symptômes, pertes, saignements, journal, observations, tests, rapports, photos chiffrées) sans supprimer le compte.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Banner, Button } from '@/components/ui';
+import { Banner, Button, Chip, Row } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { backend, eq } from '@/lib/backend';
 import { useUserId } from '@/lib/auth';
-import { useInvalidate } from '@/lib/data/hooks';
+import { useInvalidate, useSetConsent } from '@/lib/data/hooks';
+import { useDeleteIntimateData } from '@/lib/data/hooks-cycle3';
+import { biometricAvailable } from '@/features/cycle3/ui';
 import { useCyclePreferences, useSaveCyclePreferences } from '@/lib/data/hooks-cycle';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { deleteEncryptedPhoto } from '@/lib/cycleAnalysis/privacy';
@@ -20,7 +22,7 @@ import { t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
 const PHOTO_TABLES = ['fertility_observations', 'ovulation_tests', 'pregnancy_tests'] as const;
-const CYCLE_TABLES = ['period_entries', 'symptom_logs', 'discharge_logs', 'bleeding_logs', 'cycle_journal', 'fertility_observations', 'ovulation_tests', 'pregnancy_tests', 'intercourse_logs'];
+const CYCLE_TABLES = ['period_entries', 'symptom_logs', 'discharge_logs', 'bleeding_logs', 'cycle_journal', 'fertility_observations', 'ovulation_tests', 'pregnancy_tests', 'intercourse_logs', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback'];
 
 export default function CyclePrivacy() {
   const c = useCyclePalette();
@@ -30,9 +32,21 @@ export default function CyclePrivacy() {
   const { prefs } = useCyclePreferences();
   const save = useSaveCyclePreferences();
   const [busy, setBusy] = useState(false);
+  const consent = useSetConsent();
+  const delIntimate = useDeleteIntimateData();
+  const [bio, setBio] = useState<boolean | null>(null);
+  useEffect(() => { void biometricAvailable().then(setBio); }, []);
 
-  async function setPref(p: { hide_on_home?: boolean; track_intercourse?: boolean; advice_enabled?: boolean; detailed_notifications?: boolean }) {
-    try { await save.mutateAsync(p); toast(tr('cy.pv.saved')); } catch (e) { toast(friendlyError(e), 'error'); }
+  async function setPref(p: { hide_on_home?: boolean; track_intercourse?: boolean; advice_enabled?: boolean; detailed_notifications?: boolean; show_intimacy_icons?: boolean; lock_mode?: 'off' | 'intimate' | 'cycle' }) {
+    try {
+      // Vie sexuelle : consentement explicite enregistré (activation comme retrait)
+      if (p.track_intercourse !== undefined) await consent.mutateAsync({ purpose: 'intimate_data' as never, granted: p.track_intercourse });
+      await save.mutateAsync(p); toast(tr('cy.pv.saved'));
+    } catch (e) { toast(friendlyError(e), 'error'); }
+  }
+  async function wipeIntimate() {
+    if (!(await confirm(tr('c3.priv.deleteIntimate'), tr('c3.priv.deleteIntimateConfirm'), tr('common.delete')))) return;
+    try { await delIntimate.mutateAsync(); toast(tr('c3.priv.deleted'), 'success'); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function wipe() {
     if (!(await confirm(tr('cy.pv.wipeTitle'), tr('cy.pv.wipeBody'), tr('cy.pv.wipeConfirm')))) return;
@@ -74,6 +88,20 @@ export default function CyclePrivacy() {
           <SwitchRow label={tr('cy.pv.trackSex')} hint={tr('cy.pv.trackSexHint')} value={!!prefs.track_intercourse} onChange={(v) => setPref({ track_intercourse: v })} />
           <SwitchRow label={tr('cy.pv.advice')} hint={tr('cy.pv.adviceHint')} value={prefs.advice_enabled !== false} onChange={(v) => setPref({ advice_enabled: v })} />
           <SwitchRow label={tr('cy.pv.detailedNotif')} hint={tr('cy.pv.detailedNotifHint')} value={!!prefs.detailed_notifications} onChange={(v) => setPref({ detailed_notifications: v })} />
+        </Glass>
+      </Rise>
+      <Rise delay={90}>
+        <Glass>
+          <Ink variant="heading">{tr('c3.priv.title')}</Ink>
+          {prefs.track_intercourse ? <SwitchRow label={tr('c3.priv.showIcons')} value={prefs.show_intimacy_icons !== false} onChange={(v) => setPref({ show_intimacy_icons: v })} /> : null}
+          <Ink weight="bold">{tr('c3.priv.lock')}</Ink>
+          <View testID="c3-lock-mode"><Row wrap>
+            {(['off', 'intimate', 'cycle'] as const).map((m) => <Chip key={m} label={tr(`c3.priv.lock.${m}`)} selected={(prefs.lock_mode ?? 'off') === m} onPress={() => setPref({ lock_mode: m })} />)}
+          </Row></View>
+          {bio === false ? <Ink variant="caption" soft>{tr('c3.priv.lockUnavailable')}</Ink> : null}
+          <Ink variant="small" soft>{tr('c3.priv.notif')}</Ink>
+          <Ink variant="small" soft>{tr('c3.priv.never')}</Ink>
+          <Button label={tr('c3.priv.deleteIntimate')} variant="ghost" icon="trash-2" loading={delIntimate.isPending} onPress={wipeIntimate} testID="c3-delete-intimate" />
         </Glass>
       </Rise>
       <Rise delay={120}>

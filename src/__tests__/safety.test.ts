@@ -46,6 +46,11 @@ describe('contrôle des réponses de l’assistant', () => {
     expect(auditAnswer('Il n’est pas nécessaire de consulter.')).toContain('découragement à consulter');
     expect(auditAnswer('En tant que sage-femme… je suis sage-femme')).toContain('usurpation de qualité');
     expect(auditAnswer('Préparez la carte Vitale et le dossier de suivi.')).toEqual([]);
+    expect(auditAnswer('Dans votre cas, la contraception d’urgence est inutile.')).toContain('contraception d’urgence dénigrée');
+    expect(auditAnswer('Pas besoin de pilule du lendemain.')).toContain('contraception d’urgence dénigrée');
+    expect(auditAnswer('C’est un jour sans risque.')).toContain('garantie contraceptive');
+    expect(auditAnswer('Vous avez ovulé hier.')).toContain('certitude non vérifiable');
+    expect(auditAnswer('La contraception d’urgence peut être prise jusqu’à 5 jours après, le plus tôt possible.')).toEqual([]);
   });
   it('ne transmet qu’un contexte minimal et validé', () => {
     const c = sanitizeContext({ journeys: ['pregnant', 'hack'], pregnancyWeekSA: 24.4, firstName: 'Lina', multiplicity: 'twins', childrenAgesMonths: [7, 'x', 400] });

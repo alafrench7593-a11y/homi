@@ -42,7 +42,9 @@ export interface CycleTest {
   user_confirmed?: boolean; photo_path?: string | null; expected_period_on?: string | null;
 }
 
-export interface CyclePreferences { user_id: string; track_intercourse: boolean; /** Masquer les données sensibles du cycle sur l'accueil. */ hide_on_home?: boolean; /** Conseils personnalisés (activés par défaut). */ advice_enabled?: boolean; /** Notifications détaillées (désactivées par défaut : textes neutres). */ detailed_notifications?: boolean }
+export interface CyclePreferences { user_id: string; track_intercourse: boolean; /** Masquer les données sensibles du cycle sur l'accueil. */ hide_on_home?: boolean; /** Conseils personnalisés (activés par défaut). */ advice_enabled?: boolean; /** Notifications détaillées (désactivées par défaut : textes neutres). */ detailed_notifications?: boolean;
+  /** Raccourcis favoris (5 au plus) et date du premier choix. */ favorites?: string[] | null; favorites_set_at?: string | null;
+  /** Icône des rapports dans le calendrier. */ show_intimacy_icons?: boolean; /** Verrouillage biométrique. */ lock_mode?: 'off' | 'intimate' | 'cycle'; /** Anticipation (Premium). */ anticipation?: boolean }
 
 export type ContraceptionMethodKind =
   | 'pill' | 'iud_copper' | 'iud_hormonal' | 'implant' | 'patch' | 'ring' | 'injection'
@@ -59,3 +61,8 @@ export interface ConsultationQuestion {
   question: string; answer: string | null; done: boolean; shared: boolean; position: number;
   created_at: string; updated_at: string;
 }
+
+/** Contraception prise, oubliée ou changée : déclarée par la personne, jamais une recommandation. */
+export interface ContraceptionLog { id: string; user_id: string; logged_on: string; kind: string; label: string | null; note: string | null; created_at: string }
+export interface CycleCustomItem { id: string; user_id: string; label: string; icon: string | null; created_at: string }
+export interface CycleInsightFeedback { user_id: string; insight_key: string; helpful: boolean; created_at: string }

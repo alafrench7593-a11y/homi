@@ -12,3 +12,4 @@ export { parcours } from './parcours';
 export { recettes } from './recettes';
 export { reorg } from './reorg';
 export { produits } from './produits';
+export { cycle3 } from './cycle3';

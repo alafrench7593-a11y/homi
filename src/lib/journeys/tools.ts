@@ -213,6 +213,8 @@ const SCREEN_RULES: { prefix: string; scopes: Scope[]; subOnly?: boolean }[] = [
   // « /track » seul est l'onglet Suivi (pour tous) ; « /track/biberon… » est une saisie pour un enfant né
   { prefix: '/track', scopes: ['baby', 'child', 'postpartum'], subOnly: true },
   { prefix: '/fertility', scopes: ['ttc'] },
+  // Rappels de pilule, patch, anneau, traitement prescrit ou rendez-vous : utiles quel que soit l'objectif du cycle
+  { prefix: '/contraception/reminders', scopes: ['avoid', 'ttc', 'cycle'] },
   { prefix: '/contraception', scopes: ['avoid'] },
   { prefix: '/postpartum', scopes: ['postpartum'] },
   { prefix: '/night/help', scopes: ['baby', 'child'] },

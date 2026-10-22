@@ -118,6 +118,10 @@ const FORBIDDEN_OUTPUT: [RegExp, string][] = [
   [/\b(il n'?est pas (utile|necessaire|nécessaire) de consulter|inutile de consulter|pas besoin de (consulter|voir un medecin|voir un médecin))/i, 'découragement à consulter'],
   [/\b(tout va bien|c'?est (tout a fait|totalement) normal|aucun danger|sans (aucun )?danger|je vous garantis)\b/i, 'garantie de sécurité'],
   [/\bje suis (medecin|médecin|sage-femme|pediatre|pédiatre|infirmi[eè]re?)\b/i, 'usurpation de qualité'],
+  // Cycle et contraception : jamais dénigrer la contraception d'urgence, jamais de certitude
+  [/(contraception d'urgence|pilule du lendemain)[^.]{0,40}\b(inutile|ne sert (a|à) rien|pas (utile|necessaire|nécessaire))|(pas|aucun) besoin (de|d'une?) (contraception d'urgence|pilule du lendemain)/i, 'contraception d’urgence dénigrée'],
+  [/\b(aucun risque|jours? sans (danger|risque)|grossesse (est )?impossible)\b/i, 'garantie contraceptive'],
+  [/\b(tu as|vous avez) ovulé|\b(tu es|vous êtes|vous etes) enceinte\b(?! ?\?)/i, 'certitude non vérifiable'],
 ];
 
 export function auditAnswer(answer: string): string[] {

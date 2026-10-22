@@ -203,7 +203,11 @@ export default function Community() {
       title={tr('screen.community.title')}
       subtitle={tr('screen.community.sub')}
       right={(
-        <IconButton icon="bell" label="Notifications" onPress={() => router.push('/notifications')} />
+        <Row gap={0}>
+          <IconButton icon="bell" label="Notifications" onPress={() => router.push('/notifications')} />
+          {/* Mon profil communautaire (publications, réponses, groupes, albums, enregistrés) */}
+          <IconButton icon="at-sign" label={me ? 'Profil communautaire' : 'Créer mon profil communautaire'} onPress={() => router.push(me ? '/moi' as never : '/community/profile')} />
+        </Row>
       )}
     >
       <VirtualList

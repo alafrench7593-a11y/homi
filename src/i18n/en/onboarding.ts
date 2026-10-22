@@ -2,12 +2,12 @@ import type { onboarding as fr } from '../fr/onboarding';
 import type { Messages } from '../types';
 
 export const onboarding: Messages<typeof fr> = {
-  'journey.avoid': 'I want to avoid pregnancy',
-  'journey.avoid.hint': 'Cycle, contraception, reminders',
-  'journey.ttc': 'I’m trying to conceive',
+  'journey.avoid': 'Manage my contraception',
+  'journey.avoid.hint': 'Doses, missed doses, incidents and reminders',
+  'journey.ttc': 'Trying to conceive',
   'journey.ttc.hint': 'Cycle, estimated fertile window, tests',
   'journey.cycle': 'Track my cycle',
-  'journey.cycle.hint': 'Period calendar, then your goal: track, avoid pregnancy or conceive',
+  'journey.cycle.hint': 'Period calendar, then your goal: simply track my cycle, try to conceive or manage my contraception',
   'journey.pregnant': 'I’m pregnant',
   'journey.pregnant.hint': 'Week by week',
   'journey.newborn': 'I’m a mum',

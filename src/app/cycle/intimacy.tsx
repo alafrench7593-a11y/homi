@@ -13,7 +13,7 @@ import { ErrorView, Skeleton } from '@/components/States';
 import { confirm, useToast } from '@/components/Overlays';
 import { Banner, Button, Field, haptic } from '@/components/ui';
 import { useUserId } from '@/lib/auth';
-import { useInvalidate } from '@/lib/data/hooks';
+import { useInvalidate, useSetConsent } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useCyclePreferences, useSaveCyclePreferences } from '@/lib/data/hooks-cycle';
 import { useCycleEstimates, useIntercourseLogs } from '@/lib/data/hooks-fertility';
@@ -109,6 +109,7 @@ export default function IntimacyScreen() {
     try { for (const l of list) await removeOwn('intercourse_logs', l.id); toast(tr('cy.deleted')); } catch (e) { toast(friendlyError(e), 'error'); } finally { inv('intercourse_logs'); }
   }
 
+  const consent = useSetConsent();
   if (prefsQ.isLoading && !prefsQ.data) return <Screen back title={tr('cy.sex.title')}><Skeleton kind="card" rows={2} /></Screen>;
   if (prefsQ.isError && !prefsQ.data) return <Screen back title={tr('cy.sex.title')}><ErrorView error={prefsQ.error} onRetry={() => void prefsQ.refetch()} /></Screen>;
   if (!prefsQ.prefs.track_intercourse) {
@@ -116,7 +117,7 @@ export default function IntimacyScreen() {
       <Screen back title={tr('cy.sex.title')} subtitle={tr('cy.sex.offSubtitle')}>
         <Glass>
           <Ink>{tr('cy.sex.offBody')}</Ink>
-          <Button label={tr('cy.sex.enable')} icon="lock" loading={savePrefs.isPending} onPress={() => savePrefs.mutateAsync({ track_intercourse: true }).catch((e) => toast(friendlyError(e), 'error'))} full />
+          <Button label={tr('cy.sex.enable')} icon="lock" loading={savePrefs.isPending} onPress={() => consent.mutateAsync({ purpose: 'intimate_data' as never, granted: true }).then(() => savePrefs.mutateAsync({ track_intercourse: true })).catch((e) => toast(friendlyError(e), 'error'))} full />
         </Glass>
         <Ink variant="caption" soft>{tr('cy.private')}</Ink>
       </Screen>

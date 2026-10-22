@@ -26,6 +26,7 @@ export const MIGRATED = [
   'src/app/cycle/home-card.tsx', 'src/features/cycle/HomeCycleCard.tsx', 'src/features/cycle/homeCard.ts',
   'src/app/cycle/intimacy.tsx', 'src/app/cycle/pain.tsx', 'src/app/cycle/recap.tsx', 'src/app/cycle/advice.tsx', 'src/app/cycle/risk.tsx', 'src/app/cycle/professional.tsx',
   'src/features/cycle/AdviceCard.tsx', 'src/features/cycle/CycleRing.tsx', 'src/features/cycle/PainKit.tsx', 'src/features/cycle/Bars.tsx', 'src/features/cycle/useAdvice.ts',
+  'src/app/cycle/emergency.tsx', 'src/features/cycle3/ui.tsx', 'src/features/cycle3/CycleCalendar.tsx', 'src/features/cycle3/AddDaySheet.tsx', 'src/features/cycle3/InsightCard.tsx', 'src/features/cycle3/CycleHome.tsx',
 ];
 
 const forms = (m: Msg) => (typeof m === 'string' ? [m] : Object.values(m).filter((x): x is string => typeof x === 'string'));

@@ -246,6 +246,13 @@ Coût externe : **aucun**. Aucune donnée personnelle ou de santé n'est envoyé
 - **Ateliers** : table `community_events` alimentée par l'équipe (administration) ; aucun service de visio intégré, le lien est transmis aux inscrit·es.
 - **Limites** : vérifié sur le web, en rendu React Native (préréglages iOS et Android) et par compilation des paquets natifs ; pas encore essayé sur un vrai téléphone.
 
+## 12 undecies. « Suivre mon cycle » (nouveau, 24 octobre 2026)
+
+- **Aucun service externe ajouté.** Calendrier, estimations, tendances, situation d'un rapport et informations d'urgence sont calculés **sur l'appareil** à partir des données de la personne ; rien n'est envoyé à un tiers (pas d'IA pour le cycle).
+- **Verrouillage biométrique** : `expo-local-authentication` (Face ID / empreinte, version du SDK 57) ; texte d'autorisation Face ID dans `app.config.ts`. Statut : 🔧 code + test de rendu avec le module simulé ; **pas encore essayé sur un vrai téléphone** ; indisponible sur le web (indiqué à l'écran).
+- **Sources de la contraception d'urgence** : Santé.fr (« Contraception d'urgence : comment ça marche ? », publiée le 18/06/2024) et dépliant Assurance Maladie (07/2023), consultées le 22 octobre 2026 ; à revérifier à chaque révision du contenu (`EC_SOURCES` dans `src/lib/domain/cycleInsights.ts`).
+- **Non réalisés dans cette étape** : widgets natifs, partage avec le ou la partenaire, Apple Santé / Health Connect (nécessitent des modules natifs et des autorisations de plateforme non disponibles ici) ; résumé mensuel PDF du cycle distinct de l'export existant.
+
 ## 13. Recommandations de produits
 ✅ **Catalogue éditorial intégré (20 octobre 2026)**, voir 12 sexies : produits réels ajoutés par l'équipe à partir des bases ouvertes, critères objectifs expliqués, aucune recommandation inventée. Équipement, jouets et livres : toujours non couverts (pas de catalogue ouvert vérifiable). Tout contenu sponsorisé devrait être étiqueté comme tel.
 

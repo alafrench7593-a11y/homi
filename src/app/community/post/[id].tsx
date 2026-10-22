@@ -42,7 +42,7 @@ export default function PostScreen() {
   const rows = useMemo(() => threads.flatMap(({ root, replies }) => [{ c: root, reply: false }, ...replies.map((r) => ({ c: r, reply: true }))]), [threads]);
   const { data: forums } = useForums();
   const { data: me } = useCommunityProfile();
-  // Sujet consulté : sert uniquement à classer « Pour vous » (visible et effaçable dans « Moi »)
+  // Sujet consulté : sert uniquement à classer « Pour vous » (visible et effaçable dans l’éditeur du profil communautaire)
   useNoteTopicView(id);
   const groupQ = useGroup(postQ.data?.group_id ?? null);
   const create = useCreateComment(id);

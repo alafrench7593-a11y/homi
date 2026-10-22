@@ -38,7 +38,7 @@ with sync_playwright() as p:
 
     # 1. Barre : Communauté présente, Profil retiré, Outils au centre
     t = tabs(pg)
-    R['1_barre_onglets'] = t == ['Accueil', 'Suivi', 'Outils', 'Communauté', 'Moi']
+    R['1_barre_onglets'] = t == ['Accueil', 'Suivi', 'Outils', 'Communauté', 'Questions']
     R['1_pas_de_profil_dans_la_barre'] = 'Profil' not in t
     pg.get_by_role('tab', name='Communauté').click(); pg.wait_for_timeout(1800)
     R['1_communaute_ouvre_la_vraie_section'] = pg.url.endswith('/community') and 'forum des parents' in pg.inner_text('body')
@@ -104,7 +104,7 @@ with sync_playwright() as p:
     ctx = b.new_context(viewport={'width': 320, 'height': 568}, locale='fr-FR'); pg = ctx.new_page()
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
-    boxes = [pg.get_by_role('tab', name=n).bounding_box() for n in ['Accueil', 'Suivi', 'Communauté', 'Moi']]
+    boxes = [pg.get_by_role('tab', name=n).bounding_box() for n in ['Accueil', 'Suivi', 'Communauté', 'Questions']]
     R['8_onglets_dans_l_ecran'] = all(bb and bb['x'] >= 0 and bb['x'] + bb['width'] <= 320 and bb['width'] >= 44 for bb in boxes)
     orb = pg.get_by_role('tab', name='Outils').bounding_box()
     R['8_outils_centre'] = bool(orb) and abs(orb['x'] + orb['width'] / 2 - 160) < 1.5
@@ -116,7 +116,7 @@ with sync_playwright() as p:
     pg.goto(B + '/settings/language'); pg.wait_for_timeout(1800)
     pg.get_by_role('radio', name='English').click(); pg.wait_for_timeout(2000)
     pg.goto(B + '/'); pg.wait_for_timeout(2500)
-    R['9_barre_en_anglais'] = tabs(pg) == ['Home', 'Tracking', 'Tools', 'Community', 'Me']
+    R['9_barre_en_anglais'] = tabs(pg) == ['Home', 'Tracking', 'Tools', 'Community', 'Questions']
     R['9_entete_en_anglais'] = header_ok(pg, re.compile('^My profile'))
     pg.goto(B + '/community'); pg.wait_for_timeout(1800)
     R['9_communaute_en_anglais'] = 'parents’ forum' in pg.inner_text('body')

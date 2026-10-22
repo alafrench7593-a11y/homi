@@ -2,6 +2,7 @@
  * Composants partagés des parcours « concevoir » (/fertility) et « éviter une grossesse » (/contraception).
  * Toute date d'ovulation / de fertilité est affichée comme une ESTIMATION.
  */
+import { useObjective } from '@/features/cycle/Objective';
 import { insertOrQueue } from '@/lib/offline';
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -624,7 +625,10 @@ export function JourneyReminders({ presets, deepLink, defaultDates }: { presets:
   const [discreet, setDiscreet] = useState(!cyclePrefs.detailed_notifications);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const mine = (reminders ?? []).filter((r) => r.deep_link?.startsWith(deepLink));
+  // Objectif « suivre » ou « concevoir » : rappels de contraception rattachés au cycle (visibles sur son accueil)
+  const objective = useObjective();
+  const link = deepLink === '/contraception' && objective && objective !== 'avoid' ? '/cycle' : deepLink;
+  const mine = (reminders ?? []).filter((r) => r.deep_link?.startsWith(deepLink) || (deepLink === '/contraception' && r.deep_link === '/cycle'));
 
   function openPreset(p: ReminderPreset) {
     setPreset(p);
@@ -644,7 +648,7 @@ export function JourneyReminders({ presets, deepLink, defaultDates }: { presets:
       await backend.insert('reminders', {
         user_id: userId, household_id: null, category: preset.category,
         title: discreet ? preset.discreetTitle : preset.title, body: null, schedule,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris', enabled: true, deep_link: deepLink,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris', enabled: true, deep_link: link,
       });
       inv('reminders'); // la liste relue reprogramme les notifications locales
       haptic('success');

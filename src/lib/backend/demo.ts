@@ -99,6 +99,7 @@ const OWNER_TABLES: Record<string, string> = {
   // Parcours fertilité : données intimes, strictement personnelles
   intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
   cycle_preferences: 'user_id', discharge_logs: 'user_id', bleeding_logs: 'user_id', cycle_journal: 'user_id',
+  contraception_logs: 'user_id', cycle_custom_items: 'user_id', cycle_insight_feedback: 'user_id',
   // Parcours : gérés par la personne (le foyer ne les modifie jamais)
   user_journeys: 'user_id',
   recipe_favorites: 'user_id', recipe_dislikes: 'user_id',
@@ -238,6 +239,25 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     const l = T('plan_limits').find((p) => p.key === key);
     return l ? (isPremium() ? l.premium_value : l.free_value) : Infinity;
   };
+  /** Cycle (miroir de 20261024000100_cycle_v3.sql) : étiquettes, suivi intime volontaire, préférences Premium. */
+  const CYCLE_MOODS = ['happy', 'calm', 'energetic', 'sensitive', 'irritable', 'anxious', 'sad', 'stressed', 'low', 'stable'];
+  const CYCLE_HABITS = ['sport', 'walk', 'hydration', 'alcohol', 'tobacco', 'stress_day', 'travel', 'night_work', 'illness', 'event'];
+  function checkSymptomRow(r: Row) {
+    const tags = (r.tags as string[] | undefined) ?? [];
+    if (tags.length > 10 || tags.some((t) => typeof t !== 'string' || t.trim().length < 1 || t.length > 30 || /[<>]/.test(t))) throw new BackendError('Étiquettes invalides (10 au plus, 1 à 30 caractères).', '23514');
+    if (((r.moods as string[] | undefined) ?? []).some((m) => !CYCLE_MOODS.includes(m))) throw new BackendError('Humeur inconnue.', '23514');
+    if (((r.habits as string[] | undefined) ?? []).some((m) => !CYCLE_HABITS.includes(m))) throw new BackendError('Habitude inconnue.', '23514');
+    if (tags.length && !isPremium()) {
+      const others = new Set(T('symptom_logs').filter((x) => x.user_id === r.user_id && x.id !== r.id).flatMap((x) => (x.tags as string[] | undefined) ?? []));
+      const all = new Set([...others, ...tags]);
+      if (all.size > 3 && tags.some((t) => !others.has(t))) throw new BackendError('Fonction Premium (cycle_tags)', 'P0001', 'premium_required');
+    }
+  }
+  function checkCyclePrefs(next: Row, prev?: Row) {
+    if (next.favorites && (next.favorites as unknown[]).length > 5) throw new BackendError('Cinq raccourcis au maximum.', '23514');
+    if (next.lock_mode && !['off', 'intimate', 'cycle'].includes(next.lock_mode as string)) throw new BackendError('Verrouillage inconnu.', '23514');
+    if (next.anticipation && !prev?.anticipation && !isPremium()) throw new BackendError('Fonction Premium (cycle_anticipation)', 'P0001', 'premium_required');
+  }
   let replyTarget: string | null = null;
   const isModerator = () => T('user_roles').some((x) => x.user_id === state.session?.userId && ['moderator', 'admin'].includes(x.role as string));
   const blockedBetween = (a: string, b: string) => T('user_blocks').some((x) => (x.blocker_id === a && x.blocked_id === b) || (x.blocker_id === b && x.blocked_id === a));
@@ -646,10 +666,37 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       r.hide_on_home ??= false;
       r.advice_enabled ??= true;
       r.detailed_notifications ??= false;
+      r.favorites ??= null; r.favorites_set_at ??= null; r.show_intimacy_icons ??= true; r.lock_mode ??= 'off'; r.anticipation ??= false;
+      checkCyclePrefs(r);
       r.updated_at = nowIso();
     }
     if (table === 'symptom_logs') {
       r.symptom_keys ??= []; r.intensities ??= {}; r.pain_locations ??= []; r.pain_impact ??= []; r.pain_associated ??= [];
+      r.moods ??= []; r.habits ??= []; r.tags ??= []; r.sleep_tags ??= []; r.custom_items ??= [];
+      checkSymptomRow(r);
+    }
+    if (table === 'intercourse_logs') {
+      // Suivi intime : uniquement après activation volontaire (consentement) dans la confidentialité du cycle
+      const prefs = T('cycle_preferences').find((x) => x.user_id === (r.user_id ?? me));
+      if (!prefs?.track_intercourse) throw new BackendError('Activez d’abord le suivi de la vie sexuelle (facultatif) dans la confidentialité du cycle', 'P0001', 'intimate_optin_required');
+    }
+    if (table === 'contraception_logs') {
+      r.logged_on ??= todayIso(); r.label ??= null; r.note ??= null;
+      const KINDS = ['pill_taken', 'pill_missed', 'patch_changed', 'ring_inserted', 'ring_removed', 'condom', 'device_declared', 'emergency_taken', 'treatment'];
+      if (!KINDS.includes(r.kind as string)) throw new BackendError('Type de saisie inconnu.', '23514');
+      if (r.kind !== 'treatment' && T(table).some((x) => x.user_id === (r.user_id ?? me) && x.logged_on === r.logged_on && x.kind === r.kind)) throw new BackendError('Déjà noté pour ce jour.', '23505');
+    }
+    if (table === 'cycle_custom_items') {
+      if (!isPremium()) throw new BackendError('Fonction Premium (cycle_custom)', 'P0001', 'premium_required');
+      const label = String(r.label ?? '').trim();
+      if (label.length < 1 || label.length > 30) throw new BackendError('Un nom de 1 à 30 caractères.', '23514');
+      if (T(table).filter((x) => x.user_id === (r.user_id ?? me)).length >= 30) throw new BackendError('30 catégories personnalisées au plus', 'P0001');
+      r.icon ??= null;
+    }
+    if (table === 'cycle_insight_feedback') {
+      delete r.id;
+      const prev = T(table).find((x) => x.user_id === (r.user_id ?? me) && x.insight_key === r.insight_key);
+      if (prev) throw new BackendError('Retour déjà enregistré.', '23505');
     }
     if (table === 'discharge_logs') { r.textures ??= []; r.symptoms ??= []; }
     if (table === 'bottle_timers') {
@@ -913,7 +960,17 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     // Effacer toutes ses données du cycle (le compte reste)
     delete_my_cycle_data: () => {
       const me = uid();
-      for (const t of ['period_entries', 'symptom_logs', 'discharge_logs', 'bleeding_logs', 'cycle_journal', 'fertility_observations', 'ovulation_tests', 'pregnancy_tests', 'intercourse_logs']) state.tables[t] = T(t).filter((r) => r.user_id !== me);
+      for (const t of ['period_entries', 'symptom_logs', 'discharge_logs', 'bleeding_logs', 'cycle_journal', 'fertility_observations', 'ovulation_tests', 'pregnancy_tests', 'intercourse_logs', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback']) state.tables[t] = T(t).filter((r) => r.user_id !== me);
+      persist();
+      return null;
+    },
+    // Effacer ses données de vie sexuelle (miroir de delete_my_intimate_data)
+    delete_my_intimate_data: () => {
+      const me = uid();
+      const INTIMATE = ['libido_up', 'libido_down', 'dyspareunia', 'discomfort'];
+      state.tables.intercourse_logs = T('intercourse_logs').filter((r) => r.user_id !== me);
+      state.tables.contraception_logs = T('contraception_logs').filter((r) => !(r.user_id === me && r.kind === 'condom'));
+      T('symptom_logs').forEach((r) => { if (r.user_id === me) r.symptom_keys = ((r.symptom_keys as string[] | undefined) ?? []).filter((k) => !INTIMATE.includes(k)); });
       persist();
       return null;
     },
@@ -950,7 +1007,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       const kept = (d: string) => others.some((o) => (o.started_on as string) <= d && d <= ((o.ended_on as string | null) ?? today));
       const inRange = (d: unknown) => { const s = String(d ?? '').slice(0, 10); return s >= from && s <= to; };
       if (cycleTypes.includes(j.type as string)) {
-        const cols: Record<string, string> = { period_entries: 'start_date', symptom_logs: 'logged_on', discharge_logs: 'observed_at', bleeding_logs: 'occurred_on', cycle_journal: 'entry_on', fertility_observations: 'observed_on', ovulation_tests: 'tested_at', pregnancy_tests: 'tested_at', intercourse_logs: 'occurred_on' };
+        const cols: Record<string, string> = { period_entries: 'start_date', symptom_logs: 'logged_on', discharge_logs: 'observed_at', bleeding_logs: 'occurred_on', cycle_journal: 'entry_on', fertility_observations: 'observed_on', ovulation_tests: 'tested_at', pregnancy_tests: 'tested_at', intercourse_logs: 'occurred_on', contraception_logs: 'logged_on' };
         for (const [t, c] of Object.entries(cols)) state.tables[t] = T(t).filter((r) => !(r.user_id === me && inRange(r[c]) && !kept(String(r[c]).slice(0, 10))));
         if (!T('user_journeys').some((o) => o.user_id === me && o.id !== j.id && o.type === j.type && o.status === 'active')) T('reminders').forEach((r) => { if (r.user_id === me && r.journey_type === j.type) r.enabled = false; });
       } else if (j.type === 'pregnancy' && j.pregnancy_id && !T('user_journeys').some((o) => o.pregnancy_id === j.pregnancy_id && o.id !== j.id && o.status === 'active')) {
@@ -1165,7 +1222,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
-        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status'].map((t) => [t, view(t)])),
+        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
           ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines']
@@ -1429,6 +1486,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         if (conflictCol && conflictCol.split(',').every((c) => raw[c] != null)) {
           const existing = T(table).find((r) => conflictCol.split(',').every((c) => r[c] === raw[c]));
           if (existing) {
+            if (table === 'cycle_preferences' && !opts?.ignoreDuplicates) checkCyclePrefs({ ...existing, ...raw }, existing);
             if (!opts?.ignoreDuplicates) Object.assign(existing, raw, table === 'cycle_preferences' ? { updated_at: nowIso() } : {});
             out.push(existing);
             continue;
@@ -1551,6 +1609,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
           afterJourney(before, r);
           continue;
         }
+        if (table === 'symptom_logs' && ('tags' in patch || 'moods' in patch || 'habits' in patch)) checkSymptomRow({ ...r, ...patch });
+        if (table === 'cycle_preferences') checkCyclePrefs({ ...r, ...patch }, r);
         if (table === 'parent_sleep_logs') {
           if (r.user_id !== state.session?.userId) continue;
           if (patch.log_date && T(table).some((x) => x.id !== r.id && x.user_id === r.user_id && x.log_date === patch.log_date)) throw new BackendError('Une nuit est déjà enregistrée pour ce jour : modifiez-la plutôt.');

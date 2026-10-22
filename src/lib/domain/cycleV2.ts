@@ -13,10 +13,11 @@ export type Flow = (typeof FLOWS)[number];
 export const SYMPTOM_KEYS = [
   'cramps', 'pelvic_pain', 'back_pain', 'pain', 'fatigue', 'headache', 'bloating', 'nausea', 'breast_tenderness', 'digestion',
   'constipation', 'diarrhea', 'skin', 'acne', 'libido_up', 'libido_down', 'dizziness', 'hot_flashes', 'cravings', 'insomnia', 'other',
+  'migraine', 'dyspareunia', 'appetite_loss', 'swelling', 'ovulation_pain', 'discomfort', 'pain_other',
 ] as const;
 export type SymptomKey = (typeof SYMPTOM_KEYS)[number];
 /** Symptômes « libido » : affichés seulement si l'utilisatrice active le suivi de la sexualité. */
-export const INTIMATE_SYMPTOMS: SymptomKey[] = ['libido_up', 'libido_down'];
+export const INTIMATE_SYMPTOMS: SymptomKey[] = ['libido_up', 'libido_down', 'dyspareunia', 'discomfort'];
 
 /** Anciennes saisies (libellés français enregistrés tels quels) → clés. */
 const LEGACY: Record<string, SymptomKey> = {

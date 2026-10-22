@@ -177,7 +177,7 @@ export function ReportSheet({ visible, onClose, postId, commentId, handle }: { v
   }
   async function block() {
     if (pending) return;
-    if (!(await confirm('Bloquer cette personne ?', 'Vous ne verrez plus ses publications ni ses commentaires, et elle ne pourra plus vous répondre. Vous pourrez la débloquer dans « Moi ».', 'Bloquer'))) return;
+    if (!(await confirm('Bloquer cette personne ?', 'Vous ne verrez plus ses publications ni ses commentaires, et elle ne pourra plus vous répondre. Vous pourrez la débloquer depuis votre profil communautaire (Personnes bloquées).', 'Bloquer'))) return;
     try {
       if (memberOnly) await blockMember.mutateAsync(handle!);
       else await blockM.mutateAsync({ postId, commentId });

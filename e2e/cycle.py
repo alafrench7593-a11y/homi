@@ -161,14 +161,14 @@ def run(p):
     R['9_contenu_pdf'] = 'Crampes, Fatigue' in txt and 'Démangeaisons' in txt and '(estimation)' in txt
     R['9_journal_exclu'] = 'Journal' not in txt and 'sereine' not in txt
 
-    # 10. Carte d'accueil : données, personnalisation, masquage
-    pg.goto(B + '/'); pg.wait_for_timeout(2500)
+    # 10. Carte de synthèse personnalisable (désormais dans « Mon cycle » ; l'accueil montre le calendrier), masquage sur l'accueil
+    pg.goto(B + '/cycle?all=1'); pg.wait_for_timeout(2500)
     t = T(pg)
     R['10_carte_accueil'] = 'Dernières règles (enregistrées)' in t and 'Prochaines règles (estimation)' in t and 'Noter mes règles' in t
     click(pg, 'Personnaliser cette carte'); pg.wait_for_timeout(1500)
     pg.get_by_role('switch', name='Statistiques').filter(visible=True).first.click()
     pick(pg, 'Calendrier'); pick(pg, 'Journal'); pg.wait_for_timeout(300)
-    pg.goto(B + '/'); pg.wait_for_timeout(2500)
+    pg.goto(B + '/cycle?all=1'); pg.wait_for_timeout(2500)
     t = T(pg)
     R['10_personnalisation'] = 'Durée moyenne des règles' in t and pg.get_by_role('button', name='Journal', exact=True).filter(visible=True).count() > 0
     pg.goto(B + '/cycle/privacy'); pg.wait_for_timeout(1500)

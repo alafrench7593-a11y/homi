@@ -7,6 +7,7 @@ insert into auth.users (id, email) values (:'MAYA', 'adv-maya@exemple.test'), (:
 
 set role authenticated; set request.jwt.claim.sub = :'MAYA';
 -- Rapport sans aucun détail : toujours possible
+insert into public.cycle_preferences (track_intercourse) values (true);
 insert into public.intercourse_logs (occurred_on) values ('2026-10-10');
 select tests.ok((select condom is null and pregnancy_wish is null from public.intercourse_logs where occurred_on = '2026-10-10'),
   'rapport : enregistrable sans aucun détail (absence de réponse ≠ « non »)');
@@ -32,7 +33,7 @@ insert into public.discharge_logs (amount, color, textures, symptoms) values ('u
 select tests.ok(tests.count('select * from public.discharge_logs') = 1, 'pertes : quantité habituelle, présence de sang, fièvre, douleur pelvienne acceptées');
 
 -- Préférences : conseils activés et notifications neutres par défaut
-insert into public.cycle_preferences (track_intercourse) values (true);
+insert into public.cycle_preferences (track_intercourse) values (true) on conflict (user_id) do update set track_intercourse = true;
 select tests.ok((select advice_enabled and not detailed_notifications from public.cycle_preferences), 'préférences : conseils activés, notifications neutres par défaut');
 
 -- Lou ne voit, ne modifie ni ne supprime rien

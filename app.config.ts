@@ -45,6 +45,7 @@ const config: ExpoConfig = {
     'expo-web-browser',
     ['expo-splash-screen', { backgroundColor: '#F6EFE6', image: './assets/icon.png', imageWidth: 120 }],
     ['expo-notifications', { color: '#C97B63' }],
+    ['expo-local-authentication', { faceIDPermission: 'Face ID protège l’accès aux informations les plus intimes de votre suivi du cycle.' }],
     ['expo-camera', { cameraPermission: 'La caméra sert à scanner un produit ou un document.', recordAudioAndroid: false }],
   ],
   experiments: { typedRoutes: true },

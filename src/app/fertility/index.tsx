@@ -64,7 +64,7 @@ export default function FertilityScreen() {
   }
 
   return (
-    <Screen back account title="Je souhaite concevoir" subtitle="Des repères pour votre cycle, à votre rythme.">
+    <Screen back account title="Essayer de concevoir" subtitle="Des repères pour votre cycle, à votre rythme.">
       <Banner tone="warning" title="Estimations, sans garantie">{TTC_DISCLAIMER}</Banner>
 
       {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (

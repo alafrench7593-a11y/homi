@@ -263,5 +263,7 @@ export const AVOID_REMINDER_PRESETS: ReminderPreset[] = [
   { key: 'ring', title: 'Mon anneau', discreetTitle: 'Petit rappel', kind: 'once', category: 'medication', hint: 'Date de retrait ou de mise en place indiquée par la notice.' },
   { key: 'injection', title: 'Mon injection', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'medication', hint: 'Date indiquée par votre professionnel (environ tous les 3 mois).' },
   { key: 'renewal', title: 'Renouveler mon implant ou DIU', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'custom', hint: 'Quelques semaines avant la date de fin d’efficacité, pour prendre rendez-vous.' },
+  { key: 'treatment', title: 'Mon traitement prescrit', discreetTitle: 'Rappel quotidien', kind: 'daily', category: 'medication', hint: 'Un traitement déjà prescrit, à l’heure indiquée par votre professionnel. L’application ne calcule ni ne modifie aucune dose.' },
+  { key: 'appointment', title: 'Mon rendez-vous', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'custom', hint: 'Consultation, pose ou retrait d’un dispositif, renouvellement : à la date de votre rendez-vous.' },
   { key: 'prescription', title: 'Renouveler mon ordonnance', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'custom', hint: 'Avant la fin de votre dernière boîte ou plaquette.' },
 ];
