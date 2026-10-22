@@ -63,6 +63,7 @@ export default function Discoveries() {
   const [reacting, setReacting] = useState(false);
   const [celebrate, setCelebrate] = useState<FoodDef | null>(null);
   const { width } = useWindowDimensions();
+  const [boxW, setBoxW] = useState(0);
 
   const today = todayISO();
   const age = child ? ageInMonths(child.birth_date, today) : 0;
@@ -89,8 +90,10 @@ export default function Discoveries() {
 
   if (!child) return <Screen back title={tr('dc.title')}><Skeleton rows={3} /></Screen>;
   const name = child.first_name;
-  const cols = width < 360 ? 2 : 3;
-  const cardW = Math.floor((Math.min(width, 720) - spacing.md * 2 - spacing.sm * (cols - 1)) / cols);
+  // Largeur réelle du conteneur (marges de l'écran comprises) : 3 colonnes dès 300 px, 4 sur tablette
+  const avail = boxW || Math.min(width, 720) - spacing.lg * 2;
+  const cols = avail >= 560 ? 4 : avail >= 300 ? 3 : 2;
+  const cardW = Math.floor((avail - spacing.sm * (cols - 1)) / cols);
   const allergenFoods = FOODS.filter((f) => f.allergen);
   const history = visibleHistory(tastings, today, premium);
   const countLabel = (c: FoodCategory, n: number) => tr(`dc.count.${c}` as TKey, { count: n });
@@ -173,7 +176,7 @@ export default function Discoveries() {
 
       {/* Mosaïque */}
       {entriesQ.isLoading && !entriesQ.data ? <Skeleton kind="card" rows={2} /> : list.length ? (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }} testID="dc-mosaic">
+        <View onLayout={(e) => setBoxW(Math.floor(e.nativeEvent.layout.width))} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }} testID="dc-mosaic">
           {list.map((f) => <FoodTile key={f.key} food={f} entry={byKey.get(f.key)} state={displayState(byKey.get(f.key), f, age)} width={cardW} locked={!premium && !freeFood(f) && !byKey.get(f.key)} onPress={() => openFood(f)} />)}
         </View>
       ) : <EmptyState icon="search" title={tr('dc.none')} body={tr('dc.noneBody')} />}

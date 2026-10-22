@@ -15,9 +15,30 @@ function shade(hex: string, k: number): string {
   return `#${[(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => f(c).toString(16).padStart(2, '0')).join('')}`;
 }
 
-function Glyph({ category, c }: { category: FoodCategory; c: string }) {
+/** Forme des légumes : longue (carotte, poireau…), ronde (tomate, potiron…), en bouquet (brocoli…) ou en feuilles. */
+const VEG_SHAPE: Record<string, 'long' | 'round' | 'floret' | 'leafy'> = {
+  carrot: 'long', parsnip: 'long', leek: 'long', zucchini: 'long', cucumber: 'long', asparagus: 'long', eggplant: 'long', sweet_potato: 'long',
+  broccoli: 'floret', cauliflower: 'floret', spinach: 'leafy', cabbage: 'leafy', artichoke: 'leafy', fennel: 'leafy',
+};
+
+function Glyph({ category, c, k }: { category: FoodCategory; c: string; k: string }) {
   const d = shade(c, 0.72);
   const leaf = '#5E9E3A';
+  const veg = category === 'veg' ? (VEG_SHAPE[k] ?? 'round') : null;
+  if (veg === 'round') return (<>
+    <Ellipse cx={50} cy={56} rx={24} ry={21} fill={c} stroke={d} strokeWidth={2} />
+    <Path d="M42 36 C46 30 54 30 58 36 C54 38 46 38 42 36 Z" fill={leaf} />
+    <Path d="M38 52 C40 62 46 68 52 70" stroke="#FFFFFF" strokeWidth={3} strokeLinecap="round" fill="none" opacity={0.35} />
+  </>);
+  if (veg === 'floret') return (<>
+    <Path d="M44 78 L47 58 M56 78 L53 58" stroke={leaf} strokeWidth={6} strokeLinecap="round" />
+    {[[38, 46], [50, 38], [62, 46], [44, 56], [56, 56]].map(([x, y], i) => <Circle key={i} cx={x} cy={y} r={11} fill={c} stroke={d} strokeWidth={1.5} />)}
+  </>);
+  if (veg === 'leafy') return (<>
+    <Path d="M50 78 C30 70 24 46 36 30 C44 40 48 52 50 78 Z" fill={c} stroke={d} strokeWidth={2} />
+    <Path d="M50 78 C70 70 76 46 64 30 C56 40 52 52 50 78 Z" fill={shade(c, 1.1)} stroke={d} strokeWidth={2} />
+    <Path d="M50 78 C46 56 48 36 50 24 C52 36 54 56 50 78 Z" fill={shade(c, 0.9)} stroke={d} strokeWidth={1.5} />
+  </>);
   switch (category) {
     case 'veg': return (<>
       <Path d="M50 22 C64 30 70 52 58 74 C54 80 46 80 42 74 C30 52 36 30 50 22 Z" fill={c} stroke={d} strokeWidth={2} />
@@ -104,7 +125,7 @@ export function FoodArt({ food, size = 72, ring = true, dim = false }: { food: P
               </RadialGradient>
             </Defs>
             <Circle cx={50} cy={50} r={50} fill={`url(#bg-${food.key})`} />
-            <Glyph category={food.category} c={food.tint} />
+            <Glyph category={food.category} c={food.tint} k={food.key} />
           </Svg>
         )}
       </View>

@@ -207,7 +207,7 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
       ] }) };
       return { ok: false, status: 404, json: async () => ({}) };
     });
-    (global as unknown as { fetch: unknown }).fetch = fetchMock;
+    (globalThis as unknown as { fetch: unknown }).fetch = fetchMock;
     const r = await render(<Nearby />);
     expect(allText(r)).toContain('ni messagerie ni rendez-vous entre membres');
     expect(has(r, 'nb-directories')).toBe(true);
@@ -232,7 +232,7 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
     expect(await backend.select({ table: 'place_reports' })).toEqual([expect.objectContaining({ place_id: 'osm:node/12', reason: 'hours' })]);
     r.unmount();
     // service indisponible : message honnête, annuaires officiels, aucun lieu
-    (global as unknown as { fetch: unknown }).fetch = jest.fn(async () => { throw new Error('network'); });
+    (globalThis as unknown as { fetch: unknown }).fetch = jest.fn(async () => { throw new Error('network'); });
     const e = await render(<Nearby />);
     await flush(600);
     expect(allText(e)).toContain('Impossible de joindre le service de cartes publiques pour le moment.');

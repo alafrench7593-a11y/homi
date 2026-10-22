@@ -166,7 +166,7 @@ export const FOODS: FoodDef[] = [
   F('sesame', 'Sésame', 'allergen', '#E8D2A2', 'En purée (tahini) diluée dans une préparation.', { ing: 'tahini', allergen: 'sesame' }),
   F('shrimp', 'Crevette', 'allergen', '#F2967A', 'Cuite, finement hachée ou mixée.', { ing: 'shrimp', allergen: 'crustaceans' }),
   F('mussel', 'Moules', 'allergen', '#3E4A5C', 'Bien cuites, hachées finement.', { ing: 'mussels', allergen: 'molluscs' }),
-  F('soy', 'Soja (tofu, boisson, desserts)', 'allergen', '#E7DFC4', 'Santé publique France déconseille le lait de soja et les produits à base de soja avant 3 ans.', { ing: 'tofu', allergen: 'soy', minMonths: 36, source: 'spf' }),
+  F('soy', 'Soja', 'allergen', '#E7DFC4', 'Tofu, boisson et desserts au soja : Santé publique France déconseille le lait de soja et les produits à base de soja avant 3 ans.', { ing: 'tofu', allergen: 'soy', minMonths: 36, source: 'spf' }),
   F('mustard', 'Moutarde', 'allergen', '#D9A51E', 'Une pointe dans une sauce, plus tard.', { ing: 'mustard', allergen: 'mustard' }),
   // ---------------------------------------------------------------- autres
   F('honey', 'Miel', 'other', '#E2A52B', 'Jamais avant 1 an (risque de botulisme infantile, ANSES). Ensuite, comme tout produit sucré, le plus tard possible.', { minMonths: 12, source: 'anses_miel' }),
