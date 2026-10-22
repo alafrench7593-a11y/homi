@@ -41,6 +41,12 @@ interface UiState {
   /** « Mes actions du jour » : raccourcis choisis par profil (4 au maximum ; absent = ceux du profil). */
   dailyActionFavorites: Record<string, string[]> | null;
   setDailyActionFavorites: (profile: string, keys: string[] | null) => void;
+  /** « Je grandis » : questions préparées pour un rendez-vous, par enfant (sur cet appareil). */
+  growQuestions: Record<string, string[]> | null;
+  setGrowQuestions: (childId: string, questions: string[]) => void;
+  /** « Près de chez moi » : dernière commune choisie (jamais une adresse) et types de lieux affichés. */
+  nearbyTown: { label: string; lat: number; lon: number } | null;
+  setNearbyTown: (town: { label: string; lat: number; lon: number } | null) => void;
   /** Carte « Mon cycle » de l'accueil : éléments affichés (dans l'ordre) et raccourcis (null = par défaut). */
   cycleCardItems: string[] | null;
   cycleCardShortcuts: string[] | null;
@@ -101,6 +107,10 @@ export const useUiStore = create<UiState>()(
       setQuickShortcuts: (quickShortcuts) => set({ quickShortcuts }),
       cocoonFavorites: null,
       setCocoonFavorites: (cocoonFavorites) => set({ cocoonFavorites }),
+      growQuestions: null,
+      setGrowQuestions: (childId, questions) => set((st) => ({ growQuestions: { ...(st.growQuestions ?? {}), [childId]: questions.slice(0, 20) } })),
+      nearbyTown: null,
+      setNearbyTown: (nearbyTown) => set({ nearbyTown }),
       dailyActionFavorites: null,
       setDailyActionFavorites: (profile, keys) => set((st) => {
         const next = { ...(st.dailyActionFavorites ?? {}) };

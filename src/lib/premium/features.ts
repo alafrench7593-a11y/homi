@@ -7,7 +7,7 @@ export type PremiumFeature =
   | 'sleep_insights' | 'bedtime_routine' | 'assistant_more' | 'assistant_saved' | 'assistant_suggestions'
   | 'scanner_more' | 'scanner_compare' | 'coparent_invite' | 'voice_entry' | 'summaries' | 'summary_export'
   | 'weekly_menu' | 'cycle_insights' | 'cycle_export' | 'cycle_trends' | 'cycle_custom' | 'cycle_share' | 'cycle_monthly' | 'family_summary' | 'more_children' | 'more_reminders'
-  | 'more_documents' | 'more_lists' | 'premium_content' | 'growth_export' | 'diversification'
+  | 'more_documents' | 'more_lists' | 'premium_content' | 'growth_export' | 'diversification' | 'development_full'
   | 'community_profile' | 'community_groups' | 'community_albums' | 'community_search' | 'community_history' | 'saved_folders' | 'community_ai' | 'community_events';
 
 /** Quota mensuel (clé de plan_limits) : la version gratuite permet d'essayer. */
@@ -20,6 +20,7 @@ export const QUOTA_OF: Partial<Record<PremiumFeature, string>> = {
   more_reminders: 'custom_reminders_count',
   more_documents: 'documents_count',
   more_lists: 'checklists_count',
+  diversification: 'food_discoveries_per_child',
 };
 
 export interface FeatureInfo { title: string; benefit: string; free: string; premium: string; icon: string }
@@ -51,7 +52,8 @@ export const FEATURES: Record<PremiumFeature, FeatureInfo> = {
   more_lists: { icon: 'check-square', title: 'Des listes de préparation illimitées', benefit: 'Valise de maternité, papiers, chambre…', free: 'Quelques listes', premium: 'Listes étendues' },
   premium_content: { icon: 'book-open', title: 'Guides approfondis', benefit: 'Séries et guides adaptés à l’âge exact ou à la semaine de grossesse.', free: 'Toutes les informations de sécurité', premium: 'Guides approfondis' },
   growth_export: { icon: 'download', title: 'Exporter les mesures', benefit: 'Un fichier des mesures de croissance à partager.', free: '—', premium: 'Export des mesures' },
-  diversification: { icon: 'coffee', title: 'Suivre la diversification', benefit: 'Aliments introduits, réactions notées, textures.', free: '—', premium: 'Suivi de la diversification' },
+  diversification: { icon: 'coffee', title: 'Toutes les découvertes de {name}', benefit: 'Le catalogue complet des aliments, les recettes qui utilisent ce qu’il a déjà goûté, des idées adaptées à son âge, des filtres avancés et tout l’historique.', free: 'Jusqu’à 15 aliments suivis par enfant, les aliments essentiels de chaque catégorie, les allergènes, les informations de sécurité et l’historique des 30 derniers jours', premium: 'Catalogue complet, recettes associées, idées personnalisées, filtres avancés, historique complet' },
+  development_full: { icon: 'trending-up', title: 'Suivre toutes les étapes de {name}', benefit: 'Toutes les étapes de chaque tranche d’âge, avec une activité adaptée pour chacune, et un résumé PDF à montrer au professionnel.', free: 'Les étapes principales, les conseils de sécurité, les sources et le résumé à l’écran', premium: 'Suivi complet, activités adaptées à l’âge, résumé PDF' },
   community_profile: { icon: 'feather', title: 'Personnaliser votre profil communautaire', benefit: 'Une couleur, une bannière, une présentation plus longue, et un badge Premium discret si vous le souhaitez.', free: 'Pseudonyme, identifiant, avatar ou photo, courte présentation, parcours', premium: 'Couleur, bannière, présentation enrichie, badge facultatif' },
   community_groups: { icon: 'lock', title: 'Créez votre groupe privé de parents', benefit: 'Un espace rien qu’à vous, sur invitation : les publications restent invisibles pour le reste de la communauté.', free: 'Rejoindre les groupes thématiques, les groupes par mois et les groupes privés où l’on vous invite', premium: 'Créer des groupes privés et inviter des membres' },
   community_albums: { icon: 'image', title: 'Des albums photo à partager', benefit: 'Des albums privés, ou partagés seulement avec les membres que vous choisissez. Photos nettoyées de leur position GPS.', free: 'Voir les albums que l’on partage avec vous ; jusqu’à 4 photos par publication', premium: 'Créer des albums et les partager' },

@@ -20,3 +20,4 @@ export { cm3 } from './cm3';
 export { dom } from './dom';
 export { cocoon } from './cocoon';
 export { care } from './care';
+export { discover } from './discover';

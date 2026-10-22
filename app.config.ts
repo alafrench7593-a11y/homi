@@ -49,6 +49,8 @@ const config: ExpoConfig = {
     // Widget iOS « Mon cycle » (discret par défaut) — nécessite une build de développement, indisponible dans Expo Go
     ['expo-widgets', { widgets: [{ name: 'CycleWidget', displayName: 'Mon cycle', description: 'Jour du cycle, de façon discrète si vous le souhaitez.', ios: { supportedFamilies: ['systemSmall', 'accessoryRectangular'] } }] }],
     ['expo-camera', { cameraPermission: 'La caméra sert à scanner un produit ou un document.', recordAudioAndroid: false }],
+    // « Près de chez moi » : position facultative, au premier plan seulement, jamais enregistrée ni partagée
+    ['expo-location', { locationWhenInUsePermission: 'Facultatif : votre position du moment sert seulement à trouver des lieux publics pour les familles près de vous. Elle n’est jamais enregistrée ni montrée à quelqu’un.', locationAlwaysAndWhenInUsePermission: false, locationAlwaysPermission: false, isAndroidBackgroundLocationEnabled: false, isIosBackgroundLocationEnabled: false, isAndroidForegroundServiceEnabled: false }],
   ],
   experiments: { typedRoutes: true },
   extra: {
