@@ -6,6 +6,7 @@ import { DEV_DOMAINS } from '@/lib/domain/childCare';
 import { exportTextFile } from '@/lib/exportData';
 import { csvCell, safeFileName } from '@/lib/csv';
 import { insertOrQueue } from '@/lib/offline';
+import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
@@ -129,6 +130,7 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
   return (
     <>
       <ChildToday child={child} compact />
+      <ChildShortcuts child={child} />
       {isBottleChild(child.birth_date, js.childType(child.id)) && <BottleTimerCard child={child} />}
       {child.enabled_tracking.includes('sleep') && <BabySleepCard child={child} />}
       <Row wrap>
@@ -597,23 +599,19 @@ export function HealthTab({ child }: { child: Child }) {
 // ---------------------------------------------------------------- Alimentation (diversification)
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
 
+/** Onglet « alimentation » : le carnet complet est dans « Ses découvertes » (mêmes données, rien n'est perdu). */
 export function FoodsTab({ child }: { child: Child }) {
-  const premium = usePremium();
-  const { data: intros } = useFoodIntroductions(child.id);
-  // Fin d'abonnement : les aliments déjà notés restent consultables (lecture seule) ; jamais de perte silencieuse
-  const readOnly = !premium && !!intros?.length;
   return (
     <>
-      {premium || readOnly ? <FoodsTracker child={child} readOnly={readOnly} /> : null}
-      {!premium ? (
-        <PremiumSection feature="diversification" name={child.first_name} preview={<Text variant="small">{`Chaque aliment découvert par ${child.first_name}, sa date et la réaction observée, au même endroit.`}</Text>}><View /></PremiumSection>
-      ) : null}
+      <ChildShortcuts child={child} />
+      <Button label={`Ouvrir « Ses découvertes »`} icon="feather" onPress={() => router.push(`/child/${child.id}/discoveries` as never)} testID="foods-open-discoveries" />
       <Banner tone="danger" title="Réaction importante ?">{'Gêne pour respirer, gonflement du visage ou des lèvres, vomissements répétés, malaise : appelez le 15 ou le 112 immédiatement.'}</Banner>
     </>
   );
 }
 
-function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boolean }) {
+/** Ancien formulaire simple (conservé pour la lecture hors ligne) : le carnet complet est « Ses découvertes ». */
+export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boolean }) {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();

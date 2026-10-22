@@ -147,6 +147,16 @@ export const discover = {
   'dc.sign.redness_mouth': "Rougeurs autour de la bouche",
   'dc.sign.digestive': "Maux de ventre, diarrhée",
   'dc.sign.other': "Autre",
+  // ---------------------------------------------------------------- raccourcis de la page de l'enfant
+  'cs.discoveries': "Ses découvertes",
+  'cs.lastFood': "Dernier aliment découvert : {food}",
+  'cs.lastFoodOn': "Dernière découverte : {food}, le {date}",
+  'cs.noFood': "Notez son premier aliment découvert.",
+  'cs.recipe': "Idée de recette : {title}",
+  'cs.lastStep': "Nouvelle étape observée : {step}",
+  'cs.noStep': "Notez ce que vous observez, à son rythme.",
+  'cs.activity': "Activité du moment : {text}",
+  'cs.nextStep': "À observer en ce moment : {step}",
   // ---------------------------------------------------------------- Je grandis
   'gr.title': "Je grandis",
   'gr.subtitle': "{name} · {age}",

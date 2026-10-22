@@ -12,6 +12,7 @@
  *  7. Un article adapté à l'âge.
  * Toutes les données viennent du profil affiché (clé = identifiant de l'enfant) : rien n'est mélangé.
  */
+import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, PanResponder, Platform, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
@@ -300,6 +301,7 @@ export function Cocoon({ child, journey, now: preview, article }: { child: Child
         {infos.map((v) => <InfoCard key={v.key} k={v.key} label={v.label} value={v.value} sub={v.sub} child={child} />)}
       </View>
       <KeepCard item={keep} child={child} />
+      <ChildShortcuts child={child} />
       {article ? <ArticleCard article={article} premium={premium} /> : null}
       <View style={{ gap: spacing.xs }}>
         <Button label={tr('coc.allDay')} icon="list" variant="secondary" full onPress={() => router.push('/(tabs)/track')} testID="cocoon-all-day" />

@@ -32,6 +32,8 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
+/** Référence stable : un nouveau tableau à chaque lecture du store provoquerait des rendus sans fin. */
+const NO_QUESTIONS: string[] = [];
 const STATUSES: StepStatus[] = ['observed', 'in_progress', 'not_yet', 'not_tracked'];
 const range = (a: number, b: number) => (b >= 24 && a % 12 === 0 && b % 12 === 0 ? tr('gr.rangeYears', { a: a / 12, b: b / 12 }) : tr('gr.rangeMonths', { a, b }));
 
@@ -158,7 +160,7 @@ function StepSheet({ step, row, child, premium, onClose }: { step: StepDef | nul
   const t = useTheme();
   const toast = useToast();
   const save = useSaveStep();
-  const questions = useUiStore((s) => s.growQuestions?.[child.id] ?? []);
+  const questions = useUiStore((s) => s.growQuestions?.[child.id] ?? NO_QUESTIONS);
   const setQuestions = useUiStore((s) => s.setGrowQuestions);
   const [status, setStatus] = useState<StepStatus | null>(null);
   const [date, setDate] = useState('');
@@ -221,7 +223,7 @@ function SummarySheet({ visible, onClose, name, age, rows, childId }: { visible:
   const toast = useToast();
   const access = usePremiumAccess('summary_export', name);
   const consume = useConsumeQuota('summary_exports_per_month');
-  const questions = useUiStore((s) => s.growQuestions?.[childId] ?? []);
+  const questions = useUiStore((s) => s.growQuestions?.[childId] ?? NO_QUESTIONS);
   const [busy, setBusy] = useState(false);
   const lines = factualSummary(name, age, rows, questions);
   async function exportIt(mode: 'pdf' | 'share') {

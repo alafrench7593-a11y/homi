@@ -68,6 +68,7 @@ export const TOOLS: ToolDef[] = [
   { id: 'scan_compare', theme: 'scanner', icon: 'columns', scopes: ALL, universal: true, href: () => '/scanner/compare' },
   { id: 'scan_avoid', theme: 'scanner', icon: 'slash', scopes: ALL, universal: true, href: () => '/scanner/avoid' },
   { id: 'ask', theme: 'resources', icon: 'message-circle', scopes: ALL, universal: true, href: () => '/(tabs)/ask' },
+  { id: 'nearby', theme: 'resources', icon: 'map-pin', scopes: ALL, universal: true, href: () => '/nearby' },
   { id: 'mood', theme: 'mood', icon: 'smile', scopes: ADULT, universal: true, href: () => '/me/mood' },
   { id: 'kid_mood', theme: 'mood', icon: 'sun', scopes: KID, universal: true, href: (c) => kid(c, '/wellbeing') },
   { id: 'sleep', theme: 'sleep', icon: 'cloud', scopes: ADULT, universal: true, href: () => '/me/sleep' },
@@ -156,12 +157,13 @@ export const TOOLS: ToolDef[] = [
   { id: 'baby_bottle_history', theme: 'feeding', icon: 'bar-chart-2', scopes: ['baby'], href: (c) => q('/bottle/history', c) },
   { id: 'baby_diaper', theme: 'diapers', icon: 'wind', scopes: ['baby'], href: (c) => q('/track/diaper', c) },
   { id: 'baby_daily', theme: 'diapers', icon: 'activity', scopes: ['baby'], href: () => '/(tabs)/track' },
-  { id: 'baby_foods', theme: 'feeding', icon: 'feather', scopes: ['baby'], href: (c) => kid(c, '/foods') },
+  { id: 'baby_foods', theme: 'feeding', icon: 'feather', scopes: KID, href: (c) => kid(c, '/discoveries') },
   { id: 'baby_night_help', theme: 'sleep', icon: 'star', scopes: ['baby'], href: (c) => q('/night/help', c) },
 
   // ---------------------------------------------------------------- bébé et enfant
   { id: 'kid_profile', theme: 'growth', icon: 'smile', scopes: KID, href: (c) => kid(c) },
   { id: 'kid_growth', theme: 'growth', icon: 'trending-up', scopes: KID, href: (c) => kid(c, '/growth') },
+  { id: 'kid_grow', theme: 'growth', icon: 'star', scopes: KID, href: (c) => kid(c, '/grow') },
   { id: 'kid_milestones', theme: 'growth', icon: 'award', scopes: KID, href: (c) => kid(c, '?tab=etapes') },
   { id: 'kid_vaccines', theme: 'health', icon: 'shield', scopes: KID, href: (c) => kid(c, '/vaccines') },
   { id: 'kid_teeth', theme: 'teeth', icon: 'circle', scopes: KID, href: (c) => q('/teeth', c) },
