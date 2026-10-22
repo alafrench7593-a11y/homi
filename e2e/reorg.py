@@ -101,7 +101,8 @@ def run(p):
     R['1_accueil_bebe_pas_echographie_3e_trimestre'] = 'Échographie du 3e trimestre' not in t
     R['1_accueil_bebe_pas_de_SA'] = not SA.search(t)
     R['1_accueil_bebe_rendez_vous_pediatre'] = 'Pédiatre de Lina' in t
-    R['1_accueil_raccourcis_et_tous_mes_outils'] = tid(pg, 'all-tools').is_visible()
+    # Profil enfant : « Le cocon du jour » (« + Ajouter » pour les saisies, tous les outils dans la barre)
+    R['1_accueil_raccourcis_et_tous_mes_outils'] = pg.locator('[data-testid="cocoon-add"]').count() > 0 and pg.get_by_role('tab', name='Outils').count() > 0
     tid(pg, 'profile-switcher').click(); pg.wait_for_timeout(700)
     R['1_selecteur_sans_post_partum_independant'] = 'Mon post-partum' not in T(pg)
     pg.keyboard.press('Escape'); pg.wait_for_timeout(400)

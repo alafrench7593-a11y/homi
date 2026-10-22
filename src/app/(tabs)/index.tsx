@@ -141,7 +141,11 @@ export default function Home() {
     ),
   };
   // « Suivre mon cycle » : l'accueil ne montre que le calendrier, les 5 raccourcis, une carte intelligente et le prochain rappel
-  const homeCards = (cycleMode || childScope) && !mainLoading && !mainError ? ['main'] : orderedHomeCards(homeOrder, homeHidden);
+  // Profil enfant : le cocon remplace les cartes par défaut ; les cartes facultatives que le parent a lui-même
+  // activées dans Réglages › Mon accueil (recette, question) restent affichées en dessous
+  const homeCards = cycleMode && !mainLoading && !mainError ? ['main']
+    : childScope && !mainLoading && !mainError ? ['main', ...orderedHomeCards(homeOrder, homeHidden).filter((k) => k === 'recipe' || k === 'assistant')]
+      : orderedHomeCards(homeOrder, homeHidden);
   // Recommandation du jour : l'article adapté s'il existe, sinon une idée de repas — sans doublon si ces cartes sont déjà affichées
   cards.recommendation = (!homeCards.includes('article') ? cards.article : null) ?? (!homeCards.includes('recipe') ? cards.recipe : null);
 

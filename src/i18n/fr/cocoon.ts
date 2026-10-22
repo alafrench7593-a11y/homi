@@ -101,6 +101,8 @@ export const cocoon = {
   'coc.keep.bottle': 'Prochain biberon vers {time}',
   'coc.keep.bottleSub': 'Rappel choisi pour {name}',
   'coc.keep.apptAt': 'Aujourd’hui à {time}',
+  'coc.keep.apptOn': '{day} à {time}',
+  'coc.keep.then': 'Ensuite : {title}, {when}',
   'coc.keep.nap': 'Prochaine sieste estimée autour de {time}',
   'coc.keep.napSub': 'Une estimation : les signes de fatigue priment',
   'coc.keep.treatment': '{name} à {time}',

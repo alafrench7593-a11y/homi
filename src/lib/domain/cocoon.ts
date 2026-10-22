@@ -6,7 +6,7 @@
  *  · « À retenir aujourd'hui » : UNE seule chose, par ordre d'utilité.
  * Rien n'est inventé : une information sans donnée n'apparaît pas (ou dit simplement qu'il n'y a rien de noté).
  */
-import { t as tr, type TKey } from '@/i18n';
+import { formatDate, t as tr, type TKey } from '@/i18n';
 import { BOTTLE_MAX_MONTHS } from './bottleTimer';
 import { hm, type TrackProfile } from './trackingCards';
 import type { Appointment, Bottle, Breastfeed, Diaper, LogKind, Meal, Observation, Sleep } from '@/lib/types';
@@ -283,7 +283,7 @@ function whenNext(iso: string, now: Date): string {
 // ─── À retenir aujourd'hui (une seule chose) ──────────────────────────────────────────────────────
 
 export type KeepKind = 'bottle' | 'appointment' | 'nap' | 'treatment' | 'medication' | 'tip' | 'none';
-export interface KeepItem { kind: KeepKind; title: string; detail?: string; source?: string }
+export interface KeepItem { kind: KeepKind; title: string; detail?: string; source?: string; /** Rendez-vous à venir, rappelé discrètement sous l'élément principal */ then?: string }
 
 export interface KeepInput {
   now: Date;
@@ -299,7 +299,7 @@ export interface KeepInput {
   tipSource?: string;
 }
 
-export function keepInMind(i: KeepInput): KeepItem {
+function keepMain(i: KeepInput): KeepItem {
   const N = i.now.getTime();
   const { to } = dayBounds(i.now);
   if (i.bottleReminderAt && at(i.bottleReminderAt) > N) {
@@ -307,15 +307,30 @@ export function keepInMind(i: KeepInput): KeepItem {
   }
   const appt = (i.appointments ?? []).filter((a) => at(a.starts_at) > N && at(a.starts_at) < to).sort((a, b) => a.starts_at.localeCompare(b.starts_at))[0];
   if (appt) return { kind: 'appointment', title: appt.title, detail: tr('coc.keep.apptAt', { time: clockOf(at(appt.starts_at)) }) };
+  // Rendez-vous des prochains jours (le plus proche), s'il n'y a rien de plus urgent aujourd'hui
+  const soon = (i.appointments ?? []).filter((a) => at(a.starts_at) >= to && at(a.starts_at) < to + 7 * 86_400_000).sort((a, b) => a.starts_at.localeCompare(b.starts_at))[0];
   if (i.nextNapAt && i.nextNapAt > N && i.nextNapAt < to) return { kind: 'nap', title: tr('coc.keep.nap', { time: clockOf(i.nextNapAt) }), detail: tr('coc.keep.napSub') };
   if (i.treatment?.nextAt && at(i.treatment.nextAt) < to) return { kind: 'treatment', title: tr('coc.keep.treatment', { name: i.treatment.name, time: clockOf(at(i.treatment.nextAt)) }), detail: tr('coc.keep.treatmentSub') };
   const med = (i.observations ?? []).filter((o) => o.kind === 'medication' && at(o.at) >= dayBounds(i.now).from && at(o.at) <= N).sort((a, b) => b.at.localeCompare(a.at))[0];
   if (med) return { kind: 'medication', title: tr('coc.keep.medication', { time: clockOf(at(med.at)) }), detail: med.label || med.note || undefined };
+  if (soon) return { kind: 'appointment', title: soon.title, detail: tr('coc.keep.apptOn', { day: formatDate(new Date(soon.starts_at), { weekday: 'long', day: 'numeric', month: 'long' }), time: clockOf(at(soon.starts_at)) }) };
   if (i.tips?.length && i.ageMonths < 12) {
     const day = Math.floor((N - new Date(i.now.getFullYear(), 0, 1).getTime()) / 86_400_000);
     return { kind: 'tip', title: tr('coc.keep.tipTitle'), detail: i.tips[day % i.tips.length], source: i.tipSource };
   }
   return { kind: 'none', title: tr('coc.keep.none'), detail: tr('coc.keep.noneSub') };
+}
+
+/** Une seule chose à retenir ; un rendez-vous proche (7 jours) reste rappelé en une ligne s'il n'est pas déjà l'élément principal. */
+export function keepInMind(i: KeepInput): KeepItem {
+  const main = keepMain(i);
+  if (main.kind === 'appointment') return main;
+  const N = i.now.getTime();
+  const next = (i.appointments ?? []).filter((a) => at(a.starts_at) > N && at(a.starts_at) < N + 7 * 86_400_000).sort((a, b) => a.starts_at.localeCompare(b.starts_at))[0];
+  if (!next) return main;
+  const sameDay = at(next.starts_at) < dayBounds(i.now).to;
+  const when = sameDay ? clockOf(at(next.starts_at)) : tr('coc.keep.apptOn', { day: formatDate(new Date(next.starts_at), { weekday: 'long', day: 'numeric', month: 'long' }), time: clockOf(at(next.starts_at)) });
+  return { ...main, then: tr('coc.keep.then', { title: next.title, when }) };
 }
 
 // ─── Ajout rapide ─────────────────────────────────────────────────────────────────────────────────

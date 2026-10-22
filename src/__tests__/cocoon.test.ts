@@ -82,6 +82,17 @@ describe('à retenir aujourd’hui (une seule chose)', () => {
     expect(keepInMind({ ...b, tips: ['Sur le dos'], tipSource: 'Santé publique France' })).toMatchObject({ kind: 'tip', detail: 'Sur le dos' });
     expect(keepInMind({ ...b, ageMonths: 30, tips: ['Sur le dos'] }).kind).toBe('none');
   });
+  it('rendez-vous des prochains jours, s’il n’y a rien aujourd’hui', () => {
+    const later = [{ id: 'a2', household_id: 'h', child_id: 'c1', starts_at: at(10, 0, 3), title: 'Pédiatre de Lina' }] as unknown as Appointment[];
+    expect(keepInMind({ ...b, appointments: later })).toMatchObject({ kind: 'appointment', title: 'Pédiatre de Lina' });
+    expect(keepInMind({ ...b, appointments: later }).detail).toMatch(/à 10\u00a0h$/);
+  });
+  it('un rendez-vous proche reste rappelé sous l’élément principal', () => {
+    const later = [{ id: 'a2', household_id: 'h', child_id: 'c1', starts_at: at(10, 0, 3), title: 'Pédiatre de Lina' }] as unknown as Appointment[];
+    const k = keepInMind({ ...b, bottleReminderAt: at(14, 10), appointments: later });
+    expect(k.kind).toBe('bottle');
+    expect(k.then).toMatch(/^Ensuite : Pédiatre de Lina, /);
+  });
   it('un rappel déjà passé n’est pas proposé', () => {
     expect(keepInMind({ ...b, bottleReminderAt: at(12) }).kind).not.toBe('bottle');
   });

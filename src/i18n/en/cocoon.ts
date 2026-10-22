@@ -98,6 +98,8 @@ export const cocoon: Messages<typeof fr> = {
   'coc.keep.bottle': 'Next bottle around {time}',
   'coc.keep.bottleSub': 'Reminder chosen for {name}',
   'coc.keep.apptAt': 'Today at {time}',
+  'coc.keep.apptOn': '{day} at {time}',
+  'coc.keep.then': 'Next: {title}, {when}',
   'coc.keep.nap': 'Next nap estimated around {time}',
   'coc.keep.napSub': 'An estimate: signs of tiredness come first',
   'coc.keep.treatment': '{name} at {time}',

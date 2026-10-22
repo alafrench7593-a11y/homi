@@ -614,7 +614,7 @@ function KeepCard({ item, child }: { item: KeepItem; child: Child }) {
   };
   return (
     <View>
-    <Pressable accessibilityRole="button" accessibilityLabel={`${tr('coc.keep.title')} : ${item.title}${item.detail ? `. ${item.detail}` : ''}`} onPress={go} style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })} testID="cocoon-keep">
+    <Pressable accessibilityRole="button" accessibilityLabel={`${tr('coc.keep.title')} : ${item.title}${item.detail ? `. ${item.detail}` : ''}${item.then ? `. ${item.then}` : ''}`} onPress={go} style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })} testID="cocoon-keep">
       <Glass rounded={28} wash={t.isDark ? undefined : ['rgba(255,236,214,0.55)', 'rgba(255,226,236,0.35)', 'rgba(232,222,255,0.45)']}>
         <View style={{ flexDirection: 'row', gap: spacing.sm, padding: spacing.md, alignItems: 'flex-start' }}>
           <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' }}>
@@ -625,6 +625,7 @@ function KeepCard({ item, child }: { item: KeepItem; child: Child }) {
             <Text weight="bold">{item.title}</Text>
             {item.detail ? <Text variant="small" muted>{item.detail}</Text> : null}
             {item.source ? <Text variant="caption" muted>{tr('coc.keep.source', { source: item.source })}</Text> : null}
+            {item.then ? <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }} testID="cocoon-keep-then"><Icon name="calendar" size={13} color={t.colors.textMuted} /><Text variant="caption" muted style={{ flex: 1 }}>{item.then}</Text></View> : null}
           </View>
           <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
         </View>
