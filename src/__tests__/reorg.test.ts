@@ -54,7 +54,7 @@ describe('accueil d’un nouveau-né : seulement ce qui concerne ce profil', () 
 describe('parcours grossesse : seulement les outils prévus', () => {
   const ids = toolsFor({ scope: 'pregnancy', pregnancyId: 'p1' }).map((x) => x.id);
   it('développement, rendez-vous, documents, poids facultatif, sommeil, humeur, repas, préparation, prénoms, articles, sexualité', () => {
-    for (const id of ['preg_evolution', 'appointments', 'documents', 'preg_weight', 'sleep', 'mood', 'meals', 'preg_birth_prep', 'preg_names', 'preg_articles', 'preg_intimacy']) expect(ids).toContain(id);
+    for (const id of ['preg_evolution', 'appointments', 'documents', 'preg_weight', 'sleep', 'mood', 'preg_eat', 'preg_birth_prep', 'preg_names', 'preg_articles', 'preg_intimacy']) expect(ids).toContain(id);
   });
   it('rien d’un bébé né, ni organisation familiale, ni cycle', () => {
     for (const id of ['baby_bottle', 'baby_diaper', 'kid_teeth', 'kid_vaccines', 'family_tasks', 'family_routines', 'avoid_cycle', 'ttc_tests', 'pp_recovery', 'baby_night_help']) expect(ids).not.toContain(id);

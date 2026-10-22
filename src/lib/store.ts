@@ -38,6 +38,9 @@ interface UiState {
   /** « Le cocon du jour » : les 4 actions favorites de « + Ajouter » (null = selon l'âge). */
   cocoonFavorites: string[] | null;
   setCocoonFavorites: (keys: string[] | null) => void;
+  /** « Mes actions du jour » : raccourcis choisis par profil (4 au maximum ; absent = ceux du profil). */
+  dailyActionFavorites: Record<string, string[]> | null;
+  setDailyActionFavorites: (profile: string, keys: string[] | null) => void;
   /** Carte « Mon cycle » de l'accueil : éléments affichés (dans l'ordre) et raccourcis (null = par défaut). */
   cycleCardItems: string[] | null;
   cycleCardShortcuts: string[] | null;
@@ -98,6 +101,12 @@ export const useUiStore = create<UiState>()(
       setQuickShortcuts: (quickShortcuts) => set({ quickShortcuts }),
       cocoonFavorites: null,
       setCocoonFavorites: (cocoonFavorites) => set({ cocoonFavorites }),
+      dailyActionFavorites: null,
+      setDailyActionFavorites: (profile, keys) => set((st) => {
+        const next = { ...(st.dailyActionFavorites ?? {}) };
+        if (keys && keys.length) next[profile] = keys.slice(0, 4); else delete next[profile];
+        return { dailyActionFavorites: next };
+      }),
       cycleCardItems: null,
       cycleCardShortcuts: null,
       setCycleCard: (p) => set((st) => ({

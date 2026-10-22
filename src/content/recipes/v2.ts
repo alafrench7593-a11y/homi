@@ -12,6 +12,7 @@ import lot03 from './v2/lot-03-mouline-ecrase.json';
 import lot04 from './v2/lot-04-morceaux-12-24-mois.json';
 import lot05 from './v2/lot-05-2-6-ans.json';
 import lot06 from './v2/lot-06-6-10-ans-famille.json';
+import lot07 from './v2/lot-07-grossesse-quotidien.json';
 
 export const V2_ORIGIN = { by: 'Rédaction par une IA (Claude, Anthropic)', on: '2026-10-21', status: 'to_review' as const, note: 'Nouveau catalogue de recettes familiales classiques ; contrôles automatiques réussis, relecture humaine à faire.' };
 
@@ -23,6 +24,7 @@ export const V2_LOTS: { id: string; label: string; items: Partial<RecipeDraft>[]
   { id: 'lot-04', label: 'Petits morceaux, 12 à 24 mois', items: lot04 as Partial<RecipeDraft>[] },
   { id: 'lot-05', label: '2 à 6 ans', items: lot05 as Partial<RecipeDraft>[] },
   { id: 'lot-06', label: '6 à 10 ans et repas de famille', items: lot06 as Partial<RecipeDraft>[] },
+  { id: 'lot-07', label: 'Grossesse au quotidien (petits-déjeuners, collations, nausées, fatigue)', items: lot07 as Partial<RecipeDraft>[] },
 ];
 
 /** Seules les recettes qui passent tous les contrôles entrent dans le catalogue. */

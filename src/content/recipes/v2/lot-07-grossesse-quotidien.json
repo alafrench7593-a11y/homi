@@ -1,0 +1,1211 @@
+[
+ {
+  "slug": "gr-porridge-banane-cannelle",
+  "title": "Porridge à la banane et à la cannelle",
+  "summary": "Un petit-déjeuner chaud et doux, prêt en quelques minutes.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "breakfast"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 3,
+  "cookMin": 5,
+  "ingredients": [
+   [
+    "oats",
+    60,
+    "g"
+   ],
+   [
+    "milk",
+    300,
+    "ml"
+   ],
+   [
+    "banana",
+    1,
+    "u"
+   ],
+   [
+    "cinnamon",
+    1,
+    "pincee"
+   ]
+  ],
+  "steps": [
+   "Versez les flocons d’avoine et le lait dans une petite casserole.",
+   "Faites cuire 5 minutes à feu doux en remuant, jusqu’à ce que le mélange épaississe.",
+   "Ajoutez la banane coupée en rondelles et la cannelle, puis servez tiède."
+  ],
+  "allergens": [
+   "gluten",
+   "milk"
+  ],
+  "tags": [
+   "quick",
+   "fiber",
+   "vegetarian",
+   "fatigue",
+   "family"
+  ],
+  "adaptations": [
+   "Remplacez la banane par une pomme ou une poire cuite avec les flocons."
+  ],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Grossesse : produits laitiers au lait pasteurisé uniquement, conservés au réfrigérateur (listériose)."
+  ],
+  "nutrition": "Des flocons d’avoine pour les fibres et un produit laitier pour le calcium, avec un fruit.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "hot",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-yaourt-avoine-fruits-rouges-chauds",
+  "title": "Yaourt, flocons d’avoine et fruits rouges tiédis",
+  "summary": "Un bol frais et croquant, avec des fruits rouges réchauffés pour plus de sécurité.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "breakfast",
+   "snack"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 3,
+  "cookMin": 5,
+  "ingredients": [
+   [
+    "frozen_berries",
+    150,
+    "g"
+   ],
+   [
+    "yogurt",
+    2,
+    "u"
+   ],
+   [
+    "oats",
+    40,
+    "g"
+   ]
+  ],
+  "steps": [
+   "Faites chauffer les fruits rouges dans une petite casserole 5 minutes jusqu’à frémissement, puis laissez tiédir.",
+   "Versez le yaourt dans deux bols et parsemez de flocons d’avoine.",
+   "Ajoutez les fruits rouges tiédis au moment de servir."
+  ],
+  "allergens": [
+   "gluten",
+   "milk"
+  ],
+  "tags": [
+   "quick",
+   "calcium",
+   "fiber",
+   "vegetarian",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Grossesse : produits laitiers au lait pasteurisé uniquement, conservés au réfrigérateur (listériose).",
+   "Les fruits rouges surgelés sont réchauffés jusqu’à frémissement avant d’être consommés."
+  ],
+  "nutrition": "Un produit laitier pour le calcium et des fibres avec l’avoine et les fruits.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "hot",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-tartines-fromage-frais-concombre",
+  "title": "Tartines de pain complet, fromage frais et concombre",
+  "summary": "Des tartines fraîches pour le matin ou le goûter.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "breakfast",
+   "snack"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 8,
+  "cookMin": 0,
+  "ingredients": [
+   [
+    "wholemeal_bread",
+    4,
+    "u",
+    "tranches"
+   ],
+   [
+    "cream_cheese",
+    60,
+    "g"
+   ],
+   [
+    "cucumber",
+    0.5,
+    "u"
+   ],
+   [
+    "chives",
+    1,
+    "cs",
+    "ciselée"
+   ]
+  ],
+  "steps": [
+   "Lavez le concombre et la ciboulette, puis coupez le concombre en fines rondelles.",
+   "Tartinez le pain de fromage frais.",
+   "Disposez le concombre, parsemez de ciboulette et servez aussitôt."
+  ],
+  "allergens": [
+   "gluten",
+   "milk"
+  ],
+  "tags": [
+   "quick",
+   "calcium",
+   "vegetarian",
+   "fatigue",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Grossesse : produits laitiers au lait pasteurisé uniquement, conservés au réfrigérateur (listériose).",
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Un féculent complet, un produit laitier et un légume, dans une préparation sans cuisson.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "cold",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-oeufs-brouilles-bien-cuits-pain-complet",
+  "title": "Œufs brouillés bien cuits sur pain complet",
+  "summary": "Un petit-déjeuner salé, avec des œufs cuits jusqu’à être bien pris.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "breakfast",
+   "lunch"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 5,
+  "cookMin": 5,
+  "ingredients": [
+   [
+    "egg",
+    3,
+    "u"
+   ],
+   [
+    "butter",
+    10,
+    "g"
+   ],
+   [
+    "wholemeal_bread",
+    2,
+    "u",
+    "tranches"
+   ],
+   [
+    "chives",
+    1,
+    "cs",
+    "ciselée"
+   ]
+  ],
+  "steps": [
+   "Battez les œufs dans un bol.",
+   "Faites fondre le beurre dans une poêle, versez les œufs et faites cuire 5 minutes à feu moyen en remuant, jusqu’à ce qu’ils soient bien pris, sans partie liquide.",
+   "Servez sur le pain grillé, parsemé de ciboulette lavée."
+  ],
+  "allergens": [
+   "eggs",
+   "milk",
+   "gluten"
+  ],
+  "tags": [
+   "quick",
+   "protein",
+   "vegetarian",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Grossesse : les œufs doivent être bien cuits, jaune et blanc fermes (salmonellose).",
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Les œufs apportent des protéines ; le pain complet un féculent riche en fibres.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "hot",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-semoule-au-lait-vanille",
+  "title": "Semoule au lait à la vanille",
+  "summary": "Un dessert doux, facile à manger quand l’appétit manque.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "snack",
+   "dessert"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 4,
+  "prepMin": 5,
+  "cookMin": 10,
+  "ingredients": [
+   [
+    "milk",
+    500,
+    "ml"
+   ],
+   [
+    "semolina",
+    50,
+    "g"
+   ],
+   [
+    "sugar",
+    20,
+    "g"
+   ],
+   [
+    "vanilla",
+    1,
+    "cc"
+   ]
+  ],
+  "steps": [
+   "Faites chauffer le lait avec la vanille et le sucre jusqu’à frémissement.",
+   "Versez la semoule en pluie en remuant et laissez cuire 8 minutes à feu doux.",
+   "Répartissez dans des ramequins et servez tiède ou froid."
+  ],
+  "allergens": [
+   "milk",
+   "gluten"
+  ],
+  "tags": [
+   "nausea",
+   "calcium",
+   "vegetarian",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 2 jours, couvert.",
+  "precautions": [
+   "Grossesse : produits laitiers au lait pasteurisé uniquement, conservés au réfrigérateur (listériose)."
+  ],
+  "nutrition": "Un produit laitier pour le calcium, dans une préparation douce et peu odorante.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "hot",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-bouillon-vermicelles-carottes-gingembre",
+  "title": "Bouillon de vermicelles aux carottes et au gingembre",
+  "summary": "Un bouillon léger et parfumé, à boire et à manger par petites quantités.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "lunch",
+   "dinner"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 8,
+  "cookMin": 15,
+  "ingredients": [
+   [
+    "vegetable_stock",
+    800,
+    "ml"
+   ],
+   [
+    "carrot",
+    2,
+    "u"
+   ],
+   [
+    "ginger",
+    1,
+    "cc",
+    "râpé"
+   ],
+   [
+    "vermicelli",
+    60,
+    "g"
+   ]
+  ],
+  "steps": [
+   "Épluchez et lavez les carottes, puis coupez-les en fines rondelles.",
+   "Portez le bouillon à ébullition avec les carottes et le gingembre râpé, puis laissez cuire 10 minutes.",
+   "Ajoutez les vermicelles et faites cuire encore 4 minutes avant de servir."
+  ],
+  "allergens": [
+   "celery",
+   "gluten"
+  ],
+  "tags": [
+   "nausea",
+   "quick",
+   "vegetarian",
+   "family"
+  ],
+  "adaptations": [
+   "Sans gingembre si son goût vous gêne."
+  ],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Un plat léger qui apporte des légumes et un féculent ; à fractionner en petites portions si besoin.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "hot",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-poisson-blanc-vapeur-riz-courgettes",
+  "title": "Poisson blanc vapeur, riz et courgettes",
+  "summary": "Un repas simple, peu odorant et doux en bouche.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "lunch",
+   "dinner"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 10,
+  "cookMin": 25,
+  "ingredients": [
+   [
+    "rice",
+    120,
+    "g"
+   ],
+   [
+    "zucchini",
+    1,
+    "u"
+   ],
+   [
+    "white_fish",
+    2,
+    "u",
+    "filets"
+   ],
+   [
+    "lemon",
+    0.5,
+    "u"
+   ],
+   [
+    "olive_oil",
+    1,
+    "cs"
+   ]
+  ],
+  "steps": [
+   "Faites cuire le riz 12 minutes dans une grande casserole d’eau bouillante, puis égouttez.",
+   "Lavez la courgette, coupez-la en dés et faites-la cuire 8 minutes à la vapeur.",
+   "Faites cuire le poisson 10 minutes à la vapeur : la chair doit être opaque et se détacher facilement.",
+   "Servez avec un filet d’huile d’olive et quelques gouttes de citron."
+  ],
+  "allergens": [
+   "fish"
+  ],
+  "tags": [
+   "nausea",
+   "protein",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Grossesse : le poisson doit être cuit à cœur, chair opaque (listériose, parasites).",
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Un poisson maigre pour les protéines, un féculent et un légume, dans une assiette légère.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "hot",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre",
+   "anses_poisson"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-dahl-lentilles-corail-coco",
+  "title": "Dahl de lentilles corail au lait de coco",
+  "summary": "Un plat végétarien réconfortant, riche en légumineuses.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "lunch",
+   "dinner"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 4,
+  "prepMin": 10,
+  "cookMin": 25,
+  "ingredients": [
+   [
+    "onion",
+    1,
+    "u"
+   ],
+   [
+    "garlic",
+    1,
+    "u",
+    "gousse"
+   ],
+   [
+    "red_lentils",
+    200,
+    "g"
+   ],
+   [
+    "canned_tomato",
+    400,
+    "g"
+   ],
+   [
+    "coconut_milk",
+    200,
+    "ml"
+   ],
+   [
+    "curry",
+    1,
+    "cc"
+   ],
+   [
+    "rice",
+    200,
+    "g"
+   ]
+  ],
+  "steps": [
+   "Épluchez et émincez l’oignon et l’ail, puis faites-les revenir 3 minutes dans une casserole.",
+   "Ajoutez les lentilles rincées, les tomates concassées, le lait de coco, le curry et 400 ml d’eau.",
+   "Laissez mijoter 20 minutes à feu doux en remuant de temps en temps, jusqu’à ce que les lentilles soient fondantes.",
+   "Pendant ce temps, faites cuire le riz 12 minutes, puis servez avec le dahl."
+  ],
+  "allergens": [
+   "mustard",
+   "celery"
+  ],
+  "tags": [
+   "iron",
+   "fiber",
+   "vegetarian",
+   "batch",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 2 jours dans une boîte fermée ; réchauffez une seule fois.",
+  "precautions": [
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Les lentilles apportent du fer et des fibres ; avec le riz, un plat complet.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "hot",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Le dahl se congèle jusqu’à 3 mois ; réchauffez-le jusqu’à ce qu’il soit bien chaud partout."
+ },
+ {
+  "slug": "gr-salade-tiede-lentilles-carottes-persil",
+  "title": "Salade tiède de lentilles vertes, carottes et persil",
+  "summary": "Une salade complète à préparer à l’avance.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "lunch"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 10,
+  "cookMin": 25,
+  "ingredients": [
+   [
+    "green_lentils",
+    150,
+    "g"
+   ],
+   [
+    "carrot",
+    2,
+    "u"
+   ],
+   [
+    "parsley",
+    2,
+    "cs",
+    "ciselé"
+   ],
+   [
+    "olive_oil",
+    2,
+    "cs"
+   ],
+   [
+    "lemon",
+    0.5,
+    "u"
+   ]
+  ],
+  "steps": [
+   "Faites cuire les lentilles 25 minutes dans une grande casserole d’eau, puis égouttez.",
+   "Épluchez, lavez et râpez les carottes ; lavez et ciselez le persil.",
+   "Mélangez les lentilles tièdes avec les carottes, le persil, l’huile d’olive et le jus de citron."
+  ],
+  "allergens": [],
+  "tags": [
+   "fiber",
+   "iron",
+   "b9",
+   "vegetarian",
+   "make_ahead",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 2 jours dans une boîte fermée.",
+  "precautions": [
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Les lentilles sont une légumineuse riche en fibres ; les légumes verts comme le persil contiennent des folates.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "cold",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-houmous-maison-batonnets-legumes",
+  "title": "Houmous maison et bâtonnets de légumes",
+  "summary": "Une collation salée à partager.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "snack"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 4,
+  "prepMin": 12,
+  "cookMin": 0,
+  "ingredients": [
+   [
+    "chickpeas",
+    250,
+    "g"
+   ],
+   [
+    "tahini",
+    1,
+    "cs"
+   ],
+   [
+    "lemon",
+    0.5,
+    "u"
+   ],
+   [
+    "garlic",
+    1,
+    "u",
+    "petite gousse"
+   ],
+   [
+    "olive_oil",
+    2,
+    "cs"
+   ],
+   [
+    "carrot",
+    2,
+    "u"
+   ],
+   [
+    "cucumber",
+    0.5,
+    "u"
+   ]
+  ],
+  "steps": [
+   "Rincez les pois chiches et mixez-les avec le tahini, le jus de citron, l’ail épluché, l’huile d’olive et 3 cuillères à soupe d’eau.",
+   "Lavez les carottes et le concombre, épluchez les carottes, puis coupez les légumes en bâtonnets.",
+   "Servez le houmous avec les bâtonnets de légumes."
+  ],
+  "allergens": [
+   "sesame"
+  ],
+  "tags": [
+   "fiber",
+   "vegetarian",
+   "quick",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 2 jours dans une boîte fermée.",
+  "precautions": [
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose).",
+   "Conservez le houmous maison au réfrigérateur et consommez-le dans les 2 jours."
+  ],
+  "nutrition": "Les pois chiches apportent fibres et protéines végétales ; les légumes crus bien lavés complètent.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "cold",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-compote-pomme-poire-amande",
+  "title": "Compote pomme-poire, cannelle et poudre d’amande",
+  "summary": "Une collation douce, sans sucre ajouté.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "snack",
+   "dessert"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 4,
+  "prepMin": 10,
+  "cookMin": 15,
+  "ingredients": [
+   [
+    "apple",
+    2,
+    "u"
+   ],
+   [
+    "pear",
+    2,
+    "u"
+   ],
+   [
+    "cinnamon",
+    1,
+    "pincee"
+   ],
+   [
+    "almond_powder",
+    2,
+    "cs"
+   ]
+  ],
+  "steps": [
+   "Épluchez, lavez et coupez les pommes et les poires en morceaux.",
+   "Faites-les cuire 15 minutes à feu doux avec 3 cuillères à soupe d’eau et la cannelle.",
+   "Écrasez à la fourchette et servez tiède, parsemé de poudre d’amande."
+  ],
+  "allergens": [
+   "nuts"
+  ],
+  "tags": [
+   "fiber",
+   "vegetarian",
+   "nausea",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 3 jours, couvert.",
+  "precautions": [
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Des fruits cuits, doux pour la digestion, avec un peu de poudre d’amande.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "hot",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-petits-suisses-kiwi-noix",
+  "title": "Petits-suisses au kiwi et aux noix",
+  "summary": "Un goûter frais en deux minutes.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "snack"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 5,
+  "cookMin": 0,
+  "ingredients": [
+   [
+    "petit_suisse",
+    4,
+    "u"
+   ],
+   [
+    "kiwi",
+    2,
+    "u"
+   ],
+   [
+    "walnuts",
+    20,
+    "g"
+   ]
+  ],
+  "steps": [
+   "Épluchez les kiwis et coupez-les en dés.",
+   "Répartissez les petits-suisses dans deux bols, ajoutez le kiwi et les cerneaux de noix concassés."
+  ],
+  "allergens": [
+   "milk",
+   "nuts"
+  ],
+  "tags": [
+   "calcium",
+   "quick",
+   "vegetarian",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Grossesse : produits laitiers au lait pasteurisé uniquement, conservés au réfrigérateur (listériose)."
+  ],
+  "nutrition": "Un produit laitier pour le calcium, un fruit et quelques noix.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "cold",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "familyAdaptations": {
+   "child": "Avant 4 ans, remplacez les noix par un peu de poudre d’amande (risque d’étouffement)."
+  }
+ },
+ {
+  "slug": "gr-pates-completes-brocoli-emmental",
+  "title": "Pâtes complètes au brocoli et à l’emmental",
+  "summary": "Un plat rapide pour les soirs de fatigue.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "lunch",
+   "dinner"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 8,
+  "cookMin": 12,
+  "ingredients": [
+   [
+    "wholewheat_pasta",
+    200,
+    "g"
+   ],
+   [
+    "broccoli",
+    300,
+    "g"
+   ],
+   [
+    "garlic",
+    1,
+    "u",
+    "gousse"
+   ],
+   [
+    "olive_oil",
+    2,
+    "cs"
+   ],
+   [
+    "emmental",
+    60,
+    "g"
+   ]
+  ],
+  "steps": [
+   "Lavez le brocoli et détaillez-le en petits bouquets.",
+   "Faites cuire les pâtes 10 minutes dans une grande casserole d’eau bouillante, en ajoutant le brocoli pour les 5 dernières minutes, puis égouttez.",
+   "Faites revenir l’ail émincé 1 minute dans l’huile d’olive, ajoutez les pâtes et le brocoli, puis l’emmental râpé, et servez chaud."
+  ],
+  "allergens": [
+   "gluten",
+   "milk"
+  ],
+  "tags": [
+   "quick",
+   "calcium",
+   "fiber",
+   "vegetarian",
+   "fatigue",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Un féculent complet, un légume vert et un fromage à pâte pressée cuite pour le calcium.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "hot",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-tartines-sardines-tomate",
+  "title": "Tartines de sardines à la tomate et au citron",
+  "summary": "Un repas rapide avec un petit poisson gras en conserve.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "lunch",
+   "snack"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 8,
+  "cookMin": 0,
+  "ingredients": [
+   [
+    "wholemeal_bread",
+    4,
+    "u",
+    "tranches"
+   ],
+   [
+    "sardines_can",
+    1,
+    "u",
+    "boîte"
+   ],
+   [
+    "tomato",
+    2,
+    "u"
+   ],
+   [
+    "lemon",
+    0.5,
+    "u"
+   ]
+  ],
+  "steps": [
+   "Lavez les tomates et coupez-les en fines tranches.",
+   "Égouttez les sardines et écrasez-les à la fourchette avec un peu de jus de citron.",
+   "Tartinez le pain, ajoutez les tomates et servez aussitôt."
+  ],
+  "allergens": [
+   "gluten",
+   "fish"
+  ],
+  "tags": [
+   "quick",
+   "protein",
+   "calcium",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Grossesse : les sardines en conserve sont déjà cuites ; évitez en revanche le poisson cru ou fumé (listériose).",
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Un petit poisson gras, dont les arêtes écrasées apportent du calcium, avec un féculent complet et un légume.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "cold",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre",
+   "anses_poisson"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-quinoa-saumon-cuit-epinards",
+  "title": "Quinoa, saumon bien cuit et épinards",
+  "summary": "Une assiette colorée, simple à préparer.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "dinner",
+   "lunch"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 10,
+  "cookMin": 20,
+  "ingredients": [
+   [
+    "quinoa",
+    120,
+    "g"
+   ],
+   [
+    "salmon",
+    2,
+    "u",
+    "pavés"
+   ],
+   [
+    "spinach",
+    200,
+    "g"
+   ],
+   [
+    "garlic",
+    1,
+    "u",
+    "gousse"
+   ],
+   [
+    "olive_oil",
+    1,
+    "cs"
+   ],
+   [
+    "lemon",
+    0.5,
+    "u"
+   ]
+  ],
+  "steps": [
+   "Rincez le quinoa et faites-le cuire 12 minutes dans deux fois son volume d’eau.",
+   "Faites cuire le saumon 12 minutes au four à 180 °C : la chair doit être opaque à cœur et se détacher facilement.",
+   "Faites revenir l’ail émincé dans l’huile d’olive, ajoutez les épinards et laissez cuire 4 minutes.",
+   "Servez le quinoa avec les épinards et le saumon, arrosé de jus de citron."
+  ],
+  "allergens": [
+   "fish"
+  ],
+  "tags": [
+   "protein",
+   "iron",
+   "b9",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Grossesse : le saumon frais doit être cuit à cœur ; le saumon fumé est à éviter (listériose).",
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Un poisson gras pour les protéines, des épinards qui contiennent des folates, et une graine riche en fibres.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "hot",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre",
+   "anses_poisson"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+ },
+ {
+  "slug": "gr-tartine-comte-pomme",
+  "title": "Tartine de pain complet, comté et pomme",
+  "summary": "Un goûter sucré-salé tout simple.",
+  "audiences": [
+   "pregnancy",
+   "family"
+  ],
+  "meals": [
+   "snack"
+  ],
+  "textures": [
+   "regular"
+  ],
+  "servings": 2,
+  "prepMin": 5,
+  "cookMin": 0,
+  "ingredients": [
+   [
+    "wholemeal_bread",
+    2,
+    "u",
+    "tranches"
+   ],
+   [
+    "comte",
+    40,
+    "g"
+   ],
+   [
+    "apple",
+    1,
+    "u"
+   ]
+  ],
+  "steps": [
+   "Lavez la pomme et coupez-la en fines lamelles.",
+   "Coupez le comté en fines tranches et disposez-les sur le pain avec la pomme."
+  ],
+  "allergens": [
+   "gluten",
+   "milk"
+  ],
+  "tags": [
+   "calcium",
+   "quick",
+   "vegetarian",
+   "family"
+  ],
+  "adaptations": [],
+  "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
+  "precautions": [
+   "Grossesse : les fromages à pâte pressée cuite comme le comté sont possibles ; retirez la croûte (listériose).",
+   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+  ],
+  "nutrition": "Un fromage à pâte pressée cuite pour le calcium, un fruit et un féculent complet.",
+  "budget": 1,
+  "seasons": "all",
+  "temperature": "cold",
+  "sources": [
+   "santefr_listeria",
+   "santefr_toxo",
+   "santefr_equilibre"
+  ],
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "familyAdaptations": {
+   "child": "Avant 4 ans, râpez la pomme (risque d’étouffement)."
+  }
+ }
+]

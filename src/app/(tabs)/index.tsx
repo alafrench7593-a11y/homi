@@ -14,12 +14,12 @@ import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
 import { PostpartumHomeCard } from '@/features/postpartum';
-import { orderedHomeCards, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
+import { orderedHomeCards, PregnancyHero, setCycleRoute, UpcomingCard } from '@/features/home';
+import { DailyActions } from '@/features/dailyActions/DailyActions';
 import { FamilyOverview, NoJourneyCard } from '@/features/journeys';
 import { useActivePregnancy, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
-import { ChildTrackCards, PregnancyTrackCards } from '@/features/trackCards';
 import { HomeCommunityCard } from '@/features/communitySocial';
 import { CycleHome } from '@/features/cycle3/CycleHome';
 import { Cocoon, CocoonAdd } from '@/features/cocoon/Cocoon';
@@ -108,9 +108,8 @@ export default function Home() {
       : cycleMode ? <CycleHome goal={cycleMode} />
       : <NoJourneyCard />,
     // Les 4 actions du quotidien : cartes de suivi pour un enfant ou une grossesse, sinon les raccourcis du profil
-    quick: (scope.scope === 'baby' || scope.scope === 'child') && child ? <ChildTrackCards child={child} journey={scope.scope} />
-      : scope.scope === 'pregnancy' && pregnancy ? <PregnancyTrackCards pregnancyId={pregnancy.id} />
-      : <QuickActions keys={quickKeys} childId={scope.childId ?? scope.babyId ?? undefined} onCustomize={() => router.push('/settings/home')} />,
+    // « Mes actions du jour » : une carte horizontale, 4 raccourcis du profil affiché au maximum (personnalisables)
+    quick: <DailyActions />,
     community: <HomeCommunityCard />,
     upcoming: <View style={{ gap: spacing.xs }}>{simple ? null : <PostpartumHomeCard />}<UpcomingCard single={simple} /></View>,
     article: article ? (

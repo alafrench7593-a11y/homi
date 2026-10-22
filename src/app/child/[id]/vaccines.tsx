@@ -18,8 +18,12 @@ import { Banner, Button, Card, Chip, Field, Icon, IconButton, ListRow, Row, Sect
 import { backend, eq } from '@/lib/backend';
 import { useChild, useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { suggestedStart, useVaccineActions, useVaccineSchedule, type Vaccination, type VaccineAppointment } from '@/lib/data/hooks-vaccines';
-import { byVisit, CALENDAR_VERSION, nextDoses, SITUATIONAL, VACCINE_QUESTIONS, VACCINE_SOURCES, type ScheduledDose } from '@/lib/domain/vaccines';
+import { useVaccineActions, useVaccineSchedule, type Vaccination, type VaccineAppointment } from '@/lib/data/hooks-vaccines';
+import { byVisit, nextDoses, VACCINE_QUESTIONS, type ScheduledDose } from '@/lib/domain/vaccines';
+import { vaccineNotice } from '@/lib/domain/vaccineRules';
+import { APPOINTMENT_CHOICES, WINDOW_CHOICES } from '@/lib/domain/pregnancyCare';
+import { usePostponeVaccine } from '@/lib/data/hooks-care';
+import { AppointmentSheet, AttachedDocs, appointmentWhen, DocumentsSheet, RemindersSheet } from '@/features/care/CareSheets';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { formatDate, t as tr, type TKey } from '@/i18n';
@@ -34,11 +38,11 @@ const fmt = (iso: string) => formatDate(`${iso}T12:00:00`, { day: 'numeric', mon
 function StateChip({ d }: { d: ScheduledDose }) {
   const t = useTheme();
   const color = d.state === 'done' ? t.colors.success : d.state === 'due' || d.state === 'upcoming' ? t.colors.primary : t.colors.textMuted;
-  const icon = d.state === 'done' ? 'check-circle' : d.state === 'planned' ? 'calendar' : d.state === 'check' ? 'help-circle' : 'clock';
+  const icon = d.state === 'done' ? 'check-circle' : d.state === 'planned' ? 'calendar' : d.state === 'postponed' ? 'pause-circle' : d.state === 'check' ? 'help-circle' : 'clock';
   return (
     <Row gap={4} style={{ alignItems: 'center', flexWrap: 'nowrap' }}>
       <Icon name={icon} size={14} color={color} />
-      <Text variant="caption" weight="bold" color={color} style={{ flexShrink: 1 }}>{tr(`vx.state.${d.state}` as TKey)}{d.state === 'done' && d.doneOn ? ` · ${toFrDate(d.doneOn)}` : ''}</Text>
+      <Text variant="caption" weight="bold" color={color} style={{ flexShrink: 1 }}>{tr(`vx.state.${d.state}` as TKey)}{d.state === 'done' && d.doneOn ? ` · ${toFrDate(d.doneOn)}` : ''}{d.state === 'postponed' && d.postponedTo ? ` · ${tr('vx.until', { date: fmt(d.postponedTo) })}` : ''}</Text>
     </Row>
   );
 }
@@ -49,7 +53,13 @@ export default function Vaccines() {
   const inv = useInvalidate();
   const { id } = useLocalSearchParams<{ id: string }>();
   const child = useChild(id);
-  const { schedule, vaccinations, appointments, loading } = useVaccineSchedule(child);
+  const { schedule, vaccinations, appointments, postponements, calendar, supported, loading } = useVaccineSchedule(child);
+  const postpone = usePostponeVaccine();
+  const [apptSheet, setApptSheet] = useState<{ appt: VaccineAppointment | null; keys: string[]; title: string } | null>(null);
+  const [remSheet, setRemSheet] = useState<{ appt: VaccineAppointment | null; visit: { months: number; toMonths?: number; date: string; doses: ScheduledDose[] } | null } | null>(null);
+  const [docsFor, setDocsFor] = useState<{ table: 'appointments' | 'child_vaccinations'; id: string; ids: string[] } | null>(null);
+  const [postTo, setPostTo] = useState('');
+  const [postNote, setPostNote] = useState('');
   const act = useVaccineActions(child);
   const [d, setD] = useState<{ id?: string; vaccine: string; date: string; dose: string; lot: string; by: string; source: Vaccination['source']; note: string } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -88,16 +98,18 @@ export default function Vaccines() {
     try { await backend.remove('child_vaccinations', [eq('id', v.id)]); inv('child_vaccinations'); toast(tr('vx.deleted')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   const visitTitle = (v: { months: number; toMonths?: number }) => tr('vx.visitTitle', { age: ageLabel(v.months, v.toMonths), name: child.first_name });
-  async function remindVisit(v: NonNullable<typeof visit>) {
-    try {
-      const at = await act.remind.mutateAsync({ title: visitTitle(v), body: tr('vx.reminderBody', { list: v.doses.filter((x) => x.state !== 'done').map((x) => x.label).join(', ') }), date: v.date });
-      toast(tr('vx.reminded', { date: at ? fmt(at.slice(0, 10)) : '' }), 'success');
-    } catch (e) { toast(friendlyError(e), 'error'); }
+  function remindVisit(v: NonNullable<typeof visit>) { setVisit(null); setRemSheet({ appt: null, visit: v }); }
+  function planVisit(v: NonNullable<typeof visit>) {
+    setVisit(null);
+    setApptSheet({ appt: null, keys: v.doses.filter((x) => x.state !== 'done').map((x) => x.key), title: visitTitle(v) });
   }
-  async function planVisit(v: NonNullable<typeof visit>) {
+  async function postponeVisit(v: NonNullable<typeof visit>, cancel = false) {
+    if (!child) return;
+    const iso = postTo.trim() ? frToISO(postTo) : null;
+    if (!cancel && postTo.trim() && !iso) return toast(tr('vx.err.date'), 'error');
     try {
-      await act.plan.mutateAsync({ title: visitTitle(v), startsAt: suggestedStart(v.date), keys: v.doses.filter((x) => x.state !== 'done').map((x) => x.key) });
-      toast(tr('vx.planned'), 'success'); setVisit(null);
+      await postpone.mutateAsync({ child, keys: v.doses.filter((x) => x.state !== 'done').map((x) => x.key), to: iso, note: postNote.trim() || null, cancel });
+      toast(tr(cancel ? 'vx.postponeCancelled' : 'vx.postponed'), 'success'); setVisit(null); setPostTo(''); setPostNote('');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function markVisitDone(v: NonNullable<typeof visit>) {
@@ -116,9 +128,11 @@ export default function Vaccines() {
     <Screen back title={tr('vx.title')} subtitle={tr('vx.subtitle', { name: child.first_name })} right={<IconButton icon="plus" label={tr('vx.add')} onPress={() => setD({ vaccine: '', date: toFrDate(todayISO()), dose: '', lot: '', by: '', source: 'carnet', note: '' })} />}>
       {/* Source officielle et date de mise à jour : jamais deviner */}
       <View testID="vaccine-source">
-        <Banner tone="info" title={tr('vx.calendarTitle', { label: CALENDAR_VERSION.label })}>
-          <Text variant="small">{tr('vx.calendarBody', { updated: formatDate(`${CALENDAR_VERSION.updated}T12:00:00`, { month: 'long', year: 'numeric' }), checked: fmt(CALENDAR_VERSION.checked) })}</Text>
-          {Object.values(VACCINE_SOURCES).map((s) => (
+        <Banner tone="info" title={tr('vx.calendarTitle', { label: calendar.label })}>
+          <Text variant="small">{tr('vx.calendarBody', { updated: formatDate(`${calendar.updated}T12:00:00`, { month: 'long', year: 'numeric' }), checked: fmt(calendar.checked) })}</Text>
+          <Text variant="caption" muted testID="vaccine-version">{tr('vx.version', { version: calendar.version, country: calendar.country })}</Text>
+          {!supported ? <Text variant="small" weight="bold">{tr('vx.otherCountry')}</Text> : null}
+          {Object.values(calendar.sources).map((s) => (
             <Tappable key={s.key} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ minHeight: 36, justifyContent: 'center' }}>
               <Text variant="caption" color={t.colors.primary}>{s.label} ({fmt(s.published)})</Text>
             </Tappable>
@@ -135,10 +149,11 @@ export default function Vaccines() {
               <View key={x.key} style={{ marginTop: 4 }}>
                 <Text variant="small">{x.label} — {x.dose} · <Text variant="small" weight="bold">{tr(x.status === 'mandatory' ? 'vx.mandatory' : 'vx.recommended')}</Text></Text>
                 <StateChip d={x} />
+                {x.shifted ? <Text variant="caption" muted>{tr('vx.shifted')}</Text> : null}
               </View>
             ))}
             <Row wrap style={{ marginTop: spacing.xs }}>
-              <Button label={tr('vx.remind')} icon="bell" size="sm" variant="secondary" testID={`vaccine-remind-${v.months}`} loading={act.remind.isPending} onPress={() => remindVisit(v)} />
+              <Button label={tr('vx.remind')} icon="bell" size="sm" variant="secondary" testID={`vaccine-remind-${v.months}`} onPress={() => remindVisit(v)} />
               <Button label={tr('vx.more')} size="sm" variant="ghost" onPress={() => { setVisit(v); setDoneDate(toFrDate(todayISO())); }} testID={`vaccine-open-${v.months}`} />
             </Row>
           </View>
@@ -150,16 +165,31 @@ export default function Vaccines() {
         <Card key={a.id}>
           <View testID={`vaccine-appt-${a.id}`}>
             <Text weight="bold">{a.title}</Text>
-            <Text variant="small" muted>{formatDate(a.starts_at, { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</Text>
+            <Text variant="small" muted>{appointmentWhen(a)}{a.location_label ? ` · ${a.location_label}` : ''}</Text>
             {a.questions?.length ? <Text variant="caption" muted>{tr('vx.questionsCount', { count: a.questions.length })}</Text> : null}
+            <AttachedDocs ids={a.document_ids} />
             <Row wrap style={{ marginTop: spacing.xs }}>
               <Button label={tr('vx.complete')} icon="check" size="sm" testID={`vaccine-complete-${a.id}`} onPress={() => completeAppt(a)} />
               <Button label={tr('vx.questions')} icon="help-circle" size="sm" variant="secondary" onPress={() => openQuestions(a)} testID={`vaccine-questions-${a.id}`} />
+              <Button label={tr('vx.editAppt')} icon="edit-3" size="sm" variant="secondary" onPress={() => setApptSheet({ appt: a, keys: a.calendar_keys ?? [], title: a.title })} testID={`vaccine-edit-${a.id}`} />
+              <Button label={tr('care.cal.reminders')} icon="bell" size="sm" variant="ghost" onPress={() => setRemSheet({ appt: a, visit: null })} testID={`vaccine-appt-remind-${a.id}`} />
+              <Button label={tr('care.cal.documents')} icon="paperclip" size="sm" variant="ghost" onPress={() => setDocsFor({ table: 'appointments', id: a.id, ids: a.document_ids ?? [] })} />
             </Row>
           </View>
         </Card>
       ))}
       {doneAppts.length ? <Text variant="caption" muted>{tr('vx.doneAppts', { count: doneAppts.length })}</Text> : null}
+      {postponements.length ? <SectionTitle title={tr('vx.postponedTitle')} /> : null}
+      {(schedule ?? []).filter((x) => x.state === 'postponed').map((x) => (
+        <Card key={x.key}>
+          <View testID={`vaccine-postponed-${x.key}`}>
+            <Text weight="bold">{x.label}</Text>
+            <Text variant="small" muted>{x.dose}{x.postponedTo ? ` · ${tr('vx.until', { date: fmt(x.postponedTo) })}` : ''}</Text>
+            {postponements.find((p) => p.calendar_key === x.key)?.note ? <Text variant="small" muted>{postponements.find((p) => p.calendar_key === x.key)!.note}</Text> : null}
+            <Button label={tr('vx.postponeCancel')} size="sm" variant="ghost" onPress={() => child && postpone.mutate({ child, keys: [x.key], to: null, note: null, cancel: true })} style={{ alignSelf: 'flex-start' }} />
+          </View>
+        </Card>
+      ))}
 
       <SectionTitle title={tr('vx.calendar')} />
       {shownVisits.map((v) => (
@@ -181,7 +211,7 @@ export default function Vaccines() {
       {!showAll && shownVisits.length < visits.length ? <Button label={tr('vx.showAll')} variant="ghost" onPress={() => setShowAll(true)} /> : null}
       <Card>
         <Text weight="bold">{tr('vx.situational')}</Text>
-        {SITUATIONAL.map((s) => <Text key={s} variant="small" style={{ marginTop: 4 }}>• {s}</Text>)}
+        {calendar.situational.map((s) => <Text key={s} variant="small" style={{ marginTop: 4 }}>• {s}</Text>)}
       </Card>
       <Text variant="caption" muted>{tr('vx.disclaimer')}</Text>
 
@@ -192,7 +222,8 @@ export default function Vaccines() {
           <Card style={{ paddingVertical: 4 }}>
             <ListRow icon="shield" title={`${v.vaccine}${v.dose_label ? ` · ${v.dose_label}` : ''}`} subtitle={[toFrDate(v.given_on), v.given_by, v.lot ? tr('vx.lot', { lot: v.lot }) : null, tr(`vx.src.${v.source}` as TKey)].filter(Boolean).join(' · ')}
               onPress={() => setD({ id: v.id, vaccine: v.vaccine, date: toFrDate(v.given_on), dose: v.dose_label ?? '', lot: v.lot ?? '', by: v.given_by ?? '', source: v.source, note: v.note ?? '' })}
-              right={<IconButton icon="trash-2" label={tr('vx.deleteA11y', { name: v.vaccine })} size={18} onPress={() => remove(v)} />} />
+              right={<Row gap={0}><IconButton icon="paperclip" label={tr('vx.attachA11y', { name: v.vaccine })} size={18} onPress={() => setDocsFor({ table: 'child_vaccinations', id: v.id, ids: v.document_ids ?? [] })} /><IconButton icon="trash-2" label={tr('vx.deleteA11y', { name: v.vaccine })} size={18} onPress={() => remove(v)} /></Row>} />
+            <AttachedDocs ids={v.document_ids} />
           </Card>
         </StaggerItem>
       ))}
@@ -219,6 +250,10 @@ export default function Vaccines() {
                 <Field label={tr('vx.doneOn')} value={doneDate} onChangeText={setDoneDate} keyboardType="numbers-and-punctuation" testID="vaccine-done-date" />
                 <Button label={tr('vx.markDone')} icon="check" full onPress={() => markVisitDone(visit)} testID="vaccine-mark-done" />
                 <Text variant="caption" muted>{tr('vx.markDoneNote')}</Text>
+                <Text variant="label">{tr('vx.postponeTitle')}</Text>
+                <Field label={tr('vx.postponeTo')} optional value={postTo} onChangeText={setPostTo} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" testID="vaccine-postpone-date" />
+                <Field label={tr('vx.f.note')} optional value={postNote} onChangeText={setPostNote} maxLength={500} />
+                <Button label={tr('vx.postpone')} icon="pause-circle" variant="ghost" full onPress={() => postponeVisit(visit)} testID="vaccine-postpone" />
               </>
             ) : null}
           </View>
@@ -254,6 +289,24 @@ export default function Vaccines() {
           </View>
         ) : null}
       </Sheet>
+      <AppointmentSheet
+        visible={!!apptSheet}
+        onClose={() => setApptSheet(null)}
+        existing={apptSheet?.appt ?? null}
+        base={{ kind: 'vaccination', title: apptSheet?.title ?? '', calendarKeys: apptSheet?.keys ?? [], childId: child.id, householdId: child.household_id }}
+      />
+      <RemindersSheet
+        visible={!!remSheet}
+        onClose={() => setRemSheet(null)}
+        choices={remSheet?.appt ? APPOINTMENT_CHOICES : WINDOW_CHOICES}
+        target={remSheet?.appt ? new Date(remSheet.appt.starts_at) : remSheet?.visit ? new Date(`${remSheet.visit.date}T09:00:00`) : null}
+        allDay={remSheet?.appt ? remSheet.appt.time_set === false : true}
+        title={tr('vx.notifTitle', { name: child.first_name })}
+        body={remSheet?.appt ? tr('vx.notifAppt', { name: child.first_name, when: appointmentWhen(remSheet.appt) }) : vaccineNotice(calendar, child.first_name)}
+        deepLink={`/child/${child.id}/vaccines${remSheet?.appt ? `?appt=${remSheet.appt.id}` : remSheet?.visit ? `?visit=${remSheet.visit.months}` : ''}`}
+        link={{ category: 'appointment', childId: child.id, appointmentId: remSheet?.appt?.id ?? null }}
+      />
+      <DocumentsSheet visible={!!docsFor} onClose={() => setDocsFor(null)} target={docsFor ? { table: docsFor.table, id: docsFor.id } : null} selected={docsFor?.ids ?? []} childId={child.id} />
     </Screen>
   );
 }

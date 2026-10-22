@@ -75,7 +75,7 @@ export const TOOLS: ToolDef[] = [
   { id: 'kid_sleep_rhythm', theme: 'sleep', icon: 'trending-up', scopes: KID, href: (c) => (c.childId ? `/sleep/${c.childId}` : null) },
   { id: 'summary', theme: 'resources', icon: 'file-text', scopes: [...KID, 'pregnancy'], href: () => '/summary' },
   { id: 'family_summary', theme: 'tasks', icon: 'home', scopes: ['family'], href: () => '/summary?family=1' },
-  { id: 'meals', theme: 'feeding', icon: 'coffee', scopes: [...ADULT, ...KID], universal: true, href: (c) => (c.childId ? `/meals?for=${c.scope}&child=${c.childId}` : `/meals?for=${c.scope}`) },
+  { id: 'meals', theme: 'feeding', icon: 'coffee', scopes: [...ADULT.filter((x) => x !== 'pregnancy'), ...KID], universal: true, href: (c) => (c.childId ? `/meals?for=${c.scope}&child=${c.childId}` : `/meals?for=${c.scope}`) },
   { id: 'appointments', theme: 'health', icon: 'calendar', scopes: ALL, universal: true, href: (c) => (c.childId ? `/appointments?child=${c.childId}` : c.scope === 'pregnancy' ? '/appointments?for=pregnancy' : '/appointments') },
   { id: 'documents', theme: 'health', icon: 'folder', scopes: ALL, universal: true, href: (c) => (c.childId ? `/documents?child=${c.childId}` : c.scope === 'pregnancy' ? '/documents?for=pregnancy' : '/documents') },
   { id: 'community', theme: 'resources', icon: 'users', scopes: ALL, universal: true, href: (c) => (SPACE_FOR_SCOPE[c.scope] ? `/(tabs)/community?space=${SPACE_FOR_SCOPE[c.scope]}` : '/(tabs)/community') },
@@ -125,6 +125,10 @@ export const TOOLS: ToolDef[] = [
   // ---------------------------------------------------------------- grossesse
   { id: 'preg_evolution', theme: 'pregnancy', icon: 'moon', scopes: ['pregnancy'], href: () => '/pregnancy' },
   { id: 'preg_weight', theme: 'pregnancy', icon: 'trending-up', scopes: ['pregnancy'], href: () => '/pregnancy/weight' },
+  // Grossesse : « Repas » devient « Bien manger enceinte » ; symptômes du jour ; calendrier des échographies
+  { id: 'preg_eat', theme: 'feeding', icon: 'coffee', scopes: ['pregnancy'], href: () => '/pregnancy/eat' },
+  { id: 'preg_feel', theme: 'pregnancy', icon: 'feather', scopes: ['pregnancy'], href: () => '/pregnancy/feel' },
+  { id: 'preg_calendar', theme: 'calendar', icon: 'calendar', scopes: ['pregnancy'], href: () => '/pregnancy/calendar' },
   { id: 'preg_birth_prep', theme: 'pregnancy', icon: 'book-open', scopes: ['pregnancy'], href: () => '/library?q=accouchement' },
   { id: 'preg_articles', theme: 'resources', icon: 'book', scopes: ['pregnancy'], href: () => '/library?journey=pregnant' },
   { id: 'preg_intimacy', theme: 'resources', icon: 'heart', scopes: ['pregnancy'], href: () => '/library?cat=sexualite' },

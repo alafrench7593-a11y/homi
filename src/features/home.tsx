@@ -280,7 +280,7 @@ export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' | 'cycle' }) {
  */
 export const HOME_CARDS: { key: string; label: string; detail: string; defaultHidden?: boolean }[] = [
   { key: 'main', label: 'Carte principale', detail: 'Grossesse, post-partum, enfant, famille ou cycle selon le profil affiché' },
-  { key: 'quick', label: 'Les 4 actions du quotidien', detail: 'Les suivis les plus utiles pour le profil affiché' },
+  { key: 'quick', label: 'Mes actions du jour', detail: 'Quatre raccourcis au plus, propres au profil affiché, personnalisables' },
   { key: 'upcoming', label: 'Prochain rendez-vous ou rappel', detail: '' },
   { key: 'community', label: 'Dans la communauté', detail: 'Une publication choisie pour vous et « Voir la communauté »' },
   { key: 'recommendation', label: 'Recommandation du jour', detail: 'Un article ou une idée de repas adaptés' },

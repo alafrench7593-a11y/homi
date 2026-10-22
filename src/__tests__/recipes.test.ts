@@ -26,8 +26,8 @@ const clone = (r: Recipe): Recipe => JSON.parse(JSON.stringify(r));
 
 describe('bibliothèque : contrôles avant publication', () => {
   it('compte réel et répartition', () => {
-    // nouveau catalogue (150 recettes) + la purée carotte et pomme de terre conservée pour sa photo
-    expect(all.length).toBe(151);
+    // nouveau catalogue (150 recettes) + la purée carotte et pomme de terre + 16 recettes « grossesse au quotidien »
+    expect(all.length).toBe(167);
     expect(all.filter((r) => r.tags.includes('classic')).length).toBeGreaterThanOrEqual(80);
     for (const r of all) expect(r.freezing && r.freezing.length > 10).toBe(true);
     expect(all.filter((r) => r.audiences.includes('pregnancy')).length).toBeGreaterThanOrEqual(20);

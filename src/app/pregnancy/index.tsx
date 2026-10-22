@@ -24,7 +24,7 @@ import { Tappable } from '@/components/Tappable';
 const HUES = ['rose', 'lavande', 'or'] as const;
 
 type Rubric = { key: string; icon: Parameters<typeof Icon>[0]['name']; title: string; subtitle?: string; to: string | { pathname: string; params?: Record<string, string> } };
-/** Les 15 rubriques de « Ma grossesse », dans l'ordre demandé ; chacune ouvre un écran existant. */
+/** Les rubriques de « Ma grossesse », dans l'ordre demandé ; chacune ouvre un écran existant. */
 function rubrics(showWeight: boolean, docs: number): Rubric[] {
   return [
     { key: 'week', icon: 'star', title: 'Mon bébé cette semaine', subtitle: 'Repères, développement, illustration', to: '#week' },
@@ -32,9 +32,10 @@ function rubrics(showWeight: boolean, docs: number): Rubric[] {
     ...(showWeight ? [{ key: 'weight', icon: 'trending-up', title: 'Mon poids', subtitle: 'Facultatif, sans objectif imposé', to: '/pregnancy/weight' } as Rubric] : []),
     { key: 'sleep', icon: 'moon', title: 'Mon sommeil', subtitle: 'Nuits, siestes, fatigue', to: '/me/sleep' },
     { key: 'mood', icon: 'smile', title: 'Mon humeur', subtitle: 'Comment je me sens', to: '/me/mood' },
-    { key: 'meals', icon: 'coffee', title: 'Mes repas', subtitle: 'Recettes adaptées à la grossesse', to: '/meals' },
+    { key: 'feel', icon: 'feather', title: 'Comment je me sens aujourd’hui ?', subtitle: 'Symptômes, intensité, quand demander conseil', to: '/pregnancy/feel' },
+    { key: 'meals', icon: 'coffee', title: 'Bien manger enceinte', subtitle: 'Repères officiels, aliments à éviter, idées de repas', to: '/pregnancy/eat' },
     { key: 'appointments', icon: 'calendar', title: 'Mes rendez-vous', to: { pathname: '/appointments', params: { for: 'pregnancy' } } },
-    { key: 'exams', icon: 'clipboard', title: 'Mes examens', subtitle: 'Échographies, prises de sang, consultations', to: { pathname: '/appointments', params: { for: 'pregnancy' } } },
+    { key: 'calendar', icon: 'clipboard', title: 'Mon calendrier de grossesse', subtitle: 'Périodes indicatives des échographies, vrais rendez-vous, rappels', to: '/pregnancy/calendar' },
     { key: 'docs', icon: 'folder', title: 'Mes échographies et documents', subtitle: docs ? `${docs} document(s)` : undefined, to: '/documents' },
     { key: 'birth', icon: 'book-open', title: 'Préparer l’accouchement', subtitle: 'Signes du travail, péridurale, césarienne…', to: { pathname: '/library', params: { cat: 'accouchement' } } },
     { key: 'lists', icon: 'check-square', title: 'Liste de maternité', subtitle: 'Valise, papiers, chambre', to: '/lists' },

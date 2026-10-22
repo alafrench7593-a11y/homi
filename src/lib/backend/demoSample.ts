@@ -63,7 +63,7 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
   for (const [days, kg, cm] of [[300, 7.4, 66], [200, 8.6, 71.5], [60, 9.9, 77]] as const) {
     log('child_measurements', { child_id: lina, measured_on: addDays(today, -days), weight_kg: kg, height_cm: cm, head_cm: null, source: 'professional' });
   }
-  T('appointments').push({ id: uuid(), household_id: hid, pregnancy_id: pid, child_id: null, for_parent: false, kind: 'ultrasound', title: 'Échographie du 3e trimestre', starts_at: new Date(now + 9 * 86400_000).toISOString(), location_label: 'Maternité', notes: null, questions: ['Comment se positionnent les bébés ?'], created_at: iso(10) });
+  T('appointments').push({ id: uuid(), household_id: hid, pregnancy_id: pid, child_id: null, for_parent: false, kind: 'ultrasound', title: 'Échographie du 3e trimestre', starts_at: (() => { const d = new Date(now + 30 * 86400_000); d.setHours(10, 30, 0, 0); return d.toISOString(); })(), location_label: 'Maternité', notes: null, questions: ['Comment se positionnent les bébés ?'], calendar_keys: ['echo_3'], document_ids: [], time_set: true, created_at: iso(10) });
   T('appointments').push({ id: uuid(), household_id: hid, pregnancy_id: null, child_id: lina, for_parent: false, kind: 'pediatric', title: 'Visite chez la pédiatre', starts_at: new Date(now + 20 * 86400_000).toISOString(), location_label: null, notes: null, questions: [], created_at: iso(10) });
 
   const list = uuid();

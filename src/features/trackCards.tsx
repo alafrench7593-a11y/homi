@@ -1,40 +1,22 @@
 /**
- * Cartes de suivi quotidien : élégantes, chaleureuses, utilisables d'une main.
- * Chaque carte : icône originale (dessin vectoriel propre à Toi & Moi), fond doux légèrement coloré, coins arrondis,
- * légère profondeur, animation discrète au toucher, retour haptique facultatif, dernière information, et un bouton
- * « + » d'ajout rapide bien visible. Quatre actions utiles au profil affiché ; les autres dans « Voir tous les suivis ».
- * Mode nuit (thème sombre) : fond bleu nuit, contraste lisible, animations réduites.
+ * Icônes originales des suivis (dessin vectoriel propre à Toi & Moi) et teintes douces.
+ * Les anciennes grandes cases carrées ont été remplacées par « Mes actions du jour »
+ * (src/features/dailyActions/DailyActions.tsx).
  */
-import React, { useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, View } from 'react-native';
-import { router } from 'expo-router';
+import React from 'react';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
-import { Button, haptic, Icon, Row, Text } from '@/components/ui';
-import { Sheet, useToast } from '@/components/Overlays';
-import { ToggleRow } from '@/features/recipes/ToggleRow';
-import { useAppointments, useLogs, useMeasurements, useMaternalWeights, useMoods, useOpenSleep, useProfile } from '@/lib/data/hooks';
-import { useTreatments } from '@/lib/data/hooks-needs';
-import { useParentSleepLogs } from '@/lib/data/hooks-sleep';
-import { SleepError, useSleepActions } from '@/lib/data/hooks-sleepPlanner';
-import { friendlyError } from '@/lib/data/hooks-settings';
-import { childAge } from '@/lib/domain/child';
-import { childTrackProfile, lastInfo, nextDose, TRACK_LABEL, trackActions, type LastData, type TrackKey, type TrackProfile } from '@/lib/domain/trackingCards';
-import { useUiStore } from '@/lib/store';
-import type { Bottle, Breastfeed, Child, Diaper, Meal, Observation, Pumping, Sleep } from '@/lib/types';
-import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
-import { t as tr } from '@/i18n';
+import type { TrackKey } from '@/lib/domain/trackingCards';
 
 // ─── Teintes douces (jour) et bleu nuit (nuit) ─────────────────────────────────────────────────────
 
-const TINT: Record<TrackKey, { bg: string; ink: string }> = {
+export const TINT: Record<TrackKey, { bg: string; ink: string }> = {
   bottle: { bg: '#FFEFE6', ink: '#D2693C' }, breastfeed: { bg: '#FFE9F0', ink: '#C2416E' }, diaper: { bg: '#E9F4FF', ink: '#3A78B5' },
   sleep: { bg: '#EEEAFF', ink: '#6A52D6' }, meal: { bg: '#EAF7EC', ink: '#3C8C55' }, pumping: { bg: '#FBEAF5', ink: '#A6448A' },
   observation: { bg: '#FFF4E0', ink: '#B7791F' }, growth: { bg: '#E6F6F4', ink: '#2A8A80' }, medication: { bg: '#F1ECFF', ink: '#5E4CC2' },
   appointment: { bg: '#FFEDEB', ink: '#C25145' }, mother_sleep: { bg: '#EAEDFF', ink: '#4F5EC4' }, mood: { bg: '#FFF3E6', ink: '#C27A2C' },
   weight: { bg: '#EEF2F6', ink: '#5B6B7C' },
 };
-const NIGHT = { bg: '#141A36', border: '#232B55', text: '#D6DCF5', muted: '#8E97C2', plus: '#2B3670' };
+export const NIGHT = { bg: '#141A36', border: '#232B55', text: '#D6DCF5', muted: '#8E97C2', plus: '#2B3670' };
 
 /** Icônes originales (trait arrondi, 24×24). */
 export function TrackIcon({ k, color, size = 26 }: { k: TrackKey; color: string; size?: number }) {
@@ -57,171 +39,4 @@ export function TrackIcon({ k, color, size = 26 }: { k: TrackKey; color: string;
     }
   })();
   return <Svg width={size} height={size} viewBox="0 0 24 24" accessibilityElementsHidden importantForAccessibility="no">{body}</Svg>;
-}
-
-// ─── Carte ─────────────────────────────────────────────────────────────────────────────────────────
-
-export interface TrackCardModel { key: TrackKey; info: string; onOpen: () => void; onAdd: () => void; addLabel?: string; active?: boolean }
-
-export function TrackActionCard({ m, compact }: { m: TrackCardModel; compact?: boolean }) {
-  const t = useTheme();
-  const reduceSetting = useReduceMotion();
-  const night = t.isDark;
-  const reduce = reduceSetting || night; // animations réduites la nuit
-  const scale = useRef(new Animated.Value(1)).current;
-  const tint = TINT[m.key];
-  const bg = night ? NIGHT.bg : tint.bg;
-  const ink = night ? '#AFC0FF' : tint.ink;
-  const press = (to: number) => { if (!reduce) Animated.spring(scale, { toValue: to, useNativeDriver: NATIVE_DRIVER, speed: 40, bounciness: to === 1 ? 6 : 0 }).start(); };
-  return (
-    <Animated.View style={{ flexBasis: compact ? '100%' : '47%', flexGrow: 1, transform: [{ scale }] }} testID={`track-card-${m.key}`}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`${TRACK_LABEL[m.key]}. ${m.info}`}
-        accessibilityHint={tr('trk.cards.openHint')}
-        onPress={() => { haptic('selection'); m.onOpen(); }}
-        onPressIn={() => press(0.97)}
-        onPressOut={() => press(1)}
-        style={{
-          minHeight: compact ? 76 : 132, borderRadius: radius.xl, padding: spacing.sm + 2, backgroundColor: bg, borderWidth: 1,
-          borderColor: night ? NIGHT.border : 'rgba(255,255,255,0.7)', gap: 6,
-          shadowColor: night ? '#000' : tint.ink, shadowOpacity: night ? 0.35 : 0.14, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 3,
-          flexDirection: compact ? 'row' : 'column', alignItems: compact ? 'center' : 'stretch',
-        }}
-      >
-        <Row style={{ alignItems: 'flex-start', justifyContent: 'space-between', flexShrink: 0 }}>
-          <View style={{ width: 44, height: 44, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: night ? '#1E2650' : 'rgba(255,255,255,0.75)' }}>
-            <TrackIcon k={m.key} color={ink} />
-          </View>
-          {compact ? null : <AddButton m={m} ink={ink} night={night} />}
-        </Row>
-        <View style={{ flex: 1, gap: 2 }}>
-          <Text weight="bold" color={night ? NIGHT.text : undefined}>{TRACK_LABEL[m.key]}</Text>
-          <Text variant="small" color={night ? NIGHT.muted : undefined} muted={!night} numberOfLines={4} testID={`track-info-${m.key}`}>{m.info}</Text>
-        </View>
-        {compact ? <AddButton m={m} ink={ink} night={night} /> : null}
-      </Pressable>
-    </Animated.View>
-  );
-}
-
-function AddButton({ m, ink, night }: { m: TrackCardModel; ink: string; night: boolean }) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: TRACK_LABEL[m.key] })}
-      hitSlop={8}
-      onPress={() => { haptic('light'); m.onAdd(); }}
-      testID={`track-add-${m.key}`}
-      style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: night ? NIGHT.plus : ink, opacity: pressed ? 0.85 : 1 })}
-    >
-      <Icon name={m.active ? 'sun' : 'plus'} size={22} color="#FFFFFF" />
-    </Pressable>
-  );
-}
-
-function CardsGrid({ primary, more, title }: { primary: TrackCardModel[]; more: TrackCardModel[]; title: string }) {
-  const t = useTheme();
-  const [open, setOpen] = useState(false);
-  const hapticsOn = useUiStore((s) => s.hapticsEnabled);
-  const setHaptics = useUiStore((s) => s.setHaptics);
-  return (
-    <View style={{ gap: spacing.sm }} testID="track-cards">
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-        {primary.map((m) => <TrackActionCard key={m.key} m={m} />)}
-      </View>
-      <Button label={more.length ? tr('trk.cards.seeAllCount', { count: more.length }) : tr('trk.cards.seeAll')} variant="ghost" icon="grid" onPress={() => setOpen(true)} testID="track-see-all" />
-      <Sheet visible={open} onClose={() => setOpen(false)} title={title}>
-        <View style={{ gap: spacing.sm }} testID="track-all">
-          {[...primary, ...more].map((m) => <TrackActionCard key={m.key} m={{ ...m, onOpen: () => { setOpen(false); m.onOpen(); }, onAdd: () => { setOpen(false); m.onAdd(); } }} compact />)}
-        </View>
-        <ToggleRow label={tr('trk.cards.haptics')} hint={tr('trk.cards.hapticsHint')} value={hapticsOn} onChange={setHaptics} />
-        {t.isDark ? <Text variant="caption" muted>{tr('trk.cards.nightNote')}</Text> : null}
-      </Sheet>
-    </View>
-  );
-}
-
-// ─── Enfant ────────────────────────────────────────────────────────────────────────────────────────
-
-const latest = <T,>(rows: T[] | undefined): T | null => (rows && rows.length ? rows[0] : null);
-
-export function ChildTrackCards({ child, journey }: { child: Child; journey?: 'baby' | 'child' | null }) {
-  const toast = useToast();
-  const id = child.id;
-  const bottles = useLogs<Bottle>('bottle', id, 7).data;
-  const feeds = useLogs<Breastfeed>('breastfeed', id, 7).data;
-  const diapers = useLogs<Diaper>('diaper', id, 7).data;
-  const sleeps = useLogs<Sleep>('sleep', id, 7).data;
-  const meals = useLogs<Meal>('meal', id, 7).data;
-  const pumpings = useLogs<Pumping>('pumping', id, 7).data;
-  const obs = useLogs<Observation>('observation', id, 7).data;
-  const measures = useMeasurements(id).data;
-  const treatments = useTreatments(id).data;
-  const appts = useAppointments({ upcomingOnly: true }).data;
-  const openSleep = useOpenSleep(id);
-  const act = useSleepActions(child);
-  const months = childAge(child.birth_date).months;
-  const profile: TrackProfile = childTrackProfile(months, { journey, mealsEnabled: child.enabled_tracking.includes('meal') });
-  const { primary, more } = trackActions({ profile, enabled: child.enabled_tracking, ageMonths: journey === 'baby' ? Math.min(months, 23) : months });
-
-  const activeTreatment = (treatments ?? []).find((x) => x.active && (!x.end_date || x.end_date >= new Date().toISOString().slice(0, 10)));
-  const data: LastData = {
-    bottle: latest(bottles), breastfeed: latest(feeds), diaper: latest(diapers), meal: latest(meals), pumping: latest(pumpings), observation: latest(obs),
-    sleep: openSleep ? { started_at: openSleep.started_at, ended_at: null } : latest([...(sleeps ?? [])].filter((s) => s.ended_at).sort((a, b) => b.ended_at!.localeCompare(a.ended_at!))),
-    growth: latest([...(measures ?? [])].sort((a, b) => b.measured_on.localeCompare(a.measured_on))),
-    medication: activeTreatment ? { name: activeTreatment.name, nextAt: nextDose(activeTreatment.times) } : null,
-    appointment: latest((appts ?? []).filter((a) => a.child_id === id)),
-  };
-
-  async function toggleSleep() {
-    try {
-      if (openSleep) { await act.awake(new Date()); toast(tr('trk.cards.wokeUp', { name: child.first_name }), 'success'); }
-      else { const h = new Date().getHours(); await act.asleep(new Date(), h >= 19 || h < 7 ? 'night' : 'nap'); toast(tr('trk.cards.asleep', { name: child.first_name }), 'success'); }
-    } catch (e) { toast(e instanceof SleepError ? e.message : friendlyError(e), 'error'); }
-  }
-
-  const track = (kind: string) => () => router.push({ pathname: '/track/[kind]', params: { kind, child: id } });
-  const model = (k: TrackKey): TrackCardModel => {
-    const info = lastInfo(k, data, { name: child.first_name, sex: child.sex });
-    switch (k) {
-      case 'bottle': return { key: k, info, onOpen: () => router.push(`/bottle/${id}` as never), onAdd: track('bottle') };
-      case 'sleep': return { key: k, info, onOpen: () => router.push(`/sleep/${id}` as never), onAdd: toggleSleep, active: !!openSleep, addLabel: openSleep ? tr('trk.cards.wakesUp', { name: child.first_name }) : tr('trk.cards.fallsAsleep', { name: child.first_name }) };
-      case 'meal': return { key: k, info, onOpen: track('meal'), onAdd: track('meal') };
-      case 'growth': return { key: k, info, onOpen: () => router.push(`/child/${id}/growth`), onAdd: () => router.push(`/child/${id}/growth`) };
-      case 'medication': return { key: k, info, onOpen: () => router.push(`/child/${id}/needs?tab=treatments` as never), onAdd: () => router.push(`/child/${id}/needs?tab=treatments` as never), addLabel: tr('trk.cards.treatments') };
-      case 'appointment': return { key: k, info, onOpen: () => router.push('/appointments'), onAdd: () => router.push({ pathname: '/appointments', params: { new: 'quick', child: id } } as never), addLabel: tr('trk.cards.addAppointment') };
-      default: return { key: k, info, onOpen: track(k), onAdd: track(k) };
-    }
-  };
-  return <CardsGrid primary={primary.map(model)} more={more.map(model)} title={tr('trk.cards.allChild', { name: child.first_name })} />;
-}
-
-// ─── Grossesse (jamais de biberon, de tétée ni de couche) ──────────────────────────────────────────
-
-export function PregnancyTrackCards({ pregnancyId }: { pregnancyId: string | null }) {
-  const { data: profile } = useProfile();
-  const sleepLogs = useParentSleepLogs(5).data;
-  const moods = useMoods(5).data;
-  const weights = useMaternalWeights(pregnancyId).data;
-  const appts = useAppointments({ upcomingOnly: true }).data;
-  const { primary, more } = trackActions({ profile: 'pregnancy', hideWeight: !!profile?.hide_weight_module });
-  const data: LastData = useMemo(() => ({
-    mother_sleep: latest([...(sleepLogs ?? [])].sort((a, b) => b.log_date.localeCompare(a.log_date))),
-    mood: latest(moods),
-    weight: latest([...(weights ?? [])].sort((a, b) => b.measured_on.localeCompare(a.measured_on))),
-    appointment: latest((appts ?? []).filter((a) => !a.child_id)),
-    meal: null,
-  }), [sleepLogs, moods, weights, appts]);
-  const model = (k: TrackKey): TrackCardModel => {
-    const info = k === 'meal' ? tr('trk.cards.pregMealInfo') : lastInfo(k, data);
-    switch (k) {
-      case 'mother_sleep': return { key: k, info, onOpen: () => router.push('/me/sleep'), onAdd: () => router.push('/me/sleep') };
-      case 'mood': return { key: k, info, onOpen: () => router.push('/me/mood'), onAdd: () => router.push('/me/mood') };
-      case 'meal': return { key: k, info, onOpen: () => router.push('/meals'), onAdd: () => router.push('/meals'), addLabel: tr('trk.cards.findMeal') };
-      case 'weight': return { key: k, info, onOpen: () => router.push('/pregnancy/weight'), onAdd: () => router.push('/pregnancy/weight') };
-      default: return { key: k, info, onOpen: () => router.push('/appointments'), onAdd: () => router.push({ pathname: '/appointments', params: { new: 'quick' } } as never), addLabel: tr('trk.cards.addAppointment') };
-    }
-  };
-  return <CardsGrid primary={primary.map(model)} more={more.map(model)} title={tr('trk.cards.allMine')} />;
 }

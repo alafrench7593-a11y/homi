@@ -17,6 +17,8 @@ export interface RelevanceCtx {
   trackedChildIds: string[];
   /** Un post-partum est en cours (infos de la mère rangées dans le profil du bébé). */
   postpartum?: boolean;
+  /** Semaines d'aménorrhée de la grossesse affichée (pour ne pas annoncer trop tôt une échéance lointaine). */
+  pregnancyWeek?: number | null;
 }
 
 const ME: Scope[] = ['avoid', 'ttc', 'cycle', 'none'];
@@ -26,6 +28,12 @@ const KID_KINDS = new Set(['pediatric', 'vaccination']);
 const POSTNATAL_KINDS = new Set(['postnatal', 'perineal_rehab']);
 /** Mots qui désignent sans ambiguïté le suivi d'une grossesse (anciennes saisies sans lien vers la grossesse). */
 const PREGNANCY_WORDS = /(échographie|echographie|trimestre|\bSA\b|amniocent|monitoring|terme|sage-femme.*grossesse|déclaration de grossesse)/i;
+/** Échéances de fin de grossesse : jamais annoncées sur l'accueil au tout début de la grossesse. */
+const LATE_PREGNANCY = /(3e trimestre|troisième trimestre|3ème trimestre|8e mois|9e mois|valise de maternité)/i;
+/** Écrans propres aux enfants, à la grossesse ou au cycle : un rappel qui y mène n'apparaît que sur ce profil. */
+const KID_LINK = /^\/(teeth|bottle|night|sleep\/|child\/|track\/)/;
+const PREGNANCY_LINK = /^\/pregnancy(\/|\?|$)/;
+const CYCLE_LINK = /^\/(cycle|fertility|contraception)(\/|\?|$)/;
 
 function forPregnancy(id: string | null | undefined, c: RelevanceCtx) {
   if (!c.pregnancyId || (id && id !== c.pregnancyId)) return false;
@@ -36,7 +44,10 @@ function forChild(id: string, c: RelevanceCtx) {
   return c.scope === 'family' || (KID.includes(c.scope) && c.childId === id);
 }
 
-export function appointmentRelevant(a: Pick<Appointment, 'pregnancy_id' | 'child_id' | 'for_parent' | 'kind' | 'title'>, c: RelevanceCtx): boolean {
+export function appointmentRelevant(a: Pick<Appointment, 'pregnancy_id' | 'child_id' | 'for_parent' | 'kind' | 'title'> & { calendar_keys?: string[] | null }, c: RelevanceCtx): boolean {
+  // Échographie du 3e trimestre ou valise de maternité : pas sur l'accueil d'une grossesse de moins de 20 SA
+  const late = LATE_PREGNANCY.test(a.title) || (a.calendar_keys ?? []).includes('echo_3');
+  if (late && c.scope === 'pregnancy' && c.pregnancyWeek != null && c.pregnancyWeek < 20) return false;
   if (a.pregnancy_id) return forPregnancy(a.pregnancy_id, c);
   if (a.child_id) return forChild(a.child_id, c);
   if (PREGNANCY_KINDS.has(a.kind) || PREGNANCY_WORDS.test(a.title)) return forPregnancy(null, c);
@@ -50,6 +61,10 @@ export function reminderRelevant(r: Pick<Reminder, 'pregnancy_id' | 'child_id' |
   if (r.pregnancy_id) return forPregnancy(r.pregnancy_id, c);
   if (r.child_id) return forChild(r.child_id, c);
   if (r.deep_link && !screenAllowed(r.deep_link.split('?')[0], c.activeScopes)) return false;
+  // Rappel menant à un écran propre à un profil (brossage des dents, biberon, cycle, grossesse) : seulement sur ce profil
+  if (r.deep_link && KID_LINK.test(r.deep_link)) return KID.includes(c.scope) || c.scope === 'family';
+  if (r.deep_link && PREGNANCY_LINK.test(r.deep_link)) return forPregnancy(null, c);
+  if (r.deep_link && CYCLE_LINK.test(r.deep_link)) return ME.includes(c.scope) && c.scope !== 'none';
   const jt = r.journey_type;
   if (jt === 'pregnancy' || r.category === 'ultrasound') return forPregnancy(null, c);
   if (jt === 'avoid' || jt === 'ttc' || jt === 'cycle') return c.scope === jt;

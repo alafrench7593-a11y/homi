@@ -11,7 +11,7 @@
 --    se publie sans nouvelle version de l'application. L'application garde une copie intégrée (repli hors ligne).
 -- Retour arrière :
 --   drop table public.pregnancy_symptom_logs, public.child_vaccine_postponements, public.vaccine_calendars;
---   alter table public.appointments drop column document_ids; alter table public.child_vaccinations drop column document_ids;
+--   alter table public.appointments drop column document_ids, drop column time_set; alter table public.child_vaccinations drop column document_ids;
 --   (puis restaurer export_my_data précédent : _export_my_data_v15)
 -- =====================================================================
 
@@ -32,6 +32,8 @@ create index if not exists pregnancy_symptom_logs_idx on public.pregnancy_sympto
 select public._apply_owner_policies('pregnancy_symptom_logs');
 
 alter table public.appointments add column if not exists document_ids uuid[] not null default '{}';
+-- Heure choisie par la personne ? (false : seule la date est connue ; l'application n'invente jamais d'heure)
+alter table public.appointments add column if not exists time_set boolean not null default true;
 alter table public.child_vaccinations add column if not exists document_ids uuid[] not null default '{}';
 -- Clé du calendrier pour les échographies (echo_1, echo_2, echo_3), comme pour les vaccins
 alter table public.appointments drop constraint if exists appointments_document_ids_len;

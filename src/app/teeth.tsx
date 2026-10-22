@@ -74,7 +74,7 @@ export default function Teeth() {
 
   async function hygieneReminder() {
     try {
-      await saveReminder.mutateAsync({ draft: { title: 'Brossage des dents', body: 'Petit rappel du soir.', category: 'custom', schedule: { type: 'daily', hour: 19, minute: 45 }, enabled: true, deep_link: '/teeth' } });
+      await saveReminder.mutateAsync({ draft: { title: 'Brossage des dents', body: 'Petit rappel du soir.', category: 'custom', schedule: { type: 'daily', hour: 19, minute: 45 }, enabled: true, deep_link: '/teeth', child_id: child?.id ?? null } });
       toast('Rappel quotidien de brossage à 19 h 45 (modifiable dans Rappels).');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }

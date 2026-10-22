@@ -18,6 +18,8 @@ export default function HomeSettings() {
   const setLayout = useUiStore((s) => s.setHomeLayout);
   const shortcuts = useUiStore((s) => s.quickShortcuts);
   const setShortcuts = useUiStore((s) => s.setQuickShortcuts);
+  const dailyFavs = useUiStore((s) => s.dailyActionFavorites);
+  const setDailyFavs = useUiStore((s) => s.setDailyActionFavorites);
   const setIntroSeen = useUiStore((s) => s.setIntroSeen);
   const simple = useUiStore((s) => s.simpleMode);
   const setSimple = useUiStore((s) => s.setSimpleMode);
@@ -75,15 +77,13 @@ export default function HomeSettings() {
 
       <SectionTitle title="Raccourcis" />
       <Card>
-        <Text variant="small" muted>{shortcuts ? `Choisis : ${chosen.map(quickLabel).join(', ')}` : 'Automatiques, selon votre parcours. Choisissez-en jusqu’à quatre pour les fixer.'}</Text>
-        <Row wrap style={{ marginTop: spacing.sm }}>
-          {QUICK_KEYS.map((k) => <Chip key={k} label={quickLabel(k)} icon={quickIcon(k)} selected={chosen.includes(k)} onPress={() => pick(k)} />)}
-        </Row>
-        {shortcuts ? <Button label="Revenir aux raccourcis automatiques" size="sm" variant="ghost" onPress={() => setShortcuts(null)} style={{ alignSelf: 'flex-start' }} /> : null}
+        {/* Les raccourcis se choisissent dans « Mes actions du jour », profil par profil : jamais un outil hors sujet */}
+        <Text variant="small" muted>{tr('da.settingsHint')}</Text>
+        {dailyFavs && Object.keys(dailyFavs).length ? <Button label={tr('da.reset')} size="sm" variant="ghost" onPress={() => { for (const k of Object.keys(dailyFavs)) setDailyFavs(k, null); setShortcuts(null); }} style={{ alignSelf: 'flex-start' }} /> : null}
       </Card>
 
       <Button label={tr('cy.home.customize')} variant="secondary" icon="sliders" onPress={() => router.push('/cycle/home-card' as never)} />
-      <Button label="Réinitialiser l’accueil" variant="secondary" icon="rotate-ccw" onPress={() => { setLayout([], []); setShortcuts(null); toast('Accueil réinitialisé.'); }} />
+      <Button label="Réinitialiser l’accueil" variant="secondary" icon="rotate-ccw" onPress={() => { setLayout([], []); setShortcuts(null); for (const k of Object.keys(dailyFavs ?? {})) setDailyFavs(k, null); toast('Accueil réinitialisé.'); }} />
       <Button label="Revoir l’introduction" variant="ghost" icon="play-circle" onPress={() => { setIntroSeen(false); router.push('/intro'); }} />
       <Text variant="caption" muted>Ces préférences sont gardées sur cet appareil.</Text>
     </Screen>

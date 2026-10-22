@@ -7,6 +7,7 @@ import { useActivePregnancy, useActiveSubject, useJourneyState, useNotifications
 import { notificationRelevant, type RelevanceCtx } from '@/lib/journeys/relevance';
 import type { Scope, ScopeCtx } from '@/lib/journeys/tools';
 import type { Child } from '@/lib/types';
+import { pregnancyProgress } from '@/lib/domain/pregnancy';
 
 export interface ScopeState extends ScopeCtx {
   /** Toutes les portées de mes profils suivis (garde d'accès des écrans). */
@@ -51,11 +52,13 @@ export function useScope(): ScopeState {
 /** Contexte de pertinence (rendez-vous, rappels, notifications) du profil affiché. */
 export function useRelevanceCtx(): RelevanceCtx {
   const s = useScope();
+  const pregnancy = useActivePregnancy();
   const { data: children } = useTrackedChildren();
   return useMemo(() => ({
     scope: s.scope, childId: s.childId, pregnancyId: s.pregnancyId, activeScopes: s.activeScopes,
     trackedChildIds: (children ?? []).map((c) => c.id), postpartum: s.postpartum,
-  }), [s, children]);
+    pregnancyWeek: pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null,
+  }), [s, children, pregnancy]);
 }
 
 /** Boîte de réception sans les notifications d'un parcours terminé ou changé. */

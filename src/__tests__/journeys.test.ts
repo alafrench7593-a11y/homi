@@ -86,7 +86,7 @@ describe('les 14 scénarios de parcours', () => {
   it('9. Parcours grossesse : ni biberons, ni tétées, ni couches, ni minuteur, ni diversification', () => {
     const preg = ids({ scope: 'pregnancy', pregnancyId: pid });
     for (const k of FEEDING_DIAPERS) expect(preg).not.toContain(k);
-    expect(preg).toEqual(expect.arrayContaining(['preg_evolution', 'preg_weight', 'preg_birth_prep', 'preg_names', 'preg_lists', 'appointments', 'documents', 'scan_food', 'meals', 'ask', 'community']));
+    expect(preg).toEqual(expect.arrayContaining(['preg_evolution', 'preg_weight', 'preg_birth_prep', 'preg_names', 'preg_lists', 'appointments', 'documents', 'scan_food', 'preg_eat', 'ask', 'community']));
     for (const k of ['bottle', 'breastfeed', 'diaper']) expect(quickAllowed(k, { scope: 'pregnancy' })).toBe(false);
     expect(quickFor({ scope: 'pregnancy' })).not.toContain('bottle');
     expect(screenAllowed('/bottle/abc', ['pregnancy', 'none'])).toBe(false);

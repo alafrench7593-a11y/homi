@@ -36,7 +36,7 @@ import Composer from '@/app/community/new';
 import PostScreen from '@/app/community/post/[id]';
 import MemberProfile from '@/app/community/u/[handle]';
 import ProfileEditor from '@/app/community/profile';
-import { ChildTrackCards, PregnancyTrackCards } from '@/features/trackCards';
+import { ChildDailyActions, PregnancyDailyActions } from '@/features/dailyActions/DailyActions';
 import Groups from '@/app/community/groups';
 import Today from '@/app/today';
 import NotificationSettings from '@/app/community/notifications';
@@ -202,15 +202,17 @@ describe(`nouveaux écrans (${Platform.OS})`, () => {
     n.unmount();
   });
 
-  it('cartes de suivi : bébé en diversification, puis grossesse sans biberon ni couche', async () => {
-    const r = await render(<ChildTrackCards child={child} journey="baby" />);
+  it('« Mes actions du jour » : bébé en diversification, puis grossesse sans biberon ni couche', async () => {
+    const r = await render(<ChildDailyActions child={child} journey="baby" />);
     const ids = r.root.findAll((n) => typeof n.props.testID === 'string' && n.props.testID.startsWith('track-card-')).map((n) => n.props.testID);
     expect([...new Set(ids)]).toEqual(['track-card-meal', 'track-card-sleep', 'track-card-bottle', 'track-card-diaper']);
-    expect(allText(r)).toContain('Voir tous les suivis');
+    expect(allText(r)).toContain('Mes actions du jour');
+    expect(allText(r)).toContain('Voir tout');
     r.unmount();
-    const g = await render(<PregnancyTrackCards pregnancyId={null} />);
+    const g = await render(<PregnancyDailyActions />);
     const gIds = [...new Set(g.root.findAll((n) => typeof n.props.testID === 'string' && n.props.testID.startsWith('track-card-')).map((n) => n.props.testID))];
-    expect(gIds).toEqual(['track-card-mother_sleep', 'track-card-mood', 'track-card-meal', 'track-card-appointment']);
+    expect(gIds).toEqual(['track-card-feel', 'track-card-mother_sleep', 'track-card-mood', 'track-card-eat']);
+    expect(allText(g)).toContain('Bien manger enceinte');
     expect(allText(g)).not.toMatch(/Biberon|Tétée|Couche/);
     g.unmount();
   });

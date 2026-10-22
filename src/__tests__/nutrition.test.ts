@@ -24,8 +24,8 @@ const base = ALL_RECIPES.find((r) => r.audiences.includes('child'))!;
 const withIngredients = (ingredients: Recipe['ingredients']): Recipe => ({ ...base, ingredients });
 
 describe('bibliothèque de recettes 0–10 ans', () => {
-  it('ancien catalogue supprimé : 151 recettes, sans doublon', () => {
-    expect(ALL_RECIPES.length).toBe(151);
+  it('ancien catalogue supprimé : 167 recettes, sans doublon', () => {
+    expect(ALL_RECIPES.length).toBe(167);
     expect(new Set(ALL_RECIPES.map((r) => r.slug)).size).toBe(ALL_RECIPES.length);
   });
   it('chaque recette est « À vérifier », avec ingrédients, quantités, étapes, temps, allergènes, sources et congélation', () => {

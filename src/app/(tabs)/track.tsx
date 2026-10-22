@@ -8,7 +8,7 @@ import { BarChart } from '@/components/Charts';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, EmptyStateCard, haptic, Icon, type IconName, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui-extra';
 import { Timeline, type LogItem } from '@/features/tracking';
-import { ChildTrackCards, PregnancyTrackCards } from '@/features/trackCards';
+import { DailyActions } from '@/features/dailyActions/DailyActions';
 import { QuickEntry } from '@/features/quickEntry';
 import { DayRibbon, SleepNights } from '@/features/motionViz';
 import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePregnancies, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
@@ -67,7 +67,7 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
   return (
     <View style={{ gap: spacing.md }}>
       {/* Cartes de suivi en premier : quatre actions utiles au profil, les autres dans « Voir tous les suivis » */}
-      <ChildTrackCards child={child} journey={journey} />
+      <DailyActions child={child} journey={journey ?? null} />
       <Tappable
         accessibilityRole="button"
         accessibilityLabel={openSleep ? tr('trk.night.a11yOpen') : tr('trk.night.a11yStart')}
@@ -135,9 +135,12 @@ function PregnancyTracking({ cards }: { cards?: boolean }) {
   const pregnancy = useActivePregnancy();
   return (
     <View style={{ gap: spacing.md }}>
-    {cards ? <PregnancyTrackCards pregnancyId={pregnancy?.id ?? null} /> : null}
+    {cards ? <DailyActions /> : null}
     <Card>
       <ListRow icon="moon" title={tr('trk.preg.weekly')} subtitle={tr('trk.preg.weeklySub')} onPress={() => router.push('/pregnancy')} />
+      <ListRow icon="calendar" title={tr('tool.preg_calendar')} subtitle={tr('care.cal.subtitle')} onPress={() => router.push('/pregnancy/calendar' as never)} testID="track-preg-calendar" />
+      <ListRow icon="feather" title={tr('tool.preg_feel')} onPress={() => router.push('/pregnancy/feel' as never)} />
+      <ListRow icon="coffee" title={tr('tool.preg_eat')} onPress={() => router.push('/pregnancy/eat' as never)} />
       {!profile?.hide_weight_module && <ListRow icon="trending-up" title={tr('trk.preg.weight')} subtitle={tr('trk.preg.weightSub')} onPress={() => router.push('/pregnancy/weight')} />}
       <ListRow icon="calendar" title={tr('trk.preg.appointments')} subtitle={tr('trk.preg.appointmentsSub')} onPress={() => router.push('/appointments')} />
       <ListRow icon="check-square" title={tr('trk.preg.lists')} subtitle={tr('trk.preg.listsSub')} onPress={() => router.push('/lists')} />
@@ -188,6 +191,7 @@ export default function Track() {
             ))}
           </View>
         )}
+        {(cycle || scope.scope === 'none') && subject.type !== 'family' ? <DailyActions /> : null}
         {(cycle || scope.scope === 'none') && subject.type !== 'family' && (
           <Card>
             <ListRow icon="heart" title={tr('trk.me.mood')} subtitle={tr('trk.me.moodSub')} onPress={() => router.push('/me/mood')} />

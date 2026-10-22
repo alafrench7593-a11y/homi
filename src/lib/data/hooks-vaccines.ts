@@ -10,9 +10,10 @@ import { useInvalidate, useRows } from './hooks';
 import { addMonthsISO, vaccineSchedule, type ScheduledDose } from '../domain/vaccines';
 import { todayISO } from '../domain/dates';
 import type { Appointment, Child } from '../types';
+import { useVaccineCalendar, useVaccinePostponements } from './hooks-care';
 
-export interface Vaccination { id: string; child_id: string; vaccine: string; given_on: string; dose_label: string | null; lot: string | null; given_by: string | null; source: 'parent' | 'carnet' | 'professional'; note: string | null; calendar_key: string | null }
-export type VaccineAppointment = Appointment & { completed_at?: string | null; calendar_keys?: string[] };
+export interface Vaccination { id: string; child_id: string; vaccine: string; given_on: string; dose_label: string | null; lot: string | null; given_by: string | null; source: 'parent' | 'carnet' | 'professional'; note: string | null; calendar_key: string | null; document_ids?: string[] }
+export type VaccineAppointment = Appointment & { completed_at?: string | null; calendar_keys?: string[]; document_ids?: string[]; time_set?: boolean };
 
 export function useVaccinations(childId: string | null | undefined) {
   return useRows<Vaccination>(['child_vaccinations', childId ?? ''], childId ? { table: 'child_vaccinations', filters: [eq('child_id', childId)], order: [{ col: 'given_on', asc: false }] } : null);
@@ -21,18 +22,22 @@ export function useVaccineAppointments(childId: string | null | undefined) {
   return useRows<VaccineAppointment>(['appointments', 'vaccination', childId ?? ''], childId ? { table: 'appointments', filters: [eq('child_id', childId), eq('kind', 'vaccination')], order: [{ col: 'starts_at' }] } : null);
 }
 
-/** Échéances indicatives de l'enfant, avec ce qui est déjà noté ou prévu. */
+/** Échéances indicatives de l'enfant (calendrier en vigueur du pays choisi), avec ce qui est noté, prévu ou reporté. */
 export function useVaccineSchedule(child: Child | null | undefined) {
   const v = useVaccinations(child?.id);
   const a = useVaccineAppointments(child?.id);
+  const p = useVaccinePostponements(child?.id);
+  const { calendar, supported, country } = useVaccineCalendar();
   const schedule = useMemo<ScheduledDose[] | null>(() => {
     if (!child) return null;
     const done: Record<string, string | null> = {};
     for (const x of v.data ?? []) if (x.calendar_key) done[x.calendar_key] = x.given_on;
     const planned = (a.data ?? []).filter((x) => !x.completed_at).flatMap((x) => x.calendar_keys ?? []);
-    return vaccineSchedule(child.birth_date, todayISO(), done, planned);
-  }, [child, v.data, a.data]);
-  return { schedule, vaccinations: v.data ?? [], appointments: a.data ?? [], loading: v.isLoading || a.isLoading };
+    const postponed: Record<string, string | null> = {};
+    for (const x of p.data ?? []) postponed[x.calendar_key] = x.postponed_to;
+    return vaccineSchedule(child.birth_date, todayISO(), done, planned, postponed, calendar);
+  }, [child, v.data, a.data, p.data, calendar]);
+  return { schedule, vaccinations: v.data ?? [], appointments: a.data ?? [], postponements: p.data ?? [], calendar, supported, country, loading: v.isLoading || a.isLoading };
 }
 
 export function useVaccineActions(child: Child | null | undefined) {
