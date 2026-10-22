@@ -26,17 +26,21 @@ const SHORT_KEYS = { index: 'tab.home', track: 'tab.track', ask: 'tab.ask', comm
 const short = (name: string) => (name in SHORT_KEYS ? tr(SHORT_KEYS[name as keyof typeof SHORT_KEYS]) : undefined);
 
 export const DOCK_HEIGHT = 74;
+/** Mode jour : barre en verre dépoli clair (jamais blanche opaque), icônes foncées bien contrastées. */
+const DAY_INK = '#2A1A26';
+const DAY_MUTED = '#6B5560';
 /** Routes d'onglet accessibles par lien mais absentes de la barre : le Profil s'ouvre depuis l'avatar de l'en-tête. */
 const HIDDEN_FROM_BAR = new Set(['profile', 'moi']);
 
 /** Icône d'onglet : petit rebond quand l'onglet devient actif. */
 function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
   const reduce = useReduceMotion();
+  const day = !useTheme().isDark;
   const v = useRef(new Animated.Value(focused ? 1 : 0)).current;
   useEffect(() => { springTo(v, focused ? 1 : 0, 'pop', reduce).start(); }, [v, focused, reduce]);
   return (
     <Animated.View style={{ transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 1.14] }) }, { translateY: v.interpolate({ inputRange: [0, 1], outputRange: [0, -1.5] }) }] }}>
-      <Feather name={name} size={21} color={focused ? '#FFFFFF' : 'rgba(255,241,245,0.5)'} />
+      <Feather name={name} size={21} color={day ? (focused ? DAY_INK : DAY_MUTED) : focused ? '#FFFFFF' : 'rgba(255,241,245,0.5)'} />
     </Animated.View>
   );
 }
@@ -175,20 +179,21 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   };
 
   const toolsFocused = focusedName === 'tools';
+  const day = !t.isDark;
   return (
     <>
       <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: Math.max(insets.bottom, 10), paddingHorizontal: spacing.sm, alignItems: 'center' }}>
-        <View style={{ height: DOCK_HEIGHT - 10, width: '100%', maxWidth: 560, borderRadius: radius.pill, backgroundColor: Platform.OS === 'android' ? t.colors.tabBar : 'transparent', shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 8, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4 }}>
+        <View style={{ height: DOCK_HEIGHT - 10, width: '100%', maxWidth: 560, borderRadius: radius.pill, backgroundColor: Platform.OS === 'android' ? (day ? 'rgba(255,247,245,0.9)' : t.colors.tabBar) : 'transparent', shadowColor: day ? '#B4507A' : '#000', shadowOpacity: day ? 0.16 : 0.18, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 8, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4, borderWidth: day ? 1 : 0, borderColor: 'rgba(255,255,255,0.9)' }}>
           {Platform.OS !== 'android' ? (
             <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.pill, overflow: 'hidden' }]}>
-              <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
-              <View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.tabBar }]} />
-              <View style={{ position: 'absolute', top: 0, left: 24, right: 24, height: 1, backgroundColor: 'rgba(255,255,255,0.18)' }} />
+              <BlurView intensity={day ? 42 : 30} tint={day ? 'light' : 'dark'} style={StyleSheet.absoluteFill} />
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: day ? 'rgba(255,248,246,0.6)' : t.colors.tabBar }]} />
+              <View style={{ position: 'absolute', top: 0, left: 24, right: 24, height: 1, backgroundColor: day ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.18)' }} />
             </View>
           ) : null}
           {pos ? (
             <>
-              <Animated.View pointerEvents="none" style={{ position: 'absolute', top: 7, bottom: 7, left: 0, width: pos.w, borderRadius: radius.pill, backgroundColor: 'rgba(255,255,255,0.10)', opacity: pillOn, transform: [{ translateX: pillX }] }} />
+              <Animated.View pointerEvents="none" style={{ position: 'absolute', top: 7, bottom: 7, left: 0, width: pos.w, borderRadius: radius.pill, backgroundColor: day ? 'rgba(233,88,124,0.12)' : 'rgba(255,255,255,0.10)', opacity: pillOn, transform: [{ translateX: pillX }] }} />
               <Animated.View pointerEvents="none" style={{ position: 'absolute', top: 10, left: -2, width: 4, height: 4, borderRadius: 2, backgroundColor: palette.gold, opacity: pillOn, transform: [{ translateX: Animated.add(pillX, Animated.multiply(pillW, 0.5)) }] }} />
             </>
           ) : null}
@@ -214,8 +219,9 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
 }
 
 function TabLabel({ label, focused }: { label: string; focused: boolean }) {
+  const day = !useTheme().isDark;
   return (
-    <Text style={{ fontFamily: focused ? fonts.bodyMedium : fonts.body, fontSize: label.length > 9 ? 8.5 : 9.5, lineHeight: 12, letterSpacing: label.length > 9 ? -0.3 : -0.1 }} color={focused ? '#FFFFFF' : 'rgba(255,241,245,0.5)'} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+    <Text style={{ fontFamily: focused ? fonts.bodyMedium : fonts.body, fontSize: label.length > 9 ? 8.5 : 9.5, lineHeight: 12, letterSpacing: label.length > 9 ? -0.3 : -0.1 }} color={day ? (focused ? DAY_INK : DAY_MUTED) : focused ? '#FFFFFF' : 'rgba(255,241,245,0.5)'} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
       {label}
     </Text>
   );

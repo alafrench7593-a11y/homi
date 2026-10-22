@@ -223,7 +223,7 @@ def run(p):
     go(pg, '/', 3000)
     pg.locator('[data-testid="profile-switcher"]').filter(visible=True).first.click(); pg.wait_for_timeout(700)
     tid(pg, f'subject-{lina}').click(); pg.wait_for_timeout(1500)
-    R['accueil_carte_sommeil'] = has(pg, 'sleep-now') and 'Endormie depuis' in text(pg, 'sleep-now-state') and has(pg, 'sleep-record') and has(pg, 'sleep-open')
+    R['accueil_carte_sommeil'] = has(pg, 'sleep-now') and 'Lina dort depuis' in text(pg, 'sleep-now-state') and has(pg, 'sleep-record') and has(pg, 'sleep-open')
     R['accueil_pas_de_detail'] = not has(pg, 'sleep-timeline') and not has(pg, 'sleep-rhythm')
     R['accueil_lien_aide_nuit'] = has(pg, 'sleep-now-tonight')
     pg.screenshot(path=f'{SHOTS}/sommeil_accueil.png')

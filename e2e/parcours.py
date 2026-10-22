@@ -105,7 +105,9 @@ def run(p):
     R['8_changement_enfant_outils'] = 'Mon enfant a un besoin particulier' in t and 'Rappel biberon' not in t and 'École ou mode de garde' not in t  # catégorie retirée le 20/10 (demande)
     go(pg, '/')
     # Les 4 actions du quotidien d'un enfant de 5 ans : repas, sommeil, médicaments prescrits, rendez-vous — jamais de biberon
-    R['8_actions_rapides_enfant'] = pg.locator('[data-testid="track-card-medication"]').count() > 0 and pg.locator('[data-testid="track-card-bottle"]').count() == 0 and 'Biberon' not in T(pg)
+    pg.locator('[data-testid="cocoon-add"]').first.click(); pg.wait_for_timeout(800)
+    R['8_actions_rapides_enfant'] = pg.locator('[data-testid="cocoon-add-medication"]').count() > 0 and pg.locator('[data-testid="cocoon-add-bottle"]').count() == 0 and 'Biberon' not in T(pg)
+    pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
 
     # ---- 11. Neurodéveloppement dans la fiche enfant + traitement recopié + rappel Pris
     go(pg, f'/child/{noe}?tab=besoins')

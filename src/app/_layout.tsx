@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
-import { Platform, View, useWindowDimensions } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Notifications from 'expo-notifications';
@@ -10,7 +11,11 @@ import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persi
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { WebInteractionStyles } from '@/components/WebInteractionStyles';
-import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
+import { ThemeProvider, useReduceMotion, useTheme } from '@/theme/ThemeProvider';
+import { DaySky } from '@/components/DaySky';
+import { PREVIEW_HOUR, skyProfileFor } from '@/theme/daySky';
+import { useUiStore } from '@/lib/store';
+import { useScope } from '@/lib/data/hooks-scope';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
@@ -187,12 +192,46 @@ function WebFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Fond vivant unique, derrière toutes les pages : vidéo en boucle, aurore en attendant qu'elle charge. */
+/**
+ * Fond vivant unique, derrière toutes les pages.
+ *  · Nuit (thème sombre) : vidéo en boucle, aurore en attendant qu'elle charge — inchangé.
+ *  · Jour : ciel lumineux qui évolue avec l'heure et se teinte selon le profil affiché (DaySky).
+ * Le passage de l'un à l'autre se fait en fondu, et le début de soirée garde une lueur de coucher de soleil
+ * qui s'éteint progressivement : jamais de changement brutal.
+ */
 function Backdrop() {
   const t = useTheme();
+  const reduce = useReduceMotion();
+  const skyOverride = useUiStore((s) => s.skyOverride);
+  const preference = useUiStore((s) => s.themePreference);
+  const scope = useScope();
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const id = setInterval(() => setNow(new Date()), 60_000); return () => clearInterval(id); }, []);
+  const hour = skyOverride ? PREVIEW_HOUR[skyOverride] : now.getHours() + now.getMinutes() / 60;
+  const light = !t.isDark;
+  const v = useRef(new Animated.Value(light ? 1 : 0)).current;
+  const [mounted, setMounted] = useState({ light, dark: !light });
+  useEffect(() => {
+    setMounted({ light: true, dark: true });
+    const done = () => setMounted({ light, dark: !light });
+    if (reduce) { v.setValue(light ? 1 : 0); done(); return; }
+    Animated.timing(v, { toValue: light ? 1 : 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: Platform.OS !== 'web' }).start(({ finished }) => { if (finished) done(); });
+  }, [light, reduce, v]);
+  // Lueur du coucher de soleil sur le ciel de nuit, de 18 h 30 à 20 h 30 (mode automatique)
+  const glow = preference === 'auto' && t.name === 'dark' ? Math.max(0, Math.min(1, (20.5 - hour) / 2)) : 0;
   return (
     <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t.colors.background }}>
-      <VideoBackdrop fallback={<LiquidAurora fallback={<Aurora />} />} />
+      {mounted.dark ? (
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>
+          <VideoBackdrop fallback={<LiquidAurora fallback={<Aurora />} />} />
+          {glow > 0 && hour >= 18 ? <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(214,120,170,0.20)', 'rgba(255,164,128,0.30)']} locations={[0.3, 0.7, 1]} style={[StyleSheet.absoluteFill, { opacity: glow }]} /> : null}
+        </Animated.View>
+      ) : null}
+      {mounted.light ? (
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: v }]}>
+          <DaySky hour={hour} profile={skyProfileFor(scope.scope)} />
+        </Animated.View>
+      ) : null}
     </View>
   );
 }

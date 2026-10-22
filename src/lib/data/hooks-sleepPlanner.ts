@@ -39,8 +39,9 @@ export function useSleepPlan(child: Child | null | undefined, everyMs = 30_000) 
   const { profile, loading: profileLoading } = useSleepProfile(id);
   const feedback = useSleepFeedback(id);
   const sleeps = (sleepsQ.data ?? []) as SleepRecord[];
+  // Heure réelle recalculée à chaque nouveau relevé : un endormissement noté à l'instant compte tout de suite
   const plan: SleepPlan | null = useMemo(
-    () => (child ? planDay({ childId: child.id, birthDate: child.birth_date, profile, sleeps, feedback, now }) : null),
+    () => (child ? planDay({ childId: child.id, birthDate: child.birth_date, profile, sleeps, feedback, now: new Date(Math.max(now.getTime(), Date.now())) }) : null),
     [child, profile, sleeps, feedback, now],
   );
   return { plan, sleeps, profile, feedback, now, loading: sleepsQ.isLoading || profileLoading };

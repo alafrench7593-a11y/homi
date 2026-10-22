@@ -95,7 +95,8 @@ export const themes: Record<ThemeName, Theme> = {
       surfaceAlt: 'rgba(255,255,255,0.46)',
       border: 'rgba(255,255,255,0.9)',
       text: '#2A1A26',
-      textMuted: '#7E6873',
+      // Un peu plus foncé qu'avant : reste lisible (≥ 4,5:1) sur le ciel coloré du mode jour
+      textMuted: '#6B5560',
       primary: '#E9587C',
       primaryText: '#FFFFFF',
       accent: '#FFB3C8',

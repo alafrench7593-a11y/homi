@@ -75,12 +75,11 @@ def run(p):
     subject(pg, lina)
     t = T(pg)
     pg.screenshot(path=f'{SHOTS}/ess_home_lina.png', full_page=True)
-    quick = tid(pg, 'home-card-quick')
-    # Les 4 actions du quotidien (cartes de suivi du bébé affiché), puis une publication de la communauté et une recommandation
-    cards = {quick.locator('[data-testid^="track-card-"]').nth(i).get_attribute('data-testid') for i in range(quick.locator('[data-testid^="track-card-"]').count())}
-    nquick = len(cards) if cards else quick.get_by_role('button').count() - 1
-    R['accueil_essentiel'] = (tid(pg, 'home-card-main').is_visible() and 1 <= nquick <= 4 and tid(pg, 'home-card-upcoming').count() > 0
-                              and tid(pg, 'home-card-community').count() > 0 and pg.locator('[data-testid="home-journey"]').count() == 0)
+    # Profil enfant : « Le cocon du jour » (cocon, frise, 3 informations, « + Ajouter », un conseil), sans grille de cases
+    ninfo = pg.locator('[data-testid^="cocoon-info-"]').count()
+    R['accueil_essentiel'] = (tid(pg, 'home-card-main').is_visible() and pg.locator('[data-testid="cocoon"]').count() > 0 and ninfo == 3
+                              and pg.locator('[data-testid="cocoon-add"]').count() > 0 and pg.locator('[data-testid="cocoon-ribbon"]').count() > 0
+                              and pg.locator('[data-testid="home-card-quick"]').count() == 0 and pg.locator('[data-testid="home-journey"]').count() == 0)
     R['accueil_bebe_sans_SA'] = not SA.search(t)
 
     # ================================================================ Sélecteur de profils

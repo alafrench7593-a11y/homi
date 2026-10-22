@@ -340,10 +340,12 @@ const DEFAULT_FAV: Record<Exclude<TrackProfile, 'pregnancy'>, AddAction[]> = {
 
 /** Les 4 favoris : ceux choisis par le parent (s'ils restent possibles), complétés par les favoris de l'âge. */
 export function favoriteActions(profile: TrackProfile, available: AddAction[], chosen: readonly string[] | null | undefined): AddAction[] {
+  const defaults = DEFAULT_FAV[profile === 'pregnancy' ? 'child' : profile];
+  // Choix du parent : gardé tel quel ; un favori devenu impossible (suivi désactivé) est remplacé
+  const target = chosen && chosen.length ? Math.min(4, chosen.length) : 4;
   const fav: AddAction[] = [];
   for (const k of chosen ?? []) if (available.includes(k as AddAction) && !fav.includes(k as AddAction)) fav.push(k as AddAction);
-  for (const k of DEFAULT_FAV[profile === 'pregnancy' ? 'child' : profile]) if (fav.length < 4 && available.includes(k) && !fav.includes(k)) fav.push(k);
-  for (const k of available) if (fav.length < 4 && !fav.includes(k)) fav.push(k);
+  for (const k of [...defaults, ...available]) if (fav.length < target && available.includes(k) && !fav.includes(k)) fav.push(k);
   return fav.slice(0, 4);
 }
 
