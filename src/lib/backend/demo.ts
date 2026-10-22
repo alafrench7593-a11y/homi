@@ -74,7 +74,7 @@ const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_r
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
 const DEMO_RECALL_CHECK = 'Mode démonstration : la base officielle RappelConso n’est pas interrogée ; seuls des rappels fictifs de démonstration peuvent apparaître.';
-const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback'];
+const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements'];
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
 function checkBottleTimer(all: Row[], r: Row) {
@@ -96,6 +96,8 @@ const OWNER_TABLES: Record<string, string> = {
   // Scanner : historique, résultats et favoris strictement personnels
   scan_results: 'user_id', scan_favorites: 'user_id',
   parent_sleep_logs: 'user_id',
+  // Grossesse : « Comment je me sens aujourd'hui ? » (jamais visible du foyer)
+  pregnancy_symptom_logs: 'user_id',
   // Parcours fertilité : données intimes, strictement personnelles
   intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
   cycle_preferences: 'user_id', discharge_logs: 'user_id', bleeding_logs: 'user_id', cycle_journal: 'user_id',
@@ -1262,7 +1264,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
-        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback', 'cycle_shares', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status'].map((t) => [t, view(t)])),
+        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback', 'cycle_shares', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status', 'pregnancy_symptom_logs'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
           ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines']
