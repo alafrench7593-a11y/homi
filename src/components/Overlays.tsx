@@ -5,7 +5,7 @@ import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
-import { Icon, IconButton, Text } from './ui';
+import { Button, Icon, IconButton, Text } from './ui';
 import { GlassSurface } from './Glass';
 import { duration, easing, spring as SPRING, springTo, timeTo } from '@/theme/motion';
 import { t as tr } from '@/i18n';
@@ -153,12 +153,8 @@ function ConfirmHost() {
         <Text variant="heading">{req.title}</Text>
         {req.message ? <Text muted>{req.message}</Text> : null}
         <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs }}>
-          <Tappable accessibilityRole="button" accessibilityLabel={tr('common.cancel')} onPress={() => done(false)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center' }}>
-            <Text weight="bold">{tr('common.cancel')}</Text>
-          </Tappable>
-          <Tappable accessibilityRole="button" accessibilityLabel={req.confirmLabel} onPress={() => done(true)} style={{ flex: 1, minHeight: 48, borderRadius: radius.pill, backgroundColor: req.destructive ? t.colors.danger : t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
-            <Text weight="bold" color="#FFFFFF">{req.confirmLabel}</Text>
-          </Tappable>
+          <Button label={tr('common.cancel')} variant="secondary" onPress={() => done(false)} style={{ flex: 1 }} />
+          <Button label={req.confirmLabel} variant={req.destructive ? 'danger' : 'primary'} onPress={() => done(true)} style={{ flex: 1 }} />
         </View>
       </Animated.View>
     </Modal>

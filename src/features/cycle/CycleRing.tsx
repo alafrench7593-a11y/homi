@@ -111,7 +111,7 @@ export function CycleRing({ data }: { data: RingData }) {
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' }}>
         {LEGEND.map((p) => (
           <Tappable key={p} accessibilityRole="button" accessibilityState={{ selected: sel === p }} onPress={() => pick(p)}
-            style={({ pressed }) => ({ minHeight: MIN_TOUCH - 8, maxWidth: '100%', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, justifyContent: 'center',
+            style={({ pressed }) => ({ minHeight: MIN_TOUCH - 8, maxWidth: '100%', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, justifyContent: 'center',
               borderWidth: 1.2, borderColor: sel === p ? c.mauve : c.line, backgroundColor: sel === p ? c.lavender : pressed ? c.pearl : 'transparent' })}>
             <Ink variant="caption" weight="medium">{tr(`cy.ring.legend.${p}` as TKey)}</Ink>
           </Tappable>

@@ -14,7 +14,8 @@ export function webInteractionCss(primary: string) {
   const interactive = ['[role="button"]', '[role="link"]', '[role="tab"]', '[role="checkbox"]', '[role="radio"]', '[role="switch"]', 'a[href]'];
   return [
     '*,*::before,*::after{box-sizing:border-box}',
-    `${interactive.map((s) => `${s}:focus-visible`).join(',')}{outline:2px solid ${primary};outline-offset:3px;border-radius:12px}`,
+    // Anneau de focus : suit les coins de l'élément (aucune forme imposée), décalé de 2 px pour rester lisible
+    `${interactive.map((s) => `${s}:focus-visible`).join(',')}{outline:2px solid ${primary};outline-offset:2px}`,
     `${interactive.map((s) => `${s}:focus:not(:focus-visible)`).join(',')}{outline:none}`,
     'div[dir="auto"],span[dir="auto"]{overflow-wrap:break-word;word-break:normal;hyphens:auto}',
     '@media (prefers-reduced-motion: reduce){*,*::before,*::after{transition-duration:0.01ms!important;animation-duration:0.01ms!important;scroll-behavior:auto!important}}',

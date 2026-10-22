@@ -147,7 +147,7 @@ export function Choices<T extends string>({ label, options, value, onChange, mul
                 if (multi) { const cur = (value as T[] | null) ?? []; onChange(on ? cur.filter((x) => x !== o) : [...cur, o]); }
                 else onChange(on && allowNone ? null : o);
               }}
-              style={({ pressed }) => ({ minHeight: MIN_TOUCH - 4, maxWidth: '100%', paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, justifyContent: 'center',
+              style={({ pressed }) => ({ minHeight: MIN_TOUCH - 4, maxWidth: '100%', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, justifyContent: 'center',
                 borderWidth: 1.2, borderColor: on ? c.mauve : c.line, backgroundColor: on ? c.lavender : pressed ? c.pearl : 'transparent' })}>
               <Text variant="small" weight={on ? 'bold' : 'medium'} color={c.ink} style={{ flexShrink: 1 }}>{labelOf(o)}</Text>
             </Tappable>

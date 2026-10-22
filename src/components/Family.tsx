@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   switcher: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: 8, paddingRight: spacing.md, borderRadius: radius.pill, borderWidth: 1, minHeight: 58 },
   pill: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingVertical: 6, paddingLeft: 6, paddingRight: 14, borderRadius: radius.pill, borderWidth: 1.2, minHeight: MIN_TOUCH + 4 },
   add: { paddingHorizontal: 14, paddingRight: 14, justifyContent: 'center' },
-  fab: { position: 'absolute', right: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 18, minHeight: 52, borderRadius: radius.pill, shadowColor: '#5B3A2E', shadowOpacity: 0.25, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 6 },
+  fab: { position: 'absolute', right: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 18, minHeight: 52, borderRadius: 14, shadowColor: '#5B3A2E', shadowOpacity: 0.25, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 6 },
   emergency: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.sm, borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, minHeight: 64 },
   phone: { minWidth: 64, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
 });

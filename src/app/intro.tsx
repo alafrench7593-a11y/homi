@@ -182,7 +182,7 @@ export default function Intro() {
                   const on = l.code === locale;
                   return (
                     <Tappable key={l.code} accessibilityRole="radio" accessibilityState={{ checked: on }} aria-checked={on} accessibilityLabel={l.native} onPress={() => chooseLanguage(l.code)}
-                      style={({ pressed }) => ({ minHeight: 48, minWidth: 120, paddingHorizontal: spacing.md, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6,
+                      style={({ pressed }) => ({ minHeight: 48, minWidth: 120, paddingHorizontal: spacing.md, borderRadius: 12, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6,
                         backgroundColor: on ? t.colors.primary : t.colors.surface, borderWidth: 1, borderColor: on ? t.colors.primary : t.colors.border, opacity: pressed ? 0.85 : 1 })}>
                       {on ? <Icon name="check" size={16} color={t.colors.primaryText} /> : null}
                       <Text weight="bold" color={on ? t.colors.primaryText : t.colors.text}>{l.native}</Text>

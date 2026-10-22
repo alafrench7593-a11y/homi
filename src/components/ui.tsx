@@ -129,9 +129,13 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
 
 // ---------------------------------------------------------------- Bouton
 /**
- * Bouton unique de l'application. Variantes : primary, secondary, outline, ghost, danger (= destructive), night.
- * Tailles sm, md, lg ; hauteur minimale (jamais fixe) : un libellé long passe à la ligne au lieu d'être coupé.
- * Pression 0,97, survol (web) : soulèvement, surface éclairée, icône qui s'anime légèrement.
+ * Bouton unique de l'application (refonte 2026 : sobre, net, cohérent).
+ * Hiérarchie : primary (plein), secondary (fond discret + liseré), outline (liseré couleur), ghost (sans fond),
+ * danger (= destructive), night (mode nuit). Tailles sm / md / lg ; hauteur minimale, jamais fixe : un libellé long
+ * passe à la ligne. Coins 10–12 px, liseré de 1 px, ombre très légère sur les boutons pleins.
+ * États : survol (web, 180 ms : voile de couleur), appui (enfoncement 0,98 + voile plus marqué), focus clavier
+ * (anneau global, src/components/WebInteractionStyles.tsx), désactivé (atténué, sans ombre), chargement
+ * (indicateur à la place du libellé, sans changement de taille). « Réduire les animations » : états immédiats.
  * Si `onPress` renvoie une promesse, le bouton affiche le chargement et ignore les appuis suivants jusqu'à la fin
  * (pas de double envoi). La confirmation de réussite reste à l'écran appelant, après la réussite réelle.
  */
@@ -148,50 +152,72 @@ interface ButtonProps extends Omit<PressableProps, 'style' | 'children' | 'onPre
   onPress?: (e: GestureResponderEvent) => unknown;
 }
 
-const NUDGE: Partial<Record<IconName, 'x' | 'up' | 'spin'>> = { 'arrow-right': 'x', 'chevron-right': 'x', 'external-link': 'up', send: 'x', 'log-in': 'x', upload: 'up', download: 'up', plus: 'spin', 'refresh-cw': 'spin' };
+/** Proportions du système de boutons (une seule source). */
+export const BUTTON = {
+  height: { sm: 38, md: MIN_TOUCH, lg: 54 },
+  padX: { sm: 12, md: 18, lg: 22 },
+  radius: { sm: 10, md: 12, lg: 14 },
+  font: { sm: 14, md: 15, lg: 16 },
+  icon: { sm: 15, md: 17, lg: 18 },
+  pressScale: 0.98,
+  hoverMs: 180,
+  pressInMs: 110,
+  pressOutMs: 200,
+};
+
+/** Liseré discret, dérivé de la couleur du texte du thème (aucune nouvelle couleur). */
+export const hairline = (isDark: boolean) => (isDark ? 'rgba(255,255,255,0.14)' : 'rgba(42,26,38,0.12)');
+
+/** Seules les flèches « avancent » de 2 px au survol : un indice de direction, pas un effet. */
+const NUDGE: Partial<Record<IconName, 'x' | 'up'>> = { 'arrow-right': 'x', 'chevron-right': 'x', 'external-link': 'up', send: 'x', 'log-in': 'x' };
+
+function useButtonMotion() {
+  const reduce = useReduceMotion();
+  const press = React.useRef(new Animated.Value(0)).current;
+  const hover = React.useRef(new Animated.Value(0)).current;
+  return {
+    press, hover,
+    handlers: {
+      onPressIn: () => timeTo(press, 1, BUTTON.pressInMs, reduce, easingStd).start(),
+      onPressOut: () => timeTo(press, 0, BUTTON.pressOutMs, reduce, easingStd).start(),
+      onHoverIn: () => timeTo(hover, 1, BUTTON.hoverMs, reduce, easingStd).start(),
+      onHoverOut: () => timeTo(hover, 0, BUTTON.hoverMs, reduce, easingStd).start(),
+    },
+  };
+}
+const easingStd = Easing.bezier(0.2, 0, 0, 1);
 
 export function Button({ label, variant: v = 'primary', icon, iconRight, loading, size = 'md', style, full, disabled, onPress, ...rest }: ButtonProps) {
   const variant = v === 'destructive' ? 'danger' : v;
   const t = useTheme();
   const reduce = useReduceMotion();
-  const press = usePressMotion();
-  const [w, setW] = React.useState(0);
+  const m = useButtonMotion();
   const [pending, setPending] = React.useState(false);
   const running = React.useRef(false);
   const mounted = React.useRef(true);
   React.useEffect(() => () => { mounted.current = false; }, []);
   const isBusy = !!loading || pending;
-  const shine = React.useRef(new Animated.Value(0)).current;
   const busy = React.useRef(new Animated.Value(isBusy ? 1 : 0)).current;
   React.useEffect(() => { timeTo(busy, isBusy ? 1 : 0, duration.fast, reduce).start(); }, [busy, isBusy, reduce]);
-  const sweep = () => {
-    if (reduce || !w) return;
-    shine.setValue(0);
-    Animated.timing(shine, { toValue: 1, duration: 650, easing: Easing.out(Easing.ease), useNativeDriver: NATIVE_DRIVER }).start();
-  };
-  // Verre liquide : primaire perlé (nuit) ou rose (jour), secondaire givré, reflet qui balaie au toucher
-  const glass = t.name !== 'night' && (variant === 'primary' || variant === 'secondary');
-  const fills: Record<string, [string, string, string]> = {
-    primaryDark: ['#FFFFFF', '#FFEAF1', '#F4C9D8'],
-    primaryLight: ['#FFA9C2', '#F57A9C', '#E9587C'],
-    secondaryDark: ['rgba(255,255,255,0.16)', 'rgba(20,8,24,0.35)', 'rgba(190,170,255,0.14)'],
-    secondaryLight: ['rgba(255,255,255,0.92)', 'rgba(255,255,255,0.55)', 'rgba(255,214,228,0.7)'],
-  };
-  const fill = variant === 'primary' ? (t.isDark ? fills.primaryDark : fills.primaryLight) : t.isDark ? fills.secondaryDark : fills.secondaryLight;
-  const fg = glass
-    ? variant === 'primary' ? (t.isDark ? '#2A1022' : '#FFFFFF') : t.colors.text
-    : { primary: t.colors.primaryText, secondary: t.colors.text, outline: t.colors.primary, ghost: t.colors.primary, danger: '#fff', night: '#1A0A13' }[variant];
-  const bg = glass ? 'transparent' : { primary: t.colors.primary, secondary: 'transparent', outline: 'transparent', ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
-  const border = glass
-    ? variant === 'primary' ? (t.isDark ? '#FFFFFF' : 'rgba(255,255,255,0.65)') : t.isDark ? 'rgba(255,255,255,0.42)' : 'rgba(255,255,255,0.95)'
-    : { primary: t.colors.primary, secondary: t.colors.border, outline: t.colors.primary, ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
-  const h = size === 'lg' ? 56 : size === 'sm' ? 40 : MIN_TOUCH;
-  const iconSize = size === 'sm' ? 16 : 19;
+  const off = !!disabled;
+  const solid = variant === 'primary' || variant === 'danger' || variant === 'night';
+
+  const bg = { primary: t.colors.primary, secondary: t.colors.surface, outline: 'transparent', ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
+  const fg = {
+    primary: t.colors.primaryText, secondary: t.colors.text, outline: t.colors.primary, ghost: t.colors.primary,
+    danger: t.isDark ? t.colors.primaryText : '#FFFFFF', night: '#1A0A13',
+  }[variant];
+  const border = { primary: t.colors.primary, secondary: hairline(t.isDark), outline: t.colors.primary, ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
+  // Voile d'état : clair sur les boutons pleins (survol), teinte de la marque sur les boutons transparents
+  const veil = solid ? '#FFFFFF' : variant === 'secondary' ? t.colors.text : t.colors.primary;
+  const veilHover = solid ? 0.1 : variant === 'secondary' ? 0.05 : 0.08;
+  const veilPress = solid ? -1 : variant === 'secondary' ? 0.09 : 0.14; // -1 : assombrir les boutons pleins à l'appui
+  const h = BUTTON.height[size];
+  const iconSize = BUTTON.icon[size];
   const nudge = (name: IconName) => {
     const k = NUDGE[name];
-    if (!k) return { transform: [{ scale: press.hover.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) }] };
-    if (k === 'spin') return { transform: [{ rotate: press.hover.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '90deg'] }) }] };
-    const d = press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, interaction.iconNudge] });
+    if (!k) return undefined;
+    const d = m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, 2] });
     return { transform: k === 'x' ? [{ translateX: d }] : [{ translateX: d }, { translateY: Animated.multiply(d, -1) }] };
   };
   const handlePress = (e: GestureResponderEvent) => {
@@ -204,49 +230,48 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
       (r as Promise<unknown>).catch(() => undefined).finally(() => { running.current = false; if (mounted.current) setPending(false); });
     }
   };
+  const radiusPx = BUTTON.radius[size];
   return (
-    <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', maxWidth: '100%', minWidth: 0, opacity: disabled ? 0.45 : 1 }, style, press.style]}>
+    <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', maxWidth: '100%', minWidth: 0, opacity: off ? 0.48 : 1, borderRadius: radiusPx }, style,
+      { transform: [{ scale: m.press.interpolate({ inputRange: [0, 1], outputRange: [1, BUTTON.pressScale] }) }] }]}>
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
-      accessibilityState={{ disabled: !!disabled || isBusy, busy: isBusy }}
-      disabled={disabled || isBusy}
-      hitSlop={size === 'sm' ? 6 : 0}
-      onLayout={(e) => setW(e.nativeEvent.layout.width)}
-      onPressIn={() => { sweep(); press.handlers.onPressIn(); }}
-      onPressOut={press.handlers.onPressOut}
-      onHoverIn={press.handlers.onHoverIn}
-      onHoverOut={press.handlers.onHoverOut}
+      accessibilityState={{ disabled: off || isBusy, busy: isBusy }}
+      disabled={off || isBusy}
+      hitSlop={size === 'sm' ? 5 : 0}
+      onPressIn={m.handlers.onPressIn}
+      onPressOut={m.handlers.onPressOut}
+      onHoverIn={m.handlers.onHoverIn}
+      onHoverOut={m.handlers.onHoverOut}
       onPress={handlePress}
       style={[
         styles.button,
-        { minHeight: h, backgroundColor: bg, borderColor: border, overflow: 'hidden', paddingHorizontal: size === 'sm' ? spacing.sm + 2 : size === 'lg' ? spacing.xl : spacing.lg },
-        variant === 'ghost' && { paddingHorizontal: size === 'sm' ? spacing.xs + 2 : spacing.sm },
-        glass && variant === 'primary' && { shadowColor: t.isDark ? '#FFC2D6' : '#E9587C', shadowOpacity: t.isDark ? 0.35 : 0.3, shadowRadius: 18, shadowOffset: { width: 0, height: 6 } },
-        variant === 'danger' && { shadowColor: t.colors.danger, shadowOpacity: 0.22, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } },
+        { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: variant === 'ghost' ? BUTTON.padX[size] - 6 : BUTTON.padX[size] },
+        // Profondeur subtile : ombre courte et douce sur les boutons pleins seulement (aucune ombre désactivé)
+        solid && !off && { shadowColor: variant === 'danger' ? t.colors.danger : t.colors.primary, shadowOpacity: t.isDark ? 0.22 : 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 },
+        variant === 'secondary' && !off && { shadowColor: '#2A1A26', shadowOpacity: t.isDark ? 0 : 0.05, shadowRadius: 3, shadowOffset: { width: 0, height: 1 } },
       ]}
       {...rest}
     >
-      {glass && <LinearGradient colors={fill} start={{ x: 0, y: 0 }} end={variant === 'primary' ? { x: 0, y: 1 } : { x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
-      {glass && <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 12, right: 12, height: 1, backgroundColor: 'rgba(255,255,255,0.9)', opacity: variant === 'primary' ? 0.95 : 0.35 }} />}
-      {glass && w > 0 && (
-        <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -10, bottom: -10, width: w * 0.5, transform: [{ translateX: shine.interpolate({ inputRange: [0, 1], outputRange: [-w * 0.7, w * 1.2] }) }, { rotate: '18deg' }] }}>
-          <LinearGradient colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFill} />
-        </Animated.View>
-      )}
-      {/* Survol (web) : la surface s'illumine légèrement (teinte du bouton pour les variantes transparentes) */}
-      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: variant === 'ghost' || variant === 'outline' ? t.colors.primary : 'rgba(255,255,255,1)', opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, variant === 'ghost' || variant === 'outline' ? 0.1 : 0.14] }) }]} />
-      {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur */}
-      <Animated.View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }), transform: [{ scale: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0.92] }) }] }}>
+      {/* Reflet intérieur d'1 px en haut des boutons pleins (lumière discrète, pas de dégradé) */}
+      {solid ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: radiusPx, right: radiusPx, height: 1, backgroundColor: 'rgba(255,255,255,0.22)' }} /> : null}
+      {/* Survol puis appui : voile d'état (sans décalage de mise en page) */}
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veil, opacity: m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, veilHover] }) }]} />
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veilPress < 0 ? '#000000' : veil, opacity: m.press.interpolate({ inputRange: [0, 1], outputRange: [0, veilPress < 0 ? 0.1 : veilPress] }) }]} />
+      {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur, à taille constante */}
+      <Animated.View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
         {icon && <Animated.View style={nudge(icon)}><Icon name={icon} size={iconSize} color={fg} /></Animated.View>}
-        <Text variant={size === 'sm' ? 'small' : 'body'} weight="bold" color={fg} center style={{ flexShrink: 1, minWidth: 0, letterSpacing: -0.2, textShadowColor: glass && variant === 'primary' && !t.isDark ? 'rgba(160,40,80,0.35)' : 'transparent', textShadowRadius: 3, textShadowOffset: { width: 0, height: 1 } }}>
-          {label}
-        </Text>
+        {label ? (
+          <Text weight="bold" color={fg} center style={{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size], lineHeight: BUTTON.font[size] + 6, letterSpacing: -0.15 }}>
+            {label}
+          </Text>
+        ) : null}
         {iconRight && <Animated.View style={nudge(iconRight)}><Icon name={iconRight} size={iconSize} color={fg} /></Animated.View>}
       </Animated.View>
       {isBusy ? (
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', opacity: busy }]}>
-          <ActivityIndicator color={fg} />
+          <ActivityIndicator size="small" color={fg} />
         </Animated.View>
       ) : null}
     </Pressable>
@@ -254,11 +279,16 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
   );
 }
 
-/** Bouton icône seule (retour, fermer, menu, partager…). `tone="filled"` : pastille de fond visible. */
-export function IconButton({ icon, label, onPress, color, size = 22, style, tone = 'plain', disabled }: { icon: IconName; label: string; onPress: () => void; color?: string; size?: number; style?: StyleProp<ViewStyle>; tone?: 'plain' | 'filled' | 'primary'; disabled?: boolean }) {
+/**
+ * Bouton icône seule (retour, fermer, menu, partager…) : zone tactile de 48 px, pastille visible de 40 px aux coins de
+ * 12 px. `plain` : sans fond (fond discret au survol), `filled` : fond discret + liseré, `primary` : plein.
+ */
+export function IconButton({ icon, label, onPress, color, size = 20, style, tone = 'plain', disabled }: { icon: IconName; label: string; onPress: () => void; color?: string; size?: number; style?: StyleProp<ViewStyle>; tone?: 'plain' | 'filled' | 'primary'; disabled?: boolean }) {
   const t = useTheme();
-  const press = usePressMotion({ pressed: 0.9, hoverLift: 0 });
-  const bg = tone === 'primary' ? t.colors.primary : tone === 'filled' ? t.colors.surfaceAlt : 'transparent';
+  const m = useButtonMotion();
+  const bg = tone === 'primary' ? t.colors.primary : tone === 'filled' ? t.colors.surface : 'transparent';
+  const veil = tone === 'primary' ? '#FFFFFF' : t.colors.text;
+  const D = 40;
   return (
     <Pressable
       accessibilityRole="button"
@@ -269,12 +299,16 @@ export function IconButton({ icon, label, onPress, color, size = 22, style, tone
         haptic('light');
         onPress();
       }}
-      {...press.handlers}
-      hitSlop={8}
-      style={[{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill, opacity: disabled ? 0.45 : 1 }, style]}
+      {...m.handlers}
+      hitSlop={6}
+      style={[{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', borderRadius: 12, opacity: disabled ? 0.45 : 1 }, style]}
     >
-      <Animated.View style={[{ width: MIN_TOUCH, height: MIN_TOUCH, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: bg }, press.style]}>
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.pill, backgroundColor: tone === 'primary' ? '#FFFFFF' : t.colors.surfaceAlt, opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, tone === 'primary' ? 0.16 : 1] }) }]} />
+      <Animated.View style={{ width: D, height: D, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: bg,
+        borderWidth: tone === 'filled' ? 1 : 0, borderColor: hairline(t.isDark),
+        transform: [{ scale: m.press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.94] }) }] }}>
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 11, backgroundColor: veil, opacity: Animated.add(
+          m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, tone === 'primary' ? 0.12 : 0.07] }),
+          m.press.interpolate({ inputRange: [0, 1], outputRange: [0, 0.06] })) }]} />
         <Icon name={icon} size={size} color={color ?? (tone === 'primary' ? t.colors.primaryText : t.colors.text)} />
       </Animated.View>
     </Pressable>
@@ -284,7 +318,7 @@ export function IconButton({ icon, label, onPress, color, size = 22, style, tone
 /** Bouton d'action flottant (libellé facultatif). Le parent le positionne (position absolue). */
 export function Fab({ icon, label, onPress, style, accessibilityHint, showLabel = true }: { icon: IconName; label: string; onPress: () => void; style?: StyleProp<ViewStyle>; accessibilityHint?: string; showLabel?: boolean }) {
   const t = useTheme();
-  const press = usePressMotion({ hoverLift: -3 });
+  const press = usePressMotion({ pressed: 0.97, hoverLift: 0 });
   return (
     <Animated.View style={[styles.fab, { backgroundColor: t.colors.primary, shadowColor: t.colors.primary }, style, press.style]}>
       <Pressable
@@ -293,11 +327,11 @@ export function Fab({ icon, label, onPress, style, accessibilityHint, showLabel 
         accessibilityHint={accessibilityHint}
         onPress={() => { haptic('light'); onPress(); }}
         {...press.handlers}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, minWidth: 52, justifyContent: 'center', paddingHorizontal: showLabel ? 18 : 0, borderRadius: radius.pill, overflow: 'hidden' }}
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, minWidth: 52, justifyContent: 'center', paddingHorizontal: showLabel ? 18 : 0, borderRadius: 14, overflow: 'hidden' }}
       >
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#FFFFFF', opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, 0.14] }) }]} />
-        <Animated.View style={{ transform: [{ rotate: press.hover.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-8deg'] }) }] }}><Icon name={icon} size={20} color={t.colors.primaryText} /></Animated.View>
-        {showLabel ? <Text weight="medium" color={t.colors.primaryText} style={{ flexShrink: 1 }}>{label}</Text> : null}
+        <Icon name={icon} size={20} color={t.colors.primaryText} />
+        {showLabel ? <Text weight="bold" color={t.colors.primaryText} style={{ flexShrink: 1, fontSize: 15, letterSpacing: -0.15 }}>{label}</Text> : null}
       </Pressable>
     </Animated.View>
   );
@@ -336,8 +370,8 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel,
   const t = useTheme();
   const active = tone === 'lavender' ? t.colors.lavender : t.colors.primary;
   const filled = selected && tone !== 'lavender';
-  const press = usePressMotion({ pressed: 0.96, hoverLift: -1 });
-  const pop = usePop(selected, 1.07);
+  const press = usePressMotion({ pressed: 0.97, hoverLift: 0 });
+  const pop = usePop(selected, 1.03);
   return (
     <Animated.View style={[{ maxWidth: '100%' }, press.style, pop]}>
     <Pressable
@@ -348,7 +382,7 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel,
       accessibilityLabel={accessibilityLabel ?? label}
       testID={testID}
       onPress={onPress ? () => { haptic('selection'); onPress(); } : undefined}
-      style={[styles.chip, { borderColor: selected ? active : t.isDark ? t.colors.border : 'transparent', backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : t.colors.surface }]}
+      style={[styles.chip, { borderColor: selected ? active : hairline(t.isDark), backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : t.colors.surface }]}
     >
       {icon && <Icon name={icon} size={15} color={filled ? t.colors.primaryText : selected ? active : t.colors.textMuted} />}
       {label ? <Text variant="small" weight="medium" color={filled ? t.colors.primaryText : selected ? active : t.colors.text} style={{ flexShrink: 1 }}>{label}</Text> : null}
@@ -367,13 +401,13 @@ export function Segmented<T extends string>({ options, value, onChange, label }:
   const PAD = 4, GAP = 4;
   const segW = w ? (w - PAD * 2 - GAP * (options.length - 1)) / options.length : 0;
   return (
-    <View accessibilityRole="radiogroup" accessibilityLabel={label} onLayout={(e) => setW(e.nativeEvent.layout.width)} style={[styles.segmented, { backgroundColor: t.colors.surfaceAlt }]}>
+    <View accessibilityRole="radiogroup" accessibilityLabel={label} onLayout={(e) => setW(e.nativeEvent.layout.width)} style={[styles.segmented, { backgroundColor: t.colors.surfaceAlt, borderWidth: 1, borderColor: hairline(t.isDark) }]}>
       {segW > 0 ? (
         <Animated.View
           pointerEvents="none"
           style={{
-            position: 'absolute', top: PAD, bottom: PAD, left: PAD, width: segW, borderRadius: radius.pill, backgroundColor: t.colors.primary,
-            shadowColor: t.colors.primary, shadowOpacity: 0.3, shadowRadius: 10, shadowOffset: { width: 0, height: 3 },
+            position: 'absolute', top: PAD, bottom: PAD, left: PAD, width: segW, borderRadius: 9, backgroundColor: t.colors.primary,
+            shadowColor: t.colors.primary, shadowOpacity: 0.18, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
             transform: [{ translateX: x.interpolate({ inputRange: [0, Math.max(1, options.length - 1)], outputRange: [0, (segW + GAP) * Math.max(1, options.length - 1)] }) }],
           }}
         />
@@ -595,11 +629,11 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
 const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: 1 },
   shadow: { shadowColor: '#B4507A', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 0 },
-  fab: { borderRadius: radius.pill, shadowOpacity: 0.32, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 6 },
-  button: { borderRadius: radius.pill, borderWidth: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 10 },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 6, minHeight: 44, maxWidth: '100%', borderRadius: radius.pill, borderWidth: 1.2 },
-  segmented: { flexDirection: 'row', borderRadius: radius.pill, padding: 4, gap: 4 },
-  segment: { flex: 1, minHeight: 44, borderRadius: radius.pill, justifyContent: 'center', paddingHorizontal: 8 },
+  fab: { borderRadius: 14, shadowOpacity: 0.22, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 4 },
+  button: { borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 8, overflow: 'hidden' },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, minHeight: 44, maxWidth: '100%', borderRadius: 10, borderWidth: 1 },
+  segmented: { flexDirection: 'row', borderRadius: 12, padding: 4, gap: 4 },
+  segment: { flex: 1, minHeight: 44, borderRadius: 9, justifyContent: 'center', paddingHorizontal: 8 },
   input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1.5, borderRadius: radius.md, paddingHorizontal: spacing.md, gap: spacing.xs },
   banner: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md, alignItems: 'flex-start' },
   sectionTitle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.md },

@@ -363,7 +363,7 @@ export function FamilyHomeCard() {
           </Row>
         </Card>
       ) : null}
-      <Tappable accessibilityRole="button" accessibilityLabel="Journée difficile : ne garder que l’essentiel" onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+      <Tappable accessibilityRole="button" accessibilityLabel="Journée difficile : ne garder que l’essentiel" onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: 12, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
         <Icon name="wind" size={16} color={t.colors.primary} />
         <Text variant="small" weight="bold">Journée difficile ?</Text>
       </Tappable>

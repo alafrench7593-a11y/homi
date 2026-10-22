@@ -58,7 +58,7 @@ export function CycleCalendar({ data, est, today, showIntimacy, onDayPress, sele
           <NavBtn icon="chevron-right" label={tr('c3.cal.next')} onPress={() => go(1)} testID="c3-next" />
         </View>
         {offset !== 0 ? (
-          <Pressable accessibilityRole="button" onPress={() => { haptic('selection'); setOffset(0); }} style={{ alignSelf: 'center', paddingHorizontal: 12, minHeight: 32, justifyContent: 'center', borderRadius: 999, backgroundColor: CAL.line }}>
+          <Pressable accessibilityRole="button" onPress={() => { haptic('selection'); setOffset(0); }} style={{ alignSelf: 'center', paddingHorizontal: 12, minHeight: 32, justifyContent: 'center', borderRadius: 10, backgroundColor: CAL.line }}>
             <Text variant="caption" weight="bold" color={CAL.soft}>{tr('c3.cal.today')}</Text>
           </Pressable>
         ) : null}

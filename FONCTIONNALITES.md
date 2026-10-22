@@ -416,6 +416,14 @@ Remplace l'ancien « Sommeil intelligent ». Inspiré du principe des applicatio
 
 **Base** : migration `20261024000100_cycle_v3.sql` (colonnes de la fiche du jour, `contraception_logs`, préférences `favorites` / `show_intimacy_icons` / `lock_mode` / `anticipation`, `cycle_custom_items`, `cycle_insight_feedback`, consentement intime, déclencheurs Premium, `delete_my_intimate_data`, `delete_journey` et export mis à jour). Tests : SQL `58_cycle_v3.sql`, jest `cycleDaily` (27) et rendu `cycle3Screens` (iOS et Android), parcours `e2e/cycle3.py`.
 
+## 26. Boutons : refonte 2026 sobre et cohérente (22 octobre 2026)
+
+**Un seul système**, centralisé dans `src/components/ui.tsx` (jetons `BUTTON`) : `Button` (primary, secondary, outline, ghost, danger / destructive, night), `IconButton` (plain, filled, primary), `Fab`, puces `Chip` et contrôle segmenté. Les boutons maison les plus visibles (confirmation, verrouillage du cycle, accueil nuit, raccourcis) suivent les mêmes proportions ; la fenêtre de confirmation utilise désormais `Button`.
+
+**Avant** : formes en pilule, dégradés « verre liquide », reflet balayant, ombre colorée de 18 px, ombre portée du texte, icônes qui tournent ou grossissent au survol, liseré de 1,5 px invisible sur fond clair, texte blanc sur rose clair en thème sombre (bouton « danger » et confirmation), anneau de focus qui forçait des coins de 12 px.
+
+**Maintenant** : coins de 10 / 12 / 14 px (sm / md / lg), puces 10 px, boutons icônes 40 px visibles dans une zone de 48 px aux coins de 12 px ; couleurs pleines du thème (aucune couleur modifiée), liseré d'1 px dérivé de la couleur du texte, reflet intérieur d'1 px et ombre courte sur les boutons pleins seulement ; texte 14 / 15 / 16 px gras, espacement -0,15, icônes 15–18 px alignées avec 6–8 px d'écart. États : survol en 180 ms (voile de couleur, aucun soulèvement), appui (0,98 + voile plus marqué), focus clavier (anneau de la couleur principale qui suit les coins de chaque élément), désactivé (atténué, sans ombre), chargement (indicateur à taille constante). Seules les flèches avancent de 2 px au survol. « Réduire les animations » et `prefers-reduced-motion` : états immédiats. Hauteurs : 38 px (+ 5 px de zone tactile), 48 px, 54 px.
+
 ## 4. Décisions et limites documentées
 
 - **EPDS non intégrée.** Le Royal College of Psychiatrists détient les droits ; la diffusion à des tiers (ce qu'est une app) exige une autorisation écrite, et l'intégration complète a déjà été refusée à un logiciel clinique (documentation CamCOPS). Conformément au § 22.4, l'app propose un check-in de bien-être **non diagnostique**. À rouvrir uniquement avec une autorisation écrite et la version française validée (Guedeney & Fermanian, 1998).

@@ -140,7 +140,7 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
         ))}
       </View>
       {openSleep && (
-        <Tappable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: radius.pill, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center' }}>
+        <Tappable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: 12, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center' }}>
           <Text weight="medium" color={palette.milk}>Ouvrir le mode nuit</Text>
         </Tappable>
       )}

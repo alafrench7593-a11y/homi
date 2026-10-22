@@ -37,7 +37,7 @@ export function Pill({ id, label, icon, selected, onPress, category, disabled, t
       <Pressable {...press.handlers} disabled={disabled} testID={testID ?? `pill-${id}`}
         accessibilityRole="checkbox" accessibilityState={{ checked: selected, disabled }} aria-checked={selected} accessibilityLabel={label}
         onPress={() => { haptic('selection'); onPress(); }}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: 14, borderRadius: 999, backgroundColor: bg,
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: 14, borderRadius: 12, backgroundColor: bg,
           borderWidth: 1.5, borderColor: selected ? tint.ink : t.isDark ? 'rgba(255,255,255,0.14)' : 'transparent', opacity: disabled ? 0.5 : 1 }}>
         <Icon name={selected ? 'check' : icon ?? (PILL_ICON[cat] as IconName)} size={16} color={fg} />
         <Text weight="medium" color={fg} style={{ flexShrink: 1 }}>{label}</Text>
@@ -90,7 +90,7 @@ export function LockedCard({ testID }: { testID?: string }) {
       <Icon name="lock" color={CAL.soft} />
       <Text weight="bold" color={CAL.text}>{tr('c3.priv.locked')}</Text>
       <Text variant="small" color={CAL.soft}>{tr('c3.priv.lockedBody')}</Text>
-      <View style={{ marginTop: 4, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 999, backgroundColor: t.colors.primary }}>
+      <View style={{ marginTop: 4, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, backgroundColor: t.colors.primary }}>
         <Text weight="bold" color={t.colors.primaryText}>{tr('c3.priv.unlock')}</Text>
       </View>
     </Pressable>

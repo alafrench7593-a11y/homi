@@ -217,7 +217,7 @@ function ActionButton({ icon, label, count, active, onPress, testID, activeColor
   const t = useTheme();
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: !!active }} hitSlop={4} onPress={onPress} testID={testID}
-      style={({ pressed }) => ({ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, paddingHorizontal: 10, borderRadius: radius.pill, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: active ? (activeColor ?? t.colors.primary) + '1F' : pressed ? t.colors.surfaceAlt : 'transparent' })}>
+      style={({ pressed }) => ({ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, paddingHorizontal: 10, borderRadius: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: active ? (activeColor ?? t.colors.primary) + '1F' : pressed ? t.colors.surfaceAlt : 'transparent' })}>
       <Icon name={icon} size={18} color={active ? (activeColor ?? t.colors.primary) : t.colors.textMuted} />
       {count != null ? <Text variant="small" weight="medium" color={active ? (activeColor ?? t.colors.primary) : t.colors.textMuted}>{String(count)}</Text> : null}
     </Tappable>

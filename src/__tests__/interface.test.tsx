@@ -8,7 +8,7 @@ import React from 'react';
 import { StyleSheet, Text as RNText } from 'react-native';
 import { act, create, type ReactTestRenderer } from 'react-test-renderer';
 import { ThemeProvider } from '@/theme/ThemeProvider';
-import { Button } from '@/components/ui';
+import { BUTTON, Button, IconButton } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { webInteractionCss } from '@/components/WebInteractionStyles';
 import { interaction } from '@/theme/motion';
@@ -67,8 +67,21 @@ describe('interactions', () => {
     expect(transform.some((t) => 'scale' in t)).toBe(true);
   });
 
+  it('boutons 2026 : coins de 10 à 14 px, zones tactiles confortables, états désactivé et chargement annoncés', async () => {
+    for (const r of Object.values(BUTTON.radius)) expect(r).toBeGreaterThanOrEqual(8), expect(r).toBeLessThanOrEqual(14);
+    expect(BUTTON.height.md).toBeGreaterThanOrEqual(44);
+    expect(BUTTON.height.sm + 2 * 5).toBeGreaterThanOrEqual(44); // petite taille : zone de toucher élargie
+    expect(BUTTON.hoverMs).toBeGreaterThanOrEqual(150); expect(BUTTON.hoverMs).toBeLessThanOrEqual(220);
+    const r = await render(<><Button label="Désactivé" disabled /><Button label="Charge" loading /><IconButton icon="x" label="Fermer" onPress={() => undefined} /></>);
+    const a11y = (label: string) => r.root.findAll((n) => n.props.accessibilityLabel === label && n.props.accessibilityState)[0].props.accessibilityState;
+    expect(a11y('Désactivé')).toMatchObject({ disabled: true });
+    expect(a11y('Charge')).toMatchObject({ disabled: true, busy: true });
+    expect(a11y('Fermer')).toMatchObject({ disabled: false });
+  });
+
   it('web : focus clavier visible, mots longs à la ligne, mouvement réduit', () => {
     const css = webInteractionCss('#E9587C');
+    expect(css).not.toContain('border-radius:12px'); // l'anneau suit les coins de chaque élément
     expect(css).toMatch(/\[role="button"\]:focus-visible[^{]*\{outline:2px solid #E9587C/);
     expect(css).toContain('overflow-wrap:break-word');
     expect(css).toContain('prefers-reduced-motion: reduce');

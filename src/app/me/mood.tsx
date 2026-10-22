@@ -147,7 +147,7 @@ export default function MoodScreen() {
                       accessibilityLabel={m.label}
                       onPress={() => { haptic('selection'); setMood(m.value); setSavedDistress(null); }}
                       style={({ pressed }) => ({
-                        minHeight: MIN_TOUCH, borderRadius: radius.pill, borderWidth: 1.2, paddingHorizontal: spacing.md, justifyContent: 'center',
+                        minHeight: MIN_TOUCH, borderRadius: 10, borderWidth: 1.2, paddingHorizontal: spacing.md, justifyContent: 'center',
                         borderColor: sel ? t.colors.primary : t.colors.border, backgroundColor: sel ? t.colors.primary : pressed ? t.colors.surfaceAlt : t.colors.surface,
                       })}
                     >

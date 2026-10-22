@@ -179,7 +179,7 @@ export default function MenuScreen() {
             <Text weight="bold" style={{ width: 64 }}>{tr('rc.menu.day', { n: d + 1 })}</Text>
             {meals.map((m) => (
               <Tappable key={m} accessibilityRole="button" onPress={() => { if (slots && moving != null) setSlots(moveSlot(slots, moving, { day: d, meal: m })); setMoving(null); }}
-                style={{ paddingHorizontal: 10, minHeight: 36, justifyContent: 'center', borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border }}>
+                style={{ paddingHorizontal: 10, minHeight: 36, justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: t.colors.border }}>
                 <Text variant="small">{mealLabel(m)}</Text>
               </Tappable>
             ))}

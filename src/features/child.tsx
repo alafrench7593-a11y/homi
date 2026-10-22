@@ -55,7 +55,7 @@ export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: 
             accessibilityState={{ selected: sel }}
             accessibilityLabel={tab.label}
             onPress={() => { haptic('selection'); onChange(tab.value); }}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: 14, borderRadius: radius.pill, borderWidth: 1.2, borderColor: sel ? t.colors.primary : t.colors.border, backgroundColor: sel ? t.colors.primary : t.colors.surface }}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1.2, borderColor: sel ? t.colors.primary : t.colors.border, backgroundColor: sel ? t.colors.primary : t.colors.surface }}
           >
             <Icon name={tab.icon} size={15} color={sel ? t.colors.primaryText : t.colors.textMuted} />
             <Text variant="small" weight="medium" color={sel ? t.colors.primaryText : t.colors.text}>{tab.label}</Text>
