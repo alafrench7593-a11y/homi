@@ -76,7 +76,7 @@ export function DaySky({ hour, profile, still: stillProp }: { hour: number; prof
   const motes = useMemo(() => Array.from({ length: 14 }, (_, i) => ({ x: ((i * 61) % 100) / 100, y: ((i * 37) % 100) / 100, s: 2 + (i % 3), o: 0.45 + (i % 4) * 0.12 })), []);
 
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <SkyLayer sky={sky} />
       {/* Halo de soleil diffus */}
       <Animated.View style={{ position: 'absolute', left: sky.sun.x * W - sunR, top: sky.sun.y * H - sunR, width: sunR * 2, height: sunR * 2,

@@ -221,7 +221,7 @@ function Backdrop() {
   // Lueur du coucher de soleil sur le ciel de nuit, de 18 h 30 à 20 h 30 (mode automatique)
   const glow = preference === 'auto' && t.name === 'dark' ? Math.max(0, Math.min(1, (20.5 - hour) / 2)) : 0;
   return (
-    <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t.colors.background }}>
+    <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: t.colors.background }}>
       {mounted.dark ? (
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>
           <VideoBackdrop fallback={<LiquidAurora fallback={<Aurora />} />} />

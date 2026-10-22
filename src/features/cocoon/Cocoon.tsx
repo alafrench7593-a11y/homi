@@ -13,7 +13,7 @@
  * Toutes les données viennent du profil affiché (clé = identifiant de l'enfant) : rien n'est mélangé.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, PanResponder, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Animated, Easing, PanResponder, Platform, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -712,6 +712,8 @@ export function CocoonAdd({ child, journey }: { child: Child; journey: Journey }
   const t = useTheme();
   const insets = useSafeAreaInsets();
   const toast = useToast();
+  // Petit écran : bouton rond (icône seule) pour ne pas masquer le contenu
+  const compact = useWindowDimensions().width < 380;
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const chosen = useUiStore((s) => s.cocoonFavorites);
@@ -768,9 +770,9 @@ export function CocoonAdd({ child, journey }: { child: Child; journey: Journey }
       <View pointerEvents="box-none" style={{ position: 'absolute', right: spacing.lg, bottom: Math.max(insets.bottom, 10) + DOCK_HEIGHT + 6 }}>
         <Pressable testID="cocoon-add" accessibilityRole="button" accessibilityLabel={tr('coc.add.a11y', { name: child.first_name })} onPress={() => { haptic('light'); setEditing(false); setOpen(true); }}
           style={({ pressed }) => ({ borderRadius: radius.pill, transform: [{ scale: pressed ? 0.96 : 1 }], shadowColor: '#B4507A', shadowOpacity: 0.35, shadowRadius: 18, shadowOffset: { width: 0, height: 10 }, elevation: 8 })}>
-          <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 56, paddingHorizontal: 22, borderRadius: radius.pill, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)' }}>
-            <Icon name="plus" size={22} color="#FFFFFF" />
-            <Text weight="bold" color="#FFFFFF">{tr('coc.add.button')}</Text>
+          <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 56, minWidth: 56, paddingHorizontal: compact ? 0 : 22, borderRadius: radius.pill, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)' }}>
+            <Icon name="plus" size={compact ? 26 : 22} color="#FFFFFF" />
+            {compact ? null : <Text weight="bold" color="#FFFFFF">{tr('coc.add.button')}</Text>}
           </LinearGradient>
         </Pressable>
       </View>
