@@ -46,6 +46,8 @@ const config: ExpoConfig = {
     ['expo-splash-screen', { backgroundColor: '#F6EFE6', image: './assets/icon.png', imageWidth: 120 }],
     ['expo-notifications', { color: '#C97B63' }],
     ['expo-local-authentication', { faceIDPermission: 'Face ID protège l’accès aux informations les plus intimes de votre suivi du cycle.' }],
+    // Widget iOS « Mon cycle » (discret par défaut) — nécessite une build de développement, indisponible dans Expo Go
+    ['expo-widgets', { widgets: [{ name: 'CycleWidget', displayName: 'Mon cycle', description: 'Jour du cycle, de façon discrète si vous le souhaitez.', ios: { supportedFamilies: ['systemSmall', 'accessoryRectangular'] } }] }],
     ['expo-camera', { cameraPermission: 'La caméra sert à scanner un produit ou un document.', recordAudioAndroid: false }],
   ],
   experiments: { typedRoutes: true },

@@ -21,19 +21,20 @@ import { DIGEST_ITEM_LABEL, DIGEST_ITEMS } from '@/lib/domain/dailyDigest';
 import { notificationsSupported } from '@/lib/notifications';
 import type { CommunityNotifPrefs, DigestPrefs } from '@/lib/types';
 import { spacing } from '@/theme/tokens';
+import { t as tr, type TKey } from '@/i18n';
 
 type PrefKey = keyof Omit<CommunityNotifPrefs, 'user_id'>;
-const ITEMS: { key: PrefKey; label: string; hint: string }[] = [
-  { key: 'post_comment', label: 'Commentaires sur mes publications', hint: 'Quand quelqu’un répond à votre publication.' },
-  { key: 'comment_reply', label: 'Réponses à mes commentaires', hint: 'Quand quelqu’un vous répond dans une discussion.' },
-  { key: 'mention', label: 'Mentions', hint: 'Quand un membre écrit votre @identifiant.' },
-  { key: 'reaction', label: 'Réactions', hint: 'Quand une publication reçoit un « j’aime » (une fois par jour au plus).' },
-  { key: 'saved_reply', label: 'Publications enregistrées', hint: 'Nouvelle réponse dans une publication que vous avez enregistrée.' },
-  { key: 'new_follower', label: 'Nouveaux abonné·es', hint: 'Quand un membre suit vos publications (une fois par personne).' },
-  { key: 'followed_post', label: 'Publications des membres suivis', hint: 'Désactivé par défaut pour éviter trop de notifications.' },
-  { key: 'group_activity', label: 'Activité de mes groupes privés', hint: 'Une notification par groupe toutes les 6 heures au plus.' },
-  { key: 'group_invite', label: 'Invitations et partages', hint: 'Invitation dans un groupe privé, album partagé avec vous.' },
-  { key: 'moderation', label: 'Modération', hint: 'Quand une de vos publications est masquée, retirée ou de nouveau visible.' },
+const ITEMS: { key: PrefKey; label: TKey; hint: TKey }[] = [
+  { key: 'post_comment', label: 'cm2.notif.postComment', hint: 'cm2.notif.postCommentHint' },
+  { key: 'comment_reply', label: 'cm2.notif.commentReply', hint: 'cm2.notif.commentReplyHint' },
+  { key: 'mention', label: 'cm2.notif.mention', hint: 'cm2.notif.mentionHint' },
+  { key: 'reaction', label: 'cm2.notif.reaction', hint: 'cm2.notif.reactionHint' },
+  { key: 'saved_reply', label: 'cm2.notif.savedReply', hint: 'cm2.notif.savedReplyHint' },
+  { key: 'new_follower', label: 'cm2.notif.newFollower', hint: 'cm2.notif.newFollowerHint' },
+  { key: 'followed_post', label: 'cm2.notif.followedPost', hint: 'cm2.notif.followedPostHint' },
+  { key: 'group_activity', label: 'cm2.notif.groupActivity', hint: 'cm2.notif.groupActivityHint' },
+  { key: 'group_invite', label: 'cm2.notif.groupInvite', hint: 'cm2.notif.groupInviteHint' },
+  { key: 'moderation', label: 'cm2.notif.moderation', hint: 'cm2.notif.moderationHint' },
 ];
 const MORNING_TIMES = ['06:30', '07:00', '07:30', '08:00', '08:30', '09:00'];
 const EVENING_TIMES = ['19:30', '20:00', '20:30', '21:00', '21:30', '22:00'];
@@ -63,53 +64,53 @@ export default function NotificationSettings() {
   const toggleItem = (k: string, shown: boolean) => void digest({ hidden_items: shown ? d.hidden_items.filter((x) => x !== k) : [...new Set([...d.hidden_items, k])] });
 
   return (
-    <Screen back title="Notifications">
-      <SectionTitle title="Résumé quotidien" />
+    <Screen back title={tr('cm2.notif.title')}>
+      <SectionTitle title={tr('cm2.notif.digestSection')} />
       {digestQ.isLoading && !digestQ.saved ? <Skeleton kind="list" rows={2} /> : (
         <Card testID="digest-prefs">
           <View style={{ gap: spacing.sm }}>
-            <ToggleRow label="Résumé du matin" hint="Rendez-vous, rappels, prochaine sieste estimée, réponses reçues, nouveautés." value={d.morning} onChange={(v) => void digest({ morning: v })} />
+            <ToggleRow label={tr('cm2.notif.morning')} hint={tr('cm2.notif.morningHint')} value={d.morning} onChange={(v) => void digest({ morning: v })} />
             {d.morning ? (
               <Row wrap gap={6} testID="digest-morning-times">
                 {MORNING_TIMES.map((t) => <Chip key={t} label={hLabel(t)} selected={d.morning_time === t} onPress={() => void digest({ morning_time: t })} />)}
               </Row>
             ) : null}
-            <ToggleRow label="Résumé du soir" hint="La journée en bref : biberons, sommeil, changes, repas, rendez-vous de demain." value={d.evening} onChange={(v) => void digest({ evening: v })} />
+            <ToggleRow label={tr('cm2.notif.evening')} hint={tr('cm2.notif.eveningHint')} value={d.evening} onChange={(v) => void digest({ evening: v })} />
             {d.evening ? (
               <Row wrap gap={6} testID="digest-evening-times">
                 {EVENING_TIMES.map((t) => <Chip key={t} label={hLabel(t)} selected={d.evening_time === t} onPress={() => void digest({ evening_time: t })} />)}
               </Row>
             ) : null}
-            <ToggleRow label="Question du jour" hint="Une question facultative, pour soi ou à partager." value={d.question} onChange={(v) => void digest({ question: v })} />
-            <Text variant="label" muted>Rubriques du résumé</Text>
+            <ToggleRow label={tr('cm2.notif.question')} hint={tr('cm2.notif.questionHint')} value={d.question} onChange={(v) => void digest({ question: v })} />
+            <Text variant="label" muted>{tr('cm2.notif.digestItems')}</Text>
             <Row wrap gap={6}>
               {DIGEST_ITEMS.filter((k) => k !== 'question').map((k) => {
                 const shown = !d.hidden_items.includes(k);
                 return <Chip key={k} label={DIGEST_ITEM_LABEL[k]} selected={shown} onPress={() => toggleItem(k, !shown)} testID={`digest-item-${k}`} />;
               })}
             </Row>
-            <Button label="Voir le résumé maintenant" icon="sun" variant="secondary" onPress={() => router.push('/today')} testID="digest-open" />
+            <Button label={tr('cm2.notif.digestOpen')} icon="sun" variant="secondary" onPress={() => router.push('/today')} testID="digest-open" />
           </View>
         </Card>
       )}
-      {!notificationsSupported ? <Text variant="caption" muted>Sur le web, les notifications ne s’affichent pas : le résumé reste consultable à tout moment.</Text> : null}
+      {!notificationsSupported ? <Text variant="caption" muted>{tr('cm2.notif.webNote')}</Text> : null}
 
-      <SectionTitle title="Rappels" />
+      <SectionTitle title={tr('cm2.notif.reminders')} />
       <Card>
-        <ListRow icon="bell" title="Rappels" subtitle="Biberons, médicaments prescrits, rendez-vous, rappels personnels" onPress={() => router.push('/settings/reminders')} />
-        <ListRow icon="inbox" title="Centre de notifications" onPress={() => router.push('/notifications')} />
+        <ListRow icon="bell" title={tr('cm2.notif.reminders')} subtitle={tr('cm2.notif.remindersSub')} onPress={() => router.push('/settings/reminders')} />
+        <ListRow icon="inbox" title={tr('cm2.notif.center')} onPress={() => router.push('/notifications')} />
       </Card>
 
-      <SectionTitle title="Communauté" />
+      <SectionTitle title={tr('cm2.notif.community')} />
       {q.isLoading && !q.saved ? <Skeleton kind="list" rows={3} /> : (
         <Card>
           <View style={{ gap: spacing.sm }} testID="community-notif-prefs">
-            {ITEMS.map((it) => <ToggleRow key={it.key} label={it.label} hint={it.hint} value={p[it.key] !== false} onChange={(v) => void toggle(it.key, v)} />)}
+            {ITEMS.map((it) => <ToggleRow key={it.key} label={tr(it.label)} hint={tr(it.hint)} value={p[it.key] !== false} onChange={(v) => void toggle(it.key, v)} />)}
           </View>
         </Card>
       )}
-      <Text variant="caption" muted>Sur l’écran verrouillé, une notification n’affiche jamais le contenu d’un message ni de vos suivis. Toucher une notification ouvre directement la publication, le commentaire ou le résumé.</Text>
-      <Button label="Tout désactiver" variant="ghost" icon="bell-off" onPress={() => {
+      <Text variant="caption" muted>{tr('cm2.notif.lockNote')}</Text>
+      <Button label={tr('cm2.notif.allOff')} variant="ghost" icon="bell-off" onPress={() => {
         const off = Object.fromEntries(ITEMS.map((it) => [it.key, false])) as unknown as CommunityNotifPrefs;
         setP(off); save.mutate(off, { onError: (e) => toast(friendlyError(e), 'error') });
         void digest({ morning: false, evening: false });

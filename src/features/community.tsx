@@ -22,15 +22,17 @@ import { BRAND } from '@/config/brand';
 import { accentOf, FolderSheet, MentionText, PollView, PremiumBadge, Tag } from '@/features/communitySocial';
 import { useCommunityAi, useFollowMember, usePinPost } from '@/lib/data/hooks-social';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
+import { t as tr } from '@/i18n';
 
-export const REPORT_REASONS: { key: ReportReason; label: string }[] = [
-  { key: 'harassment', label: 'Harcèlement ou propos blessants' },
-  { key: 'medical_misinformation', label: 'Information médicale dangereuse' },
-  { key: 'danger', label: 'Une personne semble en danger' },
-  { key: 'personal_data', label: 'Données personnelles exposées' },
-  { key: 'spam', label: 'Publicité ou spam' },
-  { key: 'inappropriate', label: 'Contenu inapproprié' },
-  { key: 'other', label: 'Autre' },
+/** Motifs de signalement ; `label` est traduit à la lecture (langue courante). */
+export const REPORT_REASONS: { key: ReportReason; readonly label: string }[] = [
+  { key: 'harassment', get label() { return tr('cm1.report.harassment'); } },
+  { key: 'medical_misinformation', get label() { return tr('cm1.report.medicalMisinformation'); } },
+  { key: 'danger', get label() { return tr('cm1.report.danger'); } },
+  { key: 'personal_data', get label() { return tr('cm1.report.personalData'); } },
+  { key: 'spam', get label() { return tr('cm1.report.spam'); } },
+  { key: 'inappropriate', get label() { return tr('cm1.report.inappropriate'); } },
+  { key: 'other', get label() { return tr('cm1.report.other'); } },
 ];
 
 const SPACE_ICONS: Record<string, IconName> = {
@@ -48,7 +50,7 @@ export function SpaceTile({ forum, selected, onPress }: { forum: Forum; selected
     <Tappable
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      accessibilityLabel={`Catégorie ${forum.title}. ${forum.description}`}
+      accessibilityLabel={tr('cm1.space.a11y', { title: forum.title, description: forum.description })}
       onPress={onPress}
       style={{ width: 168, minHeight: 112, padding: spacing.sm, gap: 4, borderRadius: radius.lg, borderWidth: selected ? 2 : 1, borderColor: selected ? t.colors.primary : t.colors.border, backgroundColor: t.colors.surface }}
     >
@@ -117,7 +119,7 @@ export function Avatar({ path, preset, size = 44, anonymous, label }: { path?: s
 export function PhotoGrid({ photos, onOpen }: { photos: FeedPhoto[]; onOpen: (index: number) => void }) {
   if (!photos.length) return null;
   const tile = (ph: FeedPhoto, i: number, style: object) => (
-    <Tappable key={ph.path} accessibilityRole="imagebutton" accessibilityLabel={`Agrandir la photo ${i + 1} sur ${photos.length}`} onPress={() => onOpen(i)} style={[{ overflow: 'hidden', borderRadius: radius.md }, style]}>
+    <Tappable key={ph.path} accessibilityRole="imagebutton" accessibilityLabel={tr('cm1.photo.enlarge', { index: i + 1, total: photos.length })} onPress={() => onOpen(i)} style={[{ overflow: 'hidden', borderRadius: radius.md }, style]}>
       <CommunityImage path={ph.path} style={{ width: '100%', height: '100%' }} />
     </Tappable>
   );
@@ -140,13 +142,13 @@ export function PhotoViewer({ photos, index, onClose }: { photos: FeedPhoto[]; i
   const w = Math.min(width, 900);
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose} accessibilityViewIsModal>
-      <Pressable accessibilityRole="button" accessibilityLabel="Fermer la photo" onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(8,6,12,0.94)', alignItems: 'center', justifyContent: 'center' }}>
-        <CommunityImage path={ph.path} style={{ width: w, height: Math.min(height * 0.8, w / ratio) }} accessibilityLabel={`Photo ${i + 1} sur ${photos.length}`} />
+      <Pressable accessibilityRole="button" accessibilityLabel={tr('cm1.photo.close')} onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(8,6,12,0.94)', alignItems: 'center', justifyContent: 'center' }}>
+        <CommunityImage path={ph.path} style={{ width: w, height: Math.min(height * 0.8, w / ratio) }} accessibilityLabel={tr('cm1.photo.position', { index: i + 1, total: photos.length })} />
         {photos.length > 1 ? (
           <Row style={{ marginTop: spacing.md }}>
-            <Chip label="Précédente" icon="chevron-left" onPress={() => setI((x) => (x + photos.length - 1) % photos.length)} />
+            <Chip label={tr('cm1.photo.previous')} icon="chevron-left" onPress={() => setI((x) => (x + photos.length - 1) % photos.length)} />
             <Text color="#FFFFFF">{`${i + 1} / ${photos.length}`}</Text>
-            <Chip label="Suivante" icon="chevron-right" onPress={() => setI((x) => (x + 1) % photos.length)} />
+            <Chip label={tr('cm1.photo.next')} icon="chevron-right" onPress={() => setI((x) => (x + 1) % photos.length)} />
           </Row>
         ) : null}
       </Pressable>
@@ -169,34 +171,34 @@ export function ReportSheet({ visible, onClose, postId, commentId, handle }: { v
     try {
       if (memberOnly) await reportMember.mutateAsync({ handle: handle!, reason });
       else await reportM.mutateAsync({ postId, commentId, reason });
-      toast('Merci. L’équipe de modération va examiner ce signalement.');
+      toast(tr('cm1.report.thanks'));
       onClose();
     } catch (e) {
-      toast(friendlyError(e, 'Signalement impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('cm1.report.error')), 'error');
     }
   }
   async function block() {
     if (pending) return;
-    if (!(await confirm('Bloquer cette personne ?', 'Vous ne verrez plus ses publications ni ses commentaires, et elle ne pourra plus vous répondre. Vous pourrez la débloquer depuis votre profil communautaire (Personnes bloquées).', 'Bloquer'))) return;
+    if (!(await confirm(tr('cm1.report.blockConfirmTitle'), tr('cm1.report.blockConfirmBody'), tr('cm1.report.blockConfirm')))) return;
     try {
       if (memberOnly) await blockMember.mutateAsync(handle!);
       else await blockM.mutateAsync({ postId, commentId });
-      toast('Cette personne est bloquée : vous ne verrez plus ses contenus.');
+      toast(tr('cm1.report.blocked'));
       onClose();
     } catch (e) {
-      toast(friendlyError(e, 'Blocage impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('cm1.report.blockError')), 'error');
     }
   }
   return (
-    <Sheet visible={visible} onClose={onClose} title={memberOnly ? 'Signaler ce membre' : commentId ? 'Signaler ce commentaire' : 'Signaler cette publication'}>
-      <Text variant="small" muted>Pourquoi ce contenu pose-t-il problème ?</Text>
+    <Sheet visible={visible} onClose={onClose} title={memberOnly ? tr('cm1.report.titleMember') : commentId ? tr('cm1.report.titleComment') : tr('cm1.report.titlePost')}>
+      <Text variant="small" muted>{tr('cm1.report.why')}</Text>
       {REPORT_REASONS.map((r) => (
         <Tappable key={r.key} accessibilityRole="button" accessibilityState={{ disabled: pending }} disabled={pending} onPress={() => report(r.key)} style={{ minHeight: MIN_TOUCH, justifyContent: 'center', opacity: pending ? 0.5 : 1 }} testID={`report-${r.key}`}>
           <Text>{r.label}</Text>
         </Tappable>
       ))}
-      <Chip label="Bloquer cette personne" icon="slash" onPress={block} />
-      <Text variant="caption" muted>Si quelqu’un semble en danger immédiat, appelez le 15 ou le 112.</Text>
+      <Chip label={tr('cm1.report.block')} icon="slash" onPress={block} />
+      <Text variant="caption" muted>{tr('cm1.report.emergency')}</Text>
     </Sheet>
   );
 }
@@ -208,7 +210,7 @@ export function postLink(id: string) {
 }
 export async function sharePost(post: Pick<FeedPost, 'id' | 'title' | 'body'>) {
   const excerpt = (post.title ?? post.body).slice(0, 80);
-  await Share.share({ message: `« ${excerpt}${(post.title ?? post.body).length > 80 ? '…' : ''} » — une discussion de la communauté ${BRAND.name} : ${postLink(post.id)}` });
+  await Share.share({ message: tr('cm1.share.message', { excerpt: `${excerpt}${(post.title ?? post.body).length > 80 ? '…' : ''}`, brand: BRAND.name, url: postLink(post.id) }) });
 }
 
 // ─── Carte de publication ──────────────────────────────────────────────────────────────────────────
@@ -241,7 +243,7 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
   const ai = useCommunityAi();
   const aiAccess = usePremiumAccess('community_ai');
   const accent = post.anonymous ? null : accentOf(post.author_accent);
-  const author = post.anonymous ? (post.is_mine ? 'Anonyme (vous)' : 'Membre anonyme') : post.pseudonym ?? 'Membre';
+  const author = post.anonymous ? (post.is_mine ? tr('cm1.post.anonymousMine') : tr('cm1.post.anonymous')) : post.pseudonym ?? tr('cm1.post.member');
   const openPost = () => router.push(`/community/post/${post.id}`);
   const openProfile = () => { if (post.author_handle) router.push(`/community/u/${post.author_handle}` as never); };
   const medical = post.kind === 'testimony' || HEALTH_SPACES.includes(post.forum_slug ?? forum?.slug ?? '') || sensitiveHints(post.body).some((h) => h.key === 'medical');
@@ -251,7 +253,7 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
     try {
       const saved = await save.mutateAsync(post);
       if (!reduce) haptic('light');
-      toast(saved ? 'Publication enregistrée.' : 'Retirée de vos enregistrements.');
+      toast(saved ? tr('cm1.post.saved') : tr('cm1.post.unsaved'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   function toggleLike() {
@@ -264,12 +266,12 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
     setMenu(false);
     try {
       await follow.mutateAsync({ handle: post.author_handle, follow: !post.following_author });
-      toast(post.following_author ? `Vous ne suivez plus @${post.author_handle}.` : `Vous suivez @${post.author_handle}.`);
+      toast(post.following_author ? tr('cm1.post.unfollowed', { handle: post.author_handle }) : tr('cm1.post.followed', { handle: post.author_handle }));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function togglePin() {
     setMenu(false);
-    try { await pin.mutateAsync({ postId: post.id, pin: !post.pinned_at }); toast(post.pinned_at ? 'Publication désépinglée.' : 'Publication épinglée en haut du groupe.'); }
+    try { await pin.mutateAsync({ postId: post.id, pin: !post.pinned_at }); toast(post.pinned_at ? tr('cm1.post.unpinned') : tr('cm1.post.pinned')); }
     catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function translate() {
@@ -277,23 +279,23 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
     if (!aiAccess.require()) return;
     try {
       const r = await ai.mutateAsync({ action: 'translate', postId: post.id, target: 'en' });
-      if ('text' in r) setTranslated(r.text); else toast(('message' in r && r.message) || 'Traduction indisponible.', 'error');
+      if ('text' in r) setTranslated(r.text); else toast(('message' in r && r.message) || tr('cm1.post.translateUnavailable'), 'error');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function remove() {
     setMenu(false);
-    if (!(await confirm('Supprimer définitivement cette publication ?', 'Ses photos, commentaires et réponses seront supprimés. Cette action est irréversible.', 'Supprimer'))) return;
+    if (!(await confirm(tr('cm1.post.deleteConfirmTitle'), tr('cm1.post.deleteConfirmBody'), tr('cm1.post.deleteConfirm')))) return;
     try {
       await del.mutateAsync(post);
-      toast('Publication supprimée.');
+      toast(tr('cm1.post.deleted'));
       if (full) (router.canGoBack() ? router.back() : router.replace('/(tabs)/community'));
-    } catch (e) { toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error'); }
+    } catch (e) { toast(friendlyError(e, tr('cm1.post.deleteError')), 'error'); }
   }
 
   return (
-    <Card onPress={full ? undefined : openPost} accessibilityLabel={`Publication de ${author}${post.title ? ` : ${post.title}` : ''}`} testID={full ? 'post-full' : `post-${post.id}`}>
+    <Card onPress={full ? undefined : openPost} accessibilityLabel={post.title ? tr('cm1.post.a11yTitled', { author, title: post.title }) : tr('cm1.post.a11y', { author })} testID={full ? 'post-full' : `post-${post.id}`}>
       <Row style={{ alignItems: 'center' }}>
-        <Tappable accessibilityRole={post.author_handle ? 'button' : 'image'} accessibilityLabel={post.author_handle ? `Voir le profil de ${author}` : author} disabled={!post.author_handle} onPress={openProfile} testID="post-author-avatar">
+        <Tappable accessibilityRole={post.author_handle ? 'button' : 'image'} accessibilityLabel={post.author_handle ? tr('cm1.post.viewProfileOf', { name: author }) : author} disabled={!post.author_handle} onPress={openProfile} testID="post-author-avatar">
           <View style={accent ? { borderRadius: 22, borderWidth: 2, borderColor: accent, padding: 1 } : undefined}>
             <Avatar path={post.avatar_path} preset={post.avatar_preset} anonymous={post.anonymous} size={accent ? 34 : 38} />
           </View>
@@ -307,52 +309,52 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
             </Row>
           </Tappable>
           <Text variant="caption" muted numberOfLines={2}>
-            {[post.author_handle ? `@${post.author_handle}` : null, timeAgo(post.created_at), post.edited_at ? 'modifiée' : null].filter(Boolean).join(' · ')}
+            {[post.author_handle ? `@${post.author_handle}` : null, timeAgo(post.created_at), post.edited_at ? tr('cm1.post.edited') : null].filter(Boolean).join(' · ')}
           </Text>
         </View>
-        <Tappable accessibilityRole="button" accessibilityLabel="Plus d’actions" hitSlop={{ top: 0, bottom: 0, left: 6, right: 6 }} onPress={() => setMenu(true)} style={{ width: 34, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', marginRight: -6 }} testID="post-menu">
+        <Tappable accessibilityRole="button" accessibilityLabel={tr('cm1.post.moreActions')} hitSlop={{ top: 0, bottom: 0, left: 6, right: 6 }} onPress={() => setMenu(true)} style={{ width: 34, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', marginRight: -6 }} testID="post-menu">
           <Icon name="more-horizontal" size={20} color={t.colors.textMuted} />
         </Tappable>
       </Row>
       <Row wrap gap={6} style={{ marginTop: 6 }}>
-        {post.pinned_at ? <Tag icon="bookmark" label="Épinglée" color={t.colors.primary} /> : null}
+        {post.pinned_at ? <Tag icon="bookmark" label={tr('cm1.post.pinnedTag')} color={t.colors.primary} /> : null}
         {post.group_name ? <Tag icon={post.group_kind === 'private' ? 'lock' : 'users'} label={post.group_name} color={t.colors.lavender} /> : null}
-        {post.poll ? <Tag icon="bar-chart-2" label="Sondage" /> : null}
+        {post.poll ? <Tag icon="bar-chart-2" label={tr('cm1.post.pollTag')} /> : null}
         {forum ? <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, backgroundColor: t.colors.primary + '14' }}><Icon name={spaceIcon(forum)} size={12} color={t.colors.primary} /><Text variant="caption" color={t.colors.primary}>{forum.title}</Text></View> : null}
-        {post.kind === 'testimony' ? <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, backgroundColor: t.colors.lavender + '33' }}><Text variant="caption">Témoignage</Text></View> : null}
-        {post.status !== 'visible' ? <Text variant="caption" color={t.colors.gold}>{post.status === 'pending_review' ? 'En relecture' : post.status === 'hidden' ? 'Masquée par la modération' : 'Retirée'}</Text> : null}
+        {post.kind === 'testimony' ? <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, backgroundColor: t.colors.lavender + '33' }}><Text variant="caption">{tr('cm1.post.testimonyTag')}</Text></View> : null}
+        {post.status !== 'visible' ? <Text variant="caption" color={t.colors.gold}>{post.status === 'pending_review' ? tr('cm1.post.statusPending') : post.status === 'hidden' ? tr('cm1.post.statusHidden') : tr('cm1.post.statusRemoved')}</Text> : null}
       </Row>
       {post.title ? <Text weight="bold" style={{ marginTop: 6 }}>{post.title}</Text> : null}
       <MentionText text={post.body} numberOfLines={full ? undefined : 5} style={{ marginTop: 4 }} />
-      {translated ? <View style={{ marginTop: 6, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} testID="post-translation"><Text variant="caption" muted>Traduction automatique</Text><Text variant="small">{translated}</Text></View> : null}
+      {translated ? <View style={{ marginTop: 6, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} testID="post-translation"><Text variant="caption" muted>{tr('cm1.post.autoTranslation')}</Text><Text variant="small">{translated}</Text></View> : null}
       <PollView post={post} />
       <PhotoGrid photos={post.photos ?? []} onOpen={(i) => setViewer(i)} />
       {post.area_label ? <Row gap={4} style={{ marginTop: 6 }}><Icon name="map-pin" size={12} color={t.colors.textMuted} /><Text variant="caption" muted>{post.area_label}</Text></Row> : null}
-      {medical && full ? <Text variant="caption" muted style={{ marginTop: 6 }} testID="post-testimony-note">Témoignage personnel d’un membre, pas un avis médical. Pour une décision de santé, demandez à un professionnel.</Text> : null}
+      {medical && full ? <Text variant="caption" muted style={{ marginTop: 6 }} testID="post-testimony-note">{tr('cm1.post.testimonyNote')}</Text> : null}
       <Row style={{ marginTop: spacing.xs }} gap={2}>
-        <ActionButton icon="heart" label={post.liked ? `Je n’aime plus (${post.like_count})` : `J’aime (${post.like_count})`} count={post.like_count} active={post.liked} onPress={toggleLike} testID="post-like" activeColor={t.colors.heart} />
-        <ActionButton icon="message-circle" label={`${post.comment_count} commentaire(s)`} count={post.comment_count} onPress={onCommentPress ?? openPost} testID="post-comments" />
+        <ActionButton icon="heart" label={post.liked ? tr('cm1.post.unlike', { count: post.like_count }) : tr('cm1.post.like', { count: post.like_count })} count={post.like_count} active={post.liked} onPress={toggleLike} testID="post-like" activeColor={t.colors.heart} />
+        <ActionButton icon="message-circle" label={tr('cm1.post.comments', { count: post.comment_count })} count={post.comment_count} onPress={onCommentPress ?? openPost} testID="post-comments" />
         <View style={{ flex: 1 }} />
-        <ActionButton icon="bookmark" label={post.saved ? 'Retirer des enregistrements' : 'Enregistrer'} active={post.saved} onPress={toggleSave} testID="post-save" />
-        <ActionButton icon="share-2" label="Partager le lien" onPress={() => sharePost(post).catch(() => toast('Le partage n’est pas disponible sur cet appareil.', 'error'))} testID="post-share" />
+        <ActionButton icon="bookmark" label={post.saved ? tr('cm1.post.unsave') : tr('cm1.post.save')} active={post.saved} onPress={toggleSave} testID="post-save" />
+        <ActionButton icon="share-2" label={tr('cm1.post.shareLink')} onPress={() => sharePost(post).catch(() => toast(tr('cm1.post.shareUnavailable'), 'error'))} testID="post-share" />
       </Row>
-      <Sheet visible={menu} onClose={() => setMenu(false)} title="Publication">
-        {post.saved ? <Chip label="Ranger dans un dossier" icon="folder" onPress={() => { setMenu(false); setFolders(true); }} testID="post-folder" /> : null}
-        {canPin ? <Chip label={post.pinned_at ? 'Désépingler' : 'Épingler'} icon="bookmark" onPress={() => void togglePin()} testID="post-pin" /> : null}
-        {full ? <Chip label="Traduire en anglais" icon="globe" onPress={() => void translate()} testID="post-translate" /> : null}
+      <Sheet visible={menu} onClose={() => setMenu(false)} title={tr('cm1.post.menuTitle')}>
+        {post.saved ? <Chip label={tr('cm1.post.moveToFolder')} icon="folder" onPress={() => { setMenu(false); setFolders(true); }} testID="post-folder" /> : null}
+        {canPin ? <Chip label={post.pinned_at ? tr('cm1.post.unpin') : tr('cm1.post.pin')} icon="bookmark" onPress={() => void togglePin()} testID="post-pin" /> : null}
+        {full ? <Chip label={tr('cm1.post.translate')} icon="globe" onPress={() => void translate()} testID="post-translate" /> : null}
         {post.is_mine ? (
           <>
-            <Chip label="Modifier" icon="edit-3" onPress={() => { setMenu(false); router.push({ pathname: '/community/new', params: { edit: post.id } }); }} />
-            <Chip label="Supprimer définitivement" icon="trash-2" onPress={remove} />
+            <Chip label={tr('cm1.post.edit')} icon="edit-3" onPress={() => { setMenu(false); router.push({ pathname: '/community/new', params: { edit: post.id } }); }} />
+            <Chip label={tr('cm1.post.deleteForever')} icon="trash-2" onPress={remove} />
           </>
         ) : (
           <>
-            {post.author_handle ? <Chip label="Voir le profil" icon="user" onPress={() => { setMenu(false); openProfile(); }} /> : null}
-            {post.author_handle ? <Chip label={post.following_author ? `Ne plus suivre @${post.author_handle}` : `Suivre @${post.author_handle}`} icon={post.following_author ? 'user-minus' : 'user-plus'} onPress={() => void toggleFollow()} testID="post-follow" /> : null}
-            <Chip label="Signaler ou bloquer" icon="flag" onPress={() => { setMenu(false); setReporting(true); }} />
+            {post.author_handle ? <Chip label={tr('cm1.post.viewProfile')} icon="user" onPress={() => { setMenu(false); openProfile(); }} /> : null}
+            {post.author_handle ? <Chip label={post.following_author ? tr('cm1.post.unfollowHandle', { handle: post.author_handle }) : tr('cm1.post.followHandle', { handle: post.author_handle })} icon={post.following_author ? 'user-minus' : 'user-plus'} onPress={() => void toggleFollow()} testID="post-follow" /> : null}
+            <Chip label={tr('cm1.post.reportOrBlock')} icon="flag" onPress={() => { setMenu(false); setReporting(true); }} />
           </>
         )}
-        <Chip label="Partager le lien" icon="share-2" onPress={() => { setMenu(false); sharePost(post).catch(() => undefined); }} />
+        <Chip label={tr('cm1.post.shareLink')} icon="share-2" onPress={() => { setMenu(false); sharePost(post).catch(() => undefined); }} />
       </Sheet>
       <ReportSheet visible={reporting} onClose={() => setReporting(false)} postId={post.id} />
       {folders ? <FolderSheet visible={folders} onClose={() => setFolders(false)} post={post} /> : null}
@@ -365,7 +367,7 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
 export function CategorySheet({ visible, onClose, forums, selected, onSelect }: { visible: boolean; onClose: () => void; forums: Forum[]; selected: string | null; onSelect: (id: string | null) => void }) {
   const t = useTheme();
   return (
-    <Sheet visible={visible} onClose={onClose} title="Toutes les catégories">
+    <Sheet visible={visible} onClose={onClose} title={tr('cm1.categories.title')}>
       <ScrollView>
         {[...forums].sort((a, b) => a.position - b.position).map((f) => (
           <Tappable key={f.id} accessibilityRole="button" accessibilityState={{ selected: selected === f.id }} onPress={() => { onSelect(f.id); onClose(); }} testID={`category-${f.slug}`}

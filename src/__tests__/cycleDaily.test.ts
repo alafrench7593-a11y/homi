@@ -238,3 +238,34 @@ describe('saisie vocale', () => {
     expect(parseCycleVoice('rien de spécial').pills).toEqual([]);
   });
 });
+
+describe('résumé du mois', () => {
+  const { monthlySummary, shiftMonth } = require('@/lib/domain/cycleMonthly') as typeof import('@/lib/domain/cycleMonthly');
+  it('compte les faits notés du mois, sans l’intime par défaut', () => {
+    const s = monthlySummary('2026-09', {
+      periods: [{ start_date: '2026-08-28', end_date: '2026-09-02' }, { start_date: '2026-09-25', end_date: '2026-09-29' }],
+      logs: [
+        { logged_on: '2026-09-01', symptom_keys: ['cramps', 'libido_up'], moods: ['sad'], pain_intensity: 6 },
+        { logged_on: '2026-09-02', symptom_keys: ['cramps'], sleep_tags: ['difficult'] },
+        { logged_on: '2026-10-01', symptom_keys: ['headache'] },
+      ],
+    }, { today: '2026-10-20' });
+    expect(s.periodStarts).toEqual(['2026-09-25']);
+    expect(s.periodDays).toBe(2 + 5);
+    expect(s.cycleLengths).toEqual([28]);
+    expect(s.topSymptoms).toEqual([{ key: 'cramps', count: 2 }]);
+    expect(s.topMoods).toEqual([{ key: 'sad', count: 1 }]);
+    expect([s.painMax, s.difficultNights, s.daysLogged]).toEqual([6, 1, 2]);
+    expect(shiftMonth('2026-01', -1)).toBe('2025-12');
+  });
+});
+
+describe('widget iOS', () => {
+  const { widgetContent } = require('@/widgets/widgetContent') as typeof import('@/widgets/widgetContent');
+  it('discret par défaut, jamais détaillé si le cycle est masqué', () => {
+    const base = { appName: 'Toi & Moi', open: 'Ouvrir', cycleDay: 'Jour 12 du cycle', next: 'Règles estimées dans 16 jours' };
+    expect(widgetContent({ ...base, detailed: false, hidden: false })).toEqual({ title: 'Toi & Moi', line1: 'Ouvrir', line2: '' });
+    expect(widgetContent({ ...base, detailed: true, hidden: true }).line1).toBe('Ouvrir');
+    expect(widgetContent({ ...base, detailed: true, hidden: false })).toEqual({ title: 'Toi & Moi', line1: 'Jour 12 du cycle', line2: 'Règles estimées dans 16 jours' });
+  });
+});

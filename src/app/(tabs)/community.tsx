@@ -29,7 +29,12 @@ import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
 type Mode = 'foryou' | 'following' | 'recent' | 'saved';
-const MODES: { value: Mode; label: string }[] = [{ value: 'foryou', label: 'Pour vous' }, { value: 'following', label: 'Abonnements' }, { value: 'recent', label: 'Récent' }, { value: 'saved', label: 'Enregistrés' }];
+const MODES: { value: Mode; readonly label: string }[] = [
+  { value: 'foryou', get label() { return tr('cm1.feed.forYou'); } },
+  { value: 'following', get label() { return tr('cm1.feed.following'); } },
+  { value: 'recent', get label() { return tr('cm1.feed.recent'); } },
+  { value: 'saved', get label() { return tr('cm1.feed.saved'); } },
+];
 
 export default function Community() {
   const t = useTheme();
@@ -103,95 +108,95 @@ export default function Community() {
 
   async function toggleSubscription() {
     if (!current) return;
-    try { await toggleSub.mutateAsync({ forumId: current.id, on: !subscribed }); toast(subscribed ? `Vous ne suivez plus « ${current.title} ».` : `« ${current.title} » apparaîtra dans vos abonnements.`); }
+    try { await toggleSub.mutateAsync({ forumId: current.id, on: !subscribed }); toast(subscribed ? tr('cm1.feed.unfollowCategory', { title: current.title }) : tr('cm1.feed.followCategory', { title: current.title })); }
     catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   const header = (
     <View style={{ gap: spacing.sm, marginBottom: spacing.xxs }}>
       {!me ? (
-        <Banner tone="info" title="Créez votre profil communautaire" action={<Button label="Créer mon profil" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => router.push('/community/profile')} testID="community-create-profile" />}>
-          {'Vous pouvez tout lire dès maintenant. Pour publier, choisissez un pseudonyme et un identifiant « @ » : votre nom, votre adresse e-mail et vos données de suivi restent privés.'}
+        <Banner tone="info" title={tr('cm1.feed.createProfileTitle')} action={<Button label={tr('cm1.feed.createProfile')} size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => router.push('/community/profile')} testID="community-create-profile" />}>
+          {tr('cm1.feed.createProfileBody')}
         </Banner>
       ) : null}
-      <Field label="Rechercher" placeholder="Sommeil, purée… ou @membre" value={q} onChangeText={setQ} returnKeyType="search" autoCorrect={false} autoCapitalize="none" testID="community-search" />
+      <Field label={tr('cm1.feed.search')} placeholder={tr('cm1.feed.searchPlaceholder')} value={q} onChangeText={setQ} returnKeyType="search" autoCorrect={false} autoCapitalize="none" testID="community-search" />
       {searching ? (
         members.data?.length ? (
           <Card testID="member-results">
-            <Text variant="label" muted>Membres</Text>
+            <Text variant="label" muted>{tr('cm1.feed.members')}</Text>
             {members.data.slice(0, memberOnly ? 10 : 3).map((m) => (
               <MemberRow key={m.handle} m={m} right={me ? <FollowButton handle={m.handle} following={!!m.is_following} /> : null} />
             ))}
           </Card>
-        ) : memberOnly && !members.isLoading ? <Text variant="small" muted>Aucun membre ne correspond.</Text> : null
+        ) : memberOnly && !members.isLoading ? <Text variant="small" muted>{tr('cm1.feed.noMember')}</Text> : null
       ) : (
         <FeedTabs value={mode} onChange={(m) => { setMode(m); setFilters(null); }} options={MODES} />
       )}
       {!searching ? (
         <Row gap={6}>
-          <Button label="Groupes" icon="users" size="sm" variant="secondary" onPress={() => router.push('/community/groups' as never)} testID="community-groups" />
+          <Button label={tr('cm1.feed.groups')} icon="users" size="sm" variant="secondary" onPress={() => router.push('/community/groups' as never)} testID="community-groups" />
           <FiltersButton active={!!filters} onOpen={() => setFiltersOpen(true)} />
-          {filters ? <IconButton icon="x" label="Effacer les filtres" onPress={() => setFilters(null)} /> : null}
+          {filters ? <IconButton icon="x" label={tr('cm1.feed.clearFilters')} onPress={() => setFilters(null)} /> : null}
         </Row>
       ) : null}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingVertical: 2 }} testID="community-categories">
-        <Chip label="Tout" icon="layers" selected={!forumId} onPress={() => setForumId(null)} />
+        <Chip label={tr('cm1.feed.all')} icon="layers" selected={!forumId} onPress={() => setForumId(null)} />
         {spaces.primary.map((f) => <Chip key={f.id} label={f.title} icon={spaceIcon(f)} selected={forumId === f.id} onPress={() => setForumId(forumId === f.id ? null : f.id)} />)}
         {current && !primaryIds.has(current.id) ? <Chip label={current.title} icon={spaceIcon(current)} selected onPress={() => setForumId(null)} /> : null}
-        <Chip label="Toutes les catégories" icon="grid" onPress={() => setAllOpen(true)} accessibilityLabel="Afficher toutes les catégories" />
+        <Chip label={tr('cm1.feed.allCategories')} icon="grid" onPress={() => setAllOpen(true)} accessibilityLabel={tr('cm1.feed.allCategoriesA11y')} />
       </ScrollView>
       {mode === 'saved' && !searching && (folders.data?.length ?? 0) > 0 ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }} testID="saved-folders">
-          <Chip label="Tous les enregistrements" icon="bookmark" selected={!folderId} onPress={() => setFolderId(null)} />
+          <Chip label={tr('cm1.feed.allSaved')} icon="bookmark" selected={!folderId} onPress={() => setFolderId(null)} />
           {folders.data!.map((f) => <Chip key={f.id} label={f.name} icon="folder" selected={folderId === f.id} onPress={() => setFolderId(folderId === f.id ? null : f.id)} />)}
         </ScrollView>
       ) : null}
       {current ? (
         <Card tone="soft">
           <Row><Icon name={spaceIcon(current)} size={18} color={t.colors.primary} /><Text weight="bold" style={{ flex: 1 }}>{current.title}</Text>
-            {me ? <Button label={subscribed ? 'Suivie' : 'Suivre'} icon={subscribed ? 'check' : 'plus'} size="sm" variant={subscribed ? 'secondary' : 'primary'} onPress={() => void toggleSubscription()} testID="category-follow" /> : null}
+            {me ? <Button label={subscribed ? tr('cm1.feed.categoryFollowed') : tr('cm1.feed.categoryFollow')} icon={subscribed ? 'check' : 'plus'} size="sm" variant={subscribed ? 'secondary' : 'primary'} onPress={() => void toggleSubscription()} testID="category-follow" /> : null}
           </Row>
           <Text variant="small" muted style={{ marginTop: 4 }}>{current.description}</Text>
         </Card>
       ) : null}
       {waiting.length ? (
         <Card testID="community-waiting">
-          <Row><Icon name="help-circle" size={16} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>Ils attendent une réponse</Text></Row>
-          <Text variant="caption" muted>Des questions récentes proches de votre parcours. Votre expérience peut aider.</Text>
+          <Row><Icon name="help-circle" size={16} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>{tr('cm1.feed.waitingTitle')}</Text></Row>
+          <Text variant="caption" muted>{tr('cm1.feed.waitingSub')}</Text>
           {waiting.map((p) => (
-            <Tappable key={p.id} accessibilityRole="button" accessibilityLabel={`Ouvrir : ${p.title ?? p.body}`} onPress={() => router.push(`/community/post/${p.id}`)}
+            <Tappable key={p.id} accessibilityRole="button" accessibilityLabel={tr('cm1.feed.openA11y', { title: p.title ?? p.body })} onPress={() => router.push(`/community/post/${p.id}`)}
               style={{ minHeight: MIN_TOUCH, justifyContent: 'center', borderTopWidth: 1, borderTopColor: t.colors.border, paddingVertical: 6 }}>
               <Text weight="medium" numberOfLines={2} intentionalTruncation>{p.title ?? p.body}</Text>
-              <Text variant="caption" muted>{`${forumOf(p)?.title ?? ''}${p.comment_count ? ` · ${p.comment_count} réponse${p.comment_count > 1 ? 's' : ''}` : ' · pas encore de réponse'}`}</Text>
+              <Text variant="caption" muted>{`${forumOf(p)?.title ?? ''} · ${p.comment_count ? tr('cm1.replies', { count: p.comment_count }) : tr('cm1.noReplyYet')}`}</Text>
             </Tappable>
           ))}
         </Card>
       ) : null}
       {mode === 'following' && !searching && !filters && !subs.ids.length && !(groups.data ?? []).some((g) => g.is_member) ? (
-        <Text variant="caption" muted testID="following-hint">Suivez des membres (menu « … » d’une publication ou leur profil), des catégories ou des groupes : leurs publications apparaîtront ici, de la plus récente à la plus ancienne.</Text>
+        <Text variant="caption" muted testID="following-hint">{tr('cm1.feed.followingHint')}</Text>
       ) : null}
-      {searching && !memberOnly ? <Text variant="small" muted>{search.data ? `${search.data.length} publication${search.data.length > 1 ? 's' : ''}${current ? ` dans « ${current.title} »` : ''}` : 'Recherche…'}</Text> : null}
-      {filters ? <Text variant="small" muted testID="filters-count">{advanced.data ? `${advanced.data.length} résultat${advanced.data.length > 1 ? 's' : ''} avec vos filtres` : 'Recherche…'}</Text> : null}
+      {searching && !memberOnly ? <Text variant="small" muted>{search.data ? (current ? tr('cm1.feed.searchCountIn', { count: search.data.length, title: current.title }) : tr('cm1.feed.searchCount', { count: search.data.length })) : tr('cm1.feed.searching')}</Text> : null}
+      {filters ? <Text variant="small" muted testID="filters-count">{advanced.data ? tr('cm1.feed.filtersCount', { count: advanced.data.length }) : tr('cm1.feed.searching')}</Text> : null}
       {listLoading ? <Skeleton kind="card" rows={3} /> : listError ? (
-        <ErrorView error={active.error} onRetry={() => void active.refetch()} title={searching ? 'Recherche impossible' : 'Impossible d’afficher le fil'} />
+        <ErrorView error={active.error} onRetry={() => void active.refetch()} title={searching ? tr('cm1.feed.searchError') : tr('cm1.feed.feedError')} />
       ) : null}
     </View>
   );
 
   const footer = posts.length ? (
     <Card tone="soft" style={{ marginTop: spacing.xs }}>
-      <Row><Icon name="shield" size={18} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>Une communauté bienveillante</Text></Row>
-      <Text variant="small" muted style={{ marginTop: 6 }}>Les témoignages partagés ici sont des expériences personnelles, pas des conseils médicaux. Signalez ce qui vous semble dangereux ; un contenu signalé trois fois est masqué en attendant la modération.</Text>
-      <Button label="Lire les règles" size="sm" variant="ghost" icon="book-open" style={{ alignSelf: 'flex-start' }} onPress={() => router.push('/community/rules' as never)} />
+      <Row><Icon name="shield" size={18} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>{tr('cm1.feed.kindTitle')}</Text></Row>
+      <Text variant="small" muted style={{ marginTop: 6 }}>{tr('cm1.feed.kindBody')}</Text>
+      <Button label={tr('cm1.feed.readRules')} size="sm" variant="ghost" icon="book-open" style={{ alignSelf: 'flex-start' }} onPress={() => router.push('/community/rules' as never)} />
     </Card>
   ) : null;
 
   const empty = listLoading || listError || (searching && memberOnly) ? null : (
     <EmptyState
       icon={searching ? 'search' : mode === 'saved' ? 'bookmark' : mode === 'following' ? 'user-plus' : 'message-square'}
-      title={searching || filters ? 'Aucune publication ne correspond' : mode === 'saved' ? 'Aucune publication enregistrée' : mode === 'following' ? 'Rien dans vos abonnements pour l’instant' : current ? 'Aucune publication dans cette catégorie pour l’instant' : 'Aucune publication pour l’instant'}
-      body={mode === 'saved' && !searching ? 'Touchez le marque-page d’une publication pour la retrouver ici.' : mode === 'following' && !searching ? 'Suivez un membre, une catégorie ou rejoignez un groupe.' : 'Lancez la discussion !'}
-      action={mode === 'saved' && !searching ? undefined : mode === 'following' ? { label: 'Découvrir les groupes', icon: 'users', onPress: () => router.push('/community/groups' as never) } : { label: 'Publier', icon: 'edit-3', onPress: newPost }}
+      title={searching || filters ? tr('cm1.feed.emptyNoMatch') : mode === 'saved' ? tr('cm1.feed.emptySaved') : mode === 'following' ? tr('cm1.feed.emptyFollowing') : current ? tr('cm1.feed.emptyCategory') : tr('cm1.feed.empty')}
+      body={mode === 'saved' && !searching ? tr('cm1.feed.emptySavedBody') : mode === 'following' && !searching ? tr('cm1.feed.emptyFollowingBody') : tr('cm1.feed.emptyBody')}
+      action={mode === 'saved' && !searching ? undefined : mode === 'following' ? { label: tr('cm1.feed.discoverGroups'), icon: 'users', onPress: () => router.push('/community/groups' as never) } : { label: tr('cm1.feed.publish'), icon: 'edit-3', onPress: newPost }}
     />
   );
 
@@ -204,9 +209,9 @@ export default function Community() {
       subtitle={tr('screen.community.sub')}
       right={(
         <Row gap={0}>
-          <IconButton icon="bell" label="Notifications" onPress={() => router.push('/notifications')} />
+          <IconButton icon="bell" label={tr('cm1.feed.notifications')} onPress={() => router.push('/notifications')} />
           {/* Mon profil communautaire (publications, réponses, groupes, albums, enregistrés) */}
-          <IconButton icon="at-sign" label={me ? 'Profil communautaire' : 'Créer mon profil communautaire'} onPress={() => router.push(me ? '/moi' as never : '/community/profile')} />
+          <IconButton icon="at-sign" label={me ? tr('cm1.feed.communityProfile') : tr('cm1.feed.createCommunityProfile')} onPress={() => router.push(me ? '/moi' as never : '/community/profile')} />
         </Row>
       )}
     >
@@ -221,7 +226,7 @@ export default function Community() {
         showsVerticalScrollIndicator={false}
       />
       <View pointerEvents="box-none" style={{ position: 'absolute', right: spacing.lg, bottom: insets.bottom + 104 }}>
-        <Fab icon="edit-3" label="Publier" onPress={newPost} />
+        <Fab icon="edit-3" label={tr('cm1.feed.publish')} onPress={newPost} />
       </View>
       <CategorySheet visible={allOpen} onClose={() => setAllOpen(false)} forums={spaces.all} selected={forumId} onSelect={setForumId} />
       {filtersOpen ? <FiltersSheet visible={filtersOpen} onClose={() => setFiltersOpen(false)} forums={spaces.all} value={filters} onApply={setFilters} /> : null}

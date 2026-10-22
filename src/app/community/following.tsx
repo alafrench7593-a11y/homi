@@ -11,6 +11,7 @@ import { spaceIcon } from '@/features/community';
 import { FollowButton, MemberRow } from '@/features/communitySocial';
 import { useSpaces } from '@/lib/data/hooks-community';
 import { useFollows, useForumSubscriptions, useToggleForumSubscription } from '@/lib/data/hooks-social';
+import { t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
 export default function Following() {
@@ -19,13 +20,13 @@ export default function Following() {
   const toggle = useToggleForumSubscription();
   const spaces = useSpaces();
   return (
-    <Screen back title="Abonnements" subtitle="Leurs publications apparaissent dans le fil « Abonnements »">
-      <SectionTitle title="Membres" />
+    <Screen back title={tr('cm3.following.title')} subtitle={tr('cm3.following.subtitle')}>
+      <SectionTitle title={tr('cm3.following.members')} />
       {follows.isLoading && !follows.data ? <Skeleton kind="list" rows={2} /> : follows.data?.length ? (
         <Card testID="following-list">{follows.data.map((m) => <MemberRow key={m.handle} m={m} right={<FollowButton handle={m.handle} following />} />)}</Card>
-      ) : <EmptyState icon="user-plus" title="Vous ne suivez encore personne" body="Depuis une publication (menu « … ») ou le profil d’un membre, touchez « Suivre »." />}
-      <SectionTitle title="Catégories" />
-      <Text variant="caption" muted>Touchez une catégorie pour la suivre ou ne plus la suivre.</Text>
+      ) : <EmptyState icon="user-plus" title={tr('cm3.following.emptyTitle')} body={tr('cm3.following.emptyBody')} />}
+      <SectionTitle title={tr('cm3.following.categories')} />
+      <Text variant="caption" muted>{tr('cm3.following.categoriesHint')}</Text>
       <View style={{ gap: spacing.xs }}>
         <Row wrap gap={6} testID="following-categories">
           {[...spaces.all].sort((a, b) => a.position - b.position).map((f) => (

@@ -77,8 +77,8 @@ interface CardProps {
 
 export function Card({ children, onPress, tone = 'surface', style, accessibilityLabel, accessibilityHint, padded = true, testID }: CardProps) {
   const t = useTheme();
-  const press = usePressMotion({ pressed: 0.982, hoverLift: -3 });
-  const tilt = useTilt(2.2);
+  const press = usePressMotion({ pressed: 0.985, hoverLift: -1 });
+  const tilt = useTilt(1);
   const bg = {
     surface: t.colors.surface,
     soft: t.isDark ? 'rgba(255,134,168,0.12)' : 'rgba(255,214,226,0.62)',
@@ -589,7 +589,7 @@ function ListRowPress({ label, onPress, children, testID }: { label: string; onP
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} testID={testID} onPress={() => { haptic('selection'); onPress(); }} {...press.handlers}>
       <Animated.View style={press.style}>
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, opacity: press.hover, marginHorizontal: -8 }]} />
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 12, backgroundColor: t.colors.surfaceAlt, opacity: press.hover, marginHorizontal: -8 }]} />
         {children}
       </Animated.View>
     </Pressable>

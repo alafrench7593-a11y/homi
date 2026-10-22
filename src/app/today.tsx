@@ -26,6 +26,7 @@ import { recipeOfDay } from '@/lib/recipes/engine';
 import type { Bottle, Breastfeed, Diaper, FeedPost, Meal, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
@@ -79,7 +80,7 @@ export default function Today() {
       nextNap: premium && plan?.nextNap ? { at: new Date(plan.nextNap.at).toISOString() } : null,
       sleepPlannerTeaser: !premium && sleepDays >= 3,
       nextBottle: bottleTimer ? { at: bottleTimer.due_at } : null,
-      pregnancy: weekSA != null && pregnancy ? { label: pregnancyProgress(pregnancy.due_date).label, detail: 'Le point de la semaine et vos prochains rendez-vous.' } : null,
+      pregnancy: weekSA != null && pregnancy ? { label: pregnancyProgress(pregnancy.due_date).label, detail: tr('trk.digest.pregDetail') } : null,
       groupPosts,
       unreadReplies: (inbox ?? []).filter((n) => !n.read_at && n.category.startsWith('community_') && n.category !== 'community_like').length,
       recipe: (() => { const r = recipes ? recipeOfDay(recipes, foodProfile, undefined, dislikes.ids) : null; return r ? { title: r.title, slug: r.slug } : null; })(),
@@ -97,8 +98,8 @@ export default function Today() {
 
   const question = digest.items.find((i) => i.key === 'question');
   return (
-    <Screen back title={moment === 'morning' ? 'Résumé du matin' : 'Résumé du soir'} subtitle={digest.title}>
-      <Segmented label="Moment" value={moment} onChange={(v) => setMoment(v as DigestMoment)} options={[{ value: 'morning', label: 'Matin' }, { value: 'evening', label: 'Soir' }]} />
+    <Screen back title={moment === 'morning' ? tr('trk.digest.morning') : tr('trk.digest.evening')} subtitle={digest.title}>
+      <Segmented label={tr('trk.digest.moment')} value={moment} onChange={(v) => setMoment(v as DigestMoment)} options={[{ value: 'morning', label: tr('trk.digest.morningOpt') }, { value: 'evening', label: tr('trk.digest.eveningOpt') }]} />
       <Text variant="small" muted>{digest.subtitle}</Text>
       <View style={{ gap: spacing.sm }} testID="digest-items">
         {digest.items.filter((i) => i.key !== 'question').map((it, i) => (
@@ -113,24 +114,24 @@ export default function Today() {
                 <Text weight="bold">{it.title}</Text>
                 {it.detail ? <Text variant="small" muted>{it.detail}</Text> : null}
               </View>
-              {it.premium ? <Text variant="caption" color={t.colors.gold}>Premium</Text> : it.link ? <Icon name="chevron-right" size={18} color={t.colors.textMuted} /> : null}
+              {it.premium ? <Text variant="caption" color={t.colors.gold}>{tr('trk.digest.premium')}</Text> : it.link ? <Icon name="chevron-right" size={18} color={t.colors.textMuted} /> : null}
             </Tappable>
           </Appear>
         ))}
       </View>
       {question ? (
         <Card testID="digest-question">
-          <Row gap={6}><Icon name="help-circle" size={16} color={t.colors.lavender} /><Text variant="caption" weight="bold" muted>QUESTION DU JOUR (FACULTATIVE)</Text></Row>
+          <Row gap={6}><Icon name="help-circle" size={16} color={t.colors.lavender} /><Text variant="caption" weight="bold" muted>{tr('trk.digest.question')}</Text></Row>
           <Text variant="heading" style={{ marginTop: 4 }}>{question.detail}</Text>
           <Row wrap gap={6} style={{ marginTop: spacing.sm }}>
-            <Button label="Répondre dans la communauté" size="sm" icon="message-circle" onPress={() => router.push({ pathname: '/community/new', params: { title: question.detail ?? '', kind: 'testimony' } })} testID="digest-question-share" />
-            <Button label="Ne plus afficher" size="sm" variant="ghost" onPress={() => savePrefs.mutate({ ...prefs, question: false })} />
+            <Button label={tr('trk.digest.answer')} size="sm" icon="message-circle" onPress={() => router.push({ pathname: '/community/new', params: { title: question.detail ?? '', kind: 'testimony' } })} testID="digest-question-share" />
+            <Button label={tr('trk.digest.hide')} size="sm" variant="ghost" onPress={() => savePrefs.mutate({ ...prefs, question: false })} />
           </Row>
         </Card>
       ) : null}
-      <Button label="Choisir mes notifications" icon="bell" variant="secondary" onPress={() => router.push('/community/notifications')} testID="digest-settings" />
+      <Button label={tr('trk.digest.settings')} icon="bell" variant="secondary" onPress={() => router.push('/community/notifications')} testID="digest-settings" />
       {!prefs.morning && !prefs.evening ? (
-        <Text variant="caption" muted>Vous ne recevez aucune notification de résumé. Vous pouvez en choisir une le matin, le soir, ou les deux.</Text>
+        <Text variant="caption" muted>{tr('trk.digest.noNotif')}</Text>
       ) : null}
     </Screen>
   );

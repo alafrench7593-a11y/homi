@@ -6,7 +6,7 @@
 export type PremiumFeature =
   | 'sleep_insights' | 'bedtime_routine' | 'assistant_more' | 'assistant_saved' | 'assistant_suggestions'
   | 'scanner_more' | 'scanner_compare' | 'coparent_invite' | 'voice_entry' | 'summaries' | 'summary_export'
-  | 'weekly_menu' | 'cycle_insights' | 'cycle_export' | 'cycle_trends' | 'cycle_custom' | 'family_summary' | 'more_children' | 'more_reminders'
+  | 'weekly_menu' | 'cycle_insights' | 'cycle_export' | 'cycle_trends' | 'cycle_custom' | 'cycle_share' | 'cycle_monthly' | 'family_summary' | 'more_children' | 'more_reminders'
   | 'more_documents' | 'more_lists' | 'premium_content' | 'growth_export' | 'diversification'
   | 'community_profile' | 'community_groups' | 'community_albums' | 'community_search' | 'community_history' | 'saved_folders' | 'community_ai' | 'community_events';
 
@@ -41,6 +41,8 @@ export const FEATURES: Record<PremiumFeature, FeatureInfo> = {
   cycle_insights: { icon: 'bar-chart-2', title: 'Comprendre vos cycles', benefit: 'Statistiques lisibles et tendances sur tout votre historique (toujours des estimations).', free: 'Calendrier, saisies, estimations de base', premium: 'Statistiques et tendances' },
   cycle_trends: { icon: 'trending-up', title: 'Repérer ce qui revient dans votre cycle', benefit: 'Les tendances observées dans vos propres données (après plusieurs cycles comparables) et, si vous le souhaitez, un message avant une période où vous notez souvent un symptôme. Jamais une certitude.', free: 'Calendrier, règles, estimation simple, symptômes essentiels, informations générales et de sécurité', premium: 'Tendances personnelles et anticipation' },
   cycle_custom: { icon: 'tag', title: 'Personnaliser votre suivi du cycle', benefit: 'Vos propres éléments à suivre et autant d’étiquettes que vous le souhaitez.', free: '3 étiquettes différentes', premium: 'Éléments personnalisés et étiquettes illimitées' },
+  cycle_share: { icon: 'users', title: 'Partager votre cycle avec votre partenaire', benefit: 'Vous choisissez quoi partager (règles, fenêtre fertile estimée, humeur, symptômes) avec un membre de votre foyer, en lecture seule ; jamais les rapports, la contraception ni vos notes. Révocable à tout moment.', free: 'Rien n’est partagé', premium: 'Partage choisi et révocable' },
+  cycle_monthly: { icon: 'file-text', title: 'Le résumé de votre mois', benefit: 'Règles, durée du cycle, symptômes et humeurs les plus notés du mois, en PDF à garder ou à montrer à votre professionnel. Des faits notés, jamais un diagnostic.', free: 'Calendrier et fiche de chaque jour', premium: 'Résumé mensuel et PDF' },
   cycle_export: { icon: 'download', title: 'Exporter votre suivi de cycle', benefit: 'Un PDF à partager avec votre professionnel de santé.', free: '—', premium: 'Export PDF' },
   family_summary: { icon: 'home', title: 'Le résumé familial du jour', benefit: 'Chaque enfant, ses repas, son sommeil et ses rendez-vous, sans rien mélanger.', free: 'Vue d’ensemble des profils', premium: 'Résumé quotidien familial' },
   more_children: { icon: 'user-plus', title: 'Suivre plus d’enfants', benefit: 'Davantage de profils, chacun avec ses propres données.', free: 'Jusqu’à 3 enfants', premium: 'Profils étendus' },

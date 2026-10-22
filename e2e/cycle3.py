@@ -287,6 +287,34 @@ def run(p):
     pg.screenshot(path=f'{SHOTS}/c3-dark.png', full_page=True)
     R['15_sombre'] = has(pg, 'cycle-calendar')
 
+    # ================================================================ 16. Résumé du mois (Premium) et partage avec le ou la partenaire
+    pg.emulate_media(color_scheme='light')
+    starts = seed_regular(pg)
+    pg.goto(B + '/cycle/month'); pg.wait_for_timeout(2000)
+    R['16_resume_mois_reserve_premium'] = has(pg, 'premium-cycle_monthly') and not has(pg, 'month-summary')
+    pg.evaluate(PREMIUM_ON); pg.goto(B + '/cycle/month'); pg.wait_for_timeout(2000)
+    if starts[0].month != TODAY.month:
+        pg.get_by_role('button', name='Mois précédent', exact=True).first.click(); pg.wait_for_timeout(600)
+    R['16_resume_mois_faits'] = has(pg, 'month-summary') and 'début de règles' in tid(pg, 'month-summary').inner_text() and 'pas un diagnostic' in T(pg)
+    me = demo(pg, "s => s.session.userId")
+    hid = demo(pg, f"s => (s.tables.household_members.find(m => m.user_id === '{me}') || {{}}).household_id")
+    mutate(pg, f"""s => {{ s.tables.household_members.push({{ household_id: '{hid}', user_id: 'partner-e2e', role: 'coparent', can_view: [], can_edit: [], joined_at: new Date().toISOString() }});
+      s.tables.profiles.find(p => p.id === '{me}').display_name = 'Camille'; s.tables.profiles.push({{ id: 'partner-e2e', display_name: 'Alex', journeys: [] }}); }}""")
+    pg.goto(B + '/cycle/share'); pg.wait_for_timeout(2200)
+    R['16_partage_jamais_intime'] = 'Jamais partagés : rapports, contraception, notes' in T(pg)
+    tap(pg, 'share-save-partner-e2e', 1500)
+    R['16_partage_cree'] = demo(pg, "s => s.tables.cycle_shares.filter(x => x.partner_id === 'partner-e2e').map(x => [x.share_period, x.share_fertile, x.share_mood])") == [[True, False, False]]
+    # Vue du ou de la partenaire (même démonstration, session basculée)
+    mutate(pg, "s => { s.session.userId = 'partner-e2e'; }")
+    pg.goto(B + '/partner/cycle'); pg.wait_for_timeout(2500)
+    t = T(pg)
+    R['16_partenaire_voit_le_partage'] = 'Camille partage avec vous' in t and has(pg, 'partner-fact')
+    R['16_partenaire_rien_d_intime'] = all(x not in t for x in ['Rapport', 'Pilule', 'note privée'])
+    mutate(pg, f"s => {{ s.session.userId = '{me}'; }}")
+    pg.goto(B + '/cycle/share'); pg.wait_for_timeout(2000)
+    tap(pg, 'share-stop-partner-e2e', 700); btn(pg, 'Arrêter le partage', 1500)
+    R['16_partage_revoque'] = demo(pg, "s => s.tables.cycle_shares.length") == 0
+
     R['erreurs'] = errs[:8]
     b.close()
 

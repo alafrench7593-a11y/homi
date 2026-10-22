@@ -99,7 +99,7 @@ const OWNER_TABLES: Record<string, string> = {
   // Parcours fertilité : données intimes, strictement personnelles
   intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
   cycle_preferences: 'user_id', discharge_logs: 'user_id', bleeding_logs: 'user_id', cycle_journal: 'user_id',
-  contraception_logs: 'user_id', cycle_custom_items: 'user_id', cycle_insight_feedback: 'user_id',
+  contraception_logs: 'user_id', cycle_custom_items: 'user_id', cycle_insight_feedback: 'user_id', cycle_shares: 'owner_id',
   // Parcours : gérés par la personne (le foyer ne les modifie jamais)
   user_journeys: 'user_id',
   recipe_favorites: 'user_id', recipe_dislikes: 'user_id',
@@ -258,6 +258,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     if (next.lock_mode && !['off', 'intimate', 'cycle'].includes(next.lock_mode as string)) throw new BackendError('Verrouillage inconnu.', '23514');
     if (next.anticipation && !prev?.anticipation && !isPremium()) throw new BackendError('Fonction Premium (cycle_anticipation)', 'P0001', 'premium_required');
   }
+  const sameHousehold = (a: string, b: string) => T('household_members').some((x) => x.user_id === a && T('household_members').some((y) => y.user_id === b && y.household_id === x.household_id));
+  /** Abonnement d'une autre personne (pause du partage du cycle) ; en démonstration, l'abonnement est celui de la ligne. */
+  const premiumOf = (id: string) => T('subscriptions').some((s2) => s2.user_id === id && ['trial', 'active', 'grace', 'cancelled'].includes(s2.status) && (!s2.expires_at || s2.expires_at > nowIso()));
   let replyTarget: string | null = null;
   const isModerator = () => T('user_roles').some((x) => x.user_id === state.session?.userId && ['moderator', 'admin'].includes(x.role as string));
   const blockedBetween = (a: string, b: string) => T('user_blocks').some((x) => (x.blocker_id === a && x.blocked_id === b) || (x.blocker_id === b && x.blocked_id === a));
@@ -693,6 +696,16 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (T(table).filter((x) => x.user_id === (r.user_id ?? me)).length >= 30) throw new BackendError('30 catégories personnalisées au plus', 'P0001');
       r.icon ??= null;
     }
+    if (table === 'cycle_shares') {
+      // Miroir de cycle_share_check : même foyer, création Premium ; une ligne par partenaire
+      delete r.id;
+      r.owner_id ??= me;
+      if (r.owner_id === r.partner_id) throw new BackendError('Partage impossible avec soi-même.', '23514');
+      if (!sameHousehold(r.owner_id as string, r.partner_id as string)) throw new BackendError('Partage possible seulement avec un membre de votre foyer', 'P0001');
+      if (!isPremium()) throw new BackendError('Fonction Premium (cycle_share)', 'P0001', 'premium_required');
+      if (T(table).some((x) => x.owner_id === r.owner_id && x.partner_id === r.partner_id)) throw new BackendError('Déjà partagé avec cette personne.', '23505');
+      r.share_period ??= true; r.share_fertile ??= false; r.share_mood ??= false; r.share_symptoms ??= false; r.updated_at = nowIso();
+    }
     if (table === 'cycle_insight_feedback') {
       delete r.id;
       const prev = T(table).find((x) => x.user_id === (r.user_id ?? me) && x.insight_key === r.insight_key);
@@ -877,6 +890,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (table === 'documents') return rows.filter((d) => !d.private_to_uploader || d.uploaded_by === me);
       if (table === 'notes') return rows.filter((n) => !n.private_to_author || n.author_id === me);
       if (table === 'name_votes') return rows;
+      if (table === 'cycle_shares') return rows.filter((x) => x.owner_id === me || x.partner_id === me);
       return rows.filter((x) => x[ownerCol] === me);
     }
     // Rendez-vous privés : réservés à la personne qui les a créés
@@ -961,8 +975,34 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     delete_my_cycle_data: () => {
       const me = uid();
       for (const t of ['period_entries', 'symptom_logs', 'discharge_logs', 'bleeding_logs', 'cycle_journal', 'fertility_observations', 'ovulation_tests', 'pregnancy_tests', 'intercourse_logs', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback']) state.tables[t] = T(t).filter((r) => r.user_id !== me);
+      state.tables.cycle_shares = T('cycle_shares').filter((r) => r.owner_id !== me);
       persist();
       return null;
+    },
+    // Partage du cycle : cycles partagés avec moi, puis les seules données partagées (miroir de partner_cycle)
+    cycle_shared_with_me: () => {
+      const me = uid();
+      return T('cycle_shares').filter((x) => x.partner_id === me).map((x) => ({
+        owner_id: x.owner_id, display_name: (T('profiles').find((p) => p.id === x.owner_id)?.display_name as string) || 'Votre partenaire',
+        share_period: x.share_period, share_fertile: x.share_fertile, share_mood: x.share_mood, share_symptoms: x.share_symptoms,
+        paused: !premiumOf(x.owner_id as string) || !sameHousehold(x.owner_id as string, me),
+      }));
+    },
+    partner_cycle: (a) => {
+      const me = uid();
+      const sh = T('cycle_shares').find((x) => x.owner_id === a?.p_owner && x.partner_id === me);
+      if (!sh) throw new BackendError('Aucun partage', 'P0002');
+      const owner = sh.owner_id as string;
+      if (!premiumOf(owner) || !sameHousehold(owner, me)) return { paused: true };
+      const since = new Date(Date.now() - 13 * 86400000).toISOString().slice(0, 10);
+      const logs = T('symptom_logs').filter((l) => l.user_id === owner && String(l.logged_on) >= since).sort((x, y) => String(x.logged_on).localeCompare(String(y.logged_on)));
+      const INTIMATE = ['libido_up', 'libido_down', 'dyspareunia', 'discomfort'];
+      return {
+        paused: false, share_period: sh.share_period, share_fertile: sh.share_fertile, share_mood: sh.share_mood, share_symptoms: sh.share_symptoms,
+        periods: sh.share_period || sh.share_fertile ? T('period_entries').filter((p) => p.user_id === owner).sort((x, y) => String(y.start_date).localeCompare(String(x.start_date))).slice(0, 12).reverse().map((p) => ({ start_date: p.start_date, end_date: p.end_date ?? null })) : [],
+        moods: sh.share_mood ? logs.filter((l) => ((l.moods as string[] | undefined) ?? []).length).map((l) => ({ date: l.logged_on, moods: l.moods })) : [],
+        symptoms: sh.share_symptoms ? logs.map((l) => ({ date: l.logged_on, keys: ((l.symptom_keys as string[] | undefined) ?? []).filter((k) => !INTIMATE.includes(k)) })) : [],
+      };
     },
     // Effacer ses données de vie sexuelle (miroir de delete_my_intimate_data)
     delete_my_intimate_data: () => {
@@ -1222,7 +1262,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
-        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status'].map((t) => [t, view(t)])),
+        personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback', 'cycle_shares', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status'].map((t) => [t, view(t)])),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
           ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines']

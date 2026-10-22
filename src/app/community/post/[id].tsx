@@ -20,6 +20,7 @@ import type { FeedComment } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { t as tr } from '@/i18n';
 
 export default function PostScreen() {
   const t = useTheme();
@@ -66,9 +67,9 @@ export default function PostScreen() {
     if (!editing || !editBody.trim() || updateComment.isPending) return;
     try {
       const r = await updateComment.mutateAsync({ id: editing.id, body: editBody });
-      toast(r?.status === 'pending_review' ? 'Commentaire modifié : il sera relu avant d’être de nouveau visible.' : 'Commentaire modifié.', r?.status === 'pending_review' ? 'info' : 'success');
+      toast(r?.status === 'pending_review' ? tr('cm2.post.editedReview') : tr('cm2.post.edited'), r?.status === 'pending_review' ? 'info' : 'success');
       setEditing(null);
-    } catch (e) { toast(friendlyError(e, 'Modification impossible.'), 'error'); }
+    } catch (e) { toast(friendlyError(e, tr('cm2.post.editFailed')), 'error'); }
   }
 
   async function send() {
@@ -77,33 +78,33 @@ export default function PostScreen() {
       const c = await create.mutateAsync({ body, parentId: replyTo?.id ?? null });
       setBody('');
       setReplyTo(null);
-      toast(c?.status === 'pending_review' ? 'Message envoyé en relecture avant d’être visible.' : replyTo ? 'Réponse publiée.' : 'Commentaire publié.', c?.status === 'pending_review' ? 'info' : 'success');
+      toast(c?.status === 'pending_review' ? tr('cm2.post.sentForReview') : replyTo ? tr('cm2.post.replyPublished') : tr('cm2.post.commentPublished'), c?.status === 'pending_review' ? 'info' : 'success');
     } catch (e) {
-      toast(friendlyError(e, 'Publication impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('cm2.publishFailed')), 'error');
     }
   }
 
   async function removeComment(c: FeedComment) {
-    if (!(await confirm('Supprimer votre commentaire ?', c.parent_id ? 'Cette action est définitive.' : 'Les réponses à ce commentaire seront aussi supprimées.', 'Supprimer'))) return;
+    if (!(await confirm(tr('cm2.post.deleteTitle'), c.parent_id ? tr('cm2.post.deleteFinal') : tr('cm2.post.deleteWithReplies'), tr('cm2.post.delete')))) return;
     del.mutate(c.id, {
-      onSuccess: () => toast('Commentaire supprimé.'),
-      onError: (e) => toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error'),
+      onSuccess: () => toast(tr('cm2.post.deleted')),
+      onError: (e) => toast(friendlyError(e, tr('cm2.post.deleteFailed')), 'error'),
     });
   }
 
   const backToCommunity = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/community'));
   if (isLoading) return <Screen back><Skeleton kind="detail" rows={5} /></Screen>;
   if (postQ.isError && !postQ.data) {
-    return <Screen back title="Publication"><ErrorView error={postQ.error} onRetry={() => void postQ.refetch()} title="Impossible d’afficher cette publication" /></Screen>;
+    return <Screen back title={tr('cm2.post.title')}><ErrorView error={postQ.error} onRetry={() => void postQ.refetch()} title={tr('cm2.post.loadError')} /></Screen>;
   }
   if (!post) {
     return (
-      <Screen back title="Publication indisponible">
+      <Screen back title={tr('cm2.post.unavailable')}>
         <EmptyState
           icon="message-square"
-          title="Publication introuvable"
-          body="Elle a peut-être été supprimée ou masquée par la modération."
-          action={{ label: 'Retour à la communauté', icon: 'arrow-left', onPress: backToCommunity }}
+          title={tr('cm2.post.notFound')}
+          body={tr('cm2.post.notFoundBody')}
+          action={{ label: tr('cm2.post.backToCommunity'), icon: 'arrow-left', onPress: backToCommunity }}
         />
       </Screen>
     );
@@ -119,7 +120,7 @@ export default function PostScreen() {
     const first = index === 0;
     const last = index === rows.length - 1;
     const focused = c.id === focusComment;
-    const who = c.anonymous ? (c.is_mine ? 'Anonyme (vous)' : 'Auteur·rice (anonyme)') : c.pseudonym ?? 'Membre';
+    const who = c.anonymous ? (c.is_mine ? tr('cm2.post.anonYou') : tr('cm2.post.anonAuthor')) : c.pseudonym ?? tr('cm2.post.member');
     const openProfile = () => { if (c.author_handle) router.push(`/community/u/${c.author_handle}` as never); };
     return (
       <View
@@ -133,22 +134,22 @@ export default function PostScreen() {
       >
         <View testID={focused ? 'comment-focused' : `comment-${c.id}`} style={{ marginLeft: reply ? spacing.lg : 0, gap: 4, paddingVertical: spacing.xs, borderLeftWidth: reply ? 2 : 0, borderLeftColor: t.colors.border, paddingLeft: reply ? spacing.sm : 0 }}>
           <Row style={{ alignItems: 'center' }} gap={8}>
-            <Tappable accessibilityRole={c.author_handle ? 'button' : 'image'} accessibilityLabel={c.author_handle ? `Voir le profil de ${who}` : who} disabled={!c.author_handle} onPress={openProfile}>
+            <Tappable accessibilityRole={c.author_handle ? 'button' : 'image'} accessibilityLabel={c.author_handle ? tr('cm2.post.viewProfile', { name: who }) : who} disabled={!c.author_handle} onPress={openProfile}>
               <Avatar path={c.avatar_path} preset={c.avatar_preset} anonymous={c.anonymous} size={30} />
             </Tappable>
             <View style={{ flex: 1 }}>
               <Row gap={6} style={{ flexWrap: 'nowrap' }}>
-                <Text variant="small" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>{who}{c.is_op && !c.anonymous ? ' · auteur·rice' : ''}</Text>
+                <Text variant="small" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>{who}{c.is_op && !c.anonymous ? tr('cm2.post.opSuffix') : ''}</Text>
                 {c.author_badge ? <PremiumBadge /> : null}
               </Row>
-              <Text variant="caption" muted numberOfLines={1}>{[c.author_handle ? `@${c.author_handle}` : null, timeAgo(c.created_at), c.edited_at ? 'modifié' : null, c.status !== 'visible' ? 'en relecture' : null].filter(Boolean).join(' · ')}</Text>
+              <Text variant="caption" muted numberOfLines={1}>{[c.author_handle ? `@${c.author_handle}` : null, timeAgo(c.created_at), c.edited_at ? tr('cm2.post.editedTag') : null, c.status !== 'visible' ? tr('cm2.post.inReview') : null].filter(Boolean).join(' · ')}</Text>
             </View>
           </Row>
           <MentionText text={c.body} style={{ fontSize: 14 }} />
           <Row gap={spacing.md}>
-            {me && c.status === 'visible' ? action('Répondre', () => { setReplyTo(c); inputRef.current?.focus(); }, true) : null}
-            {c.is_mine ? action('Modifier', () => { setEditing(c); setEditBody(c.body); }) : null}
-            {c.is_mine ? action('Supprimer', () => removeComment(c)) : action('Signaler', () => setReportComment(c.id))}
+            {me && c.status === 'visible' ? action(tr('cm2.post.reply'), () => { setReplyTo(c); inputRef.current?.focus(); }, true) : null}
+            {c.is_mine ? action(tr('cm2.post.edit'), () => { setEditing(c); setEditBody(c.body); }) : null}
+            {c.is_mine ? action(tr('cm2.post.delete'), () => removeComment(c)) : action(tr('cm2.post.report'), () => setReportComment(c.id))}
           </Row>
         </View>
       </View>
@@ -161,9 +162,9 @@ export default function PostScreen() {
       <PostCard post={post} full forum={forums?.find((f) => f.id === post.forum_id) ?? null} onCommentPress={() => inputRef.current?.focus()}
         canPin={!!groupQ.data?.is_owner && groupQ.data.kind === 'private'} />
       <AiSummaryCard postId={post.id} commentCount={post.comment_count} />
-      <Text variant="heading">{post.comment_count} commentaire{post.comment_count > 1 ? 's' : ''}</Text>
+      <Text variant="heading">{tr('cm2.post.commentCount', { count: String(post.comment_count) })}</Text>
       {commentsLoading ? <Skeleton kind="list" rows={2} /> : commentsError ? (
-        <ErrorView error={commentsQ.error} onRetry={() => void commentsQ.refetch()} title="Impossible d’afficher les commentaires" />
+        <ErrorView error={commentsQ.error} onRetry={() => void commentsQ.refetch()} title={tr('cm2.post.commentsError')} />
       ) : null}
     </View>
   );
@@ -171,28 +172,28 @@ export default function PostScreen() {
   const footer = (
     <View style={{ gap: spacing.md, marginTop: spacing.md }}>
       {post.status !== 'visible' ? (
-        <Banner tone="info">{'Cette publication est en attente de modération : les commentaires sont fermés pour le moment.'}</Banner>
+        <Banner tone="info">{tr('cm2.post.closed')}</Banner>
       ) : me ? (
         <Card tone="soft">
           {replyTo && (
             <Row style={{ marginBottom: spacing.xs }}>
               <Icon name="corner-down-right" size={14} />
-              <Text variant="small" style={{ flex: 1 }}>Réponse à {replyTo.pseudonym ?? 'ce commentaire'}</Text>
-              <Tappable onPress={() => setReplyTo(null)} hitSlop={4} accessibilityRole="button" accessibilityLabel="Annuler la réponse" style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={16} /></Tappable>
+              <Text variant="small" style={{ flex: 1 }}>{tr('cm2.post.replyTo', { name: replyTo.pseudonym ?? tr('cm2.post.thisComment') })}</Text>
+              <Tappable onPress={() => setReplyTo(null)} hitSlop={4} accessibilityRole="button" accessibilityLabel={tr('cm2.post.cancelReply')} style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={16} /></Tappable>
             </Row>
           )}
-          <Field ref={inputRef} label={replyTo ? 'Votre réponse' : 'Votre commentaire'} value={body} onChangeText={setBody} multiline maxLength={4000} testID="comment-input" />
+          <Field ref={inputRef} label={replyTo ? tr('cm2.post.yourReply') : tr('cm2.post.yourComment')} value={body} onChangeText={setBody} multiline maxLength={4000} testID="comment-input" />
           {mentionHits.length ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingTop: spacing.xs }} testID="comment-mentions">
               {mentionHits.map((m) => <Chip key={m.handle} label={`@${m.handle}`} icon="at-sign" onPress={() => setBody((b) => completeMention(b, m.handle))} />)}
             </ScrollView>
           ) : null}
-          <Button label={replyTo ? 'Répondre' : 'Publier'} style={{ marginTop: spacing.sm }} loading={create.isPending} disabled={!body.trim()} onPress={send} testID="comment-send" />
-          <Text variant="caption" muted style={{ marginTop: 4 }}>{post.anonymous && post.is_mine ? 'Vos réponses à votre publication anonyme restent anonymes.' : 'Bienveillance avant tout : partagez votre expérience, pas un diagnostic.'}</Text>
+          <Button label={replyTo ? tr('cm2.post.reply') : tr('cm2.publish')} style={{ marginTop: spacing.sm }} loading={create.isPending} disabled={!body.trim()} onPress={send} testID="comment-send" />
+          <Text variant="caption" muted style={{ marginTop: 4 }}>{post.anonymous && post.is_mine ? tr('cm2.post.anonReplies') : tr('cm2.post.kindness')}</Text>
         </Card>
       ) : (
-        <Banner tone="info" action={<Button label="Choisir un pseudonyme" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => router.push('/community/profile')} />}>
-          {'Choisissez un pseudonyme pour commenter et répondre.'}
+        <Banner tone="info" action={<Button label={tr('cm2.chooseHandle')} size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => router.push('/community/profile')} />}>
+          {tr('cm2.post.needHandle')}
         </Banner>
       )}
     </View>
@@ -211,11 +212,11 @@ export default function PostScreen() {
         ListEmptyComponent={commentsLoading || commentsError ? null : (
           <EmptyState
             icon="message-circle"
-            title="Soyez la première personne à répondre."
+            title={tr('cm2.post.beFirst')}
             action={canComment
-              ? { label: 'Écrire le premier commentaire', icon: 'edit-3', onPress: () => inputRef.current?.focus() }
+              ? { label: tr('cm2.post.writeFirst'), icon: 'edit-3', onPress: () => inputRef.current?.focus() }
               : post.status === 'visible'
-                ? { label: 'Choisir un pseudonyme', icon: 'user', onPress: () => router.push('/community/profile') }
+                ? { label: tr('cm2.chooseHandle'), icon: 'user', onPress: () => router.push('/community/profile') }
                 : undefined}
           />
         )}
@@ -223,9 +224,9 @@ export default function PostScreen() {
         showsVerticalScrollIndicator={false}
       />
       <ReportSheet visible={!!reportComment} onClose={() => setReportComment(null)} commentId={reportComment ?? undefined} />
-      <Sheet visible={!!editing} onClose={() => setEditing(null)} title="Modifier mon commentaire">
-        <Field label="Commentaire" value={editBody} onChangeText={setEditBody} multiline maxLength={4000} testID="comment-edit-input" />
-        <Button label="Enregistrer" loading={updateComment.isPending} disabled={!editBody.trim()} onPress={saveEdit} testID="comment-edit-save" />
+      <Sheet visible={!!editing} onClose={() => setEditing(null)} title={tr('cm2.post.editSheet')}>
+        <Field label={tr('cm2.post.commentField')} value={editBody} onChangeText={setEditBody} multiline maxLength={4000} testID="comment-edit-input" />
+        <Button label={tr('cm2.post.save')} loading={updateComment.isPending} disabled={!editBody.trim()} onPress={saveEdit} testID="comment-edit-save" />
       </Sheet>
     </Screen>
   );

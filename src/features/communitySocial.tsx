@@ -24,6 +24,7 @@ import { isPremiumRequired } from '@/lib/premium/features';
 import type { CommunityGroup, FeedPost, Forum, MemberCard } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, NACRE, radius, SKY_GRADIENTS, spacing } from '@/theme/tokens';
+import { localeTag, t as tr } from '@/i18n';
 
 /** Couleurs d'accent : reprises des encres déjà utilisées dans l'application (aucune couleur existante modifiée). */
 export const ACCENT_COLOR: Record<ProfileAccent, string> = { rose: '#C2416E', lavande: '#7A5CE0', menthe: '#3C8C55', peche: '#D2693C', ciel: '#3A78B5', sable: '#B7791F' };
@@ -49,9 +50,9 @@ export function MentionText({ text, numberOfLines, style }: { text: string; numb
 export function PremiumBadge() {
   const t = useTheme();
   return (
-    <View accessibilityLabel="Abonnée Premium" style={{ flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 6, paddingVertical: 1, borderRadius: radius.pill, backgroundColor: t.colors.gold + '22' }} testID="premium-badge">
+    <View accessibilityLabel={tr('cm1.social.premiumA11y')} style={{ flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 6, paddingVertical: 1, borderRadius: radius.pill, backgroundColor: t.colors.gold + '22' }} testID="premium-badge">
       <Icon name="star" size={10} color={t.colors.gold} />
-      <Text variant="caption" color={t.colors.gold} style={{ fontSize: 11, lineHeight: 14 }}>Premium</Text>
+      <Text variant="caption" color={t.colors.gold} style={{ fontSize: 11, lineHeight: 14 }}>{tr('cm1.social.premium')}</Text>
     </View>
   );
 }
@@ -90,7 +91,7 @@ export function PollView({ post }: { post: Pick<FeedPost, 'id' | 'poll' | 'group
         const selected = picked.includes(o.id) || (showResults && o.mine);
         return (
           <Tappable key={o.id} accessibilityRole={poll.multiple ? 'checkbox' : 'radio'} accessibilityState={{ checked: selected, disabled: poll.closed }}
-            accessibilityLabel={`${o.label}${showResults ? `, ${pct} %` : ''}`} disabled={poll.closed || vote.isPending}
+            accessibilityLabel={`${o.label}${showResults ? `, ${tr('cm1.poll.pct', { pct })}` : ''}`} disabled={poll.closed || vote.isPending}
             onPress={() => {
               if (poll.multiple) setPicked((p) => (p.includes(o.id) ? p.filter((x) => x !== o.id) : [...p, o.id]));
               else void send(o.mine ? [] : [o.id]);
@@ -101,14 +102,14 @@ export function PollView({ post }: { post: Pick<FeedPost, 'id' | 'poll' | 'group
             <Row style={{ paddingHorizontal: spacing.sm }}>
               {selected ? <Icon name="check" size={16} color={t.colors.primary} /> : null}
               <Text style={{ flex: 1 }} weight={selected ? 'bold' : 'regular'}>{o.label}</Text>
-              {showResults ? <Text variant="small" weight="bold">{`${pct} %`}</Text> : null}
+              {showResults ? <Text variant="small" weight="bold">{tr('cm1.poll.pct', { pct })}</Text> : null}
             </Row>
           </Tappable>
         );
       })}
-      {poll.multiple && !poll.closed && picked.length ? <Button label="Voter" size="sm" onPress={() => void send(picked)} loading={vote.isPending} testID="poll-vote" /> : null}
+      {poll.multiple && !poll.closed && picked.length ? <Button label={tr('cm1.poll.vote')} size="sm" onPress={() => void send(picked)} loading={vote.isPending} testID="poll-vote" /> : null}
       <Text variant="caption" muted>
-        {[`${poll.total} participation${poll.total > 1 ? 's' : ''}`, poll.multiple ? 'plusieurs choix possibles' : null, poll.closed ? 'sondage terminé' : poll.closes_at ? `jusqu’au ${new Date(poll.closes_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}` : null, 'votes anonymes'].filter(Boolean).join(' · ')}
+        {[tr('cm1.poll.participations', { count: poll.total }), poll.multiple ? tr('cm1.poll.multiple') : null, poll.closed ? tr('cm1.poll.closed') : poll.closes_at ? tr('cm1.poll.until', { date: new Date(poll.closes_at).toLocaleDateString(localeTag(), { day: 'numeric', month: 'long' }) }) : null, tr('cm1.poll.anonymous')].filter(Boolean).join(' · ')}
       </Text>
     </View>
   );
@@ -120,10 +121,10 @@ export function FollowButton({ handle, following, size = 'sm', onNeedProfile }: 
   const toast = useToast();
   const follow = useFollowMember();
   return (
-    <Button label={following ? 'Abonné·e' : 'Suivre'} icon={following ? 'check' : 'user-plus'} size={size} variant={following ? 'secondary' : 'primary'} loading={follow.isPending}
-      accessibilityLabel={following ? `Ne plus suivre @${handle}` : `Suivre @${handle}`}
+    <Button label={following ? tr('cm1.follow.following') : tr('cm1.follow.follow')} icon={following ? 'check' : 'user-plus'} size={size} variant={following ? 'secondary' : 'primary'} loading={follow.isPending}
+      accessibilityLabel={following ? tr('cm1.post.unfollowHandle', { handle }) : tr('cm1.post.followHandle', { handle })}
       onPress={async () => {
-        try { await follow.mutateAsync({ handle, follow: !following }); haptic('light'); toast(following ? `Vous ne suivez plus @${handle}.` : `Vous suivez @${handle} : ses publications apparaissent dans « Abonnements ».`); }
+        try { await follow.mutateAsync({ handle, follow: !following }); haptic('light'); toast(following ? tr('cm1.post.unfollowed', { handle }) : tr('cm1.follow.followedToast', { handle })); }
         catch (e) {
           const hint = (e as { hint?: string }).hint;
           if (hint === 'pseudonym_required' && onNeedProfile) onNeedProfile(); else toast(friendlyError(e), 'error');
@@ -135,12 +136,12 @@ export function FollowButton({ handle, following, size = 'sm', onNeedProfile }: 
 export function MemberRow({ m, right }: { m: MemberCard; right?: React.ReactNode }) {
   return (
     <Row style={{ minHeight: MIN_TOUCH + 8 }} testID={`member-${m.handle}`}>
-      <Tappable accessibilityRole="button" accessibilityLabel={`Voir le profil de ${m.pseudonym}`} onPress={() => router.push(`/community/u/${m.handle}` as never)}
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('cm1.post.viewProfileOf', { name: m.pseudonym })} onPress={() => router.push(`/community/u/${m.handle}` as never)}
         style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minWidth: 0 }}>
         <Avatar path={m.avatar_path} preset={m.avatar_preset ?? 'moon'} size={38} />
         <View style={{ flex: 1, minWidth: 0 }}>
           <Text weight="bold" numberOfLines={1} intentionalTruncation>{m.pseudonym}</Text>
-          <Text variant="caption" muted numberOfLines={1} intentionalTruncation>{`@${m.handle}${m.role === 'owner' ? ' · créatrice du groupe' : ''}`}</Text>
+          <Text variant="caption" muted numberOfLines={1} intentionalTruncation>{`@${m.handle}${m.role === 'owner' ? ` · ${tr('cm1.member.groupOwner')}` : ''}`}</Text>
         </View>
       </Tappable>
       {right}
@@ -150,20 +151,20 @@ export function MemberRow({ m, right }: { m: MemberCard; right?: React.ReactNode
 
 // ─── Groupes ───────────────────────────────────────────────────────────────────────────────────────
 
-const GROUP_KIND: Record<CommunityGroup['kind'], string> = { theme: 'Groupe thématique', cohort: 'Groupe par mois', private: 'Groupe privé' };
+const GROUP_KIND: Record<CommunityGroup['kind'], 'cm1.group.theme' | 'cm1.group.cohort' | 'cm1.group.private'> = { theme: 'cm1.group.theme', cohort: 'cm1.group.cohort', private: 'cm1.group.private' };
 export function GroupCard({ g, compact }: { g: CommunityGroup; compact?: boolean }) {
   const t = useTheme();
   return (
-    <Card onPress={() => router.push(`/community/group/${g.id}` as never)} accessibilityLabel={`${g.name}, ${GROUP_KIND[g.kind]}`} testID={`group-${g.slug ?? g.id}`}>
+    <Card onPress={() => router.push(`/community/group/${g.id}` as never)} accessibilityLabel={`${g.name}, ${tr(GROUP_KIND[g.kind])}`} testID={`group-${g.slug ?? g.id}`}>
       <Row>
         <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: (g.kind === 'private' ? t.colors.lavender : t.colors.primary) + '22' }}>
           <Icon name={(g.icon as IconName) ?? 'users'} size={18} color={g.kind === 'private' ? t.colors.lavender : t.colors.primary} />
         </View>
         <View style={{ flex: 1, minWidth: 0 }}>
           <Text weight="bold">{g.name}</Text>
-          <Text variant="caption" muted>{[GROUP_KIND[g.kind], `${g.member_count} membre${g.member_count > 1 ? 's' : ''}`, g.is_member ? 'vous en faites partie' : null].filter(Boolean).join(' · ')}</Text>
+          <Text variant="caption" muted>{[tr(GROUP_KIND[g.kind]), tr('cm1.group.members', { count: g.member_count }), g.is_member ? tr('cm1.group.isMember') : null].filter(Boolean).join(' · ')}</Text>
         </View>
-        {g.pending_invitation ? <Tag icon="mail" label="Invitation" color={t.colors.primary} /> : <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
+        {g.pending_invitation ? <Tag icon="mail" label={tr('cm1.group.invitation')} color={t.colors.primary} /> : <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
       </Row>
       {!compact && g.description ? <Text variant="small" muted style={{ marginTop: 6 }}>{g.description}</Text> : null}
     </Card>
@@ -196,28 +197,28 @@ export function FiltersSheet({ visible, onClose, forums, value, onApply }: { vis
   const set = (p: Partial<AdvancedFilters>) => setF((x) => ({ ...x, ...p }));
   const toggleForum = (id: string) => set({ forumIds: (f.forumIds ?? []).includes(id) ? (f.forumIds ?? []).filter((x) => x !== id) : [...(f.forumIds ?? []), id] });
   return (
-    <Sheet visible={visible} onClose={onClose} title="Filtres avancés">
+    <Sheet visible={visible} onClose={onClose} title={tr('cm1.filters.title')}>
       <ScrollView contentContainerStyle={{ gap: spacing.sm }} testID="filters-sheet">
-        <Field label="Mots-clés (facultatif)" value={f.query ?? ''} onChangeText={(v) => set({ query: v })} />
-        <Text variant="label" muted>Type</Text>
+        <Field label={tr('cm1.filters.keywords')} value={f.query ?? ''} onChangeText={(v) => set({ query: v })} />
+        <Text variant="label" muted>{tr('cm1.filters.type')}</Text>
         <Row wrap gap={6}>
-          {([[null, 'Tous'], ['question', 'Questions'], ['testimony', 'Témoignages'], ['poll', 'Sondages']] as const).map(([k, l]) => <Chip key={l} label={l} selected={(f.kind ?? null) === k} onPress={() => set({ kind: k })} />)}
+          {([[null, tr('cm1.filters.all')], ['question', tr('cm1.filters.questions')], ['testimony', tr('cm1.filters.testimonies')], ['poll', tr('cm1.filters.polls')]] as const).map(([k, l]) => <Chip key={String(k)} label={l} selected={(f.kind ?? null) === k} onPress={() => set({ kind: k })} />)}
         </Row>
-        <Text variant="label" muted>Période</Text>
+        <Text variant="label" muted>{tr('cm1.filters.period')}</Text>
         <Row wrap gap={6}>
-          {([[null, 'Toujours'], [1, '24 h'], [7, '7 jours'], [30, '30 jours']] as const).map(([k, l]) => <Chip key={l} label={l} selected={(f.sinceDays ?? null) === k} onPress={() => set({ sinceDays: k })} />)}
+          {([[null, tr('cm1.filters.always')], [1, tr('cm1.filters.day')], [7, tr('cm1.filters.week')], [30, tr('cm1.filters.month')]] as const).map(([k, l]) => <Chip key={String(k)} label={l} selected={(f.sinceDays ?? null) === k} onPress={() => set({ sinceDays: k })} />)}
         </Row>
         <Row wrap gap={6}>
-          <Chip label="Avec photos" icon="image" selected={!!f.withPhotos} onPress={() => set({ withPhotos: !f.withPhotos })} />
-          <Chip label="Sans réponse" icon="help-circle" selected={!!f.unanswered} onPress={() => set({ unanswered: !f.unanswered })} />
+          <Chip label={tr('cm1.filters.withPhotos')} icon="image" selected={!!f.withPhotos} onPress={() => set({ withPhotos: !f.withPhotos })} />
+          <Chip label={tr('cm1.filters.unanswered')} icon="help-circle" selected={!!f.unanswered} onPress={() => set({ unanswered: !f.unanswered })} />
         </Row>
-        <Field label="D’un membre (@identifiant)" value={f.handle ?? ''} onChangeText={(v) => set({ handle: v })} autoCapitalize="none" autoCorrect={false} />
-        <Text variant="label" muted>Catégories (plusieurs possibles)</Text>
+        <Field label={tr('cm1.filters.member')} value={f.handle ?? ''} onChangeText={(v) => set({ handle: v })} autoCapitalize="none" autoCorrect={false} />
+        <Text variant="label" muted>{tr('cm1.filters.categories')}</Text>
         <Row wrap gap={6}>
           {[...forums].sort((a, b) => a.position - b.position).map((fo) => <Chip key={fo.id} label={fo.title} icon={spaceIcon(fo)} selected={(f.forumIds ?? []).includes(fo.id)} onPress={() => toggleForum(fo.id)} />)}
         </Row>
-        <Button label="Afficher les résultats" icon="check" onPress={() => { onApply(f); onClose(); }} testID="filters-apply" />
-        <Button label="Effacer les filtres" variant="ghost" onPress={() => { setF({}); onApply(null); onClose(); }} />
+        <Button label={tr('cm1.filters.apply')} icon="check" onPress={() => { onApply(f); onClose(); }} testID="filters-apply" />
+        <Button label={tr('cm1.filters.clear')} variant="ghost" onPress={() => { setF({}); onApply(null); onClose(); }} />
       </ScrollView>
     </Sheet>
   );
@@ -228,11 +229,11 @@ export function FiltersButton({ active, onOpen }: { active: boolean; onOpen: () 
   const t = useTheme();
   const access = usePremiumAccess('community_search');
   return (
-    <Button label={active ? 'Filtres actifs' : 'Filtres'} icon="sliders" size="sm" variant={active ? 'primary' : 'secondary'}
+    <Button label={active ? tr('cm1.filters.active') : tr('cm1.filters.button')} icon="sliders" size="sm" variant={active ? 'primary' : 'secondary'}
       onPress={() => (access.premium ? onOpen() : access.showPreview(
-        <Text variant="small">{'Exemple : « Sommeil » + « Biberon », sondages des 7 derniers jours, sans réponse.'}</Text>,
+        <Text variant="small">{tr('cm1.filters.example')}</Text>,
       ))} testID="community-filters"
-      accessibilityLabel={access.premium ? 'Filtres avancés' : 'Filtres avancés (Premium)'}
+      accessibilityLabel={access.premium ? tr('cm1.filters.title') : tr('cm1.filters.a11yPremium')}
       style={!access.premium ? { borderColor: t.colors.gold } : undefined} />
   );
 }
@@ -251,20 +252,20 @@ export function FolderSheet({ visible, onClose, post }: { visible: boolean; onCl
     catch (e) { if (isPremiumRequired(e)) { onClose(); access.showPreview(); } else toast(friendlyError(e), 'error'); }
   }
   return (
-    <Sheet visible={visible} onClose={onClose} title="Ranger dans un dossier">
+    <Sheet visible={visible} onClose={onClose} title={tr('cm1.folders.title')}>
       <View style={{ gap: spacing.sm }} testID="folder-sheet">
         {(folders.data ?? []).map((f) => (
           <Chip key={f.id} label={f.name} icon="folder" selected={post.saved_folder_id === f.id}
-            onPress={() => void run({ kind: 'move', postId: post.id, folderId: post.saved_folder_id === f.id ? null : f.id }, post.saved_folder_id === f.id ? 'Retirée du dossier.' : `Rangée dans « ${f.name} ».`)} />
+            onPress={() => void run({ kind: 'move', postId: post.id, folderId: post.saved_folder_id === f.id ? null : f.id }, post.saved_folder_id === f.id ? tr('cm1.folders.removed') : tr('cm1.folders.moved', { name: f.name }))} />
         ))}
         {premium ? (
           <Row>
-            <View style={{ flex: 1 }}><Field label="Nouveau dossier" value={name} onChangeText={setName} placeholder="Sommeil, valise…" maxLength={40} /></View>
-            <Button label="Créer" size="sm" disabled={!name.trim()} onPress={() => { void run({ kind: 'create', name }, `Dossier « ${name.trim()} » créé.`); setName(''); }} testID="folder-create" />
+            <View style={{ flex: 1 }}><Field label={tr('cm1.folders.new')} value={name} onChangeText={setName} placeholder={tr('cm1.folders.newPlaceholder')} maxLength={40} /></View>
+            <Button label={tr('cm1.folders.create')} size="sm" disabled={!name.trim()} onPress={() => { void run({ kind: 'create', name }, tr('cm1.folders.created', { name: name.trim() })); setName(''); }} testID="folder-create" />
           </Row>
         ) : (
           <Card tone="gold" onPress={() => { onClose(); access.showPreview(); }}>
-            <Row><Icon name="star" size={16} /><Text variant="small" style={{ flex: 1 }}>Créer des dossiers est réservé à Premium. Vos enregistrements restent tous accessibles.</Text></Row>
+            <Row><Icon name="star" size={16} /><Text variant="small" style={{ flex: 1 }}>{tr('cm1.folders.premiumOnly')}</Text></Row>
           </Card>
         )}
       </View>
@@ -283,10 +284,10 @@ export function AiSummaryCard({ postId, commentCount }: { postId: string; commen
   const [notice, setNotice] = useState<string | null>(null);
   if (commentCount < 6) return null;
   async function run() {
-    if (!access.require(<Text variant="small">{`Cette discussion compte ${commentCount} réponses : le résumé en présente l’essentiel, sous forme de témoignages.`}</Text>)) return;
+    if (!access.require(<Text variant="small">{tr('cm1.ai.preview', { count: commentCount })}</Text>)) return;
     try {
       const r = await ai.mutateAsync({ action: 'summarize', postId });
-      if ('points' in r) setResult({ points: r.points, caution: r.caution, note: r.ai === 'demo' ? r.message : 'Résumé automatique : relisez la discussion pour les détails.' });
+      if ('points' in r) setResult({ points: r.points, caution: r.caution, note: r.ai === 'demo' ? r.message : tr('cm1.ai.note') });
       else setNotice('message' in r ? r.message : null);
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
@@ -294,16 +295,16 @@ export function AiSummaryCard({ postId, commentCount }: { postId: string; commen
     <Card tone="soft" testID="ai-summary">
       {result ? (
         <View style={{ gap: 4 }}>
-          <Row><Icon name="align-left" size={16} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>L’essentiel de la discussion</Text></Row>
+          <Row><Icon name="align-left" size={16} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>{tr('cm1.ai.essentials')}</Text></Row>
           {result.points.map((p, i) => <Text key={i} variant="small">{`• ${p}`}</Text>)}
           {result.caution ? <Text variant="caption" color={t.colors.gold}>{result.caution}</Text> : null}
           {result.note ? <Text variant="caption" muted>{result.note}</Text> : null}
         </View>
       ) : (
         <View style={{ gap: 4 }}>
-          <Row><Icon name="align-left" size={16} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>{`${commentCount} réponses : voir l’essentiel`}</Text>{!access.premium ? <PremiumBadge /> : null}</Row>
+          <Row><Icon name="align-left" size={16} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>{tr('cm1.ai.cta', { count: commentCount })}</Text>{!access.premium ? <PremiumBadge /> : null}</Row>
           {notice ? <Text variant="caption" muted>{notice}</Text> : null}
-          <Button label="Résumer la discussion" size="sm" variant="secondary" icon="align-left" loading={ai.isPending} onPress={() => void run()} style={{ alignSelf: 'flex-start' }} testID="ai-summarize" />
+          <Button label={tr('cm1.ai.summarize')} size="sm" variant="secondary" icon="align-left" loading={ai.isPending} onPress={() => void run()} style={{ alignSelf: 'flex-start' }} testID="ai-summarize" />
         </View>
       )}
     </Card>
@@ -332,15 +333,15 @@ export function HomeCommunityCard() {
   const forum = post ? spaces.all.find((f) => f.id === post.forum_id) ?? null : null;
   return (
     <Card testID="home-community">
-      <Row><Icon name="message-circle" size={16} color={t.colors.lavender} /><Text variant="caption" weight="bold" muted style={{ flex: 1, letterSpacing: 1.2 }}>DANS LA COMMUNAUTÉ</Text></Row>
+      <Row><Icon name="message-circle" size={16} color={t.colors.lavender} /><Text variant="caption" weight="bold" muted style={{ flex: 1, letterSpacing: 1.2 }}>{tr('cm1.home.kicker')}</Text></Row>
       {post ? (
-        <Tappable accessibilityRole="button" accessibilityLabel={`Ouvrir la publication : ${post.title ?? post.body}`} onPress={() => router.push(`/community/post/${post.id}`)} style={{ marginTop: 6, gap: 2 }} testID="home-community-post">
+        <Tappable accessibilityRole="button" accessibilityLabel={tr('cm1.home.openPost', { title: post.title ?? post.body })} onPress={() => router.push(`/community/post/${post.id}`)} style={{ marginTop: 6, gap: 2 }} testID="home-community-post">
           <Text weight="bold" numberOfLines={2} intentionalTruncation>{post.title ?? post.body}</Text>
           {post.title ? <Text variant="small" muted numberOfLines={2} intentionalTruncation>{post.body}</Text> : null}
-          <Text variant="caption" muted>{[forum?.title, post.comment_count ? `${post.comment_count} réponse${post.comment_count > 1 ? 's' : ''}` : 'pas encore de réponse'].filter(Boolean).join(' · ')}</Text>
+          <Text variant="caption" muted>{[forum?.title, post.comment_count ? tr('cm1.replies', { count: post.comment_count }) : tr('cm1.noReplyYet')].filter(Boolean).join(' · ')}</Text>
         </Tappable>
-      ) : feed.isLoading ? null : <Text variant="small" muted style={{ marginTop: 6 }}>Questions, témoignages et groupes de parents qui vivent la même chose.</Text>}
-      <Button label="Voir la communauté" icon="arrow-right" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: spacing.sm }} onPress={() => router.push('/(tabs)/community')} testID="home-see-community" />
+      ) : feed.isLoading ? null : <Text variant="small" muted style={{ marginTop: 6 }}>{tr('cm1.home.blurb')}</Text>}
+      <Button label={tr('cm1.home.seeCommunity')} icon="arrow-right" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: spacing.sm }} onPress={() => router.push('/(tabs)/community')} testID="home-see-community" />
     </Card>
   );
 }

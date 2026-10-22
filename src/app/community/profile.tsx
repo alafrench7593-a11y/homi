@@ -30,6 +30,7 @@ import { AVATAR_PRESETS, handleBase, handleError, JOURNEY_LABELS, normalizeHandl
 import { pickPhotos } from '@/lib/documents/io';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { localeTag, t as tr } from '@/i18n';
 
 export default function CommunityProfileScreen() {
   const t = useTheme();
@@ -69,104 +70,104 @@ export default function CommunityProfileScreen() {
     const he = handleError(handle);
     setError(e); setHandleErr(he);
     if (e || he) return;
-    if (creating && !rules) { setError('Acceptez les règles de la communauté pour continuer.'); return; }
+    if (creating && !rules) { setError(tr('cm2.profile.acceptRules')); return; }
     try {
       await saveM.mutateAsync({ pseudonym: pseudo, handle: preview, bio, journeyLabel: journey, visibility, avatarPreset: preset, acceptRules: creating, exists: !creating, areaLabel: me?.area_label ?? null });
-      toast(creating ? 'Bienvenue dans la communauté !' : 'Profil enregistré.');
+      toast(creating ? tr('cm2.profile.welcome') : tr('cm2.profile.saved'));
       if (params.next === 'new') router.replace('/community/new');
       else if (params.next === 'groups') router.replace('/community/groups' as never);
       else if (router.canGoBack()) router.back();
     } catch (err) {
       const raw = err instanceof Error ? err.message : '';
-      const msg = friendlyError(err, 'Enregistrement impossible. Réessayez dans un instant.');
-      if (/handle|identifiant/i.test(raw)) setHandleErr(/duplicate|pris|unique/i.test(raw) ? 'Cet identifiant est déjà pris.' : raw);
-      else setError(/existe|duplicate|unique/i.test(raw) ? 'Ce pseudonyme est déjà pris.' : msg);
+      const msg = friendlyError(err, tr('cm2.profile.saveFailed'));
+      if (/handle|identifiant/i.test(raw)) setHandleErr(/duplicate|pris|unique/i.test(raw) ? tr('cm2.profile.handleTaken') : raw);
+      else setError(/existe|duplicate|unique/i.test(raw) ? tr('cm2.profile.pseudoTaken') : msg);
     }
   }
 
   async function pickPhoto() {
     const res = await pickPhotos(false);
-    if (res === 'denied') { toast('Autorisez l’accès aux photos dans les réglages du téléphone.', 'error'); return; }
+    if (res === 'denied') { toast(tr('cm2.photosDenied'), 'error'); return; }
     if (!res.length) return;
     try {
       await avatarM.mutateAsync({ uri: res[0].uri, previous: me?.avatar_path ?? null });
-      toast('Photo de profil mise à jour (sans localisation ni métadonnées).');
-    } catch (e) { toast(friendlyError(e, 'Photo impossible à envoyer.'), 'error'); }
+      toast(tr('cm2.profile.photoUpdated'));
+    } catch (e) { toast(friendlyError(e, tr('cm2.profile.photoFailed')), 'error'); }
   }
   async function removePhoto() {
-    if (!(await confirm('Retirer la photo de profil ?', 'Elle sera supprimée définitivement ; votre illustration sera affichée.', 'Retirer'))) return;
-    try { await avatarM.mutateAsync({ uri: null, previous: me?.avatar_path ?? null }); toast('Photo supprimée.'); } catch (e) { toast(friendlyError(e), 'error'); }
+    if (!(await confirm(tr('cm2.profile.removePhotoTitle'), tr('cm2.profile.removePhotoBody'), tr('cm2.profile.remove')))) return;
+    try { await avatarM.mutateAsync({ uri: null, previous: me?.avatar_path ?? null }); toast(tr('cm2.profile.photoDeleted')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
-  if (meQ.isLoading && !me) return <Screen back title="Profil communautaire"><Skeleton kind="detail" rows={4} /></Screen>;
-  if (meQ.isError && !me) return <Screen back title="Profil communautaire"><ErrorView error={meQ.error} onRetry={() => void meQ.refetch()} /></Screen>;
+  if (meQ.isLoading && !me) return <Screen back title={tr('cm2.profile.title')}><Skeleton kind="detail" rows={4} /></Screen>;
+  if (meQ.isError && !me) return <Screen back title={tr('cm2.profile.title')}><ErrorView error={meQ.error} onRetry={() => void meQ.refetch()} /></Screen>;
 
   return (
-    <Screen back title={creating ? 'Créer mon profil' : 'Modifier mon profil'} subtitle="Visible par les membres connectés. Vos données de suivi restent privées.">
-      {me?.suspended_until && new Date(me.suspended_until) > new Date() ? <Banner tone="warning">{`Votre participation est suspendue jusqu’au ${new Date(me.suspended_until).toLocaleDateString('fr-FR')}.`}</Banner> : null}
+    <Screen back title={creating ? tr('cm2.profile.create') : tr('cm2.profile.edit')} subtitle={tr('cm2.profile.subtitle')}>
+      {me?.suspended_until && new Date(me.suspended_until) > new Date() ? <Banner tone="warning">{tr('cm2.profile.suspended', { date: new Date(me.suspended_until).toLocaleDateString(localeTag()) })}</Banner> : null}
 
-      <SectionTitle title="Avatar" />
+      <SectionTitle title={tr('cm2.profile.avatar')} />
       <Card>
         <Row style={{ alignItems: 'center' }}>
-          <Avatar path={me?.avatar_path} preset={preset} size={72} label="Aperçu de l’avatar" />
+          <Avatar path={me?.avatar_path} preset={preset} size={72} label={tr('cm2.profile.avatarPreview')} />
           <View style={{ flex: 1, gap: 6 }}>
             {me ? (
               <Row wrap>
-                <Button label={me.avatar_path ? 'Changer la photo' : 'Choisir une photo'} size="sm" variant="secondary" icon="image" loading={avatarM.isPending} onPress={pickPhoto} testID="profile-photo-pick" />
-                {me.avatar_path ? <Button label="Retirer la photo" size="sm" variant="ghost" icon="trash-2" onPress={removePhoto} testID="profile-photo-remove" /> : null}
+                <Button label={me.avatar_path ? tr('cm2.profile.changePhoto') : tr('cm2.profile.choosePhoto')} size="sm" variant="secondary" icon="image" loading={avatarM.isPending} onPress={pickPhoto} testID="profile-photo-pick" />
+                {me.avatar_path ? <Button label={tr('cm2.profile.removePhoto')} size="sm" variant="ghost" icon="trash-2" onPress={removePhoto} testID="profile-photo-remove" /> : null}
               </Row>
-            ) : <Text variant="small" muted>Vous pourrez ajouter une photo après avoir créé votre profil. Pensez à une image qui ne montre ni votre visage ni celui de vos enfants.</Text>}
+            ) : <Text variant="small" muted>{tr('cm2.profile.photoLater')}</Text>}
           </View>
         </Row>
-        <Text variant="small" weight="bold" style={{ marginTop: spacing.sm }}>Ou une illustration</Text>
+        <Text variant="small" weight="bold" style={{ marginTop: spacing.sm }}>{tr('cm2.profile.orIllustration')}</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 }} testID="profile-presets">
           {AVATAR_PRESETS.map((p) => (
-            <Tappable key={p} accessibilityRole="radio" accessibilityState={{ selected: preset === p }} accessibilityLabel={`Illustration ${p}`} onPress={() => setPreset(p)} testID={`preset-${p}`}
+            <Tappable key={p} accessibilityRole="radio" accessibilityState={{ selected: preset === p }} accessibilityLabel={tr('cm2.profile.illustration', { name: p })} onPress={() => setPreset(p)} testID={`preset-${p}`}
               style={{ borderRadius: 28, padding: 2, borderWidth: 2, borderColor: preset === p ? t.colors.primary : 'transparent' }}>
               <PresetAvatar preset={p} size={44} />
             </Tappable>
           ))}
         </View>
-        {me?.avatar_path ? <Text variant="caption" muted style={{ marginTop: 4 }}>La photo est prioritaire sur l’illustration.</Text> : null}
+        {me?.avatar_path ? <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('cm2.profile.photoFirst')}</Text> : null}
       </Card>
 
-      <SectionTitle title="Identité dans la communauté" />
+      <SectionTitle title={tr('cm2.profile.identity')} />
       <Card>
-        <Field label="Pseudonyme" value={pseudo} onChangeText={setPseudo} maxLength={24} autoCorrect={false} error={error ?? undefined} hint="Ni votre prénom, ni votre nom, ni votre adresse e-mail." testID="profile-pseudo" />
-        <Field label="Identifiant unique" value={handle} onChangeText={(v) => { setHandle(v); setHandleTouched(true); setHandleErr(null); }} maxLength={21} autoCapitalize="none" autoCorrect={false}
-          error={handleErr ?? undefined} hint={`Il apparaîtra ainsi : @${preview || 'identifiant'} — lettres minuscules sans accent, chiffres, « _ ».`} testID="profile-handle" />
-        <Field label="Présentation" optional value={bio} onChangeText={(v) => setBio(v.slice(0, 280))} multiline maxLength={280} placeholder="Quelques mots sur vous, sans information qui permette de vous retrouver." hint={`${bioLeft} caractère${bioLeft > 1 ? 's' : ''} restant${bioLeft > 1 ? 's' : ''}`} testID="profile-bio-input" />
-        <Text variant="small" weight="bold" style={{ marginTop: spacing.xs }}>Mon parcours (facultatif)</Text>
+        <Field label={tr('cm2.profile.pseudonym')} value={pseudo} onChangeText={setPseudo} maxLength={24} autoCorrect={false} error={error ?? undefined} hint={tr('cm2.profile.pseudonymHint')} testID="profile-pseudo" />
+        <Field label={tr('cm2.profile.handle')} value={handle} onChangeText={(v) => { setHandle(v); setHandleTouched(true); setHandleErr(null); }} maxLength={21} autoCapitalize="none" autoCorrect={false}
+          error={handleErr ?? undefined} hint={tr('cm2.profile.handleHint', { handle: preview || tr('cm2.profile.handlePlaceholder') })} testID="profile-handle" />
+        <Field label={tr('cm2.profile.bio')} optional value={bio} onChangeText={(v) => setBio(v.slice(0, 280))} multiline maxLength={280} placeholder={tr('cm2.profile.bioPlaceholder')} hint={tr('cm2.profile.bioLeft', { count: String(bioLeft) })} testID="profile-bio-input" />
+        <Text variant="small" weight="bold" style={{ marginTop: spacing.xs }}>{tr('cm2.profile.journey')}</Text>
         <Row wrap>
-          <Chip label="Ne pas afficher" selected={!journey} onPress={() => setJourney(null)} />
+          <Chip label={tr('cm2.profile.hideJourney')} selected={!journey} onPress={() => setJourney(null)} />
           {Object.entries(JOURNEY_LABELS).map(([k, l]) => <Chip key={k} label={l} selected={journey === k} onPress={() => setJourney(k)} testID={`journey-${k}`} />)}
         </Row>
       </Card>
 
-      <SectionTitle title="Visibilité du profil" />
+      <SectionTitle title={tr('cm2.profile.visibility')} />
       <Card>
-        <Segmented label="Visibilité du profil" value={visibility} onChange={setVisibility} options={[{ value: 'members', label: 'Membres' }, { value: 'minimal', label: 'Discret' }]} />
+        <Segmented label={tr('cm2.profile.visibility')} value={visibility} onChange={setVisibility} options={[{ value: 'members', label: tr('cm2.profile.members') }, { value: 'minimal', label: tr('cm2.profile.minimal') }]} />
         <Text variant="small" muted style={{ marginTop: 6 }} testID="profile-visibility-help">
           {visibility === 'members'
-            ? 'Les membres connectés voient votre présentation, votre parcours (si indiqué), votre mois d’inscription et le nombre de vos publications.'
-            : 'Les membres voient seulement votre pseudonyme, votre identifiant et votre avatar. Vos publications restent visibles dans les fils.'}
+            ? tr('cm2.profile.membersHelp')
+            : tr('cm2.profile.minimalHelp')}
         </Text>
-        <Text variant="caption" muted style={{ marginTop: 6 }}>Jamais visibles : votre nom, votre adresse e-mail, vos enfants, votre grossesse, vos médicaments, votre sommeil, vos documents, vos conversations avec l’assistant.</Text>
+        <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('cm2.profile.neverVisible')}</Text>
       </Card>
 
       {creating ? (
         <Card tone="soft">
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-            <View style={{ flex: 1 }}><Text weight="medium">J’accepte les règles de la communauté</Text></View>
-            <Toggle label="J’accepte les règles de la communauté" value={rules} onChange={setRules} />
+            <View style={{ flex: 1 }}><Text weight="medium">{tr('cm2.profile.rulesAccept')}</Text></View>
+            <Toggle label={tr('cm2.profile.rulesAccept')} value={rules} onChange={setRules} />
           </View>
-          <Button label="Lire les règles" size="sm" variant="ghost" icon="book-open" style={{ alignSelf: 'flex-start' }} onPress={() => router.push('/community/rules' as never)} />
+          <Button label={tr('cm2.profile.readRules')} size="sm" variant="ghost" icon="book-open" style={{ alignSelf: 'flex-start' }} onPress={() => router.push('/community/rules' as never)} />
         </Card>
       ) : null}
-      <Button label={creating ? 'Créer mon profil' : 'Enregistrer'} size="lg" loading={saveM.isPending} onPress={save} testID="profile-save" />
+      <Button label={creating ? tr('cm2.profile.create') : tr('cm2.profile.save')} size="lg" loading={saveM.isPending} onPress={save} testID="profile-save" />
       {!creating && me ? <Customization me={me} /> : null}
       {!creating ? <FeedPersonalization /> : null}
-      {!creating ? <Button label="Voir mon profil public" variant="ghost" icon="eye" onPress={() => router.push(`/community/u/${me!.handle}` as never)} testID="profile-view-public" /> : null}
+      {!creating ? <Button label={tr('cm2.profile.viewPublic')} variant="ghost" icon="eye" onPress={() => router.push(`/community/u/${me!.handle}` as never)} testID="profile-view-public" /> : null}
     </Screen>
   );
 }
@@ -194,20 +195,20 @@ function Customization({ me }: { me: CommunityProfile }) {
   if (!premium) {
     return (
       <View style={{ gap: spacing.sm }}>
-        <PremiumSection feature="community_profile" preview={<Text variant="small">{`@${me.handle} avec une bannière « Prairie », un contour menthe et une présentation plus longue.`}</Text>}>
+        <PremiumSection feature="community_profile" preview={<Text variant="small">{tr('cm2.profile.customPreview', { handle: String(me.handle) })}</Text>}>
           <View />
         </PremiumSection>
-        {hasAny ? <Button label="Retirer ma personnalisation" variant="ghost" icon="x" loading={busy} onPress={() => void persist({ accent: null, banner: null, about: null, show_premium_badge: false }, 'Personnalisation retirée.')} testID="profile-custom-remove" /> : null}
+        {hasAny ? <Button label={tr('cm2.profile.customRemove')} variant="ghost" icon="x" loading={busy} onPress={() => void persist({ accent: null, banner: null, about: null, show_premium_badge: false }, tr('cm2.profile.customRemoved'))} testID="profile-custom-remove" /> : null}
       </View>
     );
   }
   return (
     <>
-      <SectionTitle title="Personnaliser mon profil" />
+      <SectionTitle title={tr('cm2.profile.customize')} />
       <Card testID="profile-custom">
-        <Text variant="label" muted>Couleur</Text>
+        <Text variant="label" muted>{tr('cm2.profile.color')}</Text>
         <Row wrap gap={6} style={{ marginTop: 4 }}>
-          <Chip label="Aucune" selected={!accent} onPress={() => setAccent(null)} />
+          <Chip label={tr('cm2.profile.noColor')} selected={!accent} onPress={() => setAccent(null)} />
           {PROFILE_ACCENTS.map((a) => (
             <Tappable key={a} accessibilityRole="radio" accessibilityState={{ checked: accent === a }} accessibilityLabel={ACCENT_LABEL[a]} onPress={() => setAccent(a)} testID={`accent-${a}`}
               style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
@@ -215,20 +216,20 @@ function Customization({ me }: { me: CommunityProfile }) {
             </Tappable>
           ))}
         </Row>
-        <Text variant="label" muted style={{ marginTop: spacing.sm }}>Bannière</Text>
+        <Text variant="label" muted style={{ marginTop: spacing.sm }}>{tr('cm2.profile.banner')}</Text>
         <Row wrap gap={6} style={{ marginTop: 4 }}>
-          <Chip label="Par défaut" selected={!banner} onPress={() => setBanner(null)} />
+          <Chip label={tr('cm2.profile.defaultBanner')} selected={!banner} onPress={() => setBanner(null)} />
           {PROFILE_BANNERS.map((b) => <Chip key={b} label={BANNER_LABEL[b]} selected={banner === b} onPress={() => setBanner(b)} testID={`banner-${b}`} />)}
         </Row>
         <View style={{ marginTop: spacing.sm }}>
-          <Field label="Présentation enrichie (facultatif)" value={about} onChangeText={setAbout} multiline maxLength={1200} hint={`${about.length} / 1200`} testID="profile-about" />
+          <Field label={tr('cm2.profile.about')} value={about} onChangeText={setAbout} multiline maxLength={1200} hint={`${about.length} / 1200`} testID="profile-about" />
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.xs }}>
-          <View style={{ flex: 1 }}><Text weight="medium">Afficher un badge Premium discret</Text><Text variant="caption" muted>Facultatif ; il disparaît si l’abonnement prend fin.</Text></View>
-          <Toggle label="Afficher un badge Premium" value={badge} onChange={setBadge} />
+          <View style={{ flex: 1 }}><Text weight="medium">{tr('cm2.profile.badge')}</Text><Text variant="caption" muted>{tr('cm2.profile.badgeHint')}</Text></View>
+          <Toggle label={tr('cm2.profile.badgeToggle')} value={badge} onChange={setBadge} />
         </View>
-        <Button label="Enregistrer la personnalisation" icon="check" style={{ marginTop: spacing.sm }} loading={busy}
-          onPress={() => void persist({ accent, banner, about: about.trim() || null, show_premium_badge: badge }, 'Personnalisation enregistrée.')} testID="profile-custom-save" />
+        <Button label={tr('cm2.profile.customSave')} icon="check" style={{ marginTop: spacing.sm }} loading={busy}
+          onPress={() => void persist({ accent, banner, about: about.trim() || null, show_premium_badge: badge }, tr('cm2.profile.customSaved'))} testID="profile-custom-save" />
       </Card>
     </>
   );
@@ -242,12 +243,12 @@ function FeedPersonalization() {
   const count = (views.data ?? []).length;
   return (
     <Card tone="soft" testID="feed-personalization">
-      <Text weight="bold">Personnalisation du fil « Pour vous »</Text>
+      <Text weight="bold">{tr('cm2.profile.feedTitle')}</Text>
       <Text variant="small" muted style={{ marginTop: 4 }}>
-        Le fil est classé sur votre téléphone d’après votre parcours, les catégories et membres suivis, l’âge de vos enfants ou la semaine de grossesse, vos groupes, les publications aimées ou enregistrées et les sujets consultés. Ces informations ne sont jamais montrées aux autres membres.
+        {tr('cm2.profile.feedBody')}
       </Text>
-      <Text variant="small" style={{ marginTop: 4 }}>{count ? `Sujets consultés : ${count} catégorie(s).` : 'Aucun sujet consulté enregistré.'}</Text>
-      {count ? <Button label="Effacer les sujets consultés" size="sm" variant="ghost" icon="trash-2" style={{ alignSelf: 'flex-start' }} onPress={() => clear.mutate(undefined, { onSuccess: () => toast('Sujets consultés effacés.'), onError: (e) => toast(friendlyError(e), 'error') })} testID="clear-topic-views" /> : null}
+      <Text variant="small" style={{ marginTop: 4 }}>{count ? tr('cm2.profile.topicsCount', { count: String(count) }) : tr('cm2.profile.noTopics')}</Text>
+      {count ? <Button label={tr('cm2.profile.clearTopics')} size="sm" variant="ghost" icon="trash-2" style={{ alignSelf: 'flex-start' }} onPress={() => clear.mutate(undefined, { onSuccess: () => toast(tr('cm2.profile.topicsCleared')), onError: (e) => toast(friendlyError(e), 'error') })} testID="clear-topic-views" /> : null}
     </Card>
   );
 }

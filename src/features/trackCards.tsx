@@ -23,6 +23,7 @@ import { useUiStore } from '@/lib/store';
 import type { Bottle, Breastfeed, Child, Diaper, Meal, Observation, Pumping, Sleep } from '@/lib/types';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 // ─── Teintes douces (jour) et bleu nuit (nuit) ─────────────────────────────────────────────────────
 
@@ -77,7 +78,7 @@ export function TrackActionCard({ m, compact }: { m: TrackCardModel; compact?: b
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${TRACK_LABEL[m.key]}. ${m.info}`}
-        accessibilityHint="Ouvre le suivi"
+        accessibilityHint={tr('trk.cards.openHint')}
         onPress={() => { haptic('selection'); m.onOpen(); }}
         onPressIn={() => press(0.97)}
         onPressOut={() => press(1)}
@@ -108,7 +109,7 @@ function AddButton({ m, ink, night }: { m: TrackCardModel; ink: string; night: b
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={m.addLabel ?? `Ajouter : ${TRACK_LABEL[m.key]}`}
+      accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: TRACK_LABEL[m.key] })}
       hitSlop={8}
       onPress={() => { haptic('light'); m.onAdd(); }}
       testID={`track-add-${m.key}`}
@@ -129,13 +130,13 @@ function CardsGrid({ primary, more, title }: { primary: TrackCardModel[]; more: 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
         {primary.map((m) => <TrackActionCard key={m.key} m={m} />)}
       </View>
-      <Button label={`Voir tous les suivis${more.length ? ` (${more.length})` : ''}`} variant="ghost" icon="grid" onPress={() => setOpen(true)} testID="track-see-all" />
+      <Button label={more.length ? tr('trk.cards.seeAllCount', { count: more.length }) : tr('trk.cards.seeAll')} variant="ghost" icon="grid" onPress={() => setOpen(true)} testID="track-see-all" />
       <Sheet visible={open} onClose={() => setOpen(false)} title={title}>
         <View style={{ gap: spacing.sm }} testID="track-all">
           {[...primary, ...more].map((m) => <TrackActionCard key={m.key} m={{ ...m, onOpen: () => { setOpen(false); m.onOpen(); }, onAdd: () => { setOpen(false); m.onAdd(); } }} compact />)}
         </View>
-        <ToggleRow label="Retour haptique" hint="Une légère vibration quand vous touchez une carte (si le téléphone le permet)." value={hapticsOn} onChange={setHaptics} />
-        {t.isDark ? <Text variant="caption" muted>Mode nuit : couleurs adoucies et animations réduites.</Text> : null}
+        <ToggleRow label={tr('trk.cards.haptics')} hint={tr('trk.cards.hapticsHint')} value={hapticsOn} onChange={setHaptics} />
+        {t.isDark ? <Text variant="caption" muted>{tr('trk.cards.nightNote')}</Text> : null}
       </Sheet>
     </View>
   );
@@ -175,8 +176,8 @@ export function ChildTrackCards({ child, journey }: { child: Child; journey?: 'b
 
   async function toggleSleep() {
     try {
-      if (openSleep) { await act.awake(new Date()); toast(`Réveil de ${child.first_name} noté.`, 'success'); }
-      else { const h = new Date().getHours(); await act.asleep(new Date(), h >= 19 || h < 7 ? 'night' : 'nap'); toast(`${child.first_name} dort : sommeil noté.`, 'success'); }
+      if (openSleep) { await act.awake(new Date()); toast(tr('trk.cards.wokeUp', { name: child.first_name }), 'success'); }
+      else { const h = new Date().getHours(); await act.asleep(new Date(), h >= 19 || h < 7 ? 'night' : 'nap'); toast(tr('trk.cards.asleep', { name: child.first_name }), 'success'); }
     } catch (e) { toast(e instanceof SleepError ? e.message : friendlyError(e), 'error'); }
   }
 
@@ -185,15 +186,15 @@ export function ChildTrackCards({ child, journey }: { child: Child; journey?: 'b
     const info = lastInfo(k, data, { name: child.first_name, sex: child.sex });
     switch (k) {
       case 'bottle': return { key: k, info, onOpen: () => router.push(`/bottle/${id}` as never), onAdd: track('bottle') };
-      case 'sleep': return { key: k, info, onOpen: () => router.push(`/sleep/${id}` as never), onAdd: toggleSleep, active: !!openSleep, addLabel: openSleep ? `${child.first_name} se réveille` : `${child.first_name} s’endort` };
+      case 'sleep': return { key: k, info, onOpen: () => router.push(`/sleep/${id}` as never), onAdd: toggleSleep, active: !!openSleep, addLabel: openSleep ? tr('trk.cards.wakesUp', { name: child.first_name }) : tr('trk.cards.fallsAsleep', { name: child.first_name }) };
       case 'meal': return { key: k, info, onOpen: track('meal'), onAdd: track('meal') };
       case 'growth': return { key: k, info, onOpen: () => router.push(`/child/${id}/growth`), onAdd: () => router.push(`/child/${id}/growth`) };
-      case 'medication': return { key: k, info, onOpen: () => router.push(`/child/${id}/needs?tab=treatments` as never), onAdd: () => router.push(`/child/${id}/needs?tab=treatments` as never), addLabel: 'Voir les traitements prescrits' };
-      case 'appointment': return { key: k, info, onOpen: () => router.push('/appointments'), onAdd: () => router.push({ pathname: '/appointments', params: { new: 'quick', child: id } } as never), addLabel: 'Ajouter un rendez-vous' };
+      case 'medication': return { key: k, info, onOpen: () => router.push(`/child/${id}/needs?tab=treatments` as never), onAdd: () => router.push(`/child/${id}/needs?tab=treatments` as never), addLabel: tr('trk.cards.treatments') };
+      case 'appointment': return { key: k, info, onOpen: () => router.push('/appointments'), onAdd: () => router.push({ pathname: '/appointments', params: { new: 'quick', child: id } } as never), addLabel: tr('trk.cards.addAppointment') };
       default: return { key: k, info, onOpen: track(k), onAdd: track(k) };
     }
   };
-  return <CardsGrid primary={primary.map(model)} more={more.map(model)} title={`Tous les suivis de ${child.first_name}`} />;
+  return <CardsGrid primary={primary.map(model)} more={more.map(model)} title={tr('trk.cards.allChild', { name: child.first_name })} />;
 }
 
 // ─── Grossesse (jamais de biberon, de tétée ni de couche) ──────────────────────────────────────────
@@ -213,14 +214,14 @@ export function PregnancyTrackCards({ pregnancyId }: { pregnancyId: string | nul
     meal: null,
   }), [sleepLogs, moods, weights, appts]);
   const model = (k: TrackKey): TrackCardModel => {
-    const info = k === 'meal' ? 'Idées de repas adaptés à la grossesse' : lastInfo(k, data);
+    const info = k === 'meal' ? tr('trk.cards.pregMealInfo') : lastInfo(k, data);
     switch (k) {
       case 'mother_sleep': return { key: k, info, onOpen: () => router.push('/me/sleep'), onAdd: () => router.push('/me/sleep') };
       case 'mood': return { key: k, info, onOpen: () => router.push('/me/mood'), onAdd: () => router.push('/me/mood') };
-      case 'meal': return { key: k, info, onOpen: () => router.push('/meals'), onAdd: () => router.push('/meals'), addLabel: 'Trouver une idée de repas' };
+      case 'meal': return { key: k, info, onOpen: () => router.push('/meals'), onAdd: () => router.push('/meals'), addLabel: tr('trk.cards.findMeal') };
       case 'weight': return { key: k, info, onOpen: () => router.push('/pregnancy/weight'), onAdd: () => router.push('/pregnancy/weight') };
-      default: return { key: k, info, onOpen: () => router.push('/appointments'), onAdd: () => router.push({ pathname: '/appointments', params: { new: 'quick' } } as never), addLabel: 'Ajouter un rendez-vous' };
+      default: return { key: k, info, onOpen: () => router.push('/appointments'), onAdd: () => router.push({ pathname: '/appointments', params: { new: 'quick' } } as never), addLabel: tr('trk.cards.addAppointment') };
     }
   };
-  return <CardsGrid primary={primary.map(model)} more={more.map(model)} title="Tous mes suivis" />;
+  return <CardsGrid primary={primary.map(model)} more={more.map(model)} title={tr('trk.cards.allMine')} />;
 }

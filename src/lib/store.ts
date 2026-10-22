@@ -20,6 +20,9 @@ interface UiState {
   householdId: string | null;
   subject: ActiveSubject | null;
   hapticsEnabled: boolean;
+  /** Widget iOS du cycle : contenu détaillé (sinon discret). Réglage propre à cet appareil. */
+  cycleWidgetDetailed: boolean;
+  setCycleWidgetDetailed: (v: boolean) => void;
   /** Mode simple (par défaut) : l'essentiel seulement ; les fonctions avancées apparaissent si on le désactive. */
   simpleMode: boolean;
   setSimpleMode: (on: boolean) => void;
@@ -81,6 +84,7 @@ export const useUiStore = create<UiState>()(
       householdId: null,
       subject: null,
       hapticsEnabled: true,
+      cycleWidgetDetailed: false,
       simpleMode: true,
       setSimpleMode: (simpleMode) => set({ simpleMode }),
       overloadTipsOff: false,
@@ -121,6 +125,7 @@ export const useUiStore = create<UiState>()(
       setHousehold: (householdId) => set({ householdId }),
       setSubject: (subject) => set({ subject }),
       setHaptics: (hapticsEnabled) => set({ hapticsEnabled }),
+      setCycleWidgetDetailed: (cycleWidgetDetailed) => set({ cycleWidgetDetailed }),
       reset: () => set({ householdId: null, subject: null, nightMode: false }),
     }),
     {

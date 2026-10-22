@@ -26,7 +26,10 @@ export const MIGRATED = [
   'src/app/cycle/home-card.tsx', 'src/features/cycle/HomeCycleCard.tsx', 'src/features/cycle/homeCard.ts',
   'src/app/cycle/intimacy.tsx', 'src/app/cycle/pain.tsx', 'src/app/cycle/recap.tsx', 'src/app/cycle/advice.tsx', 'src/app/cycle/risk.tsx', 'src/app/cycle/professional.tsx',
   'src/features/cycle/AdviceCard.tsx', 'src/features/cycle/CycleRing.tsx', 'src/features/cycle/PainKit.tsx', 'src/features/cycle/Bars.tsx', 'src/features/cycle/useAdvice.ts',
-  'src/app/cycle/emergency.tsx', 'src/features/cycle3/ui.tsx', 'src/features/cycle3/CycleCalendar.tsx', 'src/features/cycle3/AddDaySheet.tsx', 'src/features/cycle3/InsightCard.tsx', 'src/features/cycle3/CycleHome.tsx',
+  'src/app/cycle/emergency.tsx', 'src/app/cycle/share.tsx', 'src/app/cycle/month.tsx', 'src/app/partner/cycle.tsx', 'src/features/cycle3/ui.tsx', 'src/features/cycle3/CycleCalendar.tsx', 'src/features/cycle3/AddDaySheet.tsx', 'src/features/cycle3/InsightCard.tsx', 'src/features/cycle3/CycleHome.tsx',
+  'src/app/(tabs)/track.tsx', 'src/features/trackCards.tsx', 'src/app/today.tsx', 'src/app/(tabs)/community.tsx', 'src/features/community.tsx', 'src/features/communitySocial.tsx', 'src/features/communityProfile.tsx',
+  'src/app/community/new.tsx', 'src/app/community/post/[id].tsx', 'src/app/community/u/[handle].tsx', 'src/app/community/profile.tsx', 'src/app/community/notifications.tsx', 'src/app/community/groups.tsx',
+  'src/app/community/group/[id].tsx', 'src/app/community/albums.tsx', 'src/app/community/album/[id].tsx', 'src/app/community/events.tsx', 'src/app/community/activity.tsx', 'src/app/community/following.tsx', 'src/app/(tabs)/moi.tsx',
 ];
 
 const forms = (m: Msg) => (typeof m === 'string' ? [m] : Object.values(m).filter((x): x is string => typeof x === 'string'));

@@ -3,7 +3,7 @@
  * dans cycleDaily.ts). Données strictement personnelles (RLS propriétaire) ; rien n'est envoyé à un service externe.
  */
 import { useMemo } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
 import { insertOrQueue } from '../offline';
@@ -161,3 +161,43 @@ export function useDeleteIntimateData() {
 }
 
 export { usePremium };
+
+// ─── Partage avec le ou la partenaire (Premium) ─────────────────────────────────────────────────────
+
+export interface CycleShare { owner_id: string; partner_id: string; share_period: boolean; share_fertile: boolean; share_mood: boolean; share_symptoms: boolean; updated_at: string }
+export interface SharedWithMe { owner_id: string; display_name: string; share_period: boolean; share_fertile: boolean; share_mood: boolean; share_symptoms: boolean; paused: boolean }
+export interface PartnerCycle {
+  paused: boolean; share_period?: boolean; share_fertile?: boolean; share_mood?: boolean; share_symptoms?: boolean;
+  periods?: { start_date: string; end_date: string | null }[]; moods?: { date: string; moods: string[] }[]; symptoms?: { date: string; keys: string[] }[];
+}
+
+export function useMyCycleShares() {
+  const userId = useUserId();
+  return useRows<CycleShare>(['cycle_shares', 'mine'], userId ? { table: 'cycle_shares', filters: [eq('owner_id', userId)] } : null);
+}
+export function useCycleSharedWithMe() {
+  const userId = useUserId();
+  return useQuery({ queryKey: [userId, 'cycle_shares', 'with-me'], queryFn: () => backend.rpc<SharedWithMe[]>('cycle_shared_with_me'), enabled: !!userId });
+}
+export function usePartnerCycle(owner: string | null) {
+  const userId = useUserId();
+  return useQuery({ queryKey: [userId, 'cycle_shares', 'partner', owner], queryFn: () => backend.rpc<PartnerCycle>('partner_cycle', { p_owner: owner }), enabled: !!userId && !!owner });
+}
+export function useSaveCycleShare() {
+  const inv = useInvalidate();
+  const userId = useUserId();
+  return useMutation({
+    mutationFn: async (a: { partner: string; values: Partial<CycleShare>; exists: boolean }) => {
+      if (a.exists) await backend.update('cycle_shares', a.values, [eq('owner_id', userId ?? ''), eq('partner_id', a.partner)]);
+      else await backend.insert('cycle_shares', { owner_id: userId, partner_id: a.partner, ...a.values });
+    },
+    onSuccess: () => inv('cycle_shares'),
+  });
+}
+export function useRevokeCycleShare() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: (a: { owner: string; partner: string }) => backend.remove('cycle_shares', [eq('owner_id', a.owner), eq('partner_id', a.partner)]),
+    onSuccess: () => inv('cycle_shares'),
+  });
+}

@@ -55,7 +55,12 @@ const SECTIONS: { key: string; icon: CycleIconName; href: string }[] = [
   { key: 'export', icon: 'export', href: '/cycle/export' },
   { key: 'privacy', icon: 'privacy', href: '/cycle/privacy' },
   { key: 'emergency', icon: 'guide', href: '/cycle/emergency' },
+  { key: 'share', icon: 'privacy', href: '/cycle/share' },
+  { key: 'month', icon: 'stats', href: '/cycle/month' },
 ];
+
+/** Rubriques visibles d'emblée ; les autres s'ouvrent d'un geste (écran allégé). */
+const ESSENTIAL = ['calendar', 'month', 'advice', 'reminders', 'share', 'privacy'];
 
 const history0 = (list: PeriodEntry[]) => [...list].sort((a, b) => b.start_date.localeCompare(a.start_date));
 
@@ -175,6 +180,7 @@ function CycleHub() {
   const urgentAdvice = advice.filter((a) => rank(a.priority) >= rank('prompt') && daysBetween(a.event.date, today) <= 3);
   const freshCount = advice.filter(isNew).length;
 
+  const [allSections, setAllSections] = useState(false);
   const recentSymptoms = (symptoms ?? []).slice(0, 3).flatMap((s) => symptomKeysOf(s)).slice(0, 4);
   const history = history0(entries);
 
@@ -251,7 +257,7 @@ function CycleHub() {
       {/* Toutes les rubriques (grille qui passe à la ligne : jamais de libellé coupé) */}
       <Rise delay={60}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-          {SECTIONS.map((s) => (
+          {SECTIONS.filter((s) => allSections || ESSENTIAL.includes(s.key)).map((s) => (
             <View key={s.key} style={{ flexGrow: 1, flexBasis: 140, maxWidth: '100%' }}>
               <Glass onPress={() => router.push(s.href as never)} accessibilityLabel={tr(`cy.nav.${s.key}` as 'cy.nav.calendar')} accessibilityHint={tr(`cy.nav.${s.key}.hint` as 'cy.nav.calendar.hint')}>
                 <CycleIcon name={s.icon} color={c.mauve} />
@@ -261,6 +267,7 @@ function CycleHub() {
             </View>
           ))}
         </View>
+        <Button label={allSections ? tr('cy.nav.less') : tr('cy.nav.more', { count: SECTIONS.length - ESSENTIAL.length })} icon={allSections ? 'chevron-up' : 'grid'} variant="ghost" onPress={() => setAllSections((v) => !v)} testID="cycle-sections-toggle" />
       </Rise>
 
       {/* Règles */}

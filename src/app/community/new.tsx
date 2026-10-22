@@ -26,6 +26,7 @@ import { pickPhotos } from '@/lib/documents/io';
 import type { FeedPhoto } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 interface LocalPhoto extends DraftPhoto { previewUri: string }
 
@@ -80,9 +81,9 @@ export default function Composer() {
   async function addPhotos() {
     if (photoCount >= MAX_PHOTOS) return;
     const res = await pickPhotos(true);
-    if (res === 'denied') { toast('Autorisez l’accès aux photos dans les réglages du téléphone.', 'error'); return; }
+    if (res === 'denied') { toast(tr('cm2.photosDenied'), 'error'); return; }
     const chosen = res.slice(0, MAX_PHOTOS - photoCount);
-    if (res.length > chosen.length) toast(`${MAX_PHOTOS} photos au maximum par publication.`, 'info');
+    if (res.length > chosen.length) toast(tr('cm2.new.maxPhotos', { max: String(MAX_PHOTOS) }), 'info');
     setPreparing(true);
     try {
       const ready: LocalPhoto[] = [];
@@ -92,15 +93,15 @@ export default function Composer() {
       }
       setAdded((a) => [...a, ...ready]);
     } catch {
-      toast('Cette photo n’a pas pu être préparée. Essayez-en une autre.', 'error');
+      toast(tr('cm2.new.photoFailed'), 'error');
     } finally { setPreparing(false); }
   }
 
   function validate() {
     const e: Record<string, string> = {};
-    if (!forumId) e.forum = 'Choisissez une catégorie.';
-    if (title.trim() && title.trim().length < 3) e.title = 'Au moins 3 caractères, ou laissez vide.';
-    if (!body.trim()) e.body = 'Écrivez votre message.';
+    if (!forumId) e.forum = tr('cm2.new.errCategory');
+    if (title.trim() && title.trim().length < 3) e.title = tr('cm2.new.errTitle');
+    if (!body.trim()) e.body = tr('cm2.new.errBody');
     if (pollOn && !editId) { const pe = pollOptionsError(pollOptions); if (pe) e.poll = pe; }
     setErrors(e);
     return !Object.keys(e).length;
@@ -110,45 +111,45 @@ export default function Composer() {
     if (busy || preparing || !validate()) return;
     // Avertissement avant de publier une information sensible
     if (hints.length && !warned) { setWarned(true); setPreview(true); return; }
-    if (hints.some((h) => h.blocking) && !(await confirm('Publier malgré l’avertissement ?', 'Votre publication sera relue par la modération avant d’être visible. Nous vous conseillons de retirer ces informations.', 'Publier quand même', false))) return;
+    if (hints.some((h) => h.blocking) && !(await confirm(tr('cm2.new.warnTitle'), tr('cm2.new.warnBody'), tr('cm2.publishAnyway'), false))) return;
     try {
       const res = editId
         ? await update.mutateAsync({ id: editId, forumId, title, body, kind, removePaths: removed, addPhotos: added, keptCount: kept.length })
         : await create.mutateAsync({ forumId, title, body, kind, anonymous, photos: added, groupId,
           poll: pollOn ? { options: pollOptions.map((o) => o.trim()).filter(Boolean), multiple: pollMultiple, closesInDays: pollDays } : null });
       const review = res?.status === 'pending_review';
-      toast(review ? 'Publication envoyée en relecture avant d’être visible.' : editId ? 'Publication modifiée.' : 'Publication en ligne.', review ? 'info' : 'success');
+      toast(review ? tr('cm2.new.sentForReview') : editId ? tr('cm2.new.updated') : tr('cm2.new.online'), review ? 'info' : 'success');
       router.replace(`/community/post/${res.id}`);
     } catch (err) {
-      setErrors({ _: friendlyError(err, 'Publication impossible. Réessayez dans un instant.') });
+      setErrors({ _: friendlyError(err, tr('cm2.publishFailed')) });
     }
   }
 
-  if ((meQ.isLoading && !me) || (editId && existing.isLoading && !existing.data)) return <Screen back title="Publication"><Skeleton kind="detail" rows={4} /></Screen>;
-  if (meQ.isError && !me) return <Screen back title="Publication"><ErrorView error={meQ.error} onRetry={() => void meQ.refetch()} /></Screen>;
+  if ((meQ.isLoading && !me) || (editId && existing.isLoading && !existing.data)) return <Screen back title={tr('cm2.new.screenTitle')}><Skeleton kind="detail" rows={4} /></Screen>;
+  if (meQ.isError && !me) return <Screen back title={tr('cm2.new.screenTitle')}><ErrorView error={meQ.error} onRetry={() => void meQ.refetch()} /></Screen>;
   if (!me) {
     return (
-      <Screen back title="Nouvelle publication">
-        <Banner tone="info">{'Créez d’abord votre profil communautaire : pseudonyme, identifiant « @ » et avatar.'}</Banner>
-        <Button label="Créer mon profil" onPress={() => router.replace({ pathname: '/community/profile', params: { next: 'new' } })} />
+      <Screen back title={tr('cm2.new.newTitle')}>
+        <Banner tone="info">{tr('cm2.new.needProfile')}</Banner>
+        <Button label={tr('cm2.new.createProfile')} onPress={() => router.replace({ pathname: '/community/profile', params: { next: 'new' } })} />
       </Screen>
     );
   }
-  if (editId && existing.data && !existing.data.is_mine) return <Screen back title="Publication"><Banner tone="danger">{'Vous ne pouvez modifier que vos propres publications.'}</Banner></Screen>;
+  if (editId && existing.data && !existing.data.is_mine) return <Screen back title={tr('cm2.new.screenTitle')}><Banner tone="danger">{tr('cm2.new.notMine')}</Banner></Screen>;
 
-  const identity = anonymous ? 'Membre anonyme' : me.pseudonym;
+  const identity = anonymous ? tr('cm2.new.anonymousMember') : me.pseudonym;
   return (
-    <Screen back title={editId ? 'Modifier la publication' : 'Nouvelle publication'}>
+    <Screen back title={editId ? tr('cm2.new.editTitle') : tr('cm2.new.newTitle')}>
       {errors._ ? <Banner tone="danger">{errors._}</Banner> : null}
       {groupId && groupQ.data ? (
-        <Banner tone="info" title={`Dans le groupe « ${groupQ.data.name} »`}>{groupQ.data.kind === 'private' ? 'Visible uniquement par les membres du groupe.' : 'Visible par tous les membres de la communauté.'}</Banner>
+        <Banner tone="info" title={tr('cm2.new.inGroup', { name: groupQ.data.name })}>{groupQ.data.kind === 'private' ? tr('cm2.new.groupPrivate') : tr('cm2.new.groupPublic')}</Banner>
       ) : null}
-      <Segmented label="Mode" value={preview ? 'preview' : 'write'} onChange={(v) => setPreview(v === 'preview')} options={[{ value: 'write', label: 'Écrire' }, { value: 'preview', label: 'Aperçu' }]} />
+      <Segmented label={tr('cm2.new.mode')} value={preview ? 'preview' : 'write'} onChange={(v) => setPreview(v === 'preview')} options={[{ value: 'write', label: tr('cm2.new.write') }, { value: 'preview', label: tr('cm2.new.preview') }]} />
 
       {preview ? (
         <View style={{ gap: spacing.sm }} testID="composer-preview">
           {hints.length ? (
-            <Banner tone={hints.some((h) => h.blocking) ? 'warning' : 'info'} title="Avant de publier">
+            <Banner tone={hints.some((h) => h.blocking) ? 'warning' : 'info'} title={tr('cm2.new.beforePublish')}>
               {hints.map((h) => `• ${h.text}`).join('\n')}
             </Banner>
           ) : null}
@@ -157,12 +158,12 @@ export default function Composer() {
               <Avatar path={anonymous ? null : me.avatar_path} preset={anonymous ? null : me.avatar_preset ?? 'moon'} anonymous={anonymous} size={42} />
               <View style={{ flex: 1 }}>
                 <Text weight="bold">{identity}</Text>
-                <Text variant="caption" muted>{anonymous ? 'Votre pseudonyme et votre identifiant ne seront pas affichés' : `@${me.handle} · à l’instant`}</Text>
+                <Text variant="caption" muted>{anonymous ? tr('cm2.new.anonPreview') : tr('cm2.new.justNow', { handle: String(me.handle) })}</Text>
               </View>
             </Row>
             <Row wrap gap={6} style={{ marginTop: 6 }}>
               {forum ? <Chip label={forum.title} icon={spaceIcon(forum)} /> : null}
-              {kind === 'testimony' ? <Chip label="Témoignage" /> : null}
+              {kind === 'testimony' ? <Chip label={tr('cm2.new.testimony')} /> : null}
             </Row>
             {title.trim() ? <Text weight="bold" style={{ marginTop: 6 }}>{title.trim()}</Text> : null}
             <Text style={{ marginTop: 4 }}>{body.trim() || '…'}</Text>
@@ -174,20 +175,20 @@ export default function Composer() {
               </View>
             ) : null}
           </Card>
-          <Button label="Modifier mon texte" variant="ghost" icon="edit-3" onPress={() => setPreview(false)} />
+          <Button label={tr('cm2.new.editText')} variant="ghost" icon="edit-3" onPress={() => setPreview(false)} />
         </View>
       ) : (
         <View style={{ gap: spacing.sm }}>
-          <Text variant="label">Catégorie</Text>
+          <Text variant="label">{tr('cm2.new.category')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
             {spaces.primary.map((f) => <Chip key={f.id} label={f.title} icon={spaceIcon(f)} selected={f.id === forumId} onPress={() => setForumId(f.id)} testID={`composer-cat-${f.slug}`} />)}
             {forum && !spaces.primary.some((f) => f.id === forum.id) ? <Chip label={forum.title} icon={spaceIcon(forum)} selected /> : null}
-            <Chip label="Toutes les catégories" icon="grid" onPress={() => setAllOpen(true)} testID="composer-all-categories" />
+            <Chip label={tr('cm2.new.allCategories')} icon="grid" onPress={() => setAllOpen(true)} testID="composer-all-categories" />
           </ScrollView>
           {errors.forum ? <Text variant="small" color={t.colors.danger}>{errors.forum}</Text> : forum ? <Text variant="small" muted>{forum.description}</Text> : null}
-          <Segmented label="Type de publication" value={kind} onChange={setKind} options={[{ value: 'question', label: 'Question' }, { value: 'testimony', label: 'Témoignage' }]} />
-          <Field label="Titre" optional value={title} onChangeText={setTitle} maxLength={140} error={errors.title} testID="composer-title" />
-          <Field label={kind === 'testimony' ? 'Votre témoignage' : 'Votre question'} value={body} onChangeText={setBody} multiline maxLength={8000} error={errors.body} style={{ minHeight: 140, textAlignVertical: 'top' }} testID="composer-body"
+          <Segmented label={tr('cm2.new.postType')} value={kind} onChange={setKind} options={[{ value: 'question', label: tr('cm2.new.question') }, { value: 'testimony', label: tr('cm2.new.testimony') }]} />
+          <Field label={tr('cm2.new.titleField')} optional value={title} onChangeText={setTitle} maxLength={140} error={errors.title} testID="composer-title" />
+          <Field label={kind === 'testimony' ? tr('cm2.new.yourTestimony') : tr('cm2.new.yourQuestion')} value={body} onChangeText={setBody} multiline maxLength={8000} error={errors.body} style={{ minHeight: 140, textAlignVertical: 'top' }} testID="composer-body"
             hint={`${body.length} / 8000`} />
           {mq && mentionResults.data?.length ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }} testID="composer-mentions">
@@ -197,19 +198,22 @@ export default function Composer() {
           {hints.length ? <Text variant="small" color={hints.some((h) => h.blocking) ? t.colors.danger : t.colors.textMuted} testID="composer-hint">{hints[0].text}</Text> : null}
           {!editId ? (
             <Card tone="soft" testID="composer-poll">
-              <ToggleRow label="Ajouter un sondage" hint="2 à 6 choix ; les votes sont anonymes, seuls les totaux sont visibles." value={pollOn} onChange={setPollOn} />
+              <ToggleRow label={tr('cm2.new.addPoll')} hint={tr('cm2.new.addPollHint')} value={pollOn} onChange={setPollOn} />
               {pollOn ? (
                 <View style={{ gap: spacing.xs, marginTop: spacing.xs }}>
                   {pollOptions.map((o, i) => (
                     <Row key={i}>
-                      <View style={{ flex: 1 }}><Field label={`Choix ${i + 1}`} value={o} maxLength={80} onChangeText={(v) => setPollOptions((list) => list.map((x, j) => (j === i ? v : x)))} testID={`composer-poll-${i}`} /></View>
-                      {pollOptions.length > 2 ? <Tappable accessibilityRole="button" accessibilityLabel={`Retirer le choix ${i + 1}`} onPress={() => setPollOptions((list) => list.filter((_, j) => j !== i))} style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={16} color={t.colors.textMuted} /></Tappable> : null}
+                      <View style={{ flex: 1 }}><Field label={tr('cm2.new.pollChoice', { n: String(i + 1) })} value={o} maxLength={80} onChangeText={(v) => setPollOptions((list) => list.map((x, j) => (j === i ? v : x)))} testID={`composer-poll-${i}`} /></View>
+                      {pollOptions.length > 2 ? <Tappable accessibilityRole="button" accessibilityLabel={tr('cm2.new.pollRemove', { n: String(i + 1) })} onPress={() => setPollOptions((list) => list.filter((_, j) => j !== i))} style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={16} color={t.colors.textMuted} /></Tappable> : null}
                     </Row>
                   ))}
-                  {pollOptions.length < 6 ? <Button label="Ajouter un choix" icon="plus" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => setPollOptions((list) => [...list, ''])} testID="composer-poll-add" /> : null}
-                  <ToggleRow label="Plusieurs choix possibles" value={pollMultiple} onChange={setPollMultiple} />
+                  {pollOptions.length < 6 ? <Button label={tr('cm2.new.pollAdd')} icon="plus" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => setPollOptions((list) => [...list, ''])} testID="composer-poll-add" /> : null}
+                  <ToggleRow label={tr('cm2.new.pollMultiple')} value={pollMultiple} onChange={setPollMultiple} />
                   <Row wrap gap={6}>
-                    {([[null, 'Sans fin'], [1, '1 jour'], [3, '3 jours'], [7, '7 jours']] as const).map(([d, l]) => <Chip key={l} label={l} selected={pollDays === d} onPress={() => setPollDays(d)} />)}
+                    {([null, 1, 3, 7] as const).map((d) => {
+                      const l = d == null ? tr('cm2.new.pollNoEnd') : tr('cm2.new.pollDays', { count: String(d) });
+                      return <Chip key={l} label={l} selected={pollDays === d} onPress={() => setPollDays(d)} />;
+                    })}
                   </Row>
                   {errors.poll ? <Text variant="small" color={t.colors.danger}>{errors.poll}</Text> : null}
                 </View>
@@ -217,46 +221,46 @@ export default function Composer() {
             </Card>
           ) : null}
 
-          <Text variant="label">{`Photos (${photoCount}/${MAX_PHOTOS})`}</Text>
+          <Text variant="label">{tr('cm2.new.photos', { count: String(photoCount), max: String(MAX_PHOTOS) })}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }} testID="composer-photos">
             {kept.map((p) => (
               <View key={p.path} style={{ width: 84, height: 84 }}>
                 <CommunityImage path={p.path} style={{ width: 84, height: 84, borderRadius: radius.md }} />
-                <Tappable accessibilityRole="button" accessibilityLabel="Supprimer cette photo" onPress={() => { setKept((k) => k.filter((x) => x.path !== p.path)); setRemoved((r) => [...r, p.path]); }} style={{ position: 'absolute', top: -8, right: -8, width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
+                <Tappable accessibilityRole="button" accessibilityLabel={tr('cm2.new.deletePhoto')} onPress={() => { setKept((k) => k.filter((x) => x.path !== p.path)); setRemoved((r) => [...r, p.path]); }} style={{ position: 'absolute', top: -8, right: -8, width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
                   <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: 'rgba(20,10,17,0.75)', alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={14} color="#FFFFFF" /></View>
                 </Tappable>
               </View>
             ))}
             {added.map((p, i) => (
               <View key={`${i}-${p.previewUri.slice(-24)}`} style={{ width: 84, height: 84 }}>
-                <Image source={{ uri: p.previewUri }} style={{ width: 84, height: 84, borderRadius: radius.md }} accessibilityLabel={`Photo ajoutée ${i + 1}`} />
-                <Tappable accessibilityRole="button" accessibilityLabel="Retirer cette photo" onPress={() => setAdded((a) => a.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -8, right: -8, width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
+                <Image source={{ uri: p.previewUri }} style={{ width: 84, height: 84, borderRadius: radius.md }} accessibilityLabel={tr('cm2.new.addedPhoto', { n: String(i + 1) })} />
+                <Tappable accessibilityRole="button" accessibilityLabel={tr('cm2.new.removePhoto')} onPress={() => setAdded((a) => a.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -8, right: -8, width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
                   <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: 'rgba(20,10,17,0.75)', alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={14} color="#FFFFFF" /></View>
                 </Tappable>
               </View>
             ))}
             {photoCount < MAX_PHOTOS ? (
-              <Tappable accessibilityRole="button" accessibilityLabel="Ajouter des photos" onPress={addPhotos} testID="composer-add-photo"
+              <Tappable accessibilityRole="button" accessibilityLabel={tr('cm2.new.addPhotos')} onPress={addPhotos} testID="composer-add-photo"
                 style={{ width: 84, height: 84, borderRadius: radius.md, borderWidth: 1.5, borderStyle: 'dashed', borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center', gap: 2 }}>
                 <Icon name={preparing ? 'loader' : 'image'} color={t.colors.textMuted} />
-                <Text variant="caption" muted>{preparing ? 'Préparation…' : 'Ajouter'}</Text>
+                <Text variant="caption" muted>{preparing ? tr('cm2.new.preparing') : tr('cm2.new.add')}</Text>
               </Tappable>
             ) : null}
           </View>
-          <Text variant="caption" muted>Les photos sont réduites et nettoyées sur votre téléphone : la localisation et les autres métadonnées sont retirées avant l’envoi. Évitez les visages d’enfants reconnaissables.</Text>
+          <Text variant="caption" muted>{tr('cm2.new.photosNote')}</Text>
 
           {!editId ? (
             <>
-              <Text variant="label">Publier sous</Text>
-              <Segmented label="Identité" value={anonymous ? 'anon' : 'me'} onChange={(v) => setAnonymous(v === 'anon')} options={[{ value: 'me', label: `@${me.handle}` }, { value: 'anon', label: 'Anonyme' }]} />
-              {anonymous ? <Text variant="caption" muted testID="composer-anon-help">Les autres membres ne verront ni votre pseudonyme, ni votre identifiant, ni votre avatar — y compris dans vos réponses à cette publication. La modération peut toujours agir en cas d’abus.</Text> : null}
+              <Text variant="label">{tr('cm2.new.publishAs')}</Text>
+              <Segmented label={tr('cm2.new.identity')} value={anonymous ? 'anon' : 'me'} onChange={(v) => setAnonymous(v === 'anon')} options={[{ value: 'me', label: `@${me.handle}` }, { value: 'anon', label: tr('cm2.new.anonymous') }]} />
+              {anonymous ? <Text variant="caption" muted testID="composer-anon-help">{tr('cm2.new.anonHelp')}</Text> : null}
             </>
-          ) : <Text variant="caption" muted>{anonymous ? 'Publication anonyme (ne change pas après publication).' : `Publiée sous @${me.handle}.`}</Text>}
+          ) : <Text variant="caption" muted>{anonymous ? tr('cm2.new.anonFixed') : tr('cm2.new.publishedAs', { handle: String(me.handle) })}</Text>}
         </View>
       )}
 
-      <Banner tone="info">{'Rien n’est publié automatiquement : ni vos conversations avec l’assistant, ni vos données de suivi, ni vos photos privées. Un témoignage médical reste une expérience personnelle, pas un conseil.'}</Banner>
-      <Button label={warned && hints.length ? 'Publier quand même' : editId ? 'Enregistrer les modifications' : 'Publier'} size="lg" loading={busy} disabled={preparing} onPress={publish} testID="composer-publish" />
+      <Banner tone="info">{tr('cm2.new.nothingAuto')}</Banner>
+      <Button label={warned && hints.length ? tr('cm2.publishAnyway') : editId ? tr('cm2.new.saveChanges') : tr('cm2.publish')} size="lg" loading={busy} disabled={preparing} onPress={publish} testID="composer-publish" />
       <CategorySheet visible={allOpen} onClose={() => setAllOpen(false)} forums={spaces.all} selected={forumId || null} onSelect={(id) => setForumId(id ?? '')} />
     </Screen>
   );

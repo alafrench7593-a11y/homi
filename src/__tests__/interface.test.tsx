@@ -24,8 +24,8 @@ afterEach(async () => { await act(async () => { while (mounted.length) mounted.p
 const pressable = (r: ReactTestRenderer, label: string) => r.root.findAll((n) => n.props.accessibilityLabel === label && typeof n.props.onPress === 'function')[0];
 
 describe('interactions', () => {
-  it('jetons : pression 0,97, durées entre 120 et 250 ms', () => {
-    expect(interaction.pressScale).toBe(0.97);
+  it('jetons : pression 0,98 (sobre), durées entre 120 et 250 ms', () => {
+    expect(interaction.pressScale).toBe(0.98);
     for (const ms of [interaction.pressInMs, interaction.pressOutMs, interaction.hoverMs]) { expect(ms).toBeGreaterThanOrEqual(120); expect(ms).toBeLessThanOrEqual(250); }
   });
 

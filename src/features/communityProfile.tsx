@@ -18,6 +18,7 @@ import type { FeedComment, FeedPhoto, FeedPost } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { accentOf, MentionText, PremiumBadge, ProfileBannerView } from '@/features/communitySocial';
+import { t as tr } from '@/i18n';
 
 export interface ProfileHeaderData {
   pseudonym: string; handle?: string | null; bio?: string | null; journey_label?: string | null; avatar_path?: string | null; avatar_preset?: string | null;
@@ -44,7 +45,7 @@ export function ProfileHeader({ p, actions }: { p: ProfileHeaderData; actions?: 
       <View style={{ paddingHorizontal: spacing.md, paddingBottom: spacing.md, marginTop: -40, gap: 6 }}>
         <Row style={{ alignItems: 'flex-end' }}>
           <View style={{ borderRadius: 48, borderWidth: 4, borderColor: accent ?? t.colors.background }}>
-            <Avatar path={p.avatar_path} preset={p.avatar_preset ?? 'moon'} size={84} label={`Avatar de ${p.pseudonym}`} />
+            <Avatar path={p.avatar_path} preset={p.avatar_preset ?? 'moon'} size={84} label={tr('cm1.profile.avatarOf', { name: p.pseudonym })} />
           </View>
         </Row>
         <Row gap={6}>
@@ -60,11 +61,11 @@ export function ProfileHeader({ p, actions }: { p: ProfileHeaderData; actions?: 
           {p.journey_label && JOURNEY_LABELS[p.journey_label] ? <Row gap={4}><Icon name="compass" size={14} color={t.colors.textMuted} /><Text variant="small" muted>{JOURNEY_LABELS[p.journey_label]}</Text></Row> : null}
           {joinedLabel(p.joined) ? <Row gap={4}><Icon name="calendar" size={14} color={t.colors.textMuted} /><Text variant="small" muted>{joinedLabel(p.joined)}</Text></Row> : null}
         </Row>
-        {p.minimal ? <Text variant="caption" muted>Ce membre a choisi un profil discret : seuls son pseudonyme et ses publications sont visibles.</Text> : (
+        {p.minimal ? <Text variant="caption" muted>{tr('cm1.profile.minimal')}</Text> : (
           <Row style={{ justifyContent: 'space-around', marginTop: spacing.xs }} testID="profile-stats">
-            <Stat value={p.posts ?? 0} label="publications" />
-            <Stat value={p.comments ?? 0} label="commentaires" />
-            <Stat value={p.photos ?? 0} label="photos" />
+            <Stat value={p.posts ?? 0} label={tr('cm1.profile.statPosts')} />
+            <Stat value={p.comments ?? 0} label={tr('cm1.profile.statComments')} />
+            <Stat value={p.photos ?? 0} label={tr('cm1.profile.statPhotos')} />
           </Row>
         )}
       </View>
@@ -75,10 +76,10 @@ export function ProfileHeader({ p, actions }: { p: ProfileHeaderData; actions?: 
 function CommentRow({ c }: { c: FeedComment }) {
   const t = useTheme();
   return (
-    <Card onPress={() => router.push({ pathname: '/community/post/[id]', params: { id: c.post_id, comment: c.id } })} accessibilityLabel={`Réponse : ${c.body}`}>
-      <Text variant="caption" muted numberOfLines={1}>{`En réponse à « ${(c.post_title ?? c.post_excerpt ?? '').slice(0, 60)} » · ${timeAgo(c.created_at)}`}</Text>
+    <Card onPress={() => router.push({ pathname: '/community/post/[id]', params: { id: c.post_id, comment: c.id } })} accessibilityLabel={tr('cm1.profile.replyA11y', { body: c.body })}>
+      <Text variant="caption" muted numberOfLines={1}>{tr('cm1.profile.inReplyTo', { title: (c.post_title ?? c.post_excerpt ?? '').slice(0, 60), time: timeAgo(c.created_at) })}</Text>
       <Text style={{ marginTop: 4 }}>{c.body}</Text>
-      {c.status !== 'visible' ? <Text variant="caption" color={t.colors.gold}>{c.status === 'pending_review' ? 'En relecture' : 'Masqué'}</Text> : null}
+      {c.status !== 'visible' ? <Text variant="caption" color={t.colors.gold}>{c.status === 'pending_review' ? tr('cm1.profile.statusPending') : tr('cm1.profile.statusHidden')}</Text> : null}
     </Card>
   );
 }
@@ -86,11 +87,11 @@ function CommentRow({ c }: { c: FeedComment }) {
 function PhotosGrid({ posts }: { posts: FeedPost[] }) {
   const all: { post: FeedPost; photo: FeedPhoto }[] = posts.flatMap((p) => (p.photos ?? []).map((photo) => ({ post: p, photo })));
   const [open, setOpen] = useState<number | null>(null);
-  if (!all.length) return <EmptyState icon="image" title="Aucune photo publiée" />;
+  if (!all.length) return <EmptyState icon="image" title={tr('cm1.profile.noPhotos')} />;
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }} testID="profile-photos">
       {all.map((x, i) => (
-        <Tappable key={x.photo.path} accessibilityRole="imagebutton" accessibilityLabel={`Photo ${i + 1}`} onPress={() => setOpen(i)} style={{ width: '32%', aspectRatio: 1, borderRadius: radius.md, overflow: 'hidden' }}>
+        <Tappable key={x.photo.path} accessibilityRole="imagebutton" accessibilityLabel={tr('cm1.profile.photoA11y', { index: i + 1 })} onPress={() => setOpen(i)} style={{ width: '32%', aspectRatio: 1, borderRadius: radius.md, overflow: 'hidden' }}>
           <CommunityImage path={x.photo.path} style={{ width: '100%', height: '100%' }} />
         </Tappable>
       ))}
@@ -101,10 +102,11 @@ function PhotosGrid({ posts }: { posts: FeedPost[] }) {
 
 type Tab = 'posts' | 'replies' | 'photos' | 'saved';
 
-export function ProfileTab({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+/** `id` : suffixe stable du testID (indépendant de la langue) ; à défaut, le libellé. */
+export function ProfileTab({ label, selected, onPress, id }: { label: string; selected: boolean; onPress: () => void; id?: string }) {
   const t = useTheme();
   return (
-    <Tappable accessibilityRole="tab" accessibilityState={{ selected }} onPress={onPress} testID={`profile-tab-${label}`}
+    <Tappable accessibilityRole="tab" accessibilityState={{ selected }} onPress={onPress} testID={`profile-tab-${id ?? label}`}
       style={{ minHeight: 44, paddingHorizontal: spacing.md, justifyContent: 'center', borderBottomWidth: 3, borderBottomColor: selected ? t.colors.primary : 'transparent' }}>
       <Text weight={selected ? 'bold' : 'medium'} color={selected ? t.colors.primary : t.colors.textMuted}>{label}</Text>
     </Tappable>
@@ -124,8 +126,13 @@ export function ProfileTabs({ handle, mine }: { handle: string | null; mine: boo
   const liked = useLikedPosts();
   const posts = mine ? minePosts : memberPosts;
   const comments = mine ? myComments : memberComments;
-  const options: { value: Tab; label: string }[] = [{ value: 'posts', label: 'Publications' }, { value: 'replies', label: 'Réponses' }, { value: 'photos', label: 'Photos' }];
-  if (mine) options.push({ value: 'saved', label: 'Enregistrés' });
+  // `id` garde les testID historiques (profile-tab-Publications…) quelle que soit la langue
+  const options: { value: Tab; label: string; id: string }[] = [
+    { value: 'posts', label: tr('cm1.profile.tabPosts'), id: 'Publications' },
+    { value: 'replies', label: tr('cm1.profile.tabReplies'), id: 'Réponses' },
+    { value: 'photos', label: tr('cm1.profile.tabPhotos'), id: 'Photos' },
+  ];
+  if (mine) options.push({ value: 'saved', label: tr('cm1.profile.tabSaved'), id: 'Enregistrés' });
   const forumOf = (p: FeedPost) => forums.find((f) => f.id === p.forum_id) ?? null;
   const list = (q: { data?: FeedPost[]; isLoading: boolean }, empty: string) => (q.isLoading && !q.data ? <Skeleton kind="card" rows={2} /> : q.data?.length
     ? <View style={{ gap: spacing.sm }}>{q.data.map((p) => <PostCard key={p.id} post={p} forum={forumOf(p)} />)}</View>
@@ -133,17 +140,17 @@ export function ProfileTabs({ handle, mine }: { handle: string | null; mine: boo
   return (
     <View style={{ gap: spacing.sm }} testID="profile-tabs">
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }} accessibilityRole="tablist">
-        {options.map((o) => <ProfileTab key={o.value} label={o.label} selected={tab === o.value} onPress={() => setTab(o.value)} />)}
+        {options.map((o) => <ProfileTab key={o.value} id={o.id} label={o.label} selected={tab === o.value} onPress={() => setTab(o.value)} />)}
       </ScrollView>
-      {tab === 'posts' ? list(posts, mine ? 'Vous n’avez encore rien publié' : 'Aucune publication') : null}
+      {tab === 'posts' ? list(posts, mine ? tr('cm1.profile.emptyMine') : tr('cm1.profile.emptyPosts')) : null}
       {tab === 'replies' ? (comments.isLoading && !comments.data ? <Skeleton kind="list" rows={2} /> : comments.data?.length
         ? <View style={{ gap: spacing.sm }}>{comments.data.map((c) => <CommentRow key={c.id} c={c} />)}</View>
-        : <EmptyState icon="message-circle" title="Aucune réponse" />) : null}
+        : <EmptyState icon="message-circle" title={tr('cm1.profile.emptyReplies')} />) : null}
       {tab === 'photos' ? <PhotosGrid posts={posts.data ?? []} /> : null}
       {tab === 'saved' && mine ? (
         <>
-          <Row><Chip label="Enregistrées" icon="bookmark" selected={savedKind === 'saved'} onPress={() => setSavedKind('saved')} /><Chip label="Aimées" icon="heart" selected={savedKind === 'liked'} onPress={() => setSavedKind('liked')} /></Row>
-          {list(savedKind === 'saved' ? saved : liked, savedKind === 'saved' ? 'Aucune publication enregistrée' : 'Aucune publication aimée')}
+          <Row><Chip label={tr('cm1.profile.saved')} icon="bookmark" selected={savedKind === 'saved'} onPress={() => setSavedKind('saved')} /><Chip label={tr('cm1.profile.liked')} icon="heart" selected={savedKind === 'liked'} onPress={() => setSavedKind('liked')} /></Row>
+          {list(savedKind === 'saved' ? saved : liked, savedKind === 'saved' ? tr('cm1.profile.emptySaved') : tr('cm1.profile.emptyLiked'))}
         </>
       ) : null}
     </View>

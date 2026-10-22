@@ -14,8 +14,10 @@ import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { NACRE, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { useCycleSharedWithMe } from '@/lib/data/hooks-cycle3';
 
 export default function Profile() {
+  const sharedCycles = useCycleSharedWithMe();
   const { session } = useAuth();
   const profileQ = useProfile();
   const profile = profileQ.data;
@@ -77,6 +79,7 @@ export default function Profile() {
           <ListRow icon="message-square" title={tr('profile.posts')} subtitle={tr('profile.postsSub')} onPress={() => router.push('/community/profile')} />
           <ListRow icon="at-sign" title={tr('profile.community')} subtitle={tr('profile.communitySub')} onPress={() => router.push('/moi' as never)} testID="profile-community" />
           <ListRow icon="lock" title={tr('profile.account')} subtitle={tr('profile.accountSub')} onPress={() => router.push({ pathname: '/moi', params: { tab: 'account' } } as never)} testID="profile-account" />
+          {sharedCycles.data?.length ? <ListRow icon="users" title={tr('c3.partner.open')} subtitle={tr('c3.partner.openSub')} onPress={() => router.push('/partner/cycle' as never)} testID="profile-partner-cycle" /> : null}
           <ListRow icon="grid" title={tr('profile.tools')} onPress={() => router.push('/tools')} />
         </Card>
 

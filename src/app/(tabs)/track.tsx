@@ -70,23 +70,23 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
       <ChildTrackCards child={child} journey={journey} />
       <Tappable
         accessibilityRole="button"
-        accessibilityLabel={openSleep ? 'Sommeil en cours. Ouvrir le mode nuit.' : 'Démarrer un sommeil en mode nuit'}
+        accessibilityLabel={openSleep ? tr('trk.night.a11yOpen') : tr('trk.night.a11yStart')}
         onPress={() => { haptic('light'); router.push('/night'); }}
         style={({ pressed }) => ({ borderRadius: radius.lg, padding: spacing.md, backgroundColor: '#1B2140', flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.9 : 1 })}
       >
         <Icon name="moon" color="#FF8FB1" />
         <View style={{ flex: 1 }}>
-          <Text weight="bold" color="#F2DFC1">{openSleep ? 'Sommeil en cours' : 'Mode nuit'}</Text>
-          <Text variant="small" color="#B8A88F">{openSleep ? 'Touchez pour arrêter ou noter un réveil' : 'Écran apaisé pour les nuits : sommeil, tétées, couches'}</Text>
+          <Text weight="bold" color="#F2DFC1">{openSleep ? tr('trk.night.ongoing') : tr('trk.night.title')}</Text>
+          <Text variant="small" color="#B8A88F">{openSleep ? tr('trk.night.ongoingHint') : tr('trk.night.hint')}</Text>
         </View>
         <Icon name="chevron-right" color="#B8A88F" />
       </Tappable>
 
       <QuickEntry activeChildId={childId} />
 
-      <SectionTitle title="Aujourd’hui" />
+      <SectionTitle title={tr('trk.today')} />
       {logsLoading ? <Skeleton kind="list" rows={3} /> : logsError ? (
-        <ErrorView error={logsError.error} onRetry={retryLogs} title="Impossible d’afficher le suivi" />
+        <ErrorView error={logsError.error} onRetry={retryLogs} title={tr('trk.loadError')} />
       ) : (
         <>
           <Card>
@@ -103,28 +103,28 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
         </>
       )}
 
-      <SectionTitle title="Tendances" />
-      <Segmented label="Période" value={range} onChange={setRange} options={[{ value: '7', label: '7 jours' }, { value: '30', label: '30 jours' }]} />
+      <SectionTitle title={tr('trk.trends')} />
+      <Segmented label={tr('trk.period')} value={range} onChange={setRange} options={[{ value: '7', label: tr('trk.days7') }, { value: '30', label: tr('trk.days30') }]} />
       {range === '30' && !premium ? (
-        <PremiumGate feature="Graphiques enrichis sur 30 jours"><View /></PremiumGate>
+        <PremiumGate feature={tr('trk.premiumCharts')}><View /></PremiumGate>
       ) : null}
       {child.enabled_tracking.includes('bottle') && (
-        <Card><Text weight="bold">Lait bu par jour (ml)</Text><BarChart data={bottleSeries} unit="ml" accessibilityLabel="Quantité de lait bue par jour" /></Card>
+        <Card><Text weight="bold">{tr('trk.chart.milk')}</Text><BarChart data={bottleSeries} unit="ml" accessibilityLabel={tr('trk.chart.milkA11y')} /></Card>
       )}
       {child.enabled_tracking.includes('sleep') && (
-        <Card><Text weight="bold">Sommeil enregistré</Text><View style={{ marginTop: spacing.xs }}><SleepNights sleeps={sleeps} days={7} /></View></Card>
+        <Card><Text weight="bold">{tr('trk.chart.sleep')}</Text><View style={{ marginTop: spacing.xs }}><SleepNights sleeps={sleeps} days={7} /></View></Card>
       )}
       {child.enabled_tracking.includes('diaper') && (
-        <Card><Text weight="bold">Changes par jour</Text><BarChart data={diaperSeries} unit="changes" accessibilityLabel="Nombre de changes par jour" /></Card>
+        <Card><Text weight="bold">{tr('trk.chart.diapers')}</Text><BarChart data={diaperSeries} unit={tr('trk.chart.diapersUnit')} accessibilityLabel={tr('trk.chart.diapersA11y')} /></Card>
       )}
-      <Text variant="caption" muted>Ces graphiques reprennent vos saisies pour préparer un rendez-vous. Ils ne constituent pas une analyse médicale.</Text>
+      <Text variant="caption" muted>{tr('trk.chart.disclaimer')}</Text>
 
-      <SectionTitle title={`Profil de ${child.first_name}`} />
+      <SectionTitle title={tr('trk.child.profile', { name: child.first_name })} />
       <Card>
-        <ListRow icon="trending-up" title="Taille & poids" subtitle="Mesures datées et courbe" onPress={() => router.push(`/child/${childId}/growth`)} />
-        <ListRow icon="user" title="Profil, santé et contacts" subtitle="Allergies déclarées, traitements, vaccins à vérifier" onPress={() => router.push(`/child/${childId}`)} />
-        {child.enabled_tracking.includes('meal') && <ListRow icon="feather" title="Diversification" subtitle="Aliments découverts et idées de repas" onPress={() => router.push(`/child/${childId}/foods`)} />}
-        <ListRow icon="folder" title="Documents" subtitle="Ordonnances, comptes rendus…" onPress={() => router.push('/documents')} />
+        <ListRow icon="trending-up" title={tr('trk.child.growth')} subtitle={tr('trk.child.growthSub')} onPress={() => router.push(`/child/${childId}/growth`)} />
+        <ListRow icon="user" title={tr('trk.child.health')} subtitle={tr('trk.child.healthSub')} onPress={() => router.push(`/child/${childId}`)} />
+        {child.enabled_tracking.includes('meal') && <ListRow icon="feather" title={tr('trk.child.foods')} subtitle={tr('trk.child.foodsSub')} onPress={() => router.push(`/child/${childId}/foods`)} />}
+        <ListRow icon="folder" title={tr('trk.documents')} subtitle={tr('trk.child.documentsSub')} onPress={() => router.push('/documents')} />
       </Card>
     </View>
   );
@@ -137,12 +137,12 @@ function PregnancyTracking({ cards }: { cards?: boolean }) {
     <View style={{ gap: spacing.md }}>
     {cards ? <PregnancyTrackCards pregnancyId={pregnancy?.id ?? null} /> : null}
     <Card>
-      <ListRow icon="moon" title="Semaine après semaine" subtitle="Développement, changements possibles, compte à rebours" onPress={() => router.push('/pregnancy')} />
-      {!profile?.hide_weight_module && <ListRow icon="trending-up" title="Mon poids" subtitle="Suivi facultatif et bienveillant" onPress={() => router.push('/pregnancy/weight')} />}
-      <ListRow icon="calendar" title="Rendez-vous & examens" subtitle="Échographies, prises de sang, questions à poser" onPress={() => router.push('/appointments')} />
-      <ListRow icon="check-square" title="Listes de préparation" subtitle="Valise, affaires de bébé, démarches…" onPress={() => router.push('/lists')} />
-      <ListRow icon="folder" title="Documents" subtitle="Échographies, comptes rendus, résultats" onPress={() => router.push('/documents')} />
-      <ListRow icon="star" title="Idées de prénoms" subtitle="Favoris et vote à deux" onPress={() => router.push('/names')} />
+      <ListRow icon="moon" title={tr('trk.preg.weekly')} subtitle={tr('trk.preg.weeklySub')} onPress={() => router.push('/pregnancy')} />
+      {!profile?.hide_weight_module && <ListRow icon="trending-up" title={tr('trk.preg.weight')} subtitle={tr('trk.preg.weightSub')} onPress={() => router.push('/pregnancy/weight')} />}
+      <ListRow icon="calendar" title={tr('trk.preg.appointments')} subtitle={tr('trk.preg.appointmentsSub')} onPress={() => router.push('/appointments')} />
+      <ListRow icon="check-square" title={tr('trk.preg.lists')} subtitle={tr('trk.preg.listsSub')} onPress={() => router.push('/lists')} />
+      <ListRow icon="folder" title={tr('trk.documents')} subtitle={tr('trk.preg.documentsSub')} onPress={() => router.push('/documents')} />
+      <ListRow icon="star" title={tr('trk.preg.names')} subtitle={tr('trk.preg.namesSub')} onPress={() => router.push('/names')} />
     </Card>
     </View>
   );
@@ -190,15 +190,15 @@ export default function Track() {
         )}
         {(cycle || scope.scope === 'none') && subject.type !== 'family' && (
           <Card>
-            <ListRow icon="heart" title="Comment je me sens" subtitle="Bilan émotionnel et journal privé" onPress={() => router.push('/me/mood')} />
-            {cycle ? <ListRow icon="circle" title="Mon cycle" subtitle="Règles, symptômes, tests" onPress={() => router.push(scope.scope === 'ttc' ? '/fertility' : '/cycle')} /> : null}
-            <ListRow icon="calendar" title="Mes rendez-vous" onPress={() => router.push('/appointments')} />
+            <ListRow icon="heart" title={tr('trk.me.mood')} subtitle={tr('trk.me.moodSub')} onPress={() => router.push('/me/mood')} />
+            {cycle ? <ListRow icon="circle" title={tr('trk.me.cycle')} subtitle={tr('trk.me.cycleSub')} onPress={() => router.push(scope.scope === 'ttc' ? '/fertility' : '/cycle')} /> : null}
+            <ListRow icon="calendar" title={tr('trk.me.appointments')} onPress={() => router.push('/appointments')} />
           </Card>
         )}
         {!loading && !failed && !pregnancy && !children?.length && !cycle && scope.scope !== 'postpartum' && (
-          <EmptyStateCard illustration="leaf" title="Rien à suivre pour l’instant" text={tr('pj.none.body')} action={<Button label={tr('pj.editJourney')} icon="compass" onPress={() => router.push('/journeys')} />} />
+          <EmptyStateCard illustration="leaf" title={tr('trk.empty.title')} text={tr('pj.none.body')} action={<Button label={tr('pj.editJourney')} icon="compass" onPress={() => router.push('/journeys')} />} />
         )}
-        {scope.childId && <Banner tone="info">{'Cette application ne remplace pas le carnet de santé officiel de votre enfant.'}</Banner>}
+        {scope.childId && <Banner tone="info">{tr('trk.healthBookNotice')}</Banner>}
       </Screen>
     </View>
   );

@@ -17,6 +17,7 @@ import { useGroupAction, useGroups } from '@/lib/data/hooks-social';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { cohortSuggestions } from '@/lib/domain/communitySocial';
 import { isPremiumRequired } from '@/lib/premium/features';
+import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
@@ -44,20 +45,20 @@ export default function Groups() {
     if (!me) return needProfile();
     try {
       const id = await act.mutateAsync({ fn: 'join_cohort_group', args: { p_type: type, p_month: `${month}-01` } });
-      toast('Vous avez rejoint le groupe.');
+      toast(tr('cm3.groups.joined'));
       if (id) router.push(`/community/group/${id}` as never);
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   function openCreate() {
     if (!me) return needProfile();
-    if (!access.require(<Text variant="small">{'Par exemple « Copines de la maternité » : un espace sur invitation, invisible pour le reste de la communauté.'}</Text>)) return;
+    if (!access.require(<Text variant="small">{tr('cm3.groups.createPreview')}</Text>)) return;
     setCreating(true);
   }
   async function create() {
     try {
       const id = await act.mutateAsync({ fn: 'create_private_group', args: { p_name: name.trim(), p_description: description.trim() || null } });
       setCreating(false); setName(''); setDescription('');
-      toast('Groupe créé. Invitez les membres de votre choix.');
+      toast(tr('cm3.groups.created'));
       if (id) router.push(`/community/group/${id}` as never);
     } catch (e) {
       if (isPremiumRequired(e)) { setCreating(false); access.showPreview(); } else toast(friendlyError(e), 'error');
@@ -65,59 +66,59 @@ export default function Groups() {
   }
 
   return (
-    <Screen back title="Groupes" subtitle="Échanger avec des parents qui vivent la même chose">
+    <Screen back title={tr('cm3.groups.title')} subtitle={tr('cm3.groups.subtitle')}>
       {suggestions.length ? (
         <Card testID="cohort-suggestions">
-          <Row><Icon name="gift" size={16} color={t.colors.primary} /><Text weight="bold" style={{ flex: 1 }}>Proposés pour vous</Text></Row>
+          <Row><Icon name="gift" size={16} color={t.colors.primary} /><Text weight="bold" style={{ flex: 1 }}>{tr('cm3.groups.suggested')}</Text></Row>
           {suggestions.map((s) => (
             <Row key={`${s.type}-${s.month}`} style={{ marginTop: 6 }}>
               <View style={{ flex: 1, minWidth: 0 }}>
                 <Text weight="medium">{s.label}</Text>
                 <Text variant="caption" muted>{s.reason}</Text>
               </View>
-              <Button label="Rejoindre" size="sm" onPress={() => void joinCohort(s.type, s.month)} loading={act.isPending} testID={`join-cohort-${s.type}-${s.month}`} />
+              <Button label={tr('cm3.groups.join')} size="sm" onPress={() => void joinCohort(s.type, s.month)} loading={act.isPending} testID={`join-cohort-${s.type}-${s.month}`} />
             </Row>
           ))}
-          <Text variant="caption" muted style={{ marginTop: 6 }}>Seul le mois est utilisé pour trouver le groupe : ni le prénom, ni la date exacte ne sont partagés.</Text>
+          <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('cm3.groups.monthOnly')}</Text>
         </Card>
       ) : null}
 
       {invites.length ? (
         <>
-          <SectionTitle title="Invitations" />
+          <SectionTitle title={tr('cm3.groups.invitations')} />
           {invites.map((g) => <GroupCard key={g.id} g={g} />)}
         </>
       ) : null}
 
-      <SectionTitle title="Mes groupes" />
+      <SectionTitle title={tr('cm3.groups.mine')} />
       {groups.isLoading && !groups.data ? <Skeleton kind="list" rows={2} /> : mine.length ? (
         <View style={{ gap: spacing.sm }}>{mine.map((g) => <GroupCard key={g.id} g={g} compact />)}</View>
-      ) : <EmptyState icon="users" title="Vous n’avez rejoint aucun groupe" body="Rejoignez un groupe thématique ou celui du mois de naissance de votre enfant." />}
+      ) : <EmptyState icon="users" title={tr('cm3.groups.emptyTitle')} body={tr('cm3.groups.emptyBody')} />}
 
-      <Card tone="soft" onPress={openCreate} accessibilityLabel="Créer un groupe privé" testID="group-create">
-        <Row><Icon name="lock" size={18} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>Créez votre groupe privé de parents</Text>{!access.premium ? <PremiumBadge /> : <Icon name="plus" size={18} />}</Row>
-        <Text variant="small" muted style={{ marginTop: 4 }}>Sur invitation uniquement. Rejoindre un groupe où l’on vous invite reste gratuit.</Text>
+      <Card tone="soft" onPress={openCreate} accessibilityLabel={tr('cm3.groups.createA11y')} testID="group-create">
+        <Row><Icon name="lock" size={18} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>{tr('cm3.groups.createTitle')}</Text>{!access.premium ? <PremiumBadge /> : <Icon name="plus" size={18} />}</Row>
+        <Text variant="small" muted style={{ marginTop: 4 }}>{tr('cm3.groups.createBody')}</Text>
       </Card>
 
       {themes.length ? (
         <>
-          <SectionTitle title="Groupes thématiques" />
+          <SectionTitle title={tr('cm3.groups.themes')} />
           <View style={{ gap: spacing.sm }}>{themes.map((g) => <GroupCard key={g.id} g={g} />)}</View>
         </>
       ) : null}
 
-      <SectionTitle title="Aussi" />
+      <SectionTitle title={tr('cm3.groups.also')} />
       <Card>
-        <ListRow icon="image" title="Albums photo" subtitle="Privés ou partagés avec des membres choisis" onPress={() => router.push('/community/albums' as never)} testID="open-albums" />
-        <ListRow icon="video" title="Ateliers et rencontres" subtitle="Programmés par l’équipe" onPress={() => router.push('/community/events' as never)} testID="open-events" />
+        <ListRow icon="image" title={tr('cm3.groups.albums')} subtitle={tr('cm3.groups.albumsSub')} onPress={() => router.push('/community/albums' as never)} testID="open-albums" />
+        <ListRow icon="video" title={tr('cm3.groups.events')} subtitle={tr('cm3.groups.eventsSub')} onPress={() => router.push('/community/events' as never)} testID="open-events" />
       </Card>
 
-      <Sheet visible={creating} onClose={() => setCreating(false)} title="Nouveau groupe privé">
+      <Sheet visible={creating} onClose={() => setCreating(false)} title={tr('cm3.groups.newTitle')}>
         <View style={{ gap: spacing.sm }} testID="group-create-sheet">
-          <Field label="Nom du groupe" value={name} onChangeText={setName} maxLength={60} placeholder="Copines de la maternité" testID="group-name" />
-          <Field label="Description (facultatif)" value={description} onChangeText={setDescription} maxLength={400} multiline testID="group-description" />
-          <Text variant="caption" muted>Pas d’adresse, de numéro ni de nom de famille : le nom du groupe est visible des personnes invitées.</Text>
-          <Button label="Créer le groupe" icon="check" disabled={name.trim().length < 3} loading={act.isPending} onPress={() => void create()} testID="group-create-submit" />
+          <Field label={tr('cm3.groups.nameLabel')} value={name} onChangeText={setName} maxLength={60} placeholder={tr('cm3.groups.namePlaceholder')} testID="group-name" />
+          <Field label={tr('cm3.groups.descriptionLabel')} value={description} onChangeText={setDescription} maxLength={400} multiline testID="group-description" />
+          <Text variant="caption" muted>{tr('cm3.groups.nameWarning')}</Text>
+          <Button label={tr('cm3.groups.createSubmit')} icon="check" disabled={name.trim().length < 3} loading={act.isPending} onPress={() => void create()} testID="group-create-submit" />
         </View>
       </Sheet>
     </Screen>

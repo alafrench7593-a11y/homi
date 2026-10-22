@@ -14,6 +14,7 @@ import { useUserId } from '@/lib/auth';
 import { useInvalidate, useSetConsent } from '@/lib/data/hooks';
 import { useDeleteIntimateData } from '@/lib/data/hooks-cycle3';
 import { biometricAvailable } from '@/features/cycle3/ui';
+import { useUiStore } from '@/lib/store';
 import { useCyclePreferences, useSaveCyclePreferences } from '@/lib/data/hooks-cycle';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { deleteEncryptedPhoto } from '@/lib/cycleAnalysis/privacy';
@@ -33,6 +34,8 @@ export default function CyclePrivacy() {
   const save = useSaveCyclePreferences();
   const [busy, setBusy] = useState(false);
   const consent = useSetConsent();
+  const widgetDetailed = useUiStore((st) => st.cycleWidgetDetailed);
+  const setWidgetDetailed = useUiStore((st) => st.setCycleWidgetDetailed);
   const delIntimate = useDeleteIntimateData();
   const [bio, setBio] = useState<boolean | null>(null);
   useEffect(() => { void biometricAvailable().then(setBio); }, []);
@@ -99,6 +102,7 @@ export default function CyclePrivacy() {
             {(['off', 'intimate', 'cycle'] as const).map((m) => <Chip key={m} label={tr(`c3.priv.lock.${m}`)} selected={(prefs.lock_mode ?? 'off') === m} onPress={() => setPref({ lock_mode: m })} />)}
           </Row></View>
           {bio === false ? <Ink variant="caption" soft>{tr('c3.priv.lockUnavailable')}</Ink> : null}
+          <SwitchRow label={tr('c3.widget.detailed')} hint={tr('c3.widget.hint')} value={widgetDetailed} onChange={setWidgetDetailed} />
           <Ink variant="small" soft>{tr('c3.priv.notif')}</Ink>
           <Ink variant="small" soft>{tr('c3.priv.never')}</Ink>
           <Button label={tr('c3.priv.deleteIntimate')} variant="ghost" icon="trash-2" loading={delIntimate.isPending} onPress={wipeIntimate} testID="c3-delete-intimate" />

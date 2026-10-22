@@ -16,6 +16,7 @@ import { useBlockMember, useCommunityMember, useMyBlocks, useUnblock } from '@/l
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { normalizeHandle } from '@/lib/domain/communityRules';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export default function MemberProfile() {
   const toast = useToast();
@@ -29,29 +30,29 @@ export default function MemberProfile() {
   const [reporting, setReporting] = useState(false);
 
   async function doBlock() {
-    if (!(await confirm(`Bloquer @${handle} ?`, 'Vous ne verrez plus ses publications ni ses commentaires, et cette personne ne pourra plus vous répondre.', 'Bloquer'))) return;
-    try { await block.mutateAsync(handle); toast('Membre bloqué.'); } catch (e) { toast(friendlyError(e), 'error'); }
+    if (!(await confirm(tr('cm2.member.blockTitle', { handle }), tr('cm2.member.blockBody'), tr('cm2.member.block')))) return;
+    try { await block.mutateAsync(handle); toast(tr('cm2.member.blocked')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function doUnblock() {
     const target = blocks.data?.find((b) => b.handle === handle);
     if (!target) return;
-    try { await unblock.mutateAsync(target.userId); toast('Membre débloqué.'); } catch (e) { toast(friendlyError(e), 'error'); }
+    try { await unblock.mutateAsync(target.userId); toast(tr('cm2.member.unblocked')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
-  if (q.isLoading && !m) return <Screen back title="Profil"><Skeleton kind="detail" rows={4} /></Screen>;
-  if (q.isError && !m) return <Screen back title="Profil"><ErrorView error={q.error} onRetry={() => void q.refetch()} /></Screen>;
-  if (!m) return <Screen back title="Profil"><EmptyState icon="user-x" title="Membre introuvable" body="Ce profil n’existe pas ou a été supprimé." /></Screen>;
-  if (m.unavailable) return <Screen back title={`@${m.handle}`}><EmptyState icon="lock" title="Profil indisponible" body="Ce profil ne peut pas être affiché." /></Screen>;
+  if (q.isLoading && !m) return <Screen back title={tr('cm2.member.title')}><Skeleton kind="detail" rows={4} /></Screen>;
+  if (q.isError && !m) return <Screen back title={tr('cm2.member.title')}><ErrorView error={q.error} onRetry={() => void q.refetch()} /></Screen>;
+  if (!m) return <Screen back title={tr('cm2.member.title')}><EmptyState icon="user-x" title={tr('cm2.member.notFound')} body={tr('cm2.member.notFoundBody')} /></Screen>;
+  if (m.unavailable) return <Screen back title={`@${m.handle}`}><EmptyState icon="lock" title={tr('cm2.member.unavailable')} body={tr('cm2.member.unavailableBody')} /></Screen>;
 
   const actions = m.is_me
-    ? <Button label="Modifier" size="sm" variant="secondary" icon="edit-3" onPress={() => router.push('/community/profile')} />
+    ? <Button label={tr('cm2.member.edit')} size="sm" variant="secondary" icon="edit-3" onPress={() => router.push('/community/profile')} />
     : (
       <>
         {!m.blocked ? <FollowButton handle={m.handle} following={!!m.is_following} onNeedProfile={() => router.push('/community/profile')} /> : null}
         {m.blocked
-          ? <Button label="Débloquer" size="sm" variant="secondary" icon="unlock" onPress={doUnblock} testID="member-unblock" />
-          : <Button label="Bloquer" size="sm" variant="ghost" icon="slash" onPress={doBlock} testID="member-block" />}
-        <Button label="Signaler" size="sm" variant="ghost" icon="flag" onPress={() => setReporting(true)} testID="member-report" />
+          ? <Button label={tr('cm2.member.unblock')} size="sm" variant="secondary" icon="unlock" onPress={doUnblock} testID="member-unblock" />
+          : <Button label={tr('cm2.member.block')} size="sm" variant="ghost" icon="slash" onPress={doBlock} testID="member-block" />}
+        <Button label={tr('cm2.member.report')} size="sm" variant="ghost" icon="flag" onPress={() => setReporting(true)} testID="member-report" />
       </>
     );
 
@@ -63,7 +64,7 @@ export default function MemberProfile() {
           joined: m.joined_month, posts: m.posts_count, comments: m.comments_count, photos: m.photos_count, minimal: m.visibility === 'minimal' && !m.is_me,
           accent: m.accent, banner: m.banner, about: m.about, badge: m.premium_badge,
         }} />
-        {m.blocked ? <Banner tone="info">{'Vous avez bloqué ce membre : ses contenus sont masqués pour vous.'}</Banner> : <ProfileTabs handle={m.handle} mine={false} />}
+        {m.blocked ? <Banner tone="info">{tr('cm2.member.blockedBanner')}</Banner> : <ProfileTabs handle={m.handle} mine={false} />}
       </View>
       <ReportSheet visible={reporting} onClose={() => setReporting(false)} handle={m.handle} />
     </Screen>

@@ -27,13 +27,13 @@ export const easing = {
 
 /**
  * Interactions des boutons et zones tactiles (une seule source pour toute l'application) :
- * pression à 0,97 en 120 ms, relâchement en 200 ms, soulèvement de 2 px au survol (web) en 180 ms.
+ * pression à 0,98 en 120 ms, relâchement en 200 ms, soulèvement d'1 px au survol (web) en 180 ms (sobre, sans effet gadget).
  */
 export const interaction = {
-  pressScale: 0.97,
+  pressScale: 0.98,
   pressInMs: 120,
   pressOutMs: 200,
-  hoverLift: -2,
+  hoverLift: -1,
   hoverMs: 180,
   iconNudge: 2,
 };
