@@ -11,7 +11,7 @@ import { useExpectedBabies, useInvalidate, useJourneyState, usePregnancies } fro
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { PregnancyForm, validatePregnancy, type PregnancyDraft } from '@/features/profiles';
 import { babiesCount, multiplicityLabel } from '@/lib/domain/pregnancy';
-import { formatDateFr, todayISO } from '@/lib/domain/dates';
+import { addDays, formatDateFr, todayISO } from '@/lib/domain/dates';
 import type { ExpectedBaby, Pregnancy } from '@/lib/types';
 import { toFrDate } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
@@ -19,8 +19,10 @@ import { t as tr } from '@/i18n';
 
 function toDraft(p: Pregnancy, babies: ExpectedBaby[]): PregnancyDraft {
   const lmpMode = p.due_date_source === 'lmp' && !!p.lmp_date;
+  const conceptionMode = p.due_date_source === 'conception' && !!p.lmp_date;
   const nicknames = ['', '', '', ''];
   for (const b of babies) if (b.position >= 1 && b.position <= 4) nicknames[b.position - 1] = b.nickname ?? '';
+  if (conceptionMode) return { dateMode: 'conception', date: toFrDate(addDays(p.lmp_date!, 14)), multiplicity: p.multiplicity, nicknames, topics: p.topics ?? [] };
   return { dateMode: lmpMode ? 'lmp' : 'due', date: toFrDate(lmpMode ? p.lmp_date! : p.due_date), multiplicity: p.multiplicity, nicknames, topics: p.topics ?? [] };
 }
 
@@ -77,7 +79,7 @@ export default function EditPregnancy() {
     setError(null);
     try {
       const unchangedDue = v.due === pregnancy.due_date;
-      const source = draft.dateMode === 'lmp' ? 'lmp' : unchangedDue && pregnancy.due_date_source === 'professional' ? 'professional' : 'due_date';
+      const source = draft.dateMode === 'lmp' ? 'lmp' : draft.dateMode === 'conception' ? 'conception' : unchangedDue && pregnancy.due_date_source === 'professional' ? 'professional' : 'due_date';
       await backend.update('pregnancies', { due_date: v.due, lmp_date: v.lmp ?? null, due_date_source: source, multiplicity: draft.multiplicity, topics: draft.topics }, [eq('id', pregnancy.id)]);
       for (const b of removed) await backend.remove('expected_babies', [eq('id', b.id)]);
       for (let i = 0; i < n; i++) {
@@ -105,7 +107,7 @@ export default function EditPregnancy() {
       {error ? <Banner tone="danger">{error}</Banner> : null}
       <PregnancyForm value={draft} onChange={setDraft} errors={errors} />
       <Text variant="caption" muted>La date retenue reste celle donnée par votre sage-femme ou votre médecin : l’application l’affiche sans l’interpréter.</Text>
-      <Button label="Enregistrer les modifications" size="lg" loading={saving} onPress={save} />
+      <Button label="Enregistrer les modifications" size="lg" loading={saving} onPress={save} testID="preg-edit-save" />
 
       <SectionTitle title={tr('pj.end.title')} />
       <Card tone="soft">

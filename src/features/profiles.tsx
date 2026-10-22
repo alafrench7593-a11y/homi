@@ -5,13 +5,14 @@ import { backend } from '@/lib/backend';
 import { addDays, frToISO, todayISO } from '@/lib/domain/dates';
 import { babiesCount, dueDateFromLmp, multiplicityLabel, type Multiplicity, validateDueDate } from '@/lib/domain/pregnancy';
 import type { Child, ChecklistKind, Pregnancy } from '@/lib/types';
-import { Chip, Field, Row, Segmented, Text } from '@/components/ui';
+import { Chip, Field, Row, Text } from '@/components/ui';
 import { CHECKLIST_TEMPLATES } from '@/content/checklists';
 import { spacing } from '@/theme/tokens';
 import { toFrDate } from '@/lib/validation';
 
 export interface PregnancyDraft {
-  dateMode: 'due' | 'lmp';
+  /** due : terme indiqué ; lmp : dernières règles ; conception : date de début de grossesse (terme = + 39 semaines, soit 41 SA) */
+  dateMode: 'due' | 'lmp' | 'conception';
   date: string; // JJ/MM/AAAA
   multiplicity: Multiplicity;
   nicknames: string[];
@@ -25,6 +26,14 @@ export const PREGNANCY_TOPICS = ['Accouchement', 'Allaitement', 'Alimentation', 
 export function validatePregnancy(d: PregnancyDraft): { errors: Record<string, string>; due?: string; lmp?: string | null } {
   const iso = frToISO(d.date);
   if (!iso) return { errors: { date: 'Format attendu : JJ/MM/AAAA.' } };
+  if (d.dateMode === 'conception') {
+    if (iso > todayISO()) return { errors: { date: 'La date de début de grossesse ne peut pas être dans le futur.' } };
+    // Convention française : 2 semaines entre le début des dernières règles et la conception (41 SA = 39 SG)
+    const lmp = addDays(iso, -14);
+    const due = dueDateFromLmp(lmp);
+    const err = validateDueDate(due);
+    return err ? { errors: { date: err } } : { errors: {}, due, lmp };
+  }
   if (d.dateMode === 'lmp') {
     if (iso > todayISO()) return { errors: { date: 'La date des dernières règles ne peut pas être dans le futur.' } };
     const due = dueDateFromLmp(iso);
@@ -40,14 +49,17 @@ export function PregnancyForm({ value, onChange, errors }: { value: PregnancyDra
   const n = babiesCount(value.multiplicity);
   return (
     <View style={{ gap: spacing.md }}>
-      <Segmented
-        label="Date connue"
-        value={value.dateMode}
-        onChange={(v) => set('dateMode', v)}
-        options={[{ value: 'due', label: 'Date prévue du terme' }, { value: 'lmp', label: 'Date des dernières règles' }]}
-      />
+      <View style={{ gap: spacing.xs }}>
+        <Text variant="label">Date connue</Text>
+        <Row wrap>
+          {([['due', 'Date prévue du terme'], ['lmp', 'Dernières règles'], ['conception', 'Début de grossesse']] as const).map(([k, l]) => (
+            <Chip key={k} label={l} selected={value.dateMode === k} onPress={() => set('dateMode', k)} testID={`preg-date-mode-${k}`} />
+          ))}
+        </Row>
+      </View>
       <Field
-        label={value.dateMode === 'due' ? 'Date prévue d’accouchement' : 'Premier jour des dernières règles'}
+        label={value.dateMode === 'due' ? 'Date prévue d’accouchement' : value.dateMode === 'lmp' ? 'Premier jour des dernières règles' : 'Date de début de grossesse'}
+        testID="preg-date"
         placeholder="JJ/MM/AAAA"
         keyboardType="numbers-and-punctuation"
         value={value.date}
@@ -55,7 +67,9 @@ export function PregnancyForm({ value, onChange, errors }: { value: PregnancyDra
         error={errors.date}
         hint={value.dateMode === 'due'
           ? 'Celle indiquée par votre sage-femme ou votre médecin. Elle sert à adapter les semaines et les contenus.'
-          : 'Le terme sera estimé à 41 semaines d’aménorrhée (convention française). Vous pourrez le corriger après l’échographie.'}
+          : value.dateMode === 'lmp'
+            ? 'Le terme sera estimé à 41 semaines d’aménorrhée (convention française). Vous pourrez le corriger après l’échographie.'
+            : 'Date de conception indiquée par un professionnel (par exemple après une FIV). Le terme sera estimé à 39 semaines de grossesse : à confirmer avec votre sage-femme ou votre médecin.'}
       />
       <View style={{ gap: spacing.xs }}>
         <Text variant="label">Combien de bébés ?</Text>
@@ -106,7 +120,7 @@ export async function createPregnancy(householdId: string, userId: string, d: Pr
   const v = validatePregnancy(d);
   if (!v.due) throw new Error(Object.values(v.errors)[0]);
   const [p] = await backend.insert<Pregnancy>('pregnancies', {
-    household_id: householdId, carrier_user_id: userId, due_date: v.due, lmp_date: v.lmp, due_date_source: d.dateMode === 'lmp' ? 'lmp' : 'due_date',
+    household_id: householdId, carrier_user_id: userId, due_date: v.due, lmp_date: v.lmp, due_date_source: d.dateMode === 'lmp' ? 'lmp' : d.dateMode === 'conception' ? 'conception' : 'due_date',
     multiplicity: d.multiplicity, status: 'active', topics: d.topics,
   });
   const n = babiesCount(d.multiplicity);

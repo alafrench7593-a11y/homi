@@ -3,6 +3,9 @@
  * rendez-vous confirmés jamais déplacés, rappels, calendrier vaccinal versionné, plusieurs enfants, séparation des
  * profils, « Mes actions du jour ».
  */
+jest.mock('@expo/vector-icons', () => ({ Feather: () => null }));
+jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
+
 import { SYMPTOM_CARE, SYMPTOMS, EAT_AVOID, EAT_HYGIENE, EAT_INTERESTING, NUTRIENTS, SUPPLEMENT_NOTICE } from '@/content/pregnancyCare';
 import { FR_2026 } from '@/content/vaccineCalendars/fr-2026';
 import { confirmedOutsideWindow, FORBIDDEN_PHRASES, frequentAt, pregnancySummary, reminderDates, safetyLevel, symptomCard, symptomsFor, ultrasoundWindows, windowState, windowToShow } from '@/lib/domain/pregnancyCare';
@@ -11,13 +14,24 @@ import { actionAllowed, actionProfile, availableActions, CHILD_ONLY, CYCLE_ONLY,
 import { appointmentRelevant, reminderRelevant, type RelevanceCtx } from '@/lib/journeys/relevance';
 import { addDays } from '@/lib/domain/dates';
 import { dueDateFromLmp } from '@/lib/domain/pregnancy';
+import { validatePregnancy } from '@/features/profiles';
 import { FR } from '@/i18n/dictionaries';
 const fr = FR as Record<string, string>;
 
 const LMP = '2026-01-05';
+const fr2 = (iso: string) => iso.split('-').reverse().join('/');
 const DUE = dueDateFromLmp(LMP); // 41 SA
 
 describe('calendrier automatique de grossesse', () => {
+  it('trois points de départ : dernières règles, début de grossesse (conception) ou terme indiqué', () => {
+    const fromLmp = validatePregnancy({ dateMode: 'lmp', date: '05/01/2026', multiplicity: 'single', nicknames: [], topics: [] });
+    const fromConception = validatePregnancy({ dateMode: 'conception', date: '19/01/2026', multiplicity: 'single', nicknames: [], topics: [] });
+    const fromDue = validatePregnancy({ dateMode: 'due', date: fr2(DUE), multiplicity: 'single', nicknames: [], topics: [] });
+    expect(fromLmp).toMatchObject({ due: DUE, lmp: LMP });
+    expect(fromConception).toMatchObject({ due: DUE, lmp: LMP }); // conception + 39 semaines = 41 SA
+    expect(fromDue.due).toBe(DUE);
+    expect(validatePregnancy({ dateMode: 'conception', date: '01/01/2099', multiplicity: 'single', nicknames: [], topics: [] }).errors.date).toMatch(/futur/);
+  });
   it('SA, SG, trimestre, terme', () => {
     const s = pregnancySummary(DUE, addDays(LMP, 12 * 7 + 3));
     expect(s).toMatchObject({ weeksSA: 12, extraDays: 3, weeksSG: 10, trimester: 1, lmp: LMP, due: DUE });

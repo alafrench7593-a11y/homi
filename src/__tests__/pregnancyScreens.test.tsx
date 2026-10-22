@@ -147,7 +147,11 @@ describe(`grossesse (${Platform.OS})`, () => {
     expect(appts[0]).toMatchObject({ time_set: false, calendar_keys: ['echo_1'] });
     expect(appts[0].location ?? null).toBeNull();
     expect(ids(r, 'echo-appt-echo_1')).toHaveLength(1);
-    // rappels de la 2e échographie : un mois, deux semaines, une semaine avant
+    // rappels de la 2e échographie : un mois, deux semaines, une semaine avant — toujours gratuits, même après
+    // la limite de 5 rappels personnels de la version gratuite
+    const me = (await backend.auth.getSession())!.userId;
+    for (let i = 0; i < 5; i++) await backend.insert('reminders', { user_id: me, category: 'custom', title: `Perso ${i}`, schedule: { type: 'daily', hour: 9, minute: 0 }, enabled: true, journey_type: 'pregnancy' });
+    await expect(backend.insert('reminders', { user_id: me, category: 'custom', title: 'Perso 6', schedule: { type: 'daily', hour: 9, minute: 0 }, enabled: true, journey_type: 'pregnancy' })).rejects.toThrow(/Limite/);
     await press(r, 'echo-remind-echo_2');
     await press(r, 'care-rem-month'); await press(r, 'care-rem-week');
     await press(r, 'care-rem-save', 400);

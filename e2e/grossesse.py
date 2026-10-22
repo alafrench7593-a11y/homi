@@ -140,6 +140,18 @@ def run(p):
     R['terme_corrige_recalcul'] = '13 SA' in t
     R['terme_corrige_rdv_non_deplaces'] = demo(pg, f"s => s.tables.appointments.find(a => a.id === '{a1['id']}').starts_at") == a1['starts_at'] and demo(pg, "s => (s.tables.appointments.find(a => (a.calendar_keys || []).includes('echo_3')) || {}).starts_at") == t3_before
     R['terme_corrige_rdv_signale'] = len([x for x in pg.evaluate("() => [...document.querySelectorAll('[data-testid^=\"preg-cal-moved-\"]')].map(e => e.getAttribute('data-testid'))")]) >= 1
+    # date de début de grossesse (conception) saisie dans le formulaire : terme = conception + 39 semaines (41 SA)
+    conception = today - timedelta(days=56)
+    go(pg, '/pregnancy/edit', 2800)
+    tid(pg, 'preg-date-mode-conception').click(); pg.wait_for_timeout(300)
+    tid(pg, 'preg-date').fill(fr(conception))
+    tid(pg, 'preg-edit-save').click(); pg.wait_for_timeout(2000)
+    p = demo(pg, f"s => s.tables.pregnancies.find(x => x.id === '{pid}')")
+    R['conception_terme_calcule'] = p['due_date'] == (conception + timedelta(days=273)).isoformat() and p['due_date_source'] == 'conception'
+    R['conception_rdv_confirmes_inchanges'] = demo(pg, f"s => s.tables.appointments.find(a => a.id === '{a1['id']}').starts_at") == a1['starts_at']
+    go(pg, '/pregnancy/calendar', 3000)
+    t = T(pg)
+    R['conception_resume'] = '10 SA' in t and 'date de début de grossesse' in t
     # grossesse multiple : pas de calendrier supplémentaire automatique
     mutate(pg, f"s => {{ s.tables.pregnancies.find(x => x.id === '{pid}').multiplicity = 'twins'; }}")
     go(pg, '/pregnancy/calendar', 3000)
