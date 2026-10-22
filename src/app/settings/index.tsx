@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import Constants from 'expo-constants';
 import { Screen } from '@/components/Screen';
 import { DemoBanner } from '@/components/Family';
-import { Banner, Button, Card, Chip, Divider, Field, ListRow, Row, Segmented, SectionTitle, Text, Toggle } from '@/components/ui';
+import { Banner, Button, Card, Chip, Divider, Field, type IconName, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { BRAND } from '@/config/brand';
 import { useAuth } from '@/lib/auth';
@@ -23,6 +23,7 @@ import { defaultRegion, localeInfo, REGIONS } from '@/i18n/locales';
 /** « Nuit » : thème nocturne doux. Le magasin d'état l'accepte à l'exécution (ThemeProvider sait l'afficher). */
 type Appearance = 'auto' | 'light' | 'dark' | 'night';
 const APPEARANCE_KEYS: Appearance[] = ['auto', 'light', 'dark', 'night'];
+const APPEARANCE_ICON: Record<Appearance, IconName> = { auto: 'clock', light: 'sun', dark: 'moon', night: 'star' };
 const PHASES: SkyPhase[] = ['dawn', 'day', 'dusk', 'night'];
 const hhmm = (d: Date) => formatTime(d);
 
@@ -114,7 +115,12 @@ export default function SettingsScreen() {
       <SectionTitle title={tr('settings.appearance')} />
       <Card>
         <View style={{ gap: spacing.sm }}>
-          <Segmented label={tr('settings.appearance.label')} options={APPEARANCE_KEYS.map((value) => ({ value, label: tr(`settings.appearance.${value}` as const) }))} value={appearance} onChange={chooseAppearance} />
+          {/* Libellés complets (« Toujours clair »…) : des pastilles qui passent à la ligne plutôt qu'un sélecteur trop étroit */}
+          <View accessibilityRole="radiogroup" accessibilityLabel={tr('settings.appearance.label')} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+            {APPEARANCE_KEYS.map((value) => (
+              <Chip key={value} label={tr(`settings.appearance.${value}` as const)} icon={APPEARANCE_ICON[value]} selected={appearance === value} onPress={() => chooseAppearance(value)} testID={`appearance-${value}`} />
+            ))}
+          </View>
           <Text variant="small" muted>
             {tr(`settings.appearance.${appearance}Hint` as const)}
           </Text>

@@ -34,7 +34,7 @@ import { Manrope_700Bold } from '@expo-google-fonts/manrope/700Bold';
 import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument-serif/400Regular_Italic';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router';
 import { LiquidAurora } from '@/components/LiquidAurora';
-import { VideoBackdrop } from '@/components/VideoBackdrop';
+import { useLowPower, VideoBackdrop } from '@/components/VideoBackdrop';
 import { JourneyGuard } from '@/components/JourneyGuard';
 import { DemoBar } from '@/components/DemoBar';
 import { OfflinePill } from '@/components/OfflinePill';
@@ -202,6 +202,7 @@ function WebFrame({ children }: { children: React.ReactNode }) {
 function Backdrop() {
   const t = useTheme();
   const reduce = useReduceMotion();
+  const lowPower = useLowPower();
   const skyOverride = useUiStore((s) => s.skyOverride);
   const preference = useUiStore((s) => s.themePreference);
   const scope = useScope();
@@ -229,7 +230,7 @@ function Backdrop() {
       ) : null}
       {mounted.light ? (
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: v }]}>
-          <DaySky hour={hour} profile={skyProfileFor(scope.scope)} />
+          <DaySky hour={hour} profile={skyProfileFor(scope.scope)} still={lowPower} />
         </Animated.View>
       ) : null}
     </View>

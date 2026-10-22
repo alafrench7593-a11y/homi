@@ -10,7 +10,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 
 /** Mode économie d'énergie (iPhone : « Mode économie d'énergie », Android : économiseur de batterie). */
-function useLowPower(): boolean {
+export function useLowPower(): boolean {
   const [low, setLow] = useState(false);
   useEffect(() => {
     if (Platform.OS === 'web') return;
