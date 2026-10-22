@@ -73,7 +73,7 @@ export default function EatWellPregnant() {
       </Row>
       <Text variant="label">{tr('care.eat.trimester')}</Text>
       <Row wrap>
-        {([1, 2, 3] as const).map((n) => <Chip key={n} label={tr('care.cal.trimester', { n }) + (n === current ? ` · ${tr('care.eat.now')}` : '')} selected={trimester === n} onPress={() => setTrimester(n)} testID={`eat-trimester-${n}`} />)}
+        {([1, 2, 3] as const).map((n) => <Chip key={n} label={tr('care.cal.trimester', { count: n }) + (n === current ? ` · ${tr('care.eat.now')}` : '')} selected={trimester === n} onPress={() => setTrimester(n)} testID={`eat-trimester-${n}`} />)}
       </Row>
       <Text variant="label">{tr('care.eat.prefs')}</Text>
       <Row wrap>

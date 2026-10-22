@@ -119,7 +119,7 @@ export const care: Messages<typeof fr> = {
   'care.cal.sa': "{w} wks (LMP)",
   'care.cal.saPlus': "{w} wks + {d} d (LMP)",
   'care.cal.sg': "{w} wks",
-  'care.cal.trimester': "Trimester {n}",
+  'care.cal.trimester': { one: "Trimester {count}", other: "Trimester {count}" },
   'care.cal.due': "Due date {date}",
   'care.cal.fixDate': "Correct the date (after a scan, for example)",
   'care.cal.source.lmp': "Calculated from the first day of your last period.",

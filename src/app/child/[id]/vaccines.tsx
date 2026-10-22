@@ -141,6 +141,7 @@ export default function Vaccines() {
       </View>
 
       <SectionTitle title={tr('vx.next')} />
+      <Text variant="caption" muted testID="vaccine-confirm-with">{tr('vx.indicative')}</Text>
       {loading && !schedule ? <Skeleton rows={2} /> : !nextVisits.length ? <Text muted>{tr('vx.nothingSoon')}</Text> : nextVisits.map((v) => (
         <Card key={`${v.months}-${v.toMonths ?? ''}`}>
           <View testID={`vaccine-next-${v.months}`}>

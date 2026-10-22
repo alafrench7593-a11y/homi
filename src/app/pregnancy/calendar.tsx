@@ -55,7 +55,7 @@ export default function PregnancyCalendar() {
           <Row wrap style={{ gap: spacing.md }}>
             <Stat label={tr('care.cal.sa.label')} value={s.extraDays ? tr('care.cal.saPlus', { w: s.weeksSA, d: s.extraDays }) : tr('care.cal.sa', { w: s.weeksSA })} />
             <Stat label={tr('care.cal.sg.label')} value={tr('care.cal.sg', { w: s.weeksSG })} />
-            <Stat label={tr('care.cal.trimester.label')} value={tr('care.cal.trimester', { n: s.trimester })} />
+            <Stat label={tr('care.cal.trimester.label')} value={tr('care.cal.trimester', { count: s.trimester })} />
           </Row>
           <Text variant="small">{tr('care.cal.due', { date: formatDate(`${s.due}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Text>
           <Text variant="caption" muted>{tr(`care.cal.source.${pregnancy.due_date_source}` as TKey)}</Text>
@@ -63,7 +63,7 @@ export default function PregnancyCalendar() {
         </View>
       </Card>
 
-      {multiple ? <Banner tone="info" title={tr('care.cal.multipleTitle')}>{tr('care.cal.multipleBody')}</Banner> : null}
+      {multiple ? <View testID="preg-cal-multiple"><Banner tone="info" title={tr('care.cal.multipleTitle')}>{tr('care.cal.multipleBody')}</Banner></View> : null}
       {moved.map((m) => {
         const a = echoAppts.find((x) => x.id === m.id)!;
         return (

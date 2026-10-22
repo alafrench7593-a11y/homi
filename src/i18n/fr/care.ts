@@ -117,7 +117,7 @@ export const care = {
   'care.cal.sa': "{w} SA",
   'care.cal.saPlus': "{w} SA + {d} j",
   'care.cal.sg': "{w} SG",
-  'care.cal.trimester': "{n}e trimestre",
+  'care.cal.trimester': { one: "1er trimestre", other: "{count}e trimestre" },
   'care.cal.due': "Terme prévu le {date}",
   'care.cal.fixDate': "Corriger la date (après une échographie, par exemple)",
   'care.cal.source.lmp': "Calculé à partir de la date des dernières règles.",

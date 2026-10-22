@@ -200,8 +200,15 @@ def run(p):
     t = T(pg)
     R['rdv_noe_seulement_sur_noe'] = 'Orthophoniste de Noé' in t and 'Pédiatre de Lina' not in t
     go(pg, f'/child/{lina}/vaccines', 2800)
-    tid(pg, 'vaccine-remind-2').click() if pg.locator('[data-testid="vaccine-remind-2"]').count() else None
-    pg.wait_for_timeout(1000)
+    if pg.locator('[data-testid="vaccine-remind-2"]').count():
+        tid(pg, 'vaccine-remind-2').click(); pg.wait_for_timeout(800)
+        for c in ['care-rem-week', 'care-rem-two_weeks', 'care-rem-month']:
+            loc = pg.locator(f'[data-testid="{c}"]')
+            if loc.count() and loc.first.get_attribute('aria-disabled') != 'true':
+                loc.first.click(); break
+        tid(pg, 'care-rem-save').click(); pg.wait_for_timeout(1000)
+        pg.keyboard.press('Escape')
+    pg.wait_for_timeout(600)
     R['vaccins_rattaches_a_lina'] = 'Lina' in T(pg) and demo(pg, f"s => s.tables.reminders.filter(r => (r.deep_link || '').includes('/vaccines')).every(r => r.child_id === '{lina}')")
 
     # ================================================================ Saisie rapide « Lina a bu 150 ml à 14 h »

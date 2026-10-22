@@ -279,8 +279,8 @@ def run(p):
     R['cartes_enfant_plus_grand'] = set(k for k in ['bottle', 'breastfeed', 'diaper', 'sleep', 'meal', 'medication', 'appointment'] if has(pg, f'track-card-{k}')) == {'meal', 'sleep', 'medication', 'appointment'}
     subject('preg')
     go(pg, '/track', 3200)
-    shown = [k for k in ['bottle', 'breastfeed', 'diaper', 'pumping', 'mother_sleep', 'mood', 'meal', 'appointment'] if has(pg, f'track-card-{k}')]
-    R['cartes_grossesse'] = set(shown) == {'mother_sleep', 'mood', 'meal', 'appointment'}
+    shown = [k for k in ['bottle', 'breastfeed', 'diaper', 'pumping', 'feel', 'mother_sleep', 'mood', 'eat', 'meal', 'appointment'] if has(pg, f'track-card-{k}')]
+    R['cartes_grossesse'] = set(shown) == {'feel', 'mother_sleep', 'mood', 'eat'}
     tid(pg, 'track-see-all').click(); pg.wait_for_timeout(800)
     R['grossesse_jamais_biberon_tetee_couche'] = not any(has(pg, f'track-card-{k}') for k in ['bottle', 'breastfeed', 'diaper', 'pumping'])
     pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
@@ -289,7 +289,7 @@ def run(p):
     pg.reload(); pg.wait_for_timeout(3500)
     go(pg, '/track', 3200)
     bg = pg.evaluate("() => { const el = document.querySelector('[data-testid=\"track-card-mood\"] [role=\"button\"]'); return el ? getComputedStyle(el).backgroundColor : null; }")
-    R['cartes_mode_nuit_bleu'] = bg == 'rgb(20, 26, 54)'
+    R['cartes_mode_nuit_verre_sombre'] = bg == 'rgba(255, 255, 255, 0.06)'
     pg.screenshot(path=f'{SHOTS}/cartes_suivi_nuit.png', full_page=True)
     b.close()
 
