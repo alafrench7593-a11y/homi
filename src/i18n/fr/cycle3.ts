@@ -210,6 +210,7 @@ export const cycle3 = {
   'c3.cal.lgSymptoms': 'Symptômes notés',
   'c3.cal.lgIntimacy': 'Rapport',
   'c3.cal.lgContraception': 'Contraception prise',
+  'c3.cal.lgReminder': 'Rappel prévu',
   'c3.cal.select': 'Sélectionner mes jours de règles',
   'c3.cal.selected': { one: '{count} jour sélectionné', other: '{count} jours sélectionnés' },
   'c3.cal.markPeriod': 'Ce sont mes règles',

@@ -204,6 +204,7 @@ export const cycle3: Messages<typeof fr> = {
   'c3.cal.lgSymptoms': 'Symptoms logged',
   'c3.cal.lgIntimacy': 'Sex',
   'c3.cal.lgContraception': 'Contraception taken',
+  'c3.cal.lgReminder': 'Reminder planned',
   'c3.cal.select': 'Select my period days',
   'c3.cal.selected': { one: '{count} day selected', other: '{count} days selected' },
   'c3.cal.markPeriod': 'These are my period days',

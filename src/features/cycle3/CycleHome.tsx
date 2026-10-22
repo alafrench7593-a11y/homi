@@ -64,6 +64,9 @@ export function CycleHome({ goal }: { goal: Goal }) {
     today: data.today, periods: data.periods, est: data.est, logs: data.logs, todayItems: todayState.pills, todayPain: todayState.painIntensity, goal, premium: trends.premium,
     feedback: Object.fromEntries((feedbackQ.data ?? []).map((f) => [f.insight_key, f.helpful ? 'helpful' : 'not_me'])),
   }), [data, todayState, goal, trends.premium, feedbackQ.data]);
+  // Jours où un rappel ponctuel ou hebdomadaire est prévu (les rappels quotidiens chargeraient tout le calendrier)
+  const reminderDays = useMemo(() => new Set((reminders ?? []).filter((r) => r.enabled && r.schedule.type !== 'daily' && r.schedule.type !== 'interval' && reminderRelevant(r, ctx))
+    .map((r) => nextOccurrence(r.schedule)).filter((d): d is Date => !!d).map((d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)), [reminders, ctx]);
   const nextReminder = (reminders ?? []).filter((r) => r.enabled && reminderRelevant(r, ctx)).map((r) => ({ r, at: nextOccurrence(r.schedule) }))
     .filter((x) => x.at).sort((a, b) => a.at!.getTime() - b.at!.getTime())[0];
 
@@ -117,7 +120,7 @@ export function CycleHome({ goal }: { goal: Goal }) {
   return (
     <View testID="c3-home" style={{ gap: spacing.md }}>
       <CycleCalendar data={data.calendar} est={data.est} today={data.today} showIntimacy={data.intimate && prefs.show_intimacy_icons !== false && !intimateLocked}
-        onDayPress={setDay} selecting={selecting} selected={selected}
+        onDayPress={setDay} selecting={selecting} selected={selected} reminderDays={reminderDays}
         onToggle={(iso) => setSelected((s) => { const n = new Set(s); if (n.has(iso)) n.delete(iso); else n.add(iso); return n; })} />
 
       {/* Sélection de plusieurs jours de règles */}

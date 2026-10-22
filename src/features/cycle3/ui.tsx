@@ -21,6 +21,40 @@ export const CAL = {
   symptom: '#F2C46D', intimacy: '#F4B6C2', contraception: '#8FD3B0', selected: '#B5523C',
 };
 
+/** Couleurs du calendrier en verre dépoli, jour et nuit (contrastes du texte ≥ 4,5:1 sur le voile). */
+export interface CalPalette {
+  glass: string; border: string; rim: string; sheen: string; wash: [string, string, string]; haloA: string; haloB: string; shadow: string;
+  text: string; soft: string; muted: string; line: string; chip: string;
+  period: [string, string]; periodText: string; predicted: string; predictedBorder: string; predictedText: string;
+  fertile: string; fertileText: string; ovulation: string;
+  todayRing: [string, string]; todayGlow: string; todayShadow: string; todayInner: string;
+  symptom: string; intimacy: string; contraception: string; reminder: string;
+}
+const CAL_DAY: CalPalette = {
+  glass: 'rgba(255,250,248,0.58)', border: 'rgba(255,255,255,0.85)', rim: 'rgba(255,255,255,0.95)', sheen: 'rgba(255,255,255,0.55)',
+  wash: ['rgba(247,196,208,0.42)', 'rgba(226,150,120,0.14)', 'rgba(196,178,244,0.40)'], haloA: 'rgba(196,174,255,0.5)', haloB: 'rgba(255,186,202,0.55)', shadow: '#B4507A',
+  text: '#2A1A26', soft: '#5E4A57', muted: '#77606D', line: 'rgba(42,26,38,0.08)', chip: 'rgba(255,255,255,0.6)',
+  period: ['#B85A43', '#A0432C'], periodText: '#FFFFFF', predicted: 'rgba(226,128,150,0.15)', predictedBorder: '#D9839A', predictedText: '#8E3550',
+  fertile: 'rgba(143,114,226,0.18)', fertileText: '#4F3AA6', ovulation: '#7A5CE0',
+  todayRing: ['#F08AA6', '#A88BFF'], todayGlow: 'rgba(240,138,166,0.18)', todayShadow: '#E9587C', todayInner: 'rgba(255,250,248,0.96)',
+  symptom: '#C27A2C', intimacy: '#C94F7C', contraception: '#2F8A5B', reminder: '#3D6293',
+};
+const CAL_NIGHT: CalPalette = {
+  glass: 'rgba(28,18,38,0.52)', border: 'rgba(255,255,255,0.14)', rim: 'rgba(255,255,255,0.22)', sheen: 'rgba(255,255,255,0.08)',
+  wash: ['rgba(255,134,168,0.16)', 'rgba(201,99,75,0.10)', 'rgba(169,139,255,0.18)'], haloA: 'rgba(169,139,255,0.26)', haloB: 'rgba(255,134,168,0.22)', shadow: '#000000',
+  text: '#F6F1F3', soft: '#D6CCD6', muted: '#B3A6B8', line: 'rgba(255,255,255,0.08)', chip: 'rgba(255,255,255,0.08)',
+  period: ['#C2604A', '#A9472F'], periodText: '#FFFFFF', predicted: 'rgba(244,182,194,0.18)', predictedBorder: '#F4B6C2', predictedText: '#FBDCE2',
+  fertile: 'rgba(167,139,250,0.32)', fertileText: '#ECE6FF', ovulation: '#D9CCFF',
+  todayRing: ['#FF9CB8', '#B9A2FF'], todayGlow: 'rgba(255,134,168,0.16)', todayShadow: '#FF86A8', todayInner: 'rgba(30,20,40,0.92)',
+  symptom: '#F2C46D', intimacy: '#F4B6C2', contraception: '#8FD3B0', reminder: '#9DBAE6',
+};
+/** Mode nuit (bébé à 3 h du matin) : même calendrier, lumière encore réduite. */
+const CAL_DIM: CalPalette = { ...CAL_NIGHT, glass: 'rgba(20,10,17,0.78)', haloA: 'rgba(169,139,255,0.06)', haloB: 'rgba(255,134,168,0.05)', sheen: 'rgba(255,255,255,0.03)', todayGlow: 'rgba(232,154,176,0.08)' };
+export function useCalPalette(): CalPalette {
+  const t = useTheme();
+  return t.name === 'night' ? CAL_DIM : t.isDark ? CAL_NIGHT : CAL_DAY;
+}
+
 /** Pastille : une saisie en un geste. */
 export function Pill({ id, label, icon, selected, onPress, category, disabled, testID }: {
   id: string; label: string; icon?: IconName; selected: boolean; onPress: () => void; category?: CategoryKey; disabled?: boolean; testID?: string;
