@@ -18,3 +18,4 @@ export { cm1 } from './cm1';
 export { cm2 } from './cm2';
 export { cm3 } from './cm3';
 export { dom } from './dom';
+export { cocoon } from './cocoon';

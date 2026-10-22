@@ -35,6 +35,9 @@ interface UiState {
   /** Raccourcis choisis (null = automatiques selon le parcours). */
   quickShortcuts: string[] | null;
   setQuickShortcuts: (keys: string[] | null) => void;
+  /** « Le cocon du jour » : les 4 actions favorites de « + Ajouter » (null = selon l'âge). */
+  cocoonFavorites: string[] | null;
+  setCocoonFavorites: (keys: string[] | null) => void;
   /** Carte « Mon cycle » de l'accueil : éléments affichés (dans l'ordre) et raccourcis (null = par défaut). */
   cycleCardItems: string[] | null;
   cycleCardShortcuts: string[] | null;
@@ -93,6 +96,8 @@ export const useUiStore = create<UiState>()(
       setHomeLayout: (homeOrder, homeHidden) => set({ homeOrder, homeHidden }),
       quickShortcuts: null,
       setQuickShortcuts: (quickShortcuts) => set({ quickShortcuts }),
+      cocoonFavorites: null,
+      setCocoonFavorites: (cocoonFavorites) => set({ cocoonFavorites }),
       cycleCardItems: null,
       cycleCardShortcuts: null,
       setCycleCard: (p) => set((st) => ({

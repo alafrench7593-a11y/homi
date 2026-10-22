@@ -14,15 +14,15 @@ import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
 import { PostpartumHomeCard } from '@/features/postpartum';
-import { ChildToday, orderedHomeCards, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
-import { ChildHomeCard, FamilyOverview, NoJourneyCard } from '@/features/journeys';
+import { orderedHomeCards, PregnancyHero, QuickActions, setCycleRoute, UpcomingCard } from '@/features/home';
+import { FamilyOverview, NoJourneyCard } from '@/features/journeys';
 import { useActivePregnancy, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
-import { SleepNowCard } from '@/features/sleep';
 import { ChildTrackCards, PregnancyTrackCards } from '@/features/trackCards';
 import { HomeCommunityCard } from '@/features/communitySocial';
 import { CycleHome } from '@/features/cycle3/CycleHome';
+import { Cocoon, CocoonAdd } from '@/features/cocoon/Cocoon';
 import { quickAllowed, quickFor, type Scope } from '@/lib/journeys/tools';
 import type { Journey } from '@/lib/types';
 import { greeting } from '@/lib/domain/dates';
@@ -68,6 +68,8 @@ export default function Home() {
 
   const unread = inbox?.filter((n) => !n.read_at).length ?? 0;
   const child = scope.child;
+  // Profil enfant : « Le cocon du jour » (bulles, cocon, frise, trois informations, « + Ajouter », un conseil)
+  const childScope = (scope.scope === 'baby' || scope.scope === 'child') && child ? scope.scope : null;
   const cycleMode = scope.scope === 'avoid' || scope.scope === 'ttc' || scope.scope === 'cycle' ? scope.scope : null;
   setCycleRoute(cycleMode === 'avoid' ? '/contraception' : cycleMode === 'cycle' ? '/cycle' : '/fertility');
 
@@ -100,8 +102,7 @@ export default function Home() {
     main: mainLoading ? <Skeleton kind="card" rows={1} />
       : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); }} />
       : scope.scope === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
-      : scope.scope === 'baby' && child ? <View style={{ gap: spacing.sm }}><ChildToday child={child} compact />{child.enabled_tracking.includes('sleep') ? <SleepNowCard child={child} /> : null}</View>
-      : scope.scope === 'child' && child ? <View style={{ gap: spacing.sm }}><ChildHomeCard child={child} />{child.enabled_tracking.includes('sleep') ? <SleepNowCard child={child} /> : null}</View>
+      : childScope && child ? <Cocoon key={child.id} child={child} journey={childScope} now={now} article={article} />
       : scope.scope === 'postpartum' ? <PostpartumHomeCard main />
       : scope.scope === 'family' ? <FamilyOverview />
       : cycleMode ? <CycleHome goal={cycleMode} />
@@ -140,13 +141,13 @@ export default function Home() {
     ),
   };
   // « Suivre mon cycle » : l'accueil ne montre que le calendrier, les 5 raccourcis, une carte intelligente et le prochain rappel
-  const homeCards = cycleMode && !mainLoading && !mainError ? ['main'] : orderedHomeCards(homeOrder, homeHidden);
+  const homeCards = (cycleMode || childScope) && !mainLoading && !mainError ? ['main'] : orderedHomeCards(homeOrder, homeHidden);
   // Recommandation du jour : l'article adapté s'il existe, sinon une idée de repas — sans doublon si ces cartes sont déjà affichées
   cards.recommendation = (!homeCards.includes('article') ? cards.article : null) ?? (!homeCards.includes('recipe') ? cards.recipe : null);
 
   return (
     <View style={{ flex: 1 }}>
-      <Screen bottomInset={96}>
+      <Screen bottomInset={childScope ? 156 : 96}>
         {/* En-tête */}
         {/* Ligne du haut : date à gauche ; aide, notifications, Réglages et Profil à droite. Salutation pleine largeur dessous. */}
         <View style={{ gap: 2, marginTop: spacing.xs }}>
@@ -162,7 +163,7 @@ export default function Home() {
             </Row>
           </Row>
           <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
-          {subtitle ? <Text variant="small" muted>{subtitle}</Text> : null}
+          {subtitle && !childScope ? <Text variant="small" muted>{subtitle}</Text> : null}
         </View>
 
         {/* 1. Parcours et profil actifs */}
@@ -172,7 +173,7 @@ export default function Home() {
             <Text variant="caption" muted style={{ flex: 1 }}>{tr('pj.home.journey', { name: journeyName ?? tr('pj.none') })}</Text>
             <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.edit')}</Text>
           </Tappable>}
-          <ProfileSwitcher />
+          <ProfileSwitcher variant={childScope && !mainLoading ? 'bubbles' : 'card'} />
         </Appear>
         {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 
@@ -183,12 +184,15 @@ export default function Home() {
           return <Appear key={key} kind={key === 'main' ? 'pop' : key === 'assistant' ? 'btn' : 'soft'} delay={0.2 + Math.min(i, 6) * 0.08}><View testID={`home-card-${key}`}>{node}</View></Appear>;
         })}
 
-        <Appear kind="side" delay={0.7}>
-          <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID="all-tools" />
-        </Appear>
+        {childScope ? null : (
+          <Appear kind="side" delay={0.7}>
+            <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID="all-tools" />
+          </Appear>
+        )}
 
         <DemoBanner />
       </Screen>
+      {childScope && child && !mainLoading ? <CocoonAdd key={child.id} child={child} journey={childScope} /> : null}
     </View>
   );
 }

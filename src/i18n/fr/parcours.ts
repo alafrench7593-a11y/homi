@@ -490,6 +490,8 @@ export const parcours = {
   'pj.kind.baby': 'Bébé',
   'pj.kind.child': 'Enfant',
   'pj.switcher.add': 'Ajouter un profil',
+  'pj.bubble.add': 'Ajouter',
+  'pj.bubble.all': 'Profils',
   'pj.simple.title': 'Mode simple',
   'pj.simple.body': 'Activé : l’essentiel seulement (accueil réduit, quelques outils par catégorie). Désactivé : toutes les fonctions avancées sont visibles.',
   'pj.tools.more': 'Voir plus ({count})',

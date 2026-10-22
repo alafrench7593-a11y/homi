@@ -1,6 +1,6 @@
 /** Composants transverses : sélecteur de profil, bouton « Poser une question », accès premium, urgences. */
 import React, { useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -14,6 +14,7 @@ import { Banner, Button, Card, haptic, Icon, type IconName, Row, Text } from './
 import { initialsColor } from './Illustrations';
 import { Sheet, useToast } from './Overlays';
 import { Tappable } from '@/components/Tappable';
+import { ChildAvatar } from '@/features/childAvatar';
 
 function Avatar({ label, color, icon, size = 40 }: { label?: string; color: string; icon?: IconName; size?: number }) {
   return (
@@ -24,7 +25,24 @@ function Avatar({ label, color, icon, size = 40 }: { label?: string; color: stri
 }
 
 /** Passer d'une grossesse à un enfant, d'un enfant à l'autre, au profil familial ou à « Moi ». */
-export function ProfileSwitcher() {
+/** Bulle d'un profil (accueil d'un enfant) : photo ou initiales au centre, prénom dessous. */
+function Bubble({ label, active, onPress, testID, children, a11y }: { label: string; active?: boolean; onPress: () => void; testID: string; children: React.ReactNode; a11y: string }) {
+  const t = useTheme();
+  return (
+    <Tappable testID={testID} accessibilityRole={active === undefined ? 'button' : 'radio'} accessibilityState={active === undefined ? undefined : { selected: active }} accessibilityLabel={a11y}
+      onPress={() => { haptic('selection'); onPress(); }} style={({ pressed }) => ({ alignItems: 'center', gap: 4, width: 68, opacity: pressed ? 0.8 : 1, transform: [{ scale: pressed ? 0.96 : 1 }] })}>
+      <View style={{ width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center', borderWidth: 2.5,
+        borderColor: active ? (t.isDark ? '#FFD27A' : '#E0607E') : (t.isDark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.9)'),
+        backgroundColor: t.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.55)',
+        shadowColor: active ? '#E0607E' : '#B4507A', shadowOpacity: active ? 0.35 : 0.1, shadowRadius: active ? 12 : 8, shadowOffset: { width: 0, height: 4 } }}>
+        {children}
+      </View>
+      <Text variant="caption" weight={active ? 'bold' : 'medium'} numberOfLines={1} center>{label}</Text>
+    </Tappable>
+  );
+}
+
+export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubbles' } = {}) {
   const t = useTheme();
   const [open, setOpen] = useState(false);
   const { subject, setSubject } = useActiveSubject();
@@ -59,27 +77,7 @@ export function ProfileSwitcher() {
   const current = items.find((i) => i.active) ?? items[0];
   const others = items.filter((i) => i !== current).slice(0, 3);
 
-  return (
-    <>
-      <Tappable
-        accessibilityRole="button"
-        testID="profile-switcher"
-        accessibilityLabel={tr('pj.switcher.a11y', { name: current.label })}
-        onPress={() => { haptic('selection'); setOpen(true); }}
-        style={({ pressed }) => [styles.switcher, { backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderColor: t.colors.border }]}
-      >
-        <View style={{ flexDirection: 'row' }}>
-          {current.avatar}
-          {others.map((o, i) => (
-            <View key={o.key} style={{ marginLeft: -12, zIndex: -i - 1, opacity: 0.9, borderWidth: 2, borderColor: t.colors.surface, borderRadius: 22 }}>{o.avatar}</View>
-          ))}
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text weight="bold">{current.label}</Text>
-          <Text variant="caption" muted>{current.sub}</Text>
-        </View>
-        <Icon name="chevron-down" size={18} color={t.colors.textMuted} />
-      </Tappable>
+  const sheet = (
       <Sheet visible={open} onClose={() => setOpen(false)} title={tr('pj.switcher.title')}>
         {items.map((it) => (
           <Tappable
@@ -110,6 +108,52 @@ export function ProfileSwitcher() {
           <Text weight="bold" color={t.colors.primary}>{tr('pj.switcher.add')}</Text>
         </Tappable>
       </Sheet>
+  );
+
+  // Accueil d'un enfant (« Le cocon du jour ») : les enfants en petites bulles, « Ajouter », puis tous les profils
+  if (variant === 'bubbles') {
+    return (
+      <>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingVertical: 2, paddingRight: spacing.md }} testID="profile-bubbles">
+          {(children ?? []).map((c) => (
+            <Bubble key={c.id} testID={`bubble-${c.id}`} label={c.first_name} active={subject.type === 'child' && subject.id === c.id} a11y={`${c.first_name}, ${childAge(c.birth_date).label}`} onPress={() => setSubject({ type: 'child', id: c.id })}>
+              <ChildAvatar child={c} size={50} />
+            </Bubble>
+          ))}
+          <Bubble testID="bubble-add" label={tr('pj.bubble.add')} a11y={tr('pj.switcher.add')} onPress={() => router.push('/journeys')}>
+            <Icon name="plus" size={22} color={t.colors.text} />
+          </Bubble>
+          <Bubble testID="profile-switcher" label={tr('pj.bubble.all')} a11y={tr('pj.switcher.a11y', { name: current.label })} onPress={() => setOpen(true)}>
+            <Icon name="users" size={20} color={t.colors.text} />
+          </Bubble>
+        </ScrollView>
+        {sheet}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Tappable
+        accessibilityRole="button"
+        testID="profile-switcher"
+        accessibilityLabel={tr('pj.switcher.a11y', { name: current.label })}
+        onPress={() => { haptic('selection'); setOpen(true); }}
+        style={({ pressed }) => [styles.switcher, { backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderColor: t.colors.border }]}
+      >
+        <View style={{ flexDirection: 'row' }}>
+          {current.avatar}
+          {others.map((o, i) => (
+            <View key={o.key} style={{ marginLeft: -12, zIndex: -i - 1, opacity: 0.9, borderWidth: 2, borderColor: t.colors.surface, borderRadius: 22 }}>{o.avatar}</View>
+          ))}
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text weight="bold">{current.label}</Text>
+          <Text variant="caption" muted>{current.sub}</Text>
+        </View>
+        <Icon name="chevron-down" size={18} color={t.colors.textMuted} />
+      </Tappable>
+      {sheet}
     </>
   );
 }

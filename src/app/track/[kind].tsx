@@ -52,7 +52,7 @@ function TrackEntry() {
   const toast = useToast();
   const inv = useInvalidate();
   // timer / planned : ouverture depuis le minuteur (« Marquer le biberon comme donné »)
-  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string }>();
+  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string; obs?: string }>();
   const kind = (params.kind ?? 'bottle') as LogKind;
   const { data: tracked } = useTrackedChildren();
   const { data: bottleChildren } = useBottleChildren();
@@ -111,7 +111,8 @@ function TrackEntry() {
   const [foods, setFoods] = useState('');
   const [texture, setTexture] = useState<Meal['texture']>(null);
   const [reaction, setReaction] = useState('');
-  const [obsKind, setObsKind] = useState<Observation['kind']>('temperature');
+  // Ouverture depuis « + Ajouter » (symptôme, note) : le type est présélectionné
+  const [obsKind, setObsKind] = useState<Observation['kind']>(() => (OBS_KINDS.some((o) => o.value === params.obs) ? params.obs as Observation['kind'] : 'temperature'));
   const [temp, setTemp] = useState('');
   const [label, setLabel] = useState('');
   const [note, setNote] = useState('');
