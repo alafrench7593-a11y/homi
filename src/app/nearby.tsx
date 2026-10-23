@@ -19,7 +19,8 @@ import { Tappable } from '@/components/Tappable';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useNearbyPlaces, usePlaceFavorites, useReportPlace, useTogglePlaceFavorite, useTownSearch, type PlaceFavorite, type ReportReason } from '@/lib/data/hooks-discoveries';
 import {
-  approxDistance, coarse, DIRECTORIES, directionsUrl, directoryUrl, distanceM, mapView, NEARBY_CONFIG, OSM_KINDS, PLACE_KINDS, validTownQuery, type Directory, type Place, type PlaceKind,
+  approxDistance, coarse, DIRECTORIES, directionsUrl, directoryUrl, distanceM, hasEquipment, mapView, NEARBY_CONFIG, OSM_KINDS, PLACE_KINDS, suitsAge, validTownQuery, widerRadius,
+  type Directory, type Equipment, type Place, type PlaceKind,
 } from '@/lib/domain/nearby';
 import { useUiStore } from '@/lib/store';
 import { formatDate, t as tr, type TKey } from '@/i18n';
@@ -29,7 +30,9 @@ import { spacing } from '@/theme/tokens';
 const REASONS: ReportReason[] = ['closed', 'hours', 'address', 'contact', 'accessibility', 'not_family', 'other'];
 const KIND_ICON: Record<PlaceKind, string> = { park: 'sun', library: 'book-open', family_cafe: 'coffee', parents_assoc: 'users', social_centre: 'home', parent_child: 'heart', breastfeeding: 'droplet', isolated_support: 'phone', public_service: 'flag' };
 const KIND_TINT: Record<PlaceKind, string> = { park: '#5E9E3A', library: '#7A5FB8', family_cafe: '#C9822B', parents_assoc: '#B4507A', social_centre: '#3E7FA6', parent_child: '#D9617A', breastfeeding: '#8C6BC9', isolated_support: '#B4507A', public_service: '#5A6B7D' };
-const RADII = [1000, 2000, 5000];
+const RADII = [1000, 2000, 5000, 10000];
+const EQUIPMENTS: Equipment[] = ['changing_table', 'highchair', 'wheelchair'];
+const AGES: { key: string; years: number }[] = [{ key: 'baby', years: 1 }, { key: 'small', years: 4 }, { key: 'school', years: 8 }];
 
 export default function Nearby() {
   const t = useTheme();
@@ -41,6 +44,8 @@ export default function Nearby() {
   const [here, setHere] = useState<{ lat: number; lon: number } | null>(null);
   const [kinds, setKinds] = useState<PlaceKind[]>(['park', 'library', 'family_cafe', 'social_centre', 'public_service']);
   const [radius, setRadius] = useState(2000);
+  const [equip, setEquip] = useState<Equipment[]>([]);
+  const [age, setAge] = useState<number | null>(null);
   const [view, setView] = useState<'map' | 'list'>('list');
   const [open, setOpen] = useState<Place | null>(null);
   const [locating, setLocating] = useState(false);
@@ -49,8 +54,8 @@ export default function Nearby() {
   const osmKinds = kinds.filter((k) => OSM_KINDS.includes(k));
   const placesQ = useNearbyPlaces(center, osmKinds, radius);
   const favs = usePlaceFavorites();
-  const places = useMemo(() => (placesQ.data ?? []).filter((p) => kinds.includes(p.kind))
-    .map((p) => ({ p, d: center ? distanceM(center, p) : 0 })).sort((a, b) => a.d - b.d), [placesQ.data, kinds, center]);
+  const places = useMemo(() => (placesQ.data ?? []).filter((p) => kinds.includes(p.kind) && equip.every((e) => hasEquipment(p, e)) && suitsAge(p, age))
+    .map((p) => ({ p, d: center ? distanceM(center, p) : 0 })).sort((a, b) => a.d - b.d), [placesQ.data, kinds, center, equip, age]);
   const directories = DIRECTORIES.filter((d) => kinds.includes(d.kind) || !OSM_KINDS.includes(d.kind));
 
   function search() {
@@ -107,6 +112,17 @@ export default function Nearby() {
       <Row wrap>
         {PLACE_KINDS.map((k) => <Chip key={k} label={tr(`nb.kind.${k}` as TKey)} icon={KIND_ICON[k] as never} selected={kinds.includes(k)} onPress={() => setKinds(kinds.includes(k) ? kinds.filter((x) => x !== k) : [...kinds, k])} testID={`nb-kind-${k}`} />)}
       </Row>
+      <Text variant="label">{tr('nb.equipments')}</Text>
+      <Row wrap>
+        {EQUIPMENTS.map((e) => <Chip key={e} label={tr(`nb.equip.${e}` as TKey)} selected={equip.includes(e)} onPress={() => setEquip(equip.includes(e) ? equip.filter((x) => x !== e) : [...equip, e])} testID={`nb-equip-${e}`} />)}
+      </Row>
+      {equip.length ? <Text variant="caption" muted>{tr('nb.equipNote')}</Text> : null}
+      <Text variant="label">{tr('nb.childAge')}</Text>
+      <Row wrap>
+        <Chip label={tr('nb.age.any')} selected={age == null} onPress={() => setAge(null)} testID="nb-age-any" />
+        {AGES.map((a) => <Chip key={a.key} label={tr(`nb.age.${a.key}` as TKey)} selected={age === a.years} onPress={() => setAge(a.years)} testID={`nb-age-${a.key}`} />)}
+      </Row>
+      {age != null ? <Text variant="caption" muted>{tr('nb.ageNote')}</Text> : null}
       <Row wrap>
         {RADII.map((r) => <Chip key={r} label={tr('nb.radius', { km: r / 1000 })} selected={radius === r} onPress={() => setRadius(r)} testID={`nb-radius-${r}`} />)}
         <View style={{ flex: 1 }} />
@@ -125,7 +141,13 @@ export default function Nearby() {
               <View style={{ gap: spacing.sm }} testID="nb-list">
                 {places.map(({ p, d }) => <PlaceRow key={p.id} p={p} dist={approxDistance(d)} fav={!!favs.data?.some((f) => f.place_id === p.id)} onPress={() => setOpen(p)} />)}
               </View>
-            ) : <Text muted variant="small" testID="nb-none">{tr('nb.none')}</Text>}
+            ) : (
+              <View style={{ gap: spacing.xs }} testID="nb-none">
+                <Text muted variant="small">{tr('nb.none')}</Text>
+                {widerRadius(radius) ? <Button label={tr('nb.widen', { km: widerRadius(radius)! / 1000 })} icon="maximize-2" size="sm" variant="secondary" onPress={() => setRadius(widerRadius(radius)!)} style={{ alignSelf: 'flex-start' }} testID="nb-widen" /> : null}
+                {equip.length || age != null ? <Button label={tr('nb.clearFilters')} size="sm" variant="ghost" onPress={() => { setEquip([]); setAge(null); }} style={{ alignSelf: 'flex-start' }} testID="nb-clear" /> : null}
+              </View>
+            )}
             {placesQ.data ? <Text variant="caption" muted>{tr('nb.osmNote', { date: formatDate(`${placesQ.data[0]?.fetchedOn ?? new Date().toISOString().slice(0, 10)}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Text> : null}
           </>
         )
@@ -148,7 +170,7 @@ export default function Nearby() {
   );
 }
 
-const favToPlace = (f: PlaceFavorite): Place => ({ id: f.place_id, name: f.name, kind: f.kind, lat: f.lat ?? 0, lon: f.lon ?? 0, address: f.address, hours: null, website: null, phone: null, wheelchair: null, changingTable: null, source: 'OpenStreetMap', fetchedOn: f.created_at.slice(0, 10) });
+const favToPlace = (f: PlaceFavorite): Place => ({ id: f.place_id, name: f.name, kind: f.kind, lat: f.lat ?? 0, lon: f.lon ?? 0, address: f.address, hours: null, website: null, phone: null, wheelchair: null, changingTable: null, highchair: null, minAge: null, maxAge: null, source: 'OpenStreetMap', fetchedOn: f.created_at.slice(0, 10) });
 
 function PlaceRow({ p, dist, fav, onPress }: { p: Place; dist: string; fav: boolean; onPress: () => void }) {
   const t = useTheme();
@@ -252,6 +274,8 @@ function PlaceSheet({ place, fav, dist, onClose }: { place: Place | null; fav: P
         {p.phone ? <Info icon="phone" text={p.phone} /> : null}
         <Info icon="info" text={p.wheelchair ? tr(`nb.wheelchair.${p.wheelchair}` as TKey) : tr('nb.accessUnknown')} />
         {p.changingTable ? <Info icon="check" text={tr('nb.changingTable')} /> : null}
+        {p.highchair ? <Info icon="check" text={tr('nb.highchair')} /> : null}
+        {p.minAge != null || p.maxAge != null ? <Info icon="users" text={tr('nb.ages', { min: p.minAge ?? 0, max: p.maxAge ?? '…' })} /> : null}
         <Text variant="caption" muted testID="nb-source">{tr('nb.source', { date: formatDate(`${p.fetchedOn}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Text>
         <Row wrap>
           <Button label={tr('nb.directions')} icon="navigation" size="sm" onPress={() => void Linking.openURL(directionsUrl(p, Platform.OS))} testID="nb-directions" />

@@ -309,6 +309,7 @@ export function Cocoon({ child, journey, now: preview, article }: { child: Child
           <SmallLink icon="smile" label={tr('coc.link.profile', { name: child.first_name })} onPress={() => router.push(`/child/${id}`)} />
           <SmallLink icon="trending-up" label={tr('tool.kid_growth')} onPress={() => router.push(`/child/${id}/growth`)} />
           <SmallLink icon="compass" label={tr('tool.kid_needs')} onPress={() => router.push(`/child/${id}/needs` as never)} testID="home-needs" />
+          <SmallLink icon="map-pin" label={tr('tool.nearby')} onPress={() => router.push('/nearby' as never)} testID="home-nearby" />
         </View>
       </View>
     </View>
@@ -679,7 +680,11 @@ function ArticleArt({ theme }: { theme: ArtTheme }) {
   );
 }
 
-function ArticleCard({ article, premium }: { article: Article; premium: boolean }) {
+/** Temps de lecture estimé (environ 200 mots par minute), au moins 1 minute. */
+export const readingMinutes = (body: string) => Math.max(1, Math.round(body.replace(/[#*_>`-]/g, ' ').split(/\s+/).filter(Boolean).length / 200));
+
+/** Carte éditoriale : illustration, titre, temps de lecture, bouton « Lire » (accueil de chaque profil). */
+export function ArticleCard({ article, premium }: { article: Article; premium: boolean }) {
   const t = useTheme();
   const open = () => router.push(`/article/${article.slug}`);
   return (
@@ -692,6 +697,7 @@ function ArticleCard({ article, premium }: { article: Article; premium: boolean 
             {isLocked(article, premium) ? <Icon name="lock" size={13} color={t.colors.gold} /> : null}
           </View>
           <Text weight="bold" numberOfLines={2}>{article.title}</Text>
+          <Text variant="caption" muted testID="article-reading">{tr('home.readingTime', { n: readingMinutes(article.body_md ?? '') })}</Text>
           <Text variant="small" muted numberOfLines={2} intentionalTruncation>{article.summary}</Text>
           <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36, paddingHorizontal: 14, borderRadius: radius.pill, backgroundColor: t.isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.85)' }}>

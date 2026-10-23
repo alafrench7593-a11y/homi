@@ -20,9 +20,10 @@ import { useToast } from '@/components/Overlays';
 import { Skeleton } from '@/components/States';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { FeedbackPrompt, SleepEditSheet, SleepRecordButtons, SleepTimeline } from '@/features/sleep';
+import { WakeCheckReminder } from '@/features/sleepWakeCheck';
 import { backend, eq } from '@/lib/backend';
-import { useChild, useInvalidate, usePremium, useRows } from '@/lib/data/hooks';
-import { friendlyError, useSaveReminder } from '@/lib/data/hooks-settings';
+import { useChild, useInvalidate, usePremium, useReminders, useRows } from '@/lib/data/hooks';
+import { friendlyError, useDeleteReminder, useSaveReminder } from '@/lib/data/hooks-settings';
 import { saveSleepProfile, useNightFeeds, useSleepNotificationSync, useSleepPlan, type SleepProfileRow } from '@/lib/data/hooks-sleepPlanner';
 import { childAge } from '@/lib/domain/child';
 import {
@@ -88,6 +89,8 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
   const premium = usePremium();
   const toast = useToast();
   const saveReminder = useSaveReminder();
+  const deleteReminder = useDeleteReminder();
+  const { data: allReminders } = useReminders();
   const { plan, sleeps, profile, feedback, now, loading } = data;
   const [editing, setEditing] = useState<Sleep | null>(null);
   const name = child.first_name;
@@ -101,6 +104,8 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
     const when = new Date(at - 10 * 60_000);
     if (when.getTime() <= Date.now()) { toast('L’heure estimée est déjà proche : pas de rappel programmé.', 'info'); return; }
     try {
+      // jamais en double : un rappel « repos » déjà programmé pour cet enfant est remplacé
+      for (const r of (allReminders ?? []).filter((x) => x.deep_link === `/sleep/${child.id}` && x.title === `Repos de ${name}`)) await deleteReminder.mutateAsync(r.id);
       await saveReminder.mutateAsync({ draft: { title: `Repos de ${name}`, body: 'Estimation d’après vos relevés : observez les signes de fatigue.', category: 'tracking', schedule: { type: 'once', at: when.toISOString() }, enabled: true, deep_link: `/sleep/${child.id}`, child_id: child.id } });
       toast(`Rappel programmé à ${clock(when)}.`, 'success');
     } catch (e) { toast(friendlyError(e), 'error'); }
@@ -113,6 +118,7 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
         {plan.assumedWake ? <Text variant="caption" muted>{`Aucun réveil noté ce matin : calcul à partir de l’heure habituelle (${hm(profile?.usual_wake)}).`}</Text> : null}
         {plan.state === 'stale' ? <Text variant="small" muted>Un relevé a peut-être été oublié : notez le prochain endormissement (ou corrigez l’heure avec « Autre heure… ») pour relancer les estimations.</Text> : null}
         <View style={{ marginTop: spacing.sm }}><SleepRecordButtons child={child} plan={plan} /></View>
+        {plan.state === 'asleep_nap' ? <View style={{ marginTop: spacing.sm }}><WakeCheckReminder child={child} /></View> : null}
       </Card>
 
       <PremiumSection feature="sleep_insights" name={name}

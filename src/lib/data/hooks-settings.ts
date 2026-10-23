@@ -132,7 +132,7 @@ export interface ReminderDraft {
 }
 
 /** Après chaque modification : relecture de la liste puis reprogrammation des notifications locales. */
-async function resync(userId: string) {
+export async function resync(userId: string) {
   const rows = await backend.select<Reminder>({ table: 'reminders', filters: [eq('user_id', userId)] });
   return syncLocalReminders(rows).catch(() => ({ scheduled: 0, skipped: 0 }));
 }

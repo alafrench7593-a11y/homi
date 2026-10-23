@@ -10,6 +10,7 @@ import { useMutation } from '@tanstack/react-query';
 import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
+import { resync } from './hooks-settings';
 import { useUiStore } from '../store';
 import { todayISO, type ISODate } from '../domain/dates';
 import { BUNDLED_CALENDARS, DEFAULT_CALENDAR } from '../domain/vaccines';
@@ -99,10 +100,12 @@ export function useSaveAppointment() {
 
 export function useDeleteAppointment() {
   const inv = useInvalidate();
+  const uid = useUserId();
   return useMutation({
     mutationFn: async (id: string) => {
       await backend.remove('reminders', [eq('appointment_id', id)]).catch(() => undefined);
       await backend.remove('appointments', [eq('id', id)]);
+      if (uid) await resync(uid); // les rappels du rendez-vous supprimé sont annulés sur le téléphone
     },
     onSuccess: () => inv('appointments', 'reminders'),
   });
@@ -138,6 +141,7 @@ export function useScheduleReminders() {
         journey_type: v.journeyType ?? null, category: v.category, title: v.title.slice(0, 80), body: v.body.slice(0, 240),
         schedule: { type: 'once', at: d.toISOString() }, timezone: tz, enabled: true, deep_link: v.deepLink,
       })));
+      if (uid) await resync(uid); // notifications locales reprogrammées aussitôt
       return v.dates.length;
     },
     onSuccess: () => inv('reminders'),
@@ -146,7 +150,8 @@ export function useScheduleReminders() {
 
 export function useDeleteReminder() {
   const inv = useInvalidate();
-  return useMutation({ mutationFn: (id: string) => backend.remove('reminders', [eq('id', id)]), onSuccess: () => inv('reminders') });
+  const uid = useUserId();
+  return useMutation({ mutationFn: async (id: string) => { await backend.remove('reminders', [eq('id', id)]); if (uid) await resync(uid); }, onSuccess: () => inv('reminders') });
 }
 
 // ─── Calendrier vaccinal versionné ──────────────────────────────────────────────────────────────

@@ -2,6 +2,7 @@ import type { cocoon as fr } from '../fr/cocoon';
 import type { Messages } from '../types';
 
 export const cocoon: Messages<typeof fr> = {
+  'home.readingTime': '{n} min read',
   'coc.ev.night': 'Night',
   'coc.ev.nap': 'Nap',
   'coc.ev.sleep': 'Sleep',

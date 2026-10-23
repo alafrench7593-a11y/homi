@@ -1,5 +1,6 @@
 /** « Le cocon du jour » : accueil d'un profil enfant (vouvoiement, comme le reste de l'application). */
 export const cocoon = {
+  'home.readingTime': '{n} min de lecture',
   // Frise : événements
   'coc.ev.night': 'Nuit',
   'coc.ev.nap': 'Sieste',

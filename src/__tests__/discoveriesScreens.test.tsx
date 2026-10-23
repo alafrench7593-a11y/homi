@@ -57,6 +57,11 @@ async function render(el: React.ReactElement) {
   await flush(300);
   return r;
 }
+/** Attend qu'une condition soit vraie (chargement plus lent quand toutes les suites tournent en parallèle). */
+async function until(cond: () => boolean, ms = 5000) {
+  const end = Date.now() + ms;
+  while (!cond() && Date.now() < end) await flush(100);
+}
 const has = (r: ReactTestRenderer, id: string) => r.root.findAll((n) => n.props.testID === id).length > 0;
 const pressable = (r: ReactTestRenderer, id: string) => r.root.findAll((n) => n.props.testID === id && typeof n.props.onPress === 'function')[0];
 async function press(r: ReactTestRenderer, id: string, wait = 300) {
@@ -86,6 +91,7 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
   it('Ses découvertes : fiche, historique, découverte de la semaine, progression, Lina et Noé séparés', async () => {
     params.id = lina.id;
     const r = await render(<Discoveries />);
+    await until(() => has(r, 'dc-mosaic') && allText(r).includes('Les découvertes de Lina'));
     expect(has(r, 'dc-mosaic')).toBe(true);
     expect(allText(r)).toContain('Les découvertes de Lina');
     expect(r.root.findAll((n) => n.props.testID === 'dc-state-carrot')[0].props.children).toBe('À découvrir'); // le refus de Noé n'apparaît pas chez Lina
@@ -117,7 +123,9 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
   it('réaction importante : informations de sécurité immédiates (15/112), jamais de diagnostic, notée sur la fiche', async () => {
     params.id = lina.id;
     const r = await render(<Discoveries />);
+    await until(() => has(r, 'dc-mosaic') && r.root.findAll((n) => n.props.testID === 'dc-state-carrot')[0]?.props.children === 'Déjà découvert');
     await press(r, 'dc-react');
+    await until(() => has(r, 'dc-rx-food-carrot'));
     await press(r, 'dc-sign-hives');
     expect(has(r, 'dc-rx-advice')).toBe(true);
     await press(r, 'dc-sign-swelling');
@@ -136,6 +144,7 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
     for (let i = 0; i < 14; i++) await backend.insert('food_introductions', { household_id: hid, child_id: lina.id, food_name: `Aliment ${i}`, food_key: `test_food_${i}`, status: 'not_yet' });
     params.id = lina.id;
     const r = await render(<Discoveries />);
+    await until(() => allText(r).includes('Version gratuite : 15 aliment(s) suivi(s) sur 15 pour Lina.'));
     expect(allText(r)).toContain('Version gratuite : 15 aliment(s) suivi(s) sur 15 pour Lina.');
     await press(r, 'dc-food-pear');
     await press(r, 'dc-status-tasted');
@@ -157,6 +166,7 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
   it('Je grandis : étape principale notée, étape du suivi complet verrouillée, résumé factuel, aucun score', async () => {
     params.id = lina.id;
     const r = await render(<Grow />);
+    await until(() => has(r, 'gr-step-sits_alone'));
     const t = allText(r);
     expect(t).toContain('Chaque enfant évolue à son propre rythme');
     expect(t).not.toMatch(/retard|échec|\d+ sur \d+/);
@@ -187,6 +197,7 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
 
   it('raccourcis de la page de l’enfant : résumé seulement, données de cet enfant', async () => {
     const r = await render(<ChildShortcuts child={lina} />);
+    await until(() => /Dernière découverte : Carotte/.test(allText(r)) && allText(r).includes('Tient assis sans appui'));
     expect(allText(r)).toMatch(/Dernière découverte : Carotte/);
     expect(allText(r)).toContain('Nouvelle étape observée : Tient assis sans appui');
     r.unmount();

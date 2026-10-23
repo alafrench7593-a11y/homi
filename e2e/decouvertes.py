@@ -162,6 +162,37 @@ def run(p):
     R['nb_signalement'] = demo(pg, "s => s.tables.place_reports.some(r => r.place_id === 'osm:node/101' && r.reason === 'hours')")
     R['nb_itineraire'] = has(pg, 'nb-directions')
     R['nb_requete_lieux_publics'] = any('overpass-api.de' in s and 'leisure' in s for s in sent)
+    pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
+    # filtres : équipement non renseigné -> aucun lieu, état vide honnête, élargir / retirer les filtres
+    tid(pg, 'nb-view-list').click(); pg.wait_for_timeout(300)
+    tid(pg, 'nb-equip-highchair').click(); pg.wait_for_timeout(600)
+    R['nb_filtre_equipement_etat_vide'] = has(pg, 'nb-none') and has(pg, 'nb-widen') and 'Élargir à 5 km' in T(pg)
+    tid(pg, 'nb-equip-highchair').click(); tid(pg, 'nb-equip-wheelchair').click(); pg.wait_for_timeout(600)
+    order = pg.evaluate("() => [...document.querySelectorAll('[data-testid^=\"nb-place-osm\"]')].map(e => e.getAttribute('data-testid'))")
+    R['nb_filtre_fauteuil_confirme'] = order == ['nb-place-osm:node/101']
+    tid(pg, 'nb-equip-wheelchair').click(); pg.wait_for_timeout(300)
+    # accès depuis Communauté et depuis l'accueil
+    go(pg, '/community', 3000)
+    pg.get_by_role('button', name='Près de chez moi').first.click(); pg.wait_for_timeout(2000)
+    R['nb_acces_communaute'] = '/nearby' in pg.url
+    pg.evaluate("() => { const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{\"state\":{},\"version\":0}'); ui.state.subject = { type: 'me' }; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }")
+    go(pg, '/', 3500)
+    R['nb_acces_accueil'] = pg.locator('[data-testid="home-nearby"]').count() > 0
+
+    # ===================================== sommeil : rappel « vérifier » seulement à la demande
+    mutate(pg, f"""s => {{ s.tables.sleeps = (s.tables.sleeps || []).filter(x => x.child_id !== '{lina}');
+      s.tables.sleeps.push({{ id: 'e2e-nap', household_id: '{hid}', child_id: '{lina}', started_at: new Date(Date.now() - 20*60000).toISOString(), ended_at: null, kind: 'nap', wakeups: 0 }});
+      s.tables.reminders = (s.tables.reminders || []).filter(r => !(r.deep_link || '').includes('check=1')); }}""")
+    go(pg, f'/sleep/{lina}', 3500)
+    R['sommeil_aucun_rappel_par_defaut'] = demo(pg, f"s => !s.tables.reminders.some(r => r.deep_link === '/sleep/{lina}?check=1')")
+    if has(pg, 'wake-check-45'):
+        tid(pg, 'wake-check-45').click(); pg.wait_for_timeout(1200)
+        tid(pg, 'wake-check-snooze').click(); pg.wait_for_timeout(1200)
+        R['sommeil_rappel_unique'] = demo(pg, f"s => s.tables.reminders.filter(r => r.deep_link === '/sleep/{lina}?check=1').length === 1 && s.tables.reminders.some(r => r.body === 'Rappel que vous avez programmé : vérifier si Lina est réveillée.')")
+        tid(pg, 'wake-check-cancel').click(); pg.wait_for_timeout(1200)
+        R['sommeil_rappel_annule'] = demo(pg, f"s => !s.tables.reminders.some(r => r.deep_link === '/sleep/{lina}?check=1')")
+    else:
+        R['sommeil_rappel_propose_pendant_sieste'] = False
     b.close()
 
 

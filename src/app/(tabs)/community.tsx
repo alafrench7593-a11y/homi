@@ -209,6 +209,7 @@ export default function Community() {
       subtitle={tr('screen.community.sub')}
       right={(
         <Row gap={0}>
+          <IconButton icon="map-pin" label={tr('nb.communityLink')} onPress={() => router.push('/nearby' as never)} />
           <IconButton icon="bell" label={tr('cm1.feed.notifications')} onPress={() => router.push('/notifications')} />
           {/* Mon profil communautaire (publications, réponses, groupes, albums, enregistrés) */}
           <IconButton icon="at-sign" label={me ? tr('cm1.feed.communityProfile') : tr('cm1.feed.createCommunityProfile')} onPress={() => router.push(me ? '/moi' as never : '/community/profile')} />

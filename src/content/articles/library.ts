@@ -90,6 +90,17 @@ const S = {
   ameliAsthenie: { label: 'ameli.fr — Fatigue (asthénie) : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/asthenie-fatigue/bons-reflexes-cas-faut-consulter', consulted_on: C, published: '2026-08-07' },
   santeSanteMentaleParents: { label: 'Santé.fr (Psycom) — La santé mentale des parents', url: 'https://www.sante.fr/la-sante-mentale-des-parents', consulted_on: C, published: '2025-08-04' },
   santeBurnout: { label: 'Santé.fr — C’est quoi le burn out parental ?', url: 'https://www.sante.fr/cest-quoi-le-burn-out-parental', consulted_on: C, published: '2020-02-03' },
+  // Ajouts du 23 octobre 2026
+  ameliRegurgitations: { label: 'ameli.fr — Régurgitations du nourrisson : que faire ?', url: 'https://www.ameli.fr/assure/sante/themes/rgo-nourrisson/que-faire-quand-consulter', consulted_on: '2026-10-23' },
+  ameliRgoTraitement: { label: 'ameli.fr — RGO du nourrisson : le diagnostic et le traitement', url: 'https://www.ameli.fr/assure/sante/themes/rgo-nourrisson/diagnostic-traitement', consulted_on: '2026-10-23', published: '2026-03-24' },
+  ameliConstipationEnfant: { label: 'ameli.fr — Constipation de l’enfant : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/constipation-enfant/bons-reflexes', consulted_on: '2026-10-23' },
+  ameliFessesRouges: { label: 'ameli.fr — Que faire si votre nourrisson a les fesses rouges ?', url: 'https://www.ameli.fr/assure/sante/themes/erytheme-fessier-du-nourisson-fesses-rouges/bons-reflexes-que-faire', consulted_on: '2026-10-23' },
+  ameliToiletteBebe: { label: 'ameli.fr — Comment changer un nourrisson et faire sa toilette ?', url: 'https://www.ameli.fr/assure/sante/bons-gestes/bebe/changer-bebe-faire-toilette', consulted_on: '2026-10-23' },
+  ameliAccouchement: { label: 'ameli.fr — Comment se déroule un accouchement ?', url: 'https://www.ameli.fr/assure/sante/devenir-parent/accouchement-nouveau-ne-et-retour-la-maison/accouchement', consulted_on: '2026-10-23' },
+  hasAccouchementNormal: { label: 'HAS — Accouchement normal : accompagnement de la physiologie et interventions médicales', url: 'https://www.has-sante.fr/jcms/c_2820336/fr/accouchement-normal-accompagnement-de-la-physiologie-et-interventions-medicales', consulted_on: '2026-10-23' },
+  santeVieFamille: { label: 'Santé.fr (1000 premiers jours) — La vie de famille après la naissance', url: 'https://www.sante.fr/la-vie-de-famille-apres-la-naissance', consulted_on: '2026-10-23', published: '2024-08-26' },
+  santeReglesDouloureuses: { label: 'Santé.fr — Règles douloureuses (dysménorrhées)', url: 'https://www.sante.fr/regles-douloureuses-dysmenorrhees', consulted_on: '2026-10-23', published: '2026-08-12' },
+  santeEndometrioseRegles: { label: 'Santé.fr — Symptômes de l’endométriose : les règles douloureuses', url: 'https://www.sante.fr/endometriose/symptomes-de-lendometriose-les-regles-douloureuses', consulted_on: '2026-10-23' },
 } satisfies Record<string, ArticleSource>;
 
 export const LIBRARY_SOURCES: Record<keyof typeof S, ArticleSource> = S;
@@ -1512,5 +1523,191 @@ Demander de l'aide, c'est prendre soin de toute la famille.`,
     sources: [S.ameliAsthenie, S.nhsFatigueParents, S.santeSanteMentaleParents, S.santeBurnout, S.ameliSecoue],
     status: 'to_review',
   },
-];
+  // ---------------------------------------------------------------- ajouts du 23 octobre 2026
+  {
+    slug: 'regurgitations-et-reflux-du-nourrisson',
+    title: 'Régurgitations et reflux du nourrisson',
+    summary: 'Les régurgitations sont fréquentes les premiers mois et diminuent souvent avec l’âge ; quelques gestes simples aident, et certains signes doivent faire consulter.',
+    body_md: `Beaucoup de bébés rejettent un peu de lait après la tétée ou le biberon. Ces régurgitations sont souvent bien supportées et diminuent en général quand l’enfant tient assis puis debout et mange plus solide.
 
+### Les gestes qui peuvent aider
+- Laisser bébé manger à sa faim, sans le forcer ni le restreindre ; des repas un peu moins copieux et plus fréquents.
+- Au biberon : vérifier le dosage de la poudre et la préparation.
+- Allaitement : le poursuivre sans changer ses habitudes.
+- Faire des pauses pour le rot et garder bébé droit 20 à 30 minutes après le repas.
+- Pour dormir : toujours à plat sur le dos, sans surélever la tête du lit.
+
+### À éviter
+- Épaissir soi-même le lait maternel, ajouter des céréales au lait sans avis médical.
+- Le laisser longtemps dans un transat ou un siège-auto juste après le repas.
+- Commencer un médicament sans avis : d’après l’Assurance Maladie, certains médicaments contre l’acidité n’ont aucun effet sur les régurgitations.
+- Si un lait épaissi est envisagé, en parler au pharmacien ou au médecin.
+
+### Quand consulter son médecin
+- Régurgitations qui apparaissent après 6 mois ou durent après 1 an.
+- Régurgitations douloureuses, avec pleurs ou traces de sang, ou abondantes (surtout avant 2 mois).
+- Bébé qui refuse de manger, ne prend plus de poids, dort mal ou se tortille pendant les repas.
+
+### Appelez le 15 sans attendre si
+- Pendant une régurgitation, bébé devient bleu ou très pâle, perd son tonus ou a du mal à respirer.
+- Un bébé de moins de 6 semaines vomit en jet après chaque repas.
+- Il vomit un liquide vert.`,
+    journeys: ['newborn'],
+    category: 'bebe',
+    tags: ['reflux', 'RGO', 'régurgitations', 'biberon', 'allaitement'],
+    min_age_months: 0, max_age_months: 18,
+    safety_critical: true,
+    sources: [S.ameliRegurgitations, S.ameliRgoTraitement],
+    status: 'to_review',
+  },
+  {
+    slug: 'constipation-bebe-et-enfant',
+    title: 'Constipation du bébé et de l’enfant',
+    summary: 'De l’eau, des fibres adaptées à l’âge, du mouvement et des toilettes sans pression aident souvent ; jamais de laxatif ni de thermomètre sans avis.',
+    body_md: `La constipation est fréquente chez l’enfant, notamment au moment de la diversification ou de l’apprentissage de la propreté.
+
+### Selon l’âge
+- **Bébé au biberon** : respecter exactement le dosage de la poudre (un lait trop concentré favorise la constipation) ; proposer de l’eau, surtout en cas de chaleur ou de fièvre.
+- **Massage** : masser doucement le ventre et faire « pédaler » les jambes plusieurs fois par jour.
+- **Diversification** : les fruits et légumes peuvent aider ; demandez conseil au médecin ou au pédiatre.
+- **Après 1 an** : au moins trois portions de fruits ou légumes par jour, des céréales complètes, et bouger chaque jour.
+- **Après 3 ans** : de l’eau, des fibres (pain complet, légumineuses, pruneaux), des repas à heures régulières.
+
+### Aux toilettes
+Ne pas forcer l’apprentissage de la propreté ; proposer les toilettes après les repas, laisser le temps, et un petit banc sous les pieds si ses pieds ne touchent pas le sol.
+
+### À ne jamais faire
+- Utiliser un thermomètre pour « déclencher » les selles.
+- Donner un laxatif sans avis médical.
+- Supprimer les produits laitiers sans en parler au médecin.
+
+### Quand consulter
+- Dans les jours qui viennent : constipation qui dure malgré ces mesures, douleur ou sang en allant à la selle, fuites de selles, prise de poids insuffisante.
+- Dans la journée : sang dans les selles, fièvre, vomissements, perte d’appétit ou de poids.
+- **Appelez le 15 ou le 112** : douleurs de ventre intenses, vomissements qui ne s’arrêtent pas, ventre gonflé, tendu et douloureux.`,
+    journeys: ['newborn', 'child'],
+    category: 'enfant',
+    tags: ['constipation', 'selles', 'propreté', 'fibres'],
+    min_age_months: 0, max_age_months: 120,
+    safety_critical: true,
+    sources: [S.ameliConstipationEnfant],
+    status: 'to_review',
+  },
+  {
+    slug: 'peau-de-bebe-et-fesses-rouges',
+    title: 'Peau de bébé : toilette et fesses rouges',
+    summary: 'Des changes fréquents, de l’eau et un nettoyant sans savon, un séchage doux et de l’air suffisent souvent ; certains signes demandent un avis médical.',
+    body_md: `La peau des nourrissons est fine et fragile. Les fesses rouges (érythème fessier) sont fréquentes et disparaissent souvent en quelques jours avec de bons gestes.
+
+### Au quotidien
+- Se laver les mains avant et après chaque change.
+- Changer souvent (au moins six fois par jour et après chaque selle), sans serrer la couche.
+- Nettoyer avec de l’eau et un nettoyant sans savon, rincer, puis sécher en tamponnant, sans frotter, en insistant sur les plis.
+- Pour une petite fille : toujours de l’avant vers l’arrière.
+- Laisser la peau à l’air quand c’est possible.
+- Une crème réparatrice (au zinc ou au cuivre) peut être appliquée ; demandez conseil au pharmacien.
+
+### À éviter
+- Les lingettes, produits parfumés ou à l’alcool sur une peau irritée.
+- Le talc : il retient l’humidité et peut être inhalé.
+- Les vêtements trop serrés qui frottent.
+
+### Quand demander un avis médical
+- Fesses rouges dans les six premières semaines de vie.
+- Fièvre, perte de poids ou bébé qui mange moins.
+- Rougeur qui persiste ou s’étend après trois jours de soins.
+- Croûtes, cloques, boutons de pus, suintement.
+- Plaques blanches dans la bouche.`,
+    journeys: ['newborn'],
+    category: 'bebe',
+    tags: ['peau', 'érythème fessier', 'toilette', 'change', 'soins'],
+    min_age_months: 0, max_age_months: 36,
+    sources: [S.ameliFessesRouges, S.ameliToiletteBebe],
+    status: 'to_review',
+  },
+  {
+    slug: 'accouchement-voie-basse-deroulement',
+    title: 'L’accouchement par voie basse, étape par étape',
+    summary: 'Début du travail, dilatation, naissance et délivrance : ce qui se passe le plus souvent, les moyens de soulager la douleur et pourquoi une césarienne peut être décidée.',
+    body_md: `Chaque accouchement est différent. Voici les grandes étapes décrites par l’Assurance Maladie, pour savoir à quoi s’attendre et pouvoir poser vos questions à l’équipe.
+
+### Quand partir à la maternité
+Le travail commence le plus souvent par des contractions de plus en plus intenses et régulières, parfois après la rupture de la poche des eaux. **Si la poche des eaux se rompt, rendez-vous à la maternité, même sans contractions fortes.** Votre sage-femme vous indique quand partir selon votre situation.
+
+### Les trois étapes
+1. **La dilatation du col** : souvent plusieurs heures (environ 8 heures pour un premier bébé, moins ensuite). Le cœur du bébé est surveillé. Pour la douleur : la péridurale, et aussi des moyens sans médicament (bain, massages, relaxation, mouvement).
+2. **La naissance (expulsion)** : une fois le col complètement ouvert, souvent environ 30 minutes. Le bébé peut être posé en peau à peau.
+3. **La délivrance** : le placenta sort, généralement dans l’heure qui suit ; un médicament est proposé pour limiter le risque de saignement.
+
+### Ce que l’équipe peut proposer
+Un médicament pour relancer les contractions, une aide instrumentale (ventouse, forceps, spatules) ou, plus rarement, une épisiotomie. Vous pouvez exprimer vos préférences à l’avance et demander pourquoi un geste est proposé.
+
+### Et la césarienne ?
+Elle peut être programmée (position du bébé, grossesse à risque…) ou décidée pendant le travail si la naissance par voie basse devient difficile ou si le bébé montre des signes de souffrance. Le peau à peau reste possible dans la plupart des cas.
+
+Le jour J, l’équipe s’adapte à vous et à votre bébé : ces repères ne remplacent pas ses explications.`,
+    journeys: ['pregnant'],
+    category: 'accouchement',
+    tags: ['accouchement', 'voie basse', 'travail', 'péridurale', 'césarienne'],
+    min_week: 28, max_week: 42,
+    sources: [S.ameliAccouchement, S.hasAccouchementNormal],
+    status: 'to_review',
+  },
+  {
+    slug: 'arrivee-d-un-nouvel-enfant-et-l-aine',
+    title: 'Un nouveau bébé arrive : l’aîné et l’organisation de la famille',
+    summary: 'L’aîné peut se sentir jaloux ou régresser un temps ; le rassurer, lui garder des moments à lui et réorganiser la maison ensemble aident toute la famille.',
+    body_md: `L’arrivée d’un bébé change la vie de toute la famille. Il faut du temps pour trouver un nouvel équilibre.
+
+### Pour l’aîné
+- Il peut se sentir inquiet, jaloux ou mis de côté, et faire à nouveau « comme un bébé » pendant un temps. Mieux vaut l’accueillir sans le gronder.
+- Avant la naissance : lui expliquer qui s’occupera de lui pendant le séjour à la maternité et comment se passeront les journées.
+- Le rassurer sur votre amour, lui raconter sa propre naissance, lui montrer qu’il garde sa place.
+- Prévoir un moment particulier pour la première rencontre, et le laisser aider s’il en a envie, sans l’y obliger.
+- Demander aux grands-parents et aux proches de s’intéresser aussi à lui.
+
+### Pour l’organisation
+- Accepter de mettre certaines choses en pause et de fixer des priorités.
+- En parler à deux régulièrement : qui fait quoi, qui se repose quand.
+- Garder un peu de temps pour soi, même court.
+- Dans Toi & Moi, les tâches du foyer, l’agenda partagé et les relais de nuit peuvent aider à répartir la charge.
+
+### Et l’entourage
+Les grands-parents et la famille trouvent aussi leur nouvelle place. Écouter les conseils, mais faire confiance à vos propres choix de parents.
+
+Si vous vous sentez dépassé(e), parlez-en à votre médecin, à votre sage-femme ou à la PMI.`,
+    journeys: ['pregnant', 'newborn', 'child'],
+    category: 'enfant',
+    tags: ['aîné', 'fratrie', 'jalousie', 'organisation familiale', 'naissance'],
+    sources: [S.santeVieFamille],
+    status: 'to_review',
+  },
+  {
+    slug: 'regles-douloureuses-quand-consulter',
+    title: 'Règles douloureuses : ce qui peut soulager et quand consulter',
+    summary: 'Les douleurs pendant les règles sont fréquentes ; chaleur, repos et mouvement doux aident souvent, et des douleurs qui changent ou empêchent de vivre normalement méritent un avis.',
+    body_md: `Une femme sur deux a mal au ventre ou au dos pendant ses règles. Ces douleurs ne sont pas une fatalité : elles méritent d’être soulagées, et parfois explorées.
+
+### Ce qui peut parfois aider
+- Une bouillotte sur le ventre ou un bain chaud.
+- Du repos et du sommeil avant et pendant les règles.
+- Un peu de mouvement ou un sport doux.
+- Limiter alcool, café et tabac pendant cette période.
+- Pour un médicament contre la douleur, demandez conseil à votre pharmacien ou à votre médecin : certains médicaments sont déconseillés (par exemple l’aspirine, qui fluidifie le sang) et tous ne conviennent pas à chacune.
+
+### Quand en parler à un professionnel
+- Des douleurs inhabituelles pour vous, ou qui apparaissent après des années de règles peu douloureuses.
+- Des règles qui deviennent difficiles à supporter, qui vous font manquer l’école ou le travail.
+- Des douleurs qui ne passent pas avec les mesures habituelles.
+
+Des règles très douloureuses peuvent être liées à une endométriose : un professionnel peut faire le point avec vous. Le suivi du cycle dans Toi & Moi permet de noter vos douleurs pour en parler plus facilement.
+
+**En cas de douleur brutale et intense, de fièvre ou de malaise, appelez le 15.**`,
+    journeys: ['avoid', 'ttc'],
+    category: 'cycle',
+    tags: ['règles douloureuses', 'dysménorrhée', 'endométriose', 'cycle', 'symptômes'],
+    safety_critical: true,
+    sources: [S.santeReglesDouloureuses, S.santeEndometrioseRegles],
+    status: 'to_review',
+  },
+];

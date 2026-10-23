@@ -55,6 +55,11 @@ export interface Place {
   /** accès en fauteuil roulant tel que renseigné dans OpenStreetMap (jamais extrapolé à la poussette) */
   wheelchair: 'yes' | 'limited' | 'no' | null;
   changingTable: boolean | null;
+  /** chaise haute (renseignée dans OpenStreetMap) */
+  highchair: boolean | null;
+  /** âges indiqués par le lieu (aires de jeux surtout), en années ; null = non renseigné */
+  minAge: number | null;
+  maxAge: number | null;
   source: 'OpenStreetMap';
   fetchedOn: string;
 }
@@ -94,6 +99,9 @@ export function parseOverpass(json: { elements?: OsmEl[] }, fetchedOn: string): 
       phone: t.phone ?? t['contact:phone'] ?? null,
       wheelchair: t.wheelchair === 'yes' || t.wheelchair === 'limited' || t.wheelchair === 'no' ? t.wheelchair : null,
       changingTable: t.changing_table === 'yes' ? true : t.changing_table === 'no' ? false : null,
+      highchair: t.highchair === 'yes' ? true : t.highchair === 'no' ? false : null,
+      minAge: /^\d{1,2}$/.test(t.min_age ?? '') ? Number(t.min_age) : null,
+      maxAge: /^\d{1,2}$/.test(t.max_age ?? '') ? Number(t.max_age) : null,
       source: 'OpenStreetMap', fetchedOn,
     });
   }
@@ -133,6 +141,23 @@ export function approxDistance(m: number): string {
 
 /** Centre de recherche tiré d'une position : arrondi à ~1 km (0,01°) pour ne jamais envoyer une position précise. */
 export const coarse = (p: { lat: number; lon: number }) => ({ lat: Math.round(p.lat * 100) / 100, lon: Math.round(p.lon * 100) / 100 });
+
+/** Équipements confirmés (jamais supposés) : seuls les lieux où l'information est renseignée « oui » passent le filtre. */
+export type Equipment = 'changing_table' | 'highchair' | 'wheelchair';
+export function hasEquipment(p: Pick<Place, 'changingTable' | 'highchair' | 'wheelchair'>, e: Equipment): boolean {
+  if (e === 'changing_table') return p.changingTable === true;
+  if (e === 'highchair') return p.highchair === true;
+  return p.wheelchair === 'yes';
+}
+/** Âge de l'enfant (années) : on n'écarte un lieu que si ses âges RENSEIGNÉS l'excluent ; sinon il reste, « âge non renseigné ». */
+export function suitsAge(p: Pick<Place, 'minAge' | 'maxAge'>, years: number | null): boolean {
+  if (years == null) return true;
+  if (p.minAge != null && years < p.minAge) return false;
+  if (p.maxAge != null && years > p.maxAge) return false;
+  return true;
+}
+/** Rayon suivant pour « élargir la recherche » (null : déjà au maximum). */
+export const widerRadius = (r: number): number | null => (r < 2000 ? 2000 : r < 5000 ? 5000 : r < 10000 ? 10000 : null);
 
 // ---------------------------------------------------------------- carte (tuiles « slippy map » standard)
 export const lon2x = (lon: number, z: number) => ((lon + 180) / 360) * 2 ** z;

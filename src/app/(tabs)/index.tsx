@@ -22,7 +22,7 @@ import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { HomeCommunityCard } from '@/features/communitySocial';
 import { CycleHome } from '@/features/cycle3/CycleHome';
-import { Cocoon, CocoonAdd } from '@/features/cocoon/Cocoon';
+import { ArticleCard, Cocoon, CocoonAdd } from '@/features/cocoon/Cocoon';
 import { quickAllowed, quickFor, type Scope } from '@/lib/journeys/tools';
 import type { Journey } from '@/lib/types';
 import { greeting } from '@/lib/domain/dates';
@@ -112,16 +112,7 @@ export default function Home() {
     quick: <DailyActions />,
     community: <HomeCommunityCard />,
     upcoming: <View style={{ gap: spacing.xs }}>{simple ? null : <PostpartumHomeCard />}<UpcomingCard single={simple} /></View>,
-    article: article ? (
-      <Card onPress={() => router.push(`/article/${article.slug}`)} accessibilityLabel={tr('home.articleA11y', { title: article.title })}>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('home.article')}</Text>
-          {isLocked(article, premium) && <Icon name="lock" size={14} color={t.colors.gold} />}
-        </Row>
-        <Text variant="heading" style={{ marginTop: 4 }}>{article.title}</Text>
-        <Text variant="small" muted numberOfLines={2} intentionalTruncation>{article.summary}</Text>
-      </Card>
-    ) : null,
+    article: article ? <ArticleCard article={article} premium={premium} /> : null,
     recipe: <HomeRecipeCard />,
     recommendation: null as React.ReactNode,
     assistant: (
@@ -190,6 +181,7 @@ export default function Home() {
         {childScope ? null : (
           <Appear kind="side" delay={0.7}>
             <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID="all-tools" />
+            <Button label={tr('tool.nearby')} icon="map-pin" variant="ghost" size="sm" onPress={() => router.push('/nearby' as never)} style={{ alignSelf: 'center' }} testID="home-nearby" />
           </Appear>
         )}
 
