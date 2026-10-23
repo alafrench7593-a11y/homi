@@ -696,7 +696,7 @@ export function ArticleCard({ article, premium }: { article: Article; premium: b
             <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.1, flex: 1 }}>{tr('coc.article.title').toUpperCase()}</Text>
             {isLocked(article, premium) ? <Icon name="lock" size={13} color={t.colors.gold} /> : null}
           </View>
-          <Text weight="bold" numberOfLines={2}>{article.title}</Text>
+          <Text weight="bold" numberOfLines={3}>{article.title}</Text>
           <Text variant="caption" muted testID="article-reading">{tr('home.readingTime', { n: readingMinutes(article.body_md ?? '') })}</Text>
           <Text variant="small" muted numberOfLines={2} intentionalTruncation>{article.summary}</Text>
           <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
