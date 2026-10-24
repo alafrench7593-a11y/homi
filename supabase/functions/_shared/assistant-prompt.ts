@@ -13,6 +13,26 @@ export interface RecordedData {
 
 export type CyclePhase = 'period' | 'follicular' | 'fertile_estimate' | 'luteal';
 
+/** « M'aider pour les nuits » : résumé chiffré du sommeil de l'enfant choisi (aucun prénom, aucun texte libre). */
+export const SLEEP_CHANGES = ['night_shorter', 'night_longer', 'more_wakeups', 'fewer_naps', 'more_naps'] as const;
+export const SLEEP_DIFFICULTIES = ['falling_asleep', 'night_wakings', 'short_naps', 'early_waking', 'irregular'] as const;
+export interface SleepContext {
+  ageMonths: number;
+  correctedAgeMonths?: number | null;
+  daysNoted: number;
+  napsPerDay?: number | null;
+  napMinutes?: number | null;
+  nightMinutes?: number | null;
+  nightWakeups?: number | null;
+  wakeWindowMinutes?: number | null;
+  usualBedtime?: string | null;
+  nextNapAt?: string | null;
+  bedtimeAt?: string | null;
+  routineMinutes?: number | null;
+  changes?: (typeof SLEEP_CHANGES)[number][];
+  difficulties?: (typeof SLEEP_DIFFICULTIES)[number][];
+}
+
 export interface AssistantContext {
   journeys?: string[];
   pregnancyWeekSA?: number | null; // semaines d'aménorrhée
@@ -21,6 +41,8 @@ export interface AssistantContext {
   postpartumWeeks?: number | null;
   cyclePhase?: CyclePhase | null;
   recorded?: RecordedData | null;
+  /** Conversation « sommeil » d'un enfant précis */
+  sleep?: SleepContext | null;
 }
 
 export interface ArticleRef {
@@ -85,7 +107,48 @@ export function sanitizeContext(raw: unknown): AssistantContext {
     };
     if (Object.values(rec).some((v) => v != null)) out.recorded = rec;
   }
+  if (c.sleep && typeof c.sleep === 'object') {
+    const z = c.sleep as Record<string, unknown>;
+    const age = num(z.ageMonths, 0, 72);
+    const hm = (v: unknown) => (typeof v === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(v) ? v : null);
+    const list = <T extends string>(v: unknown, allowed: readonly T[]): T[] => (Array.isArray(v) ? [...new Set(v.filter((x): x is T => allowed.includes(x as T)))] : []);
+    if (age !== null) {
+      out.sleep = {
+        ageMonths: age, correctedAgeMonths: num(z.correctedAgeMonths, 0, 72), daysNoted: num(z.daysNoted, 0, 14) ?? 0,
+        napsPerDay: num(z.napsPerDay, 0, 8, 1), napMinutes: num(z.napMinutes, 0, 600), nightMinutes: num(z.nightMinutes, 0, 900),
+        nightWakeups: num(z.nightWakeups, 0, 20, 1), wakeWindowMinutes: num(z.wakeWindowMinutes, 20, 480),
+        usualBedtime: hm(z.usualBedtime), nextNapAt: hm(z.nextNapAt), bedtimeAt: hm(z.bedtimeAt), routineMinutes: num(z.routineMinutes, 0, 90),
+        changes: list(z.changes, SLEEP_CHANGES), difficulties: list(z.difficulties, SLEEP_DIFFICULTIES),
+      };
+    }
+  }
   return out;
+}
+
+const SLEEP_CHANGE_LABELS: Record<string, string> = { night_shorter: 'nuits plus courtes ces 3 derniers jours', night_longer: 'nuits plus longues ces 3 derniers jours', more_wakeups: 'plus de réveils la nuit ces derniers jours', fewer_naps: 'une sieste de moins par jour ces derniers jours', more_naps: 'une sieste de plus par jour ces derniers jours' };
+const SLEEP_DIFF_LABELS: Record<string, string> = { falling_asleep: 'endormissement difficile', night_wakings: 'réveils nocturnes', short_naps: 'siestes courtes', early_waking: 'réveils très matinaux', irregular: 'rythme irrégulier' };
+const hmin = (m: number) => `${Math.floor(m / 60)} h ${String(Math.round(m % 60)).padStart(2, '0')}`;
+
+/** Résumé du sommeil en phrases (données saisies par le parent, jamais une norme). */
+export function describeSleep(z: SleepContext): string {
+  const p: string[] = [`Conversation sur le sommeil d’un enfant de ${z.ageMonths} mois${z.correctedAgeMonths != null && z.correctedAgeMonths !== z.ageMonths ? ` (âge corrigé : ${z.correctedAgeMonths} mois)` : ''}.`];
+  if (z.daysNoted < 3) p.push(`Seulement ${z.daysNoted} jour(s) de sommeil noté(s) sur 7 : données insuffisantes pour parler de tendance.`);
+  else {
+    p.push(`${z.daysNoted} jours notés sur les 7 derniers.`);
+    const d: string[] = [];
+    if (z.napsPerDay != null) d.push(`${z.napsPerDay} sieste(s) par jour${z.napMinutes != null ? ` (${hmin(z.napMinutes)} en tout)` : ''}`);
+    if (z.nightMinutes != null) d.push(`nuit notée de ${hmin(z.nightMinutes)}`);
+    if (z.nightWakeups != null) d.push(`${z.nightWakeups} réveil(s) noté(s) par nuit`);
+    if (z.wakeWindowMinutes != null) d.push(`temps d’éveil habituel d’environ ${hmin(z.wakeWindowMinutes)}`);
+    if (z.usualBedtime) d.push(`coucher habituel vers ${z.usualBedtime}`);
+    if (d.length) p.push(`Moyennes : ${d.join(' ; ')}.`);
+    if (z.changes?.length) p.push(`Changements observés : ${z.changes.map((c) => SLEEP_CHANGE_LABELS[c]).join(', ')}.`);
+  }
+  if (z.nextNapAt) p.push(`Prochaine sieste estimée par l’application vers ${z.nextNapAt} (estimation).`);
+  if (z.bedtimeAt) p.push(`Coucher estimé vers ${z.bedtimeAt} (estimation).`);
+  if (z.routineMinutes != null) p.push(`Routine du soir d’environ ${z.routineMinutes} min.`);
+  if (z.difficulties?.length) p.push(`Difficultés signalées par le parent : ${z.difficulties.map((x) => SLEEP_DIFF_LABELS[x]).join(', ')}.`);
+  return p.join(' ');
 }
 
 export function describeContext(c: AssistantContext): string {
@@ -107,6 +170,7 @@ export function describeContext(c: AssistantContext): string {
     if (r.moodAvg7d != null) d.push(`humeur moyenne du parent sur 7 jours : ${r.moodAvg7d}/5`);
     if (d.length) parts.push(`Données saisies dans l’application (plus jeune enfant) : ${d.join(' ; ')}.`);
   }
+  if (c.sleep) parts.push(describeSleep(c.sleep));
   return parts.join(' ') || 'Aucun contexte renseigné.';
 }
 
@@ -125,7 +189,14 @@ QUI TU ES
 - Tu es une intelligence artificielle. Tu ne te présentes JAMAIS comme médecin, sage-femme, pédiatre, pharmacien ou autre professionnel de santé, et tu ne prétends jamais avoir examiné la personne.
 - Tu réponds TOUJOURS en français, avec des mots simples, clairs, chaleureux, sans jugement et sans culpabiliser.
 
-CE QUE TU NE FAIS JAMAIS
+${c?.sleep ? `CONVERSATION « M’AIDER POUR LES NUITS »
+- Tu aides le parent à comprendre le rythme de SON enfant d’après les données ci-dessous (notées par le parent, souvent incomplètes) : cite-les, dis clairement ce qu’elles ne permettent pas de savoir, et ne tire aucune conclusion d’une seule journée ni de moins de 3 jours notés.
+- Conseils pratiques, doux et adaptables (horaires indicatifs, rituel calme, ambiance du soir, signes de fatigue) ; les heures que tu proposes sont des repères approximatifs, jamais des obligations.
+- Tu n’imposes aucune méthode, tu ne conseilles JAMAIS de laisser pleurer le bébé ni de « méthode d’extinction », tu ne promets jamais qu’il « fera ses nuits » rapidement, et tu ne culpabilises jamais le parent.
+- Tu ne proposes jamais de réveiller automatiquement un bébé ; tu rappelles si utile le couchage sécuritaire (sur le dos, dans son lit, sans oreiller, couverture ni tour de lit, pièce à 18–20 °C).
+- Fièvre, difficulté à respirer, bébé mou ou difficile à réveiller, refus de boire, pleurs inhabituels inconsolables, ou parent à bout : tu ne traites pas, tu orientes (15 ou 112 en urgence, médecin, PMI, Allô Parents Bébé 0 800 00 34 56) en premier, en quelques mots.
+
+` : ''}CE QUE TU NE FAIS JAMAIS
 - Poser un diagnostic, ou dire de quoi souffre la personne ou l’enfant.
 - Prescrire, recommander ou modifier un traitement ; arrêter ou changer un médicament ; recommander un complément alimentaire.
 - Donner une dose, une posologie, un nombre de milligrammes ou un calcul selon le poids.

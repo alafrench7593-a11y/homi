@@ -39,7 +39,7 @@ export function OutingsHomeCard() {
           <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: `${t.colors.lavender}33`, alignItems: 'center', justifyContent: 'center' }}><Icon name="map-pin" size={18} color={t.colors.lavender} /></View>
           <View style={{ flex: 1 }}>
             <Text weight="bold">{tr('out.title')}</Text>
-            <Text variant="caption" muted numberOfLines={2}>{area ? tr('out.homeIntro', { town: area }) : tr('out.homeNoTown')}</Text>
+            <Text variant="caption" muted>{area ? tr('out.homeIntro', { town: area }) : tr('out.homeNoTown')}</Text>
           </View>
         </Row>
         {!center ? <TownPicker onHere={setHere} compact /> : q.isLoading ? <Skeleton kind="card" rows={2} /> : state && state !== 'ok' ? (

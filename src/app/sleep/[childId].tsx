@@ -152,6 +152,7 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
       ) : null}
 
       <Row wrap>
+        <Button size="sm" variant="secondary" icon="heart" label="M’aider pour les nuits" onPress={() => router.push(`/sleep/help/${child.id}` as never)} testID="sleep-help-link" />
         <Button size="sm" variant="ghost" icon="moon" label="Aide pour cette nuit" onPress={() => router.push({ pathname: '/sleep/tonight', params: { child: child.id } } as never)} testID="sleep-tonight-link" />
         <Button size="sm" variant="ghost" icon="edit-3" label="Noter un sommeil passé" onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'sleep', child: child.id } })} />
       </Row>

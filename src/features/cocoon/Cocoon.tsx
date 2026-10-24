@@ -12,6 +12,7 @@
  *  7. Un article adapté à l'âge.
  * Toutes les données viennent du profil affiché (clé = identifiant de l'enfant) : rien n'est mélangé.
  */
+import { NightsHelpCard } from '@/features/sleepHelpCard';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, PanResponder, Platform, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
@@ -296,6 +297,7 @@ export function Cocoon({ child, journey, now: preview, article }: { child: Child
   return (
     <View style={{ gap: spacing.md }} testID="cocoon">
       <CocoonCard child={child} plan={plan} premium={premium} moment={cocoonMoment(preview)} lastEvent={events.filter((e) => e.start <= now.getTime()).slice(-1)[0] ?? null} />
+      {age.months < 36 ? <NightsHelpCard child={child} /> : null}
       <DayRibbon child={child} events={events} now={now} />
       <View style={{ flexDirection: 'row', gap: spacing.xs }} testID="cocoon-infos">
         {infos.map((v) => <InfoCard key={v.key} k={v.key} label={v.label} value={v.value} sub={v.sub} child={child} />)}

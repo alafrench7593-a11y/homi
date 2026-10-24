@@ -131,7 +131,8 @@ def run(p):
     R['gr_noe_separe'] = demo(pg, f"s => !s.tables.child_steps.some(x => x.child_id === '{noe}')")
 
     # ===================================== Accueil de l'enfant : deux raccourcis résumés
-    pg.evaluate(f"() => {{ const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{{\"state\":{{}},\"version\":0}}'); ui.state.subject = {{ type: 'child', id: '{lina}' }}; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }}")
+    mutate_ui = "() => { const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{\"state\":{},\"version\":0}'); ui.state.subject = { type: 'child', id: 'LINA' }; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }"
+    pg.evaluate(mutate_ui.replace('LINA', lina))
     go(pg, '/', 3800)
     R['accueil_raccourcis'] = has(pg, 'cs-discoveries') and has(pg, 'cs-grow')
     R['accueil_resume'] = 'Dernière découverte : Carotte' in text_of(pg, 'cs-discoveries') and 'Tient assis sans appui' in text_of(pg, 'cs-grow')
@@ -165,6 +166,25 @@ def run(p):
     pg.screenshot(path=f'{SHOTS}/accueil_sorties.png', full_page=True)
     go(pg, '/community', 3000)
     R['out_communaute'] = has(pg, 'community-outings') and 'Sorties près de chez moi' in T(pg)
+
+    # ===================================== M'aider pour les nuits (accueil du bébé, page, nuit difficile)
+    mutate_ui = "() => { const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{\"state\":{},\"version\":0}'); ui.state.subject = { type: 'child', id: 'LINA' }; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }"
+    pg.evaluate(mutate_ui.replace('LINA', lina))
+    go(pg, '/', 4000)
+    R['nuits_carte_accueil_bebe'] = has(pg, 'nights-help-card') and 'M’aider pour les nuits' in T(pg)
+    pg.screenshot(path=f'{SHOTS}/accueil_nuits.png', full_page=True)
+    go(pg, f'/sleep/help/{lina}', 3500)
+    t = T(pg)
+    R['nuits_page'] = has(pg, 'nh-review') and has(pg, 'nh-safe') and has(pg, 'nh-routine') and 'Couchage sécuritaire' in t
+    R['nuits_acces_ia_et_nuit_difficile'] = has(pg, 'nh-ai') and has(pg, 'nh-difficult')
+    pg.screenshot(path=f'{SHOTS}/maider_nuits.png', full_page=True)
+    go(pg, f'/sleep/difficult/{lina}', 3000)
+    R['nuit_difficile_signes_dabord'] = has(pg, 'difficult-night') and 'D’abord : l’un de ces signes ?' in T(pg)
+    tid(pg, 'dn-obs-parent_exhausted').click(); tid(pg, 'dn-next').click(); pg.wait_for_timeout(400); tid(pg, 'dn-next').click(); pg.wait_for_timeout(400)
+    R['nuit_difficile_pistes_douces'] = 'D’abord vous' in T(pg) and not re.search(r'laissez[- ]le pleurer', T(pg), re.I)
+    go(pg, f'/assistant/chat?topic=sleep&child={lina}', 3500)
+    t = T(pg)
+    R['ia_sommeil_identifiee'] = 'Assistant sommeil · IA' in t or 'intelligence artificielle' in t
 
     # ===================================== sommeil : rappel « vérifier » seulement à la demande
     mutate(pg, f"""s => {{ s.tables.sleeps = (s.tables.sleeps || []).filter(x => x.child_id !== '{lina}');

@@ -17,7 +17,8 @@ import {
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { backend, BackendError, eq } from '@/lib/backend';
 import { useUserId } from '@/lib/auth';
-import { useConsents, useConversations, useInvalidate, useMessages, usePrivacy, useSetConsent } from '@/lib/data/hooks';
+import { useChild, useConsents, useConversations, useInvalidate, useMessages, usePrivacy, useSetConsent } from '@/lib/data/hooks';
+import { SLEEP_QUESTIONS, useSleepAssistantContext } from '@/features/sleepAssistant';
 import { friendlyError, useUpdatePrivacy } from '@/lib/data/hooks-settings';
 import type { AssistantMessage } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -57,7 +58,11 @@ export default function Chat() {
   const inv = useInvalidate();
   const userId = useUserId();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ id?: string; q?: string }>();
+  const params = useLocalSearchParams<{ id?: string; q?: string; topic?: string; child?: string }>();
+  // « M'aider pour les nuits » : conversation sommeil sur l'enfant choisi
+  const sleepChild = useChild(params.topic === 'sleep' ? params.child : null);
+  const sleepTopic = params.topic === 'sleep' && !!sleepChild;
+  const sleepCtx = useSleepAssistantContext(sleepTopic ? sleepChild : null);
   const [conversationId, setConversationId] = useState<string | null>(params.id ?? null);
   const historyQ = useMessages(params.id);
   const { data: history } = historyQ;
@@ -72,9 +77,12 @@ export default function Chat() {
   const updatePrivacy = useUpdatePrivacy();
   const historyOn = privacy.data?.ai_history_enabled === true;
   const [premiumNeeded, setPremiumNeeded] = useState<string | null>(null);
-  const [useContext, setUseContext] = useState(false);
+  // Sommeil : les données de sommeil de l'enfant sont proposées d'emblée (visibles et désactivables), sinon rien
+  const [useContext, setUseContext] = useState(params.topic === 'sleep' && !params.id);
   const [showContext, setShowContext] = useState(false);
-  const context = useAssistantContext();
+  const generalContext = useAssistantContext();
+  // Seulement ce qui est nécessaire : pour le sommeil, l'âge et le résumé chiffré du sommeil de cet enfant
+  const context = params.topic === 'sleep' ? (sleepCtx ?? {}) : generalContext;
   const { data: quotaStatus } = useAssistantQuota();
   const [quota, setQuota] = useState<{ used: number; limit: number } | null>(null);
   const { latest } = useConsents();
@@ -106,11 +114,11 @@ export default function Chat() {
   }, [conv]);
 
   useEffect(() => {
-    if (params.q && !askedInitial.current && consented) {
+    if (params.q && !askedInitial.current && consented && (params.topic !== 'sleep' || !!sleepCtx)) {
       askedInitial.current = true;
       send(params.q);
     }
-  }, [params.q, consented]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [params.q, consented, sleepCtx]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function changeContext(v: boolean) {
     setUseContext(v);
@@ -262,7 +270,7 @@ export default function Chat() {
 
   if (!consented) {
     return (
-      <Screen back title="Assistant">
+      <Screen back title={sleepTopic ? "Assistant sommeil · IA" : "Assistant"}>
         <AssistantIntro />
         <Card tone="lavender">
           <Text variant="heading">Avant de commencer</Text>
@@ -295,7 +303,7 @@ export default function Chat() {
     && !!history && history.length === 0 && !!conversations && !conversations.some((c) => c.id === params.id);
   if (historyLoading || historyError || notFound) {
     return (
-      <Screen back title="Assistant">
+      <Screen back title={sleepTopic ? "Assistant sommeil · IA" : "Assistant"}>
         {historyLoading ? <Skeleton kind="detail" rows={5} /> : historyError ? (
           <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher cette conversation" />
         ) : (
@@ -316,7 +324,7 @@ export default function Chat() {
   return (
     <Screen
       back
-      title="Assistant"
+      title={sleepTopic ? "Assistant sommeil · IA" : "Assistant"}
       scroll={false}
       right={
         <Row gap={0}>
@@ -344,7 +352,7 @@ export default function Chat() {
             <Card padded>
               <Row style={{ justifyContent: 'space-between' }}>
                 <View style={{ flex: 1, gap: 2 }}>
-                  <Text weight="medium">Utiliser ma situation</Text>
+                  <Text weight="medium">{sleepTopic ? `Utiliser les données de sommeil de ${sleepChild!.first_name}` : 'Utiliser ma situation'}</Text>
                   <Text variant="caption" muted>Pour cette conversation uniquement. Vous pouvez changer d’avis à tout moment.</Text>
                 </View>
                 <Toggle label="Utiliser ma situation pour cette conversation" value={useContext} onChange={changeContext} />
@@ -356,6 +364,13 @@ export default function Chat() {
               )}
               {useContext && showContext && <Text variant="small" muted>{describeContext(context)}</Text>}
             </Card>
+            {sleepTopic && !msgs.length ? (
+              <View style={{ gap: spacing.xs }} testID="chat-sleep-questions">
+                <Text variant="label">{`Questions fréquentes sur le sommeil de ${sleepChild!.first_name}`}</Text>
+                <Row wrap>{SLEEP_QUESTIONS.map((q) => <Chip key={q} label={q} onPress={() => void send(q)} />)}</Row>
+                <Text variant="caption" muted>L’assistant tient compte de son âge et des sommeils notés, explique ses incertitudes et ne pose jamais de diagnostic.</Text>
+              </View>
+            ) : null}
             <Card padded>
               <Row style={{ justifyContent: 'space-between' }}>
                 <View style={{ flex: 1, gap: 2 }}>
