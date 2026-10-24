@@ -171,19 +171,28 @@ L’onglet **Questions** (accessible depuis tous les parcours) est l’accueil d
 - **Retours « Utile / Pas utile »** dans `assistant_feedback` (RLS : propriétaire uniquement, seulement sur ses propres réponses), **favoris** (`assistant_messages.saved`), **quota** gratuit/premium vérifié par le serveur (`consume_assistant_quota`, 5 puis 300 questions par mois selon `plan_limits`), affiché via `assistant_quota_status()` avec bandeau premium quand il est atteint. Une question est rendue (`refund_assistant_quota`) si le service d’IA échoue.
 - **Protection** : JWT vérifié, lectures sous RLS avec le client de l’utilisateur, limite de débit (8/min, 120/jour), 2 000 caractères maximum, détection des tentatives de détournement (refus sans consommer de question). Les conversations ne sont **jamais publiées** dans la communauté.
 
-**Configuration (secrets serveur, jamais dans l’app)**
-```bash
-supabase secrets set GEMINI_API_KEY=...                       # clé Google AI Studio (aistudio.google.com › Get API key)
-supabase secrets set GEMINI_MODEL=gemini-3.5-flash-lite       # optionnel (valeur par défaut)
-supabase secrets set APP_NAME="Toi & Moi"                     # optionnel
-supabase db push                                              # applique 20261016000400_assistant_feedback.sql
-supabase functions deploy assistant                           # vérification du JWT activée (par défaut)
-```
+**Historique, arrêt, nouvel essai**
+- L’historique n’est conservé **qu’avec l’accord de la personne** : désactivé par défaut, activé par « Garder mes conversations » (dans la conversation ou Réglages › Confidentialité), accord daté dans `privacy_settings.ai_history_consented_at` (migration `20261029000200_assistant_history_consent.sql`). Sans accord, rien n’est enregistré ; la conversation garde quand même son contexte : l’app joint les derniers échanges (`recent_turns`, 12 au plus, nettoyés par `sanitizeRecentTurns`) pour la réponse en cours seulement.
+- Bouton **Arrêter la réponse** pendant la diffusion, **Réessayer** sur une réponse arrêtée ou en erreur, délai maximal de 90 s côté app, 30 s pour une réponse complète et 60 s pour le flux côté serveur.
+- Si le service n’est pas configuré : l’utilisatrice voit seulement « L’assistant n’est pas disponible pour le moment. Réessayez plus tard. » ; l’état détaillé est dans **Réglages › État des services** (mode développeur : toucher 7 fois le numéro de version).
+
+**Mise en service, pas à pas** (vous seul·e saisissez les clés, dans votre terminal, jamais dans l’app ni dans le dépôt)
+1. Projet Supabase : créez-le sur supabase.com, installez la CLI, puis `supabase login` et `supabase link --project-ref <identifiant du projet>`.
+2. Base : `supabase db push` (toutes les migrations de `supabase/migrations`).
+3. Clé Gemini : créez-la sur **Google AI Studio** (aistudio.google.com › « Get API key » › « Create API key »), puis :
+   ```bash
+   supabase secrets set GEMINI_API_KEY=<votre clé>
+   supabase secrets set GEMINI_MODEL=gemini-3.5-flash-lite      # facultatif : modèle stable, modifiable sans republier l’app
+   ```
+4. Fonction : `supabase functions deploy assistant` (vérification du JWT activée par défaut).
+5. Application : dans `.env` (non versionné), `EXPO_PUBLIC_SUPABASE_URL=https://<projet>.supabase.co` et `EXPO_PUBLIC_SUPABASE_ANON_KEY=<clé anon publique>` (clé publique prévue pour l’app ; la clé « service_role » ne doit jamais y figurer), puis relancez l’app.
+6. Vérification : Réglages › État des services doit indiquer « Gemini » configuré ; posez une question, poursuivez, fermez puis rouvrez la conversation (si l’historique est activé), supprimez-la.
+
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` et `SUPABASE_SERVICE_ROLE_KEY` sont fournies automatiquement aux fonctions par Supabase.
 
-**Sans clé IA** : aucune réponse n’est simulée. La fonction renvoie l’erreur explicite `ai_not_configured` (« Assistant IA non configuré… ») sans décompter de question. En mode démo (sans Supabase), l’assistant affiche le même message ; seule l’orientation en cas d’urgence (règles locales, sans IA) reste active.
+**Sans clé IA** : aucune réponse n’est simulée, aucune question n’est décomptée (`ai_not_configured`). La démonstration publiée (sans Supabase) ne peut donc pas répondre : seule l’orientation en cas d’urgence (règles locales, sans IA) y reste active.
 
-Tests : `npm test` (`src/__tests__/assistant.test.ts`, `safety.test.ts`) et `npm run db:test` (`supabase/tests/sql/33_assistant.sql`).
+Tests : `npm test` (`src/__tests__/assistant.test.ts`, `assistantChat.test.tsx`, `safety.test.ts`) et `npm run db:test` (`supabase/tests/sql/33_assistant.sql`, `63_assistant_history_consent.sql`).
 
 ## Scanner
 
@@ -196,20 +205,20 @@ Routes : `/scanner` (accueil), `/scanner/product`, `/scanner/food` (« Puis-je m
 
 Tests : `src/__tests__/scanner.test.ts`, `scannerScreens.test.tsx`, Deno `supabase/functions/_shared/{open-facts,rappelconso,scan-explain}_test.ts`, SQL `supabase/tests/sql/34_scanner.sql`.
 
-## Sorties & rencontres (Communauté)
+## Sorties près de chez moi
 
-Route : `/outings` (onglets Lieux et Rencontres ; `/nearby` y redirige). Accès : carte « Sorties & rencontres » en haut du fil Communauté, icône carte de l’en-tête, raccourci unique « Sorties près de chez moi » de l’accueil.
+Carte sur l’**accueil** (carte « Sorties près de chez moi », réglable dans Réglages › Mon accueil) et écran `/outings` (vues Carte et Liste ; `/nearby` y redirige). Lieux publics seulement : cafés et salons de thé, restaurants familles, parcs et aires de jeux, activités parents-enfants ; « PMI et accompagnement » en filtre secondaire (avec les annuaires officiels). Filtres : type de lieu, espace bébé ou enfant. **Aucune rencontre entre membres** (création et inscriptions bloquées en base par `20261029000100_outings_public_places_only.sql`, anciennes données conservées et exportables).
 
-- **Lieux** (11 catégories, `src/lib/domain/outings.ts`) : OpenStreetMap via Overpass (seule source dessinée sur la carte), lieux proposés par les membres **après validation** (`place_suggestions`), annuaires officiels (PMI, Caf, LAEP, allaitement, carte famille nombreuse, préparation à la naissance). Équipements affichés « selon OpenStreetMap / Google Maps / un membre », jamais comme confirmés. Photos : Google (si activé), sinon Wikimedia Commons (auteur et licence), sinon illustration du type de lieu.
-- **Google Places (facultatif, payant)** : fonction `places` (Places API New : Nearby / Text Search, Place Photos), clé uniquement côté serveur. Résultats montrés dans la liste et les fiches seulement, avec la mention « Google Maps », les auteurs des photos et le lien vers la fiche Google ; jamais enregistrés sur l’appareil (cache non persistant), pas de favori Google. Activation, avec facturation Google Cloud :
-  ```bash
-  supabase secrets set GOOGLE_PLACES_API_KEY=...   # clé restreinte à « Places API (New) »
-  supabase functions deploy places
-  ```
-  Sans clé : `{ google: 'not_configured' }`, l’app le dit et garde OpenStreetMap.
-- **Rencontres** (`community_meetups`, `meetup_participants`) : 3 à 20 places, lieu public choisi dans les résultats (`osm:`, `google:`, `sugg:` validé), entre 1 h et 60 jours ; texte avec coordonnées ⇒ relu par la modération ; organisatrice inscrite d’office ; liste des participantes jamais lisible (seul le nombre de places) ; blocage dans les deux sens ; signalement d’annonce (3 ⇒ mise de côté), de membre, de lieu proposé.
+- **Lieux et photos : Google Places API (New)**, appelée uniquement par la fonction serveur `places` (clé `GOOGLE_PLACES_API_KEY`, jamais dans l’app). Position envoyée arrondie à ~1 km, limite d’appels par personne, aucun résultat stocké (cache non persistant). Cafés et restaurants gardés seulement si Google les indique adaptés aux enfants ; « non renseigné » sinon, jamais supposé.
+- **Fond de carte Google** (obligatoire pour afficher des lieux Google) : `react-native-maps` (`PROVIDER_GOOGLE`) sur iOS/Android, Maps JavaScript API sur le web. Ces clés de carte sont des clés « client » prévues par Google, à **restreindre** : identifiant iOS / paquet Android + SHA-1, ou domaine du site.
+- Sans clé : l’app affiche « La recherche de lieux n’est pas encore disponible » et aucune carte factice ; état détaillé dans Réglages › État des services (vérification réelle de la clé Places).
 
-Tests : `src/__tests__/outings.test.tsx`, SQL `supabase/tests/sql/62_outings_meetups.sql`, e2e `e2e/decouvertes.py`.
+**Mise en service** (Google Cloud, facturation activée ; vous saisissez les clés vous-même)
+1. Console Google Cloud › API et services : activez **Places API (New)**, **Maps SDK for Android**, **Maps SDK for iOS**, **Maps JavaScript API**.
+2. Clé serveur (restreinte à « Places API (New) ») : `supabase secrets set GOOGLE_PLACES_API_KEY=<clé>` puis `supabase functions deploy places`.
+3. Clés de carte : au moment de la construction, variables `GOOGLE_MAPS_IOS_API_KEY` et `GOOGLE_MAPS_ANDROID_API_KEY` (par exemple secrets EAS), et pour le web `EXPO_PUBLIC_GOOGLE_MAPS_WEB_KEY` (restreinte au domaine). Une nouvelle build est nécessaire pour iOS/Android.
+
+Tests : `src/__tests__/outings.test.tsx` (réponses Google simulées au format de l’API), SQL `62_outings_meetups.sql`, e2e `e2e/decouvertes.py`.
 
 ## Comprendre mon cycle et mes tests (parcours « Projet bébé »)
 

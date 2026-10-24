@@ -19,6 +19,7 @@ import {
   parseStructuredAnswer,
   structuredToMarkdown,
   todayIso,
+  sanitizeRecentTurns,
   type StructuredAnswer,
 } from '../_shared/assistant-format.ts';
 
@@ -53,7 +54,7 @@ Deno.serve(async (req) => {
     return json({ error: 'rate_limited', message: 'Beaucoup de questions en peu de temps. Réessayez dans une minute.' }, 429);
   }
 
-  let body: { conversation_id?: unknown; message?: unknown; context?: unknown; use_context?: unknown; stream?: unknown };
+  let body: { conversation_id?: unknown; message?: unknown; context?: unknown; use_context?: unknown; stream?: unknown; recent_turns?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -74,8 +75,9 @@ Deno.serve(async (req) => {
     if (!conv) return json({ error: 'not_found', message: 'Conversation introuvable.' }, 404);
   }
 
-  const { data: privacy } = await db.from('privacy_settings').select('ai_history_enabled').eq('user_id', user.id).maybeSingle();
-  const keepHistory = privacy?.ai_history_enabled !== false;
+  // Historique conservé seulement avec l'accord explicite de la personne (20261029000200)
+  const { data: privacy } = await db.from('privacy_settings').select('ai_history_enabled, ai_history_consented_at').eq('user_id', user.id).maybeSingle();
+  const keepHistory = privacy?.ai_history_enabled === true && !!privacy?.ai_history_consented_at;
   const { data: consent } = await db
     .from('consents')
     .select('granted')
@@ -152,7 +154,9 @@ Deno.serve(async (req) => {
   // L'IA n'est pas configurée : on le dit clairement, sans consommer de question ni simuler de réponse.
   const geminiOrNull = geminiConfig();
   if (!geminiOrNull) {
-    return json({ error: 'ai_not_configured', message: 'Assistant IA non configuré : la clé GEMINI_API_KEY doit être ajoutée aux secrets Supabase (voir README, section Assistant IA).' }, 503);
+    // Message discret pour l'utilisatrice ; l'état détaillé est dans Réglages › État des services (mode développeur)
+    console.error('assistant_not_configured');
+    return json({ error: 'ai_not_configured', message: 'L’assistant n’est pas disponible pour le moment. Réessayez plus tard.' }, 503);
   }
   const gemini = geminiOrNull;
 
@@ -199,6 +203,9 @@ Deno.serve(async (req) => {
     }
     while (history.length && history[0].role !== 'user') history.shift();
     if (history.length && history[history.length - 1].role === 'user') history.pop();
+  } else {
+    // Historique non conservé : le contexte de la conversation vient de l'application, pour cette réponse seulement
+    history.push(...sanitizeRecentTurns(body.recent_turns));
   }
 
   const devMode = false;

@@ -76,7 +76,8 @@ export interface Backend {
    * si le serveur a répondu sans diffusion, par exemple une orientation urgente).
    * Sur les plateformes sans flux lisible, bascule automatiquement sans diffusion.
    */
-  invokeStream<T>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void): Promise<T>;
+  /** Réponse diffusée. `signal` : arrêter la réponse ; `timeoutMs` : délai maximal (erreur « timeout »). */
+  invokeStream<T>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void, opts?: { signal?: AbortSignal; timeoutMs?: number }): Promise<T>;
   /**
    * Changements faits ailleurs (autre appareil, coparent) sur des tables, en temps réel.
    * Les droits (RLS) s'appliquent côté serveur. Absent en démonstration (une seule personne, un seul appareil).

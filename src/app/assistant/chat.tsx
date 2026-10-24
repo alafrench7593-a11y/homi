@@ -17,8 +17,8 @@ import {
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { backend, BackendError, eq } from '@/lib/backend';
 import { useUserId } from '@/lib/auth';
-import { useConsents, useConversations, useInvalidate, useMessages, useSetConsent } from '@/lib/data/hooks';
-import { friendlyError } from '@/lib/data/hooks-settings';
+import { useConsents, useConversations, useInvalidate, useMessages, usePrivacy, useSetConsent } from '@/lib/data/hooks';
+import { friendlyError, useUpdatePrivacy } from '@/lib/data/hooks-settings';
 import type { AssistantMessage } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
@@ -40,6 +40,10 @@ interface LocalMsg {
   feedback?: -1 | 1 | null;
   saved?: boolean;
   error?: boolean;
+  /** Question d'origine (pour « Réessayer ») */
+  question?: string;
+  /** Réponse arrêtée par la personne */
+  stopped?: boolean;
 }
 
 const fromHistory = (m: AssistantMessage): LocalMsg => ({
@@ -63,6 +67,10 @@ export default function Chat() {
   const [msgs, setMsgs] = useState<LocalMsg[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const privacy = usePrivacy();
+  const updatePrivacy = useUpdatePrivacy();
+  const historyOn = privacy.data?.ai_history_enabled === true;
   const [premiumNeeded, setPremiumNeeded] = useState<string | null>(null);
   const [useContext, setUseContext] = useState(false);
   const [showContext, setShowContext] = useState(false);
@@ -128,12 +136,18 @@ export default function Chat() {
     setPremiumNeeded(null);
     const now = Date.now();
     const answerId = `a${now}`;
-    setMsgs((m) => [...m, { id: `u${now}`, role: 'user', content: message }, { id: answerId, role: 'assistant', content: '', raw: '', streaming: true }]);
+    setMsgs((m) => [...m, { id: `u${now}`, role: 'user', content: message }, { id: answerId, role: 'assistant', content: '', raw: '', streaming: true, question: message }]);
     setSending(true);
+    const ac = new AbortController();
+    abortRef.current = ac;
     try {
       const res = await backend.invokeStream<AskResponse>(
         'assistant',
-        { conversation_id: conversationId, message, use_context: useContext, context: useContext ? context : undefined },
+        {
+          conversation_id: conversationId, message, use_context: useContext, context: useContext ? context : undefined,
+          // Historique non conservé : les derniers échanges accompagnent la question (gardés seulement pour cette réponse)
+          recent_turns: conversationId ? undefined : msgs.filter((x) => !x.streaming && !x.error && !x.stopped && (x.role === 'user' || (x.safety ?? 'none') === 'none')).slice(-12).map((x) => ({ role: x.role, content: x.content })),
+        },
         (event, data) => {
           const d = data as { text?: string; conversation_id?: string | null; quota?: { used: number; limit: number } };
           if (event === 'delta' && d.text) patchMsg(answerId, (m) => ({ raw: (m.raw ?? '') + d.text }));
@@ -142,6 +156,7 @@ export default function Chat() {
             if (d.quota) setQuota(d.quota);
           }
         },
+        { signal: ac.signal, timeoutMs: 90_000 },
       );
       if (res.conversation_id) setConversationId(res.conversation_id);
       if (res.quota) setQuota(res.quota);
@@ -157,13 +172,26 @@ export default function Chat() {
         setPremiumNeeded(e.message);
         setMsgs((m) => m.filter((x) => x.id !== answerId));
         inv('assistant_usage');
+      } else if (e instanceof BackendError && e.code === 'aborted') {
+        patchMsg(answerId, { streaming: false, raw: undefined, stopped: true, content: 'Réponse arrêtée.' });
       } else {
         patchMsg(answerId, { streaming: false, raw: undefined, error: true, content: friendlyError(e, 'L’assistant est indisponible pour le moment. Réessayez dans un instant.') });
       }
     } finally {
+      abortRef.current = null;
       setSending(false);
       setTimeout(() => scroll.current?.scrollToEnd({ animated: true }), 120);
     }
+  }
+
+  /** Réessayer : la question est renvoyée, la réponse en erreur ou arrêtée est retirée. */
+  function retry(m: LocalMsg) {
+    if (!m.question || sending) return;
+    setMsgs((all) => {
+      const i = all.findIndex((x) => x.id === m.id);
+      return all.filter((_, j) => j !== i && j !== i - 1);
+    });
+    void send(m.question);
   }
 
   async function feedback(m: LocalMsg, value: -1 | 1) {
@@ -328,6 +356,16 @@ export default function Chat() {
               )}
               {useContext && showContext && <Text variant="small" muted>{describeContext(context)}</Text>}
             </Card>
+            <Card padded>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text weight="medium">Garder mes conversations</Text>
+                  <Text variant="caption" muted testID="chat-history-note">{historyOn ? 'Vos conversations sont enregistrées dans votre espace privé, visibles par vous seule ou vous seul, et supprimables à tout moment.' : 'Désactivé : vos questions et les réponses ne sont pas enregistrées après l’échange.'}</Text>
+                </View>
+                <Toggle label="Garder mes conversations" value={historyOn} onChange={(v) => updatePrivacy.mutate({ ai_history_enabled: v }, { onError: (e) => toast(friendlyError(e), 'error') })} />
+              </Row>
+              {historyOn ? <Button label="Mes conversations" icon="clock" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => router.push('/(tabs)/ask' as never)} /> : null}
+            </Card>
           </View>
         )}
         renderItem={({ item: m }) => (
@@ -357,7 +395,10 @@ export default function Chat() {
                   <Markdown source={m.content} />
                 )}
               </View>
-              {!m.streaming && !m.error && (
+              {(m.error || m.stopped) && m.question ? (
+                <Button label="Réessayer" icon="refresh-cw" size="sm" variant="secondary" style={{ alignSelf: 'flex-start' }} disabled={sending} onPress={() => retry(m)} testID="chat-retry" />
+              ) : null}
+              {!m.streaming && !m.error && !m.stopped && (
                 <Text variant="caption" muted>Réponse générée par une IA, à titre d’information : elle ne remplace pas un professionnel de santé.</Text>
               )}
               {m.serverId && !m.streaming && (
@@ -398,15 +439,23 @@ export default function Chat() {
             maxLength={MAX_QUESTION_LENGTH}
             style={{ flex: 1, minHeight: 44, maxHeight: 140, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, paddingHorizontal: spacing.sm, paddingTop: 10 }}
           />
-          <Tappable
-            accessibilityRole="button"
-            accessibilityLabel="Envoyer"
-            disabled={sending || blocked || input.trim().length < 2}
-            onPress={() => send()}
-            style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center', opacity: sending || blocked || input.trim().length < 2 ? 0.4 : 1 }}
-          >
-            {sending ? <ActivityIndicator color={t.colors.primaryText} /> : <Icon name="arrow-up" color={t.colors.primaryText} />}
-          </Tappable>
+          {sending ? (
+            <Tappable accessibilityRole="button" accessibilityLabel="Arrêter la réponse" onPress={() => abortRef.current?.abort()} testID="chat-stop"
+              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="square" color={t.colors.primaryText} size={18} />
+            </Tappable>
+          ) : (
+            <Tappable
+              accessibilityRole="button"
+              accessibilityLabel="Envoyer"
+              disabled={blocked || input.trim().length < 2}
+              onPress={() => send()}
+              testID="chat-send"
+              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center', opacity: blocked || input.trim().length < 2 ? 0.4 : 1 }}
+            >
+              <Icon name="arrow-up" color={t.colors.primaryText} />
+            </Tappable>
+          )}
         </View>
         <Tappable accessibilityRole="link" accessibilityLabel="Numéros d’urgence : 15, 112, SMS 114, 3114" onPress={() => router.push('/emergency')} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
           <Text variant="caption" color={t.colors.danger} center>Urgence : 15 ou 112 · SMS 114 (sourds, malentendants) · Détresse : 3114</Text>

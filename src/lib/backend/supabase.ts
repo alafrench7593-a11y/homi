@@ -199,10 +199,18 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
       }
       return data as T;
     },
-    async invokeStream<T>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void) {
+    async invokeStream<T>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void, opts?: { signal?: AbortSignal; timeoutMs?: number }) {
       const { data: sess } = await client.auth.getSession();
       const token = sess.session?.access_token;
       if (!token) throw new BackendError('Connexion requise.', '42501', undefined, 401);
+      // Arrêt demandé par la personne, ou délai dépassé : la lecture du flux est interrompue proprement
+      const ac = new AbortController();
+      let timedOut = false;
+      const timer = setTimeout(() => { timedOut = true; ac.abort(); }, opts?.timeoutMs ?? 90_000);
+      const onAbort = () => ac.abort();
+      opts?.signal?.addEventListener('abort', onAbort);
+      const stopped = () => (timedOut ? new BackendError('La réponse prend trop de temps. Réessayez.', 'timeout') : new BackendError('Réponse arrêtée.', 'aborted'));
+      try {
       // Web : fetch natif (flux lisible). iOS / Android : expo/fetch, qui expose aussi un flux lisible.
       const doFetch = (Platform.OS === 'web' ? globalThis.fetch : (expoFetch as unknown as typeof globalThis.fetch)) ?? globalThis.fetch;
       let res: Response;
@@ -211,8 +219,10 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}`, apikey: anonKey, 'Content-Type': 'application/json', Accept: 'text/event-stream' },
           body: JSON.stringify({ ...body, stream: true }),
+          signal: ac.signal,
         });
       } catch {
+        if (ac.signal.aborted) throw stopped();
         // Plateforme sans fetch en flux : réponse complète, sans diffusion
         return api.invoke<T>(fn, { ...body, stream: false });
       }
@@ -252,7 +262,8 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
         const decoder = new TextDecoder();
         let buffer = '';
         for (;;) {
-          const { value, done } = await reader.read();
+          if (ac.signal.aborted) { void reader.cancel().catch(() => undefined); throw stopped(); }
+          const { value, done } = await reader.read().catch((e) => { if (ac.signal.aborted) throw stopped(); throw e; });
           if (done) break;
           buffer = handle(buffer + decoder.decode(value, { stream: true }));
         }
@@ -264,6 +275,10 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
       if (failure) throw new BackendError((failure as { message?: string }).message ?? 'L’assistant est momentanément indisponible.', (failure as { error?: string }).error ?? 'function_error', undefined, 503);
       if (!final) throw new BackendError('La réponse a été interrompue. Réessayez dans un instant.', 'stream_interrupted');
       return final;
+      } finally {
+        clearTimeout(timer);
+        opts?.signal?.removeEventListener('abort', onAbort);
+      }
     },
   };
   return api;

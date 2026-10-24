@@ -200,12 +200,13 @@ describe('assistant sur le moteur local (mode démonstration)', () => {
     await db.insert('consents', { purpose: 'ai_assistant', granted: true, version: '1' });
   });
 
-  it('sans serveur ni clé Gemini : erreur explicite, aucune réponse simulée, aucune question décomptée', async () => {
+  it('sans serveur ni clé Gemini : erreur discrète (ni clé, ni détail technique, ni « mode démonstration »), aucune réponse simulée, aucune question décomptée', async () => {
     const before = (await db.rpc<{ used: number }[]>('assistant_quota_status'))[0].used;
     const err = await db.invoke('assistant', { message: 'Comment préparer la valise de maternité ?' }).catch((e) => e);
     expect(err).toBeInstanceOf(BackendError);
     expect((err as BackendError).code).toBe('ai_not_configured');
-    expect((err as BackendError).message).toMatch(/Gemini/);
+    expect((err as BackendError).message).toBe('L’assistant n’est pas disponible pour le moment. Réessayez plus tard.');
+    expect((err as BackendError).message).not.toMatch(/Gemini|GEMINI_API_KEY|Supabase|démonstration/);
     expect((await db.rpc<{ used: number }[]>('assistant_quota_status'))[0].used).toBe(before);
     expect(await db.select({ table: 'assistant_messages', filters: [eq('role', 'assistant')] })).toHaveLength(0);
   });

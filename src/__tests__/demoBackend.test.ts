@@ -79,7 +79,7 @@ describe('moteur local : parcours essentiels', () => {
     expect(await db.rpc('has_premium')).toBe(false);
     await db.insert('consents', { purpose: 'ai_assistant', granted: true, version: '1' });
     // Sans serveur, l'assistant ne simule aucune réponse
-    await expect(db.invoke('assistant', { message: 'Comment préparer la valise de maternité ?' })).rejects.toThrow(/Gemini/);
+    await expect(db.invoke('assistant', { message: 'Comment préparer la valise de maternité ?' })).rejects.toThrow(/pas disponible pour le moment/);
     await db.rpc('set_demo_subscription', { active: true, period: 'annual' });
     expect(await db.rpc('has_premium')).toBe(true);
   });

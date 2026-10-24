@@ -12,6 +12,25 @@ export const ASSISTANT_INTRO =
   'Vous échangez avec un assistant d’intelligence artificielle spécialisé dans l’information en santé et parentalité. Il ne remplace pas un médecin, une sage-femme, un pédiatre ou les services d’urgence.';
 
 /** Longueur maximale d'une question (contrôlée dans l'app ET par le serveur). */
+/**
+ * Échanges récents envoyés par l'application quand l'historique n'est pas conservé (sans accord de la personne) :
+ * gardés seulement le temps de la réponse. Au plus 12 messages, rôles alternés, textes tronqués ; sinon ignorés.
+ */
+export function sanitizeRecentTurns(v: unknown): { role: 'user' | 'assistant'; content: string }[] {
+  if (!Array.isArray(v)) return [];
+  const out: { role: 'user' | 'assistant'; content: string }[] = [];
+  for (const t of v.slice(-12)) {
+    const role = (t as { role?: unknown })?.role, content = (t as { content?: unknown })?.content;
+    if ((role !== 'user' && role !== 'assistant') || typeof content !== 'string' || !content.trim()) continue;
+    const last = out[out.length - 1];
+    if (last && last.role === role) continue;
+    out.push({ role, content: content.trim().slice(0, 4000) });
+  }
+  while (out.length && out[0].role !== 'user') out.shift();
+  if (out.length && out[out.length - 1].role === 'user') out.pop();
+  return out;
+}
+
 export const MAX_QUESTION_LENGTH = 2000;
 
 /** Mention du mode développement (aucune clé IA configurée). */

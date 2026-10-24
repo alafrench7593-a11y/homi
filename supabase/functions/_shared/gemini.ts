@@ -10,6 +10,8 @@
 
 export const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 export const DEFAULT_GEMINI_MODEL = 'gemini-3.5-flash-lite';
+/** Délai maximal d'un appel à Gemini (au-delà : erreur « indisponible », question rendue). */
+export const GEMINI_TIMEOUT_MS = 30_000;
 
 export interface GeminiConfig { apiKey: string; model: string }
 
@@ -71,7 +73,8 @@ export async function geminiGenerate(cfg: GeminiConfig, o: GeminiRequestOptions,
     method: 'POST',
     headers: { 'x-goog-api-key': cfg.apiKey, 'content-type': 'application/json' },
     body: JSON.stringify(buildGeminiBody(o)),
-  });
+    signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
+  }).catch((e) => { throw new GeminiError(`Gemini ${(e as Error).name === 'TimeoutError' ? 'timeout' : 'network'}`, 504); });
   if (!res.ok) throw new GeminiError(`Gemini ${res.status}`, res.status);
   const out = geminiText(await res.json());
   if (out.blocked) throw new GeminiError('Réponse bloquée par les filtres de sécurité', 200, true);
@@ -84,7 +87,9 @@ export async function geminiStream(cfg: GeminiConfig, o: GeminiRequestOptions, o
     method: 'POST',
     headers: { 'x-goog-api-key': cfg.apiKey, 'content-type': 'application/json' },
     body: JSON.stringify(buildGeminiBody(o)),
-  });
+    // délai pour le début de la réponse ; le flux lui-même est borné par la fonction (maxOutputTokens)
+    signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS * 2),
+  }).catch((e) => { throw new GeminiError(`Gemini ${(e as Error).name === 'TimeoutError' ? 'timeout' : 'network'}`, 504); });
   if (!res.ok || !res.body) throw new GeminiError(`Gemini ${res.status}`, res.status);
   const reader = res.body.getReader();
   const dec = new TextDecoder();

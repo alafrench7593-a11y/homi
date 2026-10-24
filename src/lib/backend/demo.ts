@@ -945,7 +945,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
     const me = uid();
     const useContext = b.use_context === true;
-    const keepHistory = T('privacy_settings').find((p) => p.user_id === me)?.ai_history_enabled !== false;
+    const ps = T('privacy_settings').find((p) => p.user_id === me);
+    const keepHistory = ps?.ai_history_enabled === true && !!ps?.ai_history_consented_at;
     const consent = T('consents')
       .filter((c) => c.user_id === me && c.purpose === 'ai_assistant')
       .sort((x, y) => (x.created_at < y.created_at ? 1 : x.created_at > y.created_at ? -1 : 0))[0];
@@ -995,7 +996,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
 
     // 3) Pas d'IA sans serveur : on le dit clairement, sans réponse simulée ni question décomptée.
-    throw new BackendError('Assistant IA non disponible en mode démonstration : il nécessite Supabase et une clé Gemini côté serveur (voir README, section Assistant IA). L’orientation en cas d’urgence reste active.', 'ai_not_configured', undefined, 503);
+    // Pas d'IA sans serveur : erreur discrète (l'état détaillé est dans Réglages › État des services)
+    throw new BackendError('L’assistant n’est pas disponible pour le moment. Réessayez plus tard.', 'ai_not_configured', undefined, 503);
   }
 
   // ---------------------------------------------------------------- fonctions backend simulées
@@ -1441,7 +1443,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     if (!T('profiles').some((p) => p.id === userId)) {
       profileCreated = true;
       T('profiles').push({ id: userId, display_name: null, journeys: [], interests: [], locale: 'fr', timezone: 'Europe/Paris', onboarding_completed: false, home_shortcuts: ['bottle', 'diaper', 'sleep', 'question'], hide_weight_module: false, theme: 'system' });
-      T('privacy_settings').push({ user_id: userId, analytics_enabled: false, crash_reports_enabled: false, ai_history_enabled: true, community_visible: true, retention_months: 36 });
+      T('privacy_settings').push({ user_id: userId, analytics_enabled: false, crash_reports_enabled: false, ai_history_enabled: false, ai_history_consented_at: null, community_visible: true, retention_months: 36 });
     }
     const member = T('household_members').find((m) => m.user_id === userId);
     if (member) return { profile_created: profileCreated, household_created: false, household_id: String(member.household_id) };
@@ -1579,6 +1581,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     async update<R>(table: string, patch: Row, filters: Filter[]) {
       await load();
       let rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      // Comme 20261029000200 : activer l'historique de l'assistant = accord daté ; le désactiver l'efface
+      if (table === 'privacy_settings' && 'ai_history_enabled' in patch) patch = { ...patch, ai_history_consented_at: patch.ai_history_enabled === true ? nowIso() : null };
       // « Je grandis » / « Ses découvertes » : mêmes contrôles qu'à la création
       if (table === 'child_steps' && 'status' in patch) for (const r of rows) checkChildStep({ ...r, ...patch });
       if (table === 'food_introductions') {
@@ -1776,7 +1780,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       persist();
       return out as R;
     },
-    async invokeStream<R>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void) {
+    async invokeStream<R>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void, opts?: { signal?: AbortSignal }) {
       await load();
       if (fn !== 'assistant') return this.invoke<R>(fn, body);
       const { result, raw } = assistantCore(body ?? {});
@@ -1785,6 +1789,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         // Diffusion simulée : le texte arrive par petits morceaux, comme avec le vrai service
         onEvent('meta', { conversation_id: result.conversation_id, quota: result.quota, demo: true });
         for (const piece of raw.match(/[\s\S]{1,22}/g) ?? []) {
+          if (opts?.signal?.aborted) throw new BackendError('Réponse arrêtée.', 'aborted');
           onEvent('delta', { text: piece });
           if (streamDelayMs > 0) await new Promise((r) => setTimeout(r, streamDelayMs));
         }
