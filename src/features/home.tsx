@@ -282,6 +282,7 @@ export const HOME_CARDS: { key: string; label: string; detail: string; defaultHi
   { key: 'main', label: 'Carte principale', detail: 'Grossesse, post-partum, enfant, famille ou cycle selon le profil affiché' },
   { key: 'quick', label: 'Mes actions du jour', detail: 'Quatre raccourcis au plus, propres au profil affiché, personnalisables' },
   { key: 'upcoming', label: 'Prochain rendez-vous ou rappel', detail: '' },
+  { key: 'outings', label: 'Sorties près de chez moi', detail: 'Carte des cafés, parcs et activités pour sortir en famille' },
   { key: 'community', label: 'Dans la communauté', detail: 'Une publication choisie pour vous et « Voir la communauté »' },
   { key: 'recommendation', label: 'Recommandation du jour', detail: 'Un article ou une idée de repas adaptés' },
   { key: 'article', label: 'Article recommandé', detail: '', defaultHidden: true },

@@ -1,5 +1,6 @@
 /**
- * Démonstration (sans serveur) de « Sorties & rencontres » : mêmes règles que 20261028000100_outings_meetups.sql.
+ * Démonstration (sans serveur) : mêmes règles que 20261028000100_outings_meetups.sql et 20261029000100 (plus aucune
+ * rencontre ni inscription créée ; anciennes annonces visibles de leur autrice seulement).
  * Rencontres de groupe (3 places au moins) uniquement dans un lieu public référencé, inscriptions dont la liste
  * n'est jamais publique, blocages dans les deux sens, signalements (3 -> annonce mise de côté), lieux proposés
  * toujours en attente jusqu'à validation par la modération.
@@ -40,6 +41,8 @@ export function createOutings(c: OutingsCtx) {
   }
 
   function beforeInsert(table: string, r: Row) {
+    // 20261029000100 : « Sorties près de chez moi » sert seulement à découvrir des lieux publics
+    if (table === 'community_meetups' || table === 'meetup_participants') throw fail('Les rencontres entre membres ne sont pas proposées dans Toi & Moi.');
     const me = c.me();
     if (table === 'place_suggestions') {
       r.user_id = me; r.status = 'pending'; r.moderated_at = null; r.equipment ??= [];
@@ -106,7 +109,7 @@ export function createOutings(c: OutingsCtx) {
     if (!me && ['place_suggestions', 'community_meetups', 'meetup_participants'].includes(table)) return [];
     if (table === 'place_suggestions') return T(table).filter((s) => s.status === 'approved' || s.user_id === me || mod);
     if (table === 'community_meetups') {
-      return T(table).filter((m) => (['visible', 'cancelled'].includes(m.status) && !c.blockedBetween(m.organizer_id, me!)) || m.organizer_id === me || mod);
+      return T(table).filter((m) => m.organizer_id === me || mod);
     }
     if (table === 'meetup_participants') return T(table).filter((p) => p.user_id === me || mod);
     return null;

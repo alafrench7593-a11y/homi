@@ -15,6 +15,7 @@ import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
 import { PostpartumHomeCard } from '@/features/postpartum';
 import { orderedHomeCards, PregnancyHero, setCycleRoute, UpcomingCard } from '@/features/home';
+import { OutingsHomeCard } from '@/features/outings/OutingsHomeCard';
 import { DailyActions } from '@/features/dailyActions/DailyActions';
 import { FamilyOverview, NoJourneyCard } from '@/features/journeys';
 import { useActivePregnancy, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
@@ -110,6 +111,7 @@ export default function Home() {
     // Les 4 actions du quotidien : cartes de suivi pour un enfant ou une grossesse, sinon les raccourcis du profil
     // « Mes actions du jour » : une carte horizontale, 4 raccourcis du profil affiché au maximum (personnalisables)
     quick: <DailyActions />,
+    outings: <OutingsHomeCard />,
     community: <HomeCommunityCard />,
     upcoming: <View style={{ gap: spacing.xs }}>{simple ? null : <PostpartumHomeCard />}<UpcomingCard single={simple} /></View>,
     article: article ? <ArticleCard article={article} premium={premium} /> : null,
@@ -134,7 +136,7 @@ export default function Home() {
   // Profil enfant : le cocon remplace les cartes par défaut ; les cartes facultatives que le parent a lui-même
   // activées dans Réglages › Mon accueil (recette, question) restent affichées en dessous
   const homeCards = cycleMode && !mainLoading && !mainError ? ['main']
-    : childScope && !mainLoading && !mainError ? ['main', ...orderedHomeCards(homeOrder, homeHidden).filter((k) => k === 'recipe' || k === 'assistant')]
+    : childScope && !mainLoading && !mainError ? ['main', ...orderedHomeCards(homeOrder, homeHidden).filter((k) => k === 'recipe' || k === 'assistant' || k === 'outings')]
       : orderedHomeCards(homeOrder, homeHidden);
   // Recommandation du jour : l'article adapté s'il existe, sinon une idée de repas — sans doublon si ces cartes sont déjà affichées
   cards.recommendation = (!homeCards.includes('article') ? cards.article : null) ?? (!homeCards.includes('recipe') ? cards.recipe : null);
@@ -181,7 +183,6 @@ export default function Home() {
         {childScope ? null : (
           <Appear kind="side" delay={0.7}>
             <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID="all-tools" />
-            <Button label={tr('out.homeShortcut')} icon="map-pin" variant="ghost" size="sm" onPress={() => router.push('/outings' as never)} style={{ alignSelf: 'center' }} testID="home-nearby" />
           </Appear>
         )}
 

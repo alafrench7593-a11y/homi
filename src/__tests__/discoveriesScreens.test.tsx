@@ -1,5 +1,5 @@
 /**
- * Rendu réel (backend de démonstration) : « Ses découvertes », « Je grandis », « Près de chez moi ».
+ * Rendu réel (backend de démonstration) : « Ses découvertes », « Je grandis » (« Sorties près de chez moi » : voir outings.test.tsx).
  * Deux enfants (Lina, Noé) : jamais de mélange. Version gratuite : 15 aliments, étapes principales.
  * Les services publics de cartes sont simulés ici (réponses au format documenté) : aucun appel réseau en test.
  * Lancé avec le préréglage iOS et avec jest.android.config.js.
@@ -35,7 +35,6 @@ import { ThemeProvider } from '@/theme/ThemeProvider';
 import { ToastProvider } from '@/components/Overlays';
 import Discoveries from '@/app/child/[id]/discoveries';
 import Grow from '@/app/child/[id]/grow';
-import Outings from '@/app/outings';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import { usePremiumSheet } from '@/lib/data/hooks-premium';
 import { useUiStore } from '@/lib/store';
@@ -206,50 +205,4 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
     n.unmount();
   });
 
-  it('Près de chez moi (onglet Lieux de « Sorties & rencontres ») : commune, liste triée par distance, favori personnel, signalement ; erreur réseau sans lieu inventé', async () => {
-    useUiStore.getState().setNearbyTown(null);
-    const calls: string[] = [];
-    const fetchMock = jest.fn(async (url: string) => {
-      calls.push(url);
-      if (url.startsWith('https://data.geopf.fr/geocodage/search')) return { ok: true, json: async () => ({ features: [{ properties: { label: 'Lyon', city: 'Lyon', postcode: '69001' }, geometry: { coordinates: [4.8357, 45.764] } }] }) };
-      if (url.startsWith('https://overpass-api.de/api/interpreter')) return { ok: true, json: async () => ({ elements: [
-        { type: 'node', id: 11, lat: 45.7700, lon: 4.8400, tags: { leisure: 'park', name: 'Parc éloigné (test)' } },
-        { type: 'node', id: 12, lat: 45.7645, lon: 4.8360, tags: { amenity: 'library', name: 'Bibliothèque proche (test)', opening_hours: 'Tu-Sa 10:00-18:00' } },
-      ] }) };
-      return { ok: false, status: 404, json: async () => ({}) };
-    });
-    (globalThis as unknown as { fetch: unknown }).fetch = fetchMock;
-    const r = await render(<Outings />);
-    expect(allText(r)).toContain('jamais d’adresse personnelle, pas de messagerie privée');
-    expect(has(r, 'out-directories')).toBe(true);
-    await type(r, 'out-town', '8 bis allée des Tilleuls');
-    await press(r, 'out-search');
-    expect(calls).toHaveLength(0); // jamais d'adresse personnelle envoyée
-    await type(r, 'out-town', 'Lyon');
-    await press(r, 'out-search', 500);
-    await press(r, 'out-townpick-69001', 800);
-    await until(() => has(r, 'out-list'));
-    const names = r.root.findAll((n) => typeof n.props.testID === 'string' && n.props.testID.startsWith('out-place-osm')).map((n) => n.props.testID as string);
-    expect([...new Set(names)]).toEqual(['out-place-osm:node/12', 'out-place-osm:node/11']);
-    expect(allText(r)).toMatch(/non vérifiées par Toi & Moi/);
-    await press(r, 'out-place-osm:node/12');
-    expect(allText(r)).toContain('Horaires indiqués (OpenStreetMap) : Tu-Sa 10:00-18:00');
-    expect(allText(r)).toContain('Équipements non renseignés');
-    await press(r, 'out-fav', 500);
-    const favs = await backend.select<{ place_id: string; lat: number }>({ table: 'place_favorites' });
-    expect(favs).toEqual([expect.objectContaining({ place_id: 'osm:node/12' })]);
-    await press(r, 'out-report-open');
-    await press(r, 'out-reason-hours');
-    await press(r, 'out-report-send', 500);
-    expect(await backend.select({ table: 'place_reports' })).toEqual([expect.objectContaining({ place_id: 'osm:node/12', reason: 'hours' })]);
-    r.unmount();
-    // service indisponible : message honnête, annuaires officiels, aucun lieu
-    (globalThis as unknown as { fetch: unknown }).fetch = jest.fn(async () => { throw new Error('network'); });
-    const e = await render(<Outings />);
-    await until(() => allText(e).includes('Impossible de joindre le service de cartes publiques pour le moment.'));
-    expect(allText(e)).toContain('Impossible de joindre le service de cartes publiques pour le moment.');
-    expect(e.root.findAll((n) => typeof n.props.testID === 'string' && n.props.testID.startsWith('out-place-osm'))).toHaveLength(0);
-    expect(has(e, 'out-directories')).toBe(true);
-    e.unmount();
-  });
 });

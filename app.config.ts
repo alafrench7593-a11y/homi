@@ -51,12 +51,17 @@ const config: ExpoConfig = {
     ['expo-camera', { cameraPermission: 'La caméra sert à scanner un produit ou un document.', recordAudioAndroid: false }],
     // « Près de chez moi » : position facultative, au premier plan seulement, jamais enregistrée ni partagée
     ['expo-location', { locationWhenInUsePermission: 'Facultatif : votre position du moment sert seulement à trouver des lieux publics pour les familles près de vous. Elle n’est jamais enregistrée ni montrée à quelqu’un.', locationAlwaysAndWhenInUsePermission: false, locationAlwaysPermission: false, isAndroidBackgroundLocationEnabled: false, isIosBackgroundLocationEnabled: false, isAndroidForegroundServiceEnabled: false }],
+    // « Sorties près de chez moi » : fond de carte Google (Maps SDK). Clés restreintes à l'application (identifiant
+    // iOS / paquet Android + empreinte SHA-1), lues à la construction depuis l'environnement, jamais écrites dans le dépôt.
+    ['react-native-maps', { iosGoogleMapsApiKey: process.env.GOOGLE_MAPS_IOS_API_KEY, androidGoogleMapsApiKey: process.env.GOOGLE_MAPS_ANDROID_API_KEY }],
   ],
   experiments: { typedRoutes: true },
   extra: {
     eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID },
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
+    // Seulement « configurée ou non » (jamais la valeur) pour afficher un état clair si la carte manque
+    googleMapsNative: { ios: !!process.env.GOOGLE_MAPS_IOS_API_KEY, android: !!process.env.GOOGLE_MAPS_ANDROID_API_KEY },
   },
 };
 

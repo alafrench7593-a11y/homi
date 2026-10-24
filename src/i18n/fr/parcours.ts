@@ -315,7 +315,7 @@ export const parcours = {
   'tool.kid_grow.sub': 'Étapes du développement, à son rythme',
   'tool.kid_milestones': 'Journal',
   'tool.kid_milestones.sub': 'Moments, dents, souvenirs',
-  'tool.nearby': 'Sorties & rencontres',
+  'tool.nearby': 'Sorties près de chez moi',
   'tool.nearby.sub': 'Lieux publics pour les familles',
   'tool.kid_vaccines': 'Vaccins',
   'tool.kid_vaccines.sub': 'Carnet à vérifier',

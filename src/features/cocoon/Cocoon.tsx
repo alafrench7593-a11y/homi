@@ -309,7 +309,6 @@ export function Cocoon({ child, journey, now: preview, article }: { child: Child
           <SmallLink icon="smile" label={tr('coc.link.profile', { name: child.first_name })} onPress={() => router.push(`/child/${id}`)} />
           <SmallLink icon="trending-up" label={tr('tool.kid_growth')} onPress={() => router.push(`/child/${id}/growth`)} />
           <SmallLink icon="compass" label={tr('tool.kid_needs')} onPress={() => router.push(`/child/${id}/needs` as never)} testID="home-needs" />
-          <SmallLink icon="map-pin" label={tr('out.homeShortcut')} onPress={() => router.push('/outings' as never)} testID="home-nearby" />
         </View>
       </View>
     </View>
