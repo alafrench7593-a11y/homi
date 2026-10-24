@@ -35,7 +35,7 @@ import { ThemeProvider } from '@/theme/ThemeProvider';
 import { ToastProvider } from '@/components/Overlays';
 import Discoveries from '@/app/child/[id]/discoveries';
 import Grow from '@/app/child/[id]/grow';
-import Nearby from '@/app/nearby';
+import Outings from '@/app/outings';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import { usePremiumSheet } from '@/lib/data/hooks-premium';
 import { useUiStore } from '@/lib/store';
@@ -206,7 +206,7 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
     n.unmount();
   });
 
-  it('Près de chez moi : commune, liste triée par distance, favori personnel, signalement ; erreur réseau sans lieu inventé', async () => {
+  it('Près de chez moi (onglet Lieux de « Sorties & rencontres ») : commune, liste triée par distance, favori personnel, signalement ; erreur réseau sans lieu inventé', async () => {
     useUiStore.getState().setNearbyTown(null);
     const calls: string[] = [];
     const fetchMock = jest.fn(async (url: string) => {
@@ -219,36 +219,37 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
       return { ok: false, status: 404, json: async () => ({}) };
     });
     (globalThis as unknown as { fetch: unknown }).fetch = fetchMock;
-    const r = await render(<Nearby />);
-    expect(allText(r)).toContain('ni messagerie ni rendez-vous entre membres');
-    expect(has(r, 'nb-directories')).toBe(true);
-    await type(r, 'nb-town', '12 rue de l’Exemple');
-    await press(r, 'nb-search');
+    const r = await render(<Outings />);
+    expect(allText(r)).toContain('jamais d’adresse personnelle, pas de messagerie privée');
+    expect(has(r, 'out-directories')).toBe(true);
+    await type(r, 'out-town', '8 bis allée des Tilleuls');
+    await press(r, 'out-search');
     expect(calls).toHaveLength(0); // jamais d'adresse personnelle envoyée
-    await type(r, 'nb-town', 'Lyon');
-    await press(r, 'nb-search', 500);
-    await press(r, 'nb-townpick-69001', 800);
-    const names = r.root.findAll((n) => typeof n.props.testID === 'string' && n.props.testID.startsWith('nb-place-osm')).map((n) => n.props.testID as string);
-    expect([...new Set(names)]).toEqual(['nb-place-osm:node/12', 'nb-place-osm:node/11']);
-    expect(allText(r)).toMatch(/non vérifiés par Toi & Moi/);
-    await press(r, 'nb-place-osm:node/12');
-    expect(allText(r)).toContain('Horaires indiqués : Tu-Sa 10:00-18:00');
-    expect(allText(r)).toContain('Accès poussette ou fauteuil : non confirmé');
-    await press(r, 'nb-fav', 500);
+    await type(r, 'out-town', 'Lyon');
+    await press(r, 'out-search', 500);
+    await press(r, 'out-townpick-69001', 800);
+    await until(() => has(r, 'out-list'));
+    const names = r.root.findAll((n) => typeof n.props.testID === 'string' && n.props.testID.startsWith('out-place-osm')).map((n) => n.props.testID as string);
+    expect([...new Set(names)]).toEqual(['out-place-osm:node/12', 'out-place-osm:node/11']);
+    expect(allText(r)).toMatch(/non vérifiées par Toi & Moi/);
+    await press(r, 'out-place-osm:node/12');
+    expect(allText(r)).toContain('Horaires indiqués (OpenStreetMap) : Tu-Sa 10:00-18:00');
+    expect(allText(r)).toContain('Équipements non renseignés');
+    await press(r, 'out-fav', 500);
     const favs = await backend.select<{ place_id: string; lat: number }>({ table: 'place_favorites' });
     expect(favs).toEqual([expect.objectContaining({ place_id: 'osm:node/12' })]);
-    await press(r, 'nb-report-open');
-    await press(r, 'nb-reason-hours');
-    await press(r, 'nb-report-send', 500);
+    await press(r, 'out-report-open');
+    await press(r, 'out-reason-hours');
+    await press(r, 'out-report-send', 500);
     expect(await backend.select({ table: 'place_reports' })).toEqual([expect.objectContaining({ place_id: 'osm:node/12', reason: 'hours' })]);
     r.unmount();
     // service indisponible : message honnête, annuaires officiels, aucun lieu
     (globalThis as unknown as { fetch: unknown }).fetch = jest.fn(async () => { throw new Error('network'); });
-    const e = await render(<Nearby />);
-    await flush(600);
+    const e = await render(<Outings />);
+    await until(() => allText(e).includes('Impossible de joindre le service de cartes publiques pour le moment.'));
     expect(allText(e)).toContain('Impossible de joindre le service de cartes publiques pour le moment.');
-    expect(e.root.findAll((n) => typeof n.props.testID === 'string' && n.props.testID.startsWith('nb-place-osm'))).toHaveLength(0);
-    expect(has(e, 'nb-directories')).toBe(true);
+    expect(e.root.findAll((n) => typeof n.props.testID === 'string' && n.props.testID.startsWith('out-place-osm'))).toHaveLength(0);
+    expect(has(e, 'out-directories')).toBe(true);
     e.unmount();
   });
 });

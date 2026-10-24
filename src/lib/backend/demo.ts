@@ -21,6 +21,7 @@ import {
 } from '../../../supabase/functions/_shared/assistant-format';
 import { buildSampleFamily } from './demoSample';
 import { createSocial } from './demoSocial';
+import { createOutings } from './demoOutings';
 import { extractiveSummary, MIN_COMMENTS_FOR_SUMMARY } from '../../../supabase/functions/_shared/community-ai';
 import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
 import { ALL_RECIPES } from '@/content/recipes';
@@ -344,6 +345,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   /** Reconstruit la bibliothèque (hors stockage), garde les recettes personnelles et applique les corrections enregistrées. */
   // Mini-réseau social (mêmes règles que 20261023000100_community_social.sql)
   const social = createSocial({ T, me: () => state.session?.userId, uid, uuid, nowIso, limit, isModerator, blockedBetween, notify, actorLabel });
+  // Sorties & rencontres (mêmes règles que 20261028000100_outings_meetups.sql)
+  const outings = createOutings({ T, me: () => state.session?.userId, nowIso, isModerator, blockedBetween,
+    needsReview: (text) => PERSONAL_DATA.test(text) || textNeedsReview(text) || DEMO_TERMS.some((x) => x.pattern.test(text)) });
 
   function seedRecipes() {
     const rows = recipeSeedRows();
@@ -500,6 +504,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   // ---------------------------------------------------------------- règles d'insertion
   function beforeInsert(table: string, r: Row): Row {
     social.beforeInsert(table, r);
+    outings.beforeInsert(table, r);
     const me = state.session?.userId;
     const ownerCol = OWNER_TABLES[table];
     if (ownerCol && r[ownerCol] == null && me) r[ownerCol] = me;
@@ -793,6 +798,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   }
   function afterInsert(table: string, r: Row) {
     social.afterInsert(table, r);
+    outings.afterInsert(table, r);
     if (table === 'user_journeys') afterJourney(null, r);
     if (table === 'family_tasks') { taskEvent(r, 'created', { assignee: r.assignee_id }); nextOccurrence(r); }
     if (table === 'product_scans' && (r.barcode || r.product_id)) {
@@ -852,7 +858,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   // ---------------------------------------------------------------- vues
   function view(table: string): Row[] {
     const me = state.session?.userId;
-    const sv = social.view(table);
+    const sv = social.view(table) ?? outings.view(table);
     if (sv) return sv;
     // Blocage dans les deux sens, comme is_blocked_between côté Supabase
     const blocked = new Set(T('user_blocks').flatMap((b) => (b.blocker_id === me ? [b.blocked_id] : b.blocked_id === me ? [b.blocker_id] : [])));
@@ -1287,6 +1293,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
         personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback', 'cycle_shares', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status', 'pregnancy_symptom_logs', 'place_favorites', 'place_reports'].map((t) => [t, view(t)])),
+        community_meetups: T('community_meetups').filter((m) => m.organizer_id === uid()), meetup_participations: T('meetup_participants').filter((x) => x.user_id === uid()),
+        place_suggestions: T('place_suggestions').filter((x) => x.user_id === uid()),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
           ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines', 'food_introductions', 'food_tastings', 'child_steps']
@@ -1351,7 +1359,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       return { ai: 'demo', kind: 'summary', points: extractiveSummary(comments as { body: string }[]), caution: null, message: 'Mode démonstration : extraits des réponses, sans IA.' };
     },
     // Démonstration : aucun service serveur n'est branché
-    'service-status': () => ({ status: 'demo', services: { gemini: false, resend: false, auth_email_hook: false, push: false, revenuecat_webhook: false, open_food_facts: false }, checked_at: nowIso() }),
+    'service-status': () => ({ status: 'demo', services: { gemini: false, resend: false, auth_email_hook: false, push: false, revenuecat_webhook: false, open_food_facts: false, google_places: false }, checked_at: nowIso() }),
+    // Google Places : jamais simulé (aucun faux établissement) ; la recherche reste sur OpenStreetMap
+    places: () => ({ google: 'not_configured' }),
     'product-lookup': (b) => {
       const action = typeof b.action === 'string' ? b.action : 'lookup';
       if (action === 'search') {
@@ -1612,7 +1622,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
           return JSON.parse(JSON.stringify(rows)) as R[];
         }
       }
-      rows = rows.filter((r) => social.beforeUpdate(table, r, patch));
+      rows = rows.filter((r) => social.beforeUpdate(table, r, patch) && outings.beforeUpdate(table, r, patch));
       markLib(table, rows);
       if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
       if (table === 'assistant_messages' && patch.saved === true && rows.some((r) => !r.saved) && !isPremium()) throw new BackendError('Fonction Premium (assistant_saved)', 'P0001', 'premium_required');
@@ -1698,10 +1708,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       await load();
       let removed = T(table).filter((r) => filters.every((f) => matches(r, f)));
       if (['posts', 'comments', 'post_photos'].includes(table) && !isModerator()) removed = removed.filter((r) => r.author_id === state.session?.userId);
-      removed = social.filterRemove(table, removed);
+      removed = outings.filterRemove(table, social.filterRemove(table, removed));
       markLib(table, removed);
       state.tables[table] = T(table).filter((r) => !removed.includes(r));
       social.afterRemove(table, removed, state.tables);
+      outings.afterRemove(table, removed);
       if (table === 'post_likes') removed.forEach((l) => { const p = T('posts').find((x) => x.id === l.post_id); if (p) p.like_count = Math.max(0, p.like_count - 1); });
       if (table === 'comments') {
         // Les réponses d'un commentaire supprimé sont supprimées avec lui

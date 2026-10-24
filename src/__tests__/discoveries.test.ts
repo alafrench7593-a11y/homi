@@ -182,7 +182,7 @@ describe('Près de chez moi', () => {
   it('commune : ville ou code postal, jamais une adresse personnelle ; lecture GeoJSON', () => {
     expect(validTownQuery('77500')).toBe(true);
     expect(validTownQuery('Lyon')).toBe(true);
-    expect(validTownQuery('12 rue de l’Exemple')).toBe(false);
+    expect(validTownQuery('8 bis allée des Tilleuls')).toBe(false);
     expect(validTownQuery('12 rue de la Paix')).toBe(false);
     expect(geocodeUrl(' Saint-Étienne ')).toBe('https://data.geopf.fr/geocodage/search?q=Saint-%C3%89tienne&type=municipality&limit=5');
     expect(parseGeocode({ features: [{ properties: { label: 'Lyon', city: 'Lyon', postcode: '69001' }, geometry: { coordinates: [4.835, 45.758] } }, { properties: {}, geometry: { coordinates: [1, 2] } }] }))

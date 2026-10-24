@@ -159,7 +159,7 @@ export function usePlaceFavorites() {
 export function useTogglePlaceFavorite() {
   const inv = useInvalidate();
   return useMutation({
-    mutationFn: async (v: { place: Pick<Place, 'id' | 'name' | 'kind' | 'address' | 'lat' | 'lon' | 'source'>; existing?: PlaceFavorite | null }) => {
+    mutationFn: async (v: { place: Pick<Place, 'id' | 'name' | 'address' | 'lat' | 'lon'> & { kind: string; source: string }; existing?: PlaceFavorite | null }) => {
       if (v.existing) await backend.remove('place_favorites', [eq('id', v.existing.id)]);
       else await backend.insert('place_favorites', { place_id: v.place.id, name: v.place.name, kind: v.place.kind, address: v.place.address, lat: v.place.lat, lon: v.place.lon, source: v.place.source });
     },

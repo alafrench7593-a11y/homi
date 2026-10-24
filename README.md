@@ -196,6 +196,21 @@ Routes : `/scanner` (accueil), `/scanner/product`, `/scanner/food` (« Puis-je m
 
 Tests : `src/__tests__/scanner.test.ts`, `scannerScreens.test.tsx`, Deno `supabase/functions/_shared/{open-facts,rappelconso,scan-explain}_test.ts`, SQL `supabase/tests/sql/34_scanner.sql`.
 
+## Sorties & rencontres (Communauté)
+
+Route : `/outings` (onglets Lieux et Rencontres ; `/nearby` y redirige). Accès : carte « Sorties & rencontres » en haut du fil Communauté, icône carte de l’en-tête, raccourci unique « Sorties près de chez moi » de l’accueil.
+
+- **Lieux** (11 catégories, `src/lib/domain/outings.ts`) : OpenStreetMap via Overpass (seule source dessinée sur la carte), lieux proposés par les membres **après validation** (`place_suggestions`), annuaires officiels (PMI, Caf, LAEP, allaitement, carte famille nombreuse, préparation à la naissance). Équipements affichés « selon OpenStreetMap / Google Maps / un membre », jamais comme confirmés. Photos : Google (si activé), sinon Wikimedia Commons (auteur et licence), sinon illustration du type de lieu.
+- **Google Places (facultatif, payant)** : fonction `places` (Places API New : Nearby / Text Search, Place Photos), clé uniquement côté serveur. Résultats montrés dans la liste et les fiches seulement, avec la mention « Google Maps », les auteurs des photos et le lien vers la fiche Google ; jamais enregistrés sur l’appareil (cache non persistant), pas de favori Google. Activation, avec facturation Google Cloud :
+  ```bash
+  supabase secrets set GOOGLE_PLACES_API_KEY=...   # clé restreinte à « Places API (New) »
+  supabase functions deploy places
+  ```
+  Sans clé : `{ google: 'not_configured' }`, l’app le dit et garde OpenStreetMap.
+- **Rencontres** (`community_meetups`, `meetup_participants`) : 3 à 20 places, lieu public choisi dans les résultats (`osm:`, `google:`, `sugg:` validé), entre 1 h et 60 jours ; texte avec coordonnées ⇒ relu par la modération ; organisatrice inscrite d’office ; liste des participantes jamais lisible (seul le nombre de places) ; blocage dans les deux sens ; signalement d’annonce (3 ⇒ mise de côté), de membre, de lieu proposé.
+
+Tests : `src/__tests__/outings.test.tsx`, SQL `supabase/tests/sql/62_outings_meetups.sql`, e2e `e2e/decouvertes.py`.
+
 ## Comprendre mon cycle et mes tests (parcours « Projet bébé »)
 
 Écrans : `src/app/fertility/understand.tsx` (accueil), `mucus.tsx` (glaire), `test/[kind].tsx` (photo d'un test d'ovulation ou de grossesse), `calendar.tsx` (calendrier privé), `compatible.tsx` (tests pris en charge).

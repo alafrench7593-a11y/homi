@@ -1,5 +1,5 @@
 """
-« Ses découvertes », « Je grandis », « Près de chez moi », version web de démonstration, sans compte.
+« Ses découvertes », « Je grandis », « Sorties & rencontres » (lieux et rencontres), version web de démonstration, sans compte.
   npx expo export --platform web --clear && python3 e2e/spa_server.py dist 8822 &
   python3 e2e/decouvertes.py
 Les services publics de cartes (géocodage, OpenStreetMap, tuiles) sont SIMULÉS ici par interception réseau
@@ -138,46 +138,97 @@ def run(p):
     tid(pg, 'cs-grow').click(); pg.wait_for_timeout(2000)
     R['accueil_ouvre_je_grandis'] = '/grow' in pg.url
 
-    # ===================================== Près de chez moi
-    go(pg, '/nearby', 3000)
+    # ===================================== Sorties & rencontres (ex-« Près de chez moi », onglet Lieux)
+    go(pg, '/nearby', 3500)
+    R['nb_ancien_lien_redirige'] = '/outings' in pg.url
     t = T(pg)
-    R['nb_confidentialite'] = 'ni messagerie ni rendez-vous entre membres' in t
-    R['nb_annuaires'] = has(pg, 'nb-directories') and 'monenfant.fr' in t and 'La Leche League' in t
-    tid(pg, 'nb-town').fill('12 rue de l’Exemple'); tid(pg, 'nb-search').click(); pg.wait_for_timeout(800)
-    R['nb_jamais_adresse_perso'] = not any('Exemple' in s for s in sent)
-    tid(pg, 'nb-town').fill('Lyon'); tid(pg, 'nb-search').click(); pg.wait_for_timeout(1500)
-    tid(pg, 'nb-townpick-69001').click(); pg.wait_for_timeout(2500)
-    order = pg.evaluate("() => [...document.querySelectorAll('[data-testid^=\"nb-place-osm\"]')].map(e => e.getAttribute('data-testid'))")
-    R['nb_liste_par_distance'] = order[:2] == ['nb-place-osm:node/101', 'nb-place-osm:way/102']
-    R['nb_non_verifie'] = 'non vérifiés par Toi & Moi' in T(pg)
-    tid(pg, 'nb-view-map').click(); pg.wait_for_timeout(1200)
-    R['nb_carte_avec_attribution'] = has(pg, 'nb-map') and '© contributeurs OpenStreetMap' in T(pg)
-    pg.screenshot(path=f'{SHOTS}/pres_de_chez_moi.png', full_page=True)
-    tid(pg, 'nb-place-osm:node/101').click(); pg.wait_for_timeout(800)
-    R['nb_fiche'] = 'Horaires indiqués : Tu-Sa 10:00-18:00' in T(pg) and 'OpenStreetMap' in T(pg)
-    tid(pg, 'nb-fav').click(); pg.wait_for_timeout(800)
-    R['nb_favori_personnel'] = demo(pg, "s => s.tables.place_favorites.some(f => f.place_id === 'osm:node/101')")
-    tid(pg, 'nb-report-open').click(); pg.wait_for_timeout(300)
-    tid(pg, 'nb-reason-hours').click(); tid(pg, 'nb-report-send').click(); pg.wait_for_timeout(800)
-    R['nb_signalement'] = demo(pg, "s => s.tables.place_reports.some(r => r.place_id === 'osm:node/101' && r.reason === 'hours')")
-    R['nb_itineraire'] = has(pg, 'nb-directions')
-    R['nb_requete_lieux_publics'] = any('overpass-api.de' in s and 'leisure' in s for s in sent)
+    R['out_confidentialite'] = 'jamais d’adresse personnelle, pas de messagerie privée' in t
+    R['out_annuaires'] = has(pg, 'out-directories') and 'monenfant.fr' in t and 'La Leche League' in t
+    R['out_11_categories'] = pg.locator('[data-testid^="out-cat-"]').count() == 12  # « Tout » + 11
+    tid(pg, 'out-town').fill('8 bis allée des Tilleuls'); tid(pg, 'out-search').click(); pg.wait_for_timeout(800)
+    R['out_jamais_adresse_perso'] = not any('Tilleuls' in s for s in sent)
+    tid(pg, 'out-town').fill('Lyon'); tid(pg, 'out-search').click(); pg.wait_for_timeout(1500)
+    tid(pg, 'out-townpick-69001').click(); pg.wait_for_timeout(3000)
+    order = pg.evaluate("() => [...new Set([...document.querySelectorAll('[data-testid^=\"out-place-osm\"]')].map(e => e.getAttribute('data-testid')))]")
+    R['out_liste_par_distance'] = order[:2] == ['out-place-osm:node/101', 'out-place-osm:way/102']
+    R['out_non_verifie'] = 'non vérifiées par Toi & Moi' in T(pg)
+    R['out_illustration_sans_photo'] = pg.locator('[data-testid^="out-art-"]').count() >= 2
+    tid(pg, 'out-view-map').click(); pg.wait_for_timeout(1200)
+    R['out_carte_avec_attribution'] = has(pg, 'out-map') and '© contributeurs OpenStreetMap' in T(pg) and pg.locator('[data-testid^="out-marker-"]').count() == 2
+    pg.screenshot(path=f'{SHOTS}/sorties_carte.png', full_page=True)
+    tid(pg, 'out-place-osm:node/101').click(); pg.wait_for_timeout(900)
+    t = T(pg)
+    R['out_fiche'] = 'Horaires indiqués (OpenStreetMap) : Tu-Sa 10:00-18:00' in t and 'Accès fauteuil roulant : oui, selon OpenStreetMap' in t and 'consulté le' in t
+    tid(pg, 'out-fav').click(); pg.wait_for_timeout(800)
+    R['out_favori_personnel'] = demo(pg, "s => s.tables.place_favorites.some(f => f.place_id === 'osm:node/101')")
+    tid(pg, 'out-report-open').click(); pg.wait_for_timeout(300)
+    tid(pg, 'out-reason-hours').click(); tid(pg, 'out-report-send').click(); pg.wait_for_timeout(800)
+    R['out_signalement_erreur'] = demo(pg, "s => s.tables.place_reports.some(r => r.place_id === 'osm:node/101' && r.reason === 'hours')")
+    R['out_itineraire'] = has(pg, 'out-directions')
+    R['out_requete_lieux_publics'] = any('overpass-api.de' in s and 'leisure' in s for s in sent)
     pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
-    # filtres : équipement non renseigné -> aucun lieu, état vide honnête, élargir / retirer les filtres
-    tid(pg, 'nb-view-list').click(); pg.wait_for_timeout(300)
-    tid(pg, 'nb-equip-highchair').click(); pg.wait_for_timeout(600)
-    R['nb_filtre_equipement_etat_vide'] = has(pg, 'nb-none') and has(pg, 'nb-widen') and 'Élargir à 5 km' in T(pg)
-    tid(pg, 'nb-equip-highchair').click(); tid(pg, 'nb-equip-wheelchair').click(); pg.wait_for_timeout(600)
-    order = pg.evaluate("() => [...document.querySelectorAll('[data-testid^=\"nb-place-osm\"]')].map(e => e.getAttribute('data-testid'))")
-    R['nb_filtre_fauteuil_confirme'] = order == ['nb-place-osm:node/101']
-    tid(pg, 'nb-equip-wheelchair').click(); pg.wait_for_timeout(300)
-    # accès depuis Communauté et depuis l'accueil
+    tid(pg, 'out-view-list').click(); pg.wait_for_timeout(300)
+    tid(pg, 'out-equip-highchair').click(); pg.wait_for_timeout(600)
+    R['out_filtre_equipement_etat_vide'] = has(pg, 'out-none') and has(pg, 'out-widen') and 'Élargir à 5 km' in T(pg)
+    tid(pg, 'out-equip-highchair').click(); tid(pg, 'out-equip-wheelchair').click(); pg.wait_for_timeout(600)
+    order = pg.evaluate("() => [...new Set([...document.querySelectorAll('[data-testid^=\"out-place-osm\"]')].map(e => e.getAttribute('data-testid')))]")
+    R['out_filtre_fauteuil_confirme'] = order == ['out-place-osm:node/101']
+    tid(pg, 'out-equip-wheelchair').click(); pg.wait_for_timeout(300)
+    tid(pg, 'out-cat-family_food').click(); pg.wait_for_timeout(1500)
+    R['out_google_non_configure_annonce'] = 'Photos et fiches Google non activées' in T(pg)
+    tid(pg, 'out-cat-all').click(); pg.wait_for_timeout(1500)
+    pg.screenshot(path=f'{SHOTS}/sorties_liste.png', full_page=True)
+    # proposer un lieu : en attente, jamais affiché avant validation
+    tid(pg, 'out-suggest-open').click(); pg.wait_for_timeout(500)
+    tid(pg, 'out-sg-name').fill('Ludothèque proposée (test)'); tid(pg, 'out-sg-address').fill('Place des Terreaux, Lyon')
+    tid(pg, 'out-sg-cat-culture').click(); tid(pg, 'out-sg-send').click(); pg.wait_for_timeout(1500)
+    R['out_lieu_propose_en_attente'] = demo(pg, "s => s.tables.place_suggestions.some(x => x.name === 'Ludothèque proposée (test)' && x.status === 'pending')")
+    R['out_lieu_propose_non_affiche'] = pg.locator('[data-testid^="out-place-sugg:"]').count() == 0
+    pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
+
+    # ===================================== Rencontres : proposer, participer, signaler, bloquer
+    me_id = demo(pg, "s => s.session.userId")
+    if not demo(pg, f"s => s.tables.community_profiles.some(p => p.user_id === '{me_id}')"):
+        mutate(pg, f"s => {{ s.tables.community_profiles = s.tables.community_profiles || []; s.tables.community_profiles.push({{ user_id: '{me_id}', pseudonym: 'Maman E2E', handle: 'maman_e2e', suspended_until: null, created_at: new Date().toISOString() }}); }}")
+        go(pg, '/outings', 3500)
+    tid(pg, 'out-place-osm:node/101').click(); pg.wait_for_timeout(800)
+    tid(pg, 'out-propose-here').click(); pg.wait_for_timeout(800)
+    R['mt_formulaire_sans_adresse'] = has(pg, 'mt-form') and has(pg, 'mt-form-place-osm:node/101')
+    tid(pg, 'mt-form-title').fill('Bébés lecteurs (test)')
+    tid(pg, 'mt-form-activity').fill('Appelez-moi au 06 12 34 56 78'); tid(pg, 'mt-form-publish').click(); pg.wait_for_timeout(800)
+    R['mt_coordonnees_refusees'] = demo(pg, "s => !(s.tables.community_meetups || []).length")
+    tid(pg, 'mt-form-activity').fill('Lecture d’albums au coin des tout-petits, puis goûter dehors.')
+    tid(pg, 'mt-form-day-2').click(); tid(pg, 'mt-form-time-15:30').click(); tid(pg, 'mt-form-publish').click(); pg.wait_for_timeout(1500)
+    R['mt_publiee_lieu_public'] = demo(pg, "s => s.tables.community_meetups.some(m => m.place_ref === 'osm:node/101' && m.status === 'visible' && m.participants_count === 1 && m.capacity === 6)")
+    other = 'e2e-autre-maman'
+    mutate(pg, f"""s => {{ s.tables.community_profiles.push({{ user_id: '{other}', pseudonym: 'Maman Lou', handle: 'maman_lou', suspended_until: null, created_at: new Date().toISOString() }});
+      s.tables.community_meetups.push({{ id: 'e2e-mt-autre', organizer_id: '{other}', title: 'Balade poussette (test)', activity: 'Tour du parc', place_ref: 'osm:way/102', place_name: 'Parc (test)', place_address: null, lat: 45.77, lon: 4.845, city_label: 'Lyon', starts_at: new Date(Date.now() + 3*86400000).toISOString(), duration_min: 90, child_age_min: 0, child_age_max: 3, for_pregnant: false, capacity: 3, participants_count: 1, status: 'visible', created_at: new Date().toISOString() }});
+      s.tables.meetup_participants = s.tables.meetup_participants || []; s.tables.meetup_participants.push({{ meetup_id: 'e2e-mt-autre', user_id: '{other}', created_at: new Date().toISOString() }}); }}""")
+    go(pg, '/outings?tab=meetups', 3500)
+    R['mt_mes_rencontres'] = has(pg, 'mt-mine') and 'Vous organisez' in T(pg)
+    R['mt_liste'] = has(pg, 'mt-card-e2e-mt-autre') and 'Proposée par Maman Lou' in T(pg) and '2 places restantes' in T(pg)
+    pg.screenshot(path=f'{SHOTS}/rencontres.png', full_page=True)
+    tid(pg, 'mt-card-e2e-mt-autre').click(); pg.wait_for_timeout(800)
+    tid(pg, 'mt-join').click(); pg.wait_for_timeout(1200)
+    R['mt_je_participe'] = demo(pg, f"s => s.tables.meetup_participants.some(p => p.meetup_id === 'e2e-mt-autre' && p.user_id === '{me_id}') && s.tables.community_meetups.find(m => m.id === 'e2e-mt-autre').participants_count === 2")
+    tid(pg, 'mt-leave').click(); pg.wait_for_timeout(1200)
+    R['mt_annuler_participation'] = demo(pg, f"s => !s.tables.meetup_participants.some(p => p.meetup_id === 'e2e-mt-autre' && p.user_id === '{me_id}') && s.tables.community_meetups.find(m => m.id === 'e2e-mt-autre').participants_count === 1")
+    tid(pg, 'mt-report-open').click(); pg.wait_for_timeout(300)
+    tid(pg, 'mt-report-spam').click(); pg.wait_for_timeout(1000)
+    R['mt_signaler_annonce'] = demo(pg, "s => s.tables.reports.some(r => r.meetup_id === 'e2e-mt-autre' && r.reason === 'spam')")
+    tid(pg, 'mt-member-actions').click(); pg.wait_for_timeout(800)
+    R['mt_signaler_bloquer_membre'] = 'Bloquer' in T(pg)
+    R['mt_aucune_adresse_personnelle'] = not re.search(r'\b\d{1,4}\s*(bis|ter)?\s*,?\s*(rue|avenue|allée)\b', T(pg), re.I)
+    pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
+
+    # accès : Communauté (rubrique visible) et raccourci unique de l'accueil
     go(pg, '/community', 3000)
-    pg.get_by_role('button', name='Près de chez moi').first.click(); pg.wait_for_timeout(2000)
-    R['nb_acces_communaute'] = '/nearby' in pg.url
+    R['out_rubrique_communaute_visible'] = has(pg, 'community-outings') and 'Sorties & rencontres' in T(pg)
+    tid(pg, 'community-outings').click(); pg.wait_for_timeout(2000)
+    R['out_acces_communaute'] = '/outings' in pg.url
     pg.evaluate("() => { const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{\"state\":{},\"version\":0}'); ui.state.subject = { type: 'me' }; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }")
     go(pg, '/', 3500)
-    R['nb_acces_accueil'] = pg.locator('[data-testid="home-nearby"]').count() > 0
+    R['out_raccourci_accueil'] = pg.locator('[data-testid="home-nearby"]').count() == 1 and 'Sorties près de chez moi' in T(pg)
 
     # ===================================== sommeil : rappel « vérifier » seulement à la demande
     mutate(pg, f"""s => {{ s.tables.sleeps = (s.tables.sleeps || []).filter(x => x.child_id !== '{lina}');

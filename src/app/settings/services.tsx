@@ -51,6 +51,7 @@ export default function ServicesScreen() {
     { name: 'RevenueCat (abonnement)', state: isDemo ? 'demo' : (env.EXPO_PUBLIC_REVENUECAT_APPLE_KEY || env.EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY) && s.revenuecat_webhook ? 'ok' : 'missing', detail: 'Clés publiques Apple/Google dans l’app + REVENUECAT_WEBHOOK_SECRET côté serveur.' },
     { name: 'Expo (notifications push)', state: isDemo ? 'demo' : Constants.expoConfig?.extra?.eas?.projectId && s.push ? 'ok' : 'missing', detail: 'EXPO_PUBLIC_EAS_PROJECT_ID + EXPO_ACCESS_TOKEN et PUSH_WEBHOOK_SECRET côté serveur. Les rappels locaux fonctionnent sans.' },
     { name: 'Open Food Facts (scanner)', state: srv('open_food_facts'), detail: 'OPENFOODFACTS_USER_AGENT (identification polie auprès de l’API).' },
+    { name: 'Google Places (photos et fiches des sorties, facultatif)', state: srv('google_places'), detail: 'Secret serveur GOOGLE_PLACES_API_KEY (facturation Google Cloud). Sans elle : OpenStreetMap et illustrations.' },
     { name: 'Sentry (rapports de plantage)', state: crashReportingConfigured() ? 'ok' : 'missing', detail: 'EXPO_PUBLIC_SENTRY_DSN, et seulement avec l’accord de la personne.' },
   ];
 

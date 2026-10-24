@@ -21,3 +21,4 @@ export { dom } from './dom';
 export { cocoon } from './cocoon';
 export { care } from './care';
 export { discover } from './discover';
+export { outings } from './outings';

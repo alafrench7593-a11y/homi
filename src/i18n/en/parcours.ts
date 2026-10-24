@@ -317,7 +317,7 @@ export const parcours: Messages<typeof fr> = {
   'tool.kid_grow.sub': 'Development steps, at their own pace',
   'tool.kid_milestones': 'Journal',
   'tool.kid_milestones.sub': 'Moments, teeth, memories',
-  'tool.nearby': 'Near me',
+  'tool.nearby': 'Outings & meetups',
   'tool.nearby.sub': 'Public places for families',
   'tool.kid_vaccines': 'Vaccines',
   'tool.kid_vaccines.sub': 'Record to check',

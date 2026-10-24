@@ -119,6 +119,20 @@ export default function Community() {
           {tr('cm1.feed.createProfileBody')}
         </Banner>
       ) : null}
+      {!searching ? (
+        <Tappable accessibilityRole="button" accessibilityLabel={`${tr('out.communityCardTitle')}. ${tr('out.communityCardBody')}`} onPress={() => router.push('/outings' as never)} testID="community-outings">
+          <Card tone="soft">
+            <Row style={{ alignItems: 'center' }}>
+              <View style={{ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: `${t.colors.lavender}33` }}><Icon name="map-pin" size={20} color={t.colors.lavender} /></View>
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text weight="bold">{tr('out.communityCardTitle')}</Text>
+                <Text variant="caption" muted>{tr('out.communityCardBody')}</Text>
+              </View>
+              <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
+            </Row>
+          </Card>
+        </Tappable>
+      ) : null}
       <Field label={tr('cm1.feed.search')} placeholder={tr('cm1.feed.searchPlaceholder')} value={q} onChangeText={setQ} returnKeyType="search" autoCorrect={false} autoCapitalize="none" testID="community-search" />
       {searching ? (
         members.data?.length ? (
@@ -209,7 +223,7 @@ export default function Community() {
       subtitle={tr('screen.community.sub')}
       right={(
         <Row gap={0}>
-          <IconButton icon="map-pin" label={tr('nb.communityLink')} onPress={() => router.push('/nearby' as never)} />
+          <IconButton icon="map-pin" label={tr('out.title')} onPress={() => router.push('/outings' as never)} />
           <IconButton icon="bell" label={tr('cm1.feed.notifications')} onPress={() => router.push('/notifications')} />
           {/* Mon profil communautaire (publications, réponses, groupes, albums, enregistrés) */}
           <IconButton icon="at-sign" label={me ? tr('cm1.feed.communityProfile') : tr('cm1.feed.createCommunityProfile')} onPress={() => router.push(me ? '/moi' as never : '/community/profile')} />

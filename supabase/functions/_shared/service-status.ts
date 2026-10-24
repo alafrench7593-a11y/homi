@@ -9,6 +9,7 @@ export const SERVER_SERVICES = {
   push: ['PUSH_WEBHOOK_SECRET', 'EXPO_ACCESS_TOKEN'],
   revenuecat_webhook: ['REVENUECAT_WEBHOOK_SECRET'],
   open_food_facts: ['OPENFOODFACTS_USER_AGENT'],
+  google_places: ['GOOGLE_PLACES_API_KEY'],
 } as const;
 
 export type ServerService = keyof typeof SERVER_SERVICES;

@@ -181,7 +181,7 @@ export default function Home() {
         {childScope ? null : (
           <Appear kind="side" delay={0.7}>
             <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID="all-tools" />
-            <Button label={tr('tool.nearby')} icon="map-pin" variant="ghost" size="sm" onPress={() => router.push('/nearby' as never)} style={{ alignSelf: 'center' }} testID="home-nearby" />
+            <Button label={tr('out.homeShortcut')} icon="map-pin" variant="ghost" size="sm" onPress={() => router.push('/outings' as never)} style={{ alignSelf: 'center' }} testID="home-nearby" />
           </Appear>
         )}
 

@@ -391,7 +391,7 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel,
   );
 }
 
-export function Segmented<T extends string>({ options, value, onChange, label }: { options: { value: T; label: string }[]; value: T; onChange: (v: T) => void; label: string }) {
+export function Segmented<T extends string>({ options, value, onChange, label }: { options: { value: T; label: string; testID?: string }[]; value: T; onChange: (v: T) => void; label: string }) {
   const t = useTheme();
   const reduce = useReduceMotion();
   const [w, setW] = React.useState(0);
@@ -421,6 +421,7 @@ export function Segmented<T extends string>({ options, value, onChange, label }:
             accessibilityState={{ selected: sel, checked: sel }}
             aria-checked={sel}
             accessibilityLabel={o.label}
+            testID={o.testID}
             onPress={() => { haptic('selection'); onChange(o.value); }}
             style={[styles.segment, sel && !segW && { backgroundColor: t.colors.primary }]}
           >

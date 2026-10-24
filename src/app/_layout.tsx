@@ -60,7 +60,8 @@ const queryClient = new QueryClient({
 // Les conversations avec l'assistant et les documents ne sont pas mis en cache.
 const persister = createAsyncStoragePersister({ storage: AsyncStorage, key: 'toietmoi.cache.v1', throttleTime: 2000 });
 // user_journeys : jamais repris d'un ancien cache (un parcours archivé ne doit pas réapparaître à l'ouverture)
-const PRIVATE_KEYS = ['assistant_messages', 'assistant_conversations', 'documents', 'mood_checkins', 'user_journeys'];
+// google_places / google_photo : contenus Google jamais enregistrés sur l'appareil (conditions d'utilisation de Google Maps Platform)
+const PRIVATE_KEYS = ['assistant_messages', 'assistant_conversations', 'documents', 'mood_checkins', 'user_journeys', 'google_places', 'google_photo'];
 
 import { useHouseholdId } from '@/lib/data/hooks';
 import { useRealtimeSync, wireFocusAndOnline } from '@/lib/sync';
