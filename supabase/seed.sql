@@ -13,7 +13,7 @@ insert into public.emergency_resources (country, label, phone, description, kind
  ('FR','Prévention du suicide','3114','Si vous pensez au suicide, si vous avez peur de vous faire du mal, ou si vous vous inquiétez pour un proche. Gratuit et confidentiel.','suicide_prevention','24 h/24, 7 j/7',3),
  ('FR','Enfance en danger','119','Si un enfant est en danger ou en risque de l''être, ou si vous avez peur de faire du mal à votre enfant.','parenting_support','24 h/24, 7 j/7',4),
  ('FR','Violences Femmes Info','3919','Écoute et orientation pour les femmes victimes de violences et leur entourage.','violence','24 h/24, 7 j/7',5),
- ('FR','Urgence par SMS (personnes sourdes ou malentendantes)','114','Contacter les secours par SMS, fax ou application.','emergency','24 h/24, 7 j/7',6);
+ ('FR','Urgence par SMS (personnes sourdes ou malentendantes)','114','Contacter les secours par SMS, fax ou application.','emergency','24 h/24, 7 j/7',6) on conflict do nothing;
 
 -- ---------------------------------------------------------------------
 -- Forums
@@ -42,7 +42,7 @@ insert into public.moderation_terms (pattern, action, reason) values
  ('\m(viagra|casino|crypto ?monnaie)\M','block','spam'),
  ('(vends?|achète|acheter|vente).{0,20}lait maternel','review','vente de lait maternel'),
  ('\m(arrêtez|arrête|arrêter) (le|son|votre) traitement\M','review','conseil médical potentiellement dangereux'),
- ('\m(mon|notre) adresse (est|:)','review','donnée personnelle');
+ ('\m(mon|notre) adresse (est|:)','review','donnée personnelle') on conflict do nothing;
 
 -- ---------------------------------------------------------------------
 -- Catégories et articles
@@ -54,7 +54,7 @@ insert into public.moderation_terms (pattern, action, reason) values
 insert into public.content_categories (slug, label, icon, position) values
  ('grossesse','Grossesse','moon',1),('accouchement','Accouchement','sparkles',2),('post-partum','Après la naissance','heart',3),
  ('sante-mentale','Émotions & sante mentale','leaf',4),('bebe','Bébé au quotidien','baby',5),('alimentation','Alimentation','bowl',6),
- ('enfant','Enfant','sun',7),('cycle','Cycle & contraception','circle',8),('reeducation','Rééducation','flower',9);
+ ('enfant','Enfant','sun',7),('cycle','Cycle & contraception','circle',8),('reeducation','Rééducation','flower',9) on conflict do nothing;
 
 with s as (select
   '[{"label":"Assurance Maladie — ameli.fr","url":"https://www.ameli.fr"},{"label":"1000 premiers jours","url":"https://www.1000-premiers-jours.fr"}]'::jsonb as ameli_1000,
@@ -120,7 +120,7 @@ from s cross join lateral (values
   'Des pistes concrètes pour tenir dans la durée, à adapter à votre famille.',
   E'Avec deux (ou trois) bébés, l''organisation des nuits devient un vrai sujet d''équipe.\n\n- **Se relayer** par tranches horaires plutôt que de se lever à deux à chaque réveil.\n- **Noter** tétées, biberons et couches de chaque bébé séparément : l''onglet Suivi le permet, bébé par bébé.\n- **Accepter l''aide** extérieure pour une nuit ou une sieste.\n\nChaque bébé a son propre rythme : il est normal qu''ils ne soient pas synchronisés, et il n''y a pas lieu de les comparer.',
   '{newborn,family}'::text[], null, null, 0, 24, false, '{jumeaux,sommeil}'::text[], s.ameli_1000, true, false)
-) v(slug, cat, title, summary, body, journeys, minw, maxw, mina, maxa, pp, tags, src, premium, safety);
+) v(slug, cat, title, summary, body, journeys, minw, maxw, mina, maxa, pp, tags, src, premium, safety) on conflict do nothing;
 
 -- ---------------------------------------------------------------------
 -- Aliments (diversification) et prénoms
@@ -131,7 +131,7 @@ insert into public.foods (name, category, is_major_allergen, allergen_group, sou
  ('Poire','fruit',false,null,'dev'),('Banane','fruit',false,null,'dev'),('Œuf (bien cuit)','protéine',true,'œuf','dev'),
  ('Poisson blanc','protéine',true,'poisson','dev'),('Purée d''arachide lisse (diluée)','protéine',true,'arachide','dev'),
  ('Yaourt nature','laitage',true,'lait','dev'),('Lentilles corail','légumineuse',false,null,'dev'),('Blé (semoule fine)','féculent',true,'gluten','dev'),
- ('Poulet','protéine',false,null,'dev'),('Avocat','fruit',false,null,'dev');
+ ('Poulet','protéine',false,null,'dev'),('Avocat','fruit',false,null,'dev') on conflict do nothing;
 
 insert into public.baby_names (name, usage, origin, meaning) values
  ('Camille','{mixed}','latine','servant(e) lors des cérémonies'),('Sacha','{mixed}','russe','diminutif d''Alexandre, « protecteur »'),
@@ -143,7 +143,7 @@ insert into public.baby_names (name, usage, origin, meaning) values
  ('Gabriel','{masculine}','hébraïque','« force de Dieu »'),('Léo','{masculine}','latine','« lion »'),('Raphaël','{masculine}','hébraïque','« Dieu guérit »'),
  ('Adam','{masculine}','hébraïque','« homme », « terre »'),('Louis','{masculine}','germanique','« glorieux au combat »'),('Noé','{masculine}','hébraïque','« repos »'),
  ('Malo','{masculine}','bretonne','« brillant », « gage »'),('Ilyes','{masculine}','hébraïque / arabe','forme d''Élie'),('Kenzo','{masculine}','japonaise','« sage », « en bonne santé »'),
- ('Timéo','{masculine}','grecque','« qui honore Dieu »'),('Amara','{feminine}','igbo / sanskrite','« grâce », « éternelle »'),('Kofi','{masculine}','akan','« né un vendredi »');
+ ('Timéo','{masculine}','grecque','« qui honore Dieu »'),('Amara','{feminine}','igbo / sanskrite','« grâce », « éternelle »'),('Kofi','{masculine}','akan','« né un vendredi »') on conflict do nothing;
 
 -- ---------------------------------------------------------------------
 -- Produits FICTIFS (base de démonstration, is_demo = true)
