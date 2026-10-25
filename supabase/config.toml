@@ -125,8 +125,10 @@ verify_jwt = false
 # par la fonction auth-email. En production : Dashboard › Authentication › Hooks › Send Email Hook
 # (type HTTPS, URL https://<ref>.supabase.co/functions/v1/auth-email), puis copier le secret
 # généré dans `supabase secrets set SEND_EMAIL_HOOK_SECRET=v1,whsec_...`.
+# Désactivé ici (sinon `supabase db push` refuse la configuration tant que le secret n'existe pas) :
+# en production, le hook s'active dans le tableau de bord une fois Resend configuré.
 [auth.hook.send_email]
-enabled = true
+enabled = false
 uri = "http://host.docker.internal:54321/functions/v1/auth-email"
 secrets = "env(SEND_EMAIL_HOOK_SECRET)"
 
