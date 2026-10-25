@@ -1,6 +1,7 @@
 /**
  * « Sorties près de chez moi » : illustration par type de lieu (jamais présentée comme une photo), photo Google avec
- * le nom de son auteur, mention « Google Maps », carte de lieu et fiche simple.
+ * le nom de son auteur (ou photo libre Wikimedia Commons pour les lieux OpenStreetMap), mention de la source,
+ * carte de lieu et fiche simple.
  */
 import React, { useState } from 'react';
 import { Image, Linking, Platform, View } from 'react-native';
@@ -9,9 +10,10 @@ import { GlassSurface } from '@/components/Glass';
 import { Sheet } from '@/components/Overlays';
 import { Button, Icon, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
-import { useGooglePhoto } from '@/lib/data/hooks-outings';
+import { useCommonsPhoto, useGooglePhoto } from '@/lib/data/hooks-outings';
+import { OSM_CONFIG } from '@/lib/domain/osmPlaces';
 import { approxDistance, directionsUrl } from '@/lib/domain/nearby';
-import { CATEGORY_ICON, CATEGORY_TINT, kidsInfo, type FamilyCategory, type FamilyPlace } from '@/lib/domain/familyPlaces';
+import { CATEGORY_ICON, CATEGORY_TINT, isOsm, kidsInfo, type FamilyCategory, type FamilyPlace } from '@/lib/domain/familyPlaces';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
@@ -54,8 +56,41 @@ export function GoogleMapsMark() {
   return <Text accessibilityLabel={GOOGLE_MAPS} style={{ fontFamily: Platform.OS === 'web' ? 'Roboto, Arial, sans-serif' : undefined, fontWeight: '400', fontSize: 12, color: t.isDark ? '#E3E3E3' : '#5E5E5E' }} testID="out-google-mark">{GOOGLE_MAPS}</Text>;
 }
 
-/** Photo Google du lieu avec son auteur ; sinon l'illustration du type de lieu. */
+/** Mention de la source à côté du contenu : « Google Maps » ou « © contributeurs OpenStreetMap ». */
+export function SourceMark({ place }: { place: Pick<FamilyPlace, 'source'> }) {
+  const t = useTheme();
+  if (!isOsm(place)) return <GoogleMapsMark />;
+  return (
+    <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(OSM_CONFIG.attributionUrl)} testID="out-osm-mark">
+      <Text style={{ fontSize: 12, color: t.isDark ? '#E3E3E3' : '#5E5E5E' }}>{OSM_CONFIG.attribution}</Text>
+    </Tappable>
+  );
+}
+
+/** Photo libre Wikimedia Commons (auteur et licence) d'un lieu OpenStreetMap ; sinon l'illustration. */
+function CommonsPhoto({ place, height }: { place: FamilyPlace; height: number }) {
+  const t = useTheme();
+  const q = useCommonsPhoto(place.commons ?? null);
+  const [failed, setFailed] = useState(false);
+  if (!q.data || failed) return <PlaceArt category={place.category} height={height} />;
+  const c = q.data;
+  return (
+    <View testID={`out-photo-${place.id}`}>
+      <Image source={{ uri: c.url }} onError={() => setFailed(true)} accessibilityLabel={place.name} style={{ height, borderRadius: 18, backgroundColor: t.colors.surfaceAlt }} resizeMode="cover" />
+      <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(c.pageUrl)} style={{ paddingTop: 2 }} testID="out-photo-credit">
+        <Text variant="caption" muted numberOfLines={2}>{tr('out.photoCommons', { author: c.author, license: c.license })}</Text>
+      </Tappable>
+    </View>
+  );
+}
+
+/** Photo du lieu avec son auteur (Google, ou Wikimedia Commons pour OpenStreetMap) ; sinon l'illustration du type de lieu. */
 export function PlacePhoto({ place, height = 120 }: { place: FamilyPlace; height?: number }) {
+  if (isOsm(place)) return <CommonsPhoto place={place} height={height} />;
+  return <GooglePhoto place={place} height={height} />;
+}
+
+function GooglePhoto({ place, height }: { place: FamilyPlace; height: number }) {
   const t = useTheme();
   const q = useGooglePhoto(place.photo?.name ?? null);
   const [failed, setFailed] = useState(false);
@@ -85,7 +120,7 @@ export function PlaceCard({ p, onPress }: { p: FamilyPlace & { distance: number 
           <Text weight="bold" numberOfLines={2}>{p.name}</Text>
           <Text variant="caption" muted numberOfLines={2}>{`${type} · ${approxDistance(p.distance)}`}</Text>
           {p.address ? <Text variant="caption" muted numberOfLines={2}>{p.address}</Text> : null}
-          <GoogleMapsMark />
+          <SourceMark place={p} />
         </View>
       </GlassSurface>
     </Tappable>
@@ -103,6 +138,7 @@ export function PlaceSheet({ place, distance, onClose }: { place: FamilyPlace | 
   if (!place) return <Sheet visible={false} onClose={onClose} title=""><View /></Sheet>;
   const p = place;
   const kids = kidsInfo(p);
+  const osm = isOsm(p);
   return (
     <Sheet visible onClose={onClose} title={p.name}>
       <View style={{ gap: spacing.sm }} testID="out-sheet">
@@ -115,17 +151,17 @@ export function PlaceSheet({ place, distance, onClose }: { place: FamilyPlace | 
             {p.hours.map((l) => <Text key={l} variant="caption" muted style={{ marginLeft: 24 }}>{l}</Text>)}
           </View>
         ) : <Info icon="clock" text={tr('out.hoursNone')} testID="out-hours-none" />}
-        <Info icon="smile" text={tr(`out.kids.${kids}` as TKey)} testID="out-kids" />
+        <Info icon="smile" text={tr(`out.kids.${kids === 'yes' && osm ? 'yesOsm' : kids}` as TKey)} testID="out-kids" />
         {p.phone ? <Info icon="phone" text={p.phone} /> : null}
         <Row wrap>
           <Button label={tr('out.directions')} icon="navigation" size="sm" onPress={() => void Linking.openURL(directionsUrl(p, Platform.OS))} testID="out-directions" />
-          {p.mapsUri ? <Button label={tr('out.openGoogle')} icon="external-link" size="sm" variant="secondary" onPress={() => void Linking.openURL(p.mapsUri!)} testID="out-open-google" /> : null}
+          {p.mapsUri ? <Button label={tr(osm ? 'out.openOsm' : 'out.openGoogle')} icon="external-link" size="sm" variant="secondary" onPress={() => void Linking.openURL(p.mapsUri!)} testID={osm ? 'out-open-osm' : 'out-open-google'} /> : null}
           {p.phone ? <Button label={tr('out.call')} icon="phone" size="sm" variant="ghost" onPress={() => void Linking.openURL(`tel:${p.phone!.replace(/\s/g, '')}`)} /> : null}
           {p.website ? <Button label={tr('out.website')} icon="globe" size="sm" variant="ghost" onPress={() => void Linking.openURL(p.website!)} /> : null}
         </Row>
-        <Text variant="caption" muted testID="out-source">{tr('out.source', { date: longDate(p.fetchedOn) })}</Text>
-        <GoogleMapsMark />
-        <Text variant="caption" color={t.colors.textMuted}>{tr('out.notVerified')}</Text>
+        <Text variant="caption" muted testID="out-source">{tr(osm ? 'out.sourceOsm' : 'out.source', { date: longDate(p.fetchedOn) })}</Text>
+        <SourceMark place={p} />
+        <Text variant="caption" color={t.colors.textMuted}>{tr(osm ? 'out.notVerifiedOsm' : 'out.notVerified')}</Text>
       </View>
     </Sheet>
   );

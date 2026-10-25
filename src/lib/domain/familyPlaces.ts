@@ -15,8 +15,15 @@ export const SECONDARY_CATEGORY: FamilyCategory = 'support';
 export const CATEGORY_ICON: Record<FamilyCategory, string> = { cafes: 'coffee', restaurants: 'shopping-bag', parks: 'sun', activities: 'star', support: 'life-buoy' };
 export const CATEGORY_TINT: Record<FamilyCategory, string> = { cafes: '#C9822B', restaurants: '#D9617A', parks: '#5E9E3A', activities: '#7A5FB8', support: '#3E7FA6' };
 
-export interface FamilyPlace extends GooglePlace { fetchedOn: string }
+export interface FamilyPlace extends GooglePlace {
+  fetchedOn: string;
+  /** source du lieu : Google Places (payant, clés requises) ou OpenStreetMap (gratuit) ; absent = Google */
+  source?: 'google' | 'osm';
+  /** fichier Wikimedia Commons (lieux OpenStreetMap) */
+  commons?: string | null;
+}
 export type PlacesState = 'ok' | 'not_configured' | 'invalid_key' | 'quota' | 'unavailable';
+export const isOsm = (p: Pick<FamilyPlace, 'source'>) => p.source === 'osm';
 
 /** « Espace bébé ou enfant » : aire de jeux, ou lieu que Google indique adapté aux enfants. Jamais supposé. */
 export const KIDS_SPACE_TYPES = ['playground', 'indoor_playground'];

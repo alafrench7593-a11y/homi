@@ -8,6 +8,7 @@ répondent, seulement que l'application les interroge et affiche correctement le
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
 """
 import base64, json, os, re, sys
+from urllib.parse import unquote
 from datetime import date, timedelta
 from playwright.sync_api import sync_playwright
 
@@ -58,6 +59,9 @@ def run(p):
         route.fulfill(status=200, content_type='application/json', body=json.dumps({'elements': [
             {'type': 'node', 'id': 101, 'lat': 45.7650, 'lon': 4.8362, 'tags': {'amenity': 'library', 'name': 'Bibliothèque (test)', 'opening_hours': 'Tu-Sa 10:00-18:00', 'wheelchair': 'yes'}},
             {'type': 'way', 'id': 102, 'center': {'lat': 45.7700, 'lon': 4.8450}, 'tags': {'leisure': 'park', 'name': 'Parc (test)'}},
+            {'type': 'node', 'id': 103, 'lat': 45.7632, 'lon': 4.8366, 'tags': {'leisure': 'playground'}},
+            {'type': 'node', 'id': 104, 'lat': 45.7645, 'lon': 4.8340, 'tags': {'amenity': 'cafe', 'name': 'Café (test)', 'kids_area': 'yes'}},
+            {'type': 'node', 'id': 105, 'lat': 45.7641, 'lon': 4.8352, 'tags': {'amenity': 'cafe', 'name': 'Bar-tabac (test)'}},
         ]}))
     pg.route(re.compile(r'https://data\.geopf\.fr/.*'), geo)
     pg.route(re.compile(r'https://overpass-api\.de/.*'), overpass)
@@ -139,8 +143,8 @@ def run(p):
     tid(pg, 'cs-grow').click(); pg.wait_for_timeout(2000)
     R['accueil_ouvre_je_grandis'] = '/grow' in pg.url
 
-    # ===================================== Sorties près de chez moi (lieux Google Places, fond de carte Google)
-    # La démonstration n'a ni clé Google ni serveur : l'application doit le dire, sans jamais montrer de faux lieux.
+    # ===================================== Sorties près de chez moi (solution gratuite : OpenStreetMap)
+    # Réponses d'Overpass et tuiles simulées (au format réel) : vérifie l'affichage, pas la disponibilité des services.
     go(pg, '/nearby', 3500)
     R['out_ancien_lien_redirige'] = '/outings' in pg.url
     t = T(pg)
@@ -153,16 +157,23 @@ def run(p):
     tid(pg, 'out-town').fill('Lyon'); tid(pg, 'out-search').click(); pg.wait_for_timeout(1500)
     tid(pg, 'out-townpick-69001').click(); pg.wait_for_timeout(2500)
     t = T(pg)
-    R['out_etat_honnete_sans_cle'] = 'La recherche de lieux n’est pas encore disponible.' in t and has(pg, 'out-retry')
-    R['out_aucun_faux_lieu'] = pg.locator('[data-testid^="out-place-"]').count() == 0 and pg.locator('[data-testid^="out-marker-"]').count() == 0
-    pg.screenshot(path=f'{SHOTS}/sorties_sans_cle.png', full_page=True)
+    R['out_carte_osm'] = has(pg, 'out-map') and pg.locator('[data-testid="out-map-tile"]').count() > 0 and 'contributeurs OpenStreetMap' in t
+    R['out_reperes_reels'] = has(pg, 'out-marker-osm:node/103') and has(pg, 'out-marker-osm:node/104') and not has(pg, 'out-marker-osm:node/105')
+    R['out_position_arrondie'] = any('around:2000,45.7600,4.8400' in unquote(s) for s in sent if 'overpass' in s)
+    pg.screenshot(path=f'{SHOTS}/sorties_carte_osm.png', full_page=True)
+    tid(pg, 'out-marker-osm:node/104').click(); pg.wait_for_timeout(1200)
+    t = T(pg)
+    R['out_fiche_osm'] = has(pg, 'out-sheet') and 'Source : OpenStreetMap' in t and has(pg, 'out-directions') and 'Google Maps' not in t
+    pg.screenshot(path=f'{SHOTS}/sorties_fiche_osm.png', full_page=True)
+    pg.keyboard.press('Escape'); pg.wait_for_timeout(600)
+    go(pg, '/outings', 3000)
     tid(pg, 'out-cat-support').click(); pg.wait_for_timeout(800)
     R['out_filtre_secondaire_pmi'] = has(pg, 'out-directories') and 'monenfant.fr' in T(pg)
     # accueil : la carte est sur la page d'accueil, avec la même honnêteté
     pg.evaluate("() => { const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{\"state\":{},\"version\":0}'); ui.state.subject = { type: 'me' }; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }")
     go(pg, '/', 3500)
     R['out_carte_sur_accueil'] = has(pg, 'home-outings') and 'Sorties près de chez moi' in T(pg)
-    R['out_accueil_etat_honnete'] = has(pg, 'home-outings-state') or has(pg, 'out-map-unavailable')
+    R['out_accueil_carte_osm'] = has(pg, 'out-map') and has(pg, 'home-outings-list')
     pg.screenshot(path=f'{SHOTS}/accueil_sorties.png', full_page=True)
     go(pg, '/community', 3000)
     R['out_communaute'] = has(pg, 'community-outings') and 'Sorties près de chez moi' in T(pg)

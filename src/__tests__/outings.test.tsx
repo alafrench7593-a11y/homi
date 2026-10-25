@@ -5,6 +5,8 @@
  * Les réponses de Google sont simulées : ce test ne prouve pas que la vraie clé fonctionne.
  * Lancé avec le préréglage iOS et avec jest.android.config.js.
  */
+// Ces tests couvrent le chemin Google (en réserve) ; le chemin gratuit OpenStreetMap est testé dans osmOutings.test.tsx
+process.env.EXPO_PUBLIC_PLACES_PROVIDER = 'google';
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
 jest.mock('expo-router', () => {
@@ -276,18 +278,21 @@ describe(`écran « Sorties près de chez moi » (${Platform.OS})`, () => {
     }
   });
 
-  it('accueil : carte visible directement, lieux proches, accès à la liste ; sans clé de carte, état clair', async () => {
+  it('accueil : carte visible directement, lieux proches, accès à la liste ; sans clé de carte, retour à la carte gratuite', async () => {
     useUiStore.getState().setNearbyTown({ label: 'Lyon 69001', lat: 45.764, lon: 4.8357 });
     let r = await render(<OutingsHomeCard />);
     await until(() => has(r, 'rn-mapview'));
     expect(has(r, 'home-outings-list')).toBe(true);
     expect(has(r, 'home-outings-list-btn')).toBe(true);
     r.unmount();
+    // Sans clé de carte Google : retour à la solution gratuite (OpenStreetMap), jamais de carte Google vide
     mapsFlag.on = false;
+    calls.length = 0;
     r = await render(<OutingsHomeCard />);
-    await until(() => has(r, 'out-map-unavailable'));
+    await until(() => has(r, 'home-outings-state'), 8000);
     expect(has(r, 'rn-mapview')).toBe(false);
-    expect(has(r, 'home-outings-list')).toBe(true);
+    expect(calls.filter((c) => c.category)).toHaveLength(0); // aucune recherche Google
+    expect(has(r, 'home-outings-retry')).toBe(true);
     r.unmount();
     useUiStore.getState().setNearbyTown(null);
     r = await render(<OutingsHomeCard />);

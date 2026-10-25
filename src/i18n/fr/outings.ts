@@ -1,4 +1,4 @@
-/** « Sorties près de chez moi » : lieux publics pour sortir en famille (Google Places, fond de carte Google). */
+/** « Sorties près de chez moi » : lieux publics pour sortir en famille (OpenStreetMap gratuit, ou Google Places). */
 export const outings = {
   'out.title': "Sorties près de chez moi",
   'out.subtitle': "Cafés, restaurants, parcs et activités pour sortir en famille",
@@ -15,7 +15,7 @@ export const outings = {
   'out.cat.support': "PMI et accompagnement",
   'out.also': "Aussi",
   'out.kidsSpace': "Espace bébé ou enfant",
-  'out.kidsSpaceNote': "Aires de jeux et lieux que Google Maps indique adaptés aux enfants.",
+  'out.kidsSpaceNote': "Aires de jeux et lieux indiqués comme adaptés aux enfants par la source (Google Maps ou OpenStreetMap).",
   'out.count': { zero: "Aucun lieu", one: "{count} lieu", other: "{count} lieux" },
   'out.none': "Aucun lieu trouvé dans un rayon de {km} km pour ces critères.",
   'out.widen': "Élargir à {km} km",
@@ -56,4 +56,12 @@ export const outings = {
   'out.homeShortcut': "Sorties près de chez moi",
   'out.communityCardTitle': "Sorties près de chez moi",
   'out.communityCardBody': "Cafés, restaurants, parcs et activités adaptés aux familles autour de chez vous.",
+  'out.recenter': "Recentrer la carte",
+  'out.kids.yesOsm': "Accueil des enfants renseigné (espace enfants, table à langer ou chaise haute)",
+  'out.openOsm': "Voir sur OpenStreetMap",
+  'out.sourceOsm': "Source : OpenStreetMap · consulté le {date}",
+  'out.notVerifiedOsm': "Informations ajoutées par les contributeurs d’OpenStreetMap, non vérifiées par Toi & Moi : vérifiez avant de vous déplacer.",
+  'out.photoCommons': "Photo : {author} · {license} · Wikimedia Commons",
+  'out.loadingSlow': "Recherche des lieux autour de vous… cela peut prendre quelques secondes.",
+  'out.osmCafesNote': "Seuls les cafés et restaurants renseignés comme accueillant les enfants sont montrés. Beaucoup ne sont pas encore renseignés dans OpenStreetMap.",
 };

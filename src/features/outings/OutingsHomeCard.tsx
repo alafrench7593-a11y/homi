@@ -1,6 +1,6 @@
 /**
  * Accueil › « Sorties près de chez moi » : la carte des lieux réels autour de la ville choisie, directement sur
- * l'accueil (fond de carte Google, lieux Google Places), les plus proches en dessous, et l'accès à la vue Liste.
+ * l'accueil (pour le moment fond OpenStreetMap et lieux OpenStreetMap, gratuits ; Google en réserve), les plus proches en dessous, et l'accès à la vue Liste.
  * Sans ville : choix de la ville ou du code postal sur place. Aucun lieu inventé.
  */
 import React, { useMemo, useState } from 'react';
@@ -42,8 +42,13 @@ export function OutingsHomeCard() {
             <Text variant="caption" muted>{area ? tr('out.homeIntro', { town: area }) : tr('out.homeNoTown')}</Text>
           </View>
         </Row>
-        {!center ? <TownPicker onHere={setHere} compact /> : q.isLoading ? <Skeleton kind="card" rows={2} /> : state && state !== 'ok' ? (
-          <Text variant="small" muted testID="home-outings-state">{tr(`out.state.${state}` as TKey)}</Text>
+        {!center ? <TownPicker onHere={setHere} compact /> : q.isLoading ? (
+          <View style={{ gap: 6 }}><Text variant="caption" muted>{tr('out.loadingSlow')}</Text><Skeleton kind="card" rows={2} /></View>
+        ) : state && state !== 'ok' ? (
+          <View style={{ gap: 6 }}>
+            <Text variant="small" muted testID="home-outings-state">{tr(`out.state.${state}` as TKey)}</Text>
+            <Button label={tr('out.retry')} icon="refresh-cw" size="sm" variant="secondary" style={{ alignSelf: 'flex-start' }} onPress={() => void q.refetch()} testID="home-outings-retry" />
+          </View>
         ) : (
           <>
             <FamilyMap center={center} places={places} radius={RADIUS} height={230} onSelect={setOpen} />

@@ -11,7 +11,7 @@ import { Banner, Card, Divider, Icon, Row, SectionTitle, Text } from '@/componen
 import { backend, hasRealBackend, isDemo } from '@/lib/backend';
 import { crashReportingConfigured } from '@/lib/crashReporting';
 import { useDeveloperMode } from '@/lib/devMode';
-import { mapsConfigured, usePlacesCheck } from '@/lib/data/hooks-outings';
+import { mapsConfigured, placesProvider, usePlacesCheck } from '@/lib/data/hooks-outings';
 import { useTheme } from '@/theme/ThemeProvider';
 
 type State = 'ok' | 'demo' | 'missing';
@@ -54,6 +54,7 @@ export default function ServicesScreen() {
     { name: 'RevenueCat (abonnement)', state: isDemo ? 'demo' : (env.EXPO_PUBLIC_REVENUECAT_APPLE_KEY || env.EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY) && s.revenuecat_webhook ? 'ok' : 'missing', detail: 'Clés publiques Apple/Google dans l’app + REVENUECAT_WEBHOOK_SECRET côté serveur.' },
     { name: 'Expo (notifications push)', state: isDemo ? 'demo' : Constants.expoConfig?.extra?.eas?.projectId && s.push ? 'ok' : 'missing', detail: 'EXPO_PUBLIC_EAS_PROJECT_ID + EXPO_ACCESS_TOKEN et PUSH_WEBHOOK_SECRET côté serveur. Les rappels locaux fonctionnent sans.' },
     { name: 'Open Food Facts (scanner)', state: srv('open_food_facts'), detail: 'OPENFOODFACTS_USER_AGENT (identification polie auprès de l’API).' },
+    { name: 'Carte gratuite OpenStreetMap (Sorties près de chez moi)', state: placesProvider() === 'osm' ? 'ok' : 'missing', detail: placesProvider() === 'osm' ? 'Utilisée en ce moment : tuiles OpenStreetMap, lieux via Overpass, photos Wikimedia Commons. Sans clé ; services publics à usage modéré.' : 'En réserve : Google est utilisé (EXPO_PUBLIC_PLACES_PROVIDER=google).' },
     { name: 'Google Places (Sorties près de chez moi)', state: isDemo ? 'demo' : places.data === 'ok' ? 'ok' : 'missing', detail: isDemo ? 'Secret serveur GOOGLE_PLACES_API_KEY.' : `Secret serveur GOOGLE_PLACES_API_KEY · vérification réelle : ${places.data ?? (places.isFetching ? 'en cours' : 'non faite')}.` },
     { name: 'Google Maps (fond de carte)', state: mapsConfigured() ? 'ok' : 'missing', detail: 'Web : EXPO_PUBLIC_GOOGLE_MAPS_WEB_KEY (restreinte au site). iOS/Android : GOOGLE_MAPS_IOS_API_KEY / GOOGLE_MAPS_ANDROID_API_KEY à la construction (restreintes à l’application).' },
     { name: 'Sentry (rapports de plantage)', state: crashReportingConfigured() ? 'ok' : 'missing', detail: 'EXPO_PUBLIC_SENTRY_DSN, et seulement avec l’accord de la personne.' },

@@ -5,7 +5,8 @@
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { mapsConfigured } from '@/lib/data/hooks-outings';
+import { mapsConfigured, placesProvider } from '@/lib/data/hooks-outings';
+import { OsmMap } from './OsmMap';
 import { CATEGORY_TINT, regionFor, SOFT_MAP_STYLE, type FamilyPlace } from '@/lib/domain/familyPlaces';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -32,7 +33,12 @@ function loadGoogleMaps(key: string): Promise<G> {
 
 const pin = (color: string) => `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="17" r="14" fill="${color}" stroke="#fff" stroke-width="3"/><circle cx="17" cy="17" r="4.5" fill="#fff"/></svg>`)}`;
 
-export function FamilyMap({ center, places, radius, height = 320, onSelect, interactive = true }: FamilyMapProps) {
+export function FamilyMap(props: FamilyMapProps) {
+  if (placesProvider() === 'osm') return <OsmMap {...props} />;
+  return <GoogleFamilyMap {...props} />;
+}
+
+function GoogleFamilyMap({ center, places, radius, height = 320, onSelect, interactive = true }: FamilyMapProps) {
   const t = useTheme();
   const ref = useRef<View>(null);
   const map = useRef<G>(null);

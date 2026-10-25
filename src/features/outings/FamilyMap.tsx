@@ -7,7 +7,8 @@ import React from 'react';
 import { View } from 'react-native';
 import MapView, { Circle, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Icon } from '@/components/ui';
-import { mapsConfigured } from '@/lib/data/hooks-outings';
+import { mapsConfigured, placesProvider } from '@/lib/data/hooks-outings';
+import { OsmMap } from './OsmMap';
 import { CATEGORY_ICON, CATEGORY_TINT, regionFor, SOFT_MAP_STYLE, type FamilyPlace } from '@/lib/domain/familyPlaces';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -22,7 +23,13 @@ export interface FamilyMapProps {
   interactive?: boolean;
 }
 
-export function FamilyMap({ center, places, radius, height = 320, onSelect, interactive = true }: FamilyMapProps) {
+export function FamilyMap(props: FamilyMapProps) {
+  // Solution gratuite pour le moment : fond OpenStreetMap ; Google seulement si ses clés sont configurées et choisies
+  if (placesProvider() === 'osm') return <OsmMap {...props} />;
+  return <GoogleFamilyMap {...props} />;
+}
+
+function GoogleFamilyMap({ center, places, radius, height = 320, onSelect, interactive = true }: FamilyMapProps) {
   const t = useTheme();
   if (!mapsConfigured()) return <MapUnavailable height={height} />;
   const region = regionFor(center, places.slice(0, 12), Math.min(radius, 3000));

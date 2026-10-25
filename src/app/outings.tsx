@@ -18,7 +18,7 @@ import { FamilyMap } from '@/features/outings/FamilyMap';
 import { catLabel, MiniRow, PlaceCard, PlaceSheet } from '@/features/outings/PlaceVisuals';
 import { TownPicker } from '@/features/outings/TownPicker';
 import { usePlaceFavorites } from '@/lib/data/hooks-discoveries';
-import { useFamilyPlaces } from '@/lib/data/hooks-outings';
+import { placesProvider, useFamilyPlaces } from '@/lib/data/hooks-outings';
 import { directionsUrl, directoryUrl, distanceM, type Directory } from '@/lib/domain/nearby';
 import { applyFilters, CATEGORY_ICON, MAIN_CATEGORIES, nextRadius, SECONDARY_CATEGORY, supportDirectories, withDistance, type FamilyCategory, type FamilyPlace } from '@/lib/domain/familyPlaces';
 import { useUiStore } from '@/lib/store';
@@ -39,6 +39,7 @@ export default function Outings() {
   const center = here ?? (town ? { lat: town.lat, lon: town.lon } : null);
   const cityLabel = here ? null : town?.label.replace(/\s*\d{5}.*$/, '') ?? null;
   const q = useFamilyPlaces(center, cat, radius);
+  const osm = placesProvider() === 'osm';
   const favs = usePlaceFavorites();
   const places = useMemo(() => (center && q.data ? applyFilters(withDistance(q.data.places, center, radius), { category: cat, kidsSpace }) : []), [center, q.data, radius, cat, kidsSpace]);
   const state = q.data?.state;
@@ -66,9 +67,12 @@ export default function Outings() {
         <Chip label={catLabel(SECONDARY_CATEGORY)} icon={CATEGORY_ICON.support as never} selected={cat === 'support'} onPress={() => setCat(cat === 'support' ? 'all' : 'support')} testID="out-cat-support" />
       </Row>
       {kidsSpace ? <Text variant="caption" muted>{tr('out.kidsSpaceNote')}</Text> : null}
+      {osm && (cat === 'cafes' || cat === 'restaurants') ? <Text variant="caption" muted testID="out-osm-note">{tr('out.osmCafesNote')}</Text> : null}
       <Segmented label={tr('out.views')} value={view} onChange={setView} options={[{ value: 'map', label: tr('out.view.map'), testID: 'out-view-map' }, { value: 'list', label: tr('out.view.list'), testID: 'out-view-list' }]} />
 
-      {!center ? <Text muted variant="small" testID="out-start">{tr('out.start')}</Text> : q.isLoading ? <Skeleton kind="list" rows={3} /> : state && state !== 'ok' ? (
+      {!center ? <Text muted variant="small" testID="out-start">{tr('out.start')}</Text> : q.isLoading ? (
+        <View style={{ gap: spacing.xs }} testID="out-loading"><Text variant="caption" muted>{tr('out.loadingSlow')}</Text><Skeleton kind="list" rows={3} /></View>
+      ) : state && state !== 'ok' ? (
         <Banner tone="warning" icon="wifi-off" title={tr(`out.state.${state}` as TKey)} action={<Button label={tr('out.retry')} size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => void q.refetch()} testID="out-retry" />}>
           {null}
         </Banner>
