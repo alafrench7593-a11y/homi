@@ -160,3 +160,15 @@ describe('affichage', () => {
 it('date du jour utilisée par défaut', () => {
   expect(sceneFor({ scope: 'baby', child: { id: 'x', birth_date: todayISO(), multiple_group: null } }).kids[0].ageYears).toBe(0);
 });
+
+describe('personnages générés de « Notre histoire »', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { chapterIndexForScene, STORY_CHAPTERS } = require('@/lib/domain/familyStory');
+  it('chaque chapitre retrouve sa propre image', () => {
+    STORY_CHAPTERS.forEach((c: { scene: unknown }, i: number) => expect(chapterIndexForScene(c.scene)).toBe(i));
+  });
+  it('jumeaux ou fratrie déjà nés : le dessin animé reste utilisé ; grossesse multiple : image de grossesse', () => {
+    expect(chapterIndexForScene({ belly: 0.6, multiple: true, kids: [] })).toBe(2);
+    expect(chapterIndexForScene({ belly: 0, multiple: false, kids: [{ id: 'a', ageYears: 2 }, { id: 'b', ageYears: 2 }] })).toBeNull();
+  });
+});

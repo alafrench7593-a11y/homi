@@ -86,6 +86,29 @@ export const STORY_CHAPTERS: StoryChapter[] = [
   { key: 'ten', title: 'Dix ans, main dans la main', text: 'Votre enfant a grandi, et votre main est toujours là.', scene: { belly: 0, multiple: false, kids: one(10) } },
 ];
 
+/**
+ * Étape illustrée (image générée, ElevenLabs, 26/10/2026) correspondant à une scène : 0 à 9 dans l'ordre de
+ * STORY_CHAPTERS. `null` quand aucune image ne convient (jumeaux ou fratrie déjà nés) : on garde alors
+ * le dessin animé, qui sait montrer plusieurs enfants.
+ */
+export function chapterIndexForScene(scene: StoryScene): number | null {
+  // Plusieurs enfants déjà nés : le dessin animé ; grossesse multiple : l'image de grossesse convient (même silhouette)
+  if (scene.kids.length > 1) return null;
+  if (scene.kids.length === 0) {
+    if (scene.belly <= 0.02) return 0;
+    if (scene.belly < bellyForWeek(22)) return 1;
+    if (scene.belly < bellyForWeek(34)) return 2;
+    return 3;
+  }
+  const age = scene.kids[0].ageYears;
+  if (age < 0.33) return 4;
+  if (age < 0.95) return 5;
+  if (age < 2) return 6;
+  if (age < 4.5) return 7;
+  if (age < 8) return 8;
+  return 9;
+}
+
 // ---------------------------------------------------------------- poses
 export const GROUND = 190;
 type Pt = [number, number];

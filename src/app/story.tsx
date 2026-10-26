@@ -5,13 +5,14 @@
  * « Réduire les animations » : chaque chapitre montre sa propre image fixe.
  */
 import React, { useMemo, useState } from 'react';
-import { ScrollView, View, useWindowDimensions } from 'react-native';
+import { Image, ScrollView, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Button, Text } from '@/components/ui';
-import { FamilyStoryArt, StoryDrawing } from '@/features/story/FamilyStoryArt';
-import { poseFor, STORY_CHAPTERS, storyA11y, storyPoseAt } from '@/lib/domain/familyStory';
+import { FamilyStoryArt } from '@/features/story/FamilyStoryArt';
+import { STORY_IMAGES } from '@/features/story/storyImages';
+import { STORY_CHAPTERS, storyA11y, storyPoseAt } from '@/lib/domain/familyStory';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
@@ -31,7 +32,7 @@ export default function Story() {
       <View style={{ flex: 1 }} testID="story">
         {reduce ? null : (
           <View style={{ height: artH }} testID="story-art">
-            <FamilyStoryArt pose={pose} height={artH} label={storyA11y(STORY_CHAPTERS[current].scene)} />
+            <FamilyStoryArt pose={pose} progress={progress} height={artH} label={storyA11y(STORY_CHAPTERS[current].scene)} />
           </View>
         )}
         <ScrollView
@@ -45,8 +46,8 @@ export default function Story() {
           {STORY_CHAPTERS.map((c, i) => (
             <View key={c.key} style={{ minHeight: reduce ? undefined : step, paddingVertical: spacing.md, opacity: reduce ? 1 : i === current ? 1 : 0.42 }} testID={`story-ch-${c.key}`}>
               {reduce ? (
-                <View accessible accessibilityRole="image" accessibilityLabel={storyA11y(c.scene)} style={{ height: 180 }}>
-                  <StoryDrawing pose={poseFor(c.scene)} night={t.isDark} width="100%" height={180} />
+                <View accessible accessibilityRole="image" accessibilityLabel={storyA11y(c.scene)} style={{ height: 220 }}>
+                  <Image source={STORY_IMAGES[i]} resizeMode="contain" style={{ width: '100%', height: 220 }} accessibilityIgnoresInvertColors />
                 </View>
               ) : null}
               <Text variant="caption" muted style={{ letterSpacing: 1.2, textTransform: 'uppercase' }}>{`${i + 1} / ${STORY_CHAPTERS.length}`}</Text>

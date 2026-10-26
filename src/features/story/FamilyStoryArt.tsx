@@ -6,10 +6,11 @@
  * Décoratif : une seule description pour les lecteurs d'écran.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop } from 'react-native-svg';
 import { useLowPower } from '@/lib/lowPower';
-import { DAY_PALETTE, dressGradient, drawPose, lerpPose, NIGHT_PALETTE, poseFor, smooth, type Pose, type Shape, type StoryScene } from '@/lib/domain/familyStory';
+import { chapterIndexForScene, DAY_PALETTE, dressGradient, drawPose, lerpPose, NIGHT_PALETTE, poseFor, smooth, type Pose, type Shape, type StoryScene } from '@/lib/domain/familyStory';
+import { STORY_IMAGES } from './storyImages';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 
@@ -86,7 +87,7 @@ const MOTES = Array.from({ length: 9 }, (_, i) => ({ x: ((i * 37) % 100) / 100, 
  * Scène animée : halo de lumière chaude (ou bleu nuit et prune), personnages, quelques particules lumineuses.
  * `scene` : étape à montrer ; `pose` : pose imposée (présentation pilotée par le défilement).
  */
-export function FamilyStoryArt({ scene, pose: forced, height = 150, label, testID }: { scene?: StoryScene; pose?: Pose; height?: number; label: string; testID?: string }) {
+export function FamilyStoryArt({ scene, pose: forced, progress, height = 150, label, testID }: { scene?: StoryScene; pose?: Pose; progress?: number; height?: number; label: string; testID?: string }) {
   const t = useTheme();
   const reduce = useReduceMotion();
   const lowPower = useLowPower();
@@ -99,6 +100,21 @@ export function FamilyStoryArt({ scene, pose: forced, height = 150, label, testI
   const glow = useLoop(7000, still);
   const id = React.useId().replace(/:/g, '');
   const halo = night ? ['#8E6FB0', '#3B3A6E'] : ['#FFF8F1', '#F7E1D9'];
+  // Personnages générés : étape de la scène (accueil) ou fondu entre deux étapes selon le défilement (présentation).
+  // Plusieurs enfants ou grossesse multiple : le dessin animé, qui sait les montrer, reste utilisé.
+  const images: [number, number][] | null = useMemo(() => {
+    if (progress != null) {
+      const n = STORY_IMAGES.length - 1;
+      const p = Math.max(0, Math.min(n, progress));
+      const i = Math.min(n - 1, Math.floor(p));
+      const k = Math.max(0, Math.min(1, (p - i - 0.18) / 0.64));
+      const e = k * k * (3 - 2 * k);
+      return e <= 0 ? [[i, 1]] : e >= 1 ? [[i + 1, 1]] : [[i, 1 - e], [i + 1, e]];
+    }
+    if (forced) return null;
+    const idx = chapterIndexForScene(scene ?? { belly: 0, multiple: false, kids: [] });
+    return idx == null ? null : [[idx, 1]];
+  }, [progress, forced, scene]);
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={label} testID={testID} style={{ height, overflow: 'hidden' }}>
       {/* halo de lumière douce, qui respire très lentement */}
@@ -122,7 +138,14 @@ export function FamilyStoryArt({ scene, pose: forced, height = 150, label, testI
       </Animated.View>
       {/* personnages : respiration à peine perceptible */}
       <Animated.View style={{ flex: 1, transform: [{ translateY: breathe.interpolate({ inputRange: [0, 1], outputRange: [0.6, -0.6] }) }, { scale: breathe.interpolate({ inputRange: [0, 1], outputRange: [1, 1.006] }) }] }}>
-        <StoryDrawing pose={pose} night={night} width="100%" height={height} />
+        {images ? (
+          images.map(([idx, op]) => (
+            <Image key={idx} source={STORY_IMAGES[idx]} resizeMode="contain" accessibilityIgnoresInvertColors
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: op }} testID={`story-img-${idx + 1}`} />
+          ))
+        ) : (
+          <StoryDrawing pose={pose} night={night} width="100%" height={height} />
+        )}
       </Animated.View>
     </View>
   );
