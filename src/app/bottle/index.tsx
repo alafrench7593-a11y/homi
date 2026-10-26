@@ -20,7 +20,8 @@ export default function BottleTimers() {
   const sorted = [...(children ?? [])].sort((a, b) => Number(b.enabled_tracking.includes('bottle')) - Number(a.enabled_tracking.includes('bottle')));
 
   return (
-    <Screen back title="Rappels biberon" subtitle={activeCount ? `${activeCount} rappel${activeCount > 1 ? 's' : ''} en cours` : 'Un rappel par enfant'}>
+    <Screen back title="Rappels biberon" subtitle={activeCount ? `${activeCount} rappel${activeCount > 1 ? 's' : ''} en cours` : 'Un rappel par enfant'}
+      action={sorted.length ? { label: 'Enregistrer un biberon', icon: 'plus', testID: 'bottles-add', onPress: () => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: sorted[0].id } }) } : undefined}>
       {isLoading ? <Skeleton kind="card" rows={2} /> : childrenQ.isError && !children ? (
         <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} title="Impossible d’afficher les rappels" />
       ) : !sorted.length ? (

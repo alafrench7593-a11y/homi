@@ -6,6 +6,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { ErrorView, Skeleton } from '@/components/States';
 import { EstimateLine, fmt, MonthCalendar, PrivateBanner, type CalendarStyle } from '@/components/Fertility';
 import { Banner, Button, Card, Row, SectionTitle, Text } from '@/components/ui';
@@ -47,6 +48,11 @@ export default function CycleCalendarScreen() {
 
   return (
     <Screen back title="Mon calendrier du cycle" subtitle="Privé : visible uniquement par vous">
+      <TodaySummary items={[
+        { icon: 'droplet', value: lastStart ? fmt(lastStart) : '—', label: 'Dernières règles' },
+        { icon: 'heart', value: windows[0] ? `${fmt(windows[0].start)} – ${fmt(windows[0].end)}` : '—', label: 'Période fertile (estimation)' },
+        { icon: 'calendar', value: windows[0] ? fmt(windows[0].nextPeriod) : '—', label: 'Prochaines règles (estimation)' },
+      ]} />
       <PrivateBanner>Ce calendrier n’est jamais partagé avec votre foyer, votre coparent ni la communauté.</PrivateBanner>
 
       {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (

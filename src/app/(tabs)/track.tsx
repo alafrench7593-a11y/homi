@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { PremiumGate, ProfileSwitcher } from '@/components/Family';
 import { BarChart } from '@/components/Charts';
 import { ErrorView, Skeleton } from '@/components/States';
@@ -18,6 +19,7 @@ import type { Bottle, Breastfeed, Diaper, LogKind, Meal, Observation, Pumping, S
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { formatDuration } from '@/lib/domain/dates';
 import { Tappable } from '@/components/Tappable';
 
 function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby' | 'child' | null }) {
@@ -89,6 +91,14 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
         <ErrorView error={logsError.error} onRetry={retryLogs} title={tr('trk.loadError')} />
       ) : (
         <>
+          <TodaySummary title={tr('trk.today')} testID="track-tab-today" items={[
+            { icon: 'droplet', value: String(bottles.filter((x) => isToday(x.at)).length + feeds.filter((x) => isToday(x.started_at)).length), label: tr('tool.baby_bottle') },
+            { icon: 'wind', value: String(diapers.filter((x) => isToday(x.at)).length), label: tr('tool.baby_diaper') },
+            { icon: 'moon', value: (() => {
+              const m = sleeps.filter((x) => isToday(x.started_at) && x.ended_at).reduce((n, x) => n + (Date.parse(x.ended_at!) - Date.parse(x.started_at)) / 60000, 0);
+              return m ? formatDuration(m) : '—';
+            })(), label: tr('tool.kid_sleep') },
+          ]} />
           <Card>
             <DayRibbon events={[
               ...sleeps.filter((x) => isToday(x.started_at) || (x.ended_at && isToday(x.ended_at)) || !x.ended_at).map((x) => ({ kind: 'sleep' as const, start: x.started_at, end: x.ended_at, nap: x.kind === 'nap' })),

@@ -1,6 +1,7 @@
 /** Historique des modifications des tâches du foyer (écrit par le serveur, lecture seule). */
 import React from 'react';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { Card, ListRow } from '@/components/ui';
@@ -19,6 +20,17 @@ export default function FamilyHistory() {
   const { labelOf } = usePeople();
   return (
     <Screen back title="Historique" subtitle="Pour se coordonner, pas pour compter.">
+      {q.data ? (() => {
+        const today = new Date().toDateString();
+        const evToday = q.data.filter((e) => new Date(e.created_at).toDateString() === today);
+        return (
+          <TodaySummary items={[
+            { icon: 'activity', value: String(evToday.length), label: 'Modifications' },
+            { icon: 'check', value: String(evToday.filter((e) => e.kind === 'done').length), label: 'Terminées' },
+            { icon: 'user-plus', value: String(evToday.filter((e) => e.kind === 'assigned').length), label: 'Confiées' },
+          ]} />
+        );
+      })() : null}
       {q.isLoading && !q.data ? <Skeleton rows={4} /> : null}
       {q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : null}
       {q.data && !q.data.length ? <EmptyState icon="clock" title="Rien pour l’instant" body="Les créations, attributions et tâches terminées apparaîtront ici." /> : null}

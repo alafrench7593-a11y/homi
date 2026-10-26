@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Field, haptic, Icon, Row, Text } from '@/components/ui';
@@ -80,7 +81,7 @@ export default function Teeth() {
   }
 
   return (
-    <Screen back title="Dents" subtitle={child ? `${child.first_name} · ${teeth.length} dent${teeth.length > 1 ? 's' : ''} notée${teeth.length > 1 ? 's' : ''}` : 'Ajoutez d’abord un enfant.'}>
+    <Screen back title="Dents" subtitle={child ? child.first_name : 'Ajoutez d’abord un enfant.'}>
       <Banner tone="info">Chaque enfant a son rythme : les premières dents arrivent souvent entre 6 et 12 mois, parfois plus tôt ou plus tard. En cas de doute, parlez-en à votre pédiatre ou à la PMI.</Banner>
       {childrenQ.isLoading && !children ? <Skeleton rows={4} /> : childrenQ.isError && !children ? (
         <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} />
@@ -90,6 +91,15 @@ export default function Teeth() {
         <ErrorView error={milestonesQ.error} onRetry={() => void milestonesQ.refetch()} title="Impossible d’afficher les dents notées" />
       ) : (
         <>
+          {(() => {
+            const dated = teeth.filter((m) => m.happened_on).sort((x, y) => (y.happened_on ?? '').localeCompare(x.happened_on ?? ''));
+            return (
+              <TodaySummary title="En bref" testID="teeth-summary" items={[
+                { icon: 'smile', value: `${teeth.length}/20`, label: 'Dents notées' },
+                { icon: 'calendar', value: dated[0]?.happened_on ? new Date(dated[0].happened_on).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '—', label: 'Dernière apparue' },
+              ]} />
+            );
+          })()}
           <Card>
             <ToothChart present={new Set(teeth.map((m) => m.title))} onPick={open} />
             <Text variant="caption" muted center>Touchez une dent pour noter sa date d’apparition et vos observations.</Text>

@@ -105,7 +105,8 @@ export default function PainScreen() {
   }, [logsQ.data, periods]);
 
   return (
-    <Screen back title={tr('cy.pain.title')} subtitle={tr('cy.pain.subtitle')}>
+    <Screen back title={tr('cy.pain.title')} subtitle={tr('cy.pain.subtitle')}
+      action={{ label: tr('common.save'), icon: 'check', onPress: () => void save(), disabled: busy, testID: 'pain-save' }}>
       <Rise>
         <Glass>
           <Field label={tr('cy.sym.date')} value={day} onChangeText={setDay} keyboardType="numbers-and-punctuation" placeholder={tr('cy.datePh')} />
@@ -142,7 +143,6 @@ export default function PainScreen() {
       ) : null}
 
       {err ? <Banner tone="warning">{err}</Banner> : null}
-      <Button label={tr('common.save')} icon="check" loading={busy} onPress={save} full />
       <Ink variant="caption" soft>{tr('cy.pain.notDiagnosis')}</Ink>
 
       <Glass>

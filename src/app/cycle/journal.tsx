@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { HistoryHeader } from '@/components/MiniApp';
 import { Banner, Button, Field, haptic } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
@@ -57,18 +58,19 @@ export default function JournalScreen() {
   const shown = (entries ?? []).filter((e) => !q || e.body.toLowerCase().includes(q));
 
   return (
-    <Screen back title={tr('cy.jr.title')} subtitle={tr('cy.jr.subtitle')}>
+    <Screen back title={tr('cy.jr.title')} subtitle={tr('cy.jr.subtitle')}
+      action={{ label: editing ? tr('cy.period.update') : tr('common.save'), icon: 'check', onPress: () => void save(), disabled: busy, testID: 'journal-save' }}>
       <Glass>
         <Ink variant="heading">{editing ? tr('cy.jr.editTitle') : tr('cy.jr.newTitle')}</Ink>
         <Field label={tr('cy.jr.date')} value={day} onChangeText={setDay} keyboardType="numbers-and-punctuation" placeholder={tr('cy.datePh')} />
         <Field label={tr('cy.jr.body')} value={body} onChangeText={setBody} multiline maxLength={10000} style={{ minHeight: 120, textAlignVertical: 'top' }} />
         <Scale label={tr('cy.scale.mood')} value={mood} onChange={setMood} low={tr('cy.scale.low')} high={tr('cy.scale.high')} />
         {err ? <Banner tone="warning">{err}</Banner> : null}
-        <Button label={editing ? tr('cy.period.update') : tr('common.save')} icon="check" loading={busy} onPress={save} full />
         {editing ? <Button label={tr('common.cancel')} variant="ghost" onPress={reset} full /> : null}
         <Ink variant="caption" soft>{tr('cy.private')}</Ink>
       </Glass>
 
+      <HistoryHeader title={tr('cy.nav.journal')} count={(entries ?? []).length || undefined} />
       {(entries ?? []).length > 3 ? <Field label={tr('cy.jr.search')} value={query} onChangeText={setQuery} /> : null}
       {!(entries ?? []).length ? <Ink soft>{tr('cy.jr.empty')}</Ink> : null}
       {shown.map((e, i) => (

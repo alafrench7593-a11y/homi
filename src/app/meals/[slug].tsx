@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, FavoriteButton, IconButton, Row, SectionTitle, Text } from '@/components/ui';
@@ -64,8 +65,14 @@ export default function RecipeDetail() {
   }
 
   return (
-    <Screen back title={r.title} right={<FavoriteButton icon="star" active={isFav} activeColor={t.colors.gold} labelOn={tr('rc.unfavorite')} labelOff={tr('rc.favorite')} onPress={() => fav.toggle.mutate(r.slug)} />}>
+    <Screen back title={r.title} right={<FavoriteButton icon="star" active={isFav} activeColor={t.colors.gold} labelOn={tr('rc.unfavorite')} labelOff={tr('rc.favorite')} onPress={() => fav.toggle.mutate(r.slug)} />}
+      action={{ label: tr('rc.addToShopping'), icon: 'shopping-cart', onPress: () => void addToShopping(), testID: 'add-shopping' }}>
       <RecipeArt recipe={r} height={190} />
+      <TodaySummary title={tr('mb.rc.recipeTitle')} items={[
+        { icon: 'clock', value: tr('mb.rc.minutes', { m: r.prepMin }), label: tr('mb.rc.prep') },
+        { icon: 'thermometer', value: tr('mb.rc.minutes', { m: r.cookMin }), label: tr('mb.rc.cook') },
+        { icon: 'users', value: String(n), label: tr('mb.rc.portions') },
+      ]} />
       <Text variant="caption" muted testID="photo-license">{tr('rc.photo.credit', { author: r.photo.author, license: r.photo.license, rights: r.photo.rights })}{r.photo.url ? ` · ${r.photo.url}` : ''}</Text>
       <Text>{r.summary}</Text>
       <View testID="recipe-status"><Banner tone={r.status === 'validated' || r.status === 'reviewed' ? 'success' : 'warning'} title={r.personal ? tr('rc.personal') : statusLabel(r.status)}>{r.personal ? tr('rc.personalBody') : tr(`rc.statusBody.${r.status}` as never)}</Banner></View>
@@ -136,7 +143,6 @@ export default function RecipeDetail() {
 
       <Row wrap>
         <Button label={tr('rc.addToMenu')} icon="calendar" variant="secondary" size="sm" onPress={() => router.push({ pathname: '/meals/menu', params: { add: r.slug } })} />
-        <Button label={tr('rc.addToShopping')} icon="shopping-cart" variant="secondary" size="sm" onPress={() => addToShopping()} testID="add-shopping" />
       </Row>
       {!r.personal ? (
         <View style={{ gap: 4 }}>

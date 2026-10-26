@@ -14,6 +14,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, Platform, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { BarChart } from '@/components/Charts';
 import { PremiumSection } from '@/components/Premium';
 import { Banner, Button, Card, Chip, Field, IconButton, Row, SectionTitle, Text } from '@/components/ui';
@@ -94,6 +95,8 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
   const { data: allReminders } = useReminders();
   const { plan, sleeps, profile, feedback, now, loading } = data;
   const [editing, setEditing] = useState<Sleep | null>(null);
+  const feeds = useNightFeeds(child.id);
+  const night = useMemo(() => lastNightReport(sleeps, child.id, feeds, now), [sleeps, feeds, child.id, now]);
   const name = child.first_name;
   if (loading || !plan) return <Skeleton rows={3} />;
   const lines = planLines(plan, name, child.sex, now);
@@ -114,6 +117,11 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
 
   return (
     <View style={{ gap: spacing.sm }}>
+      <TodaySummary testID="sleep-today" items={[
+        { icon: 'sun', value: String(plan.napsDone ?? 0), label: (plan.napsDone ?? 0) > 1 ? 'Siestes' : 'Sieste' },
+        { icon: 'clock', value: plan.daySleepMinutes ? span(plan.daySleepMinutes) : '—', label: 'Sommeil de jour' },
+        { icon: 'moon', value: night ? String(night.wakings) : '—', label: 'Réveils (nuit)' },
+      ]} />
       <Card>
         <Text variant="heading" testID="sleep-state">{state.text}</Text>
         {plan.assumedWake ? <Text variant="caption" muted>{`Aucun réveil noté ce matin : calcul à partir de l’heure habituelle (${hm(profile?.usual_wake)}).`}</Text> : null}

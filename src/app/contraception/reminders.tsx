@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { JourneyReminders, PrivateBanner } from '@/components/Fertility';
@@ -42,6 +43,7 @@ export default function ContraceptionRemindersScreen() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const list = methods ?? [];
   const renewalDue = list.find((m) => m.active && m.renewal_due_on)?.renewal_due_on ?? null;
+  const current = list.find((m) => m.active) ?? null;
 
   function open(m?: ContraceptionMethod) {
     setErrors({});
@@ -91,7 +93,12 @@ export default function ContraceptionRemindersScreen() {
 
   const renewalHint = CONTRACEPTION_METHODS.find((m) => m.kind === f.method)?.renewalYears;
   return (
-    <Screen back title="Ma méthode et mes rappels" subtitle="Vous choisissez vos rappels et ce qui s’affiche.">
+    <Screen back title="Ma méthode et mes rappels" subtitle="Vous choisissez vos rappels et ce qui s’affiche."
+      action={{ label: 'Ajouter une méthode', icon: 'plus', onPress: () => open(), testID: 'contra-add-method' }}>
+      <TodaySummary title="Ma contraception" items={[
+        { icon: 'shield', value: current ? current.label || methodTitle(current.method) : '—', label: 'Méthode actuelle' },
+        { icon: 'refresh-cw', value: renewalDue ? formatDateFr(renewalDue, false) : '—', label: 'Renouvellement' },
+      ]} />
       <PrivateBanner>Votre contraception n’est jamais partagée avec votre foyer ni votre coparent.</PrivateBanner>
 
       <SectionTitle title="Ma contraception" />
@@ -109,7 +116,6 @@ export default function ContraceptionRemindersScreen() {
           />
         ))}
         {!list.length ? <Text muted>Aucune méthode renseignée.</Text> : null}
-        <Button label="Ajouter une méthode" icon="plus" variant="secondary" size="sm" style={{ marginTop: spacing.xs, alignSelf: 'flex-start' }} onPress={() => open()} />
       </Card>
       )}
 

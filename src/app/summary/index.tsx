@@ -6,6 +6,7 @@ import React, { useMemo, useState } from 'react';
 import { Platform, Share, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { PremiumSection } from '@/components/Premium';
 import { Banner, Button, Card, Chip, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
@@ -130,8 +131,17 @@ export default function SummaryScreen() {
 
   const locked = period !== 'day' && !summaries.premium;
   return (
-    <Screen back title="Résumé" subtitle={name ? `Pour ${name}` : undefined}>
+    <Screen back title="Résumé" subtitle={name ? `Pour ${name}` : undefined}
+      action={!locked && sections.length && (subject.type === 'child' || subject.type === 'pregnancy')
+        ? { label: Platform.OS === 'web' ? 'Télécharger en PDF' : 'Exporter en PDF', icon: 'download', disabled: busy, onPress: () => void exportPdf('pdf'), testID: 'summary-export' } : undefined}>
       <ProfileSwitcher />
+      {subject.type === 'child' || subject.type === 'pregnancy' ? (
+        <TodaySummary title={PERIOD_LABEL[period]} items={[
+          { icon: 'layers', value: String(sections.length), label: sections.length > 1 ? 'Rubriques remplies' : 'Rubrique remplie' },
+          { icon: 'list', value: String(sections.reduce((n, x) => n + x.lines.length, 0)), label: 'Éléments notés' },
+          { icon: 'download', value: exportAccess.premium ? '∞' : exportQuota.status ? String(exportQuota.status.remaining) : '—', label: 'Exports restants' },
+        ]} />
+      ) : null}
       {subject.type !== 'child' && subject.type !== 'pregnancy' ? <Banner tone="info">{'Choisissez un enfant ou votre grossesse pour voir son résumé.'}</Banner> : (
         <>
           <View testID="summary-periods"><Row wrap>
@@ -147,7 +157,6 @@ export default function SummaryScreen() {
           {!locked && sections.length ? (
             <View style={{ gap: spacing.xs }}>
               <Row wrap>
-                <Button label={Platform.OS === 'web' ? 'Télécharger en PDF' : 'Exporter en PDF'} icon="download" size="sm" loading={busy} onPress={() => exportPdf('pdf')} testID="summary-export" />
                 {Platform.OS !== 'web' ? <Button label="Partager le texte" icon="share" size="sm" variant="secondary" loading={busy} onPress={() => exportPdf('share')} /> : null}
               </Row>
               {!exportAccess.premium && exportQuota.status ? <Text variant="caption" muted testID="summary-export-left">{`${exportQuota.status.remaining} export(s) gratuit(s) restant(s) ce mois.`}</Text> : null}

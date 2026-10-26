@@ -3,7 +3,7 @@
  * fenêtre fertile estimée, symptômes, pertes, saignements, tests, journal, rendez-vous. Détail du jour + raccourcis de saisie.
  * Chaque information a une forme ET une couleur (jamais la couleur seule) et une description pour les lecteurs d'écran.
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, View } from 'react-native';
 import { router } from 'expo-router';
 import { confirm, useToast } from '@/components/Overlays';
@@ -18,6 +18,7 @@ import { ObjectiveRow, useObjective } from '@/features/cycle/Objective';
 import { ListRow } from '@/components/ui';
 import { dayActions, type DayAction } from '@/lib/domain/cycleCalendar';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Button, haptic, IconButton, Row } from '@/components/ui';
 import { Sheet } from '@/components/Overlays';
 import { useAppointments, usePeriods, useTests } from '@/lib/data/hooks';
@@ -103,10 +104,30 @@ export default function CycleCalendar() {
     d.tests ? tr('cy.cal.tests') : null, d.journal ? tr('cy.cal.journal') : null, d.appointment ? tr('cy.cal.appointment') : null,
   ].filter(Boolean).join(', ');
 
+  // « Ajouter aujourd'hui » : ouvre directement la fiche du jour (revient au mois en cours si besoin)
+  const [wantToday, setWantToday] = useState(false);
+  useEffect(() => {
+    if (!wantToday) return;
+    const cell = cells.find((x) => x.iso === today);
+    if (cell) { setDay(cell); setWantToday(false); }
+  }, [wantToday, cells, today]);
+  function openToday() {
+    haptic('selection');
+    setYm({ y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 });
+    setWantToday(true);
+  }
+  const short = (iso: string) => fmtDay(iso, { day: 'numeric', month: 'short' });
+
   const daySymptoms = day ? (symptoms ?? []).filter((s) => s.logged_on === day.iso).flatMap((s) => symptomKeysOf(s)) : [];
 
   return (
-    <Screen back title={tr('pj.cycleHub')} subtitle={tr('cy.cal.subtitle')}>
+    <Screen back title={tr('pj.cycleHub')} subtitle={tr('cy.cal.subtitle')}
+      action={{ label: tr('c3.home.add'), icon: 'plus', onPress: openToday, testID: 'cal-add-today' }}>
+      <TodaySummary title={tr('cyc.estimates')} items={[
+        { icon: 'droplet', value: next ? short(next.nextPeriod) : '—', label: tr('cy.hc.item.next') },
+        { icon: 'sun', value: next ? `${short(next.start)} – ${short(next.end)}` : '—', label: tr('cy.hc.item.fertile') },
+        { icon: 'circle', value: next ? short(next.ovulation) : '—', label: tr('cy.ring.legend.ovulation') },
+      ]} />
       <ObjectiveRow />
       <Glass>
         <Row style={{ justifyContent: 'space-between' }}>

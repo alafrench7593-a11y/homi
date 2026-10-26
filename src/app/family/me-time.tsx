@@ -5,6 +5,7 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
@@ -83,7 +84,14 @@ export default function MeTime() {
   }
 
   return (
-    <Screen back title="Temps pour soi" subtitle="Un moment à vous, sans avoir à le justifier.">
+    <Screen back title="Temps pour soi" subtitle="Un moment à vous, sans avoir à le justifier."
+      action={slots[0] ? { label: `Réserver ${hm(slots[0].starts_at)} – ${hm(new Date(Math.min(Date.parse(slots[0].ends_at), Date.parse(slots[0].starts_at) + 3600000)).toISOString())}`, icon: 'sun', disabled: save.isPending, testID: 'metime-next-slot',
+        onPress: () => reserve({ starts_at: slots[0].starts_at, ends_at: new Date(Math.min(Date.parse(slots[0].ends_at), Date.parse(slots[0].starts_at) + 3600000)).toISOString() }, false) } : undefined}>
+      <TodaySummary title="Mon temps" items={[
+        { icon: 'sun', value: String(mine.length), label: mine.length > 1 ? 'Moments réservés' : 'Moment réservé' },
+        { icon: 'clock', value: mine[0] ? hm([...mine].sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1))[0].starts_at) : '—', label: 'Prochain' },
+        { icon: 'calendar', value: String(slots.length), label: which === 'today' ? 'Créneaux libres aujourd’hui' : 'Créneaux libres demain' },
+      ]} />
       <SectionTitle title="Mes moments réservés" />
       {mine.length === 0 ? <EmptyState icon="sun" title="Aucun moment réservé" body="Même 30 minutes comptent." /> : null}
       {mine.map((s, i) => (

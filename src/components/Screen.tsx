@@ -55,18 +55,19 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   React.useEffect(() => { if (origin) takeToolOrigin(pathname); }, [origin, pathname]);
   const tool = React.useMemo(() => (forcedTool === false ? null : forcedTool ?? (title ? toolForPath(pathname) : null)), [forcedTool, pathname, title]);
   const accent = tool ? glyphColor(t, tool.theme, tool.urgent) : null;
+  const glowId = `g${React.useId().replace(/:/g, '')}`;
   const header = (title || back || right || account) && (
     <View style={[styles.header, styles.wide, { paddingTop: insets.top + spacing.xs }]}>
       {accent ? (
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
           <Svg width="100%" height="100%">
             <Defs>
-              <RadialGradient id="miniappGlow" cx="18%" cy="62%" rx="55%" ry="70%">
+              <RadialGradient id={glowId} cx="18%" cy="62%" rx="55%" ry="70%">
                 <Stop offset="0" stopColor={accent} stopOpacity={t.isDark ? 0.24 : 0.18} />
                 <Stop offset="1" stopColor={accent} stopOpacity="0" />
               </RadialGradient>
             </Defs>
-            <Rect x="0" y="0" width="100%" height="100%" fill="url(#miniappGlow)" />
+            <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${glowId})`} />
           </Svg>
         </View>
       ) : null}

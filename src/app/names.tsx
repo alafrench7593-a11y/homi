@@ -7,6 +7,7 @@ import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, IconButton, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
@@ -14,7 +15,9 @@ import { useUserId } from '@/lib/auth';
 import { backend, eq } from '@/lib/backend';
 import { ensureHousehold, useActivePregnancy, useBabyNames, useChildren, useHouseholdId, useHouseholdMembers, useInvalidate, useNameFavorites, useNameVotes } from '@/lib/data/hooks';
 import { buildNames, filterNames, fold, LETTERS, lenOf, originsOf, popOf, siblingSuggestions, twinSuggestions, type Gender, type Len, type NameEntry, type Pop } from '@/lib/domain/names';
-import { t as tr, type TKey } from '@/i18n';
+import { getLocale, t as tr, type TKey } from '@/i18n';
+
+const L = (fr: string, en: string) => (getLocale().startsWith('fr') ? fr : en);
 import { friendlyError } from '@/lib/data/hooks-settings';
 import type { NameFavorite, NameVote } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -56,6 +59,7 @@ export default function NamesScreen() {
   const [custom, setCustom] = useState('');
   const [customError, setCustomError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [moreFilters, setMoreFilters] = useState(false);
 
   const favByName = useMemo(() => new Map((favorites ?? []).map((f) => [norm(f.name), f])), [favorites]);
   const all = useMemo(() => buildNames(rawNames(), names ?? []), [names]);
@@ -181,8 +185,16 @@ export default function NamesScreen() {
     );
   };
 
+  const top = sortedFavorites[0];
+  const myVotes = (votes ?? []).filter((v) => v.user_id === userId && v.vote !== 0).length;
+  const extraActive = (len ? 1 : 0) + (pop ? 1 : 0) + (origin ? 1 : 0);
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xs }}>
+      <TodaySummary title={L('Nos prénoms', 'Our names')} items={[
+        { icon: 'heart', value: String(favorites?.length ?? 0), label: L('Favoris', 'Favourites') },
+        { icon: 'award', value: top ? top.name : '—', label: L('En tête', 'Top pick') },
+        { icon: 'thumbs-up', value: String(myVotes), label: L('Mes votes', 'My votes') },
+      ]} />
       <Segmented
         label="Affichage"
         value={view}
@@ -198,14 +210,21 @@ export default function NamesScreen() {
           </ScrollView>
           <Row wrap>
             {(['f', 'm', 'x'] as Gender[]).map((g) => <Chip key={g} label={genderLabel(g)} selected={gender === g} onPress={() => setGender(gender === g ? null : g)} />)}
-            {(['short', 'medium', 'long'] as Len[]).map((l) => <Chip key={l} tone="lavender" label={tr(`nm.len.${l}` as TKey)} selected={len === l} onPress={() => setLen(len === l ? null : l)} />)}
+            <Chip label={`${L('Plus de filtres', 'More filters')}${extraActive ? ` · ${extraActive}` : ''}`} icon={moreFilters ? 'chevron-up' : 'sliders'} selected={moreFilters || extraActive > 0} onPress={() => setMoreFilters(!moreFilters)} testID="names-more-filters" />
           </Row>
-          <Row wrap>
-            {(['very', 'common', 'uncommon', 'rare', 'old'] as Pop[]).map((p) => <Chip key={p} label={popLabel(p)} selected={pop === p} onPress={() => setPop(pop === p ? null : p)} />)}
-          </Row>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
-            {origins.map((o) => <Chip key={o} tone="lavender" label={o} selected={origin === o} onPress={() => setOrigin(origin === o ? null : o)} />)}
-          </ScrollView>
+          {moreFilters ? (
+            <>
+              <Row wrap>
+                {(['short', 'medium', 'long'] as Len[]).map((l) => <Chip key={l} tone="lavender" label={tr(`nm.len.${l}` as TKey)} selected={len === l} onPress={() => setLen(len === l ? null : l)} />)}
+              </Row>
+              <Row wrap>
+                {(['very', 'common', 'uncommon', 'rare', 'old'] as Pop[]).map((p) => <Chip key={p} label={popLabel(p)} selected={pop === p} onPress={() => setPop(pop === p ? null : p)} />)}
+              </Row>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+                {origins.map((o) => <Chip key={o} tone="lavender" label={o} selected={origin === o} onPress={() => setOrigin(origin === o ? null : o)} />)}
+              </ScrollView>
+            </>
+          ) : null}
           <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <Text variant="small" muted testID="names-count">{tr('nm.count', { count: filtered.length.toLocaleString('fr-FR') })}</Text>
             <Row gap={4}>
@@ -270,7 +289,13 @@ export default function NamesScreen() {
   const contentStyle = { paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.xs };
 
   return (
-    <Screen back title="Prénoms" subtitle="Des idées, vos coups de cœur et un vote à deux." scroll={false} padded={false}>
+    <Screen back title="Prénoms" subtitle="Idées, coups de cœur, vote à deux." scroll={false} padded={false}
+      action={(() => {
+        const q = query.trim().slice(0, 40);
+        if (explore && q && !favByName.has(norm(q))) return { label: L(`Ajouter « ${q} » aux favoris`, `Add “${q}” to favourites`), icon: 'heart' as const, onPress: () => void addFavorite(q), testID: 'names-main-action' };
+        if (view === 'favorites') return { label: L('Explorer les prénoms', 'Explore names'), icon: 'search' as const, onPress: () => setView('explore'), testID: 'names-main-action' };
+        return { label: `${L('Mes favoris', 'My favourites')}${favorites?.length ? ` (${favorites.length})` : ''}`, icon: 'heart' as const, onPress: () => setView('favorites'), testID: 'names-main-action' };
+      })()}>
       {explore ? (
         <VirtualList
           key="explore"

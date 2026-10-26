@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { HistoryHeader } from '@/components/MiniApp';
 import { Banner, Button, Field, haptic, Row } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
@@ -71,7 +72,8 @@ export default function BleedingScreen() {
   }
 
   return (
-    <Screen back title={tr('cy.bl.title')} subtitle={tr('cy.bl.subtitle')}>
+    <Screen back title={tr('cy.bl.title')} subtitle={tr('cy.bl.subtitle')}
+      action={{ label: editing ? tr('cy.period.update') : tr('common.save'), icon: 'check', onPress: () => void save(), disabled: busy, testID: 'bleeding-save' }}>
       {/* Accès immédiat à l'aide, sans rien remplir */}
       <Banner tone="danger" title={tr('cy.bl.redFlagsTitle')} action={<Button label={tr('cy.orient.call')} variant="danger" size="sm" onPress={() => router.push('/emergency')} />}>
         {tr('cy.bl.redFlags', { numbers: emergency })}
@@ -91,12 +93,11 @@ export default function BleedingScreen() {
         <Field label={tr('cy.bl.date')} value={day} onChangeText={setDay} keyboardType="numbers-and-punctuation" placeholder={tr('cy.datePh')} />
         <Field label={tr('cy.dis.note')} optional value={note} onChangeText={setNote} multiline maxLength={2000} style={{ minHeight: 72, textAlignVertical: 'top' }} />
         {err ? <Banner tone="warning">{err}</Banner> : null}
-        <Button label={editing ? tr('cy.period.update') : tr('common.save')} icon="check" loading={busy} onPress={save} full />
         {editing ? <Button label={tr('common.cancel')} variant="ghost" onPress={reset} full /> : null}
         <Ink variant="caption" soft>{tr('cy.bl.notice')}</Ink>
       </Glass>
 
-      <Ink variant="heading">{tr('cy.bl.history')}</Ink>
+      <HistoryHeader title={tr('cy.bl.history')} count={(logs ?? []).length || undefined} />
       {!(logs ?? []).length ? <Ink soft>{tr('cy.bl.empty')}</Ink> : null}
       {(logs ?? []).map((b, i) => (
         <Rise key={b.id} delay={Math.min(i, 6) * 30}>

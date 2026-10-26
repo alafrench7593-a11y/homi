@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { BarChart } from '@/components/Charts';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Button, Card, Chip, IconButton, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -98,6 +99,17 @@ export default function BottleHistory() {
           {chrono ? <BottleInstrument child={child} /> : null}
         </>
       ) : null}
+      {!isLoading && !loadError ? (() => {
+        const d = week.find((x) => x.key === day);
+        const gaps = list.map((b) => b.interval_minutes).filter((m): m is number => m != null);
+        return (
+          <TodaySummary title={dayLabel(day)} items={[
+            { icon: 'droplet', value: String(d?.count ?? 0), label: (d?.count ?? 0) > 1 ? 'Biberons' : 'Biberon' },
+            { icon: 'bar-chart-2', value: d?.consumedCount ? `${d.consumedTotal} ml` : '—', label: 'Bu (noté)' },
+            { icon: 'clock', value: gaps.length ? formatHM(Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length)) : '—', label: 'Écart moyen' },
+          ]} testID="bottle-history-today" />
+        );
+      })() : null}
       <Segmented label="Affichage" value={view} onChange={setView} options={[{ value: 'day', label: 'Jour' }, { value: 'week', label: 'Semaine' }]} />
       {isLoading ? <Skeleton kind="list" rows={4} /> : loadError ? (
         <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher l’historique" />
@@ -142,7 +154,8 @@ export default function BottleHistory() {
   );
 
   return (
-    <Screen scroll={false} padded={false} back title="Historique des biberons" subtitle={child ? `${child.first_name} · 7 derniers jours` : undefined}>
+    <Screen scroll={false} padded={false} back title="Historique des biberons" subtitle={child ? `${child.first_name} · 7 derniers jours` : undefined}
+      action={{ label: 'Enregistrer un biberon', icon: 'plus', onPress: addBottle, testID: 'bottle-history-add' }}>
       <VirtualList
         data={dayRows}
         keyExtractor={(b) => b.id}

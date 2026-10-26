@@ -6,10 +6,11 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { HistoryHeader, TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
-import { Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Button, Card, Chip, Field, haptic, ListRow, Row, Text } from '@/components/ui';
 import { backend, eq } from '@/lib/backend';
 import { useChild, useInvalidate, useRows } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -52,14 +53,25 @@ export default function ChildWellbeing() {
 
   const describe = (e: Entry) => [e.mood ? MOODS[e.mood - 1] : null, ...WELLBEING_SCALES.map((s) => (e[s.key] ? `${s.label} : ${s.levels[(e[s.key] as number) - 1].toLowerCase()}` : null)), e.unusual_event].filter(Boolean).join(' · ');
 
+  const entries = q.data ?? [];
+  const todayKey = new Date().toDateString();
+  const todayEntries = entries.filter((e) => new Date(e.at).toDateString() === todayKey);
+  const weekAgo = Date.now() - 7 * 86400_000;
+  const lastMood = todayEntries.find((e) => e.mood)?.mood;
+  const empty = !mood && !Object.keys(scales).length && !unusual.trim() && !note.trim();
+
   return (
-    <Screen back title="Humeur et bien-être" subtitle={child ? `${child.first_name} — un journal, pas un bilan` : undefined}>
-      <Card>
-        <Text weight="bold">Aujourd’hui, plutôt…</Text>
-        <Row wrap style={{ marginTop: spacing.xs }}>{MOODS.map((m, i) => <Chip key={m} label={m} selected={mood === i + 1} onPress={() => setMood(mood === i + 1 ? null : i + 1)} />)}</Row>
-      </Card>
+    <Screen back title="Humeur et bien-être" subtitle={child ? `${child.first_name} · un journal, pas un bilan` : undefined}
+      action={{ label: 'Enregistrer', icon: 'check', onPress: () => void save(), disabled: saving || empty, testID: 'wellbeing-save' }}>
+      <TodaySummary items={[
+        { icon: 'smile', value: lastMood ? MOODS[lastMood - 1] : '—', label: 'Humeur notée' },
+        { icon: 'edit-3', value: String(todayEntries.length), label: 'Notes du jour' },
+        { icon: 'calendar', value: String(entries.filter((e) => Date.parse(e.at) >= weekAgo).length), label: 'Sur 7 jours' },
+      ]} />
       <Card>
         <View style={{ gap: spacing.sm }}>
+          <Text weight="bold">Aujourd’hui, plutôt…</Text>
+          <Row wrap>{MOODS.map((m, i) => <Chip key={m} label={m} selected={mood === i + 1} onPress={() => setMood(mood === i + 1 ? null : i + 1)} />)}</Row>
           {WELLBEING_SCALES.map((s) => (
             <View key={s.key} style={{ gap: 4 }}>
               <Text weight="medium">{s.label}</Text>
@@ -68,12 +80,11 @@ export default function ChildWellbeing() {
           ))}
           <Field label="Événement inhabituel" optional value={unusual} onChangeText={setUnusual} maxLength={300} placeholder="Première journée à la crèche, vaccin, visite…" />
           <Field label="Note" optional multiline value={note} onChangeText={setNote} maxLength={2000} />
-          <Button label="Enregistrer" onPress={save} loading={saving} />
         </View>
       </Card>
       <Text variant="caption" muted>Un comportement isolé ne veut rien dire à lui seul. Si quelque chose vous inquiète ou dure, parlez-en à votre médecin.</Text>
 
-      <SectionTitle title="Notes précédentes" />
+      <HistoryHeader title="Notes précédentes" count={entries.length || undefined} />
       {q.isLoading && !q.data ? <Skeleton rows={2} /> : null}
       {q.data && !q.data.length ? <EmptyState icon="smile" title="Rien de noté pour l’instant" /> : null}
       {(q.data ?? []).map((e, i) => (

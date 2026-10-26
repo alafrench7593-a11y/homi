@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState } from '@/components/States';
 import { Button, Chip, Field, Row, SectionTitle, Text } from '@/components/ui';
 import { RecipeCard } from '@/features/recipes/RecipeCard';
@@ -25,6 +26,11 @@ export default function Pantry() {
   const toggle = (k: string) => setHave(have.includes(k) ? have.filter((x) => x !== k) : [...have, k]);
   return (
     <Screen back title={tr('rc.pantry.open')} subtitle={profile.name ? tr('rc.for', { name: profile.name }) : tr('rc.pantry.sub')}>
+      <TodaySummary title={tr('rc.pantry.open')} items={[
+        { icon: 'package', value: String(have.length), label: tr('mb.rc.have') },
+        { icon: 'book-open', value: String(results.length), label: tr('mb.rc.possible') },
+        { icon: 'check-circle', value: String(results.filter((x) => !x.missing.length).length), label: tr('mb.rc.complete') },
+      ]} />
       <Field label={tr('rc.pantry.search')} value={q} onChangeText={setQ} autoCorrect={false} testID="pantry-search" />
       {have.length ? <Row wrap>{have.map((k) => <Chip key={k} label={INGREDIENTS[k]?.name ?? k} selected onPress={() => toggle(k)} />)}<Button label={tr('rc.pantry.clear')} size="sm" variant="ghost" onPress={() => setHave([])} /></Row> : null}
       {AISLE_ORDER.map((a) => {

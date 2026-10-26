@@ -10,6 +10,7 @@ import { Animated, Easing, Image, PanResponder, View } from 'react-native';
 import { FOETUS_IMAGES } from '@/assets/foetus';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { FetusOrb } from './FetusOrb';
+import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 
 export function foetusImageFor(week: number) {
   const available = Object.keys(FOETUS_IMAGES).map(Number).sort((a, b) => a - b);
@@ -89,13 +90,69 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
       style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}
     >
       <Animated.View style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', opacity: fade, transform: [{ perspective: 800 }, { translateY }, { rotateY }] }}>
-        <Image source={source} style={{ width: size, height: size }} resizeMode="cover" />
+        {/* image agrandie : son liseré sombre d'origine sort du cercle, remplacé par le fil doré */}
+        <Image source={source} style={{ position: 'absolute', width: size * 1.22, height: size * 1.22, left: -size * 0.11, top: -size * 0.11 }} resizeMode="cover" />
+        <GoldRim size={size} still={reduce} />
         <Animated.View testID="fetus-heart" pointerEvents="none" style={{
           position: 'absolute', left: size * 0.47, top: size * 0.47, width: size * 0.07, height: size * 0.07, borderRadius: size,
           backgroundColor: 'rgba(255,120,150,0.9)', shadowColor: '#FF7896', shadowOpacity: 0.9, shadowRadius: size * 0.05, shadowOffset: { width: 0, height: 0 },
           opacity: reduce ? 0.7 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.45, 1] }),
           transform: [{ scale: reduce ? 1 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1.35] }) }],
         }} />
+      </Animated.View>
+    </View>
+  );
+}
+
+/**
+ * Bord de la bulle : un fil d'or fin (comme le logo), doublé d'un second fil plus léger, avec une étincelle
+ * de lumière qui glisse le long du fil. Immobile si les animations sont réduites.
+ */
+function GoldRim({ size, still }: { size: number; still: boolean }) {
+  const spin = useRef(new Animated.Value(0)).current;
+  const spin2 = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (still) return;
+    const a = Animated.loop(Animated.timing(spin, { toValue: 1, duration: 6000, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
+    const b = Animated.loop(Animated.timing(spin2, { toValue: 1, duration: 9500, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
+    a.start(); b.start();
+    return () => { a.stop(); b.stop(); };
+  }, [still, spin, spin2]);
+  const r = size / 2;
+  const r1 = r - 2.2;
+  const r2 = r - 6;
+  const c1 = 2 * Math.PI * r1;
+  const c2 = 2 * Math.PI * r2;
+  const full = { position: 'absolute' as const, left: 0, top: 0, width: size, height: size };
+  const rot = (v: Animated.Value, from: number, dir = 1) => ({ transform: [{ rotate: v.interpolate({ inputRange: [0, 1], outputRange: [`${from}deg`, `${from + dir * 360}deg`] }) }] });
+  return (
+    <View pointerEvents="none" style={full} testID="fetus-gold-rim">
+      {/* fils fixes : un trait d'or net et un second, plus fin et plus pâle */}
+      <Svg width={size} height={size} style={{ position: 'absolute' }}>
+        <Defs>
+          <LinearGradient id="rimGold" x1="0" y1="0" x2="1" y2="1">
+            <Stop offset="0" stopColor="#FFF6DC" />
+            <Stop offset="0.5" stopColor="#FFD58A" />
+            <Stop offset="1" stopColor="#FFE7A8" />
+          </LinearGradient>
+        </Defs>
+        <Circle cx={r} cy={r} r={r1} stroke="#FFC861" strokeOpacity={0.22} strokeWidth={9} fill="none" />
+        <Circle cx={r} cy={r} r={r1} stroke="#FFC861" strokeOpacity={0.45} strokeWidth={4.5} fill="none" />
+        <Circle cx={r} cy={r} r={r1} stroke="url(#rimGold)" strokeWidth={2} fill="none" />
+        <Circle cx={r} cy={r} r={r2} stroke="#FFE7B0" strokeOpacity={0.35} strokeWidth={0.8} fill="none" />
+      </Svg>
+      {/* étincelle qui file le long du fil (traînée qui s'estompe) */}
+      <Animated.View style={[full, { opacity: still ? 0 : 1 }, rot(spin, -90)]}>
+        <Svg width={size} height={size}>
+          <Circle cx={r} cy={r} r={r1} stroke="#FFE7B0" strokeOpacity={0.45} strokeWidth={5} strokeLinecap="round" strokeDasharray={`${c1 * 0.16} ${c1}`} fill="none" />
+          <Circle cx={r} cy={r} r={r1} stroke="#FFF6DE" strokeOpacity={0.9} strokeWidth={3} strokeLinecap="round" strokeDasharray={`${c1 * 0.07} ${c1}`} strokeDashoffset={-c1 * 0.09} fill="none" />
+          <Circle cx={r} cy={r} r={r1} stroke="#FFFFFF" strokeWidth={5} strokeLinecap="round" strokeDasharray={`${c1 * 0.012} ${c1}`} strokeDashoffset={-c1 * 0.148} fill="none" />
+        </Svg>
+      </Animated.View>
+      <Animated.View style={[full, { opacity: still ? 0 : 0.8 }, rot(spin2, 90, -1)]}>
+        <Svg width={size} height={size}>
+          <Circle cx={r} cy={r} r={r2} stroke="#FFE7B0" strokeOpacity={0.7} strokeWidth={1.4} strokeLinecap="round" strokeDasharray={`${c2 * 0.05} ${c2}`} fill="none" />
+        </Svg>
       </Animated.View>
     </View>
   );

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { ProgressBar as AnimatedProgress } from '@/components/Motion';
 import { PremiumGate } from '@/components/Family';
 import { Banner, Button, Card, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -192,19 +193,23 @@ export default function ListsScreen() {
     create('custom', clean, []);
   }
 
+  const totalItems = (allItems ?? []).filter((i) => (lists ?? []).some((l) => l.id === i.checklist_id));
+  const doneItems = totalItems.filter((i) => i.done).length;
+
   return (
-    <Screen back title="Listes de préparation" subtitle="Cochez à deux, chacun de son côté.">
-      {!premium && (
-        <Text variant="small" muted>{count} liste{count > 1 ? 's' : ''} sur {limit} dans la version gratuite.</Text>
-      )}
+    <Screen back title="Listes de préparation" subtitle="Cochez à deux, chacun de son côté."
+      action={atLimit ? undefined : { label: 'Nouvelle liste', icon: 'plus', onPress: () => setCreating(true), testID: 'lists-new' }}>
+      <TodaySummary title="Ma préparation" items={[
+        { icon: 'list', value: premium ? String(count) : `${count}/${limit}`, label: count > 1 ? 'Listes' : 'Liste' },
+        { icon: 'check-square', value: totalItems.length ? `${doneItems}/${totalItems.length}` : '—', label: 'Éléments cochés' },
+        { icon: 'pie-chart', value: totalItems.length ? `${Math.round((doneItems / totalItems.length) * 100)} %` : '—', label: 'Avancement' },
+      ]} />
       {atLimit ? (
         <View style={{ gap: spacing.sm }}>
           <Banner tone="warning" title="Limite de la version gratuite">{`Vous avez atteint ${limit} listes. Supprimez une liste terminée ou passez à Au fil de nous Premium pour en créer davantage.`}</Banner>
           <PremiumGate feature="Listes illimitées"><View /></PremiumGate>
         </View>
-      ) : (
-        <Button label="Nouvelle liste" icon="plus" onPress={() => setCreating(true)} />
-      )}
+      ) : null}
 
       {isLoading && !lists ? <Skeleton rows={3} /> : listsQ.isError && !lists ? (
         <ErrorView error={listsQ.error} onRetry={() => void listsQ.refetch()} title="Impossible d’afficher vos listes" />

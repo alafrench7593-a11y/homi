@@ -11,6 +11,7 @@ import { Linking, Platform, ScrollView, Share, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton } from '@/components/States';
 import { GlassSurface } from '@/components/Glass';
 import { PremiumSection } from '@/components/Premium';
@@ -60,21 +61,33 @@ export default function Grow() {
   const list = stepsInBand(b, cat);
   const recent = recentObservations(rows);
 
+  // Action principale : la prochaine étape de la période en cours qui n'a encore rien de noté (sinon la première)
+  const bandSteps = stepsInBand(current, null).filter((s) => stepAvailable(s, premium));
+  const nextStep = bandSteps.find((s) => !byKey.get(s.key)) ?? bandSteps[0] ?? null;
+  const observedCount = rows.filter((r) => r.status === 'observed').length;
+  const progressCount = rows.filter((r) => r.status === 'in_progress').length;
+
   function openStep(s: StepDef) {
     if (!stepAvailable(s, premium)) return access.showPreview(<Text variant="small">{tr('gr.lockedPreview', { name, step: s.title })}</Text>);
     setOpen(s);
   }
 
   return (
-    <Screen back title={tr('gr.title')} subtitle={tr('gr.subtitle', { name, age: tr('dc.age', { count: age }) })}>
+    <Screen back title={tr('gr.title')} subtitle={tr('gr.subtitle', { name, age: tr('dc.age', { count: age }) })}
+      action={nextStep ? { label: tr('mb.gr.action'), icon: 'check-circle', onPress: () => openStep(nextStep), testID: 'gr-main-action' } : undefined}>
       <View testID="grow" />
-      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(201,184,255,0.06)', 'rgba(255,214,190,0.05)'] : ['#F4EEFC', '#FFF4EA', '#FDEBE0']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2200, borderRadius: 32 }} />
+      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(201,184,255,0.06)', 'rgba(255,214,190,0.05)'] : ['rgba(255,250,246,0.18)', 'rgba(255,244,234,0.12)', 'rgba(253,235,224,0.08)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2200, borderRadius: 32 }} />
       <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.55)' : 'rgba(255,255,255,0.62)'} depth={2} radius={26} padded={spacing.md}>
         <View style={{ gap: 6 }} testID="gr-hero">
           <Text variant="heading">{tr('gr.heroTitle', { name })}</Text>
           <Text variant="small">{tr('gr.rhythm')}</Text>
         </View>
       </GlassSurface>
+      <TodaySummary title={tr('mb.gr.title')} items={[
+        { icon: 'check-circle', value: String(observedCount), label: tr('mb.gr.observed') },
+        { icon: 'loader', value: String(progressCount), label: tr('mb.gr.inProgress') },
+        { icon: 'calendar', value: tr(`gr.band.${current.key}` as TKey), label: tr('mb.gr.band') },
+      ]} />
 
       <SectionTitle title={tr('gr.recent')} />
       {recent.length ? (

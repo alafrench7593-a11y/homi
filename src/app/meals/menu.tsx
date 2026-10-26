@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, IconButton, Row, SectionTitle, Text } from '@/components/ui';
@@ -106,7 +107,15 @@ export default function MenuScreen() {
   }
 
   return (
-    <Screen back title={aud === 'pregnancy' ? tr('rc.menu.pregnancy') : tr('rc.menu.open')} subtitle={profile.name ? tr('rc.for', { name: profile.name }) : undefined}>
+    <Screen back title={aud === 'pregnancy' ? tr('rc.menu.pregnancy') : tr('rc.menu.open')} subtitle={profile.name ? tr('rc.for', { name: profile.name }) : undefined}
+      action={slots
+        ? { label: tr('rc.menu.toShopping'), icon: 'shopping-cart', onPress: () => void makeList(), disabled: createList.isPending, testID: 'menu-to-shopping' }
+        : { label: tr('rc.menu.generate'), icon: 'refresh-cw', onPress: generate, testID: 'menu-generate' }}>
+      <TodaySummary title={tr('rc.menu.title')} items={[
+        { icon: 'calendar', value: String(days), label: tr('mb.rc.days') },
+        { icon: 'coffee', value: slots ? String(slots.length) : String(days * meals.length), label: tr('mb.rc.planned') },
+        { icon: 'users', value: String(servings), label: tr('mb.rc.portions') },
+      ]} />
       {aud === 'pregnancy' ? (
         <View style={{ gap: 4 }}>
           <Text variant="small" muted>{tr('rc.menu.trimesterHint')}</Text>
@@ -127,7 +136,7 @@ export default function MenuScreen() {
       </Row>
       <ToggleRow label={tr('rc.menu.useHave', { count: pantry.length })} value={useHave} onChange={setUseHave} />
       {members.length ? <ToggleRow label={tr('rc.menu.withKids', { names: members.map((m) => m.name).join(', ') })} value={withKids} onChange={setWithKids} /> : null}
-      <Button label={slots ? tr('rc.menu.regenerate') : tr('rc.menu.generate')} icon="refresh-cw" onPress={generate} full testID="menu-generate" />
+      {slots ? <Button label={tr('rc.menu.regenerate')} icon="refresh-cw" variant="secondary" onPress={generate} full testID="menu-generate" /> : null}
       {aud === 'pregnancy' ? <Banner tone="info">{tr('rc.menu.pregnancyNote')}</Banner> : null}
 
       {adding ? <Banner tone="info" title={tr('rc.menu.adding')}>{tr('rc.menu.addingBody', { title: (all ?? []).find((x) => x.slug === adding)?.title ?? '' })}</Banner> : null}
@@ -168,7 +177,6 @@ export default function MenuScreen() {
       {slots ? (
         <View style={{ gap: spacing.xs }}>
           <Button label={tr('rc.menu.save')} icon="save" variant="secondary" onPress={() => persist()} loading={save.isPending} full testID="menu-save" />
-          <Button label={tr('rc.menu.toShopping')} icon="shopping-cart" onPress={() => makeList()} loading={createList.isPending} full testID="menu-to-shopping" />
           <Button label={tr('rc.new.open')} icon="plus" variant="ghost" onPress={() => router.push('/meals/new')} full />
         </View>
       ) : null}

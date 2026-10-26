@@ -221,6 +221,9 @@ export function VideoBackdrop({ fallback }: { fallback?: React.ReactNode }) {
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       {fallback}
+      {/* tant que la vidéo charge (ou si elle ne peut pas être lue) : image du nouveau fond, jamais l'ancien ciel */}
+      <Image source={(clips[Math.floor(stillSeed * clips.length)] ?? clips[0]).poster} resizeMode="cover" style={StyleSheet.absoluteFill} accessibilityIgnoresInvertColors testID="bg-video-poster" />
+      {ready ? null : veil}
       <Animated.View style={[StyleSheet.absoluteFill, { opacity }]} testID={night ? 'bg-video-night' : 'bg-video-day'}>
         <VideoLayers key={night ? 'night' : 'day'} clips={clips} playing={foreground} onReady={onReady} />
         {/* Voile de lisibilité : clair et chaleureux le jour, sombre le soir */}

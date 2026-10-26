@@ -5,6 +5,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -61,7 +62,15 @@ export default function Routines() {
 
   const list = q.data ?? [];
   return (
-    <Screen back title="Routines" subtitle="Ce qui revient souvent, préparé une fois pour toutes.">
+    <Screen back title="Routines" subtitle="Ce qui revient souvent, préparé une fois pour toutes."
+      action={{ label: 'Nouvelle routine', icon: 'plus', onPress: () => setDraft({ title: '', kind: 'custom', items: '', assignee: null }), testID: 'routines-new' }}>
+      {q.data ? (
+        <TodaySummary title="Mes routines" items={[
+          { icon: 'list', value: String(list.length), label: list.length > 1 ? 'Routines' : 'Routine' },
+          { icon: 'check-square', value: String(list.reduce((n, r) => n + r.items.length, 0)), label: 'Étapes préparées' },
+          { icon: 'user-check', value: String(list.filter((r) => r.default_assignee).length), label: 'Déjà confiées' },
+        ]} />
+      ) : null}
       {q.isLoading && !q.data ? <Skeleton rows={2} /> : null}
       {q.data && !list.length ? <EmptyState icon="list" title="Aucune routine" body="Partez d’un modèle ci-dessous, puis adaptez-le." /> : null}
       {list.map((r, i) => (

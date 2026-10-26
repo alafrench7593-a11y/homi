@@ -4,6 +4,7 @@ import { ScrollView, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Card, Chip, Field, Icon, ListRow, SectionTitle, Text } from '@/components/ui';
 import { EmptyStateCard } from '@/components/ui-extra';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
@@ -53,6 +54,13 @@ export default function Library() {
 
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xs }}>
+      {articles ? (
+        <TodaySummary title="En bref" items={[
+          { icon: 'book-open', value: String(articles.length), label: 'Articles' },
+          { icon: 'heart', value: String(forYou.length), label: 'Pour vous en ce moment' },
+          { icon: 'grid', value: categories ? String(categories.length) : '—', label: 'Thèmes' },
+        ]} />
+      ) : null}
       <Field label="Rechercher" placeholder="Allaitement, péridurale, sommeil…" value={q} onChangeText={setQ} returnKeyType="search" />
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
@@ -118,7 +126,8 @@ export default function Library() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Screen back title="Bibliothèque" subtitle="Des informations claires, sourcées et datées." scroll={false} padded={false}>
+      <Screen back title="Bibliothèque" subtitle="Des informations claires, sourcées et datées." scroll={false} padded={false}
+        action={{ label: 'Poser une question', icon: 'message-circle', onPress: () => router.push('/assistant/chat' as never), testID: 'library-ask' }}>
         <VirtualList
           data={loading || failed ? [] : list}
           keyExtractor={(a) => a.id}

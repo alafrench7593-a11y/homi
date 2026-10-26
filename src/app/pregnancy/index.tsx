@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
+import { GlassSurface } from '@/components/Glass';
+import { useTheme } from '@/theme/ThemeProvider';
 import { FetusArt } from '@/components/FetusArt';
 import { WeeksRing } from '@/components/DayClock';
 import { ProgressRing } from '@/components/Charts';
@@ -46,7 +49,7 @@ function rubrics(showWeight: boolean, docs: number): Rubric[] {
     { key: 'supplement', icon: 'bell', title: 'Complément prescrit', subtitle: 'Fer, acide folique… seulement s’il a été prescrit ou conseillé', to: { pathname: '/settings/reminders', params: { new: 'supplement' } } },
   ];
 }
-const GOLD = '#FF8FB1';
+const GOLD = '#E7C08F';
 const TEXT = '#F2DFC1';
 const MUTED = '#B8A88F';
 
@@ -79,6 +82,7 @@ function BabyNotes({ baby }: { baby: ExpectedBaby }) {
 }
 
 export default function PregnancyUniverse() {
+  const th = useTheme();
   const pregnanciesQ = usePregnancies();
   // Seule la grossesse d'un parcours « grossesse » actif s'affiche (jamais une ancienne grossesse)
   const js = useJourneyState();
@@ -112,8 +116,11 @@ export default function PregnancyUniverse() {
   const n = Math.max(1, babies?.length ?? 1);
   const multiple = pregnancy.multiplicity !== 'single' && pregnancy.multiplicity !== 'unknown';
 
+  const nextAppt = (appts ?? []).filter((x) => x.pregnancy_id === pregnancy.id && Date.parse(x.starts_at) >= Date.now()).sort((x, y) => x.starts_at.localeCompare(y.starts_at))[0];
+
   return (
-    <Screen back stars>
+    <Screen back stars
+      action={{ label: 'Comment je me sens', icon: 'feather', onPress: () => { setSubject({ type: 'pregnancy', id: pregnancy.id }); router.push('/pregnancy/feel'); }, testID: 'preg-main-action' }}>
       <View style={{ backgroundColor: 'rgba(28,17,40,0.72)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.14)', borderRadius: 32, padding: spacing.lg, gap: spacing.sm, overflow: 'hidden' }}>
         <Aurora mood="night" intensity={1.2} />
         <Text variant="small" color={GOLD} center>{multiplicityLabel(pregnancy.multiplicity)}</Text>
@@ -144,14 +151,14 @@ export default function PregnancyUniverse() {
       {week !== null && <Button label="Revenir à ma semaine" variant="ghost" size="sm" onPress={() => setWeek(null)} />}
 
       <Row style={{ gap: spacing.md }}>
-        <ProgressRing progress={p.progress} size={112} label={`Progression de la grossesse : ${Math.round(p.progress * 100)} %`}>
+        <ProgressRing progress={p.progress} size={96} label={`Progression de la grossesse : ${Math.round(p.progress * 100)} %`}>
           <Text variant="heading">{Math.round(p.progress * 100)}%</Text>
         </ProgressRing>
-        <View style={{ flex: 1, gap: 4 }}>
-          <Text variant="caption" muted>Terme prévu</Text>
-          <Text variant="heading">{formatDateFr(pregnancy.due_date)}</Text>
-          <Text>{countdownLabel(p.daysToDue)}</Text>
-          <Text variant="caption" muted>{pregnancy.due_date_source === 'lmp' ? 'Estimé depuis la date des dernières règles' : 'Date indiquée par vous'}</Text>
+        <View style={{ flex: 1 }}>
+          <TodaySummary title="Terme prévu" items={[
+            { icon: 'calendar', value: formatDateFr(pregnancy.due_date, false), label: pregnancy.due_date_source === 'lmp' ? 'Estimé (dernières règles)' : 'Date indiquée par vous' },
+            { icon: 'clock', value: p.daysToDue > 0 ? `J-${p.daysToDue}` : '—', label: countdownLabel(p.daysToDue) },
+          ]} />
         </View>
       </Row>
 
@@ -161,33 +168,39 @@ export default function PregnancyUniverse() {
       <Card tone="soft">{info.mother.map((m) => <Row key={m} style={{ alignItems: 'flex-start', paddingVertical: 4 }}><Icon name="heart" size={14} /><Text style={{ flex: 1 }}>{m}</Text></Row>)}</Card>
       <Banner tone="warning">{'Saignements, douleurs inhabituelles, fièvre, maux de tête intenses, troubles de la vue, bébé qui bouge moins : contactez sans attendre votre maternité ou le 15.'}</Banner>
 
-      {(() => {
-        const next = (appts ?? []).filter((x) => x.pregnancy_id === pregnancy.id && Date.parse(x.starts_at) >= Date.now()).sort((x, y) => x.starts_at.localeCompare(y.starts_at))[0];
-        return (
-          <Card onPress={() => router.push({ pathname: '/appointments', params: { for: 'pregnancy' } })} accessibilityLabel="Prochain rendez-vous de grossesse">
-            <View testID="preg-next-appt"><ListRow icon="calendar" title={next ? next.title : 'Aucun rendez-vous à venir'} subtitle={next ? new Date(next.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : 'Ajouter un rendez-vous ou un examen'} /></View>
-          </Card>
-        );
-      })()}
+      <Card onPress={() => router.push({ pathname: '/appointments', params: { for: 'pregnancy' } })} accessibilityLabel="Prochain rendez-vous de grossesse">
+        <View testID="preg-next-appt"><ListRow icon="calendar" title={nextAppt ? nextAppt.title : 'Aucun rendez-vous à venir'} subtitle={nextAppt ? new Date(nextAppt.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : 'Ajouter un rendez-vous ou un examen'} /></View>
+      </Card>
 
       <SectionTitle title="Ma grossesse" />
-      <Card>
+      <View style={{ gap: spacing.sm }}>
         {(() => {
           const list = rubrics(!profile?.hide_weight_module, docs?.length ?? 0);
           const shown = simple && !allRubrics ? list.slice(0, 6) : list;
           return (
             <>
-              {shown.map((r) => (
-                <View key={r.key} testID={`preg-rubric-${r.key}`}>
-                  <ListRow icon={r.icon} title={r.title} subtitle={r.subtitle} onPress={() => { if (r.to === '#week') { setWeek(null); return; } setSubject({ type: 'pregnancy', id: pregnancy.id }); router.push(r.to as never); }} />
-                </View>
-              ))}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+                {shown.map((r) => (
+                  <View key={r.key} testID={`preg-rubric-${r.key}`} style={{ flexBasis: '47%', flexGrow: 1 }}>
+                    <Tappable accessibilityRole="button" accessibilityLabel={r.subtitle ? `${r.title}. ${r.subtitle}` : r.title}
+                      onPress={() => { if (r.to === '#week') { setWeek(null); return; } setSubject({ type: 'pregnancy', id: pregnancy.id }); router.push(r.to as never); }}>
+                      <GlassSurface fill={th.colors.surface} depth={1} radius={20}>
+                        <View style={{ padding: spacing.md, gap: 6, minHeight: 92 }}>
+                          <Icon name={r.icon} size={20} color={th.colors.primary} />
+                          <Text weight="bold" numberOfLines={2}>{r.title}</Text>
+                          {r.subtitle ? <Text variant="caption" muted numberOfLines={1}>{r.subtitle}</Text> : null}
+                        </View>
+                      </GlassSurface>
+                    </Tappable>
+                  </View>
+                ))}
+              </View>
               {simple && list.length > 6 ? <Button label={allRubrics ? 'Voir moins' : `Voir plus (${list.length - 6})`} variant="ghost" size="sm" onPress={() => setAllRubrics((v) => !v)} testID="preg-rubrics-more" /> : null}
             </>
           );
         })()}
         <ListRow icon="edit-3" title="Modifier la grossesse" subtitle="Date du terme, nombre de bébés" onPress={() => router.push('/pregnancy/edit')} />
-      </Card>
+      </View>
 
       {multiple && (
         <>

@@ -17,6 +17,7 @@ import { EmptyState, Skeleton } from '@/components/States';
 import { GlassSurface } from '@/components/Glass';
 import { PremiumSection } from '@/components/Premium';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
+import { TodaySummary } from '@/components/MiniApp';
 import { Banner, Button, Chip, Field, Icon, IconButton, Row, SectionTitle, Text, haptic } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { RecipeArt } from '@/features/recipes/RecipeArt';
@@ -131,6 +132,11 @@ export default function Discoveries() {
         </View>
       </GlassSurface>
 
+      <TodaySummary title={tr('dc.history')} testID="dc-summary" items={[
+        { icon: 'check-circle', value: String(FOODS.filter((f) => displayState(byKey.get(f.key), f, age) === 'discovered').length), label: tr('dc.filter.discovered') },
+        { icon: 'star', value: String(week.length), label: tr('dc.week') },
+        { icon: 'alert-triangle', value: String(entries.filter((e) => e.reaction).length), label: tr('dc.filter.reaction') },
+      ]} />
       <Button label={tr('dc.react')} icon="alert-triangle" variant="secondary" onPress={() => setReacting(true)} testID="dc-react" />
 
       {/* Cette semaine */}

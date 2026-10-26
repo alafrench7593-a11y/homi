@@ -6,6 +6,9 @@ import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
+import { GlassSurface } from '@/components/Glass';
+import { Tappable } from '@/components/Tappable';
 import { EmergencyList } from '@/components/Family';
 import { Banner, Card, Icon, type IconName, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useAppointments, useArticles, useDocuments, useMoods } from '@/lib/data/hooks';
@@ -62,21 +65,31 @@ export default function MeSpace() {
   ];
 
   return (
-    <Screen back title="Moi aussi" subtitle="Un espace pour vous, sans pression ni objectif.">
-      <Card tone="soft">
-        <Row style={{ alignItems: 'flex-start' }}>
-          <Icon name="heart" color={t.colors.heart} />
-          <Text style={{ flex: 1 }}>
-            Prendre soin de vous fait aussi partie de prendre soin de votre famille. Tout ici est facultatif : prenez ce qui vous aide, laissez le reste.
-          </Text>
-        </Row>
-      </Card>
+    <Screen back title="Moi aussi" subtitle="Un espace pour vous, sans pression."
+      action={{ label: 'Comment je me sens', icon: 'heart', onPress: () => router.push('/me/mood'), testID: 'me-main-action' }}>
+      <TodaySummary title="Pour moi" items={[
+        { icon: 'moon', value: lastNightMinutes != null ? formatDuration(lastNightMinutes) : '—', label: lastNight ? nightLabel(lastNight.log_date) : 'Dernière nuit' },
+        { icon: 'heart', value: lastMood ? new Date(lastMood.checked_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '—', label: 'Dernier bilan' },
+        { icon: 'calendar', value: nextAppt ? new Date(nextAppt.starts_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '—', label: 'Prochain rendez-vous' },
+      ]} />
 
-      <Card>
+      <Text variant="small" muted>Prendre soin de vous fait aussi partie de prendre soin de votre famille. Tout est facultatif.</Text>
+
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
         {links.map((l) => (
-          <ListRow key={l.to} icon={l.icon} title={l.title} subtitle={l.subtitle} onPress={() => router.push(l.to as never)} />
+          <View key={l.to} style={{ flexBasis: '47%', flexGrow: 1 }}>
+            <Tappable accessibilityRole="button" accessibilityLabel={`${l.title}. ${l.subtitle}`} onPress={() => router.push(l.to as never)}>
+              <GlassSurface fill={t.colors.surface} depth={1} radius={20}>
+                <View style={{ padding: spacing.md, gap: 6, minHeight: 96 }}>
+                  <Icon name={l.icon} size={20} color={t.colors.primary} />
+                  <Text weight="bold" numberOfLines={1}>{l.title}</Text>
+                  <Text variant="caption" muted numberOfLines={2}>{l.subtitle}</Text>
+                </View>
+              </GlassSurface>
+            </Tappable>
+          </View>
         ))}
-      </Card>
+      </View>
 
       <Card onPress={() => router.push('/postpartum/partner')} accessibilityLabel="Espace conjoint : soutenir après la naissance">
         <ListRow icon="users" title="Vous êtes le conjoint ou un proche ?" subtitle="Comprendre le post-partum et savoir comment aider" />

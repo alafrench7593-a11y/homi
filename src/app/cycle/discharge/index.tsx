@@ -3,8 +3,9 @@ import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { HistoryHeader } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Button, Row } from '@/components/ui';
+import { Row } from '@/components/ui';
 import { useDischargeLogs } from '@/lib/data/hooks-cycle2';
 import { useDischargeLabels } from '@/features/cycle/discharge';
 import { CycleIcon, Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
@@ -19,12 +20,13 @@ export default function DischargeList() {
   const logs = q.data ?? [];
   return (
     <Screen back title={tr('cy.dis.title')} subtitle={tr('cy.dis.subtitle')}
-      footer={<Button label={tr('cy.dis.new')} icon="plus" onPress={() => router.push('/cycle/discharge/new' as never)} full />}>
+      action={{ label: tr('cy.dis.new'), icon: 'plus', onPress: () => router.push('/cycle/discharge/new' as never), testID: 'discharge-new' }}>
       <Glass onPress={() => router.push('/cycle/guides' as never)} accessibilityLabel={tr('cy.nav.guides')}>
         <Row><CycleIcon name="guide" color={c.mauve} /><Ink weight="bold" style={{ flex: 1 }}>{tr('cy.nav.guides')}</Ink></Row>
         <Ink variant="small" soft>{tr('cy.dis.guidesHint')}</Ink>
       </Glass>
       <Ink variant="caption" soft>{tr('cy.private')}</Ink>
+      <HistoryHeader title={tr('cy.nav.discharge')} count={logs.length || undefined} />
       {q.isLoading && !q.data ? <Skeleton rows={3} /> : q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : null}
       {!q.isLoading && !logs.length ? <EmptyState icon="droplet" title={tr('cy.dis.empty')} body={tr('cy.dis.emptyBody')} /> : null}
       {logs.map((l, i) => (

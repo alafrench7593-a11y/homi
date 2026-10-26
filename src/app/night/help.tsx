@@ -10,6 +10,7 @@ import React, { useMemo, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { MiniBars } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, Row, SectionTitle, Text } from '@/components/ui';
@@ -65,11 +66,9 @@ export default function NightHelp() {
   }
 
   return (
-    <Screen back title={tr('nh.title')} subtitle={tr('nh.subtitle', { name: child.first_name })}>
+    <Screen back title={tr('nh.title')} subtitle={tr('nh.subtitle', { name: child.first_name })}
+      action={{ label: tr('nh.openNightMode'), icon: 'moon', onPress: () => router.push(`/night?child=${child.id}`), testID: 'night-open-mode' }}>
       <Banner tone="info">{tr('nh.intro')}</Banner>
-
-      {/* Noter la nuit */}
-      <Button label={tr('nh.openNightMode')} icon="moon" full onPress={() => router.push(`/night?child=${child.id}`)} testID="night-open-mode" />
 
       {/* Résumé simple */}
       <SectionTitle title={tr('nh.summary')} />
@@ -87,6 +86,11 @@ export default function NightHelp() {
           </View>
         </Card>
       )}
+      {nights.some((n) => n.hasData) ? (
+        <MiniBars testID="night-week"
+          values={[...nights].reverse().map((n) => Math.round((n.sleepMinutes / 60) * 10) / 10)}
+          labels={[...nights].reverse().map((n) => formatDate(`${n.evening}T12:00:00`, { weekday: 'narrow' }))} />
+      ) : null}
       {nights.slice(1).some((n) => n.hasData) ? (
         <Card>
           <Text variant="caption" weight="bold" muted>{tr('nh.previous')}</Text>

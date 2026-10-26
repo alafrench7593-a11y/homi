@@ -7,6 +7,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { PremiumGate } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, Row, SectionTitle, Text } from '@/components/ui';
@@ -95,11 +96,15 @@ export default function DocumentsHome() {
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xs }}>
       {/* Actions principales */}
+      {!loading && !failed ? (
+        <TodaySummary title={tr('docs.title')} items={[
+          { icon: 'folder', value: String((docs ?? []).filter((d) => !d.archived).length), label: tr('docs.section.library') },
+          { icon: 'alert-circle', value: String(toVerify.length), label: tr('docs.section.toVerify') },
+          { icon: 'star', value: String(favorites.length), label: tr('docs.section.favorites') },
+        ]} />
+      ) : null}
       <Appear kind="pop" delay={0.05}>
-        <View style={{ gap: spacing.xs }}>
-          <Button label={tr('docs.scan')} icon="camera" size="lg" onPress={() => { haptic('light'); router.push('/documents/scan?from=camera'); }} disabled={atLimit} full />
-          <Button label={tr('docs.import')} icon="upload" variant="secondary" onPress={() => setImportOpen(true)} disabled={atLimit} full />
-        </View>
+        <Button label={tr('docs.import')} icon="upload" variant="secondary" onPress={() => setImportOpen(true)} disabled={atLimit} full />
       </Appear>
       <Row>
         <View style={{ flex: 1 }}><Card onPress={() => router.push('/documents/book')} accessibilityLabel={tr('docs.book.title')}>
@@ -175,6 +180,7 @@ export default function DocumentsHome() {
       subtitle={tr('docs.subtitle')}
       scroll={false}
       padded={false}
+      action={selecting ? undefined : { label: tr('docs.scan'), icon: 'camera', onPress: () => { haptic('light'); router.push('/documents/scan?from=camera'); }, disabled: atLimit, testID: 'docs-scan' }}
       footer={selecting ? (
         <Row>
           <Button label={tr('common.cancel')} variant="secondary" onPress={() => { setSelecting(false); setSelected([]); }} style={{ flex: 1 }} />

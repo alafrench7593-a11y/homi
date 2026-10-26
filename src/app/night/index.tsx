@@ -203,6 +203,18 @@ export default function NightMode() {
               )}
             </View>
 
+            {/* Cette nuit en un coup d'œil (saisies des dernières 24 h) */}
+            <View testID="night-counts" style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.lg }} accessibilityRole="summary"
+              accessibilityLabel={`Dernières 24 heures : ${feeds?.length ?? 0} tétées, ${diapers?.length ?? 0} couches`}>
+              {[{ icon: 'droplet' as const, n: feeds?.length ?? 0, l: 'tétées' }, { icon: 'wind' as const, n: diapers?.length ?? 0, l: 'couches' }].map((x) => (
+                <Row key={x.l} gap={6}>
+                  <Icon name={x.icon} color={GOLD} size={16} />
+                  <Text weight="bold" color={TEXT}>{x.n}</Text>
+                  <Text variant="small" color={MUTED}>{x.l} · 24 h</Text>
+                </Row>
+              ))}
+            </View>
+
             {feedStart && (
               <Text center color={GOLD} accessibilityLiveRegion="polite">Tétée {feedStart.side === 'left' ? 'gauche' : 'droite'} en cours depuis {timeAgo(feedStart.at).replace('il y a ', '')} — touchez à nouveau pour terminer</Text>
             )}

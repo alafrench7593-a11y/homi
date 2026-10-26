@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -48,6 +49,7 @@ export default function HealthTracking() {
   const [note, setNote] = useState('');
   const [source, setSource] = useState<Entry['source']>('parent');
   const [busy, setBusy] = useState(false);
+  const [pick, setPick] = useState(false);
 
   async function saveTracker() {
     if (!child || !editing) return;
@@ -103,8 +105,25 @@ export default function HealthTracking() {
   }
 
   const trackers = trackersQ.data ?? [];
+  const activeTrackers = trackers.filter((x) => x.active !== false);
+  const allEntries = entriesQ.data ?? [];
+  const todayKey = new Date().toDateString();
+  const todayCount = allEntries.filter((e) => new Date(e.at).toDateString() === todayKey).length;
+  const lastEntry = allEntries[0];
+  // Action principale : noter tout de suite (un seul suivi), choisir le suivi (plusieurs), ou en créer un (aucun)
+  function quickNote() {
+    if (activeTrackers.length === 1) setEntryFor(activeTrackers[0]);
+    else if (activeTrackers.length > 1) setPick(true);
+    else setEditing({ kind: 'observation', label: '', contexts: [] });
+  }
   return (
-    <Screen back title="Suivi de santé" subtitle={child ? `${child.first_name} — pour préparer les consultations` : undefined}>
+    <Screen back title="Suivi de santé" subtitle={child ? `${child.first_name} · pour préparer les consultations` : undefined}
+      action={{ label: activeTrackers.length ? 'Noter maintenant' : 'Créer un suivi', icon: 'plus', onPress: quickNote, testID: 'health-main-action' }}>
+      <TodaySummary items={[
+        { icon: 'activity', value: String(activeTrackers.length), label: 'Suivis' },
+        { icon: 'edit-3', value: String(todayCount), label: 'Notes du jour' },
+        { icon: 'clock', value: lastEntry ? new Date(lastEntry.at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '—', label: 'Dernière note' },
+      ]} />
       <Banner tone="info" icon="info">{'Cet espace aide à noter et à retrouver des informations. Il ne pose aucun diagnostic, ne donne aucun score et n’indique jamais de dose ni de traitement. Les repères affichés sont uniquement ceux du plan écrit par le professionnel qui suit votre enfant.'}</Banner>
 
       {trackersQ.isLoading && !trackersQ.data ? <Skeleton kind="card" rows={2} /> : null}
@@ -139,6 +158,12 @@ export default function HealthTracking() {
         {TEMPLATES.map((m) => <Chip key={m.label} label={m.label} icon="plus" onPress={() => setEditing({ kind: m.kind, label: m.label, unit: m.unit ?? null, contexts: m.contexts })} />)}
         <Chip label="Suivi vide" icon="plus" onPress={() => setEditing({ kind: 'observation', label: '', contexts: [] })} />
       </Row>
+
+      <Sheet visible={pick} onClose={() => setPick(false)} title="Que voulez-vous noter ?">
+        <View style={{ gap: spacing.xs }}>
+          {activeTrackers.map((x) => <ListRow key={x.id} icon={x.kind === 'measure' ? 'activity' : 'edit-3'} title={x.label} subtitle={x.kind === 'measure' ? 'Mesure' : 'Observation'} onPress={() => { setPick(false); setEntryFor(x); }} />)}
+        </View>
+      </Sheet>
 
       <Sheet visible={!!editing} onClose={() => setEditing(null)} title={editing?.id ? 'Modifier le suivi' : 'Nouveau suivi'}>
         {editing ? (

@@ -103,11 +103,11 @@ export default function EditPregnancy() {
   }
 
   return (
-    <Screen back title="Modifier la grossesse" subtitle={`${multiplicityLabel(pregnancy.multiplicity)} · terme actuel le ${formatDateFr(pregnancy.due_date)}`}>
+    <Screen back title="Modifier la grossesse" subtitle={`${multiplicityLabel(pregnancy.multiplicity)} · terme actuel le ${formatDateFr(pregnancy.due_date)}`}
+      action={{ label: 'Enregistrer les modifications', icon: 'check', onPress: () => void save(), disabled: saving, testID: 'preg-edit-save' }}>
       {error ? <Banner tone="danger">{error}</Banner> : null}
       <PregnancyForm value={draft} onChange={setDraft} errors={errors} />
       <Text variant="caption" muted>La date retenue reste celle donnée par votre sage-femme ou votre médecin : l’application l’affiche sans l’interpréter.</Text>
-      <Button label="Enregistrer les modifications" size="lg" loading={saving} onPress={save} testID="preg-edit-save" />
 
       <SectionTitle title={tr('pj.end.title')} />
       <Card tone="soft">

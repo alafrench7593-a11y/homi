@@ -7,6 +7,7 @@ import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Appear } from '@/components/Appear';
 import { Banner, Button, Card, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
@@ -33,6 +34,7 @@ export default function FertilityScreen() {
   const cycleQ = useCycleEstimates(4);
   const { entries, est, windows } = cycleQ;
   const [saving, setSaving] = useState(false);
+  const [showTiming, setShowTiming] = useState(false);
   const { prefs } = useCyclePreferences();
   const today = todayISO();
   const day = currentCycleDay(entries, today);
@@ -64,7 +66,13 @@ export default function FertilityScreen() {
   }
 
   return (
-    <Screen back account title="Essayer de concevoir" subtitle="Des repères pour votre cycle, à votre rythme.">
+    <Screen back account title="Essayer de concevoir" subtitle="Des repères pour votre cycle, à votre rythme."
+      action={{ label: 'Mes règles ont commencé aujourd’hui', icon: 'droplet', onPress: () => void periodToday(), disabled: saving, testID: 'ttc-period-today' }}>
+      <TodaySummary items={[
+        { icon: 'sun', value: day != null ? String(day) : '—', label: 'Jour du cycle' },
+        { icon: 'heart', value: w ? `${fmt(w.start)} – ${fmt(w.end)}` : '—', label: 'Fenêtre fertile (estimation)' },
+        { icon: 'circle', value: w ? fmt(w.ovulation) : '—', label: 'Ovulation (estimation)' },
+      ]} />
       <Banner tone="warning" title="Estimations, sans garantie">{TTC_DISCLAIMER}</Banner>
 
       {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (
@@ -92,7 +100,6 @@ export default function FertilityScreen() {
           ) : (
             <Text muted style={{ marginTop: spacing.xs }}>Notez la date de vos dernières règles pour afficher des estimations.</Text>
           )}
-          <Button label="Mes règles ont commencé aujourd’hui" icon="droplet" variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} loading={saving} onPress={periodToday} />
         </Card>
       </Appear>
       )}
@@ -123,12 +130,15 @@ export default function FertilityScreen() {
 
       <SectionTitle title="Quand des rapports peuvent augmenter les chances" />
       <Card tone="lavender">
-        {TIMING_INFO.map((i) => (
+        {TIMING_INFO.slice(0, showTiming ? undefined : 1).map((i) => (
           <View key={i.title} style={{ gap: 2, paddingVertical: 6 }}>
             <Text weight="bold">{i.title}</Text>
             <Text variant="small">{i.text}</Text>
           </View>
         ))}
+        {TIMING_INFO.length > 1 ? (
+          <Button label={showTiming ? 'Afficher moins' : `Voir les ${TIMING_INFO.length - 1} autres repères`} size="sm" variant="ghost" icon={showTiming ? 'chevron-up' : 'chevron-down'} onPress={() => setShowTiming((v) => !v)} style={{ alignSelf: 'flex-start' }} />
+        ) : null}
       </Card>
 
       <SectionTitle title="Préparer une consultation" />

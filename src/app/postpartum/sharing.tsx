@@ -5,6 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
@@ -68,7 +69,13 @@ export default function PostpartumSharing() {
   const sharing = anySharing(s);
 
   return (
-    <Screen back title="Ce que je partage" subtitle={household ? `Avec le foyer « ${household.name} »` : 'Avec votre foyer'}>
+    <Screen back title="Ce que je partage" subtitle={household ? `Avec le foyer « ${household.name} »` : 'Avec votre foyer'}
+      action={sharing ? { label: 'Publier pour mon foyer', icon: 'send', onPress: () => void publish(value), disabled: update.isPending, testID: 'pp-share-publish' } : undefined}>
+      <TodaySummary title="Mon partage" items={[
+        { icon: sharing ? 'eye' : 'eye-off', value: sharing ? 'Actif' : 'Privé', label: 'État' },
+        { icon: 'sliders', value: `${SHARE_OPTIONS.filter((o) => !!s[o.key]).length}/${SHARE_OPTIONS.length}`, label: 'Éléments autorisés' },
+        { icon: 'send', value: mine.data ? 'Oui' : '—', label: 'Publié au foyer' },
+      ]} />
       <Banner tone="info" icon="lock">
         {'Par défaut, rien n’est partagé. Vos points du jour, vos notes, vos contacts et vos questions restent toujours privés : même un membre du foyer avec tous les droits ne peut pas les voir. Il n’existe aucun accès caché.'}
       </Banner>
@@ -113,7 +120,6 @@ export default function PostpartumSharing() {
                 </View>
               ) : null}
               {s.share_summary ? <Field label="Mon résumé" optional multiline value={value.summary ?? ''} onChangeText={(x) => setValue({ ...value, summary: x })} maxLength={500} hint="Écrit par vous, partagé tel quel." /> : null}
-              <Button label="Publier pour mon foyer" icon="send" onPress={() => publish(value)} loading={update.isPending} />
             </View>
           </Card>
 

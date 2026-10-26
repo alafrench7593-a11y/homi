@@ -7,6 +7,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton } from '@/components/States';
 import { ProgressBar, StaggerItem } from '@/components/Motion';
 import { Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -33,6 +34,12 @@ export default function WeeklyReview() {
 
   return (
     <Screen back title="Bilan de la semaine" subtitle="Ce qui a été fait, ce qui arrive. Sans classement.">
+      <TodaySummary title="Cette semaine" items={[
+        { icon: 'check-square', value: String(r.doneCount), label: 'Tâches faites' },
+        { icon: 'repeat', value: String(r.requests.total), label: 'Demandes' },
+        { icon: 'moon', value: String(r.nightsCount), label: 'Nuits de relais' },
+        { icon: 'sun', value: String(r.restCount), label: 'Moments pour soi' },
+      ]} />
       {tasksQ.isLoading && !tasksQ.data ? <Skeleton kind="card" rows={2} /> : null}
       <Card>
         <Text weight="bold">{r.doneCount ? `${r.doneCount} tâche${r.doneCount > 1 ? 's' : ''} faite${r.doneCount > 1 ? 's' : ''} ces 7 derniers jours` : 'Aucune tâche cochée ces 7 derniers jours'}</Text>

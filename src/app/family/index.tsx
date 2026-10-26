@@ -7,6 +7,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { Banner, Button, Card, Chip, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -58,7 +59,21 @@ export default function FamilyHome() {
   }
 
   return (
-    <Screen back title="Organisation familiale" subtitle="Partager la charge, à plusieurs." right={<IconButton icon="plus" label="Nouvelle tâche" onPress={() => setCreating(true)} />}>
+    <Screen back title="Organisation familiale" subtitle="Partager la charge, à plusieurs." right={<IconButton icon="plus" label="Nouvelle tâche" onPress={() => setCreating(true)} />}
+      action={{ label: 'Ajouter une tâche', icon: 'plus', onPress: () => setCreating(true), testID: 'family-main-action' }}>
+      {(() => {
+        const todo = tasks.filter((x) => x.status === 'todo');
+        const dueToday = todo.filter((x) => !x.due_at || sameLocalDay(x.due_at, day) || Date.parse(x.due_at) < Date.now()).length;
+        const doneToday = tasks.filter((x) => x.status === 'done' && x.done_at && sameLocalDay(x.done_at, day)).length;
+        return tasksQ.data ? (
+          <TodaySummary items={[
+            { icon: 'check-square', value: String(dueToday), label: 'À faire' },
+            { icon: 'user-x', value: String(todo.filter((x) => !x.assignee_id).length), label: 'Sans responsable' },
+            { icon: 'check', value: String(doneToday), label: 'Faites' },
+            { icon: 'message-circle', value: String(open.length), label: 'Demandes ouvertes' },
+          ]} />
+        ) : null;
+      })()}
       <Card tone="soft" onPress={() => router.push('/family/difficult')} accessibilityLabel="Journée difficile : simplifier l’application">
         <ListRow icon="wind" title="Journée difficile ?" subtitle="Ne garder que l’essentiel et demander de l’aide en un geste" />
       </Card>

@@ -7,6 +7,7 @@ import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Appear } from '@/components/Appear';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -41,7 +42,13 @@ export default function ContraceptionScreen() {
   }, [t]);
 
   return (
-    <Screen back account title="Gérer ma contraception" subtitle="Prises, oublis, incidents et rappels.">
+    <Screen back account title="Gérer ma contraception" subtitle="Prises, oublis, incidents et rappels."
+      action={{ label: 'Ma méthode et mes rappels', icon: 'bell', onPress: () => router.push('/contraception/reminders' as never), testID: 'contra-reminders' }}>
+      <TodaySummary items={[
+        { icon: 'sun', value: day != null ? String(day) : '—', label: 'Jour du cycle' },
+        { icon: 'shield', value: active[0] ? active[0].label || methodTitle(active[0].method) : '—', label: 'Ma méthode' },
+        { icon: 'calendar', value: w ? fmt(w.nextPeriod) : '—', label: 'Prochaines règles (estimation)' },
+      ]} />
       <Banner tone="warning" title="Une grossesse reste possible à tout moment">{AVOID_DISCLAIMER}</Banner>
 
       {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (

@@ -6,6 +6,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { HistoryHeader } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
@@ -40,7 +41,8 @@ export default function PostpartumHistory() {
   }
 
   return (
-    <Screen back title="Mon évolution" subtitle="Ce que vous avez noté, sans jugement.">
+    <Screen back title="Mon évolution" subtitle="Ce que vous avez noté, sans jugement."
+      action={{ label: list.some((c) => c.checkin_date === today) ? 'Relire mon point du jour' : 'Faire le point', icon: 'feather', onPress: () => router.push('/postpartum/checkin'), testID: 'pp-history-action' }}>
       {q.isLoading && !q.data ? <Skeleton kind="card" rows={3} /> : null}
       {q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : null}
       {q.data && list.length === 0 ? (
@@ -70,7 +72,7 @@ export default function PostpartumHistory() {
             </>
           ) : null}
 
-          <SectionTitle title="Mes points du jour" />
+          <HistoryHeader title="Mes points du jour" count={list.length} />
           {list.map((c, i) => (
             <StaggerItem key={c.id} index={i}>
               <Card>

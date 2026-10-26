@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton } from '@/components/States';
 import { ConsultationChecklist } from '@/components/Fertility';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -107,7 +108,13 @@ export default function PostpartumSupport() {
   };
 
   return (
-    <Screen back title="Mon plan de soutien" subtitle="À préparer avant ou après la naissance. Privé.">
+    <Screen back title="Mon plan de soutien" subtitle="Avant ou après la naissance. Privé."
+      action={{ label: 'Ajouter une personne de confiance', icon: 'user-plus', onPress: () => { setErrors({}); setDraft({ kind: 'trusted', name: '', relation: '', phone: '', email: '', note: '' }); }, testID: 'pp-support-add' }}>
+      <TodaySummary title="Mon plan" items={[
+        { icon: 'users', value: String(contacts.filter((c) => c.kind === 'trusted').length), label: 'Personnes de confiance' },
+        { icon: 'briefcase', value: String(contacts.filter((c) => c.kind === 'professional').length), label: 'Professionnels' },
+        { icon: 'calendar', value: String(myAppointments.length), label: 'Rendez-vous à venir' },
+      ]} />
       <Banner tone="info">{'Ce plan vous sert à vous. Rien n’est envoyé à personne : c’est vous qui appelez, écrivez ou partagez si vous le souhaitez.'}</Banner>
 
       <SectionTitle title="Mes personnes de confiance" />

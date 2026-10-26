@@ -40,7 +40,7 @@ export function TodaySummary({ title = "Aujourd'hui", items, testID }: { title?:
                   <Icon name={it.icon} size={15} color={accent} />
                 </View>
               ) : null}
-              <Text weight="bold" style={{ fontSize: 24, lineHeight: 29 }} numberOfLines={1} adjustsFontSizeToFit>{it.value}</Text>
+              <Text weight="bold" style={valueStyle(it.value, items.length)} numberOfLines={2}>{it.value}</Text>
               <Text variant="caption" muted numberOfLines={2}>{it.label}</Text>
             </View>
           </GlassSurface>
@@ -48,6 +48,13 @@ export function TodaySummary({ title = "Aujourd'hui", items, testID }: { title?:
       </View>
     </View>
   );
+}
+
+/** Taille de la valeur selon sa longueur : jamais coupée par « … » (le web ne réduit pas le texte tout seul). */
+export function valueStyle(value: string, count: number) {
+  const n = value.length + (count > 2 ? 2 : 0);
+  const size = n <= 5 ? 24 : n <= 7 ? 20 : n <= 10 ? 17 : 15;
+  return { fontSize: size, lineHeight: Math.round(size * 1.2) };
 }
 
 /** Petite tendance en barres : la dernière barre (aujourd'hui) est mise en avant. */

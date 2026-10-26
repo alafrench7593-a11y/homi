@@ -11,6 +11,7 @@ import React, { useMemo, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, Row, SectionTitle, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
@@ -49,19 +50,19 @@ export default function PregnancyCalendar() {
   const name = (k: EchoKey) => tr(`care.cal.${k}` as TKey);
 
   return (
-    <Screen back title={tr('care.cal.title')} subtitle={tr('care.cal.subtitle')}>
-      <Card>
-        <View testID="preg-cal-summary" style={{ gap: 4 }}>
-          <Row wrap style={{ gap: spacing.md }}>
-            <Stat label={tr('care.cal.sa.label')} value={s.extraDays ? tr('care.cal.saPlus', { w: s.weeksSA, d: s.extraDays }) : tr('care.cal.sa', { w: s.weeksSA })} />
-            <Stat label={tr('care.cal.sg.label')} value={tr('care.cal.sg', { w: s.weeksSG })} />
-            <Stat label={tr('care.cal.trimester.label')} value={tr('care.cal.trimester', { count: s.trimester })} />
-          </Row>
-          <Text variant="small">{tr('care.cal.due', { date: formatDate(`${s.due}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Text>
-          <Text variant="caption" muted>{tr(`care.cal.source.${pregnancy.due_date_source}` as TKey)}</Text>
-          <Button label={tr('care.cal.fixDate')} size="sm" variant="ghost" icon="edit-3" onPress={() => router.push('/pregnancy/edit')} style={{ alignSelf: 'flex-start' }} testID="preg-cal-fix" />
-        </View>
-      </Card>
+    <Screen back title={tr('care.cal.title')} subtitle={tr('care.cal.subtitle')}
+      action={{ label: tr('care.cal.addTeam'), icon: 'plus', onPress: () => setEditing({ key: null, appt: null, window: null }), testID: 'preg-cal-add-team' }}>
+      <View testID="preg-cal-summary" style={{ gap: spacing.xs }}>
+        <TodaySummary title={tr('care.cal.due', { date: formatDate(`${s.due}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' }) })} items={[
+          { icon: 'moon', label: tr('care.cal.sa.label'), value: s.extraDays ? tr('care.cal.saPlus', { w: s.weeksSA, d: s.extraDays }) : tr('care.cal.sa', { w: s.weeksSA }) },
+          { icon: 'sun', label: tr('care.cal.sg.label'), value: tr('care.cal.sg', { w: s.weeksSG }) },
+          { icon: 'layers', label: tr('care.cal.trimester.label'), value: tr('care.cal.trimester', { count: s.trimester }) },
+        ]} />
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text variant="caption" muted style={{ flex: 1 }}>{tr(`care.cal.source.${pregnancy.due_date_source}` as TKey)}</Text>
+          <Button label={tr('care.cal.fixDate')} size="sm" variant="ghost" icon="edit-3" onPress={() => router.push('/pregnancy/edit')} testID="preg-cal-fix" />
+        </Row>
+      </View>
 
       {multiple ? <View testID="preg-cal-multiple"><Banner tone="info" title={tr('care.cal.multipleTitle')}>{tr('care.cal.multipleBody')}</Banner></View> : null}
       {moved.map((m) => {
@@ -124,7 +125,6 @@ export default function PregnancyCalendar() {
           <Card><Text weight="bold">{a.title}</Text><Text variant="small" muted>{appointmentWhen(a)}{a.location_label ? ` · ${a.location_label}` : ''}</Text></Card>
         </Tappable>
       ))}
-      <Button label={tr('care.cal.addTeam')} icon="plus" variant="secondary" onPress={() => setEditing({ key: null, appt: null, window: null })} testID="preg-cal-add-team" />
 
       <View style={{ gap: 2 }}>
         <Text variant="caption" muted>{tr('care.cal.sources')}</Text>
@@ -162,14 +162,5 @@ export default function PregnancyCalendar() {
       />
       <DocumentsSheet visible={!!docsFor} onClose={() => setDocsFor(null)} target={docsFor ? { table: 'appointments', id: docsFor.id } : null} selected={docsFor?.document_ids ?? []} pregnancyId={pregnancy.id} />
     </Screen>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={{ minWidth: 90 }}>
-      <Text variant="caption" muted>{label}</Text>
-      <Text variant="heading">{value}</Text>
-    </View>
   );
 }

@@ -9,7 +9,7 @@ import { Screen } from '@/components/Screen';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { useToast } from '@/components/Overlays';
 import { EmptyState } from '@/components/States';
-import { Banner, Button, Card, Chip, Field, ListRow, Row, Text } from '@/components/ui';
+import { Banner, Card, Chip, Field, ListRow, Row, Text } from '@/components/ui';
 import { textureLabel } from '@/features/recipes/labels';
 import { useScope } from '@/lib/data/hooks-scope';
 import { useChildFoodSettings, useIntroducedFoods, useSaveChildFoodSettings } from '@/lib/data/hooks-recipes';
@@ -37,7 +37,12 @@ export default function FoodSettings() {
   }, [s.data]);
   if (!child) return <Screen back title={tr('rc.settings.title')}><EmptyState icon="smile" title={tr('rc.settings.noChild')} /></Screen>;
   return (
-    <Screen back title={tr('rc.settings.open', { name: child.first_name })}>
+    <Screen back title={tr('rc.settings.open', { name: child.first_name })} action={{ label: tr('common.save'), icon: 'check', disabled: save.isPending, testID: 'food-settings-save', onPress: async () => {
+      try {
+        await save.mutateAsync({ exists: !!s.data, child_id: child.id, household_id: child.household_id, texture, vegetarian: veg, no_pork: noPork, refused, pro_advice: advice.trim() || null, allergen_advice_needed: needAdvice });
+        toast(tr('nd.saved'), 'success');
+      } catch (e) { toast(friendlyError(e), 'error'); }
+    } }}>
       <Banner tone="info">{tr('rc.settings.intro')}</Banner>
       <Text weight="bold">{tr('rc.settings.texture')}</Text>
       <Row wrap>{TEXTURES.map((x) => <Chip key={x} label={textureLabel(x)} selected={texture === x} onPress={() => setTexture(texture === x ? null : x)} />)}</Row>
@@ -54,12 +59,6 @@ export default function FoodSettings() {
       ))}</Row>
       <Text variant="caption" muted>{tr('rc.settings.refusedHint')}</Text>
       <Field label={tr('rc.settings.advice')} optional value={advice} onChangeText={setAdvice} multiline maxLength={2000} />
-      <Button label={tr('common.save')} loading={save.isPending} testID="food-settings-save" onPress={async () => {
-        try {
-          await save.mutateAsync({ exists: !!s.data, child_id: child.id, household_id: child.household_id, texture, vegetarian: veg, no_pork: noPork, refused, pro_advice: advice.trim() || null, allergen_advice_needed: needAdvice });
-          toast(tr('nd.saved'), 'success');
-        } catch (e) { toast(friendlyError(e), 'error'); }
-      }} />
     </Screen>
   );
 }

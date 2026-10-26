@@ -49,6 +49,8 @@ export default function OrgEmergency() {
         <Text weight="bold" color={t.colors.primary}>← Retour</Text>
       </Tappable>
       <Text variant="title" accessibilityRole="header">Respirez. Une chose à la fois.</Text>
+      {/* urgence vitale toujours en premier, sans animation */}
+      <Big icon="alert-octagon" label="Urgence médicale ou danger : 15 · 112 · 3114" tone="danger" onPress={() => router.push('/emergency')} />
 
       <Big icon="users" label="Demander un relais" onPress={() => send('relay', 'Demande de relais envoyée.')} />
       <Big icon="life-buoy" label="J’ai besoin d’aide aujourd’hui" onPress={() => send('help_today', 'Demande d’aide envoyée.')} />
@@ -64,7 +66,6 @@ export default function OrgEmergency() {
       <Big icon="heart" label="Infos indispensables des enfants" onPress={() => setShowChild((v) => !v)} />
       {showChild ? <ChildEssentials large /> : null}
 
-      <Big icon="alert-octagon" label="Urgence médicale ou danger : 15 · 112 · 3114" tone="danger" onPress={() => router.push('/emergency')} />
       <Text variant="small" muted>Ce mode aide à s’organiser. Il ne remplace pas les services d’urgence médicale ou psychologique.</Text>
     </ScrollView>
   );

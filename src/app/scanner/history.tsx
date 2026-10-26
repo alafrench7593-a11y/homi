@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { confirm, useToast } from '@/components/Overlays';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Button, Chip, IconButton, Row, Text } from '@/components/ui';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -60,7 +61,8 @@ export default function ScanHistoryScreen() {
   };
 
   return (
-    <Screen back scroll={false} padded={false} title="Historique du scanner" subtitle="Vos analyses restent privées : elles ne sont pas partagées avec le foyer.">
+    <Screen back scroll={false} padded={false} title="Historique du scanner" subtitle="Vos analyses restent privées : elles ne sont pas partagées avec le foyer."
+      action={{ label: 'Scanner un produit', icon: 'camera', onPress: () => router.push('/scanner/product'), testID: 'scan-history-new' }}>
       <VirtualList
         data={isLoading || failed ? [] : rows}
         keyExtractor={(s) => s.id}
@@ -75,6 +77,13 @@ export default function ScanHistoryScreen() {
         )}
         ListHeaderComponent={(
           <View style={{ gap: spacing.md, marginBottom: spacing.xxs }}>
+            {data ? (
+              <TodaySummary title="En bref" items={[
+                { icon: 'maximize', value: String(data.filter((x) => x.kind === 'product').length), label: 'Produits' },
+                { icon: 'search', value: String(data.filter((x) => x.kind === 'food').length), label: 'Aliments' },
+                { icon: 'star', value: String(data.filter((x) => favorites.has(x.id)).length), label: 'Favoris' },
+              ]} />
+            ) : null}
             <Row wrap>{FILTERS.map((f) => <Chip key={f.value} label={f.label} selected={filter === f.value} onPress={() => setFilter(f.value)} />)}</Row>
             <View testID="scan-profile-filter"><Row wrap>{PROFILES.map((p) => <Chip key={p.key} icon={profAccess.premium ? undefined : 'star'} label={p.label} selected={profile === p.key}
               onPress={() => { if (profile === p.key) { setProfile(null); return; } if (profAccess.require(<Text variant="small">{`${(data ?? []).filter((x) => p.value.includes(String((x as { target_profile?: string }).target_profile ?? ''))).length} analyse(s) faites pour « ${p.label} » dans votre historique.`}</Text>)) setProfile(p.key); }} />)}</Row></View>

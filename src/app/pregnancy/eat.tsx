@@ -12,6 +12,7 @@ import React, { useMemo, useState } from 'react';
 import { Linking, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Icon, Row, SectionTitle, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
@@ -23,7 +24,9 @@ import { filterRecipes } from '@/lib/recipes/engine';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import type { Allergen, Meal, Recipe, Tag } from '@/lib/recipes/types';
 import { EAT_AVOID, EAT_HYGIENE, EAT_INTERESTING, NOT_ADVICE, NUTRIENTS, NUTRITION_SOURCES, SUPPLEMENT_NOTICE, type FoodSection } from '@/content/pregnancyCare';
-import { formatDate, t as tr, type TKey } from '@/i18n';
+import { formatDate, getLocale, t as tr, type TKey } from '@/i18n';
+
+const L = (fr: string, en: string) => (getLocale().startsWith('fr') ? fr : en);
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
@@ -45,6 +48,7 @@ export default function EatWellPregnant() {
   const [noPork, setNoPork] = useState(false);
   const [allergens, setAllergens] = useState<Allergen[]>([]);
   const [open, setOpen] = useState<string | null>(null);
+  const [filters, setFilters] = useState(false);
 
   const list = useMemo<Recipe[]>(() => {
     if (!all) return [];
@@ -58,9 +62,14 @@ export default function EatWellPregnant() {
   }, [all, trimester, meal, need, vegetarian, noPork, allergens, fav.slugs]);
 
   return (
-    <Screen back title={tr('care.eat.title')} subtitle={tr('care.eat.subtitle', { n: current })}>
+    <Screen back title={tr('care.eat.title')} subtitle={tr('care.eat.subtitle', { n: current })}
+      action={{ label: tr('care.eat.shopping'), icon: 'shopping-cart', onPress: () => router.push('/meals/shopping'), testID: 'eat-shopping' }}>
       <View testID="eat-pregnant" />
-      <Banner tone="info" icon="shield">{SUPPLEMENT_NOTICE}</Banner>
+      <TodaySummary items={[
+        { icon: 'layers', value: tr('care.cal.trimester', { count: current }), label: L('Mon trimestre', 'My trimester') },
+        { icon: 'coffee', value: all ? String(list.length) : '—', label: L('Idées adaptées', 'Matching ideas') },
+        { icon: 'heart', value: String(fav.slugs.length), label: L('Favoris', 'Favourites') },
+      ]} />
 
       <SectionTitle title={tr('care.eat.ideas')} />
       <Row wrap>
@@ -71,16 +80,24 @@ export default function EatWellPregnant() {
       <Row wrap>
         {(Object.keys(NEED_TAG) as Need[]).map((n) => <Chip key={n} label={tr(`care.eat.need.${n}` as TKey)} selected={need === n} onPress={() => setNeed(need === n ? null : n)} testID={`eat-need-${n}`} />)}
       </Row>
-      <Text variant="label">{tr('care.eat.trimester')}</Text>
-      <Row wrap>
-        {([1, 2, 3] as const).map((n) => <Chip key={n} label={tr('care.cal.trimester', { count: n }) + (n === current ? ` · ${tr('care.eat.now')}` : '')} selected={trimester === n} onPress={() => setTrimester(n)} testID={`eat-trimester-${n}`} />)}
-      </Row>
-      <Text variant="label">{tr('care.eat.prefs')}</Text>
-      <Row wrap>
-        <Chip label={tr('rc.tag.vegetarian')} selected={vegetarian} onPress={() => setVegetarian(!vegetarian)} testID="eat-veg" />
-        <Chip label={tr('care.eat.noPork')} selected={noPork} onPress={() => setNoPork(!noPork)} />
-        {COMMON_ALLERGENS.map((a) => <Chip key={a} label={tr('care.eat.without', { a: allergenLabel(a).toLowerCase() })} selected={allergens.includes(a)} onPress={() => setAllergens(allergens.includes(a) ? allergens.filter((x) => x !== a) : [...allergens, a])} testID={`eat-al-${a}`} />)}
-      </Row>
+      {(() => {
+        const active = (trimester !== current ? 1 : 0) + (vegetarian ? 1 : 0) + (noPork ? 1 : 0) + allergens.length;
+        return <Chip label={`${L('Trimestre, préférences, allergènes', 'Trimester, preferences, allergens')}${active ? ` · ${active}` : ''}`} icon={filters ? 'chevron-up' : 'sliders'} selected={filters || active > 0} onPress={() => setFilters(!filters)} testID="eat-filters" />;
+      })()}
+      {filters ? (
+        <>
+          <Text variant="label">{tr('care.eat.trimester')}</Text>
+          <Row wrap>
+            {([1, 2, 3] as const).map((n) => <Chip key={n} label={tr('care.cal.trimester', { count: n }) + (n === current ? ` · ${tr('care.eat.now')}` : '')} selected={trimester === n} onPress={() => setTrimester(n)} testID={`eat-trimester-${n}`} />)}
+          </Row>
+          <Text variant="label">{tr('care.eat.prefs')}</Text>
+          <Row wrap>
+            <Chip label={tr('rc.tag.vegetarian')} selected={vegetarian} onPress={() => setVegetarian(!vegetarian)} testID="eat-veg" />
+            <Chip label={tr('care.eat.noPork')} selected={noPork} onPress={() => setNoPork(!noPork)} />
+            {COMMON_ALLERGENS.map((a) => <Chip key={a} label={tr('care.eat.without', { a: allergenLabel(a).toLowerCase() })} selected={allergens.includes(a)} onPress={() => setAllergens(allergens.includes(a) ? allergens.filter((x) => x !== a) : [...allergens, a])} testID={`eat-al-${a}`} />)}
+          </Row>
+        </>
+      ) : null}
       {loading && !all ? <Skeleton kind="card" rows={1} /> : list.length ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm, paddingRight: spacing.md }} testID="eat-list">
           {list.slice(0, 12).map((r) => <View key={r.id} style={{ width: 240 }}><RecipeCard r={r} favorite={fav.slugs.includes(r.slug)} /></View>)}
@@ -88,21 +105,24 @@ export default function EatWellPregnant() {
       ) : <Text muted testID="eat-empty">{tr(meal === 'fav' ? 'care.eat.noFav' : 'care.eat.none')}</Text>}
       <Row wrap>
         <Button label={tr('care.eat.allRecipes')} size="sm" variant="secondary" icon="book-open" onPress={() => router.push('/meals')} />
-        <Button label={tr('care.eat.shopping')} size="sm" variant="secondary" icon="shopping-cart" onPress={() => router.push('/meals/shopping')} testID="eat-shopping" />
         <Button label={tr('care.eat.menu')} size="sm" variant="ghost" icon="calendar" onPress={() => router.push('/meals/menu')} />
       </Row>
 
       <SectionTitle title={tr('care.eat.nutrients')} />
-      <View style={{ gap: spacing.xs }} testID="eat-nutrients">
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm, paddingRight: spacing.md }} testID="eat-nutrients">
         {NUTRIENTS.map((n) => (
-          <Card key={n.key}>
-            <Text weight="bold">{n.title}</Text>
-            <Text variant="small">{n.why}</Text>
-            <Text variant="small"><Text variant="small" weight="bold">{tr('care.eat.where')} </Text>{n.where}</Text>
-            <Text variant="small" muted>{n.professional}</Text>
-          </Card>
+          <View key={n.key} style={{ width: 260 }}>
+            <Card>
+              <Text weight="bold">{n.title}</Text>
+              <Text variant="small">{n.why}</Text>
+              <Text variant="small"><Text variant="small" weight="bold">{tr('care.eat.where')} </Text>{n.where}</Text>
+              <Text variant="small" muted>{n.professional}</Text>
+            </Card>
+          </View>
         ))}
-      </View>
+      </ScrollView>
+
+      <Banner tone="info" icon="shield">{SUPPLEMENT_NOTICE}</Banner>
 
       {[EAT_INTERESTING, EAT_AVOID, EAT_HYGIENE].map((s) => <Section key={s.key} s={s} open={open === s.key} onToggle={() => setOpen(open === s.key ? null : s.key)} />)}
 

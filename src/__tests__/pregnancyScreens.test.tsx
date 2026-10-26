@@ -91,6 +91,7 @@ describe(`grossesse (${Platform.OS})`, () => {
     expect(ids(r, 'feel-sym-')).not.toContain('feel-sym-movements'); // 9 SA
     await press(r, 'feel-sym-nausea');
     await press(r, 'feel-intensity-1');
+    await press(r, 'feel-more'); // heure, fréquence, note : repliées par défaut
     await type(r, 'feel-time', '07:30');
     await press(r, 'feel-freq-several');
     await type(r, 'feel-note', 'Le matin surtout');

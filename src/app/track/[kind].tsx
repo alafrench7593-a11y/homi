@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary, type SummaryItem } from '@/components/MiniApp';
 import { EmptyState } from '@/components/States';
 import { Banner, Button, Chip, Field, haptic, Row, Segmented, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
@@ -19,8 +20,8 @@ import { getPermission, notificationsSupported } from '@/lib/notifications';
 import { askNotificationPermission } from '@/lib/notificationPrompt';
 import type { BottleRecord } from '@/lib/types-bottle';
 import { uuid } from '@/lib/uuid';
-import { LOG_TABLE, type Bottle, type Breastfeed, type Diaper, type LogKind, type Meal, type Observation, type Pumping, type Sleep } from '@/lib/types';
-import { formatDuration } from '@/lib/domain/dates';
+import { LOG_TABLE, LOG_TIME_COL, type Bottle, type Breastfeed, type Diaper, type LogKind, type Meal, type Observation, type Pumping, type Sleep } from '@/lib/types';
+import { formatDuration, formatTime, todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
@@ -34,6 +35,39 @@ const OBS_KINDS: { value: Observation['kind']; label: string }[] = [
   { value: 'diarrhea', label: 'Diarrhée' }, { value: 'abdominal_pain', label: 'Douleur au ventre' }, { value: 'bloating', label: 'Ballonnements' },
   { value: 'crying', label: 'Pleurs inhabituels' }, { value: 'symptom', label: 'Autre symptôme' }, { value: 'medication', label: 'Traitement prescrit' }, { value: 'note', label: 'Note' },
 ];
+
+/**
+ * Résumé du jour pour ce type de saisie et cet enfant : combien de fois, à quelle heure la dernière, et un total utile
+ * (lait bu, temps de sommeil, selles…). Uniquement des saisies réelles ; « — » quand rien n'est noté aujourd'hui.
+ */
+function TrackToday({ kind, childId }: { kind: LogKind; childId: string }) {
+  const q = useLogs<Record<string, unknown>>(kind, childId, 1);
+  const today = todayISO();
+  const col = LOG_TIME_COL[kind];
+  const rows = (q.data ?? []).filter((r) => typeof r[col] === 'string' && todayISO(new Date(r[col] as string)) === today);
+  const last = rows[0] ? formatTime(rows[0][col] as string) : '—';
+  const items: SummaryItem[] = [
+    { icon: KIND_META[kind].icon, value: String(rows.length), label: rows.length > 1 ? 'Saisies' : 'Saisie', testID: 'track-today-count' },
+    { icon: 'clock', value: last, label: 'Dernière' },
+  ];
+  const minutes = (a: unknown, b: unknown) => (typeof a === 'string' && typeof b === 'string' ? Math.max(0, (Date.parse(b) - Date.parse(a)) / 60000) : 0);
+  if (kind === 'bottle') {
+    const ml = rows.reduce((n, r) => n + (typeof r.consumed_ml === 'number' ? r.consumed_ml : 0), 0);
+    items.push({ icon: 'droplet', value: ml ? `${ml} ml` : '—', label: 'Bu (noté)' });
+  } else if (kind === 'sleep') {
+    const m = rows.reduce((n, r) => n + minutes(r.started_at, r.ended_at), 0);
+    items.push({ icon: 'moon', value: m ? formatDuration(m) : '—', label: 'Sommeil' });
+  } else if (kind === 'breastfeed') {
+    const m = rows.reduce((n, r) => n + minutes(r.started_at, r.ended_at), 0);
+    items.push({ icon: 'watch', value: m ? formatDuration(m) : '—', label: 'Durée totale' });
+  } else if (kind === 'diaper') {
+    items.push({ icon: 'circle', value: String(rows.filter((r) => r.stool).length), label: 'Avec selles' });
+  } else if (kind === 'pumping') {
+    const ml = rows.reduce((n, r) => n + (typeof r.amount_ml === 'number' ? r.amount_ml : 0), 0);
+    items.push({ icon: 'droplet', value: ml ? `${ml} ml` : '—', label: 'Tiré' });
+  }
+  return <TodaySummary items={items} testID="track-today" />;
+}
 
 export default function TrackEntryRoute() {
   const params = useLocalSearchParams<{ kind: string }>();
@@ -317,6 +351,7 @@ function TrackEntry() {
           <Text weight="bold">{child.first_name}</Text>
         </View>
       ) : null}
+      {!editing ? <TrackToday kind={kind} childId={childId} /> : null}
       {error ? <Banner tone="danger">{error}</Banner> : null}
 
       {kind === 'bottle' && (

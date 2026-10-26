@@ -8,6 +8,7 @@ import { Share, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { LineChart } from '@/components/Charts';
 import { PremiumGate } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
@@ -48,6 +49,7 @@ export default function WeightScreen() {
   const [note, setNote] = useState('');
   const [pro, setPro] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showNotes, setShowNotes] = useState(false);
 
   async function add() {
     const iso = frToISO(date);
@@ -63,6 +65,7 @@ export default function WeightScreen() {
       setKg('');
       setNote('');
       setPro('');
+      setShowNotes(false);
       toast('Mesure enregistrée.');
     });
   }
@@ -107,9 +110,11 @@ export default function WeightScreen() {
   const loading = weightsQ.isLoading && !weights;
   const failed = weightsQ.isError && !weights;
   const history = (weights ?? []).slice().reverse();
+  const last = history[0];
 
   return (
-    <Screen back title="Mon poids" subtitle="Un suivi pour vous, à votre rythme." scroll={false} padded={false}>
+    <Screen back title="Mon poids" subtitle="À votre rythme, sans objectif." scroll={false} padded={false}
+      action={{ label: 'Enregistrer la mesure', icon: 'check', onPress: () => void add(), disabled: busy === 'add', testID: 'weight-main-action' }}>
       <VirtualList
         data={loading || failed ? [] : history}
         keyExtractor={(w) => w.id}
@@ -117,31 +122,42 @@ export default function WeightScreen() {
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
         ListHeaderComponent={(
           <View style={{ gap: spacing.md }}>
-            <Banner tone="info">{'Il n’existe pas de « bon » poids à atteindre ici. Les évolutions sont propres à chaque personne et à chaque grossesse (y compris multiple). Seul votre professionnel de santé peut vous donner une indication adaptée.'}</Banner>
+            <TodaySummary title="Mon suivi" items={[
+              { icon: 'trending-up', value: last ? `${String(last.weight_kg).replace('.', ',')} kg` : '—', label: 'Dernière mesure' },
+              { icon: 'calendar', value: last ? formatDateFr(last.measured_on, false) : '—', label: 'Notée le' },
+              { icon: 'list', value: String(history.length), label: history.length > 1 ? 'Mesures' : 'Mesure' },
+            ]} />
+
+            <Card>
+              <Text weight="bold">Nouvelle mesure</Text>
+              <Row style={{ alignItems: 'flex-start' }}>
+                <View style={{ flex: 3 }}><Field label="Date" value={date} onChangeText={setDate} error={errors.date} keyboardType="numbers-and-punctuation" /></View>
+                <View style={{ flex: 2 }}><Field label="Poids" value={kg} onChangeText={setKg} keyboardType="decimal-pad" suffix="kg" error={errors.kg} /></View>
+              </Row>
+              {showNotes || note || pro ? (
+                <>
+                  <Field label="Note personnelle" optional value={note} onChangeText={setNote} />
+                  <Field label="Indication donnée par mon professionnel" optional value={pro} onChangeText={setPro} hint="Par exemple ce qu’il vous a dit lors du dernier rendez-vous." />
+                </>
+              ) : (
+                <Button label="Ajouter une note" size="sm" variant="ghost" icon="edit-3" style={{ alignSelf: 'flex-start' }} onPress={() => setShowNotes(true)} />
+              )}
+            </Card>
+
             {loading ? <Skeleton kind="card" rows={1} /> : failed ? (
               <ErrorView error={weightsQ.error} onRetry={() => void weightsQ.refetch()} title="Impossible d’afficher vos mesures" />
             ) : points.length >= 2 ? (
               <Card><Text weight="bold">Mes mesures</Text><LineChart points={points} unit="kg" accessibilityLabel="Évolution de mes mesures de poids" formatX={(x) => new Date(x).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} /></Card>
             ) : (
-              <Card tone="soft"><Text muted>Ajoutez au moins deux mesures pour afficher le graphique.</Text></Card>
+              <Card tone="soft"><Text muted>Le graphique apparaît dès deux mesures.</Text></Card>
             )}
-
-            <SectionTitle title="Ajouter une mesure" />
-            <Card>
-              <Row style={{ alignItems: 'flex-start' }}>
-                <View style={{ flex: 3 }}><Field label="Date" value={date} onChangeText={setDate} error={errors.date} keyboardType="numbers-and-punctuation" /></View>
-                <View style={{ flex: 2 }}><Field label="Poids" value={kg} onChangeText={setKg} keyboardType="decimal-pad" suffix="kg" error={errors.kg} /></View>
-              </Row>
-              <Field label="Note personnelle" optional value={note} onChangeText={setNote} />
-              <Field label="Indication donnée par mon professionnel" optional value={pro} onChangeText={setPro} hint="Par exemple ce qu’il vous a dit lors du dernier rendez-vous." />
-              <Button label="Enregistrer" style={{ marginTop: spacing.sm }} loading={busy === 'add'} onPress={add} />
-            </Card>
+            <Banner tone="info">{'Il n’existe pas de « bon » poids à atteindre ici. Les évolutions sont propres à chaque personne et à chaque grossesse (y compris multiple). Seul votre professionnel de santé peut vous donner une indication adaptée.'}</Banner>
 
             <SectionTitle title="Historique" />
             {loading ? <Skeleton rows={2} /> : null}
           </View>
         )}
-        ListEmptyComponent={loading || failed ? null : <EmptyState icon="trending-up" title="Aucune mesure" body="Ajoutez une mesure ci-dessus quand vous le souhaitez : rien n’est obligatoire." />}
+        ListEmptyComponent={loading || failed ? null : <EmptyState icon="trending-up" title="Aucune mesure" body="Notez une mesure quand vous le souhaitez : rien n’est obligatoire." />}
         renderItem={({ item: w }) => (
           <Card style={{ paddingVertical: spacing.xs }}>
             <ListRow title={`${String(w.weight_kg).replace('.', ',')} kg`} subtitle={[formatDateFr(w.measured_on), w.note, w.professional_note ? `Pro : ${w.professional_note}` : null].filter(Boolean).join(' · ')} right={<Button label="Supprimer" size="sm" variant="ghost" loading={busy === `del-${w.id}`} accessibilityLabel={`Supprimer la mesure du ${formatDateFr(w.measured_on)}`} onPress={() => remove(w.id)} />} />

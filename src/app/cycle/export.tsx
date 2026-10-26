@@ -74,7 +74,8 @@ export default function CycleExport() {
   }
 
   return (
-    <Screen back title={tr('cy.ex.title')} subtitle={tr('cy.ex.subtitle')}>
+    <Screen back title={tr('cy.ex.title')} subtitle={tr('cy.ex.subtitle')}
+      action={{ label: Platform.OS === 'web' ? tr('cy.ex.download') : tr('cy.ex.share'), icon: Platform.OS === 'web' ? 'download' : 'share', onPress: () => void make(), disabled: busy || loading, testID: 'export-make' }}>
       <Rise>
         <Glass>
           <Choices label={tr('cy.ex.rangeQ')} options={RANGES} value={range} allowNone={false} onChange={(v) => v && setRange(v as Range)} labelOf={(r) => tr(`cy.ex.range.${r}` as TKey)} />
@@ -90,7 +91,6 @@ export default function CycleExport() {
         </Glass>
       </Rise>
       <Ink variant="caption" soft>{Platform.OS === 'web' ? tr('cy.ex.destWeb') : tr('cy.ex.destNative')}</Ink>
-      <Button label={Platform.OS === 'web' ? tr('cy.ex.download') : tr('cy.ex.share')} icon={Platform.OS === 'web' ? 'download' : 'share'} loading={busy} disabled={loading} onPress={make} full />
       {done ? <Banner tone="success">{tr('cy.ex.done')}</Banner> : null}
       <Button label={tr('cy.ex.fullData')} variant="ghost" icon="database" onPress={() => router.push('/settings/privacy' as never)} full />
     </Screen>

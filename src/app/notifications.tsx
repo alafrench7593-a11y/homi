@@ -4,8 +4,9 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
-import { Button, haptic, Icon, type IconName, IconButton, Row, SectionTitle, Text } from '@/components/ui';
+import { haptic, Icon, type IconName, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { useRelevantNotifications } from '@/lib/data/hooks-scope';
 import { useDeleteNotification, useMarkAllNotificationsRead, useMarkNotificationRead } from '@/lib/data/hooks-me';
@@ -105,7 +106,9 @@ export default function NotificationsScreen() {
       back
       title="Notifications"
       subtitle={unread.length ? `${unread.length} non lue${unread.length > 1 ? 's' : ''}` : 'Vous êtes à jour.'}
-      right={unread.length > 0 ? <Button label="Tout marquer comme lu" size="sm" variant="ghost" icon="check" loading={markAll.isPending} onPress={() => markAll.mutate(undefined, { onSuccess: () => toast('Tout est marqué comme lu.'), onError: (e) => toast(friendlyError(e), 'error') })} /> : undefined}
+      action={unread.length > 0
+        ? { label: 'Tout marquer comme lu', icon: 'check', disabled: markAll.isPending, testID: 'notif-mark-all', onPress: () => markAll.mutate(undefined, { onSuccess: () => toast('Tout est marqué comme lu.'), onError: (e) => toast(friendlyError(e), 'error') }) }
+        : { label: 'Gérer mes rappels', icon: 'settings', testID: 'notif-settings', onPress: () => router.push('/settings/reminders' as never) }}
       scroll={false}
       padded={false}
     >
@@ -117,7 +120,13 @@ export default function NotificationsScreen() {
         onRefresh={() => void refetch()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
-        ListHeaderComponent={loading ? <Skeleton rows={5} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} title="Impossible d’afficher vos notifications" /> : null}
+        ListHeaderComponent={loading ? <Skeleton rows={5} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} title="Impossible d’afficher vos notifications" /> : (
+          <TodaySummary title="En bref" items={[
+            { icon: 'bell', value: String(unread.length), label: unread.length > 1 ? 'Non lues' : 'Non lue' },
+            { icon: 'clock', value: String((data ?? []).filter((n) => n.category === 'reminder').length), label: 'Rappels' },
+            { icon: 'alert-triangle', value: String((data ?? []).filter((n) => n.category === 'product_recall').length), label: 'Rappels de produit' },
+          ]} />
+        )}
         ListEmptyComponent={loading || failed ? null : (
           <EmptyState icon="bell" title="Rien de nouveau" body="Vos rappels, les réponses de la communauté et les alertes importantes apparaîtront ici." action={{ label: 'Gérer mes rappels', icon: 'settings', onPress: () => router.push('/settings/reminders' as never) }} />
         )}

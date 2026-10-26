@@ -10,6 +10,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, ListRow, Row, Segmented, SectionTitle, Text, Toggle } from '@/components/ui';
@@ -53,10 +54,20 @@ export default function ChildNeeds() {
   const simple = useUiStore((st) => st.simpleMode);
   const { data: needs } = useChildNeeds(params.id);
   const [tab, setTab] = useState<Tab | null>(params.tab === 'treatments' || params.tab === 'follow' || params.tab === 'profile' || params.tab === 'forYou' ? params.tab : null);
+  const { data: treatments } = useTreatments(params.id);
+  const active = useMemo(() => (treatments ?? []).filter((x) => x.active), [treatments]);
+  const dayStart = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.toISOString(); }, []);
+  const { data: todayLogs } = useTreatmentLogs(active.map((x) => x.id), dayStart);
+  const todayDoses = useMemo(() => dosesFor(new Date(), active, todayLogs ?? []), [active, todayLogs]);
   if (!child) return <Screen back title={tr('nd.title')}><Skeleton kind="detail" rows={4} /></Screen>;
   const current: Tab = tab ?? (needs?.kinds.length ? 'forYou' : 'profile');
   return (
     <Screen back title={tr('nd.title')} subtitle={child.first_name}>
+      <TodaySummary title={tr('mb.nd.title')} items={[
+        { icon: 'list', value: String(needs?.kinds.length ?? 0), label: tr('mb.nd.kinds') },
+        { icon: 'clipboard', value: String(active.length), label: tr('mb.nd.treatments') },
+        { icon: 'check', value: todayDoses.length ? `${todayDoses.filter((x) => x.log?.status === 'taken').length}/${todayDoses.length}` : '—', label: tr('mb.nd.doses') },
+      ]} />
       <Banner tone="info">{tr('nd.disclaimer')}</Banner>
       <Segmented label={tr('nd.title')} value={current} onChange={setTab} options={[
         { value: 'forYou', label: tr('nd.tab.forYou') }, { value: 'profile', label: tr('nd.tab.profile') },

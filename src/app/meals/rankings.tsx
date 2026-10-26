@@ -6,6 +6,7 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Button, Chip, Row, Text } from '@/components/ui';
 import { RecipeCard } from '@/features/recipes/RecipeCard';
@@ -50,6 +51,11 @@ export default function Rankings() {
 
   return (
     <Screen back title={tr('rc.rank.open')} subtitle={profile.name ? tr('rc.for', { name: profile.name }) : undefined}>
+      <TodaySummary title={tr(`rc.band.${band}` as TKey)} items={[
+        { icon: 'award', value: String(ranked.length), label: tr('mb.rc.ranked') },
+        { icon: 'zap', value: String(ranked.filter((x) => x.r.prepMin + x.r.cookMin <= 30).length), label: tr('mb.rc.quick') },
+        { icon: 'star', value: String(ranked.filter((x) => fav.ids.includes(x.r.id)).length), label: tr('mb.rc.favorites') },
+      ]} />
       <Row wrap>{KINDS.map((k) => <Chip key={k} label={tr(`rc.rank.${k}` as TKey)} selected={kind === k} onPress={() => { setKind(k); setShown(20); }} />)}</Row>
       <Text variant="caption" muted>{tr(`rc.rank.${kind}.hint` as TKey)}</Text>
       <Text variant="small" weight="bold">{tr('rc.rank.band')}</Text>

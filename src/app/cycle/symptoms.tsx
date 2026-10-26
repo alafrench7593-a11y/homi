@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Button, Field, haptic, Row } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
@@ -78,7 +79,13 @@ export default function SymptomsScreen() {
 
   return (
     <Screen back title={tr('cy.sym.title')} subtitle={tr('cy.sym.subtitle')}
-      footer={<Button label={tr('common.save')} icon="check" loading={busy} onPress={save} full />}>
+      action={{ label: tr('common.save'), icon: 'check', onPress: () => void save(), disabled: busy, testID: 'sym-save' }}>
+      {/* La fiche du jour, en un coup d'œil (se met à jour pendant la saisie) */}
+      <TodaySummary title={iso ? fmtDay(iso) : tr('cy.sym.date')} items={[
+        { icon: 'activity', value: String(keys.length), label: tr('cy.sym.list') },
+        { icon: 'smile', value: mood ? `${mood}/5` : '—', label: tr('cy.sym.mood') },
+        { icon: 'zap', value: energy ? `${energy}/5` : '—', label: tr('cy.sym.energy') },
+      ]} />
       <Rise>
         <Glass>
           <Field label={tr('cy.sym.date')} value={dateText} onChangeText={setDateText} keyboardType="numbers-and-punctuation" placeholder={tr('cy.datePh')} error={err ?? undefined} />

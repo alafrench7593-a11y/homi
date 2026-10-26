@@ -10,6 +10,7 @@ import React, { useMemo, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
 import { EmptyState } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, Icon, Row, SectionTitle, Text, Toggle } from '@/components/ui';
@@ -20,7 +21,10 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { symptomCard, symptomsFor, type Frequency, type Intensity, type SafetyLevel, type SymptomCard } from '@/lib/domain/pregnancyCare';
 import { NOT_ADVICE, SAFETY_CONTACTS, type SymptomKey } from '@/content/pregnancyCare';
-import { formatDate, t as tr, type TKey } from '@/i18n';
+import { formatDate, getLocale, t as tr, type TKey } from '@/i18n';
+
+/** Libellé court bilingue (les clés de traduction de cet écran restent inchangées). */
+const L = (fr: string, en: string) => (getLocale().startsWith('fr') ? fr : en);
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
@@ -43,6 +47,9 @@ export default function Feel() {
   const [d, setD] = useState<Draft>(EMPTY);
   const [cards, setCards] = useState<SymptomCard[] | null>(null);
   const options = useMemo(() => symptomsFor(week), [week]);
+  const [more, setMore] = useState(false);
+  const todayKey = new Date().toDateString();
+  const todayCount = logs.filter((l) => new Date(l.logged_at).toDateString() === todayKey).length;
 
   function toggle(k: SymptomKey) {
     if (d.id) return setD({ ...d, symptoms: [k] });
@@ -63,11 +70,13 @@ export default function Feel() {
       setCards(d.symptoms.map((symptom) => symptomCard({ symptom, intensity: d.intensity, frequency: d.frequency, weekSA: week, worried: d.worried })));
       toast(tr(d.id ? 'care.feel.updated' : 'care.feel.saved'), 'success');
       setD(EMPTY);
+      setMore(false);
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   function edit(l: PregnancySymptomLog) {
     setCards(null);
     setD({ id: l.id, symptoms: [l.symptom as SymptomKey], intensity: l.intensity, time: l.started_at ? hhmm(l.started_at) : '', frequency: l.frequency, note: l.note ?? '', worried: false });
+    setMore(!!(l.started_at || l.frequency || l.note));
   }
   async function remove(l: PregnancySymptomLog) {
     if (!(await confirm(tr('care.feel.deleteTitle'), symLabel(l.symptom), tr('common.delete')))) return;
@@ -75,11 +84,18 @@ export default function Feel() {
   }
 
   return (
-    <Screen back title={tr('care.feel.title')} subtitle={pregnancy ? tr('care.feel.subtitle', { w: week }) : undefined}>
+    <Screen back title={tr('care.feel.title')} subtitle={pregnancy ? tr('care.feel.subtitle', { w: week }) : undefined}
+      action={cards
+        ? { label: tr('care.feel.another'), icon: 'plus', onPress: () => setCards(null), testID: 'feel-another' }
+        : { label: tr(d.id ? 'common.save' : 'care.feel.save'), icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'feel-save' }}>
+      <TodaySummary items={[
+        { icon: 'feather', value: String(todayCount), label: L('Noté aujourd’hui', 'Logged today') },
+        { icon: 'clock', value: logs[0] ? symLabel(logs[0].symptom) : '—', label: L('Dernier noté', 'Last logged') },
+        { icon: 'moon', value: pregnancy ? tr('care.cal.sa', { w: week }) : '—', label: L('Semaine', 'Week') },
+      ]} />
       {cards ? (
         <View style={{ gap: spacing.sm }} testID="feel-cards">
           {cards.map((c) => <SymptomInfo key={c.symptom} c={c} week={week} />)}
-          <Button label={tr('care.feel.another')} variant="ghost" icon="plus" onPress={() => setCards(null)} testID="feel-another" />
         </View>
       ) : (
         <Card>
@@ -92,14 +108,19 @@ export default function Feel() {
             <Row wrap>
               {([1, 2, 3] as Intensity[]).map((n) => <Chip key={n} label={tr(`care.feel.int${n}` as TKey)} selected={d.intensity === n} onPress={() => setD({ ...d, intensity: d.intensity === n ? null : n })} testID={`feel-intensity-${n}`} />)}
             </Row>
-            <Field label={tr('care.feel.start')} optional value={d.time} onChangeText={(v) => setD({ ...d, time: v })} placeholder="08:30" keyboardType="numbers-and-punctuation" hint={tr('care.feel.startHint')} testID="feel-time" />
-            <Text variant="label">{tr('care.feel.frequency')}</Text>
-            <Row wrap>
-              {FREQS.map((f) => <Chip key={f} label={tr(`care.feel.freq.${f}` as TKey)} selected={d.frequency === f} onPress={() => setD({ ...d, frequency: d.frequency === f ? null : f })} testID={`feel-freq-${f}`} />)}
-            </Row>
-            <Field label={tr('care.feel.note')} optional value={d.note} onChangeText={(v) => setD({ ...d, note: v })} maxLength={1000} multiline testID="feel-note" />
+            {more ? (
+              <>
+                <Field label={tr('care.feel.start')} optional value={d.time} onChangeText={(v) => setD({ ...d, time: v })} placeholder="08:30" keyboardType="numbers-and-punctuation" hint={tr('care.feel.startHint')} testID="feel-time" />
+                <Text variant="label">{tr('care.feel.frequency')}</Text>
+                <Row wrap>
+                  {FREQS.map((f) => <Chip key={f} label={tr(`care.feel.freq.${f}` as TKey)} selected={d.frequency === f} onPress={() => setD({ ...d, frequency: d.frequency === f ? null : f })} testID={`feel-freq-${f}`} />)}
+                </Row>
+                <Field label={tr('care.feel.note')} optional value={d.note} onChangeText={(v) => setD({ ...d, note: v })} maxLength={1000} multiline testID="feel-note" />
+              </>
+            ) : (
+              <Button label={[tr('care.feel.start'), tr('care.feel.frequency'), tr('care.feel.note')].join(' · ')} size="sm" variant="ghost" icon="plus" style={{ alignSelf: 'flex-start' }} onPress={() => setMore(true)} testID="feel-more" />
+            )}
             <Toggle label={tr('care.feel.worried')} value={d.worried} onChange={(v) => setD({ ...d, worried: v })} />
-            <Button label={tr(d.id ? 'common.save' : 'care.feel.save')} full loading={save.isPending} onPress={submit} testID="feel-save" />
             {d.id ? <Button label={tr('common.cancel')} variant="ghost" onPress={() => setD(EMPTY)} /> : null}
             <Text variant="caption" muted>{tr('care.feel.private')}</Text>
           </View>

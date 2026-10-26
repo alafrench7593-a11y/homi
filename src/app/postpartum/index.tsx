@@ -6,6 +6,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton, ErrorView } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { useToast } from '@/components/Overlays';
@@ -73,7 +74,13 @@ export default function PostpartumHome() {
   const failed = (settingsQ.isError && !settingsQ.data) || (checkinsQ.isError && !checkinsQ.data);
 
   return (
-    <Screen back title="Après la naissance" subtitle="Votre espace. Privé par défaut, sans score ni jugement.">
+    <Screen back title="Après la naissance" subtitle="Votre espace privé, sans score ni jugement."
+      action={{ label: todayCheckin ? 'Relire mon point du jour' : 'Faire le point', icon: 'feather', onPress: () => router.push(CHECKIN_LINK), testID: 'pp-main-action' }}>
+      <TodaySummary items={[
+        { icon: 'check-circle', value: todayCheckin ? 'Noté' : '—', label: 'Point du jour' },
+        { icon: 'sun', value: daysSince != null && daysSince >= 0 ? `J+${daysSince}` : '—', label: 'Depuis la naissance' },
+        { icon: 'bell', value: reminder?.enabled ? 'Activé' : '—', label: 'Rappel du soir' },
+      ]} />
       <Banner tone="info" icon="lock">
         {'Ce que vous notez ici reste visible uniquement par vous. Votre conjoint ou votre famille ne voient que ce que vous décidez de partager, et vous pouvez l’arrêter à tout moment.'}
       </Banner>
@@ -112,10 +119,10 @@ export default function PostpartumHome() {
           ) : (
             <Card>
               <Text weight="bold">Comment ça va, vraiment ?</Text>
-              <Text variant="small" muted style={{ marginTop: 4 }}>Moins d’une minute, et tout est facultatif. Vous pouvez aussi ne rien noter : il n’y a pas de « bonne » fréquence.</Text>
+              <Text variant="small" muted style={{ marginTop: 4 }}>Moins d’une minute, tout est facultatif. Il n’y a pas de « bonne » fréquence.</Text>
               <Row style={{ marginTop: spacing.sm }} wrap>
-                <Button label="Faire le point" icon="feather" onPress={() => router.push(CHECKIN_LINK)} />
-                <Button label="Pas aujourd’hui" variant="ghost" onPress={() => toast('D’accord. Prenez soin de vous.')} />
+                <Button label="Faire le point" icon="feather" size="sm" variant="secondary" onPress={() => router.push(CHECKIN_LINK)} />
+                <Button label="Pas aujourd’hui" size="sm" variant="ghost" onPress={() => toast('D’accord. Prenez soin de vous.')} />
               </Row>
             </Card>
           )}

@@ -9,6 +9,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { HistoryHeader, TodaySummary } from '@/components/MiniApp';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Button, Field, haptic, Row, Segmented } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
@@ -33,7 +34,7 @@ import { ObjectiveRow, useObjective } from '@/features/cycle/Objective';
 import { useAdvice } from '@/features/cycle/useAdvice';
 import { rank } from '@/lib/advice/types';
 import { uuid } from '@/lib/uuid';
-import { formatNumber, t as tr } from '@/i18n';
+import { formatNumber, formatUnit, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
 type TestKind = 'ovulation_tests' | 'pregnancy_tests';
@@ -185,21 +186,27 @@ function CycleHub() {
   const history = history0(entries);
 
   return (
-    <Screen back account title={tr('cy.title')} subtitle={tr('cy.subtitle')}>
+    <Screen back account title={tr('cy.title')} subtitle={tr('cy.subtitle')}
+      action={open
+        ? { label: tr('cy.quick.ended'), icon: 'check', onPress: () => void periodEnded(), disabled: busy === 'quick', testID: 'cycle-quick-end' }
+        : { label: tr('cy.quick.started'), icon: 'droplet', onPress: () => void periodStarted(), disabled: busy === 'quick', testID: 'cycle-quick-start' }}>
       {/* Situations pressantes récentes : visibles sans chercher (jamais retardées par une animation) */}
       {urgentAdvice.slice(0, 1).map((a) => <AdviceCard key={a.signature} advice={a} compact />)}
+
+      {/* L'essentiel d'un coup d'œil : jour du cycle, prochaines règles (estimation), durée habituelle */}
+      <TodaySummary title={tr('cy.cal.today')} items={[
+        { icon: 'sun', value: day ? String(day) : '—', label: tr('cy.hc.item.day') },
+        { icon: 'droplet', value: est.nextPeriod ? fmtDay(est.nextPeriod, { day: 'numeric', month: 'short' }) : '—', label: tr('cy.hc.item.next') },
+        { icon: 'repeat', value: est.averageLength != null ? formatUnit(est.averageLength, 'day', 0) : '—', label: tr('cy.hc.item.length') },
+      ]} />
 
       {/* Objectif (changeable sans perdre l'historique) et carte de synthèse personnalisable (Réglages de la carte) */}
       <ObjectiveRow />
       <HomeCycleCard mode={objective ?? 'cycle'} />
 
-      {/* Mes règles : un geste, enregistrement immédiat, annulation possible */}
+      {/* Mes règles : un geste (gros bouton en bas), enregistrement immédiat, récapitulatif et annulation ici */}
+      {quick ? (
       <Glass>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
-          {open
-            ? <Button label={tr('cy.quick.ended')} icon="check" loading={busy === 'quick'} onPress={periodEnded} style={{ flexGrow: 1 }} />
-            : <Button label={tr('cy.quick.started')} icon="droplet" loading={busy === 'quick'} onPress={periodStarted} style={{ flexGrow: 1 }} />}
-        </View>
         {quick ? (
           <Rise key={`${quick.kind}${quick.id}`}>
             <View accessibilityLiveRegion="polite" style={{ gap: 4, padding: spacing.sm, borderRadius: 14, backgroundColor: c.powder }}>
@@ -213,6 +220,7 @@ function CycleHub() {
           </Rise>
         ) : null}
       </Glass>
+      ) : null}
 
       {ring ? <Rise><Glass><CycleRing data={ring} /></Glass></Rise> : null}
 
@@ -284,7 +292,7 @@ function CycleHub() {
         </Glass>
       </Rise>
 
-      <Ink variant="heading">{tr('cy.history')}</Ink>
+      <HistoryHeader title={tr('cy.history')} count={history.length || undefined} />
       {periodsQ.isLoading && !periodsQ.data ? <Skeleton rows={2} /> : periodsQ.isError && !periodsQ.data ? <ErrorView error={periodsQ.error} onRetry={() => void periodsQ.refetch()} /> : null}
       {!history.length && !periodsQ.isLoading ? <Ink soft>{tr('cy.history.empty')}</Ink> : null}
       {history.slice(0, 24).map((p) => (

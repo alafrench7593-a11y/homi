@@ -8,6 +8,7 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmergencyList } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
@@ -119,10 +120,15 @@ export default function MoodScreen() {
   }
 
   const loading = moodsQ.isLoading && !moods;
+  const lastMood = moods?.[0];
+  const weekAgo = Date.now() - 7 * 86400_000;
+  const weekCount = (moods ?? []).filter((m) => new Date(m.checked_at).getTime() >= weekAgo).length;
+  const todayDone = !!lastMood && new Date(lastMood.checked_at).toDateString() === new Date().toDateString();
   const failed = moodsQ.isError && !moods;
 
   return (
-    <Screen back title="Comment je me sens" subtitle="Privé, facultatif, sans jugement." scroll={false} padded={false}>
+    <Screen back title="Comment je me sens" subtitle="Privé, facultatif, sans jugement." scroll={false} padded={false}
+      action={{ label: 'Enregistrer mon bilan', icon: 'check', onPress: () => void save(), disabled: saving, testID: 'mood-main-action' }}>
       <VirtualList
         data={loading || failed ? [] : moods ?? []}
         keyExtractor={(m) => m.id}
@@ -132,33 +138,38 @@ export default function MoodScreen() {
           <View style={{ gap: spacing.md }}>
             <Banner tone="info">{'Ce bilan est visible uniquement par vous. Il ne calcule aucun score et ne pose aucun diagnostic : c’est simplement un espace pour faire le point.'}</Banner>
 
+            <TodaySummary title="Mon point" items={[
+              { icon: 'check-circle', value: todayDone ? 'Fait' : '—', label: 'Aujourd’hui' },
+              { icon: 'heart', value: lastMood ? moodLabel(lastMood.mood) : '—', label: 'Dernier bilan' },
+              { icon: 'calendar', value: String(weekCount), label: '7 derniers jours' },
+            ]} />
+
             {savedDistress && <SupportBanner urgent={savedDistress === 'urgent'} />}
 
             <Card>
               <Text weight="bold">Aujourd’hui, c’est plutôt…</Text>
-              <View accessibilityRole="radiogroup" accessibilityLabel="Mon humeur du jour" style={{ gap: spacing.xs, marginTop: spacing.sm }}>
+              <View accessibilityRole="radiogroup" accessibilityLabel="Mon humeur du jour" style={{ flexDirection: 'row', gap: 6, marginTop: spacing.sm }}>
                 {MOODS.map((m) => {
                   const sel = mood === m.value;
                   return (
                     <Tappable
                       key={m.value}
+                      bare
                       accessibilityRole="radio"
                       accessibilityState={{ selected: sel }}
                       accessibilityLabel={m.label}
                       onPress={() => { haptic('selection'); setMood(m.value); setSavedDistress(null); }}
                       style={({ pressed }) => ({
-                        minHeight: MIN_TOUCH, borderRadius: 10, borderWidth: 1.2, paddingHorizontal: spacing.md, justifyContent: 'center',
+                        flex: 1, minHeight: 84, borderRadius: 18, borderWidth: 1.2, paddingHorizontal: 4, paddingVertical: spacing.sm, alignItems: 'center', justifyContent: 'center', gap: 6,
                         borderColor: sel ? t.colors.primary : t.colors.border, backgroundColor: sel ? t.colors.primary : pressed ? t.colors.surfaceAlt : t.colors.surface,
                       })}
                     >
-                      <Row>
-                        <View style={{ flexDirection: 'row', gap: 3 }}>
-                          {[1, 2, 3, 4, 5].map((i) => (
-                            <View key={i} style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: i <= m.value ? (sel ? t.colors.primaryText : t.colors.lavender) : t.colors.border }} />
-                          ))}
-                        </View>
-                        <Text weight="medium" color={sel ? t.colors.primaryText : t.colors.text}>{m.label}</Text>
-                      </Row>
+                      <View style={{ flexDirection: 'row', gap: 2 }}>
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <View key={i} style={{ width: 5, height: 5 + i * 2, borderRadius: 3, alignSelf: 'flex-end', backgroundColor: i <= m.value ? (sel ? t.colors.primaryText : t.colors.lavender) : t.colors.border }} />
+                        ))}
+                      </View>
+                      <Text variant="caption" weight="medium" center numberOfLines={2} color={sel ? t.colors.primaryText : t.colors.text}>{m.label}</Text>
                     </Tappable>
                   );
                 })}
@@ -167,8 +178,7 @@ export default function MoodScreen() {
             </Card>
 
             <Card>
-              <Text weight="bold">Ce qui est présent en ce moment</Text>
-              <Text variant="small" muted>Facultatif, plusieurs choix possibles.</Text>
+              <Text weight="bold">Ce qui est présent <Text variant="small" muted>(facultatif)</Text></Text>
               <Row wrap style={{ marginTop: spacing.sm }}>
                 {FEELINGS.map((f) => <Chip key={f} label={f} selected={feelings.includes(f)} onPress={() => toggleFeeling(f)} />)}
               </Row>
@@ -185,8 +195,6 @@ export default function MoodScreen() {
             {distressNow && !savedDistress && <SupportBanner urgent={safety || feelings.some((f) => HEAVY.includes(f))} />}
 
             <Field label="Mon journal" optional value={journal} onChangeText={setJournal} multiline maxLength={6000} placeholder="Ce que j’ai envie de garder de cette journée…" style={{ minHeight: 110, textAlignVertical: 'top' }} />
-            <Button label="Enregistrer mon bilan" onPress={save} loading={saving} full />
-
             <SectionTitle title="Mes bilans précédents" />
             {loading ? <Skeleton rows={2} /> : null}
             {failed ? <ErrorView error={moodsQ.error} onRetry={() => void moodsQ.refetch()} title="Impossible d’afficher vos bilans" /> : null}

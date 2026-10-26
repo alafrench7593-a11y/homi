@@ -5,6 +5,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Modal, Pressable, View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
 import { PrivateBanner } from '@/components/Fertility';
 import { ErrorView, Skeleton } from '@/components/States';
@@ -166,9 +167,15 @@ export default function MucusScreen() {
   }, [periods, obs]);
 
   const message = observationMessage(category);
+  const lastObs = useMemo(() => [...(obs ?? [])].filter((o) => o.cervical_mucus).sort((a, b) => b.observed_on.localeCompare(a.observed_on))[0] ?? null, [obs]);
 
   return (
-    <Screen back title="Ma glaire cervicale" subtitle="Observer son corps, à son rythme. Rien n’est obligatoire.">
+    <Screen back title="Ma glaire cervicale" subtitle="Observer son corps, à son rythme. Rien n’est obligatoire."
+      action={{ label: 'Enregistrer l’observation', icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'mucus-save' }}>
+      <TodaySummary title="Dernière observation" items={[
+        { icon: 'droplet', value: lastObs ? mucusLabel(lastObs.cervical_mucus as MucusCategory) ?? '—' : '—', label: lastObs ? formatDateFr(lastObs.observed_on, false) : 'Aspect' },
+        { icon: 'calendar', value: String(cycles[0]?.days.length ?? 0), label: 'Jours notés ce cycle' },
+      ]} />
       <PrivateBanner>Ces observations et leurs photos ne sont jamais partagées avec votre foyer, votre coparent ni la communauté.</PrivateBanner>
 
       <Card>
@@ -226,7 +233,6 @@ export default function MucusScreen() {
       </Card>
 
       {error ? <Banner tone="danger">{error}</Banner> : null}
-      <Button label="Enregistrer l’observation" icon="check" loading={save.isPending} onPress={submit} full />
 
       <SectionTitle title="Au fil de mes cycles" />
       {obsQ.isLoading && !obs ? <Skeleton kind="card" rows={1} /> : obsQ.isError && !obs ? (

@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
 import { EmptyState, Skeleton } from '@/components/States';
-import { Button, Card, Field, ListRow, Text } from '@/components/ui';
+import { Card, Field, ListRow, Text } from '@/components/ui';
 import { useChild } from '@/lib/data/hooks';
 import { useAddNeedEntry, useDeleteNeedEntry, useNeedEntries } from '@/lib/data/hooks-needs';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -20,17 +21,23 @@ export default function ChildSchool() {
   const del = useDeleteNeedEntry();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  async function save() {
+    if (!title.trim() || !id) { toast(tr('nd.entry.errTitle'), 'error'); return; }
+    try { await add.mutateAsync({ child_id: id, kind: 'school', title: title.trim(), body: body.trim() || null, occurred_on: todayISO() }); setTitle(''); setBody(''); }
+    catch (e) { toast(friendlyError(e), 'error'); }
+  }
+  const last = entries?.[0];
   return (
-    <Screen back title={tr('tool.child_school')} subtitle={child?.first_name}>
+    <Screen back title={tr('tool.child_school')} subtitle={child?.first_name}
+      action={{ label: tr('common.save'), icon: 'check', onPress: () => void save(), testID: 'school-save', disabled: add.isPending }}>
+      <TodaySummary title={tr('mb.sc.title')} items={[
+        { icon: 'book', value: String(entries?.length ?? 0), label: tr('mb.sc.count') },
+        { icon: 'clock', value: last ? formatDateFr(last.occurred_on) : '—', label: tr('mb.sc.last') },
+      ]} />
       <Text muted>{tr('sc.intro')}</Text>
       <Card>
         <Field label={tr('sc.title')} value={title} onChangeText={setTitle} maxLength={120} placeholder={tr('sc.placeholder')} testID="school-title" />
         <Field label={tr('sc.body')} optional value={body} onChangeText={setBody} multiline maxLength={4000} />
-        <Button label={tr('common.save')} loading={add.isPending} testID="school-save" onPress={async () => {
-          if (!title.trim() || !id) { toast(tr('nd.entry.errTitle'), 'error'); return; }
-          try { await add.mutateAsync({ child_id: id, kind: 'school', title: title.trim(), body: body.trim() || null, occurred_on: todayISO() }); setTitle(''); setBody(''); }
-          catch (e) { toast(friendlyError(e), 'error'); }
-        }} />
       </Card>
       {isLoading ? <Skeleton rows={2} /> : !entries?.length ? <EmptyState icon="book" title={tr('sc.none')} /> : (
         <Card>

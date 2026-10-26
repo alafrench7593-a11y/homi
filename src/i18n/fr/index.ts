@@ -22,3 +22,4 @@ export { cocoon } from './cocoon';
 export { care } from './care';
 export { discover } from './discover';
 export { outings } from './outings';
+export { miniB } from './miniB';

@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -122,10 +123,17 @@ export default function Vaccines() {
     if (!(await confirm(tr('vx.completeTitle'), tr('vx.completeBody', { count: doses.length }), tr('vx.complete')))) return;
     try { await act.complete.mutateAsync({ appt: a, doses }); toast(tr('vx.completed'), 'success'); } catch (e) { toast(friendlyError(e), 'error'); }
   }
+  function newVaccine() { setD({ vaccine: '', date: toFrDate(todayISO()), dose: '', lot: '', by: '', source: 'carnet', note: '' }); }
   function openQuestions(a: VaccineAppointment) { setQAppt(a); setQs(a.questions ?? []); setQFree(''); }
 
   return (
-    <Screen back title={tr('vx.title')} subtitle={tr('vx.subtitle', { name: child.first_name })} right={<IconButton icon="plus" label={tr('vx.add')} onPress={() => setD({ vaccine: '', date: toFrDate(todayISO()), dose: '', lot: '', by: '', source: 'carnet', note: '' })} />}>
+    <Screen back title={tr('vx.title')} subtitle={tr('vx.subtitle', { name: child.first_name })} right={<IconButton icon="plus" label={tr('vx.add')} onPress={newVaccine} />}
+      action={{ label: tr('mb.vx.action'), icon: 'check', onPress: newVaccine, testID: 'vaccine-main-action' }}>
+      <TodaySummary title={tr('mb.vx.title')} items={[
+        { icon: 'check-circle', value: String(vaccinations.length), label: tr('mb.vx.done') },
+        { icon: 'clock', value: nextVisits[0] ? ageLabel(nextVisits[0].months, nextVisits[0].toMonths) : '—', label: tr('mb.vx.next') },
+        { icon: 'calendar', value: String(open.length), label: tr('mb.vx.appts') },
+      ]} />
       {/* Source officielle et date de mise à jour : jamais deviner */}
       <View testID="vaccine-source">
         <Banner tone="info" title={tr('vx.calendarTitle', { label: calendar.label })}>

@@ -79,7 +79,8 @@ export default function PostpartumCheckin() {
   }
 
   return (
-    <Screen back title="Faire le point" subtitle="Moins d’une minute. Tout est facultatif.">
+    <Screen back title="Faire le point" subtitle="Moins d’une minute. Tout est facultatif."
+      action={{ label: existing ? 'Mettre à jour mon point' : 'Enregistrer', icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'pp-checkin-save' }}>
       <Card>
         <View style={{ gap: spacing.md }}>
           {SCALES.filter((s) => QUICK.includes(s.key)).map((s) => (
@@ -89,8 +90,7 @@ export default function PostpartumCheckin() {
       </Card>
 
       <Card>
-        <Text weight="bold">De quoi auriez-vous le plus besoin aujourd’hui ?</Text>
-        <Text variant="small" muted>Plusieurs choix possibles.</Text>
+        <Text weight="bold">De quoi auriez-vous le plus besoin ? <Text variant="small" muted>(plusieurs choix)</Text></Text>
         <Row wrap style={{ marginTop: spacing.sm }}>
           {NEEDS.map((n) => <Chip key={n.value} label={n.label} selected={v.needs.includes(n.value)} onPress={() => toggleNeed(n.value)} />)}
         </Row>
@@ -138,7 +138,6 @@ export default function PostpartumCheckin() {
       </Card>
       {danger.length > 0 ? <DangerPanel country={settings?.country} /> : null}
 
-      <Button label={existing ? 'Mettre à jour mon point' : 'Enregistrer'} full onPress={submit} loading={save.isPending} />
       <Button label="Passer pour aujourd’hui" variant="ghost" full onPress={() => router.back()} />
 
       {saved && plan.level !== 'danger' ? <SupportPlanCard plan={plan} country={settings?.country} /> : null}

@@ -9,7 +9,7 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Chip, Field, IconButton, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Card, Chip, Field, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { allergenLabel, mealLabel } from '@/features/recipes/labels';
 import { useFoodProfile, useRecipes, useSavePersonalRecipe } from '@/lib/data/hooks-recipes';
 import { friendlyError, useMyRoles } from '@/lib/data/hooks-settings';
@@ -18,7 +18,6 @@ import { INGREDIENTS } from '@/lib/recipes/ingredients';
 import { MEALS, type Audience, type Meal, type Recipe, type RecipeIngredient, type Unit } from '@/lib/recipes/types';
 import { derivedAllergens, fold, isVegetarian, validateRecipe } from '@/lib/recipes/validate';
 import { t as tr, type TKey } from '@/i18n';
-import { spacing } from '@/theme/tokens';
 
 const UNITS: Unit[] = ['g', 'ml', 'u', 'cs', 'cc', 'pincee'];
 const AUDS: Audience[] = ['pregnancy', 'baby', 'child', 'family'];
@@ -70,7 +69,7 @@ export default function NewRecipe() {
   }
 
   return (
-    <Screen back title={tr('rc.new.open')}>
+    <Screen back title={tr('rc.new.open')} action={{ label: tr('common.save'), icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'new-save' }}>
       <Banner tone="info">{tr('rc.new.intro')}</Banner>
       {isEditor ? <ToggleRow label={tr('rc.new.library')} value={library} onChange={setLibrary} /> : null}
       <Field label={tr('rc.new.title')} value={title} onChangeText={setTitle} maxLength={120} testID="new-title" />
@@ -113,9 +112,6 @@ export default function NewRecipe() {
         <View testID="new-checks"><Banner tone="warning" title={tr('rc.new.checks')}>{checks.map((c) => `• ${c}`).join('\n')}</Banner></View>
       ) : null}
       <Text variant="caption" muted>{library ? tr('rc.new.libraryNote') : tr('rc.new.personalNote')}</Text>
-      <View style={{ gap: spacing.xs }}>
-        <Button label={tr('common.save')} loading={save.isPending} onPress={() => submit()} full testID="new-save" />
-      </View>
     </Screen>
   );
 }

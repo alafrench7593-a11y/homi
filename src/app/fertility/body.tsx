@@ -5,9 +5,10 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { LineChart } from '@/components/Charts';
 import { confirm, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Chip, Field, haptic, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Card, Chip, Field, haptic, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { PrivateBanner } from '@/components/Fertility';
 import { ErrorView, Skeleton } from '@/components/States';
 import { backend, eq } from '@/lib/backend';
@@ -36,6 +37,9 @@ export default function BodyScreen() {
   const list = data ?? [];
   const points = useMemo(() => bbtSeries(list, 45), [list]);
   const since = addDays(todayISO(), -45);
+  const sorted = useMemo(() => [...list].sort((a, b) => b.observed_on.localeCompare(a.observed_on)), [list]);
+  const lastTemp = sorted.find((o) => o.bbt_celsius != null) ?? null;
+  const lastMucus = sorted.find((o) => o.cervical_mucus != null) ?? null;
 
   async function submit() {
     const iso = frToISO(date);
@@ -70,7 +74,13 @@ export default function BodyScreen() {
   }
 
   return (
-    <Screen back title="Température et glaire" subtitle="Si vous souhaitez les noter : c’est entièrement facultatif.">
+    <Screen back title="Température et glaire" subtitle="Si vous souhaitez les noter : c’est entièrement facultatif."
+      action={{ label: 'Enregistrer', icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'body-save' }}>
+      <TodaySummary title="Dernière observation" items={[
+        { icon: 'thermometer', value: lastTemp ? `${String(lastTemp.bbt_celsius).replace('.', ',')} °C` : '—', label: lastTemp ? formatDateFr(lastTemp.observed_on, false) : 'Température' },
+        { icon: 'droplet', value: lastMucus ? mucusLabel(lastMucus.cervical_mucus) ?? '—' : '—', label: 'Glaire' },
+        { icon: 'calendar', value: String(list.filter((o) => o.observed_on >= since).length), label: 'Jours notés (45 j)' },
+      ]} />
       <PrivateBanner>Ces observations ne sont jamais partagées avec votre foyer ni votre coparent.</PrivateBanner>
 
       <Card>
@@ -83,7 +93,6 @@ export default function BodyScreen() {
           {CERVICAL_MUCUS.map((m) => <Chip key={m.value} label={m.label} selected={mucus === m.value} onPress={() => setMucus(mucus === m.value ? null : m.value)} />)}
         </Row>
         <View style={{ marginTop: spacing.sm }}><Field label="Note" optional value={note} onChangeText={setNote} maxLength={500} /></View>
-        <Button label="Enregistrer" icon="check" style={{ marginTop: spacing.sm }} loading={save.isPending} onPress={submit} />
         <Text variant="caption" muted style={{ marginTop: 6 }}>Une seule observation par jour : enregistrer à nouveau la même date remplace la précédente.</Text>
       </Card>
 

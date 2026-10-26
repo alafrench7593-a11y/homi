@@ -4,10 +4,10 @@
  * Purement descriptive : aucune zone « normale » ou « anormale ».
  */
 import React from 'react';
-import { View } from 'react-native';
+import { Animated, Easing, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
 import { palette, fonts } from '@/theme/tokens';
-import { useTheme } from '@/theme/ThemeProvider';
+import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { Text } from './ui';
 
 export interface ClockEvent {
@@ -117,9 +117,36 @@ function SvgLabel({ text, color }: { text: string; color: string }) {
 }
 
 /** Anneau des 40 semaines autour de l'illustration du bébé. */
+const NEON = '#FFC861';
+const NEON_CORE = '#FFE7A8';
+const NEON_HOT = '#FFF6DC';
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+/**
+ * Anneau des semaines : perles d'or néon. Une vague de lumière parcourt les semaines déjà passées jusqu'à la
+ * semaine en cours, qui pulse doucement. Immobile (mais toujours dorée) si les animations sont réduites.
+ */
 export function WeeksRing({ week, total = 41, size, children }: { week: number; total?: number; size: number; children?: React.ReactNode }) {
   const c = size / 2;
-  const r = c - 8;
+  const r = c - 10;
+  const reduce = useReduceMotion();
+  const wave = React.useRef(new Animated.Value(0)).current;
+  const pulse = React.useRef(new Animated.Value(0)).current;
+  React.useEffect(() => {
+    if (reduce) return;
+    const a = Animated.loop(Animated.sequence([
+      Animated.timing(wave, { toValue: 1, duration: 2600, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
+      Animated.delay(700),
+      Animated.timing(wave, { toValue: 0, duration: 0, useNativeDriver: false }),
+    ]));
+    const b = Animated.loop(Animated.sequence([
+      Animated.timing(pulse, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
+      Animated.timing(pulse, { toValue: 0, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
+    ]));
+    a.start(); b.start();
+    return () => { a.stop(); b.stop(); };
+  }, [reduce, wave, pulse]);
+  const span = Math.max(1, week);
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
       <Svg width={size} height={size} style={{ position: 'absolute' }} accessibilityElementsHidden importantForAccessibility="no">
@@ -128,7 +155,26 @@ export function WeeksRing({ week, total = 41, size, children }: { week: number; 
           const p = polar(c, c, r, a);
           const done = i < week;
           const current = i === week;
-          return <Circle key={i} cx={p.x} cy={p.y} r={current ? 5.5 : done ? 3.2 : 2.2} fill={done || current ? palette.gold : '#FFFFFF'} fillOpacity={done || current ? 1 : 0.22} />;
+          if (!done && !current) return <Circle key={i} cx={p.x} cy={p.y} r={2.2} fill="#FFFFFF" fillOpacity={0.2} />;
+          if (current) {
+            return (
+              <React.Fragment key={i}>
+                <AnimatedCircle cx={p.x} cy={p.y} r={reduce ? 12 : pulse.interpolate({ inputRange: [0, 1], outputRange: [10, 15] })} fill={NEON} fillOpacity={reduce ? 0.28 : pulse.interpolate({ inputRange: [0, 1], outputRange: [0.32, 0.12] })} />
+                <Circle cx={p.x} cy={p.y} r={8} fill={NEON} fillOpacity={0.35} />
+                <Circle cx={p.x} cy={p.y} r={5.5} fill={NEON_HOT} />
+              </React.Fragment>
+            );
+          }
+          // vague : chaque perle s'allume quand la lumière passe sur elle
+          const at = i / span;
+          const glow = reduce ? 0.22 : wave.interpolate({ inputRange: [Math.max(0, at - 0.12), at, Math.min(1, at + 0.12)], outputRange: [0.18, 0.75, 0.18], extrapolate: 'clamp' });
+          const grow = reduce ? 6 : wave.interpolate({ inputRange: [Math.max(0, at - 0.12), at, Math.min(1, at + 0.12)], outputRange: [5.5, 8, 5.5], extrapolate: 'clamp' });
+          return (
+            <React.Fragment key={i}>
+              <AnimatedCircle cx={p.x} cy={p.y} r={grow} fill={NEON} fillOpacity={glow} />
+              <Circle cx={p.x} cy={p.y} r={3.2} fill={NEON_CORE} />
+            </React.Fragment>
+          );
         })}
       </Svg>
       {children}

@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Field, IconButton, ListRow, Row } from '@/components/ui';
+import { Banner, Card, Field, IconButton, ListRow, Row } from '@/components/ui';
 import { useAvoidProducts, useSaveAvoid } from '@/features/avoidList';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { spacing } from '@/theme/tokens';
@@ -29,8 +30,15 @@ export default function AvoidList() {
   }
 
   return (
-    <Screen back title="Produits à éviter" subtitle="Partagés avec le foyer (accès santé).">
-      <Banner tone="info">{'Un produit absent de cette liste n’est pas pour autant sans risque. Les compositions changent : vérifiez toujours l’étiquette actuelle, et en cas d’allergie sévère, contactez le fabricant ou un professionnel.'}</Banner>
+    <Screen back title="Produits à éviter" subtitle="Partagés avec le foyer (accès santé)."
+      action={{ label: name.trim() ? `Ajouter « ${name.trim().slice(0, 24)} »` : 'Ajouter un produit', icon: 'plus', onPress: add, disabled: save.isPending, testID: 'avoid-add' }}>
+      {q.data ? (
+        <TodaySummary title="Ma liste" items={[
+          { icon: 'slash', value: String(q.data.length), label: q.data.length > 1 ? 'Produits à éviter' : 'Produit à éviter' },
+          { icon: 'maximize', value: String(q.data.filter((p) => p.barcode).length), label: 'Repérés au scan (code-barres)' },
+        ]} />
+      ) : null}
+      <Banner tone="info">{'Un produit absent de cette liste n’est pas forcément adapté pour autant. Les compositions changent : vérifiez toujours l’étiquette actuelle, et en cas d’allergie sévère, contactez le fabricant ou un professionnel.'}</Banner>
       {q.isLoading && !q.data ? <Skeleton rows={2} /> : null}
       {q.data && !q.data.length ? <EmptyState icon="slash" title="Liste vide" body="Ajoutez un produit depuis un résultat de scan, ou ci-dessous." /> : null}
       {(q.data ?? []).map((p, i) => (
@@ -48,7 +56,6 @@ export default function AvoidList() {
             <View style={{ flex: 1 }}><Field label="Code-barres" optional value={barcode} onChangeText={setBarcode} keyboardType="number-pad" maxLength={14} /></View>
           </Row>
           <Field label="Pourquoi ?" optional value={reason} onChangeText={setReason} maxLength={300} />
-          <Button label="Ajouter" icon="plus" onPress={add} loading={save.isPending} />
         </View>
       </Card>
     </Screen>

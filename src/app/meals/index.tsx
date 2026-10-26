@@ -6,12 +6,13 @@ import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { ProfileSwitcher } from '@/components/Family';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Banner, Button, Chip, Field, Icon, Row, Text } from '@/components/ui';
 import { RecipeCard } from '@/features/recipes/RecipeCard';
 import { allergenLabel, mealLabel, MEALS_FOR, TAGS_FOR, tagLabel, textureLabel, stageLabel } from '@/features/recipes/labels';
-import { meetsNeed, NEEDS, stageOf, useFoodProfile, useRecipeDislikes, useRecipeFavorites, useRecipes, useRecipeScores, type Need } from '@/lib/data/hooks-recipes';
+import { meetsNeed, NEEDS, stageOf, useFoodProfile, useLatestMealPlan, useLatestShoppingList, useRecipeDislikes, useRecipeFavorites, useRecipes, useRecipeScores, type Need } from '@/lib/data/hooks-recipes';
 import { currentSeason, filterRecipes, type RecipeFilter } from '@/lib/recipes/engine';
 import { ALLERGENS, type Allergen, type Meal, type Recipe, type Tag } from '@/lib/recipes/types';
 import { childAge } from '@/lib/domain/child';
@@ -44,6 +45,8 @@ export default function Meals() {
   const { profile, scope } = useFoodProfile();
   const fav = useRecipeFavorites();
   const dislikes = useRecipeDislikes();
+  const plan = useLatestMealPlan();
+  const shopping = useLatestShoppingList();
   const [showHidden, setShowHidden] = useState(false);
   const [classic, setClassic] = useState(false);
   const [familyOnly, setFamilyOnly] = useState(false);
@@ -87,8 +90,14 @@ export default function Meals() {
     : aud === 'child' && scope.child ? childAge(scope.child.birth_date).label : null;
 
   return (
-    <Screen back title={tr('rc.title')} subtitle={tr('rc.subtitle')}>
+    <Screen back title={tr('rc.title')} subtitle={tr('rc.subtitle')}
+      action={{ label: aud === 'pregnancy' ? tr('rc.menu.pregnancy') : tr('rc.menu.open'), icon: 'calendar', onPress: () => router.push('/meals/menu'), testID: 'meals-main-action' }}>
       <ProfileSwitcher />
+      <TodaySummary title={tr('mb.rc.title')} items={[
+        { icon: 'star', value: String(fav.ids.length), label: tr('mb.rc.favorites') },
+        { icon: 'calendar', value: String(plan.items.length), label: tr('mb.rc.planned') },
+        { icon: 'shopping-cart', value: String(shopping.items.filter((i) => !i.at_home && !i.checked).length), label: tr('mb.rc.toBuy') },
+      ]} />
       <View testID="meals-heading" style={{ gap: 2 }}>
         <Text variant="heading" accessibilityRole="header">{heading}</Text>
         {sub ? <Text variant="small" muted>{sub}</Text> : null}
@@ -96,14 +105,14 @@ export default function Meals() {
       </View>
       {aud === 'pregnancy' ? <Banner tone="info">{tr('rc.banner.pregnancy')}</Banner> : aud === 'baby' ? <Banner tone="info">{tr('rc.banner.baby')}</Banner> : null}
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
+      <Row wrap>
         <Button label={aud === 'pregnancy' ? tr('rc.menu.pregnancy') : tr('rc.menu.open')} icon="calendar" size="sm" variant="secondary" onPress={() => router.push('/meals/menu')} testID="open-menu" />
         <Button label={tr('rc.shopping.open')} icon="shopping-cart" size="sm" variant="secondary" onPress={() => router.push('/meals/shopping')} testID="open-shopping" />
         <Button label={tr('rc.rank.open')} icon="award" size="sm" variant="secondary" onPress={() => router.push('/meals/rankings')} testID="open-rankings" />
         <Button label={tr('rc.pantry.open')} icon="package" size="sm" variant="secondary" onPress={() => router.push('/meals/pantry')} testID="open-pantry" />
         {aud === 'baby' && profile.name ? <Button label={tr('rc.settings.open', { name: profile.name })} icon="sliders" size="sm" variant="secondary" onPress={() => router.push('/meals/settings')} testID="open-food-settings" /> : null}
         <Button label={tr('rc.new.open')} icon="plus" size="sm" variant="ghost" onPress={() => router.push('/meals/new')} />
-      </ScrollView>
+      </Row>
 
       <Field label={tr('rc.search')} value={q} onChangeText={setQ} placeholder={tr('rc.searchPh')} autoCorrect={false} testID="recipes-search" />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>

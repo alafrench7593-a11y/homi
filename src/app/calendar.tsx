@@ -7,6 +7,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { Animated, Linking, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton } from '@/components/States';
 import { StaggerItem, usePop } from '@/components/Motion';
 import { Flash, SlideSwap } from '@/components/MotionKit';
@@ -62,6 +63,7 @@ export default function FamilyCalendar() {
   }, [view, cursor]);
   const items = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(range[0]), atLocal(range[1])), [eventsQ.data, appointments, tasks, shifts, range]);
   const clashes = useMemo(() => overlaps(items), [items]);
+  const todayItems = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(todayISO()), atLocal(addDays(todayISO(), 1))), [eventsQ.data, appointments, tasks, shifts]);
 
   const dir = useRef(0);
   const [moved, setMoved] = useState<string | null>(null);
@@ -152,7 +154,18 @@ export default function FamilyCalendar() {
   );
 
   return (
-    <Screen back account title="Agenda familial" subtitle="Rendez-vous, activités, tâches et relais." right={<IconButton icon="plus" label="Nouvel événement" onPress={() => openNew()} />}>
+    <Screen back account title="Agenda familial" subtitle="Rendez-vous, activités, tâches et relais." right={<IconButton icon="plus" label="Nouvel événement" onPress={() => openNew()} />}
+      action={{ label: 'Ajouter un événement', icon: 'plus', onPress: () => openNew(), testID: 'calendar-add' }}>
+      {(() => {
+        const nextUp = todayItems.filter((x) => Date.parse(x.ends) >= Date.now()).sort((a, b) => (a.starts < b.starts ? -1 : 1))[0];
+        return (
+          <TodaySummary items={[
+            { icon: 'list', value: String(todayItems.length), label: todayItems.length > 1 ? 'Éléments prévus' : 'Élément prévu' },
+            { icon: 'calendar', value: String(todayItems.filter((x) => x.source === 'appointment').length), label: 'Rendez-vous' },
+            { icon: 'clock', value: nextUp ? (nextUp.allDay ? 'Journée' : hm(nextUp.starts)) : '—', label: nextUp ? `Ensuite : ${nextUp.title}` : 'Ensuite' },
+          ]} />
+        );
+      })()}
       <Segmented label="Vue" value={view} onChange={(v) => { dir.current = 0; setView(v); haptic('selection'); }} options={[{ value: 'day', label: 'Jour' }, { value: 'week', label: 'Semaine' }, { value: 'month', label: 'Mois' }, { value: 'agenda', label: 'Agenda' }]} />
       <Row style={{ justifyContent: 'space-between' }}>
         {view !== 'agenda' ? <IconButton icon="chevron-left" label="Période précédente" onPress={() => move(-1)} /> : <View />}

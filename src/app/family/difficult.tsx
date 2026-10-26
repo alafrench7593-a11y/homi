@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { ChildEssentials, TaskRow, TaskSheet } from '@/features/familyLoad';
@@ -55,12 +56,17 @@ export default function DifficultDay() {
   }
 
   return (
-    <Screen back title="Journée difficile" subtitle="Juste l’essentiel. Le reste peut attendre.">
+    <Screen back title="Journée difficile" subtitle="Juste l’essentiel. Le reste peut attendre."
+      action={{ label: asked ? 'Demande envoyée' : 'J’ai besoin d’aide aujourd’hui', icon: asked ? 'check' : 'life-buoy', onPress: askHelp, disabled: asked || ask.isPending, testID: 'difficult-help' }}>
+      <TodaySummary items={[
+        { icon: 'star', value: String(essential.length), label: 'Essentiel' },
+        { icon: 'calendar', value: String(todayAppointments.length), label: 'Rendez-vous' },
+        { icon: 'skip-forward', value: String(plan.length), label: 'Peut attendre' },
+      ]} />
       <Card tone="soft">
         <Text weight="bold">Demander de l’aide, en un geste</Text>
-        <Text variant="small" muted>Votre foyer reçoit « Besoin d’aide aujourd’hui ».</Text>
+        <Text variant="small" muted>Votre foyer reçoit « Besoin d’aide aujourd’hui » (bouton en bas).</Text>
         <Row wrap style={{ marginTop: spacing.sm }}>
-          <Button label={asked ? 'Demande envoyée' : 'J’ai besoin d’aide aujourd’hui'} icon={asked ? 'check' : 'life-buoy'} onPress={askHelp} loading={ask.isPending} disabled={asked} />
           <Button label="Demander un relais" variant="secondary" onPress={() => ask.mutateAsync({ kind: 'relay' }).then(() => toast('Demande de relais envoyée.')).catch((e) => toast(friendlyError(e), 'error'))} />
         </Row>
       </Card>

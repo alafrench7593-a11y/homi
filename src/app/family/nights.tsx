@@ -5,6 +5,7 @@
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
@@ -46,6 +47,10 @@ export default function NightRelay() {
   const plan = useMemo(() => (startIso && chosen.length ? planNights({ pattern, people: chosen, startDay: startIso, nights: n, startHour: Number(startHour) || 22, endHour: Number(endHour) || 6, custom: Array.from({ length: n }, (_, i) => custom[i] ?? chosen[i % chosen.length]) }) : []), [pattern, chosen, startIso, n, startHour, endHour, custom]);
   const upcoming = (shiftsQ.data ?? []).filter((s) => s.status !== 'cancelled' && Date.parse(s.ends_at) > Date.now());
   const conflicts = shiftConflicts(plan, upcoming);
+  const sortedUp = [...upcoming].sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1));
+  // la nuit en cours ou celle de ce soir (commence avant demain midi)
+  const tonight = sortedUp.find((x) => Date.parse(x.starts_at) < new Date(new Date().setHours(36, 0, 0, 0)).getTime());
+  const myPending = sortedUp.find((x) => x.user_id === me && x.status === 'planned');
 
   function toggleOrder(id: string) { setOrder((cur) => { const base = cur.length ? cur : []; return base.includes(id) ? base.filter((x) => x !== id) : [...base, id]; }); }
 
@@ -65,7 +70,14 @@ export default function NightRelay() {
   }
 
   return (
-    <Screen back title="Relais de nuit" subtitle="Qui se lève, quelle nuit. Sans compter les points.">
+    <Screen back title="Relais de nuit" subtitle="Qui se lève, quelle nuit. Sans compter les points."
+      action={myPending ? { label: 'Je confirme ma prochaine nuit', icon: 'check', onPress: () => setStatus(myPending, 'confirmed', 'Nuit confirmée.'), testID: 'nights-confirm-next' }
+        : plan.length ? { label: `Enregistrer ce planning (${plan.length} nuit${plan.length > 1 ? 's' : ''})`, icon: 'calendar', onPress: submit, disabled: save.isPending, testID: 'nights-save-plan' } : undefined}>
+      <TodaySummary items={[
+        { icon: 'moon', value: tonight ? labelOf(tonight.user_id) : '—', label: 'Cette nuit' },
+        { icon: 'calendar', value: String(upcoming.filter((x) => x.user_id === me).length), label: 'Mes nuits à venir' },
+        { icon: 'check-circle', value: String(upcoming.filter((x) => x.user_id === me && x.status === 'planned').length), label: 'À confirmer' },
+      ]} />
       <SectionTitle title="Nuits prévues" />
       {upcoming.length ? (
         <Card padded={false} style={{ paddingVertical: spacing.sm }}>

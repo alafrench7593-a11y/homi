@@ -7,12 +7,15 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { MiniBars, TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Row, Text } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { BottleNotificationSettings, NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { TimePicker } from '@/features/tracking';
-import { useChild, useMemberships } from '@/lib/data/hooks';
+import { useChild, useLogs, useMemberships } from '@/lib/data/hooks';
+import { addDays, todayISO } from '@/lib/domain/dates';
+import type { Bottle } from '@/lib/types';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useBottleChildren, useBottleTimer, useLastBottle, useNow, useStartBottleTimer, useTimerScheduledHere, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
 import {
@@ -43,6 +46,8 @@ export default function BottleReminderScreen() {
   const update = useUpdateBottleTimer();
   const start = useStartBottleTimer();
   const scheduledHere = useTimerScheduledHere(active);
+  // Résumé : biberons notés aujourd'hui et sur 7 jours (vraies saisies uniquement)
+  const weekQ = useLogs<Bottle>('bottle', childId || null, 7);
 
   const [sheet, setSheet] = useState<SheetKind>(null);
   const [startAt, setStartAt] = useState(new Date());
@@ -119,10 +124,19 @@ export default function BottleReminderScreen() {
   }
 
   const others = (children ?? []).filter((c) => c.id !== childId);
+  const today = todayISO();
+  const week = weekQ.data ?? [];
+  const todays = week.filter((b) => todayISO(new Date(b.at)) === today);
+  const drunk = todays.reduce((n, b) => n + (b.consumed_ml ?? 0), 0);
+  const days = Array.from({ length: 7 }, (_, i) => addDays(today, i - 6));
+  const perDay = days.map((d) => week.filter((b) => todayISO(new Date(b.at)) === d).length);
+  const dayLetters = days.map((d) => ['di', 'lu', 'ma', 'me', 'je', 've', 'sa'][new Date(`${d}T12:00:00`).getDay()]);
   const passed = active ? remainingMinutes(active, now) <= 0 : false;
 
   return (
     <Screen back title={`Biberon de ${name}`} subtitle="Rappel du prochain biberon"
+      action={{ label: 'Enregistrer un biberon', icon: 'plus', testID: 'bottle-record',
+        onPress: () => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, ...(active ? { timer: active.id } : {}) } }) }}
       right={<Button label="Historique" icon="list" variant="ghost" size="sm" onPress={() => router.push({ pathname: '/bottle/history', params: { child: childId } })} />}>
       {others.length > 0 && (
         <Row wrap>
@@ -131,6 +145,13 @@ export default function BottleReminderScreen() {
           ))}
         </Row>
       )}
+
+      <TodaySummary items={[
+        { icon: 'droplet', value: String(todays.length), label: todays.length > 1 ? 'Biberons' : 'Biberon', testID: 'bottle-today-count' },
+        { icon: 'bar-chart-2', value: drunk ? `${drunk} ml` : '—', label: 'Bu (noté)' },
+        { icon: 'bell', value: active && !passed ? formatClock(active.due_at) : '—', label: 'Prochain rappel' },
+      ]} />
+      {perDay.some((n) => n > 0) ? <MiniBars values={perDay} labels={dayLetters} testID="bottle-week" /> : null}
 
       {isLoading ? <Skeleton kind="detail" rows={3} /> : timerQ.isError && !timerQ.data ? (
         <ErrorView error={timerQ.error} onRetry={() => void timerQ.refetch()} title="Impossible d’afficher le rappel" />
@@ -156,8 +177,6 @@ export default function BottleReminderScreen() {
         </Card>
       )}
 
-      <Button label="Enregistrer un biberon" icon="plus" size="lg" testID="bottle-record"
-        onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, ...(active ? { timer: active.id } : {}) } })} />
       {active ? (
         <Row wrap>
           <Button label="Modifier le rappel" icon="edit-2" variant="secondary" onPress={openEdit} testID="bottle-edit" style={{ flexGrow: 1 }} />

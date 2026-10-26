@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { EmptyStateCard } from '@/components/ui-extra';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, type IconName, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -190,7 +191,19 @@ export default function AppointmentsScreen() {
   }
 
   return (
-    <Screen back title="Rendez-vous" subtitle="Consultations, échographies, examens, questions à poser." footer={<Button label="Ajouter un rendez-vous" icon="plus" onPress={openNew} full />}>
+    <Screen back title="Rendez-vous" subtitle="Consultations, échographies, examens, questions à poser."
+      action={{ label: 'Ajouter un rendez-vous', icon: 'plus', onPress: openNew, testID: 'appointments-add' }}>
+      {!isLoading ? (() => {
+        const next = upcoming[0];
+        const days = next ? Math.round((new Date(next.starts_at).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 86400000) : null;
+        return (
+          <TodaySummary title="En bref" items={[
+            { icon: 'clock', value: days == null ? '—' : days <= 0 ? 'Aujourd’hui' : days === 1 ? 'Demain' : `J-${days}`, label: next ? `Prochain : ${next.title}` : 'Prochain rendez-vous' },
+            { icon: 'calendar', value: String(upcoming.length), label: 'À venir' },
+            { icon: 'help-circle', value: String(upcoming.reduce((n, a) => n + a.questions.length, 0)), label: 'Questions à poser' },
+          ]} />
+        );
+      })() : null}
       {focusLabel ? (
         <Row wrap>
           <Chip label={`Pour ${focusLabel}`} selected={!everyone} onPress={() => setEveryone(false)} />

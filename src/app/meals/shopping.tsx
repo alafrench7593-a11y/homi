@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Button, Card, Field, haptic, Icon, Row, SectionTitle, Text } from '@/components/ui';
@@ -29,6 +30,10 @@ export default function Shopping() {
   const home = items.filter((i) => i.at_home);
   const left = toBuy.filter((i) => !i.checked).length;
   const aisles = AISLE_ORDER.filter((a) => toBuy.some((i) => i.aisle === a)).concat(toBuy.some((i) => !AISLE_ORDER.includes(i.aisle as never)) ? ['epicerie'] : []);
+  async function addItem() {
+    if (!list || !label.trim()) return;
+    try { await add.mutateAsync({ listId: list.id, householdId: list.household_id, label: label.trim(), position: items.length }); setLabel(''); } catch (e) { toast(friendlyError(e), 'error'); }
+  }
   const row = (i: typeof items[number]) => (
     <Tappable key={i.id} testID={`shop-${i.ingredient_key ?? i.label}`} accessibilityRole="checkbox" accessibilityState={{ checked: i.checked }} accessibilityLabel={`${i.label} ${formatQty(i.qty, i.unit)}`}
       onPress={() => { haptic('selection'); toggle.mutate({ id: i.id, checked: !i.checked }, { onError: (e) => toast(friendlyError(e), 'error') }); }}
@@ -40,6 +45,15 @@ export default function Shopping() {
   );
   return (
     <Screen back title={list.title} subtitle={tr('rc.shopping.left', { count: left })}>
+      <TodaySummary title={tr('rc.shopping.open')} items={[
+        { icon: 'shopping-cart', value: String(left), label: tr('mb.rc.toBuy') },
+        { icon: 'check-square', value: String(toBuy.length - left), label: tr('mb.rc.inCart') },
+        { icon: 'home', value: String(home.length), label: tr('mb.rc.atHome') },
+      ]} />
+      <Row style={{ alignItems: 'flex-end' }}>
+        <View style={{ flex: 1 }}><Field label={tr('rc.shopping.addItem')} value={label} onChangeText={setLabel} maxLength={120} testID="shop-add-label" onSubmitEditing={() => void addItem()} returnKeyType="done" /></View>
+      </Row>
+      <Button label={tr('rc.shopping.add')} icon="plus" variant="secondary" onPress={() => void addItem()} />
       {(members?.length ?? 0) > 1 ? <Text variant="small" muted testID="shopping-shared">{tr('rc.shopping.shared')}</Text> : <Text variant="small" muted>{tr('rc.shopping.shareHint')}</Text>}
       {aisles.map((a) => (
         <View key={a} style={{ gap: 2 }}>
@@ -48,13 +62,6 @@ export default function Shopping() {
         </View>
       ))}
       {home.length ? <><SectionTitle title={tr('rc.shopping.atHome')} /><Card>{home.map(row)}</Card></> : null}
-      <Row>
-        <View style={{ flex: 1 }}><Field label={tr('rc.shopping.addItem')} value={label} onChangeText={setLabel} maxLength={120} testID="shop-add-label" /></View>
-      </Row>
-      <Button label={tr('rc.shopping.add')} icon="plus" variant="secondary" onPress={async () => {
-        if (!label.trim()) return;
-        try { await add.mutateAsync({ listId: list.id, householdId: list.household_id, label: label.trim(), position: items.length }); setLabel(''); } catch (e) { toast(friendlyError(e), 'error'); }
-      }} />
     </Screen>
   );
 }
