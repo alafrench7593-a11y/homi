@@ -1,5 +1,5 @@
 /**
- * Personnages de « Notre histoire » (ElevenLabs, GPT Image 2.5, 26/10/2026) : la même femme que dans la vidéo
+ * Personnages de « Notre histoire » : croquis au fil doré (comme le logo), tirés des images ElevenLabs du 26/10/2026 : la même femme que dans la vidéo
  * de fond, à chaque étape de STORY_CHAPTERS, détourée (fond transparent) pour se poser sur le ciel de l'application.
  */
 /* eslint-disable @typescript-eslint/no-require-imports */
