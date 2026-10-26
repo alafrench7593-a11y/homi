@@ -39,6 +39,69 @@ export function useTweenedPose(target: Pose, still: boolean): Pose {
   return pose;
 }
 
+/**
+ * Croquis au fil doré animé : à l'arrivée, le trait se dessine de haut en bas ; ensuite, une lumière d'or parcourt
+ * le fil en continu (bande claire qui glisse le long du dessin). Immobile si les animations sont réduites.
+ */
+const GOLD_LIGHT = '#FFE7B0';
+function GoldThreadImage({ idx, opacity, still, night }: { idx: number; opacity: number; still: boolean; night: boolean }) {
+  const [h, setH] = useState(0);
+  const draw = useRef(new Animated.Value(still ? 1 : 0)).current;
+  const sweep = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (still || !h) { draw.setValue(1); return; }
+    draw.setValue(0);
+    const a = Animated.sequence([
+      Animated.timing(draw, { toValue: 1, duration: 1700, easing: Easing.inOut(Easing.cubic), useNativeDriver: NATIVE_DRIVER }),
+    ]);
+    a.start();
+    return () => a.stop();
+  }, [idx, still, h, draw]);
+  useEffect(() => {
+    if (still || !h) return;
+    sweep.setValue(0);
+    const loop = Animated.loop(Animated.sequence([
+      Animated.delay(900),
+      Animated.timing(sweep, { toValue: 1, duration: 3400, easing: Easing.inOut(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [still, h, sweep]);
+  const src = STORY_IMAGES[idx];
+  const full = { position: 'absolute' as const, top: 0, left: 0, right: 0, height: (h || '100%') as number | `${number}%` };
+  // fenêtre qui glisse : on déplace le cadre vers le bas et l'image vers le haut d'autant, pour qu'elle reste en place
+  const band = (size: number, alpha: number, k: number) => {
+    const travel = sweep.interpolate({ inputRange: [0, 1], outputRange: [-size, h + size] });
+    return (
+      <Animated.View key={k} pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: size, overflow: 'hidden', opacity: alpha, transform: [{ translateY: travel }] }}>
+        <Animated.Image source={src} resizeMode="contain" tintColor={GOLD_LIGHT}
+          style={[full, { transform: [{ translateY: Animated.multiply(travel, -1) }] }]} />
+      </Animated.View>
+    );
+  };
+  return (
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity }]} onLayout={(e) => setH(e.nativeEvent.layout.height)} testID={`story-img-${idx + 1}`}>
+      {/* tracé : le dessin apparaît de haut en bas */}
+      <Animated.View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: (h || '100%') as number | `${number}%`, overflow: 'hidden',
+        transform: [{ translateY: draw.interpolate({ inputRange: [0, 1], outputRange: [-(h || 0), 0] }) }] }}>
+        <Animated.Image source={src} resizeMode="contain" accessibilityIgnoresInvertColors
+          style={[full, { transform: [{ translateY: draw.interpolate({ inputRange: [0, 1], outputRange: [h || 0, 0] }) }] }]} />
+      </Animated.View>
+      {/* pointe du fil qui se dessine : une lueur dorée au bord du tracé */}
+      {!still && h ? (
+        <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 26, overflow: 'hidden',
+          opacity: draw.interpolate({ inputRange: [0, 0.05, 0.92, 1], outputRange: [0, 1, 1, 0] }),
+          transform: [{ translateY: draw.interpolate({ inputRange: [0, 1], outputRange: [-13, h - 13] }) }] }}>
+          <Animated.Image source={src} resizeMode="contain" tintColor={GOLD_LIGHT}
+            style={[full, { transform: [{ translateY: draw.interpolate({ inputRange: [0, 1], outputRange: [13, -(h - 13)] }) }] }]} />
+        </Animated.View>
+      ) : null}
+      {/* lumière d'or qui parcourt le fil en continu (bande douce : trois épaisseurs superposées) */}
+      {!still && h ? [band(90, night ? 0.25 : 0.3, 0), band(46, night ? 0.45 : 0.5, 1), band(18, night ? 0.8 : 0.85, 2)] : null}
+    </View>
+  );
+}
+
 function useLoop(ms: number, still: boolean) {
   const v = useRef(new Animated.Value(0.5)).current;
   useEffect(() => {
@@ -139,10 +202,7 @@ export function FamilyStoryArt({ scene, pose: forced, progress, height = 150, la
       {/* personnages : respiration à peine perceptible */}
       <Animated.View style={{ flex: 1, transform: [{ translateY: breathe.interpolate({ inputRange: [0, 1], outputRange: [0.6, -0.6] }) }, { scale: breathe.interpolate({ inputRange: [0, 1], outputRange: [1, 1.006] }) }] }}>
         {images ? (
-          images.map(([idx, op]) => (
-            <Image key={idx} source={STORY_IMAGES[idx]} resizeMode="contain" accessibilityIgnoresInvertColors
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: op }} testID={`story-img-${idx + 1}`} />
-          ))
+          images.map(([idx, op]) => <GoldThreadImage key={idx} idx={idx} opacity={op} still={still} night={night} />)
         ) : (
           <StoryDrawing pose={pose} night={night} width="100%" height={height} />
         )}
