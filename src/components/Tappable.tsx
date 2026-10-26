@@ -10,7 +10,8 @@
  */
 import React, { useRef, useState } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, type GestureResponderEvent, type PressableProps, type StyleProp, View, type ViewStyle } from 'react-native';
-import { useReduceMotion } from '@/theme/ThemeProvider';
+import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
+import { linkFrame } from './linkFrame';
 import { easing, interaction, timeTo } from '@/theme/motion';
 
 const APressable = Animated.createAnimatedComponent(Pressable);
@@ -23,17 +24,22 @@ export interface TappableProps extends Omit<PressableProps, 'style'> {
   pressScale?: number;
   /** Soulèvement au survol en px (web) ; 0 = aucun. */
   hoverLift?: number;
+  /** Lien sans cadre (mentions sur une carte ou une photo). Par défaut, un lien est présenté comme un bouton arrondi. */
+  bare?: boolean;
 }
 
-export const Tappable = React.forwardRef<View, TappableProps>(function Tappable({ style, pressScale = interaction.pressScale, hoverLift = interaction.hoverLift, onPressIn, onPressOut, onHoverIn, onHoverOut, disabled, children, ...rest }, ref) {
+export const Tappable = React.forwardRef<View, TappableProps>(function Tappable({ style, pressScale = interaction.pressScale, hoverLift = interaction.hoverLift, onPressIn, onPressOut, onHoverIn, onHoverOut, disabled, bare, children, ...rest }, ref) {
   const reduce = useReduceMotion();
+  const theme = useTheme();
+  const framed = rest.accessibilityRole === 'link' && !bare;
   const press = useRef(new Animated.Value(0)).current;
   const hover = useRef(new Animated.Value(0)).current;
   const dynamic = typeof style === 'function';
   const [state, setState] = useState<State>({ pressed: false, hovered: false });
   const set = (k: keyof State, v: boolean) => { if (dynamic) setState((s) => (s[k] === v ? s : { ...s, [k]: v })); };
 
-  const userStyle = dynamic ? (style as (s: State) => StyleProp<ViewStyle>)(state) : style;
+  const ownStyle = dynamic ? (style as (s: State) => StyleProp<ViewStyle>)(state) : style;
+  const userStyle: StyleProp<ViewStyle> = framed ? [linkFrame(theme.isDark), ownStyle] : ownStyle;
   const flat = (StyleSheet.flatten(userStyle) ?? {}) as ViewStyle;
   const own = [
     { translateY: hover.interpolate({ inputRange: [0, 1], outputRange: [0, hoverLift] }) },

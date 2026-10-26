@@ -1,4 +1,5 @@
 /** Liste des tests compatibles, règles de chaque fabricant et sources. */
+import { Tappable } from '@/components/Tappable';
 import React from 'react';
 import { Linking, View } from 'react-native';
 import { Screen } from '@/components/Screen';
@@ -27,7 +28,9 @@ export default function CompatibleTestsScreen() {
               <Text variant="caption" muted>{MODE_LABEL[r.mode]}</Text>
               {r.readingRules.map((l) => <Text key={l} variant="small" style={{ marginTop: 2 }}>• {l}</Text>)}
               <Row style={{ marginTop: spacing.xs }}>
-                <Text variant="caption" color="#7A5CE0" accessibilityRole="link" onPress={() => Linking.openURL(r.source.url).catch(() => toast('Impossible d’ouvrir ce lien sur cet appareil.', 'error'))}>{`Source : ${r.source.title} (consultée le ${r.source.consultedOn.split('-').reverse().join('/')})`}</Text>
+                <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(r.source.url).catch(() => toast('Impossible d’ouvrir ce lien sur cet appareil.', 'error'))} style={{ flexShrink: 1 }}>
+                  <Text variant="caption" color="#7A5CE0" style={{ flexShrink: 1 }}>{`Source : ${r.source.title} (consultée le ${r.source.consultedOn.split('-').reverse().join('/')})`}</Text>
+                </Tappable>
               </Row>
               {r.source.note ? <Text variant="caption" muted>{r.source.note}</Text> : null}
             </Card>

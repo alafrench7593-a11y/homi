@@ -236,7 +236,7 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
               <Text variant="caption" muted>{tr(PROFILE_SUB[ctx.profile])}</Text>
             </View>
             <Tappable accessibilityRole="button" accessibilityLabel={tr('da.seeAllA11y')} onPress={() => setAll(true)} testID="track-see-all"
-              style={{ minHeight: 40, paddingHorizontal: 12, borderRadius: radius.pill, justifyContent: 'center', backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.75)' }}>
+              style={{ minHeight: 40, paddingHorizontal: 14, borderRadius: radius.pill, justifyContent: 'center', borderWidth: 1, borderColor: dark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.30)', backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.75)' }}>
               <Text variant="small" weight="bold" color={t.colors.primary}>{tr('da.seeAll')}</Text>
             </Tappable>
           </View>

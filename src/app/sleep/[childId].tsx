@@ -9,6 +9,7 @@
  *    professionnel — toujours gratuits.
  * Les heures affichées sont des estimations personnalisables, jamais des obligations ni des promesses.
  */
+import { Tappable } from '@/components/Tappable';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, Platform, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -462,9 +463,11 @@ function SafetyTab({ child, data }: { child: Child; data: PlanData }) {
         {SAFE_SLEEP_POINTS.map((s) => <Text key={s} variant="small" style={{ marginTop: 2 }}>{`• ${s}`}</Text>)}
         <Text variant="caption" muted style={{ marginTop: spacing.xs }}>Sources officielles :</Text>
         {SAFE_SLEEP_SOURCES.map((s) => (
-          <Text key={s.url} variant="caption" color={palette.lavenderInk} onPress={() => Linking.openURL(s.url)} accessibilityRole="link">
-            {`${s.label} — publié le ${new Date(`${s.published}T12:00:00`).toLocaleDateString('fr-FR')}, consulté le ${new Date(`${s.consulted_on}T12:00:00`).toLocaleDateString('fr-FR')}`}
-          </Text>
+          <Tappable key={s.url} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ alignSelf: 'stretch', marginTop: 4 }}>
+            <Text variant="caption" color={palette.lavenderInk} style={{ flex: 1 }}>
+              {`${s.label} — publié le ${new Date(`${s.published}T12:00:00`).toLocaleDateString('fr-FR')}, consulté le ${new Date(`${s.consulted_on}T12:00:00`).toLocaleDateString('fr-FR')}`}
+            </Text>
+          </Tappable>
         ))}
       </Card>
       <SectionTitle title="Quand demander un avis médical rapidement" />

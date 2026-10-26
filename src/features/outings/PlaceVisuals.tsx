@@ -61,7 +61,7 @@ export function SourceMark({ place }: { place: Pick<FamilyPlace, 'source'> }) {
   const t = useTheme();
   if (!isOsm(place)) return <GoogleMapsMark />;
   return (
-    <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(OSM_CONFIG.attributionUrl)} testID="out-osm-mark">
+    <Tappable bare accessibilityRole="link" onPress={() => void Linking.openURL(OSM_CONFIG.attributionUrl)} testID="out-osm-mark">
       <Text style={{ fontSize: 12, color: t.isDark ? '#E3E3E3' : '#5E5E5E' }}>{OSM_CONFIG.attribution}</Text>
     </Tappable>
   );
@@ -77,7 +77,7 @@ function CommonsPhoto({ place, height }: { place: FamilyPlace; height: number })
   return (
     <View testID={`out-photo-${place.id}`}>
       <Image source={{ uri: c.url }} onError={() => setFailed(true)} accessibilityLabel={place.name} style={{ height, borderRadius: 18, backgroundColor: t.colors.surfaceAlt }} resizeMode="cover" />
-      <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(c.pageUrl)} style={{ paddingTop: 2 }} testID="out-photo-credit">
+      <Tappable bare accessibilityRole="link" onPress={() => void Linking.openURL(c.pageUrl)} style={{ paddingTop: 2 }} testID="out-photo-credit">
         <Text variant="caption" muted numberOfLines={2}>{tr('out.photoCommons', { author: c.author, license: c.license })}</Text>
       </Tappable>
     </View>
@@ -101,7 +101,7 @@ function GooglePhoto({ place, height }: { place: FamilyPlace; height: number }) 
     <View testID={`out-photo-${place.id}`}>
       <Image source={{ uri: q.data }} onError={() => setFailed(true)} accessibilityLabel={place.name} style={{ height, borderRadius: 18, backgroundColor: t.colors.surfaceAlt }} resizeMode="cover" />
       {author ? (
-        <Tappable accessibilityRole="link" disabled={!url} onPress={() => url && void Linking.openURL(url)} style={{ paddingTop: 2 }} testID="out-photo-credit">
+        <Tappable bare accessibilityRole="link" disabled={!url} onPress={() => url && void Linking.openURL(url)} style={{ paddingTop: 2 }} testID="out-photo-credit">
           <Text variant="caption" muted numberOfLines={1}>{tr('out.photoBy', { author })}</Text>
         </Tappable>
       ) : null}

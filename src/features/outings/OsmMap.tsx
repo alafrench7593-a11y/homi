@@ -113,7 +113,7 @@ export function OsmMap({ center, places, height = 320, onSelect, interactive = t
           {moved ? <IconButton icon="crosshair" label={tr('out.recenter')} tone="filled" onPress={() => { setView(null); setZoom(null); }} /> : null}
         </View>
       ) : null}
-      <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(OSM_CONFIG.attributionUrl)} testID="out-osm-attribution"
+      <Tappable bare accessibilityRole="link" onPress={() => void Linking.openURL(OSM_CONFIG.attributionUrl)} testID="out-osm-attribution"
         style={{ position: 'absolute', right: 0, bottom: 0, paddingHorizontal: 6, paddingVertical: 2, borderTopLeftRadius: 8, backgroundColor: 'rgba(255,255,255,0.88)' }}>
         <Text variant="caption" color="#333">{OSM_CONFIG.attribution}</Text>
       </Tappable>

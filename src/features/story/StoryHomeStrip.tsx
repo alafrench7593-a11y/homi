@@ -3,6 +3,7 @@
  * semaine de grossesse, enfant selon SON âge, jumeaux et fratrie selon la famille renseignée). Bandeau discret et
  * compact (130 px), au-dessus des cartes utiles qu'il ne masque jamais ; touché, il ouvre la présentation.
  */
+import { linkFrame } from '@/components/linkFrame';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -39,7 +40,7 @@ export function StoryHomeStrip() {
       <View style={{ flex: 1, alignSelf: 'center', gap: 4, paddingRight: spacing.xs }}>
         <Text variant="caption" muted style={{ letterSpacing: 1.2, textTransform: 'uppercase' }}>Au fil de nous</Text>
         <Text weight="bold" numberOfLines={2} testID="home-story-caption">{caption}</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
+        <View style={[linkFrame(t.isDark), { marginTop: 4, minHeight: 34, paddingHorizontal: 12 }]}>
           <Text variant="caption" weight="bold" color={t.colors.primary}>Notre histoire</Text>
           <Icon name="arrow-right" size={13} color={t.colors.primary} />
         </View>

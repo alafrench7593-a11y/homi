@@ -1,4 +1,5 @@
 /** Lecture d'un article : contenu, sources, dates et statut de relecture. */
+import { Tappable } from '@/components/Tappable';
 import React, { useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -7,7 +8,7 @@ import { Markdown } from '@/components/Markdown';
 import { PremiumGate } from '@/components/Family';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Divider, FavoriteButton, IconButton, Row, Text } from '@/components/ui';
+import { Banner, Button, Card, Divider, FavoriteButton, Icon, IconButton, Row, Text } from '@/components/ui';
 import { backend } from '@/lib/backend';
 import { useArticles, useInvalidate, usePremium, useRows } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -79,9 +80,12 @@ export default function ArticleScreen() {
       <Card tone="soft">
         <Text weight="bold">{tr('art.references')}</Text>
         {a.sources.length ? a.sources.map((s) => (
-          <Text key={s.url} variant="small" color={t.colors.primary} accessibilityRole="link" onPress={() => Linking.openURL(s.url).catch(() => toast('Impossible d’ouvrir ce lien sur cet appareil.', 'error'))} style={{ marginTop: 6, textDecorationLine: 'underline' }}>
-            {s.label}{s.published ? ` — ${tr('art.published', { date: formatDateFr(s.published) })}` : ''}{s.consulted_on ? ` (${tr('art.consulted', { date: formatDateFr(s.consulted_on) })})` : ''}
-          </Text>
+          <Tappable key={s.url} accessibilityRole="link" onPress={() => void Linking.openURL(s.url).catch(() => toast('Impossible d’ouvrir ce lien sur cet appareil.', 'error'))} style={{ marginTop: 6, alignSelf: 'stretch' }}>
+            <Icon name="external-link" size={14} color={t.colors.primary} />
+            <Text variant="small" color={t.colors.text} style={{ flex: 1 }}>
+              {s.label}{s.published ? ` — ${tr('art.published', { date: formatDateFr(s.published) })}` : ''}{s.consulted_on ? ` (${tr('art.consulted', { date: formatDateFr(s.consulted_on) })})` : ''}
+            </Text>
+          </Tappable>
         )) : <Text variant="small" muted>Aucune source renseignée.</Text>}
         <View style={{ marginTop: spacing.sm, gap: 2 }}>
           {a.author_name && <Text variant="caption" muted>Rédaction : {a.author_name}</Text>}

@@ -12,6 +12,7 @@
  *  7. Un article adapté à l'âge.
  * Toutes les données viennent du profil affiché (clé = identifiant de l'enfant) : rien n'est mélangé.
  */
+import { linkFrame } from '@/components/linkFrame';
 import { NightsHelpCard } from '@/features/sleepHelpCard';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -321,9 +322,9 @@ function SmallLink({ icon, label, onPress, testID }: { icon: IconName; label: st
   const t = useTheme();
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} testID={testID}
-      style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingHorizontal: spacing.sm, borderRadius: radius.pill, opacity: pressed ? 0.7 : 1 })}>
-      <Icon name={icon} size={15} color={t.colors.textMuted} />
-      <Text variant="caption" weight="bold" muted>{label}</Text>
+      style={({ pressed }) => ({ ...linkFrame(t.isDark), minHeight: 44, opacity: pressed ? 0.8 : 1 })}>
+      <Icon name={icon} size={15} color={t.colors.primary} />
+      <Text variant="caption" weight="bold" color={t.colors.text}>{label}</Text>
     </Tappable>
   );
 }
@@ -397,9 +398,10 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
               {actions.map((a, i) => (
                 <Tappable key={a.testID} testID={a.testID} accessibilityRole="button" accessibilityLabel={`${a.label}, ${child.first_name}`} disabled={busy} onPress={() => go(a)}
                   style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: 18, borderRadius: radius.pill, opacity: busy ? 0.6 : pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }],
-                    backgroundColor: i === 0 ? (dark ? 'rgba(185,162,255,0.42)' : 'rgba(123,102,224,0.92)') : (dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.72)') })}>
-                  <Icon name={a.icon} size={17} color={i === 0 ? '#FFFFFF' : t.colors.text} />
-                  <Text weight="bold" color={i === 0 ? '#FFFFFF' : undefined}>{a.label}</Text>
+                    borderWidth: 1, borderColor: i === 0 ? 'transparent' : dark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.30)',
+                    backgroundColor: i === 0 ? t.colors.primary : (dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,250,246,0.75)') })}>
+                  <Icon name={a.icon} size={17} color={i === 0 ? t.colors.primaryText : t.colors.text} />
+                  <Text weight="bold" color={i === 0 ? t.colors.primaryText : undefined}>{a.label}</Text>
                 </Tappable>
               ))}
             </View>

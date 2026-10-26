@@ -12,6 +12,7 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, NACRE, radius, spacing, typeScale } from '@/theme/tokens';
 import { useUiStore } from '@/lib/store';
 import { GlassSurface } from './Glass';
+import { linkFrame } from './linkFrame';
 import { usePop, usePressMotion, useShake, useTilt } from './Motion';
 import { duration, interaction, springTo, timeTo } from '@/theme/motion';
 import { t as tr } from '@/i18n';
@@ -205,12 +206,12 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
   const off = !!disabled;
   const solid = variant === 'primary' || variant === 'danger' || variant === 'night';
 
-  const bg = { primary: t.colors.primary, secondary: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.72)', outline: 'transparent', ghost: 'transparent', danger: t.colors.danger, night: '#D9B48A' }[variant];
+  const bg = { primary: t.colors.primary, secondary: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.72)', outline: 'transparent', ghost: t.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,250,246,0.5)', danger: t.colors.danger, night: '#D9B48A' }[variant];
   const fg = {
     primary: t.colors.primaryText, secondary: t.colors.text, outline: t.colors.primary, ghost: t.colors.primary,
     danger: t.isDark ? t.colors.primaryText : '#FFFFFF', night: '#141831',
   }[variant];
-  const border = { primary: 'transparent', secondary: t.isDark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.30)', outline: t.colors.primary, ghost: 'transparent', danger: t.colors.danger, night: '#D9B48A' }[variant];
+  const border = { primary: 'transparent', secondary: t.isDark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.30)', outline: t.colors.primary, ghost: t.isDark ? 'rgba(240,217,207,0.18)' : 'rgba(184,134,90,0.24)', danger: t.colors.danger, night: '#D9B48A' }[variant];
   // Voile d'état : clair sur les boutons pleins (survol), teinte de la marque sur les boutons transparents
   const veil = solid ? '#FFFFFF' : variant === 'secondary' ? t.colors.text : t.colors.primary;
   const veilHover = solid ? 0.1 : variant === 'secondary' ? 0.05 : 0.08;
@@ -250,7 +251,7 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
       onPress={handlePress}
       style={[
         styles.button,
-        { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: variant === 'ghost' ? BUTTON.padX[size] - 6 : BUTTON.padX[size] },
+        { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: BUTTON.padX[size] },
         // Profondeur subtile : ombre courte et douce sur les boutons pleins seulement (aucune ombre désactivé)
         solid && !off && { shadowColor: variant === 'danger' ? t.colors.danger : t.isDark ? '#000000' : '#6B3F2E', shadowOpacity: t.isDark ? 0.3 : 0.24, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 3 },
         variant === 'secondary' && !off && { shadowColor: '#6B3F2E', shadowOpacity: t.isDark ? 0 : 0.08, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
@@ -532,8 +533,9 @@ export function SectionTitle({ title, action, onAction }: { title: string; actio
     <View style={styles.sectionTitle}>
       <Text variant="heading" accessibilityRole="header">{title}</Text>
       {action && onAction ? (
-        <Pressable onPress={onAction} accessibilityRole="link" hitSlop={10} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
-          <Text variant="small" weight="medium" color={t.colors.primary}>{action}</Text>
+        <Pressable onPress={onAction} accessibilityRole="button" hitSlop={6} style={({ pressed }) => [linkFrame(t.isDark), { alignSelf: 'center', opacity: pressed ? 0.8 : 1 }]}>
+          <Text variant="small" weight="bold" color={t.colors.primary}>{action}</Text>
+          <Icon name="chevron-right" size={14} color={t.colors.primary} />
         </Pressable>
       ) : null}
     </View>
