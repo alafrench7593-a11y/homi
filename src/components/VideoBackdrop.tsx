@@ -42,6 +42,9 @@ export const BACKDROP_CLIPS: { day: BackdropClip[]; night: BackdropClip[] } = {
     { video: require('../../assets/video/jour-1.mp4'), poster: require('../../assets/video/jour-1.jpg') },
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     { video: require('../../assets/video/jour-2.mp4'), poster: require('../../assets/video/jour-2.jpg') },
+    // Première vidéo de fond (ciel, galets flottants, bulles, bateau en papier), gardée dans la rotation du jour
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    { video: require('../../assets/video/jour-galets.mp4'), poster: require('../../assets/video/jour-galets.jpg') },
   ],
   night: [
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -53,7 +56,7 @@ export const BACKDROP_CLIPS: { day: BackdropClip[]; night: BackdropClip[] } = {
 /** Compatibilité : première vidéo et première image de jour. */
 export const BACKGROUND_VIDEO: number = BACKDROP_CLIPS.day[0].video;
 export const BACKGROUND_POSTER: number = BACKDROP_CLIPS.day[0].poster;
-/** Première vidéo de fond (ciel, galets, bateau en papier, boucle de 4 s), remplacée le 26/10/2026 ; fichier conservé. */
+/** Première vidéo de fond (boucle de 4 s, paysage) ; sa version téléphone de 8 s, jour-galets.mp4, tourne avec les fonds de jour. */
 export const FIRST_BACKGROUND_VIDEO_FILE = 'assets/video/fond-ciel.mp4';
 /** Vidéo du prompt MOSS (Movento), essayée le 26/10/2026, remplacée par la vidéo générée pour l'application. */
 export const BACKGROUND_VIDEO_URL = 'https://cdn.5sdesign.art/projects/moss/hero.mp4';
