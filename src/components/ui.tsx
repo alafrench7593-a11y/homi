@@ -81,10 +81,10 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
   const tilt = useTilt(1);
   const bg = {
     surface: t.colors.surface,
-    soft: t.isDark ? 'rgba(255,134,168,0.12)' : 'rgba(255,214,226,0.62)',
+    soft: t.isDark ? 'rgba(231,192,143,0.10)' : 'rgba(250,234,223,0.7)',
     lavender: t.isDark ? 'rgba(195,178,255,0.12)' : 'rgba(225,215,255,0.6)',
     night: '#1E0F1A',
-    gold: t.isDark ? 'rgba(255,179,138,0.12)' : 'rgba(255,226,200,0.6)',
+    gold: t.isDark ? 'rgba(231,192,143,0.14)' : 'rgba(240,215,180,0.55)',
     danger: t.colors.dangerSoft,
   }[tone];
   // Verre liquide pour les cartes translucides ; les cartes pleines (nuit, alerte) restent opaques
@@ -132,7 +132,8 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
  * Bouton unique de l'application (refonte 2026 : sobre, net, cohérent).
  * Hiérarchie : primary (plein), secondary (fond discret + liseré), outline (liseré couleur), ghost (sans fond),
  * danger (= destructive), night (mode nuit). Tailles sm / md / lg ; hauteur minimale, jamais fixe : un libellé long
- * passe à la ligne. Coins 10–12 px, liseré de 1 px, ombre très légère sur les boutons pleins.
+ * passe à la ligne. Forme pilule ; bouton principal en dégradé cuivre doré avec reflet, secondaire en verre dépoli
+ * au liseré champagne (refonte « moderne et élégante » du 26/10/2026), ombres chaudes et diffuses.
  * États : survol (web, 180 ms : voile de couleur), appui (enfoncement 0,98 + voile plus marqué), focus clavier
  * (anneau global, src/components/WebInteractionStyles.tsx), désactivé (atténué, sans ombre), chargement
  * (indicateur à la place du libellé, sans changement de taille). « Réduire les animations » : états immédiats.
@@ -154,9 +155,9 @@ interface ButtonProps extends Omit<PressableProps, 'style' | 'children' | 'onPre
 
 /** Proportions du système de boutons (une seule source). */
 export const BUTTON = {
-  height: { sm: 38, md: MIN_TOUCH, lg: 54 },
-  padX: { sm: 12, md: 18, lg: 22 },
-  radius: { sm: 10, md: 12, lg: 14 },
+  height: { sm: 40, md: 50, lg: 56 },
+  padX: { sm: 16, md: 24, lg: 28 },
+  radius: { sm: 20, md: 25, lg: 28 }, // pilule (moitié de la hauteur)
   font: { sm: 14, md: 15, lg: 16 },
   icon: { sm: 15, md: 17, lg: 18 },
   pressScale: 0.98,
@@ -166,7 +167,9 @@ export const BUTTON = {
 };
 
 /** Liseré discret, dérivé de la couleur du texte du thème (aucune nouvelle couleur). */
-export const hairline = (isDark: boolean) => (isDark ? 'rgba(255,255,255,0.14)' : 'rgba(42,26,38,0.12)');
+export const hairline = (isDark: boolean) => (isDark ? 'rgba(240,217,207,0.18)' : 'rgba(135,83,63,0.16)');
+/** Dégradé des boutons principaux : reflet doré en haut, cuivre au centre, plus profond en bas. */
+export const PRIMARY_GRADIENT = (isDark: boolean): [string, string, string] => (isDark ? ['#F3D4A6', '#E7C08F', '#D6A874'] : ['#9C6650', '#87533F', '#764533']);
 
 /** Seules les flèches « avancent » de 2 px au survol : un indice de direction, pas un effet. */
 const NUDGE: Partial<Record<IconName, 'x' | 'up'>> = { 'arrow-right': 'x', 'chevron-right': 'x', 'external-link': 'up', send: 'x', 'log-in': 'x' };
@@ -202,12 +205,12 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
   const off = !!disabled;
   const solid = variant === 'primary' || variant === 'danger' || variant === 'night';
 
-  const bg = { primary: t.colors.primary, secondary: t.colors.surface, outline: 'transparent', ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
+  const bg = { primary: t.colors.primary, secondary: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.72)', outline: 'transparent', ghost: 'transparent', danger: t.colors.danger, night: '#D9B48A' }[variant];
   const fg = {
     primary: t.colors.primaryText, secondary: t.colors.text, outline: t.colors.primary, ghost: t.colors.primary,
-    danger: t.isDark ? t.colors.primaryText : '#FFFFFF', night: '#1A0A13',
+    danger: t.isDark ? t.colors.primaryText : '#FFFFFF', night: '#141831',
   }[variant];
-  const border = { primary: t.colors.primary, secondary: hairline(t.isDark), outline: t.colors.primary, ghost: 'transparent', danger: t.colors.danger, night: '#FF8FB1' }[variant];
+  const border = { primary: 'transparent', secondary: t.isDark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.30)', outline: t.colors.primary, ghost: 'transparent', danger: t.colors.danger, night: '#D9B48A' }[variant];
   // Voile d'état : clair sur les boutons pleins (survol), teinte de la marque sur les boutons transparents
   const veil = solid ? '#FFFFFF' : variant === 'secondary' ? t.colors.text : t.colors.primary;
   const veilHover = solid ? 0.1 : variant === 'secondary' ? 0.05 : 0.08;
@@ -249,13 +252,15 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
         styles.button,
         { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: variant === 'ghost' ? BUTTON.padX[size] - 6 : BUTTON.padX[size] },
         // Profondeur subtile : ombre courte et douce sur les boutons pleins seulement (aucune ombre désactivé)
-        solid && !off && { shadowColor: variant === 'danger' ? t.colors.danger : t.colors.primary, shadowOpacity: t.isDark ? 0.22 : 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 1 },
-        variant === 'secondary' && !off && { shadowColor: '#2A1A26', shadowOpacity: t.isDark ? 0 : 0.05, shadowRadius: 3, shadowOffset: { width: 0, height: 1 } },
+        solid && !off && { shadowColor: variant === 'danger' ? t.colors.danger : t.isDark ? '#000000' : '#6B3F2E', shadowOpacity: t.isDark ? 0.3 : 0.24, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 3 },
+        variant === 'secondary' && !off && { shadowColor: '#6B3F2E', shadowOpacity: t.isDark ? 0 : 0.08, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
       ]}
       {...rest}
     >
-      {/* Reflet intérieur d'1 px en haut des boutons pleins (lumière discrète, pas de dégradé) */}
-      {solid ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: radiusPx, right: radiusPx, height: 1, backgroundColor: 'rgba(255,255,255,0.22)' }} /> : null}
+      {/* Bouton principal : dégradé cuivre doré (or champagne la nuit) */}
+      {variant === 'primary' && !off ? <LinearGradient pointerEvents="none" colors={PRIMARY_GRADIENT(t.isDark)} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} /> : null}
+      {/* Reflet intérieur d'1 px en haut des boutons pleins et du verre */}
+      {solid || variant === 'secondary' ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: radiusPx * 0.7, right: radiusPx * 0.7, height: 1, backgroundColor: solid ? 'rgba(255,236,214,0.38)' : 'rgba(255,255,255,0.9)' }} /> : null}
       {/* Survol puis appui : voile d'état (sans décalage de mise en page) */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veil, opacity: m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, veilHover] }) }]} />
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veilPress < 0 ? '#000000' : veil, opacity: m.press.interpolate({ inputRange: [0, 1], outputRange: [0, veilPress < 0 ? 0.1 : veilPress] }) }]} />
@@ -263,7 +268,7 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
       <Animated.View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
         {icon && <Animated.View style={nudge(icon)}><Icon name={icon} size={iconSize} color={fg} /></Animated.View>}
         {label ? (
-          <Text weight="bold" color={fg} center style={{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size], lineHeight: BUTTON.font[size] + 6, letterSpacing: -0.15 }}>
+          <Text weight="bold" color={fg} center style={{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size], lineHeight: BUTTON.font[size] + 6, letterSpacing: 0.1 }}>
             {label}
           </Text>
         ) : null}
@@ -301,12 +306,12 @@ export function IconButton({ icon, label, onPress, color, size = 20, style, tone
       }}
       {...m.handlers}
       hitSlop={6}
-      style={[{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', borderRadius: 12, opacity: disabled ? 0.45 : 1 }, style]}
+      style={[{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', borderRadius: MIN_TOUCH / 2, opacity: disabled ? 0.45 : 1 }, style]}
     >
-      <Animated.View style={{ width: D, height: D, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: bg,
+      <Animated.View style={{ width: D, height: D, borderRadius: D / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: bg,
         borderWidth: tone === 'filled' ? 1 : 0, borderColor: hairline(t.isDark),
         transform: [{ scale: m.press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.94] }) }] }}>
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 11, backgroundColor: veil, opacity: Animated.add(
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: D / 2, backgroundColor: veil, opacity: Animated.add(
           m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, tone === 'primary' ? 0.12 : 0.07] }),
           m.press.interpolate({ inputRange: [0, 1], outputRange: [0, 0.06] })) }]} />
         <Icon name={icon} size={size} color={color ?? (tone === 'primary' ? t.colors.primaryText : t.colors.text)} />
@@ -320,14 +325,14 @@ export function Fab({ icon, label, onPress, style, accessibilityHint, showLabel 
   const t = useTheme();
   const press = usePressMotion({ pressed: 0.97, hoverLift: 0 });
   return (
-    <Animated.View style={[styles.fab, { backgroundColor: t.colors.primary, shadowColor: t.colors.primary }, style, press.style]}>
+    <Animated.View style={[styles.fab, { backgroundColor: t.colors.primary, shadowColor: t.isDark ? '#000000' : '#6B3F2E' }, style, press.style]}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={label}
         accessibilityHint={accessibilityHint}
         onPress={() => { haptic('light'); onPress(); }}
         {...press.handlers}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, minWidth: 52, justifyContent: 'center', paddingHorizontal: showLabel ? 18 : 0, borderRadius: 14, overflow: 'hidden' }}
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, minWidth: 52, justifyContent: 'center', paddingHorizontal: showLabel ? 22 : 0, borderRadius: 26, overflow: 'hidden' }}
       >
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#FFFFFF', opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, 0.14] }) }]} />
         <Icon name={icon} size={20} color={t.colors.primaryText} />
@@ -382,7 +387,7 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel,
       accessibilityLabel={accessibilityLabel ?? label}
       testID={testID}
       onPress={onPress ? () => { haptic('selection'); onPress(); } : undefined}
-      style={[styles.chip, { borderColor: selected ? active : hairline(t.isDark), backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : t.colors.surface }]}
+      style={[styles.chip, { borderColor: selected ? active : hairline(t.isDark), backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,250,246,0.7)' }]}
     >
       {icon && <Icon name={icon} size={15} color={filled ? t.colors.primaryText : selected ? active : t.colors.textMuted} />}
       {label ? <Text variant="small" weight="medium" color={filled ? t.colors.primaryText : selected ? active : t.colors.text} style={{ flexShrink: 1 }}>{label}</Text> : null}
@@ -406,8 +411,8 @@ export function Segmented<T extends string>({ options, value, onChange, label }:
         <Animated.View
           pointerEvents="none"
           style={{
-            position: 'absolute', top: PAD, bottom: PAD, left: PAD, width: segW, borderRadius: 9, backgroundColor: t.colors.primary,
-            shadowColor: t.colors.primary, shadowOpacity: 0.18, shadowRadius: 4, shadowOffset: { width: 0, height: 1 },
+            position: 'absolute', top: PAD, bottom: PAD, left: PAD, width: segW, borderRadius: 999, backgroundColor: t.colors.primary,
+            shadowColor: t.isDark ? '#000000' : '#6B3F2E', shadowOpacity: 0.2, shadowRadius: 8, shadowOffset: { width: 0, height: 3 },
             transform: [{ translateX: x.interpolate({ inputRange: [0, Math.max(1, options.length - 1)], outputRange: [0, (segW + GAP) * Math.max(1, options.length - 1)] }) }],
           }}
         />
@@ -458,10 +463,10 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
         {label}
         {optional ? <Text variant="small" muted>{`  (${tr('common.optional')})`}</Text> : null}
       </Text>
-      <View style={[styles.input, { borderColor: error ? t.colors.danger : t.colors.border, backgroundColor: t.colors.surface }]}>
+      <View style={[styles.input, { borderColor: error ? t.colors.danger : hairline(t.isDark), backgroundColor: t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,250,246,0.78)' }]}>
         {/* Halo de focus : liseré de la couleur principale qui apparaît en fondu */}
-        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: radius.md, borderWidth: 1.5, borderColor: t.colors.primary, opacity: focus }} /> : null}
-        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, borderRadius: radius.md + 4, borderWidth: 3, borderColor: t.colors.primary, opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0, 0.16] }) }} /> : null}
+        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: 18, borderWidth: 1.5, borderColor: t.colors.primary, opacity: focus }} /> : null}
+        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, borderRadius: 22, borderWidth: 3, borderColor: t.colors.primary, opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0, 0.16] }) }} /> : null}
         <TextInput
           ref={ref}
           placeholderTextColor={t.colors.textMuted}
@@ -629,15 +634,15 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
 
 const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: 1 },
-  shadow: { shadowColor: '#B4507A', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 0 },
-  fab: { borderRadius: 14, shadowOpacity: 0.22, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 4 },
+  shadow: { shadowColor: '#6B3F2E', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 0 },
+  fab: { borderRadius: 26, shadowOpacity: 0.26, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 4 },
   button: { borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 8, overflow: 'hidden' },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, minHeight: 44, maxWidth: '100%', borderRadius: 10, borderWidth: 1 },
-  segmented: { flexDirection: 'row', borderRadius: 12, padding: 4, gap: 4 },
-  segment: { flex: 1, minHeight: 44, borderRadius: 9, justifyContent: 'center', paddingHorizontal: 8 },
-  input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1.5, borderRadius: radius.md, paddingHorizontal: spacing.md, gap: spacing.xs },
-  banner: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md, alignItems: 'flex-start' },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6, minHeight: 44, maxWidth: '100%', borderRadius: 999, borderWidth: 1 },
+  segmented: { flexDirection: 'row', borderRadius: 999, padding: 4, gap: 4 },
+  segment: { flex: 1, minHeight: 44, borderRadius: 999, justifyContent: 'center', paddingHorizontal: 8 },
+  input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 18, paddingHorizontal: spacing.md + 2, gap: spacing.xs },
+  banner: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, alignItems: 'flex-start' },
   sectionTitle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.md },
   listRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingVertical: spacing.xs },
-  listIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  listIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
 });

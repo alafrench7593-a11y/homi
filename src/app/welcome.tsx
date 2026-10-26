@@ -50,13 +50,13 @@ export default function Welcome() {
             </View>
           </Appear>
           <Appear kind="scale" delay={0.3}>
-            <Tappable accessibilityRole="button" accessibilityLabel={tr('welcome.language', { language: localeInfo(getLocale()).native })} onPress={() => router.push('/intro')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 12, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.7 : 1 })}>
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('welcome.language', { language: localeInfo(getLocale()).native })} onPress={() => router.push('/intro')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 12, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.7 : 1 })}>
               <Icon name="globe" size={16} color={t.colors.text} />
               <Text variant="small" weight="medium">{localeInfo(getLocale()).native}</Text>
             </Tappable>
           </Appear>
           <Appear kind="scale" delay={0.34}>
-            <Tappable accessibilityRole="button" accessibilityLabel={tr('welcome.helpA11y')} onPress={() => router.push('/emergency')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 14, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.95)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.6)', opacity: pressed ? 0.8 : 1 })}>
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('welcome.helpA11y')} onPress={() => router.push('/emergency')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 16, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.95)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.6)', opacity: pressed ? 0.8 : 1 })}>
               <Icon name="life-buoy" size={16} color={t.colors.heart} />
               <Text variant="small" weight="medium">{tr('welcome.help')}</Text>
             </Tappable>
@@ -75,7 +75,7 @@ export default function Welcome() {
         {/* Texte principal, en bas et centré */}
         <View style={{ alignItems: 'center' }}>
           <Appear kind="pop" delay={0.22}>
-            <LinearGradient colors={t.isDark ? ['rgba(231,192,143,0.45)', 'rgba(42,36,72,0.65)', 'rgba(31,35,68,0.75)'] : ['rgba(230,190,150,0.7)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 6, marginBottom: 18 }}>
+            <LinearGradient colors={t.isDark ? ['rgba(231,192,143,0.45)', 'rgba(42,36,72,0.65)', 'rgba(31,35,68,0.75)'] : ['rgba(230,190,150,0.7)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, marginBottom: 18 }}>
               <Sparkle color={t.isDark ? '#FFFFFF' : '#87533F'} />
               <Text variant="small" color={ink}>{tr('brand.tagline')}</Text>
             </LinearGradient>
@@ -88,7 +88,7 @@ export default function Welcome() {
             </Appear>
             <Appear kind="mask" delay={0.62}>
               <Text center style={{ fontFamily: fonts.displayMedium, fontSize: 38, lineHeight: 46, letterSpacing: -1.6, color: ink }}>
-                <Text style={{ fontFamily: fonts.serifItalic, fontSize: 43, letterSpacing: -0.8, color: t.isDark ? '#FFB3C8' : '#D9507A' }}>{tr('welcome.title2a')}</Text>{tr('welcome.title2b')}
+                <Text style={{ fontFamily: fonts.serifItalic, fontSize: 43, letterSpacing: -0.8, color: t.isDark ? '#E7C08F' : '#9A5A48' }}>{tr('welcome.title2a')}</Text>{tr('welcome.title2b')}
               </Text>
             </Appear>
           </View>
@@ -114,7 +114,7 @@ export default function Welcome() {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8, marginTop: 26 }}>
           {STATS.map((s, i) => (
             <Appear key={s.key} kind="stat" delay={1.12 + i * 0.16} style={{ flex: 1, alignItems: 'center', gap: 6 }}>
-              <View style={{ width: 30, height: 30, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: t.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.7)' }}>
+              <View style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: t.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.7)' }}>
                 <Icon name={s.icon} size={15} color={ink} />
               </View>
               <Text variant="caption" center color={muted} style={{ minHeight: 34 }}>{tr(s.key)}</Text>

@@ -16,7 +16,7 @@ export function DemoBar() {
   if (!isDemo || !session) return null;
   return (
     <View pointerEvents="box-none" style={{ position: 'absolute', top: insets.top + 2, left: 0, right: 0, alignItems: 'center', zIndex: 50 }}>
-      <View accessibilityRole="text" accessibilityLabel={tr('demo.badgeA11y')} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 3, borderRadius: 999, backgroundColor: 'rgba(122,92,224,0.92)' }}>
+      <View accessibilityRole="text" accessibilityLabel={tr('demo.badgeA11y')} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 3, borderRadius: 999, backgroundColor: 'rgba(135,83,63,0.9)' }}>
         <Text variant="caption" weight="bold" color="#FFFFFF">{tr('demo.badge')}</Text>
         {canLeave ? (
           <Tappable accessibilityRole="button" accessibilityLabel={tr('demo.leaveA11y')} hitSlop={12} onPress={async () => { await leaveDemo(); router.replace('/welcome'); }}>

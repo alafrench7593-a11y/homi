@@ -67,8 +67,8 @@ describe('interactions', () => {
     expect(transform.some((t) => 'scale' in t)).toBe(true);
   });
 
-  it('boutons 2026 : coins de 10 à 14 px, zones tactiles confortables, états désactivé et chargement annoncés', async () => {
-    for (const r of Object.values(BUTTON.radius)) expect(r).toBeGreaterThanOrEqual(8), expect(r).toBeLessThanOrEqual(14);
+  it('boutons (refonte du 26/10/2026) : forme pilule, zones tactiles confortables, états désactivé et chargement annoncés', async () => {
+    for (const k of ['sm', 'md', 'lg'] as const) expect(BUTTON.radius[k]).toBe(BUTTON.height[k] / 2);
     expect(BUTTON.height.md).toBeGreaterThanOrEqual(44);
     expect(BUTTON.height.sm + 2 * 5).toBeGreaterThanOrEqual(44); // petite taille : zone de toucher élargie
     expect(BUTTON.hoverMs).toBeGreaterThanOrEqual(150); expect(BUTTON.hoverMs).toBeLessThanOrEqual(220);

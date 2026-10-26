@@ -77,8 +77,9 @@ export function GlassSurface({
 
 const styles = StyleSheet.create({
   // Ombre rose déjà utilisée par les cartes (#B4507A), plus ou moins diffuse selon la profondeur
-  shadowSoft: { shadowColor: '#B4507A', shadowOpacity: 0.06, shadowRadius: 14, shadowOffset: { width: 0, height: 6 } },
-  shadow: { shadowColor: '#B4507A', shadowOpacity: 0.09, shadowRadius: 24, shadowOffset: { width: 0, height: 10 } },
-  shadowFloat: { shadowColor: '#B4507A', shadowOpacity: 0.16, shadowRadius: 34, shadowOffset: { width: 0, height: 16 }, elevation: 6 },
+  // Ombres chaudes (brun cuivré) et diffuses depuis la refonte du 26/10/2026
+  shadowSoft: { shadowColor: '#6B3F2E', shadowOpacity: 0.06, shadowRadius: 16, shadowOffset: { width: 0, height: 6 } },
+  shadow: { shadowColor: '#6B3F2E', shadowOpacity: 0.09, shadowRadius: 28, shadowOffset: { width: 0, height: 12 } },
+  shadowFloat: { shadowColor: '#6B3F2E', shadowOpacity: 0.16, shadowRadius: 36, shadowOffset: { width: 0, height: 16 }, elevation: 6 },
   shadowDark: { shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 22, shadowOffset: { width: 0, height: 10 } },
 });

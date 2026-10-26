@@ -299,8 +299,8 @@ function Capsule({ m }: { m: ActionModel }) {
       </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={10} testID={`track-add-${m.key}`}
         onPress={() => { haptic('light'); m.onAdd(); }}
-        style={({ pressed }) => ({ position: 'absolute', top: 8, right: 8, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: dark ? 'rgba(201,184,255,0.35)' : INK[m.key], opacity: pressed ? 0.85 : 1 })}>
-        <Icon name={m.active ? 'sun' : 'plus'} size={16} color="#FFFFFF" />
+        style={({ pressed }) => ({ position: 'absolute', top: 8, right: 8, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, opacity: pressed ? 0.85 : 1, shadowColor: dark ? '#000000' : '#6B3F2E', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } })}>
+        <Icon name={m.active ? 'sun' : 'plus'} size={16} color={t.colors.primaryText} />
       </Pressable>
     </View>
   );
@@ -319,8 +319,8 @@ function Row({ m }: { m: ActionModel }) {
         </View>
       </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={8} onPress={m.onAdd}
-        style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.isDark ? 'rgba(201,184,255,0.3)' : INK[m.key] }}>
-        <Icon name={m.active ? 'sun' : 'plus'} size={18} color="#FFFFFF" />
+        style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
+        <Icon name={m.active ? 'sun' : 'plus'} size={18} color={t.colors.primaryText} />
       </Pressable>
     </View>
   );
