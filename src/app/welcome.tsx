@@ -7,8 +7,6 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { Appear } from '@/components/Appear';
-import { FetusArt } from '@/components/FetusArt';
-import { WeeksRing } from '@/components/DayClock';
 import { Button, Icon, type IconName, Text } from '@/components/ui';
 import { isDemo } from '@/lib/backend';
 import { startDemoWithoutAccount } from '@/lib/demoMode';
@@ -18,7 +16,7 @@ import { localeInfo } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
-import { BrandLogo } from '@/components/BrandLogo';
+import { BrandLine, BrandLogo } from '@/components/BrandLogo';
 
 function Sparkle({ color }: { color: string }) {
   return (
@@ -68,9 +66,9 @@ export default function Welcome() {
         {/* Illustration */}
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Appear kind="pop" delay={0.2} duration={1.3}>
-            <WeeksRing week={24} size={236}>
-              <FetusArt week={24} growth={0.55} size={176} interactive={false} accessibilityLabel={tr('welcome.illustrationA11y')} />
-            </WeeksRing>
+            <View accessibilityRole="image" accessibilityLabel={BRAND.name}>
+              <BrandLine size={260} />
+            </View>
           </Appear>
         </View>
 

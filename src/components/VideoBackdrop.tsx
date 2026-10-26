@@ -1,6 +1,6 @@
 /**
- * Fond vidéo en boucle (muet, plein écran, « cover »), derrière toutes les pages.
- * La vidéo est lue en streaming depuis son URL ; tant qu'elle n'est pas prête
+ * Fond vidéo (muet, plein écran, « cover »), derrière toutes les pages : plusieurs vidéos par ambiance, enchaînées.
+ * Les vidéos sont fournies avec l'application ; tant qu'elle n'est pas prête
  * (ou si le réseau manque), le fond rose poudré (ou bleu nuit) reste affiché dessous.
  * Un voile teinté par le thème garde le texte lisible de jour comme de nuit.
  */
@@ -10,6 +10,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 
 import { useLowPower } from '@/lib/lowPower';
+import { BACKDROP_FADE_S, backdropPlan, type BackdropPass } from '@/lib/domain/backdropPlan';
 export { useLowPower };
 
 /** Application au premier plan ? (la vidéo est mise en pause sinon) */
@@ -28,15 +29,32 @@ function useForeground(): boolean {
 }
 
 /**
- * Vidéo de fond « Au fil de nous » (ciel rose et crème, galets flottants, bulles, plume, bateau en papier), générée
- * pour l'application le 26/10/2026 (ElevenLabs, Seedance 2.5) puis mise en boucle sans raccord visible (fondu enchaîné
- * fin → début), sans son. Fournie avec l'application : aucune dépendance à un lien externe.
+ * Fonds vidéo « Au fil de nous » (26/10/2026, ElevenLabs, Kling 3 Pro) : 10 s chacun, format téléphone, sans son,
+ * aux couleurs du logo. Jour : ciel rose et pêche, lumière dorée, fil doré ; nuit : bleu nuit et prune, lune,
+ * étoiles, fil champagne. Fournis avec l'application : aucune dépendance à un lien externe.
+ * Ils tournent en fondu enchaîné, dans un ordre tiré au hasard, parfois en miroir et à vitesse variable
+ * (voir backdropPlan) : le fond n'est jamais tout à fait le même.
  */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-export const BACKGROUND_VIDEO: number = require('../../assets/video/fond-ciel.mp4');
-/** Première image de la vidéo : affichée pendant le chargement et quand les animations sont réduites. */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-export const BACKGROUND_POSTER: number = require('../../assets/video/fond-ciel.jpg');
+export interface BackdropClip { video: number; poster: number }
+export const BACKDROP_CLIPS: { day: BackdropClip[]; night: BackdropClip[] } = {
+  day: [
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    { video: require('../../assets/video/jour-1.mp4'), poster: require('../../assets/video/jour-1.jpg') },
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    { video: require('../../assets/video/jour-2.mp4'), poster: require('../../assets/video/jour-2.jpg') },
+  ],
+  night: [
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    { video: require('../../assets/video/nuit-1.mp4'), poster: require('../../assets/video/nuit-1.jpg') },
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    { video: require('../../assets/video/nuit-2.mp4'), poster: require('../../assets/video/nuit-2.jpg') },
+  ],
+};
+/** Compatibilité : première vidéo et première image de jour. */
+export const BACKGROUND_VIDEO: number = BACKDROP_CLIPS.day[0].video;
+export const BACKGROUND_POSTER: number = BACKDROP_CLIPS.day[0].poster;
+/** Première vidéo de fond (ciel, galets, bateau en papier, boucle de 4 s), remplacée le 26/10/2026 ; fichier conservé. */
+export const FIRST_BACKGROUND_VIDEO_FILE = 'assets/video/fond-ciel.mp4';
 /** Vidéo du prompt MOSS (Movento), essayée le 26/10/2026, remplacée par la vidéo générée pour l'application. */
 export const BACKGROUND_VIDEO_URL = 'https://cdn.5sdesign.art/projects/moss/hero.mp4';
 /** Ancienne vidéo de fond (ambiance nuit), conservée pour mémoire. */
@@ -63,45 +81,115 @@ export function webAssetUri(mod: unknown): string | undefined {
   try { return (Image.resolveAssetSource?.(mod as number) as { uri?: string } | undefined)?.uri; } catch { return undefined; }
 }
 
-function WebVideo({ onReady, playing }: { onReady: () => void; playing: boolean }) {
+type Layer = { pass: BackdropPass; n: number };
+
+/** Enchaîne les passages : deux couches qui alternent, la suivante démarre pendant la fin de la précédente. */
+function usePlaylist(clips: BackdropClip[]) {
+  const [plan] = useState(() => backdropPlan(clips.length, Math.random(), 24));
+  const [st, setSt] = useState<{ layers: [Layer, Layer]; active: 0 | 1 }>(() => ({
+    layers: [{ pass: plan[0], n: 0 }, { pass: plan[1 % plan.length], n: 1 }],
+    active: 0,
+  }));
+  const busy = useRef(false);
+  const next = React.useCallback(() => {
+    if (busy.current) return;
+    busy.current = true;
+    setSt(({ layers, active }) => {
+      const incoming: 0 | 1 = active === 0 ? 1 : 0;
+      const n = layers[active].n + 1;
+      const copy: [Layer, Layer] = [layers[0], layers[1]];
+      copy[incoming] = { pass: plan[n % plan.length], n };
+      return { layers: copy, active: incoming };
+    });
+    setTimeout(() => { busy.current = false; }, BACKDROP_FADE_S * 1000 + 300);
+  }, [plan]);
+  return { layers: st.layers, active: st.active, next };
+}
+
+function WebLayer({ clip, pass, n, active, playing, onReady, onNearEnd }: { clip: BackdropClip; pass: BackdropPass; n: number; active: boolean; playing: boolean; onReady: () => void; onNearEnd: () => void }) {
   const ref = useRef<HTMLVideoElement | null>(null);
+  // Nouveau passage sur cette couche : on repart du début, à la vitesse tirée
+  useEffect(() => {
+    const v = ref.current;
+    if (!v || !active) return;
+    try { v.currentTime = 0; } catch { /* vidéo pas encore prête */ }
+    v.playbackRate = pass.rate;
+    if (playing) v.play?.().catch(() => undefined);
+  }, [n, active]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
-    if (playing) v.play?.().catch(() => undefined);
-    else v.pause?.();
-  }, [playing]);
-  // Élément HTML natif : autoplay muet + playsInline.
+    if (!playing) v.pause?.();
+    else if (active) v.play?.().catch(() => undefined);
+  }, [playing, active]);
   return React.createElement('video', {
     ref,
-    src: webAssetUri(BACKGROUND_VIDEO),
-    poster: webAssetUri(BACKGROUND_POSTER),
-    autoPlay: true,
-    loop: true,
+    src: webAssetUri(clip.video),
+    poster: webAssetUri(clip.poster),
+    autoPlay: active,
     muted: true,
     playsInline: true,
     preload: 'auto',
     'aria-hidden': true,
-    onCanPlay: onReady,
-    style: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' },
+    onCanPlay: active ? onReady : undefined,
+    onTimeUpdate: (e: { currentTarget: HTMLVideoElement }) => {
+      const v = e.currentTarget;
+      if (active && v.duration && (v.duration - v.currentTime) / (v.playbackRate || 1) <= BACKDROP_FADE_S) onNearEnd();
+    },
+    onEnded: active ? onNearEnd : undefined,
+    style: {
+      position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+      opacity: active ? 1 : 0, transition: `opacity ${BACKDROP_FADE_S}s ease-in-out`,
+      transform: pass.mirror ? 'scaleX(-1)' : 'none',
+    },
   });
 }
 
-function NativeVideo({ onReady, playing }: { onReady: () => void; playing: boolean }) {
-  const player = useVideoPlayer(BACKGROUND_VIDEO, (p) => {
-    p.loop = true;
+function NativeLayer({ clip, pass, n, active, playing, onReady, onNearEnd }: { clip: BackdropClip; pass: BackdropPass; n: number; active: boolean; playing: boolean; onReady: () => void; onNearEnd: () => void }) {
+  const player = useVideoPlayer(clip.video, (p) => {
+    p.loop = false;
     p.muted = true;
-    p.play();
+    p.timeUpdateEventInterval = 0.25;
   });
+  const fade = useRef(new Animated.Value(active ? 1 : 0)).current;
   useEffect(() => {
-    const sub = player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay') onReady(); });
-    return () => sub.remove();
-  }, [player, onReady]);
+    Animated.timing(fade, { toValue: active ? 1 : 0, duration: BACKDROP_FADE_S * 1000, useNativeDriver: true }).start();
+  }, [active, fade]);
   useEffect(() => {
+    const a = player.addListener('statusChange', ({ status }) => { if (status === 'readyToPlay' && active) onReady(); });
+    const b = player.addListener('timeUpdate', ({ currentTime }) => {
+      if (active && player.duration && (player.duration - currentTime) / (player.playbackRate || 1) <= BACKDROP_FADE_S) onNearEnd();
+    });
+    const c = player.addListener('playToEnd', () => { if (active) onNearEnd(); });
+    return () => { a.remove(); b.remove(); c.remove(); };
+  }, [player, active, onReady, onNearEnd]);
+  useEffect(() => {
+    if (!active) return;
+    player.currentTime = 0;
+    player.playbackRate = pass.rate;
     if (playing) player.play();
-    else player.pause();
-  }, [player, playing]);
-  return <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} allowsPictureInPicture={false} />;
+  }, [n, active]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!playing) player.pause();
+    else if (active) player.play();
+  }, [player, playing, active]);
+  return (
+    <Animated.View style={[StyleSheet.absoluteFill, { opacity: fade, transform: [{ scaleX: pass.mirror ? -1 : 1 }] }]}>
+      <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} allowsPictureInPicture={false} />
+    </Animated.View>
+  );
+}
+
+function VideoLayers({ clips, playing, onReady }: { clips: BackdropClip[]; playing: boolean; onReady: () => void }) {
+  const { layers, active, next } = usePlaylist(clips);
+  const Layer = Platform.OS === 'web' ? WebLayer : NativeLayer;
+  return (
+    <>
+      {layers.map((l, i) => (
+        <Layer key={i + ':' + l.pass.clip} clip={clips[l.pass.clip]} pass={l.pass} n={l.n} active={active === i} playing={playing} onReady={onReady} onNearEnd={next} />
+      ))}
+    </>
+  );
 }
 
 export function VideoBackdrop({ fallback }: { fallback?: React.ReactNode }) {
@@ -110,16 +198,19 @@ export function VideoBackdrop({ fallback }: { fallback?: React.ReactNode }) {
   const opacity = useFadeIn(ready);
   const onReady = React.useCallback(() => setReady(true), []);
   const night = t.isDark;
+  const clips = night ? BACKDROP_CLIPS.night : BACKDROP_CLIPS.day;
+  const [stillSeed] = useState(() => Math.random());
   const reduceMotion = useReduceMotion();
   const lowPower = useLowPower();
   const foreground = useForeground();
   const veil = <View style={[StyleSheet.absoluteFill, { backgroundColor: night ? VIDEO_VEIL.night : VIDEO_VEIL.day }]} testID="bg-video-veil" />;
-  // Économie d'énergie ou animations réduites : version fixe (première image de la vidéo, même voile)
+  // Économie d'énergie ou animations réduites : image fixe (tirée parmi les fonds de l'ambiance), même voile
   if (lowPower || reduceMotion) {
+    const still = clips[Math.floor(stillSeed * clips.length)] ?? clips[0];
     return (
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {fallback}
-        <Image source={BACKGROUND_POSTER} resizeMode="cover" style={StyleSheet.absoluteFill} accessibilityIgnoresInvertColors testID="bg-video-poster" />
+        <Image source={still.poster} resizeMode="cover" style={StyleSheet.absoluteFill} accessibilityIgnoresInvertColors testID="bg-video-poster" />
         {veil}
       </View>
     );
@@ -127,8 +218,8 @@ export function VideoBackdrop({ fallback }: { fallback?: React.ReactNode }) {
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       {fallback}
-      <Animated.View style={[StyleSheet.absoluteFill, { opacity }]}>
-        {Platform.OS === 'web' ? <WebVideo onReady={onReady} playing={foreground} /> : <NativeVideo onReady={onReady} playing={foreground} />}
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity }]} testID={night ? 'bg-video-night' : 'bg-video-day'}>
+        <VideoLayers key={night ? 'night' : 'day'} clips={clips} playing={foreground} onReady={onReady} />
         {/* Voile de lisibilité : clair et chaleureux le jour, sombre le soir */}
         {veil}
       </Animated.View>
