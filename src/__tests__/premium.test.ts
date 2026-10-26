@@ -219,7 +219,7 @@ describe('widgets : rien de sensible sur l’écran verrouillé sans accord', ()
   it('grossesse, rendez-vous et prénom masqués par défaut', () => {
     const w = widgetSnapshot({ scope: 'pregnancy', weeksSA: 24, nextAppointment: { title: 'Échographie', at: '2026-10-25T09:00:00Z' } });
     expect(JSON.stringify(w)).not.toMatch(/24 SA|Échographie/);
-    expect(w.title).toBe('Toi & Moi');
+    expect(w.title).toBe('Au fil de nous');
     const ok = widgetSnapshot({ scope: 'pregnancy', weeksSA: 24 }, { lockScreenDetails: true });
     expect(ok.lines[0].value).toBe('24 SA');
   });

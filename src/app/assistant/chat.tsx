@@ -429,8 +429,8 @@ export default function Chat() {
         ListFooterComponent={premiumNeeded || blocked ? (
           <Card tone="gold">
             <Text weight="bold">{premiumNeeded ?? `Vous avez utilisé vos ${limit} questions de ce mois.`}</Text>
-            <Text variant="small" muted>Avec Toi & Moi Premium, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence et les numéros d’urgence restent toujours gratuits.</Text>
-            <Button label="Découvrir Toi & Moi Premium" size="sm" variant="secondary" icon="star" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
+            <Text variant="small" muted>Avec Au fil de nous Premium, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence et les numéros d’urgence restent toujours gratuits.</Text>
+            <Button label="Découvrir Au fil de nous Premium" size="sm" variant="secondary" icon="star" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
           </Card>
         ) : null}
       />

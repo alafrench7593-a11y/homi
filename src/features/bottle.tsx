@@ -137,7 +137,7 @@ export function BottleNotificationSettings() {
         </View>
       )}
       {s.enabled && s.permission === 'denied' && (
-        <Banner tone="warning" icon="bell-off">{'Les notifications sont refusées dans les réglages du téléphone. Le rappel reste affiché dans l’application ; pour être prévenu, autorisez « Toi & Moi » dans Réglages > Notifications.'}</Banner>
+        <Banner tone="warning" icon="bell-off">{'Les notifications sont refusées dans les réglages du téléphone. Le rappel reste affiché dans l’application ; pour être prévenu, autorisez « Au fil de nous » dans Réglages > Notifications.'}</Banner>
       )}
     </Card>
   );

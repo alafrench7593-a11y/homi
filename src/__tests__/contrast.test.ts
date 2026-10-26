@@ -58,9 +58,11 @@ describe.each(Object.keys(themes) as ThemeName[])('thème %s', (name) => {
   it('texte des boutons principaux', () => expect(ratio(parse(c.primaryText).rgb, parse(c.primary).rgb)).toBeGreaterThanOrEqual(min(`${name}:boutons principaux`)));
 });
 
-it('palette de marque inchangée (couleurs verrouillées)', () => {
-  expect(themes.light.colors.primary).toBe('#E9587C');
-  expect(themes.light.colors.danger).toBe('#D63A3A');
+// Palette « Au fil de nous » (rose poudré, brun chaud ; nuit bleu nuit et prune), choisie le 26/10/2026
+it('palette de marque « Au fil de nous » (couleurs verrouillées)', () => {
+  expect(themes.light.colors.background).toBe('#F2DDD8');
+  expect(themes.light.colors.primary).toBe('#9A4F57');
+  expect(themes.light.colors.danger).toBe('#B02E2E');
   expect(themes.dark.colors.primary).toBe('#FF86A8');
   expect(themes.night.colors.primary).toBe('#E89AB0');
 });

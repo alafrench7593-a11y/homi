@@ -1670,7 +1670,7 @@ Le jour J, l’équipe s’adapte à vous et à votre bébé : ces repères ne r
 - Accepter de mettre certaines choses en pause et de fixer des priorités.
 - En parler à deux régulièrement : qui fait quoi, qui se repose quand.
 - Garder un peu de temps pour soi, même court.
-- Dans Toi & Moi, les tâches du foyer, l’agenda partagé et les relais de nuit peuvent aider à répartir la charge.
+- Dans Au fil de nous, les tâches du foyer, l’agenda partagé et les relais de nuit peuvent aider à répartir la charge.
 
 ### Et l’entourage
 Les grands-parents et la famille trouvent aussi leur nouvelle place. Écouter les conseils, mais faire confiance à vos propres choix de parents.
@@ -1700,7 +1700,7 @@ Si vous vous sentez dépassé(e), parlez-en à votre médecin, à votre sage-fem
 - Des règles qui deviennent difficiles à supporter, qui vous font manquer l’école ou le travail.
 - Des douleurs qui ne passent pas avec les mesures habituelles.
 
-Des règles très douloureuses peuvent être liées à une endométriose : un professionnel peut faire le point avec vous. Le suivi du cycle dans Toi & Moi permet de noter vos douleurs pour en parler plus facilement.
+Des règles très douloureuses peuvent être liées à une endométriose : un professionnel peut faire le point avec vous. Le suivi du cycle dans Au fil de nous permet de noter vos douleurs pour en parler plus facilement.
 
 **En cas de douleur brutale et intense, de fièvre ou de malaise, appelez le 15.**`,
     journeys: ['avoid', 'ttc'],

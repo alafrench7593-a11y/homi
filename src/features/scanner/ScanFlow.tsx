@@ -350,7 +350,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
             <Banner tone="warning" title="Accès à la caméra refusé"
               action={cameraDenied === 'settings' ? <Button label="Ouvrir les réglages" size="sm" variant="secondary" style={{ marginTop: 6, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings().catch(() => undefined)} /> : undefined}>
               {cameraDenied === 'settings'
-                ? 'Autorisez la caméra pour Toi & Moi dans les réglages du téléphone, ou saisissez le code-barres à la main.'
+                ? 'Autorisez la caméra pour Au fil de nous dans les réglages du téléphone, ou saisissez le code-barres à la main.'
                 : 'Sans la caméra, vous pouvez saisir le code-barres ou le nom du produit.'}
             </Banner>
           ) : null}

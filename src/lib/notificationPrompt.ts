@@ -13,7 +13,7 @@ export async function askNotificationPermission(reason: string): Promise<Permiss
   if (current === 'denied') {
     const open = await confirm(
       'Notifications désactivées',
-      `${reason}\n\nLes notifications sont refusées pour Toi & Moi. Vous pouvez les réactiver dans les réglages du téléphone.`,
+      `${reason}\n\nLes notifications sont refusées pour Au fil de nous. Vous pouvez les réactiver dans les réglages du téléphone.`,
       'Ouvrir les réglages',
       false,
     );

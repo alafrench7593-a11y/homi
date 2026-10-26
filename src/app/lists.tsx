@@ -199,7 +199,7 @@ export default function ListsScreen() {
       )}
       {atLimit ? (
         <View style={{ gap: spacing.sm }}>
-          <Banner tone="warning" title="Limite de la version gratuite">{`Vous avez atteint ${limit} listes. Supprimez une liste terminée ou passez à Toi & Moi Premium pour en créer davantage.`}</Banner>
+          <Banner tone="warning" title="Limite de la version gratuite">{`Vous avez atteint ${limit} listes. Supprimez une liste terminée ou passez à Au fil de nous Premium pour en créer davantage.`}</Banner>
           <PremiumGate feature="Listes illimitées"><View /></PremiumGate>
         </View>
       ) : (

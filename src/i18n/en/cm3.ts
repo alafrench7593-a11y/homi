@@ -219,5 +219,5 @@ export const cm3: Messages<typeof fr> = {
   'cm3.moi.writeUsAt': 'Write to us at {email}',
   'cm3.moi.rules': 'Community guidelines',
   'cm3.moi.emergency': 'Emergencies',
-  'cm3.moi.disclaimer': 'Toi & Moi does not replace the advice of a healthcare professional.',
+  'cm3.moi.disclaimer': 'Au fil de nous does not replace the advice of a healthcare professional.',
 };

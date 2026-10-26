@@ -1,5 +1,9 @@
 /**
- * Direction artistique « Aurore » — immersive et chaleureuse.
+ * Direction artistique « Au fil de nous » (octobre 2026) : fond rose poudré doux et lumineux (#F2DDD8), dégradés
+ * crème et beige rosé, traits et textes brun chaud, accents taupe et rose poudré. Nuit : bleu nuit et prune,
+ * jamais de noir. Remplace la palette « Aurore » à la demande de la porteuse du projet.
+ *
+ * Ancienne direction « Aurore » — immersive et chaleureuse.
  * Un fond d'aurore boréale aux couleurs douces (pêche, rose, lavande, menthe) ondule derrière
  * des cartes translucides. Jour : lumière crème et pêche. Soir & nuit : aurore lumineuse sur ciel prune.
  * Le rouge reste réservé aux urgences.
@@ -41,9 +45,9 @@ export function skyPhase(d: Date = new Date()): SkyPhase {
   return 'night';
 }
 export const SKY_GRADIENTS: Record<Exclude<SkyPhase, 'night'>, [string, string, string]> = {
-  dawn: ['#FFE3EA', '#FFF2F5', '#FFEFE8'],
-  day: ['#FFF7F9', '#FFF1F4', '#FFE9F0'],
-  dusk: ['#3A1630', '#1E0C19', '#120810'],
+  dawn: ['#F8EBE4', '#F2DDD8', '#EBD3CC'],
+  day: ['#F8EBE4', '#F2DDD8', '#EBD3CC'],
+  dusk: ['#2A2448', '#1F2344', '#191D3A'],
 };
 /** Heure représentative de chaque phase (aperçu dans les réglages). */
 export function previewTime(p: SkyPhase): Date {
@@ -88,27 +92,26 @@ export const themes: Record<ThemeName, Theme> = {
     name: 'light',
     isDark: false,
     colors: {
-      background: '#FFF6EF',
-      backgroundAlt: '#FFEDE6',
-      gradient: ['#FFF7F0', '#FFF2F1', '#F6F1FC'],
-      surface: 'rgba(255,255,255,0.68)',
-      surfaceAlt: 'rgba(255,255,255,0.46)',
-      border: 'rgba(255,255,255,0.9)',
-      text: '#2A1A26',
-      // Un peu plus foncé qu'avant : reste lisible (≥ 4,5:1) sur le ciel coloré du mode jour
-      textMuted: '#6B5560',
-      primary: '#E9587C',
+      background: '#F2DDD8', // rose poudré
+      backgroundAlt: '#EED5CF',
+      gradient: ['#F8EBE4', '#F2DDD8', '#EBD3CC'], // crème → rose poudré → beige rosé
+      surface: 'rgba(255,250,246,0.62)',
+      surfaceAlt: 'rgba(255,250,246,0.42)',
+      border: 'rgba(255,255,255,0.78)',
+      text: '#3A2621', // brun chaud
+      textMuted: '#6A5049', // taupe brun (≥ 4,5:1 sur le fond)
+      primary: '#9A4F57', // vieux rose profond
       primaryText: '#FFFFFF',
-      accent: '#FFB3C8',
-      accentSoft: 'rgba(255,179,200,0.35)',
-      lavender: '#7A5CE0',
-      gold: '#C2416E',
-      success: '#2F8A5B',
-      danger: palette.danger,
+      accent: '#E3B3AE', // rose poudré soutenu
+      accentSoft: 'rgba(227,179,174,0.38)',
+      lavender: '#7D5263', // prune taupe
+      gold: '#8E5040', // brun terre cuite
+      success: '#2A7A50',
+      danger: '#B02E2E', // rouge des urgences, assombri pour rester lisible sur le rose poudré (≥ 4,5:1)
       dangerSoft: palette.dangerSoft,
-      tabBar: 'rgba(42,26,38,0.86)',
-      overlay: 'rgba(42,26,38,0.35)',
-      heart: '#F0577F',
+      tabBar: 'rgba(74,50,42,0.88)',
+      overlay: 'rgba(58,38,33,0.35)',
+      heart: '#B4545F',
     },
   },
   // Soir & nuit : « Rose nuit »
@@ -116,9 +119,9 @@ export const themes: Record<ThemeName, Theme> = {
     name: 'dark',
     isDark: true,
     colors: {
-      background: '#170F22',
-      backgroundAlt: '#1D1329',
-      gradient: ['#2A1834', '#1C1128', '#120B1C'],
+      background: '#1F2344', // bleu nuit
+      backgroundAlt: '#262A4D',
+      gradient: ['#2A2448', '#1F2344', '#191D3A'], // prune → bleu nuit
       surface: 'rgba(255,255,255,0.07)',
       surfaceAlt: 'rgba(255,255,255,0.11)',
       border: 'rgba(255,255,255,0.12)',
@@ -133,7 +136,7 @@ export const themes: Record<ThemeName, Theme> = {
       success: '#9FE0B5',
       danger: '#FF8A8A',
       dangerSoft: 'rgba(255,90,90,0.16)',
-      tabBar: 'rgba(28,17,40,0.82)',
+      tabBar: 'rgba(30,32,64,0.86)',
       overlay: 'rgba(0,0,0,0.55)',
       heart: '#FF86A8',
     },
@@ -143,24 +146,24 @@ export const themes: Record<ThemeName, Theme> = {
     name: 'night',
     isDark: true,
     colors: {
-      background: '#0C060A',
-      backgroundAlt: '#140A11',
-      gradient: ['#0C060A', '#120810', '#180B15'],
-      surface: '#1A0E17',
-      surfaceAlt: '#22131D',
-      border: '#2E1A27',
+      background: '#141831', // bleu nuit tamisé (jamais noir)
+      backgroundAlt: '#191C38',
+      gradient: ['#1A1834', '#151830', '#12152C'],
+      surface: '#1E2140',
+      surfaceAlt: '#252848',
+      border: '#33365A',
       text: '#F3D6DF',
       textMuted: '#B8939F',
       primary: '#E89AB0',
       primaryText: '#140A11',
       accent: '#C98197',
-      accentSoft: '#2A1622',
+      accentSoft: '#2C2547',
       lavender: '#B7A3E6',
       gold: '#E89AB0',
       success: '#9CC1A2',
       danger: '#F0A0A0',
-      dangerSoft: '#3B2030',
-      tabBar: '#0C060A',
+      dangerSoft: '#3A2440',
+      tabBar: '#141831',
       overlay: 'rgba(0,0,0,0.6)',
       heart: '#E89AB0',
     },

@@ -29,7 +29,7 @@ export const legacy: Messages<typeof fr> = {
   'ask.disclaimer': 'AI assistant. It doesn’t replace a health professional.',
   'emergency.title': 'Need help now',
   'emergency.subtitle': 'These numbers are free and work without an account.',
-  'premium.title': 'Toi & Moi Premium',
+  'premium.title': 'Au fil de nous Premium',
   'premium.locked': 'Included with the subscription',
   'demo.banner': 'Demo mode: your data stays on this device.',
   'auth.signIn': 'Sign in',

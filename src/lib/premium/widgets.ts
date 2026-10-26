@@ -32,8 +32,8 @@ export function widgetSnapshot(i: WidgetInput, opts: { lockScreenDetails: boolea
   if (i.nextAppointment) lines.push({ key: 'appt', label: 'Prochain rendez-vous', value: `${dm(i.nextAppointment.at, opts.tz)} · ${i.nextAppointment.title}`, sensitive: true });
   if (i.nextReminder) lines.push({ key: 'reminder', label: 'Prochain rappel', value: `${hm(i.nextReminder.at, opts.tz)} · ${i.nextReminder.title}`, sensitive: true });
   // Écran verrouillé : sans accord explicite, rien de sensible (grossesse, cycle, santé, intitulés) ni le prénom
-  const safe = opts.lockScreenDetails ? lines : lines.map((l) => (l.sensitive ? { ...l, value: 'Ouvrir Toi & Moi pour voir' } : l));
-  const title = opts.lockScreenDetails && i.childName ? i.childName : 'Toi & Moi';
+  const safe = opts.lockScreenDetails ? lines : lines.map((l) => (l.sensitive ? { ...l, value: 'Ouvrir Au fil de nous pour voir' } : l));
+  const title = opts.lockScreenDetails && i.childName ? i.childName : 'Au fil de nous';
   const quickAction = i.scope === 'baby' ? { label: 'Noter un biberon', url: '/track/bottle' }
     : i.scope === 'child' ? { label: 'Noter un repas', url: '/track/meal' }
     : i.scope === 'cycle' ? { label: 'Noter mes règles', url: '/cycle/calendar' }

@@ -14,7 +14,8 @@ import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
 import { PostpartumHomeCard } from '@/features/postpartum';
-import { orderedHomeCards, PregnancyHero, setCycleRoute, UpcomingCard } from '@/features/home';
+import { effectiveHidden, orderedHomeCards, PregnancyHero, setCycleRoute, UpcomingCard } from '@/features/home';
+import { StoryHomeStrip } from '@/features/story/StoryHomeStrip';
 import { OutingsHomeCard } from '@/features/outings/OutingsHomeCard';
 import { DailyActions } from '@/features/dailyActions/DailyActions';
 import { FamilyOverview, NoJourneyCard } from '@/features/journeys';
@@ -171,6 +172,8 @@ export default function Home() {
           </Tappable>}
           <ProfileSwitcher variant={childScope && !mainLoading ? 'bubbles' : 'card'} />
         </Appear>
+        {/* « Au fil de nous » : l'étape du profil affiché, discrète, au-dessus des cartes utiles */}
+        {!mainLoading && !effectiveHidden(homeOrder, homeHidden).includes('story') ? <Appear kind="soft" delay={0.15}><StoryHomeStrip /></Appear> : null}
         {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 
         {/* Cartes de l'accueil, dans l'ordre choisi (Réglages › Mon accueil) */}

@@ -12,10 +12,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { WebInteractionStyles } from '@/components/WebInteractionStyles';
 import { ThemeProvider, useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { DaySky } from '@/components/DaySky';
-import { PREVIEW_HOUR, skyProfileFor } from '@/theme/daySky';
+import { PowderSky } from '@/components/PowderSky';
+import { PREVIEW_HOUR } from '@/theme/daySky';
 import { useUiStore } from '@/lib/store';
-import { useScope } from '@/lib/data/hooks-scope';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
@@ -29,12 +28,11 @@ import { SpaceGrotesk_600SemiBold } from '@expo-google-fonts/space-grotesk/600Se
 import { SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk/700Bold';
 import { Manrope_500Medium } from '@expo-google-fonts/manrope/500Medium';
 import { Manrope_600SemiBold } from '@expo-google-fonts/manrope/600SemiBold';
-import { Aurora } from '@/components/Aurora';
 import { Manrope_700Bold } from '@expo-google-fonts/manrope/700Bold';
 import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument-serif/400Regular_Italic';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router';
-import { LiquidAurora } from '@/components/LiquidAurora';
-import { useLowPower, VideoBackdrop } from '@/components/VideoBackdrop';
+import { useLowPower } from '@/lib/lowPower';
+import { VideoBackdrop } from '@/components/VideoBackdrop';
 import { JourneyGuard } from '@/components/JourneyGuard';
 import { DemoBar } from '@/components/DemoBar';
 import { OfflinePill } from '@/components/OfflinePill';
@@ -184,9 +182,8 @@ function WebFrame({ children }: { children: React.ReactNode }) {
   try { off = Platform.OS === 'web' && globalThis.localStorage?.getItem('toietmoi.frame') === 'off'; } catch { off = false; }
   if (Platform.OS !== 'web' || width < 600 || off) return <>{children}</>;
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#140D1C', padding: 24 }}>
-      <Aurora mood="evening" intensity={1.3} />
-      <View style={{ flex: 1, width: 420, maxHeight: 900, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)', shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 50, shadowOffset: { width: 0, height: 24 } }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#EBD3CC', padding: 24 }}>
+      <View style={{ flex: 1, width: 420, maxHeight: 900, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.7)', shadowColor: '#7A5546', shadowOpacity: 0.28, shadowRadius: 50, shadowOffset: { width: 0, height: 24 } }}>
         {children}
       </View>
     </View>
@@ -195,8 +192,9 @@ function WebFrame({ children }: { children: React.ReactNode }) {
 
 /**
  * Fond vivant unique, derrière toutes les pages.
- *  · Nuit (thème sombre) : vidéo en boucle, aurore en attendant qu'elle charge — inchangé.
- *  · Jour : ciel lumineux qui évolue avec l'heure et se teinte selon le profil affiché (DaySky).
+ *  · Vidéo de fond en boucle (ciel rose onirique) sous un voile rose poudré le jour, bleu nuit et prune la nuit.
+ *  · En attendant la vidéo, sans réseau, avec « Réduire les animations » ou en économie d'énergie : fond fixe
+ *    rose poudré (jour) ou bleu nuit et prune (nuit), jamais noir.
  * Le passage de l'un à l'autre se fait en fondu, et le début de soirée garde une lueur de coucher de soleil
  * qui s'éteint progressivement : jamais de changement brutal.
  */
@@ -206,7 +204,6 @@ function Backdrop() {
   const lowPower = useLowPower();
   const skyOverride = useUiStore((s) => s.skyOverride);
   const preference = useUiStore((s) => s.themePreference);
-  const scope = useScope();
   const [now, setNow] = useState(() => new Date());
   useEffect(() => { const id = setInterval(() => setNow(new Date()), 60_000); return () => clearInterval(id); }, []);
   const hour = skyOverride ? PREVIEW_HOUR[skyOverride] : now.getHours() + now.getMinutes() / 60;
@@ -225,13 +222,14 @@ function Backdrop() {
     <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: t.colors.background }}>
       {mounted.dark ? (
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>
-          <VideoBackdrop fallback={<LiquidAurora fallback={<Aurora />} />} />
+          {/* Nuit « Au fil de nous » : la vidéo de fond sous un voile bleu nuit et prune ; fond fixe en attendant ou sans animation */}
+          <VideoBackdrop fallback={<PowderSky hour={hour} night still={lowPower} />} />
           {glow > 0 && hour >= 18 ? <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(214,120,170,0.20)', 'rgba(255,164,128,0.30)']} locations={[0.3, 0.7, 1]} style={[StyleSheet.absoluteFill, { opacity: glow }]} /> : null}
         </Animated.View>
       ) : null}
       {mounted.light ? (
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: v }]}>
-          <DaySky hour={hour} profile={skyProfileFor(scope.scope)} still={lowPower} />
+          <VideoBackdrop fallback={<PowderSky hour={hour} night={false} still={lowPower} />} />
         </Animated.View>
       ) : null}
     </View>

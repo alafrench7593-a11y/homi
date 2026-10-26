@@ -29,7 +29,7 @@ const CATEGORY: Record<AppNotification['category'], { icon: IconName; label: str
   assistant: { icon: 'help-circle', label: 'Assistant' },
   subscription: { icon: 'star', label: 'Abonnement' },
   product_recall: { icon: 'alert-triangle', label: 'Rappel de produit' },
-  system: { icon: 'info', label: 'Toi & Moi' },
+  system: { icon: 'info', label: 'Au fil de nous' },
   family: { icon: 'users', label: 'Foyer' },
 };
 

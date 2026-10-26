@@ -11,8 +11,8 @@ export const i = (key: string, qty: number | null, unit: Unit | null, note?: str
 export function generatedPhoto(title: string): PhotoInfo {
   return {
     kind: 'generated',
-    source: 'Toi & Moi',
-    author: 'Illustration générée par programme pour l’application Toi & Moi',
+    source: 'Au fil de nous',
+    author: 'Illustration générée par programme pour l’application Au fil de nous',
     license: 'Création propre de l’application (aucune œuvre de tiers)',
     url: null,
     rights: 'Utilisation libre dans l’application, y compris commerciale',

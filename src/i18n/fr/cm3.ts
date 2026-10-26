@@ -217,5 +217,5 @@ export const cm3 = {
   'cm3.moi.writeUsAt': 'Écrivez-nous à {email}',
   'cm3.moi.rules': 'Règles de la communauté',
   'cm3.moi.emergency': 'Urgences',
-  'cm3.moi.disclaimer': 'Toi & Moi ne remplace pas l’avis d’un professionnel de santé.',
+  'cm3.moi.disclaimer': 'Au fil de nous ne remplace pas l’avis d’un professionnel de santé.',
 } as const;

@@ -128,6 +128,6 @@ export function consultationSummary(opts: {
   const consumed = inRange.filter((b) => b.consumed_ml != null);
   lines.push('');
   lines.push(`Sur la période : ${inRange.length} biberon${inRange.length > 1 ? 's' : ''} enregistré${inRange.length > 1 ? 's' : ''}` + (consumed.length ? ` ; quantité bue renseignée : ${fmtMl(consumed.reduce((s, b) => s + (b.consumed_ml ?? 0), 0))}.` : '.'));
-  lines.push(`Généré par Toi & Moi le ${String(p.day).padStart(2, '0')}/${String(p.month).padStart(2, '0')}/${p.year} à ${formatClock(now, opts.timeZone)}.`);
+  lines.push(`Généré par Au fil de nous le ${String(p.day).padStart(2, '0')}/${String(p.month).padStart(2, '0')}/${p.year} à ${formatClock(now, opts.timeZone)}.`);
   return lines.join('\n');
 }

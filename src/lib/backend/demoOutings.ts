@@ -42,7 +42,7 @@ export function createOutings(c: OutingsCtx) {
 
   function beforeInsert(table: string, r: Row) {
     // 20261029000100 : « Sorties près de chez moi » sert seulement à découvrir des lieux publics
-    if (table === 'community_meetups' || table === 'meetup_participants') throw fail('Les rencontres entre membres ne sont pas proposées dans Toi & Moi.');
+    if (table === 'community_meetups' || table === 'meetup_participants') throw fail('Les rencontres entre membres ne sont pas proposées dans Au fil de nous.');
     const me = c.me();
     if (table === 'place_suggestions') {
       r.user_id = me; r.status = 'pending'; r.moderated_at = null; r.equipment ??= [];

@@ -55,7 +55,7 @@ describe('contrôle des réponses de l’assistant', () => {
   it('ne transmet qu’un contexte minimal et validé', () => {
     const c = sanitizeContext({ journeys: ['pregnant', 'hack'], pregnancyWeekSA: 24.4, firstName: 'Lina', multiplicity: 'twins', childrenAgesMonths: [7, 'x', 400] });
     expect(c).toEqual({ journeys: ['pregnant'], pregnancyWeekSA: 24, multiplicity: 'twins', childrenAgesMonths: [7], postpartumWeeks: null });
-    const prompt = buildSystemPrompt('Toi & Moi', c, []);
+    const prompt = buildSystemPrompt('Au fil de nous', c, []);
     expect(prompt).toMatch(/jamais comme médecin/i);
     expect(prompt).toMatch(/jumeaux/);
     expect(prompt).not.toMatch(/Lina/);

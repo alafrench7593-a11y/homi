@@ -633,7 +633,7 @@ export const DIFFICULTY_LABEL: Record<Difficulty, string> = {
 /** Texte à montrer ou partager avec un médecin, une sage-femme ou la PMI. Uniquement ce qui a été noté. */
 export function proSheet(name: string, ageLabel: string, profile: SleepProfile | null | undefined, sleeps: SleepRecord[], childId: string, now = new Date(), note = ''): string {
   const tr = sleepTrends(sleeps, childId, now);
-  const lines = [`Sommeil de ${name} (${ageLabel}) — relevés notés dans Toi & Moi`, `Préparé le ${now.toLocaleDateString('fr-FR')}`, ''];
+  const lines = [`Sommeil de ${name} (${ageLabel}) — relevés notés dans Au fil de nous`, `Préparé le ${now.toLocaleDateString('fr-FR')}`, ''];
   const diffs = (profile?.difficulties ?? []).map((d) => DIFFICULTY_LABEL[d]);
   lines.push(diffs.length ? `Difficultés signalées par le parent : ${diffs.join(', ')}.` : 'Aucune difficulté cochée dans le profil.');
   if (tr.days) {

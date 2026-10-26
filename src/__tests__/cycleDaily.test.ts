@@ -263,9 +263,9 @@ describe('résumé du mois', () => {
 describe('widget iOS', () => {
   const { widgetContent } = require('@/widgets/widgetContent') as typeof import('@/widgets/widgetContent');
   it('discret par défaut, jamais détaillé si le cycle est masqué', () => {
-    const base = { appName: 'Toi & Moi', open: 'Ouvrir', cycleDay: 'Jour 12 du cycle', next: 'Règles estimées dans 16 jours' };
-    expect(widgetContent({ ...base, detailed: false, hidden: false })).toEqual({ title: 'Toi & Moi', line1: 'Ouvrir', line2: '' });
+    const base = { appName: 'Au fil de nous', open: 'Ouvrir', cycleDay: 'Jour 12 du cycle', next: 'Règles estimées dans 16 jours' };
+    expect(widgetContent({ ...base, detailed: false, hidden: false })).toEqual({ title: 'Au fil de nous', line1: 'Ouvrir', line2: '' });
     expect(widgetContent({ ...base, detailed: true, hidden: true }).line1).toBe('Ouvrir');
-    expect(widgetContent({ ...base, detailed: true, hidden: false })).toEqual({ title: 'Toi & Moi', line1: 'Jour 12 du cycle', line2: 'Règles estimées dans 16 jours' });
+    expect(widgetContent({ ...base, detailed: true, hidden: false })).toEqual({ title: 'Au fil de nous', line1: 'Jour 12 du cycle', line2: 'Règles estimées dans 16 jours' });
   });
 });

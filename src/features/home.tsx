@@ -279,6 +279,7 @@ export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' | 'cycle' }) {
  * (Réglages › Mon accueil) mais sont masquées par défaut.
  */
 export const HOME_CARDS: { key: string; label: string; detail: string; defaultHidden?: boolean }[] = [
+  { key: 'story', label: 'Au fil de nous', detail: 'L’illustration de votre étape (cycle, grossesse ou âge de l’enfant affiché), discrète, en haut de l’accueil' },
   { key: 'main', label: 'Carte principale', detail: 'Grossesse, post-partum, enfant, famille ou cycle selon le profil affiché' },
   { key: 'quick', label: 'Mes actions du jour', detail: 'Quatre raccourcis au plus, propres au profil affiché, personnalisables' },
   { key: 'upcoming', label: 'Prochain rendez-vous ou rappel', detail: '' },

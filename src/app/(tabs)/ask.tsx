@@ -152,9 +152,9 @@ export default function Ask() {
           tone="warning"
           icon="star"
           title="Limite mensuelle atteinte"
-          action={<Button label="Découvrir Toi & Moi Premium" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => assistantAccess.showPreview(undefined, quota ? { used: quota.quota - quota.remaining, quota: quota.quota, unit: 'questions' } : null)} />}
+          action={<Button label="Découvrir Au fil de nous Premium" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => assistantAccess.showPreview(undefined, quota ? { used: quota.quota - quota.remaining, quota: quota.quota, unit: 'questions' } : null)} />}
         >
-          {'Avec Toi & Moi Premium, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence reste toujours gratuite.'}
+          {'Avec Au fil de nous Premium, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence reste toujours gratuite.'}
         </Banner>
       )}
 

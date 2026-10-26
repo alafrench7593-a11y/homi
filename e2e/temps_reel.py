@@ -21,7 +21,7 @@ with sync_playwright() as p:
     b = p.chromium.launch(); ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR'); pg = ctx.new_page()
     pg.route('http://sb.fake.test/**', fake.route)
     pg.route_web_socket(re.compile(r'wss?://sb\.fake\.test/realtime/.*'), rt.attach)
-    pg.route(re.compile(r'https://d8j0ntlcm91z4\.cloudfront\.net/.*'), lambda r: r.abort())
+    pg.route(re.compile(r'https://(d8j0ntlcm91z4\.cloudfront\.net|cdn\.5sdesign\.art)/.*'), lambda r: r.abort())
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.on('console', lambda m: errs.append('console: ' + m.text[:160]) if m.type == 'error' and 'Failed to load resource' not in m.text else None)
     pg.goto(B + '/auth/sign-in'); pg.wait_for_timeout(3500)

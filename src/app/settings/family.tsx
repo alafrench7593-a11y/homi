@@ -171,7 +171,7 @@ function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: 
 function InvitedWithoutAccount({ code }: { code: string | null }) {
   useEffect(() => { if (code) void savePendingInvite(code); }, [code]);
   return (
-    <Screen back title="Invitation" subtitle="Rejoindre un foyer sur Toi & Moi">
+    <Screen back title="Invitation" subtitle="Rejoindre un foyer sur Au fil de nous">
       <Card tone="lavender">
         <Text weight="bold">Vous êtes invité·e à rejoindre un foyer</Text>
         <Text variant="small" style={{ marginTop: 4 }}>{code ? 'Créez votre compte ou connectez-vous : l’invitation vous attendra, puis vous la confirmerez en un geste.' : 'Ce lien d’invitation est incomplet. Demandez à la personne qui vous a invité·e de vous le renvoyer.'}</Text>

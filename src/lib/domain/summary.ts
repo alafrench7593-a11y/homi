@@ -78,5 +78,5 @@ export function childSummary(d: ChildData, from: Date, to: Date, tz?: string): S
 /** Texte à partager (message) : mêmes faits, sans mise en forme. */
 export function summaryText(title: string, subtitle: string, sections: SummarySection[]): string {
   return [title, subtitle, '', ...sections.flatMap((s) => [s.heading.toUpperCase(), ...s.lines.map((l) => `- ${l}`), '']),
-    'Faits enregistrés dans Toi & Moi par la famille. Ce résumé ne contient ni diagnostic ni interprétation médicale.'].join('\n');
+    'Faits enregistrés dans Au fil de nous par la famille. Ce résumé ne contient ni diagnostic ni interprétation médicale.'].join('\n');
 }

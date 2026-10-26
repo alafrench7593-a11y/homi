@@ -123,12 +123,12 @@ describe('bilan, conseils et contexte (logique)', () => {
     expect(ctx.usualBedtime).toBe('20:00');
     const clean = sanitizeContext({ sleep: { ...ctx, usualBedtime: '<script>', difficulties: ['night_wakings', 'pirate'], ageMonths: 8 }, childrenAgesMonths: [8] });
     expect(clean.sleep).toMatchObject({ ageMonths: 8, usualBedtime: null, difficulties: ['night_wakings'] });
-    const prompt = buildSystemPrompt('Toi & Moi', clean, []);
+    const prompt = buildSystemPrompt('Au fil de nous', clean, []);
     expect(prompt).toMatch(/M’AIDER POUR LES NUITS/);
     expect(prompt).toMatch(/ne conseilles JAMAIS de laisser pleurer/);
     expect(prompt).toMatch(/réveils noté\(s\) par nuit|2 réveil/);
-    expect(buildSystemPrompt('Toi & Moi', sanitizeContext({ sleep: { ageMonths: 4, daysNoted: 1 } }), [])).toMatch(/données insuffisantes/);
-    expect(buildSystemPrompt('Toi & Moi', sanitizeContext({ childrenAgesMonths: [4] }), [])).not.toMatch(/M’AIDER POUR LES NUITS/);
+    expect(buildSystemPrompt('Au fil de nous', sanitizeContext({ sleep: { ageMonths: 4, daysNoted: 1 } }), [])).toMatch(/données insuffisantes/);
+    expect(buildSystemPrompt('Au fil de nous', sanitizeContext({ childrenAgesMonths: [4] }), [])).not.toMatch(/M’AIDER POUR LES NUITS/);
   });
   it('rappels : seulement si le parent les active, textes du planning, jamais de réveil programmé', () => {
     const plan = planDay({ childId: 'a', birthDate: addDays(todayISO(), -240), sleeps: days('a', 5, 2) as never, now: new Date(new Date().setHours(8, 0, 0, 0)) });
