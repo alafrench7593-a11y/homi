@@ -86,7 +86,7 @@ function TrackEntry() {
   const toast = useToast();
   const inv = useInvalidate();
   // timer / planned : ouverture depuis le minuteur (« Marquer le biberon comme donné »)
-  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string; obs?: string }>();
+  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string; obs?: string; from?: string }>();
   const kind = (params.kind ?? 'bottle') as LogKind;
   const { data: tracked } = useTrackedChildren();
   const { data: bottleChildren } = useBottleChildren();
@@ -186,6 +186,9 @@ function TrackEntry() {
 
   // Repères de sécurité (quand consulter) à partir des saisies récentes + celle en cours
   const recentObs = useLogs<Observation>('observation', kind === 'observation' ? childId : null, 2);
+  // Premier biberon de la journée : après l'enregistrement, la journée biberons complète s'ouvre (créneaux à remplir)
+  const bottlesToday = useLogs<{ at: string }>('bottle', kind === 'bottle' ? childId : null, 1);
+  const firstOfDay = kind === 'bottle' && !(bottlesToday.data ?? []).some((b) => new Date(b.at).toDateString() === new Date().toDateString());
   const recentDiapers = useLogs<Diaper>('diaper', kind === 'observation' ? childId : null, 4);
   const notices = kind === 'observation' && child ? digestionNotices({
     ageMonths: childAge(child.birth_date).months,
@@ -267,7 +270,11 @@ function TrackEntry() {
         toast(res === 'queued' ? 'Enregistré sur l’appareil — synchronisation au retour du réseau.' : `${KIND_META[kind].label} enregistré.`, res === 'queued' ? 'info' : 'success');
       }
       haptic('success');
-      router.back();
+      if (kind === 'bottle' && !editing && firstOfDay && params.from !== 'day' && childId && time.toDateString() === new Date().toDateString()) {
+        router.replace({ pathname: '/bottle/[childId]', params: { childId } });
+      } else {
+        router.back();
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Enregistrement impossible.');
     } finally {

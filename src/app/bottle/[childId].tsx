@@ -9,7 +9,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { MiniBars, TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Chip, Field, haptic, Row, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, Icon, Row, Text } from '@/components/ui';
+import { useTheme } from '@/theme/ThemeProvider';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { BottleNotificationSettings, NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { TimePicker } from '@/features/tracking';
@@ -23,11 +24,14 @@ import {
   setReminderAt, snoozeTimer, SNOOZE_PRESETS, type ReminderChoice,
 } from '@/lib/domain/bottleTimer';
 import { spacing } from '@/theme/tokens';
+import { bottleDayPlan, nextSlot, slotClock } from '@/lib/domain/bottleDayPlan';
+import { BottleDayTimeline, openSlot } from '@/features/bottleDay';
 
 type SheetKind = 'start' | 'edit' | null;
 
 export default function BottleReminderScreen() {
   const toast = useToast();
+  const th = useTheme();
   const params = useLocalSearchParams<{ childId: string; edit?: string }>();
   const childId = params.childId ?? '';
   const childrenQ = useBottleChildren();
@@ -132,11 +136,26 @@ export default function BottleReminderScreen() {
   const perDay = days.map((d) => week.filter((b) => todayISO(new Date(b.at)) === d).length);
   const dayLetters = days.map((d) => ['di', 'lu', 'ma', 'me', 'je', 've', 'sa'][new Date(`${d}T12:00:00`).getDay()]);
   const passed = active ? remainingMinutes(active, now) <= 0 : false;
+  // Journée biberons : créneaux d'après le délai choisi par le parent (rappel en cours, sinon le dernier choisi)
+  const dayInterval = active?.interval_minutes ?? lastInterval ?? null;
+  const slots = bottleDayPlan({ todays, intervalMinutes: dayInterval, plannedMl: active?.planned_ml ?? null, now });
+  const upcoming = nextSlot(slots);
+  async function pickInterval(minutes: number) {
+    const last = todays.length ? [...todays].sort((a, b) => b.at.localeCompare(a.at))[0] : null;
+    if (!last) return;
+    try {
+      const timer = await start.mutateAsync({ childId, lastBottleAt: new Date(last.at), intervalMinutes: minutes, plannedMl: null, bottleId: last.id, replace: active ? 'restart' : false });
+      haptic('success');
+      toast(nextReminderSentence(name, timer.due_at));
+    } catch (e) {
+      toast(friendlyError(e, 'Programmation impossible. Réessayez dans un instant.'), 'error');
+    }
+  }
 
   return (
-    <Screen back title={`Biberon de ${name}`} subtitle="Rappel du prochain biberon"
-      action={{ label: 'Enregistrer un biberon', icon: 'plus', testID: 'bottle-record',
-        onPress: () => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, ...(active ? { timer: active.id } : {}) } }) }}
+    <Screen back title={`Biberon de ${name}`} subtitle="Journée, rappels et quantités"
+      action={{ label: upcoming ? `Noter le biberon de ${slotClock(upcoming.at)}` : todays.length ? 'Enregistrer un biberon' : 'Noter le premier biberon', icon: 'plus', testID: 'bottle-record',
+        onPress: () => (upcoming ? openSlot(childId, upcoming, active?.id) : router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, from: 'day', ...(active ? { timer: active.id } : {}) } })) }}
       right={<Button label="Historique" icon="list" variant="ghost" size="sm" onPress={() => router.push({ pathname: '/bottle/history', params: { child: childId } })} />}>
       {others.length > 0 && (
         <Row wrap>
@@ -151,43 +170,45 @@ export default function BottleReminderScreen() {
         { icon: 'bar-chart-2', value: drunk ? `${drunk} ml` : '—', label: 'Bu (noté)' },
         { icon: 'bell', value: active && !passed ? formatClock(active.due_at) : '—', label: 'Prochain rappel' },
       ]} />
+      <BottleDayTimeline childId={childId} slots={slots} intervalMinutes={dayInterval} timerId={active?.id} onPickInterval={pickInterval} name={name} />
       {perDay.some((n) => n > 0) ? <MiniBars values={perDay} labels={dayLetters} testID="bottle-week" /> : null}
 
-      {isLoading ? <Skeleton kind="detail" rows={3} /> : timerQ.isError && !timerQ.data ? (
+      {isLoading ? <Skeleton kind="detail" rows={2} /> : timerQ.isError && !timerQ.data ? (
         <ErrorView error={timerQ.error} onRetry={() => void timerQ.refetch()} title="Impossible d’afficher le rappel" />
       ) : (
         <Card>
           <View style={{ gap: spacing.sm }}>
-            <View testID="bottle-next" accessibilityLiveRegion="polite">
-              <Text variant="heading">
-                {active ? (passed ? `Le rappel choisi pour ${name} était prévu ${atClock(active.due_at, now)}.` : nextReminderSentence(name, active.due_at, now)) : `Aucun rappel prévu pour ${name}.`}
-              </Text>
-              {active ? <Text variant="small" muted>Délai choisi : {formatHM(active.interval_minutes)} après le biberon de {formatClock(active.last_bottle_at)}.</Text> : null}
-            </View>
+            <Row style={{ alignItems: 'flex-start' }}>
+              <Icon name={active ? 'bell' : 'bell-off'} size={18} color={th.colors.primary} />
+              <View style={{ flex: 1, gap: 2 }} testID="bottle-next" accessibilityLiveRegion="polite">
+                <Text weight="bold">
+                  {active ? (passed ? `Le rappel choisi pour ${name} était prévu ${atClock(active.due_at, now)}.` : nextReminderSentence(name, active.due_at, now)) : `Aucun rappel prévu pour ${name}.`}
+                </Text>
+                {active ? <Text variant="caption" muted>Délai choisi : {formatHM(active.interval_minutes)} après le biberon de {formatClock(active.last_bottle_at)}.</Text> : null}
+              </View>
+            </Row>
             <View testID="bottle-last">
-              <Text variant="label" muted>Dernier biberon enregistré</Text>
-              <Text style={{ marginTop: 2 }}>
-                {lastBottle
-                  ? `${atClock(lastBottle.at, now).replace(/^à /, 'Aujourd’hui à ')}${lastBottle.consumed_ml != null ? ` · ${lastBottle.consumed_ml} ml bus` : ''}${lastBottle.prepared_ml != null ? ` · ${lastBottle.prepared_ml} ml préparés` : ''}`
-                  : 'Aucun biberon enregistré pour l’instant.'}
+              <Text variant="caption" muted>
+                Dernier biberon enregistré : {lastBottle
+                  ? `${atClock(lastBottle.at, now).replace(/^à /, 'aujourd’hui à ')}${lastBottle.consumed_ml != null ? ` · ${lastBottle.consumed_ml} ml bus` : ''}${lastBottle.prepared_ml != null ? ` · ${lastBottle.prepared_ml} ml préparés` : ''}`
+                  : 'aucun pour l’instant.'}
               </Text>
             </View>
             {active && scheduledHere === false && !passed ? <Text variant="caption" muted>Aucune notification programmée sur cet appareil (voir les réglages ci-dessous).</Text> : null}
+            {active ? (
+              <Row wrap>
+                <Button label="Modifier" icon="edit-2" size="sm" variant="secondary" onPress={openEdit} testID="bottle-edit" style={{ flexGrow: 1 }} />
+                <Button label="Annuler le rappel" icon="x" size="sm" variant="ghost" testID="bottle-cancel" style={{ flexGrow: 1 }} onPress={async () => {
+                  if (await confirm('Annuler le rappel ?', `Le rappel prévu ${atClock(active.due_at)} pour ${name} sera annulé, sur tous les appareils du foyer.`, 'Annuler le rappel')) {
+                    await patch(cancelTimer(), `Rappel de ${name} annulé.`);
+                  }
+                }} />
+              </Row>
+            ) : (
+              <Button label="Programmer un rappel" icon="bell" size="sm" variant="secondary" onPress={openStart} testID="bottle-program" />
+            )}
           </View>
         </Card>
-      )}
-
-      {active ? (
-        <Row wrap>
-          <Button label="Modifier le rappel" icon="edit-2" variant="secondary" onPress={openEdit} testID="bottle-edit" style={{ flexGrow: 1 }} />
-          <Button label="Annuler" icon="x" variant="ghost" testID="bottle-cancel" style={{ flexGrow: 1 }} onPress={async () => {
-            if (await confirm('Annuler le rappel ?', `Le rappel prévu ${atClock(active.due_at)} pour ${name} sera annulé, sur tous les appareils du foyer.`, 'Annuler le rappel')) {
-              await patch(cancelTimer(), `Rappel de ${name} annulé.`);
-            }
-          }} />
-        </Row>
-      ) : (
-        <Button label="Programmer un rappel" icon="bell" variant="secondary" onPress={openStart} testID="bottle-program" />
       )}
 
       <BottleNotificationSettings />
