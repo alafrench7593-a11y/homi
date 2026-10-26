@@ -31,3 +31,12 @@ describe('journée biberons', () => {
     expect(usualMl([b('1', 7, 0, null)], null)).toBeNull();
   });
 });
+
+describe('journée biberons le soir', () => {
+  it('tard le soir : le biberon suivant est quand même proposé (même après 23 h)', () => {
+    const slots = bottleDayPlan({ todays: [b('1', 16, 56), b('2', 20, 26)], intervalMinutes: 210, now: new Date(2026, 9, 26, 23, 20) });
+    const n = nextSlot(slots)!;
+    expect(new Date(n.at).getHours()).toBe(23);
+    expect(new Date(n.at).getMinutes()).toBe(56);
+  });
+});

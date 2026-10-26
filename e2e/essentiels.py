@@ -95,7 +95,7 @@ def run(p):
     subject(pg, noe)
     tn = T(pg)
     R['grossesse_affiche_SA'] = bool(SA.search(tp)) and 'Biberon' not in tp
-    R['noe_sans_SA_ni_biberon'] = not SA.search(tn) and 'Rappel biberon' not in tn and 'Lina' not in tn.split('Noé', 1)[-1][:400]
+    R['noe_sans_SA_ni_biberon'] = not SA.search(tn) and 'Ma journée biberons' not in tn and 'Lina' not in tn.split('Noé', 1)[-1][:400]
     go(pg, '/tools', 2600)
     mine = T(pg).split('Outils des autres profils')[0]
     R['outils_noe_sans_bebe_ni_grossesse'] = not any(x in mine for x in ['Biberon', 'Couches', 'Mon poids', 'Échographies'])

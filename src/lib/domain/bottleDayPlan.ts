@@ -63,7 +63,8 @@ export function bottleDayPlan({ todays, intervalMinutes, plannedMl = null, now =
   const late = now.getTime() - GRACE_MIN * MIN;
   let t = Date.parse(done[done.length - 1].at) + intervalMinutes * MIN;
   let nextGiven = false;
-  while (t <= end && slots.length < max) {
+  // le biberon suivant est toujours proposé, même tard le soir ou la nuit ; les autres jusqu'à l'heure de fin
+  while ((t <= end || !nextGiven) && slots.length < max) {
     const status: SlotStatus = t < late ? 'missed' : nextGiven ? 'planned' : 'next';
     if (status === 'next') nextGiven = true;
     slots.push({ at: new Date(t).toISOString(), status, suggestedMl: ml });

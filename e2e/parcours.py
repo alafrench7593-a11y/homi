@@ -84,7 +84,7 @@ def run(p):
     # ---- 9. Grossesse : ni biberons, ni couches, ni tétées, ni minuteur, ni diversification (outils + actions rapides)
     home = T(pg)
     t = tools_text(pg)
-    banned = ['Biberons', 'Rappel biberon', 'Couches', 'Diversification', 'Allaitement']
+    banned = ['Biberons', 'Ma journée biberons', 'Couches', 'Diversification', 'Allaitement']
     R['9_outils_grossesse_sans_biberons'] = not any(x in t for x in banned) and 'Évolution du bébé' in t and 'Préparation à l’accouchement' in t
     R['9_accueil_grossesse_sans_biberons'] = not any(x in home for x in ['Biberon', 'Couche', 'Tétée'])
     pg.screenshot(path=f'{SHOTS}/parcours-outils-grossesse.png', full_page=True)
@@ -92,8 +92,8 @@ def run(p):
     # ---- 10. Profil bébé : minuteur de biberon présent
     go(pg, '/'); subject(pg, lina)
     t = tools_text(pg)
-    R['10_minuteur_biberon_bebe'] = 'Rappel biberon' in t and 'Couches' in t and 'Évolution du bébé' not in t
-    pg.get_by_text('Rappel biberon').first.click(); pg.wait_for_timeout(2000)
+    R['10_minuteur_biberon_bebe'] = 'Ma journée biberons' in t and 'Couches' in t and 'Évolution du bébé' not in t
+    pg.get_by_text('Ma journée biberons').first.click(); pg.wait_for_timeout(2000)
     R['10_minuteur_ouvre_profil_lina'] = f'/bottle/{lina}' in pg.url
     # Prénom affiché avant d'enregistrer un biberon
     go(pg, f'/track/bottle?child={lina}')
@@ -102,7 +102,7 @@ def run(p):
     # ---- 8. Changer d'enfant : Noé (enfant) → outils différents
     go(pg, '/'); subject(pg, noe)
     t = tools_text(pg)
-    R['8_changement_enfant_outils'] = 'Mon enfant a un besoin particulier' in t and 'Rappel biberon' not in t and 'École ou mode de garde' not in t  # catégorie retirée le 20/10 (demande)
+    R['8_changement_enfant_outils'] = 'Mon enfant a un besoin particulier' in t and 'Ma journée biberons' not in t and 'École ou mode de garde' not in t  # catégorie retirée le 20/10 (demande)
     go(pg, '/')
     # Les 4 actions du quotidien d'un enfant de 5 ans : repas, sommeil, médicaments prescrits, rendez-vous — jamais de biberon
     pg.locator('[data-testid="cocoon-add"]').first.click(); pg.wait_for_timeout(800)
