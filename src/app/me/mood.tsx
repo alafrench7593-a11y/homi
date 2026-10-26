@@ -8,7 +8,8 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
+import { MiniBars, TodaySummary } from '@/components/MiniApp';
+import { frequentValues, withFrequentFirst } from '@/lib/domain/quickPicks';
 import { EmergencyList } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
@@ -125,10 +126,14 @@ export default function MoodScreen() {
   const weekCount = (moods ?? []).filter((m) => new Date(m.checked_at).getTime() >= weekAgo).length;
   const todayDone = !!lastMood && new Date(lastMood.checked_at).toDateString() === new Date().toDateString();
   const failed = moodsQ.isError && !moods;
+  // Mes ressentis habituels (d'après MES bilans) en tête des choix ; tendance des 7 derniers jours
+  const feelingOptions = withFrequentFirst(FEELINGS, frequentValues((moods ?? []).flatMap((m) => m.feelings.map((f) => ({ value: f, at: m.checked_at }))), 4));
+  const days7 = Array.from({ length: 7 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d; });
+  const trend = days7.map((d) => (moods ?? []).find((m) => new Date(m.checked_at).toDateString() === d.toDateString())?.mood ?? 0);
 
   return (
     <Screen back title="Comment je me sens" subtitle="Privé, facultatif, sans jugement." scroll={false} padded={false}
-      action={{ label: 'Enregistrer mon bilan', icon: 'check', onPress: () => void save(), disabled: saving, testID: 'mood-main-action' }}>
+      action={{ label: mood ? `Enregistrer : ${moodLabel(mood)}` : 'Enregistrer mon bilan', icon: 'check', onPress: () => void save(), disabled: saving, testID: 'mood-main-action' }}>
       <VirtualList
         data={loading || failed ? [] : moods ?? []}
         keyExtractor={(m) => m.id}
@@ -144,6 +149,7 @@ export default function MoodScreen() {
               { icon: 'calendar', value: String(weekCount), label: '7 derniers jours' },
             ]} />
 
+            {trend.some((x) => x > 0) ? <MiniBars values={trend} labels={days7.map((d) => ['di', 'lu', 'ma', 'me', 'je', 've', 'sa'][d.getDay()])} testID="mood-week" /> : null}
             {savedDistress && <SupportBanner urgent={savedDistress === 'urgent'} />}
 
             <Card>
@@ -180,7 +186,7 @@ export default function MoodScreen() {
             <Card>
               <Text weight="bold">Ce qui est présent <Text variant="small" muted>(facultatif)</Text></Text>
               <Row wrap style={{ marginTop: spacing.sm }}>
-                {FEELINGS.map((f) => <Chip key={f} label={f} selected={feelings.includes(f)} onPress={() => toggleFeeling(f)} />)}
+                {feelingOptions.map((f) => <Chip key={f} label={f} selected={feelings.includes(f)} onPress={() => toggleFeeling(f)} />)}
               </Row>
             </Card>
 

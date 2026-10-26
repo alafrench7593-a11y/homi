@@ -18,6 +18,11 @@ import { planNights, shiftConflicts, type CareShift, type NightPattern } from '@
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
+import { GlassSurface } from '@/components/Glass';
+import { Icon } from '@/components/ui';
+import { tint } from '@/components/ToolGlyph';
+import { useTheme } from '@/theme/ThemeProvider';
+import { countdown } from '@/lib/domain/dayThread';
 
 const fmtNight = (s: { starts_at: string; ends_at: string }) => {
   const a = new Date(s.starts_at);
@@ -27,6 +32,7 @@ const fmtNight = (s: { starts_at: string; ends_at: string }) => {
 
 export default function NightRelay() {
   const toast = useToast();
+  const t = useTheme();
   const { people, labelOf, me } = usePeople();
   const shiftsQ = useCareShifts('night');
   const save = useSaveShifts();
@@ -78,6 +84,33 @@ export default function NightRelay() {
         { icon: 'calendar', value: String(upcoming.filter((x) => x.user_id === me).length), label: 'Mes nuits à venir' },
         { icon: 'check-circle', value: String(upcoming.filter((x) => x.user_id === me && x.status === 'planned').length), label: 'À confirmer' },
       ]} />
+      {tonight ? (
+        // Ce soir, en grand : qui se lève, à quelle heure ; confirmer ou proposer un échange en un geste
+        <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
+          <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="nights-tonight">
+            <Row style={{ alignItems: 'center' }}>
+              <View style={{ width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tint(t.colors.lavender, t.isDark ? 0.25 : 0.15) }}>
+                <Icon name="moon" size={24} color={t.colors.lavender} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>{Date.parse(tonight.starts_at) <= Date.now() ? 'Cette nuit' : 'Ce soir'}</Text>
+                <Text weight="bold" style={{ fontSize: 28, lineHeight: 33 }} testID="nights-tonight-who">{tonight.user_id === me ? 'Vous' : labelOf(tonight.user_id)}</Text>
+              </View>
+            </Row>
+            <Text variant="small" muted>
+              {`${new Date(tonight.starts_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} – ${new Date(tonight.ends_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`}
+              {Date.parse(tonight.starts_at) > Date.now() ? ` · commence ${countdown(tonight.starts_at)}` : ''}
+              {tonight.status === 'confirmed' ? ' · confirmée' : tonight.status === 'swapped' ? ' · échangée' : ' · à confirmer'}
+            </Text>
+            {tonight.user_id === me ? (
+              <Row wrap>
+                {tonight.status === 'planned' ? <Button label="Je confirme" icon="check" size="sm" onPress={() => setStatus(tonight, 'confirmed', 'Nuit confirmée.')} testID="nights-tonight-confirm" style={{ flexGrow: 1 }} /> : null}
+                <Button label="Proposer un échange" icon="shuffle" size="sm" variant="secondary" onPress={() => setSwap(tonight.id)} testID="nights-tonight-swap" style={{ flexGrow: 1 }} />
+              </Row>
+            ) : null}
+          </View>
+        </GlassSurface>
+      ) : null}
       <SectionTitle title="Nuits prévues" />
       {upcoming.length ? (
         <Card padded={false} style={{ paddingVertical: spacing.sm }}>

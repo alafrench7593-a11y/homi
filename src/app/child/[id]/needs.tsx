@@ -13,7 +13,9 @@ import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Chip, Field, haptic, ListRow, Row, Segmented, SectionTitle, Text, Toggle } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, Icon, ListRow, Row, Segmented, SectionTitle, Text, Toggle } from '@/components/ui';
+import { Tappable } from '@/components/Tappable';
+import { useTheme } from '@/theme/ThemeProvider';
 import { dosesFor, needLabel, type Dose } from '@/features/needs';
 import { useChild } from '@/lib/data/hooks';
 import { useNow } from '@/lib/data/hooks-bottle';
@@ -225,6 +227,7 @@ function validateT(d: TDraft): { errors: Record<string, string>; row?: Omit<Trea
 
 function Treatments({ childId, childName, noteDose, askTime }: { childId: string; childName: string; noteDose?: string; askTime?: string }) {
   const toast = useToast();
+  const th = useTheme();
   const now = useNow(60_000);
   const { data: treatments, isLoading } = useTreatments(childId);
   const ids = (treatments ?? []).map((x) => x.id);
@@ -297,14 +300,24 @@ function Treatments({ childId, childName, noteDose, askTime }: { childId: string
       {isLoading ? <Skeleton rows={2} /> : !doses.length ? <Text muted>{tr('nd.t.noDose')}</Text> : doses.map((d) => (
         <Card key={`${d.treatment.id}-${d.time}`}>
           <View testID={`dose-${d.time}`}>
-            <Text weight="bold">{d.time} · {d.treatment.name}</Text>
-            <Text variant="small">{d.treatment.dose_text}</Text>
-            {d.treatment.instructions ? <Text variant="small" muted>{d.treatment.instructions}</Text> : null}
-            {d.log ? <Text variant="small" weight="bold" style={{ marginTop: 4 }} testID={`dose-status-${d.time}`}>{tr(`nd.t.status.${d.log.status}` as TKey)}{d.log.note ? ` · ${d.log.note}` : ''}</Text> : null}
+            <Row style={{ alignItems: 'center', gap: spacing.md }}>
+              {/* case à cocher : « donné » en un geste */}
+              <Tappable bare accessibilityRole="checkbox" accessibilityState={{ checked: d.log?.status === 'taken' }} accessibilityLabel={`${tr('nd.t.taken')} — ${d.time} · ${d.treatment.name}`}
+                onPress={() => { haptic('success'); void answer(d, 'taken'); }} testID={`dose-taken-${d.time}`} hitSlop={8}
+                style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: 2,
+                  borderColor: d.log?.status === 'taken' ? th.colors.gold : th.colors.primary, backgroundColor: d.log?.status === 'taken' ? th.colors.gold : 'transparent' }}>
+                {d.log?.status === 'taken' ? <Icon name="check" size={20} color="#FFFFFF" /> : null}
+              </Tappable>
+              <View style={{ flex: 1 }}>
+                <Text weight="bold" style={{ fontSize: 18 }}>{d.time} <Text weight="bold">· {d.treatment.name}</Text></Text>
+                <Text variant="small">{d.treatment.dose_text}</Text>
+                {d.treatment.instructions ? <Text variant="small" muted>{d.treatment.instructions}</Text> : null}
+                {d.log ? <Text variant="small" weight="bold" color={d.log.status === 'taken' ? th.colors.gold : undefined} style={{ marginTop: 2 }} testID={`dose-status-${d.time}`}>{tr(`nd.t.status.${d.log.status}` as TKey)}{d.log.note ? ` · ${d.log.note}` : ''}</Text> : null}
+              </View>
+            </Row>
             <Row wrap style={{ marginTop: spacing.xs }}>
-              <Button label={tr('nd.t.taken')} size="sm" onPress={() => answer(d, 'taken')} testID={`dose-taken-${d.time}`} />
-              <Button label={tr('nd.t.snooze')} size="sm" variant="secondary" onPress={() => answer(d, 'snoozed')} />
-              <Button label={tr('nd.t.skip')} size="sm" variant="secondary" onPress={() => answer(d, 'skipped')} />
+              <Button label={tr('nd.t.snooze')} size="sm" variant="ghost" onPress={() => answer(d, 'snoozed')} />
+              <Button label={tr('nd.t.skip')} size="sm" variant="ghost" onPress={() => answer(d, 'skipped')} />
               <Button label={tr('nd.t.note')} size="sm" variant="ghost" onPress={() => { setNoteFor(d); setNote(d.log?.note ?? ''); }} />
             </Row>
           </View>

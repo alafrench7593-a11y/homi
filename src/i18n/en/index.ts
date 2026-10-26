@@ -23,3 +23,6 @@ export { care } from './care';
 export { discover } from './discover';
 export { outings } from './outings';
 export { miniB } from './miniB';
+export { passA } from './passA';
+export { passD } from './passD';
+export { passC } from './passC';

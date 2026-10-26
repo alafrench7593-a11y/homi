@@ -10,7 +10,10 @@ import { HistoryHeader, TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
-import { Button, Card, Chip, Field, haptic, ListRow, Row, Text } from '@/components/ui';
+import { Button, Card, Chip, Field, haptic, Icon, ListRow, Row, Text } from '@/components/ui';
+import { Tappable } from '@/components/Tappable';
+import { tint } from '@/components/ToolGlyph';
+import { useTheme } from '@/theme/ThemeProvider';
 import { backend, eq } from '@/lib/backend';
 import { useChild, useInvalidate, useRows } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -21,6 +24,7 @@ import { spacing } from '@/theme/tokens';
 type Scales = Partial<Record<(typeof WELLBEING_SCALES)[number]['key'], 1 | 2 | 3>>;
 interface Entry { id: string; at: string; mood: number | null; unusual_event: string | null; note: string | null; crying: number | null; irritability: number | null; energy: number | null; appetite: number | null; sleep: number | null; digestive_comfort: number | null }
 const MOODS = ['Très difficile', 'Difficile', 'Entre les deux', 'Plutôt bien', 'Très bien'];
+const MOOD_ICONS = ['cloud-rain', 'cloud', 'cloud-drizzle', 'sun', 'star'] as const;
 
 export default function ChildWellbeing() {
   const toast = useToast();
@@ -33,6 +37,20 @@ export default function ChildWellbeing() {
   const [unusual, setUnusual] = useState('');
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
+  const [details, setDetails] = useState(false);
+  const th = useTheme();
+
+  /** Un tap sur une humeur : enregistré tout de suite (les détails restent possibles ensuite). */
+  async function quickMood(level: number) {
+    if (!child || saving) return;
+    setSaving(true);
+    try {
+      await insertOrQueue('child_wellbeing', { child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), mood: level, unusual_event: null, note: null });
+      inv('child_wellbeing');
+      haptic('success');
+      toast(`Noté : ${MOODS[level - 1].toLowerCase()}.`);
+    } catch (e) { toast(friendlyError(e), 'error'); } finally { setSaving(false); }
+  }
 
   async function save() {
     if (!child) return;
@@ -43,7 +61,7 @@ export default function ChildWellbeing() {
       inv('child_wellbeing');
       haptic('success');
       toast('Noté.');
-      setMood(null); setScales({}); setUnusual(''); setNote('');
+      setMood(null); setScales({}); setUnusual(''); setNote(''); setDetails(false);
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setSaving(false); }
   }
   async function remove(e: Entry) {
@@ -62,15 +80,36 @@ export default function ChildWellbeing() {
 
   return (
     <Screen back title="Humeur et bien-être" subtitle={child ? `${child.first_name} · un journal, pas un bilan` : undefined}
-      action={{ label: 'Enregistrer', icon: 'check', onPress: () => void save(), disabled: saving || empty, testID: 'wellbeing-save' }}>
+      action={details ? { label: 'Enregistrer les détails', icon: 'check', onPress: () => void save(), disabled: saving || empty, testID: 'wellbeing-save' } : undefined}>
       <TodaySummary items={[
         { icon: 'smile', value: lastMood ? MOODS[lastMood - 1] : '—', label: 'Humeur notée' },
         { icon: 'edit-3', value: String(todayEntries.length), label: 'Notes du jour' },
         { icon: 'calendar', value: String(entries.filter((e) => Date.parse(e.at) >= weekAgo).length), label: 'Sur 7 jours' },
       ]} />
+      {/* humeur en un tap : enregistrée aussitôt */}
       <Card>
         <View style={{ gap: spacing.sm }}>
-          <Text weight="bold">Aujourd’hui, plutôt…</Text>
+          <Text weight="bold">{child ? `${child.first_name}, aujourd’hui c’est plutôt…` : 'Aujourd’hui, plutôt…'}</Text>
+          <Row style={{ gap: 6 }}>
+            {MOODS.map((m, i) => {
+              const on = lastMood === i + 1;
+              return (
+                <Tappable key={m} accessibilityRole="button" accessibilityLabel={`${m} — enregistrer`} onPress={() => void quickMood(i + 1)} testID={`wellbeing-quick-${i + 1}`}
+                  style={{ flex: 1, alignItems: 'center', gap: 4, paddingVertical: spacing.sm, borderRadius: 18, borderWidth: 1,
+                    borderColor: on ? th.colors.gold : tint(th.colors.primary, 0.25), backgroundColor: on ? tint(th.colors.gold, th.isDark ? 0.3 : 0.18) : 'transparent' }}>
+                  <Icon name={MOOD_ICONS[i]} size={22} color={on ? th.colors.gold : th.colors.primary} />
+                  <Text variant="caption" center numberOfLines={2} style={{ fontSize: 11 }}>{m}</Text>
+                </Tappable>
+              );
+            })}
+          </Row>
+          <Button label={details ? 'Masquer les détails' : 'Ajouter des détails (pleurs, énergie, appétit…)'} variant="ghost" size="sm" icon={details ? 'chevron-up' : 'plus'} onPress={() => setDetails((d) => !d)} testID="wellbeing-details" />
+        </View>
+      </Card>
+      {details ? (
+      <Card>
+        <View style={{ gap: spacing.sm }}>
+          <Text weight="bold">Détails</Text>
           <Row wrap>{MOODS.map((m, i) => <Chip key={m} label={m} selected={mood === i + 1} onPress={() => setMood(mood === i + 1 ? null : i + 1)} />)}</Row>
           {WELLBEING_SCALES.map((s) => (
             <View key={s.key} style={{ gap: 4 }}>
@@ -82,6 +121,7 @@ export default function ChildWellbeing() {
           <Field label="Note" optional multiline value={note} onChangeText={setNote} maxLength={2000} />
         </View>
       </Card>
+      ) : null}
       <Text variant="caption" muted>Un comportement isolé ne veut rien dire à lui seul. Si quelque chose vous inquiète ou dure, parlez-en à votre médecin.</Text>
 
       <HistoryHeader title="Notes précédentes" count={entries.length || undefined} />

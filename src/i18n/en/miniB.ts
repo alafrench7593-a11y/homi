@@ -37,4 +37,13 @@ export const miniB: Messages<typeof fr> = {
   'mb.rc.recipeTitle': "The recipe",
   'mb.rc.ranked': "Ranked recipes",
   'mb.rc.quick': "30 min or less",
+  'mb.vx.doneToday': 'Done today',
+  'mb.vx.quickTitle': 'Mark these vaccines as done today?',
+  'mb.vx.quickBody': '{list} — you can add the batch or date afterwards.',
+  'mb.gr.quickObserved': "Seen",
+  'mb.rc.cookMode': "Cook step by step",
+  'mb.rc.stepOf': "Step {n} of {total}",
+  'mb.rc.prev': "Back",
+  'mb.rc.next': "Next",
+  'mb.rc.finish': "Done",
 };

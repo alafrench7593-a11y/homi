@@ -114,6 +114,14 @@ function emptyForm(date = todayISO()): FormState {
   return { id: null, date: toFrDate(date), bed: '', wake: '', wakings: '0', details: [], duration: '', durationEdited: false, naps: [], quality: null, fatigue: null, mood: null, note: '' };
 }
 
+/** Nouvelle nuit pré-remplie avec les horaires de la dernière nuit notée (les siens, jamais une norme), à ajuster. */
+function usualForm(logs: ParentSleepLog[]): FormState {
+  const last = [...logs].sort((a, b) => b.log_date.localeCompare(a.log_date))[0];
+  const f = emptyForm();
+  if (!last) return f;
+  return { ...f, bed: timeOfIso(last.bedtime), wake: timeOfIso(last.wake_time) };
+}
+
 function formFromLog(l: ParentSleepLog): FormState {
   return {
     id: l.id,
@@ -212,6 +220,7 @@ function SleepFormSheet({ initial, logs, onClose }: { initial: FormState; logs: 
         </Row>
       )}
 
+      {!initial.id && initial.bed ? <Text variant="caption" muted testID="sleep-prefilled">Horaires repris de votre dernière nuit : ajustez si besoin, puis enregistrez.</Text> : null}
       <Row style={{ alignItems: 'flex-start' }}>
         <TimeField label="Coucher" value={f.bed} onChange={(v) => set('bed', v)} placeholder="22:30" error={errors.bed} />
         <TimeField label="Réveil" value={f.wake} onChange={(v) => set('wake', v)} placeholder="07:00" error={errors.wake} />
@@ -333,7 +342,7 @@ export default function MySleepScreen() {
 
   return (
     <Screen back title="Mon sommeil" subtitle="Votre sommeil à vous, sans objectif ni note." scroll={false} padded={false}
-      action={{ label: todayLog ? 'Modifier ma nuit' : 'Noter ma nuit', icon: 'moon', onPress: () => setForm(todayLog ? formFromLog(todayLog) : emptyForm()), testID: 'sleep-main-action' }}>
+      action={{ label: todayLog ? 'Modifier ma nuit' : 'Noter ma nuit', icon: 'moon', onPress: () => setForm(todayLog ? formFromLog(todayLog) : usualForm(logs ?? [])), testID: 'sleep-main-action' }}>
       <VirtualList
         data={loading || failed ? [] : logs ?? []}
         keyExtractor={(l) => l.id}

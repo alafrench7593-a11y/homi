@@ -26,6 +26,7 @@ import { formatDate, getLocale, t as tr, type TKey } from '@/i18n';
 /** Libellé court bilingue (les clés de traduction de cet écran restent inchangées). */
 const L = (fr: string, en: string) => (getLocale().startsWith('fr') ? fr : en);
 import { useTheme } from '@/theme/ThemeProvider';
+import { frequentValues, withFrequentFirst } from '@/lib/domain/quickPicks';
 import { spacing } from '@/theme/tokens';
 
 const FREQS: Frequency[] = ['once', 'several', 'continuous'];
@@ -46,7 +47,9 @@ export default function Feel() {
   const del = useDeleteSymptom();
   const [d, setD] = useState<Draft>(EMPTY);
   const [cards, setCards] = useState<SymptomCard[] | null>(null);
-  const options = useMemo(() => symptomsFor(week), [week]);
+  // Mes symptômes fréquents (d'après MES saisies) : en tête des choix et notables en un seul tap
+  const frequent = useMemo(() => frequentValues(logs.map((l) => ({ value: l.symptom as SymptomKey, at: l.logged_at })), 4), [logs]);
+  const options = useMemo(() => withFrequentFirst(symptomsFor(week), frequent), [week, frequent]);
   const [more, setMore] = useState(false);
   const todayKey = new Date().toDateString();
   const todayCount = logs.filter((l) => new Date(l.logged_at).toDateString() === todayKey).length;
@@ -73,6 +76,14 @@ export default function Feel() {
       setMore(false);
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
+  /** Un tap sur un symptôme fréquent : noté maintenant, la carte d'information s'affiche (modifiable ensuite). */
+  async function quickLog(symptom: SymptomKey) {
+    try {
+      await save.mutateAsync({ rows: [{ pregnancy_id: pregnancy?.id ?? null, symptom, intensity: null, started_at: null, frequency: null, note: null, week_sa: pregnancy ? week : null }] });
+      setCards([symptomCard({ symptom, intensity: null, frequency: null, weekSA: week, worried: false })]);
+      toast(tr('care.feel.saved'), 'success');
+    } catch (e) { toast(friendlyError(e), 'error'); }
+  }
   function edit(l: PregnancySymptomLog) {
     setCards(null);
     setD({ id: l.id, symptoms: [l.symptom as SymptomKey], intensity: l.intensity, time: l.started_at ? hhmm(l.started_at) : '', frequency: l.frequency, note: l.note ?? '', worried: false });
@@ -93,6 +104,14 @@ export default function Feel() {
         { icon: 'clock', value: logs[0] ? symLabel(logs[0].symptom) : '—', label: L('Dernier noté', 'Last logged') },
         { icon: 'moon', value: pregnancy ? tr('care.cal.sa', { w: week }) : '—', label: L('Semaine', 'Week') },
       ]} />
+      {frequent.length && !cards && !d.id ? (
+        <View style={{ gap: 6 }} testID="feel-quick">
+          <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>{tr('pc.feel.quick' as TKey)}</Text>
+          <Row wrap>
+            {frequent.map((k) => <Button key={k} label={symLabel(k)} icon="plus" size="sm" variant="secondary" onPress={() => void quickLog(k)} disabled={save.isPending} testID={`feel-quick-${k}`} />)}
+          </Row>
+        </View>
+      ) : null}
       {cards ? (
         <View style={{ gap: spacing.sm }} testID="feel-cards">
           {cards.map((c) => <SymptomInfo key={c.symptom} c={c} week={week} />)}

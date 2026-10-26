@@ -35,4 +35,13 @@ export const miniB = {
   'mb.rc.recipeTitle': "La recette",
   'mb.rc.ranked': "Recettes classées",
   'mb.rc.quick': "En 30 min ou moins",
+  'mb.vx.doneToday': "Fait aujourd’hui",
+  'mb.vx.quickTitle': "Noter ces vaccins comme faits aujourd’hui ?",
+  'mb.vx.quickBody': '{list} — vous pourrez préciser le lot ou la date ensuite.',
+  'mb.gr.quickObserved': "Observé",
+  'mb.rc.cookMode': "Cuisiner pas à pas",
+  'mb.rc.stepOf': "Étape {n} sur {total}",
+  'mb.rc.prev': "Précédent",
+  'mb.rc.next': "Suivant",
+  'mb.rc.finish': "C’est prêt",
 };

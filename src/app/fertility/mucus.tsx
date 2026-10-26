@@ -181,6 +181,12 @@ export default function MucusScreen() {
       <Card>
         <Field label="Date" value={date} onChangeText={setDate} keyboardType="numbers-and-punctuation" placeholder="JJ/MM/AAAA" />
         <Text variant="label" style={{ marginTop: spacing.sm }}>Quel aspect aujourd’hui ?</Text>
+        {/* reprise en un geste de l'aspect noté la dernière fois (à vérifier avant d'enregistrer) */}
+        {!category && lastObs && MUCUS_CATEGORIES.some((m) => m.value === lastObs.cervical_mucus) ? (
+          <View style={{ marginTop: 6, alignSelf: 'flex-start' }}>
+            <Chip icon="corner-down-left" label={`Comme le ${formatDateFr(lastObs.observed_on, false)} : ${mucusLabel(lastObs.cervical_mucus as MucusCategory) ?? ''}`} onPress={() => setCategory(lastObs.cervical_mucus as MucusCategory)} testID="mucus-prefill" />
+          </View>
+        ) : null}
         <View style={{ gap: 6, marginTop: 6 }}>
           {MUCUS_CATEGORIES.map((m) => (
             <Tappable key={m.value} accessibilityRole="radio" accessibilityState={{ selected: category === m.value }} onPress={() => setCategory(category === m.value ? null : m.value)}

@@ -17,7 +17,9 @@ import { parseFrDateTime, splitLocal } from '@/features/familyLoad';
 import { useAppointments, useChildren, useHouseholdId } from '@/lib/data/hooks';
 import { feedUrl, useCalendarFeeds, useCreateCalendarFeed, useRevokeCalendarFeed, webcalUrl } from '@/lib/data/hooks-calendar';
 import { backendUrl, isDemo } from '@/lib/backend';
-import { useCareShifts, useDeleteEvent, useFamilyEvents, useFamilyTasks, usePeople, useSaveEvent } from '@/lib/data/hooks-family-load';
+import { useCareShifts, useDeleteEvent, useFamilyEvents, useFamilyTasks, usePeople, useSaveEvent, useSaveTask } from '@/lib/data/hooks-family-load';
+import { DayThread, clockFr, type ThreadRow } from '@/features/dayThread';
+import { threadStates } from '@/lib/domain/dayThread';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import {
   EVENT_KINDS, SOURCE_LABEL, addDays, addMonths, atLocal, dayKey, itemsBetween, itemsOnDay, monthGrid, overlaps, toIcs, weekStart,
@@ -54,6 +56,7 @@ export default function FamilyCalendar() {
   const { labelOf } = usePeople();
   const save = useSaveEvent();
   const del = useDeleteEvent();
+  const saveTask = useSaveTask();
 
   const range = useMemo(() => {
     if (view === 'day') return [cursor, addDays(cursor, 1)];
@@ -63,6 +66,7 @@ export default function FamilyCalendar() {
   }, [view, cursor]);
   const items = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(range[0]), atLocal(range[1])), [eventsQ.data, appointments, tasks, shifts, range]);
   const clashes = useMemo(() => overlaps(items), [items]);
+  const weekItems = useMemo(() => { const s0 = weekStart(todayISO()); return itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(s0), atLocal(addDays(s0, 7))); }, [eventsQ.data, appointments, tasks, shifts]);
   const todayItems = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(todayISO()), atLocal(addDays(todayISO(), 1))), [eventsQ.data, appointments, tasks, shifts]);
 
   const dir = useRef(0);
@@ -74,7 +78,9 @@ export default function FamilyCalendar() {
   }
 
   function openNew(day = cursor) {
-    setDraft({ title: '', kind: 'activity', date: toFrDate(day), from: '10h', to: '11h', allDay: false, location: '', notes: '', recurrence: 'none', until: '', childId: null });
+    // aujourd'hui : l'heure pleine suivante est pré-remplie ; un autre jour : 10 h
+    const h = day === todayISO() ? Math.min(22, new Date().getHours() + 1) : 10;
+    setDraft({ title: '', kind: 'activity', date: toFrDate(day), from: `${h}h`, to: `${h + 1}h`, allDay: false, location: '', notes: '', recurrence: 'none', until: '', childId: null });
   }
   function openItem(i: CalendarItem) {
     if (i.source === 'appointment') return router.push('/appointments');
@@ -166,6 +172,21 @@ export default function FamilyCalendar() {
           ]} />
         );
       })()}
+      {(() => {
+        // Aujourd'hui au fil d'or : ce qui est passé, en cours, ensuite ; une tâche se coche en un geste
+        const rows: ThreadRow[] = threadStates(todayItems.map((i) => ({ key: i.key, at: i.allDay ? null : i.starts, end: i.allDay ? null : i.ends, done: i.done, actionable: i.source === 'task', allDay: i.allDay, item: i })))
+          .map(({ item: i, state }) => ({
+            key: i.key, state, time: i.allDay ? '' : clockFr(i.starts), title: i.title, icon: ICON[i.source],
+            sub: [SOURCE_LABEL[i.source], i.who ? labelOf(i.who) : null, i.location].filter(Boolean).join(' · '),
+            onPress: () => openItem(i), testID: `cal-today-${i.key}`,
+            action: i.source === 'task' && !i.done ? { label: 'Fait', testID: `cal-done-${i.refId}`, onPress: async () => {
+              try { await saveTask.mutateAsync({ id: i.refId, input: { status: 'done' } }); haptic('success'); toast('Fait.'); } catch (e) { toast(friendlyError(e), 'error'); }
+            } } : undefined,
+          }));
+        return <DayThread title="Aujourd’hui" rows={rows} testID="cal-today"
+          empty={<Text variant="small" muted>Rien de prévu aujourd’hui.</Text>} />;
+      })()}
+      <WeekStrip cursor={cursor} counts={(d) => itemsOnDay(weekItems, d).length} onPick={(d) => { dir.current = 0; setCursor(d); setView('day'); haptic('selection'); }} />
       <Segmented label="Vue" value={view} onChange={(v) => { dir.current = 0; setView(v); haptic('selection'); }} options={[{ value: 'day', label: 'Jour' }, { value: 'week', label: 'Semaine' }, { value: 'month', label: 'Mois' }, { value: 'agenda', label: 'Agenda' }]} />
       <Row style={{ justifyContent: 'space-between' }}>
         {view !== 'agenda' ? <IconButton icon="chevron-left" label="Période précédente" onPress={() => move(-1)} /> : <View />}
@@ -265,6 +286,33 @@ export default function FamilyCalendar() {
         ) : null}
       </Sheet>
     </Screen>
+  );
+}
+
+/** Semaine en un coup d'œil : 7 pastilles (jour, nombre d'éléments), touchée = vue du jour. */
+function WeekStrip({ cursor, counts, onPick }: { cursor: string; counts: (d: string) => number; onPick: (d: string) => void }) {
+  const t = useTheme();
+  const start = weekStart(todayISO());
+  const today = todayISO();
+  return (
+    <View style={{ flexDirection: 'row', gap: 6 }} testID="cal-week-strip">
+      {Array.from({ length: 7 }, (_, k) => addDays(start, k)).map((d) => {
+        const n = counts(d);
+        const on = d === cursor;
+        const isToday = d === today;
+        return (
+          <Tappable key={d} onPress={() => onPick(d)} accessibilityRole="button" accessibilityLabel={`${longDay(d)}, ${n ? `${n} élément${n > 1 ? 's' : ''}` : 'rien de prévu'}`}
+            style={{ flex: 1, alignItems: 'center', paddingVertical: 8, borderRadius: 16, borderWidth: 1,
+              borderColor: isToday ? t.colors.primary : t.colors.border, backgroundColor: on ? t.colors.primary : t.colors.surface }}>
+            <Text variant="caption" color={on ? t.colors.primaryText : t.colors.textMuted}>{['L', 'M', 'M', 'J', 'V', 'S', 'D'][(atLocal(d, 12).getDay() + 6) % 7]}</Text>
+            <Text weight="bold" color={on ? t.colors.primaryText : t.colors.text}>{Number(d.slice(8))}</Text>
+            <View style={{ flexDirection: 'row', gap: 2, height: 5, marginTop: 2 }}>
+              {Array.from({ length: Math.min(n, 3) }, (_, i) => <View key={i} style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: on ? t.colors.primaryText : t.colors.gold }} />)}
+            </View>
+          </Tappable>
+        );
+      })}
+    </View>
   );
 }
 

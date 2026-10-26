@@ -87,6 +87,12 @@ export default function BodyScreen() {
         <Field label="Date" value={date} onChangeText={setDate} error={errors.date} keyboardType="numbers-and-punctuation" placeholder="JJ/MM/AAAA" />
         <View style={{ marginTop: spacing.sm }}>
           <Field label="Température au réveil" optional value={temp} onChangeText={setTemp} error={errors.temp} keyboardType="decimal-pad" placeholder="36,55" suffix="°C" hint="Idéalement prise au réveil, avant de se lever, toujours de la même façon." />
+          {/* reprise en un geste de la dernière valeur notée, à ajuster avant d'enregistrer */}
+          {!temp && lastTemp?.bbt_celsius != null ? (
+            <View style={{ marginTop: 6, alignSelf: 'flex-start' }}>
+              <Chip icon="corner-down-left" label={`Partir de ${String(lastTemp.bbt_celsius).replace('.', ',')} °C`} onPress={() => setTemp(String(lastTemp.bbt_celsius).replace('.', ','))} testID="body-prefill-temp" />
+            </View>
+          ) : null}
         </View>
         <Text variant="label" style={{ marginTop: spacing.sm }}>Glaire cervicale (facultatif)</Text>
         <Row wrap style={{ marginTop: 6 }}>

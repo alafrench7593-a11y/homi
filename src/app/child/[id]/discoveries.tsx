@@ -35,7 +35,8 @@ import {
 } from '@/lib/domain/discoveries';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
-import { formatDate, t as tr, type TKey } from '@/i18n';
+import { formatDate, t as tr, tMaybe, type TKey } from '@/i18n';
+import { recentlyOffered } from '@/lib/domain/dayTimeline';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import type { Recipe } from '@/lib/recipes/types';
@@ -47,6 +48,10 @@ const STATUSES: FoodStatus[] = ['not_yet', 'tasted', 'liked', 'refused'];
 const SIGNS: ReactionSign[] = ['breathing', 'swelling', 'vomiting', 'faint', 'hives', 'redness_mouth', 'digestive', 'other'];
 const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const day = (iso: string) => formatDate(`${iso}T12:00:00`, { day: 'numeric', month: 'long' });
+
+/** Clés de la 2e passe (fichiers passA.ts de src/i18n) ; repli sur une clé existante tant qu'elles ne sont pas branchées. */
+const RECENT_KEY = ['pa', 'dc', 'recent'].join('.');
+const RECENT_HINT_KEY = ['pa', 'dc', 'recentHint'].join('.');
 
 export default function Discoveries() {
   const t = useTheme();
@@ -74,6 +79,9 @@ export default function Discoveries() {
   const progress = useMemo(() => progressByCategory(entries), [entries]);
   const top = topCategories(progress);
   const week = discoveredThisWeek(tastings, today);
+  const recent = recentlyOffered(tastings, today).filter((k) => FOOD_BY_KEY[k]);
+  const recentTitle = tMaybe(RECENT_KEY) ?? tr('dc.historyRecent');
+  const recentHint = tMaybe(RECENT_HINT_KEY);
   const ideas = useMemo(() => ideasForAge(entries, age, 6, child?.allergies_declared ?? []), [entries, age, child?.allergies_declared]);
 
   const list = useMemo(() => FOODS.filter((f) => {
@@ -150,6 +158,22 @@ export default function Discoveries() {
           ) : <Chip key={k} label={k} />; })}
         </ScrollView>
       ) : <Text muted variant="small">{tr('dc.weekNone')}</Text>}
+
+      {/* Ajout rapide : aliments proposés ces 30 derniers jours, un geste ouvre la fiche pré-remplie */}
+      {recent.length ? (
+        <View style={{ gap: spacing.xs }} testID="dc-recent">
+          <SectionTitle title={recentTitle} />
+          {recentHint ? <Text variant="caption" muted>{recentHint}</Text> : null}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+            {recent.map((k) => { const f = FOOD_BY_KEY[k]; return f ? (
+              <Tappable key={k} accessibilityRole="button" accessibilityLabel={f.name} onPress={() => openFood(f)} testID={`dc-recent-${k}`}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 4, paddingRight: 12, paddingVertical: 4, borderRadius: 999, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface }}>
+                <FoodArt food={f} size={30} /><Text variant="small" weight="bold">{f.name}</Text><Icon name="plus" size={14} color={t.colors.primary} />
+              </Tappable>
+            ) : null; })}
+          </View>
+        </View>
+      ) : null}
 
       {/* Idées adaptées à l'âge (Premium : suggestions personnalisées) */}
       <SectionTitle title={tr('dc.ideas')} />

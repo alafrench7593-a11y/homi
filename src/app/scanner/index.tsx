@@ -1,16 +1,18 @@
 /** Accueil du scanner : produit ou aliment, historique récent, favoris, comparaison. */
 import React from 'react';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { GlassSurface } from '@/components/Glass';
+import { frDate } from '@/lib/domain/scanSources';
 import { isDemo } from '@/lib/backend';
 import { useRecallWatch, useScanFavorites, useScanHistory, useScanQuota } from '@/lib/data/hooks-scanner';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
-import { ScanListRow } from '@/features/scanner/components';
+import { ScanListRow, VerdictBadge } from '@/features/scanner/components';
 
 export default function ScannerHub() {
   const t = useTheme();
@@ -19,7 +21,8 @@ export default function ScannerHub() {
   const { data: history } = historyQ;
   const { ids: favIds } = useScanFavorites();
   const { data: quota } = useScanQuota();
-  const recent = (history ?? []).slice(0, 4);
+  const last = (history ?? [])[0];
+  const recent = (history ?? []).slice(1, 5);
   const favorites = (history ?? []).filter((s) => favIds.has(s.id)).slice(0, 4);
 
   return (
@@ -31,6 +34,32 @@ export default function ScannerHub() {
         { icon: 'star', value: history ? String((history ?? []).filter((x) => favIds.has(x.id)).length) : '—', label: 'Favoris' },
         { icon: 'zap', value: quota ? String(quota.remaining) : '—', label: 'Restantes ce mois-ci' },
       ]} />
+      {last ? (
+        // Dernier scan en grand : le résultat d'un coup d'œil, et le même type de scan relancé en un geste
+        <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
+          <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="scanner-last">
+            <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>Dernier scan</Text>
+            <Row style={{ alignItems: 'center' }}>
+              {last.product_snapshot?.image_url ? (
+                <Image source={{ uri: last.product_snapshot.image_url }} style={{ width: 64, height: 64, borderRadius: 16, backgroundColor: t.colors.surfaceAlt }} accessibilityIgnoresInvertColors />
+              ) : (
+                <View style={{ width: 64, height: 64, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt }}>
+                  <Icon name={last.kind === 'food' ? 'search' : 'maximize'} size={26} color={t.colors.primary} />
+                </View>
+              )}
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text variant="heading" numberOfLines={2}>{`${last.product_snapshot?.name ?? 'Sans nom'}${favIds.has(last.id) ? ' ★' : ''}`}</Text>
+                <Text variant="caption" muted>{[last.kind === 'food' ? 'Aliment' : 'Produit', last.product_snapshot?.brand, last.analysed_at ? frDate(last.analysed_at) : null].filter(Boolean).join(' · ')}</Text>
+                {last.verdict ? <VerdictBadge verdict={last.verdict} /> : null}
+              </View>
+            </Row>
+            <Row wrap>
+              <Button label="Voir le résultat" icon="eye" size="sm" variant="secondary" onPress={() => router.push(`/scanner/result/${last.id}`)} testID="scanner-last-open" style={{ flexGrow: 1 }} />
+              <Button label={last.kind === 'food' ? 'Autre aliment' : 'Autre produit'} icon="camera" size="sm" onPress={() => router.push(last.kind === 'food' ? '/scanner/food' : '/scanner/product')} testID="scanner-last-again" style={{ flexGrow: 1 }} />
+            </Row>
+          </View>
+        </GlassSurface>
+      ) : null}
       <Row style={{ alignItems: 'stretch' }}>
         {([
           { to: '/scanner/product', icon: 'maximize', title: 'Scanner un produit', sub: 'Crème, lingettes, couches, lessive, produit ménager…' },
@@ -51,10 +80,10 @@ export default function ScannerHub() {
       </Row>
       {quota ? <Text variant="caption" muted>{`Analyses restantes ce mois-ci : ${quota.remaining} sur ${quota.quota}. Les alertes de rappel officiel sont toujours gratuites.`}</Text> : null}
 
-      <SectionTitle title="Récents" action={history?.length ? 'Tout voir' : undefined} onAction={() => router.push('/scanner/history')} />
+      <SectionTitle title={last ? 'Avant' : 'Récents'} action={history?.length ? 'Tout voir' : undefined} onAction={() => router.push('/scanner/history')} />
       {historyQ.isLoading && !history ? <Skeleton kind="card" rows={2} /> : historyQ.isError && !history ? (
         <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher vos analyses" />
-      ) : recent.length ? recent.map((s) => <ScanListRow key={s.id} s={s} favorite={favIds.has(s.id)} />) : (
+      ) : recent.length ? recent.map((s) => <ScanListRow key={s.id} s={s} favorite={favIds.has(s.id)} />) : last ? null : (
         <EmptyState icon="maximize" title="Aucune analyse pour le moment." body="Scannez un code-barres ou recherchez un produit par son nom." action={{ label: 'Lancer un premier scan', icon: 'camera', onPress: () => router.push('/scanner/product') }} />
       )}
 

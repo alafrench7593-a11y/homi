@@ -10,10 +10,14 @@ import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
-import { Banner, Button, Card, Chip, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { useToast } from '@/components/Overlays';
+import { DayThread, clockFr, type ThreadRow } from '@/features/dayThread';
+import { threadStates } from '@/lib/domain/dayThread';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { LoadBar } from '@/features/motionViz';
 import { QuickActionsGrid, RequestCard, RequestSheet, TaskRow, TaskSheet } from '@/features/familyLoad';
-import { useCareRequests, useCareShifts, useFamilyTasks, usePeople } from '@/lib/data/hooks-family-load';
+import { useCareRequests, useCareShifts, useFamilyTasks, usePeople, useSaveTask } from '@/lib/data/hooks-family-load';
 import { useParentSleepLogs } from '@/lib/data/hooks-sleep';
 import { overloadSignals, sameLocalDay, type FamilyTask, type RequestKind } from '@/lib/domain/familyLoad';
 import { todayISO } from '@/lib/domain/dates';
@@ -28,7 +32,10 @@ export default function FamilyHome() {
   const requestsQ = useCareRequests();
   const { data: shifts } = useCareShifts();
   const { data: mySleep } = useParentSleepLogs(1);
-  const { me } = usePeople();
+  const { me, labelOf } = usePeople();
+  const toast = useToast();
+  const saveTask = useSaveTask();
+  const [quick, setQuick] = useState('');
   const tipsOff = useUiStore((s) => s.overloadTipsOff);
   const setTipsOff = useUiStore((s) => s.setOverloadTipsOff);
   const [filter, setFilter] = useState<Filter>('today');
@@ -50,6 +57,39 @@ export default function FamilyHome() {
   }, [tasks, filter, day]);
 
   const signals = useMemo(() => (tipsOff || !me ? [] : overloadSignals({ tasks, requests, shifts: shifts ?? [], me, day, myDeclaredFatigue: mySleep?.[0]?.log_date === day ? mySleep[0].fatigue : null })), [tasks, requests, shifts, me, day, tipsOff, mySleep]);
+
+  // Journée en famille : tâches du jour (et sans date) sur le fil d'or, cochées ou prises en charge en un geste
+  const dayRows = useMemo<ThreadRow[]>(() => {
+    const todays = tasks.filter((x) => x.status !== 'cancelled' && (
+      (x.status === 'todo' && (!x.due_at || sameLocalDay(x.due_at, day) || Date.parse(x.due_at) < Date.now()))
+      || (x.status === 'done' && x.done_at && sameLocalDay(x.done_at, day))));
+    const states = threadStates(todays.map((x) => ({ key: x.id, at: x.due_at && sameLocalDay(x.due_at, day) ? x.due_at : null, done: x.status === 'done', actionable: true, task: x })));
+    return states.map(({ task: x, state }) => ({
+      key: x.id,
+      state: x.status === 'todo' && x.due_at && !sameLocalDay(x.due_at, day) ? 'late' : state,
+      time: x.due_at && sameLocalDay(x.due_at, day) ? clockFr(x.due_at) : '',
+      title: x.title,
+      sub: [x.assignee_id ? labelOf(x.assignee_id) : 'Personne pour l’instant', x.essential ? 'essentielle' : null].filter(Boolean).join(' · '),
+      icon: 'check',
+      onPress: () => setEditing(x),
+      testID: `family-day-${x.id}`,
+      action: x.status === 'done' ? undefined
+        : !x.assignee_id && me ? { label: 'Je m’en charge', onPress: () => void quickSave(x.id, { assignee_id: me }, 'C’est noté : vous vous en chargez.'), testID: `family-take-${x.id}` }
+          : { label: 'Fait', onPress: () => void quickSave(x.id, { status: 'done' }, 'Fait.'), testID: `family-done-${x.id}` },
+    }));
+  }, [tasks, day, me, labelOf]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function quickSave(id: string, input: Parameters<typeof saveTask.mutateAsync>[0]['input'], message: string) {
+    try { await saveTask.mutateAsync({ id, input }); haptic('success'); toast(message); } catch (e) { toast(friendlyError(e), 'error'); }
+  }
+  async function quickAdd() {
+    const title = quick.trim();
+    if (!title) return;
+    try {
+      await saveTask.mutateAsync({ input: { title: title.slice(0, 120), category: 'other', due_at: null, assignee_id: null, priority: 'normal', essential: false, recurrence: null, notes: null } });
+      haptic('success'); setQuick(''); toast('Ajoutée pour aujourd’hui.');
+    } catch (e) { toast(friendlyError(e), 'error'); }
+  }
 
   const [proposeHint, setProposeHint] = useState(false);
   function pick(kind: RequestKind) {
@@ -74,6 +114,15 @@ export default function FamilyHome() {
           ]} />
         ) : null;
       })()}
+      <DayThread title="Notre journée" caption="Touchez « Fait » ou « Je m’en charge » : un seul geste." rows={dayRows} testID="family-day"
+        empty={<Text variant="small" muted>Rien de prévu aujourd’hui. Ajoutez ci-dessous ce qui doit être fait.</Text>} />
+      <Row style={{ alignItems: 'flex-end' }}>
+        <View style={{ flex: 1 }}>
+          <Field label="Ajout rapide" placeholder="Ex. racheter du lait, sortir les poubelles…" value={quick} onChangeText={setQuick} onSubmitEditing={() => void quickAdd()} returnKeyType="done" testID="family-quick" />
+        </View>
+        <Button label="Ajouter" icon="plus" size="sm" onPress={() => void quickAdd()} disabled={!quick.trim()} testID="family-quick-add" />
+      </Row>
+
       <Card tone="soft" onPress={() => router.push('/family/difficult')} accessibilityLabel="Journée difficile : simplifier l’application">
         <ListRow icon="wind" title="Journée difficile ?" subtitle="Ne garder que l’essentiel et demander de l’aide en un geste" />
       </Card>

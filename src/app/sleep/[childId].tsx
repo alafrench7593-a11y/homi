@@ -15,6 +15,8 @@ import { Linking, Platform, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
+import { DayStrip } from '@/features/dayStrip/DayStrip';
+import { nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { BarChart } from '@/components/Charts';
 import { PremiumSection } from '@/components/Premium';
 import { Banner, Button, Card, Chip, Field, IconButton, Row, SectionTitle, Text } from '@/components/ui';
@@ -122,6 +124,9 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
         { icon: 'clock', value: plan.daySleepMinutes ? span(plan.daySleepMinutes) : '—', label: 'Sommeil de jour' },
         { icon: 'moon', value: night ? String(night.wakings) : '—', label: 'Réveils (nuit)' },
       ]} />
+      <DayStrip testID="sleep-day-strip" title="Sommeils du jour" now={nowMinute(now, now)}
+        events={toDayEvents('sleep', sleeps.filter((x) => x.child_id === child.id), now, now)}
+        empty={`Rien de noté aujourd’hui : « ${name} s’endort » ci-dessous lance le premier relevé.`} />
       <Card>
         <Text variant="heading" testID="sleep-state">{state.text}</Text>
         {plan.assumedWake ? <Text variant="caption" muted>{`Aucun réveil noté ce matin : calcul à partir de l’heure habituelle (${hm(profile?.usual_wake)}).`}</Text> : null}

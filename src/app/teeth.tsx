@@ -7,7 +7,7 @@ import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Field, haptic, Icon, Row, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, Icon, Row, Text } from '@/components/ui';
 import { ToothChart } from '@/features/childCare';
 import { useSaveReminder } from '@/lib/data/hooks-settings';
 import { toFrDate } from '@/lib/validation';
@@ -15,7 +15,7 @@ import { backend, eq } from '@/lib/backend';
 import { useActiveSubject, useTrackedChildren, useInvalidate } from '@/lib/data/hooks';
 import { useMilestones } from '@/lib/data/hooks-family';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { frToISO, todayISO } from '@/lib/domain/dates';
+import { addDays, frToISO, todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
@@ -130,6 +130,13 @@ export default function Teeth() {
       )}
 
       <Sheet visible={!!picked} onClose={() => setPicked(null)} title={picked ?? ''}>
+        {/* date en un geste (modifiable dans le champ juste en dessous) */}
+        <Row wrap testID="teeth-date-quick">
+          {[{ label: 'Aujourd’hui', d: 0 }, { label: 'Hier', d: 1 }, { label: 'Il y a 3 jours', d: 3 }, { label: 'Il y a une semaine', d: 7 }].map((o) => {
+            const iso = addDays(todayISO(), -o.d);
+            return <Chip key={o.d} label={o.label} selected={frToISO(date) === iso} onPress={() => { haptic('selection'); setDate(toFrDate(iso)); }} />;
+          })}
+        </Row>
         <Field label="Date d’apparition" value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" />
         <Field label="Observations" optional multiline value={note} onChangeText={setNote} maxLength={4000} placeholder="Gencive gonflée, mâchouille beaucoup…" />
         <Button label={pickedRow ? 'Enregistrer' : 'Noter cette dent'} onPress={save} loading={!!busy} />

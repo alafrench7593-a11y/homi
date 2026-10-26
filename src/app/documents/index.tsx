@@ -4,7 +4,9 @@
  * Version gratuite : 15 documents ; au-delà, l'abonnement est proposé sans bloquer la consultation.
  */
 import React, { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
+import { Tappable } from '@/components/Tappable';
+import { GlassSurface } from '@/components/Glass';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
@@ -103,6 +105,29 @@ export default function DocumentsHome() {
           { icon: 'star', value: String(favorites.length), label: tr('docs.section.favorites') },
         ]} />
       ) : null}
+      {/* Recherche en tête : retrouver un document en tapant quelques mots */}
+      <Field label={tr('docs.search.label')} value={query} onChangeText={setQuery} placeholder={tr('docs.search.placeholder')} returnKeyType="search" autoCorrect={false} testID="docs-search" />
+      {/* Favoris à portée de pouce : tuiles qui défilent, ouvertes en un geste */}
+      {!filtering && !loading && !failed && favorites.length && !selecting ? (
+        <View style={{ gap: spacing.xs }} testID="docs-fav-strip">
+          <SectionTitle title={tr('docs.section.favorites')} />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }}>
+            {favorites.slice(0, 12).map((d) => (
+              <Tappable key={d.id} onPress={() => open(d)} accessibilityRole="button" accessibilityLabel={d.title} testID={`docs-fav-${d.id}`}>
+                <GlassSurface fill={t.colors.surface} depth={1} radius={20} style={{ width: 132 }}>
+                  <View style={{ padding: spacing.md, gap: 6 }}>
+                    <View style={{ width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt }}>
+                      <Icon name={categoryDef(d.category).icon} size={18} color={t.colors.gold} />
+                    </View>
+                    <Text weight="bold" numberOfLines={2}>{d.title}</Text>
+                    <Text variant="caption" muted numberOfLines={1}>{categoryLabel(d.category)}</Text>
+                  </View>
+                </GlassSurface>
+              </Tappable>
+            ))}
+          </ScrollView>
+        </View>
+      ) : null}
       <Appear kind="pop" delay={0.05}>
         <Button label={tr('docs.import')} icon="upload" variant="secondary" onPress={() => setImportOpen(true)} disabled={atLimit} full />
       </Appear>
@@ -127,8 +152,6 @@ export default function DocumentsHome() {
         </>
       ) : null}
 
-      {/* Recherche */}
-      <Field label={tr('docs.search.label')} value={query} onChangeText={setQuery} placeholder={tr('docs.search.placeholder')} returnKeyType="search" autoCorrect={false} />
       {interpretation && (interpretation.categories.length || interpretation.year || interpretation.latest || interpretation.childId || interpretation.exact) ? (
         <Row wrap gap={6}>
           <Text variant="caption" muted>{tr('docs.search.understood')}</Text>
@@ -163,7 +186,7 @@ export default function DocumentsHome() {
           {toVerify.slice(0, 3).map((d) => <DocCard key={d.id} doc={d} children={kids} onPress={() => open(d)} selecting={selecting} selected={selected.includes(d.id)} />)}
         </View>
       ) : null}
-      {!filtering && !loading && !failed && favorites.length ? (
+      {!filtering && !loading && !failed && favorites.length && selecting ? (
         <View style={{ gap: spacing.xs }}>
           <SectionTitle title={tr('docs.section.favorites')} />
           {favorites.slice(0, 3).map((d) => <DocCard key={d.id} doc={d} children={kids} onPress={() => open(d)} selecting={selecting} selected={selected.includes(d.id)} />)}

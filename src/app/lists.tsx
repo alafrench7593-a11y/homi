@@ -18,6 +18,7 @@ import type { Checklist, ChecklistItem, ChecklistKind } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { progressOf } from '@/lib/domain/quickPicks';
 
 type TemplateKind = Exclude<ChecklistKind, 'custom'>;
 const iconOf = (kind: ChecklistKind): IconName => (kind === 'custom' ? 'list' : (CHECKLIST_TEMPLATES[kind].icon as IconName));
@@ -39,7 +40,12 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
   const [label, setLabel] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const [showDone, setShowDone] = useState(false);
   const done = (items ?? []).filter((i) => i.done).length;
+  const prog = progressOf(items ?? []);
+  // À faire d'abord (dans l'ordre de la liste), les éléments cochés repliés en bas
+  const todo = (items ?? []).filter((i) => !i.done);
+  const doneList = (items ?? []).filter((i) => i.done);
 
   async function toggle(item: ChecklistItem) {
     if (busyId === item.id) return;
@@ -111,13 +117,23 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
           <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{list.title}</Text>
           <IconButton icon="chevron-up" label="Refermer la liste" onPress={onClose} />
         </Row>
-        <Text variant="small" muted>{done} sur {items?.length ?? 0} fait{done > 1 ? 's' : ''}</Text>
+        <Row style={{ alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <Text variant="small" muted>{done} sur {items?.length ?? 0} fait{done > 1 ? 's' : ''}</Text>
+          <Text weight="bold" color={t.colors.primary} testID="list-pct">{prog.pct} %</Text>
+        </Row>
         <ProgressBar done={done} total={items?.length ?? 0} />
+        {/* ajout rapide en haut : Entrée ajoute et garde le clavier ouvert pour enchaîner */}
+        <Row style={{ alignItems: 'flex-end' }}>
+          <View style={{ flex: 1 }}>
+            <Field label="Ajouter un élément" value={label} onChangeText={(v) => { setLabel(v); setError(null); }} maxLength={160} error={error} onSubmitEditing={add} returnKeyType="done" blurOnSubmit={false} />
+          </View>
+          <IconButton icon="plus" tone="primary" label="Ajouter" onPress={add} disabled={adding} />
+        </Row>
         {isLoading && !items ? <Skeleton kind="detail" rows={4} /> : itemsQ.isError && !items ? (
           <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title="Impossible d’afficher cette liste" />
         ) : (
           <View>
-            {(items ?? []).map((item) => (
+            {[...todo, ...(showDone ? doneList : [])].map((item) => (
               <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                 <Tappable
                   accessibilityRole="checkbox"
@@ -126,17 +142,21 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
                   onPress={() => toggle(item)}
                   style={({ pressed }) => ({ flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH + 4, paddingVertical: 6, borderRadius: radius.md, opacity: pressed ? 0.7 : 1 })}
                 >
-                  <Icon name={item.done ? 'check-square' : 'square'} color={item.done ? t.colors.success : t.colors.textMuted} />
+                  <View style={{ width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center', borderWidth: item.done ? 0 : 2, borderColor: t.colors.border, backgroundColor: item.done ? t.colors.gold : 'transparent' }}>
+                    {item.done ? <Icon name="check" size={15} color="#FFFFFF" /> : null}
+                  </View>
                   <Text style={{ flex: 1, textDecorationLine: item.done ? 'line-through' : 'none' }} muted={item.done}>{item.label}</Text>
                 </Tappable>
                 <IconButton icon="trash-2" size={17} color={t.colors.textMuted} label={`Retirer ${item.label}`} onPress={() => removeItem(item)} />
               </View>
             ))}
             {!items?.length && <Text muted>Cette liste est vide.</Text>}
+            {items?.length && !todo.length ? <Text muted center style={{ paddingVertical: spacing.sm }}>Tout est coché.</Text> : null}
+            {doneList.length ? (
+              <Button label={showDone ? 'Masquer les éléments cochés' : `Voir les ${doneList.length} élément${doneList.length > 1 ? 's' : ''} coché${doneList.length > 1 ? 's' : ''}`} icon={showDone ? 'chevron-up' : 'chevron-down'} size="sm" variant="ghost" onPress={() => setShowDone((v) => !v)} style={{ alignSelf: 'flex-start' }} testID="list-toggle-done" />
+            ) : null}
           </View>
         )}
-        <Field label="Ajouter un élément" value={label} onChangeText={(v) => { setLabel(v); setError(null); }} maxLength={160} error={error} onSubmitEditing={add} returnKeyType="done" />
-        <Button label="Ajouter" icon="plus" size="sm" variant="secondary" loading={adding} onPress={add} style={{ alignSelf: 'flex-start' }} />
         <Button label="Supprimer la liste" icon="trash-2" variant="ghost" size="sm" loading={removing} onPress={removeList} style={{ alignSelf: 'flex-start' }} />
       </View>
     </Card>
@@ -144,6 +164,7 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
 }
 
 export default function ListsScreen() {
+  const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
   const hid = useHouseholdId();
@@ -195,6 +216,12 @@ export default function ListsScreen() {
 
   const totalItems = (allItems ?? []).filter((i) => (lists ?? []).some((l) => l.id === i.checklist_id));
   const doneItems = totalItems.filter((i) => i.done).length;
+  // « Reprendre » : la liste commencée la plus avancée qui n'est pas terminée (sinon la première non terminée)
+  const resume = (lists ?? []).map((l) => {
+    const its = (allItems ?? []).filter((i) => i.checklist_id === l.id);
+    const p = progressOf(its);
+    return { list: l, left: p.total - p.done, pct: p.pct, started: p.done > 0 };
+  }).filter((x) => x.left > 0).sort((a, b) => Number(b.started) - Number(a.started) || b.pct - a.pct)[0] ?? null;
 
   return (
     <Screen back title="Listes de préparation" subtitle="Cochez à deux, chacun de son côté."
@@ -217,6 +244,21 @@ export default function ListsScreen() {
         <EmptyState icon="check-square" title="Aucune liste pour l’instant" body="Partez d’un modèle (valise de maternité, démarches…) puis adaptez-le à votre famille." action={atLimit ? undefined : { label: 'Créer une liste', onPress: () => setCreating(true) }} />
       ) : (
         <>
+          {!open && resume ? (
+            <Tappable accessibilityRole="button" accessibilityLabel={`Reprendre ${resume.list.title}`} onPress={() => setOpenId(resume.list.id)} testID="lists-resume">
+              <Card tone="lavender">
+                <Row>
+                  <Icon name={iconOf(resume.list.kind)} color={t.colors.primary} />
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <Text variant="caption" muted>Reprendre</Text>
+                    <Text weight="bold">{resume.list.title}</Text>
+                    <Text variant="small" muted>{resume.left} élément{resume.left > 1 ? 's' : ''} à faire · {resume.pct} %</Text>
+                  </View>
+                  <Icon name="chevron-right" color={t.colors.textMuted} />
+                </Row>
+              </Card>
+            </Tappable>
+          ) : null}
           {open && <ChecklistDetail key={open.id} list={open} onClose={() => setOpenId(null)} />}
           <SectionTitle title={open ? 'Autres listes' : 'Vos listes'} />
           <Card>

@@ -112,7 +112,7 @@ export default function Grow() {
       </ScrollView>
 
       <View style={{ gap: spacing.sm }} testID="gr-steps">
-        {list.length ? list.map((s) => <StepCard key={s.key} s={s} row={byKey.get(s.key)} locked={!stepAvailable(s, premium)} onPress={() => openStep(s)} />)
+        {list.length ? list.map((s) => <StepCard key={s.key} s={s} row={byKey.get(s.key)} locked={!stepAvailable(s, premium)} onPress={() => openStep(s)} child={child} />)
           : <Text muted variant="small">{band === '36_72' ? tr('gr.beyond') : tr('gr.noneInBand')}</Text>}
       </View>
       {!premium ? <Text variant="caption" muted testID="gr-free-note">{tr('gr.freeNote')}</Text> : null}
@@ -136,9 +136,19 @@ export default function Grow() {
   );
 }
 
-function StepCard({ s, row, locked, onPress }: { s: StepDef; row?: ChildStep; locked: boolean; onPress: () => void }) {
+function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildStep; locked: boolean; onPress: () => void; child: { id: string; household_id: string; first_name: string } }) {
   const t = useTheme();
+  const toast = useToast();
+  const save = useSaveStep();
   const st = row?.status;
+  /** « Observé » en un geste (date du jour, modifiable ensuite en touchant la carte). */
+  async function quickObserved() {
+    try {
+      await save.mutateAsync({ child, key: s.key, existing: row ?? null, status: 'observed', date: todayISO(), note: row?.note ?? null });
+      haptic('success');
+      toast(tr('gr.saved'), 'success');
+    } catch (e) { toast(friendlyError(e), 'error'); }
+  }
   const tint = st === 'observed' ? (t.colors.success ?? '#3E8E41') : st === 'in_progress' ? t.colors.primary : t.colors.textMuted;
   return (
     <Tappable accessibilityRole="button" onPress={onPress} testID={`gr-step-${s.key}`}
@@ -153,7 +163,12 @@ function StepCard({ s, row, locked, onPress }: { s: StepDef; row?: ChildStep; lo
             <Text variant="caption" muted>{tr(`gr.cat.${s.category}` as TKey)} · {tr('gr.around', { range: range(s.around[0], s.around[1]) })}</Text>
             {st ? <Text variant="caption" color={tint} testID={`gr-status-${s.key}`}>{tr(`gr.status.${st}` as TKey)}</Text> : null}
           </View>
-          <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
+          {!locked && st !== 'observed' ? (
+            <Tappable bare accessibilityRole="button" accessibilityLabel={`${tr('mb.gr.quickObserved')} — ${s.title}`} onPress={() => void quickObserved()} hitSlop={8} testID={`gr-quick-${s.key}`}
+              style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: t.colors.primary }}>
+              <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('mb.gr.quickObserved')}</Text>
+            </Tappable>
+          ) : <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
         </View>
       </GlassSurface>
     </Tappable>

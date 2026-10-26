@@ -24,6 +24,8 @@ import { CARE_SOURCES } from '@/content/pregnancyCare';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { daysUntil, pregnancyThread, type PregThreadItem } from '@/lib/domain/pregnancyThread';
+import { PregnancyThread } from '@/features/pregnancyThread';
 
 const dayLabel = (iso: string) => formatDate(`${iso}T12:00:00`, { day: 'numeric', month: 'long' });
 const saLabel = ([w, d]: [number, number]) => (d ? tr('care.cal.saPlus', { w, d }) : tr('care.cal.sa', { w }));
@@ -63,6 +65,34 @@ export default function PregnancyCalendar() {
           <Button label={tr('care.cal.fixDate')} size="sm" variant="ghost" icon="edit-3" onPress={() => router.push('/pregnancy/edit')} testID="preg-cal-fix" />
         </Row>
       </View>
+
+      <PregnancyThread
+        title={tr('pc.cal.thread' as TKey)}
+        caption={tr('pc.cal.threadCaption' as TKey)}
+        items={pregnancyThread({
+          today, due: pregnancy.due_date, windows,
+          echoAppts: windows.flatMap((w) => { const a = byKey(w.key); return a ? [{ key: w.key, id: a.id, date: a.starts_at.slice(0, 10) }] : []; }),
+          appts: others.map((a) => ({ id: a.id, date: a.starts_at.slice(0, 10) })),
+        })}
+        labelOf={(it: PregThreadItem) => {
+          const soon = (d: string) => (d > today ? tr('pc.cal.inDays' as TKey, { count: daysUntil(today, d) }) : null);
+          const tag = it.state === 'done' ? tr('pc.cal.done' as TKey) : it.state === 'next' ? tr('pc.cal.next' as TKey) : undefined;
+          if (it.kind === 'today') return { title: s.extraDays ? tr('care.cal.saPlus', { w: s.weeksSA, d: s.extraDays }) : tr('care.cal.sa', { w: s.weeksSA }), sub: dayLabel(today), tag: tr('pc.cal.today' as TKey) };
+          if (it.kind === 'due') return { title: dayLabel(it.date), sub: soon(it.date) ?? undefined, tag: tr('pc.cal.due' as TKey) };
+          if (it.kind === 'echo') {
+            const w = windows.find((x) => x.key === it.ref)!;
+            const appt = byKey(w.key);
+            const st = windowState(w, today);
+            return { title: name(w.key), sub: [appt ? appointmentWhen(appt) : `${dayLabel(w.from)} → ${dayLabel(w.to)}`, soon(it.date)].filter(Boolean).join(' · '), tag: tag ?? tr(`care.cal.state.${st}` as TKey) };
+          }
+          const a = others.find((x) => x.id === it.ref)!;
+          return { title: a.title, sub: [appointmentWhen(a), soon(it.date)].filter(Boolean).join(' · '), tag };
+        }}
+        onPress={(it: PregThreadItem) => {
+          if (it.kind === 'echo') { const w = windows.find((x) => x.key === it.ref)!; setEditing({ key: w.key, appt: byKey(w.key) ?? null, window: w }); }
+          else if (it.kind === 'appt') { const a = others.find((x) => x.id === it.ref); if (a) setEditing({ key: null, appt: a, window: null }); }
+        }}
+      />
 
       {multiple ? <View testID="preg-cal-multiple"><Banner tone="info" title={tr('care.cal.multipleTitle')}>{tr('care.cal.multipleBody')}</Banner></View> : null}
       {moved.map((m) => {

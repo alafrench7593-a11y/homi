@@ -19,6 +19,7 @@ import { avoidDayKind, currentCycleDay, type AvoidDayKind } from '@/lib/domain/c
 import { AVOID_DISCLAIMER, AVOID_NO_SAFE_DAYS, methodTitle } from '@/content/fertility';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { PillToday, dailyKindFor } from '@/features/cycle/PillToday';
 
 export default function ContraceptionScreen() {
   const t = useTheme();
@@ -49,6 +50,8 @@ export default function ContraceptionScreen() {
         { icon: 'shield', value: active[0] ? active[0].label || methodTitle(active[0].method) : '—', label: 'Ma méthode' },
         { icon: 'calendar', value: w ? fmt(w.nextPeriod) : '—', label: 'Prochaines règles (estimation)' },
       ]} />
+      {/* Prise du jour en un geste (pilule, patch, anneau) */}
+      {active.find((m) => dailyKindFor(m.method)) ? <PillToday method={active.find((m) => dailyKindFor(m.method))!.method} /> : null}
       <Banner tone="warning" title="Une grossesse reste possible à tout moment">{AVOID_DISCLAIMER}</Banner>
 
       {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (

@@ -15,7 +15,9 @@ import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Chip, Field, Icon, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { GlassSurface } from '@/components/Glass';
+import { GoldTimeline, type GoldState } from '@/features/goldTimeline';
 import { backend, eq } from '@/lib/backend';
 import { useChild, useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -123,6 +125,14 @@ export default function Vaccines() {
     if (!(await confirm(tr('vx.completeTitle'), tr('vx.completeBody', { count: doses.length }), tr('vx.complete')))) return;
     try { await act.complete.mutateAsync({ appt: a, doses }); toast(tr('vx.completed'), 'success'); } catch (e) { toast(friendlyError(e), 'error'); }
   }
+  // Première visite qui n'est pas entièrement faite et dont une dose est « à faire » ou « bientôt »
+  const firstNow = shownVisits.find((v) => v.doses.some((x) => x.state === 'due' || x.state === 'upcoming'));
+  async function quickDone(v: NonNullable<typeof visit>) {
+    const todo = v.doses.filter((x) => x.state !== 'done');
+    if (!todo.length) return;
+    if (!(await confirm(tr('mb.vx.quickTitle'), tr('mb.vx.quickBody', { list: todo.map((x) => x.label).join(', ') }), tr('mb.vx.doneToday')))) return;
+    try { await act.markDone.mutateAsync({ doses: todo, givenOn: todayISO() }); haptic('success'); toast(tr('vx.markedDone'), 'success'); } catch (e) { toast(friendlyError(e), 'error'); }
+  }
   function newVaccine() { setD({ vaccine: '', date: toFrDate(todayISO()), dose: '', lot: '', by: '', source: 'carnet', note: '' }); }
   function openQuestions(a: VaccineAppointment) { setQAppt(a); setQs(a.questions ?? []); setQFree(''); }
 
@@ -201,22 +211,26 @@ export default function Vaccines() {
       ))}
 
       <SectionTitle title={tr('vx.calendar')} />
-      {shownVisits.map((v) => (
-        <Tappable key={`${v.months}-${v.toMonths ?? ''}`} accessibilityRole="button" onPress={() => { setVisit(v); setDoneDate(toFrDate(todayISO())); }}>
-          <Card>
-            <Row style={{ justifyContent: 'space-between' }}>
-              <Text weight="bold">{ageLabel(v.months, v.toMonths)}</Text>
-              <Text variant="caption" muted>{v.toMonths ? `${fmt(v.date)} – ${fmt(v.doses[0].dateTo!)}` : tr('vx.around', { date: fmt(v.date) })}</Text>
-            </Row>
-            {v.doses.map((x) => (
-              <View key={x.key} style={{ marginTop: 4 }}>
-                <Text variant="small">{x.label} — {x.dose}</Text>
-                <StateChip d={x} />
-              </View>
-            ))}
-          </Card>
-        </Tappable>
-      ))}
+      {/* Fil des vaccins : chaque visite est une perle (faite, c'est le moment, prévue, plus tard) ; « Fait aujourd'hui » en un geste */}
+      <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
+        <View style={{ padding: spacing.lg }}>
+          <GoldTimeline testID="vaccine-timeline" items={shownVisits.map((v) => {
+            const todo = v.doses.filter((x) => x.state !== 'done');
+            const state: GoldState = !todo.length ? 'done' : v === firstNow ? 'now' : todo.some((x) => x.state === 'planned') ? 'planned' : 'later';
+            return {
+              key: `${v.months}-${v.toMonths ?? ''}`,
+              title: ageLabel(v.months, v.toMonths),
+              tag: !todo.length ? tr('vx.state.done') : tr(`vx.state.${todo[0].state}` as TKey),
+              subtitle: `${v.doses.map((x) => x.label).join(' · ')}\n${v.toMonths ? `${fmt(v.date)} – ${fmt(v.doses[0].dateTo!)}` : tr('vx.around', { date: fmt(v.date) })}`,
+              state,
+              icon: 'shield' as const,
+              onPress: () => { setVisit(v); setDoneDate(toFrDate(todayISO())); },
+              testID: `vaccine-visit-${v.months}`,
+              action: state === 'now' ? { label: tr('mb.vx.doneToday'), onPress: () => void quickDone(v), testID: `vaccine-quick-done-${v.months}` } : undefined,
+            };
+          })} />
+        </View>
+      </GlassSurface>
       {!showAll && shownVisits.length < visits.length ? <Button label={tr('vx.showAll')} variant="ghost" onPress={() => setShowAll(true)} /> : null}
       <Card>
         <Text weight="bold">{tr('vx.situational')}</Text>

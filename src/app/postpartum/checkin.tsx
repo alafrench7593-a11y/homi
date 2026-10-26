@@ -10,6 +10,7 @@ import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, haptic, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { DangerPanel, RecoveryWarnings, Scale, SupportPlanCard } from '@/features/postpartum';
+import { PostpartumExpress } from '@/features/postpartumExpress';
 import { usePostpartumCheckins, usePostpartumSettings, useSaveCheckin } from '@/lib/data/hooks-postpartum';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import {
@@ -36,6 +37,7 @@ export default function PostpartumCheckin() {
   const existing = checkinsQ.data?.find((c) => c.checkin_date === today);
   const [v, setV] = useState<CheckinInput>({ ...EMPTY, checkin_date: today });
   const [more, setMore] = useState(false);
+  const [scales, setScales] = useState(false);
   const [physical, setPhysical] = useState(false);
   const [danger, setDanger] = useState<DangerKey[]>([]);
   const [saved, setSaved] = useState(false);
@@ -45,6 +47,7 @@ export default function PostpartumCheckin() {
     if (!existing) return;
     const { id: _i, user_id: _u, created_at: _c, updated_at: _up, ...rest } = existing;
     setV(rest);
+    setScales(true);
     setMore([rest.mood, rest.supported, rest.coping, rest.rest_need, rest.help_need, rest.comment].some((x) => x != null));
     setPhysical([rest.physical_fatigue, rest.pain, rest.recovery, rest.pain_note, rest.feeding_note, rest.difficulties].some((x) => x != null));
   }, [existing?.id]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -79,8 +82,14 @@ export default function PostpartumCheckin() {
   }
 
   return (
-    <Screen back title="Faire le point" subtitle="Moins d’une minute. Tout est facultatif."
+    <Screen back title="Faire le point" subtitle="3 taps suffisent. Tout est facultatif."
       action={{ label: existing ? 'Mettre à jour mon point' : 'Enregistrer', icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'pp-checkin-save' }}>
+      {!scales ? (
+        <>
+          <PostpartumExpress value={v} onAnswer={(k, n) => set(k, n as never)} />
+          <Button label="Toutes les échelles (stress…)" variant="ghost" size="sm" icon="sliders" onPress={() => setScales(true)} testID="pp-all-scales" />
+        </>
+      ) : (
       <Card>
         <View style={{ gap: spacing.md }}>
           {SCALES.filter((s) => QUICK.includes(s.key)).map((s) => (
@@ -88,6 +97,7 @@ export default function PostpartumCheckin() {
           ))}
         </View>
       </Card>
+      )}
 
       <Card>
         <Text weight="bold">De quoi auriez-vous le plus besoin ? <Text variant="small" muted>(plusieurs choix)</Text></Text>

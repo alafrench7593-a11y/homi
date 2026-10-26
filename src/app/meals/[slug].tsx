@@ -8,9 +8,9 @@ import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
-import { useToast } from '@/components/Overlays';
+import { Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Chip, FavoriteButton, IconButton, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, FavoriteButton, haptic, Icon, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { RecipeArt } from '@/features/recipes/RecipeArt';
 import { allergenLabel, budgetLabel, mealLabel, stageLabel, statusLabel, textureLabel } from '@/features/recipes/labels';
 import { scoreBandFor, useCreateShoppingList, useFoodProfile, useIngredientPrices, useLatestShoppingList, useRecipeDislikes, useRecipeFavorites, useRecipes } from '@/lib/data/hooks-recipes';
@@ -45,6 +45,9 @@ export default function RecipeDetail() {
   const inv = useInvalidate();
   const r = all?.find((x) => x.slug === slug) ?? null;
   const [servings, setServings] = useState<number | null>(null);
+  // Cuisine pas-à-pas : étapes cochées d'un tap, et mode plein écran une étape à la fois
+  const [doneSteps, setDoneSteps] = useState<number[]>([]);
+  const [cookAt, setCookAt] = useState<number | null>(null);
   if (loading && !all) return <Screen back title={tr('rc.title')}><Skeleton kind="detail" rows={5} /></Screen>;
   if (!r) return <Screen back title={tr('rc.title')}><EmptyState icon="book" title={tr('rc.notFound')} /></Screen>;
   const n = servings ?? r.servings;
@@ -118,12 +121,38 @@ export default function RecipeDetail() {
       </View>
 
       <SectionTitle title={tr('rc.steps')} />
-      {r.steps.map((s, k) => (
-        <View key={k} style={{ flexDirection: 'row', gap: spacing.sm }}>
-          <Text weight="bold" color={t.colors.primary}>{k + 1}.</Text>
-          <Text style={{ flex: 1 }}>{s}</Text>
-        </View>
-      ))}
+      <Button label={tr('mb.rc.cookMode')} icon="play" variant="secondary" onPress={() => { setCookAt(0); haptic('light'); }} testID="rc-cook-mode" />
+      {r.steps.map((s, k) => {
+        const done = doneSteps.includes(k);
+        return (
+          <Tappable key={k} accessibilityRole="checkbox" accessibilityState={{ checked: done }} accessibilityLabel={`${k + 1}. ${s}`} testID={`rc-step-${k}`}
+            onPress={() => { haptic('selection'); setDoneSteps((d) => (d.includes(k) ? d.filter((x) => x !== k) : [...d, k])); }}
+            style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start', paddingVertical: 4 }}>
+            <View style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: done ? t.colors.gold : 'transparent', borderWidth: 2, borderColor: done ? t.colors.gold : t.colors.primary }}>
+              {done ? <Icon name="check" size={15} color="#FFFFFF" /> : <Text variant="caption" weight="bold" color={t.colors.primary}>{k + 1}</Text>}
+            </View>
+            <Text style={{ flex: 1, opacity: done ? 0.55 : 1, textDecorationLine: done ? 'line-through' : 'none' }}>{s}</Text>
+          </Tappable>
+        );
+      })}
+      <Sheet visible={cookAt != null} onClose={() => setCookAt(null)} title={cookAt != null ? tr('mb.rc.stepOf', { n: cookAt + 1, total: r.steps.length }) : ''}>
+        {cookAt != null ? (
+          <View style={{ gap: spacing.md }} testID="rc-cook-sheet">
+            <View style={{ height: 6, borderRadius: 3, backgroundColor: t.colors.border, overflow: 'hidden' }}>
+              <View style={{ width: `${((cookAt + 1) / r.steps.length) * 100}%`, height: 6, backgroundColor: t.colors.gold }} />
+            </View>
+            <Text style={{ fontSize: 22, lineHeight: 31 }}>{r.steps[cookAt]}</Text>
+            <Row>
+              <Button label={tr('mb.rc.prev')} icon="arrow-left" variant="secondary" disabled={cookAt === 0} onPress={() => setCookAt(cookAt - 1)} style={{ flex: 1 }} />
+              {cookAt < r.steps.length - 1 ? (
+                <Button label={tr('mb.rc.next')} iconRight="arrow-right" onPress={() => { setDoneSteps((d) => (d.includes(cookAt) ? d : [...d, cookAt])); setCookAt(cookAt + 1); haptic('light'); }} style={{ flex: 1 }} testID="rc-cook-next" />
+              ) : (
+                <Button label={tr('mb.rc.finish')} icon="check" onPress={() => { setDoneSteps(r.steps.map((_, i) => i)); setCookAt(null); haptic('success'); }} style={{ flex: 1 }} testID="rc-cook-finish" />
+              )}
+            </Row>
+          </View>
+        ) : null}
+      </Sheet>
 
       {r.precautions.length ? (
         <View testID="recipe-precautions"><Banner tone="warning" title={profile.audience === 'pregnancy' ? tr('rc.precautions.pregnancy') : tr('rc.precautions')}>{r.precautions.map((p) => `• ${p}`).join('\n')}</Banner></View>

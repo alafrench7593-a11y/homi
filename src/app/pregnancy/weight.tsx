@@ -50,6 +50,18 @@ export default function WeightScreen() {
   const [pro, setPro] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showNotes, setShowNotes] = useState(false);
+  // Pré-remplissage : la dernière mesure notée (jamais une cible), ajustable au dixième en un geste
+  const prefilled = React.useRef(false);
+  React.useEffect(() => {
+    if (prefilled.current || !weights?.length || kg) return;
+    prefilled.current = true;
+    setKg(String(weights[weights.length - 1].weight_kg).replace('.', ','));
+  }, [weights, kg]);
+  const nudge = (delta: number) => {
+    const v = Number((kg || '0').replace(',', '.'));
+    if (!Number.isFinite(v) || v <= 0) return;
+    setKg((Math.round((v + delta) * 10) / 10).toFixed(1).replace('.', ','));
+  };
 
   async function add() {
     const iso = frToISO(date);
@@ -134,6 +146,14 @@ export default function WeightScreen() {
                 <View style={{ flex: 3 }}><Field label="Date" value={date} onChangeText={setDate} error={errors.date} keyboardType="numbers-and-punctuation" /></View>
                 <View style={{ flex: 2 }}><Field label="Poids" value={kg} onChangeText={setKg} keyboardType="decimal-pad" suffix="kg" error={errors.kg} /></View>
               </Row>
+              {kg ? (
+                <Row wrap style={{ justifyContent: 'center' }} testID="weight-steppers">
+                  {[-0.5, -0.1, 0.1, 0.5].map((d) => (
+                    <Button key={d} label={`${d > 0 ? '+' : '−'}${String(Math.abs(d)).replace('.', ',')}`} size="sm" variant="secondary" onPress={() => nudge(d)} accessibilityLabel={`${d > 0 ? 'Ajouter' : 'Retirer'} ${String(Math.abs(d)).replace('.', ',')} kg`} testID={`weight-nudge-${d}`} />
+                  ))}
+                </Row>
+              ) : null}
+              {last ? <Text variant="caption" muted center>Pré-rempli avec votre dernière mesure : ajustez puis enregistrez.</Text> : null}
               {showNotes || note || pro ? (
                 <>
                   <Field label="Note personnelle" optional value={note} onChangeText={setNote} />

@@ -1,12 +1,12 @@
 /** Boîte de réception : rappels, réponses de la communauté, abonnement, rappels officiels de produits. */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
-import { haptic, Icon, type IconName, IconButton, Row, SectionTitle, Text } from '@/components/ui';
+import { Chip, haptic, Icon, type IconName, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { useRelevantNotifications } from '@/lib/data/hooks-scope';
 import { useDeleteNotification, useMarkAllNotificationsRead, useMarkNotificationRead } from '@/lib/data/hooks-me';
@@ -34,6 +34,18 @@ const CATEGORY: Record<AppNotification['category'], { icon: IconName; label: str
   family: { icon: 'users', label: 'Foyer' },
 };
 
+type Group = 'all' | 'reminders' | 'community' | 'products' | 'home';
+/** Familles de notifications, pour filtrer en un geste. */
+const GROUP_OF = (c: AppNotification['category']): Exclude<Group, 'all'> =>
+  c === 'reminder' ? 'reminders' : c.startsWith('community') ? 'community' : c === 'product_recall' ? 'products' : 'home';
+const GROUPS: { value: Group; label: string; icon: IconName }[] = [
+  { value: 'all', label: 'Tout', icon: 'inbox' },
+  { value: 'reminders', label: 'Rappels', icon: 'bell' },
+  { value: 'community', label: 'Communauté', icon: 'message-circle' },
+  { value: 'products', label: 'Produits', icon: 'alert-triangle' },
+  { value: 'home', label: 'Foyer et compte', icon: 'home' },
+];
+
 /** Lien interne de la notification : deep_link, sinon payload.route / payload.url / payload.deep_link. */
 function routeOf(n: Pick<AppNotification, 'deep_link' | 'payload'>): string | null {
   const candidates = [n.deep_link, n.payload?.route, n.payload?.url, n.payload?.deep_link];
@@ -50,8 +62,11 @@ export default function NotificationsScreen() {
   const markAll = useMarkAllNotificationsRead();
   const del = useDeleteNotification();
 
-  const unread = (data ?? []).filter((n) => !n.read_at);
-  const read = (data ?? []).filter((n) => n.read_at);
+  const [group, setGroup] = useState<Group>('all');
+  const shown = (data ?? []).filter((n) => group === 'all' || GROUP_OF(n.category) === group);
+  const allUnread = (data ?? []).filter((n) => !n.read_at);
+  const unread = shown.filter((n) => !n.read_at);
+  const read = shown.filter((n) => n.read_at);
 
   function openNotif(n: AppNotification) {
     if (!n.read_at) markRead.mutate(n.id, { onError: (e) => toast(friendlyError(e), 'error') });
@@ -86,6 +101,7 @@ export default function NotificationsScreen() {
           </View>
           {to && <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
         </Tappable>
+        {isUnread ? <IconButton icon="check" label={`Marquer comme lue : ${n.title}`} color={t.colors.primary} size={18} onPress={() => { haptic('selection'); markRead.mutate(n.id, { onError: (e) => toast(friendlyError(e), 'error') }); }} /> : null}
         <IconButton icon="x" label={`Supprimer la notification ${n.title}`} color={t.colors.textMuted} size={18} onPress={() => { if (del.isPending && del.variables === n.id) return; del.mutate(n.id, { onError: (e) => toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error') }); }} />
       </View>
     );
@@ -105,8 +121,8 @@ export default function NotificationsScreen() {
     <Screen
       back
       title="Notifications"
-      subtitle={unread.length ? `${unread.length} non lue${unread.length > 1 ? 's' : ''}` : 'Vous êtes à jour.'}
-      action={unread.length > 0
+      subtitle={allUnread.length ? `${allUnread.length} non lue${allUnread.length > 1 ? 's' : ''}` : 'Vous êtes à jour.'}
+      action={allUnread.length > 0
         ? { label: 'Tout marquer comme lu', icon: 'check', disabled: markAll.isPending, testID: 'notif-mark-all', onPress: () => markAll.mutate(undefined, { onSuccess: () => toast('Tout est marqué comme lu.'), onError: (e) => toast(friendlyError(e), 'error') }) }
         : { label: 'Gérer mes rappels', icon: 'settings', testID: 'notif-settings', onPress: () => router.push('/settings/reminders' as never) }}
       scroll={false}
@@ -121,11 +137,21 @@ export default function NotificationsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
         ListHeaderComponent={loading ? <Skeleton rows={5} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} title="Impossible d’afficher vos notifications" /> : (
+          <View style={{ gap: spacing.sm }}>
           <TodaySummary title="En bref" items={[
-            { icon: 'bell', value: String(unread.length), label: unread.length > 1 ? 'Non lues' : 'Non lue' },
+            { icon: 'bell', value: String(allUnread.length), label: allUnread.length > 1 ? 'Non lues' : 'Non lue' },
             { icon: 'clock', value: String((data ?? []).filter((n) => n.category === 'reminder').length), label: 'Rappels' },
             { icon: 'alert-triangle', value: String((data ?? []).filter((n) => n.category === 'product_recall').length), label: 'Rappels de produit' },
           ]} />
+          {(data ?? []).length ? (
+            <Row wrap gap={6} testID="notif-filters">
+              {GROUPS.filter((g) => g.value === 'all' || (data ?? []).some((n) => GROUP_OF(n.category) === g.value)).map((g) => {
+                const c = g.value === 'all' ? allUnread.length : allUnread.filter((n) => GROUP_OF(n.category) === g.value).length;
+                return <Chip key={g.value} icon={g.icon} label={c ? `${g.label} · ${c}` : g.label} selected={group === g.value} onPress={() => { haptic('selection'); setGroup(g.value); }} testID={`notif-filter-${g.value}`} />;
+              })}
+            </Row>
+          ) : null}
+          </View>
         )}
         ListEmptyComponent={loading || failed ? null : (
           <EmptyState icon="bell" title="Rien de nouveau" body="Vos rappels, les réponses de la communauté et les alertes importantes apparaîtront ici." action={{ label: 'Gérer mes rappels', icon: 'settings', onPress: () => router.push('/settings/reminders' as never) }} />

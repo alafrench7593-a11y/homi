@@ -1,0 +1,22 @@
+/** Cycle « en un geste » (2e passe) : anneau au fil d'or, saisie du jour en un tap. */
+export const passD = {
+  'pd.ring.label': "Anneau du cycle : jour {day} sur environ {length} (durée estimée).",
+  'pd.ring.day': "Jour {day}",
+  'pd.ring.of': "sur ~{length} j · estimé",
+  'pd.ring.noData': "Note tes dernières règles pour voir ton cycle.",
+  'pd.ring.legend.period': "Règles notées",
+  'pd.ring.legend.fertile': "Fenêtre fertile (estimée)",
+  'pd.ring.legend.next': "Prochaines règles (estimées)",
+  'pd.ring.detail': "Voir le détail du cycle",
+  'pd.ring.next': "Prochaines règles estimées vers le {date}",
+  'pd.quick.title': "Aujourd'hui en un geste",
+  'pd.quick.hint': "Touche pour noter, touche encore pour retirer. Tes symptômes les plus fréquents sont en premier.",
+  'pd.quick.flow': "Flux de tes règles",
+  'pd.quick.symptoms': "Ce que tu ressens",
+  'pd.quick.mood': "Humeur",
+  'pd.quick.all': "Tout noter en détail",
+  'pd.quick.added': "{what} noté pour aujourd'hui.",
+  'pd.quick.removed': "{what} retiré d'aujourd'hui.",
+  'pd.quick.flowSaved': "Flux noté : {what}.",
+  'pd.quick.moodSaved': "Humeur notée.",
+};

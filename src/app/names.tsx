@@ -19,11 +19,12 @@ import { getLocale, t as tr, type TKey } from '@/i18n';
 
 const L = (fr: string, en: string) => (getLocale().startsWith('fr') ? fr : en);
 import { friendlyError } from '@/lib/data/hooks-settings';
+import { NameSwipeDeck } from '@/features/namesSwipe';
 import type { NameFavorite, NameVote } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
-type Mode = 'explore' | 'favorites' | 'ideas';
+type Mode = 'explore' | 'swipe' | 'favorites' | 'ideas';
 const norm = fold;
 const ROW_H = 84; // deux lignes de détails tiennent sans être coupées sur un petit écran
 // Base INSEE chargée à la première ouverture de l'écran
@@ -65,6 +66,12 @@ export default function NamesScreen() {
   const all = useMemo(() => buildNames(rawNames(), names ?? []), [names]);
   const origins = useMemo(() => originsOf(all), [all]);
   const filtered = useMemo(() => filterNames(all, { q: query, letter, gender, len, pop, origin, sort }), [all, query, letter, gender, len, pop, origin, sort]);
+  // Coups de cœur : prénoms donnés récemment (les plus parlants d'abord), mélangés pour varier
+  const swipeNames = useMemo(() => {
+    const pool = filterNames(all, { q: '', letter: null, gender, len: null, pop: null, origin: null, sort: 'pop' }).slice(0, 600);
+    const seed = new Date().getDate();
+    return pool.map((n, i) => ({ n, k: (i * 9301 + seed * 49297) % 233280 })).sort((a, b) => a.k - b.k).map((x) => x.n);
+  }, [all, gender]);
   const siblings = (kids ?? []).map((c) => c.first_name);
   const sibIdeas = useMemo(() => siblingSuggestions(all, siblings, gender), [all, siblings.join(','), gender]); // eslint-disable-line react-hooks/exhaustive-deps
   const twins = useMemo(() => twinSuggestions(all, twinBase, gender), [all, twinBase, gender]);
@@ -199,7 +206,7 @@ export default function NamesScreen() {
         label="Affichage"
         value={view}
         onChange={setView}
-        options={[{ value: 'explore', label: tr('nm.tab.explore') }, { value: 'ideas', label: tr('nm.tab.ideas') }, { value: 'favorites', label: `${tr('nm.tab.favorites')}${favorites?.length ? ` (${favorites.length})` : ''}` }]}
+        options={[{ value: 'explore', label: tr('nm.tab.explore') }, { value: 'swipe', label: L('Coups de cœur', 'Swipe'), testID: 'names-tab-swipe' }, { value: 'ideas', label: tr('nm.tab.ideas') }, { value: 'favorites', label: `${tr('nm.tab.favorites')}${favorites?.length ? ` (${favorites.length})` : ''}` }]}
       />
       {explore ? (
         <>
@@ -233,6 +240,16 @@ export default function NamesScreen() {
             </Row>
           </Row>
         </>
+      ) : view === 'swipe' ? (
+        <View style={{ gap: spacing.sm }}>
+          <Row wrap>{(['f', 'm', 'x'] as Gender[]).map((g) => <Chip key={g} label={genderLabel(g)} selected={gender === g} onPress={() => setGender(gender === g ? null : g)} />)}</Row>
+          <NameSwipeDeck
+            names={swipeNames}
+            favorites={new Set(favByName.keys())}
+            onLike={(n) => void addFavorite(n.name)}
+            describe={(n) => [genderLabel(n.gender), n.recent ? tr('nm.births', { count: n.recent.toLocaleString('fr-FR') }) : popLabel('old'), n.origin, n.meaning].filter(Boolean).join(' · ')}
+          />
+        </View>
       ) : view === 'ideas' ? (
         <View style={{ gap: spacing.sm }}>
           <Row wrap>{(['f', 'm', 'x'] as Gender[]).map((g) => <Chip key={g} label={genderLabel(g)} selected={gender === g} onPress={() => setGender(gender === g ? null : g)} />)}</Row>
@@ -276,7 +293,7 @@ export default function NamesScreen() {
     </View>
   );
 
-  const empty = loading || failed || view === 'ideas' ? null : explore ? (
+  const empty = loading || failed || view === 'ideas' || view === 'swipe' ? null : explore ? (
     query.trim() ? (
       <EmptyState icon="search" title="Aucun prénom ne correspond" body="Vous pouvez ajouter votre propre idée à vos favoris." action={{ label: `Ajouter « ${query.trim().slice(0, 40)} »`, icon: 'heart', onPress: () => void addFavorite(query.trim().slice(0, 40)) }} />
     ) : (
@@ -312,8 +329,8 @@ export default function NamesScreen() {
           ListEmptyComponent={empty}
           ListFooterComponent={footer}
         />
-      ) : view === 'ideas' ? (
-        <VirtualList key="ideas" data={[] as NameFavorite[]} renderItem={() => null} contentContainerStyle={contentStyle} ListHeaderComponent={header} ListFooterComponent={footer} showsVerticalScrollIndicator={false} />
+      ) : view === 'ideas' || view === 'swipe' ? (
+        <VirtualList key={view} data={[] as NameFavorite[]} renderItem={() => null} contentContainerStyle={contentStyle} ListHeaderComponent={header} ListFooterComponent={footer} showsVerticalScrollIndicator={false} />
       ) : (
         <VirtualList
           key="favorites"

@@ -16,6 +16,10 @@ import { askNotificationPermission } from '@/lib/notificationPrompt';
 import { toFrDate } from '@/lib/validation';
 import type { Appointment, AppointmentKind } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
+import { GlassSurface } from '@/components/Glass';
+import { Tappable } from '@/components/Tappable';
+import { tint } from '@/components/ToolGlyph';
+import { countdown } from '@/lib/domain/dayThread';
 import { spacing } from '@/theme/tokens';
 
 const KINDS: { value: AppointmentKind; label: string; icon: IconName }[] = [
@@ -61,6 +65,9 @@ export default function AppointmentsScreen() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [showAllPast, setShowAllPast] = useState(false);
+  // Questions cochées pendant le rendez-vous (sur cet écran) ; une nouvelle question s'ajoute en un geste
+  const [asked, setAsked] = useState<Record<string, boolean>>({});
+  const [newQ, setNewQ] = useState('');
 
   // Profil affiché : par défaut, seulement ses rendez-vous ; ceux d'une ancienne grossesse restent dans « Mes parcours précédents »
   const qp = useLocalSearchParams<{ child?: string; for?: string; all?: string }>();
@@ -170,6 +177,69 @@ export default function AppointmentsScreen() {
     toast('Rendez-vous supprimé.');
   }
 
+  async function addQuestion(a: Appointment) {
+    const q = newQ.trim();
+    if (!q) return;
+    try {
+      await backend.update('appointments', { questions: [...a.questions, q.slice(0, 200)] }, [eq('id', a.id)]);
+      inv('appointments');
+      haptic('success');
+      setNewQ('');
+      toast('Question ajoutée.');
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Enregistrement impossible.', 'error');
+    }
+  }
+
+  /** Prochain rendez-vous en grand : compte à rebours, lieu, questions à cocher pendant la consultation. */
+  function NextCard({ a }: { a: Appointment }) {
+    const meta = kindMeta(a.kind);
+    const who = concernLabel(a);
+    const cd = countdown(a.starts_at);
+    return (
+      <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
+        <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="appt-next">
+          <Row style={{ alignItems: 'center' }}>
+            <View style={{ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: tint(t.colors.primary, t.isDark ? 0.22 : 0.12) }}>
+              <Icon name={meta.icon} color={t.colors.primary} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>Prochain rendez-vous</Text>
+              <Text weight="bold" style={{ fontSize: 26, lineHeight: 31 }} color={t.colors.primary} testID="appt-countdown">{cd.replace(/^./, (c) => c.toUpperCase())}</Text>
+            </View>
+          </Row>
+          <Tappable bare onPress={() => openEdit(a)} accessibilityRole="button" accessibilityLabel={`${a.title}, ${fmtWhen(a.starts_at)}. Modifier`}>
+            <Text variant="heading">{a.title}</Text>
+            <Text variant="small">{fmtWhen(a.starts_at)}</Text>
+            <Text variant="caption" muted>{[meta.label, who, a.location_label].filter(Boolean).join(' · ')}</Text>
+          </Tappable>
+          <View style={{ gap: 6, marginTop: spacing.xs }}>
+            <Text variant="label">Questions à poser {a.questions.length ? `· ${a.questions.filter((_, i) => asked[`${a.id}:${i}`]).length}/${a.questions.length}` : ''}</Text>
+            {a.questions.map((q, i) => {
+              const k = `${a.id}:${i}`;
+              const on = !!asked[k];
+              return (
+                <Tappable key={k} bare onPress={() => { haptic('selection'); setAsked((m) => ({ ...m, [k]: !m[k] })); }} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={q} testID={`appt-q-${i}`}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 6 }}>
+                  <View style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: on ? 0 : 2, borderColor: t.colors.gold, backgroundColor: on ? t.colors.gold : 'transparent' }}>
+                    {on ? <Icon name="check" size={13} color="#FFFFFF" /> : null}
+                  </View>
+                  <Text style={{ flex: 1, textDecorationLine: on ? 'line-through' : 'none', opacity: on ? 0.6 : 1 }}>{q}</Text>
+                </Tappable>
+              );
+            })}
+            <Row style={{ alignItems: 'flex-end' }}>
+              <View style={{ flex: 1 }}>
+                <Field label="Nouvelle question" optional value={newQ} onChangeText={setNewQ} placeholder="Ce qui vous préoccupe…" onSubmitEditing={() => void addQuestion(a)} returnKeyType="done" testID="appt-q-new" />
+              </View>
+              <Button label="Ajouter" icon="plus" size="sm" variant="secondary" disabled={!newQ.trim()} onPress={() => void addQuestion(a)} testID="appt-q-add" />
+            </Row>
+          </View>
+        </View>
+      </GlassSurface>
+    );
+  }
+
   function renderAppt(a: Appointment, faded?: boolean) {
     const meta = kindMeta(a.kind);
     const who = concernLabel(a);
@@ -210,8 +280,9 @@ export default function AppointmentsScreen() {
           <Chip label="Toute la famille" selected={everyone} onPress={() => setEveryone(true)} />
         </Row>
       ) : null}
-      <SectionTitle title="À venir" />
-      {upcoming.map((a) => renderAppt(a))}
+      {upcoming[0] ? NextCard({ a: upcoming[0] }) : null}
+      {upcoming.length > 1 ? <SectionTitle title="Ensuite" /> : null}
+      {upcoming.slice(1).map((a) => renderAppt(a))}
       {!isLoading && !upcoming.length && <EmptyStateCard illustration="leaf" title="Aucun rendez-vous à venir" text="Notez vos prochains rendez-vous pour les retrouver ici, avec les questions que vous voulez poser." />}
 
       {past.length > 0 && (

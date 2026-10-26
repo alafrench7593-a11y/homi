@@ -23,6 +23,9 @@ import { uuid } from '@/lib/uuid';
 import { LOG_TABLE, LOG_TIME_COL, type Bottle, type Breastfeed, type Diaper, type LogKind, type Meal, type Observation, type Pumping, type Sleep } from '@/lib/types';
 import { formatDuration, formatTime, todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
+import { DayStrip } from '@/features/dayStrip/DayStrip';
+import { LastSideCard, QuickDiaperCard } from '@/features/dayStrip/QuickLog';
+import { lastSide, nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { spacing } from '@/theme/tokens';
 
 type Side = 'left' | 'right' | 'both';
@@ -190,6 +193,10 @@ function TrackEntry() {
   const bottlesToday = useLogs<{ at: string }>('bottle', kind === 'bottle' ? childId : null, 1);
   const firstOfDay = kind === 'bottle' && !(bottlesToday.data ?? []).some((b) => new Date(b.at).toDateString() === new Date().toDateString());
   const recentDiapers = useLogs<Diaper>('diaper', kind === 'observation' ? childId : null, 4);
+  // Frise du jour et saisies en un geste (couches, tétées, sommeils) : vraies saisies uniquement
+  const dayRowsQ = useLogs<Record<string, unknown>>(kind, (kind === 'diaper' || kind === 'breastfeed' || kind === 'sleep') ? childId : null, 2);
+  const dayRows = (dayRowsQ.data ?? []) as { id?: string; at?: string; started_at?: string; ended_at?: string | null; wet?: boolean; stool?: boolean; side?: Side }[];
+  const feedsQ = useLogs<Breastfeed>('breastfeed', kind === 'breastfeed' ? childId : null, 7);
   const notices = kind === 'observation' && child ? digestionNotices({
     ageMonths: childAge(child.birth_date).months,
     observations: [...(recentObs.data ?? []).filter((o) => o.id !== params.id), { at: time.toISOString(), kind: obsKind, value_num: obsKind === 'temperature' ? Number(temp.replace(',', '.')) || null : null }],
@@ -359,6 +366,25 @@ function TrackEntry() {
         </View>
       ) : null}
       {!editing ? <TrackToday kind={kind} childId={childId} /> : null}
+      {!editing && kind === 'diaper' && child ? (
+        <QuickDiaperCard childId={childId} householdId={child.household_id} name={child.first_name}
+          lastAt={[...dayRows].map((r) => r.at).filter((x): x is string => !!x).sort().pop() ?? null} />
+      ) : null}
+      {!editing && kind === 'breastfeed' ? (
+        <LastSideCard last={lastSide(feedsQ.data ?? [])} running={!!timerStart}
+          onStart={(sd) => { setSide(sd); setTimerStart(new Date()); }} />
+      ) : null}
+      {!editing && (kind === 'diaper' || kind === 'breastfeed' || kind === 'sleep') ? (
+        <DayStrip
+          testID="track-day-strip"
+          title={kind === 'diaper' ? 'Changes du jour' : kind === 'sleep' ? 'Sommeils du jour' : 'Tétées du jour'}
+          events={toDayEvents(kind === 'diaper' ? 'diaper' : kind === 'sleep' ? 'sleep' : 'feed', dayRows)}
+          now={nowMinute()}
+          legend={kind === 'diaper' ? [{ kind: 'diaper', label: 'Mouillée' }, { kind: 'feed', label: 'Avec selles' }] : undefined}
+          empty={kind === 'diaper' ? 'Rien de noté aujourd’hui : un geste ci-dessus suffit.' : 'Rien de noté aujourd’hui.'}
+        />
+      ) : null}
+      {!editing && (kind === 'diaper' || kind === 'breastfeed') ? <Text variant="label" muted style={{ marginTop: spacing.xs }}>Ou en détail</Text> : null}
       {error ? <Banner tone="danger">{error}</Banner> : null}
 
       {kind === 'bottle' && (

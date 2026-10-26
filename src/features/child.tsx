@@ -7,6 +7,7 @@ import { exportTextFile } from '@/lib/exportData';
 import { csvCell, safeFileName } from '@/lib/csv';
 import { insertOrQueue } from '@/lib/offline';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
+import { TodaySummary } from '@/components/MiniApp';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
@@ -133,12 +134,13 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
       <ChildShortcuts child={child} />
       {isBottleChild(child.birth_date, js.childType(child.id)) && <BottleTimerCard child={child} />}
       {child.enabled_tracking.includes('sleep') && <BabySleepCard child={child} />}
-      <Row wrap>
-        {quick.map((k) => (
-          <Chip key={k} icon={KIND_META[k].icon} label={KIND_META[k].label} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: k, child: child.id } })} />
+      {/* noter en un geste : grandes tuiles plutôt que petites puces */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }} testID="child-quick">
+        {[...quick.map((k) => ({ key: k, icon: KIND_META[k].icon, label: KIND_META[k].label, go: () => router.push({ pathname: '/track/[kind]', params: { kind: k, child: child.id } }) })),
+          ...(child.enabled_tracking.includes('sleep') ? [{ key: 'sleep', icon: 'moon' as IconName, label: 'Sommeil', go: () => router.push('/night') }] : [])].map((x) => (
+          <QuickTile key={x.key} icon={x.icon} label={x.label} onPress={x.go} />
         ))}
-        {child.enabled_tracking.includes('sleep') && <Chip icon="moon" label="Sommeil" onPress={() => router.push('/night')} />}
-      </Row>
+      </View>
 
       <SectionTitle title="Dernières entrées" />
       {logsLoading ? <Skeleton kind="list" rows={3} /> : logsError ? (
@@ -164,6 +166,20 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
         <ListRow icon="calendar" title="Rendez-vous" subtitle="Pédiatre, vaccins, bilans" onPress={() => router.push('/appointments')} />
       </Card>
     </>
+  );
+}
+
+function QuickTile({ icon, label, onPress }: { icon: IconName; label: string; onPress: () => void }) {
+  const t = useTheme();
+  return (
+    <Tappable accessibilityRole="button" accessibilityLabel={`Noter : ${label}`} onPress={onPress}
+      style={{ flexGrow: 1, flexBasis: '30%', minWidth: 92, alignItems: 'center', gap: 6, paddingVertical: spacing.md, borderRadius: 20, borderWidth: 1,
+        borderColor: t.isDark ? 'rgba(240,217,207,0.2)' : 'rgba(184,134,90,0.28)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,250,246,0.7)' }}>
+      <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
+        <Icon name={icon} size={18} color={t.colors.primaryText} />
+      </View>
+      <Text variant="caption" weight="bold" center numberOfLines={1}>{label}</Text>
+    </Tappable>
   );
 }
 
@@ -214,6 +230,18 @@ export function GrowthTab({ child }: { child: Child }) {
     .filter((x) => x[metric] != null)
     .map((x) => ({ x: new Date(x.measured_on).getTime(), y: Number(x[metric]), label: formatDateFr(x.measured_on, false) }));
 
+  // Dernière valeur connue de chaque mesure (saisies de la famille) : affichée en tuiles et reprise d'un geste dans le formulaire
+  const sortedM = [...(measurements ?? [])].sort((a, b) => b.measured_on.localeCompare(a.measured_on));
+  const lastOf = (k: Metric) => sortedM.find((x) => x[k] != null);
+  function prefillLast() {
+    setValues({
+      weight_kg: lastOf('weight_kg') ? String(lastOf('weight_kg')!.weight_kg).replace('.', ',') : '',
+      height_cm: lastOf('height_cm') ? String(lastOf('height_cm')!.height_cm).replace('.', ',') : '',
+      head_cm: lastOf('head_cm') ? String(lastOf('head_cm')!.head_cm).replace('.', ',') : '',
+    });
+    haptic('light');
+  }
+
   async function add() {
     const e: Record<string, string> = {};
     const iso = frToISO(date);
@@ -256,6 +284,11 @@ export function GrowthTab({ child }: { child: Child }) {
 
   return (
     <>
+      <TodaySummary title="Dernières mesures" testID="growth-last" items={[
+        { icon: 'trending-up', value: lastOf('weight_kg') ? `${fmt(lastOf('weight_kg')!.weight_kg!, 3)} kg` : '—', label: lastOf('weight_kg') ? `Poids · ${formatDateFr(lastOf('weight_kg')!.measured_on, false)}` : 'Poids' },
+        { icon: 'maximize-2', value: lastOf('height_cm') ? `${fmt(lastOf('height_cm')!.height_cm!)} cm` : '—', label: lastOf('height_cm') ? `Taille · ${formatDateFr(lastOf('height_cm')!.measured_on, false)}` : 'Taille' },
+        { icon: 'circle', value: lastOf('head_cm') ? `${fmt(lastOf('head_cm')!.head_cm!)} cm` : '—', label: 'Crâne' },
+      ]} />
       <Segmented label="Mesure affichée" value={metric} onChange={setMetric} options={METRICS.map((x) => ({ value: x.key, label: x.key === 'head_cm' ? 'Crâne' : x.label }))} />
       {whoOn && whoSex && agePoints.length >= 1 ? (
         <Card>
@@ -286,6 +319,7 @@ export function GrowthTab({ child }: { child: Child }) {
         <View style={{ gap: spacing.sm }}>
           {errors.form ? <Banner tone="danger">{errors.form}</Banner> : null}
           <Field label="Date" value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" error={errors.date} />
+          {sortedM.length ? <Chip icon="copy" label="Repartir de la dernière mesure" onPress={prefillLast} testID="growth-prefill" /> : null}
           <Row style={{ alignItems: 'flex-start' }}>
             <View style={{ flex: 1 }}><Field label="Poids" optional value={values.weight_kg} onChangeText={(v) => setValues({ ...values, weight_kg: v })} keyboardType="decimal-pad" suffix="kg" error={errors.weight_kg} /></View>
             <View style={{ flex: 1 }}><Field label="Taille" optional value={values.height_cm} onChangeText={(v) => setValues({ ...values, height_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.height_cm} /></View>

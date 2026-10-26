@@ -11,7 +11,7 @@ import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { HistoryHeader, TodaySummary } from '@/components/MiniApp';
 import { ErrorView, Skeleton } from '@/components/States';
-import { Button, Field, haptic, Row, Segmented } from '@/components/ui';
+import { Button, Field, haptic, Row, Segmented, Chip } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
 import { backend, eq } from '@/lib/backend';
@@ -28,13 +28,15 @@ import type { PeriodEntry } from '@/lib/types';
 import { Choices, CycleIcon, Glass, IconBadge, Ink, Rise, useCyclePalette, type CycleIconName } from '@/features/cycle/kit';
 import { fmtDay } from '@/features/cycle/format';
 import { CycleRing, ringData } from '@/features/cycle/CycleRing';
+import { GoldCycleRing } from '@/features/cycle/GoldCycleRing';
+import { QuickToday } from '@/features/cycle/QuickToday';
 import { AdviceCard } from '@/features/cycle/AdviceCard';
 import { HomeCycleCard } from '@/features/cycle/HomeCycleCard';
 import { ObjectiveRow, useObjective } from '@/features/cycle/Objective';
 import { useAdvice } from '@/features/cycle/useAdvice';
 import { rank } from '@/lib/advice/types';
 import { uuid } from '@/lib/uuid';
-import { formatNumber, formatUnit, t as tr } from '@/i18n';
+import { formatNumber, formatUnit, t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
 type TestKind = 'ovulation_tests' | 'pregnancy_tests';
@@ -182,6 +184,7 @@ function CycleHub() {
   const freshCount = advice.filter(isNew).length;
 
   const [allSections, setAllSections] = useState(false);
+  const [ringDetail, setRingDetail] = useState(false);
   const recentSymptoms = (symptoms ?? []).slice(0, 3).flatMap((s) => symptomKeysOf(s)).slice(0, 4);
   const history = history0(entries);
 
@@ -192,6 +195,9 @@ function CycleHub() {
         : { label: tr('cy.quick.started'), icon: 'droplet', onPress: () => void periodStarted(), disabled: busy === 'quick', testID: 'cycle-quick-start' }}>
       {/* Situations pressantes récentes : visibles sans chercher (jamais retardées par une animation) */}
       {urgentAdvice.slice(0, 1).map((a) => <AdviceCard key={a.signature} advice={a} compact />)}
+
+      {/* Anneau du cycle au fil d'or : jour actuel qui pulse, règles notées, fenêtre estimée */}
+      {ring ? <Rise><GoldCycleRing data={ring} /></Rise> : null}
 
       {/* L'essentiel d'un coup d'œil : jour du cycle, prochaines règles (estimation), durée habituelle */}
       <TodaySummary title={tr('cy.cal.today')} items={[
@@ -222,7 +228,15 @@ function CycleHub() {
       </Glass>
       ) : null}
 
-      {ring ? <Rise><Glass><CycleRing data={ring} /></Glass></Rise> : null}
+      {/* Aujourd'hui en un geste : flux, symptômes fréquents, humeur — chaque touche enregistre */}
+      <QuickToday openPeriod={open ?? null} />
+
+      {/* Détail de la roue (ovulation estimée, jours mesurés, fiabilité) : à la demande */}
+      {ring ? (
+        ringDetail ? <Rise><Glass><CycleRing data={ring} /></Glass></Rise> : (
+          <Chip icon="pie-chart" label={tr('pd.ring.detail' as TKey)} onPress={() => setRingDetail(true)} testID="cycle-ring-detail" />
+        )
+      ) : null}
 
       {advice.length ? (
         <Glass onPress={() => router.push('/cycle/advice' as never)} accessibilityLabel={tr('adv.ui.seeAll')}>

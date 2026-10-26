@@ -38,7 +38,7 @@ export default function Shopping() {
     <Tappable key={i.id} testID={`shop-${i.ingredient_key ?? i.label}`} accessibilityRole="checkbox" accessibilityState={{ checked: i.checked }} accessibilityLabel={`${i.label} ${formatQty(i.qty, i.unit)}`}
       onPress={() => { haptic('selection'); toggle.mutate({ id: i.id, checked: !i.checked }, { onError: (e) => toast(friendlyError(e), 'error') }); }}
       style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
-      <Icon name={i.checked ? 'check-square' : 'square'} color={i.checked ? t.colors.primary : t.colors.textMuted} />
+      <View style={{ width: 28, height: 28, borderRadius: 9, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: i.checked ? t.colors.gold : t.colors.textMuted, backgroundColor: i.checked ? t.colors.gold : 'transparent' }}>{i.checked ? <Icon name="check" size={16} color="#FFFFFF" /> : null}</View>
       <Text style={{ flex: 1, textDecorationLine: i.checked ? 'line-through' : 'none' }} muted={i.checked}>{i.label.charAt(0).toUpperCase() + i.label.slice(1)}</Text>
       <Text variant="small" muted>{formatQty(i.qty == null ? null : Number(i.qty), i.unit)}</Text>
     </Tappable>
@@ -50,6 +50,11 @@ export default function Shopping() {
         { icon: 'check-square', value: String(toBuy.length - left), label: tr('mb.rc.inCart') },
         { icon: 'home', value: String(home.length), label: tr('mb.rc.atHome') },
       ]} />
+      {toBuy.length ? (
+        <View style={{ height: 8, borderRadius: 4, backgroundColor: t.colors.border, overflow: 'hidden' }} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: toBuy.length, now: toBuy.length - left }} testID="shop-progress">
+          <View style={{ width: `${((toBuy.length - left) / toBuy.length) * 100}%`, height: 8, borderRadius: 4, backgroundColor: t.colors.gold }} />
+        </View>
+      ) : null}
       <Row style={{ alignItems: 'flex-end' }}>
         <View style={{ flex: 1 }}><Field label={tr('rc.shopping.addItem')} value={label} onChangeText={setLabel} maxLength={120} testID="shop-add-label" onSubmitEditing={() => void addItem()} returnKeyType="done" /></View>
       </Row>
