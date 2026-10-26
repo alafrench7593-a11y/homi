@@ -81,9 +81,17 @@ function KindGlyph({ kind, color, size = 18 }: { kind: RibbonKind; color: string
 }
 
 /** Surface en verre dépoli propre au cocon : flou, voile coloré, reflet, liseré clair, ombre douce teintée. */
-function Glass({ children, wash, style, rounded = 30, testID }: { children: React.ReactNode; wash?: [string, string, string]; style?: object; rounded?: number; testID?: string }) {
+function Glass({ children, wash, style, rounded = 30, testID, clear }: { children: React.ReactNode; wash?: [string, string, string]; style?: object; rounded?: number; testID?: string; clear?: boolean }) {
   const t = useTheme();
   const dark = t.isDark;
+  // Cadre transparent (fond vidéo visible), simple liseré champagne : grand cadre du profil de l'enfant
+  if (clear) {
+    return (
+      <View testID={testID} style={[{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(240,217,207,0.28)' : 'rgba(184,134,90,0.35)' }, style]}>
+        {children}
+      </View>
+    );
+  }
   return (
     <View testID={testID} style={[{ borderRadius: rounded, shadowColor: dark ? '#000' : '#B4507A', shadowOpacity: dark ? 0.3 : 0.13, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 4 }, style]}>
       <View style={{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.78)' }}>
@@ -370,9 +378,7 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
     <Animated.View {...pan.panHandlers} style={{ transform: [{ translateX: x }], opacity: x.interpolate({ inputRange: [-340, 0, 340], outputRange: [0.2, 1, 0.2] }) }} testID="cocoon-card"
       accessibilityActions={list.length > 1 ? [{ name: 'increment', label: tr('coc.a11y.nextChild') }, { name: 'decrement', label: tr('coc.a11y.prevChild') }] : undefined}
       onAccessibilityAction={(e) => switchTo(e.nativeEvent.actionName === 'increment' ? 1 : -1)}>
-      <Glass wash={dark ? DARK_WASH : WASH[moment]} rounded={36}>
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill]}><MomentArt moment={moment} dark={dark} /></View>
-        <Motes dark={dark || moment === 'night'} />
+      <Glass clear rounded={36}>
         <View style={{ alignItems: 'center', paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.md, gap: 4 }}>
           <Pressable accessibilityRole="button" accessibilityLabel={tr('coc.a11y.openProfile', { name: child.first_name })} onPress={() => router.push(`/child/${child.id}`)} style={{ width: 132, height: 132, alignItems: 'center', justifyContent: 'center' }} testID="cocoon-avatar">
             <BreathingHalo size={132} dark={dark} moment={moment} />
