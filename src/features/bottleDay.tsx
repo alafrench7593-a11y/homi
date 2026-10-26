@@ -6,7 +6,7 @@
  * - créneaux prévus jusqu'au soir (discrets).
  * Les créneaux viennent seulement du délai choisi par le parent ; sans délai, il le choisit ici en un geste.
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, View } from 'react-native';
 import { router } from 'expo-router';
 import { GlassSurface } from '@/components/Glass';
@@ -15,6 +15,7 @@ import { Tappable } from '@/components/Tappable';
 import { tint } from '@/components/ToolGlyph';
 import { DELAY_PRESETS, formatHM } from '@/lib/domain/bottleTimer';
 import { slotClock, type DaySlot } from '@/lib/domain/bottleDayPlan';
+import { BottleClock } from './bottleClock';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
 
@@ -79,6 +80,14 @@ export function BottleDayTimeline({ childId, slots, intervalMinutes, timerId, on
   }
 
   const done = slots.filter((s) => s.status === 'done').length;
+  return <DayCard {...{ childId, slots, intervalMinutes, timerId, onPickInterval, done, gold, accent, line }} />;
+}
+
+function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval, done, gold, accent, line }: {
+  childId: string; slots: DaySlot[]; intervalMinutes: number | null; timerId?: string | null; onPickInterval: (m: number) => void; done: number; gold: string; accent: string; line: string;
+}) {
+  const t = useTheme();
+  const [showList, setShowList] = useState(false);
   return (
     <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
       <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="bottle-day">
@@ -97,7 +106,26 @@ export function BottleDayTimeline({ childId, slots, intervalMinutes, timerId, on
           </View>
         )}
 
+        {/* cadran doré : la journée d'un coup d'œil */}
         <View style={{ marginTop: spacing.xs }}>
+          <BottleClock childId={childId} slots={slots} timerId={timerId} />
+        </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.md }}>
+          {[{ k: 'Donné', c: gold, fill: true }, { k: 'Suivant', c: accent, fill: true }, { k: 'Prévu', c: gold, fill: false }].map((x) => (
+            <View key={x.k} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: x.fill ? x.c : 'transparent', borderWidth: x.fill ? 0 : 1.5, borderColor: x.c, alignItems: 'center', justifyContent: 'center' }}>
+                {x.k === 'Suivant' ? <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#FFFFFF' }} /> : null}
+              </View>
+              <Text variant="caption" muted>{x.k}</Text>
+            </View>
+          ))}
+        </View>
+        <Tappable accessibilityRole="button" onPress={() => setShowList((v) => !v)} testID="bottle-day-toggle"
+          style={{ alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8 }}>
+          <Text variant="caption" weight="bold" color={accent}>{showList ? 'Masquer le détail' : 'Voir le détail heure par heure'}</Text>
+          <Icon name={showList ? 'chevron-up' : 'chevron-down'} size={14} color={accent} />
+        </Tappable>
+        {showList ? <View style={{ marginTop: spacing.xs }}>
           {slots.map((s, i) => {
             const last = i === slots.length - 1;
             const isNext = s.status === 'next';
@@ -146,7 +174,7 @@ export function BottleDayTimeline({ childId, slots, intervalMinutes, timerId, on
               </View>
             );
           })}
-        </View>
+        </View> : null}
         <Text variant="caption" muted>Heures et quantités reprises de vos propres saisies : vous les vérifiez avant d’enregistrer.</Text>
       </View>
     </GlassSurface>
