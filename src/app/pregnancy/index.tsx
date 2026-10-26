@@ -20,7 +20,6 @@ import { countdownLabel, multiplicityLabel, pregnancyProgress } from '@/lib/doma
 import { FETAL_SIZE_SOURCE, formatLength, formatWeight, weekInfo } from '@/lib/domain/fetalWeeks';
 import { formatDateFr } from '@/lib/domain/dates';
 import type { ExpectedBaby } from '@/lib/types';
-import { Aurora } from '@/components/Aurora';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 
@@ -83,6 +82,9 @@ function BabyNotes({ baby }: { baby: ExpectedBaby }) {
 
 export default function PregnancyUniverse() {
   const th = useTheme();
+  const heroGold = th.isDark ? GOLD : th.colors.gold;
+  const heroText = th.isDark ? TEXT : th.colors.text;
+  const heroMuted = th.isDark ? MUTED : th.colors.textMuted;
   const pregnanciesQ = usePregnancies();
   // Seule la grossesse d'un parcours « grossesse » actif s'affiche (jamais une ancienne grossesse)
   const js = useJourneyState();
@@ -121,11 +123,11 @@ export default function PregnancyUniverse() {
   return (
     <Screen back stars
       action={{ label: 'Comment je me sens', icon: 'feather', onPress: () => { setSubject({ type: 'pregnancy', id: pregnancy.id }); router.push('/pregnancy/feel'); }, testID: 'preg-main-action' }}>
-      <View style={{ backgroundColor: 'rgba(28,17,40,0.72)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.14)', borderRadius: 32, padding: spacing.lg, gap: spacing.sm, overflow: 'hidden' }}>
-        <Aurora mood="night" intensity={1.2} />
-        <Text variant="small" color={GOLD} center>{multiplicityLabel(pregnancy.multiplicity)}</Text>
-        <Text variant="hero" color={TEXT} center>{w} SA</Text>
-        <Text center color={MUTED}>{Math.max(0, w - 2)} semaines de grossesse, trimestre {w < 15 ? 1 : w < 29 ? 2 : 3}</Text>
+      {/* carte transparente : le fond de l'application (vidéo jour / nuit) reste visible derrière le bébé */}
+      <View style={{ paddingVertical: spacing.md, gap: spacing.sm }} testID="preg-hero">
+        <Text variant="small" color={heroGold} center>{multiplicityLabel(pregnancy.multiplicity)}</Text>
+        <Text variant="hero" color={heroText} center>{w} SA</Text>
+        <Text center color={heroMuted}>{Math.max(0, w - 2)} semaines de grossesse, trimestre {w < 15 ? 1 : w < 29 ? 2 : 3}</Text>
         <View style={{ alignItems: 'center', paddingVertical: spacing.sm }}>
           <WeeksRing week={w} size={310}><FetusArt week={w} growth={info.growth} size={n > 1 ? 220 : 250} hue={HUES[selected % 3]} accessibilityLabel={`Illustration artistique ${babies?.[selected]?.nickname ? 'de ' + babies[selected].nickname : 'du bébé'} à ${w} semaines d’aménorrhée. Glissez pour faire tourner.`} /></WeeksRing>
         </View>
@@ -134,11 +136,11 @@ export default function PregnancyUniverse() {
             {babies!.map((b, i) => <Chip key={b.id} label={b.nickname ?? `Bébé ${b.position}`} selected={selected === i} onPress={() => setSelected(i)} />)}
           </Row>
         )}
-        <Text center color={TEXT}>À peu près de la taille d’<Text weight="bold" color={GOLD}>{info.compare.replace(/^une? /, (m) => m === 'une ' ? 'une ' : 'un ')}</Text></Text>
-        <Text center variant="small" color={MUTED} testID="fetal-size">Taille moyenne {formatLength(info.lengthCm)} · poids moyen {formatWeight(info.weightG)}</Text>
-        <Text center variant="caption" color={MUTED} testID="fetal-source">Moyennes générales, pas les mesures de votre bébé. Source : {FETAL_SIZE_SOURCE.name}, mis à jour le {formatDateFr(FETAL_SIZE_SOURCE.updatedOn)}.</Text>
-        <Text center variant="caption" color={MUTED}>Illustration artistique et éducative : ce n’est pas une échographie ni une image de votre bébé. La lueur du cœur est décorative et ne mesure rien.</Text>
-        {multiple && <Text center variant="caption" color={MUTED}>En cas de grossesse multiple, chaque bébé grandit à son propre rythme : ces repères ne permettent pas de les comparer.</Text>}
+        <Text center color={heroText}>À peu près de la taille d’<Text weight="bold" color={heroGold}>{info.compare.replace(/^une? /, (m) => m === 'une ' ? 'une ' : 'un ')}</Text></Text>
+        <Text center variant="small" color={heroMuted} testID="fetal-size">Taille moyenne {formatLength(info.lengthCm)} · poids moyen {formatWeight(info.weightG)}</Text>
+        <Text center variant="caption" color={heroMuted} testID="fetal-source">Moyennes générales, pas les mesures de votre bébé. Source : {FETAL_SIZE_SOURCE.name}, mis à jour le {formatDateFr(FETAL_SIZE_SOURCE.updatedOn)}.</Text>
+        <Text center variant="caption" color={heroMuted}>Illustration artistique et éducative : ce n’est pas une échographie ni une image de votre bébé. La lueur du cœur est décorative et ne mesure rien.</Text>
+        {multiple && <Text center variant="caption" color={heroMuted}>En cas de grossesse multiple, chaque bébé grandit à son propre rythme : ces repères ne permettent pas de les comparer.</Text>}
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }} accessibilityLabel="Choisir une semaine">
