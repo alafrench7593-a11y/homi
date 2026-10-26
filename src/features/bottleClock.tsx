@@ -10,7 +10,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, View } from 'react-native';
 import { router } from 'expo-router';
-import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Stop, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
 import { Icon, Text } from '@/components/ui';
 import { slotClock, type DaySlot } from '@/lib/domain/bottleDayPlan';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
@@ -105,10 +105,6 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
             <Stop offset="0.8" stopColor="#F3D4A6" />
             <Stop offset="1" stopColor="#C38A5E" />
           </LinearGradient>
-          <RadialGradient id="bcFace" cx="50%" cy="42%" r="60%">
-            <Stop offset="0" stopColor={dark ? '#3A3060' : '#FFFBF5'} stopOpacity={dark ? 0.9 : 0.95} />
-            <Stop offset="1" stopColor={dark ? '#1B1836' : '#F3E2D4'} stopOpacity={dark ? 0.92 : 0.95} />
-          </RadialGradient>
           <LinearGradient id="bcArc" x1="0" y1="0" x2="1" y2="1">
             <Stop offset="0" stopColor={goldA} />
             <Stop offset="1" stopColor={goldB} />
@@ -116,7 +112,7 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
         </Defs>
         {/* lunette dorée : double filet et dégradé */}
         <Circle cx={c} cy={c} r={R + 4} fill="none" stroke={goldB} strokeOpacity={0.5} strokeWidth={1} />
-        <Circle cx={c} cy={c} r={R - 5} fill="url(#bcFace)" stroke="url(#bcBezel)" strokeWidth={10} />
+        <Circle cx={c} cy={c} r={R - 5} fill="none" stroke="url(#bcBezel)" strokeWidth={10} />
         <Circle cx={c} cy={c} r={R - 12} fill="none" stroke={goldA} strokeOpacity={0.6} strokeWidth={0.8} />
         {/* graduations : quarts d'heure, heures, repères */}
         {ticks.map((i) => {
@@ -167,7 +163,7 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
       {/* aiguille de l'heure actuelle */}
       <Animated.View pointerEvents="none" style={[full, { transform: [{ rotate: hand.interpolate({ inputRange: [0, 360], outputRange: ['0deg', '360deg'] }) }] }]} testID="bottle-clock-hand">
         <Svg width={size} height={size}>
-          <Path d={`M ${c - 4.5} ${c + 16} L ${c} ${c - rTrack + 14} L ${c + 4.5} ${c + 16} Z`} stroke={dark ? 'none' : '#6B3F2E'} strokeWidth={0.6} fill="url(#bcHand)" />
+          <Path d={`M ${c - 3.5} ${c - 52} L ${c} ${c - rTrack + 14} L ${c + 3.5} ${c - 52} Z`} stroke={dark ? 'none' : '#6B3F2E'} strokeWidth={0.6} fill="url(#bcHand)" />
           <Defs>
             <LinearGradient id="bcHand" x1="0" y1="0" x2="1" y2="0">
               <Stop offset="0" stopColor={dark ? goldB : '#7A4A33'} />
@@ -181,7 +177,7 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
 
       {/* centre : le prochain biberon */}
       <View pointerEvents="none" style={[full, { alignItems: 'center', justifyContent: 'center', paddingHorizontal: size * 0.24 }]}>
-        <View style={{ alignItems: 'center', backgroundColor: dark ? 'rgba(27,24,54,0.78)' : 'rgba(255,251,245,0.86)', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, borderWidth: 1, borderColor: dark ? 'rgba(255,231,176,0.35)' : 'rgba(156,102,80,0.25)' }}>
+        <View style={{ alignItems: 'center', paddingHorizontal: 14, paddingVertical: 8 }}>
           {next ? (
             <>
               <Text variant="caption" weight="bold" color={goldB} style={{ letterSpacing: 1.4, textTransform: 'uppercase', fontSize: 10 }}>Prochain biberon</Text>

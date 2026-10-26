@@ -89,7 +89,7 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval, don
   const t = useTheme();
   const [showList, setShowList] = useState(false);
   return (
-    <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
+    <View style={{ borderRadius: 26, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,231,176,0.22)' : 'rgba(156,102,80,0.22)' }}>
       <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="bottle-day">
         <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: spacing.sm }}>
           <Text variant="heading">Ma journée biberons</Text>
@@ -177,6 +177,6 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval, don
         </View> : null}
         <Text variant="caption" muted>Heures et quantités reprises de vos propres saisies : vous les vérifiez avant d’enregistrer.</Text>
       </View>
-    </GlassSurface>
+    </View>
   );
 }
