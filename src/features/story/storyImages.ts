@@ -16,3 +16,22 @@ export const STORY_IMAGES: number[] = [
   require('../../../assets/story/etape-10.png'),
 ];
 /* eslint-enable @typescript-eslint/no-require-imports */
+
+/**
+ * Mini-vidéos au fil d'or (Kling 3 Pro via ElevenLabs, 26/10/2026) converties en WebP animé à fond transparent :
+ * même étape que STORY_IMAGES, le trait respire et bouge doucement en boucle.
+ */
+/* eslint-disable @typescript-eslint/no-require-imports */
+export const STORY_ANIMS: number[] = [
+  require('../../../assets/story/anim-01.webp'),
+  require('../../../assets/story/anim-02.webp'),
+  require('../../../assets/story/anim-03.webp'),
+  require('../../../assets/story/anim-04.webp'),
+  require('../../../assets/story/anim-05.webp'),
+  require('../../../assets/story/anim-06.webp'),
+  require('../../../assets/story/anim-07.webp'),
+  require('../../../assets/story/anim-08.webp'),
+  require('../../../assets/story/anim-09.webp'),
+  require('../../../assets/story/anim-10.webp'),
+];
+/* eslint-enable @typescript-eslint/no-require-imports */

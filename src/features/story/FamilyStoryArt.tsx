@@ -10,7 +10,8 @@ import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop } from 'react-native-svg';
 import { useLowPower } from '@/lib/lowPower';
 import { chapterIndexForScene, DAY_PALETTE, dressGradient, drawPose, lerpPose, NIGHT_PALETTE, poseFor, smooth, type Pose, type Shape, type StoryScene } from '@/lib/domain/familyStory';
-import { STORY_IMAGES } from './storyImages';
+import { Image as MotionImage } from 'expo-image';
+import { STORY_ANIMS, STORY_IMAGES } from './storyImages';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 
@@ -40,7 +41,8 @@ export function useTweenedPose(target: Pose, still: boolean): Pose {
 }
 
 /**
- * Croquis au fil doré animé : à l'arrivée, le trait se dessine de haut en bas ; ensuite, une lumière d'or parcourt
+ * Mouvement normal : mini-vidéo au fil d'or (WebP animé). Animations réduites : croquis fixe. Ancien rendu animé en code conservé ci-dessous
+ * (jamais atteint quand still=false) — Croquis au fil doré animé : à l'arrivée, le trait se dessine de haut en bas ; ensuite, une lumière d'or parcourt
  * le fil en continu (bande claire qui glisse le long du dessin). Immobile si les animations sont réduites.
  */
 const GOLD_LIGHT = '#FFE7B0';
@@ -79,6 +81,14 @@ function GoldThreadImage({ idx, opacity, still, night }: { idx: number; opacity:
       </Animated.View>
     );
   };
+  if (!still) {
+    // mini-vidéo au fil d'or (WebP animé transparent) : le personnage bouge pour de vrai
+    return (
+      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity }]} testID={`story-img-${idx + 1}`}>
+        <MotionImage source={STORY_ANIMS[idx]} contentFit="contain" autoplay style={{ width: '100%', height: '100%' }} testID={`story-anim-${idx + 1}`} />
+      </View>
+    );
+  }
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity }]} onLayout={(e) => setH(e.nativeEvent.layout.height)} testID={`story-img-${idx + 1}`}>
       {/* tracé : le dessin apparaît de haut en bas */}
@@ -150,7 +160,7 @@ const MOTES = Array.from({ length: 9 }, (_, i) => ({ x: ((i * 37) % 100) / 100, 
  * Scène animée : halo de lumière chaude (ou bleu nuit et prune), personnages, quelques particules lumineuses.
  * `scene` : étape à montrer ; `pose` : pose imposée (présentation pilotée par le défilement).
  */
-export function FamilyStoryArt({ scene, pose: forced, progress, height = 150, label, testID }: { scene?: StoryScene; pose?: Pose; progress?: number; height?: number; label: string; testID?: string }) {
+export function FamilyStoryArt({ scene, pose: forced, progress, blend, height = 150, label, testID }: { scene?: StoryScene; pose?: Pose; progress?: number; /** fondu libre entre deux étapes quelconques : [de, vers, 0..1] */ blend?: [number, number, number]; height?: number; label: string; testID?: string }) {
   const t = useTheme();
   const reduce = useReduceMotion();
   const lowPower = useLowPower();
@@ -166,6 +176,10 @@ export function FamilyStoryArt({ scene, pose: forced, progress, height = 150, la
   // Personnages générés : étape de la scène (accueil) ou fondu entre deux étapes selon le défilement (présentation).
   // Plusieurs enfants ou grossesse multiple : le dessin animé, qui sait les montrer, reste utilisé.
   const images: [number, number][] | null = useMemo(() => {
+    if (blend) {
+      const [a, b, k] = blend;
+      return k <= 0 || a === b ? [[a, 1]] : k >= 1 ? [[b, 1]] : [[a, 1 - k], [b, k]];
+    }
     if (progress != null) {
       const n = STORY_IMAGES.length - 1;
       const p = Math.max(0, Math.min(n, progress));
@@ -177,7 +191,7 @@ export function FamilyStoryArt({ scene, pose: forced, progress, height = 150, la
     if (forced) return null;
     const idx = chapterIndexForScene(scene ?? { belly: 0, multiple: false, kids: [] });
     return idx == null ? null : [[idx, 1]];
-  }, [progress, forced, scene]);
+  }, [blend, progress, forced, scene]);
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={label} testID={testID} style={{ height, overflow: 'hidden' }}>
       {/* halo de lumière douce, qui respire très lentement */}
