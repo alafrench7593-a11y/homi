@@ -7,6 +7,7 @@ import { Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
+import { TodaySummary } from '@/components/MiniApp';
 import { BarChart, StatPill } from '@/components/Charts';
 import { Appear } from '@/components/Appear';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
@@ -331,7 +332,8 @@ export default function MySleepScreen() {
   const failed = logsQ.isError && !logs;
 
   return (
-    <Screen back title="Mon sommeil" subtitle="Votre sommeil à vous, sans objectif ni note." scroll={false} padded={false}>
+    <Screen back title="Mon sommeil" subtitle="Votre sommeil à vous, sans objectif ni note." scroll={false} padded={false}
+      action={{ label: todayLog ? 'Modifier ma nuit' : 'Noter ma nuit', icon: 'moon', onPress: () => setForm(todayLog ? formFromLog(todayLog) : emptyForm()), testID: 'sleep-main-action' }}>
       <VirtualList
         data={loading || failed ? [] : logs ?? []}
         keyExtractor={(l) => l.id}
@@ -344,7 +346,11 @@ export default function MySleepScreen() {
             {signal.show && <SupportBanner fatigue={signal.fatigue} lowMood={signal.lowMood} />}
 
             <Appear kind="soft">
-              <Button label={todayLog ? 'Modifier ma nuit' : 'Noter ma nuit'} icon="moon" full onPress={() => setForm(todayLog ? formFromLog(todayLog) : emptyForm())} />
+              <TodaySummary title="Cette nuit" items={[
+                { icon: 'moon', value: todayLog && nightMinutes(todayLog) != null ? formatDuration(nightMinutes(todayLog)!) : '—', label: 'Sommeil' },
+                { icon: 'star', value: todayLog?.quality ? `${todayLog.quality}/5` : '—', label: 'Qualité' },
+                { icon: 'battery', value: todayLog?.fatigue ? `${todayLog.fatigue}/5` : '—', label: 'Fatigue' },
+              ]} />
             </Appear>
 
             <SectionTitle title="Mes 7 derniers jours" />

@@ -14,6 +14,10 @@ import { peekToolOrigin, takeToolOrigin, type ToolOrigin } from '@/lib/toolOrigi
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { toolForPath, type PathTool } from '@/lib/domain/toolForPath';
+import { glyphColor } from './ToolGlyph';
+import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
+import { Button, type IconName } from './ui';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -30,9 +34,16 @@ interface ScreenProps {
   contentStyle?: StyleProp<ViewStyle>;
   /** Espace réservé en bas (barre d'onglets, bouton flottant) */
   bottomInset?: number;
+  /**
+   * Identité « mini-app » : par défaut retrouvée depuis l'adresse (catégorie et icône de l'outil) ;
+   * `false` pour un écran qui n'en veut pas.
+   */
+  tool?: PathTool | null | false;
+  /** Action principale de l'outil : gros bouton toujours à portée de pouce, en bas de l'écran. */
+  action?: { label: string; icon?: IconName; onPress: () => void; testID?: string; disabled?: boolean };
 }
 
-export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars, footer, contentStyle, bottomInset = 0 }: ScreenProps) {
+export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars, footer, contentStyle, bottomInset = 0, tool: forcedTool, action }: ScreenProps) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
   const focused = useIsFocused();
@@ -42,8 +53,23 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   const pathname = usePathname();
   const [origin] = React.useState<ToolOrigin | null>(() => peekToolOrigin(pathname));
   React.useEffect(() => { if (origin) takeToolOrigin(pathname); }, [origin, pathname]);
+  const tool = React.useMemo(() => (forcedTool === false ? null : forcedTool ?? (title ? toolForPath(pathname) : null)), [forcedTool, pathname, title]);
+  const accent = tool ? glyphColor(t, tool.theme, tool.urgent) : null;
   const header = (title || back || right || account) && (
     <View style={[styles.header, styles.wide, { paddingTop: insets.top + spacing.xs }]}>
+      {accent ? (
+        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+          <Svg width="100%" height="100%">
+            <Defs>
+              <RadialGradient id="miniappGlow" cx="18%" cy="62%" rx="55%" ry="70%">
+                <Stop offset="0" stopColor={accent} stopOpacity={t.isDark ? 0.24 : 0.18} />
+                <Stop offset="1" stopColor={accent} stopOpacity="0" />
+              </RadialGradient>
+            </Defs>
+            <Rect x="0" y="0" width="100%" height="100%" fill="url(#miniappGlow)" />
+          </Svg>
+        </View>
+      ) : null}
       <View style={styles.headerRow}>
         {back ? (
           <IconButton icon="arrow-left" label={tr('common.back')} onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
@@ -57,8 +83,8 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
         </View>
       </View>
       {title ? (
-        <View style={{ paddingHorizontal: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-          {origin ? <ArrivalGlyph origin={origin} /> : null}
+        <View style={{ paddingHorizontal: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.md }} testID={tool ? `miniapp-${tool.id}` : undefined}>
+          {origin ? <ArrivalGlyph origin={origin} /> : tool ? <ToolGlyph theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={52} play={1} /> : null}
           <View style={{ flex: 1, gap: 4 }}>
             <Text variant="title" accessibilityRole="header">{title}</Text>
             {subtitle ? <Text muted>{subtitle}</Text> : null}
@@ -87,7 +113,12 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {header}
         {body}
-        {footer ? <View style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: insets.bottom + spacing.sm, paddingTop: spacing.sm }}>{footer}</View> : null}
+        {footer || action ? (
+          <View style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: insets.bottom + spacing.sm, paddingTop: spacing.sm, gap: spacing.sm }}>
+            {action ? <Button label={action.label} icon={action.icon ?? 'plus'} size="lg" full onPress={action.onPress} disabled={action.disabled} testID={action.testID ?? 'miniapp-action'} /> : null}
+            {footer}
+          </View>
+        ) : null}
       </KeyboardAvoidingView>
     </Animated.View>
   );

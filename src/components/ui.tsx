@@ -520,10 +520,31 @@ export function Banner({ tone = 'info', icon, title, children, action }: { tone?
       <Icon name={icon ?? c.icon} size={18} color={c.fg} />
       <View style={{ flex: 1, gap: 2 }}>
         {title ? <Text variant="small" weight="bold" color={tone === 'demo' ? t.colors.text : c.fg}>{title}</Text> : null}
-        {typeof children === 'string' ? <Text variant="small" color={t.colors.text}>{children}</Text> : children}
+        {typeof children === 'string' ? <BannerText text={children} fold={tone === 'info' || tone === 'demo'} accent={c.fg} /> : children}
         {action}
       </View>
     </View>
+  );
+}
+
+/**
+ * Texte d'un bandeau d'information : un long paragraphe est replié sur deux lignes, avec « Lire la suite »
+ * pour le déplier (le texte complet reste lu par les lecteurs d'écran). Avertissements et urgences ne sont jamais repliés.
+ */
+const FOLD_AT = 110;
+function BannerText({ text, fold, accent }: { text: string; fold: boolean; accent: string }) {
+  const t = useTheme();
+  const [open, setOpen] = React.useState(false);
+  const long = fold && text.length > FOLD_AT;
+  return (
+    <>
+      <Text variant="small" color={t.colors.text} numberOfLines={long && !open ? 2 : undefined} accessibilityLabel={text}>{text}</Text>
+      {long ? (
+        <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? 'Réduire' : 'Lire la suite'} hitSlop={10} style={{ alignSelf: 'flex-start', paddingVertical: 2 }}>
+          <Text variant="caption" weight="bold" color={accent}>{open ? 'Réduire' : 'Lire la suite'}</Text>
+        </Pressable>
+      ) : null}
+    </>
   );
 }
 
