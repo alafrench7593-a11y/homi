@@ -36,7 +36,7 @@ const CAL_DAY: CalPalette = {
   text: '#2A1A26', soft: '#5E4A57', muted: '#77606D', line: 'rgba(42,26,38,0.08)', chip: 'rgba(255,255,255,0.6)',
   period: ['#B85A43', '#A0432C'], periodText: '#FFFFFF', predicted: 'rgba(226,128,150,0.15)', predictedBorder: '#D9839A', predictedText: '#8E3550',
   fertile: 'rgba(143,114,226,0.18)', fertileText: '#4F3AA6', ovulation: '#7A5CE0',
-  todayRing: ['#F08AA6', '#A88BFF'], todayGlow: 'rgba(240,138,166,0.18)', todayShadow: '#E9587C', todayInner: 'rgba(255,250,248,0.96)',
+  todayRing: ['#E2AE78', '#A9697A'], todayGlow: 'rgba(226,174,120,0.2)', todayShadow: '#B07A55', todayInner: 'rgba(255,250,248,0.96)',
   symptom: '#C27A2C', intimacy: '#C94F7C', contraception: '#2F8A5B', reminder: '#3D6293',
 };
 const CAL_NIGHT: CalPalette = {
@@ -45,7 +45,7 @@ const CAL_NIGHT: CalPalette = {
   text: '#F6F1F3', soft: '#D6CCD6', muted: '#B3A6B8', line: 'rgba(255,255,255,0.08)', chip: 'rgba(255,255,255,0.08)',
   period: ['#C2604A', '#A9472F'], periodText: '#FFFFFF', predicted: 'rgba(244,182,194,0.18)', predictedBorder: '#F4B6C2', predictedText: '#FBDCE2',
   fertile: 'rgba(167,139,250,0.32)', fertileText: '#ECE6FF', ovulation: '#D9CCFF',
-  todayRing: ['#FF9CB8', '#B9A2FF'], todayGlow: 'rgba(255,134,168,0.16)', todayShadow: '#FF86A8', todayInner: 'rgba(30,20,40,0.92)',
+  todayRing: ['#E7C08F', '#C98A86'], todayGlow: 'rgba(231,192,143,0.16)', todayShadow: '#E7C08F', todayInner: 'rgba(30,20,40,0.92)',
   symptom: '#F2C46D', intimacy: '#F4B6C2', contraception: '#8FD3B0', reminder: '#9DBAE6',
 };
 /** Mode nuit (bébé à 3 h du matin) : même calendrier, lumière encore réduite. */

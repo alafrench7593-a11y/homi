@@ -36,12 +36,8 @@ export const ratio = (a: RGB, b: RGB) => {
  * ombre portée du texte) : le test échoue si une NOUVELLE paire passe sous le seuil.
  */
 const KNOWN_BRAND_EXCEPTIONS: Record<string, number> = {
-  'light:liens (primaire) sur fond': 3.1,
-  'light:liens (primaire) sur carte': 3.1,
-  'light:liens (primaire) sur carte secondaire': 3.1,
   'light:erreurs sur fond': 4.3,
   'light:erreurs sur carte secondaire': 4.4,
-  'light:boutons principaux': 3.4,
 };
 const min = (key: string) => KNOWN_BRAND_EXCEPTIONS[key] ?? 4.5;
 
@@ -58,11 +54,12 @@ describe.each(Object.keys(themes) as ThemeName[])('thème %s', (name) => {
   it('texte des boutons principaux', () => expect(ratio(parse(c.primaryText).rgb, parse(c.primary).rgb)).toBeGreaterThanOrEqual(min(`${name}:boutons principaux`)));
 });
 
-// Palette « Au fil de nous » (rose poudré, brun chaud ; nuit bleu nuit et prune), choisie le 26/10/2026
+// Palette « Au fil de nous » : rose poudré et ciel pêche, accents dorés du logo (validé le 26/10/2026) ;
+// nuit bleu nuit et prune avec accents champagne
 it('palette de marque « Au fil de nous » (couleurs verrouillées)', () => {
   expect(themes.light.colors.background).toBe('#F2DDD8');
-  expect(themes.light.colors.primary).toBe('#9A4F57');
+  expect(themes.light.colors.primary).toBe('#87533F');
   expect(themes.light.colors.danger).toBe('#B02E2E');
-  expect(themes.dark.colors.primary).toBe('#FF86A8');
-  expect(themes.night.colors.primary).toBe('#E89AB0');
+  expect(themes.dark.colors.primary).toBe('#E7C08F');
+  expect(themes.night.colors.primary).toBe('#D9B48A');
 });

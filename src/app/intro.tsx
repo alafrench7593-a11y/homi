@@ -28,6 +28,7 @@ import { duration, easing, timeTo } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NACRE, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { BrandLogo } from '@/components/BrandLogo';
 
 type Universe = 'cycle' | 'pregnancy' | 'child' | 'health' | 'tools' | 'community';
 const UNIVERSES: { key: Universe; hero: ToolTheme; heroIcon: IconName; sats: [ToolTheme, IconName][]; icons: IconName[] }[] = [
@@ -41,7 +42,7 @@ const UNIVERSES: { key: Universe; hero: ToolTheme; heroIcon: IconName; sats: [To
 type Slide = 'hello' | Universe | 'privacy';
 const SLIDES: Slide[] = ['hello', ...UNIVERSES.map((u) => u.key), 'privacy'];
 
-/** Logo animé : la tuile nacrée pivote et se pose, une lumière respire derrière (pas en boucle si animations réduites). */
+/** Logo animé : la tuile « Au fil de nous » pivote et se pose, une lumière respire derrière (pas en boucle si animations réduites). */
 function AnimatedMark({ size = 84 }: { size?: number }) {
   const reduce = useReduceMotion();
   const enter = useRef(new Animated.Value(reduce ? 1 : 0)).current;
@@ -56,15 +57,14 @@ function AnimatedMark({ size = 84 }: { size?: number }) {
     loop.start();
     return () => loop.stop();
   }, [enter, glow, reduce]);
-  const box = size * 2.3;
+  const box = size * 1.9;
   return (
     <View style={{ width: box, height: box, alignItems: 'center', justifyContent: 'center' }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       <Animated.View style={{ position: 'absolute', width: box, height: box, borderRadius: box / 2, opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0.3, 0.65] }), transform: [{ scale: glow.interpolate({ inputRange: [0, 1], outputRange: [0.88, 1.06] }) }] }}>
         <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1, borderRadius: box / 2, opacity: 0.42 }} />
       </Animated.View>
-      <Animated.View style={{ opacity: enter, transform: [{ scale: enter.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] }) }, { rotate: enter.interpolate({ inputRange: [0, 1], outputRange: ['-80deg', '-30deg'] }) }] }}>
-        <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: size, height: size, borderRadius: size * 0.31 }} />
-        <View style={{ position: 'absolute', top: 3, left: size * 0.18, right: size * 0.18, height: 2, borderRadius: 1, backgroundColor: 'rgba(255,255,255,0.75)' }} />
+      <Animated.View style={{ opacity: enter, transform: [{ scale: enter.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] }) }, { rotate: enter.interpolate({ inputRange: [0, 1], outputRange: ['-24deg', '0deg'] }) }] }}>
+        <BrandLogo size={size} />
       </Animated.View>
     </View>
   );
@@ -172,7 +172,7 @@ export default function Intro() {
       <Animated.View key={`${slide}-${locale}`} style={[{ flex: 1, justifyContent: 'center', gap: spacing.md }, enter]}>
         {slide === 'hello' ? (
           <View style={{ alignItems: 'center', gap: spacing.md }}>
-            <AnimatedMark />
+            <AnimatedMark size={112} />
             <Appear kind="mask" delay={0.45}><Text variant="title" center accessibilityRole="header">{BRAND.name}</Text></Appear>
             <Appear kind="soft" delay={0.65}><Text center muted style={{ maxWidth: 340 }}>{tr('intro.mission')}</Text></Appear>
             <Appear kind="soft" delay={0.85} style={{ alignSelf: 'stretch', gap: spacing.xs, marginTop: spacing.sm }}>

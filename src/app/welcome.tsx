@@ -16,8 +16,9 @@ import { BRAND } from '@/config/brand';
 import { getLocale, t as tr } from '@/i18n';
 import { localeInfo } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, MIN_TOUCH, NACRE, spacing } from '@/theme/tokens';
+import { fonts, MIN_TOUCH, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { BrandLogo } from '@/components/BrandLogo';
 
 function Sparkle({ color }: { color: string }) {
   return (
@@ -46,7 +47,7 @@ export default function Welcome() {
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Appear kind="scale" delay={0.08}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 9 }} accessibilityRole="header" accessibilityLabel={BRAND.name}>
-              <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 24, height: 24, borderRadius: 8, transform: [{ rotate: '-30deg' }] }} />
+              <BrandLogo size={28} />
               <Text weight="bold" style={{ fontSize: 16, letterSpacing: -0.4 }}>{BRAND.name}</Text>
             </View>
           </Appear>
@@ -76,8 +77,8 @@ export default function Welcome() {
         {/* Texte principal, en bas et centré */}
         <View style={{ alignItems: 'center' }}>
           <Appear kind="pop" delay={0.22}>
-            <LinearGradient colors={t.isDark ? ['rgba(255,170,200,0.55)', 'rgba(60,30,70,0.6)', 'rgba(20,10,28,0.7)'] : ['rgba(255,170,200,0.65)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 6, marginBottom: 18 }}>
-              <Sparkle color={t.isDark ? '#FFFFFF' : '#E9587C'} />
+            <LinearGradient colors={t.isDark ? ['rgba(231,192,143,0.45)', 'rgba(42,36,72,0.65)', 'rgba(31,35,68,0.75)'] : ['rgba(230,190,150,0.7)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 6, marginBottom: 18 }}>
+              <Sparkle color={t.isDark ? '#FFFFFF' : '#87533F'} />
               <Text variant="small" color={ink}>{tr('brand.tagline')}</Text>
             </LinearGradient>
           </Appear>

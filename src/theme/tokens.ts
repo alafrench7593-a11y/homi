@@ -1,4 +1,8 @@
 /**
+ * Mise à jour du 26/10/2026 (logo validé) : accents dorés et rose doré, comme le fil du logo et la lumière de la
+ * vidéo de fond (ciel rose et pêche). Liens et boutons cuivre doré, dégradé signature champagne → rose doré ;
+ * la nuit garde le bleu nuit et la prune, avec des accents champagne.
+ *
  * Direction artistique « Au fil de nous » (octobre 2026) : fond rose poudré doux et lumineux (#F2DDD8), dégradés
  * crème et beige rosé, traits et textes brun chaud, accents taupe et rose poudré. Nuit : bleu nuit et prune,
  * jamais de noir. Remplace la palette « Aurore » à la demande de la porteuse du projet.
@@ -31,7 +35,7 @@ export const palette = {
 };
 
 /** Dégradé signature (bouton +, anneau, accents). */
-export const NACRE: [string, string, string] = ['#FFB38A', '#FF7FA8', '#A98BFF'];
+export const NACRE: [string, string, string] = ['#E2AE78', '#CB8A72', '#A9697A']; // champagne → rose doré → vieux rose
 
 export type ThemeName = 'light' | 'dark' | 'night';
 
@@ -45,8 +49,8 @@ export function skyPhase(d: Date = new Date()): SkyPhase {
   return 'night';
 }
 export const SKY_GRADIENTS: Record<Exclude<SkyPhase, 'night'>, [string, string, string]> = {
-  dawn: ['#F8EBE4', '#F2DDD8', '#EBD3CC'],
-  day: ['#F8EBE4', '#F2DDD8', '#EBD3CC'],
+  dawn: ['#FAEADF', '#F2DDD8', '#EBD0C8'],
+  day: ['#FAEADF', '#F2DDD8', '#EBD0C8'],
   dusk: ['#2A2448', '#1F2344', '#191D3A'],
 };
 /** Heure représentative de chaque phase (aperçu dans les réglages). */
@@ -94,18 +98,18 @@ export const themes: Record<ThemeName, Theme> = {
     colors: {
       background: '#F2DDD8', // rose poudré
       backgroundAlt: '#EED5CF',
-      gradient: ['#F8EBE4', '#F2DDD8', '#EBD3CC'], // crème → rose poudré → beige rosé
+      gradient: ['#FAEADF', '#F2DDD8', '#EBD0C8'], // pêche lumineuse → rose poudré → rose beige (ciel de la vidéo)
       surface: 'rgba(255,250,246,0.62)',
       surfaceAlt: 'rgba(255,250,246,0.42)',
       border: 'rgba(255,255,255,0.78)',
       text: '#3A2621', // brun chaud
       textMuted: '#6A5049', // taupe brun (≥ 4,5:1 sur le fond)
-      primary: '#9A4F57', // vieux rose profond
+      primary: '#87533F', // cuivre doré (fil du logo), ≥ 4,5:1 sur le fond
       primaryText: '#FFFFFF',
-      accent: '#E3B3AE', // rose poudré soutenu
-      accentSoft: 'rgba(227,179,174,0.38)',
+      accent: '#E6BE96', // pêche champagne
+      accentSoft: 'rgba(230,190,150,0.38)',
       lavender: '#7D5263', // prune taupe
-      gold: '#8E5040', // brun terre cuite
+      gold: '#80532A', // or brun (lisible sur le rose)
       success: '#2A7A50',
       danger: '#B02E2E', // rouge des urgences, assombri pour rester lisible sur le rose poudré (≥ 4,5:1)
       dangerSoft: palette.dangerSoft,
@@ -127,12 +131,12 @@ export const themes: Record<ThemeName, Theme> = {
       border: 'rgba(255,255,255,0.12)',
       text: '#FFF4EE',
       textMuted: '#CDB8C6',
-      primary: '#FF86A8',
-      primaryText: '#2A0F1E',
-      accent: '#FF9BB8',
-      accentSoft: 'rgba(255,134,168,0.16)',
+      primary: '#E7C08F', // champagne
+      primaryText: '#2A2448',
+      accent: '#F0D9CF',
+      accentSoft: 'rgba(231,192,143,0.16)',
       lavender: '#C3B2FF',
-      gold: '#FFB38A',
+      gold: '#E7C08F',
       success: '#9FE0B5',
       danger: '#FF8A8A',
       dangerSoft: 'rgba(255,90,90,0.16)',
@@ -154,12 +158,12 @@ export const themes: Record<ThemeName, Theme> = {
       border: '#33365A',
       text: '#F3D6DF',
       textMuted: '#B8939F',
-      primary: '#E89AB0',
-      primaryText: '#140A11',
-      accent: '#C98197',
+      primary: '#D9B48A', // champagne tamisé
+      primaryText: '#141831',
+      accent: '#C9A27E',
       accentSoft: '#2C2547',
       lavender: '#B7A3E6',
-      gold: '#E89AB0',
+      gold: '#D9B48A',
       success: '#9CC1A2',
       danger: '#F0A0A0',
       dangerSoft: '#3A2440',
