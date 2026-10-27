@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Markdown } from '@/components/Markdown';
+import { ArticleBody, readingMinutes } from '@/features/articleBody';
 import { PremiumGate } from '@/components/Family';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
@@ -59,12 +59,16 @@ export default function ArticleScreen() {
     );
   }
 
-  const body = <Markdown source={a.body_md} />;
+  const body = <ArticleBody source={a.body_md} />;
   // Relu ou validé seulement si une personne (nom + qualification) est enregistrée ; sinon « À vérifier »
   const raw = a.editorial_status ?? 'to_review';
   const status = (raw === 'reviewed' || raw === 'validated') && !(a.reviewer_name && a.reviewer_qualification) ? 'to_review' : raw;
   return (
     <Screen back right={<FavoriteButton icon="bookmark" active={!!saved} labelOn="Retirer des favoris" labelOff="Ajouter aux favoris" onPress={toggleFav} />}>
+      <Row style={{ alignItems: 'center' }}>
+        <Icon name="clock" size={14} color={t.colors.textMuted} />
+        <Text variant="caption" muted testID="article-reading-time">{readingMinutes(a.body_md)} min de lecture</Text>
+      </Row>
       <Text variant="title" accessibilityRole="header">{a.title}</Text>
       <Text italic color={t.colors.primary}>{a.summary}</Text>
       {/* Statut éditorial réel : jamais « relu » ou « validé » sans le nom et la qualification de la personne */}

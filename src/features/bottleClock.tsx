@@ -85,6 +85,19 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
     return () => { a.stop(); b.stop(); };
   }, [reduce, gleam, pulse]);
 
+  // apparition des perles l'une après l'autre, comme des joyaux posés sur le cadran
+  const appear = useRef(new Animated.Value(reduce ? 1 : 0)).current;
+  useEffect(() => {
+    if (reduce) { appear.setValue(1); return; }
+    Animated.timing(appear, { toValue: 1, duration: 1200, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
+  }, [appear, reduce]);
+  const pop = (i: number, n: number, r: number) => {
+    if (reduce) return r;
+    const a = Math.min(0.85, (i / Math.max(1, n)) * 0.7);
+    return appear.interpolate({ inputRange: [0, a, Math.min(1, a + 0.15), 1], outputRange: [0, 0, r * 1.25, r], extrapolate: 'clamp' });
+  };
+  const lastDrunk = lastDone?.bottle?.consumed_ml ?? lastDone?.bottle?.prepared_ml ?? null;
+  const doneCount = slots.filter((s) => s.status === 'done').length;
   const ticks = useMemo(() => Array.from({ length: 96 }, (_, i) => i), []);
   const a0 = lastDone ? dayAngle(new Date(lastDone.at)) : 0;
   const total = lastDone && next ? (dayAngle(new Date(next.at)) - a0 + 360) % 360 : 0;
@@ -125,9 +138,13 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
           const p2 = pt(c, r2, a);
           return <Line key={i} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={hour ? goldB : goldA} strokeOpacity={major ? 1 : hour ? 0.85 : 0.45} strokeWidth={major ? 2.2 : hour ? 1.3 : 0.8} strokeLinecap="round" />;
         })}
-        {[0, 6, 12, 18].map((h) => {
-          const p = pt(c, R - 52, (h / 24) * 360);
-          return <SvgText key={h} x={p.x} y={p.y + 4} fontSize={12} fontWeight="700" fill={goldB} textAnchor="middle" letterSpacing={0.5}>{`${h} h`}</SvgText>;
+        {/* nuit (20 h → 7 h) et jour (7 h → 20 h) : deux arcs très doux sous les graduations */}
+        <Path d={arcPath(c, R - 19, (20 / 24) * 360, (31 / 24) * 360)} stroke={dark ? '#8E7CC3' : '#7C6BA8'} strokeOpacity={dark ? 0.35 : 0.18} strokeWidth={10} fill="none" />
+        <Path d={arcPath(c, R - 19, (7 / 24) * 360, (20 / 24) * 360)} stroke={goldA} strokeOpacity={dark ? 0.16 : 0.22} strokeWidth={10} fill="none" />
+        {[0, 3, 6, 9, 12, 15, 18, 21].map((h) => {
+          const main = h % 6 === 0;
+          const p = pt(c, R - (main ? 50 : 46), (h / 24) * 360);
+          return <SvgText key={h} x={p.x} y={p.y + (main ? 4 : 3)} fontSize={main ? 12 : 9} fontWeight={main ? '700' : '500'} fill={goldB} fillOpacity={main ? 1 : 0.7} textAnchor="middle" letterSpacing={0.5}>{main ? `${h} h` : String(h)}</SvgText>;
         })}
         {/* piste des perles */}
         <Circle cx={c} cy={c} r={rTrack} fill="none" stroke={goldA} strokeOpacity={0.18} strokeWidth={6} />
@@ -145,11 +162,26 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
               </G>
             );
           }
-          if (s.status === 'done') return <Circle key={i} cx={p.x} cy={p.y} r={8} fill="url(#bcArc)" stroke={dark ? '#FFF4D6' : '#FFFFFF'} strokeWidth={1.5} />;
-          if (s.status === 'missed') return <Circle key={i} cx={p.x} cy={p.y} r={7} fill="none" stroke={t.colors.heart} strokeWidth={2} strokeDasharray="3 3" />;
-          return <Circle key={i} cx={p.x} cy={p.y} r={6} fill={dark ? '#1B1836' : '#FFFBF5'} stroke={goldB} strokeWidth={1.6} />;
+          if (s.status === 'done') {
+            const ml = s.bottle?.consumed_ml ?? s.bottle?.prepared_ml ?? null;
+            const q = pt(c, rTrack - 19, dayAngle(new Date(s.at)));
+            return (
+              <G key={i}>
+                <AnimatedCircle cx={p.x} cy={p.y} r={pop(i, slots.length, 8)} fill="url(#bcArc)" stroke={dark ? '#FFF4D6' : '#FFFFFF'} strokeWidth={1.5} />
+                {ml != null ? <SvgText x={q.x} y={q.y + 3} fontSize={9} fontWeight="700" fill={goldB} textAnchor="middle">{ml}</SvgText> : null}
+              </G>
+            );
+          }
+          if (s.status === 'missed') return <AnimatedCircle key={i} cx={p.x} cy={p.y} r={pop(i, slots.length, 7)} fill="none" stroke={t.colors.heart} strokeWidth={2} strokeDasharray="3 3" />;
+          return <AnimatedCircle key={i} cx={p.x} cy={p.y} r={pop(i, slots.length, 6)} fill={dark ? '#1B1836' : '#FFFBF5'} stroke={goldB} strokeWidth={1.6} />;
         })}
       </Svg>
+
+      {/* soleil à midi, lune à minuit (dans le cadran, sous les chiffres) */}
+      {[{ h: 12, icon: 'sun' as const }, { h: 0, icon: 'moon' as const }].map(({ h, icon }) => {
+        const p = pt(c, R - 66, (h / 24) * 360);
+        return <View key={h} pointerEvents="none" style={{ position: 'absolute', left: p.x - 7, top: p.y - 7 }}><Icon name={icon} size={14} color={goldB} /></View>;
+      })}
 
       {/* reflet qui tourne sur la lunette */}
       {!reduce ? (
@@ -183,6 +215,11 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
               <Text variant="caption" weight="bold" color={goldB} style={{ letterSpacing: 1.4, textTransform: 'uppercase', fontSize: 10 }}>Prochain biberon</Text>
               <Text weight="bold" color={ink} style={{ fontSize: 30, lineHeight: 34 }} testID="bottle-clock-next">{slotClock(next.at)}</Text>
               <Text variant="caption" color={muted}>{untilLabel(next.at, now)}{next.suggestedMl != null ? ` · ${next.suggestedMl} ml` : ''}</Text>
+              {lastDone ? (
+                <Text variant="caption" color={muted} numberOfLines={1} style={{ fontSize: 10, marginTop: 4 }} testID="bottle-clock-last">
+                  Dernier : {slotClock(lastDone.at)}{lastDrunk != null ? ` · ${lastDrunk} ml` : ''}
+                </Text>
+              ) : null}
             </>
           ) : (
             <>

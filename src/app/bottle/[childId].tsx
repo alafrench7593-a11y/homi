@@ -138,7 +138,9 @@ export default function BottleReminderScreen() {
   const passed = active ? remainingMinutes(active, now) <= 0 : false;
   // Journée biberons : créneaux d'après le délai choisi par le parent (rappel en cours, sinon le dernier choisi)
   const dayInterval = active?.interval_minutes ?? lastInterval ?? null;
-  const slots = bottleDayPlan({ todays, intervalMinutes: dayInterval, plannedMl: active?.planned_ml ?? null, now });
+  // la nuit compte avec la veille : un biberon des 12 dernières heures reste sur le cadran après minuit
+  const dayBottles = week.filter((b) => todayISO(new Date(b.at)) === today || Date.now() - Date.parse(b.at) < 12 * 3600_000);
+  const slots = bottleDayPlan({ todays: dayBottles, intervalMinutes: dayInterval, plannedMl: active?.planned_ml ?? null, now });
   const upcoming = nextSlot(slots);
   async function pickInterval(minutes: number) {
     const last = todays.length ? [...todays].sort((a, b) => b.at.localeCompare(a.at))[0] : null;
