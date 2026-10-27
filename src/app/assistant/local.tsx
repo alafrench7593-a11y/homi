@@ -53,6 +53,7 @@ function AnswerCard({ m }: { m: Msg }) {
           <Text variant="small" muted>Je préfère ne rien inventer. Essayez avec d’autres mots, ou posez la question à un professionnel de santé (médecin, sage-femme, PMI, pharmacien).</Text>
           {a.related.length ? <Text variant="caption" muted>Articles les plus proches :</Text> : null}
           <Related items={a.related} />
+          <Chip icon="cloud" label="Demander à l’assistant en ligne" onPress={() => router.push({ pathname: '/assistant/chat', params: { q: m.q } })} testID="local-online" />
         </View>
       </GlassSurface>
     );
@@ -144,6 +145,14 @@ export default function LocalAssistant() {
 
   const journey = pregnancy ? 'pregnant' : (children ?? []).some((c) => childAge(c.birth_date).months < 24) ? 'newborn' : (children ?? []).length ? 'child' : (profile?.journeys ?? []).includes('ttc') ? 'ttc' : 'pregnant';
   const suggestions = [...SUGGEST[journey], ...(journey !== 'child' ? SUGGEST.child.slice(0, 2) : [])];
+
+  // Question venue de l'onglet « Questions » : posée automatiquement dès que l'assistant est prêt
+  const autoAsked = useRef(false);
+  useEffect(() => {
+    if (!index || autoAsked.current || typeof params.q !== 'string' || params.q.trim().length < 2) return;
+    autoAsked.current = true;
+    ask(params.q);
+  }, [index]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function ask(q: string) {
     const question = q.trim();

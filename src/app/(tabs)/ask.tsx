@@ -84,8 +84,12 @@ export default function Ask() {
   const [selected, setSelected] = useState<Journey | null>(null);
   const journey = selected ?? journeys[0];
 
-  const go = (question?: string) => router.push({ pathname: '/assistant/chat', params: question ? { q: question } : {} });
-  const blocked = quota?.remaining === 0;
+  // Réponses générées SUR LE TÉLÉPHONE par l'assistant local (articles sourcés, hors ligne, sans limite) ;
+  // l'assistant en ligne reste disponible, avec son quota mensuel.
+  const go = (question?: string) => router.push({ pathname: '/assistant/local', params: question ? { q: question } : {} });
+  const goOnline = (question?: string) => router.push({ pathname: '/assistant/chat', params: question ? { q: question } : {} });
+  const blockedOnline = quota?.remaining === 0;
+  const blocked = false;
 
   async function deleteOne(c: Conversation) {
     if (busy) return;
@@ -137,24 +141,27 @@ export default function Ask() {
           onSubmitEditing={() => q.trim().length >= 2 && !blocked && go(q.trim())}
         />
         <Row style={{ marginTop: spacing.sm }} wrap>
-          <Button label="Poser la question" icon="send" disabled={blocked || q.trim().length < 2} onPress={() => go(q.trim())} />
-          <Button label="Nouvelle conversation" icon="plus" variant="secondary" disabled={blocked} onPress={() => go()} />
+          <Button label="Poser la question" icon="send" disabled={q.trim().length < 2} onPress={() => go(q.trim())} testID="ask-local" />
+          <Button label="Assistant en ligne" icon="cloud" variant="secondary" disabled={blockedOnline} onPress={() => goOnline(q.trim() || undefined)} testID="ask-online" />
         </Row>
+        <Text variant="caption" muted style={{ marginTop: spacing.xs }}>
+          Réponse immédiate tirée de plus de 1 000 articles sourcés, calculée sur votre téléphone : rien n’est envoyé, sans limite.
+        </Text>
         {quota && (
-          <Text variant="caption" muted style={{ marginTop: spacing.xs }}>
-            {quota.remaining > 0 ? `Il vous reste ${quota.remaining} question${quota.remaining > 1 ? 's' : ''} ce mois-ci (sur ${quota.quota}).` : 'Vous avez utilisé toutes vos questions de ce mois.'}
+          <Text variant="caption" muted style={{ marginTop: 2 }}>
+            {quota.remaining > 0 ? `Assistant en ligne : il vous reste ${quota.remaining} question${quota.remaining > 1 ? 's' : ''} ce mois-ci (sur ${quota.quota}).` : 'Assistant en ligne : vous avez utilisé toutes vos questions de ce mois.'}
           </Text>
         )}
       </Card>
 
-      {blocked && (
+      {blockedOnline && (
         <Banner
           tone="warning"
           icon="star"
-          title="Limite mensuelle atteinte"
+          title="Assistant en ligne : limite mensuelle atteinte"
           action={<Button label="Découvrir Au fil de nous Premium" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => assistantAccess.showPreview(undefined, quota ? { used: quota.quota - quota.remaining, quota: quota.quota, unit: 'questions' } : null)} />}
         >
-          {'Avec Au fil de nous Premium, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence reste toujours gratuite.'}
+          {'Les réponses tirées des articles restent illimitées. Avec Au fil de nous Premium, posez jusqu’à 300 questions par mois à l’assistant en ligne. L’orientation en cas d’urgence reste toujours gratuite.'}
         </Banner>
       )}
 
