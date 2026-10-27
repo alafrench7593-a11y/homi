@@ -25,6 +25,7 @@ const S = {
   depressionAdo: { label: 'Santé.fr — Dépression chez l’enfant et l’adolescent', url: 'https://www.sante.fr/node/2055581', consulted_on: C, published: '2026-08-12' },
   hpi: { label: 'Santé.fr (Inserm) — Identifier le haut potentiel intellectuel avec un test sur Internet, vraiment ?', url: 'https://www.sante.fr/node/6501373', consulted_on: C, published: '2023-04-13' },
   epilepsie: { label: 'Santé.fr — Comprendre l’épilepsie : causes, symptômes et traitements', url: 'https://www.sante.fr/epilepsie', consulted_on: C, published: '2026-08-13' },
+  convulsionsFebriles: { label: 'ameli.fr — Convulsions fébriles de l’enfant : que faire ?', url: 'https://www.ameli.fr/assure/sante/urgence/bebe-enfant/convulsions-febriles-enfant', consulted_on: C, published: '2024-10-08' },
   diabete: { label: 'Santé.fr — Diabète de type 1 chez l’enfant : savoir reconnaître les signes pour limiter les complications', url: 'https://www.sante.fr/node/17809241', consulted_on: C, published: '2025-09-12' },
   drepano: { label: 'Santé.fr (Inserm) — Drépanocytose, la maladie génétique la plus fréquente en France', url: 'https://www.sante.fr/node/4750839', consulted_on: C, published: '2023-06-19' },
   depistageNeonatal: { label: 'ARS Île-de-France — Le programme national de dépistage néonatal', url: 'https://www.iledefrance.ars.sante.fr/le-programme-national-de-depistage-neonatal', consulted_on: C, published: '2025-03-26' },
@@ -725,7 +726,7 @@ ${FIN}`,
     ...CHRONIC, safety_critical: true, slug: 'epilepsie-enfant-que-faire-en-cas-de-crise', tags: ['épilepsie', 'crise', 'urgence', 'pai', 'neurologie'],
     title: 'Épilepsie de l’enfant : les bons gestes pendant une crise',
     summary: 'Position latérale de sécurité, ne rien mettre dans la bouche, chronométrer la crise : les gestes à connaître et quand appeler le 15.',
-    sources: [S.epilepsie, S.pai],
+    sources: [S.epilepsie, S.pai, S.convulsionsFebriles],
     body_md: `## En bref
 - L’**épilepsie** est une maladie neurologique chronique : des **crises** se répètent, dues à une hyperactivité d’un groupe de neurones.
 - Elle est **fréquente chez l’enfant** ; plus de la moitié des enfants concernés **guérissent avant l’âge adulte**.
@@ -757,7 +758,7 @@ Le traitement de l’enfant vise à éviter des séquelles et à limiter le rete
 **À l’école** : un **projet d’accueil individualisé (PAI)** précise les aménagements et la **conduite à tenir en cas d’urgence**, avec une trousse d’urgence accessible et emportée lors des sorties.
 
 ## Questions fréquentes
-**Faut-il appeler le 15 à chaque crise ?** Pour une épilepsie connue, suivez le protocole donné par le médecin ; appelez le **15** dans les situations listées plus haut ou au moindre doute. Pour une **première crise**, appelez le 15.
+**Faut-il appeler le 15 à chaque crise ?** Pour une épilepsie connue, suivez le protocole donné par le médecin ; appelez le **15** dans les situations listées plus haut ou au moindre doute. Pour une **première crise**, appelez le 15 : l’Assurance Maladie demande notamment d’appeler le 15 lorsqu’une convulsion survient **sans fièvre**, chez un enfant de moins d’un an ou de plus de 5 ans, ou en cas de plusieurs convulsions en 24 heures.
 
 **Mon enfant pourra-t-il faire du sport ?** Oui, l’activité régulière est encouragée, en évitant les sports où une chute ou une perte de connaissance serait dangereuse, et avec l’avis du médecin.
 

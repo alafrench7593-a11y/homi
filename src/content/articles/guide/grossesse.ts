@@ -48,6 +48,13 @@ const S = {
   santePrematures: { label: 'Santé.fr — Prématurés : des bébés sous surveillance', url: 'https://www.sante.fr/prematures-des-bebes-sous-surveillance', consulted_on: C, published: '2025-12-02' },
   santePremiereTetee: { label: 'Santé.fr — La première tétée', url: 'https://www.sante.fr/la-premiere-tetee', consulted_on: C, published: '2025-06-16' },
   santeRythmeTetees: { label: 'Santé.fr — Rythme des tétées', url: 'https://www.sante.fr/rythme-des-tetees', consulted_on: C, published: '2025-12-11' },
+  spAllo: { label: 'Service-Public.fr — Missions et valeurs (mention d’Allô Service Public 3939, renseignement administratif par téléphone)', url: 'https://entreprendre.service-public.gouv.fr/P10002', consulted_on: C, published: '2025-09-26' },
+  infoViolences: { label: 'info.gouv.fr — Violences faites aux femmes : quels recours pour les victimes ?', url: 'https://www.info.gouv.fr/actualite/violences-faites-aux-femmes-quels-recours-pour-les-victimes', consulted_on: C, published: '2025-11-24' },
+  santeTabac: { label: 'Santé.fr (Santé publique France — Tabac Info Service) — 9 conseils pour arrêter de fumer', url: 'https://www.sante.fr/node/1134744', consulted_on: C, published: '2023-05-23' },
+  santeCannabis: { label: 'Santé.fr (Santé publique France — 1000 premiers jours) — Savoir dire non au cannabis pendant la grossesse', url: 'https://www.sante.fr/node/1871143', consulted_on: C, published: '2019-06-19' },
+  arsCap: { label: 'ARS Île-de-France — Centre antipoison et de toxicovigilance d’Île-de-France', url: 'https://www.iledefrance.ars.sante.fr/centre-antipoison-et-de-toxicovigilance-dile-de-france-captv', consulted_on: C, published: '2023-05-30' },
+  hasAntiD: { label: 'HAS — Commission de la transparence : avis sur une immunoglobuline anti-D (indications pendant la grossesse)', url: 'https://has-sante.fr/upload/docs/application/pdf/2010-04/rhophylac_-_ct-7715.pdf', consulted_on: C, published: '2010-03-31' },
+  efsRhd: { label: 'Établissement français du sang — Génotypage RHD fœtal sur sang maternel (fiche pour les praticiens)', url: 'https://www.efs.sante.fr/sites/default/files/2024-08/Fiche%20Foetal_praticien_2023.pdf', consulted_on: C },
   santeJumeaux: { label: 'Santé.fr — Allaiter des jumeaux', url: 'https://www.sante.fr/allaiter-des-jumeaux', consulted_on: C, published: '2022-11-07' },
 } satisfies Record<string, ArticleSource>;
 
@@ -170,7 +177,7 @@ ${FIN}`,
     title: 'Le congé maternité : durée, report et indemnités',
     summary: 'Combien de semaines avant et après la naissance, comment décaler une partie du congé et comment sont versées les indemnités.',
     category: 'droits-demarches', tags: ['congé maternité', 'travail', 'indemnités journalières'],
-    sources: [S.spCongeMaternite],
+    sources: [S.spCongeMaternite, S.spAllo],
     body_md: `## En bref
 - Le congé maternité est **obligatoire** : il comprend un congé prénatal (avant) et un congé postnatal (après).
 - Pour un 1er ou un 2e enfant : **6 semaines avant + 10 semaines après**, soit 16 semaines.
@@ -220,7 +227,7 @@ ${FIN}`,
     title: 'Enceinte et salariée : vos droits au travail',
     summary: 'Absences pour les examens, protection contre le licenciement, annonce de la grossesse : ce que prévoit le Code du travail.',
     category: 'droits-demarches', tags: ['travail', 'employeur', 'licenciement', 'absences'],
-    sources: [S.spAbsences, S.spLicenciement],
+    sources: [S.spAbsences, S.spLicenciement, S.spAllo],
     body_md: `## En bref
 - Vous pouvez vous absenter pour les **examens médicaux obligatoires** de la grossesse, **sans perte de salaire**.
 - La personne qui vit en couple avec vous peut s’absenter pour **3 de ces examens**.
@@ -271,7 +278,7 @@ ${FIN}`,
     title: 'Le congé du second parent (paternité et accueil de l’enfant)',
     summary: 'Durée, partie obligatoire, délais pour prévenir l’employeur et indemnisation du congé de paternité et d’accueil de l’enfant.',
     category: 'droits-demarches', tags: ['congé paternité', 'second parent', 'coparent', 'travail'],
-    sources: [S.spPaternite, S.spAbsences],
+    sources: [S.spPaternite, S.spAbsences, S.spAllo],
     body_md: `## En bref
 - Le second parent a droit à **3 jours de congé de naissance**, puis à un **congé de paternité et d’accueil de l’enfant**.
 - Ce congé dure **25 jours calendaires** pour une naissance (32 pour des naissances multiples).
@@ -374,7 +381,7 @@ ${FIN}`,
     title: 'Reconnaître son enfant avant la naissance',
     summary: 'Pour les couples non mariés : où et comment faire une reconnaissance anticipée, et à quoi elle sert.',
     category: 'droits-demarches', tags: ['reconnaissance', 'filiation', 'mairie', 'état civil'],
-    sources: [S.spReconnaissance],
+    sources: [S.spReconnaissance, S.spAllo],
     body_md: `## En bref
 - Dans un couple **non marié**, la reconnaissance établit le lien de filiation, notamment avec le père.
 - Elle peut être faite **avant la naissance**, dans **n’importe quelle mairie**.
@@ -477,7 +484,7 @@ ${FIN}`,
     title: 'L’entretien prénatal précoce : un temps pour vous',
     summary: 'Obligatoire et pris en charge à 100 %, cet entretien permet de parler de vos besoins, de vos questions et de votre projet de naissance.',
     category: 'suivi-grossesse', tags: ['entretien prénatal', 'epp', '1000 premiers jours', 'projet de naissance'], max_week: 30,
-    sources: [S.santeEpp, S.ameliPreparation, S.ameliProgramme],
+    sources: [S.santeEpp, S.ameliPreparation, S.infoViolences],
     body_md: `## En bref
 - L’**entretien prénatal précoce** (EPP) est **obligatoire** depuis 2020 et **pris en charge à 100 %**.
 - Il a lieu une fois la grossesse déclarée, idéalement **tôt** (conseillé dès le 4e mois).
@@ -1297,7 +1304,7 @@ ${FIN}`,
     title: 'Arrêter de fumer quand on est enceinte : c’est bénéfique à tout moment',
     summary: 'Risques du tabac et de la cigarette électronique pendant la grossesse, et les aides concrètes pour arrêter.',
     category: 'alimentation-grossesse', tags: ['tabac', 'cigarette électronique', 'vapotage', 'sevrage'],
-    sources: [S.ameliTabac, S.santeAliments],
+    sources: [S.ameliTabac, S.santeAliments, S.santeTabac],
     body_md: `## En bref
 - **Arrêter de fumer est bénéfique à tout moment** de la grossesse.
 - Le tabac augmente notamment les risques de **fausse couche**, d’**accouchement prématuré** et de **retard de croissance** du bébé.
@@ -1350,7 +1357,7 @@ ${FIN}`,
     title: 'Cannabis et autres drogues pendant la grossesse : en parler sans crainte',
     summary: 'Les effets possibles sur le bébé, et pourquoi en parler à un professionnel permet un accompagnement adapté, sans jugement.',
     category: 'alimentation-grossesse', tags: ['cannabis', 'drogues', 'addiction', 'accompagnement'],
-    sources: [S.ameliDrogues],
+    sources: [S.ameliDrogues, S.santeCannabis],
     body_md: `## En bref
 - Le **THC** du cannabis **traverse le placenta** et passe dans le **lait maternel**.
 - Une consommation **régulière et importante** est associée à la prématurité, à une croissance plus lente du bébé et à des troubles plus tard.
@@ -1384,7 +1391,7 @@ Le but du suivi est de vous accompagner et de protéger votre santé et celle du
 Parlez-en lors de votre prochain rendez-vous ; les études ne montrent pas d’effet malformatif au 1er trimestre, mais il est préférable d’arrêter.
 
 **Le CBD est-il concerné ?**
-Demandez conseil à un professionnel avant toute consommation pendant la grossesse.
+Les pages officielles consultées ne donnent pas de repère spécifique sur le CBD pendant la grossesse : n’en consommez pas sans en avoir parlé à votre médecin, à votre sage-femme ou à votre pharmacien.
 
 **Et pendant l’allaitement ?**
 Le THC passe dans le lait : parlez-en avant la naissance pour préparer l’allaitement ou le biberon.
@@ -1393,7 +1400,7 @@ Le THC passe dans le lait : parlez-en avant la naissance pour préparer l’alla
 Oui : Drogues Info Service est anonyme, et les consultations en CSAPA sont gratuites et confidentielles.
 
 ## Quand demander conseil
-**Drogues Info Service** : 0 800 23 13 13, gratuit et anonyme. Parlez-en à votre médecin, à votre sage-femme ou à la PMI. Consultez sans attendre en cas de saignements, de douleurs, de contractions ou si le bébé bouge moins. ${URG}
+**Drogues Info Service** : 0 800 23 13 13, gratuit et anonyme, 7 jours sur 7 de 8 h à 2 h (selon Santé.fr). Parlez-en à votre médecin, à votre sage-femme ou à la PMI. Consultez sans attendre en cas de saignements, de douleurs, de contractions ou si le bébé bouge moins. ${URG}
 
 ${FIN}`,
   }),
@@ -1403,7 +1410,7 @@ ${FIN}`,
     title: 'Médicaments pendant la grossesse : les bons réflexes',
     summary: 'Pourquoi éviter l’automédication, ce que signifient les pictogrammes sur les boîtes et pourquoi ne jamais arrêter seule un traitement.',
     category: 'sante-grossesse', tags: ['médicaments', 'automédication', 'anti-inflammatoires', 'pictogramme'],
-    sources: [S.ameliMedicaments, S.santeEnvironnement],
+    sources: [S.ameliMedicaments, S.santeEnvironnement, S.arsCap],
     body_md: `## En bref
 - **Pas d’automédication** : demandez conseil à votre médecin, sage-femme ou pharmacien **avant tout médicament**, même sans ordonnance.
 - Les **anti-inflammatoires** (AINS) sont **contre-indiqués à partir du 6e mois** et, avant, réservés à une nécessité absolue.
@@ -1831,7 +1838,7 @@ ${FIN}`,
     title: 'Rhésus négatif : ce que cela change pendant la grossesse',
     summary: 'Pourquoi on recherche des anticorps (RAI) quand on est rhésus négatif, et à quoi sert l’injection d’immunoglobulines anti-D.',
     category: 'suivi-grossesse', tags: ['rhésus', 'groupe sanguin', 'rai', 'anti-d'],
-    sources: [S.ameliMensuel, S.sante8eMois, S.ameliProgramme],
+    sources: [S.ameliMensuel, S.hasAntiD, S.efsRhd],
     body_md: `## En bref
 - Le **groupe sanguin et le rhésus** sont déterminés au début de la grossesse.
 - Si vous êtes **rhésus négatif**, une **recherche d’agglutinines irrégulières (RAI)** est faite au **6e et au 8e mois**.
@@ -1850,7 +1857,7 @@ C’est pourquoi on surveille l’apparition éventuelle de ces anticorps (RAI) 
 - **Lors d’une prochaine grossesse**, rappelez les injections reçues.
 
 ### Situations où l’injection peut être proposée
-D’après les situations décrites par les équipes : saignement pendant la grossesse, choc sur le ventre, version par manœuvre externe, certains examens invasifs (comme l’amniocentèse), fausse couche ou interruption de grossesse, et après l’accouchement si le bébé est rhésus positif. Votre maternité vous indiquera aussi si une injection systématique est prévue au 3e trimestre.
+D’après les indications rappelées par la Haute Autorité de santé : saignement pendant la grossesse, choc sur le ventre, version par manœuvre externe, certains examens invasifs (amniocentèse, biopsie de trophoblaste), fausse couche, grossesse extra-utérine ou interruption de grossesse, et après l’accouchement si le bébé est rhésus positif. Une injection systématique vers 28 semaines d’aménorrhée est aussi recommandée ; votre équipe vous dira si elle vous concerne.
 
 ## Questions fréquentes
 **Je suis rhésus négatif, mon bébé est-il en danger ?**
@@ -1866,7 +1873,7 @@ Elle est utilisée depuis longtemps ; l’équipe vous en explique l’intérêt
 Deux déterminations sont nécessaires ; votre carte de groupe sanguin les indique.
 
 **Faut-il connaître le rhésus du bébé ?**
-Dans certaines situations, une prise de sang chez la mère permet de déterminer le rhésus du bébé et d’éviter des injections inutiles ; votre équipe vous dira si c’est proposé.
+Selon l’Établissement français du sang, une prise de sang chez la mère (génotypage RHD fœtal) peut être proposée à partir de 11 semaines d’aménorrhée : si le bébé est rhésus négatif, l’injection préventive peut être évitée. Votre équipe vous dira si cet examen vous est proposé.
 
 ## Quand demander conseil
 Consultez rapidement à la maternité en cas de **saignement**, de **choc sur le ventre** ou de **chute**, en signalant que vous êtes rhésus négatif. ${URG}

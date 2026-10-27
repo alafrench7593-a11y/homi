@@ -23,6 +23,7 @@ const S = {
   ameliToilette: { label: 'ameli.fr — Comment changer un nourrisson et faire sa toilette ?', url: 'https://www.ameli.fr/assure/sante/bons-gestes/bebe/changer-bebe-faire-toilette', consulted_on: C, published: '2025-12-22' },
   ameliHernieDef: { label: 'ameli.fr — Hernie inguinale de l’enfant : définition et mode d’apparition', url: 'https://www.ameli.fr/assure/sante/themes/hernie-inguinale-enfant/hernie-inguinale-de-l-enfant-definition-et-mode-d-apparition', consulted_on: C },
   ameliHernieTrt: { label: 'ameli.fr — Hernie inguinale de l’enfant : le traitement', url: 'https://www.ameli.fr/assure/sante/themes/hernie-inguinale-enfant/hernie-inguinale-de-l-enfant-le-traitement', consulted_on: C, published: '2024-11-05' },
+  hiaHernie: { label: 'Hôpital d’instruction des armées Laveran (Service de santé des armées) — Fiche d’information patient : les hernies de l’aine', url: 'https://hialaveran.sante.defense.gouv.fr/content/uploads/sites/20/2022/07/fiche-d-information-patient-hernies-de-laine.pdf', consulted_on: C },
   ameliCryptoComp: { label: 'ameli.fr — Comprendre la cryptorchidie ou testicule non descendu', url: 'https://www.ameli.fr/assure/sante/themes/cryptorchidie-testicule-non-descendu-ectopie-testiculaire/comprendre-cryptorchidie', consulted_on: C, published: '2025-12-05' },
   ameliCryptoDiag: { label: 'ameli.fr — Cryptorchidie ou testicule non descendu : diagnostic et évolution', url: 'https://www.ameli.fr/assure/sante/themes/cryptorchidie-testicule-non-descendu-ectopie-testiculaire/diagnostic-evolution', consulted_on: C, published: '2020-04-09' },
   ameliCryptoTrt: { label: 'ameli.fr — Traitement de la cryptorchidie ou testicule non descendu', url: 'https://www.ameli.fr/assure/sante/themes/cryptorchidie-testicule-non-descendu-ectopie-testiculaire/traitement', consulted_on: C, published: '2025-12-05' },
@@ -472,18 +473,18 @@ ${FIN}`,
     title: 'Une petite grosseur dans l’aine de bébé : la hernie inguinale',
     summary: 'Une boule qui apparaît dans le pli de l’aine quand bébé pleure ou pousse et disparaît au calme : ce qu’est la hernie inguinale, pourquoi elle s’opère et quand c’est urgent.',
     tags: ['hernie inguinale bébé', 'boule aine bébé', 'grosseur pli de l’aine', 'hernie étranglée', 'hernie fille ovaire', 'prématuré hernie'],
-    sources: [S.ameliHernieDef, S.ameliHernieTrt, S.ameliToilette],
+    sources: [S.ameliHernieDef, S.ameliHernieTrt, S.hiaHernie],
     body_md: `## En bref
 - La hernie inguinale est une **grosseur dans le pli de l’aine** : une partie de l’intestin (ou, chez la fille, parfois l’ovaire) passe par un petit orifice resté ouvert depuis la vie avant la naissance.
 - Elle touche **2 à 5 % des enfants**, surtout les garçons, et plus souvent les bébés **nés prématurés**.
 - On la découvre souvent **au change ou au bain** : la boule apparaît lors des efforts (pleurs, selles) et disparaît au calme.
 - Elle **ne disparaît jamais seule** et doit être **opérée**, dans un délai court chez le bébé, à cause du risque d’**étranglement**.
-- Une hernie **dure, douloureuse, qui ne rentre plus**, chez un bébé qui pleure ou vomit, est une **urgence**.
+- Une hernie qui **ne rentre plus** et devient **très douloureuse** (bébé pleure de façon inhabituelle) est une **urgence**.
 
 ## Comprendre
 Pendant la grossesse, un petit canal relie l’abdomen à la bourse chez le garçon (canal péritonéo-vaginal) ou aux grandes lèvres chez la fille (canal de Nück). Il se referme normalement avant la naissance. S’il reste ouvert, une partie d’organe peut s’y glisser : c’est la hernie inguinale **congénitale**. L’Assurance Maladie précise qu’elle n’est pas due à une faiblesse des muscles mais à cet orifice resté ouvert.
 
-Le principal risque est l’**étranglement** : la partie engagée reste coincée et n’est plus bien irriguée. Il justifie une chirurgie urgente. Il est plus fréquent chez le garçon, et les complications (notamment l’atrophie du testicule ou de l’ovaire) sont plus probables quand la hernie a été étranglée.
+Le principal risque est l’**étranglement** : la partie engagée (souvent l’intestin) reste coincée dans la hernie. Une fiche d’information hospitalière (Service de santé des armées) en décrit les signes : la hernie **ne rentre plus** et devient **très douloureuse**, ce qui impose un avis chirurgical en urgence. Il est plus fréquent chez le garçon, et les complications (notamment l’atrophie du testicule ou de l’ovaire) sont plus probables quand la hernie a été étranglée.
 
 **Le traitement** est chirurgical, le plus souvent en ambulatoire (retour le jour même), sous anesthésie générale ou régionale. Le chirurgien referme l’orifice, par une petite incision au pli de l’aine ou par cœlioscopie. L’enfant est revu ensuite pour vérifier la cicatrisation. Les complications sont rares.
 
@@ -505,7 +506,7 @@ Le principal risque est l’**étranglement** : la partie engagée reste coincé
 **Pourquoi opérer vite un bébé ?** Parce que le risque d’étranglement est plus important chez le nourrisson : l’opération est programmée dans un court délai après le diagnostic.
 
 ## Quand demander conseil
-Prenez rendez-vous rapidement avec votre médecin si vous remarquez une grosseur dans l’aine ou la bourse, même si elle disparaît au calme. Appelez le **15** (ou le 112) ou allez aux urgences si la grosseur devient **dure, douloureuse, rouge ou violacée, et ne rentre plus**, surtout si bébé pleure de façon inhabituelle, vomit ou refuse de manger.
+Prenez rendez-vous rapidement avec votre médecin si vous remarquez une grosseur dans l’aine ou la bourse, même si elle disparaît au calme. Appelez le **15** (ou le 112) ou allez aux urgences si la grosseur **ne rentre plus** et semble **douloureuse** (bébé pleure de façon inhabituelle, ne se calme pas), ou au moindre doute sur l’état de votre enfant.
 
 ${FIN}`,
   },

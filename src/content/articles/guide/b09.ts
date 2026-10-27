@@ -12,7 +12,6 @@ const C = '2026-10-27';
 // Sources réellement consultées le 2026-10-27. `published` = date de publication ou de mise à jour affichée par la page.
 const S = {
   hasSynthese: { label: 'HAS — Prescription d’activité physique pendant la grossesse et le post-partum (synthèse)', url: 'https://www.has-sante.fr/upload/docs/application/pdf/2022-08/synthese_aps_grossesse_post_partum_vf.pdf', consulted_on: C, published: '2022-07-13' },
-  hasFiche: { label: 'HAS — Grossesse : l’activité physique pour votre santé (fiche pour les patientes)', url: 'https://www.has-sante.fr/upload/docs/application/pdf/2022-11/ap_fiche_grossesse.pdf', consulted_on: C, published: '2022-12' },
   santeIdees: { label: 'Santé.fr (Santé publique France – Manger Bouger) — Idées d’activités et de mouvements à faire pendant la grossesse', url: 'https://www.sante.fr/activite-physique-pendant-la-grossesse', consulted_on: C, published: '2023-05-09' },
   santeAP: { label: 'Santé.fr (Santé publique France – 1000 premiers jours) — L’activité physique pendant la grossesse', url: 'https://www.sante.fr/node/1871127', consulted_on: C, published: '2023-04-25' },
   guideSports: { label: 'Ministère chargé des Sports — Guide « Activités physiques et sportives et maternité » (diffusé sur monenfant.fr)', url: 'https://www.monenfant.fr/documents/20143/108676/GUIDE+-+APS+ET+MATERNIT%C3%89+-+vf+-oct+2020.pdf/bc54ed63-2e5a-84eb-4b4c-ef5f37ab6004', consulted_on: C },
@@ -804,7 +803,7 @@ ${END}`,
 - L'intensité est modérée : vous pouvez parler pendant l'effort.
 
 ## Comprendre
-Les recommandations s'adressent à toutes les femmes enceintes sans contre-indication médicale, qu'elles aient été sportives ou non. La HAS rappelle que l'activité physique n'augmente pas le risque de naissance prématurée, de fausse couche ou de complications de l'accouchement, et qu'elle est bénéfique pour la santé physique et mentale de la mère et pour l'enfant.
+Les recommandations s'adressent à toutes les femmes enceintes sans contre-indication médicale, qu'elles aient été sportives ou non. La HAS indique que l'activité physique est conseillée à toutes les femmes enceintes, en dehors des contre-indications, et cite parmi ses bénéfices la prévention possible du diabète gestationnel et la réduction des poids de naissance excessifs.
 
 Pour les femmes peu actives, Santé publique France propose de commencer par 15 minutes au moins 3 jours par semaine, puis d'augmenter progressivement jusqu'à 30 minutes par jour. Le guide du ministère chargé des Sports conseille de partir de la marche déjà pratiquée au quotidien et d'allonger la durée de quelques minutes chaque jour. Il cite comme activités adaptées la natation, la marche nordique, les activités à faible impact, les étirements, le yoga prénatal, le pilates et la gymnastique douce.
 
@@ -838,7 +837,7 @@ Demandez conseil avant de commencer si vous avez une maladie chronique, une comp
 
 ${END}`,
     tags: ['débuter', 'sédentaire', 'reprendre le sport', 'marche', 'activité modérée', 'motivation'],
-    sources: [S.santeAP, S.guideSports, S.hasFiche],
+    sources: [S.santeAP, S.guideSports, S.hasSynthese],
   },
   // ───────────────────────────── Bien-être, sophrologie, préparation ─────────────────────────────
   {
@@ -1360,6 +1359,6 @@ Appelez le 15 ou le 112 en cas de douleur ou de pression dans la poitrine, de pe
 
 ${END}`,
     tags: ['signes d\'alerte', 'arrêter le sport', 'contre-indications', 'contractions', 'saignement', 'urgence', 'essoufflement'],
-    sources: [S.hasSynthese, S.hasFiche, S.guideSports],
+    sources: [S.hasSynthese, S.guideSports],
   },
 ];

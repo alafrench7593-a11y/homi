@@ -8,7 +8,7 @@ const S = {
   santeSuivi: { label: 'Santé.fr (Santé publique France — 1000 premiers jours) — Le suivi médical après l’accouchement', url: 'https://www.sante.fr/le-suivi-medical-apres-laccouchement', consulted_on: C, published: '2024-08-09' },
   santeBouger: { label: 'Santé.fr — Bouger plus au quotidien : petits pas, grands bénéfices', url: 'https://www.sante.fr/bouger-plus-au-quotidien-petits-pas-grands-benefices', consulted_on: C, published: '2026-09-10' },
   santeMentale: { label: 'Santé.fr (avec Psycom) — La santé mentale des parents', url: 'https://www.sante.fr/la-sante-mentale-des-parents', consulted_on: C, published: '2025-08-04' },
-  hasFiche: { label: 'Haute Autorité de santé — Après une naissance : l’activité physique pour votre santé (fiche patient)', url: 'https://www.has-sante.fr/upload/docs/application/pdf/2022-11/ap_fiche_postpartum.pdf', consulted_on: C, published: '2022-12' },
+  hasSynthese: { label: 'Haute Autorité de santé — Prescription d’activité physique : grossesse et post-partum (synthèse)', url: 'https://www.has-sante.fr/upload/docs/application/pdf/2022-08/synthese_aps_grossesse_post_partum_vf.pdf', consulted_on: C, published: '2022-07-13' },
   has2002: { label: 'ANAES / Haute Autorité de santé — Rééducation dans le cadre du post-partum (recommandations pour la pratique clinique)', url: 'https://has-sante.fr/upload/docs/application/pdf/recos_finales_post_partum_2006.pdf', consulted_on: C, published: '2002-12' },
   has2014: { label: 'Haute Autorité de santé — Sortie de maternité : préparez votre retour à la maison (document d’information)', url: 'https://www.has-sante.fr/upload/docs/application/pdf/2014-02/document_dinformation.pdf', consulted_on: C, published: '2014-03' },
   sportsPage: { label: 'Ministère chargé des Sports — Guide de la pratique sportive pendant la maternité', url: 'https://www.sports.gouv.fr/guide-de-la-pratique-sportive-pendant-la-maternite-824', consulted_on: C, published: '2021-03-02' },
@@ -41,7 +41,7 @@ export const GUIDE_B10: LibArticle[] = [
     title: 'Reprendre une activité physique après l’accouchement : quoi, et à partir de quand ?',
     summary: 'Les grandes étapes de la reprise selon le type d’accouchement, de la marche des premiers jours jusqu’aux sports plus intenses après la rééducation du périnée.',
     tags: ['reprise du sport', 'sport après accouchement', 'post-partum', 'quand reprendre le sport', 'périnée', 'césarienne', 'épisiotomie'],
-    sources: [S.santeActivite, S.hasFiche, S.ameliRetour],
+    sources: [S.santeActivite, S.hasSynthese, S.ameliRetour],
     body_md: `## En bref
 - La marche à intensité faible à modérée peut commencer très tôt après un accouchement par voie basse, à votre rythme.
 - Les activités plus intenses, avec impacts ou port de charges, viennent **après la rééducation du périnée**, lorsqu'elle est nécessaire.
@@ -53,10 +53,10 @@ La grossesse et l'accouchement sollicitent fortement le périnée (les muscles q
 
 L'ordre compte : **d'abord le périnée, ensuite l'intensité**. Les repères officiels varient légèrement selon les sources, ce qui rappelle qu'il n'existe pas de calendrier unique :
 - **Après une voie basse** : Santé publique France indique que la marche peut commencer tout de suite et que les activités plus intenses sont généralement possibles 6 à 8 semaines après l'accouchement, une fois la rééducation périnéale terminée. La Haute Autorité de santé (HAS) et l'Assurance Maladie parlent, en général, de 4 à 6 semaines pour une reprise progressive, après avis médical.
-- **Après une épisiotomie** : la reprise se fait après l'avis du professionnel qui vous suit ; la HAS évoque au moins 8 à 10 semaines selon la cicatrisation.
+- **Après une épisiotomie** : la reprise se fait après l'avis du professionnel qui vous suit ; la HAS indique que le délai varie selon les conditions de l'accouchement (césarienne, forceps, épisiotomie…) et se discute avec l'équipe.
 - **Après une césarienne** : il faut attendre que la paroi abdominale se reconstitue, environ 2 mois selon Santé publique France, 8 à 10 semaines selon la HAS et l'Assurance Maladie.
 
-Dans tous les cas, la HAS précise que les activités avec impacts au sol (course à pied, tennis, trampoline) ne se reprennent qu'**une fois le périnée redevenu fonctionnel**.
+Dans tous les cas, la HAS précise que les activités avec impacts ne redémarrent qu'**après la rééducation périnéale et le constat d'une fonction normale du périnée**.
 
 ## Au quotidien
 **Les premières semaines**
@@ -81,7 +81,7 @@ Parce que chaque accouchement et chaque récupération sont différents. Les sou
 Les activités avec impacts sont à garder pour après la rééducation du périnée, lorsqu'il est redevenu fonctionnel. En attendant, la marche, même rapide, reste possible.
 
 **Et si je n'ai jamais fait de sport ?**
-Toutes les femmes qui ont accouché récemment peuvent pratiquer une activité adaptée à leurs capacités, rappelle la HAS. Commencer par la marche quotidienne est déjà une vraie reprise.
+La HAS recommande une reprise progressive, d'abord d'intensité légère à modérée. Commencer par la marche quotidienne est déjà une vraie reprise.
 
 ## Quand demander conseil
 Parlez-en à votre sage-femme ou à votre médecin si vous avez des fuites urinaires, une sensation de pesanteur dans le bas du ventre, une douleur de cicatrice qui augmente ou des saignements qui reprennent. Consultez rapidement en cas de fièvre, de pertes malodorantes ou de saignements abondants. En cas d'urgence (saignement très abondant, difficulté à respirer, douleur dans la poitrine), appelez le **15** ou le **112**.
@@ -142,7 +142,7 @@ ${FIN}`,
     title: 'Rééducation du périnée : pour qui, et pourquoi ?',
     summary: 'La rééducation périnéale n’est pas automatique : elle est proposée selon vos symptômes et l’examen de la consultation postnatale, et elle est prise en charge si elle est prescrite.',
     tags: ['rééducation du périnée', 'rééducation périnéale', 'périnée', 'post-partum', 'consultation postnatale', 'sage-femme', 'kiné'],
-    sources: [S.has2002, S.ameliRetour, S.hasFiche],
+    sources: [S.has2002, S.ameliRetour, S.hasSynthese],
     body_md: `## En bref
 - Le périnée est l'ensemble des muscles qui soutiennent la vessie, l'utérus et le rectum ; la grossesse et l'accouchement le fragilisent.
 - La rééducation est prescrite **si besoin**, après l'examen de la consultation postnatale (6 à 8 semaines après la naissance).
@@ -157,7 +157,7 @@ Les recommandations professionnelles de 2002 (ANAES, aujourd'hui HAS) précisent
 - une faiblesse musculaire du périnée qui persiste ;
 - une incontinence (urinaire notamment) qui persiste.
 
-Dans sa fiche plus récente sur l'activité physique après une naissance, la HAS indique que la rééducation périnéale est **fortement recommandée avant une activité plus intense ou sportive**, pour réduire les risques de fuites urinaires ou de prolapsus. C'est donc aussi votre projet de reprise du sport qui compte dans la discussion.
+Dans sa synthèse de 2022 sur l'activité physique pendant la grossesse et le post-partum, la HAS indique que la rééducation périnéale **doit être effectuée afin d'éviter les risques de fuites urinaires ou de prolapsus**, et que les activités avec impacts ne redémarrent qu'après cette rééducation, une fois la fonction du périnée normale. C'est donc aussi votre projet de reprise du sport qui compte dans la discussion.
 
 ## Au quotidien
 **Préparer la consultation postnatale**
@@ -172,7 +172,7 @@ Dans sa fiche plus récente sur l'activité physique après une naissance, la HA
 
 ## Questions fréquentes
 **Je n'ai aucune fuite : dois-je faire une rééducation ?**
-Ce n'est pas automatique. Le professionnel l'évalue lors de la consultation postnatale. Si vous comptez reprendre un sport avec impacts, dites-le-lui : la HAS recommande fortement une rééducation avant une activité intense.
+Ce n'est pas automatique. Le professionnel l'évalue lors de la consultation postnatale. Si vous comptez reprendre un sport avec impacts, dites-le-lui : selon la HAS, ces activités ne redémarrent qu'après la rééducation périnéale.
 
 **Quand commence-t-elle ?**
 Selon les recommandations de 2002, la rééducation périnéo-sphinctérienne débute après la consultation postnatale, 6 à 8 semaines après l'accouchement, et après un examen clinique complet.
@@ -304,7 +304,7 @@ ${FIN}`,
     title: 'Sensation de pesanteur ou de « boule » après l’accouchement : que savoir ?',
     summary: 'Une gêne dans le bas du ventre ou au niveau du vagin après la naissance mérite d’être signalée : elle peut traduire une fragilité du périnée qui se prend en charge.',
     tags: ['pesanteur', 'prolapsus', 'descente d’organe', 'périnée', 'post-partum', 'gêne vaginale', 'rééducation'],
-    sources: [S.ameliProlapsus, S.ameliRetour, S.hasFiche],
+    sources: [S.ameliProlapsus, S.ameliRetour, S.hasSynthese],
     body_md: `## En bref
 - Une sensation de pesanteur, de gêne ou de « boule » dans le bas du ventre ou au niveau du vagin peut traduire une fragilité du périnée.
 - Sans soins, cette fragilité peut évoluer vers une incontinence ou un prolapsus (descente d'organe).
@@ -515,7 +515,7 @@ ${FIN}`,
     title: 'Ventre et poids après l’accouchement : des attentes réalistes',
     summary: 'L’utérus met environ deux mois à reprendre sa taille et les régimes sont déconseillés au début : prendre le temps, bien manger et bouger progressivement.',
     tags: ['poids après accouchement', 'ventre après grossesse', 'perdre du poids', 'régime', 'allaitement', 'post-partum', 'silhouette'],
-    sources: [S.ameliMaternite, S.ameliRetour, S.hasFiche],
+    sources: [S.ameliMaternite, S.ameliRetour, S.hasSynthese],
     body_md: `## En bref
 - Après la naissance, l'utérus met environ deux mois à reprendre sa taille : le ventre change progressivement.
 - L'Assurance Maladie déconseille les régimes pendant l'allaitement, et avant les 3 mois de l'enfant si vous n'allaitez pas.
@@ -527,7 +527,7 @@ Juste après l'accouchement, beaucoup de femmes sont surprises de garder un vent
 
 La paroi abdominale, elle aussi, a été étirée et retrouve son tonus avec le temps et, si besoin, une rééducation abdominale.
 
-Pour le poids, la Haute Autorité de santé (HAS) indique que l'activité physique aide à retrouver le poids d'avant la grossesse. L'Assurance Maladie recommande de ne pas suivre de régime si vous allaitez, ni avant les 3 mois de l'enfant si vous n'allaitez pas, et de privilégier une alimentation variée en buvant suffisamment d'eau.
+Pour le poids, la Haute Autorité de santé (HAS) indique que l'activité physique aide à la perte de poids après l'accouchement. L'Assurance Maladie recommande de ne pas suivre de régime si vous allaitez, ni avant les 3 mois de l'enfant si vous n'allaitez pas, et de privilégier une alimentation variée en buvant suffisamment d'eau.
 
 ## Au quotidien
 **Manger pour récupérer**
@@ -565,7 +565,7 @@ ${FIN}`,
     title: 'Reprendre la course à pied après l’accouchement',
     summary: 'La course est une activité à impacts : elle se reprend après la rééducation du périnée, progressivement, en restant attentive aux fuites et à la pesanteur.',
     tags: ['course à pied', 'running', 'courir après accouchement', 'jogging', 'reprise du sport', 'périnée', 'post-partum'],
-    sources: [S.hasFiche, S.sportsGuide, S.ameliIUPrev],
+    sources: [S.hasSynthese, S.sportsGuide, S.ameliIUPrev],
     body_md: `## En bref
 - La course à pied est une activité à impacts au sol : la Haute Autorité de santé (HAS) recommande de ne la reprendre qu'**après la rééducation du périnée**, une fois celui-ci redevenu fonctionnel.
 - Pendant les 5 à 6 premières semaines, les sauts et impacts verticaux sont à éviter.
@@ -616,7 +616,7 @@ ${FIN}`,
     title: 'Natation et activités aquatiques après l’accouchement',
     summary: 'La natation fait partie des activités qui se reprennent tôt à allure modérée : comment y retourner sereinement, et quelles questions poser avant.',
     tags: ['natation', 'piscine', 'aquagym', 'nager après accouchement', 'reprise du sport', 'post-partum', 'activité douce'],
-    sources: [S.hasFiche, S.sportsGuide, S.ameliIUVie],
+    sources: [S.hasSynthese, S.sportsGuide, S.ameliIUVie],
     body_md: `## En bref
 - La Haute Autorité de santé (HAS) cite la natation parmi les activités qui peuvent être reprises rapidement, à allure modérée.
 - L'eau porte le corps : elle limite les contraintes sur les articulations et peut soulager le dos.
@@ -943,7 +943,7 @@ ${FIN}`,
     title: 'Allaitement et activité physique : ce qu’il faut savoir',
     summary: 'Une activité physique modérée ne modifie ni la quantité ni la qualité du lait : comment concilier tétées et reprise du sport en pratique.',
     tags: ['allaitement', 'sport et allaitement', 'activité physique', 'lait maternel', 'reprise du sport', 'post-partum', 'tétée'],
-    sources: [S.hasFiche, S.sportsGuide, S.ameliRetour],
+    sources: [S.hasSynthese, S.sportsGuide, S.ameliRetour],
     body_md: `## En bref
 - Selon la Haute Autorité de santé (HAS) et le ministère chargé des Sports, une activité physique modérée ne modifie ni la quantité ni la qualité du lait.
 - Elle n'influence pas la tétée et n'a pas de répercussion négative sur la croissance du bébé.
@@ -1048,7 +1048,7 @@ ${FIN}`,
     title: 'Activité physique et moral après la naissance',
     summary: 'Bouger peut améliorer l’humeur et diminuer l’anxiété après l’accouchement, sans remplacer une aide adaptée en cas de dépression du post-partum.',
     tags: ['moral', 'baby blues', 'dépression post-partum', 'anxiété', 'activité physique', 'santé mentale', 'post-partum'],
-    sources: [S.hasFiche, S.ameliBabyBlues, S.santeMentale],
+    sources: [S.hasSynthese, S.ameliBabyBlues, S.santeMentale],
     body_md: `## En bref
 - Selon la Haute Autorité de santé (HAS), une activité physique régulière après l'accouchement peut améliorer l'humeur et réduire les signes dépressifs.
 - Elle est un soutien, pas un traitement à elle seule : une dépression du post-partum nécessite une prise en charge.
@@ -1056,7 +1056,7 @@ ${FIN}`,
 - Bouger à plusieurs (balades entre parents, cours parent-bébé) aide aussi à rompre l'isolement.
 
 ## Comprendre
-La HAS indique qu'une activité physique régulière favorise la santé physique et mentale et que, dans les mois suivant l'accouchement, elle peut améliorer l'humeur et réduire les signes dépressifs. La HAS souligne aussi que pratiquer à plusieurs favorise les relations et le soutien.
+La HAS cite, parmi les bénéfices de l'activité physique après l'accouchement, la prévention et l'amélioration des symptômes dépressifs du post-partum. Pratiquer à plusieurs peut en plus aider à rompre l'isolement.
 
 Il est important de distinguer :
 - **le baby blues**, qui touche de nombreuses femmes, apparaît entre le 2e et le 5e jour et disparaît en deux semaines (irritabilité, pleurs, fatigue, anxiété) ;
@@ -1099,15 +1099,15 @@ ${FIN}`,
     title: 'Reprendre le sport après une césarienne',
     summary: 'Après une césarienne, la paroi abdominale a besoin d’environ deux mois pour se reconstituer : marche d’abord, puis reprise progressive après avis médical.',
     tags: ['césarienne', 'sport après césarienne', 'cicatrice', 'paroi abdominale', 'reprise du sport', 'post-partum', 'abdominaux'],
-    sources: [S.hasFiche, S.santeActivite, S.has2014],
+    sources: [S.hasSynthese, S.santeActivite, S.has2014],
     body_md: `## En bref
 - Une césarienne est une intervention chirurgicale : la paroi abdominale doit se reconstituer avant les efforts intenses.
-- Les sources officielles évoquent environ 2 mois (Santé publique France) ou au moins 8 à 10 semaines selon la cicatrisation (HAS).
+- Les sources officielles évoquent environ 2 mois (Santé publique France) ou 8 à 10 semaines après accord médical (HAS).
 - La marche, selon votre confort et les conseils de l'équipe, reste possible avant.
 - Le périnée a lui aussi porté la grossesse : son évaluation compte aussi après une césarienne.
 
 ## Comprendre
-Lors d'une césarienne, la paroi abdominale est incisée puis refermée : elle a besoin de temps pour se reconstituer. Santé publique France indique qu'il faut attendre la reconstitution de la paroi abdominale, environ 2 mois, avant les activités plus intenses. La Haute Autorité de santé (HAS) parle d'au moins 8 à 10 semaines, selon la cicatrisation. Le délai exact dépend de votre confort et de la façon dont la cicatrice évolue : il se discute avec votre sage-femme ou votre médecin.
+Lors d'une césarienne, la paroi abdominale est incisée puis refermée : elle a besoin de temps pour se reconstituer. Santé publique France indique qu'il faut attendre la reconstitution de la paroi abdominale, environ 2 mois, avant les activités plus intenses. La Haute Autorité de santé (HAS) parle de 8 à 10 semaines, après accord médical. Le délai exact dépend de votre confort et de la façon dont la cicatrice évolue : il se discute avec votre sage-femme ou votre médecin.
 
 Une césarienne ne dispense pas de penser au périnée : neuf mois de grossesse l'ont sollicité. La consultation postnatale permet d'évaluer à la fois la cicatrice, la paroi abdominale et le périnée, et de prescrire si besoin une rééducation.
 
@@ -1136,7 +1136,7 @@ Parce que la paroi abdominale a été incisée et doit cicatriser en profondeur.
 Parlez-en à la consultation postnatale ou à votre kinésithérapeute : ils peuvent évaluer la cicatrice et vous proposer des conseils adaptés avant de reprendre.
 
 **Faut-il quand même une rééducation du périnée après une césarienne ?**
-Elle n'est pas automatique, mais le périnée a porté la grossesse. La HAS recommande fortement la rééducation périnéale avant une activité intense ou sportive, pour réduire les risques de fuites et de prolapsus : parlez de vos projets d'activité lors de la consultation postnatale.
+Elle n'est pas automatique, mais le périnée a porté la grossesse. La HAS indique que la rééducation périnéale doit être effectuée pour éviter les risques de fuites et de prolapsus, et que les activités avec impacts ne reprennent qu'après elle : parlez de vos projets d'activité lors de la consultation postnatale.
 
 **Puis-je porter mon bébé en écharpe après une césarienne ?**
 Demandez conseil à l'équipe : selon votre confort, des portages courts et bien ajustés peuvent être envisagés, en évitant de comprimer la cicatrice.
@@ -1151,17 +1151,17 @@ ${FIN}`,
     title: 'Reprendre le sport après une épisiotomie ou une déchirure',
     summary: 'Après une épisiotomie, la reprise se décide avec le professionnel qui vous suit, une fois la cicatrice guérie et le périnée rééduqué si besoin.',
     tags: ['épisiotomie', 'déchirure périnéale', 'cicatrice', 'périnée', 'reprise du sport', 'post-partum', 'douleurs périnéales'],
-    sources: [S.santeActivite, S.hasFiche, S.has2002],
+    sources: [S.santeActivite, S.hasSynthese, S.has2002],
     body_md: `## En bref
 - Après une épisiotomie, la reprise du sport se fait après l'avis du professionnel qui vous suit et la fin de la rééducation périnéale, selon Santé publique France.
-- La Haute Autorité de santé (HAS) évoque au moins 8 à 10 semaines, selon la cicatrisation.
+- La Haute Autorité de santé (HAS) indique que le délai de reprise varie selon les conditions de l'accouchement, dont l'épisiotomie.
 - La marche douce reste possible avant, à votre rythme.
 - Des douleurs périnéales qui persistent, notamment pendant les rapports, justifient d'en parler : elles font partie des indications de rééducation.
 
 ## Comprendre
 L'épisiotomie est une incision du périnée réalisée pendant l'accouchement ; une déchirure peut aussi se produire spontanément. Dans les deux cas, une cicatrice doit guérir : l'équipe de la maternité puis la sage-femme vous indiquent les soins à faire.
 
-Pour la reprise, Santé publique France précise qu'après une épisiotomie, elle se fait après l'avis du professionnel qui vous suit et après la rééducation périnéale. La HAS indique un délai d'au moins 8 à 10 semaines, selon la cicatrisation.
+Pour la reprise, Santé publique France précise qu'après une épisiotomie, elle se fait après l'avis du professionnel qui vous suit et après la rééducation périnéale. La HAS précise que le délai de reprise varie selon les conditions de l'accouchement (césarienne, forceps, épisiotomie…) et se décide avec l'équipe qui vous suit.
 
 Les recommandations de 2002 (ANAES, aujourd'hui HAS) citent les douleurs périnéales persistantes, en particulier si les rapports sont douloureux, parmi les situations justifiant une rééducation. Elles indiquent aussi que le froid (cryothérapie) est la seule technique ayant montré un effet sur les douleurs périnéales.
 
@@ -1260,11 +1260,11 @@ ${FIN}`,
     title: 'Activité physique après un diabète gestationnel',
     summary: 'Après un diabète de grossesse, le risque de diabète de type 2 augmente : l’activité physique, l’alimentation et le dépistage régulier font partie de la prévention.',
     tags: ['diabète gestationnel', 'diabète de grossesse', 'diabète de type 2', 'prévention', 'activité physique', 'glycémie', 'post-partum'],
-    sources: [S.ameliDiabeteG, S.hasFiche, S.santeBouger],
+    sources: [S.ameliDiabeteG, S.hasSynthese, S.santeBouger],
     body_md: `## En bref
 - Après un diabète gestationnel, la glycémie redevient en général normale, mais le risque de diabète de type 2 est multiplié par 7 et persiste au moins 25 ans, selon l'Assurance Maladie.
 - Une activité physique suffisante, une alimentation équilibrée, l'arrêt du tabac et la correction d'un éventuel surpoids aident à le prévenir.
-- La Haute Autorité de santé (HAS) indique que poursuivre l'activité physique, avec une alimentation équilibrée, réduit le risque de diabète ultérieur.
+- La Haute Autorité de santé (HAS) recommande une reprise progressive de l'activité après l'accouchement, toujours associée à une alimentation adaptée et équilibrée.
 - Un dépistage régulier est prévu : à la consultation postnatale, à 3 mois, avant une nouvelle grossesse, puis tous les 1 à 3 ans.
 
 ## Comprendre
@@ -1272,7 +1272,7 @@ Le diabète gestationnel est un trouble de la glycémie qui apparaît pendant la
 
 C'est pourquoi un **dépistage** est recommandé : lors de la consultation postnatale (6 à 8 semaines), 3 mois après l'accouchement, avant toute nouvelle grossesse, puis tous les 1 à 3 ans selon les facteurs de risque, par une glycémie à jeun ou une hyperglycémie provoquée par voie orale. La tension artérielle et le bilan lipidique sont aussi surveillés.
 
-La **prévention** repose sur l'hygiène de vie : activité physique suffisante, alimentation équilibrée, arrêt du tabac, correction d'un surpoids. La HAS rappelle que les habitudes prises pendant la grossesse (activité, alimentation équilibrée et contrôlée) valent la peine d'être poursuivies.
+La **prévention** repose sur l'hygiène de vie : activité physique suffisante, alimentation équilibrée, arrêt du tabac, correction d'un surpoids. Après l'accouchement, la HAS recommande une activité physique reprise progressivement et associée à un apport alimentaire adapté et équilibré.
 
 ## Au quotidien
 **Reprendre progressivement**
@@ -1285,7 +1285,7 @@ La **prévention** repose sur l'hygiène de vie : activité physique suffisante,
 - Réduisez le temps passé assise : levez-vous et marchez quelques minutes au moins toutes les heures.
 
 **Alimentation**
-- Gardez une alimentation équilibrée, comme le recommandent l'Assurance Maladie et la HAS, sans régime restrictif pendant l'allaitement ; demandez conseil à votre médecin ou à un diététicien si besoin.
+- Gardez une alimentation équilibrée, comme le recommande l'Assurance Maladie, sans régime restrictif pendant l'allaitement ; demandez conseil à votre médecin ou à un diététicien si besoin.
 
 **Ne pas oublier les rendez-vous**
 - Notez les dates de dépistage dans votre agenda ou dans l'application.
@@ -1299,7 +1299,7 @@ Oui. La glycémie se normalise souvent, mais le risque de diabète de type 2 res
 L'insuline est arrêtée après l'accouchement et la glycémie surveillée. Le risque ultérieur est plus élevé quand un traitement par insuline a été nécessaire : le suivi est d'autant plus important.
 
 **Quelle activité choisir ?**
-Toutes les activités sont possibles, selon la HAS, en tenant compte de votre état de santé avec votre professionnel. La meilleure est celle que vous pratiquerez régulièrement.
+Commencez par des activités d'intensité légère à modérée, comme le recommande la HAS (marche active, escaliers, natation modérée), puis élargissez avec votre professionnel. La meilleure est celle que vous pratiquerez régulièrement.
 
 ## Quand demander conseil
 Faites vos dépistages aux dates prévues, même si vous vous sentez bien, et parlez du suivi à la consultation postnatale. Consultez votre médecin si vous êtes inhabituellement fatiguée ou si quelque chose vous inquiète. En cas de malaise avec sueurs, confusion ou perte de connaissance, appelez le **15** ou le **112**.

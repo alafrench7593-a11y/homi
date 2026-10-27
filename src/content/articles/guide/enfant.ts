@@ -55,6 +55,9 @@ const S = {
   harcelement: { label: 'Ministère de l’Éducation nationale — Mon enfant est victime de harcèlement', url: 'https://www.education.gouv.fr/non-au-harcelement/mon-enfant-est-victime-de-harcelement-323014', consulted_on: C },
   allo119: { label: '119 Allô Enfance en danger (GIP Enfance en danger) — Signaler une situation', url: 'https://www.allo119.gouv.fr/recueil-de-situation-adulte', consulted_on: C },
   accidents: { label: 'Santé.fr (Santé publique France, 1000 premiers jours) — Éviter les accidents domestiques des enfants', url: 'https://www.sante.fr/eviter-les-accidents-domestiques-des-enfants', consulted_on: C, published: '2025-07-11' },
+  asthmeSuivi: { label: 'ameli.fr — Suivi médical et vie quotidienne de l’enfant et de l’adolescent asthmatiques', url: 'https://www.ameli.fr/assure/sante/themes/asthme-enfant-plus-3-ans/suivi-medical-vie-quotidienne', consulted_on: C },
+  pileBouton: { label: 'ameli.fr — Mon enfant a avalé une pile bouton : agir vite', url: 'https://www.ameli.fr/assure/sante/urgence/corps-etrangers/mon-enfant-avale-une-pile-bouton-agir-vite', consulted_on: C },
+  signesDanger: { label: 'Ministère chargé des Solidarités — Campagne de lutte contre les violences faites aux enfants (signes d’alerte selon l’âge)', url: 'https://solidarites.gouv.fr/campagne-de-lutte-contre-les-violences-faites-aux-enfants', consulted_on: C, published: '2026-10-20' },
   noyade: { label: 'ameli.fr — Fortes chaleurs : un risque de noyade augmenté', url: 'https://www.ameli.fr/assure/sante/themes/canicule-chaleur/chaleur-noyade', consulted_on: C, published: '2026-06-01' },
   noyadeSpf: { label: 'Santé publique France — Résultats de l’enquête NOYADES 2021 : la prévention reste primordiale', url: 'https://www.santepubliquefrance.fr/presse/2022/resultats-de-l-enquete-noyades-2021-la-prevention-reste-primordiale', consulted_on: C, published: '2022-06-21' },
 } satisfies Record<string, ArticleSource>;
@@ -366,7 +369,7 @@ Pour la douleur et la fièvre, le paracétamol est le médicament de référence
 
 **Pourquoi les enfants font-ils autant d’otites ?** Chez le jeune enfant, la petite trompe qui relie le nez à l’oreille est courte et fonctionne moins bien : lors d’un rhume, les sécrétions et les microbes remontent facilement vers l’oreille moyenne. C’est pourquoi l’otite suit si souvent une rhinopharyngite, et pourquoi le **lavage de nez** est un geste utile.
 
-**Soulager la douleur la nuit.** La douleur d’oreille est souvent plus forte en position allongée. Un oreiller supplémentaire sous le matelas pour surélever légèrement la tête (jamais d’oreiller sous la tête d’un bébé), un médicament adapté donné selon les conseils du médecin et votre présence rassurante aident à passer la nuit.
+**Soulager la douleur la nuit.** Un médicament contre la douleur, donné selon les conseils du médecin ou du pharmacien, et votre présence rassurante aident à passer la nuit. Ne mettez jamais d’oreiller sous la tête d’un bébé.
 
 ## Au quotidien
 - **Nez** : mouchoirs jetables, sérum physiologique ou eau de mer, pulvérisateurs adaptés à l’âge ; limitez le mouche-bébé.
@@ -487,7 +490,7 @@ ${FIN}`,
     ...CHILD, slug: 'asthme-de-l-enfant', category: 'sante-enfant', min_age_months: 36, safety_critical: true, tags: ['asthme', 'respiration', 'PAI', 'école'],
     title: 'Asthme de l’enfant : reconnaître, suivre, vivre au quotidien',
     summary: 'Sifflements, toux de nuit, gêne à l’effort : les signes de l’asthme, ses déclencheurs, l’organisation à l’école et les signes de crise grave.',
-    sources: [S.asthme, S.asthmeEcole],
+    sources: [S.asthme, S.asthmeEcole, S.asthmeSuivi],
     body_md: `## En bref
 - L’asthme se manifeste par des **sifflements à l’expiration**, une **toux** (souvent la nuit), une **gêne respiratoire** ou une oppression dans la poitrine.
 - Les déclencheurs fréquents : **infections virales**, froid, allergènes, effort, rire, **tabagisme passif**.
@@ -500,7 +503,7 @@ Selon l’Assurance Maladie, chez l’enfant de plus de 3 ans les symptômes var
 Le diagnostic repose sur l’examen médical et sur des **épreuves fonctionnelles respiratoires** réalisées hors crise : la spirométrie est possible dès 6 ans, d’autres examens sont plus adaptés entre 3 et 6 ans. Des tests cutanés peuvent rechercher une allergie. L’arrêt d’un traitement de fond, une exposition massive à un allergène ou le tabagisme passif peuvent favoriser une exacerbation.
 
 
-**Bien utiliser les traitements inhalés.** Les médicaments de l’asthme se prennent le plus souvent par inhalation, parfois avec une **chambre d’inhalation** (un tube avec un masque ou un embout). La technique est importante pour que le médicament arrive bien dans les bronches : demandez au médecin ou au pharmacien de vous la montrer et de vérifier comment votre enfant s’y prend. Le traitement **de fond**, pris tous les jours, et le traitement **de la crise** n’ont pas le même rôle : le plan d’action précise quand utiliser l’un ou l’autre.
+**Bien utiliser les traitements inhalés.** Les médicaments de l’asthme se prennent le plus souvent par inhalation. L’Assurance Maladie conseille de vous assurer que votre enfant maîtrise bien les techniques d’inhalation : demandez au médecin de vous les montrer et posez-lui toutes vos questions. Le traitement prescrit pour tous les jours se prend même quand l’enfant va bien ; le traitement **de secours** (inhalateur) est à garder à portée de main. En cas de crise, suivez la prescription ou le **plan d’action écrit**.
 
 **Un suivi régulier.** L’asthme évolue avec l’âge, les saisons et l’environnement. Des consultations régulières permettent d’ajuster le traitement, de faire le point sur les crises et les réveils nocturnes, et de mettre à jour le plan d’action et le PAI.
 
@@ -678,7 +681,7 @@ Selon l’Assurance Maladie, les yeux des enfants sont fragiles et les troubles 
 L’**amblyopie** survient quand les deux yeux voient très différemment (myopie, hypermétropie ou astigmatisme d’un seul côté) : le cerveau finit par ignorer l’image de l’œil le moins performant. Traitée tôt, elle guérit ; découverte après 6 ans, elle peut entraîner une perte définitive de la vision d’un œil. C’est pourquoi les dépistages de la petite enfance sont si importants.
 
 
-**Les troubles les plus fréquents.** La **myopie** fait voir flou de loin, l’**hypermétropie** demande un effort pour voir de près et peut donner des maux de tête, l’**astigmatisme** brouille la vision à toutes les distances. Ces défauts se corrigent par des lunettes adaptées, prescrites après un examen chez l’ophtalmologiste. Le **strabisme** (yeux qui ne regardent pas dans la même direction) nécessite toujours un avis spécialisé, à tout âge.
+**Les troubles les plus fréquents.** La **myopie**, l’**hypermétropie** et l’**astigmatisme** sont des défauts de la vision que seul un examen permet de mesurer ; si besoin, l’ophtalmologiste prescrit des lunettes adaptées. Le **strabisme** (yeux qui ne regardent pas dans la même direction) nécessite toujours un avis spécialisé, à tout âge.
 
 **Après le dépistage scolaire.** Si un courrier vous signale une anomalie, ne l’ignorez pas, même si votre enfant ne se plaint de rien : prenez rendez-vous avec votre médecin ou un ophtalmologiste et apportez le compte rendu du dépistage.
 
@@ -1553,7 +1556,7 @@ ${FIN}`,
     ...CHILD, slug: 'accidents-domestiques-proteger-son-enfant', category: 'securite', safety_critical: true, tags: ['accidents domestiques', 'chutes', 'brûlures', 'intoxications', 'prévention'],
     title: 'Accidents domestiques : protéger son enfant à la maison',
     summary: 'Chutes, défenestrations, brûlures, intoxications, étouffements : les gestes de prévention pièce par risque et les numéros à connaître.',
-    sources: [S.accidents],
+    sources: [S.accidents, S.pileBouton],
     body_md: `## En bref
 - Une **surveillance par un adulte** reste la première protection ; un enfant ou un adolescent ne doit pas assurer seul la surveillance d’un tout-petit.
 - **Fenêtres et balcons** : rien qui permette de grimper dessous, dispositifs de sécurité aux fenêtres.
@@ -1586,7 +1589,7 @@ Vérifier que les équipements (lits, jouets, sièges) portent le marquage CE ou
 Ne le faites pas vomir et ne lui donnez rien à boire sans avis. Appelez le **15** ou un centre antipoison, en gardant l’emballage à portée.
 
 **Il a avalé une pile bouton ?**
-C’est une urgence : appelez immédiatement le **15**.
+C’est une urgence, même en cas de simple doute : appelez immédiatement le **15** ou un centre antipoison en précisant qu’il s’agit d’une pile bouton. Selon l’Assurance Maladie, laissez l’enfant à jeun (ni boisson ni aliment), ne le faites pas vomir et gardez l’emballage de la pile pour les urgences.
 
 **À quel âge peut-on relâcher la vigilance ?**
 Les risques changent avec l’âge mais ne disparaissent pas : défenestrations, brûlures et intoxications concernent aussi les plus grands. Expliquez les dangers et adaptez les aménagements.
@@ -1646,7 +1649,7 @@ ${FIN}`,
     ...CHILD, slug: 'enfance-en-danger-appeler-le-119', category: 'sante-mentale', safety_critical: true, tags: ['119', 'maltraitance', 'protection de l’enfance', 'violences'],
     title: 'Enfant en danger : le 119 et les bons réflexes',
     summary: 'Que faire si vous pensez qu’un enfant est maltraité ou en danger : le 119, le formulaire en ligne et les numéros d’urgence.',
-    sources: [S.allo119, S.veo],
+    sources: [S.allo119, S.veo, S.signesDanger],
     body_md: `## En bref
 - Le **119 – Allô Enfance en danger** est le numéro national dédié à la **prévention et à la protection des enfants en danger** ou en risque de l’être.
 - Un **formulaire en ligne** permet aussi de signaler par écrit une situation préoccupante (il ne traite pas l’urgence).
@@ -1659,7 +1662,7 @@ Un enfant peut être en danger dans sa famille, chez des proches, à l’école 
 Le 119 concerne les enfants en danger, mais aussi ceux qui risquent de l’être : une inquiétude sérieuse suffit pour s’adresser à lui.
 
 
-**Reconnaître des signes qui peuvent alerter.** Un enfant en danger ne le dit pas toujours. Des changements de comportement brutaux, des blessures inexpliquées ou répétées, une grande peur de rentrer à la maison, un repli, une tristesse durable, des troubles du sommeil ou de l’alimentation, des propos ou comportements sexualisés inadaptés à l’âge peuvent alerter. Aucun de ces signes ne prouve à lui seul une maltraitance, mais ils justifient d’en parler à un professionnel.
+**Reconnaître des signes qui peuvent alerter.** Un enfant en danger ne le dit pas toujours, et les violences ne laissent pas toujours de marques visibles. Le ministère chargé des Solidarités cite, selon l’âge : des changements brusques du comportement (agitation, opposition, repli sur soi, désintérêt pour le jeu), des troubles du sommeil ou de l’alimentation, des régressions soudaines (propreté, langage), des douleurs répétées (maux de ventre, maux de tête, malaises), des difficultés scolaires, de l’irritabilité, de la tristesse ou de l’anxiété. Aucun de ces signes ne prouve à lui seul une maltraitance, mais ils justifient d’en parler à un professionnel ; le 119 peut être appelé même sans certitude.
 
 **Le rôle de chacun.** Parents, proches, voisins, enseignants, animateurs, professionnels de santé : tout adulte qui s’inquiète pour un enfant peut s’adresser au 119. Protéger un enfant, c’est aussi soutenir les parents en difficulté, en les orientant vers les aides existantes.
 

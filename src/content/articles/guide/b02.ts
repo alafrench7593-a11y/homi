@@ -877,16 +877,12 @@ ${FIN}`,
     body_md: `## En bref
 - Les repères alimentaires de la grossesse recommandent **trois repas par jour sans en sauter** et de boire régulièrement : le jeûne s’en écarte.
 - Avant de jeûner, **parlez-en** à votre sage-femme ou à votre médecin : votre situation (nausées, diabète gestationnel, anémie, terme) compte beaucoup.
-- Beaucoup de traditions religieuses prévoient des **dispenses** pour les femmes enceintes ; un responsable religieux peut vous éclairer.
 - Si vous jeûnez, **apprenez les signes** qui doivent faire rompre le jeûne et consulter.
 
 ## Comprendre
 Pendant la grossesse, Santé.fr conseille de prendre trois repas par jour sans en sauter, pour éviter les fringales et stabiliser la glycémie. Santé publique France recommande de boire de l’eau à volonté et davantage qu’en temps habituel. Un jeûne de la journée, surtout s’il tombe en période chaude ou de longues journées, réduit les apports et l’hydratation sur de nombreuses heures.
 
 Certaines situations rendent le jeûne particulièrement délicat : nausées et vomissements, diabète gestationnel ou autre maladie chronique, anémie, faible prise de poids, fin de grossesse, travail physique. Seul votre professionnel peut évaluer votre cas. Cette discussion se fait sans jugement : il s’agit de trouver avec vous la solution qui respecte vos convictions et votre santé.
-
-Par ailleurs, dans la plupart des interprétations religieuses, la femme enceinte ou allaitante peut être dispensée du jeûne, avec des formes de compensation. Un imam ou un responsable religieux peut vous en parler.
-
 ## Au quotidien
 ### Si vous décidez de jeûner, en accord avec votre professionnel
 - **Repas du soir** (rupture du jeûne) : commencez par boire, puis un repas complet avec légumes, féculents de préférence complets, protéines bien cuites, produit laitier et fruit. Évitez les repas très copieux, gras ou frits, qui favorisent les remontées acides.
@@ -898,7 +894,7 @@ Par ailleurs, dans la plupart des interprétations religieuses, la femme enceint
 - **Couchez-vous** environ trois heures après le dernier repas si vous avez des remontées acides, comme le conseille ameli.
 
 ### Alternatives possibles
-Jeûner certains jours seulement, reporter le jeûne après la grossesse ou l’allaitement, ou participer autrement (prières, repas partagés). Ces choix vous appartiennent.
+Selon votre situation, vous pouvez en discuter avec votre sage-femme ou votre médecin : ne pas jeûner certains jours, ou décaler le jeûne après la grossesse ou l’allaitement, par exemple. Ces choix vous appartiennent ; le rôle du professionnel est de vous aider à protéger votre santé et celle du bébé.
 
 ## Questions fréquentes
 **Le jeûne est-il possible avec un diabète gestationnel ?**

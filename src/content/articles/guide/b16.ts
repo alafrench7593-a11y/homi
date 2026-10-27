@@ -31,6 +31,7 @@ const S = {
   macsf: { label: 'MACSF (assureur des professionnels de santé) — Qu’est-ce qu’une échographie « plaisir » ? Cadre juridique', url: 'https://www.macsf.fr/responsabilite-professionnelle/cadre-juridique/echographie-plaisir-fin-pratique-contestee', consulted_on: C },
   hasAcc: { label: 'HAS — Accouchement normal : accompagnement de la physiologie et interventions médicales (synthèse, décembre 2017)', url: 'https://www.has-sante.fr/portail/upload/docs/application/pdf/2018-01/fs_accouchement_v3.pdf', consulted_on: C, published: '2017-12' },
   ameliDroits: { label: 'ameli.fr — Grossesse : prise en charge (droits et démarches)', url: 'https://www.ameli.fr/assure/droits-demarches/famille/maternite-paternite-adoption/grossesse', consulted_on: C, published: '2017-05-02' },
+  secu05Maternite: { label: 'Sécurité sociale des Hautes-Alpes (Caf et CPAM) — Parcours maternité : support d’information (janvier 2026)', url: 'https://caf.fr/sites/default/files/medias/051/CCSS05_Parcours_maternite_01_2026.pdf', consulted_on: C },
   ameliDents: { label: 'ameli.fr — Femme enceinte : l’examen bucco-dentaire de prévention', url: 'https://www.ameli.fr/assure/sante/devenir-parent/grossesse/grossesse-en-bonne-sante/grossesse/femme-enceinte-soins-dentaire-mtdents', consulted_on: C },
   ameliAlim: { label: 'ameli.fr — L’alimentation pendant la grossesse', url: 'https://www.ameli.fr/assure/sante/devenir-parent/grossesse/grossesse-en-bonne-sante/grossesse-alimentation/alimentation-grossesse', consulted_on: C, published: '2026-06-18' },
 } satisfies Record<string, ArticleSource>;
@@ -1004,7 +1005,7 @@ ${END}`,
 
 **Les examens biologiques.** Selon la page de l’Assurance maladie consacrée à la prise en charge de la grossesse, les examens biologiques complémentaires prescrits dans ce cadre sont pris en charge à 100 %, y compris ceux du futur père. Le caryotype fœtal et le dépistage de certaines maladies génétiques, lorsqu’ils sont nécessaires, sont pris en charge à 100 % avec tiers payant.
 
-**Les échographies.** Cette même page, datée de 2017, indique que les deux premières échographies, avant la fin du 5e mois, sont remboursées au taux habituel (70 %), et que la troisième, à partir du 6e mois, est prise en charge à 100 %. D’autres échographies peuvent être prises en charge en cas de pathologie de la grossesse ou du bébé. Les taux pouvant évoluer, vérifiez votre situation sur votre compte ameli.
+**Les échographies.** Cette même page, datée de 2017, indique que les deux premières échographies, avant la fin du 5e mois, sont prises en charge à 70 %, et que la troisième, à partir du 6e mois, est prise en charge à 100 %. Un support d’information de la Sécurité sociale des Hautes-Alpes (Caf et CPAM) daté de janvier 2026 reprend la même règle pour les deux premières échographies (70 %, dans la limite des tarifs de base de l’Assurance maladie), puis rappelle qu’à partir du 6e mois tous les frais médicaux remboursables sont pris en charge à 100 %. D’autres échographies peuvent être prises en charge en cas de pathologie de la grossesse ou du bébé. Les taux pouvant évoluer, vérifiez votre situation sur votre compte ameli.
 
 **La préparation à la naissance et à la parentalité.** Les séances animées par un médecin ou une sage-femme sont prises en charge à 100 %. Elles commencent le plus souvent au 7e mois.
 
@@ -1031,7 +1032,7 @@ Si une difficulté administrative vous fait renoncer à un examen, parlez-en à 
 
 ${END}`,
     tags: ['remboursement', 'prise en charge 100 %', 'tiers payant', 'échographie remboursée', 'carte Vitale', 'déclaration de grossesse', 'ameli'],
-    sources: [S.ameliDroits, S.sp, S.ameliDents],
+    sources: [S.ameliDroits, S.secu05Maternite, S.ameliDents],
   },
   {
     ...FAMILY,

@@ -924,7 +924,7 @@ Ce congé est accessible depuis le 1er juillet 2026. Il concerne les salariés, 
 
 **L’indemnisation** des salariés est assurée par l’Assurance Maladie, sous forme d’indemnités journalières de naissance : 70 % du salaire le premier mois, puis 60 % le second, dans la limite d’un plafond (4 005 € brut mensuel au 1er janvier 2026). L’employeur n’est pas obligé de compléter, sauf accord ou convention plus favorable. L’indemnité est versée après chaque mois de congé.
 
-**Pour les enfants nés au premier semestre 2026**, des règles transitoires s’appliquent, avec un délai pour prendre le congé qui court jusqu’au printemps 2027 : vérifiez la date limite exacte sur Service-Public.fr ou ameli.fr.
+**Pour les enfants nés au premier semestre 2026**, des règles transitoires s’appliquent : selon la FAQ de Service-Public.fr, le congé doit débuter dans les 9 mois à compter du 1er juillet 2026, soit avant le 1er avril 2027.
 
 **Les cumuls.** Ce congé ne peut pas être pris en même temps que la PreParE, mais les deux peuvent se suivre, dans n’importe quel ordre. En principe, il n’est pas cumulable avec le CMG pour le même enfant, sauf exceptions pour les enfants nés ou adoptés entre le 1er janvier et le 30 juin 2026. Il n’est pas non plus cumulable avec les indemnités maladie, les allocations chômage ou l’AJPP.
 

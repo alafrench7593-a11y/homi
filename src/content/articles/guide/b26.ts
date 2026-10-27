@@ -19,7 +19,7 @@ const S = {
   spEnfCharge: { label: 'Service-Public.gouv.fr — Impôt sur le revenu : enfant mineur à charge', url: `${SP}F2633`, consulted_on: C, published: '2026-01-01' },
   spARS: { label: 'Service-Public.gouv.fr — Allocation de rentrée scolaire (ARS)', url: `${SP}F1878`, consulted_on: C, published: '2026-08-04' },
   spCNS: { label: 'Service-Public.gouv.fr — Congé supplémentaire de naissance du salarié du secteur privé', url: `${SP}F39685`, consulted_on: C, published: '2026-06-03' },
-  spCNSfaq: { label: 'Service-Public.gouv.fr — Congé de naissance supplémentaire : les réponses à vos questions (FAQ)', url: 'https://www.service-public.gouv.fr/particuliers/actualites/A18982', consulted_on: C, published: '2026-07-03' },
+  spCNSfaq: { label: 'Service-Public.gouv.fr — Congé supplémentaire de naissance : les réponses à toutes vos questions (FAQ)', url: 'https://www.service-public.gouv.fr/particuliers/actualites/A18982', consulted_on: C, published: '2026-07-03' },
   spNom: { label: 'Service-Public.gouv.fr — Choix du nom de famille d’un enfant par son père et sa mère', url: `${SP}F10505`, consulted_on: C, published: '2026-08-06' },
   spLivret: { label: 'Service-Public.gouv.fr — Livret de famille : délivrance à la naissance du premier enfant', url: `${SP}F11991`, consulted_on: C, published: '2026-08-12' },
   spLivretMaj: { label: 'Service-Public.gouv.fr — Mise à jour du livret de famille à la suite d’un changement', url: `${SP}F18910`, consulted_on: C, published: '2023-01-16' },
@@ -218,7 +218,7 @@ ${END}`,
 
 **Les cotisations.** Elles sont prises en charge à 100 % pour une assistante maternelle agréée et à 50 % pour une garde à domicile, dans la limite d’un plafond.
 
-**Les cumuls.** Le CMG peut se cumuler avec la PreParE en cas de temps partiel. Il ne se cumule pas, pour un même enfant, avec le congé de naissance supplémentaire, sauf pour les enfants nés entre le 1er janvier et le 30 juin 2026.
+**Les cumuls.** Le CMG peut se cumuler avec la PreParE en cas de temps partiel. Il ne se cumule pas, pour un même enfant, avec le congé supplémentaire de naissance, sauf pour les enfants nés entre le 1er janvier et le 30 juin 2026.
 
 ## Au quotidien
 - **Faites une simulation** avant de signer un contrat : le simulateur officiel tient compte du nouveau calcul.
@@ -523,13 +523,13 @@ ${END}`,
   {
     ...BASE,
     slug: 'conge-de-naissance-supplementaire-2026',
-    title: 'Le nouveau congé de naissance supplémentaire (depuis juillet 2026) : mode d’emploi',
+    title: 'Le nouveau congé supplémentaire de naissance (depuis juillet 2026) : mode d’emploi',
     summary: 'Pour les enfants nés ou adoptés depuis le 1er janvier 2026, chaque parent peut prendre 1 ou 2 mois de congé indemnisé en plus des congés maternité, paternité ou d’adoption.',
     journeys: ['pregnant', 'newborn'],
     tags: ['congé de naissance', 'congé supplémentaire de naissance', 'nouveau congé 2026', 'congé parental', 'indemnités', 'second parent', 'PreParE', 'employeur'],
     max_age_months: 12,
     sources: [S.spCNS, S.spCNSfaq],
-    body_md: `Depuis le 1er juillet 2026, un nouveau congé existe pour les parents : le congé de naissance supplémentaire. Il s’ajoute aux congés maternité, paternité et d’accueil de l’enfant ou d’adoption, et il est indemnisé. Voici ce qu’en disent les pages officielles pour les salariés du secteur privé.
+    body_md: `Depuis le 1er juillet 2026, un nouveau congé est accessible aux parents : le congé supplémentaire de naissance. Il s’ajoute aux congés maternité, paternité et d’accueil de l’enfant ou d’adoption, et il est indemnisé. Voici ce qu’en disent les pages officielles pour les salariés du secteur privé.
 
 ## En bref
 - Il concerne les enfants nés ou arrivés au foyer en vue d’adoption à partir du 1er janvier 2026 (ainsi que certains enfants nés prématurément fin 2025 alors que la naissance était prévue en 2026).
@@ -541,7 +541,7 @@ ${END}`,
 ## Comprendre
 **Qui peut le prendre ?** La mère, le père, le conjoint, partenaire de Pacs ou concubin de la mère, et dans un couple de femmes la mère qui n’a pas accouché. Il faut avoir déjà pris son congé maternité, paternité et d’accueil de l’enfant ou d’adoption. D’autres actifs peuvent en bénéficier avec des règles adaptées : indépendants, agents publics, demandeurs d’emploi indemnisés…
 
-**Quand le prendre ?** Dans les 9 mois qui suivent la naissance ou l’arrivée de l’enfant. Pour les enfants nés entre le 1er janvier et le 30 juin 2026, la période court du 1er juillet 2026 jusqu’à fin mars 2027 (la FAQ évoque le 1er avril 2027). Ce délai peut être allongé dans certains cas (naissances multiples, hospitalisation de l’enfant…).
+**Quand le prendre ?** Dans les 9 mois qui suivent la naissance ou l’arrivée de l’enfant. Pour les enfants nés entre le 1er janvier et le 30 juin 2026, le congé doit débuter dans les 9 mois à compter du 1er juillet 2026, soit avant le 1er avril 2027, selon la FAQ de Service-Public. Ce délai peut être allongé dans certains cas (naissances multiples, hospitalisation de l’enfant…).
 
 **L’indemnisation.** Aucun salaire n’est versé par l’employeur, sauf accord plus favorable ; la CPAM verse une indemnité dégressive, dans la limite du plafond mensuel de la Sécurité sociale (4 005 € au 1er janvier 2026). Des conditions de cotisation ou d’heures travaillées s’appliquent.
 
@@ -555,7 +555,7 @@ ${END}`,
 - **Faites vos comptes** : l’indemnité est inférieure au salaire, et elle ne se cumule pas avec la PreParE, le chômage ou des indemnités journalières.
 
 ## Questions fréquentes
-**Puis-je enchaîner avec un congé parental ?** Oui. Le congé de naissance supplémentaire et le congé parental indemnisé par la PreParE ne se cumulent pas, mais ils peuvent se succéder, dans l’ordre de votre choix.
+**Puis-je enchaîner avec un congé parental ?** Oui. Le congé supplémentaire de naissance et le congé parental indemnisé par la PreParE ne se cumulent pas, mais ils peuvent se succéder, dans l’ordre de votre choix.
 
 **Je suis indépendant(e) : comment faire ?** La demande se fait auprès de la CPAM en ligne, avec une attestation de cessation temporaire d’activité ; le montant est calculé à partir d’un forfait journalier.
 

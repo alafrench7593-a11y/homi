@@ -815,7 +815,7 @@ Enfin, l’analyse de l’Anses sur 2014–2020 montre que les intoxications au 
 
 **Je soupçonne qu’il a avalé du cannabis : que faire ?** Consultez rapidement, même s’il s’agit d’une simple suspicion : l’Anses recommande de ne pas attendre. Dites franchement aux soignants ce qui a pu être avalé ; cela permet de bien le soigner.
 
-**Je voudrais arrêter de fumer : qui peut m’aider ?** Votre médecin, votre sage-femme ou votre pharmacien peuvent vous accompagner, ainsi que la ligne Tabac Info Service (39 89).
+**Je voudrais arrêter de fumer : qui peut m’aider ?** Votre médecin, votre sage-femme ou votre pharmacien peuvent vous accompagner et vous orienter vers un tabacologue.
 
 ## Quand demander conseil
 ${CAP} Appelez le **15** ou le **112** si l’enfant vomit de façon répétée, est somnolent, agité, convulse, respire mal ou perd connaissance. ${URG}
@@ -1159,7 +1159,7 @@ Le site 1000 premiers jours recommande lui aussi de tenir les bébés éloignés
 
 ## Au quotidien
 **Vous envisagez d’adopter un NAC**
-- Si vous attendez un bébé ou avez un enfant de moins de 5 ans, parlez-en d’abord à votre médecin ou à un vétérinaire. Les auteurs du BEH citent des recommandations américaines qui déconseillent un reptile dans un foyer avec un enfant de moins de 5 ans.
+- Si vous attendez un bébé ou avez un enfant de moins de 5 ans, parlez-en d’abord à votre médecin ou à un vétérinaire. Les auteurs du BEH citent des recommandations américaines qui déconseillent d’acquérir un reptile dans un foyer avec un enfant de moins de 5 ans ; ils précisent qu’il n’existe pas de recommandation équivalente en France.
 
 **Vous avez déjà un reptile**
 - Placez le terrarium ou l’aquarium hors des pièces de vie de bébé, et jamais dans sa chambre ni dans la cuisine.
