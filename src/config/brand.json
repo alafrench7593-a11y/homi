@@ -4,6 +4,6 @@
   "tagline": "À chaque étape de votre histoire",
   "slug": "toi-et-moi",
   "scheme": "toietmoi",
-  "bundleId": "fr.toietmoi.app",
-  "supportEmail": "contact@exemple.fr"
+  "bundleId": "fr.aufildenous.app",
+  "supportEmail": "aufildenous@outlook.fr"
 }
