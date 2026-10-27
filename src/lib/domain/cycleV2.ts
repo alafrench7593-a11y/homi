@@ -179,7 +179,7 @@ export function monthCells(year: number, month0: number, data: {
     const e = p.end_date ? toDay(p.end_date) : Math.min(s + 4, toDay(todayIso));
     for (let d = s; d <= e; d++) recorded.add(d);
   }
-  const est = estimateCycle(sorted);
+  const est = estimateCycle(sorted, todayIso);
   const estimated = new Set<number>();
   const fertile = new Set<number>();
   if (est.nextPeriod) {

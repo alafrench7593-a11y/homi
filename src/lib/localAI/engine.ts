@@ -53,7 +53,7 @@ export interface LocalAnswer {
 export const normalize = (s: string) =>
   s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'`]/g, ' ').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
 
-const STOP = new Set(('a au aux avec ce ces cet cette comme dans de des du elle elles en est et etre eu il ils je la le les leur leurs lui ma mais me meme mes moi mon ne nos notre nous on ou par pas pour qu que qui sa se ses son sur ta te tes toi ton tu un une vos votre vous y c d j l m n s t qu est sont ete avoir fait faut peut peux puis plus tres bien quoi quel quelle quels quelles comment pourquoi quand combien estce est-ce cela ca ceci si sans entre chez vers dont deja aussi encore tout tous toute toutes autre autres alors donc car or ni soit faire avez ai as a ont sera serait etait etaient fils fille peut-etre peutetre savoir dois doit puisje puis-je mon ma mes notre est-il est-elle y-a-t-il ya').split(' '));
+const STOP = new Set(('a au aux avec ce ces cet cette comme dans de des du elle elles en est et etre eu il ils je la le les leur leurs lui ma mais me meme mes moi mon ne nos notre nous on ou par pas pour qu que qui sa se ses son sur ta te tes toi ton tu un une vos votre vous y c d j l m n s t qu est sont ete avoir fait faut peut peux puis plus tres bien quoi quel quelle quels quelles comment pourquoi quand combien estce est-ce cela ca ceci si sans entre chez vers dont deja aussi encore tout tous toute toutes autre autres alors donc car or ni soit faire avez ai as a ont sera serait etait etaient fils fille peut-etre peutetre savoir dois doit puisje puis-je mon ma mes notre est-il est-elle y-a-t-il ya ans mois').split(' '));
 
 /** Racine simple du français (pluriels, féminins, quelques suffixes fréquents). */
 export function stem(w: string): string {
@@ -98,9 +98,9 @@ const SYN: string[][] = [
   ['caf', 'prime', 'aide', 'aides', 'allocation'],
   ['conge maternite', 'conge maternel', 'arret maternite'],
   ['poux', 'pou', 'lentes'],
-  ['sport', 'activite physique', 'bouger', 'exercice', 'exercices'],
+  ['sport', 'activite physique', 'bouger', 'sportif', 'sportive'],
   ['refus scolaire', 'ne veut pas aller a l ecole', 'phobie scolaire', 'peur de l ecole'],
-  ['activite', 'activites', 'jeu', 'jeux', 'jouer', 'occuper'],
+  ['activite', 'activites', 'jeu', 'jeux', 'jouer', 'occuper', 'quoi faire avec', 'eveil'],
   ['dent', 'dents', 'poussee dentaire', 'dentaire'],
 ];
 const SYN_MAP = new Map<string, string>();
@@ -125,6 +125,13 @@ export function tokenize(text: string): string[] {
   }
   n = '';
   return [...out, ...extra];
+}
+
+/** Jetons d'une QUESTION : « quel / quelle … ? » cherche aussi à « choisir ». */
+export function queryTokens(question: string): string[] {
+  const t = tokenize(question);
+  if (/^\s*(quel|quelle|quels|quelles|lequel|laquelle)\b/i.test(normalize(question))) t.push(stem('choisir'));
+  return [...new Set(t)];
 }
 
 // ------------------------------------------------------------------ découpage en passages
@@ -180,7 +187,7 @@ const K1 = 1.4;
 const B = 0.72;
 
 export function search(index: KbIndex, question: string, limit = 8): { p: Passage; score: number }[] {
-  const q = [...new Set(tokenize(question))];
+  const q = queryTokens(question);
   if (!q.length) return [];
   const N = index.passages.length;
   const scored: { p: Passage; score: number }[] = [];
@@ -228,7 +235,7 @@ export function ageInQuestion(question: string): number | null {
 
 /** Classement par article : meilleur passage + bonus fort quand les mots de la question sont dans le TITRE. */
 export function rankArticles(index: KbIndex, question: string, hits: { p: Passage; score: number }[]) {
-  const q = [...new Set(tokenize(question))];
+  const q = queryTokens(question);
   const N = index.passages.length;
   const age = ageInQuestion(question);
   const by = new Map<string, { slug: string; best: { p: Passage; score: number }; score: number }>();
@@ -243,10 +250,13 @@ export function rankArticles(index: KbIndex, question: string, hits: { p: Passag
     let boost = 0;
     for (const t of q) if (title.has(t)) boost += Math.log(1 + N / ((index.df.get(t) ?? 1) + 1));
     r.score += boost * 2.2;
+    // question large (« quel sport enceinte ? ») : l'article dont le TITRE couvre toute la question, et qui reste général, passe devant
+    const cover = q.length ? q.filter((t) => title.has(t)).length / q.length : 0;
+    if (cover === 1) r.score *= 1.25 + Math.max(0, 0.25 - a.title.length / 400);
     // âge précisé : on privilégie les articles dont la tranche d'âge le contient
     if (age != null && (a.min_age_months != null || a.max_age_months != null)) {
       const inside = (a.min_age_months ?? 0) <= age && age <= (a.max_age_months ?? 240);
-      r.score *= inside ? 1.35 : 0.55;
+      r.score *= inside ? 1.4 : 0.3;
     }
   }
   return [...by.values()].sort((a, b) => b.score - a.score);

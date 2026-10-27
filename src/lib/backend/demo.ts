@@ -192,7 +192,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         // Bibliothèque : nouvelles catégories et articles par parcours (statut éditorial « À vérifier »)
         for (const c of EXTRA_CATEGORIES) if (!state.tables.content_categories.some((x) => x.slug === c.slug)) state.tables.content_categories.push({ id: `cat-${c.slug}`, ...c });
         for (const x of state.tables.articles) x.editorial_status ??= 'to_review';
-        for (const r of libraryArticleRows(state.tables.content_categories as never)) if (!state.tables.articles.some((x) => x.slug === r.slug)) state.tables.articles.push(r as unknown as Row);
+        const seenArticles = new Set(state.tables.articles.map((x) => x.slug));
+        for (const r of libraryArticleRows(state.tables.content_categories as never)) if (!seenArticles.has(r.slug)) state.tables.articles.push(r as unknown as Row);
         // Scanner : données de démonstration (fictives, is_demo = true), mêmes que la section « Scanner » de supabase/seed.sql
         for (const p of DEMO_SCANNER_PRODUCTS) if (!state.tables.products.some((x) => x.barcode === p.barcode)) state.tables.products.push(JSON.parse(JSON.stringify(p)));
         for (const r of DEMO_SCANNER_RECALLS) if (!state.tables.product_recalls.some((x) => x.id === r.id)) state.tables.product_recalls.push(JSON.parse(JSON.stringify(r)));
@@ -1549,6 +1550,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         });
       }
       if (q.limit) rows = rows.slice(0, q.limit);
+      // Contenus de référence (articles, aliments, prénoms…) : jamais modifiés par l'écran → copie légère, bien plus rapide
+      // (la bibliothèque compte plus de 1 000 articles longs) ; données de l'utilisateur : copie complète.
+      if ((CATALOG_TABLES as readonly string[]).includes(q.table)) return rows.map((r) => ({ ...r })) as unknown as R[];
       return JSON.parse(JSON.stringify(rows)) as R[];
     },
     async insert<R>(table: string, input: Row | Row[], opts?: { onConflict?: string; ignoreDuplicates?: boolean; returning?: string }) {

@@ -17,6 +17,11 @@ describe('assistant local de la bibliothèque', () => {
     ['Puis-je manger du fromage au lait cru enceinte ?', /listeri|aliment|fromage/i],
     ['Quand faire un test de grossesse ?', /test/i],
     ['Mon bébé a de la fièvre', /fi[eè]vre/i],
+    ['Quel sport faire enceinte ?', /bouger|sport|activit/i],
+    ['Quel sport pour mon enfant de 7 ans ?', /sport/i],
+    ['Mon enfant ne veut pas aller à l’école', /refus scolaire|[ée]cole/i],
+    ['Quelle poussette choisir ?', /poussette/i],
+    ['Peut-on faire du yoga enceinte ?', /yoga/i],
   ])('répond à « %s » avec un article pertinent', (q, re) => {
     const a = answer(kb, q);
     expect(a.kind).toBe('answer');

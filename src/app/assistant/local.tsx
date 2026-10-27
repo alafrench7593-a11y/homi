@@ -3,7 +3,7 @@
  * Il retrouve la réponse dans les articles sourcés (grossesse, projet bébé, bébé, enfant, TDAH, autisme, dys, maladies…)
  * et la présente : réponse, points clés, quand demander conseil, article et sources. Aucune question ne quitte le téléphone.
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, Linking, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,7 +17,9 @@ import { Tappable } from '@/components/Tappable';
 import { tint } from '@/components/ToolGlyph';
 import { useActivePregnancy, useArticles, useChildren, useProfile } from '@/lib/data/hooks';
 import { childAge } from '@/lib/domain/child';
-import { answer, buildIndex, type LocalAnswer } from '@/lib/localAI/engine';
+import { answer, buildIndex, type KbIndex, type LocalAnswer } from '@/lib/localAI/engine';
+
+let CACHE: { n: number; index: KbIndex } | null = null;
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, spacing } from '@/theme/tokens';
 
@@ -123,7 +125,19 @@ export default function LocalAssistant() {
   const { data: profile } = useProfile();
   const pregnancy = useActivePregnancy();
   const { data: children } = useChildren();
-  const index = useMemo(() => (articlesQ.data ? buildIndex(articlesQ.data.map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, body_md: a.body_md, tags: a.tags, sources: a.sources, min_age_months: a.min_age_months, max_age_months: a.max_age_months }))) : null), [articlesQ.data]);
+  // Index construit une seule fois (gardé en mémoire), juste après l'affichage de l'écran pour qu'il reste fluide
+  const [index, setIndex] = useState<KbIndex | null>(() => (articlesQ.data && CACHE?.n === articlesQ.data.length ? CACHE.index : null));
+  useEffect(() => {
+    const data = articlesQ.data;
+    if (!data) return;
+    if (CACHE?.n === data.length) { setIndex(CACHE.index); return; }
+    const id = setTimeout(() => {
+      const built = buildIndex(data.map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, body_md: a.body_md, tags: a.tags, sources: a.sources, min_age_months: a.min_age_months, max_age_months: a.max_age_months })));
+      CACHE = { n: data.length, index: built };
+      setIndex(built);
+    }, 30);
+    return () => clearTimeout(id);
+  }, [articlesQ.data]);
   const [text, setText] = useState(typeof params.q === 'string' ? params.q : '');
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const list = useRef<FlatList<Msg>>(null);
