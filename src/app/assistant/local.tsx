@@ -133,7 +133,7 @@ export default function LocalAssistant() {
     if (!data) return;
     if (CACHE?.n === data.length) { setIndex(CACHE.index); return; }
     const id = setTimeout(() => {
-      const built = buildIndex(data.map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, body_md: a.body_md, tags: a.tags, sources: a.sources, min_age_months: a.min_age_months, max_age_months: a.max_age_months })));
+      const built = buildIndex(data.map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, body_md: a.body_md, tags: a.tags, sources: a.sources, min_age_months: a.min_age_months, max_age_months: a.max_age_months, journeys: a.journeys })));
       CACHE = { n: data.length, index: built };
       setIndex(built);
     }, 30);

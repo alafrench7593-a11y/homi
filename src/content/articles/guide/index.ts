@@ -4,6 +4,7 @@ import { GUIDE_CONCEPTION } from './conception';
 import { GUIDE_ENFANT } from './enfant';
 import { GUIDE_GROSSESSE } from './grossesse';
 import { GUIDE_TROUBLES } from './troubles';
+import { GUIDE_EXTRA } from './extra';
 import { GUIDE_B01 } from './b01';
 import { GUIDE_B02 } from './b02';
 import { GUIDE_B03 } from './b03';
@@ -36,5 +37,5 @@ import { GUIDE_B29 } from './b29';
 import { GUIDE_B30 } from './b30';
 
 export const GUIDE_UPDATED_ON = '2026-10-27';
-export const GUIDE_ARTICLES = [...GUIDE_CONCEPTION, ...GUIDE_GROSSESSE, ...GUIDE_BEBE, ...GUIDE_ENFANT, ...GUIDE_TROUBLES,
+export const GUIDE_ARTICLES = [...GUIDE_CONCEPTION, ...GUIDE_GROSSESSE, ...GUIDE_BEBE, ...GUIDE_ENFANT, ...GUIDE_TROUBLES, ...GUIDE_EXTRA,
   ...GUIDE_B01, ...GUIDE_B02, ...GUIDE_B03, ...GUIDE_B04, ...GUIDE_B05, ...GUIDE_B06, ...GUIDE_B07, ...GUIDE_B08, ...GUIDE_B09, ...GUIDE_B10, ...GUIDE_B11, ...GUIDE_B12, ...GUIDE_B13, ...GUIDE_B14, ...GUIDE_B15, ...GUIDE_B16, ...GUIDE_B17, ...GUIDE_B18, ...GUIDE_B19, ...GUIDE_B20, ...GUIDE_B21, ...GUIDE_B22, ...GUIDE_B23, ...GUIDE_B24, ...GUIDE_B25, ...GUIDE_B26, ...GUIDE_B27, ...GUIDE_B28, ...GUIDE_B29, ...GUIDE_B30].map((a) => ({ ...a, updated_on: GUIDE_UPDATED_ON }));

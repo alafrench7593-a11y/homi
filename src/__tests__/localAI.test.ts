@@ -21,6 +21,8 @@ describe('assistant local de la bibliothèque', () => {
     ['Quel sport pour mon enfant de 7 ans ?', /sport/i],
     ['Mon enfant ne veut pas aller à l’école', /refus scolaire|[ée]cole/i],
     ['Quelle poussette choisir ?', /poussette/i],
+    ['Pourquoi j’ai mal au ventre pendant mes règles ?', /r[eè]gles/i],
+    ['J’ai des crampes pendant mes règles', /r[eè]gles/i],
     ['Peut-on faire du yoga enceinte ?', /yoga/i],
   ])('répond à « %s » avec un article pertinent', (q, re) => {
     const a = answer(kb, q);

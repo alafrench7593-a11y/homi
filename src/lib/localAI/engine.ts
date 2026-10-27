@@ -19,6 +19,8 @@ export interface KbArticle {
   sources?: { label: string; url: string }[];
   min_age_months?: number | null;
   max_age_months?: number | null;
+  /** Parcours de l'article ('pregnant', 'newborn', 'child'…) : sert à deviner si la question parle de l'adulte ou de l'enfant. */
+  journeys?: string[];
 }
 
 export interface Passage {
@@ -53,7 +55,7 @@ export interface LocalAnswer {
 export const normalize = (s: string) =>
   s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'`]/g, ' ').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
 
-const STOP = new Set(('a au aux avec ce ces cet cette comme dans de des du elle elles en est et etre eu il ils je la le les leur leurs lui ma mais me meme mes moi mon ne nos notre nous on ou par pas pour qu que qui sa se ses son sur ta te tes toi ton tu un une vos votre vous y c d j l m n s t qu est sont ete avoir fait faut peut peux puis plus tres bien quoi quel quelle quels quelles comment pourquoi quand combien estce est-ce cela ca ceci si sans entre chez vers dont deja aussi encore tout tous toute toutes autre autres alors donc car or ni soit faire avez ai as a ont sera serait etait etaient fils fille peut-etre peutetre savoir dois doit puisje puis-je mon ma mes notre est-il est-elle y-a-t-il ya ans mois').split(' '));
+const STOP = new Set(('a au aux avec ce ces cet cette comme dans de des du elle elles en est et etre eu il ils je la le les leur leurs lui ma mais me meme mes moi mon ne nos notre nous on ou par pas pour qu que qui sa se ses son sur ta te tes toi ton tu un une vos votre vous y c d j l m n s t qu est sont ete avoir fait faut peut peux puis plus tres bien quoi quel quelle quels quelles comment pourquoi quand combien estce est-ce cela ca ceci si sans entre chez vers dont deja aussi encore tout tous toute toutes autre autres alors donc car or ni soit faire avez ai as a ont sera serait etait etaient fils fille peut-etre peutetre savoir dois doit puisje puis-je mon ma mes notre est-il est-elle y-a-t-il ya ans mois pendant durant lors apres avant depuis sens sent sentir').split(' '));
 
 /** Racine simple du français (pluriels, féminins, quelques suffixes fréquents). */
 export function stem(w: string): string {
@@ -80,7 +82,7 @@ const SYN: string[][] = [
   ['pleurs', 'pleure', 'pleurer', 'cris', 'crie'],
   ['dodo', 'dormir', 'sommeil', 'nuit', 'nuits', 'sieste', 'siestes', 'endormir'],
   ['peridurale', 'anesthesie', 'douleur accouchement'],
-  ['accouchement', 'accoucher', 'naissance', 'travail'],
+  ['accouchement', 'accoucher', 'naissance', 'debut du travail', 'salle de naissance'],
   ['pma', 'amp', 'fiv', 'insemination', 'procreation medicalement assistee'],
   ['concevoir', 'tomber enceinte', 'conception', 'avoir un bebe', 'essai bebe'],
   ['contraception', 'pilule', 'sterilet', 'preservatif'],
@@ -88,7 +90,11 @@ const SYN: string[][] = [
   ['ecran', 'ecrans', 'tablette', 'telephone', 'television', 'tele'],
   ['colere', 'coleres', 'crise', 'crises'],
   ['proprete', 'pot', 'couche', 'couches'],
-  ['depression', 'deprime', 'baby blues', 'tristesse', 'deprimee'],
+  ['depression', 'deprime', 'baby blues', 'tristesse', 'deprimee', 'triste', 'pleure tout le temps', 'idees noires'],
+  ['postpartum', 'post partum', 'apres la naissance', 'apres l accouchement', 'depuis la naissance', 'depuis l accouchement', 'depuis mon accouchement'],
+  ['saignement', 'saignements', 'saigne', 'saigner', 'sang', 'perte de sang', 'hemorragie'],
+  ['fatigue', 'fatiguee', 'epuise', 'epuisee', 'epuisement', 'crevee', 'creve', 'a bout'],
+  ['crevasse', 'crevasses', 'mamelon', 'mamelons', 'seins douloureux', 'engorgement', 'mastite'],
   ['toxoplasmose', 'toxo'],
   ['listeriose', 'listeria'],
   ['diabete', 'glycemie', 'sucre'],
@@ -98,6 +104,9 @@ const SYN: string[][] = [
   ['caf', 'prime', 'aide', 'aides', 'allocation'],
   ['conge maternite', 'conge maternel', 'arret maternite'],
   ['poux', 'pou', 'lentes'],
+  ['douleur', 'douleurs', 'douloureux', 'douloureuse', 'douloureuses', 'crampe', 'crampes', 'mal au ventre', 'mal de ventre', 'mal au dos', 'mal aux seins'],
+  ['ventre', 'mal au ventre', 'mal de ventre', 'abdomen', 'abdominal', 'abdominale'],
+  ['cephalee', 'mal a la tete', 'mal de tete', 'maux de tete', 'migraine', 'migraines'],
   ['sport', 'activite physique', 'bouger', 'sportif', 'sportive'],
   ['refus scolaire', 'ne veut pas aller a l ecole', 'phobie scolaire', 'peur de l ecole'],
   ['activite', 'activites', 'jeu', 'jeux', 'jouer', 'occuper', 'quoi faire avec', 'eveil'],
@@ -116,7 +125,10 @@ for (const g of SYN) {
 export function tokenize(text: string): string[] {
   let n = ` ${normalize(text)} `;
   const extra: string[] = [];
-  for (const [phrase, head] of SYN_PHRASES) if (n.includes(` ${phrase} `)) extra.push(head);
+  // expressions (« baby blues », « mal au ventre ») : remplacées par leur sens, et leurs mots ne comptent plus seuls
+  const hit = SYN_PHRASES.filter(([phrase]) => n.includes(` ${phrase} `));
+  for (const [, head] of hit) extra.push(head);
+  for (const [phrase] of hit) n = n.split(` ${phrase} `).join('  ');
   const out: string[] = [];
   for (const w of n.trim().split(' ')) {
     if (!w || STOP.has(w) || /^\d+$/.test(w) || (w.length < 3 && w !== 'pma')) continue;
@@ -233,11 +245,19 @@ export function ageInQuestion(question: string): number | null {
   return m[2].startsWith('mois') ? Number(m[1]) : Number(m[1]) * 12;
 }
 
+/** La question parle-t-elle de la personne elle-même (« j'ai mal », « mes règles ») plutôt que d'un enfant ? */
+export function aboutSelf(question: string): boolean {
+  const n = ` ${normalize(question)} `;
+  const kid = / (mon|ma|notre) (enfant|bebe|fils|fille|nourrisson|ado)| (mes|nos) enfants| il a | elle a /.test(n);
+  return !kid && / (j ai|je |me |mes |mon corps|ma grossesse|enceinte)/.test(n);
+}
+
 /** Classement par article : meilleur passage + bonus fort quand les mots de la question sont dans le TITRE. */
 export function rankArticles(index: KbIndex, question: string, hits: { p: Passage; score: number }[]) {
   const q = queryTokens(question);
   const N = index.passages.length;
   const age = ageInQuestion(question);
+  const self = aboutSelf(question);
   const by = new Map<string, { slug: string; best: { p: Passage; score: number }; score: number }>();
   for (const h of hits) {
     const cur = by.get(h.p.slug);
@@ -251,8 +271,15 @@ export function rankArticles(index: KbIndex, question: string, hits: { p: Passag
     for (const t of q) if (title.has(t)) boost += Math.log(1 + N / ((index.df.get(t) ?? 1) + 1));
     r.score += boost * 2.2;
     // question large (« quel sport enceinte ? ») : l'article dont le TITRE couvre toute la question, et qui reste général, passe devant
-    const cover = q.length ? q.filter((t) => title.has(t)).length / q.length : 0;
+    // titre précis : la plupart de ses mots sont dans la question (« Saignements pendant la grossesse » plutôt que « Saignement de NEZ… »)
+    const tt = tokenize(a.title);
+    // couverture comptée sur le titre seul (les tags élargissent trop : « moral » ≠ « dépression »)
+    const cover = q.length ? q.filter((t) => tt.includes(t)).length / q.length : 0;
+    const precision = tt.length ? tt.filter((t) => q.includes(t)).length / new Set(tt).size : 0;
+    r.score *= 1 + precision * 1.5;
     if (cover === 1) r.score *= 1.25 + Math.max(0, 0.25 - a.title.length / 400);
+    // question à la première personne : les articles réservés aux enfants passent derrière
+    if (self && a.journeys?.length && a.journeys.every((j) => j === 'newborn' || j === 'child') && /b[ée]b[ée]|nourrisson|enfant|tout-petit|fils|fille/i.test(a.title)) r.score *= 0.35;
     // âge précisé : on privilégie les articles dont la tranche d'âge le contient
     if (age != null && (a.min_age_months != null || a.max_age_months != null)) {
       const inside = (a.min_age_months ?? 0) <= age && age <= (a.max_age_months ?? 240);
