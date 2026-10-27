@@ -68,6 +68,7 @@ export const TOOLS: ToolDef[] = [
   { id: 'scan_compare', theme: 'scanner', icon: 'columns', scopes: ALL, universal: true, href: () => '/scanner/compare' },
   { id: 'scan_avoid', theme: 'scanner', icon: 'slash', scopes: ALL, universal: true, href: () => '/scanner/avoid' },
   { id: 'ask', theme: 'resources', icon: 'message-circle', scopes: ALL, universal: true, href: () => '/(tabs)/ask' },
+  { id: 'local_ai', theme: 'resources', icon: 'cpu', scopes: ALL, universal: true, href: () => '/assistant/local' },
   { id: 'nearby', theme: 'resources', icon: 'map-pin', scopes: ALL, universal: true, href: () => '/outings' },
   { id: 'mood', theme: 'mood', icon: 'smile', scopes: ADULT, universal: true, href: () => '/me/mood' },
   { id: 'kid_mood', theme: 'mood', icon: 'sun', scopes: KID, universal: true, href: (c) => kid(c, '/wellbeing') },

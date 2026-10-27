@@ -10,6 +10,11 @@ import { EmptyStateCard } from '@/components/ui-extra';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { useActivePregnancy, useArticles, useCategories, useChildren, usePremium, useProfile, useRows } from '@/lib/data/hooks';
 import { isLocked, suggestArticles } from '@/lib/domain/content';
+import { CATEGORY_GROUPS } from '@/content/articles/rows';
+import { Tappable } from '@/components/Tappable';
+import { GlassSurface } from '@/components/Glass';
+import { tint } from '@/components/ToolGlyph';
+import type { IconName } from '@/components/ui';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { childAge } from '@/lib/domain/child';
 import { t as tr, type TKey } from '@/i18n';
@@ -45,9 +50,33 @@ export default function Library() {
     multiple: !!pregnancy && pregnancy.multiplicity !== 'single',
   }, 3), [articles, profile, pregnancy, children]);
 
+  // Recherche dans tout le texte des articles (pour trouver la réponse à une question), titres d'abord
+  const nq = norm(q.trim());
+  const words = nq.split(/\s+/).filter((w) => w.length > 2);
+  const score = (a: { title: string; summary: string; tags: string[]; body_md: string }) => {
+    if (!nq) return 1;
+    const head = norm(`${a.title} ${a.summary} ${a.tags.join(' ')}`);
+    const body = norm(a.body_md);
+    if (head.includes(nq)) return 100;
+    if (body.includes(nq)) return 50;
+    const hits = words.filter((w) => head.includes(w)).length * 3 + words.filter((w) => body.includes(w)).length;
+    return words.length && hits >= words.length ? hits : 0;
+  };
   const list = (articles ?? []).filter((a) => (!activeCat || a.category_id === activeCat)
     && (!journey || (journey === 'parents_sleep' ? a.tags.includes('sommeil-parents') : (a.journeys as string[]).includes(journey)))
-    && (!q || norm(`${a.title} ${a.summary} ${a.tags.join(' ')}`).includes(norm(q))));
+    && score(a) > 0).sort((x, y) => score(y) - score(x));
+
+  // Guide : parcours par défaut d'après le profil (enceinte, bébé, enfant, projet bébé)
+  const profileJourney = pregnancy ? 'pregnant' : (children ?? []).some((c) => childAge(c.birth_date).months < 24) ? 'newborn' : (children ?? []).length ? 'child' : (profile?.journeys ?? []).includes('ttc') ? 'ttc' : 'pregnant';
+  const guideJourney = (CATEGORY_GROUPS.some((g) => g.journey === journey) ? journey : profileJourney) as (typeof CATEGORY_GROUPS)[number]['journey'];
+  const group = CATEGORY_GROUPS.find((g) => g.journey === guideJourney)!;
+  const guideCards = group.slugs.map((slug) => {
+    const c = (categories ?? []).find((x) => x.slug === slug);
+    if (!c) return null;
+    const n = (articles ?? []).filter((a) => a.category_id === c.id && (a.journeys as string[]).includes(guideJourney)).length;
+    return n ? { c, n } : null;
+  }).filter(Boolean) as { c: { id: string; slug: string; label: string; icon: string | null }; n: number }[];
+  const showGuide = !q && !activeCat;
 
   const loading = articlesQ.isLoading && !articles;
   const failed = articlesQ.isError && !articles;
@@ -61,7 +90,7 @@ export default function Library() {
           { icon: 'grid', value: categories ? String(categories.length) : '—', label: 'Thèmes' },
         ]} />
       ) : null}
-      <Field label="Rechercher" placeholder="Allaitement, péridurale, sommeil…" value={q} onChangeText={setQ} returnKeyType="search" />
+      <Field label="Rechercher" placeholder="Posez votre question : péridurale, fièvre, fer…" value={q} onChangeText={setQ} returnKeyType="search" />
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
         {([
@@ -92,12 +121,44 @@ export default function Library() {
         </>
       )}
 
+      {showGuide ? (
+        <View style={{ gap: spacing.sm }} testID="library-guide">
+          <SectionTitle title="Le guide" />
+          <Text variant="small" muted>Toutes les questions d’un même moment de vie, rangées par thème.</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+            {CATEGORY_GROUPS.map((g) => <Chip key={g.journey} label={g.title} selected={guideJourney === g.journey} onPress={() => setJourney(g.journey)} testID={`guide-${g.journey}`} />)}
+          </View>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+            {guideCards.map(({ c, n }) => (
+              <View key={c.id} style={{ width: '48.5%' }}>
+                <GlassSurface fill={t.colors.surface} depth={1} radius={20}>
+                  <Tappable bare accessibilityRole="button" accessibilityLabel={`${c.label} : ${n} articles`} testID={`guide-cat-${c.slug}`}
+                    onPress={() => { setJourney(guideJourney); setCat(c.id); }} style={{ padding: spacing.md, gap: 6, minHeight: 104 }}>
+                    <View style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: tint(t.colors.gold, t.isDark ? 0.22 : 0.14) }}>
+                      <Icon name={(c.icon ?? 'book-open') as IconName} size={16} color={t.colors.gold} />
+                    </View>
+                    <Text weight="bold" numberOfLines={2}>{c.label}</Text>
+                    <Text variant="caption" muted>{n} article{n > 1 ? 's' : ''}</Text>
+                  </Tappable>
+                </GlassSurface>
+              </View>
+            ))}
+          </View>
+        </View>
+      ) : activeCat ? (
+        <Tappable accessibilityRole="button" onPress={() => { setCat(null); router.setParams({ cat: undefined } as never); }} testID="guide-back"
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start' }}>
+          <Icon name="arrow-left" size={16} color={t.colors.primary} />
+          <Text weight="bold" color={t.colors.primary}>{(categories ?? []).find((c) => c.id === activeCat)?.label ?? 'Thème'} · {list.length} article{list.length > 1 ? 's' : ''}</Text>
+        </Tappable>
+      ) : null}
+
       <SectionTitle title={tr('art.byJourney')} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
         {(['ttc', 'avoid', 'pregnant', 'newborn', 'child'] as const).map((j) => <Chip key={j} label={tr(`art.j.${j}`)} selected={journey === j} onPress={() => setJourney(journey === j ? null : j)} />)}
         <Chip label={tr('art.parentsSleep')} selected={journey === 'parents_sleep'} onPress={() => setJourney(journey === 'parents_sleep' ? null : 'parents_sleep')} />
       </ScrollView>
-      <SectionTitle title="Thèmes" />
+      <SectionTitle title="Tous les thèmes" />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
         <Chip label="Tout" selected={!activeCat} onPress={() => { setCat(null); router.setParams({ cat: undefined } as never); }} />
         {(categories ?? []).map((c) => <Chip key={c.id} label={c.label} selected={activeCat === c.id} onPress={() => setCat(activeCat === c.id ? null : c.id)} />)}
@@ -127,7 +188,7 @@ export default function Library() {
   return (
     <View style={{ flex: 1 }}>
       <Screen back title="Bibliothèque" subtitle="Des informations claires, sourcées et datées." scroll={false} padded={false}
-        action={{ label: 'Poser une question', icon: 'message-circle', onPress: () => router.push('/assistant/chat' as never), testID: 'library-ask' }}>
+        action={{ label: 'Demander aux articles', icon: 'cpu', onPress: () => router.push({ pathname: '/assistant/local', params: q ? { q } : {} } as never), testID: 'library-ask' }}>
         <VirtualList
           data={loading || failed ? [] : list}
           keyExtractor={(a) => a.id}

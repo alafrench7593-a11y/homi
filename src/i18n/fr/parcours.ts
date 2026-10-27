@@ -199,6 +199,8 @@ export const parcours = {
   'tool.scan_avoid.sub': 'Allergies, ingrédients signalés',
   'tool.ask': 'Assistant',
   'tool.ask.sub': 'Poser une question',
+  'tool.local_ai': 'Assistant des articles',
+  'tool.local_ai.sub': 'Réponses tirées des articles, hors ligne',
   'tool.mood': 'Mon humeur',
   'tool.kid_mood': 'Humeur et émotions',
   'tool.kid_mood.sub': 'Journal descriptif',

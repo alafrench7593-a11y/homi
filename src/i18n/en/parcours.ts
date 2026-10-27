@@ -201,6 +201,8 @@ export const parcours: Messages<typeof fr> = {
   'tool.scan_avoid.sub': 'Allergies, flagged ingredients',
   'tool.ask': 'Assistant',
   'tool.ask.sub': 'Ask a question',
+  'tool.local_ai': 'Article assistant',
+  'tool.local_ai.sub': 'Answers from the articles, offline',
   'tool.mood': 'My mood',
   'tool.kid_mood': 'Mood and emotions',
   'tool.kid_mood.sub': 'Descriptive journal',

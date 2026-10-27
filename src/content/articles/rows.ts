@@ -25,14 +25,20 @@ export const EXTRA_CATEGORIES: Omit<Category, 'id'>[] = [
   { slug: 'sante-enfant', label: 'Santé de l’enfant', icon: 'activity', position: 50 },
   { slug: 'education', label: 'Comportement et éducation', icon: 'smile', position: 51 },
   { slug: 'ecole-garde', label: 'Mode de garde et école', icon: 'book', position: 52 },
+  { slug: 'maladies-chroniques', label: 'Maladies chroniques et handicap', icon: 'plus-square', position: 53 },
+  { slug: 'activites-eveil', label: 'Activités, jeux et éveil', icon: 'sun', position: 60 },
+  { slug: 'sport', label: 'Sport et activité physique', icon: 'activity', position: 61 },
+  { slug: 'materiel', label: 'Bien choisir le matériel', icon: 'shopping-bag', position: 62 },
+  { slug: 'vie-pratique', label: 'Vie pratique et organisation', icon: 'clipboard', position: 63 },
+  { slug: 'premiers-secours', label: 'Premiers secours et bobos', icon: 'plus-circle', position: 64 },
 ];
 
 /** Catégories rangées par parcours : la bibliothèque les présente comme un guide (toutes les questions d'un même moment de vie). */
 export const CATEGORY_GROUPS: { journey: 'ttc' | 'pregnant' | 'newborn' | 'child'; title: string; slugs: string[] }[] = [
   { journey: 'ttc', title: 'Je veux concevoir', slugs: ['fertilite', 'preparer-grossesse', 'difficultes-conception', 'cycle', 'sexualite'] },
-  { journey: 'pregnant', title: 'Je suis enceinte', slugs: ['suivi-grossesse', 'alimentation-grossesse', 'corps-grossesse', 'sante-grossesse', 'quotidien-grossesse', 'grossesse', 'sante-mentale', 'sexualite', 'accouchement', 'droits-demarches'] },
-  { journey: 'newborn', title: 'Mon bébé (0 à 2 ans)', slugs: ['alimentation-bebe', 'sommeil', 'bebe', 'sante-bebe', 'developpement', 'securite', 'post-partum', 'reeducation', 'alimentation', 'droits-demarches'] },
-  { journey: 'child', title: 'Mon enfant (2 à 10 ans)', slugs: ['sante-enfant', 'enfant', 'education', 'sommeil', 'alimentation', 'ecole-garde', 'securite', 'neurodeveloppement'] },
+  { journey: 'pregnant', title: 'Je suis enceinte', slugs: ['suivi-grossesse', 'alimentation-grossesse', 'corps-grossesse', 'sante-grossesse', 'sport', 'quotidien-grossesse', 'grossesse', 'sante-mentale', 'sexualite', 'accouchement', 'materiel', 'vie-pratique', 'droits-demarches'] },
+  { journey: 'newborn', title: 'Mon bébé (0 à 2 ans)', slugs: ['alimentation-bebe', 'sommeil', 'bebe', 'sante-bebe', 'premiers-secours', 'developpement', 'activites-eveil', 'neurodeveloppement', 'maladies-chroniques', 'securite', 'materiel', 'post-partum', 'reeducation', 'sport', 'alimentation', 'vie-pratique', 'droits-demarches'] },
+  { journey: 'child', title: 'Mon enfant (2 à 10 ans)', slugs: ['sante-enfant', 'premiers-secours', 'neurodeveloppement', 'maladies-chroniques', 'alimentation', 'activites-eveil', 'sport', 'enfant', 'education', 'sommeil', 'ecole-garde', 'securite', 'materiel', 'vie-pratique'] },
 ];
 
 /**
