@@ -107,6 +107,8 @@ const S = {
   santeVieFamille: { label: 'Santé.fr (1000 premiers jours) — La vie de famille après la naissance', url: 'https://www.sante.fr/la-vie-de-famille-apres-la-naissance', consulted_on: '2026-10-23', published: '2024-08-26' },
   santeReglesDouloureuses: { label: 'Santé.fr — Règles douloureuses (dysménorrhées)', url: 'https://www.sante.fr/regles-douloureuses-dysmenorrhees', consulted_on: '2026-10-23', published: '2026-08-12' },
   santeEndometrioseRegles: { label: 'Santé.fr — Symptômes de l’endométriose : les règles douloureuses', url: 'https://www.sante.fr/endometriose/symptomes-de-lendometriose-les-regles-douloureuses', consulted_on: '2026-10-23' },
+  // Ajout du 27 octobre 2026
+  santeActiviteGrossesse: { label: 'Santé.fr (Manger Bouger) — Idées d’activités et de mouvements à faire pendant la grossesse', url: 'https://www.sante.fr/activite-physique-pendant-la-grossesse', consulted_on: '2026-10-27', published: '2023-05-09' },
 } satisfies Record<string, ArticleSource>;
 
 export const LIBRARY_SOURCES: Record<keyof typeof S, ArticleSource> = S;
@@ -1162,40 +1164,55 @@ Cet article informe et ne remplace pas l'avis de votre maternité, de votre sage
   {
     slug: 'activite-physique-pendant-la-grossesse',
     title: 'Bouger pendant la grossesse',
-    summary: 'Sauf contre-indication, une activité physique régulière et modérée est bénéfique ; certains signes doivent faire arrêter et consulter.',
-    body_md: `Sauf avis médical contraire, bouger régulièrement pendant la grossesse est bénéfique : meilleur sommeil, moins de douleurs de dos, meilleure circulation, moral soutenu.
+    summary: 'Sauf contre-indication, une activité physique régulière et modérée fait du bien pendant la grossesse : quelles activités choisir, comment s’y prendre, quoi éviter et quels signes doivent faire arrêter.',
+    body_md: `## En bref
+- Sauf contre-indication médicale, bouger régulièrement pendant la grossesse contribue à la forme, au bien-être et à une bonne circulation du sang.
+- Repère général : **au moins 30 minutes par jour** d’activité modérée, et du renforcement musculaire **une à deux fois par semaine**, à ajuster avec votre médecin ou votre sage-femme.
+- La marche, la natation, la gymnastique douce, le yoga prénatal ou l’aquagym pour femmes enceintes sont souvent proposés.
+- À éviter : les activités avec risque de chute ou de choc, les efforts en bloquant la respiration, la chaleur humide, l’altitude et les pics de pollution.
+- Arrêtez et consultez en cas d’essoufflement qui persiste au repos, de contractions, de saignements, de malaise ou de mollet gonflé. Douleur dans la poitrine : **15**.
 
-### Les repères
-- Viser environ **30 minutes par jour** d'activité modérée, comme la marche, la natation ou la gymnastique douce.
-- Si vous étiez peu active, commencer par 15 minutes, au moins trois jours par semaine, et augmenter progressivement.
-- Se lever régulièrement si l'on reste longtemps assise.
-- La régularité compte plus que l'intensité.
+## Comprendre
+Une activité adaptée sollicite le cœur et les poumons, entretient les muscles et les articulations, et favorise le retour veineux, c’est-à-dire la remontée du sang des jambes vers le cœur. Elle procure aussi une sensation de bien-être et de légèreté.
 
-### À éviter
-- Les sports avec risque de chute (vélo, ski, équitation, roller) et les sports de contact ou de combat.
-- La plongée sous-marine.
-- Les efforts en bloquant sa respiration.
-- Les environnements très chauds, l'altitude et les pics de pollution.
-- Rester longtemps allongée sur le dos à partir de la 24e semaine.
+Le type d’activité, son intensité et sa fréquence se décident avec le médecin ou la sage-femme qui vous suit : certaines situations médicales contre-indiquent l’effort, et chaque grossesse est différente. La régularité compte souvent davantage que l’intensité. Si vous étiez peu active avant la grossesse, vous pouvez commencer doucement et augmenter petit à petit.
 
-### Les bons réflexes
-- Échauffement, récupération douce et hydratation.
-- Par forte chaleur, préférer le matin ou le soir.
-- Demander conseil à votre médecin ou à votre sage-femme avant de commencer : leur avis prime sur ces repères généraux.
+Rester longtemps immobile n’aide pas non plus : il est conseillé de ne pas rester assise trop longtemps et de marcher un peu toutes les deux heures. À l’inverse, la station debout prolongée peut faire baisser la tension et provoquer un malaise.
 
-### Arrêtez et consultez si
-- Essoufflement anormal qui persiste au repos.
-- Douleur dans la poitrine : **appelez le 15**.
-- Contractions régulières et douloureuses qui ne cessent pas au repos.
-- Saignements vaginaux.
-- Vertiges, malaise, maux de tête inhabituels.
-- Mollet gonflé et dur.
+## Au quotidien
+- **La marche** : accessible, elle peut se commencer à tout moment et se poursuivre jusqu’à l’accouchement, seule ou en famille.
+- **La natation ou la marche dans l’eau** : elles ménagent les articulations et favorisent le retour veineux. Des piscines proposent des cours pour femmes enceintes ; évitez les heures de forte affluence.
+- **La gymnastique douce, le yoga prénatal, le Pilates ou l’aquagym spécifique** : on y travaille la respiration, le bassin et le périnée. Un encadrant formé peut corriger vos postures.
+- **La course à pied** : plutôt si vous la pratiquiez déjà. Choisissez de bonnes chaussures, un terrain souple, et arrêtez si vos chevilles deviennent douloureuses.
+- **Le renforcement musculaire** : une à deux fois par semaine. Pour le plancher pelvien, Santé.fr propose par exemple de contracter environ 10 secondes, relâcher 5 secondes, une dizaine de fois, plusieurs fois par jour. Pendant les exercices, ne creusez pas le bas du dos et expirez à l’effort.
 
-Et si la fatigue vous empêche de bouger certains jours, ce n'est pas un échec : écoutez votre corps.`,
+Les bons réflexes : 10 à 15 minutes d’échauffement avant, 10 à 15 minutes de récupération après avec des étirements doux ; boire pendant l’effort ; une tenue adaptée à la température. Quand le ventre s’arrondit, préférez les exercices allongée sur le côté ou debout mais courts, et méfiez-vous des changements d’équilibre.
+
+À éviter : les contractions prolongées en bloquant la respiration ; les exercices allongée sur le dos à partir de la 24e semaine d’aménorrhée ; les activités où l’on peut perdre l’équilibre, tomber ou recevoir un choc (sports de contact ou de combat, par exemple) ; la plongée sous-marine ; les environnements chauds et humides ; l’altitude ; l’effort lors d’un pic de pollution.
+
+## Questions fréquentes
+**Je n’étais pas sportive : puis-je commencer maintenant ?** Oui, le plus souvent, avec des activités douces comme la marche ou la natation, après en avoir parlé avec votre médecin ou votre sage-femme. Commencez par des séances courtes et augmentez progressivement.
+
+**Pourquoi éviter d’être allongée sur le dos ?** Plus tard dans la grossesse, l’utérus peut comprimer les gros vaisseaux et freiner le retour du sang vers le cœur, ce qui peut faire baisser la tension. C’est pourquoi on recommande d’éviter cette position à partir de la 24e semaine (vers le 5e mois).
+
+**Puis-je garder mon sport habituel ?** Cela dépend du sport et de votre grossesse : parlez-en avec le professionnel qui vous suit, qui vous aidera à adapter l’intensité.
+
+**Et les jours de grande fatigue ?** Écoutez votre corps : se reposer fait aussi partie de l’équilibre. Si la fatigue est intense ou dure, parlez-en lors de votre suivi.
+
+## Quand demander conseil
+Demandez l’avis de votre médecin ou de votre sage-femme avant de commencer ou de reprendre une activité. Pendant l’effort, arrêtez-vous et consultez si vous ressentez :
+- un essoufflement anormal qui ne passe pas au repos ;
+- une douleur dans la poitrine : **appelez le 15 (ou le 112)** ;
+- des contractions régulières et douloureuses qui persistent au repos ;
+- des saignements vaginaux ;
+- des vertiges, des troubles de l’équilibre, un malaise ou des maux de tête inhabituels ;
+- un mollet gonflé et dur, qui peut être le signe d’une phlébite.
+
+Cet article informe et ne remplace pas l’avis de votre médecin ou de votre sage-femme.`,
     journeys: ['pregnant'],
     category: 'grossesse',
     tags: ['activité physique', 'sport', 'marche', 'précautions'],
-    sources: [S.mbGrossesse, S.ameliActive],
+    sources: [S.mbGrossesse, S.ameliActive, S.santeActiviteGrossesse],
     status: 'to_review',
   },
   {
@@ -3027,23 +3044,40 @@ Cet article vous donne des repères généraux ; il ne remplace pas l'avis d'un 
     slug: 'accouchement-voie-basse-deroulement',
     title: 'L’accouchement par voie basse, étape par étape',
     summary: 'Début du travail, dilatation, naissance et délivrance : ce qui se passe le plus souvent, les moyens de soulager la douleur et pourquoi une césarienne peut être décidée.',
-    body_md: `Chaque accouchement est différent. Voici les grandes étapes décrites par l’Assurance Maladie, pour savoir à quoi s’attendre et pouvoir poser vos questions à l’équipe.
+    body_md: `## En bref
+- L’accouchement a lieu le plus souvent entre la 37e et la 42e semaine ; il peut commencer à tout moment dans cette période.
+- On part à la maternité quand les contractions deviennent régulières et rapprochées, ou dès que la poche des eaux se rompt, même sans fortes contractions.
+- Trois étapes se succèdent : la dilatation du col, la naissance (expulsion), puis la délivrance (sortie du placenta).
+- Pour la douleur, la péridurale est possible, ainsi que des moyens sans médicament : bouger, bain ou douche, massages.
+- L’équipe peut proposer des gestes (rupture de la poche, ventouse, forceps…) ou décider une césarienne : vous pouvez toujours demander pourquoi.
 
-### Quand partir à la maternité
-Le travail commence le plus souvent par des contractions de plus en plus intenses et régulières, parfois après la rupture de la poche des eaux. **Si la poche des eaux se rompt, rendez-vous à la maternité, même sans contractions fortes.** Votre sage-femme vous indique quand partir selon votre situation.
+## Comprendre
+**Le début du travail.** Les contractions deviennent de plus en plus intenses, régulières et rapprochées. Parfois, c’est la poche des eaux qui se rompt en premier : dans ce cas, rendez-vous à la maternité même si les contractions ne sont pas encore fortes. Votre sage-femme ou votre maternité vous dit, selon votre situation, à quel moment partir. Si vous habitez à plus de 45 minutes d’une maternité, l’Assurance Maladie prévoit un dispositif (« Engagement maternité ») qui peut prendre en charge un hébergement proche et les transports.
 
-### Les trois étapes
-1. **La dilatation du col** : souvent plusieurs heures (environ 8 heures pour un premier bébé, moins ensuite). Le cœur du bébé est surveillé. Pour la douleur : la péridurale, et aussi des moyens sans médicament (bain, massages, relaxation, mouvement).
-2. **La naissance (expulsion)** : une fois le col complètement ouvert, souvent environ 30 minutes. Le bébé peut être posé en peau à peau.
-3. **La délivrance** : le placenta sort, généralement dans l’heure qui suit ; un médicament est proposé pour limiter le risque de saignement.
+**1. La dilatation du col.** C’est la phase la plus longue : environ 8 heures en moyenne pour un premier enfant, environ 4 heures pour une femme qui a déjà accouché. Le col s’ouvre progressivement jusqu’à 10 cm. Le cœur du bébé est surveillé par un monitoring pendant les contractions. Pendant le travail, seuls les liquides clairs sont en général autorisés (eau, thé ou café sans lait, jus sans pulpe).
 
-### Ce que l’équipe peut proposer
-Un médicament pour relancer les contractions, une aide instrumentale (ventouse, forceps, spatules) ou, plus rarement, une épisiotomie. Vous pouvez exprimer vos préférences à l’avance et demander pourquoi un geste est proposé.
+**2. L’expulsion.** Une fois le col complètement ouvert et la tête du bébé bien descendue, l’équipe vous accompagne pour pousser. Cette phase dure en moyenne une trentaine de minutes. À la naissance, le cordon est coupé, la sage-femme vérifie que le bébé va bien et le pose contre vous, en peau à peau quand c’est possible.
 
-### Et la césarienne ?
-Elle peut être programmée (position du bébé, grossesse à risque…) ou décidée pendant le travail si la naissance par voie basse devient difficile ou si le bébé montre des signes de souffrance. Le peau à peau reste possible dans la plupart des cas.
+**3. La délivrance.** De nouvelles contractions font sortir le placenta, habituellement 20 à 30 minutes après la naissance. S’il ne sort pas, l’équipe le retire. Un médicament (l’ocytocine) est donné juste avant ou après la naissance pour prévenir une hémorragie.
 
-Le jour J, l’équipe s’adapte à vous et à votre bébé : ces repères ne remplacent pas ses explications.`,
+## Au quotidien
+**Soulager la douleur.** La péridurale est posée par un anesthésiste pendant le travail : elle soulage la douleur des contractions sans faire perdre conscience, et une pompe permet souvent d’ajuster l’analgésie sous contrôle médical. La consultation avec l’anesthésiste, au 8e mois, est prévue même si vous souhaitez accoucher sans péridurale. Les méthodes sans médicament aident aussi : changer de position, marcher, prendre un bain ou une douche, recevoir des massages. Vous pouvez combiner ces approches et changer d’avis en cours de route.
+
+**Les gestes possibles.** Selon le déroulement, l’équipe peut rompre la poche des eaux si le travail est avancé, donner de l’ocytocine pour renforcer les contractions, ou aider la sortie du bébé avec une ventouse, des forceps ou des spatules si le bébé supporte mal l’expulsion ou si vous n’avez plus la force de pousser. L’épisiotomie (incision du périnée) n’est pas systématique : elle est devenue beaucoup moins fréquente ces dernières années.
+
+**Préparer vos souhaits.** Vous pouvez noter vos préférences (positions, gestion de la douleur, peau à peau) et en parler à l’équipe à l’avance : elles servent de base au dialogue.
+
+## Questions fréquentes
+**Pourquoi une césarienne peut-elle être décidée ?** Elle peut être programmée, par exemple selon la position du bébé ou dans certaines grossesses à risque, ou décidée pendant le travail si l’accouchement par voie basse devient difficile ou si le monitoring montre des signes de souffrance du bébé. Le peau à peau reste souvent possible, au bloc ou en salle de réveil.
+
+**Et si mon bébé se présente par le siège ?** S’il est repéré au 8e mois, l’obstétricien peut proposer une manœuvre pour tenter de le retourner. La suite est discutée avec vous.
+
+**Combien de temps reste-t-on en salle de naissance ?** Après un accouchement par voie basse, la surveillance dure au moins deux heures : tension, pouls, saignements et contraction de l’utérus sont contrôlés.
+
+## Quand demander conseil
+Appelez votre maternité si vous avez un doute sur le début du travail, et partez sans attendre si la poche des eaux se rompt. Des saignements rouges, une diminution des mouvements du bébé, de la fièvre ou une douleur inhabituelle justifient un appel immédiat à la maternité. **En urgence, appelez le 15 (ou le 112).** Après la naissance, si vous vous sentez très triste ou en détresse, parlez-en à l’équipe ; le 3114 répond jour et nuit.
+
+Cet article informe et ne remplace pas les explications de votre sage-femme, de votre médecin ou de l’équipe de la maternité.`,
     journeys: ['pregnant'],
     category: 'accouchement',
     tags: ['accouchement', 'voie basse', 'travail', 'péridurale', 'césarienne'],
@@ -3055,25 +3089,48 @@ Le jour J, l’équipe s’adapte à vous et à votre bébé : ces repères ne r
     slug: 'arrivee-d-un-nouvel-enfant-et-l-aine',
     title: 'Un nouveau bébé arrive : l’aîné et l’organisation de la famille',
     summary: 'L’aîné peut se sentir jaloux ou régresser un temps ; le rassurer, lui garder des moments à lui et réorganiser la maison ensemble aident toute la famille.',
-    body_md: `L’arrivée d’un bébé change la vie de toute la famille. Il faut du temps pour trouver un nouvel équilibre.
+    body_md: `## En bref
+- Après l’arrivée d’un bébé, l’aîné peut se sentir inquiet, jaloux ou mis de côté, et parfois « régresser » un temps : mieux vaut l’accueillir sans s’alarmer ni le gronder.
+- Le préparer avant la naissance : qui s’occupera de lui pendant le séjour à la maternité, comment se passera le retour.
+- Lui montrer qu’il garde sa place : moments rien qu’à lui, histoire de sa propre naissance, attention des proches.
+- Toute la famille se réorganise : fixer des priorités, se répartir les tâches, garder un peu de temps pour soi.
+- Grands-parents et entourage trouvent aussi leur nouvelle place : écouter les conseils, tout en faisant confiance à vos choix.
 
-### Pour l’aîné
-- Il peut se sentir inquiet, jaloux ou mis de côté, et faire à nouveau « comme un bébé » pendant un temps. Mieux vaut l’accueillir sans le gronder.
-- Avant la naissance : lui expliquer qui s’occupera de lui pendant le séjour à la maternité et comment se passeront les journées.
-- Le rassurer sur votre amour, lui raconter sa propre naissance, lui montrer qu’il garde sa place.
-- Prévoir un moment particulier pour la première rencontre, et le laisser aider s’il en a envie, sans l’y obliger.
-- Demander aux grands-parents et aux proches de s’intéresser aussi à lui.
+## Comprendre
+Un nouveau bébé ne change pas seulement la vie des parents. Pour l’aîné, c’est un grand bouleversement : le rythme de la maison change, les parents sont fatigués et moins disponibles, et un petit être occupe soudain beaucoup de place. Il peut ressentir de l’inquiétude, de la jalousie ou l’impression d’être rejeté. Certains enfants recommencent à faire « comme un bébé » : demander le biberon, parler comme un tout-petit, avoir de nouveau des accidents de propreté. Santé.fr (1000 premiers jours) rappelle qu’il ne faut ni s’inquiéter ni le gronder : ces réactions expriment souvent un besoin d’être rassuré.
 
-### Pour l’organisation
-- Accepter de mettre certaines choses en pause et de fixer des priorités.
-- En parler à deux régulièrement : qui fait quoi, qui se repose quand.
-- Garder un peu de temps pour soi, même court.
+Les parents aussi traversent une période d’ajustement. Leurs propres besoins passent souvent au second plan, et il faut parfois renoncer un temps à certaines activités. Un nouvel équilibre se construit progressivement, à votre rythme. Les grands-parents, oncles et tantes vivent eux aussi un changement de rôle, source de joie mais parfois de tensions.
+
+## Au quotidien
+**Avant la naissance**
+- Expliquez à l’aîné, avec des mots adaptés à son âge, qui s’occupera de lui pendant votre séjour à la maternité et comment s’organisera le retour à la maison.
+- Racontez-lui sa propre naissance, montrez-lui ses photos de bébé : cela l’aide à comprendre qu’il a lui aussi été accueilli ainsi.
+- Certaines familles préparent un petit « sac de grand frère ou de grande sœur » avec de petits cadeaux et des mots doux, ou emportent une photo de famille à la maternité pour que l’aîné se sente présent.
+
+**La rencontre et les premières semaines**
+- Prévoyez un moment privilégié pour la première rencontre. Selon son âge et son envie, montrez-lui comment faire un câlin au bébé ou le tenir dans ses bras, toujours avec un adulte à côté.
+- Laissez-le aider s’il le souhaite (apporter une couche, chanter une chanson), sans l’y obliger.
+- Gardez des moments rien qu’avec lui, même courts : une histoire le soir, une sortie au parc avec l’un des parents.
+- Demandez aux proches qui viennent voir le bébé de s’intéresser aussi à lui.
+- Faites confiance à votre ressenti : vous connaissez votre enfant mieux que quiconque.
+
+**L’organisation de la famille**
+- Acceptez de mettre certaines choses en pause et de fixer des priorités.
+- Parlez-en à deux régulièrement : qui fait quoi, qui se repose quand, comment chacun peut avoir un moment pour soi.
+- Une fois la période d’adaptation passée, les sorties en famille, même courtes, font du bien à tous et évitent l’isolement.
 - Dans Au fil de nous, les tâches du foyer, l’agenda partagé et les relais de nuit peuvent aider à répartir la charge.
 
-### Et l’entourage
-Les grands-parents et la famille trouvent aussi leur nouvelle place. Écouter les conseils, mais faire confiance à vos propres choix de parents.
+## Questions fréquentes
+**Mon aîné de 3 ans refait pipi dans sa culotte depuis la naissance : que faire ?** Ce type de retour en arrière peut arriver après l’arrivée d’un bébé. Accueillez-le calmement, sans punition, en lui offrant de l’attention à d’autres moments. Si cela dure ou vous inquiète, parlez-en à son médecin.
 
-Si vous vous sentez dépassé(e), parlez-en à votre médecin, à votre sage-femme ou à la PMI.`,
+**Il dit qu’il n’aime pas le bébé : faut-il le reprendre ?** Ses émotions peuvent être accueillies : vous pouvez mettre des mots dessus (« tu trouves que le bébé prend beaucoup de place »), tout en posant des limites claires sur les gestes, pour la sécurité du bébé.
+
+**Les grands-parents donnent beaucoup de conseils : comment réagir ?** Communiquez, exprimez vos besoins et écoutez les leurs. Prendre du recul face aux nombreux conseils et vous faire confiance aide à trouver votre façon de faire.
+
+## Quand demander conseil
+Si vous vous sentez dépassé(e), épuisé(e) ou très triste, parlez-en à votre médecin, à votre sage-femme ou à la PMI. Si l’aîné montre une détresse qui dure ou vous inquiète, son médecin ou son pédiatre peut vous aider. En cas d’idées noires, appelez le **3114** (24 h/24) ; si un enfant est en danger, le **119** ; en urgence, le **15** ou le **112**.
+
+Cet article informe et ne remplace pas l’avis d’un professionnel de santé ou de la petite enfance.`,
     journeys: ['pregnant', 'newborn', 'child'],
     category: 'enfant',
     tags: ['aîné', 'fratrie', 'jalousie', 'organisation familiale', 'naissance'],
@@ -3084,23 +3141,43 @@ Si vous vous sentez dépassé(e), parlez-en à votre médecin, à votre sage-fem
     slug: 'regles-douloureuses-quand-consulter',
     title: 'Règles douloureuses : ce qui peut soulager et quand consulter',
     summary: 'Les douleurs pendant les règles sont fréquentes ; chaleur, repos et mouvement doux aident souvent, et des douleurs qui changent ou empêchent de vivre normalement méritent un avis.',
-    body_md: `Une femme sur deux a mal au ventre ou au dos pendant ses règles. Ces douleurs ne sont pas une fatalité : elles méritent d’être soulagées, et parfois explorées.
+    body_md: `## En bref
+- Les douleurs de règles (dysménorrhées) sont fréquentes : une femme sur deux se plaint de douleurs au ventre ou dans le bas du dos pendant ses règles.
+- Chaleur, repos, sommeil et mouvement doux soulagent souvent ; limiter alcool, café et tabac autour des règles peut aussi aider.
+- Pour un médicament, demandez conseil à votre pharmacien ou à votre médecin : l’aspirine est déconseillée.
+- Des douleurs inhabituelles, qui s’aggravent, résistent aux antalgiques simples ou vous empêchent de vivre normalement méritent une consultation : elles peuvent révéler une endométriose ou une autre cause.
+- Douleur brutale et intense, fièvre ou malaise : appelez le **15**.
 
-### Ce qui peut parfois aider
-- Une bouillotte sur le ventre ou un bain chaud.
-- Du repos et du sommeil avant et pendant les règles.
-- Un peu de mouvement ou un sport doux.
-- Limiter alcool, café et tabac pendant cette période.
-- Pour un médicament contre la douleur, demandez conseil à votre pharmacien ou à votre médecin : certains médicaments sont déconseillés (par exemple l’aspirine, qui fluidifie le sang) et tous ne conviennent pas à chacune.
+## Comprendre
+La douleur prend le plus souvent la forme de crampes qui commencent avec les règles, parfois un peu avant, et peuvent s’étendre vers les reins et les cuisses. Elle s’accompagne parfois de maux de tête, de nausées ou de vomissements. Selon Santé.fr, 50 à 70 % des jeunes femmes sont concernées, et pour environ 15 % d’entre elles la douleur est invalidante, au point de manquer l’école ou le travail.
 
-### Quand en parler à un professionnel
-- Des douleurs inhabituelles pour vous, ou qui apparaissent après des années de règles peu douloureuses.
-- Des règles qui deviennent difficiles à supporter, qui vous font manquer l’école ou le travail.
-- Des douleurs qui ne passent pas avec les mesures habituelles.
+Les médecins distinguent deux situations :
+- **La dysménorrhée primaire** apparaît à l’adolescence, dans les mois qui suivent les premières règles. Elle est le plus souvent liée aux contractions de l’utérus pendant les règles, plus rarement à une particularité anatomique ou hormonale.
+- **La dysménorrhée secondaire** survient à l’âge adulte. Elle peut être liée à une endométriose, une infection génitale chronique, des troubles ovariens ou des polypes de l’utérus, ce qui justifie un examen médical.
 
-Des règles très douloureuses peuvent être liées à une endométriose : un professionnel peut faire le point avec vous. Le suivi du cycle dans Au fil de nous permet de noter vos douleurs pour en parler plus facilement.
+Les douleurs elles-mêmes n’entraînent pas de complications, mais elles peuvent être le signe d’une maladie à prendre en charge. L’endométriose en fait partie : des règles douloureuses peuvent l’évoquer quand la douleur revient à chaque cycle, résiste à un antalgique simple et empêche les activités habituelles (se lever, travailler, aller en cours). D’autres signes peuvent l’accompagner : règles très abondantes ou longues, douleurs pendant les rapports sexuels, troubles digestifs ou urinaires pendant les règles.
 
-**En cas de douleur brutale et intense, de fièvre ou de malaise, appelez le 15.**`,
+## Au quotidien
+- **La chaleur** : une bouillotte sur le ventre ou un bain chaud, allongée et détendue.
+- **Le repos** : bien dormir avant et pendant les règles.
+- **Bouger** : un peu de mouvement ou un sport doux soulage souvent.
+- **Les habitudes** : limiter ou éviter l’alcool, le café et le tabac avant et pendant les règles.
+- **Les médicaments** : un antalgique sans ordonnance peut être pris si besoin, sur conseil du pharmacien. L’aspirine est déconseillée, car elle fluidifie le sang et peut augmenter les saignements. D’autres traitements existent ; votre médecin choisit avec vous ce qui convient selon votre santé, vos autres traitements et un éventuel projet de grossesse.
+- **Noter vos symptômes** : le suivi du cycle dans Au fil de nous permet de noter l’intensité de la douleur, les jours concernés et ce qui vous a soulagée. Ces notes facilitent l’échange avec le professionnel.
+
+## Questions fréquentes
+**Avoir très mal pendant ses règles, faut-il simplement le supporter ?** Non. Une douleur qui vous empêche de vivre normalement mérite d’être soulagée et d’en chercher la cause. Vous pouvez en parler à votre médecin traitant, à une sage-femme ou à un gynécologue.
+
+**Mes règles sont devenues douloureuses alors qu’elles ne l’étaient pas : est-ce un signal ?** Des douleurs qui apparaissent après plusieurs années de règles peu douloureuses, ou qui changent, font partie des raisons de consulter.
+
+**Comment le médecin cherche-t-il la cause ?** Il vous interroge et vous examine. Il vérifie notamment que les saignements sont bien des règles et non le signe d’une autre affection, comme une grossesse extra-utérine. Il peut proposer des examens, comme une échographie ou une IRM.
+
+**L’endométriose empêche-t-elle d’avoir un enfant ?** Elle peut être associée à des difficultés de fertilité, d’où l’intérêt d’en parler tôt, surtout si vous avez un projet de grossesse. Un professionnel pourra vous orienter.
+
+## Quand demander conseil
+Consultez si vos douleurs sont inhabituelles pour vous, si vos règles deviennent difficiles à supporter, si la douleur apparaît après des années de règles peu douloureuses, si elle résiste aux mesures habituelles ou s’accompagne de saignements anormaux, de douleurs pendant les rapports, de troubles digestifs ou urinaires. **En cas de douleur brutale et intense, de fièvre, de malaise ou de saignements très abondants, appelez le 15 (ou le 112).** Si la douleur pèse sur votre moral au point d’avoir des idées noires, le 3114 répond jour et nuit.
+
+Cet article informe et ne remplace pas l’avis de votre médecin, de votre sage-femme ou de votre gynécologue.`,
     journeys: ['avoid', 'ttc'],
     category: 'cycle',
     tags: ['règles douloureuses', 'dysménorrhée', 'endométriose', 'cycle', 'symptômes'],

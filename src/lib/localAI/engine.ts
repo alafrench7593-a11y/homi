@@ -17,6 +17,8 @@ export interface KbArticle {
   body_md: string;
   tags?: string[];
   sources?: { label: string; url: string }[];
+  min_age_months?: number | null;
+  max_age_months?: number | null;
 }
 
 export interface Passage {
@@ -96,6 +98,9 @@ const SYN: string[][] = [
   ['caf', 'prime', 'aide', 'aides', 'allocation'],
   ['conge maternite', 'conge maternel', 'arret maternite'],
   ['poux', 'pou', 'lentes'],
+  ['sport', 'activite physique', 'bouger', 'exercice', 'exercices'],
+  ['refus scolaire', 'ne veut pas aller a l ecole', 'phobie scolaire', 'peur de l ecole'],
+  ['activite', 'activites', 'jeu', 'jeux', 'jouer', 'occuper'],
   ['dent', 'dents', 'poussee dentaire', 'dentaire'],
 ];
 const SYN_MAP = new Map<string, string>();
@@ -114,7 +119,7 @@ export function tokenize(text: string): string[] {
   for (const [phrase, head] of SYN_PHRASES) if (n.includes(` ${phrase} `)) extra.push(head);
   const out: string[] = [];
   for (const w of n.trim().split(' ')) {
-    if (!w || STOP.has(w) || (w.length < 3 && !/^\d+$/.test(w) && w !== 'pma')) continue;
+    if (!w || STOP.has(w) || /^\d+$/.test(w) || (w.length < 3 && w !== 'pma')) continue;
     const st = stem(w);
     out.push(SYN_MAP.get(st) ?? st);
   }
@@ -214,10 +219,18 @@ function coverage(question: string, p: Passage): number {
 
 const bullets = (md: string) => md.split('\n').filter((l) => /^\s*[-*•]\s+/.test(l)).map((l) => l.replace(/^\s*[-*•]\s+/, '').trim());
 
+/** Âge mentionné dans la question (« 7 ans », « 18 mois »), en mois. */
+export function ageInQuestion(question: string): number | null {
+  const m = normalize(question).match(/\b(\d{1,2})\s*(ans?|mois)\b/);
+  if (!m) return null;
+  return m[2].startsWith('mois') ? Number(m[1]) : Number(m[1]) * 12;
+}
+
 /** Classement par article : meilleur passage + bonus fort quand les mots de la question sont dans le TITRE. */
 export function rankArticles(index: KbIndex, question: string, hits: { p: Passage; score: number }[]) {
   const q = [...new Set(tokenize(question))];
   const N = index.passages.length;
+  const age = ageInQuestion(question);
   const by = new Map<string, { slug: string; best: { p: Passage; score: number }; score: number }>();
   for (const h of hits) {
     const cur = by.get(h.p.slug);
@@ -230,6 +243,11 @@ export function rankArticles(index: KbIndex, question: string, hits: { p: Passag
     let boost = 0;
     for (const t of q) if (title.has(t)) boost += Math.log(1 + N / ((index.df.get(t) ?? 1) + 1));
     r.score += boost * 2.2;
+    // âge précisé : on privilégie les articles dont la tranche d'âge le contient
+    if (age != null && (a.min_age_months != null || a.max_age_months != null)) {
+      const inside = (a.min_age_months ?? 0) <= age && age <= (a.max_age_months ?? 240);
+      r.score *= inside ? 1.35 : 0.55;
+    }
   }
   return [...by.values()].sort((a, b) => b.score - a.score);
 }

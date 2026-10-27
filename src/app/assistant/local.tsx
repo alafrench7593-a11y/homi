@@ -123,7 +123,7 @@ export default function LocalAssistant() {
   const { data: profile } = useProfile();
   const pregnancy = useActivePregnancy();
   const { data: children } = useChildren();
-  const index = useMemo(() => (articlesQ.data ? buildIndex(articlesQ.data.map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, body_md: a.body_md, tags: a.tags, sources: a.sources }))) : null), [articlesQ.data]);
+  const index = useMemo(() => (articlesQ.data ? buildIndex(articlesQ.data.map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, body_md: a.body_md, tags: a.tags, sources: a.sources, min_age_months: a.min_age_months, max_age_months: a.max_age_months }))) : null), [articlesQ.data]);
   const [text, setText] = useState(typeof params.q === 'string' ? params.q : '');
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const list = useRef<FlatList<Msg>>(null);
