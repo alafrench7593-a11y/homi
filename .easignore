@@ -13,4 +13,5 @@ expo-env.d.ts
 __pycache__/
 e2e/
 docs/
-supabase/
+supabase/migrations/
+supabase/seed*
