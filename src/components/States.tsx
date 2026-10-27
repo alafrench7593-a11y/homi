@@ -17,6 +17,9 @@ import { friendlyErrorMessage } from '@/lib/errors';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { ScreenToolContext } from '@/lib/screenTool';
+import { ToolArticles } from '@/features/ToolArticles';
+import { TOOL_TOPICS } from '@/lib/domain/toolArticles';
 
 // ------------------------------------------------------------------ squelettes
 export function SkeletonBlock({ height = 16, width = '100%', style }: { height?: number; width?: number | `${number}%`; style?: object }) {
@@ -141,7 +144,16 @@ export function QueryView<T>({ query, children, empty, skeleton = 'list', rows, 
  * À utiliser à l'intérieur d'un écran qui défile : `scrollEnabled={false}` n'est PAS virtualisé,
  * on utilise donc la liste comme conteneur de défilement (prop `screen` de <Screen scroll={false}>).
  */
-function VirtualListInner<T>({ renderItem, ...props }: FlatListProps<T>, ref: React.ForwardedRef<FlatList<T>>) {
+function VirtualListInner<T>({ renderItem, ListFooterComponent, ...props }: FlatListProps<T>, ref: React.ForwardedRef<FlatList<T>>) {
+  // Liste d'un outil : ses articles « Pour aller plus loin » viennent après le pied de liste
+  const toolId = React.useContext(ScreenToolContext);
+  const Orig = ListFooterComponent;
+  const footer = toolId && TOOL_TOPICS[toolId] ? (
+    <View>
+      {Orig ? (React.isValidElement(Orig) ? Orig : React.createElement(Orig as React.ComponentType)) : null}
+      <ToolArticles toolId={toolId} />
+    </View>
+  ) : Orig;
   // Les premières lignes apparaissent en cascade ; les suivantes arrivent déjà visibles
   const staggered: ListRenderItem<T> | null | undefined = renderItem
     ? (info) => <StaggerItem index={info.index}>{renderItem(info)}</StaggerItem>
@@ -155,6 +167,7 @@ function VirtualListInner<T>({ renderItem, ...props }: FlatListProps<T>, ref: Re
       windowSize={7}
       removeClippedSubviews
       keyboardShouldPersistTaps="handled"
+      ListFooterComponent={footer}
       {...props}
     />
   );

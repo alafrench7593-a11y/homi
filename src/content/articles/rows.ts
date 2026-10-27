@@ -32,9 +32,9 @@ export const EXTRA_CATEGORIES: Omit<Category, 'id'>[] = [
   { slug: 'vie-pratique', label: 'Vie pratique et organisation', icon: 'clipboard', position: 63 },
   { slug: 'premiers-secours', label: 'Premiers secours et bobos', icon: 'plus-circle', position: 64 },
   // Règles, cycle et santé intime (27/10/2026)
-  { slug: 'regles', label: 'Règles : comprendre et soulager', icon: 'droplet', position: 70 },
-  { slug: 'cycle-ages', label: 'Cycle, hormones et âges de la vie', icon: 'moon', position: 71 },
-  { slug: 'sante-intime', label: 'Santé intime et gynécologique', icon: 'heart', position: 72 },
+  { slug: 'regles', label: 'Règles', icon: 'droplet', position: 70 },
+  { slug: 'cycle-ages', label: 'Cycle et âges de la vie', icon: 'moon', position: 71 },
+  { slug: 'sante-intime', label: 'Santé intime', icon: 'heart', position: 72 },
   { slug: 'contraception', label: 'Contraception et IVG', icon: 'shield', position: 73 },
 ];
 

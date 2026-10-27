@@ -26,9 +26,9 @@ insert into public.content_categories (slug, label, icon, position) values ('spo
 insert into public.content_categories (slug, label, icon, position) values ('materiel', 'Bien choisir le matériel', 'shopping-bag', 62) on conflict (slug) do nothing;
 insert into public.content_categories (slug, label, icon, position) values ('vie-pratique', 'Vie pratique et organisation', 'clipboard', 63) on conflict (slug) do nothing;
 insert into public.content_categories (slug, label, icon, position) values ('premiers-secours', 'Premiers secours et bobos', 'plus-circle', 64) on conflict (slug) do nothing;
-insert into public.content_categories (slug, label, icon, position) values ('regles', 'Règles : comprendre et soulager', 'droplet', 70) on conflict (slug) do nothing;
-insert into public.content_categories (slug, label, icon, position) values ('cycle-ages', 'Cycle, hormones et âges de la vie', 'moon', 71) on conflict (slug) do nothing;
-insert into public.content_categories (slug, label, icon, position) values ('sante-intime', 'Santé intime et gynécologique', 'heart', 72) on conflict (slug) do nothing;
+insert into public.content_categories (slug, label, icon, position) values ('regles', 'Règles', 'droplet', 70) on conflict (slug) do nothing;
+insert into public.content_categories (slug, label, icon, position) values ('cycle-ages', 'Cycle et âges de la vie', 'moon', 71) on conflict (slug) do nothing;
+insert into public.content_categories (slug, label, icon, position) values ('sante-intime', 'Santé intime', 'heart', 72) on conflict (slug) do nothing;
 insert into public.content_categories (slug, label, icon, position) values ('contraception', 'Contraception et IVG', 'shield', 73) on conflict (slug) do nothing;
 insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('fertilite-masculine-ce-qui-compte', (select id from public.content_categories where slug = 'fertilite'), 'Fertilité masculine : ce qui compte et comment la préserver', 'La fertilité se joue à deux : âge, tabac, cannabis, poids, chaleur et examens du partenaire, expliqués simplement.', '## En bref
 - Quand une grossesse tarde, les deux partenaires sont concernés : le bilan s’adresse toujours au couple.
