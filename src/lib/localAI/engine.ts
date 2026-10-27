@@ -112,10 +112,18 @@ const SYN: string[][] = [
   ['activite', 'activites', 'jeu', 'jeux', 'jouer', 'occuper', 'quoi faire avec', 'eveil'],
   ['dent', 'dents', 'poussee dentaire', 'dentaire'],
   // Règles, cycle, santé intime, contraception
-  ['spm', 'syndrome premenstruel', 'premenstruel', 'premenstruelle', 'premenstruels', 'tdpm', 'trouble dysphorique premenstruel'],
+  ['spm', 'syndrome premenstruel', 'premenstruel', 'premenstruelle', 'premenstruels'],
+  ['tdpm', 'trouble dysphorique premenstruel', 'dysphorique'],
+  ['depistage', 'depister', 'depiste', 'depistee', 'depistages'],
+  ['garder', 'porter', 'laisser', 'duree de port'],
   ['retard de regles', 'regles en retard', 'pas eu mes regles', 'pas eu de regles', 'toujours pas mes regles', 'pas encore eu mes regles'],
   ['abondantes', 'abondante', 'abondant', 'regles abondantes', 'menorragie', 'menorragies', 'regles hemorragiques', 'beaucoup de sang'],
-  ['protection', 'protections', 'protection periodique', 'protections periodiques', 'tampon', 'tampons', 'serviette hygienique', 'serviettes hygieniques', 'coupe menstruelle', 'cup', 'cups', 'culotte menstruelle', 'culottes menstruelles'],
+  ['protection', 'protections', 'protection periodique', 'protections periodiques', 'protection hygienique', 'protections hygieniques'],
+  ['tampon', 'tampons'],
+  ['serviette', 'serviettes', 'serviette hygienique', 'serviettes hygieniques'],
+  ['coupe', 'coupe menstruelle', 'coupes menstruelles', 'cup', 'cups', 'cup menstruelle'],
+  ['culotte', 'culottes', 'culotte menstruelle', 'culottes menstruelles'],
+  ['odeur', 'odeurs', 'sentent mauvais', 'sent mauvais', 'mauvaise odeur', 'odeur forte', 'malodorant', 'malodorantes'],
   ['menopause', 'menopausee', 'perimenopause', 'premenopause'],
   ['bouffees de chaleur', 'bouffee de chaleur', 'sueurs nocturnes'],
   ['mycose', 'mycoses', 'candidose', 'champignon'],
@@ -126,7 +134,8 @@ const SYN: string[][] = [
   ['dyspareunie', 'douleur pendant les rapports', 'douleurs pendant les rapports', 'mal pendant les rapports', 'rapports douloureux'],
   ['oubli', 'oublie', 'oubliee', 'oublier', 'oublies'],
   ['pilule du lendemain', 'contraception d urgence', 'pilule d urgence'],
-  ['puberte', 'premieres regles', 'pubere'],
+  ['puberte', 'pubere'],
+  ['chute des dents', 'perdre ses dents', 'perd ses dents', 'dents de lait', 'dent de lait', 'dents qui bougent', 'dent qui bouge'],
   ['ovulation', 'ovule', 'ovuler', 'periode fertile'],
 ];
 const SYN_MAP = new Map<string, string>();
@@ -294,6 +303,10 @@ export function rankArticles(index: KbIndex, question: string, hits: { p: Passag
     const cover = q.length ? q.filter((t) => tt.includes(t)).length / q.length : 0;
     const precision = tt.length ? tt.filter((t) => q.includes(t)).length / new Set(tt).size : 0;
     r.score *= 1 + precision * 1.5;
+    // le titre COMMENCE par le sujet de la question (« Dépistage des IST… », « IVG : tes droits… ») : c'est l'article de fond
+    if (tt.length && q.includes(tt[0])) r.score *= 1.3;
+    // « c'est quoi… », « qu'est-ce que… » : l'article qui explique la maladie passe devant les cas particuliers
+    if (/c ?est quoi|qu ?est ?ce que|ca veut dire|definition/.test(normalize(question)) && /comprendre|qu.est-ce que|c.est quoi/i.test(a.title)) r.score *= 1.5;
     if (cover === 1) r.score *= 1.25 + Math.max(0, 0.25 - a.title.length / 400);
     // question à la première personne : les articles réservés aux enfants passent derrière
     if (self && a.journeys?.length && a.journeys.every((j) => j === 'newborn' || j === 'child') && /b[ée]b[ée]|nourrisson|enfant|tout-petit|fils|fille/i.test(a.title)) r.score *= 0.35;

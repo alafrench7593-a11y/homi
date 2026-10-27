@@ -1,5 +1,5 @@
 -- Articles par parcours — FICHIER GÉNÉRÉ par scripts/gen-articles-seed.ts (ne pas modifier à la main).
--- Guide complet : 926 nouveaux articles (concevoir, grossesse, bébé, enfant, troubles, alimentation, sport, matériel, vie pratique…), rédigés avec l'aide d'une IA à partir de sources officielles consultées le 27/10/2026 : statut éditorial « à vérifier ».
+-- Guide complet : 1052 nouveaux articles (concevoir, grossesse, bébé, enfant, troubles, alimentation, sport, matériel, vie pratique…), rédigés avec l'aide d'une IA à partir de sources officielles consultées le 27/10/2026 : statut éditorial « à vérifier ».
 -- Retour arrière : delete from public.articles where updated_on = '2026-10-27' and editorial_status = 'to_review' and slug not in (anciens slugs) ; les catégories ajoutées peuvent rester.
 insert into public.content_categories (slug, label, icon, position) values ('sexualite', 'Sexualité et couple', 'heart', 10) on conflict (slug) do nothing;
 insert into public.content_categories (slug, label, icon, position) values ('sommeil', 'Sommeil', 'moon', 11) on conflict (slug) do nothing;
@@ -26,6 +26,10 @@ insert into public.content_categories (slug, label, icon, position) values ('spo
 insert into public.content_categories (slug, label, icon, position) values ('materiel', 'Bien choisir le matériel', 'shopping-bag', 62) on conflict (slug) do nothing;
 insert into public.content_categories (slug, label, icon, position) values ('vie-pratique', 'Vie pratique et organisation', 'clipboard', 63) on conflict (slug) do nothing;
 insert into public.content_categories (slug, label, icon, position) values ('premiers-secours', 'Premiers secours et bobos', 'plus-circle', 64) on conflict (slug) do nothing;
+insert into public.content_categories (slug, label, icon, position) values ('regles', 'Règles : comprendre et soulager', 'droplet', 70) on conflict (slug) do nothing;
+insert into public.content_categories (slug, label, icon, position) values ('cycle-ages', 'Cycle, hormones et âges de la vie', 'moon', 71) on conflict (slug) do nothing;
+insert into public.content_categories (slug, label, icon, position) values ('sante-intime', 'Santé intime et gynécologique', 'heart', 72) on conflict (slug) do nothing;
+insert into public.content_categories (slug, label, icon, position) values ('contraception', 'Contraception et IVG', 'shield', 73) on conflict (slug) do nothing;
 insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('fertilite-masculine-ce-qui-compte', (select id from public.content_categories where slug = 'fertilite'), 'Fertilité masculine : ce qui compte et comment la préserver', 'La fertilité se joue à deux : âge, tabac, cannabis, poids, chaleur et examens du partenaire, expliqués simplement.', '## En bref
 - Quand une grossesse tarde, les deux partenaires sont concernés : le bilan s’adresse toujours au couple.
 - La qualité des spermatozoïdes diminue avec l’âge, le tabac, le cannabis, l’alcool et l’excès de poids.
@@ -7234,6 +7238,49 @@ Certaines maladies rares sont repérées dès la naissance grâce au **dépistag
 - Urgence vitale : **15** ou **112**, en présentant la fiche d’urgence si vous en avez une.
 
 Cet article vous informe et vous aide à vous repérer ; il ne permet pas de poser un diagnostic et ne remplace pas l’avis du médecin ou des professionnels qui suivent votre enfant.', array['child','newborn']::text[], null, null, null, null, false, array['maladies rares','orphanet','centres de référence','filières']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ARS Bretagne (portail d’accompagnement des professionnels de santé) — Mémo ressources maladies rares","url":"https://bretagne.paps.sante.fr/media/67713/download","consulted_on":"2026-10-27"},{"label":"ARS Île-de-France — Le programme national de dépistage néonatal","url":"https://www.iledefrance.ars.sante.fr/le-programme-national-de-depistage-neonatal","consulted_on":"2026-10-27","published":"2025-03-26"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('saignements-pendant-la-grossesse', (select id from public.content_categories where slug = 'sante-grossesse'), 'Saignements pendant la grossesse : que faire, quand c’est urgent', 'Des saignements vaginaux pendant la grossesse demandent toujours un avis : rapidement au 1er trimestre, en urgence ensuite.', '## En bref
+- Au **1er trimestre**, des saignements sont fréquents : selon l’Assurance Maladie, environ une femme enceinte sur quatre en a, et la grossesse se poursuit dans la grande majorité des cas. Ils demandent quand même un avis rapide.
+- À partir du **2e trimestre**, tout saignement vaginal est considéré comme anormal : il nécessite un bilan **en urgence**.
+- **Appelez le 15 (ou le 112)** ou allez aux urgences en cas de saignement abondant, de malaise, de douleurs fortes ou de fièvre.
+- Si vous êtes de groupe **Rhésus négatif**, signalez-le : une injection de gammaglobulines anti-D peut être nécessaire.
+
+## Comprendre
+**Au premier trimestre.** Les saignements peuvent survenir alors que la grossesse évolue normalement ; parfois, aucune cause n’est retrouvée. Ils peuvent aussi être le signe d’une **fausse couche** (perte de la grossesse avant la 22e semaine), d’une **grossesse extra-utérine** — l’œuf s’est implanté hors de l’utérus, le plus souvent dans une trompe, ce qui est une urgence — ou, de façon exceptionnelle, d’une môle hydatiforme. Seul un examen permet de faire la différence.
+
+**Aux deuxième et troisième trimestres.** L’Assurance Maladie rappelle qu’à ce stade, il n’existe pas de saignement considéré comme bénin. Les deux causes principales sont :
+- le **placenta prævia** : le placenta est inséré trop bas et recouvre en partie ou totalement l’orifice du col. Les saignements sont plutôt abondants, de sang rouge, et peuvent se répéter, parfois avec des contractions sans douleur ;
+- l’**hématome rétroplacentaire** : une poche de sang décolle le placenta de la paroi de l’utérus. Les saignements sont souvent peu abondants et noirâtres, avec une douleur brutale et permanente du ventre, qui devient dur, et parfois un malaise ou des palpitations. Il peut compliquer une pré-éclampsie.
+
+## Au quotidien
+- **Notez** l’heure de début, l’abondance (quelques gouttes, une serviette qui se remplit…), la couleur, et ce qui accompagne le saignement (douleurs, contractions, fièvre, malaise).
+- **Au 1er trimestre**, sans signe de gravité, prenez **rapidement** rendez-vous avec votre médecin, votre gynécologue ou votre sage-femme. Le plus souvent, un examen, une échographie et une prise de sang (dosage de l’hormone de grossesse) permettent de faire le point ; une nouvelle échographie est parfois proposée une à deux semaines plus tard.
+- **À partir du 2e trimestre**, n’attendez pas : rendez-vous **immédiatement** à la maternité qui vous suit ou appelez les urgences. Une hospitalisation et une surveillance du bébé (échographie, rythme cardiaque) sont en général nécessaires.
+- Gardez à portée de main votre carte de groupe sanguin et votre dossier de grossesse.
+- Évitez de conduire vous-même si vous saignez abondamment ou vous sentez mal : faites-vous accompagner ou appelez le 15.
+
+## Questions fréquentes
+**J’ai eu quelques gouttes de sang au début de la grossesse : est-ce grave ?**
+Ce n’est pas forcément grave : ces saignements sont fréquents et la grossesse se poursuit le plus souvent. Mais seul un professionnel peut vérifier, notamment pour écarter une grossesse extra-utérine. Consultez rapidement.
+
+**Je saigne au 6e mois, mais je n’ai pas mal. Puis-je attendre le prochain rendez-vous ?**
+Non. Après le premier trimestre, tout saignement doit être évalué en urgence, même sans douleur : le placenta prævia, par exemple, peut saigner sans faire mal.
+
+**Pourquoi me parle-t-on de mon groupe sanguin ?**
+Si vous êtes Rhésus négatif, une injection de gammaglobulines anti-D peut être proposée lors de saignements, pour protéger les grossesses suivantes et le bébé. Signalez-le à l’équipe.
+
+**Que se passe-t-il si la grossesse s’est arrêtée ?**
+L’équipe vous explique les options (attendre, traitement par médicament ou geste par aspiration) et en discute avec vous. Vous n’êtes pas seule : demandez aussi un soutien si vous en ressentez le besoin.
+
+## Quand demander conseil
+**Appelez le 15 ou le 112, ou allez aux urgences tout de suite** si :
+- le saignement est abondant, ou s’accompagne d’un malaise, de palpitations ou d’une sensation d’évanouissement ;
+- vous avez des douleurs fortes du bas-ventre, d’un côté, ou un ventre dur et douloureux en permanence ;
+- vous avez de la fièvre ;
+- vous êtes au 2e ou au 3e trimestre, quel que soit le saignement.
+
+Dans les autres cas au 1er trimestre, prenez rendez-vous **rapidement** avec votre médecin, votre gynécologue ou votre sage-femme. En cas de détresse après une perte de grossesse, le **3114** répond 24 h/24.
+
+Cet article vous informe ; il ne remplace pas l’avis de la sage-femme ou du médecin qui vous suit.', array['pregnant']::text[], null, null, null, null, false, array['saignement','saignements','sang','saigner','perte de sang','grossesse','urgence','placenta','fausse couche']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Saignements gynécologiques du premier trimestre de la grossesse","url":"https://www.ameli.fr/assure/sante/devenir-parent/grossesse/difficultes-et-maladies-pendant-la-grossesse/saignements-gynecologiques-grossesse/saignements-gynecologiques-du-premier-trimestre-de-la-grossesse","consulted_on":"2026-10-27","published":"2026-06-24"},{"label":"ameli.fr — Saignements gynécologiques lors du 2e et du 3e trimestre de la grossesse","url":"https://www.ameli.fr/assure/sante/devenir-parent/grossesse/difficultes-et-maladies-pendant-la-grossesse/saignements-gynecologiques-grossesse/saignements-lors-du-deuxieme-et-du-troisieme-trimestre-de-la-grossesse","consulted_on":"2026-10-27","published":"2026-06-24"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
 insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('fromages-enceinte-lesquels-choisir', (select id from public.content_categories where slug = 'alimentation-grossesse'), 'Fromages enceinte : lesquels choisir, lesquels éviter ?', 'Le point fromage par fromage : pâtes pressées cuites, pâtes molles, bleus, fromages frais, râpés et croûtes pendant les neuf mois.', '## En bref
 - **À privilégier** : les fromages à **pâte pressée cuite** (comté, beaufort, emmental, gruyère, parmesan), **sans la croûte**.
 - **À éviter pendant neuf mois** : fromages au **lait cru**, fromages à **pâte molle** (camembert, brie, munster, pont-l’évêque), à **croûte fleurie ou lavée**, **bleus**, et pâtes pressées non cuites à affinage court (reblochon, morbier), **même pasteurisés**.
@@ -40746,6 +40793,5291 @@ Mieux vaut l’aider à dire la vérité et à réparer. Une punition trop lourd
 Parlez-en au médecin si les mensonges sont très fréquents et s’accompagnent d’autres difficultés (agressivité, tristesse, difficultés scolaires, troubles du sommeil), ou si vous pensez qu’il cache quelque chose qui lui fait peur. Si vous vous sentez à bout ou envahi par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit. En cas d’urgence vitale, appelez le **15** (SAMU) ou le **112**.
 
 _Cet article vous informe ; il ne remplace pas l’avis du médecin, du pédiatre, de la puéricultrice de PMI, du psychologue ou des professionnels qui accompagnent votre enfant._', array['child']::text[], null, null, 36, 120, false, array['mensonge enfant','enfant ment','imaginaire','père Noël','petite souris','raconter des histoires','vérité','confiance']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — Le père Noël, la petite souris : faut-il laisser les enfants y croire ?","url":"https://www.mpedia.fr/art-les-croyances-enfant/","consulted_on":"2026-10-27","published":"2020-11-23"},{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — Obéissance de l’enfant : quelle punition ?","url":"https://www.mpedia.fr/art-obeissance-punition/","consulted_on":"2026-10-27","published":"2023-08-31"},{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — Les peurs fréquentes et irraisonnées chez l’enfant","url":"https://www.mpedia.fr/art-les-peurs-frequentes-chez-enfant/","consulted_on":"2026-10-27","published":"2020-09-28"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('regles-duree-abondance-reperes', (select id from public.content_categories where slug = 'regles'), 'Durée, abondance, couleur : les repères pour connaître tes règles', 'Combien de jours durent les règles, quelle quantité de sang, pourquoi la couleur change : les repères donnés par les sources de santé publique pour mieux te situer.', '## En bref
+- Selon l’Assurance Maladie, les règles durent **en général 3 à 6 jours** et sont souvent plus abondantes les **3 premiers jours**.
+- Un cycle dure **en moyenne 28 jours**, avec des écarts courants **entre 23 et 35 jours**.
+- La quantité de sang perdue sur l’ensemble des règles est souvent estimée **sous 60 ml** (environ 4 cuillères à soupe) ; au-delà de **80 ml** ou de **7 jours**, on parle de règles abondantes.
+- La couleur varie selon la vitesse d’écoulement : **rouge et fluide** quand le sang coule vite, **marron et plus épais** quand il coule lentement.
+- Chaque personne a ses propres repères : ce qui compte surtout, c’est un **changement** par rapport à ton habitude.
+
+## Comprendre
+Les règles correspondent à l’élimination de la couche superficielle de la muqueuse de l’utérus (l’endomètre) quand il n’y a pas eu de fécondation. Le premier jour des règles marque le début d’un nouveau cycle.
+
+Le cycle comporte deux phases séparées par l’ovulation. La première (phase folliculaire) peut varier en longueur d’un cycle à l’autre : c’est elle qui explique la plupart des différences de durée. La seconde (phase lutéale) est plus stable, autour de 12 à 16 jours. Quand il n’y a pas de grossesse, la baisse des hormones déclenche les règles.
+
+Le sang des règles n’est pas du sang « comme celui d’une coupure » : il contient aussi de la muqueuse utérine et de la glaire. QuestionSexualité explique ainsi les différences de couleur : un sang rouge vif s’écoule rapidement ; un sang marron, un peu grumeleux, a mis plus de temps à sortir, s’est oxydé et a épaissi. Les fins de règles sont donc souvent plus sombres.
+
+Côté quantité, les repères officiels diffèrent un peu selon la manière de compter : l’Assurance Maladie parle de règles abondantes au-delà de 80 ml et/ou plus de 6 jours ; QuestionSexualité retient une perte inférieure à 60 ml comme habituelle et parle de ménorragies au-delà de 80 ml et/ou 7 jours. Comme personne ne mesure ses règles au millilitre, ces chiffres servent surtout de point de repère.
+
+À l’adolescence et à l’approche de la ménopause, les cycles sont souvent plus irréguliers.
+
+## Au quotidien
+- **Compte la durée de ton cycle** : du premier jour des règles au premier jour des règles suivantes. Au bout de 3 ou 4 cycles, tu obtiens une moyenne.
+- **Note quelques infos simples** dans un calendrier ou dans l’app : date de début, nombre de jours, jours les plus abondants, douleur éventuelle.
+- **Observe ton rythme de changement de protection** : c’est un bon indicateur concret de l’abondance.
+- **Garde toujours une protection sur toi** : les règles peuvent arriver sans prévenir, surtout si ton cycle varie.
+- Les règles ne t’obligent pas à arrêter tes activités, sport compris.
+
+## Questions fréquentes
+**Mes règles durent 2 jours seulement, est-ce un souci ?** La durée varie beaucoup d’une personne à l’autre. Si c’est ton fonctionnement habituel et que tu te sens bien, c’est surtout un changement net ou des signes associés (douleurs, saignements entre les règles) qui doivent amener à en parler à un professionnel.
+
+**Pourquoi mon sang est-il marron au début ou à la fin ?** Parce qu’il s’écoule lentement et a le temps de s’oxyder. C’est fréquent en tout début et en fin de règles.
+
+**Comment savoir si j’ai des règles abondantes ?** Un repère pratique donné par QuestionSexualité : devoir changer de protection **au moins toutes les deux heures pendant toute une journée**. Des règles qui débordent malgré tes protections habituelles, ou qui durent plus d’une semaine, méritent aussi une consultation.
+
+**Mon cycle change d’un mois à l’autre, faut-il s’inquiéter ?** Des variations de quelques jours sont courantes, notamment parce que la première phase du cycle varie. Des cycles très courts, très longs ou très imprévisibles sont à évoquer avec un professionnel.
+
+## Quand demander conseil
+Consulte si tes règles deviennent très abondantes ou très longues et gênent ton quotidien, si elles s’accompagnent de douleurs importantes et répétées, si tu saignes entre les règles, ou si tes règles s’arrêtent plus de 3 mois (hors grossesse, allaitement ou ménopause). Une douleur qui t’empêche de vivre normalement n’a pas à être subie : elle mérite une consultation.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid','ttc']::text[], null, null, null, null, false, array['durée des règles','combien de jours règles','quantité de sang règles','couleur des règles','sang marron','cycle menstruel','règles normales','flux']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Informations et conseils sur les règles ou menstruations","url":"https://www.ameli.fr/assure/sante/themes/puberte/informations-conseils-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"ameli.fr — Qu’est-ce qu’un saignement gynécologique anormal en dehors de la grossesse ?","url":"https://www.ameli.fr/assure/sante/themes/saignements-gynecologiques-anormaux/saignements-gynecologiques-anormaux-definition","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Règles : tout savoir sur le cycle menstruel","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/tout-savoir-sur-les-regles","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('regles-abondantes-menorragies-quand-consulter', (select id from public.content_categories where slug = 'regles'), 'Règles abondantes (ménorragies) : les reconnaître et quand consulter', 'Protections qui débordent, règles qui durent plus d’une semaine : comment reconnaître des règles abondantes, leurs causes possibles et pourquoi en parler à un professionnel.', '## En bref
+- On parle de **ménorragies** quand les règles sont anormalement **abondantes** (plus de 80 ml) et/ou **longues** (plus de 6 à 7 jours selon les sources).
+- Signe concret : des protections qui **ne suffisent plus**, ou qu’il faut changer **toutes les deux heures** pendant une journée entière.
+- Les causes les plus fréquentes sont des **déséquilibres hormonaux**, des **polypes ou fibromes**, l’**adénomyose**, le **stérilet au cuivre** et, plus rarement, des **anomalies de la coagulation**.
+- Des règles très abondantes qui gênent ton quotidien justifient **un avis médical** : il existe des traitements.
+
+## Comprendre
+L’Assurance Maladie définit les ménorragies comme des saignements survenant à la date prévue des règles mais anormalement abondants (plus de 80 ml) et/ou longs (plus de 6 jours). Santé.fr parle de règles dépassant leur durée habituelle ou d’un flux qui n’est plus contrôlé par tes protections habituelles.
+
+Les causes possibles sont nombreuses :
+- **Déséquilibres hormonaux**, en particulier les troubles de l’ovulation, fréquents à la puberté et à l’approche de la ménopause : les premiers et les derniers cycles sont souvent plus abondants.
+- **Polypes et fibromes de l’utérus**, des formations le plus souvent bénignes.
+- **Adénomyose**, quand de la muqueuse utérine se trouve dans le muscle de l’utérus.
+- **Stérilet au cuivre** : Santé.fr indique qu’un stérilet hormonal peut alors être envisagé avec le professionnel.
+- **Anomalies de la coagulation** (comme la maladie de Willebrand), rares, que l’on recherche notamment chez l’adolescente et la jeune femme.
+- Un **traitement anticoagulant** pris pour une autre raison.
+- Plus rarement, une anomalie de l’endomètre, comme un épaississement (hyperplasie).
+
+Le traitement vise la cause : certains médicaments hormonaux, d’autres qui agissent sur la coagulation ou les contractions de l’utérus, ou la prise en charge d’un fibrome ou d’un polype. C’est le médecin qui choisit selon ta situation.
+
+## Au quotidien
+- **Note ce que tu observes** pendant 2 ou 3 cycles : nombre de jours, nombre de protections par jour, protections qui débordent, nuits où tu dois te lever, présence de caillots. Ces infos aident beaucoup en consultation.
+- **Adapte tes protections** à ton flux plutôt que de garder plus longtemps une protection interne très absorbante : l’Anses recommande un pouvoir absorbant adapté et un changement régulier.
+- **Sois attentive à la fatigue**, à l’essoufflement ou à une pâleur : des pertes de sang importantes répétées peuvent conduire à une anémie, à vérifier avec un médecin.
+- **Prévois un kit** (protections de rechange, sous-vêtement) au travail, à l’école ou en sortie pour vivre plus sereinement les jours les plus abondants.
+
+## Questions fréquentes
+**Des règles abondantes, est-ce grave ?** Le plus souvent, la cause est bénigne. Mais elles peuvent fatiguer, perturber la vie quotidienne et cacher une cause qui se traite : c’est pourquoi elles méritent un avis médical.
+
+**Quels examens peut-on me proposer ?** Selon la situation, un examen clinique, une échographie et, chez l’adolescente ou la jeune femme, la recherche d’un trouble de la coagulation. D’autres examens ne sont faits que si l’échographie montre quelque chose de suspect.
+
+**Mon stérilet au cuivre rend mes règles plus abondantes, que faire ?** C’est une cause connue. Parles-en au professionnel qui te suit : il pourra discuter avec toi d’autres options de contraception.
+
+**À l’adolescence, mes règles sont très abondantes, est-ce que ça passe ?** Les troubles de l’ovulation des premiers cycles se résolvent souvent spontanément, mais un traitement peut soulager. Consulte, notamment si des proches ont des problèmes de saignement.
+
+## Quand demander conseil
+Prends rendez-vous si tes règles débordent malgré tes protections habituelles, durent plus d’une semaine, s’accompagnent de fatigue marquée, d’essoufflement ou de pâleur, ou si elles deviennent plus abondantes qu’avant. Pour en savoir plus sur les maladies rares de la coagulation, Maladies Rares Info Services répond au **0800 40 40 43** (appel gratuit).
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['règles abondantes','ménorragie','règles hémorragiques','règles longues','flux abondant','fibrome','polype','stérilet cuivre','fatigue règles']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Qu’est-ce qu’un saignement gynécologique anormal en dehors de la grossesse ?","url":"https://www.ameli.fr/assure/sante/themes/saignements-gynecologiques-anormaux/saignements-gynecologiques-anormaux-definition","consulted_on":"2026-10-27"},{"label":"ameli.fr — Saignements entre les règles ou règles très abondantes : quelles causes ?","url":"https://www.ameli.fr/assure/sante/themes/saignements-gynecologiques-anormaux/saignements-entre-les-regles-ou-regles-abondantes-longues-les-causes","consulted_on":"2026-10-27"},{"label":"Santé.fr — Troubles des règles","url":"https://www.sante.fr/troubles-des-regles","consulted_on":"2026-10-27","published":"2026-08-14"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('saignements-entre-les-regles-spotting', (select id from public.content_categories where slug = 'regles'), 'Saignements entre les règles (spotting) : causes possibles et quand consulter', 'Petites pertes brunâtres, saignement après un rapport, saignements sous pilule : ce que peuvent signifier des saignements en dehors des règles et pourquoi les signaler.', '## En bref
+- On parle de **métrorragie** pour un saignement en dehors des règles, et de **spotting** quand il est peu abondant, souvent brunâtre.
+- Cause fréquente : la **contraception hormonale** (oubli de pilule, contraception progestative, stérilet hormonal).
+- D’autres causes sont à rechercher : **infection**, **polype**, **fibrome**, **lésion du col de l’utérus**.
+- Un saignement **après un rapport sexuel** doit être signalé à un professionnel.
+- En cas de **retard de règles** avec saignement et douleur, pense à une grossesse et consulte rapidement.
+
+## Comprendre
+L’Assurance Maladie distingue plusieurs types de saignements anormaux hors grossesse : les métrorragies (saignements en dehors des règles), le spotting (petite quantité, souvent brunâtre) et les ménométrorragies (saignements anormaux pendant et entre les règles).
+
+Les déséquilibres hormonaux sont la cause la plus fréquente :
+- sous **pilule œstroprogestative**, des saignements peuvent apparaître en cas d’oubli ou de déséquilibre entre les hormones ;
+- une **contraception progestative** (pilule, stérilet hormonal) entraîne souvent de petits saignements modérés ;
+- à la puberté et à l’approche de la ménopause, les troubles de l’ovulation rendent les cycles irréguliers.
+
+D’autres causes sont à rechercher par un professionnel :
+- **infection gynécologique**, dont certaines infections sexuellement transmissibles qui touchent le col (pertes, douleurs pendant les rapports, petits saignements) ;
+- **polypes** de l’utérus ou du col, **fibromes** ;
+- **endométrite** (infection de la muqueuse utérine), avec fièvre et pertes anormales ;
+- **lésion ou cancer du col de l’utérus** : l’Assurance Maladie précise que les saignements surviennent d’abord après les rapports, peu abondants et sans douleur, d’où l’intérêt du dépistage régulier ;
+- plus rarement, un traitement anticoagulant ou un trouble de la coagulation.
+
+## Au quotidien
+- **Note les dates** des saignements dans ton calendrier : moment du cycle, abondance, couleur, lien éventuel avec un rapport ou un oubli de pilule.
+- **Sous pilule**, relis la notice et les consignes en cas d’oubli ; si tu as un doute sur ta protection contraceptive, demande conseil à un pharmacien.
+- **Pense au dépistage du cancer du col** de l’utérus aux âges recommandés : il repère des lésions avant qu’elles ne donnent des symptômes.
+- **Protège-toi des IST** avec le préservatif et fais-toi dépister en cas de doute.
+- Un protège-slip peut suffire pour du spotting ; change-le régulièrement.
+
+## Questions fréquentes
+**J’ai eu des petits saignements après avoir commencé une nouvelle pilule, est-ce inquiétant ?** Les saignements sont fréquents avec certaines contraceptions hormonales, surtout au début. S’ils persistent, augmentent ou te gênent, parles-en au professionnel qui te l’a prescrite.
+
+**Je saigne un peu après les rapports, que faire ?** Consulte : cela peut venir du col de l’utérus (infection, polype, lésion). Un examen simple permet souvent d’y voir clair.
+
+**Peut-on saigner au moment de l’ovulation ?** Certaines personnes observent de petites pertes au milieu du cycle. Comme d’autres causes sont possibles, il vaut mieux en parler à un professionnel si cela se répète ou si c’est nouveau.
+
+**Et si j’ai du retard et des saignements ?** Fais un test de grossesse. Un saignement avec douleur du ventre en début de grossesse nécessite un avis médical rapide.
+
+## Quand demander conseil
+Consulte si les saignements entre les règles se répètent, apparaissent après les rapports, s’accompagnent de pertes inhabituelles, de douleurs ou de fièvre, ou surviennent après la ménopause. Une douleur qui t’empêche de vivre normalement n’a pas à être subie.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['spotting','saignement entre les règles','métrorragie','pertes marron','saignement après rapport','saignement sous pilule','oubli de pilule','polype']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Qu’est-ce qu’un saignement gynécologique anormal en dehors de la grossesse ?","url":"https://www.ameli.fr/assure/sante/themes/saignements-gynecologiques-anormaux/saignements-gynecologiques-anormaux-definition","consulted_on":"2026-10-27"},{"label":"ameli.fr — Saignements entre les règles ou règles très abondantes : quelles causes ?","url":"https://www.ameli.fr/assure/sante/themes/saignements-gynecologiques-anormaux/saignements-entre-les-regles-ou-regles-abondantes-longues-les-causes","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('syndrome-premenstruel-spm-comprendre-soulager', (select id from public.content_categories where slug = 'regles'), 'Syndrome prémenstruel (SPM) : comprendre ce qui se passe et mieux vivre ces jours-là', 'Seins tendus, ventre gonflé, irritabilité, coup de blues avant les règles : ce qu’est le syndrome prémenstruel, ce qui peut aider au quotidien et quand en parler.', '## En bref
+- Le **syndrome prémenstruel** regroupe des symptômes physiques et émotionnels qui apparaissent **environ une semaine avant les règles** et disparaissent **en un ou deux jours** après leur début.
+- Signes fréquents : **seins tendus**, **ballonnements**, sensation de gonflement, maux de tête, **irritabilité**, tristesse, fatigue.
+- Ses mécanismes sont encore mal connus ; il est lié aux variations hormonales après l’ovulation.
+- Des habitudes de vie peuvent aider, même si leur efficacité n’est pas démontrée scientifiquement.
+- S’il est **invalidant**, parles-en à un médecin : des solutions existent.
+
+## Comprendre
+Santé.fr décrit le syndrome prémenstruel (SPM) comme un ensemble de symptômes qui survient environ une semaine avant les règles et disparaît un ou deux jours après leur arrivée.
+
+**Côté corps** : seins douloureux, prise de poids passagère, sensation de gonflement, ballonnements, maux de ventre, douleurs dans le bas du dos. Une partie de ces symptômes s’explique par une rétention d’eau.
+
+**Côté émotions** : tristesse, manque d’énergie, crises de larmes, irritabilité, anxiété.
+
+Les mécanismes ne sont pas complètement compris : le SPM serait lié à la baisse des hormones sexuelles en fin de cycle, après l’ovulation. Son intensité varie beaucoup d’une personne à l’autre et d’un cycle à l’autre.
+
+Chez une petite partie des femmes (5 à 10 % selon QuestionSexualité), les symptômes émotionnels sont sévères, avec humeur dépressive ou forte anxiété : on parle alors de **trouble dysphorique prémenstruel**, qui nécessite d’en parler à un médecin.
+
+## Au quotidien
+Santé.fr cite plusieurs pistes, en précisant que leur efficacité n’est pas démontrée scientifiquement. Tu peux tester ce qui te fait du bien :
+- **Alimentation** : moins de sel dans les jours qui précèdent les règles, et limiter les excitants (café, alcool, tabac).
+- **Bouger** : marche, vélo, natation, danse… ou des pratiques de **relaxation**.
+- **Sommeil** : te coucher à heures régulières et préserver ton temps de repos.
+- **Stress** : alléger ton planning si possible ces jours-là, prévoir des moments pour toi.
+- **Repérer** : note tes symptômes dans un calendrier pendant 2 ou 3 cycles. Voir qu’ils reviennent toujours à la même période aide à anticiper, à en parler à ton entourage et à préparer la consultation.
+- **En parler** : expliquer à ton ou ta partenaire, à ta famille ou à tes amis ce que tu traverses peut alléger la tension.
+
+## Questions fréquentes
+**Comment savoir si c’est un SPM ou autre chose ?** Le SPM a un calendrier typique : il revient avant chaque règles et s’efface dès leur début. Si tes symptômes durent tout le mois, ne s’améliorent pas avec les règles ou s’aggravent, parles-en à un médecin.
+
+**Existe-t-il des traitements ?** Si le SPM est invalidant, Santé.fr indique que le médecin peut proposer un antalgique ou un anti-inflammatoire, et parfois d’autres traitements selon les symptômes. Demande conseil avant toute automédication.
+
+**Mes seins sont douloureux avant les règles, est-ce lié ?** La tension mammaire fait partie des signes les plus cités du SPM. Une boule qui persiste après les règles, un écoulement ou une modification de la peau doivent en revanche être montrés à un professionnel.
+
+**Le SPM peut-il changer avec l’âge ?** Oui, il peut évoluer, et l’Assurance Maladie cite aussi le syndrome prémenstruel parmi les signes possibles de la périménopause.
+
+## Quand demander conseil
+Consulte si tes symptômes perturbent ton travail, tes études, ta vie de couple ou tes relations, ou si tu te sens très triste, anxieuse ou à bout avant tes règles. Si tu as des idées noires, appelle le **3114** (numéro national de prévention du suicide), gratuit, 24 h/24. En cas d’urgence, appelle le **15** ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid','ttc']::text[], null, null, null, null, false, array['syndrome prémenstruel','SPM','avant les règles','seins douloureux','ballonnements','irritabilité','humeur avant les règles','rétention d’eau']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Troubles des règles","url":"https://www.sante.fr/troubles-des-regles","consulted_on":"2026-10-27","published":"2026-08-14"},{"label":"ameli.fr — Informations et conseils sur les règles ou menstruations","url":"https://www.ameli.fr/assure/sante/themes/puberte/informations-conseils-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"QuestionSexualité (Santé publique France) — Règles : tout savoir sur le cycle menstruel","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/tout-savoir-sur-les-regles","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('serviettes-hygieniques-jetables-lavables-bien-choisir', (select id from public.content_categories where slug = 'regles'), 'Serviettes hygiéniques jetables ou lavables : bien choisir et bien les utiliser', 'Avantages, limites, absorption, entretien des serviettes lavables, étiquetage : tout pour choisir des serviettes adaptées à ton flux et les utiliser en confiance.', '## En bref
+- Les serviettes sont des **protections externes** : elles se fixent dans la culotte, sans rien introduire dans le vagin.
+- Elles sont **faciles à utiliser** et conseillées **la nuit** par l’Assurance Maladie, notamment pour réduire le risque de choc toxique lié aux protections internes.
+- Les modèles **lavables** doivent être lavés avant le premier usage, puis entretenus selon les consignes et **bien séchés**.
+- Choisis une absorption **adaptée à ton flux** et privilégie les produits **sans parfum**.
+- Depuis avril 2024, la **composition** et les **précautions d’usage** doivent figurer sur l’emballage ou la notice.
+
+## Comprendre
+La DGCCRF classe les protections en deux familles : les **protections externes** (serviettes, protège-slips, culottes menstruelles, jetables ou réutilisables) et les **protections internes** (tampons et coupes). Selon cette fiche, les protections externes n’ont, à ce jour, pas été associées au syndrome de choc toxique menstruel.
+
+**Serviettes jetables** : elles tiennent grâce à une bande adhésive. QuestionSexualité souligne leur facilité d’utilisation ; côté contraintes, elles sont à usage unique, doivent être changées régulièrement selon le flux, demandent un endroit pour se changer et une poubelle, et leur coût mensuel peut peser.
+
+**Serviettes lavables** : elles se fixent avec un ou plusieurs boutons pression. Elles sont réutilisables mais demandent un entretien rigoureux. QuestionSexualité indique une durée de port de 4 à 6 heures, avec des changements plus fréquents si le flux est abondant, un rinçage à l’eau froide puis un lavage entre 30 et 60 °C, et surtout un **séchage complet** avant de les réutiliser, pour limiter le risque de mycose.
+
+**Protège-slips** : utiles pour de très petites pertes (fin de règles, spotting). Les modèles lavables suivent les mêmes règles d’entretien.
+
+Depuis le 1er avril 2024, un décret impose que l’étiquetage ou la notice des protections intimes précise la composition, les modalités et précautions d’utilisation et les effets indésirables possibles (irritations, intolérances, allergies…).
+
+## Au quotidien
+- **Adapte l’absorption** au moment des règles : plus absorbante les jours de fort flux, plus fine en fin de règles.
+- **Change-la régulièrement**, sans attendre qu’elle soit saturée, pour le confort et l’hygiène.
+- **Lave-toi les mains** avant et après chaque changement, comme le recommandent l’Assurance Maladie et l’Anses.
+- **Privilégie les produits sans parfum ni lotion parfumée**, conseil de la DGCCRF pour limiter les substances potentiellement allergisantes.
+- **Lis l’étiquette** : composition, précautions, consignes d’entretien. Méfie-toi des mentions commerciales très flatteuses sur les matières premières.
+- **Pour les lavables** : prévois un petit sac hermétique pour transporter une serviette utilisée, et assez de pièces pour avoir le temps qu’elles sèchent.
+- **La nuit** : une serviette adaptée (plus longue ou plus absorbante) est la protection conseillée, plutôt qu’un tampon.
+
+## Questions fréquentes
+**Serviettes ou tampons, qu’est-ce qui est mieux ?** Il n’y a pas de « meilleure » protection : tout dépend de ton confort, de tes activités et de ton flux. Beaucoup de personnes alternent selon les moments.
+
+**Ma serviette me donne des irritations, que faire ?** Change plus souvent, essaie un modèle sans parfum ou une autre matière, et vérifie la composition. Si l’irritation persiste ou s’accompagne de démangeaisons ou de pertes inhabituelles, consulte.
+
+**Les serviettes lavables sont-elles hygiéniques ?** Oui, si elles sont bien lavées selon les consignes et complètement sèches avant d’être réutilisées.
+
+**Combien de temps garder une serviette ?** Les sources ne fixent pas de durée unique pour les jetables : change-la selon ton flux, dès qu’elle est bien imprégnée. QuestionSexualité indique 4 à 6 heures pour les serviettes lavables, avec des changements plus fréquents si le flux est abondant.
+
+## Quand demander conseil
+Parles-en à un médecin, une sage-femme ou un pharmacien en cas d’irritation, de démangeaisons ou de pertes inhabituelles qui persistent, ou si tes règles sont si abondantes que les serviettes débordent. Une douleur pendant les règles qui t’empêche de vivre normalement mérite aussi une consultation.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['serviette hygiénique','serviette lavable','protège-slip','protection externe','protection de nuit','composition serviette','serviette sans parfum','protection périodique']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Quelle protection hygiénique adopter pendant les règles ?","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/quelle-protection-pendant-les-regles","consulted_on":"2026-10-27"},{"label":"ameli.fr — Protections intimes périodiques : comment les utiliser en toute sécurité ?","url":"https://www.ameli.fr/assure/sante/themes/regles-et-protections-intimes/protections-intimes-periodiques-comment-les-utiliser-en-toute-securite","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"DGCCRF (economie.gouv.fr) — Produits d’hygiène féminine : serviettes, tampons et coupes menstruelles","url":"https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/produits-dhygiene-feminine-serviettes-tampons-et-coupes-menstruelles","consulted_on":"2026-10-27","published":"2024-04-03"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('tampons-bien-choisir-mettre-retirer', (select id from public.content_categories where slug = 'regles'), 'Tampons : bien choisir l’absorption, les mettre, les retirer et respecter la durée de port', 'Comment choisir un tampon adapté à ton flux, le mettre en place sans douleur, le changer à temps et pourquoi éviter de le porter la nuit.', '## En bref
+- Un tampon se place dans le vagin et absorbe les règles ; un fil reste à l’extérieur pour le retirer.
+- Change-le **au plus tard toutes les 4 à 6 heures** et ne le garde **jamais plus de 6 heures**.
+- Choisis l’**absorption la plus faible** qui convient à ton flux : un tampon trop absorbant reste plus longtemps en place.
+- **N’en porte que pendant les règles** et **privilégie une serviette la nuit**.
+- Si tu as déjà eu un **choc toxique**, les protections internes ne sont pas recommandées.
+
+## Comprendre
+Les tampons sont des protections internes à usage unique, très discrets et disponibles pour tous les types de flux. Ils existent **avec ou sans applicateur** et en plusieurs tailles ; selon l’Assurance Maladie, les plus fins peuvent convenir dès les premières règles et quand le flux est faible.
+
+Le principal risque lié aux protections internes est le **syndrome de choc toxique menstruel**, rare mais grave. L’Assurance Maladie précise que garder un tampon plus de 6 heures, ou le porter toute la nuit, double le risque, et que ne pas suivre la notice est aussi associé à un risque accru. D’après l’Anses, ce risque est lié aux conditions d’utilisation (durée de port, absorption supérieure au besoin), et non aux matériaux.
+
+Depuis le 1er avril 2024, la notice des tampons doit indiquer leur composition, la durée maximale de port de 6 heures, le port uniquement pendant les règles, la recommandation d’une protection externe la nuit et les symptômes du choc toxique.
+
+## Au quotidien
+**Pour le mettre (QuestionSexualité)** :
+- lave-toi les mains, installe-toi dans une position où tu te sens détendue ;
+- **sans applicateur** : place la pointe à l’entrée du vagin, pousse doucement, puis enfonce un peu plus si tu le sens ;
+- **avec applicateur** : introduis l’applicateur, pousse le tube intérieur avec l’index pour libérer le tampon, puis retire l’applicateur ;
+- le fil doit rester à l’extérieur. Bien placé, un tampon ne se sent pas.
+
+**Pour le retirer** : mains propres, détends-toi et tire doucement sur le fil. S’il frotte, c’est souvent qu’il n’est pas assez imbibé : une absorption plus faible conviendra peut-être mieux.
+
+**Pour bien l’utiliser** :
+- note l’heure ou mets une alarme, surtout les journées chargées ;
+- alterne avec des serviettes, en particulier **la nuit** ;
+- garde des tampons de rechange et une serviette sur toi ;
+- n’utilise pas de tampon pour des pertes hors règles.
+
+## Questions fréquentes
+**Peut-on utiliser des tampons dès les premières règles ?** Oui, si tu en as envie. Les tampons les plus fins sont les plus adaptés au début. L’Assurance Maladie conseille de te faire expliquer l’utilisation par une personne de confiance ou un professionnel de santé.
+
+**Ça fait mal de mettre un tampon ?** Il peut y avoir une gêne au début. Prends ton temps, détends-toi, essaie une autre position ou un modèle plus fin. Une douleur forte et persistante à l’insertion mérite d’en parler à un professionnel.
+
+**Et si j’oublie un tampon ?** Retire-le dès que tu y penses. Si tu n’arrives pas à le retirer, consulte un médecin ou une sage-femme. Si tu as de la fièvre ou un malaise, c’est une urgence.
+
+**Faut-il un tampon plus absorbant pour le garder plus longtemps ?** Non : l’absorption doit correspondre à ton flux, pas à la durée. Un tampon trop absorbant pour ton flux augmente le risque de choc toxique selon l’Anses et la DGCCRF.
+
+## Quand demander conseil
+Consulte si tu n’arrives pas à retirer un tampon, si tu as des douleurs, des démangeaisons ou des pertes inhabituelles. Retire immédiatement le tampon et consulte en urgence en cas de **fièvre élevée, vomissements, diarrhée, éruption type coup de soleil, vertiges ou malaise** pendant ou peu après les règles : ce sont des signes possibles de choc toxique.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['tampon','mettre un tampon','tampon applicateur','absorption tampon','durée tampon','tampon la nuit','protection interne','premier tampon']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Protections intimes périodiques : comment les utiliser en toute sécurité ?","url":"https://www.ameli.fr/assure/sante/themes/regles-et-protections-intimes/protections-intimes-periodiques-comment-les-utiliser-en-toute-securite","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"QuestionSexualité (Santé publique France) — Quelle protection hygiénique adopter pendant les règles ?","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/quelle-protection-pendant-les-regles","consulted_on":"2026-10-27"},{"label":"DGCCRF (economie.gouv.fr) — Produits d’hygiène féminine : serviettes, tampons et coupes menstruelles","url":"https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/produits-dhygiene-feminine-serviettes-tampons-et-coupes-menstruelles","consulted_on":"2026-10-27","published":"2024-04-03"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('coupe-menstruelle-cup-utilisation-entretien', (select id from public.content_categories where slug = 'regles'), 'Coupe menstruelle (cup) : la mettre, la vider, l’entretenir en toute sécurité', 'Insertion, retrait, durée de port, stérilisation et précautions : le mode d’emploi de la coupe menstruelle selon les recommandations officielles.', '## En bref
+- La coupe menstruelle se place dans le vagin et **recueille** le sang au lieu de l’absorber.
+- L’Assurance Maladie recommande de la **vider toutes les 4 à 6 heures au maximum** ; ne dépasse jamais la durée indiquée sur la notice.
+- Lave-la avant le premier usage, nettoie-la entre deux utilisations (eau chaude et savon sans huile ni parfum) et suis la notice pour la **stérilisation**.
+- Comme le tampon, c’est une **protection interne** : à utiliser **seulement pendant les règles**, et pas si tu as déjà eu un choc toxique.
+- Depuis le 1er octobre 2026, une coupe achetée en pharmacie peut être **prise en charge** sous conditions.
+
+## Comprendre
+La coupe est une protection interne réutilisable. QuestionSexualité cite ses avantages (réutilisable, économique sur plusieurs années) et ses contraintes : l’insertion et le retrait demandent un peu d’entraînement, il faut un point d’eau et un endroit tranquille, être à l’aise avec le sang, et l’achat initial a un coût.
+
+Côté sécurité, l’Anses rappelle que le choc toxique concerne les protections internes, tampons comme coupes, et que le risque dépend surtout de la durée de port. Le décret entré en vigueur le 1er avril 2024 impose pour les coupes l’indication des mesures d’hygiène, d’un vidage régulier (toutes les 4 à 6 heures), d’un port uniquement pendant les règles et de la recommandation d’une protection externe la nuit.
+
+Les durées de port citées varient selon les sources et les produits (certaines notices indiquent jusqu’à 6 à 8 heures) : retiens la règle la plus prudente, celle de l’Assurance Maladie, et la notice de ton produit.
+
+## Au quotidien
+**Avant la première utilisation** : lave-la, et stérilise-la selon la notice ; QuestionSexualité décrit la stérilisation à l’eau bouillante quelques minutes ou au stérilisateur, avant la première utilisation et à chaque début de règles.
+
+**Pour l’insérer** : mains propres, plie la coupe (plusieurs pliages existent), insère-la, puis vérifie qu’elle s’est bien dépliée. Si elle reste pliée, repositionne-la.
+
+**Pour la retirer** : pince la base pour casser l’effet ventouse, **ne tire pas seulement sur la tige**, puis retire-la doucement en la gardant droite. Vide-la dans les toilettes.
+
+**Entre deux utilisations** : selon l’Assurance Maladie, nettoie-la avec de l’eau chaude et un savon sans huile et sans parfum, puis rince bien.
+
+**Bien choisir** : il existe plusieurs tailles et souplesses ; le fabricant indique généralement des repères (âge, flux, accouchement). Lis la composition et la notice avant d’acheter.
+
+## Questions fréquentes
+**La coupe est-elle plus sûre que le tampon pour le choc toxique ?** Non : ce sont deux protections internes, et le risque existe avec les deux. Respecte les durées de port et privilégie une protection externe la nuit.
+
+**Ma coupe fuit, pourquoi ?** Souvent parce qu’elle ne s’est pas complètement dépliée, qu’elle est mal positionnée ou que la taille ne te convient pas. Un professionnel de santé peut t’aider.
+
+**Puis-je la porter la nuit ?** L’Assurance Maladie et la réglementation recommandent une protection externe la nuit (serviette ou culotte menstruelle), y compris quand on utilise une coupe le jour.
+
+**Comment obtenir le remboursement ?** Depuis le 1er octobre 2026, les moins de 26 ans et les bénéficiaires de la Complémentaire santé solidaire peuvent être remboursés pour une coupe référencée achetée en pharmacie, dans la limite de 15,80 € et de 2 produits (coupe ou culotte) par période de 12 mois.
+
+## Quand demander conseil
+Consulte si tu n’arrives pas à retirer ta coupe, en cas de douleur, d’irritation ou de pertes inhabituelles. Retire-la immédiatement et consulte en urgence si tu as de la **fièvre élevée, des vomissements, une diarrhée, une éruption cutanée ou un malaise** pendant ou juste après tes règles.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['coupe menstruelle','cup','cup menstruelle','stériliser cup','vider cup','protection réutilisable','cup choc toxique','cup remboursée']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Protections intimes périodiques : comment les utiliser en toute sécurité ?","url":"https://www.ameli.fr/assure/sante/themes/regles-et-protections-intimes/protections-intimes-periodiques-comment-les-utiliser-en-toute-securite","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"QuestionSexualité (Santé publique France) — Quelle protection hygiénique adopter pendant les règles ?","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/quelle-protection-pendant-les-regles","consulted_on":"2026-10-27"},{"label":"DGCCRF (economie.gouv.fr) — Produits d’hygiène féminine : serviettes, tampons et coupes menstruelles","url":"https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/produits-dhygiene-feminine-serviettes-tampons-et-coupes-menstruelles","consulted_on":"2026-10-27","published":"2024-04-03"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('culotte-menstruelle-choisir-entretenir', (select id from public.content_categories where slug = 'regles'), 'Culotte menstruelle : bien la choisir, la porter et l’entretenir', 'Flux, durée de port, lavage, séchage, étiquetage et remboursement : ce qu’il faut savoir avant d’adopter la culotte menstruelle.', '## En bref
+- La culotte menstruelle **absorbe les règles** sans rien introduire dans le vagin : c’est une **protection externe**.
+- Elle existe en plusieurs formes (culotte, shorty, tanga) et niveaux d’absorption : choisis selon **ton flux**.
+- Lave-la **avant le premier usage**, puis selon les **consignes du fabricant** ; un bon rinçage après usage est indispensable.
+- Les protections externes n’ont, à ce jour, **pas été associées au choc toxique** selon la DGCCRF.
+- Depuis le 1er octobre 2026, une culotte référencée achetée en pharmacie peut être **remboursée** sous conditions.
+
+## Comprendre
+QuestionSexualité présente la culotte menstruelle comme confortable, enfilée comme une culotte classique, avec un coût total inférieur à celui des protections jetables sur plusieurs années. Ses contraintes : être à l’aise avec le sang, rincer soigneusement après usage, disposer d’un point d’eau et, idéalement, d’un petit sac hermétique pour transporter une culotte portée, et un coût d’achat initial élevé.
+
+La durée de port annoncée peut aller jusqu’à une douzaine d’heures selon les modèles et le flux : réfère-toi toujours à la notice et change plus tôt si tu sens une saturation.
+
+Côté réglementation, la composition des culottes menstruelles doit être indiquée selon les règles européennes d’étiquetage des textiles ; depuis avril 2024, l’étiquetage ou la notice doit aussi préciser les précautions d’utilisation et les effets indésirables possibles. La DGCCRF a inclus ces produits dans ses contrôles des nouvelles protections intimes.
+
+## Au quotidien
+- **Choisis l’absorption** selon tes jours : une culotte « flux abondant » pour le début des règles ou la nuit, une plus légère pour la fin.
+- **Prévois-en plusieurs** pour avoir le temps de les laver et les faire sécher entre deux usages.
+- **Lave-la avant la première utilisation**, comme le recommande l’Assurance Maladie.
+- **Après usage** : rince à l’eau froide jusqu’à ce que l’eau soit claire, puis lave et sèche selon l’étiquette.
+- **Sèche-la complètement** avant de la remettre, pour l’hygiène et le confort.
+- **Hors de chez toi** : un petit sac étanche permet de ranger une culotte portée.
+- **Lis l’étiquette** : composition, consignes, et méfie-toi des allégations commerciales trop flatteuses.
+- **Remboursement** : achète-la en pharmacie, parmi les produits référencés par le ministère de la Santé, si tu as moins de 26 ans ou si tu bénéficies de la Complémentaire santé solidaire. La prise en charge est plafonnée à 19 € par culotte et à 2 produits (culotte ou coupe) par période de 12 mois.
+
+## Questions fréquentes
+**Peut-on la porter la nuit ?** Oui : c’est une protection externe, et l’Assurance Maladie recommande justement une protection externe la nuit. Choisis un modèle adapté à ton flux nocturne.
+
+**Est-elle adaptée aux règles très abondantes ?** Certaines personnes la combinent avec une autre protection les jours de fort flux. Si tes protections débordent régulièrement, parle de l’abondance de tes règles à un professionnel.
+
+**Sent-elle mauvais ?** Changée régulièrement et bien lavée, la culotte menstruelle limite les odeurs. Une odeur forte et inhabituelle de tes pertes peut signaler une infection et mérite un avis.
+
+**Est-ce adapté aux ados ?** Oui, c’est souvent une protection appréciée au début, car elle ne demande aucune manipulation dans le vagin. Le remboursement s’applique aux moins de 26 ans.
+
+## Quand demander conseil
+Consulte en cas d’irritation, de démangeaisons, de pertes ou d’odeurs inhabituelles qui persistent, ou si tes règles sont si abondantes que tu dois changer de protection très souvent. Une douleur qui t’empêche de vivre normalement n’a pas à être subie.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['culotte menstruelle','culotte de règles','shorty menstruel','laver culotte menstruelle','protection lavable','culotte remboursée','protection externe','règles nuit']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Quelle protection hygiénique adopter pendant les règles ?","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/quelle-protection-pendant-les-regles","consulted_on":"2026-10-27"},{"label":"ameli.fr — Protections intimes périodiques : comment les utiliser en toute sécurité ?","url":"https://www.ameli.fr/assure/sante/themes/regles-et-protections-intimes/protections-intimes-periodiques-comment-les-utiliser-en-toute-securite","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"DGCCRF (economie.gouv.fr) — Produits d’hygiène féminine : serviettes, tampons et coupes menstruelles","url":"https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/produits-dhygiene-feminine-serviettes-tampons-et-coupes-menstruelles","consulted_on":"2026-10-27","published":"2024-04-03"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('syndrome-choc-toxique-menstruel-signes-prevention', (select id from public.content_categories where slug = 'regles'), 'Syndrome du choc toxique menstruel : reconnaître les signes et le prévenir', 'Ce qu’est le choc toxique lié aux tampons et aux coupes, les symptômes qui doivent faire réagir tout de suite et les gestes simples pour le prévenir.', '## En bref
+- Le choc toxique menstruel est une **réaction grave et brutale**, rare, qui survient pendant les règles ou peu après, liée aux **protections internes** (tampons, coupes).
+- Il est dû à une **toxine** produite par certains **staphylocoques dorés** présents dans le vagin.
+- Signes d’alerte : **fièvre élevée soudaine**, vomissements, diarrhée, **éruption type coup de soleil**, douleurs musculaires, vertiges, malaise.
+- Au moindre doute : **retire immédiatement** le tampon ou la coupe et **appelle le 15 ou le 112**.
+- Prévention : **6 heures maximum**, absorption adaptée, **protection externe la nuit**, protection interne seulement pendant les règles.
+
+## Comprendre
+Selon l’Assurance Maladie, une bactérie de la famille des staphylocoques dorés est présente dans le vagin d’environ 1 % des femmes, sans symptôme. Quand un tampon ou une coupe est porté, le sang stagne et favorise sa multiplication ; certaines souches produisent une toxine qui passe dans le sang et agit sur tout l’organisme. Plusieurs cas sont signalés chaque année en France, surtout chez des adolescentes.
+
+La DGCCRF précise que les cas signalés concernent principalement une mauvaise utilisation des tampons ou des coupes : port trop long ou protection inadaptée au flux. Les protections externes (serviettes, culottes menstruelles) n’ont, à ce jour, pas été associées à ce syndrome. L’Anses souligne que le risque est lié aux conditions d’utilisation et non aux matériaux.
+
+Facteurs de risque cités par l’Assurance Maladie : garder un tampon plus de 6 heures et le porter toute la nuit (chacun double le risque), ne pas lire ou ne pas suivre la notice.
+
+**Les signes** (ils n’apparaissent pas forcément tous en même temps) :
+- fièvre forte et brutale ;
+- signes ressemblant à une grippe (douleurs musculaires, mal de gorge) ou à une gastro (nausées, vomissements, diarrhée, douleurs du ventre) ;
+- éruption rouge généralisée, comme un coup de soleil, sur la peau et parfois dans la bouche ;
+- vertiges, malaise, voire perte de connaissance.
+
+Le traitement, à l’hôpital, doit être rapide.
+
+## Au quotidien
+- **Change ton tampon ou vide ta coupe** toutes les 4 à 6 heures au plus, sans jamais dépasser 6 heures.
+- **Prends l’absorption la plus faible** qui convient à ton flux.
+- **La nuit**, utilise une serviette ou une culotte menstruelle.
+- **N’utilise une protection interne que pendant les règles.**
+- **Lave-toi les mains** avant et après chaque changement.
+- **Lis la notice** : depuis avril 2024, elle doit décrire les symptômes du choc toxique.
+- **Mets une alarme** sur ton téléphone si tu as tendance à oublier.
+- **Parles-en aux ados** autour de toi : elles sont les plus concernées.
+
+## Questions fréquentes
+**Je n’ai porté mon tampon que 7 heures, dois-je m’inquiéter ?** Retire-le dès que tu t’en rends compte, reprends des changements plus fréquents et reste attentive : si de la fièvre, des vomissements, une éruption ou un malaise apparaissent dans les jours qui suivent, consulte en urgence.
+
+**Peut-on refaire un choc toxique ?** Les personnes qui en ont déjà eu un ne doivent pas utiliser de protection interne, selon l’Assurance Maladie et la réglementation. Parles-en à ton médecin.
+
+**Les tampons bio ou en coton évitent-ils le choc toxique ?** L’Anses n’a pas établi de lien entre les matériaux et ce risque : c’est la durée de port et l’absorption qui comptent.
+
+**Et la coupe menstruelle ?** Elle est aussi concernée : les mêmes règles de durée et de port la nuit s’appliquent.
+
+## Quand demander conseil
+**Urgence** : en cas de fièvre élevée, vomissements, diarrhée, éruption type coup de soleil, vertiges ou malaise pendant ou peu après tes règles avec une protection interne, retire-la tout de suite et appelle le **15** ou le **112**. Dis que tu portais un tampon ou une coupe.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['choc toxique','syndrome du choc toxique','SCT','tampon fièvre','cup fièvre','staphylocoque doré','protection interne danger','urgence règles']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Protections périodiques et risque de choc toxique lors des règles","url":"https://www.ameli.fr/assure/sante/themes/regles-et-protections-intimes/protections-periodiques-et-risque-de-choc-toxique-lors-des-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"DGCCRF (economie.gouv.fr) — Produits d’hygiène féminine : serviettes, tampons et coupes menstruelles","url":"https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/produits-dhygiene-feminine-serviettes-tampons-et-coupes-menstruelles","consulted_on":"2026-10-27","published":"2024-04-03"},{"label":"Anses — Protections intimes : composition et choc toxique, toutes nos recommandations","url":"https://www.anses.fr/fr/content/protections-intimes-composition-et-choc-toxique-toutes-nos-recommandations","consulted_on":"2026-10-27","published":"2025-05-28"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('precarite-menstruelle-protections-gratuites-remboursees', (select id from public.content_categories where slug = 'regles'), 'Précarité menstruelle : protections gratuites, remboursement et où trouver de l’aide', 'Si acheter des protections est difficile, voici les dispositifs publics existants : remboursement des coupes et culottes, distributions pour étudiantes, collégiennes et personnes en grande précarité.', '## En bref
+- On parle de **précarité menstruelle** quand l’accès aux protections est difficile ou impossible, surtout pour des raisons financières.
+- Depuis le **1er octobre 2026**, les **coupes** et **culottes menstruelles** achetées en pharmacie peuvent être **remboursées** pour les **moins de 26 ans** et les bénéficiaires de la **Complémentaire santé solidaire** (C2S), sans limite d’âge pour ces derniers.
+- Limites : **2 produits par période de 12 mois**, produits **référencés** par le ministère de la Santé, prix plafonnés.
+- Des **distributions gratuites** ont été mises en place pour les étudiantes, des collégiennes et lycéennes et des personnes en grande précarité, avec des associations.
+- Tu n’as pas à avoir honte d’en parler : c’est un **enjeu de santé publique**.
+
+## Comprendre
+Le ministère chargé de l’Égalité femmes-hommes définit la précarité menstruelle comme la situation de personnes dont l’accès aux protections hygiéniques est difficile ou impossible pour des raisons avant tout financières. En 2021, il évoquait près de 2 millions de femmes concernées et des jeunes filles qui manquent l’école à cause de leurs règles. Manquer de protections peut conduire à garder une protection trop longtemps ou à utiliser des solutions de fortune, avec des risques pour la santé et un impact sur les études, le travail et l’estime de soi.
+
+**Le remboursement des protections réutilisables** (depuis le 1er octobre 2026) :
+- **qui** : les personnes de moins de 26 ans, sans condition de ressources, et les bénéficiaires de la C2S, sans limite d’âge ;
+- **quoi** : les coupes et culottes menstruelles référencées, achetées **en pharmacie** ;
+- **combien** : prix limites de 15,80 € pour une coupe et 19 € pour une culotte ; selon etudiant.gouv.fr, l’Assurance Maladie rembourse 55 à 65 % pour les moins de 26 ans (le reste pouvant être couvert par une complémentaire) et 100 % pour les bénéficiaires de la C2S ;
+- **combien de fois** : 2 produits par période de 12 mois, à partir du premier achat.
+
+**Les distributions gratuites** : en 2021, le gouvernement annonçait des protections gratuites dans les résidences et services de santé universitaires du réseau des CROUS et des distributeurs dans des restaurants universitaires, l’extension d’expérimentations dans des collèges et lycées de plusieurs départements, et des actions avec des associations (maraudes, épiceries solidaires, collectes) pour les personnes sans abri ou en grande précarité. L’offre varie selon les lieux.
+
+## Au quotidien
+- **Demande en pharmacie** quels produits sont référencés pour le remboursement et quelles sont les modalités de prise en charge.
+- **Si tu as de faibles ressources**, vérifie si tu as droit à la **Complémentaire santé solidaire** : elle ouvre aussi la prise en charge à 100 % de ces protections.
+- **Étudiante** : renseigne-toi auprès du service de santé de ton université ou du CROUS.
+- **Collégienne ou lycéenne** : l’infirmerie scolaire peut souvent dépanner et t’écouter.
+- **En difficulté** : les associations de solidarité, les épiceries solidaires et les centres sociaux peuvent t’orienter.
+- **Une coupe peut durer plusieurs années** si elle est bien entretenue (environ 5 ans selon etudiant.gouv.fr) : c’est un investissement qui peut alléger le budget.
+- **Ne garde jamais une protection interne plus de 6 heures** pour économiser : le risque de choc toxique augmente.
+
+## Questions fréquentes
+**Faut-il une ordonnance pour le remboursement ?** Les sources consultées précisent l’achat en pharmacie de produits référencés ; demande au pharmacien les modalités exactes au moment de l’achat.
+
+**Les serviettes et tampons jetables sont-ils remboursés ?** Le dispositif de 2026 concerne les coupes et culottes réutilisables.
+
+**Je n’ose pas demander de l’aide, c’est gênant…** Les règles concernent la moitié de la population. Les infirmières scolaires, les services de santé étudiants et les associations sont là pour ça.
+
+## Quand demander conseil
+Si tes règles sont si abondantes qu’elles te coûtent beaucoup de protections, parles-en à un médecin ou à une sage-femme : des règles abondantes peuvent se traiter. Une douleur qui t’empêche d’aller en cours ou au travail mérite aussi une consultation. Si tu te sens très isolée ou à bout, appelle le **3114**, gratuit, 24 h/24.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['précarité menstruelle','protections gratuites','remboursement culotte menstruelle','remboursement cup','complémentaire santé solidaire','étudiante règles','CROUS protections','moins de 26 ans']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"etudiant.gouv.fr — Protections menstruelles réutilisables : ce qui va changer en 2026","url":"https://www.etudiant.gouv.fr/fr/protections-menstruelles-reutilisables-ce-qui-va-changer-en-2026-3422","consulted_on":"2026-10-27","published":"2026-09-30"},{"label":"ameli.fr — Protections intimes périodiques : comment les utiliser en toute sécurité ?","url":"https://www.ameli.fr/assure/sante/themes/regles-et-protections-intimes/protections-intimes-periodiques-comment-les-utiliser-en-toute-securite","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"Ministère chargé de l’Égalité femmes-hommes — Le Gouvernement engagé pour lutter contre la précarité menstruelle","url":"https://www.egalite-femmes-hommes.gouv.fr/journee-mondiale-de-lhygiene-menstruelle-le-gouvernement-est-pleinement-engage-pour-lutter-contre-la-precarite-menstruelle-28-mai-2021","consulted_on":"2026-10-27","published":"2021-05-28"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('regles-douloureuses-chaleur-mouvement-gestes-qui-soulagent', (select id from public.content_categories where slug = 'regles'), 'Douleurs de règles : chaleur, mouvement, repos… les gestes qui peuvent soulager', 'Bouillotte, bain chaud, marche, relaxation, sommeil : les gestes du quotidien cités par les sources officielles pour atténuer les crampes de règles, et leurs limites.', '## En bref
+- Les crampes de règles viennent des **contractions de l’utérus** qui évacue sa muqueuse ; elles touchent le bas-ventre, parfois le dos et les cuisses.
+- **Chaleur** (bouillotte, bain ou douche chaude), **massage du ventre**, **activité physique douce** et **relaxation** font partie des gestes cités par l’Assurance Maladie et Santé.fr.
+- Dormir suffisamment et limiter **alcool, café et tabac** avant et pendant les règles peut aussi aider.
+- Ces gestes complètent, sans le remplacer, l’avis d’un professionnel si la douleur est forte.
+- Une douleur qui **t’empêche de vivre normalement** n’est pas à subir : elle mérite une consultation.
+
+## Comprendre
+Pendant les règles, l’utérus se contracte pour évacuer l’endomètre. Ces contractions sont favorisées par des substances appelées prostaglandines ; quand elles sont trop fortes, le muscle utérin est moins bien oxygéné, ce qui provoque la douleur. Elle dure en général un à deux ou trois jours, au moment où le flux est le plus abondant.
+
+Les douleurs de règles sont très fréquentes à l’adolescence (50 à 70 % des adolescentes selon l’Assurance Maladie) et diminuent souvent après 18 ans. Elles peuvent s’accompagner de fatigue, de troubles digestifs, de nausées ou de maux de tête.
+
+Des gestes simples peuvent détendre les muscles du bas-ventre. Ils ne conviennent pas à toutes et ne suffisent pas toujours : si la douleur reste forte, un professionnel peut proposer un traitement adapté et rechercher une cause.
+
+## Au quotidien
+**La chaleur**
+- Une **bouillotte** sur le bas-ventre ou le bas du dos, allongée au calme.
+- Un **bain** ou une **douche chaude**.
+- Vérifie la température pour éviter les brûlures, et ne t’endors pas avec une source de chaleur très chaude contre la peau.
+
+**Le mouvement**
+- Une **activité physique douce** : marche, natation, vélo tranquille. Santé.fr indique que bouger soulage souvent.
+- Des étirements, du **yoga** ou de la **relaxation** (respiration lente, détente musculaire).
+- Les règles ne t’obligent pas à arrêter le sport : adapte l’intensité à ton ressenti.
+
+**Le massage**
+- Des mouvements circulaires doux sur le bas-ventre, éventuellement avec une huile neutre.
+
+**Le repos et l’hygiène de vie**
+- **Dormir suffisamment** avant et pendant les règles.
+- **Limiter alcool, café et tabac** sur cette période ; l’Assurance Maladie note que le tabac aggraverait les douleurs.
+- Prévoir des vêtements confortables qui ne serrent pas le ventre.
+
+**Les médicaments**
+- Si tu as besoin d’un antidouleur, demande conseil à ton pharmacien ou à ton médecin, qui vérifiera les contre-indications. Santé.fr conseille d’éviter l’aspirine pendant les règles. Ne prolonge pas l’automédication sans avis.
+
+## Questions fréquentes
+**La chaleur peut-elle vraiment aider ?** C’est l’un des gestes les plus cités par les sources de santé publique pour détendre le bas-ventre contracté. Son effet varie selon les personnes.
+
+**Faire du sport pendant les règles, ça n’aggrave pas les douleurs ?** Au contraire, une activité douce soulage souvent. Écoute ton corps : si l’effort intense te gêne, privilégie la marche ou les étirements ces jours-là.
+
+**Les douleurs vont-elles diminuer avec le temps ?** Chez beaucoup de personnes, elles s’atténuent au fil des années. Si elles augmentent, apparaissent tardivement ou ne cèdent pas, consulte.
+
+**Je rate des cours ou le travail à cause de mes règles, est-ce une raison de consulter ?** Oui. Les règles douloureuses sont la première cause d’absentéisme scolaire chez les adolescentes ; une douleur qui t’empêche d’étudier ou de travailler doit être prise en charge.
+
+## Quand demander conseil
+Consulte si la douleur est intense, revient chaque mois malgré ces gestes, apparaît après des années de règles peu douloureuses, ou s’accompagne de douleurs pendant les rapports, de règles abondantes ou de saignements entre les règles. Un bilan peut être nécessaire, notamment pour rechercher une endométriose.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['douleurs de règles','crampes règles','bouillotte','soulager règles','règles douloureuses naturel','yoga règles','massage ventre','dysménorrhée']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Informations et conseils sur les règles ou menstruations","url":"https://www.ameli.fr/assure/sante/themes/puberte/informations-conseils-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"Santé.fr — Règles douloureuses (dysménorrhées)","url":"https://www.sante.fr/regles-douloureuses-dysmenorrhees","consulted_on":"2026-10-27","published":"2026-08-12"},{"label":"QuestionSexualité (Santé publique France) — Règles : tout savoir sur le cycle menstruel","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/tout-savoir-sur-les-regles","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('regles-douloureuses-endometriose-adenomyose-signes-a-ne-pas-banaliser', (select id from public.content_categories where slug = 'regles'), 'Quand les douleurs de règles cachent autre chose : les signes à ne pas banaliser', 'Dysménorrhée primaire ou secondaire, endométriose, adénomyose, fibromes, stérilet au cuivre : comprendre quand une douleur de règles doit faire chercher une cause.', '## En bref
+- La **dysménorrhée primaire** apparaît à l’adolescence, dans les mois qui suivent les premières règles ; elle est fréquente et le plus souvent bénigne.
+- La **dysménorrhée secondaire** survient chez une adulte dont les règles étaient peu ou pas douloureuses : une **cause est toujours recherchée**.
+- Causes possibles : **endométriose**, **adénomyose**, **fibrome**, **polypes**, **stérilet au cuivre** (surtout s’il s’est déplacé), changement de contraception hormonale, infection.
+- Signes associés à signaler : **douleurs pendant les rapports**, **règles abondantes**, **saignements entre les règles**.
+- L’examen de première intention est souvent l’**échographie pelvienne** ; l’IRM complète parfois le bilan.
+
+## Comprendre
+L’Assurance Maladie distingue deux situations.
+
+**La dysménorrhée primaire** est liée à un excès de prostaglandines qui rend les contractions de l’utérus trop fortes. Elle est favorisée par des règles précoces, des antécédents familiaux, l’absence de grossesse antérieure, et le tabac l’aggraverait. Même à l’adolescence, une douleur qui s’aggrave doit faire rechercher une cause, car l’**endométriose peut débuter tôt**, ou plus rarement une malformation de l’utérus ou du vagin.
+
+**La dysménorrhée secondaire** fait suspecter une maladie sous-jacente :
+- **l’endométriose** : des fragments de tissu semblable à l’endomètre se trouvent en dehors de l’utérus ; ils réagissent aux hormones et saignent à chaque cycle ;
+- **l’adénomyose** : ces fragments sont situés dans le muscle de l’utérus ;
+- **un fibrome** ou des **polypes** de l’endomètre ;
+- **un stérilet au cuivre**, surtout s’il est déplacé ;
+- **un changement de contraception hormonale** ;
+- **une infection génitale** chronique, citée par Santé.fr.
+
+Santé.fr retient trois situations qui doivent amener à consulter : une douleur inhabituelle avant ou pendant les règles, des règles devenues difficiles à supporter, des douleurs qui apparaissent après plusieurs années de règles peu douloureuses.
+
+## Au quotidien
+- **Note ta douleur** chaque cycle, par exemple sur une échelle de 0 à 10, avec les jours concernés, ce qui soulage ou non, et les absences au travail ou en cours.
+- **Repère les signes associés** : douleur pendant ou après les rapports, douleur en allant aux toilettes pendant les règles, saignements entre les règles, règles plus abondantes qu’avant, fatigue.
+- **Prépare la consultation** avec ces notes : elles aident le médecin, la sage-femme ou le gynécologue à orienter le bilan.
+- **Sache à quoi t’attendre** : l’examen dépend de ta situation ; chez une jeune fille qui n’a jamais eu de rapport, l’examen gynécologique n’est pas réalisé. L’échographie peut se faire par le ventre ou par voie vaginale, qui détecte mieux certaines lésions ; l’échographiste demande toujours ton accord.
+- **Si une cause est trouvée**, le traitement est adapté à cette maladie. Sinon, le médecin peut proposer des anti-inflammatoires, une contraception hormonale qui atténue ou supprime les règles, ou un stérilet hormonal.
+
+## Questions fréquentes
+**Mes règles ont toujours été douloureuses, est-ce forcément une endométriose ?** Non. Mais une douleur forte qui gêne ta vie quotidienne mérite un avis, quelle que soit ton histoire.
+
+**Pourquoi mes douleurs ont-elles changé après la pose d’un stérilet au cuivre ?** C’est une cause connue de dysménorrhée secondaire, surtout si le stérilet s’est déplacé. Parles-en au professionnel qui l’a posé.
+
+**L’échographie était normale, mais j’ai toujours mal. Et maintenant ?** L’échographie par voie abdominale peut être insuffisante pour l’endométriose ; d’autres examens (échographie endovaginale, IRM) peuvent être discutés. N’hésite pas à reconsulter.
+
+**Est-ce que ça peut jouer sur la fertilité ?** Santé.fr rappelle que l’endométriose peut entraîner des difficultés à concevoir : c’est une raison de plus de consulter tôt.
+
+## Quand demander conseil
+Prends rendez-vous si ta douleur est inhabituelle, s’aggrave, t’empêche d’étudier ou de travailler, ou s’accompagne de douleurs pendant les rapports, de règles abondantes ou de saignements entre les règles. Une douleur qui t’empêche de vivre normalement n’a pas à être subie.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['endométriose','adénomyose','dysménorrhée secondaire','douleur règles anormale','douleur rapports','fibrome','échographie pelvienne','IRM endométriose']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Douleurs pendant les règles ou dysménorrhée : quelles sont les causes ?","url":"https://www.ameli.fr/assure/sante/themes/regles-douloureuses/douleurs-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"ameli.fr — Règles douloureuses : consultation et traitement","url":"https://www.ameli.fr/assure/sante/themes/regles-douloureuses/consultation-traitement","consulted_on":"2026-10-27","published":"2025-06-25"},{"label":"Santé.fr — Règles douloureuses (dysménorrhées)","url":"https://www.sante.fr/regles-douloureuses-dysmenorrhees","consulted_on":"2026-10-27","published":"2026-08-12"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('caillots-pendant-les-regles-mesurer-abondance', (select id from public.content_categories where slug = 'regles'), 'Caillots pendant les règles : comment évaluer l’abondance de ton flux', 'Caillots, sang foncé, protections qui débordent la nuit : comment observer et noter ton flux avec des repères simples, comme ceux utilisés par les médecins.', '## En bref
+- Le sang des règles contient de la **muqueuse utérine** et de la **glaire** ; quand il s’écoule lentement, il fonce et peut épaissir.
+- La **présence de caillots** fait partie des éléments que le médecin te demandera pour évaluer l’abondance des règles, avec le **nombre de protections** et les **débordements la nuit**.
+- Un outil simple, le **score de Higham**, permet de noter le remplissage de tes protections jour après jour.
+- Repères cités par l’Assurance Maladie pour les protections réutilisables : vider la coupe **toutes les 2 à 3 heures** pendant plus de 7 jours, ou devoir changer la culotte la plus absorbante **avant 12 heures**, signalent des règles anormalement abondantes.
+- Des caillots associés à des règles très abondantes, à de la fatigue ou à un malaise doivent amener à **consulter**.
+
+## Comprendre
+QuestionSexualité explique que le sang des règles est différent du sang d’une coupure : il contient aussi de la muqueuse de l’utérus et de la glaire. Quand il s’écoule vite, il est rouge et fluide ; quand il s’écoule plus lentement, il a le temps de foncer, de coaguler un peu et d’épaissir, d’où un aspect parfois marron ou grumeleux.
+
+Les sources consultées ne fixent pas de taille de caillot « limite ». En revanche, l’Assurance Maladie classe la présence de caillots parmi les éléments à signaler en consultation, au même titre que le nombre de protections par jour et les débordements nocturnes. Ensemble, ces informations permettent d’estimer si tes règles sont anormalement abondantes (au-delà d’environ 80 ml par cycle).
+
+**Le score de Higham**, décrit par l’Assurance Maladie : chaque jour de règles, tu comptes tes protections et tu notes leur remplissage. Une protection peu remplie compte 1 point, moyennement remplie 5 points, très remplie 20 points. Tu ajoutes aussi la présence de caillots et les débordements. Un total au-delà de 100 sur l’ensemble des règles correspond à des règles anormalement abondantes.
+
+## Au quotidien
+- **Pendant 2 ou 3 cycles**, note chaque jour : nombre de protections, remplissage (peu, moyen, très), caillots (oui/non, petits ou gros), débordements, nuits où tu as dû te lever.
+- **Utilise un calendrier** ou le suivi de l’app : il suffit de quelques secondes par jour.
+- **Note aussi** ta fatigue, un essoufflement inhabituel à l’effort, des vertiges : ce sont des signes possibles d’anémie.
+- **Pense à tes traitements** : contraception, aspirine, anti-inflammatoires ou anticoagulants peuvent influencer les saignements ; mentionne-les en consultation.
+- **Pour les nuits abondantes**, adapte ta protection (serviette plus absorbante, culotte menstruelle) plutôt que de garder une protection interne trop longtemps.
+
+## Questions fréquentes
+**Avoir quelques petits caillots, est-ce inquiétant ?** Les sources consultées ne donnent pas de seuil. Ce qui doit t’alerter, c’est l’ensemble du tableau : caillots fréquents ou volumineux, protections qui débordent, règles longues, fatigue. Dans ce cas, consulte.
+
+**Pourquoi le médecin me pose-t-il autant de questions ?** Pour estimer objectivement l’abondance de tes règles et orienter le bilan (prise de sang, échographie).
+
+**Mes règles sont plus abondantes depuis quelque temps, et j’ai des caillots. Que faire ?** Un changement par rapport à ton habitude est une bonne raison de consulter : un fibrome, un polype, un déséquilibre hormonal ou un stérilet au cuivre peuvent être en cause.
+
+**Le sang marron est-il un caillot ?** Pas forcément : c’est souvent du sang qui s’est écoulé lentement et s’est oxydé, fréquent en début et en fin de règles.
+
+## Quand demander conseil
+Consulte ton médecin traitant ou une sage-femme si tes règles sont plus abondantes ou plus longues qu’avant, si tu as souvent des caillots, si tes protections débordent ou si tu te sens fatiguée et essoufflée. Une douleur qui t’empêche de vivre normalement n’a pas à être subie.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['caillots règles','caillots de sang','règles abondantes','score de Higham','débordement nuit','sang foncé règles','mesurer règles','flux menstruel']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Saignements entre les règles ou règles très abondantes : quand consulter ?","url":"https://www.ameli.fr/assure/sante/themes/saignements-gynecologiques-anormaux/saignements-entre-les-regles-ou-regles-tres-abondantes-longues-le-bilan","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Règles : tout savoir sur le cycle menstruel","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/tout-savoir-sur-les-regles","consulted_on":"2026-10-27"},{"label":"ameli.fr — Qu’est-ce qu’un saignement gynécologique anormal en dehors de la grossesse ?","url":"https://www.ameli.fr/assure/sante/themes/saignements-gynecologiques-anormaux/saignements-gynecologiques-anormaux-definition","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('regles-fer-fatigue-anemie', (select id from public.content_categories where slug = 'regles'), 'Règles, fatigue et manque de fer : repérer une anémie et bien couvrir ses besoins', 'Pourquoi des règles abondantes peuvent épuiser les réserves en fer, quels signes doivent faire penser à une anémie et comment l’alimentation peut aider.', '## En bref
+- Entre la puberté et la ménopause, les **règles augmentent les besoins en fer** ; les **adolescentes** font partie des personnes à risque de carence.
+- Des **règles très abondantes ou longues** peuvent conduire à une **anémie par carence en fer**.
+- Signes possibles : **pâleur**, **fatigue**, **essoufflement à l’effort**, maux de tête, vertiges, ongles cassants, peau et cheveux secs.
+- Le diagnostic repose sur une **prise de sang** (hémoglobine, ferritine) prescrite par un médecin.
+- L’alimentation aide : **viandes, poissons, légumineuses, légumes verts**, de la **vitamine C** au repas, et le **thé plutôt à distance** des repas.
+
+## Comprendre
+L’anémie correspond à un taux trop bas d’hémoglobine, la protéine des globules rouges qui transporte l’oxygène. Le fer est indispensable pour la fabriquer : quand il manque, les réserves s’épuisent d’abord (carence en fer), puis l’anémie peut s’installer.
+
+Selon l’Assurance Maladie, les **pertes de sang** sont une cause majeure de carence en fer chez l’adulte, et parmi les pertes visibles figurent les **règles très abondantes et/ou longues** et les saignements entre les règles. Les adolescentes sont plus exposées, à cause de la croissance, des règles et parfois d’une alimentation déséquilibrée ou restrictive. Les régimes végétariens ou végétaliens stricts demandent aussi de la vigilance.
+
+L’anémie s’installe souvent progressivement et peut passer inaperçue au début. Quand elle s’aggrave, apparaissent pâleur, fatigue, essoufflement à l’effort, maux de tête, vertiges ou sensation de « tête qui tourne » en se levant ; le manque de fer peut aussi rendre la peau et les cheveux secs et les ongles cassants.
+
+Le médecin prescrit une **numération formule sanguine** et un dosage de la **ferritine**, qui reflète les réserves de fer. Il recherche aussi la cause : si ce sont tes règles, un bilan gynécologique permettra de les traiter.
+
+## Au quotidien
+**Varier les sources de fer** :
+- le **fer héminique**, le mieux absorbé, se trouve dans les viandes, abats, poissons et fruits de mer ;
+- le **fer non héminique** se trouve dans les légumineuses (lentilles, pois chiches, haricots), les céréales, les noix, le jaune d’œuf et les légumes à feuilles vertes.
+
+**Favoriser son absorption** (Santé.fr) :
+- ajoute de la **vitamine C** au repas : poivrons, agrumes, choux, fraises, de nombreux fruits ;
+- bois **le thé ou le café plutôt à distance des repas** : leurs tanins diminuent l’absorption du fer d’origine végétale ; environ une heure après le repas, l’effet n’est plus gênant selon plusieurs études ;
+- le **trempage et la cuisson** des légumineuses et céréales complètes réduisent les phytates qui freinent l’absorption.
+
+**Ne pas s’auto-supplémenter** : un complément de fer se discute avec un médecin, après une prise de sang.
+
+## Questions fréquentes
+**Je suis toujours fatiguée pendant mes règles, est-ce le fer ?** Ce n’est pas la seule explication possible (douleur, sommeil perturbé, SPM), mais une fatigue persistante, surtout avec des règles abondantes, justifie une prise de sang.
+
+**Je suis végétarienne, suis-je plus à risque ?** Le fer végétal est moins bien absorbé. En associant légumineuses, céréales, vitamine C et en éloignant le thé des repas, tu améliores tes apports. Parles-en à ton médecin si tu as des règles abondantes.
+
+**Le sport intensif peut-il jouer ?** Le guide du ministère des Sports sur le cycle rappelle que des règles abondantes peuvent entraîner fatigue et risque d’anémie chez les sportives, et recommande de consulter pour en chercher la cause.
+
+## Quand demander conseil
+Consulte ton médecin traitant si tu te sens anormalement fatiguée, pâle, essoufflée ou si tu as des vertiges, surtout avec des règles abondantes ou longues. Un saignement abondant avec malaise ou grande faiblesse est une urgence.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['anémie','carence en fer','fatigue règles','ferritine','aliments riches en fer','thé et fer','vitamine C fer','essoufflement']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Qu’est-ce qu’une anémie par carence en fer et quelles sont les causes ?","url":"https://www.ameli.fr/assure/sante/themes/anemie-par-carence-en-fer/definition-causes-anemie-carence-fer","consulted_on":"2026-10-27","published":"2026-06-09"},{"label":"ameli.fr — Symptômes et diagnostic de l’anémie par carence en fer","url":"https://www.ameli.fr/assure/sante/themes/anemie-par-carence-en-fer/symptomes-diagnostic","consulted_on":"2026-10-27","published":"2024-04-22"},{"label":"Santé.fr — Boire du thé en mangeant empêche-t-il l’absorption du fer ?","url":"https://www.sante.fr/decryptage/nos-reponses/boire-du-en-mangeant-empeche-t-il-labsorption-du-fer","consulted_on":"2026-10-27","published":"2026-07-06"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('sport-et-regles-adapter-sa-pratique', (select id from public.content_categories where slug = 'regles'), 'Sport et règles : continuer à bouger, adapter sa pratique et repérer les signaux', 'Peut-on faire du sport pendant les règles, que changent les phases du cycle, quand une absence de règles chez une sportive doit alerter : les repères officiels.', '## En bref
+- Les règles **n’imposent pas d’arrêter tes activités**, sport compris, rappelle l’Assurance Maladie ; une **activité douce** peut même soulager les douleurs.
+- Pendant les règles, les hormones sont au plus bas : certaines sportives se sentent moins performantes, surtout en endurance. **Écoute ton ressenti**.
+- Une **absence de règles** ou **moins de 6 cycles par an** chez une sportive doit amener à consulter : cela peut traduire un **déficit d’énergie**.
+- Des **règles abondantes** peuvent entraîner fatigue et **anémie**, à vérifier avec un médecin.
+- Aucune contraception n’améliore ni ne limite la performance, selon le ministère des Sports, en dehors de ses éventuels effets indésirables.
+
+## Comprendre
+Le guide « Cycle menstruel et performance » du ministère des Sports, conçu pour les sportives de haut niveau, donne des repères utiles à toutes. Il rappelle qu’un cycle dure en moyenne 28 jours, avec des variations, et que les règles durent normalement moins de 7 jours. Pendant les règles, le niveau d’hormones est au plus bas et la performance peut être un peu plus limitée ; le guide conseille de tenir compte de son ressenti et de sa fatigue.
+
+La semaine qui précède les règles, le syndrome prémenstruel peut se manifester par des ballonnements, des jambes lourdes, des crampes, des maux de tête, une tension des seins, des fringales, de la fatigue, des troubles de l’humeur et du sommeil. La prise de poids passagère liée au cycle ne justifie pas de régime.
+
+**Le point de vigilance majeur : le déficit énergétique.** Quand les apports alimentaires ne couvrent pas la dépense (entraînement intense, restriction alimentaire), l’organisme peut « mettre en pause » les cycles. L’Assurance Maladie cite les sportives d’endurance, de sports esthétiques ou à catégories de poids. Le guide du ministère décrit les signes d’alerte : fatigue chronique, performances en baisse, blessures plus fréquentes. Les conséquences possibles touchent notamment les os (fractures de fatigue). Ces troubles sont réversibles en quelques mois avec une prise en charge adaptée.
+
+## Au quotidien
+- **Adapte l’intensité** à ton ressenti les jours de règles : technique, endurance douce, étirements si tu es fatiguée.
+- **Choisis une protection adaptée** à ton activité et change-la régulièrement ; respecte la durée maximale de port des protections internes (6 heures).
+- **Hydrate-toi et mange suffisamment** : un apport énergétique adapté à ton entraînement protège ton cycle et tes os.
+- **Note ton cycle** : dates des règles, douleurs, fatigue, performances. Repérer un cycle qui s’allonge ou disparaît permet de réagir tôt.
+- **Si tu entraînes des ados**, sache qu’un cycle qui s’arrête n’est pas un signe de « bonne forme » et qu’il mérite un avis médical.
+
+## Questions fréquentes
+**Peut-on nager pendant les règles ?** Oui, avec une protection adaptée à la baignade (tampon ou coupe), changée en respectant la durée maximale de port.
+
+**Mes règles ont disparu depuis que je m’entraîne plus, est-ce grave ?** Ce n’est pas anodin : le guide recommande une consultation en cas d’absence de règles ou de cycles irréguliers depuis le début de l’entraînement. Un bilan permet de vérifier tes apports et ta santé osseuse.
+
+**Faut-il adapter son entraînement à chaque phase du cycle ?** Le guide invite surtout à tenir compte de ton ressenti. Noter ton cycle et tes sensations t’aide à repérer ce qui te concerne personnellement.
+
+**Je ne veux pas en parler à mon entraîneur…** Tu n’es pas obligée. L’essentiel est d’en parler à un professionnel de santé : médecin, médecin du sport, sage-femme.
+
+## Quand demander conseil
+Consulte si tes règles s’arrêtent plus de 3 mois, si tu as moins de 6 cycles par an, si tu n’as pas eu tes premières règles à 16 ans, si tes douleurs ou ton syndrome prémenstruel gênent ton entraînement, ou si tu te sens épuisée. Une douleur qui t’empêche de vivre normalement n’a pas à être subie. Si tu as une relation difficile avec l’alimentation, parles-en : des professionnels peuvent t’aider.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid','child']::text[], null, null, null, null, false, array['sport règles','sport cycle menstruel','piscine règles','sportive aménorrhée','RED-S','déficit énergétique','performance cycle','entraînement règles']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Ministère des Sports — Cycle menstruel et performance (guide IPCS, sportives de haut niveau)","url":"https://www.sports.gouv.fr/sites/default/files/2025-09/guide-ipcs-cycle-menstruel-et-performance-pdf-47358.pdf","consulted_on":"2026-10-27"},{"label":"ameli.fr — Informations et conseils sur les règles ou menstruations","url":"https://www.ameli.fr/assure/sante/themes/puberte/informations-conseils-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"ameli.fr — Aménorrhée secondaire, arrêt des règles de plus de 3 mois : quelles causes ?","url":"https://www.ameli.fr/assure/sante/themes/retard-absence-de-regles-ou-amenorrhee/amenorrhee-regles-retard-absence-0","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('migraine-des-regles-catameniale', (select id from public.content_categories where slug = 'regles'), 'Migraine pendant les règles : comprendre la migraine menstruelle et mieux la gérer', 'Pourquoi certaines migraines reviennent autour des règles, comment tenir un agenda des crises et quelles pistes discuter avec ton médecin.', '## En bref
+- Chez la femme, la **chute des œstrogènes en fin de cycle** peut déclencher une migraine dite **menstruelle** ou **cataméniale**, de **2 jours avant à 3 jours après** le début des règles.
+- La forme « pure » (crises uniquement au moment des règles) est **rare** ; environ **une migraineuse sur trois** a des crises menstruelles en plus d’autres crises.
+- Tenir un **agenda des crises** avec la **date des règles** aide le médecin à poser le diagnostic et à choisir un traitement.
+- En cas de **migraine avec aura**, la contraception **œstroprogestative est contre-indiquée** : parles-en avant tout choix de contraception.
+- Un mal de tête **brutal, inhabituel**, avec fièvre ou troubles neurologiques qui persistent nécessite une **prise en charge urgente**.
+
+## Comprendre
+La migraine est une maladie fréquente, qui touche 2 à 3 fois plus les femmes que les hommes. La crise associe une douleur souvent d’un seul côté, pulsatile, aggravée par l’effort, et parfois des nausées, des vomissements, une gêne à la lumière, au bruit ou aux odeurs. Certaines personnes ont une **aura** : des signes visuels (points lumineux, vision floue), des fourmillements ou des difficultés à parler, qui durent de quelques minutes à une heure avant la douleur.
+
+L’Assurance Maladie explique que la chute brutale des œstrogènes en fin de cycle peut provoquer une crise survenant de deux jours avant à trois jours après le début des règles. D’autres facteurs peuvent s’ajouter : manque ou excès de sommeil, repas sauté, stress ou relâchement du stress, alcool. Les règles douloureuses elles-mêmes peuvent aussi s’accompagner de maux de tête.
+
+## Au quotidien
+- **Tiens un agenda** : date et heure de la crise, durée, intensité, facteurs déclenchants, **date de tes règles**, médicaments pris et leur effet. Le suivi de cycle de l’app peut t’aider à faire le lien.
+- **Anticipe** : si tes crises reviennent au même moment du cycle, allège ton planning, prévois du repos et garde à portée de main ce que ton médecin t’a conseillé.
+- **Soigne ton rythme**, surtout autour des règles : horaires de coucher et de lever réguliers, repas à heures fixes, hydratation.
+- **Bouge régulièrement** : l’Assurance Maladie cite l’activité d’endurance (marche rapide, vélo, course) parmi les mesures utiles entre les crises.
+- **Repère tes déclencheurs** personnels (alcool, manque de sommeil, certains aliments) sans te lancer dans un régime strict.
+- **Surveille ta consommation d’antidouleurs** : des prises trop fréquentes peuvent entretenir des maux de tête chroniques. Compte tes jours de prise et parles-en à ton médecin.
+
+## Questions fréquentes
+**Existe-t-il un traitement spécifique de la migraine menstruelle ?** Oui, le médecin peut proposer un traitement de crise adapté et, dans certains cas, un traitement hormonal ciblé autour des règles. C’est à décider avec lui selon ta situation et tes contre-indications.
+
+**Ma pilule peut-elle jouer sur mes migraines ?** Le choix de la contraception dépend de ton âge et de la présence d’une aura. Si tu as des migraines avec aura, une pilule œstroprogestative est contre-indiquée : signale-le toujours.
+
+**Faut-il faire des examens ?** Pour une migraine typique, l’Assurance Maladie indique qu’aucun examen n’est en général nécessaire : le diagnostic repose sur l’interrogatoire et un examen normal.
+
+**Je pensais que c’était « juste » un mal de tête de règles…** La migraine peut altérer la qualité de vie, les études et le travail ; un tiers des personnes concernées n’ont jamais consulté. Des traitements existent.
+
+## Quand demander conseil
+Consulte si tes crises sont fréquentes, intenses, durent plusieurs jours ou te font manquer cours ou travail, ou si tu prends souvent des antidouleurs. Appelle le **15** ou le **112** en cas de mal de tête brutal et très intense, de fièvre avec raideur de la nuque, ou de signes neurologiques (paralysie, troubles de la parole, de la vision) qui ne disparaissent pas.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['migraine règles','migraine menstruelle','migraine cataméniale','mal de tête règles','céphalée cycle','migraine avec aura','agenda migraine','pilule migraine']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Migraine : symptômes, facteurs déclenchants et évolution","url":"https://www.ameli.fr/assure/sante/themes/migraine/symptomes-facteurs-declenchants-evolution","consulted_on":"2026-10-27","published":"2025-10-17"},{"label":"ameli.fr — Migraine : consultation médicale et traitement","url":"https://www.ameli.fr/assure/sante/themes/migraine/diagnostic-traitement","consulted_on":"2026-10-27","published":"2026-01-22"},{"label":"ameli.fr — Douleurs pendant les règles ou dysménorrhée : quelles sont les causes ?","url":"https://www.ameli.fr/assure/sante/themes/regles-douloureuses/douleurs-regles","consulted_on":"2026-10-27","published":"2026-09-29"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('trouble-dysphorique-premenstruel-tdpm', (select id from public.content_categories where slug = 'regles'), 'Trouble dysphorique prémenstruel (TDPM) : quand l’humeur s’effondre avant les règles', 'Tristesse intense, anxiété, irritabilité qui reviennent chaque cycle avant les règles : reconnaître le trouble dysphorique prémenstruel et oser en parler.', '## En bref
+- Le **trouble dysphorique prémenstruel** (TDPM) est une forme **sévère** du syndrome prémenstruel, centrée sur l’humeur : **humeur dépressive** ou **forte anxiété** avant les règles.
+- Il concerne **5 à 10 %** des femmes selon QuestionSexualité.
+- Signe clé : les symptômes reviennent **à chaque cycle** dans les jours qui précèdent les règles, puis s’atténuent après leur début.
+- Ce n’est ni un caprice ni un manque de volonté : **parles-en à un médecin**, des prises en charge existent.
+- En cas d’**idées noires**, appelle le **3114**, gratuit, jour et nuit.
+
+## Comprendre
+Beaucoup de personnes ressentent des variations d’humeur avant les règles : c’est le syndrome prémenstruel, avec par exemple de l’irritabilité, de la tristesse ou de la fatigue. Pour une minorité, ces symptômes sont si intenses qu’ils bouleversent le quotidien : on parle alors de trouble dysphorique prémenstruel.
+
+Psycom, le site d’information en santé mentale, décrit les symptômes psychologiques qui peuvent apparaître à l’approche des règles : tristesse, manque d’énergie, sensation de malaise, crises de larmes, irritabilité, impatience, anxiété. Il rappelle, en citant l’Inserm, que souffrir à chaque cycle n’a pas à être accepté. Il recommande d’envisager un TDPM, mais aussi d’autres causes comme une endométriose ou un syndrome des ovaires polykystiques, quand les règles s’accompagnent d’une douleur qui empêche toute activité, d’une grande fatigue ou d’une anxiété élevée, et d’en parler à un médecin.
+
+Selon Santé.fr, le syndrome prémenstruel est lié aux variations hormonales en fin de cycle, après l’ovulation, par des mécanismes encore mal connus. Les symptômes s’estompent en général un ou deux jours après l’arrivée des règles. C’est ce rythme qui distingue le TDPM d’une dépression ou d’un trouble anxieux présents tout le mois, même si les deux peuvent coexister.
+
+## Au quotidien
+- **Note ton humeur chaque jour** pendant au moins deux cycles, avec la date de tes règles : une échelle simple (de 1 à 5), quelques mots, ton sommeil. Ce relevé est précieux pour le médecin.
+- **Anticipe les jours difficiles** : Psycom suggère d’alléger ton agenda ou de télétravailler si c’est possible pendant les périodes de vulnérabilité.
+- **Préviens tes proches** de ce qui se passe : cela évite des malentendus et permet d’être soutenue.
+- **Prends soin des bases** : sommeil régulier, activité physique, limiter alcool et excitants. Ces mesures peuvent aider, même si elles ne suffisent pas toujours.
+- **Prépare la consultation** : tes notes, depuis quand cela dure, l’impact sur tes études, ton travail, ta vie de couple ou de famille, ta contraception actuelle.
+- **Pense au soutien psychologique** : médecin traitant, psychologue, service de santé étudiante pour les étudiantes.
+
+## Questions fréquentes
+**Comment savoir si c’est un TDPM ou une dépression ?** Le TDPM suit le cycle : les symptômes surviennent avant les règles et s’améliorent ensuite. Si tu te sens mal tout le mois, parles-en aussi à un médecin : c’est lui qui pourra faire la part des choses.
+
+**Ma contraception peut-elle jouer ?** Les hormones peuvent influencer l’humeur, dans un sens ou dans l’autre. Ne change pas de traitement seule : discutes-en avec le professionnel qui te la prescrit.
+
+**Est-ce que ça se soigne ?** Le médecin peut proposer différentes approches selon tes symptômes. L’important est de ne pas rester seule avec cette souffrance.
+
+**J’ai honte de mes réactions avant les règles…** Ce que tu ressens a une origine réelle. En parler, c’est déjà reprendre de la marge de manœuvre.
+
+## Quand demander conseil
+Consulte si tes symptômes perturbent ta vie chaque mois, si tu te sens très triste, très anxieuse ou à bout. Si tu as des idées suicidaires ou te sens en danger, appelle immédiatement le **3114** (numéro national de prévention du suicide, gratuit, 24 h/24) ou le **15** / **112** en cas d’urgence. Les 12-25 ans peuvent aussi joindre Fil Santé Jeunes au **0800 235 236** (anonyme et gratuit).
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['TDPM','trouble dysphorique prémenstruel','déprime avant les règles','anxiété règles','humeur cycle','idées noires règles','SPM sévère','santé mentale cycle']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Règles : tout savoir sur le cycle menstruel","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/tout-savoir-sur-les-regles","consulted_on":"2026-10-27"},{"label":"Psycom (Santé mentale Info) — La santé mentale des femmes","url":"https://www.psycom.org/sinformer/la-sante-mentale/la-sante-mentale-des-femmes/","consulted_on":"2026-10-27","published":"2026-09-16"},{"label":"Santé.fr — Troubles des règles","url":"https://www.sante.fr/troubles-des-regles","consulted_on":"2026-10-27","published":"2026-08-14"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('retard-de-regles-test-de-grossesse-autres-causes', (select id from public.content_categories where slug = 'regles'), 'Retard de règles : quand faire un test de grossesse et quelles autres causes possibles', 'Tes règles n’arrivent pas : à quel moment faire un test, urinaire ou sanguin, comment l’interpréter et quelles autres raisons peuvent expliquer un retard.', '## En bref
+- Un retard de règles peut être le **premier signe d’une grossesse**, mais le **stress**, le **sport**, les **voyages** ou d’autres causes peuvent aussi décaler les règles.
+- Le **test de grossesse** est le seul moyen fiable de savoir si tu es enceinte.
+- **Test urinaire** : à partir de la date prévue des règles, avec les premières urines du matin ; si tes cycles sont irréguliers, environ **3 semaines après le rapport**.
+- **Test sanguin** : le plus fiable, possible dès **14 jours après le rapport**, remboursé sur ordonnance.
+- **Retard + douleur brutale ou saignements** : consulte en urgence.
+
+## Comprendre
+L’Assurance Maladie rappelle qu’une absence de règles à la date prévue peut être le premier signe d’une grossesse, mais que ce signe ne suffit pas : le stress, le sport ou les voyages peuvent aussi retarder les règles. QuestionSexualité ajoute que les signes souvent associés à la grossesse (seins sensibles, fatigue, nausées, envie d’uriner plus souvent, humeur changeante) peuvent aussi venir d’un stress, du syndrome prémenstruel ou d’un déséquilibre hormonal.
+
+**Le test urinaire** détecte l’hormone de grossesse (hCG) dans les urines. Elle n’est détectable qu’environ 10 jours après la fécondation : un test fait trop tôt peut être faussement négatif. QuestionSexualité conseille de le faire à partir de la date prévue des règles ; Santé.fr (contenu Fil Santé Jeunes) recommande d’attendre 21 jours après le rapport à risque pour un résultat fiable. Il s’achète sans ordonnance en pharmacie ou en grande surface ; il peut être pris en charge dans les centres de santé sexuelle (ex-centres de planification).
+
+**Le test sanguin** (dosage de la bêta-hCG) se fait en laboratoire dès 14 jours après le rapport. Il est remboursé sur prescription ; les mineures et les personnes sans couverture sociale peuvent obtenir une ordonnance dans un centre de santé sexuelle.
+
+Certaines situations peuvent fausser un test urinaire : un test trop précoce, certains médicaments, du sang dans les urines ou une infection urinaire.
+
+## Au quotidien
+- **Regarde ton calendrier** : date des dernières règles, durée habituelle de ton cycle, date du rapport non ou mal protégé.
+- **Si le rapport date de moins de 5 jours** et que tu ne souhaites pas de grossesse, pense à la **contraception d’urgence**, disponible en pharmacie, d’autant plus efficace qu’elle est prise tôt.
+- **Fais le test au bon moment**, de préférence le matin, et lis bien la notice.
+- **Test négatif mais toujours pas de règles ?** Refais un test quelques jours plus tard ou demande une prise de sang, et consulte si le retard persiste.
+- **Test positif ?** Consulte un professionnel de santé : pour confirmer et suivre la grossesse si tu la poursuis, ou le plus tôt possible si tu envisages une IVG ou si tu hésites.
+
+## Questions fréquentes
+**Le stress peut-il vraiment retarder les règles ?** Oui, les sources officielles citent le stress, comme le sport intense ou les voyages, parmi les causes possibles d’un retard.
+
+**J’ai eu des petits saignements à la place de mes règles, puis-je être enceinte ?** QuestionSexualité indique que des saignements en début de grossesse peuvent être pris pour des règles. En cas de doute, fais un test.
+
+**Je prends la pilule et je n’ai pas eu mes règles pendant la pause.** Relis la notice et, en cas d’oubli de comprimé ou de doute, fais un test et demande conseil à un pharmacien ou à ton médecin.
+
+**À partir de quand faut-il consulter pour un retard sans grossesse ?** Si les règles ne reviennent pas pendant plus de 3 mois (hors allaitement et ménopause), l’Assurance Maladie recommande de consulter pour en chercher la cause.
+
+## Quand demander conseil
+Consulte si ton test est positif, si le doute persiste malgré un test négatif, ou si ton retard se prolonge. **Retard de règles avec douleur brutale et intense du ventre, saignements, malaise** : cela peut évoquer une grossesse extra-utérine ou une fausse couche, appelle le **15** ou le **112**. Les 12-25 ans peuvent joindre Fil Santé Jeunes au **0800 235 236**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid','ttc']::text[], null, null, null, null, false, array['retard de règles','règles en retard','test de grossesse','quand faire un test','test sanguin bêta-hCG','test négatif retard','stress règles','enceinte ou pas']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Enceinte : comment savoir ?","url":"https://www.questionsexualite.fr/comprendre-la-conception-et-la-grossesse/la-grossesse/comment-savoir-si-vous-etes-enceinte","consulted_on":"2026-10-27"},{"label":"Santé.fr (contenu Fil Santé Jeunes) — Les tests de grossesse","url":"https://www.sante.fr/les-tests-de-grossesse","consulted_on":"2026-10-27","published":"2022-07-27"},{"label":"ameli.fr — Qu’est-ce qu’une aménorrhée et quand faut-il s’inquiéter de l’absence de règles ?","url":"https://www.ameli.fr/assure/sante/themes/retard-absence-de-regles-ou-amenorrhee/amenorrhee-regles-retard-absence","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('amenorrhee-regles-absentes-causes-quand-consulter', (select id from public.content_categories where slug = 'regles'), 'Règles absentes (aménorrhée) : les causes possibles et quand consulter', 'Pas de règles depuis plus de 3 mois, ou pas encore de premières règles à 16 ans : ce que recouvre l’aménorrhée, ses causes fréquentes et le bilan possible.', '## En bref
+- L’**aménorrhée** désigne l’absence de règles chez une personne en âge d’être réglée, en dehors de la **grossesse**, de l’**allaitement** et de la **ménopause**.
+- **Aménorrhée primaire** : pas de premières règles à **16 ans**. **Aménorrhée secondaire** : plus de règles depuis **plus de 3 mois** alors qu’elles étaient régulières.
+- Causes fréquentes : **grossesse**, **stress ou choc psychologique**, **perte de poids** ou **troubles alimentaires**, **sport intense**, **SOPK**, excès de **prolactine**, arrêt récent de la pilule.
+- Dans tous ces cas, **consulte** : l’aménorrhée signale un dérèglement dont il faut trouver la cause.
+- Commence toujours par un **test de grossesse** en cas de rapport sexuel.
+
+## Comprendre
+L’Assurance Maladie précise que les premières règles surviennent habituellement entre 10 et 15 ans. Ne pas être réglée à 16 ans justifie une consultation ; la cause la plus fréquente est un retard pubertaire, selon Santé.fr, mais d’autres causes plus rares sont recherchées.
+
+Pour l’aménorrhée secondaire, les principales causes décrites sont :
+- **la grossesse**, à éliminer en premier ;
+- **des causes « fonctionnelles »**, réversibles : choc émotionnel ou événement traumatisant, stress important, **anorexie** ou apports alimentaires insuffisants, **sport intense** (endurance, sports esthétiques ou à catégories de poids). Les règles reviennent en général quand la situation s’améliore ; un arrêt prolongé peut fragiliser les os ;
+- **l’arrêt de la pilule** : la reprise des cycles peut prendre quelques semaines ; au-delà de 3 mois, une cause est recherchée ;
+- **le syndrome des ovaires polykystiques (SOPK)**, avec cycles longs ou absents, parfois acné, pilosité ou chute de cheveux ;
+- **un excès de prolactine**, lié à certains médicaments ou à un adénome hypophysaire bénin, parfois avec un écoulement par les mamelons ;
+- **l’insuffisance ovarienne prématurée** (avant 40 ans), avec bouffées de chaleur ;
+- **des causes utérines** après une IVG instrumentale, un curetage ou une chirurgie (adhérences, col rétréci) ;
+- plus rarement, d’autres causes hormonales ou génétiques.
+
+## Au quotidien
+- **Fais un test de grossesse** si tu as eu un rapport, même protégé, puis consulte si le doute persiste.
+- **Note tes dates** : dernières règles, arrêt éventuel d’une contraception, changements récents (poids, entraînement, stress, médicaments).
+- **Prends soin de ton alimentation** si tu fais beaucoup de sport : un apport insuffisant peut suffire à interrompre les cycles.
+- **Ne te mets pas en danger** en attendant que « ça revienne » : une consultation permet d’agir tôt, notamment pour protéger tes os.
+- **Prépare les questions** du médecin : acné, pilosité, écoulement par les seins, bouffées de chaleur, maux de tête, troubles de la vue.
+
+## Questions fréquentes
+**Mes règles ne sont pas revenues depuis l’arrêt de ma pilule, est-ce inquiétant ?** Un délai de quelques semaines est fréquent. Au-delà de 3 mois sans règles, consulte.
+
+**Je n’ai plus mes règles depuis que je mange moins, est-ce grave ?** C’est un signal à prendre au sérieux : l’Assurance Maladie cite la restriction alimentaire parmi les causes d’arrêt des règles, avec un risque pour les os. Parles-en à un médecin ; si l’alimentation est devenue une source d’angoisse, des professionnels peuvent t’accompagner.
+
+**Quels examens peut-on me prescrire ?** Selon les cas : prise de sang (hCG, dosages hormonaux), échographie pelvienne, parfois d’autres examens orientés par le médecin.
+
+**Je n’ai pas de règles pendant l’allaitement, faut-il consulter ?** Non, c’est attendu pendant l’allaitement ; mais l’allaitement ne protège pas toujours d’une grossesse : une contraception reste nécessaire si tu ne souhaites pas être enceinte.
+
+## Quand demander conseil
+Consulte si tu n’as pas eu tes premières règles à 16 ans, si tes règles se sont arrêtées depuis plus de 3 mois, si tu as des signes associés (acné ou pilosité nouvelles, écoulement par les seins, bouffées de chaleur, maux de tête). En cas de troubles alimentaires, de mal-être ou d’idées noires, appelle le **3114**.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid','child']::text[], null, null, null, null, false, array['aménorrhée','plus de règles','règles absentes','arrêt des règles','pas de règles 3 mois','aménorrhée primaire','règles après pilule','prolactine']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Qu’est-ce qu’une aménorrhée et quand faut-il s’inquiéter de l’absence de règles ?","url":"https://www.ameli.fr/assure/sante/themes/retard-absence-de-regles-ou-amenorrhee/amenorrhee-regles-retard-absence","consulted_on":"2026-10-27"},{"label":"ameli.fr — Aménorrhée secondaire, arrêt des règles de plus de 3 mois : quelles causes ?","url":"https://www.ameli.fr/assure/sante/themes/retard-absence-de-regles-ou-amenorrhee/amenorrhee-regles-retard-absence-0","consulted_on":"2026-10-27"},{"label":"Santé.fr — Troubles des règles","url":"https://www.sante.fr/troubles-des-regles","consulted_on":"2026-10-27","published":"2026-08-14"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('regles-irregulieres-hors-projet-bebe', (select id from public.content_categories where slug = 'regles'), 'Règles irrégulières : comprendre ce qui fait varier ton cycle et quand consulter', 'Cycles qui changent d’un mois à l’autre, très courts ou très longs : les explications possibles, de la puberté au SOPK, et les repères pour savoir quand en parler.', '## En bref
+- Un cycle dure en moyenne **28 jours**, avec des variations courantes **entre environ 23-25 et 35 jours** selon les sources.
+- Les cycles sont souvent **irréguliers à l’adolescence** (ils se régularisent en général en **un à deux ans**) et à l’approche de la **ménopause**.
+- Des cycles **plus longs que 35 à 40 jours** depuis l’adolescence, avec **acné**, **pilosité** ou **chute de cheveux**, peuvent évoquer un **syndrome des ovaires polykystiques** (SOPK).
+- Stress, perte de poids, sport intense, contraception ou certains médicaments peuvent aussi dérégler le cycle.
+- Noter tes dates sur plusieurs mois est le meilleur point de départ.
+
+## Comprendre
+Selon l’Assurance Maladie, la longueur du cycle varie surtout à cause de la première phase (avant l’ovulation) ; la seconde phase est plus stable. Santé.fr rappelle qu’un cycle plus court ou plus long que la moyenne n’est pas forcément un problème. Ce qui compte, c’est ta régularité personnelle et les signes associés.
+
+**À la puberté**, les ovulations ne sont pas encore régulières : les règles peuvent espacer, puis revenir plus abondantes. **Autour de 45-50 ans**, la périménopause entraîne aussi des cycles irréguliers.
+
+**Le SOPK** est un trouble hormonal fréquent. L’Assurance Maladie décrit des cycles de plus de 35 à 40 jours, présents depuis l’adolescence, pouvant aller jusqu’à l’absence de règles, souvent associés à un excès d’hormones masculines : pilosité accrue, acné qui persiste après 20 ans, chute de cheveux. Un surpoids, de la fatigue, une humeur dépressive ou de l’anxiété peuvent s’y ajouter. Le diagnostic repose sur des critères précis, avec prise de sang et parfois échographie. C’est une maladie chronique dont les symptômes se soignent, et qui mérite un suivi (risques métaboliques notamment).
+
+**D’autres causes** : Santé.fr cite un kyste de l’ovaire en cas de cycle particulièrement long avec seins douloureux et maux de ventre et un test de grossesse négatif. Les troubles de l’ovulation, la contraception hormonale, un stress important ou un déficit énergétique (sport intense, apports insuffisants) peuvent aussi jouer.
+
+## Au quotidien
+- **Note le premier jour de chaque règles** pendant au moins 3 à 6 mois : la durée de chaque cycle apparaît vite.
+- **Ajoute les signes associés** : douleurs, abondance, saignements entre les règles, acné, pilosité, poids, stress, sport.
+- **Garde toujours une protection sur toi** quand ton cycle est imprévisible.
+- **Si tu as des rapports**, rappelle-toi qu’un cycle irrégulier rend les « calculs » de période fertile très peu fiables : utilise une contraception adaptée si tu ne souhaites pas de grossesse.
+- **En cas de retard** après un rapport, fais un test de grossesse.
+
+## Questions fréquentes
+**J’ai 14 ans et mes règles sont irrégulières, faut-il consulter ?** Les cycles mettent souvent un à deux ans à se régulariser. Consulte si tes règles sont très abondantes, très douloureuses, ou si elles disparaissent plus de 3 mois.
+
+**Mon cycle varie de quelques jours chaque mois, est-ce un trouble ?** De petites variations sont courantes. Des cycles régulièrement inférieurs à environ 21-23 jours ou supérieurs à 35 jours méritent d’en parler.
+
+**Le SOPK se soigne-t-il ?** Il ne se guérit pas, mais ses symptômes se traitent et un suivi permet de prévenir les complications. Une prise en charge du retentissement psychologique est aussi recommandée.
+
+**Un kyste de l’ovaire peut-il allonger un cycle ?** Santé.fr l’évoque en cas de cycle particulièrement long avec seins douloureux, maux de ventre et test de grossesse négatif. Seul un examen permet de le confirmer : consulte si tu te reconnais dans cette situation.
+
+## Quand demander conseil
+Consulte si tes cycles sont régulièrement très courts ou très longs, si tes règles disparaissent plus de 3 mois, si tu as de l’acné ou une pilosité qui te gênent, ou si tes règles deviennent très abondantes ou très douloureuses. Une douleur qui t’empêche de vivre normalement n’a pas à être subie.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['règles irrégulières','cycle irrégulier','cycle long','cycle court','SOPK','ovaires polykystiques','puberté cycle','périménopause']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Troubles des règles","url":"https://www.sante.fr/troubles-des-regles","consulted_on":"2026-10-27","published":"2026-08-14"},{"label":"ameli.fr — Symptômes, diagnostic et évolution du syndrome des ovaires polykystiques","url":"https://www.ameli.fr/assure/sante/themes/syndrome-ovaires-polykystiques/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2026-01-12"},{"label":"ameli.fr — Informations et conseils sur les règles ou menstruations","url":"https://www.ameli.fr/assure/sante/themes/puberte/informations-conseils-regles","consulted_on":"2026-10-27","published":"2026-09-29"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('troubles-digestifs-pendant-les-regles', (select id from public.content_categories where slug = 'regles'), 'Ventre gonflé, diarrhée, nausées pendant les règles : comprendre et soulager', 'Pourquoi le cycle peut chambouler la digestion, ce qui peut aider au quotidien et quels signes digestifs doivent faire consulter.', '## En bref
+- Les règles s’accompagnent souvent de **troubles digestifs** : **diarrhée**, **nausées**, parfois **vomissements**, selon l’Assurance Maladie et QuestionSexualité.
+- Avant les règles, le syndrome prémenstruel peut donner des **ballonnements**, une sensation de gonflement et des **fringales**.
+- Ces troubles sont souvent plus marqués quand les **règles sont douloureuses**.
+- Repas légers, hydratation, chaleur et activité douce peuvent aider.
+- Des **douleurs digestives fortes à chaque cycle** (en allant à la selle, par exemple) méritent un avis : une **endométriose** peut être en cause.
+
+## Comprendre
+L’Assurance Maladie liste, parmi les symptômes qui accompagnent les règles douloureuses, des signes digestifs (nausées, vomissements, diarrhée), une fatigue et une sensation de malaise. QuestionSexualité souligne que les règles douloureuses s’accompagnent souvent de fatigue et de troubles digestifs.
+
+Les douleurs de règles sont liées à un excès de prostaglandines qui provoquent des contractions de l’utérus. Les sources consultées associent les troubles digestifs à ces règles douloureuses sans en détailler le mécanisme : retiens surtout qu’ils font partie des symptômes fréquemment décrits et qu’ils peuvent être pris en compte dans le traitement des douleurs.
+
+Dans les jours qui précèdent les règles, le syndrome prémenstruel peut entraîner ballonnements, sensation de gonflement et prise de poids passagère liée à la rétention d’eau, ainsi que des fringales. Le guide du ministère des Sports sur le cycle rappelle que cette prise de poids cyclique ne justifie pas de régime.
+
+Quand les troubles digestifs sont très douloureux et reviennent à chaque cycle, ils peuvent faire partie d’une endométriose, dont les lésions peuvent toucher différents organes du bassin. Un avis médical permet d’en avoir le cœur net.
+
+## Au quotidien
+- **Mange léger et en plusieurs petits repas** les jours sensibles, en évitant les plats très gras ou épicés si tu remarques qu’ils te gênent.
+- **Bois régulièrement**, surtout en cas de diarrhée ou de vomissements, pour éviter de te déshydrater.
+- **Limite sel, alcool et excitants** avant les règles : Santé.fr les cite pour atténuer le syndrome prémenstruel, même si leur efficacité n’est pas démontrée scientifiquement.
+- **Mets de la chaleur** sur le ventre (bouillotte) et **bouge doucement** : marche, étirements.
+- **Prévois** une tenue confortable et repère les toilettes quand tu sors les premiers jours de règles.
+- **Note tes symptômes** dans ton calendrier : jour du cycle, type de trouble, intensité. Cela aide à anticiper et à en parler.
+- **Demande conseil** à un pharmacien ou à ton médecin avant de prendre un médicament, surtout si tu as d’autres traitements.
+
+## Questions fréquentes
+**Pourquoi ai-je la diarrhée au début de mes règles ?** La diarrhée fait partie des symptômes souvent associés aux règles douloureuses selon l’Assurance Maladie et QuestionSexualité. Si elle est très gênante, douloureuse ou dure au-delà des règles, consulte.
+
+**Ballonnements avant les règles : est-ce le SPM ?** C’est l’un des symptômes les plus cités. Ils disparaissent en général avec l’arrivée des règles.
+
+**J’ai mal en allant à la selle pendant mes règles, est-ce lié ?** Une douleur de ce type, répétée à chaque cycle, doit être signalée : elle peut orienter vers une endométriose.
+
+**Faut-il faire un régime pour le ventre gonflé ?** Non, la prise de poids cyclique est passagère et ne justifie pas de régime.
+
+## Quand demander conseil
+Consulte si les troubles digestifs sont intenses, durent au-delà des règles, s’accompagnent de sang dans les selles, d’une perte de poids, d’une fièvre, ou de douleurs fortes à chaque cycle. Une douleur qui t’empêche de vivre normalement n’a pas à être subie. En cas de vomissements avec fièvre élevée et malaise pendant le port d’un tampon ou d’une coupe, retire-la et appelle le 15.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['diarrhée règles','ballonnements règles','nausées règles','ventre gonflé','troubles digestifs cycle','constipation règles','fringales','endométriose digestive']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Douleurs pendant les règles ou dysménorrhée : quelles sont les causes ?","url":"https://www.ameli.fr/assure/sante/themes/regles-douloureuses/douleurs-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"QuestionSexualité (Santé publique France) — Règles : tout savoir sur le cycle menstruel","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/tout-savoir-sur-les-regles","consulted_on":"2026-10-27"},{"label":"Ministère des Sports — Cycle menstruel et performance (guide IPCS, sportives de haut niveau)","url":"https://www.sports.gouv.fr/sites/default/files/2025-09/guide-ipcs-cycle-menstruel-et-performance-pdf-47358.pdf","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('humeur-et-sommeil-selon-le-cycle', (select id from public.content_categories where slug = 'regles'), 'Humeur, énergie et sommeil au fil du cycle : mieux comprendre tes variations', 'Fatigue, irritabilité, sommeil perturbé avant ou pendant les règles : ce que disent les sources sur les liens entre hormones, humeur et sommeil, et comment t’organiser.', '## En bref
+- Les variations des **hormones** au cours du cycle peuvent influencer l’**humeur**, l’**énergie** et le **sommeil**.
+- Avant les règles, le **syndrome prémenstruel** peut s’accompagner de fatigue, de troubles de l’humeur et du sommeil.
+- Pendant les règles, la **chute hormonale** peut donner de la **somnolence** ou un petit coup de **déprime** ; des règles douloureuses aggravent souvent le tout.
+- Le mode de vie, le sommeil, l’alimentation et les tensions du quotidien jouent aussi beaucoup.
+- **Suivre ton cycle** permet d’anticiper les périodes plus fragiles et d’adapter ton organisation.
+
+## Comprendre
+Fil Santé Jeunes explique qu’avant les règles, les variations d’œstradiol et de progestérone peuvent provoquer le syndrome prémenstruel, avec des fluctuations d’humeur. Ces fluctuations dépendent aussi de facteurs extérieurs : rythme de vie, sommeil, appétit, tensions familiales. Pendant les règles, la chute des hormones peut entraîner somnolence ou déprime, et des règles douloureuses aggravent les symptômes physiques comme psychologiques.
+
+Le guide « Cycle menstruel et performance » du ministère des Sports cite, parmi les symptômes de la semaine qui précède les règles, la fatigue et les troubles de l’humeur et du sommeil, à côté des ballonnements, maux de tête ou tensions mammaires.
+
+Psycom, site d’information en santé mentale, souligne l’intérêt de suivre son cycle et de noter ses variations d’humeur pour anticiper les périodes de fatigue ou de vulnérabilité, et d’en parler à un médecin quand cela pèse.
+
+Chaque personne a son propre profil : certaines ne ressentent presque rien, d’autres vivent des variations marquées. Quand l’humeur s’effondre chaque mois, on parle de trouble dysphorique prémenstruel, qui nécessite un avis médical.
+
+## Au quotidien
+**Observer**
+- Note chaque jour, en quelques secondes : humeur, énergie, qualité du sommeil, douleur, jour du cycle. Après deux ou trois cycles, des tendances apparaissent souvent.
+
+**S’organiser**
+- Garde les tâches les plus exigeantes pour les jours où tu te sens en forme, si c’est possible.
+- Les jours plus fragiles, allège ton agenda, prévois des pauses et des moments pour toi.
+
+**Prendre soin de son sommeil**
+- Des horaires de coucher et de lever réguliers, une chambre calme et sombre.
+- Limite écrans, café et alcool le soir.
+- En cas de douleur nocturne, la chaleur (bouillotte) et une protection adaptée pour la nuit (serviette ou culotte menstruelle) aident à mieux dormir.
+
+**Se soutenir**
+- Une activité physique régulière, même douce, aide l’humeur et le sommeil.
+- Explique à tes proches ce que tu traverses : cela allège la tension et évite les malentendus.
+
+## Questions fréquentes
+**Pourquoi je pleure plus facilement avant mes règles ?** Les variations hormonales de fin de cycle peuvent rendre plus sensible. Si ces moments deviennent très douloureux ou envahissants, parles-en à un médecin.
+
+**Je dors mal pendant mes règles, que faire ?** Douleurs, peur de tacher et variations hormonales peuvent perturber le sommeil. Une protection adaptée la nuit, la chaleur et un rythme régulier aident ; si la douleur te réveille souvent, consulte.
+
+**Les applis de suivi de cycle sont-elles utiles pour l’humeur ?** Psycom cite le suivi du cycle, y compris avec des applis, comme un moyen d’anticiper les périodes de vulnérabilité. Elles ne remplacent pas un avis médical.
+
+**Ma contraception change-t-elle mon humeur ?** Les hormones peuvent avoir un effet, variable d’une personne à l’autre. Parles-en au professionnel qui te la prescrit avant de modifier quoi que ce soit.
+
+## Quand demander conseil
+Consulte si ton humeur ou ton sommeil sont très perturbés chaque mois, si tu te sens triste ou anxieuse la plupart du temps, ou si la fatigue ne passe pas. Si tu as des idées noires, appelle le **3114** (gratuit, 24 h/24) ; les 12-25 ans peuvent aussi joindre Fil Santé Jeunes au **0800 235 236**. En cas d’urgence, appelle le **15** ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['humeur cycle','sommeil règles','fatigue avant les règles','insomnie règles','émotions cycle','hormones humeur','déprime règles','énergie cycle']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Fil Santé Jeunes — Vivre avec les règles","url":"https://www.filsantejeunes.com/vivre-avec-les-regles-18771","consulted_on":"2026-10-27","published":"2024-02-23"},{"label":"Psycom (Santé mentale Info) — La santé mentale des femmes","url":"https://www.psycom.org/sinformer/la-sante-mentale/la-sante-mentale-des-femmes/","consulted_on":"2026-10-27","published":"2026-09-16"},{"label":"Ministère des Sports — Cycle menstruel et performance (guide IPCS, sportives de haut niveau)","url":"https://www.sports.gouv.fr/sites/default/files/2025-09/guide-ipcs-cycle-menstruel-et-performance-pdf-47358.pdf","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('sexualite-pendant-les-regles', (select id from public.content_categories where slug = 'regles'), 'Sexualité pendant les règles : envies, idées reçues et protection', 'Avoir des rapports pendant les règles, c’est un choix à deux : ce qu’il faut savoir sur le risque de grossesse, les IST et le confort.', '## En bref
+- Les règles **ne sont pas une contre-indication** aux rapports sexuels : c’est à chacun et chacune de décider s’il ou elle se sent à l’aise.
+- **Une grossesse reste possible** : les spermatozoïdes peuvent survivre jusqu’à **5 jours** et, avec un cycle court, l’ovulation peut survenir peu après les règles.
+- Les rapports non protégés pendant les règles peuvent **augmenter le risque de transmission de certaines IST**.
+- Le **préservatif** protège à la fois des IST et de la grossesse.
+- **Retire ton tampon** avant un rapport avec pénétration vaginale.
+
+## Comprendre
+Il existe beaucoup d’idées reçues sur les rapports pendant les règles. Fil Santé Jeunes rappelle que les règles ne sont pas une contre-indication et que chaque partenaire décide s’il ou elle est à l’aise. Certaines personnes ont plus de désir à ce moment-là, d’autres moins, d’autres pas du tout : tout cela se respecte, et personne n’a à se forcer.
+
+**Le risque de grossesse** : QuestionSexualité explique qu’une grossesse est possible sans contraception pendant les règles, pour deux raisons. D’une part, avec des cycles courts, l’ovulation peut survenir très tôt, peu après la fin des règles. D’autre part, les spermatozoïdes peuvent survivre jusqu’à cinq jours dans l’appareil génital. Sans contraception, il n’existe donc pas de moment du cycle où une grossesse serait impossible.
+
+**Le risque d’IST** : les rapports non protégés pendant les règles augmentent le risque de transmission de certaines infections sexuellement transmissibles, selon QuestionSexualité et Fil Santé Jeunes. Le sang peut faciliter cette transmission.
+
+**Et les douleurs ?** Santé.fr mentionne que l’activité sexuelle peut, chez certaines personnes, réduire les troubles liés aux règles. À l’inverse, si les rapports sont douloureux, notamment en profondeur, c’est un signe à signaler à un professionnel : cela peut évoquer une endométriose.
+
+## Au quotidien
+- **Parlez-en** avant : envies, limites, gêne éventuelle. Le consentement compte à chaque moment.
+- **Utilise un préservatif** si tu n’as pas de contraception ou si le statut IST de ton ou ta partenaire n’est pas connu.
+- **Retire tampon ou coupe** avant une pénétration vaginale ; un tampon oublié doit être retiré dès que possible.
+- **Côté pratique** : une serviette de bain foncée, des mouchoirs, une douche avant ou après peuvent mettre plus à l’aise.
+- **Pense à d’autres formes d’intimité** si tu préfères éviter la pénétration ces jours-là.
+- **En cas de rapport non protégé**, la contraception d’urgence est possible en pharmacie, et un dépistage des IST peut être utile.
+
+## Questions fréquentes
+**Peut-on tomber enceinte pendant les règles ?** Oui, c’est possible, surtout avec un cycle court. Si tu ne souhaites pas de grossesse, garde une contraception efficace.
+
+**C’est sale d’avoir des rapports pendant les règles ?** Non, le sang des règles fait partie du fonctionnement normal du corps. C’est une question de confort et de choix personnel.
+
+**Le sexe pendant les règles soulage-t-il les douleurs ?** Santé.fr indique que l’activité sexuelle peut réduire ces troubles chez certaines personnes. Ce n’est pas le cas pour toutes, et rien ne t’y oblige.
+
+**J’ai mal pendant les rapports, surtout pendant mes règles.** Parles-en à un médecin, une sage-femme ou un gynécologue : des douleurs pendant les rapports ne sont pas à subir et peuvent avoir une cause qui se traite.
+
+## Quand demander conseil
+Consulte en cas de douleur pendant ou après les rapports, de saignements après les rapports en dehors des règles, de pertes ou de démangeaisons inhabituelles, ou après un rapport à risque d’IST. Les 12-25 ans peuvent joindre Fil Santé Jeunes au **0800 235 236**. En cas de violence sexuelle, appelle le **17** ou le **112** ; le **3919** écoute les femmes victimes de violences.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid']::text[], null, null, null, null, false, array['rapport pendant les règles','sexe règles','grossesse pendant les règles','IST règles','préservatif règles','libido cycle','tampon rapport','idées reçues règles']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Règles : tout savoir sur le cycle menstruel","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/tout-savoir-sur-les-regles","consulted_on":"2026-10-27"},{"label":"Fil Santé Jeunes — Vivre avec les règles","url":"https://www.filsantejeunes.com/vivre-avec-les-regles-18771","consulted_on":"2026-10-27","published":"2024-02-23"},{"label":"Santé.fr — Règles douloureuses (dysménorrhées)","url":"https://www.sante.fr/regles-douloureuses-dysmenorrhees","consulted_on":"2026-10-27","published":"2026-08-12"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('regles-au-travail-et-a-l-ecole-amenagements', (select id from public.content_categories where slug = 'regles'), 'Règles douloureuses au travail, à l’école ou à la fac : s’organiser et demander des aménagements', 'Absences, douleurs, fatigue : comment t’organiser, à qui t’adresser et quels aménagements existent à l’école, à l’université et en entreprise.', '## En bref
+- Les règles douloureuses sont la **première cause d’absentéisme scolaire** chez les adolescentes et **professionnel** chez les jeunes femmes, selon l’Assurance Maladie.
+- Une douleur qui t’empêche d’aller en cours ou au travail **n’est pas à subir** : elle mérite une consultation et un traitement adapté.
+- À l’université, le **service de santé étudiante** est la porte d’entrée pour des **aménagements d’études** (absences tolérées, temps additionnel aux examens…), validés par un médecin.
+- En entreprise, des aménagements d’horaires, de poste, du **télétravail** ou des jours supplémentaires peuvent être discutés, **dans le respect du secret médical**.
+- Un **kit** dans ton sac et une organisation anticipée allègent beaucoup les jours difficiles.
+
+## Comprendre
+L’Assurance Maladie souligne que les règles douloureuses sont la première cause d’absentéisme scolaire chez l’adolescente et professionnel chez la jeune femme. Pourtant, beaucoup de personnes n’osent pas en parler, par gêne ou parce que la douleur de règles a longtemps été banalisée.
+
+**Pour les étudiantes**, etudiant.gouv.fr détaille, à propos de l’endométriose, les aménagements possibles, à faire valider par un médecin après un entretien : tolérance pour les absences justifiées médicalement, aménagement de l’emploi du temps, modalités d’examen adaptées ou dispense d’assiduité, étalement du cursus, temps additionnel aux examens, régime spécial d’études dans le cadre du handicap. Certaines universités proposent aussi un **congé menstruel**. Le **service de santé étudiante**, accessible à tous les étudiants, est le point de départ ; on peut y consulter selon les cas un médecin, une sage-femme, un gynécologue ou une infirmière.
+
+**Pour les salariées**, Santé.fr relaie les ressources de l’Anact (affiche, quiz, guide) qui invitent les entreprises à agir sur les horaires, le poste et l’activité, à renforcer le soutien managérial dans le respect du secret médical, et cite le télétravail et des jours de congés supplémentaires parmi les pistes. Ces mesures s’inscrivent idéalement dans une démarche collective de l’entreprise sur les maladies chroniques.
+
+## Au quotidien
+- **Consulte** si tes règles t’empêchent régulièrement d’étudier ou de travailler : un traitement adapté peut changer ton quotidien, et une cause comme l’endométriose peut être recherchée.
+- **Prépare un kit** : protections de rechange, sous-vêtement, petit sac hermétique, antidouleur conseillé par ton médecin ou ton pharmacien, bouillotte souple si possible.
+- **Note ton cycle** pour anticiper : éviter de caler un examen oral ou une réunion importante le jour le plus difficile quand tu as le choix.
+- **Au collège ou au lycée**, l’infirmerie scolaire peut t’accueillir et t’aider à en parler à ta famille.
+- **À la fac**, prends rendez-vous au service de santé étudiante ; un étudiant relais-santé ou le relais handicap peuvent t’aider dans les démarches.
+- **Au travail**, tu n’as pas à révéler ton diagnostic à ton employeur. Tu peux t’adresser à la médecine du travail ou aux ressources humaines pour discuter d’aménagements.
+
+## Questions fréquentes
+**Le congé menstruel existe-t-il partout ?** Non : selon etudiant.gouv.fr, certaines universités le proposent ; en entreprise, cela dépend des accords et des politiques internes.
+
+**Dois-je dire à mon manager que j’ai des règles douloureuses ?** Ce n’est pas une obligation. Les aménagements peuvent se discuter sans détailler ta santé, dans le respect du secret médical.
+
+**Ma fille rate souvent l’école à cause de ses règles, que faire ?** Aide-la à prendre rendez-vous avec son médecin : des douleurs qui font manquer l’école doivent être prises en charge, et un bilan d’endométriose peut être nécessaire.
+
+## Quand demander conseil
+Consulte si tes règles te font manquer des cours ou le travail, si la douleur résiste à ce qui t’a été conseillé, ou si elle s’accompagne de règles très abondantes. Si tu te sens à bout ou isolée, appelle le **3114** ; les 12-25 ans peuvent joindre Fil Santé Jeunes au **0800 235 236**.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid','child']::text[], null, null, null, null, false, array['règles travail','règles école','congé menstruel','aménagement études endométriose','absence règles','service de santé étudiante','infirmière scolaire','télétravail règles']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Douleurs pendant les règles ou dysménorrhée : quelles sont les causes ?","url":"https://www.ameli.fr/assure/sante/themes/regles-douloureuses/douleurs-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"etudiant.gouv.fr — Endométriose : les aménagements d’études qui s’adaptent à vos besoins","url":"https://www.etudiant.gouv.fr/fr/amenagements-endometriose","consulted_on":"2026-10-27","published":"2025-01-20"},{"label":"Santé.fr — Endométriose et travail : 3 ressources pour comprendre et agir en entreprise","url":"https://www.sante.fr/endometriose/endometriose-et-travail-3-ressources-pour-comprendre-et-agir-en-entreprise","consulted_on":"2026-10-27","published":"2024-03-07"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('suivre-son-cycle-calendrier-quoi-noter', (select id from public.content_categories where slug = 'regles'), 'Suivre ton cycle dans un calendrier : quoi noter, pourquoi, et ses limites', 'Dates des règles, flux, douleurs, humeur : comment tenir un calendrier de cycle utile pour toi et pour ton médecin, sans le confondre avec une contraception.', '## En bref
+- Noter le **premier jour de tes règles** chaque mois permet de connaître la **durée de ton cycle** et d’anticiper les prochaines règles.
+- Ajouter quelques infos (**abondance**, **douleur**, **humeur**, **saignements entre les règles**) en fait un outil précieux pour **repérer un changement** et préparer une consultation.
+- Psycom recommande ce suivi pour **anticiper** les périodes de fatigue ou de vulnérabilité.
+- Un calendrier **n’est pas une contraception** : l’Assurance Maladie rappelle que la méthode du calendrier a un **taux d’échec élevé** et ne protège pas des IST.
+- Le suivi de cycle de l’app sert à **t’informer**, pas à poser un diagnostic.
+
+## Comprendre
+QuestionSexualité explique comment calculer la durée de ton cycle : on compte les jours entre le premier jour des règles et le premier jour des règles suivantes. Au bout de trois ou quatre cycles, si ceux-ci sont réguliers, on obtient une bonne moyenne.
+
+Un calendrier bien tenu aide à répondre aux questions que posent les professionnels : date des dernières règles, durée et abondance des règles, nombre de protections par jour, saignements entre les règles, douleurs, retentissement sur ta vie quotidienne. Pour la migraine menstruelle, l’Assurance Maladie conseille par exemple de noter la date des règles dans l’agenda des crises.
+
+Psycom souligne que suivre son cycle et noter ses variations d’humeur, éventuellement avec une appli, permet d’anticiper les périodes plus fragiles et d’alléger son agenda quand c’est possible.
+
+**Attention à la contraception.** La méthode dite du calendrier (Ogino) consiste à éviter les rapports pendant la période supposée fertile. L’Assurance Maladie la réserve aux personnes ayant des cycles réguliers, qui connaissent bien leur cycle et acceptent un risque de grossesse, et indique que les méthodes naturelles ont un taux d’échec élevé en pratique et ne protègent pas des IST. Une prédiction de règles ou d’ovulation dans une appli ne remplace pas une contraception.
+
+## Au quotidien
+**Le minimum utile**
+- Le premier jour des règles et le jour où elles se terminent.
+
+**Pour aller plus loin** (quelques secondes par jour)
+- Abondance : légère, moyenne, forte ; nombre de protections ; caillots ; débordements la nuit.
+- Douleur sur une échelle de 0 à 10, et ce qui l’a soulagée.
+- Humeur, énergie, sommeil.
+- Saignements ou pertes inhabituelles entre les règles.
+- Événements particuliers : maladie, stress, voyage, changement de contraception, sport intense.
+
+**Bien s’en servir**
+- Regarde ton calendrier avant une consultation, ou montre-le au professionnel.
+- Repère les **changements** : cycle qui s’allonge, règles plus abondantes, douleur qui augmente.
+- Garde une protection sur toi quelques jours avant la date prévue, surtout si ton cycle varie.
+- Si tu ne souhaites pas de grossesse, utilise une contraception efficace, indépendamment de ce que prédit ton calendrier.
+
+## Questions fréquentes
+**Mon appli prévoit mes règles, est-ce fiable ?** Elle se base sur tes cycles précédents : plus tes cycles sont réguliers, plus l’estimation est proche. Elle peut se tromper, surtout en cas de cycle irrégulier.
+
+**Puis-je utiliser mon calendrier pour savoir quand je suis fertile ?** Une estimation est possible, mais elle reste incertaine. Si tu as un projet de grossesse, parles-en à un professionnel ; si tu veux éviter une grossesse, ne t’y fie pas comme contraception.
+
+**Combien de temps faut-il noter ?** Trois ou quatre cycles donnent une première moyenne. Continuer permet de repérer les changements au fil des années.
+
+**Mes données sont-elles utiles même si tout va bien ?** Oui : connaître ton fonctionnement habituel aide à remarquer plus vite ce qui change.
+
+## Quand demander conseil
+Consulte si ton calendrier montre des cycles très courts ou très longs, des règles absentes plus de 3 mois, des règles très abondantes ou longues, des saignements entre les règles ou des douleurs croissantes. Une douleur qui t’empêche de vivre normalement n’a pas à être subie.
+
+En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout si tes règles sont en retard), de fièvre avec douleurs du bas-ventre, ou de fièvre élevée avec malaise pendant le port d’un tampon ou d’une coupe, appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme, d’un ou d’une gynécologue ou d’un pharmacien._', array['avoid','ttc']::text[], null, null, null, null, false, array['calendrier règles','suivi du cycle','appli règles','noter ses règles','durée du cycle','journal des symptômes','méthode calendrier','prévoir ses règles']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Règles : tout savoir sur le cycle menstruel","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/le-corps-et-son-fonctionnement/tout-savoir-sur-les-regles","consulted_on":"2026-10-27"},{"label":"Psycom (Santé mentale Info) — La santé mentale des femmes","url":"https://www.psycom.org/sinformer/la-sante-mentale/la-sante-mentale-des-femmes/","consulted_on":"2026-10-27","published":"2026-09-16"},{"label":"ameli.fr — Les méthodes naturelles de contraception","url":"https://www.ameli.fr/assure/sante/themes/contraception/methodes-naturelles-contraception","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('premieres-regles-ce-qui-se-passe-ado', (select id from public.content_categories where slug = 'cycle-ages'), 'Mes premières règles : à quoi ça ressemble et comment je me prépare', 'Pour les ados : quand arrivent les premières règles, à quoi elles ressemblent, comment te préparer et à qui en parler si quelque chose t’inquiète.', '## En bref
+- Les premières règles arrivent le plus souvent **entre 10 et 15 ans**, en moyenne vers 12-13 ans, mais certaines filles sont réglées avant 10 ans et d’autres plus tard.
+- Elles viennent en général **environ deux ans après** le début du développement des seins et des poils du pubis.
+- Le premier signe est souvent une **petite tache de sang** dans la culotte ou en allant aux toilettes, rouge ou plutôt marron.
+- Avoir ses règles veut dire qu’une **grossesse devient possible**, même dès un premier rapport non protégé.
+- Garde **une protection dans ton sac** dès le début de la puberté : tu seras tranquille le jour J.
+
+## Comprendre
+Chaque mois, à partir de la puberté, la paroi intérieure de l’utérus (l’endomètre) s’épaissit pour accueillir une éventuelle grossesse. S’il n’y a pas de fécondation, cette muqueuse se détache et s’écoule par le vagin : ce sont les règles. Elles durent en général 3 à 6 ou 7 jours et sont souvent plus abondantes les premiers jours.
+
+Les premières règles sont souvent discrètes : quelques traces de sang, parfois un peu épais, dont la couleur va du rouge au marron. Fil santé jeunes rappelle que la couleur ne dit rien de ta santé. Tu peux aussi remarquer, dans les mois qui précèdent, des pertes blanches ou jaunâtres dans ta culotte : elles font partie des changements de la puberté.
+
+Au début, il est fréquent que les règles soient **irrégulières** : rapprochées, puis absentes pendant plusieurs mois. Le cycle se règle souvent en un à deux ans, parfois plus. Chacune a son propre rythme : ce n’est pas parce que tes amies sont réglées que tu es « en retard ».
+
+## Au quotidien
+- **Prépare une petite trousse** : une ou deux serviettes (ou la protection que tu préfères), une culotte de rechange, quelques mouchoirs. Glisse-la dans ton sac de cours.
+- **Choisis ta protection** : les serviettes sont souvent les plus simples pour commencer. Les tampons (les plus fins conviennent souvent au début), la coupe menstruelle et la culotte menstruelle sont aussi possibles. Lis toujours la notice.
+- **Change ta protection régulièrement**. Un tampon se change toutes les 4 à 6 heures et ne se porte pas la nuit, à cause du risque rare mais grave de choc toxique.
+- **Au collège ou au lycée**, l’infirmerie peut souvent te dépanner en protections et t’accueillir si tu as mal.
+- **Note tes dates** dans un carnet, un calendrier ou dans l’app : tu verras ton rythme se dessiner peu à peu.
+- **Tu peux continuer tes activités**, sport compris : les règles n’obligent pas à t’arrêter.
+- **Parles-en à quelqu’un de confiance** : ta mère, ton père, une sœur, une tante, l’infirmière scolaire… Les personnes qui ont leurs règles savent souvent de quoi tu parles, mais un homme peut aussi t’aider si tu le souhaites.
+
+## Questions fréquentes
+**Est-ce que ça fait mal ?** Les premières règles sont souvent peu douloureuses, mais chacune est différente. Tu peux ressentir des crampes dans le ventre, des douleurs dans le dos, des seins sensibles, un ventre gonflé, des boutons ou des maux de tête. Une bouillotte, une douche chaude ou un peu de marche aident souvent.
+
+**Je me sens triste ou énervée avant mes règles, pourquoi ?** Les variations d’hormones peuvent jouer sur l’humeur : fatigue, irritabilité, tristesse, parfois quelques jours avant les règles. Si ça te gêne vraiment, parles-en à un adulte de confiance ou à un médecin.
+
+**Et si mes règles arrivent en plein cours ?** Avec une protection adaptée, une tache ne se voit pas. Demande à aller aux toilettes ou à l’infirmerie. Une veste nouée autour de la taille dépanne aussi.
+
+**J’ai 15 ans et toujours pas mes règles, je dois m’inquiéter ?** Certaines filles sont réglées plus tard. Si elles ne sont pas arrivées à 16 ans (ou si tu as d’autres questions avant), un rendez-vous chez un médecin, une sage-femme, un·e gynécologue ou au Planning familial permet de faire le point.
+
+## Quand demander conseil
+Une douleur qui t’empêche d’aller en cours ou de faire tes activités n’est pas à subir : parles-en à ton médecin, notamment lors des examens de suivi proposés entre 11 et 13 ans puis entre 15 et 16 ans. Consulte aussi si tes règles sont très abondantes ou très longues, si elles n’ont pas commencé à 16 ans, ou si elles disparaissent plus de 3 mois. Tu peux appeler Fil santé jeunes, gratuit et anonyme pour les 12-25 ans, au **0 800 235 236**. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid','child']::text[], null, null, 96, 216, false, array['premières règles','ménarche','puberté','ado','règles à 11 ans','règles à 12 ans','protections','serviette','saignement culotte']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu Fil santé jeunes / EPE Île-de-France) — Les premières règles","url":"https://www.sante.fr/node/135698","consulted_on":"2026-10-27","published":"2024-06-17"},{"label":"Santé.fr (contenu Fil santé jeunes / EPE Île-de-France) — À quel âge arrivent les premières règles ?","url":"https://www.sante.fr/node/135741","consulted_on":"2026-10-27","published":"2016-11-08"},{"label":"ameli.fr — Informations et conseils sur les règles ou menstruations","url":"https://www.ameli.fr/assure/sante/themes/puberte/informations-conseils-regles","consulted_on":"2026-10-27","published":"2026-09-29"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('parler-des-regles-a-sa-fille', (select id from public.content_categories where slug = 'cycle-ages'), 'Parler des règles à sa fille : quand commencer et quoi lui dire', 'À quel âge aborder les règles avec ta fille, comment en parler simplement, quoi préparer avec elle et quand l’accompagner chez un professionnel.', '## En bref
+- En France, les premières règles arrivent **en moyenne vers 12 ans**, environ 18 à 24 mois après le début du développement des seins (souvent vers 9-10 ans).
+- Une gynécologue interrogée par la Caf conseille d’**engager la discussion vers 9 ans**, avec des mots adaptés à son âge, car certaines filles sont réglées tôt.
+- L’objectif : qu’elle **ne soit pas surprise** au premier saignement, et qu’elle sache que c’est une étape que vivent toutes les femmes, sans tabou.
+- Préparez ensemble **une trousse** avec une ou deux protections à garder dans son sac.
+
+## Comprendre
+Les règles ne sont pas le premier signe de la puberté : chez la fille, tout commence le plus souvent par la poussée des seins, puis la pilosité. Les premières règles viennent ensuite, mais la date reste imprévisible. Une enfant qui n’a jamais entendu parler des règles peut avoir très peur en voyant du sang. Une enfant informée, au contraire, sait quoi faire et à qui le dire.
+
+Parler des règles, c’est aussi transmettre qu’elles témoignent d’un corps en bonne santé et qu’elles n’empêchent pas de vivre : école, sport, sorties. Certaines jeunes filles ressentent au début de la honte ou une impression de saleté ; ameli.fr indique que ces sentiments s’estompent généralement en quelques mois, surtout quand on peut en parler librement à la maison.
+
+## Au quotidien
+- **Saisir les occasions** : une publicité, un paquet de serviettes dans la salle de bain, une question sur un livre… Ça évite le « grand discours » solennel.
+- **Utiliser les vrais mots** : utérus, vagin, règles, protections. Tu peux t’appuyer sur un livre ou une bande dessinée adaptée à son âge (ameli.fr signale par exemple une BD gratuite sur la puberté sur santebd.org, à regarder d’abord toi-même).
+- **Expliquer les protections** : serviettes, tampons, coupe, culotte menstruelle. Elle peut utiliser serviettes ou tampons dès le début ; les culottes menstruelles peuvent aider en cas de flux abondant. Montre-lui comment les utiliser et rappelle qu’il faut les changer régulièrement (un tampon, toutes les 4 à 6 heures, jamais plus de 8 heures, et pas la nuit).
+- **Préparer le jour J** : une ou deux protections dans le sac dès le début de la puberté, une culotte de rechange, et le réflexe de filer à l’infirmerie si besoin.
+- **Parler hygiène sans excès** : une toilette intime habituelle suffit, se laver trop peut déséquilibrer la flore vaginale.
+- **Penser au budget** : depuis le 1er octobre 2026, certaines culottes et coupes menstruelles achetées en pharmacie peuvent être prises en charge pour les moins de 26 ans (voir ameli.fr pour les conditions).
+- **Impliquer les deux parents** si possible : un père peut tout à fait en parler, acheter des protections et rassurer.
+
+## Questions fréquentes
+**Elle ne veut pas en parler avec moi, que faire ?** C’est fréquent à cet âge. Laisse un livre à disposition, dis-lui que tu es là, et propose-lui d’en parler à une sœur, une amie, une tante ou un professionnel de santé si elle préfère.
+
+**Ses cycles sont très irréguliers, faut-il s’inquiéter ?** Au début, les cycles sont souvent longs et irréguliers, parfois espacés de deux ou trois mois. Ils se régularisent en général en un à deux ans. Noter les dates aide à y voir clair.
+
+**Elle a très mal pendant ses règles, est-ce qu’elle doit « faire avec » ?** Non. Les règles douloureuses sont fréquentes chez les ados, mais une douleur qui l’empêche d’aller en cours ou qui ne passe pas avec un antalgique adapté mérite une consultation.
+
+**Faut-il parler aussi de contraception ?** Les premières règles signifient qu’une grossesse est possible. Sans tout aborder d’un coup, tu peux lui dire qu’elle pourra toujours te poser la question, ou à un médecin, une sage-femme ou au Planning familial.
+
+## Quand demander conseil
+Consultez un médecin généraliste, un pédiatre, une sage-femme ou un·e gynécologue si les règles sont très douloureuses ou entraînent des absences scolaires, très abondantes ou très longues, si elles disparaissent plus de 3 mois, ou si elles ne sont pas apparues à 15 ans ou quatre ans après le début du développement des seins. Si des signes de puberté apparaissent avant 8 ans, parlez-en aussi au médecin. Fil santé jeunes (**0 800 235 236**) répond gratuitement aux 12-25 ans. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid','child']::text[], null, null, 96, 192, false, array['parler des règles','premières règles','fille','puberté','parents','éducation','ménarche','dialogue']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"caf.fr (Vies de famille) — Les premières règles : comment en parler avec sa fille ?","url":"https://caf.fr/allocataires/vies-de-famille/articles/les-premieres-regles-comment-en-parler-avec-sa-fille","consulted_on":"2026-10-27","published":"2025-11-03"},{"label":"ameli.fr — Informations et conseils sur les règles ou menstruations","url":"https://www.ameli.fr/assure/sante/themes/puberte/informations-conseils-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"ameli.fr — Puberté précoce et puberté tardive","url":"https://www.ameli.fr/assure/sante/themes/puberte/puberte-precoce-tardive","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('premiers-cycles-irreguliers-adolescence', (select id from public.content_categories where slug = 'cycle-ages'), 'Cycles irréguliers à l’adolescence : ce qui est attendu et ce qui doit faire consulter', 'Pourquoi les premiers cycles sont souvent irréguliers, combien de temps ça peut durer, comment les suivre et quels signes justifient un rendez-vous.', '## En bref
+- Après les premières règles, les cycles sont **souvent irréguliers** : règles rapprochées, puis absentes plusieurs mois.
+- Ils deviennent généralement réguliers **en un à deux ans**, parfois plus.
+- Chez l’adulte, un cycle dure en moyenne 28 jours ; ameli.fr situe l’intervalle habituel entre **21 et 35 jours**.
+- **Noter les dates** de tes règles aide à repérer ton rythme et à répondre précisément au médecin.
+- Une absence de règles **de plus de 3 mois**, des règles très abondantes ou très douloureuses justifient une consultation.
+
+## Comprendre
+Le cycle dépend d’un dialogue entre le cerveau (hypothalamus et hypophyse), les ovaires et l’utérus. À la puberté, ce dialogue se met en place progressivement : l’ovulation ne se produit pas forcément à chaque cycle au début. C’est surtout la première partie du cycle (avant l’ovulation) qui varie en longueur, ce qui explique des règles tantôt en avance, tantôt très en retard.
+
+Fil santé jeunes rappelle que les règles peuvent être rapprochées ou absentes plusieurs mois au départ, et que le cycle se stabilise au bout de quelques années. La Caf, citant une gynécologue, précise qu’au début de la vie génitale les cycles sont souvent plus longs et peuvent atteindre deux ou trois mois.
+
+D’autres facteurs peuvent aussi jouer, à tout âge : stress, fatigue, changement de rythme de vie, perte de poids rapide, troubles alimentaires, sport très intense. Et dès lors qu’il y a eu des rapports sexuels, un retard peut aussi signifier une grossesse.
+
+## Au quotidien
+- **Tiens un calendrier** : note le premier jour de chaque règle, leur durée, leur abondance (nombre de protections changées dans la journée) et les douleurs. L’app peut t’y aider.
+- **Calcule la durée de ton cycle** : du premier jour des règles au premier jour des règles suivantes.
+- **Aie toujours une protection sur toi**, puisque la date est imprévisible.
+- **Prends soin de ton rythme** : sommeil suffisant, repas réguliers et variés, activité physique plaisir. Ça ne garantit pas un cycle régulier, mais ça aide le corps à fonctionner.
+- **En cas de rapport sexuel**, un retard de règles doit faire penser à une grossesse : un test de grossesse urinaire (en pharmacie) lève le doute.
+
+## Questions fréquentes
+**Mes règles reviennent toutes les 3 semaines, c’est grave ?** Des cycles un peu courts peuvent se voir au début. Si les règles reviennent très souvent, sont très abondantes ou te fatiguent, parles-en à un médecin : des pertes de sang importantes peuvent faire baisser le fer.
+
+**Je n’ai pas eu mes règles depuis 4 mois, que faire ?** Au-delà de 3 mois sans règles, ameli.fr recommande une consultation pour en chercher la cause. S’il y a eu un rapport, fais d’abord un test de grossesse.
+
+**La pilule va-t-elle « régulariser » mon cycle ?** Une contraception hormonale donne des saignements réguliers, mais ce ne sont pas des règles au sens naturel, et elle ne traite pas la cause d’une irrégularité. Le choix d’une contraception se discute avec un professionnel.
+
+**Est-ce que le sport peut couper les règles ?** Une activité physique très intensive, surtout avec une alimentation insuffisante, peut entraîner une absence de règles. Si c’est ton cas, parles-en à ton médecin ou au médecin du sport.
+
+## Quand demander conseil
+Consulte un médecin, une sage-femme ou un·e gynécologue si : tes règles sont absentes plus de 3 mois, elles n’ont pas commencé à 16 ans, elles sont très abondantes (protection à changer très souvent, caillots, fatigue) ou très longues, ou si la douleur t’empêche de vivre normalement. Si tu as une relation compliquée avec la nourriture ou ton poids, tu peux en parler à ton médecin ou à Fil santé jeunes (**0 800 235 236**). En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid','child']::text[], null, null, 108, 216, false, array['cycle irrégulier','règles irrégulières','adolescente','premiers cycles','retard de règles','puberté','calendrier']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Informations et conseils sur les règles ou menstruations","url":"https://www.ameli.fr/assure/sante/themes/puberte/informations-conseils-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"Santé.fr (contenu Fil santé jeunes / EPE Île-de-France) — À quel âge arrivent les premières règles ?","url":"https://www.sante.fr/node/135741","consulted_on":"2026-10-27","published":"2016-11-08"},{"label":"Santé.fr — Troubles des règles","url":"https://www.sante.fr/node/2055757","consulted_on":"2026-10-27","published":"2026-08-13"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('ovulation-signes-glaire-temperature', (select id from public.content_categories where slug = 'cycle-ages'), 'Ovulation : glaire, température, sensations… les signes que tu peux observer', 'Comment se passe l’ovulation, quels signes (glaire cervicale, température au réveil, sensations) peuvent l’accompagner, et pourquoi les observer ne suffit pas comme contraception.', '## En bref
+- L’ovulation, c’est la libération d’un ovule par un ovaire, déclenchée par un **pic d’hormone LH**. Dans un cycle de 28 jours, elle a lieu vers le **14e jour**, mais elle peut se décaler.
+- Avant l’ovulation, la **glaire cervicale** devient plus abondante, fluide et filante.
+- Après l’ovulation, la **température au réveil** monte légèrement.
+- Observer ces signes aide à **connaître son corps**, mais ce n’est pas une contraception fiable sans formation : le stress, la fatigue ou un mauvais sommeil peuvent décaler l’ovulation.
+
+## Comprendre
+Pendant la première partie du cycle (phase folliculaire), un follicule mûrit dans l’ovaire sous l’effet de l’hormone FSH et produit des œstrogènes, qui épaississent la paroi de l’utérus. Les glandes du col de l’utérus fabriquent alors une glaire qui aide les spermatozoïdes à remonter. Puis un pic de LH provoque l’ovulation. Le follicule vide devient le « corps jaune » et produit de la progestérone : c’est la phase lutéale, qui dure en général 12 à 16 jours. Sans fécondation, la progestérone chute et les règles arrivent.
+
+C’est surtout la phase avant l’ovulation qui varie. C’est pour ça qu’on ne peut pas prédire l’ovulation à coup sûr en comptant les jours. QuestionSexualité rappelle aussi que les spermatozoïdes peuvent survivre **jusqu’à 5 jours**, ce qui élargit la période où un rapport peut conduire à une grossesse.
+
+## Au quotidien
+Voici ce que tu peux observer, si ça t’intéresse de mieux connaître ton cycle :
+- **La glaire cervicale** : après les règles, la glaire apparaît puis devient plus abondante, fluide et filante à l’approche de l’ovulation. On l’observe matin et soir sur le papier toilette ou la culotte, ou par le toucher.
+- **La température au réveil** : prise chaque matin à la même heure, avant de se lever, elle monte légèrement après l’ovulation et reste plus haute jusqu’aux règles. Elle confirme donc l’ovulation **après coup**.
+- **La position du col** : certaines méthodes y ajoutent la palpation du col de l’utérus.
+- **Les sensations** : certaines personnes ressentent une petite gêne d’un côté du bas-ventre au milieu du cycle (voir l’article sur la douleur d’ovulation).
+- **Les tests d’ovulation** vendus en pharmacie mesurent les variations hormonales du cycle dans les urines.
+
+Note tout dans ton calendrier ou dans l’app : au fil des mois, tu verras se dessiner ton propre rythme.
+
+## Questions fréquentes
+**Peut-on utiliser ces signes comme contraception ?** Les méthodes dites naturelles existent (glaire, températures, méthode symptothermique qui combine les deux). Selon QuestionSexualité, elles demandent une formation, souvent 12 cycles d’observation et l’abstinence ou une méthode barrière pendant une partie du cycle. Elles sont moins efficaces en pratique que les méthodes médicalisées, déconseillées en cas de cycles irréguliers, à l’adolescence et en périménopause, et ne protègent pas des IST. Si tu veux éviter une grossesse, parles-en à un professionnel pour choisir une méthode adaptée.
+
+**Mes pertes changent au cours du mois, est-ce une infection ?** Une glaire transparente et filante autour de l’ovulation est un phénomène du cycle. En revanche, des pertes qui sentent mauvais, changent de couleur (verdâtre, grisâtre) ou s’accompagnent de démangeaisons, brûlures ou douleurs justifient une consultation.
+
+**Et si je veux un bébé ?** Repérer la glaire filante peut t’aider à situer ta période fertile. Si la grossesse tarde à venir, parles-en à ton médecin ou à une sage-femme.
+
+**J’ai une contraception hormonale : est-ce que j’ovule ?** Selon la méthode, l’ovulation peut être bloquée (pilule combinée, patch…) ou non ; les signes observés n’ont alors pas la même signification.
+
+## Quand demander conseil
+Consulte si tu as des pertes inhabituelles (odeur, couleur, démangeaisons), des saignements entre les règles, des cycles très irréguliers ou une douleur pelvienne qui te gêne au quotidien : une douleur qui t’empêche de vivre normalement n’est pas à subir. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid','ttc']::text[], null, null, null, null, false, array['ovulation','glaire cervicale','température basale','pertes blanches','période fertile','cycle','connaître son cycle']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Que sont les méthodes naturelles ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/tous-les-modes-de-contraception/que-sont-les-methodes-naturelles","consulted_on":"2026-10-27"},{"label":"ameli.fr — Informations et conseils sur les règles ou menstruations","url":"https://www.ameli.fr/assure/sante/themes/puberte/informations-conseils-regles","consulted_on":"2026-10-27","published":"2026-09-29"},{"label":"ameli.fr — Les méthodes naturelles de contraception","url":"https://www.ameli.fr/assure/sante/themes/contraception/methodes-naturelles-contraception","consulted_on":"2026-10-27","published":"2018-05-30"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('retour-de-couches-allaitement-cycle', (select id from public.content_categories where slug = 'cycle-ages'), 'Retour de couches : quand reviennent les règles, avec ou sans allaitement', 'Ce qu’est le retour de couches, pourquoi l’allaitement le retarde, pourquoi une grossesse reste possible avant les premières règles et quand consulter.', '## En bref
+- Le **retour de couches**, ce sont les premières règles après l’accouchement.
+- **Sans allaitement**, l’ovulation ne reprend pas avant le 21e jour après la naissance ; Santé.fr indique un retour des règles attendu en général **4 à 8 semaines** après l’accouchement.
+- **Avec allaitement**, la prolactine produite lors des tétées bloque l’ovulation : les règles reviennent souvent **plus tard**, parfois à l’arrêt de l’allaitement.
+- **Une grossesse est possible avant les premières règles**, puisque l’ovulation précède les règles : ameli.fr conseille une contraception dès le 21e jour si tu ne souhaites pas de nouvelle grossesse.
+- La fatigue ou une dépression peuvent aussi retarder le retour des règles.
+
+## Comprendre
+Pendant la grossesse, le cycle est suspendu. Après l’accouchement, il se remet en route progressivement. Les saignements des premières semaines (les lochies) ne sont pas des règles : ce sont les suites de l’accouchement, le temps que l’utérus retrouve sa taille.
+
+Quand tu allaites, la succion du bébé déclenche la production de prolactine, une hormone qui bloque l’ovulation. Plus les tétées sont fréquentes, jour et nuit, plus cet effet est marqué. Dès que les tétées s’espacent (introduction de biberons, nuits plus longues, diversification, reprise du travail), l’ovulation peut revenir, souvent sans prévenir.
+
+Le premier cycle peut être différent de ceux d’avant : règles plus abondantes, plus longues ou plus courtes, cycle irrégulier pendant quelque temps. Chaque corps retrouve son rythme à sa façon.
+
+## Au quotidien
+- **Note la date de la fin des lochies** et celle de tes premières règles dans l’app : ce sera utile pour ton suivi.
+- **Parle contraception tôt** avec la sage-femme ou le médecin, idéalement à la maternité ou lors de la consultation postnatale : le choix dépend notamment de l’allaitement.
+- **Connais les conditions de la MAMA** (méthode de l’allaitement maternel et de l’aménorrhée) : bébé de moins de 6 mois, allaitement exclusif au sein à la demande jour et nuit (sans longues pauses entre les tétées), et aucune règle depuis l’accouchement. Dès qu’une condition n’est plus remplie, il faut une autre contraception.
+- **Prévois des protections** pour le retour de couches, qui peut surprendre par son abondance.
+- **Prends soin de toi** : sommeil autant que possible, alimentation variée, aide de l’entourage.
+
+## Questions fréquentes
+**J’allaite et je n’ai pas mes règles depuis 8 mois, est-ce un problème ?** Pendant l’allaitement, l’absence de règles est attendue selon ameli.fr. Pense seulement à une contraception si tu ne souhaites pas de grossesse, et parles-en à ton médecin si tu as un doute.
+
+**Peut-on tomber enceinte avant le retour de couches ?** Oui. L’ovulation a lieu environ deux semaines avant les règles : on peut donc ovuler, et être enceinte, sans avoir revu ses règles.
+
+**Mes règles sont revenues alors que j’allaite encore, est-ce que mon lait va changer ?** Le retour des règles ne t’oblige pas à arrêter d’allaiter. En revanche, la MAMA ne fonctionne plus comme contraception à partir de ce moment.
+
+**Mon retour de couches est très abondant, est-ce attendu ?** Les premières règles peuvent être plus abondantes que d’habitude. Mais des saignements qui imposent de changer de protection très souvent, avec des caillots, une fatigue intense, un malaise ou de la fièvre, nécessitent un avis rapide.
+
+## Quand demander conseil
+Consulte si tes règles ne sont pas revenues plusieurs semaines après l’arrêt de l’allaitement (ou 2 mois après l’accouchement sans allaitement), si tes saignements sont très abondants, malodorants ou accompagnés de fièvre ou de douleurs, ou si tu as un doute sur une grossesse (fais un test). Une douleur qui t’empêche de vivre normalement n’est pas à subir. Si tu te sens épuisée, triste ou envahie d’idées noires, parles-en vite à un professionnel ; le **3114** répond jour et nuit. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid','newborn']::text[], null, null, null, null, false, array['retour de couches','règles après accouchement','allaitement','post-partum','MAMA','ovulation après bébé','contraception après accouchement']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Quelle contraception après un accouchement ?","url":"https://www.ameli.fr/assure/sante/devenir-parent/accouchement-et-nouveau-ne/contraception-apres-un-accouchement","consulted_on":"2026-10-27"},{"label":"Santé.fr — Troubles des règles","url":"https://www.sante.fr/node/2055757","consulted_on":"2026-10-27","published":"2026-08-13"},{"label":"ameli.fr — Qu’est-ce qu’une aménorrhée et quand faut-il s’inquiéter de l’absence de règles ?","url":"https://www.ameli.fr/assure/sante/themes/retard-absence-de-regles-ou-amenorrhee/amenorrhee-regles-retard-absence","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('regles-apres-une-fausse-couche', (select id from public.content_categories where slug = 'cycle-ages'), 'Les règles après une fausse couche : à quoi t’attendre', 'Saignements de la fausse couche, délai habituel avant les premières règles, reprise de l’ovulation, signes qui doivent faire consulter et soutien.', '## En bref
+- Les saignements de la fausse couche elle-même peuvent être légers ou abondants, durer plusieurs jours, voire **jusqu’à 15 jours** après un traitement médicamenteux.
+- La Cité de la santé indique que l’ovulation revient souvent **2 à 4 semaines** après une fausse couche très précoce ; les premières règles arrivent alors **4 à 6 semaines** après, parfois **6 à 8 semaines**.
+- Une **ovulation peut survenir avant les premières règles** : une nouvelle grossesse est possible tout de suite.
+- Pendant les saignements, on évite les **tampons** ; ameli.fr conseille d’attendre environ deux semaines avant les rapports.
+- Fièvre, saignements très abondants, douleurs qui augmentent : consulte sans attendre.
+
+## Comprendre
+Après une fausse couche, l’utérus doit d’abord se vider (spontanément, avec un médicament ou par un geste chirurgical), puis les hormones de grossesse (hCG) redescendent progressivement. Le cycle se remet en route ensuite : une ovulation, puis environ deux semaines plus tard, les règles.
+
+Plus la grossesse était avancée et l’imprégnation hormonale forte, plus le retour des règles peut prendre du temps. Les premières règles peuvent aussi être un peu différentes : plus abondantes, plus douloureuses ou plus courtes. Le cycle retrouve souvent son rythme habituel au fil des mois suivants.
+
+Une fausse couche isolée est suivie, en général, de grossesses sans difficultés. Si plusieurs fausses couches se répètent, un bilan médical est proposé.
+
+## Au quotidien
+- **Utilise des serviettes** plutôt que des tampons ou une coupe tant que les saignements de la fausse couche durent, pour limiter le risque d’infection.
+- **Va à la consultation ou à l’échographie de contrôle** si elle est prévue : elle vérifie que l’utérus est bien vide.
+- **Note le premier jour de tes saignements** et celui de tes premières règles dans l’app.
+- **Si tu ne veux pas de grossesse tout de suite**, parle contraception avec le médecin ou la sage-femme dès maintenant.
+- **Si tu souhaites une nouvelle grossesse**, elle peut être envisagée dès que tu te sens rétablie ; une consultation préconceptionnelle permet de faire le point.
+- **Accorde-toi du temps** : la tristesse, le sentiment de vide ou la culpabilité sont fréquents après une fausse couche. Tu as le droit d’en parler et d’être aidée.
+
+## Questions fréquentes
+**Comment distinguer les saignements de la fausse couche et les premières règles ?** Les saignements de la fausse couche commencent avec elle et diminuent progressivement. Les règles reviennent après un intervalle sans saignement. En cas de doute, demande conseil.
+
+**Mes règles ne sont pas revenues 8 semaines après, et mon test est négatif.** Le délai varie. Si tu dépasses largement ces repères, ou si tu as des symptômes, consulte : le professionnel pourra vérifier la situation, notamment le taux d’hormones, et répondre à ta situation précise.
+
+**Le test de grossesse reste positif après la fausse couche, pourquoi ?** Les hormones de grossesse mettent un certain temps à disparaître du sang. Seul le professionnel qui te suit peut interpréter ce résultat avec l’examen et l’échographie.
+
+**Je suis de groupe Rhésus négatif, est-ce important ?** Oui : ameli.fr indique qu’un traitement anti-D est administré après la fausse couche dans ce cas. Signale-le à l’équipe.
+
+## Quand demander conseil
+Consulte rapidement en cas de fièvre, de frissons, de saignements abondants, de douleurs qui augmentent fortement ou si le traitement n’agit pas dans les 24 heures. Appelle le **15** ou le **112** en cas de saignements très abondants ou de signes de choc (faiblesse, vertiges, confusion, cœur qui s’accélère). Une douleur sévère et persistante dans le ventre, pouvant aller jusqu’à l’épaule, avec de petits saignements et une grande faiblesse, peut évoquer une grossesse extra-utérine : c’est une urgence. Si la peine devient trop lourde, le **3114** répond jour et nuit.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid','ttc']::text[], null, null, null, null, false, array['fausse couche','règles après fausse couche','retour des règles','ovulation','saignements','deuil périnatal','cycle']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Fausse couche","url":"https://www.ameli.fr/assure/sante/devenir-parent/grossesse/difficultes-et-maladies-pendant-la-grossesse/fausse-couche","consulted_on":"2026-10-27"},{"label":"Cité de la santé (Cité des sciences et de l’industrie) — Questions-santé : Fausse couche","url":"https://www.cite-sciences.fr/fr/au-programme/lieux-ressources/cite-de-la-sante/une-question-en-sante/questions-sante/toutes-les-questions/2023/12/fausse-couche","consulted_on":"2026-10-27","published":"2023-12-08"},{"label":"ameli.fr — Consultation et bilan médical en cas d’absence de règles","url":"https://www.ameli.fr/assure/sante/themes/retard-absence-de-regles-ou-amenorrhee/absence-de-regles-consultation","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('regles-et-cycle-apres-une-ivg', (select id from public.content_categories where slug = 'cycle-ages'), 'Saignements, règles et cycle après une IVG', 'Combien de temps durent les saignements après une IVG, quand reviennent les règles et l’ovulation, pourquoi la visite de contrôle compte et quand consulter.', '## En bref
+- Après une IVG, les saignements peuvent être **plus abondants que des règles** les premiers jours et durer **de quelques jours à trois semaines**.
+- L’ovulation peut revenir **en moyenne 15 à 20 jours** après l’IVG : une **grossesse est possible avant le retour des règles**.
+- Les règles reviennent en général **4 à 6 semaines** après, selon la contraception choisie.
+- La **visite de contrôle** (14 à 21 jours après) est indispensable : les saignements seuls ne prouvent pas que l’IVG a fonctionné.
+- Fièvre, douleurs du bas-ventre ou saignements inquiétants : consulte sans tarder.
+
+## Comprendre
+Que l’IVG soit médicamenteuse ou instrumentale, le corps doit éliminer la grossesse puis remettre son cycle en route. Les hormones de grossesse diminuent progressivement : c’est pour cela qu’un test urinaire peut rester positif jusqu’à trois semaines après, sans que cela signifie un échec.
+
+L’ANSM rappelle que, pour l’IVG médicamenteuse, la visite de contrôle est obligatoire : c’est le seul moyen de confirmer l’efficacité (le risque d’échec est d’environ 5 %). Elle peut comprendre un examen clinique, une prise de sang (dosage des β-hCG) ou une échographie, pris en charge à 100 %.
+
+Selon ivg.gouv.fr, le risque d’infertilité n’est pas lié à l’IVG elle-même mais à d’éventuelles complications, rares dans des conditions sécurisées.
+
+## Au quotidien
+- **Préfère les serviettes** : ivg.gouv.fr conseille de ne pas utiliser de tampons et d’attendre une dizaine de jours avant les rapports avec pénétration.
+- **Note les dates** de tes saignements et de tes premières règles dans l’app.
+- **Pense à la contraception dès maintenant** : aucune méthode n’est contre-indiquée après une IVG, sauf cas particulier. Une contraception hormonale peut débuter très vite, un DIU peut être posé selon la méthode d’IVG. Seuls les préservatifs protègent aussi des IST.
+- **Avec une pilule combinée**, les saignements surviennent à la fin de la première plaquette ; **avec un DIU hormonal**, les règles peuvent devenir irrégulières ou absentes.
+- **Garde la date de ta visite de contrôle** et n’hésite pas à poser tes questions ce jour-là.
+- **Pour le Rhésus négatif**, une injection d’anti-D est prévue : signale ton groupe sanguin.
+
+## Questions fréquentes
+**Je ne saigne presque pas, est-ce que l’IVG a marché ?** L’abondance des saignements ne permet pas de conclure, dans un sens comme dans l’autre. Seule la visite de contrôle le confirme.
+
+**Mes règles ne sont pas revenues 6 semaines après.** Le délai dépend de la contraception choisie. Sans contraception hormonale et sans règles, fais le point avec le professionnel qui t’a suivie : une nouvelle grossesse est possible dès l’ovulation.
+
+**Est-ce que je pourrai avoir des enfants plus tard ?** ivg.gouv.fr indique que le risque d’infertilité n’est pas augmenté là où l’IVG est légale, y compris après deux IVG ou plus.
+
+**Comment vais-je me sentir ?** Le vécu est personnel. Tu peux demander un entretien psycho-social, voir un psychologue ou appeler le numéro vert anonyme et gratuit « IVG, contraception, sexualités » : **0 800 08 11 11**.
+
+## Quand demander conseil
+Consulte sans tarder en cas de fièvre, de douleurs du bas-ventre ou de saignements vaginaux qui t’inquiètent dans les jours qui suivent. Une douleur qui t’empêche de vivre normalement n’est pas à subir. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**. Si tu ressens une grande détresse ou des idées noires, appelle le **3114**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['IVG','règles après IVG','saignements après IVG','visite de contrôle','ovulation','contraception après IVG','avortement']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ivg.gouv.fr (ministère de la Santé) — Après l’IVG","url":"https://ivg.gouv.fr/apres-ivg","consulted_on":"2026-10-27","published":"2025-11-18"},{"label":"ameli.fr — Après une IVG : suivi et contraception","url":"https://www.ameli.fr/assure/sante/devenir-parent/grossesse/ivg/suivi-et-contraception-apres-une-ivg","consulted_on":"2026-10-27"},{"label":"ANSM — IVG médicamenteuse : pourquoi la consultation médicale de contrôle est indispensable et obligatoire","url":"https://ansm.sante.fr/actualites/interruption-volontaire-de-grossesse-ivg-medicamenteuse-pourquoi-la-consultation-medicale-de-controle-est-indispensable-et-obligatoire","consulted_on":"2026-10-27","published":"2022-09-15"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('absence-de-regles-stress-poids-sport-intense', (select id from public.content_categories where slug = 'cycle-ages'), 'Plus de règles à cause du stress, d’une perte de poids ou du sport ?', 'Comment le stress, une perte de poids, des troubles alimentaires ou un sport très intense peuvent suspendre le cycle, et quel bilan proposer après 3 mois sans règles.', '## En bref
+- On parle d’**aménorrhée secondaire** quand les règles sont absentes **depuis plus de 3 mois** chez une personne qui était réglée.
+- Avant tout, s’il y a eu un rapport, **un test de grossesse** lève le doute.
+- Le cycle dépend du cerveau, des ovaires et de l’utérus : **stress prolongé, fatigue, choc émotionnel, perte de poids brutale, alimentation insuffisante, sport très intensif** peuvent le suspendre.
+- Au-delà de 3 mois sans règles, **un bilan médical** est recommandé pour en trouver la cause.
+- Prendre une pilule pour « faire revenir » les règles sans connaître la cause est déconseillé par ameli.fr.
+
+## Comprendre
+Le cerveau (hypothalamus et hypophyse) commande les ovaires grâce aux hormones FSH et LH. QuestionSexualité explique qu’un stress physique ou émotionnel augmente le cortisol, qui, à forte dose, peut suspendre temporairement le cycle. Le corps « met en pause » la fonction de reproduction quand il se sent en difficulté : manque d’énergie, épuisement, émotion forte.
+
+Fil santé jeunes cite parmi les causes possibles : changement de rythme de vie, fatigue, stress prolongé, troubles ou carences alimentaires, perte de poids brutale, événement bouleversant, activité physique intensive, contraception hormonale ou certains médicaments. D’autres causes sont médicales (syndrome des ovaires polykystiques, problème de thyroïde ou d’hypophyse…) : c’est pourquoi on ne se contente pas de supposer.
+
+Une absence de règles prolongée liée à un manque d’œstrogènes n’est pas anodine : ces hormones participent aussi à la solidité des os.
+
+## Au quotidien
+- **Fais un test de grossesse** en cas de rapport, même protégé.
+- **Note dans l’app** la date de tes dernières règles, les changements récents (stress, examens, déménagement, deuil), ton alimentation, ton entraînement et ton poids si tu le suis.
+- **Prépare la consultation** : ameli.fr conseille de pouvoir indiquer l’âge des premières règles de ta mère et de tes sœurs, tes cycles d’avant, ta contraception et la date de son arrêt, tes autres symptômes (acné, pilosité, bouffées de chaleur, écoulement des seins), ta pratique sportive et un éventuel régime restrictif.
+- **Si tu fais beaucoup de sport**, veille à manger suffisamment pour couvrir tes dépenses et parles-en à ton médecin ou au médecin du sport.
+- **Si le stress est en cause**, cherche ce qui peut t’aider à souffler : sommeil, pauses, activité plaisir, soutien d’un proche ou d’un professionnel.
+
+## Questions fréquentes
+**Quels examens peut-on me proposer ?** Selon ameli.fr : un examen général (poids, taille, IMC), parfois gynécologique avec ton accord, une courbe de température, un test aux progestatifs, des dosages hormonaux sanguins (estradiol, LH, FSH, prolactine…) et une échographie pelvienne. D’autres examens sont possibles selon la situation.
+
+**Mes règles reviendront-elles toutes seules ?** Souvent, quand la cause est levée (reprise de poids, baisse de l’entraînement, période moins stressante), le cycle peut repartir. Mais seul le bilan permet de savoir ce qui se passe.
+
+**Ma relation à la nourriture est compliquée.** Tu n’es pas seule. Parles-en à ton médecin : les troubles du comportement alimentaire se soignent, et l’absence de règles peut en être un signe.
+
+**Sans règles, je ne peux pas tomber enceinte ?** Ne compte pas dessus : l’ovulation peut revenir avant les règles.
+
+## Quand demander conseil
+Consulte si tes règles sont absentes depuis plus de 3 mois, si tu n’as jamais eu de règles à 16 ans, si tu as perdu beaucoup de poids, si tu as des bouffées de chaleur avant 40 ans ou un écoulement par les seins. Une douleur qui t’empêche de vivre normalement n’est pas à subir. Si tu te sens à bout ou envahie d’idées noires, appelle le **3114**. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['aménorrhée','plus de règles','stress','perte de poids','sport intensif','anorexie','troubles alimentaires','retard de règles']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu Fil santé jeunes / EPE Île-de-France) — L’aménorrhée ou l’absence de règles","url":"https://www.sante.fr/node/135701","consulted_on":"2026-10-27","published":"2024-02-23"},{"label":"ameli.fr — Consultation et bilan médical en cas d’absence de règles","url":"https://www.ameli.fr/assure/sante/themes/retard-absence-de-regles-ou-amenorrhee/absence-de-regles-consultation","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Le cycle menstruel","url":"https://www.questionsexualite.fr/comprendre-la-conception-et-la-grossesse/la-sexualite-reproductive/le-cycle-menstruel","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('fibromes-uterins-comprendre-et-traiter', (select id from public.content_categories where slug = 'cycle-ages'), 'Fibromes utérins : comprendre, surveiller, traiter', 'Ce que sont les fibromes de l’utérus, les symptômes qu’ils peuvent donner, pourquoi certains ne se traitent pas et comment se prend la décision quand un traitement est utile.', '## En bref
+- Les fibromes (ou myomes) sont des **tumeurs bénignes** du muscle de l’utérus ; la HAS précise qu’ils ne se transforment pas en cancer.
+- Ils sont **très fréquents** : 20 à 30 % des femmes de plus de 30 ans, davantage après 40 ans.
+- Beaucoup ne donnent **aucun symptôme**. Quand ils en donnent : **règles abondantes** ou saignements irréguliers, douleurs ou sensation de pesanteur dans le bassin, parfois des difficultés à concevoir.
+- **Sans symptôme, pas de traitement** en général. Avec des symptômes, on commence le plus souvent par des médicaments.
+- Les fibromes arrêtent de grossir après la ménopause et peuvent alors régresser.
+
+## Comprendre
+Un fibrome se développe à partir des cellules musculaires de l’utérus. Il peut y en avoir un seul ou plusieurs, de quelques millimètres à plus de 20 cm. Leur emplacement compte : ceux qui déforment la cavité de l’utérus (sous-muqueux) donnent plus souvent des règles abondantes ; ceux qui poussent vers l’extérieur peuvent appuyer sur la vessie ou le rectum.
+
+Les symptômes concernent 20 à 50 % des femmes ayant des fibromes. Des règles très abondantes peuvent entraîner une fatigue et une baisse du fer. L’évolution est imprévisible : certains fibromes restent stables, d’autres grossissent.
+
+## Au quotidien
+- **Suis tes règles dans l’app** : durée, abondance (nombre de protections changées par jour, débordements la nuit, caillots), douleurs. C’est précieux pour le médecin.
+- **Repère la fatigue** : essoufflement, pâleur, grande lassitude peuvent signaler un manque de fer en cas de règles abondantes.
+- **Prépare les rendez-vous** : note tes questions sur les options, la fertilité, la sexualité, l’arrêt de travail.
+- **Si un traitement non médicamenteux est discuté**, la HAS décrit plusieurs options, sans hiérarchie entre elles :
+  - la **myomectomie** (retirer les fibromes en gardant l’utérus), par les voies naturelles (hystéroscopie), cœlioscopie ou ouverture du ventre ;
+  - l’**embolisation des artères utérines**, réalisée par un radiologue, qui réduit l’apport de sang au fibrome ;
+  - l’**hystérectomie** (retrait de l’utérus), traitement radical ;
+  - la destruction de la muqueuse de l’utérus (endométrectomie) dans certains cas, quand il n’y a plus de projet de grossesse.
+- **La décision se prend avec toi** : tu as droit à une information complète, à un temps de réflexion et à exprimer tes priorités (garder ton utérus, projet de grossesse, durée de récupération).
+
+## Questions fréquentes
+**Faut-il faire une échographie régulière si mon fibrome ne me gêne pas ?** La HAS indique qu’une échographie systématique n’est pas utile en cas de fibrome sans symptôme. Ton médecin adapte le suivi à ta situation.
+
+**Un fibrome empêche-t-il d’avoir un enfant ?** Pas forcément. Certains fibromes, surtout ceux qui déforment la cavité utérine, peuvent jouer sur la fertilité. Si tu as un projet de grossesse, dis-le : cela change les options proposées.
+
+**Combien de temps d’arrêt après une intervention ?** À titre indicatif, la HAS mentionne environ une semaine après une embolisation, 2 à 4 semaines après une myomectomie et environ un mois après une hystérectomie.
+
+**Mon fibrome va-t-il disparaître à la ménopause ?** Sa croissance s’arrête après la ménopause et il régresse souvent.
+
+## Quand demander conseil
+Consulte si tes règles deviennent plus abondantes ou plus longues, si tu saignes entre les règles, si tu as des douleurs ou une pesanteur dans le bassin, des envies fréquentes d’uriner ou une grande fatigue. Une douleur qui t’empêche de vivre normalement n’est pas à subir. Tout saignement après la ménopause doit faire consulter. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['fibrome','myome','fibrome utérin','règles abondantes','ménorragie','myomectomie','embolisation','hystérectomie']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"HAS — Fiche pertinence : traitements non médicamenteux des fibromes utérins","url":"https://www.has-sante.fr/upload/docs/application/pdf/2023-09/fiche_pertinence_fibromes_uterins_2023-09-15_17-16-19_699.pdf","consulted_on":"2026-10-27","published":"2022-11-24"},{"label":"Santé.fr — Troubles des règles","url":"https://www.sante.fr/node/2055757","consulted_on":"2026-10-27","published":"2026-08-13"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('endometriose-comprendre-symptomes', (select id from public.content_categories where slug = 'cycle-ages'), 'Endométriose : comprendre la maladie et reconnaître ses symptômes', 'Ce qu’est l’endométriose, les douleurs et autres signes qui doivent y faire penser, pourquoi le diagnostic arrive souvent tard et vers qui te tourner.', '## En bref
+- L’endométriose est une **maladie inflammatoire chronique** : du tissu qui ressemble à la muqueuse de l’utérus se trouve en dehors de l’utérus et réagit aux hormones à chaque cycle.
+- Elle concerne **environ une femme sur dix** en âge d’avoir des règles, selon Santé.fr.
+- Le symptôme principal : des **règles douloureuses** qui reviennent à chaque cycle, ne cèdent pas à un antalgique simple et **empêchent les activités** (se lever, travailler, aller en cours).
+- Autres signes possibles : douleurs pendant les rapports, douleurs pelviennes fréquentes, douleurs pour uriner ou aller à la selle pendant les règles.
+- Le diagnostic est souvent tardif : ameli.fr évoque **8 à 10 ans** entre les premiers symptômes et la confirmation. En parler tôt change les choses.
+
+## Comprendre
+À chaque cycle, les lésions d’endométriose se comportent comme la muqueuse de l’utérus : elles saignent, provoquent une inflammation et peuvent laisser des cicatrices fibreuses et des adhérences entre les organes. Elles se situent surtout dans le bassin (ovaires, ligaments, rectum, vessie…), plus rarement ailleurs.
+
+L’intensité de la douleur ne dépend pas de la taille des lésions mais de leur profondeur. Selon les organes touchés, ameli.fr décrit des **signes urinaires** (douleur en urinant, sang dans les urines pendant les règles) ou **digestifs** (douleur pour aller à la selle, sang dans les selles, sensation de tension douloureuse). Certaines formes sont silencieuses et découvertes lors d’un bilan, par exemple d’infertilité. Toutes les personnes atteintes ne sont pas concernées par l’infertilité.
+
+La maladie suit le cycle hormonal : elle diminue et disparaît généralement après la ménopause.
+
+## Au quotidien
+- **Tiens un journal de tes douleurs** dans l’app : jour du cycle, intensité (de 0 à 10), localisation, ce qui t’a soulagée ou non, activités annulées. C’est l’outil le plus utile pour la consultation.
+- **Note les autres symptômes** : douleurs aux rapports, troubles digestifs ou urinaires pendant les règles, saignements entre les règles, fatigue.
+- **Ose dire que tu as mal.** Santé.fr rappelle que ces symptômes ne sont pas à banaliser. EndoFrance le formule ainsi : la douleur n’est pas « dans ta tête ».
+- **Pour soulager en attendant**, la chaleur (bouillotte), le repos et un antalgique adapté peuvent aider ; si rien n’y fait, c’est justement un signal pour consulter.
+- **Fais-toi accompagner** si tu le souhaites : une personne de confiance, une association de patientes (EndoFrance, ENDOmind…).
+
+## Questions fréquentes
+**Avoir des règles douloureuses, est-ce forcément de l’endométriose ?** Non. Beaucoup de personnes ont mal pendant leurs règles sans avoir d’endométriose, notamment lors des premiers cycles. Ce qui doit alerter : une douleur cyclique, qui résiste à un antalgique simple et empêche tes activités, ou qui s’accompagne d’autres symptômes.
+
+**Peut-on avoir une endométriose à l’adolescence ?** Oui, elle peut se manifester dès les premières années de règles. Des douleurs importantes et répétées chez une ado, qui la font manquer les cours, méritent d’en parler au médecin.
+
+**Est-ce que ça s’aggrave forcément ?** L’évolution varie d’une personne à l’autre. Les traitements visent à soulager les symptômes et à faire régresser les lésions.
+
+**Qui consulter en premier ?** Ton médecin traitant, un·e gynécologue ou une sage-femme. Si besoin, ils t’orientent vers la filière endométriose de ta région.
+
+## Quand demander conseil
+Consulte si tes règles t’obligent à rester couchée, à manquer les cours ou le travail, si un antalgique simple ne suffit pas, si tu as mal pendant les rapports, ou si tu as des troubles digestifs ou urinaires qui reviennent avec les règles. Une douleur qui t’empêche de vivre normalement n’est pas à subir. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['endométriose','règles douloureuses','dysménorrhée','douleurs pelviennes','douleur rapports','symptômes endométriose','maladie chronique']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Endométriose (mini-site du Service public d’information en santé)","url":"https://www.sante.fr/endometriose","consulted_on":"2026-10-27"},{"label":"ameli.fr — Endométriose : symptômes, diagnostic et évolution","url":"https://www.ameli.fr/assure/sante/themes/endometriose/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2017-03-12"},{"label":"Santé.fr (contenu EndoFrance) — Symptômes de l’endométriose : les règles douloureuses","url":"https://www.sante.fr/endometriose/symptomes-de-lendometriose-les-regles-douloureuses","consulted_on":"2026-10-27","published":"2024-01-05"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('endometriose-diagnostic-examens', (select id from public.content_categories where slug = 'cycle-ages'), 'Endométriose : comment se fait le diagnostic, étape par étape', 'De la première consultation à l’échographie, l’IRM et le test salivaire : comment on confirme une endométriose et comment préparer tes rendez-vous.', '## En bref
+- Tout commence par une **consultation** : médecin traitant, gynécologue ou sage-femme, qui écoute tes symptômes et t’examine si besoin.
+- L’**échographie pelvienne**, de préférence endovaginale, est souvent le premier examen d’imagerie ; l’**IRM** précise les lésions profondes.
+- Un **examen normal n’exclut pas** la maladie : d’autres examens peuvent être prescrits.
+- La **cœlioscopie** n’est plus recommandée pour le seul diagnostic : on la réserve aux situations où une chirurgie est justifiée.
+- Un **test salivaire** est pris en charge de façon temporaire, en troisième intention, pour les diagnostics complexes.
+
+## Comprendre
+Le diagnostic de l’endométriose est difficile parce que les symptômes sont variés et se confondent avec ceux d’autres troubles. Santé.fr insiste : en cas de doute, il faut en parler rapidement, car une détection précoce permet un accompagnement plus adapté. Les **filières endométriose** régionales organisent un parcours de soins de proximité.
+
+Les examens possibles :
+- **Examen gynécologique** (toucher vaginal et/ou rectal) : le plus souvent utile pour orienter. Il doit t’être expliqué à l’avance, respecter ton intimité et se faire avec ton accord ; tu peux dire stop.
+- **Échographie pelvienne** : avec une sonde endovaginale, elle donne des images de très bonne qualité. Elle repère bien les kystes de l’ovaire liés à l’endométriose, mais peut passer à côté d’autres lésions.
+- **IRM pelvienne** : elle détecte kystes, nodules et lésions profondes et précise leur emplacement, notamment avant une chirurgie.
+- **Examens complémentaires** dans certaines formes profondes : échographie endorectale, examens du rein et des voies urinaires, scanner spécifique du côlon.
+- **Cœlioscopie** : petite caméra introduite par le nombril, qui permet de voir les lésions, de prélever et de traiter. Elle n’est plus faite uniquement pour poser le diagnostic.
+- **Test salivaire** : il analyse l’ARN de la salive. Depuis février 2025, il est pris en charge dans un cadre dérogatoire et temporaire (forfait innovation), en troisième intention, quand l’imagerie est négative ou incertaine.
+
+## Au quotidien
+- **Apporte ton journal de cycle et de douleurs** (l’app peut t’aider à le tenir) : dates des règles, intensité, traitements essayés.
+- **Note tes questions** avant le rendez-vous : quels examens, pourquoi, quels délais, qui lira les images.
+- **Demande si l’échographiste ou le radiologue a l’habitude de l’endométriose** : la qualité de l’examen dépend beaucoup de l’expérience.
+- **Pour l’examen**, ameli.fr indique que le ou la gynécologue examine si possible pendant les règles ; pour rechercher une adénomyose, l’échographie est plutôt faite en deuxième partie de cycle.
+- **Fais-toi accompagner** si tu le souhaites, et n’hésite pas à demander un deuxième avis.
+
+## Questions fréquentes
+**Mon échographie est normale mais j’ai toujours mal.** Une échographie normale n’exclut pas une endométriose, en particulier certaines lésions superficielles. Parles-en : une IRM ou un avis dans une filière spécialisée peuvent être proposés, et la douleur se traite même sans diagnostic définitif.
+
+**L’examen gynécologique m’angoisse.** Dis-le. Le professionnel doit t’expliquer pourquoi il le propose, peut adapter sa façon de faire et s’arrêter si tu le demandes.
+
+**Le test salivaire remplace-t-il les autres examens ?** Non. Il intervient après la consultation et l’imagerie, quand le diagnostic reste incertain, et son évaluation est encore en cours.
+
+**Combien de temps pour avoir un diagnostic ?** Le délai a longtemps été très long. Tenir un journal précis et consulter tôt aident à raccourcir le parcours.
+
+## Quand demander conseil
+Consulte si tes règles sont douloureuses au point de t’empêcher de vivre normalement, si tu as mal pendant les rapports, ou si tu as des troubles digestifs ou urinaires qui reviennent pendant les règles. Une douleur qui t’empêche de vivre normalement n’est pas à subir. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['diagnostic endométriose','échographie endovaginale','IRM pelvienne','cœlioscopie','test salivaire','filière endométriose','examen gynécologique']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Endométriose : examens complémentaires","url":"https://www.sante.fr/endometriose/diagnostic-et-examens/examens-complementaires","consulted_on":"2026-10-27"},{"label":"ameli.fr — Endométriose : symptômes, diagnostic et évolution","url":"https://www.ameli.fr/assure/sante/themes/endometriose/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2017-03-12"},{"label":"Santé.fr — Endométriose : en quoi consiste le test salivaire de l’endométriose ?","url":"https://www.sante.fr/endometriose/endometriose-en-quoi-consiste-le-test-salivaire-de-lendometriose","consulted_on":"2026-10-27","published":"2025-03-26"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('endometriose-traitements-options', (select id from public.content_categories where slug = 'cycle-ages'), 'Endométriose : les traitements possibles et comment ils agissent', 'Traitements de la douleur, traitements hormonaux, chirurgie et approches complémentaires : ce que proposent les sources officielles et comment se décide le traitement.', '## En bref
+- Le traitement est **personnalisé** : sans symptôme, une simple surveillance est possible ; avec des symptômes, on associe le plus souvent **traitement hormonal et traitement de la douleur**.
+- Les traitements hormonaux **arrêtent les règles** : sans saignement des lésions, la douleur diminue et les lésions régressent. Les cicatrices fibreuses, elles, ne régressent pas.
+- La douleur se traite **tôt et par paliers**, avec un suivi médical.
+- La **chirurgie** est réservée à certaines situations (douleur invalidante malgré les médicaments, infertilité avec projet de grossesse) et doit être faite par des équipes expertes.
+- Les formes sévères peuvent ouvrir droit à une **prise en charge à 100 % (ALD hors liste)** sous conditions.
+
+## Comprendre
+**Les traitements hormonaux.** Ameli.fr cite en première intention des traitements progestatifs (pilule progestative, implant, progestatif plus puissant), choisis avec toi selon tes contre-indications, ta santé et tes préférences. D’autres options existent en troisième intention, comme les analogues de la GnRH, qui mettent le corps au repos hormonal pendant quelques mois ; leurs effets (bouffées de chaleur, fragilisation des os) sont compensés par un apport hormonal sous contrôle médical. Ameli.fr signale aussi que deux progestatifs (acétate de chlormadinone et acétate de nomégestrol) exposent à un **risque de méningiome** en traitement prolongé : si tu en prends, parles-en à ton médecin.
+
+**Le traitement de la douleur.** Une douleur non soulagée durablement rend le système nerveux plus sensible. D’où l’intérêt de la traiter tôt, par paliers, en évitant les anti-inflammatoires au long cours. Pour les douleurs chroniques, d’autres médicaments à visée antalgique peuvent être proposés, et un **centre antidouleur** peut prendre le relais en cas de douleurs rebelles.
+
+**La chirurgie.** Souvent par cœlioscopie, elle détruit ou retire les lésions. Elle se prépare avec plusieurs spécialistes (gynécologue, urologue, chirurgien digestif…). Sans projet de grossesse, un traitement hormonal est en général prescrit ensuite pour limiter le risque de récidive.
+
+**Les approches complémentaires** (acupuncture, ostéopathie douce, yoga, hypnose) peuvent compléter la prise en charge médicale, sans la remplacer. En cas de troubles digestifs associés, un accompagnement diététique est souvent utile.
+
+## Au quotidien
+- **Ne modifie pas un traitement seule** : parles-en à ton médecin si les effets indésirables te gênent, d’autres options existent.
+- **N’associe pas plusieurs antalgiques** sans avis médical et respecte les durées indiquées.
+- **Évalue ce qui marche** : note dans l’app ton niveau de douleur avant et après un changement de traitement.
+- **Pose toutes tes questions** : effets sur la fertilité, la sexualité, la durée du traitement, les alternatives. La décision se partage.
+- **Renseigne-toi sur l’ALD 31** avec ton médecin si ta maladie est sévère et demande des soins nombreux et coûteux.
+
+## Questions fréquentes
+**Le traitement hormonal guérit-il l’endométriose ?** Il soulage et fait régresser les lésions tant qu’il est pris, mais la maladie peut récidiver. C’est une maladie chronique, qui se suit dans le temps.
+
+**Et si je veux un enfant ?** Les traitements hormonaux qui bloquent les règles sont alors arrêtés ou adaptés. Le projet de grossesse change la stratégie : parles-en dès que possible (un article de l’app est dédié à endométriose et désir de grossesse).
+
+**La chirurgie est-elle obligatoire ?** Non. Elle est proposée dans des situations précises, quand le bénéfice attendu dépasse les risques.
+
+**Le sport peut-il aider ?** Le ministère des Sports propose une ressource « En mouvement avec l’endométriose », relayée par Santé.fr. Une activité adaptée, à ton rythme, peut faire partie de la prise en charge.
+
+## Quand demander conseil
+Consulte si ta douleur n’est pas contrôlée, si un traitement te pose problème ou si de nouveaux symptômes apparaissent (saignements digestifs ou urinaires, fièvre). Une douleur qui t’empêche de vivre normalement n’est pas à subir. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**. Si la douleur chronique pèse sur ton moral au point d’avoir des idées noires, appelle le **3114**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['traitement endométriose','traitement hormonal','chirurgie endométriose','antalgiques','centre antidouleur','cœlioscopie','ALD 31']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Le traitement de l’endométriose","url":"https://www.ameli.fr/assure/sante/themes/endometriose/traitement","consulted_on":"2026-10-27"},{"label":"Santé.fr — Endométriose (mini-site du Service public d’information en santé)","url":"https://www.sante.fr/endometriose","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('endometriose-vivre-avec-travail-droits', (select id from public.content_categories where slug = 'cycle-ages'), 'Vivre avec l’endométriose : travail, droits, soutien au quotidien', 'S’organiser avec une endométriose : aménagements au travail, médecin du travail, temps partiel thérapeutique, ALD, aides et soutien psychologique.', '## En bref
+- Les symptômes peuvent devenir **invalidants autour et pendant les règles** : s’appuyer sur un réseau de soutien (proches, aide à domicile, garde d’enfants, soutien psychologique) aide beaucoup.
+- Au travail, tu peux rencontrer le **médecin du travail**, tenu au secret médical, qui peut proposer un **aménagement de poste**.
+- **Parler ou non de ta maladie à ton employeur** est un choix personnel.
+- Le **temps partiel thérapeutique** permet une reprise progressive après un arrêt.
+- Certaines formes ouvrent droit à l’**ALD 31** (prise en charge à 100 % des soins liés à la maladie) ; d’autres aides existent selon la situation.
+
+## Comprendre
+L’endométriose est une maladie chronique dont les symptômes varient d’un mois à l’autre. Santé.fr note que certaines femmes voient leur vie professionnelle freinée par la douleur, surtout lorsque le poste impose de rester longtemps debout ou de se déplacer souvent. Vivre avec la maladie, c’est donc aussi organiser son quotidien et connaître ses droits.
+
+**Côté droits** : l’endométriose ne figure pas sur la liste des ALD 30, mais certaines formes graves, évoluant depuis plus de 6 mois et nécessitant des soins coûteux, peuvent relever d’une ALD « hors liste » (ALD 31), demandée par ton médecin auprès de l’Assurance Maladie. Selon la situation, d’autres dispositifs peuvent être étudiés : pension d’invalidité, reconnaissance de la qualité de travailleur handicapé (RQTH), allocation aux adultes handicapés (AAH) via la MDPH.
+
+## Au quotidien
+- **Anticipe tes « mauvais jours »** grâce au suivi de cycle dans l’app : prévois des journées plus légères, du télétravail si c’est possible, des repas déjà prêts.
+- **Prépare ton kit** : bouillotte, vêtements confortables, protections, traitement prescrit, bouteille d’eau.
+- **Au travail** : prends rendez-vous avec le médecin du travail pour discuter d’aménagements (horaires, poste assis, pauses, télétravail). L’Anact propose des ressources pour les entreprises, relayées par Santé.fr.
+- **Bouge à ton rythme** : le ministère des Sports a publié des repères « En mouvement avec l’endométriose » ; l’activité physique adaptée peut s’intégrer au parcours de soins.
+- **Prends soin de ta santé mentale** : la douleur chronique fatigue et isole. Un psychologue, des techniques de relaxation ou des groupes de parole peuvent aider.
+- **Rejoins une association** de patientes (EndoFrance, ENDOmind, Info-endométriose…) pour échanger et t’informer.
+- **Dans le couple**, parle des douleurs pendant les rapports : il existe des solutions, et l’intimité ne se résume pas à la pénétration.
+
+## Questions fréquentes
+**Dois-je dire à mon employeur que j’ai une endométriose ?** Ce n’est pas obligatoire. Le médecin du travail, lui, est tenu au secret et peut demander des aménagements sans détailler ta maladie.
+
+**Qu’est-ce que le temps partiel thérapeutique ?** C’est une reprise progressive à temps partiel après une maladie, prescrite par le médecin, qui permet de ne pas perdre de salaire selon les conditions prévues.
+
+**Comment demander l’ALD 31 ?** C’est ton médecin traitant qui fait la demande auprès de l’Assurance Maladie, avec un protocole de soins, si ta situation correspond aux critères.
+
+**Je me sens incomprise par mon entourage.** C’est un vécu fréquent. Partager des ressources fiables (Santé.fr, associations) ou proposer à un proche de t’accompagner en consultation peut aider à faire comprendre la maladie.
+
+## Quand demander conseil
+Consulte si ta douleur n’est plus contrôlée, si tu ne peux plus travailler ou étudier, ou si ton moral baisse fortement. Une douleur qui t’empêche de vivre normalement n’est pas à subir. Si tu as des idées noires, appelle le **3114**, gratuit, jour et nuit. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['vivre avec endométriose','travail','médecin du travail','temps partiel thérapeutique','ALD 31','aides sociales','soutien psychologique','associations']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Endométriose (mini-site du Service public d’information en santé)","url":"https://www.sante.fr/endometriose","consulted_on":"2026-10-27"},{"label":"Santé.fr — Endométriose : soutien au quotidien","url":"https://www.sante.fr/endometriose/vivre-avec/soutien-au-quotidien","consulted_on":"2026-10-27"},{"label":"Santé.fr — Endométriose : prise en charge et aides sociales","url":"https://www.sante.fr/endometriose/droits-des-patients/prise-en-charge-et-aides-sociales","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('adenomyose-comprendre-symptomes-traitements', (select id from public.content_categories where slug = 'cycle-ages'), 'Adénomyose : l’« endométriose interne » de l’utérus', 'Ce qu’est l’adénomyose, ses symptômes (règles abondantes, longues, douloureuses), comment on la diagnostique et quels traitements peuvent être proposés.', '## En bref
+- L’adénomyose correspond à la présence de **tissu semblable à la muqueuse de l’utérus dans le muscle de l’utérus** (le myomètre). On la décrit souvent comme une « endométriose interne ».
+- Elle est **fréquente** et **souvent silencieuse** : deux fois sur trois, elle ne donne aucun symptôme.
+- Quand elle en donne : **règles abondantes et longues** (plus de 7 jours), **règles douloureuses**, **saignements entre les règles**.
+- Le diagnostic repose sur l’**échographie** (idéalement endovaginale) et, si besoin, l’**IRM**.
+- Seules les formes qui gênent sont traitées.
+
+## Comprendre
+Dans l’endométriose « classique », le tissu se développe hors de l’utérus. Dans l’adénomyose, il infiltre la paroi musculaire de l’utérus, au niveau de la zone de jonction entre la muqueuse et le muscle. Elle peut être diffuse, localisée (un ou quelques foyers) ou liée à une endométriose profonde voisine. Les deux maladies sont souvent associées, mais l’une n’entraîne pas forcément l’autre.
+
+Longtemps, on pensait qu’elle concernait surtout les femmes de plus de 40 ans ayant eu plusieurs grossesses. Grâce à l’imagerie, elle est aujourd’hui diagnostiquée aussi chez des femmes plus jeunes. Selon l’article d’EndoFrance relayé par Santé.fr, le stérilet n’est pas un facteur de risque.
+
+Côté symptômes, l’article cite des règles abondantes dans environ la moitié des cas, des règles douloureuses dans environ un tiers, et des saignements entre les règles dans environ un cas sur cinq. Certaines formes sont très douloureuses.
+
+## Au quotidien
+- **Mesure ton flux** : note dans l’app la durée des règles, le nombre de protections changées par jour, les débordements nocturnes, les caillots.
+- **Surveille ta fatigue** : des règles abondantes répétées peuvent entraîner un manque de fer. Parles-en à ton médecin, qui pourra prescrire une prise de sang.
+- **Prévois des protections adaptées** aux jours de fort flux (et pense à les changer régulièrement).
+- **Prépare l’échographie** : pour l’adénomyose, elle est idéalement réalisée en deuxième partie de cycle.
+- **Les traitements possibles**, selon ta situation et ton projet de grossesse : DIU hormonal (qui réduit les saignements), progestatif en continu, analogues de la GnRH avec apport hormonal associé, embolisation des artères utérines (qui conserve l’utérus, mais les symptômes peuvent revenir), et en dernier recours l’hystérectomie.
+
+## Questions fréquentes
+**Quelle différence avec un fibrome ?** Le fibrome est une boule bien délimitée de tissu musculaire ; l’adénomyose infiltre la paroi de l’utérus. Les symptômes se ressemblent (règles abondantes), et l’IRM permet de les distinguer.
+
+**L’adénomyose empêche-t-elle d’avoir un enfant ?** Elle est souvent retrouvée lors de bilans d’infertilité et pourrait gêner l’implantation de l’embryon. Si tu as un projet de grossesse, parles-en : la prise en charge sera adaptée.
+
+**Faut-il traiter une adénomyose découverte par hasard ?** Non : seules les formes qui donnent des symptômes sont traitées.
+
+**Est-ce que ça disparaît à la ménopause ?** Comme l’endométriose, l’adénomyose dépend des hormones ; parles-en avec ton médecin pour savoir ce qui est attendu dans ta situation.
+
+## Quand demander conseil
+Consulte si tes règles durent plus de 7 jours, sont si abondantes que tu dois changer de protection très souvent ou te lever la nuit, si tu saignes entre les règles, si tu es très fatiguée ou si tes douleurs te gênent. Une douleur qui t’empêche de vivre normalement n’est pas à subir. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['adénomyose','endométriose interne','règles abondantes','règles longues','règles douloureuses','saignements entre les règles','utérus']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu EndoFrance) — Qu’est-ce que l’adénomyose ?","url":"https://www.sante.fr/endometriose/quest-ce-que-ladenomyose","consulted_on":"2026-10-27","published":"2024-08-08"},{"label":"Santé.fr (contenu EndoFrance) — Symptômes de l’endométriose : les règles douloureuses","url":"https://www.sante.fr/endometriose/symptomes-de-lendometriose-les-regles-douloureuses","consulted_on":"2026-10-27","published":"2024-01-05"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('sopk-au-quotidien-symptomes-hygiene-de-vie', (select id from public.content_categories where slug = 'cycle-ages'), 'SOPK au quotidien : cycles, acné, pilosité, moral… ce qui peut aider', 'Vivre avec un syndrome des ovaires polykystiques hors projet bébé : les symptômes, ce que l’hygiène de vie peut changer, les traitements des symptômes et le soutien psychologique.', '## En bref
+- Le SOPK est une **maladie chronique** liée à un **excès d’androgènes** (hormones dites masculines) produits par les ovaires, qui perturbe l’ovulation.
+- Ses signes varient beaucoup : **cycles longs ou absents**, **pilosité excessive**, **acné** souvent inflammatoire, **chute de cheveux** sur le dessus du crâne, surpoids, fatigue, anxiété…
+- Il n’existe **pas de traitement qui guérit** le SOPK, mais on peut **traiter les symptômes** et en limiter les conséquences, jusqu’à la ménopause.
+- L’**hygiène de vie** (alimentation, activité physique, arrêt du tabac) a un vrai rôle ; le **soutien psychologique** est jugé indispensable par ameli.fr.
+
+## Comprendre
+Dans le SOPK, l’excès d’androgènes empêche l’ovulation de se faire régulièrement. Résultat : des cycles souvent de plus de 35 à 40 jours depuis l’adolescence, parfois une absence de règles. Les androgènes expliquent aussi les signes visibles : poils sur le visage, la poitrine, le dos (chez environ 70 % des femmes concernées), acné qui persiste après 20 ans, chute de cheveux.
+
+Le diagnostic repose, chez l’adulte, sur au moins deux critères parmi trois : signes d’excès d’androgènes (visibles ou à la prise de sang), ovulation rare ou absente, ovaires d’aspect polykystique à l’échographie. Chez l’adolescente, on regarde les troubles du cycle qui persistent 1 à 2 ans après la puberté, associés à des signes d’excès d’androgènes ; l’échographie n’est pas utilisée à cet âge.
+
+Le SOPK touche aussi l’image de soi : ameli.fr cite l’anxiété, l’humeur dépressive et une image négative de soi parmi les symptômes possibles.
+
+## Au quotidien
+- **Suis ton cycle dans l’app** : même irrégulier, il est utile de noter les dates de règles, les longues périodes sans règles et tes symptômes.
+- **Alimentation** : privilégie une alimentation équilibrée, en limitant sucres rapides et graisses. Pas besoin de régime restrictif ; avance pas à pas.
+- **Activité physique** : bouger davantage est recommandé à l’adolescence comme à l’âge adulte. Choisis une activité qui te plaît pour qu’elle dure.
+- **Poids** : en cas de surpoids, ameli.fr indique qu’une perte d’environ 10 % du poids initial peut réduire l’excès d’androgènes, améliorer les cycles et l’humeur. Un accompagnement (médecin, diététicien) aide à y arriver sans culpabilité.
+- **Tabac** : l’arrêt est recommandé pour protéger ton cœur et tes vaisseaux.
+- **Moral** : parles-en. Le dispositif « Mon soutien psy » permet des séances chez un psychologue prises en charge par l’Assurance Maladie.
+- **Peau et cheveux** : parles-en à ton médecin ou à un dermatologue avant d’enchaîner les produits ; des traitements médicaux existent.
+
+## Questions fréquentes
+**Quels traitements pour l’acné et la pilosité ?** Ameli.fr cite en première intention une pilule œstroprogestative, qui régule aussi les cycles. D’autres médicaments peuvent être proposés si besoin. Certains exposent à des risques (thrombose, méningiome) et sont réévalués chaque année : pose toutes tes questions à ton médecin.
+
+**Pourquoi est-il important d’avoir des règles régulièrement ?** Des cycles très espacés sans ovulation peuvent laisser la muqueuse de l’utérus s’épaissir. Rétablir des saignements réguliers protège l’endomètre ; c’est un des objectifs du traitement.
+
+**Le SOPK disparaît-il ?** C’est une maladie chronique. Les symptômes liés au cycle peuvent s’améliorer après la ménopause, mais les risques métaboliques, eux, peuvent persister : le suivi continue.
+
+**Est-ce que je pourrai avoir des enfants ?** Le SOPK est une cause fréquente de difficultés à concevoir, mais des solutions existent. L’app propose un article dédié au SOPK et désir de grossesse.
+
+## Quand demander conseil
+Consulte si tes cycles sont très longs ou absents depuis plus de 3 mois, si la pilosité, l’acné ou la chute de cheveux apparaissent ou s’aggravent vite, si tu prends du poids sans comprendre pourquoi, ou si tu te sens découragée, anxieuse ou triste. Une douleur qui t’empêche de vivre normalement n’est pas à subir. Si tu as des idées noires, appelle le **3114**. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['SOPK','syndrome des ovaires polykystiques','cycles irréguliers','acné','pilosité','hirsutisme','chute de cheveux','estime de soi']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Symptômes, diagnostic et évolution du syndrome des ovaires polykystiques","url":"https://www.ameli.fr/assure/sante/themes/syndrome-ovaires-polykystiques/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2026-01-12"},{"label":"ameli.fr — Traitement du syndrome des ovaires polykystiques","url":"https://www.ameli.fr/assure/sante/themes/syndrome-ovaires-polykystiques/traitement","consulted_on":"2026-10-27","published":"2025-12-09"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('sopk-sante-long-terme-suivi', (select id from public.content_categories where slug = 'cycle-ages'), 'SOPK : protéger ta santé sur le long terme (cœur, glycémie, endomètre, sommeil)', 'Pourquoi le SOPK demande un suivi même sans projet de grossesse : risque de diabète, de syndrome métabolique, d’atteinte de l’endomètre, d’apnées du sommeil, et les examens réguliers utiles.', '## En bref
+- Au-delà des cycles et de la peau, le SOPK a des **effets métaboliques** : l’excès d’androgènes favorise la **prise de poids** et l’**insulinorésistance**.
+- Il augmente le risque de **syndrome métabolique**, de **diabète de type 2**, de **foie gras** (stéatose) et d’**apnées du sommeil**, surtout en cas de surpoids.
+- Des cycles très espacés exposent à un **risque accru de cancer de l’endomètre** : c’est une raison de traiter les troubles du cycle.
+- Un **suivi régulier** de la glycémie, du cholestérol, de la tension et du poids est recommandé, y compris après la ménopause.
+
+## Comprendre
+**Le syndrome métabolique** associe, selon ameli.fr, un tour de taille élevé (plus de 80 cm chez la femme) à au moins deux autres éléments : triglycérides élevés, « bon » cholestérol (HDL) bas, tension artérielle élevée, glycémie à jeun élevée. C’est un facteur de risque d’angine de poitrine, d’infarctus et d’AVC. Le SOPK en augmente le risque.
+
+**L’insulinorésistance**, c’est quand le corps répond moins bien à l’insuline. Elle peut se voir sur la peau sous forme de taches foncées et veloutées (nuque, aisselles, plis de l’aine), appelées acanthosis nigricans.
+
+**L’endomètre** : sans ovulation régulière, la muqueuse de l’utérus est exposée aux œstrogènes sans le « contrepoids » de la progestérone, ce qui peut favoriser son épaississement. D’où l’objectif de rétablir des cycles ou des saignements réguliers.
+
+Santé.fr rappelle qu’après la ménopause, les symptômes du SOPK peuvent s’améliorer, mais que **le risque cardiovasculaire peut persister** (diabète, cholestérol, hypertension, surpoids).
+
+## Au quotidien
+- **Fais ton bilan sanguin** quand il est prescrit : ameli.fr cite glycémie, parfois test d’hyperglycémie provoquée, insuline, cholestérol et triglycérides.
+- **Fais vérifier ta tension** régulièrement (chez le médecin, en pharmacie).
+- **Mesure ton tour de taille** de temps en temps, sans obsession : c’est un repère utile pour le médecin.
+- **Bouge chaque jour** et limite le temps assise : ameli.fr recommande d’augmenter l’activité physique, à tout âge.
+- **Mange équilibré** en limitant sucres rapides, boissons sucrées et graisses ; un diététicien peut t’accompagner.
+- **Arrête le tabac** si tu fumes (Tabac info service : 39 89).
+- **Parle de ton sommeil** : ronflements, pauses respiratoires signalées par ton ou ta partenaire, fatigue au réveil peuvent évoquer des apnées.
+- **Note tes saignements** dans l’app : une longue absence de règles ou des saignements anormaux se signalent.
+
+## Questions fréquentes
+**Je suis mince, suis-je concernée ?** Les complications métaboliques sont plus fréquentes en cas de surpoids, mais le suivi reste conseillé : parles-en avec ton médecin pour adapter les examens.
+
+**Un médicament peut-il être proposé pour la glycémie ?** Oui, si l’hygiène de vie ne suffit pas, ton médecin peut prescrire un traitement et t’en expliquer les effets possibles.
+
+**Le SOPK donne-t-il un cancer ?** Le risque de cancer de l’endomètre est augmenté ; pour d’autres cancers gynécologiques, il est seulement suspecté et étudié. Traiter les troubles du cycle et signaler tout saignement anormal fait partie de la prévention.
+
+**Faut-il continuer le suivi après la ménopause ?** Oui, car les risques cardiovasculaires et métaboliques peuvent persister.
+
+## Quand demander conseil
+Consulte si tu as très soif, urines beaucoup ou te sens très fatiguée, si tes règles sont absentes plus de 3 mois sans contraception, si tu as des saignements inhabituels, des ronflements avec fatigue au réveil, ou des taches foncées qui apparaissent sur la peau. Appelle le **15** ou le **112** en cas de douleur dans la poitrine, d’essoufflement brutal ou de signes d’AVC (visage déformé, bras faible, troubles de la parole).
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['SOPK','syndrome métabolique','diabète de type 2','insulinorésistance','cholestérol','apnée du sommeil','cancer de l’endomètre','suivi']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Symptômes, diagnostic et évolution du syndrome des ovaires polykystiques","url":"https://www.ameli.fr/assure/sante/themes/syndrome-ovaires-polykystiques/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2026-01-12"},{"label":"ameli.fr — Traitement du syndrome des ovaires polykystiques","url":"https://www.ameli.fr/assure/sante/themes/syndrome-ovaires-polykystiques/traitement","consulted_on":"2026-10-27","published":"2025-12-09"},{"label":"Santé.fr — Les symptômes de la ménopause","url":"https://www.sante.fr/menopause-perimenopause/symptomes-menopause","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('kyste-ovaire-fonctionnel-organique', (select id from public.content_categories where slug = 'cycle-ages'), 'Kyste de l’ovaire : fonctionnel ou organique, surveiller ou opérer ?', 'Ce qu’est un kyste de l’ovaire, la différence entre kyste fonctionnel et organique, comment se fait la surveillance et quels signes imposent une consultation en urgence.', '## En bref
+- Un kyste de l’ovaire est une **poche de liquide** qui se forme sur ou dans un ovaire. La grande majorité sont **bénins**.
+- Les **kystes fonctionnels** sont liés au fonctionnement de l’ovaire au cours du cycle et **disparaissent souvent d’eux-mêmes** ; on les reconnaît justement à leur disparition à l’échographie.
+- Les **kystes organiques** (dont ceux liés à l’endométriose) persistent et peuvent nécessiter une intervention.
+- L’**échographie**, de préférence par voie endovaginale, est l’examen de référence.
+- Une **douleur brutale et intense** d’un côté du bas-ventre, avec nausées ou malaise, peut signaler une complication (torsion) : c’est une **urgence**.
+
+## Comprendre
+À chaque cycle, un follicule grossit dans l’ovaire avant de libérer l’ovule. Il arrive qu’il continue à grossir ou se remplisse de liquide : c’est un kyste fonctionnel. Il peut parfois allonger un cycle ; Santé.fr note qu’un cycle anormalement long avec douleurs des seins et du ventre, alors que le test de grossesse est négatif, peut être lié à un kyste de l’ovaire.
+
+Les kystes organiques, eux, ne dépendent pas du cycle et ne disparaissent pas spontanément. Certains signes à l’échographie (taille importante, partie solide, cloisons, paroi épaisse) orientent le médecin vers un kyste organique. L’échographie endovaginale repère bien notamment les kystes liés à l’endométriose.
+
+Selon les recommandations du CNGOF, pendant la période où l’on a ses règles et en l’absence de symptôme, une **surveillance de 1 à 3 cycles** avec contrôle échographique est souvent proposée avant d’envisager une chirurgie. Lorsqu’une intervention est utile, elle se fait le plus souvent par **cœlioscopie**, en retirant le kyste et en conservant l’ovaire quand c’est possible.
+
+## Au quotidien
+- **Fais l’échographie de contrôle** prévue, idéalement au moment du cycle indiqué par le médecin.
+- **Note tes symptômes dans l’app** : douleurs (côté, intensité, moment du cycle), retard de règles, pesanteur, douleurs pendant les rapports.
+- **Ne change pas de contraception de toi-même** : le CNGOF indique qu’il n’est pas recommandé de changer de pilule pour un kyste fonctionnel isolé et sans symptôme.
+- **Garde les comptes rendus** d’échographie pour pouvoir comparer d’un examen à l’autre.
+- **Connais les signes d’urgence** (ci-dessous) et n’hésite pas à les dire à tes proches.
+
+## Questions fréquentes
+**Un kyste peut-il être un cancer ?** La grande majorité des kystes sont bénins. Une petite proportion de kystes présumés bénins se révèle maligne, d’où l’importance de l’échographie et du suivi proposé par le médecin.
+
+**Ma pilule empêche-t-elle les kystes ?** Selon le CNGOF, sous pilule faiblement dosée, des follicules continuent à se développer et un kyste fonctionnel reste possible. Un traitement hormonal n’est pas recommandé pour « faire disparaître » un kyste fonctionnel sans symptôme.
+
+**Et après la ménopause ?** Des kystes peuvent aussi être découverts après la ménopause. La conduite à tenir est alors différente et se discute avec le gynécologue.
+
+**Une ponction peut-elle suffire ?** Elle n’a pas montré d’intérêt par rapport à la simple surveillance pour un kyste fonctionnel sans symptôme.
+
+## Quand demander conseil
+Appelle le **15** ou le **112** en cas de douleur brutale et très intense dans le bas-ventre, surtout d’un seul côté, avec nausées, vomissements, malaise ou fièvre : il peut s’agir d’une torsion de l’ovaire ou, en cas de retard de règles, d’une grossesse extra-utérine. Consulte rapidement si tu as des douleurs pelviennes qui durent, une sensation de pesanteur, un ventre qui gonfle, des douleurs pendant les rapports ou des saignements inhabituels. Une douleur qui t’empêche de vivre normalement n’est pas à subir.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['kyste ovaire','kyste ovarien','kyste fonctionnel','torsion ovaire','échographie pelvienne','douleur ovaire','cœlioscopie']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"CNGOF — Recommandations pour la pratique clinique : prise en charge des kystes de l’ovaire présumés bénins (2001)","url":"https://cngof.fr/app/uploads/2025/11/Ovaires202001-Prise20en20charge20des20kystes20de20l27ovaire20prC3A9sumC3A9s20bC3A9nins.pdf","consulted_on":"2026-10-27","published":"2001-12-07"},{"label":"Santé.fr — Troubles des règles","url":"https://www.sante.fr/node/2055757","consulted_on":"2026-10-27","published":"2026-08-13"},{"label":"Santé.fr — Endométriose : examens complémentaires","url":"https://www.sante.fr/endometriose/diagnostic-et-examens/examens-complementaires","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('insuffisance-ovarienne-prematuree-menopause-precoce', (select id from public.content_categories where slug = 'cycle-ages'), 'Ménopause précoce ou insuffisance ovarienne prématurée : comprendre et être accompagnée', 'Quand les règles s’arrêtent avant 40 ans : ce qu’est l’insuffisance ovarienne prématurée, comment on la diagnostique, pourquoi un traitement hormonal est proposé et ce qu’elle change pour la fertilité.', '## En bref
+- On parle d’**insuffisance ovarienne prématurée (IOP)** quand les règles deviennent rares ou s’arrêtent **plus de 4 mois avant 40 ans**, avec une prise de sang qui montre une FSH élevée (confirmée deux fois) et un estradiol bas.
+- Elle concerne environ **1 à 2 % des femmes de 40 ans**, plus rarement avant.
+- Signes possibles : **règles absentes ou espacées**, **bouffées de chaleur**, sueurs nocturnes, troubles du sommeil ou de l’humeur, sécheresse vaginale, baisse du désir.
+- Un **traitement hormonal** est en général proposé, au moins jusqu’à l’âge habituel de la ménopause (vers 51 ans), pour protéger les os, le cœur et la qualité de vie.
+- Le mot « insuffisance » ne veut pas dire que tout est définitif : une **grossesse spontanée reste possible** dans une petite proportion de cas.
+
+## Comprendre
+Les ovaires cessent de fonctionner normalement plus tôt que prévu. Les causes peuvent être génétiques (anomalies des chromosomes ou de certains gènes), auto-immunes, ou liées à une chirurgie des deux ovaires, une chimiothérapie ou une radiothérapie. Dans la majorité des cas (environ 60 à 70 % selon le protocole national), aucune cause n’est retrouvée.
+
+Le diagnostic précoce est important, car le manque d’œstrogènes fragilise les os et augmente le risque cardiovasculaire. Le bilan comprend souvent un **caryotype** (étude des chromosomes), une recherche génétique ciblée, un bilan thyroïdien, parfois une échographie ; une densitométrie osseuse est faite au diagnostic.
+
+Santé.fr distingue la ménopause dite anticipée (entre 40 et 45 ans) de l’IOP avant 40 ans, qui doit être prise en charge.
+
+## Au quotidien
+- **Note tes cycles dans l’app** : la date des dernières règles et la durée sans règles sont des informations clés.
+- **Si tu as un traitement hormonal**, prends-le régulièrement et parles-en à ton médecin si tu as des effets gênants : il existe plusieurs façons de l’adapter. Le protocole national indique qu’il n’y a pas d’augmentation démontrée du risque de cancer du sein lorsque ce traitement est pris avant l’âge naturel de la ménopause.
+- **Protège tes os** : activité physique régulière avec impacts (marche, danse), apports suffisants en calcium et vitamine D, pas de tabac.
+- **Pense contraception** si tu ne veux pas de grossesse : la fonction des ovaires peut fluctuer. Parles-en avec ton médecin.
+- **Sexualité** : en cas de sécheresse ou de douleur, des solutions existent (lubrifiants, traitements locaux, traitement hormonal).
+- **Prends soin de ton moral** : l’annonce peut être un choc, surtout si tu avais un projet d’enfant. Un soutien psychologique et des groupes de parole sont recommandés.
+- **Suivi annuel** : examen gynécologique et des seins, poids, tension, bilan thyroïdien.
+
+## Questions fréquentes
+**Puis-je encore avoir un enfant ?** Une grossesse spontanée survient dans environ 4 à 6 % des cas, sans qu’on puisse prédire qui sera concernée. Le don d’ovocytes est la principale option proposée en cas de projet d’enfant ; l’adoption est une autre voie.
+
+**Le traitement hormonal est-il le même que celui de la ménopause ?** Le principe est proche (œstrogènes et progestatif pour protéger l’utérus), mais les objectifs et la durée diffèrent : il s’agit de remplacer des hormones qui manquent trop tôt.
+
+**Mes sœurs ou mes filles sont-elles concernées ?** Si une cause génétique est retrouvée, une consultation de génétique peut être proposée à la famille.
+
+**Ai-je fait quelque chose de mal ?** Non. Dans la plupart des cas, la cause n’est pas connue, et ce n’est la faute de personne.
+
+## Quand demander conseil
+Consulte si tes règles sont absentes plus de 3 mois avant 40 ans (après avoir écarté une grossesse), ou si tu as des bouffées de chaleur, des sueurs nocturnes et des cycles irréguliers à un âge jeune. Si tu as des idées noires, appelle le **3114**. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid','ttc']::text[], null, null, null, null, false, array['ménopause précoce','insuffisance ovarienne prématurée','IOP','règles arrêtées avant 40 ans','bouffées de chaleur jeune','fertilité','don d’ovocytes']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"HAS / FIRENDO — Insuffisance ovarienne prématurée : synthèse à destination du médecin traitant (PNDS)","url":"https://www.has-sante.fr/upload/docs/application/pdf/2021-05/synthese_mg_insuffisance_ovarienne_prematuree.pdf","consulted_on":"2026-10-27","published":"2021-05-01"},{"label":"Santé.fr — Idées reçues sur la ménopause","url":"https://www.sante.fr/menopause-perimenopause/idees-recues-sur-menopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Troubles des règles","url":"https://www.sante.fr/node/2055757","consulted_on":"2026-10-27","published":"2026-08-13"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('saignements-apres-la-menopause-consulter', (select id from public.content_categories where slug = 'cycle-ages'), 'Saignement après la ménopause : toujours consulter', 'Pourquoi tout saignement survenant plus de 12 mois après les dernières règles doit faire consulter, quels examens peuvent être proposés et ce qu’il faut savoir sur le cancer de l’endomètre.', '## En bref
+- On est ménopausée après **12 mois consécutifs sans règles** (hors contraception).
+- **Tout saignement après ce délai** doit faire consulter un médecin, même s’il est léger, unique, ou s’il ressemble à quelques traces.
+- Un saignement peut avoir plusieurs causes, mais c’est aussi le **principal signe d’alerte du cancer de l’endomètre**, diagnostiqué dans 95 % des cas après la ménopause.
+- Détecté tôt, ce cancer a un **bon pronostic** : consulter vite fait vraiment la différence.
+
+## Comprendre
+Après la ménopause, la muqueuse de l’utérus (l’endomètre) ne se renouvelle plus chaque mois : il n’y a donc plus de raison de saigner. Un saignement peut avoir plusieurs origines (muqueuse fragilisée par le manque d’œstrogènes, polype, effet d’un traitement hormonal…), mais seul un examen permet de savoir.
+
+La Fondation ARC rappelle que le cancer de l’endomètre est le deuxième cancer gynécologique le plus fréquent en France, qu’il survient le plus souvent entre 55 et 70 ans et que son symptôme principal est un **saignement vaginal anormal, en particulier après la ménopause**. Des pertes blanches inhabituelles ou des douleurs du bas-ventre peuvent l’accompagner. Il n’existe pas de dépistage organisé : c’est l’attention à ce signe et le suivi gynécologique qui permettent de le repérer tôt. Parmi les facteurs de risque cités : l’âge, l’obésité, l’hypertension, une prédisposition génétique, certains traitements hormonaux.
+
+Santé.fr recommande aussi de consulter, dès la périménopause, en cas de saignements après les rapports, entre les règles ou inattendus, ou de règles très abondantes et rapprochées avec caillots.
+
+## Au quotidien
+- **Ne laisse pas passer** un saignement, même minime : prends rendez-vous rapidement avec ton médecin, ton ou ta gynécologue ou ta sage-femme.
+- **Note dans l’app** la date de tes dernières règles, la date et l’aspect du saignement (traces, sang rouge, pertes rosées ou brunes), s’il a suivi un rapport.
+- **Signale tes traitements** : traitement hormonal de la ménopause, traitement d’un cancer du sein, anticoagulants…
+- **À quoi t’attendre** : un examen gynécologique et, selon la situation, un prélèvement de la muqueuse de l’utérus (biopsie), parfois réalisé en consultation, ou une **hystéroscopie** (examen de l’intérieur de l’utérus avec une petite caméra). Seule l’analyse du tissu permet de poser un diagnostic certain.
+- **Garde tes dépistages à jour** (col de l’utérus, sein, côlon) : la ménopause est un bon moment pour faire le point.
+
+## Questions fréquentes
+**C’était juste quelques traces roses, dois-je vraiment consulter ?** Oui. La quantité ne dit pas la cause. Un rendez-vous permet de lever le doute.
+
+**Je prends un traitement hormonal de la ménopause et je saigne.** Selon le schéma de traitement, des saignements peuvent être prévus. Mais des saignements inattendus ou qui changent doivent être signalés à ton médecin.
+
+**Mes règles se sont arrêtées il y a 8 mois et reviennent.** Tant que les 12 mois sans règles ne sont pas atteints, on est en périménopause et des règles peuvent revenir. Des saignements très abondants, rapprochés, avec caillots ou après les rapports méritent toutefois une consultation.
+
+**J’ai peur du résultat.** C’est compréhensible. Un saignement n’est pas synonyme de cancer, et quand un cancer de l’endomètre est trouvé, il l’est le plus souvent à un stade précoce (environ trois quarts des cas selon la Fondation ARC), avec un bon pronostic.
+
+## Quand demander conseil
+Consulte rapidement pour tout saignement survenant plus de 12 mois après tes dernières règles, ou pour des pertes inhabituelles ou des douleurs pelviennes qui persistent. Appelle le **15** ou le **112** si le saignement est très abondant avec malaise, pâleur ou vertiges. Si l’inquiétude devient envahissante, parles-en à un proche ou à un professionnel.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['saignement après ménopause','métrorragies','ménopause','cancer de l’endomètre','biopsie endomètre','hystéroscopie','pertes de sang']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Les symptômes de la ménopause","url":"https://www.sante.fr/menopause-perimenopause/symptomes-menopause","consulted_on":"2026-10-27"},{"label":"Fondation ARC pour la recherche sur le cancer — Le cancer de l’endomètre","url":"https://www.fondation-arc.org/sinformer-sur-le-cancer/les-differents-cancers/le-cancer-de-lendometre/","consulted_on":"2026-10-27","published":"2026-06-05"},{"label":"Institut Curie — Symptômes et diagnostic du cancer de l’endomètre","url":"https://curie.fr/symptomes-et-diagnostic-du-cancer-de-lendometre","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('perimenopause-reperer-les-premiers-signes', (select id from public.content_categories where slug = 'cycle-ages'), 'Périménopause : repérer les premiers signes, souvent dès la quarantaine', 'Ce qu’est la périménopause, à quel âge elle commence, les changements possibles (cycles, bouffées de chaleur, sommeil, humeur) et pourquoi la contraception reste nécessaire.', '## En bref
+- La **périménopause** (ou préménopause) est la période qui précède la ménopause : les œstrogènes **fluctuent**.
+- Elle commence **en moyenne vers 47 ans** et dure **environ 4 ans**, mais elle peut débuter dès la quarantaine.
+- Signes possibles : **règles irrégulières**, plus ou moins abondantes, **premières bouffées de chaleur**, irritabilité, troubles du sommeil ou de l’humeur.
+- **Une grossesse reste possible** : la contraception doit être maintenue tant que la ménopause n’est pas confirmée.
+- Aucun test sanguin isolé ne permet de « dater » la ménopause : le diagnostic est surtout clinique.
+
+## Comprendre
+Pendant la périménopause, les ovaires fonctionnent de façon de plus en plus irrégulière. Certains cycles s’accompagnent d’une ovulation, d’autres non. Les taux d’hormones montent et descendent, ce qui explique des cycles tantôt courts, tantôt longs, des règles parfois plus abondantes, et des symptômes qui vont et viennent.
+
+Santé.fr précise qu’en France il n’existe pas de recommandations officielles spécifiques à la prise en charge de la périménopause : un traitement hormonal peut être envisagé au cas par cas, notamment en cas d’état dépressif sans autre cause identifiée. La page met aussi en garde contre les « produits miracles » vendus en ligne, dont l’efficacité n’est pas validée.
+
+Le dosage de la FSH existe, mais son taux varie beaucoup pendant cette période : un résultat isolé ne suffit pas. Les autotests vendus en pharmacie ont les mêmes limites.
+
+## Au quotidien
+- **Continue à noter tes cycles** dans l’app : dates, abondance, durée, symptômes. C’est le meilleur moyen de voir l’évolution et d’en parler avec ton médecin.
+- **Repère tes symptômes** : bouffées de chaleur, sueurs la nuit, réveils, irritabilité, baisse de moral, difficultés de concentration.
+- **Garde ta contraception** : après 50 ans et sans contraception hormonale, le risque de grossesse est généralement considéré comme négligeable après 12 mois sans règles ; avant 50 ans, deux ans sans règles sont habituellement recommandés. Avec une contraception hormonale, demande conseil pour savoir quand arrêter.
+- **Prends soin de ton hygiène de vie** : activité physique régulière, alimentation équilibrée riche en calcium, sommeil, limitation de l’alcool et arrêt du tabac.
+- **Profite de « Mon bilan prévention »** proposé entre 45 et 50 ans pour faire le point sur ta santé (tension, poids, habitudes de vie).
+
+## Questions fréquentes
+**J’ai encore mes règles, puis-je être en périménopause ?** Oui. La périménopause peut commencer entre 40 et 50 ans, alors que les règles sont encore présentes, simplement plus irrégulières.
+
+**Je prends une pilule en continu, comment savoir où j’en suis ?** La pilule peut supprimer les saignements et masquer la ménopause. Vers la cinquantaine, ton médecin peut te proposer une autre méthode de contraception pour y voir plus clair. N’arrête pas ta pilule sans solution de remplacement si tu ne souhaites pas de grossesse.
+
+**Ma baisse de moral vient-elle de la périménopause ?** Les fluctuations hormonales peuvent favoriser un état dépressif, surtout si tu as déjà vécu des épisodes dépressifs. Mais une dépression ne doit pas être automatiquement attribuée à la ménopause : parles-en à un professionnel.
+
+**Des compléments peuvent-ils aider ?** Leur efficacité n’est pas démontrée et certains présentent des risques. Demande l’avis de ton médecin ou de ton pharmacien.
+
+## Quand demander conseil
+Consulte en cas de saignements après les rapports ou entre les règles, de règles très abondantes, rapprochées (moins de 3 semaines) avec caillots, de symptômes qui gênent ta vie quotidienne, ou de tristesse ou d’anxiété qui durent. Si tu as des idées noires, appelle le **3114**. En cas de saignement très abondant avec malaise, de douleur brutale et intense dans le ventre (surtout avec un retard de règles), de fièvre avec douleurs dans le bas-ventre ou de signes de choc toxique (fièvre brutale, éruption, malaise) en portant un tampon ou une coupe : appelle le **15** (SAMU) ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['périménopause','préménopause','règles irrégulières 45 ans','premières bouffées de chaleur','humeur','sommeil','contraception 45 ans']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Ménopause et périménopause","url":"https://www.sante.fr/menopause-perimenopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Idées reçues sur la ménopause","url":"https://www.sante.fr/menopause-perimenopause/idees-recues-sur-menopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Les symptômes de la ménopause","url":"https://www.sante.fr/menopause-perimenopause/symptomes-menopause","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('menopause-symptomes-a-connaitre', (select id from public.content_categories where slug = 'cycle-ages'), 'Ménopause : tous les symptômes possibles et qui consulter', 'Bouffées de chaleur, sommeil, humeur, sécheresse vaginale, troubles urinaires, articulations : les manifestations possibles de la ménopause et les professionnels qui peuvent t’accompagner.', '## En bref
+- La ménopause, c’est l’**arrêt définitif des règles**, confirmé après **12 mois consécutifs sans règles** (sans contraception). Elle survient **en moyenne vers 51 ans**.
+- Ce n’est **pas une maladie** mais une étape naturelle ; elle peut pourtant s’accompagner de signes gênants, regroupés sous le nom de **syndrome climatérique**.
+- Les plus fréquents : **bouffées de chaleur** (au moins 75 % des femmes), **sueurs nocturnes**, troubles du **sommeil** et de l’**humeur**, **sécheresse vaginale**, troubles **urinaires**.
+- La plupart des femmes n’en ressentent que quelques-uns, d’intensité très variable.
+- Des solutions existent : **en parler** est la première étape.
+
+## Comprendre
+La baisse progressive des œstrogènes agit sur tout le corps. Santé.fr décrit :
+- **Les bouffées de chaleur** : sensation de chaleur brutale, parfois rougeur du visage et cœur qui s’accélère, durant de 30 secondes à 2 minutes ; souvent d’abord la nuit.
+- **Les changements du cycle** dès la périménopause : règles plus ou moins abondantes, irrégulières.
+- **Les troubles du sommeil** : liés aux sueurs nocturnes mais aussi directement aux changements hormonaux, avec fatigue, baisse de concentration et de mémoire.
+- **Les troubles de l’humeur** : sautes d’humeur, irritabilité, parfois épisodes dépressifs caractérisés.
+- **La sécheresse vaginale** : moins de lubrification, parois plus fines, qui peuvent rendre les rapports inconfortables, parfois avec une baisse du désir.
+- **Les troubles urinaires** : fuites liées à la perte de tonus du périnée (syndrome génito-urinaire de la ménopause), souvent tus alors que des traitements existent.
+- **D’autres signes** : maux de tête, fatigue, douleurs musculaires ou articulaires, prise de poids surtout au niveau du ventre, peau et cheveux plus secs.
+
+À plus long terme, la baisse des œstrogènes augmente le risque d’**ostéoporose** et de **maladies cardiovasculaires**.
+
+## Au quotidien
+- **Fais la liste de tes symptômes** et de leur retentissement (sommeil, travail, vie intime) avant le rendez-vous : l’app peut t’aider à les noter.
+- **Choisis ton interlocuteur** :
+  - le **médecin généraliste**, premier interlocuteur, pour le diagnostic, le bilan global (cœur, os) et un éventuel traitement ;
+  - le ou la **gynécologue**, pour les symptômes hormonaux, le traitement hormonal de la ménopause et le suivi gynécologique ;
+  - la **sage-femme**, pour la prévention, les conseils de mode de vie et les traitements locaux sans hormones de la sécheresse ;
+  - l’**endocrinologue** pour les situations complexes ; un diététicien ou un psychologue si besoin.
+- **Ne garde pas pour toi les fuites urinaires ou la sécheresse** : rééducation du périnée, lubrifiants, hydratants ou traitements locaux peuvent aider.
+- **Adapte ton hygiène de vie** : activité physique, alimentation riche en calcium, sommeil régulier, moins d’alcool, pas de tabac.
+
+## Questions fréquentes
+**Faut-il une prise de sang pour savoir si je suis ménopausée ?** Non, dans la tranche d’âge habituelle : le diagnostic repose sur l’absence de règles pendant 12 mois. Aucun dosage hormonal ni échographie n’est nécessaire.
+
+**Les symptômes durent-ils des années ?** Les bouffées de chaleur s’atténuent en général au bout de quelques mois, mais persistent parfois plusieurs années. Chaque femme vit la ménopause à sa façon.
+
+**Prend-on forcément du poids ?** Non. Les besoins énergétiques et la masse musculaire diminuent, et la graisse se répartit davantage sur le ventre, mais l’alimentation, l’activité et le sommeil jouent beaucoup.
+
+**Et l’endométriose ou le SOPK ?** Les symptômes de l’endométriose et du SOPK peuvent s’améliorer après la ménopause, mais le risque cardiovasculaire lié au SOPK peut persister.
+
+## Quand demander conseil
+Consulte si tes symptômes gênent ta vie quotidienne, en cas de saignement plus de 12 mois après tes dernières règles, de tristesse ou de perte d’intérêt qui durent, ou de fuites urinaires. Si tu as des idées noires, appelle le **3114**. Appelle le **15** ou le **112** en cas de douleur dans la poitrine ou de signes d’AVC.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['ménopause','symptômes ménopause','syndrome climatérique','sécheresse vaginale','fuites urinaires','douleurs articulaires','prise de poids','gynécologue']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Les symptômes de la ménopause","url":"https://www.sante.fr/menopause-perimenopause/symptomes-menopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Ménopause et périménopause","url":"https://www.sante.fr/menopause-perimenopause","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('bouffees-de-chaleur-sueurs-nocturnes-soulager', (select id from public.content_categories where slug = 'cycle-ages'), 'Bouffées de chaleur et sueurs nocturnes : ce qui peut vraiment aider', 'Comprendre les bouffées de chaleur de la (péri)ménopause, repérer leurs déclencheurs, les astuces du quotidien et les traitements dont l’efficacité est reconnue.', '## En bref
+- Les bouffées de chaleur touchent **au moins 75 %** des femmes en cours de ménopause. Elles durent **de 30 secondes à 2 minutes**, souvent d’abord la nuit (sueurs nocturnes).
+- Certains **déclencheurs** sont fréquents : plats épicés, boissons chaudes, alcool, caféine, stress.
+- Des **gestes simples** aident à les supporter : vêtements en couches, matières respirantes, eau fraîche, chambre fraîche.
+- L’**hypnose** et les **thérapies cognitivo-comportementales (TCC)** peuvent aider.
+- Le **traitement hormonal de la ménopause** est le plus efficace, réservé aux symptômes qui altèrent fortement la qualité de vie, après évaluation des bénéfices et des risques.
+
+## Comprendre
+Les bouffées de chaleur sont liées à la baisse des œstrogènes. Elles se manifestent par une vague de chaleur, parfois avec une rougeur du visage et un pouls qui s’accélère. Elles surviennent spontanément ou sont provoquées par certains déclencheurs. La nuit, elles s’accompagnent parfois de sueurs abondantes qui perturbent le sommeil.
+
+En général, les bouffées de chaleur s’atténuent au bout de quelques mois ; dans de rares cas, elles persistent plusieurs années. Leur intensité varie énormément d’une femme à l’autre.
+
+## Au quotidien
+- **Habille-toi en couches** faciles à retirer, en matières respirantes (coton, lin).
+- **Garde de l’eau fraîche** à portée de main, un éventail ou un brumisateur.
+- **Repère tes déclencheurs** en notant dans l’app quand surviennent tes bouffées (après un café, un verre de vin, un plat épicé, une réunion stressante…).
+- **La nuit** : chambre fraîche, vêtements de nuit légers, repas du soir léger, pas d’alcool ni de caféine le soir, horaires de coucher réguliers.
+- **Bouge régulièrement** : Santé.fr indique qu’un effet direct de l’activité physique sur les bouffées de chaleur n’est pas démontré, mais elle protège le cœur, les os, le sommeil et le moral.
+- **Limite l’alcool** : il peut aggraver les bouffées, perturber le sommeil et favoriser la prise de poids.
+- **Si elles deviennent invalidantes**, consulte : des traitements efficaces existent.
+
+## Questions fréquentes
+**Les plantes et compléments marchent-ils ?** Leur efficacité n’est pas démontrée de façon convaincante. Les plantes riches en phytoestrogènes (soja, trèfle rouge…) pourraient légèrement réduire les bouffées, mais les résultats sont contradictoires, et ces produits ne sont pas dénués de risques, notamment en cas d’antécédent de cancer hormonodépendant. Demande conseil à ton médecin ou à ton pharmacien.
+
+**Existe-t-il des traitements sans hormones ?** Santé.fr mentionne quelques traitements non hormonaux, dont l’intérêt est jugé limité. Ton médecin peut en discuter avec toi, notamment si le traitement hormonal t’est contre-indiqué.
+
+**Le traitement hormonal est-il dangereux ?** Il comporte des risques (cancer du sein, complications vasculaires), d’où une décision individuelle, la dose efficace la plus faible, la voie cutanée (gel, patch) privilégiée et une réévaluation au moins annuelle. Un article de l’app lui est consacré.
+
+**Et si j’ai des bouffées de chaleur avant 40 ans ?** Associées à des règles absentes ou très espacées, elles doivent faire consulter pour rechercher une insuffisance ovarienne prématurée.
+
+## Quand demander conseil
+Consulte si les bouffées de chaleur ou les sueurs nocturnes perturbent ton sommeil, ton travail ou ta vie sociale, si tu manques de sommeil depuis des semaines, ou si elles apparaissent avant 40 ans. Appelle le **15** ou le **112** si une sensation de chaleur s’accompagne d’une douleur dans la poitrine, d’un essoufflement ou d’un malaise.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['bouffées de chaleur','sueurs nocturnes','ménopause','périménopause','déclencheurs','plantes ménopause','traitement hormonal']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Vivre au mieux la ménopause","url":"https://www.sante.fr/menopause-perimenopause/vivre-au-mieux-menopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Les symptômes de la ménopause","url":"https://www.sante.fr/menopause-perimenopause/symptomes-menopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Les traitements pour la ménopause","url":"https://www.sante.fr/menopause-perimenopause/traitements-pour-menopause","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('traitement-hormonal-menopause-information', (select id from public.content_categories where slug = 'cycle-ages'), 'Traitement hormonal de la ménopause (THM) : pour qui, quels bénéfices, quels risques', 'Ce qu’est le THM, dans quelles situations il peut être proposé selon les recommandations relayées par Santé.fr, ses contre-indications, ses risques et comment se décide le traitement.', '## En bref
+- Le **traitement hormonal de la ménopause (THM)**, autrefois appelé traitement hormonal substitutif, apporte les hormones que les ovaires ne produisent plus.
+- Il est **le plus efficace contre les bouffées de chaleur et les sueurs nocturnes**, et peut aussi améliorer le sommeil, certains troubles génitaux et prévenir la perte osseuse.
+- Il est **réservé aux symptômes qui altèrent fortement la qualité de vie** : il n’est **ni obligatoire ni systématique**.
+- Il comporte des **risques** (cancer du sein, complications vasculaires), d’où une **décision individuelle**, la dose efficace la plus faible, la durée la plus courte possible et une **réévaluation au moins annuelle**.
+- La **voie cutanée** (gel ou patch) est à privilégier.
+
+## Comprendre
+Le THM associe en général un **œstrogène** (le plus souvent l’estradiol) et, chez les femmes qui ont encore leur utérus, un **progestatif** qui protège la muqueuse de l’utérus : les œstrogènes seuls augmentent le risque de cancer de l’endomètre. Il peut être pris selon un schéma cyclique (avec des saignements chaque mois) ou continu (sans règles).
+
+Selon les recommandations de la HAS (2025) relayées par Santé.fr :
+- **Indication principale** : des troubles importants, notamment des bouffées de chaleur, retentissant fortement sur la qualité de vie, si la femme le souhaite, après une information claire sur les risques.
+- **Os** : chez les femmes à risque élevé de fracture, le THM n’est envisagé qu’en cas d’intolérance ou de contre-indication aux traitements de référence de l’ostéoporose.
+- **Suivi** : réévaluation par le médecin au moins une fois par an.
+
+Les **contre-indications** citées : antécédent personnel de maladie cardiovasculaire, cancer du sein ou de l’utérus, saignements vaginaux anormaux non expliqués.
+
+Santé.fr indique que le rapport bénéfices-risques est généralement favorable s’il est **débuté avant 60 ans ou dans les 10 ans** suivant la ménopause, en l’absence de contre-indication. Le risque de cancer du sein augmente surtout **au-delà de 5 ans** et par **voie orale**. La voie cutanée expose à moins de risque de caillot et d’AVC.
+
+## Au quotidien
+- **Prépare la consultation** : tes symptômes et leur impact, tes antécédents personnels et familiaux (cancer du sein, phlébite, AVC, infarctus), ton tabagisme, tes dépistages.
+- **Fais l’examen clinique et gynécologique** proposé avant de commencer, et garde tes dépistages du cancer du sein à jour.
+- **Fais-toi expliquer** pourquoi le traitement est proposé dans ton cas, ses bénéfices attendus et ses risques.
+- **Sois attentive à certains progestatifs** : l’ANSM a recommandé de ne plus prescrire la chlormadinone et le nomégestrol dans le THM, et d’autres progestatifs font l’objet d’une surveillance en raison d’un risque de **méningiome**. Signale à ton médecin des maux de tête inhabituels, des troubles de la vue, de la parole, de la mémoire ou de l’audition, des vertiges, des convulsions ou une faiblesse.
+- **N’arrête pas et ne modifie pas ton traitement seule** : parles-en à ton médecin.
+- **Méfie-toi des promesses** des réseaux sociaux : aucune étude solide ne montre que la testostérone soulage les symptômes de la ménopause ; son seul bénéfice démontré concerne une baisse persistante du désir sexuel source de souffrance.
+
+## Questions fréquentes
+**Peut-on le commencer dès les premiers signes ?** Oui, selon Santé.fr, il peut être débuté tôt, dès les premiers signes de ménopause, après un examen clinique et gynécologique complet tenant compte des antécédents familiaux.
+
+**Combien de temps peut-on le prendre ?** Tant que les symptômes altèrent la qualité de vie, avec une réévaluation au moins annuelle de l’intérêt du traitement.
+
+**Et la sécheresse vaginale seule ?** Des traitements locaux (crèmes, ovules, anneau à base d’œstrogènes) existent, avec un passage dans le sang jugé négligeable, ainsi que des hydratants et lubrifiants en vente libre.
+
+**Les hormones « naturelles » ou « bio-identiques » sont-elles sans danger ?** Aucun traitement hormonal n’est dénué de risque. Les plantes à phytoestrogènes elles-mêmes peuvent présenter des risques proches de ceux des œstrogènes : elles s’utilisent sous contrôle médical.
+
+## Quand demander conseil
+Consulte avant de commencer, puis au moins une fois par an. Consulte rapidement en cas de saignement inattendu, de grosseur ou d’écoulement d’un sein, de douleur ou de gonflement d’un mollet, ou de maux de tête inhabituels. Appelle le **15** ou le **112** en cas de douleur dans la poitrine, d’essoufflement brutal ou de signes d’AVC (visage déformé, bras faible, troubles de la parole).
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['traitement hormonal de la ménopause','THM','THS','œstrogènes','progestérone','cancer du sein','gel patch','méningiome']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Les traitements pour la ménopause","url":"https://www.sante.fr/menopause-perimenopause/traitements-pour-menopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Idées reçues sur la ménopause","url":"https://www.sante.fr/menopause-perimenopause/idees-recues-sur-menopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Ménopause et périménopause","url":"https://www.sante.fr/menopause-perimenopause","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('apres-la-menopause-proteger-os-et-coeur', (select id from public.content_categories where slug = 'cycle-ages'), 'Après la ménopause : prendre soin de tes os et de ton cœur', 'Pourquoi le risque d’ostéoporose et de maladies cardiovasculaires augmente après la ménopause, et les repères d’activité physique, d’alimentation et de suivi qui aident à se protéger.', '## En bref
+- La baisse des œstrogènes **accélère la perte osseuse** : le risque d’**ostéoporose** et de **fracture** augmente après la ménopause.
+- Le **risque cardiovasculaire** augmente aussi : dix ans après la ménopause, il devient aussi élevé chez les femmes que chez les hommes du même âge, selon Santé.fr.
+- Repères d’activité : **au moins 30 minutes d’activité dynamique par jour**, du **renforcement musculaire** et des exercices d’**équilibre et de souplesse** chaque semaine, et **moins de temps assise**.
+- **Calcium**, **vitamine D**, **arrêt du tabac**, **peu d’alcool** et un **suivi médical régulier** complètent la protection.
+- Il n’est **jamais trop tard** pour commencer.
+
+## Comprendre
+Les œstrogènes participent à l’entretien de l’os et à la protection des vaisseaux. Quand ils diminuent, l’os se renouvelle moins bien et peut devenir plus fragile : c’est l’ostéoporose, qui expose à des fractures en cas de chute. En parallèle, la tension, le cholestérol, la glycémie et la graisse abdominale ont tendance à augmenter, ce qui accroît le risque d’infarctus et d’AVC.
+
+Santé publique France (Manger Bouger) rappelle que l’activité physique ralentit la perte de densité osseuse, voire l’augmente, et aide à prévenir les maladies cardiovasculaires, le diabète de type 2 et certains cancers. Les activités avec impacts, comme le step ou la course, sont particulièrement intéressantes pour les os.
+
+Une **ostéodensitométrie** (mesure de la densité osseuse) peut être prescrite, notamment en cas d’antécédent de fracture, de tabagisme, de faible poids (IMC inférieur à 19) ou de traitements qui fragilisent les os.
+
+## Au quotidien
+- **Bouge chaque jour** : marche rapide, escaliers, jardinage, danse, vélo… au moins 30 minutes d’activité dynamique.
+- **Renforce tes muscles** plusieurs fois par semaine : porter tes courses, monter les escaliers, exercices avec le poids du corps.
+- **Travaille l’équilibre et la souplesse** deux fois par semaine (yoga, tai-chi, étirements) : c’est aussi une façon de prévenir les chutes.
+- **Lève-toi régulièrement** : ne reste pas assise des heures d’affilée, surtout devant les écrans.
+- **Mange varié** : légumes, fruits, céréales complètes, légumineuses, poissons, assez de protéines pour préserver tes muscles, et des aliments riches en calcium (produits laitiers, certaines eaux minérales). La vitamine D est aussi indispensable aux os ; parles-en à ton médecin.
+- **Arrête le tabac**, qui augmente les risques cardiovasculaires et d’ostéoporose ; limite l’alcool (au maximum 2 verres par jour et pas tous les jours, sachant que ces repères ne correspondent pas à une consommation dénuée de risque).
+- **Fais le point avec ton médecin** : tension, poids, cholestérol, glycémie, et dépistages des cancers du sein, du col et du côlon. « Mon bilan prévention » est proposé entre 45 et 50 ans.
+- **Si tu reprends le sport**, vas-y progressivement.
+
+## Questions fréquentes
+**Le traitement hormonal protège-t-il les os ?** Il peut prévenir la perte osseuse, mais chez les femmes à risque élevé de fracture, il n’est envisagé qu’en cas d’intolérance ou de contre-indication aux traitements de référence de l’ostéoporose. La décision se prend avec ton médecin.
+
+**Je n’ai jamais fait de sport, est-ce trop tard ?** Non. Un peu d’activité est déjà bénéfique, et plus il y en a, mieux c’est.
+
+**Dois-je prendre des compléments de calcium ?** Commence par l’alimentation. Les compléments ne se prennent pas au hasard : demande l’avis de ton médecin ou de ton pharmacien.
+
+**Comment savoir si mes os sont fragiles ?** Ton médecin évalue ton risque et peut prescrire une ostéodensitométrie si tu as des facteurs de risque.
+
+## Quand demander conseil
+Consulte en cas de fracture survenue après une simple chute, ou pour faire le point sur ton risque cardiovasculaire. Appelle le **15** ou le **112** en cas de douleur dans la poitrine, d’essoufflement brutal, ou de signes d’AVC : visage déformé, bras ou jambe qui faiblit, troubles de la parole.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['ostéoporose','ménopause','santé des os','calcium','vitamine D','maladies cardiovasculaires','activité physique','ostéodensitométrie']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu Santé publique France – Manger Bouger) — Activité physique pour les femmes à la ménopause","url":"https://www.sante.fr/activite-physique-pour-les-femmes-la-menopause","consulted_on":"2026-10-27","published":"2022-10-18"},{"label":"Santé.fr — Vivre au mieux la ménopause","url":"https://www.sante.fr/menopause-perimenopause/vivre-au-mieux-menopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Ménopause et périménopause","url":"https://www.sante.fr/menopause-perimenopause","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('menopause-sommeil-humeur-moral', (select id from public.content_categories where slug = 'cycle-ages'), 'Ménopause : retrouver le sommeil et prendre soin de ton moral', 'Insomnie, réveils nocturnes, irritabilité, anxiété ou déprime autour de la ménopause : comprendre ce qui se passe et ce qui peut aider, et quand consulter.', '## En bref
+- Autour de la ménopause, le sommeil peut être perturbé par les **sueurs nocturnes**, mais aussi **directement par les changements hormonaux**.
+- Le manque de sommeil retentit sur la **vigilance**, la **concentration**, la **mémoire** et l’**humeur**.
+- **Sautes d’humeur, irritabilité, anxiété** sont fréquentes ; des **épisodes dépressifs** peuvent aussi survenir, surtout si tu en as déjà vécu.
+- Une routine de sommeil, l’activité physique et le lien social aident ; les **thérapies cognitivo-comportementales (TCC)** sont efficaces contre l’insomnie.
+- Une **tristesse ou une perte d’intérêt qui durent** doivent faire consulter sans attendre.
+
+## Comprendre
+Les fluctuations des œstrogènes et de la progestérone influencent le sommeil et les émotions. À cela s’ajoutent les bouffées de chaleur qui réveillent, la fatigue qui s’accumule et, souvent, une période de vie chargée : enfants ados ou qui partent, parents vieillissants, pression professionnelle. Santé.fr rappelle que ces bouleversements personnels peuvent aggraver les troubles de l’humeur.
+
+Pour autant, une dépression ne doit pas être automatiquement attribuée à la ménopause : elle mérite d’être reconnue et soignée comme telle. Santé.fr précise qu’en périménopause, un traitement hormonal peut être envisagé au cas par cas, notamment en cas d’état dépressif sans autre cause identifiée.
+
+## Au quotidien
+- **Garde des horaires réguliers** de coucher et de lever, même le week-end.
+- **Prépare une chambre fraîche**, des vêtements de nuit légers, une couette adaptée ; garde de l’eau fraîche près du lit.
+- **Allège le dîner** et évite l’alcool et la caféine le soir.
+- **Bouge dans la journée** : l’activité physique régulière favorise le sommeil et réduit l’anxiété.
+- **Si tu ne dors pas**, plutôt que de rester des heures au lit à ruminer, lève-toi pour une activité calme et reviens te coucher quand la fatigue revient.
+- **Ménage-toi des moments de détente** : relaxation, respiration, méditation, yoga, selon ce qui te convient.
+- **Garde du lien** : vie sociale, échanges avec d’autres femmes qui traversent la même étape, parler de ce que tu ressens à tes proches.
+- **Note ton sommeil et ton humeur** dans l’app : tu repéreras mieux ce qui t’aide, et tu pourras en parler précisément avec ton médecin.
+
+## Questions fréquentes
+**Les somnifères sont-ils une solution ?** En cas d’insomnie persistante, consulte : Santé.fr cite les TCC parmi les traitements efficaces. Les médicaments éventuels se discutent avec ton médecin.
+
+**Je m’énerve pour un rien, est-ce la ménopause ?** L’irritabilité est fréquente avant et pendant la ménopause, liée aux hormones et au manque de sommeil. Si elle pèse sur ta vie ou tes relations, parles-en.
+
+**Mes trous de mémoire m’inquiètent.** Le manque de sommeil peut réduire la concentration et la mémoire. Si ces difficultés persistent ou s’aggravent, fais le point avec ton médecin.
+
+**Le traitement hormonal peut-il aider ?** Il peut améliorer le sommeil en réduisant les bouffées de chaleur, mais il se décide au cas par cas, selon les bénéfices et les risques.
+
+## Quand demander conseil
+Consulte si tu dors mal depuis plusieurs semaines, si tu te sens triste, anxieuse ou sans envie la plupart du temps depuis plus de deux semaines, ou si ton humeur pèse sur ta vie familiale ou professionnelle. Si tu as des idées noires ou envie de mourir, appelle le **3114**, gratuit, jour et nuit. En cas de danger immédiat, appelle le **15** ou le **112**.
+
+_Cet article t’informe ; il ne remplace pas l’avis d’un médecin, d’une sage-femme ou d’un·e gynécologue._', array['avoid']::text[], null, null, null, null, false, array['ménopause','insomnie','sommeil','humeur','irritabilité','dépression','anxiété','TCC']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Vivre au mieux la ménopause","url":"https://www.sante.fr/menopause-perimenopause/vivre-au-mieux-menopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Les symptômes de la ménopause","url":"https://www.sante.fr/menopause-perimenopause/symptomes-menopause","consulted_on":"2026-10-27"},{"label":"Santé.fr — Idées reçues sur la ménopause","url":"https://www.sante.fr/menopause-perimenopause/idees-recues-sur-menopause","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('pertes-vaginales-hors-grossesse-reperes-couleur-odeur', (select id from public.content_categories where slug = 'sante-intime'), 'Pertes vaginales : les repères pour savoir ce qui doit faire consulter', 'Couleur, texture, odeur, variations au fil du cycle : ce que disent les sources officielles sur les pertes blanches habituelles et sur les signes qui évoquent une infection.', '## En bref
+- Les pertes blanches sont des **sécrétions naturelles** du vagin et du col de l’utérus : elles apparaissent quelques mois avant les premières règles et disparaissent à la ménopause.
+- Elles **changent au fil du cycle** : plus filantes et abondantes autour de l’ovulation (comme du blanc d’œuf cru), plus épaisses avant les règles.
+- Selon le CNGOF, des pertes habituelles ne s’accompagnent **ni de brûlures, ni de démangeaisons, ni de mauvaise odeur**.
+- Des pertes en grumeaux, mousseuses, grisâtres, jaunes ou vertes, malodorantes, ou associées à des brûlures, démangeaisons ou douleurs méritent une **consultation rapide**.
+
+## Comprendre
+Tes pertes viennent de deux endroits : la muqueuse du vagin et la glaire fabriquée par le col de l’utérus. Elles sont pilotées par tes hormones. Fil Santé Jeunes rappelle qu’elles ont plusieurs rôles : aider le vagin à se nettoyer tout seul en éliminant les cellules mortes, le garder humide, le protéger des bactéries et virus et entretenir l’équilibre de la flore vaginale. Elles sont généralement blanches ou jaune pâle, transparentes ou un peu laiteuses, et le plus souvent sans odeur marquée. Leur quantité et leur aspect varient d’une personne à l’autre.
+
+Au cours du cycle, le Collège national des gynécologues et obstétriciens français (CNGOF) décrit ces variations : avant l’ovulation, le col produit une glaire filante ; au milieu du cycle, elle ressemble à du blanc d’œuf et peut être abondante ; après l’ovulation, elle perd sa filance. Sous pilule, la glaire est souvent moins abondante et moins filante, ce qui peut surprendre quand on arrête sa contraception. Après la ménopause, les sécrétions diminuent.
+
+À ne pas confondre : la lubrification qui apparaît lors de l’excitation sexuelle est un autre liquide que les pertes blanches.
+
+Le vagin abrite une flore équilibrée. Elle peut être modifiée par des antibiotiques, des changements hormonaux, une hygiène trop agressive ou un microbe transmis lors d’un rapport. C’est là que les pertes peuvent changer d’aspect.
+
+## Au quotidien
+**Quelques repères d’aspect décrits par l’Assurance Maladie et le CNGOF** (ils orientent, ils ne remplacent pas un examen) :
+- pertes blanches, épaisses, comme du « lait caillé » ou du yaourt, avec démangeaisons : évoquent une **mycose** ;
+- pertes fluides, abondantes, grisâtres, avec une odeur de poisson : évoquent une **vaginose bactérienne** ;
+- pertes jaunâtres ressemblant à du pus, avec brûlures en urinant : peuvent évoquer une **IST** comme le gonocoque ou la chlamydia ;
+- pertes verdâtres et mousseuses : peuvent évoquer un parasite, le trichomonas.
+
+**Prendre soin de toi sans perturber la flore :**
+- une toilette uniquement externe, avec un produit doux et non parfumé ;
+- pas de douche vaginale, même si tu trouves l’odeur gênante : cela risque d’aggraver les choses ;
+- des sous-vêtements en coton ;
+- noter dans ton calendrier de cycle les jours où les pertes changent : tu repéreras plus facilement ce qui est habituel pour toi.
+
+## Questions fréquentes
+**Mes pertes sont plus abondantes certains jours, est-ce inquiétant ?** Les variations au fil du cycle sont décrites par les sources : autour de l’ovulation, elles peuvent être abondantes et filantes. Ce qui doit t’alerter, c’est surtout l’apparition d’odeur, de démangeaisons, de brûlures ou de douleurs.
+
+**Des pertes jaunes, est-ce forcément une infection ?** Fil Santé Jeunes décrit des pertes habituelles blanches ou jaune pâle. En revanche, des pertes franchement jaunes, vertes ou purulentes, surtout avec d’autres signes, justifient de consulter.
+
+**Les pertes abondantes sont-elles un signe de grossesse ?** Fil Santé Jeunes précise qu’elles ne sont pas un signe fiable de grossesse. En cas de doute, un test de grossesse est plus parlant.
+
+**Puis-je porter un protège-slip tous les jours ?** Les sources consultées insistent surtout sur le fait d’éviter ce qui irrite (frottements, produits parfumés, matières synthétiques). Si tu en utilises, choisis-les non parfumés et change-les souvent.
+
+## Quand demander conseil
+Consulte dans les jours qui viennent ton ou ta médecin, une sage-femme ou un ou une gynécologue si tes pertes changent d’odeur, de couleur ou de texture, ou s’accompagnent de démangeaisons, brûlures ou douleurs pendant les rapports. Consulte dans la journée en cas de douleurs dans le bas du ventre, de brûlures en urinant ou si tu es peut-être enceinte. Fièvre avec douleurs pelviennes, douleur brutale et intense ou malaise : appelle le **15** ou le **112**. Une gêne qui t’empêche de vivre normalement n’est pas à subir.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['pertes blanches','pertes vaginales','leucorrhées','glaire cervicale','pertes jaunes','pertes vertes','odeur intime','pertes marron','sécrétions']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu CNGOF) — Faire la différence entre les pertes blanches, les infections et mycoses génitales","url":"https://www.sante.fr/faire-la-difference-entre-les-pertes-blanches-les-infections-et-mycoses-genitales","consulted_on":"2026-10-27","published":"2019-03-26"},{"label":"Fil Santé Jeunes — Les pertes blanches : c’est naturel !","url":"https://www.filsantejeunes.com/les-pertes-blanches-5690","consulted_on":"2026-10-27","published":"2021-10-23"},{"label":"ameli.fr — Reconnaître une vaginite (définition, symptômes, facteurs favorisants)","url":"https://www.ameli.fr/assure/sante/themes/vaginite/definition-symptomes-facteurs-favorisants","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('mycose-vaginale-reconnaitre-soigner-eviter-recidives', (select id from public.content_categories where slug = 'sante-intime'), 'Mycose vaginale : la reconnaître, la soigner, éviter les récidives', 'Démangeaisons, pertes en « lait caillé », brûlures : comment reconnaître une mycose vaginale, quand l’automédication est possible et quand il vaut mieux consulter.', '## En bref
+- La mycose vaginale est due à la prolifération d’un champignon, **Candida albicans**, habituellement présent dans le vagin : c’est un **déséquilibre de la flore**, pas une IST.
+- Signes typiques : **démangeaisons**, vulve rouge et irritée, **pertes blanches épaisses en grumeaux**, parfois brûlures en urinant et douleurs pendant les rapports.
+- Si tu as **déjà eu une mycose** et que tu reconnais exactement les mêmes symptômes, l’Assurance Maladie indique qu’un traitement local sans ordonnance est possible, sur conseil du pharmacien.
+- Première fois, doute, grossesse, diabète, pertes odorantes ou colorées, récidives : **consulte**.
+
+## Comprendre
+L’Assurance Maladie explique que les mycoses sont les plus fréquentes des vaginites, et QuestionSexualité (Santé publique France) estime qu’environ 75 % des femmes en auront au moins une dans leur vie. Le champignon en cause vit normalement dans le vagin sans poser de problème ; il prolifère quand l’équilibre de la flore change.
+
+Plusieurs situations peuvent favoriser une mycose : un traitement antibiotique, la grossesse, certaines contraceptions hormonales, un diabète mal équilibré, une baisse des défenses immunitaires, mais aussi une toilette intime trop fréquente ou des douches vaginales, des vêtements serrés ou synthétiques. Une mycose ne retarde pas les règles : selon le CNGOF, si tes règles sont perturbées, il faut consulter pour en chercher la cause.
+
+## Au quotidien
+**Si tu reconnais une mycose déjà connue** (et que tu n’es pas enceinte), l’Assurance Maladie donne ces repères :
+- demande conseil à ton pharmacien : il existe des traitements locaux (ovules, capsules, comprimés gynécologiques, crèmes) sans ordonnance ;
+- les ovules et capsules se placent de préférence le soir au coucher ;
+- l’amélioration peut prendre 24 à 48 heures : une absence d’effet immédiat n’est pas forcément un échec ;
+- évite les rapports tant que le traitement n’a pas agi, ou utilise un préservatif.
+
+**Pendant et après la crise :**
+- toilette uniquement externe, une à deux fois par jour, avec un produit doux ;
+- sous-vêtements en coton, vêtements pas trop serrés à l’entrejambe ;
+- ne reste pas longtemps dans un maillot de bain mouillé ;
+- sèche bien la vulve après la toilette ;
+- si tu as eu des mycoses, évite les crèmes spermicides, qui peuvent irriter.
+
+**Côté partenaire :** QuestionSexualité indique que le risque de mycose du gland est plus élevé chez les partenaires de femmes ayant une mycose vaginale. Si ton ou ta partenaire a des rougeurs, démangeaisons ou un dépôt blanchâtre, il ou elle peut consulter aussi.
+
+## Questions fréquentes
+**Combien de temps dure une mycose ?** Selon le CNGOF, avec un traitement adapté, les troubles régressent rapidement et la guérison survient en général en une huitaine de jours. Non traitée, elle peut durer longtemps.
+
+**À partir de quand parle-t-on de mycoses à répétition ?** À partir de quatre épisodes par an, selon QuestionSexualité. Le CNGOF recommande alors de rechercher un facteur favorisant (comme un diabète) ou un autre foyer, et d’adapter le traitement avec un professionnel.
+
+**Faut-il faire un prélèvement ?** Pas toujours. Le CNGOF indique qu’en cas de doute sur une infection, des prélèvements permettent d’identifier le germe et d’adapter le traitement ; c’est aussi utile en cas de récidives.
+
+**Les probiotiques aident-ils ?** QuestionSexualité indique qu’ils peuvent être recommandés en prévention ; demandes-en l’intérêt à ton médecin ou ton pharmacien.
+
+## Quand demander conseil
+Consulte dans les jours qui viennent s’il s’agit d’une première fois, si tu as un doute, si les pertes sont jaunes, vertes, mousseuses ou malodorantes, si les symptômes persistent après le traitement ou reviennent vite, ou si tu as une maladie chronique comme un diabète. Consulte **dans la journée** si tu es enceinte ou penses l’être, ou si tu as des douleurs dans le ventre ou des brûlures en urinant. Fièvre avec douleurs pelviennes : appelle le **15** ou le **112**. Des démangeaisons qui t’empêchent de dormir ou de vivre normalement ne sont pas à subir.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['mycose','mycose vaginale','candidose','candida','démangeaisons','ovule','mycose à répétition','lait caillé','vulvovaginite']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Mycose vaginale et autres vaginites : que faire ?","url":"https://www.ameli.fr/assure/sante/themes/vaginite/que-faire-quand-consulter","consulted_on":"2026-10-27","published":"2024-12-23"},{"label":"QuestionSexualité (Santé publique France) — Tout ce qu’il faut savoir sur la mycose vaginale et la mycose du gland","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-maladies-de-la-sphere-sexuelle/que-sont-les-mycoses-genitales","consulted_on":"2026-10-27"},{"label":"Santé.fr (contenu CNGOF) — Faire la différence entre les pertes blanches, les infections et mycoses génitales","url":"https://www.sante.fr/faire-la-difference-entre-les-pertes-blanches-les-infections-et-mycoses-genitales","consulted_on":"2026-10-27","published":"2019-03-26"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('vaginose-bacterienne-odeur-pertes-grises-que-faire', (select id from public.content_categories where slug = 'sante-intime'), 'Vaginose bactérienne : odeur de poisson, pertes grisâtres, que faire ?', 'La vaginose bactérienne est un déséquilibre de la flore vaginale : comment la distinguer d’une mycose, pourquoi consulter et comment limiter les récidives.', '## En bref
+- La vaginose bactérienne vient d’un **déséquilibre de la flore vaginale** : une bactérie normalement présente, *Gardnerella vaginalis*, prolifère.
+- Signes décrits par le CNGOF : **pertes abondantes, fluides, grisâtres**, parfois bulleuses, avec une **odeur de poisson**.
+- Contrairement à la mycose, elle se soigne avec un **antibiotique prescrit** par un professionnel : l’automédication n’est pas adaptée.
+- Une flore respectée (pas de douche vaginale, toilette externe douce) aide à **limiter les récidives**.
+
+## Comprendre
+Ton vagin est protégé par une flore dominée par des bactéries appelées lactobacilles (ou bacilles de Döderlein). Elles maintiennent un milieu acide qui empêche d’autres germes de se multiplier. Quand cet équilibre se rompt, d’autres bactéries prennent le dessus : c’est la vaginose.
+
+L’Assurance Maladie liste ce qui peut perturber la flore : un excès d’hygiène intime, les douches vaginales et produits introduits dans le vagin, certains produits irritants (gels douche, savons parfumés), les antibiotiques, ou encore les rapports sexuels. Pour les vaginites d’origine bactérienne, elle décrit des pertes fluides, abondantes, grisâtres ou jaunâtres et malodorantes.
+
+La vaginose se distingue de la mycose : avec une mycose, les pertes sont plutôt blanches, épaisses, en grumeaux, et ce sont les démangeaisons qui dominent. Avec une vaginose, c’est surtout l’odeur qui frappe. Selon la page du CNGOF publiée sur Santé.fr, la vaginose ne nécessite pas de traiter le partenaire, à la différence des IST comme la chlamydia ou le trichomonas, pour lesquelles le ou les partenaires doivent être traités en même temps.
+
+## Au quotidien
+**Avant la consultation :**
+- évite la toilette intime juste avant le rendez-vous : le médecin ou la sage-femme pourra observer les pertes, et un prélèvement vaginal pourra identifier le germe ;
+- note depuis quand tu as les symptômes, s’ils reviennent après les règles ou les rapports, et si tu as pris récemment des antibiotiques.
+
+**Pendant le traitement :**
+- prends le traitement prescrit en entier, même si l’odeur disparaît vite ;
+- lave uniquement l’extérieur, deux fois par jour au plus, avec un produit doux ;
+- si tu as des rapports, utilise un préservatif tant que le diagnostic n’est pas posé : une IST peut donner des signes proches.
+
+**Pour limiter les récidives (repères de l’Assurance Maladie) :**
+- pas de douche vaginale ni de produit « purifiant » intime ;
+- un savon doux, non parfumé, pas d’antiseptique moussant ;
+- essuie-toi d’avant en arrière après être allée aux toilettes ;
+- change souvent de protection pendant les règles ;
+- sous-vêtements en coton plutôt que synthétiques.
+
+## Questions fréquentes
+**L’odeur revient régulièrement : que faire ?** Les vaginites peuvent récidiver. Note quand les symptômes reviennent (après les règles, après un rapport, après des antibiotiques) et parles-en : un traitement adapté et la recherche d’un facteur favorisant peuvent être discutés.
+
+**Une douche vaginale peut-elle enlever l’odeur ?** Non : l’Assurance Maladie déconseille les douches vaginales, qui perturbent la flore protectrice et favorisent les vaginites. Mieux vaut consulter.
+
+**Est-ce une infection sexuellement transmissible ?** Non, c’est un déséquilibre de la flore. Mais comme des IST peuvent donner des pertes malodorantes, le diagnostic par un professionnel est important, et un dépistage peut être proposé.
+
+**Et si je suis enceinte ?** L’Assurance Maladie recommande de consulter dans la journée en cas de vaginite pendant la grossesse, car certaines infections peuvent avoir des conséquences pour le bébé.
+
+## Quand demander conseil
+Consulte ton ou ta médecin, une sage-femme ou un ou une gynécologue dans les jours qui viennent en cas de pertes malodorantes, grisâtres, jaunes ou vertes. Consulte **dans la journée** si tu es enceinte ou peut-être enceinte, ou si tu as des douleurs dans le ventre ou des brûlures en urinant. Fièvre avec douleurs pelviennes : appelle le **15** ou le **112**. Une gêne qui revient sans cesse et pèse sur ta vie intime mérite une vraie prise en charge.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['vaginose','vaginose bactérienne','gardnerella','odeur de poisson','pertes grises','flore vaginale','lactobacilles','mauvaise odeur intime']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu CNGOF) — Faire la différence entre les pertes blanches, les infections et mycoses génitales","url":"https://www.sante.fr/faire-la-difference-entre-les-pertes-blanches-les-infections-et-mycoses-genitales","consulted_on":"2026-10-27","published":"2019-03-26"},{"label":"ameli.fr — Mycose vaginale et autres vaginites : consultation et traitement","url":"https://www.ameli.fr/assure/sante/themes/vaginite/consultation-traitement","consulted_on":"2026-10-27","published":"2024-12-23"},{"label":"ameli.fr — Comment prévenir la vaginite et ses récidives ?","url":"https://www.ameli.fr/assure/sante/themes/vaginite/prevention","consulted_on":"2026-10-27","published":"2024-08-13"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('hygiene-intime-gestes-a-eviter-douche-vaginale', (select id from public.content_categories where slug = 'sante-intime'), 'Hygiène intime : les bons gestes et ce qu’il vaut mieux éviter', 'Le vagin se nettoie tout seul : la routine conseillée par les sources officielles, et les pratiques (douche vaginale, produits parfumés, « purifiants ») qui favorisent les infections.', '## En bref
+- Le vagin **se nettoie tout seul** grâce à ses sécrétions : la toilette concerne uniquement la **vulve**, à l’extérieur.
+- Une toilette **une fois par jour** (deux au maximum selon l’Assurance Maladie), avec un savon **doux, non parfumé**, au pH neutre ou acide.
+- À éviter : **douches vaginales**, lavage à l’intérieur du vagin, antiseptiques moussants, parfums, talc, déodorants intimes, produits « purificateurs ».
+- Trop d’hygiène fragilise la flore et **favorise mycoses et vaginoses**.
+
+## Comprendre
+Le vagin abrite une flore protectrice, surtout composée de lactobacilles, qui maintient un milieu acide défavorable aux germes. QuestionSexualité (Santé publique France) rappelle que toute intervention qui détruit cette flore favorise les infections et les mycoses. L’Assurance Maladie cite l’excès d’hygiène intime, les produits irritants, les douches vaginales et les produits introduits dans le vagin parmi les facteurs qui favorisent les vaginites.
+
+Autrement dit, se laver plus souvent ou avec des produits plus forts ne rend pas « plus propre » : cela peut au contraire provoquer irritations, odeurs et infections. Une légère odeur personnelle et des pertes qui varient au fil du cycle font partie du fonctionnement du corps.
+
+## Au quotidien
+**La routine décrite par QuestionSexualité :**
+1. Lave la vulve d’avant en arrière.
+2. Lave ensuite la région anale, sans revenir vers la vulve.
+3. Rince soigneusement.
+4. Sèche en douceur, sans frotter, avec ta serviette personnelle.
+
+**Choisir ton produit (sans marque, juste des critères) :**
+- un savon doux ou un gel lavant non parfumé, au pH neutre ou acide ;
+- pas d’antiseptique moussant au quotidien ;
+- si un produit pique ou irrite, arrête-le : l’Assurance Maladie conseille de supprimer les produits qui irritent.
+
+**Les autres gestes qui comptent (Assurance Maladie) :**
+- essuie-toi d’avant en arrière après les toilettes ;
+- change souvent de tampon ou de protection pendant les règles ;
+- préfère les sous-vêtements en coton et évite les vêtements très serrés ;
+- ne reste pas longtemps en maillot de bain mouillé ;
+- si tu utilises un diaphragme, lave-le à l’eau savonneuse après chaque utilisation, sans désinfectant, puis rince-le et sèche-le ;
+- si un lubrifiant, un spermicide ou un préservatif t’irrite, parles-en : il existe d’autres options.
+
+**Après un rapport :** une toilette externe simple suffit ; le vagin n’a pas besoin d’être lavé à l’intérieur.
+
+## Questions fréquentes
+**J’ai une odeur qui me gêne, une douche vaginale peut-elle aider ?** Non. QuestionSexualité déconseille la douche vaginale même en cas d’odeur désagréable ou de pertes inhabituelles, car elle risque d’aggraver la situation. Une odeur forte et nouvelle mérite plutôt l’avis d’un médecin ou d’un pharmacien.
+
+**Les lingettes intimes, c’est une bonne idée ?** Les sources consultées ne les recommandent pas pour un usage quotidien. Si tu en utilises ponctuellement, choisis-les sans parfum et arrête en cas d’irritation.
+
+**Les produits « détox » ou « purifiants » vaginaux vendus en ligne ?** QuestionSexualité les déconseille fortement. Rien ne doit être introduit dans le vagin pour le « nettoyer ».
+
+**Et pour une petite fille ?** L’Assurance Maladie note que les muqueuses des fillettes sont fragiles : une toilette externe douce et bien rincée, et apprendre à s’essuyer d’avant en arrière, limitent les irritations.
+
+## Quand demander conseil
+Consulte si tu as des démangeaisons, des brûlures, des pertes inhabituelles (odeur, couleur, texture) ou des douleurs pendant les rapports : l’hygiène seule ne règle pas une infection. Chez une enfant, des pertes malodorantes peuvent venir d’un petit objet introduit dans le vagin : l’Assurance Maladie recommande de consulter dans la journée. Fièvre avec douleurs pelviennes : **15** ou **112**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['hygiène intime','toilette intime','douche vaginale','savon intime','flore vaginale','odeur','protège-slip','vulve','pH']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Hygiène intime féminine : quelle routine adopter","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/l-hygiene-et-le-suivi-medical/hygiene-intime-feminine-quelle-routine-adopter","consulted_on":"2026-10-27"},{"label":"ameli.fr — Comment prévenir la vaginite et ses récidives ?","url":"https://www.ameli.fr/assure/sante/themes/vaginite/prevention","consulted_on":"2026-10-27","published":"2024-08-13"},{"label":"ameli.fr — Reconnaître une vaginite (définition, symptômes, facteurs favorisants)","url":"https://www.ameli.fr/assure/sante/themes/vaginite/definition-symptomes-facteurs-favorisants","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('premiere-consultation-gynecologique-deroulement-confidentialite', (select id from public.content_categories where slug = 'sante-intime'), 'Première consultation gynécologique : comment ça se passe ?', 'Quand y aller, avec qui, ce qui se dit, l’examen qu’on peut refuser, la confidentialité même quand on est mineure : tout pour aborder sereinement son premier rendez-vous.', '## En bref
+- Il n’y a **pas d’âge imposé** : tu peux y aller dès que tu as une question (contraception, règles, corps, sexualité, IST) ou une inquiétude. QuestionSexualité conseille une première visite **avant 25 ans**, âge du premier frottis.
+- Tu peux voir un ou une **gynécologue**, mais aussi un **médecin généraliste** ou une **sage-femme**.
+- Le premier rendez-vous est surtout **une discussion**. Selon Fil Santé Jeunes, il n’y a en général pas d’examen lors de la première consultation, et **tu peux refuser** d’être examinée.
+- La consultation est **confidentielle**, y compris pour les mineures.
+
+## Comprendre
+Fil Santé Jeunes décrit la première consultation comme un temps d’échange : le ou la professionnelle se présente, t’explique le déroulement, puis te pose des questions sur ta santé, tes antécédents personnels et familiaux, tes habitudes (tabac, alimentation, vie sexuelle) et d’éventuels traitements. Tu peux parler de tout : ton corps, tes règles, ta contraception, ta sexualité, tes doutes.
+
+L’examen gynécologique n’est pas automatique. QuestionSexualité rappelle que tu n’es pas obligée de te déshabiller ni d’être examinée, qu’un examen n’est pas toujours utile et que tu peux le refuser. Quand il est proposé, c’est quand tu te sens prête, à ta demande ou sur proposition du ou de la professionnelle. Tu peux demander à voir le matériel avant, et dire si tu te sens gênée.
+
+Sur la confidentialité, Fil Santé Jeunes est clair : ce que tu dis reste entre toi et le ou la professionnelle, même si tu es mineure. Rien n’est transmis à tes parents, sauf si tu es en danger. Les moins de 18 ans n’ont pas besoin d’autorisation parentale pour consulter, selon QuestionSexualité.
+
+## Au quotidien
+**Choisir où aller :**
+- un cabinet en ville ou un centre de santé ;
+- un centre de santé sexuelle ou de planification familiale : Fil Santé Jeunes précise que les consultations y sont anonymes et gratuites pour les mineures ;
+- l’hôpital.
+En ville, la consultation est payante mais généralement remboursée par l’Assurance Maladie. Tu peux demander à voir une femme si tu préfères.
+
+**Préparer ton rendez-vous :**
+- note la date de tes dernières règles et, si tu peux, la durée habituelle de tes cycles (ton calendrier de cycle t’y aide) ;
+- liste tes questions à l’avance : on oublie souvent ce qu’on voulait demander ;
+- pense à tes antécédents familiaux connus (cancers, maladies cardiovasculaires, diabète) ;
+- prends ta carte Vitale si tu en as une.
+
+**Venir accompagnée ?** Tu peux venir seule ou avec un parent, une personne de confiance, un ou une amie, ton ou ta partenaire. Cette personne peut rester tout ou partie du rendez-vous ; la partie intime se passe entre toi et le ou la professionnelle.
+
+**Si tu ne te sens pas à l’aise**, tu as le droit de changer de professionnel. Un bon suivi repose sur la confiance.
+
+## Questions fréquentes
+**Je n’ai jamais eu de rapport, est-ce utile d’y aller ?** Oui, si tu as des questions sur tes règles, tes pertes, ta puberté ou la contraception. La consultation n’est pas réservée aux personnes qui ont une vie sexuelle.
+
+**On va forcément me faire un frottis ?** Non. QuestionSexualité rappelle que le premier frottis de dépistage est recommandé à partir de 25 ans.
+
+**Mes parents vont-ils le savoir ?** Pas si tu ne le souhaites pas : la consultation est confidentielle. Dans un centre de santé sexuelle, elle est anonyme et gratuite pour les mineures.
+
+**Et si j’ai un souci urgent avant le rendez-vous ?** Fil Santé Jeunes conseille de consulter rapidement pour une mycose, une infection ou des douleurs, sans attendre une « première consultation » programmée.
+
+**À qui poser mes questions en attendant ?** Fil Santé Jeunes propose une ligne anonyme et gratuite, le **0800 235 236**, tous les jours de 9 h à 23 h. L’infirmière scolaire, le médecin ou le pharmacien peuvent aussi t’aider.
+
+## Quand demander conseil
+Consulte sans attendre en cas de douleurs dans le bas du ventre, de pertes inhabituelles, de brûlures en urinant, de retard de règles avec des douleurs, ou après un rapport à risque (contraception d’urgence, dépistage des IST). Douleur brutale et intense, saignement très abondant avec malaise, fièvre avec douleurs pelviennes : appelle le **15** ou le **112**. Si tu as subi des violences, tu peux appeler le **3919** (gratuit et anonyme) ; si tu es mineure et en danger, le **119**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid','child']::text[], null, null, null, null, false, array['première consultation gynécologique','gynéco','premier rendez-vous','examen gynécologique','mineure','confidentialité','planning familial','adolescente','sage-femme']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Fil Santé Jeunes — La première consultation gynéco","url":"https://www.filsantejeunes.com/premiere-consultation-gyneco-5687","consulted_on":"2026-10-27","published":"2024-02-27"},{"label":"QuestionSexualité (Santé publique France) — Comment se passe la première consultation gynécologique ?","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/l-hygiene-et-le-suivi-medical/comment-se-passe-la-premiere-consultation-gynecologique","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('suivi-gynecologique-gynecologue-sage-femme-generaliste-qui-fait-quoi', (select id from public.content_categories where slug = 'sante-intime'), 'Gynécologue, sage-femme ou médecin généraliste : qui fait quoi pour ton suivi ?', 'Trois professionnels peuvent assurer ton suivi gynécologique : ce que chacun peut faire, quand voir un ou une spécialiste et à quel rythme consulter.', '## En bref
+- Ton suivi gynécologique peut être assuré par un ou une **gynécologue**, une **sage-femme** ou ton **médecin généraliste**.
+- Tous trois peuvent **prescrire une contraception**, faire un bilan et **dépister les IST** ; le frottis de dépistage peut aussi être fait par chacun d’eux.
+- Selon Santé.fr, il est préférable de voir un ou une gynécologue en cas de **maladie gynécologique**, de problème d’**infertilité** ou de **grossesse à risque**.
+- Tu peux consulter une sage-femme ou un ou une gynécologue **sans ordonnance de ton médecin généraliste** et être remboursée.
+
+## Comprendre
+En France, le suivi gynécologique de prévention n’est pas réservé aux gynécologues. Santé.fr (contenu de Santé publique France) rappelle que la sage-femme et le médecin généraliste peuvent assurer le suivi gynécologique et le suivi de grossesse, au même titre que le ou la gynécologue. Ils exercent en cabinet, à l’hôpital ou dans les centres de planification familiale (centres de santé sexuelle).
+
+L’Assurance Maladie liste les professionnels qui peuvent réaliser un frottis de dépistage du cancer du col de l’utérus : médecin généraliste, gynécologue, sage-femme, mais aussi centres de santé, centres d’examens de santé de l’Assurance Maladie, centres de planification, hôpitaux et certains laboratoires.
+
+En cas de problème particulier, ton ou ta professionnelle habituelle peut t’orienter vers un ou une spécialiste : gynécologue pour une maladie gynécologique, sexologue pour une difficulté dans ta sexualité, par exemple.
+
+## Au quotidien
+**Qui choisir selon ta situation (repères) :**
+- **suivi de prévention, contraception, frottis, dépistage des IST** : généraliste, sage-femme ou gynécologue, selon ta préférence et les disponibilités près de chez toi ;
+- **maladie gynécologique connue ou suspectée** (endométriose, fibromes, saignements inexpliqués), **difficulté à concevoir**, **grossesse à risque** : plutôt un ou une gynécologue ;
+- **question confidentielle, besoin de gratuité, mineure** : un centre de santé sexuelle (planning familial).
+
+**Le rythme conseillé par Santé.fr :**
+- une consultation de suivi gynécologique **au moins une fois par an** ;
+- et au moindre doute, ou lors d’un changement important : premiers rapports, nouveau partenaire, changement de contraception, désir d’enfant, grossesse.
+
+**Organiser ton suivi :**
+- garde dans ton calendrier la date de ton dernier frottis et de ton dernier dépistage d’IST ;
+- note tes questions entre deux rendez-vous ;
+- si tu changes de professionnel, demande une copie de tes derniers résultats.
+
+**Femmes ayant des rapports avec des femmes :** les recommandations sont les mêmes, avec un rendez-vous conseillé chaque année. Santé.fr reconnaît que tous les professionnels ne sont pas formés à leur santé sexuelle ; n’hésite pas à poser la question ou à t’adresser au Planning familial.
+
+## Questions fréquentes
+**Une sage-femme peut-elle me suivre si je ne suis pas enceinte ?** Oui. Le suivi gynécologique de prévention et la contraception font partie de ses missions, selon Santé.fr.
+
+**Dois-je passer par mon médecin traitant pour voir un ou une gynécologue ?** Santé.fr indique qu’une prescription du médecin généraliste n’est pas nécessaire pour être remboursée lors d’une consultation chez une sage-femme ou un ou une gynécologue.
+
+**Mon médecin généraliste peut-il faire mon frottis ?** Oui, l’Assurance Maladie le cite parmi les professionnels qui réalisent ce prélèvement.
+
+**Je ne suis pas à l’aise avec mon ou ma praticienne, puis-je changer ?** Oui. QuestionSexualité rappelle que tu peux changer de professionnel si tu ne te sens pas à l’aise.
+
+## Quand demander conseil
+N’attends pas ton rendez-vous annuel en cas de pertes inhabituelles, de douleurs pelviennes, de saignements entre les règles ou après les rapports, de douleurs pendant les rapports, ou de règles qui t’empêchent de vivre normalement : une douleur de ce type n’est pas à subir. Saignement très abondant avec malaise, douleur brutale intense (surtout avec un retard de règles), fièvre avec douleurs pelviennes : appelle le **15** ou le **112**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['suivi gynécologique','gynécologue','sage-femme','médecin généraliste','accès direct','frottis','contraception','planning familial','remboursement']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu QuestionSexualité / Santé publique France) — Santé sexuelle : quel suivi médical pour les femmes ?","url":"https://www.sante.fr/sante-sexuelle-quel-suivi-medical-pour-les-femmes","consulted_on":"2026-10-27","published":"2026-05-11"},{"label":"ameli.fr — Dépistage organisé du cancer du col de l’utérus","url":"https://www.ameli.fr/assure/sante/themes/cancer-col-uterus/depistage-organise-cancer-col-uterus","consulted_on":"2026-10-27","published":"2026-10-20"},{"label":"QuestionSexualité (Santé publique France) — Comment se passe la première consultation gynécologique ?","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/l-hygiene-et-le-suivi-medical/comment-se-passe-la-premiere-consultation-gynecologique","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('depistage-cancer-col-uterus-frottis-test-hpv-ages-rythme', (select id from public.content_categories where slug = 'sante-intime'), 'Dépistage du cancer du col de l’utérus : frottis, test HPV, à quel âge et à quel rythme', 'De 25 à 65 ans, un dépistage régulier permet de repérer le papillomavirus ou des cellules anormales avant un cancer : examens selon l’âge, invitation, remboursement et autoprélèvement.', '## En bref
+- Le dépistage est recommandé à **toutes les femmes de 25 à 65 ans**, sauf avis contraire du médecin, même vaccinées contre les HPV.
+- **De 25 à 29 ans** : examen des cellules du col (cytologie). Deux frottis à un an d’intervalle, puis un trois ans plus tard si les résultats sont normaux.
+- **De 30 à 65 ans** : **test HPV**, trois ans après la dernière cytologie normale, puis **tous les cinq ans** tant qu’il est négatif.
+- Avec l’invitation de l’Assurance Maladie, l’**analyse est prise en charge à 100 %**, sans avance de frais.
+
+## Comprendre
+Les papillomavirus humains (HPV) sont à l’origine de 70 à 90 % des cancers du col de l’utérus, selon l’Assurance Maladie. Une infection par un HPV « à haut risque » peut, des années plus tard, entraîner des anomalies des cellules du col, puis un cancer. Le dépistage permet de repérer le virus ou ces cellules anormales **avant** qu’elles n’évoluent, en l’absence de tout symptôme.
+
+Le prélèvement se fait comme un frottis : le ou la professionnelle place un spéculum et prélève des cellules à la surface du col. Ce qui change selon l’âge, c’est l’analyse :
+- avant 30 ans, on regarde les cellules au microscope (cytologie) ; si elle est anormale, la recherche d’HPV peut se faire sur le même prélèvement ;
+- à partir de 30 ans, on recherche d’abord le virus (test HPV) ; s’il est positif, on examine les cellules sur le même prélèvement, et d’autres examens peuvent suivre.
+
+Un test HPV positif ne veut pas dire cancer : il signale la présence du virus et la nécessité d’un suivi.
+
+## Au quotidien
+**Où le faire ?** Chez ton ou ta médecin généraliste, un ou une gynécologue, une sage-femme, mais aussi en centre de santé, en centre d’examens de santé de l’Assurance Maladie, en centre de planification familiale, à l’hôpital ou dans certains laboratoires.
+
+**Les invitations :** l’Assurance Maladie envoie des invitations par courrier et sur le compte ameli aux femmes de 26 à 65 ans en retard de dépistage. En cas de perte, tu peux la retrouver sur ton compte ameli, en demander une à ton médecin ou à ton pharmacien, ou appeler le **36 46**.
+
+**Combien ça coûte ?** Avec l’invitation, l’analyse (cytologie ou test HPV) est prise en charge à 100 %. La consultation et le prélèvement sont remboursés à 70 % sur la base du tarif conventionnel, le reste étant généralement couvert par la complémentaire santé.
+
+**L’autoprélèvement vaginal :** il est proposé aux femmes de plus de 30 ans qui se font peu ou pas dépister. Tu fais toi-même le prélèvement ; si le test HPV est positif, un frottis chez un ou une professionnelle est ensuite nécessaire.
+
+**Pour t’organiser :**
+- note la date et le type de ton dernier dépistage dans ton calendrier ;
+- demande comment tu recevras les résultats.
+
+## Questions fréquentes
+**Je suis vaccinée contre les HPV, dois-je quand même me faire dépister ?** Oui. L’Assurance Maladie précise que le vaccin ne protège pas contre tous les HPV à risque : le dépistage reste nécessaire.
+
+**Je n’ai plus de rapports, ou j’ai une partenaire femme : suis-je concernée ?** Les recommandations s’adressent à toutes les femmes de 25 à 65 ans, sauf avis contraire du médecin. Parles-en avec ton ou ta professionnelle.
+
+**J’ai un traitement qui diminue mes défenses immunitaires.** La Haute Autorité de santé recommande dans certains cas un dépistage plus rapproché ; ton médecin t’indiquera le calendrier adapté.
+
+**Le frottis fait-il mal ?** Il peut être un peu inconfortable. Dis-le si tu as mal ou si tu es tendue : le ou la professionnelle peut adapter sa façon de faire.
+
+## Quand demander conseil
+Le dépistage concerne les femmes **sans symptômes**. Si tu as des saignements après les rapports, entre les règles ou après la ménopause, des pertes inhabituelles ou des douleurs pelviennes, consulte sans attendre la date de ton prochain dépistage. Saignement très abondant avec malaise ou douleur brutale intense : **15** ou **112**. Recevoir un résultat anormal peut être angoissant : n’hésite pas à poser toutes tes questions, et si l’anxiété devient envahissante, tu peux appeler le **3114**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['frottis','test HPV','cancer du col','dépistage','papillomavirus','autoprélèvement','cytologie','col de l’utérus','invitation assurance maladie']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Dépistage organisé du cancer du col de l’utérus","url":"https://www.ameli.fr/assure/sante/themes/cancer-col-uterus/depistage-organise-cancer-col-uterus","consulted_on":"2026-10-27","published":"2026-10-20"},{"label":"ameli.fr — Prévenir le cancer du col de l’utérus : vaccination HPV et frottis de dépistage","url":"https://www.ameli.fr/assure/sante/themes/cancer-col-uterus/prevention-cancer-col-uterus","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('vaccin-hpv-papillomavirus-filles-garcons-rattrapage', (select id from public.content_categories where slug = 'sante-intime'), 'Vaccin contre les papillomavirus (HPV) : pour qui, quand et pourquoi', 'Filles et garçons dès 11 ans, campagne gratuite en 5e, rattrapage : ce que disent les sources officielles sur la vaccination contre les HPV, son efficacité et ses effets indésirables.', '## En bref
+- Les HPV se transmettent lors des **contacts sexuels** : environ **8 personnes sur 10** y seront exposées au cours de leur vie, selon Vaccination Info Service.
+- La vaccination est recommandée aux **filles et aux garçons à partir de 11 ans**, avec **2 doses** entre 11 et 14 ans.
+- Un **rattrapage** est possible ensuite, avec 3 doses ; Vaccination Info Service indique qu’il est ouvert **jusqu’à 26 ans inclus** depuis le 19 décembre 2025.
+- Le vaccin est **gratuit au collège** (classe de 5e). Il ne remplace pas le **dépistage** du cancer du col à partir de 25 ans.
+
+## Comprendre
+Les papillomavirus humains sont très répandus : selon Vaccination Info Service, dans 60 % des cas l’infection survient au début de la vie sexuelle. Certains types peuvent provoquer des lésions précancéreuses, des verrues génitales et des cancers. Vaccination Info Service rappelle que le cancer du col de l’utérus représente près de 3 000 nouveaux cas par an en France, et qu’environ 6 400 cancers par an sont liés aux HPV, dont un sur quatre chez les hommes. C’est pourquoi la vaccination est recommandée aux garçons depuis le 1er janvier 2021.
+
+Les préservatifs n’offrent qu’une **protection partielle** contre les HPV.
+
+Le vaccin est le plus efficace **avant le début de la vie sexuelle** : la protection contre les types de virus couverts est alors proche de 100 %, selon Vaccination Info Service. Elle est moindre après les premiers rapports, car le vaccin ne soigne pas une infection déjà présente. Le vaccin recommandé pour toute nouvelle vaccination couvre neuf types de HPV ; une vaccination commencée doit être terminée avec le même vaccin.
+
+## Au quotidien
+**Pour ton enfant (11 à 14 ans) :**
+- deux injections espacées de quelques mois (Vaccination Info Service indique un schéma à 0 et 5 mois) ;
+- au collège, en 5e, la vaccination est proposée gratuitement ; elle nécessite **l’accord écrit des deux parents** ou représentants légaux ;
+- elle peut aussi se faire chez le médecin, la sage-femme, en centre de vaccination, en centre de santé sexuelle ou en CeGIDD ;
+- une dose peut être faite le même jour qu’un rappel prévu à cet âge : demande au médecin.
+
+**Pour toi, si tu n’es pas vaccinée :** parle du rattrapage à ton médecin ou à ta sage-femme. En dehors du collège, le vaccin est remboursé à 65 % par l’Assurance Maladie sur prescription, le reste étant généralement pris en charge par la complémentaire ; il est gratuit pour les bénéficiaires de la Complémentaire santé solidaire et dans certains centres.
+
+**Si une dose a été oubliée :** il n’est pas nécessaire de tout recommencer ; il suffit de compléter les doses manquantes.
+
+**Préparer l’injection avec un ado :** expliquer à quoi sert le vaccin, prévoir de rester assis pendant la surveillance d’un quart d’heure recommandée après l’injection, car des malaises peuvent survenir chez les adolescents.
+
+## Questions fréquentes
+**Quels sont les effets indésirables ?** Selon Vaccination Info Service, la douleur au point d’injection est fréquente et plus marquée qu’avec d’autres vaccins, ainsi que rougeur ou gonflement. Fièvre et douleurs musculaires ou articulaires sont possibles. Une allergie grave est très rare.
+
+**Le vaccin augmente-t-il le risque de maladies auto-immunes ?** Les études indépendantes citées par Vaccination Info Service n’ont pas montré d’augmentation de ce risque, et l’ANSM n’a pas détecté de signal de sécurité.
+
+**Pourquoi vacciner si jeune ?** Parce que l’efficacité est maximale avant toute exposition au virus, et que le schéma à 2 doses est réservé aux 11-14 ans.
+
+**Je suis vaccinée : puis-je arrêter les frottis ?** Non, le dépistage reste nécessaire de 25 à 65 ans, car le vaccin ne couvre pas tous les HPV à risque.
+
+## Quand demander conseil
+Parle de la vaccination avec ton ou ta médecin, ta sage-femme ou ton pharmacien, surtout si ton enfant ou toi avez une maladie ou un traitement qui diminue les défenses immunitaires. Après une injection, appelle le **15** ou le **112** en cas de gonflement du visage, de difficulté à respirer ou à avaler, ou de malaise important.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid','child']::text[], null, null, 108, null, false, array['vaccin HPV','papillomavirus','Gardasil','vaccination collège','rattrapage','cancer du col','verrues génitales','garçons','adolescent']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Vaccination Info Service (Santé publique France) — Infections à papillomavirus humains (HPV)","url":"https://www.vaccination-info-service.fr/Les-maladies-et-leurs-vaccins/Infections-a-Papillomavirus-humains-HPV","consulted_on":"2026-10-27","published":"2026-01-01"},{"label":"ameli.fr — Prévenir le cancer du col de l’utérus : vaccination HPV et frottis de dépistage","url":"https://www.ameli.fr/assure/sante/themes/cancer-col-uterus/prevention-cancer-col-uterus","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('cystite-infection-urinaire-reconnaitre-agir-prevenir', (select id from public.content_categories where slug = 'sante-intime'), 'Cystite : reconnaître une infection urinaire, agir vite et prévenir les récidives', 'Brûlures en urinant, envies pressantes, urines troubles : les bons réflexes face à une cystite, les signes qui doivent faire consulter dans la journée et les gestes de prévention.', '## En bref
+- La cystite est une **infection de la vessie**, due dans 90 % des cas à une bactérie du tube digestif (*Escherichia coli*). Elle est fréquente chez la femme.
+- Signes typiques : **brûlures en urinant**, **envies pressantes et fréquentes** pour de petites quantités, gêne dans le bas-ventre, urines troubles, odorantes, parfois avec du sang.
+- **Pas de fièvre** dans une cystite simple : **fièvre, frissons ou douleur dans le dos ou sur le côté** font craindre une atteinte du rein et imposent de **consulter dans la journée**.
+- Boire suffisamment, ne pas se retenir et **uriner après les rapports** aident à prévenir les récidives.
+
+## Comprendre
+La bactérie, naturellement présente dans l’intestin, remonte de l’extérieur jusqu’à la vessie par l’urètre, puis s’y multiplie. L’Assurance Maladie explique que l’urètre court des femmes, les rapports sexuels (surtout avec des spermicides), la grossesse, la baisse des œstrogènes après la ménopause, un prolapsus ou des fuites urinaires favorisent ces infections.
+
+Une cystite qui n’est pas traitée assez vite peut s’étendre aux reins : c’est la **pyélonéphrite**, qui se manifeste notamment par de la fièvre et dont le traitement est urgent.
+
+On parle de cystites **récidivantes** à partir de **4 infections en 12 mois**. Elles justifient un suivi médical et des mesures de prévention adaptées.
+
+## Au quotidien
+**Dès les premiers symptômes, l’Assurance Maladie conseille :**
+- de **boire beaucoup**, au moins 1,5 litre par jour d’eau ou de boissons non alcoolisées, sauf contre-indication médicale ;
+- de ne pas te retenir d’uriner et de **bien vider ta vessie** à chaque fois ;
+- d’éviter les rapports sexuels jusqu’à la disparition des symptômes ;
+- de prendre rendez-vous avec ton ou ta médecin ou ta sage-femme, **ou de t’adresser à ton pharmacien** : les femmes de 16 à 65 ans qui ont récemment des brûlures en urinant ou des envies fréquentes ou urgentes peuvent y faire un test de dépistage, et le pharmacien peut, si nécessaire, délivrer un antibiotique dans un cadre défini.
+
+**Pour prévenir (repères de l’Assurance Maladie) :**
+- boire régulièrement dans la journée et lutter contre la constipation ;
+- aller aux toilettes dès que le besoin se fait sentir ;
+- t’essuyer d’avant en arrière après être allée à la selle ;
+- pas de douche vaginale, ni de produits intimes parfumés ou de bains moussants ;
+- sous-vêtements en coton, pantalons pas trop moulants ;
+- si les cystites surviennent après les rapports : **uriner juste après** et éviter les spermicides.
+
+**En cas de récidives :** parles-en à ton ou ta médecin. Selon ta situation, un professionnel peut proposer la canneberge, un traitement local après la ménopause ou un traitement préventif ; un suivi médical régulier est alors recommandé.
+
+## Questions fréquentes
+**Puis-je attendre que ça passe ?** Les sources recommandent d’agir dès les premiers signes : boire, et consulter ou voir ton pharmacien. Une cystite non traitée peut atteindre les reins.
+
+**Les symptômes ne passent pas sous antibiotique, que faire ?** Recontacte rapidement ton ou ta médecin si les symptômes s’aggravent dans les jours qui suivent le début du traitement.
+
+**Les rapports peuvent-ils déclencher des cystites ?** Oui, c’est un facteur favorisant connu. Uriner juste après le rapport et éviter les spermicides font partie des conseils de prévention.
+
+**Et chez une petite fille ?** La cystite y ressemble à celle de l’adulte : prends rendez-vous chez le médecin. Avant 2 ans, l’infection touche souvent les reins avec des signes trompeurs (fièvre inexpliquée, pleurs en urinant, vomissements) : elle doit être prise en charge rapidement.
+
+## Quand demander conseil
+Consulte **dans la journée** en cas de fièvre, de frissons, de douleur dans le dos ou sur le côté, si tu es enceinte, si tu as une maladie chronique (diabète, maladie rénale) ou une baisse des défenses immunitaires, ou pour une suspicion d’infection urinaire chez un enfant. Fièvre élevée avec malaise, vomissements empêchant de boire ou altération de l’état général : appelle le **15** ou le **112**. Des cystites à répétition qui gâchent ta vie intime ne sont pas à subir : parles-en.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['cystite','infection urinaire','brûlures en urinant','envie fréquente d’uriner','pyélonéphrite','cystite après rapport','cystite à répétition','pharmacie','vessie']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Cystite (infection urinaire) : symptômes et causes","url":"https://www.ameli.fr/assure/sante/themes/cystite/reconnaitre-cystite","consulted_on":"2026-10-27"},{"label":"ameli.fr — Cystite : que faire et quand consulter ?","url":"https://www.ameli.fr/assure/sante/themes/cystite/que-faire-cystite","consulted_on":"2026-10-27","published":"2025-05-13"},{"label":"ameli.fr — Prévenir l’infection urinaire et les récidives de cystite","url":"https://www.ameli.fr/assure/sante/themes/cystite/prevention-recidives","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('depistage-ist-ou-quand-gratuit-sans-ordonnance', (select id from public.content_categories where slug = 'sante-intime'), 'Dépistage des IST : quand le faire, où, et comment en bénéficier gratuitement', 'Les IST sont souvent silencieuses : les situations où se faire dépister, les lieux possibles (laboratoire sans ordonnance, CeGIDD, centre de santé sexuelle) et les conditions de gratuité.', '## En bref
+- Les infections sexuellement transmissibles (IST) sont **souvent sans symptômes** : selon l’Assurance Maladie, le dépistage est le seul moyen de savoir si l’on est infecté.
+- Se faire dépister est conseillé après un **rapport non protégé**, en cas de **plusieurs partenaires**, avant d’**arrêter le préservatif** avec un nouveau partenaire, et à chaque doute.
+- **Le dépistage du VIH est gratuit pour tout le monde** en laboratoire, **sans ordonnance ni rendez-vous**.
+- Chlamydia, gonocoque, syphilis et hépatite B : **gratuits sans ordonnance avant 26 ans** ; avec une ordonnance, gratuits à tout âge.
+
+## Comprendre
+Les IST les plus courantes sont la chlamydiose, le gonocoque, la syphilis, l’hépatite B, l’herpès génital, les papillomavirus, les mycoplasmes, la trichomonase et le VIH. L’Assurance Maladie rappelle que beaucoup d’entre elles passent inaperçues, alors qu’elles peuvent entraîner des complications : douleurs pelviennes chroniques, infertilité, grossesse extra-utérine, transmission au bébé à l’accouchement, et, pour certains HPV, des cancers.
+
+Santé.fr (contenu QuestionSexualité) recommande un dépistage régulier si tu as plusieurs partenaires dans l’année, même en utilisant le préservatif, et à chaque fois que tu envisages d’arrêter le préservatif avec un nouveau partenaire régulier. Le dépistage peut aussi être fait à tout moment en cas de doute.
+
+## Au quotidien
+**Où te faire dépister ?** (QuestionSexualité)
+- **En laboratoire, sans ordonnance ni rendez-vous** : le dépistage du VIH y est gratuit pour toutes et tous. Un court questionnaire sur place indique les autres dépistages recommandés dans ta situation.
+- **En CeGIDD** (centres gratuits d’information, de dépistage et de diagnostic) **et dans certains centres de santé sexuelle** : dépistage gratuit du VIH et des autres IST.
+- **Chez ton ou ta médecin ou ta sage-femme** : l’ordonnance permet un dépistage gratuit en laboratoire, quel que soit ton âge.
+- **Associations** : certaines proposent gratuitement des tests rapides (TROD) et des autotests du VIH et de l’hépatite B.
+- **À domicile** : si tu as entre **18 et 25 ans**, tu peux commander sur le site mon-test-ist.ameli.fr un kit d’autoprélèvement pour la chlamydia et le gonocoque, sans avance de frais.
+
+**Combien ça coûte ?**
+- VIH : gratuit partout ;
+- chlamydia, gonocoque, syphilis, hépatite B sans ordonnance : gratuits avant 26 ans ; à partir de 26 ans, remboursés à 60 % par l’Assurance Maladie, le reste par la complémentaire ;
+- avec une ordonnance : gratuits quel que soit l’âge.
+
+**Comment ça se passe ?** Selon l’infection recherchée : une prise de sang (VIH, syphilis, hépatite B), un prélèvement vaginal ou un prélèvement d’urine (chlamydia, gonocoque). C’est simple et généralement indolore.
+
+**Garder une trace :** note la date de ton dernier dépistage dans ton calendrier pour savoir quand refaire le point.
+
+## Questions fréquentes
+**Je n’ai aucun symptôme, est-ce utile ?** Oui : c’est justement parce que les IST sont souvent silencieuses que le dépistage est recommandé dans les situations à risque.
+
+**Un résultat négatif juste après un rapport suffit-il ?** Certaines infections ne sont détectables qu’après un délai. Demande au laboratoire, au CeGIDD ou à ton ou ta médecin s’il faut refaire un test plus tard.
+
+**Mon ou ma partenaire doit-il ou elle aussi se faire dépister ?** Si une IST est trouvée, il faut prévenir ses partenaires récents pour qu’ils se fassent dépister et, si besoin, traiter.
+
+**À qui poser mes questions anonymement ?** Sida Info Service répond au **0 800 840 800**, de façon anonyme et gratuite.
+
+## Quand demander conseil
+Consulte rapidement en cas d’écoulement, de pertes inhabituelles, de brûlures en urinant, de douleurs pendant les rapports, de lésions ou boutons génitaux, de ganglions dans l’aine, de fièvre ou de douleurs dans le bas-ventre. Après un rapport à risque d’exposition au VIH, un traitement d’urgence peut être proposé : rends-toi **au plus vite** aux urgences ou dans un CeGIDD. Fièvre avec douleurs pelviennes : **15** ou **112**. En cas de rapport non consenti, tu peux appeler le **3919** ou le **17**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['dépistage IST','IST','MST','CeGIDD','test VIH','laboratoire sans ordonnance','Mon test IST','gratuit','rapport non protégé','chlamydia']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Où se faire dépister gratuitement ?","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-depistages/ou-se-faire-depister-gratuitement","consulted_on":"2026-10-27"},{"label":"ameli.fr — Symptômes, diagnostic et évolution des IST","url":"https://www.ameli.fr/assure/sante/themes/mst-ist/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2025-12-02"},{"label":"Santé.fr (contenu QuestionSexualité / Santé publique France) — Santé sexuelle : quel suivi médical pour les femmes ?","url":"https://www.sante.fr/sante-sexuelle-quel-suivi-medical-pour-les-femmes","consulted_on":"2026-10-27","published":"2026-05-11"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('chlamydia-infection-silencieuse-depistage-traitement', (select id from public.content_categories where slug = 'sante-intime'), 'Chlamydia : une IST souvent silencieuse, pourquoi se faire dépister', 'Très fréquente avant 25 ans et le plus souvent sans symptôme, la chlamydiose peut menacer la fertilité si elle n’est pas traitée : signes possibles, dépistage, traitement et partenaires.', '## En bref
+- La chlamydiose est une IST due à la bactérie *Chlamydia trachomatis*, **très fréquente chez les moins de 25 ans**.
+- Elle est le plus souvent **silencieuse** : selon Santé.fr, moins de 30 % des femmes infectées ont des symptômes. On reste **contagieuse** même sans signes.
+- Non traitée, elle peut atteindre l’utérus et les trompes et entraîner **douleurs pelviennes chroniques, infertilité ou grossesse extra-utérine**.
+- Le dépistage est **simple et indolore**, **gratuit sans ordonnance avant 26 ans**, et le traitement repose sur des antibiotiques.
+
+## Comprendre
+Santé.fr indique qu’environ 4 % des jeunes femmes de moins de 25 ans seraient infectées en France, davantage en région parisienne. Comme l’infection passe souvent inaperçue, elle peut se transmettre et progresser longtemps sans être repérée.
+
+Quand il y a des signes, ils peuvent être : des brûlures en urinant ou pendant les rapports, des pertes vaginales inhabituelles, des douleurs dans le ventre, de légers saignements, parfois une conjonctivite. L’Assurance Maladie décrit aussi des formes aiguës avec fièvre et douleurs pelviennes. Chez les hommes, elle peut provoquer brûlures, écoulement ou testicules douloureux, mais elle est souvent silencieuse aussi.
+
+Les complications sont plus fréquentes chez les femmes, justement parce que l’infection est discrète : inflammation de l’utérus et des trompes, pouvant laisser des séquelles sur la fertilité ou favoriser une grossesse extra-utérine. Pendant la grossesse, la bactérie peut être transmise au nouveau-né. Une chlamydiose augmente aussi le risque d’infection par le VIH.
+
+## Au quotidien
+**Te faire dépister :**
+- par prélèvement vaginal (souvent réalisable toi-même) ou par analyse d’urine ;
+- chez ton ou ta médecin, ta sage-femme, ton ou ta gynécologue, ou gratuitement en CeGIDD et en centre de santé sexuelle ;
+- en laboratoire sans ordonnance : gratuit avant 26 ans ;
+- à domicile entre 18 et 25 ans : kit d’autoprélèvement chlamydia et gonocoque à commander sur mon-test-ist.ameli.fr, sans avance de frais.
+
+**Si le résultat est positif :**
+- le traitement est un antibiotique par voie orale, prescrit par un ou une professionnelle ;
+- Santé.fr recommande de s’abstenir de rapports pendant la semaine qui suit le début du traitement ;
+- si les symptômes persistent, recontacte ton ou ta médecin ; une consultation de contrôle peut être prévue ;
+- **préviens tes partenaires récents** pour qu’ils se fassent dépister et, si besoin, traiter, afin d’éviter de te réinfecter ;
+- l’Assurance Maladie note que les récidives sont fréquentes dans les premiers mois : un nouveau dépistage peut t’être proposé.
+
+**Prévenir :** le préservatif à chaque rapport, y compris pour la fellation selon Santé.fr, et un dépistage régulier si tu changes de partenaire.
+
+## Questions fréquentes
+**Je n’ai aucun symptôme, pourquoi me dépister ?** Parce que la majorité des infections sont silencieuses et que le dépistage est le seul moyen de les repérer avant d’éventuelles complications.
+
+**La chlamydia rend-elle forcément stérile ?** Non. Le risque concerne surtout les infections qui ne sont pas traitées et qui atteignent les trompes. D’où l’intérêt d’un dépistage précoce.
+
+**Puis-je l’attraper à nouveau après un traitement ?** Oui, si un ou une partenaire infectée n’a pas été traitée, ou lors d’un nouveau contact. Le traitement ne protège pas pour l’avenir.
+
+**Comment l’annoncer à un ou une partenaire ?** Simplement et sans culpabiliser : l’infection est fréquente et souvent silencieuse, personne ne pouvait le savoir sans test. Le CeGIDD peut t’aider à trouver les mots.
+
+## Quand demander conseil
+Consulte rapidement en cas de pertes inhabituelles, de brûlures en urinant, de saignements après les rapports ou entre les règles, ou de douleurs pendant les rapports. Fièvre avec douleurs pelviennes, ou douleur brutale et intense avec un retard de règles (grossesse extra-utérine possible) : appelle le **15** ou le **112**. Si tu as un projet de grossesse, parle de ton dépistage à ton ou ta professionnelle.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['chlamydia','chlamydiose','IST','infection silencieuse','infertilité','dépistage','kit autoprélèvement','salpingite','jeunes']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Infections génitales à Chlamydia","url":"https://www.sante.fr/infections-genitales-chlamydia","consulted_on":"2026-10-27","published":"2026-08-13"},{"label":"ameli.fr — Symptômes, diagnostic et évolution des IST","url":"https://www.ameli.fr/assure/sante/themes/mst-ist/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2025-12-02"},{"label":"QuestionSexualité (Santé publique France) — Où se faire dépister gratuitement ?","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-depistages/ou-se-faire-depister-gratuitement","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('herpes-genital-poussees-contagion-vivre-avec', (select id from public.content_categories where slug = 'sante-intime'), 'Herpès génital : comprendre les poussées, limiter la transmission, vivre avec', 'L’herpès génital est une IST virale qui évolue par poussées : reconnaître les signes, se soulager pendant une crise, protéger son ou sa partenaire et prévenir en cas de grossesse.', '## En bref
+- L’herpès génital est une **IST virale très contagieuse** : il se manifeste par de **petites cloques douloureuses** sur les organes génitaux, l’anus ou la bouche, avec démangeaisons et brûlures.
+- Le virus **reste dans l’organisme** : après la première crise, des **poussées** peuvent revenir, ou jamais ; selon l’Assurance Maladie, elles tendent à s’espacer.
+- Un **traitement sur ordonnance**, commencé tôt, réduit la durée et l’intensité des crises, sans éliminer le virus.
+- Le virus peut être transmis **même sans lésion visible**, et le préservatif ne protège qu’en partie.
+
+## Comprendre
+QuestionSexualité indique que l’herpès génital touche environ une personne sur huit entre 15 et 49 ans dans le monde. Les premiers symptômes apparaissent au minimum une semaine après la contamination : petites bulles douloureuses, démangeaisons, parfois fièvre, maux de tête, douleurs au ventre ou en urinant.
+
+Le diagnostic repose sur l’examen médical, parfois complété par un prélèvement sur les lésions. Il peut être posé par ton ou ta médecin, ta sage-femme, ton ou ta gynécologue, ou dans un CeGIDD ou un centre de santé sexuelle, où le dépistage est anonyme et gratuit.
+
+L’Assurance Maladie précise un point important : le virus peut être présent par intermittence sur les muqueuses **sans aucun signe**, et donc se transmettre. Le préservatif ne protège pas suffisamment, car des lésions peuvent se trouver en dehors de la zone couverte ; il reste utile pour limiter les risques. Il n’existe pas de vaccin.
+
+Comme toute IST, l’herpès fragilise les muqueuses et augmente le risque de contamination par le VIH.
+
+## Au quotidien
+**Pendant une poussée (conseils de l’Assurance Maladie) :**
+- consulte dès les premiers symptômes : le traitement est d’autant plus efficace qu’il est précoce ;
+- pour la douleur, demande conseil à ton ou ta médecin ou à ton pharmacien et respecte la notice ;
+- n’applique pas de crème ou de produit sur les lésions de ta propre initiative : cela peut les aggraver et retarder la cicatrisation ;
+- nettoie les lésions à l’eau et au savon, sans alcool, puis sèche doucement ;
+- laisse-les à l’air libre, sans pansement ; porte des vêtements amples et des sous-vêtements en coton ;
+- bois abondamment si tu as des brûlures en urinant ;
+- évite les rapports pendant la poussée.
+
+**Entre les poussées :**
+- apprends à reconnaître les signes qui annoncent une crise chez toi, pour commencer le traitement vite ;
+- informe ton ou ta médecin, ton ou ta gynécologue et ton ou tes partenaires ;
+- l’Assurance Maladie conseille d’éviter le stress, qui peut affaiblir les défenses immunitaires.
+
+**En parler à un ou une partenaire :** c’est une conversation délicate mais importante. Tu peux expliquer que l’infection est fréquente, qu’elle se gère et que vous pouvez décider ensemble des précautions.
+
+## Questions fréquentes
+**Les crises vont-elles revenir toute ma vie ?** Pas forcément : QuestionSexualité indique que les crises suivantes peuvent survenir à tout moment ou ne jamais survenir.
+
+**Puis-je transmettre l’herpès sans poussée ?** Oui, le virus peut être présent sans signe visible. C’est pourquoi l’information du partenaire et les précautions comptent.
+
+**Est-ce dangereux si je suis enceinte ?** L’herpès peut être transmis au bébé lors de l’accouchement. Si tu as déjà eu un herpès génital, préviens **immédiatement** ton ou ta médecin ou ta sage-femme dès le début de la grossesse.
+
+**Les lésions peuvent-elles toucher d’autres zones que le sexe ?** Oui : QuestionSexualité décrit des cloques possibles sur les organes génitaux, l’anus ou la bouche. Signale à ton ou ta médecin toutes les zones touchées.
+
+## Quand demander conseil
+Consulte dès l’apparition de lésions génitales, si la douleur persiste malgré les antalgiques, ou si tu es enceinte et as des antécédents d’herpès. Fièvre élevée avec malaise ou état qui se dégrade rapidement : appelle le **15** ou le **112**. Vivre avec une IST peut peser sur le moral ; si tu te sens dépassée, tu peux appeler le **3114**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['herpès génital','herpès','IST','cloques','vésicules','poussée','récidive','contagion','grossesse herpès']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Qu’est-ce que l’herpès génital ?","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-infections-sexuellement-transmissibles/qu-est-ce-que-l-herpes-genital","consulted_on":"2026-10-27"},{"label":"ameli.fr — Que faire pendant et entre les poussées d’herpès génital ?","url":"https://www.ameli.fr/assure/sante/themes/herpes-genital/que-faire-poussees-herpes","consulted_on":"2026-10-27","published":"2021-01-02"},{"label":"ameli.fr — Symptômes, diagnostic et évolution des IST","url":"https://www.ameli.fr/assure/sante/themes/mst-ist/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2025-12-02"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('douleurs-pendant-les-rapports-dyspareunie-causes-solutions', (select id from public.content_categories where slug = 'sante-intime'), 'Douleurs pendant les rapports (dyspareunie) : les causes possibles et les solutions', 'Avoir mal pendant ou après la pénétration n’est pas à subir : les causes physiques fréquentes, le lien avec l’endométriose, ce qui peut aider et les professionnels à consulter.', '## En bref
+- La dyspareunie désigne les **douleurs liées à la pénétration** ou à une tentative de pénétration, pendant ou après le rapport. Elle concerne environ **7,5 % des femmes** sexuellement actives, selon QuestionSexualité.
+- La douleur peut être **superficielle** (vulve, entrée du vagin) ou **profonde** (au fond du vagin, dans le bas-ventre).
+- Les causes sont le plus souvent **physiques** : lubrification insuffisante, mycose, IST, sécheresse, endométriose, cicatrice, kyste ou fibrome…
+- Cette douleur est **réelle** et des solutions existent : **parles-en** à un ou une gynécologue ou une sage-femme.
+
+## Comprendre
+QuestionSexualité liste les principales causes physiques chez les personnes ayant un vagin : un manque de lubrification, une mycose vaginale, une infection sexuellement transmissible, une sécheresse vaginale (liée par exemple à une contraception mal adaptée ou à la ménopause), un dysfonctionnement des muscles du périnée, l’endométriose, une cicatrice d’épisiotomie, un kyste, un fibrome ou leurs traitements. Une douleur qui s’installe progressivement oriente plutôt vers une cause physique.
+
+**Douleur profonde et endométriose :** Santé.fr (contenu EndoFrance) explique que la douleur ressentie au fond du vagin lors de la pénétration est un symptôme fréquent de l’endométriose et fait partie des signes qui orientent vers ce diagnostic, surtout si elle s’associe à des règles douloureuses, des troubles digestifs ou urinaires. Elle peut apparaître dès les premiers rapports ou bien plus tard, et varier d’une gêne à l’impossibilité d’avoir des rapports.
+
+**Les causes psychologiques** (difficultés de couple, baisse de désir, expérience traumatique, anxiété) ne doivent être envisagées qu’après un examen médical attentif. Même dans ce cas, la douleur n’est pas « dans la tête » : elle est bien ressentie. Non prise en charge, elle peut entraîner une baisse du désir et peser sur le couple.
+
+## Au quotidien
+**Ce qui peut aider, selon QuestionSexualité :**
+- un **lubrifiant** pendant les rapports, première piste à envisager ;
+- prendre le temps des préliminaires, pour favoriser l’excitation et la lubrification naturelle ;
+- si la douleur vient d’un périnée contracté, des massages doux peuvent soulager ;
+- les crèmes anesthésiantes locales existent mais peuvent diminuer le plaisir : demande d’abord l’avis d’un médecin ou d’un pharmacien, car certains produits fragilisent les préservatifs.
+
+**En parler à ton ou ta partenaire :** expliquer que la douleur est réelle, convenir d’un signal pour arrêter, explorer d’autres formes de sexualité que la pénétration. EndoFrance encourage ce dialogue pour trouver des solutions ensemble.
+
+**Préparer la consultation :**
+- note où tu as mal (entrée du vagin ou fond), à quel moment (début, pendant, après), dans quelles positions ;
+- note si tu as aussi des règles douloureuses, des troubles digestifs ou urinaires ;
+- indique ta contraception et tes éventuelles infections récentes.
+
+## Questions fréquentes
+**Est-ce que je dois continuer les rapports malgré la douleur ?** Non. Ton consentement et ton confort comptent ; personne ne peut t’obliger à un rapport. Arrêter quand ça fait mal et consulter permet de trouver la cause.
+
+**Qui consulter ?** Un ou une gynécologue ou une sage-femme, qui pourra t’orienter. Selon la cause, d’autres professionnels peuvent intervenir : kinésithérapeute spécialisé dans le périnée, sexologue, psychologue, gynécologue spécialisé dans les douleurs pelviennes. Choisis une personne qui prend le temps de t’écouter et de t’examiner.
+
+**On m’a dit que c’était psychologique.** EndoFrance met en garde contre ce raccourci : une endométriose peut être à l’origine de douleurs profondes. Si tu n’es pas entendue, demande un autre avis.
+
+**La douleur peut-elle compliquer un projet de grossesse ?** EndoFrance note qu’une dyspareunie importante peut, en réduisant les rapports, peser sur la fertilité du couple ; et l’endométriose elle-même peut être en cause. Parles-en à ton ou ta professionnelle.
+
+## Quand demander conseil
+Consulte si la douleur se répète, s’aggrave, s’accompagne de saignements après les rapports, de pertes inhabituelles, de fièvre ou de règles très douloureuses. Une douleur qui t’empêche de vivre ta sexualité comme tu le souhaites n’est pas à subir. Douleur brutale et intense dans le bas-ventre (surtout avec un retard de règles) ou fièvre avec douleurs pelviennes : appelle le **15** ou le **112**. Si des rapports te sont imposés, tu peux appeler le **3919**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid','ttc']::text[], null, null, null, null, false, array['dyspareunie','douleur pendant les rapports','mal pendant la pénétration','rapports douloureux','endométriose','lubrifiant','sexologue','douleur profonde']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Dyspareunies : douleurs pendant les rapports sexuels","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-troubles-de-la-sexualite/dyspareunies-douleurs-pendant-les-rapports-sexuels","consulted_on":"2026-10-27"},{"label":"Santé.fr (contenu EndoFrance) — La dyspareunie : douleurs lors des rapports sexuels","url":"https://www.sante.fr/endometriose/la-dyspareunie-douleurs-lors-des-rapports-sexuels","consulted_on":"2026-10-27","published":"2024-01-05"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('secheresse-vaginale-causes-lubrifiant-hydratant-traitements', (select id from public.content_categories where slug = 'sante-intime'), 'Sécheresse vaginale : pourquoi elle apparaît et ce qui peut soulager', 'Contraception, ménopause, irritation : les causes de la sécheresse vaginale, la différence entre lubrifiant et hydratant, et les traitements locaux à discuter avec un professionnel.', '## En bref
+- La sécheresse vaginale se traduit par un manque de lubrification, des **irritations**, parfois des **douleurs pendant les rapports**.
+- Elle est fréquente **autour de la ménopause** (baisse des œstrogènes), mais peut aussi être liée à une **contraception hormonale** faiblement dosée, à des produits irritants ou à un manque d’excitation.
+- Un **lubrifiant** pendant les rapports et un **hydratant vaginal** utilisé régulièrement peuvent aider.
+- Selon Santé.fr, ces gênes **ne sont pas une fatalité** : des traitements locaux, dont certains à base d’œstrogènes, peuvent être proposés.
+
+## Comprendre
+La lubrification du vagin dépend en grande partie des œstrogènes. QuestionSexualité explique qu’à la ménopause, la baisse de ces hormones rend la lubrification moins abondante et plus lente, et peut s’accompagner d’une perte de souplesse de la muqueuse (atrophie vaginale) rendant la pénétration inconfortable, voire douloureuse.
+
+Avant la ménopause, la sécheresse peut avoir d’autres origines. QuestionSexualité indique que certaines contraceptions hormonales faiblement dosées en œstrogènes peuvent provoquer une sécheresse vaginale chez certaines femmes. Les produits d’hygiène intime parfumés ou agressifs, que Santé.fr conseille d’éviter, peuvent aussi irriter la muqueuse. Enfin, un manque d’excitation (fatigue, stress, préliminaires trop courts) réduit la lubrification naturelle.
+
+## Au quotidien
+**Lubrifiant ou hydratant, quelle différence ?**
+- le **lubrifiant** s’utilise **au moment du rapport** pour faciliter la pénétration ; il en existe à base d’eau ou de silicone ;
+- l’**hydratant vaginal** s’utilise **régulièrement**, en dehors des rapports, pour améliorer le confort de la muqueuse au quotidien ; Santé.fr le cite parmi les options.
+
+**Bien choisir (sans marque) :**
+- préfère des produits **sans parfum** ;
+- si tu utilises des préservatifs, vérifie sur l’emballage que le lubrifiant est **compatible** : certains produits gras fragilisent le latex ;
+- arrête un produit qui pique ou irrite, et demande conseil à ton pharmacien.
+
+**Protéger ta muqueuse :**
+- évite les produits d’hygiène intime parfumés ou agressifs et les douches vaginales ;
+- porte des sous-vêtements en coton ;
+- prends le temps des préliminaires pendant les rapports, comme le conseille QuestionSexualité.
+
+**Les traitements à discuter :** si les gênes persistent, un ou une médecin, gynécologue ou sage-femme peut proposer un traitement local, notamment à base d’œstrogènes, contre la sécheresse et l’atrophie vaginale. Si ta contraception semble en cause, il est possible d’en changer en en parlant avec un professionnel.
+
+## Questions fréquentes
+**Je ne suis pas ménopausée et j’ai une sécheresse, est-ce possible ?** Oui. Une contraception hormonale, des produits irritants ou un manque d’excitation peuvent jouer, selon les sources consultées. Un examen permet aussi d’écarter une infection.
+
+**La sécheresse peut-elle faire baisser le désir ?** QuestionSexualité indique que l’inconfort lié à la sécheresse peut freiner la sexualité et faire baisser la libido. La soulager peut aider à retrouver du plaisir.
+
+**Tous les lubrifiants vont-ils avec les préservatifs ?** Non : les produits gras peuvent fragiliser les préservatifs en latex. Vérifie l’emballage ou demande conseil au pharmacien pour un produit adapté à la muqueuse et compatible.
+
+**Faut-il en parler à mon ou ma partenaire ?** Santé.fr encourage à en parler avec son partenaire et avec un professionnel : cela évite que la douleur s’installe et permet d’adapter vos moments d’intimité.
+
+## Quand demander conseil
+Consulte si la sécheresse s’accompagne de démangeaisons, brûlures, pertes inhabituelles, saignements (en particulier **après la ménopause**, ce qui doit toujours faire consulter) ou de douleurs pendant les rapports qui persistent. Une gêne qui t’empêche de vivre normalement ou ta sexualité comme tu le souhaites n’est pas à subir : une sage-femme, un ou une gynécologue, ton médecin généraliste ou un ou une sexologue peuvent t’aider.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['sécheresse vaginale','sécheresse intime','lubrifiant','hydratant vaginal','ménopause','atrophie vaginale','irritation','rapports douloureux','œstrogènes']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Vivre au mieux la ménopause","url":"https://www.sante.fr/menopause-perimenopause/vivre-au-mieux-menopause","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Sexualité, ménopause et andropause","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/la-sexualite-au-cours-de-la-vie/la-sexualite-apres-la-menopause-et-l-andropause","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — La contraception fait-elle baisser la libido ?","url":"https://www.questionsexualite.fr/site/choisir-sa-contraception/ma-contraception-et-moi/la-contraception-fait-elle-baisser-la-libido","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('vaginisme-comprendre-prise-en-charge', (select id from public.content_categories where slug = 'sante-intime'), 'Vaginisme : quand la pénétration est impossible ou très douloureuse', 'Le vaginisme est une contraction involontaire du périnée qui empêche ou rend douloureuse toute pénétration : comprendre ses formes, ses causes possibles et la prise en charge qui fonctionne.', '## En bref
+- Le vaginisme est une **contraction involontaire des muscles du périnée** autour du vagin, qui se déclenche lors d’une tentative d’insertion (doigt, tampon, spéculum, pénis) ou à la simple pensée d’une pénétration.
+- Il rend la pénétration **douloureuse, voire impossible**. Ce n’est ni un manque d’envie, ni un rejet du ou de la partenaire.
+- Il peut exister **depuis toujours** (primaire) ou **apparaître plus tard** (secondaire), dans toutes les situations ou seulement certaines.
+- QuestionSexualité le dit clairement : **le vaginisme n’est pas une fatalité**. Une prise en charge pluridisciplinaire aide.
+
+## Comprendre
+QuestionSexualité décrit plusieurs formes :
+- **primaire** : présent depuis le début de la vie sexuelle ;
+- **secondaire** : apparu après une période où la pénétration était possible ;
+- **total** : dans toutes les situations et avec tout objet ;
+- **partiel** ou situationnel : la pénétration est possible dans certains contextes ou avec certaines personnes, pas dans d’autres.
+
+Les causes sont propres à chaque personne : une cause physique, des douleurs de la vulve (vulvodynie), une éducation stricte ou des interdits, la peur d’une grossesse, un traumatisme sexuel… Quelle que soit l’origine, le résultat est une forte contraction du périnée. Un cercle peut ensuite s’installer : la douleur génère de l’angoisse, qui renforce la contraction, qui renforce la douleur.
+
+Les sensations sont souvent décrites comme une brûlure ou une impression de déchirement, avec de la peur à l’idée d’une introduction dans le vagin. La contraction est involontaire : on ne peut pas la « décider ».
+
+## Au quotidien
+**Te rappeler l’essentiel :** la sexualité ne se résume pas à la pénétration. Le désir et le plaisir restent possibles, par d’autres pratiques, sans pression.
+
+**Parler avec ton ou ta partenaire :** QuestionSexualité souligne que le dialogue est essentiel pour lui faire comprendre que les contractions sont involontaires et ne disent rien de ton envie ni de vos sentiments. Vous pouvez convenir ensemble de mettre la pénétration de côté le temps de la prise en charge.
+
+**Trouver le bon accompagnement :**
+- psychologue, médecin, gynécologue, sage-femme ou conseiller ou conseillère conjugale : choisis quelqu’un avec qui tu te sens écoutée et en confiance ;
+- la prise en charge associe généralement une **sexothérapie** et un **travail corporel** personnel, souvent accompagné par un **kinésithérapeute** spécialisé dans le périnée ;
+- elle se construit dans la durée, à ton rythme.
+
+**Pendant les consultations :** tu as le droit de **refuser un toucher vaginal** ou un examen avec spéculum. Tu peux demander qu’on t’explique chaque geste avant, et arrêter à tout moment. QuestionSexualité rappelle aussi qu’un examen n’est pas toujours nécessaire lors d’une consultation gynécologique.
+
+## Questions fréquentes
+**Je n’arrive pas à mettre un tampon, est-ce du vaginisme ?** Pas forcément. Mais si toute tentative déclenche une contraction réflexe et une douleur, parles-en à un ou une professionnelle.
+
+**Est-ce que c’est « dans ma tête » ?** Le vaginisme associe le corps et les émotions. La contraction est réelle et involontaire, et des causes physiques peuvent être en jeu : c’est pour cela qu’un examen respectueux et une prise en charge globale sont utiles.
+
+**Puis-je avoir un enfant si j’ai un vaginisme ?** Le vaginisme se soigne, et des solutions existent pour un projet de grossesse : parles-en à ton ou ta gynécologue ou à ta sage-femme.
+
+**Combien de temps dure la prise en charge ?** Elle varie selon chaque personne. QuestionSexualité indique qu’elle s’inscrit dans la durée.
+
+## Quand demander conseil
+Consulte dès que la pénétration est impossible ou douloureuse, ou que la peur t’empêche de vivre ta sexualité comme tu le souhaites : ce n’est pas à subir. Si le vaginisme est lié à des violences sexuelles, tu peux être aidée : **3919** (gratuit, anonyme, 24 h/24) ; en cas de danger immédiat, **17** ou **112**. Si tu te sens très angoissée ou déprimée, le **3114** répond jour et nuit.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid','ttc']::text[], null, null, null, null, false, array['vaginisme','pénétration impossible','contraction périnée','tampon impossible','peur de la pénétration','sexothérapie','kinésithérapeute','premier rapport']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Le vaginisme, c’est quoi ?","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-troubles-de-la-sexualite/le-vaginisme-c-est-quoi","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Dyspareunies : douleurs pendant les rapports sexuels","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-troubles-de-la-sexualite/dyspareunies-douleurs-pendant-les-rapports-sexuels","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Comment se passe la première consultation gynécologique ?","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/l-hygiene-et-le-suivi-medical/comment-se-passe-la-premiere-consultation-gynecologique","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('baisse-du-desir-libido-causes-contraception-en-parler', (select id from public.content_categories where slug = 'sante-intime'), 'Baisse du désir : les causes possibles et à qui en parler', 'Contraception, sécheresse, douleur, fatigue, ménopause : ce qui peut faire varier le désir, ce que tu peux essayer et pourquoi ton consentement reste toujours la règle.', '## En bref
+- Le désir varie au fil de la vie, des périodes et des relations. Une baisse n’est un problème **que si elle te préoccupe** ou te fait souffrir.
+- Plusieurs facteurs peuvent jouer : **contraception hormonale** chez certaines femmes, **sécheresse vaginale**, **douleurs pendant les rapports**, **ménopause**, maladie ou traitement, contexte de vie.
+- Des **solutions existent** : lubrifiant, changement de contraception, traitement d’une douleur, accompagnement sexologique.
+- Le **consentement** reste la règle : personne, même dans un couple marié, ne peut t’obliger à un rapport.
+
+## Comprendre
+**Contraception :** QuestionSexualité explique que les études sur le lien entre pilule et désir ne sont pas unanimes. Certaines femmes signalent une baisse de libido sous contraception hormonale (pilule, patch, anneau, implant, DIU hormonal), d’autres un effet favorable, par exemple quand les règles deviennent moins douloureuses. Deux pistes sont avancées : certains contraceptifs pourraient diminuer le taux de testostérone, et les contraceptions faiblement dosées en œstrogènes peuvent provoquer une sécheresse vaginale. Chaque femme réagit différemment.
+
+**Sécheresse et douleur :** une lubrification insuffisante ou des rapports douloureux freinent logiquement l’envie. Soigner la cause peut suffire à retrouver du désir.
+
+**Ménopause :** selon QuestionSexualité, environ 40 % des femmes ménopausées signalent un problème sexuel, mais la ménopause n’en est pas la seule cause : une maladie, un traitement ou d’autres facteurs peuvent aussi intervenir. Certaines femmes ressentent au contraire un regain de sexualité, libérées de la contraception et des règles.
+
+**Le contexte :** fatigue, stress, changements émotionnels, estime de soi, difficultés dans la relation peuvent aussi peser.
+
+## Au quotidien
+**Des pistes à explorer :**
+- note dans ton calendrier si ton envie varie selon le moment du cycle, la fatigue ou un changement récent (nouvelle contraception, traitement) : c’est utile pour en parler ;
+- si la sécheresse gêne, un **lubrifiant** (à base d’eau ou de silicone) peut aider ;
+- prends le temps des préliminaires, qui favorisent l’excitation et la lubrification ;
+- si tu soupçonnes ta contraception, **n’arrête pas seule** sans solution de relais : parles-en à ton médecin, ta sage-femme ou ton ou ta gynécologue, qui pourront te proposer une autre méthode ;
+- QuestionSexualité rappelle qu’il existe des contraceptions sans hormones (préservatif, DIU au cuivre, diaphragme, cape cervicale).
+
+**Dans le couple :**
+- parler de ses envies et de ses limites, sans reproche ;
+- se rappeler que l’intimité ne se résume pas à la pénétration ;
+- une consultation de sexologie ou de conseil conjugal peut aider à rouvrir le dialogue.
+
+## Questions fréquentes
+**Je n’ai plus envie, suis-je « anormale » ?** Non. Le désir est variable et il n’existe pas de « bonne » fréquence. Ce qui compte, c’est ce que toi tu ressens et souhaites.
+
+**Mon ou ma partenaire insiste, dois-je accepter ?** Non. QuestionSexualité est clair : le « devoir conjugal » n’existe pas. Imposer un acte sexuel à quelqu’un, y compris à son conjoint, est interdit par la loi.
+
+**Le DIU au cuivre change-t-il le désir ?** Il ne modifie pas l’équilibre hormonal, selon QuestionSexualité. Si les fils gênent ton ou ta partenaire, un ou une professionnelle peut les raccourcir.
+
+**Existe-t-il des traitements ?** QuestionSexualité indique que des solutions médicales existent, selon la cause. Un professionnel pourra en discuter avec toi.
+
+## Quand demander conseil
+Parles-en à ton médecin, à une sage-femme, à un ou une gynécologue ou à un ou une sexologue si la baisse de désir te préoccupe, s’accompagne de douleurs, de sécheresse ou de tristesse persistante. Si tu te sens déprimée ou à bout, appelle le **3114** (jour et nuit). Si des rapports te sont imposés ou si tu subis des violences, le **3919** est gratuit et anonyme, 24 h/24 ; en cas de danger immédiat, **17** ou **112**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['baisse de libido','désir sexuel','plus envie','libido','contraception et libido','pilule','sécheresse','couple','consentement','sexologue']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — La contraception fait-elle baisser la libido ?","url":"https://www.questionsexualite.fr/site/choisir-sa-contraception/ma-contraception-et-moi/la-contraception-fait-elle-baisser-la-libido","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Sexualité, ménopause et andropause","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/la-sexualite-au-cours-de-la-vie/la-sexualite-apres-la-menopause-et-l-andropause","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Le devoir conjugal, ça existe ?","url":"https://www.questionsexualite.fr/site/lutter-contre-les-violences-et-discriminations/les-droits/le-devoir-conjugal-ca-existe","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('fuites-urinaires-femme-hors-grossesse-effort-urgence-perinee', (select id from public.content_categories where slug = 'sante-intime'), 'Fuites urinaires en dehors de la grossesse : comprendre et agir', 'Fuites quand tu tousses, cours ou ris, ou envies pressantes impossibles à retenir : les types de fuites urinaires, leurs causes et la rééducation du périnée, premier traitement.', '## En bref
+- Les fuites urinaires ne concernent pas que la grossesse ou le grand âge : elles peuvent toucher des femmes **jeunes**, y compris sportives ou n’ayant pas accouché.
+- Il existe des fuites **à l’effort** (toux, rire, saut, port de charges), des fuites **par urgence** (besoin pressant impossible à retenir) et des formes **mixtes**.
+- Selon l’Assurance Maladie, la **rééducation du périnée** est le **traitement initial** des fuites à l’effort, et elle est aussi recommandée pour les autres formes.
+- Beaucoup de femmes n’en parlent pas : pourtant des solutions existent, **ose en parler**.
+
+## Comprendre
+L’Assurance Maladie distingue trois formes :
+- **l’incontinence d’effort** : une fuite sans envie préalable, lors d’un effort (marche, saut, port de charge, changement de position) ou d’un effort minime (toux, rire, éternuement) ;
+- **l’hyperactivité vésicale** (« urgenterie ») : une fuite précédée d’un besoin urgent et impérieux, parfois au repos ou la nuit ;
+- **l’incontinence mixte**, qui associe les deux et représente environ la moitié des cas.
+
+Plusieurs facteurs peuvent favoriser les fuites : les suites d’une grossesse ou d’un accouchement difficile, la ménopause (baisse des hormones), le surpoids, la constipation chronique, une toux chronique, certains médicaments, une consommation importante de caféine, d’alcool ou de tabac. Les sports qui sollicitent le périnée de façon répétée (course à pied, trampoline, sauts, haltérophilie…) peuvent révéler une fragilité. Chez des femmes sans facteur particulier et n’ayant pas accouché, une fragilité des tissus de soutien est suspectée.
+
+Des fuites par urgence peuvent aussi être liées à une **infection urinaire** : un examen médical permet de rechercher une cause à traiter.
+
+## Au quotidien
+**Les repères de la prise en charge (Assurance Maladie) :**
+- la **rééducation périnéo-sphinctérienne** est réalisée par un ou une kinésithérapeute (ou une sage-femme après un accouchement) ; elle vise à renforcer le plancher pelvien et demande ta participation active ;
+- un **travail d’auto-rééducation** entre les séances est recommandé : les exercices appris en séance sont à refaire chez toi ;
+- un **traitement comportemental** peut aider : adapter ta consommation de liquides et reprogrammer tes passages aux toilettes pour les espacer progressivement ;
+- le rééducateur donne aussi des conseils de postures et d’activité ;
+- traiter ce qui favorise les fuites : constipation, toux chronique, surpoids.
+
+**Si tu fais du sport :** ne renonce pas forcément à ton activité, mais parles-en : un ou une kinésithérapeute peut t’aider à adapter tes entraînements et à renforcer ton périnée.
+
+**Noter ce qui se passe :** pendant quelques jours, note dans ton calendrier quand surviennent les fuites (effort, envie pressante, nuit), ce que tu bois et combien de fois tu urines. Ces informations aident beaucoup lors de la consultation.
+
+**Après la ménopause :** l’Assurance Maladie indique que des œstrogènes locaux, proposés en cas de sécheresse vaginale, améliorent souvent les fuites associées.
+
+## Questions fréquentes
+**Faut-il boire moins pour fuir moins ?** Pas de ta propre initiative : boire trop peu favorise les infections urinaires et la constipation. Le traitement comportemental consiste à **adapter** les apports avec un professionnel, pas à les supprimer.
+
+**Je n’ai jamais accouché, est-ce possible ?** Oui, l’Assurance Maladie l’évoque, notamment chez des sportives ou en cas de fragilité des tissus de soutien.
+
+**La rééducation suffit-elle ?** C’est le traitement de première intention. Si les fuites persistent malgré elle, d’autres options (médicaments pour l’hyperactivité vésicale, chirurgie dans certains cas) peuvent être discutées avec un médecin.
+
+**À qui en parler ?** À ton médecin généraliste, ta sage-femme ou ton ou ta gynécologue, qui pourront prescrire une rééducation.
+
+## Quand demander conseil
+Consulte si les fuites te gênent, même un peu : ce n’est pas à subir. Consulte rapidement si elles s’accompagnent de brûlures en urinant, de sang dans les urines, de douleurs, ou d’une sensation de boule ou de pesanteur dans le vagin. Fièvre avec douleurs dans le dos ou sur le côté : consulte dans la journée ; en cas de malaise, appelle le **15** ou le **112**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['fuites urinaires','incontinence urinaire','incontinence d’effort','envie pressante','périnée','rééducation périnéale','sport et fuites','kinésithérapeute','ménopause']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Incontinence urinaire : mécanisme, fréquence et causes","url":"https://www.ameli.fr/assure/sante/themes/incontinence-urinaire/mecanismes-frequence-causes","consulted_on":"2026-10-27","published":"2026-04-10"},{"label":"ameli.fr — Traitement de l’incontinence urinaire","url":"https://www.ameli.fr/assure/sante/themes/incontinence-urinaire/traitement","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('depistage-cancer-du-sein-examen-clinique-mammographie-signes', (select id from public.content_categories where slug = 'sante-intime'), 'Dépistage du cancer du sein : examen des seins, mammographie et signes à connaître', 'Examen clinique des seins dès 25 ans, mammographie tous les deux ans de 50 à 74 ans, signes qui doivent faire consulter : les repères de l’Institut national du cancer.', '## En bref
+- L’Institut national du cancer recommande un **examen clinique des seins** (observation et palpation) par un ou une professionnelle **tous les ans dès 25 ans**.
+- **De 50 à 74 ans**, sans symptôme ni risque particulier : une **mammographie tous les deux ans**, complétée si besoin par une échographie, dans le cadre du **dépistage organisé gratuit**.
+- Les femmes à **risque élevé** (antécédents familiaux, prédisposition) peuvent bénéficier d’un suivi spécifique : parles-en.
+- Une boule, un changement de la peau ou du mamelon, un écoulement doivent faire **consulter sans attendre**, quel que soit ton âge.
+
+## Comprendre
+Le cancer du sein est le plus fréquent des cancers chez la femme. Santé.fr rappelle qu’environ 80 % des cas sont diagnostiqués après 50 ans, d’où le dépistage organisé à partir de cet âge. Ce programme propose gratuitement, depuis 2004, une mammographie tous les deux ans. Selon Santé.fr (INCa), les mammographies normales y sont relues par un second radiologue expérimenté, par sécurité. L’INCa souligne que le dépistage a des bénéfices et des limites, et recommande de s’informer avant de décider.
+
+**Facteurs de risque cités par Santé.fr :** l’âge, des antécédents familiaux (mère, sœur ou fille atteinte), des antécédents personnels, certaines lésions bénignes du sein, des radiothérapies du thorax, une exposition prolongée aux œstrogènes (premières règles précoces, ménopause tardive, première grossesse tardive ou absence de grossesse). D’autres sont liés au mode de vie : surpoids après la ménopause, tabac, alcool, manque d’activité physique, certains traitements hormonaux pris longtemps. Pour la pilule, Santé.fr précise que le risque supplémentaire est minime.
+
+## Au quotidien
+**Avant 50 ans :**
+- demande un examen de tes seins lors de ta consultation de suivi gynécologique annuelle, chez ton médecin, ta sage-femme ou ton ou ta gynécologue ;
+- si une proche (mère, sœur, fille) a eu un cancer du sein ou de l’ovaire, signale-le : un dépistage adapté à ton risque peut t’être proposé.
+
+**De 50 à 74 ans :**
+- dans le cadre du dépistage organisé, la mammographie est proposée gratuitement tous les deux ans : garde ton courrier d’invitation et prends rendez-vous chez un radiologue ;
+- note la date dans ton calendrier pour ne pas laisser passer l’échéance.
+
+**Connaître tes seins :** observer et palper tes seins de temps en temps, par exemple sous la douche, t’aide à remarquer un changement. Cela ne remplace pas l’examen par un professionnel ni la mammographie.
+
+**Les signes qui doivent faire consulter (Santé.fr) :**
+- une **masse dure** dans un sein, souvent indolore, aux contours irréguliers ;
+- des **ganglions durs** sous l’aisselle ;
+- un **écoulement spontané** par un mamelon ;
+- un **mamelon qui se rétracte** ou une **peau qui change** (dure, grumeleuse, aspect « peau d’orange ») ;
+- une modification de la forme ou du volume d’un sein.
+
+**Réduire ce qui peut l’être :** limiter l’alcool, ne pas fumer, bouger régulièrement, surveiller son poids après la ménopause.
+
+## Questions fréquentes
+**J’ai trouvé une boule, est-ce un cancer ?** Pas forcément : beaucoup de boules sont bénignes. Mais seul un examen permet de le savoir ; consulte rapidement.
+
+**J’ai moins de 50 ans, ai-je droit à une mammographie ?** En dehors du dépistage organisé, une mammographie peut être prescrite si un examen le justifie ou si ton risque est élevé.
+
+**Et après 74 ans ?** Selon l’INCa, la question se discute au cas par cas avec ton médecin.
+
+**La pilule augmente-t-elle le risque ?** Santé.fr indique un risque supplémentaire minime en cas de prise prolongée ; parles-en à ton ou ta professionnelle si tu as des antécédents familiaux.
+
+## Quand demander conseil
+Consulte **rapidement** ton médecin, ta sage-femme ou ton ou ta gynécologue en cas de boule, d’écoulement, de rétraction du mamelon ou de changement de la peau d’un sein, même si tu as eu une mammographie récente. Attendre un résultat peut être très angoissant : n’hésite pas à demander du soutien, et si l’anxiété te submerge, le **3114** répond jour et nuit.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['cancer du sein','dépistage','mammographie','palpation des seins','boule dans le sein','examen clinique','octobre rose','mamelon','facteurs de risque']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu Institut national du cancer) — Cancer du sein : quels examens et à quel âge ?","url":"https://www.sante.fr/cancer-du-sein-quels-examens-et-quel-age","consulted_on":"2026-10-27","published":"2018-08-10"},{"label":"Santé.fr (contenu Institut national du cancer) — Le dépistage du cancer du sein : les réponses à vos questions","url":"https://www.sante.fr/le-depistage-du-cancer-du-sein-les-reponses-vos-questions","consulted_on":"2026-10-27","published":"2021-10-12"},{"label":"Santé.fr — Cancer du sein","url":"https://www.sante.fr/cancer-du-sein","consulted_on":"2026-10-27","published":"2026-08-13"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('demangeaisons-brulures-vulve-douloureuse-vulvodynie', (select id from public.content_categories where slug = 'sante-intime'), 'Démangeaisons, brûlures, vulve douloureuse : causes possibles et que faire', 'Mycose, irritation, sécheresse, IST ou vulvodynie : ce qui peut provoquer des démangeaisons ou des douleurs de la vulve, les gestes qui soulagent et pourquoi consulter.', '## En bref
+- Démangeaisons et brûlures de la vulve sont **fréquentes** : mycose, vaginite, irritation par des produits ou des frottements, sécheresse, IST, maladie de peau…
+- Quand des **douleurs vulvaires durent au moins trois mois**, on parle de **vulvodynie**, souvent sans lésion visible.
+- QuestionSexualité le rappelle : **avoir mal à la vulve n’est pas à banaliser** ; un avis médical est utile.
+- Des gestes simples soulagent souvent : coton, vêtements amples, produits sans parfum, lessive douce.
+
+## Comprendre
+**Les causes les plus courantes de démangeaisons** sont les vulvovaginites. L’Assurance Maladie explique que la vaginite est presque toujours associée à une irritation de la vulve, avec démangeaisons ou brûlures, lèvres rouges et gonflées, parfois douleurs pendant les rapports ou en urinant. Elle peut être infectieuse (mycose, bactérie, parasite, herpès) ou non infectieuse : irritation par des produits (gels douche, savons, lubrifiants, spermicides), frottements, sous-vêtements serrés, maladie de peau étendue à la vulve, ou baisse des œstrogènes après la ménopause.
+
+**La vulvodynie** est décrite par QuestionSexualité comme une douleur vulvaire qui persiste au moins trois mois : brûlure (la sensation la plus fréquente), impression de chair à vif ou de coupure, irritation qui donne envie de se gratter, douleur au contact (position assise prolongée, serviette hygiénique, vélo, vêtements serrés), douleur intense pendant les rapports. Le plus souvent, aucune lésion n’est visible. Les causes possibles sont nombreuses : déshydratation de la vulve, infection (mycose, IST), maladie de peau comme le lichen, atteinte d’un nerf, irritation par des produits d’hygiène ou de lessive, endométriose, déséquilibre hormonal (périménopause), cicatrice d’épisiotomie ou d’intervention, maladie auto-immune. Ces douleurs ont souvent un retentissement émotionnel.
+
+## Au quotidien
+**Ce qui peut soulager (QuestionSexualité, Assurance Maladie) :**
+- des sous-vêtements en **coton** et des vêtements **peu serrés** à l’entrejambe ;
+- dormir sans sous-vêtement ;
+- des produits d’hygiène intime et une **lessive sans parfum**, hypoallergéniques ;
+- une toilette **uniquement externe**, une à deux fois par jour, puis bien sécher sans frotter ;
+- pas de douche vaginale, de déodorant intime ou de talc ;
+- hydrater la vulve avec un produit dédié, si la peau est sèche ;
+- éviter de rester longtemps en maillot de bain mouillé.
+
+**Pendant les rapports :** un lubrifiant peut aider ; QuestionSexualité cite aussi des gels anesthésiants ou des massages du périnée pour certaines personnes, à discuter avec un professionnel. L’écoute de ton ou ta partenaire compte.
+
+**Pour la consultation :** note depuis quand les symptômes durent, ce qui les déclenche ou les soulage, les produits utilisés, et s’il y a des pertes associées. Évite la toilette intime juste avant le rendez-vous, pour que les pertes puissent être examinées.
+
+## Questions fréquentes
+**Des démangeaisons, c’est forcément une mycose ?** Non. La mycose est fréquente, mais une irritation, une sécheresse, une IST ou une maladie de peau peuvent donner des signes proches. Si ce n’est pas une mycose déjà connue et reconnue, consulte avant de te traiter.
+
+**J’ai mal mais rien ne se voit, est-ce réel ?** Oui. QuestionSexualité indique que dans la vulvodynie, le plus souvent aucune lésion n’est visible. La douleur est bien réelle et mérite une prise en charge.
+
+**Qui consulter ?** D’abord ton médecin traitant ou ton ou ta gynécologue. Selon les cas : dermatologue, kinésithérapeute spécialisé dans le périnée, psychologue ou sexologue.
+
+**Et chez une petite fille ?** L’Assurance Maladie cite, chez l’enfant, une toilette incomplète, des oxyures (petits vers intestinaux) ou un objet introduit dans le vagin. Un écoulement malodorant justifie de consulter dans la journée.
+
+## Quand demander conseil
+Consulte si les démangeaisons ou brûlures durent plus de quelques jours, reviennent, s’accompagnent de pertes inhabituelles, de plaies, de boutons ou de cloques, ou si tu as mal pendant les rapports. Une douleur qui t’empêche de t’asseoir, de dormir ou de vivre normalement n’est pas à subir. Fièvre avec douleurs pelviennes : **15** ou **112**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['démangeaisons vulve','brûlure vulve','vulvodynie','vulve douloureuse','irritation intime','prurit vulvaire','mycose','lichen','gratter']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Quand la vulve est douloureuse","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-troubles-de-la-sexualite/quand-la-vulve-est-douloureuse","consulted_on":"2026-10-27"},{"label":"ameli.fr — Reconnaître une vaginite (définition, symptômes, facteurs favorisants)","url":"https://www.ameli.fr/assure/sante/themes/vaginite/definition-symptomes-facteurs-favorisants","consulted_on":"2026-10-27"},{"label":"ameli.fr — Comment prévenir la vaginite et ses récidives ?","url":"https://www.ameli.fr/assure/sante/themes/vaginite/prevention","consulted_on":"2026-10-27","published":"2024-08-13"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('violences-sexuelles-ou-trouver-aide-3919-17-112', (select id from public.content_categories where slug = 'sante-intime'), 'Violences sexuelles : où trouver de l’aide, que faire, quels numéros', 'Personne n’a le droit de t’imposer un acte sexuel : les numéros à connaître, les premiers réflexes de santé, comment porter plainte et où être accompagnée, à ton rythme.', '## En bref
+- **Personne n’a le droit de t’imposer un acte sexuel** que tu ne désires pas, y compris dans un couple ou un mariage.
+- **En danger immédiat** : appelle le **17** (police, gendarmerie) ou le **112** ; par SMS, le **114**. Pour une urgence médicale, le **15**.
+- Pour parler, être écoutée et orientée : le **3919** (Violences Femmes Info), **gratuit et anonyme, 24 h/24 et 7 j/7**.
+- La responsabilité revient **uniquement à l’auteur**. Rien de ce que tu as fait, dit ou porté ne justifie des violences.
+
+## Comprendre
+Le site gouvernemental arretonslesviolences.gouv.fr rappelle que les violences sexuelles portent atteinte à l’intégrité physique et psychologique. Elles recouvrent notamment le viol, l’agression sexuelle, le harcèlement sexuel, le voyeurisme, l’exploitation sexuelle et la diffusion de contenus intimes, y compris en ligne.
+
+Le **consentement** doit être libre, éclairé, spécifique, préalable et révocable : il ne se déduit **ni du silence, ni de l’absence de réaction**. Tu peux changer d’avis à tout moment.
+
+Dans le couple, QuestionSexualité est clair : le « devoir conjugal » **n’existe pas**. La loi n’impose pas de rapports sexuels aux personnes mariées, et imposer un acte sexuel à son conjoint ou à sa conjointe est puni par la loi ; le fait d’être en couple avec la victime est même une circonstance aggravante.
+
+Les réactions après des violences sont très variables : sidération, honte, colère, troubles du sommeil, peur… Il n’y a pas de « bonne » façon de réagir.
+
+## Au quotidien
+**Les premiers réflexes possibles (arretonslesviolences.gouv.fr)**, à ton rythme :
+- **ne pas rester seule** : parler à une personne de confiance, à un ou une professionnelle de santé, à une association ;
+- **consulter un ou une médecin** rapidement : il ou elle peut établir un constat et un certificat médical, et proposer les soins d’urgence nécessaires (contraception d’urgence, traitement préventif contre le VIH, dépistage et traitement d’éventuelles infections) ;
+- si c’est possible, ne pas te laver et garder les vêtements dans un **sac en papier** : cela peut servir de preuve ;
+- **conserver les traces numériques** (messages, photos, vidéos) ;
+- en cas de traumatisme, te faire accompagner par un ou une professionnelle formée : il existe des centres régionaux de psychotraumatisme.
+
+**Porter plainte :** au commissariat ou à la gendarmerie, quand tu te sens prête. Les délais pour porter plainte sont longs (par exemple 20 ans pour un viol sur une personne majeure), et même au-delà, il reste possible de déposer plainte. Une plateforme de signalement en ligne, accessible depuis service-public.fr, permet d’échanger par tchat 24 h/24 avec des policiers ou gendarmes formés ; tu peux quitter rapidement le tchat et effacer l’historique.
+
+**Dans les transports :** le **3117** (appel) ou le **31177** (SMS) permettent d’alerter, 24 h/24.
+
+**D’autres soutiens :** le Collectif féministe contre le viol (**0800 05 95 95**), les associations d’aide aux victimes et les CIDFF, que tu trouveras via l’annuaire d’arretonslesviolences.gouv.fr.
+
+## Questions fréquentes
+**Je n’ai pas dit non, est-ce quand même une violence ?** Oui, si tu n’étais pas consentante. Le consentement ne se déduit pas du silence ou de l’absence de réaction.
+
+**C’était mon ou ma partenaire.** Être en couple ne donne aucun droit sur ton corps. Le 3919 peut t’écouter et t’orienter, sans jugement.
+
+**Je ne suis pas prête à porter plainte.** Tu peux d’abord te faire soigner, en parler, être accompagnée. Un certificat médical établi tôt peut être utile plus tard.
+
+**Un proche m’a confié des violences, comment l’aider ?** L’écouter sans juger, lui dire qu’il ou elle n’est pas responsable, l’informer des numéros. Le 3919 s’adresse aussi à l’entourage.
+
+## Quand demander conseil
+En danger immédiat : **17**, **112** ou SMS au **114**. Besoin de soins urgents : **15**. Pour parler : **3919**, gratuit, anonyme, 24 h/24. Si une personne mineure est en danger, appelle le **119**. Si tu as des idées noires ou te sens submergée, le **3114** répond jour et nuit.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['violences sexuelles','agression sexuelle','viol','3919','consentement','porter plainte','victime','aide','viol conjugal','harcèlement']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"arretonslesviolences.gouv.fr (Gouvernement) — Violences sexuelles : besoin d’aide","url":"https://arretonslesviolences.gouv.fr/besoin-d-aide/violences-sexuelles","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Le devoir conjugal, ça existe ?","url":"https://www.questionsexualite.fr/site/lutter-contre-les-violences-et-discriminations/les-droits/le-devoir-conjugal-ca-existe","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('preservatifs-gratuits-prevention-ist-moins-26-ans-limites', (select id from public.content_categories where slug = 'sante-intime'), 'Préservatifs et prévention des IST : les obtenir gratuitement et connaître leurs limites', 'Seuls les préservatifs protègent des IST : comment en obtenir gratuitement en pharmacie avant 26 ans, pourquoi les associer à sa contraception, et ce contre quoi ils protègent moins bien.', '## En bref
+- Selon l’Assurance Maladie, **seuls les préservatifs** (externe et interne) protègent des IST : pilule, implant, patch, anneau, DIU et spermicides **ne protègent pas** des infections.
+- **Avant 26 ans**, certains préservatifs sont **gratuits en pharmacie, sans ordonnance et sans âge minimum**, sur présentation de ta carte Vitale, d’une attestation de droits ou d’une pièce d’identité.
+- **À partir de 26 ans**, certains préservatifs sont remboursés à 60 % sur prescription d’un médecin, d’une sage-femme ou d’un centre de santé sexuelle.
+- Le préservatif protège **moins bien** contre les papillomavirus et l’herpès, dont les lésions peuvent se trouver hors de la zone couverte.
+
+## Comprendre
+L’Assurance Maladie recommande d’utiliser un préservatif **à chaque rapport et avec chaque partenaire**, tant que tu n’es pas certaine que ton ou ta partenaire n’a pas d’IST. Pour arrêter le préservatif avec un nouveau partenaire régulier, un dépistage des deux est conseillé.
+
+Le préservatif reste précieux même si tu as déjà une contraception : on parle de **double protection** (contraception contre la grossesse, préservatif contre les IST).
+
+**Ses limites :** l’Assurance Maladie précise qu’il ne protège pas totalement contre les HPV, ni pendant une primo-infection ou une poussée d’herpès, car des lésions proches des organes génitaux restent un risque. Dans ces situations, il vaut mieux éviter les rapports, même protégés. Le vaccin HPV et le dépistage complètent alors la prévention.
+
+L’enquête citée par l’Assurance Maladie montre que l’utilisation du préservatif a reculé ces dernières années, y compris lors du premier rapport : en parler reste important.
+
+## Au quotidien
+**Obtenir des préservatifs gratuitement (moins de 26 ans) :**
+- va en pharmacie avec ta carte Vitale, une attestation de droits ou une pièce d’identité ;
+- une boîte est remise par passage ;
+- les mineures peuvent justifier de leur âge ou de leur couverture par une **déclaration sur l’honneur** et demander que la délivrance reste **confidentielle** ;
+- les centres de santé sexuelle, CeGIDD, Espaces santé jeunes et services de santé universitaires sont aussi des lieux d’information et souvent de distribution.
+
+**Bien choisir (sans marque) :**
+- vérifie le **marquage CE** et la **date de péremption** sur l’emballage ;
+- en cas d’allergie au latex, il existe des modèles sans latex, dont certains sont pris en charge ;
+- utilise un lubrifiant compatible (à base d’eau ou de silicone) : les produits gras fragilisent le latex ;
+- si un préservatif ou un spermicide t’irrite, parles-en : l’Assurance Maladie cite ces produits parmi les causes possibles d’irritation.
+
+**Le préservatif interne** se place dans le vagin et peut être posé à l’avance ; c’est une option si tu veux gérer toi-même ta protection.
+
+**Si le préservatif craque ou glisse :** pense à la contraception d’urgence si tu n’as pas d’autre contraception, au dépistage des IST, et, en cas de risque d’exposition au VIH, au traitement d’urgence à débuter au plus vite (urgences ou CeGIDD).
+
+## Questions fréquentes
+**Dois-je avoir une ordonnance pour les préservatifs gratuits ?** Non, pas avant 26 ans. À partir de 26 ans, une prescription permet un remboursement partiel de certains modèles.
+
+**Je suis sous pilule, ai-je besoin d’un préservatif ?** Pour te protéger des IST, oui : la pilule ne protège que de la grossesse.
+
+**Peut-on mettre deux préservatifs pour être plus protégés ?** Non : le frottement entre deux préservatifs augmente le risque de rupture. Un seul, bien posé, suffit.
+
+**Où trouver plus d’informations ?** Sida Info Service répond au **0 800 840 800**, de façon anonyme et gratuite.
+
+## Quand demander conseil
+Après un rapport sans préservatif ou un accident de préservatif, ne reste pas seule avec ton inquiétude : pharmacie (contraception d’urgence), CeGIDD, médecin ou sage-femme (dépistage). Si tu as des symptômes (pertes inhabituelles, brûlures, lésions), consulte rapidement. Si un rapport t’a été imposé, appelle le **3919** ou, en danger immédiat, le **17** ou le **112**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['préservatif gratuit','préservatif pharmacie','moins de 26 ans','prévention IST','préservatif interne','double protection','contraception et IST','remboursement préservatif']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Prévenir les IST","url":"https://www.ameli.fr/assure/sante/themes/mst-ist/prevention","consulted_on":"2026-10-27","published":"2026-03-05"},{"label":"QuestionSexualité (Santé publique France) — Où se faire dépister gratuitement ?","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-depistages/ou-se-faire-depister-gratuitement","consulted_on":"2026-10-27"},{"label":"ameli.fr — Comment prévenir la vaginite et ses récidives ?","url":"https://www.ameli.fr/assure/sante/themes/vaginite/prevention","consulted_on":"2026-10-27","published":"2024-08-13"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('gonocoque-blennorragie-chaude-pisse-symptomes-traitement', (select id from public.content_categories where slug = 'sante-intime'), 'Gonocoque (blennorragie, « chaude-pisse ») : signes, dépistage et traitement', 'Le gonocoque est une IST bactérienne souvent silencieuse chez les femmes : signes possibles, dépistage simple, traitement antibiotique et importance de traiter les partenaires.', '## En bref
+- Le gonocoque (*Neisseria gonorrhoeae*) est une **bactérie transmise lors des rapports sexuels**, qui peut toucher le sexe, l’anus et la gorge.
+- Les signes, quand il y en a, apparaissent **2 à 7 jours** après le rapport : brûlures, écoulement ou pertes jaunes, douleur dans le bas-ventre, parfois fièvre ou mal de gorge.
+- Chez les femmes, l’infection est **souvent silencieuse** : selon l’Assurance Maladie, jusqu’à 70 % n’ont pas de symptômes.
+- Elle se soigne avec des **antibiotiques**, et **les partenaires doivent être traités en même temps**.
+
+## Comprendre
+QuestionSexualité décrit des brûlures et/ou un écoulement jaune au niveau du vagin, de la verge ou de l’anus, de la fièvre, une douleur dans le bas-ventre, et parfois une angine quand la gorge est touchée. Le CNGOF, sur Santé.fr, évoque des pertes jaunâtres ressemblant à du pus, avec des brûlures en urinant, et une possible irritation de la gorge après une fellation.
+
+Le problème, c’est que l’infection passe souvent inaperçue, surtout chez les femmes. Non traitée, elle peut remonter vers l’utérus et les trompes. L’Assurance Maladie cite comme complications des douleurs pelviennes chroniques, une infertilité, une grossesse extra-utérine, des infections d’autres organes (notamment les articulations), et une transmission possible au bébé à l’accouchement. Le gonocoque fragilise aussi les muqueuses et augmente nettement le risque de contamination par le VIH.
+
+Il n’existe **pas de vaccin** contre le gonocoque.
+
+## Au quotidien
+**Te faire dépister :**
+- par un prélèvement à l’entrée du vagin, indolore, que tu peux souvent réaliser toi-même ; un prélèvement de gorge ou d’anus peut être proposé selon les pratiques ;
+- chez ton médecin, ta sage-femme, ton ou ta gynécologue, en centre de santé sexuelle, ou en CeGIDD (anonyme et gratuit) ;
+- en laboratoire **sans ordonnance ni rendez-vous** : gratuit avant 26 ans ;
+- entre 18 et 25 ans, avec le **kit d’autoprélèvement** chlamydia et gonocoque à commander sur mon-test-ist.ameli.fr.
+
+**Si le test est positif :**
+- prends le traitement antibiotique prescrit **jusqu’au bout** ;
+- **préviens tes partenaires** récents : ils doivent être dépistés et traités en même temps pour éviter de vous recontaminer ;
+- évite les rapports jusqu’à la fin du traitement et l’avis de ton ou ta professionnelle ;
+- un dépistage des autres IST (chlamydia, syphilis, VIH, hépatite B) est souvent proposé en même temps, car elles peuvent être associées.
+
+**Prévenir :** le préservatif à chaque rapport, y compris lors des rapports oraux, et un dépistage régulier si tu as plusieurs partenaires.
+
+## Questions fréquentes
+**Je n’ai aucun signe, mon partenaire a été diagnostiqué : que faire ?** Fais-toi dépister et traiter même sans symptôme : l’infection est souvent silencieuse chez les femmes.
+
+**Peut-on l’attraper par la bouche ?** Oui, le gonocoque peut toucher la gorge. Le dépistage peut alors inclure un prélèvement de gorge.
+
+**Le traitement protège-t-il pour l’avenir ?** Non. On peut être réinfectée lors d’un nouveau contact, notamment si un partenaire n’a pas été traité.
+
+**Mes pertes sont jaunes, est-ce le gonocoque ?** Pas forcément : d’autres infections donnent des pertes jaunes. Seul un prélèvement permet de le savoir.
+
+## Quand demander conseil
+Consulte rapidement en cas de pertes jaunes ou purulentes, de brûlures en urinant, de douleurs dans le bas-ventre ou pendant les rapports, ou si un ou une partenaire t’annonce une IST. Fièvre avec douleurs pelviennes, ou douleur brutale et intense avec retard de règles : appelle le **15** ou le **112**. Une gêne qui dure n’est pas à subir.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['gonocoque','gonorrhée','blennorragie','chaude-pisse','IST','pertes jaunes','brûlures urinaires','dépistage','antibiotique']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — La blennorragie gonococcique (ou chaude-pisse), c’est quoi ?","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-infections-sexuellement-transmissibles/qu-est-ce-que-la-blennorragie-gonococcique-ou-chaude-pisse","consulted_on":"2026-10-27"},{"label":"ameli.fr — Symptômes, diagnostic et évolution des IST","url":"https://www.ameli.fr/assure/sante/themes/mst-ist/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2025-12-02"},{"label":"Santé.fr (contenu CNGOF) — Faire la différence entre les pertes blanches, les infections et mycoses génitales","url":"https://www.sante.fr/faire-la-difference-entre-les-pertes-blanches-les-infections-et-mycoses-genitales","consulted_on":"2026-10-27","published":"2019-03-26"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('condylomes-verrues-genitales-hpv-traitement-vaccin', (select id from public.content_categories where slug = 'sante-intime'), 'Condylomes (verrues génitales) : les reconnaître, les traiter, les prévenir', 'Dues à certains papillomavirus, les verrues génitales sont fréquentes et peuvent récidiver : leur aspect, les traitements possibles, la place du préservatif et du vaccin HPV.', '## En bref
+- Les condylomes sont des **verrues génitales** dues à certains **papillomavirus humains (HPV)**, transmis lors des rapports, notamment par **contact peau à peau**.
+- Ce sont de petites excroissances rosées ou grisâtres, plates ou en relief, parfois **invisibles à l’œil nu**, sur la vulve, l’anus, le périnée, voire dans le vagin ou sur le col.
+- Le traitement **détruit les lésions** (froid, laser, électrocoagulation, traitement local) mais **n’élimine pas le virus** : des **récidives** sont possibles.
+- Le **vaccin HPV** protège contre les types responsables d’environ 90 % des condylomes, à condition d’être fait avant l’infection.
+
+## Comprendre
+Santé.fr explique qu’il existe de nombreux types de HPV : certains provoquent des condylomes, d’autres, plus rares, peuvent entraîner des cancers (notamment du col de l’utérus). Les condylomes eux-mêmes sont le plus souvent bénins, mais l’Assurance Maladie note qu’ils sont souvent **difficiles à éradiquer**.
+
+Ils peuvent apparaître **plusieurs années après la contamination**, ce qui rend souvent impossible de savoir quand et avec qui l’infection a été transmise. Ils peuvent provoquer des démangeaisons ou des saignements pendant les rapports. La contamination peut aussi se faire par les doigts, et une mère porteuse peut transmettre le virus au bébé à l’accouchement.
+
+Selon Santé.fr, le risque est plus élevé quand la vie sexuelle a débuté tôt, en cas de nombreux partenaires ou d’une autre IST.
+
+## Au quotidien
+**Si tu remarques une petite excroissance :**
+- ne tente pas de la retirer toi-même : un ou une professionnelle doit d’abord confirmer de quoi il s’agit ;
+- consulte ton médecin, ta sage-femme, ton ou ta gynécologue ou un ou une dermatologue ; un CeGIDD ou un centre de santé sexuelle peuvent aussi t’orienter.
+
+**Le traitement (Santé.fr) :**
+- destruction des lésions visibles par le froid (azote liquide), le laser ou l’électrocoagulation ;
+- parfois un traitement local à appliquer, sur prescription ;
+- une **surveillance** sur plusieurs semaines ou mois, car de nouvelles lésions peuvent apparaître.
+
+**Pendant cette période :**
+- le préservatif est indispensable pour limiter le risque, même s’il ne protège pas totalement, car des lésions peuvent se trouver hors de la zone couverte ;
+- informer ton ou ta partenaire lui permet de surveiller sa peau et de consulter si besoin ;
+- un dépistage des autres IST peut être proposé.
+
+**Le dépistage du col reste important :** le frottis ou le test HPV à partir de 25 ans permet de repérer les HPV à risque de cancer, qui ne sont pas ceux des condylomes.
+
+## Questions fréquentes
+**Les condylomes peuvent-ils donner un cancer ?** Les types de HPV responsables des condylomes sont généralement différents de ceux à haut risque de cancer. Mais on peut être porteuse de plusieurs types : suis ton dépistage du col.
+
+**Mon ou ma partenaire m’a-t-il ou elle « trompée » ?** Pas forcément : les condylomes peuvent apparaître des années après la contamination. Il est souvent impossible de savoir d’où vient l’infection.
+
+**Le vaccin peut-il soigner mes condylomes ?** Non : Santé.fr précise qu’il est inefficace si l’infection est déjà là. D’où l’intérêt de vacciner avant le début de la vie sexuelle, filles et garçons.
+
+**Les condylomes reviennent : est-ce un échec ?** Les récidives sont fréquentes, car le virus reste présent. Retourne consulter à chaque nouvelle lésion ; la surveillance fait partie du traitement.
+
+## Quand demander conseil
+Consulte devant toute excroissance, bouton ou lésion sur le sexe ou l’anus, des démangeaisons qui persistent ou des saignements après les rapports. Si tu es enceinte et as des condylomes, parles-en à ta sage-femme ou à ton médecin. Vivre avec une IST peut peser sur le moral et sur le couple : si tu te sens dépassée, le **3114** répond jour et nuit.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['condylomes','verrues génitales','HPV','papillomavirus','crête de coq','bouton sur la vulve','cryothérapie','vaccin HPV','IST']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Verrues génitales (condylomes)","url":"https://www.sante.fr/verrues-genitales-condylomes","consulted_on":"2026-10-27","published":"2026-08-13"},{"label":"ameli.fr — Symptômes, diagnostic et évolution des IST","url":"https://www.ameli.fr/assure/sante/themes/mst-ist/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2025-12-02"},{"label":"Vaccination Info Service (Santé publique France) — Infections à papillomavirus humains (HPV)","url":"https://www.vaccination-info-service.fr/Les-maladies-et-leurs-vaccins/Infections-a-Papillomavirus-humains-HPV","consulted_on":"2026-10-27","published":"2026-01-01"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('trichomonase-mycoplasme-pertes-mousseuses-ist', (select id from public.content_categories where slug = 'sante-intime'), 'Trichomonase et mycoplasmes : ces IST qui donnent des pertes inhabituelles', 'Pertes verdâtres et mousseuses, brûlures, démangeaisons : la trichomonase et l’infection à mycoplasme sont des IST fréquentes, à faire diagnostiquer et traiter avec ses partenaires.', '## En bref
+- La **trichomonase** est due à un parasite, *Trichomonas vaginalis* ; l’infection à **mycoplasme** (*Mycoplasma genitalium*) à une bactérie. Ce sont deux **IST fréquentes**.
+- Signes possibles : **pertes inhabituelles** (verdâtres, mousseuses, malodorantes pour la trichomonase), **brûlures**, **démangeaisons**, brûlures en urinant.
+- Les signes apparaissent à partir d’**environ une semaine** après la contamination.
+- Le diagnostic repose sur un **prélèvement**, et le traitement doit concerner **toi et tes partenaires en même temps**.
+
+## Comprendre
+**La trichomonase :** le CNGOF, sur Santé.fr, décrit des pertes verdâtres, mousseuses, avec une odeur particulière. L’Assurance Maladie mentionne des pertes souvent malodorantes, des démangeaisons et des brûlures urinaires chez la femme, alors que chez l’homme elle passe souvent inaperçue, parfois avec des brûlures en urinant. Son traitement repose sur un antiparasitaire prescrit.
+
+**Les mycoplasmes :** chez la femme, l’Assurance Maladie cite des pertes vaginales, une inflammation du col, des saignements après les rapports ou entre les règles, des brûlures urinaires. Le traitement est antibiotique ; la guérison est fréquente mais des récidives sont possibles. Non traitée, l’infection peut se compliquer d’infections génitales hautes, d’infertilité ou de grossesse extra-utérine.
+
+Ces deux infections fragilisent les muqueuses et **augmentent nettement le risque de contamination par le VIH**, selon QuestionSexualité. Il n’existe **pas de vaccin**.
+
+**À ne pas confondre :** des pertes malodorantes peuvent aussi venir d’une vaginose bactérienne (déséquilibre de la flore, qui n’est pas une IST), et des pertes épaisses avec démangeaisons d’une mycose. Seul un prélèvement fait la différence.
+
+## Au quotidien
+**Se faire diagnostiquer :**
+- un prélèvement local (vaginal, ou premier jet d’urine) suffit ;
+- il peut être prescrit par ton médecin, ta sage-femme ou ton ou ta gynécologue, ou fait en centre de santé sexuelle ou en CeGIDD, où il est **anonyme et gratuit** ;
+- évite la toilette intime juste avant, pour que les pertes puissent être examinées.
+
+**Pendant le traitement :**
+- prends le traitement prescrit en entier (QuestionSexualité indique qu’il peut associer des antibiotiques et un traitement local) ;
+- **ton ou tes partenaires doivent être traités en même temps**, même sans symptômes, pour éviter de vous recontaminer ;
+- évite les rapports ou utilise un préservatif jusqu’à la guérison ;
+- continue une toilette externe douce, sans douche vaginale.
+
+**Prévenir :** le préservatif à chaque rapport, et un dépistage des IST lors d’un changement de partenaire.
+
+## Questions fréquentes
+**Mon partenaire n’a aucun symptôme, doit-il quand même être traité ?** Oui. Chez l’homme, la trichomonase est souvent silencieuse ; sans traitement simultané, la réinfection est probable.
+
+**Ces infections sont-elles graves ?** Elles se soignent. Mais non traitées, elles peuvent entraîner des complications et facilitent la transmission du VIH : d’où l’intérêt de consulter vite.
+
+**J’ai des pertes mousseuses, puis-je prendre un traitement contre la mycose ?** Non : un antifongique ne soigne ni la trichomonase ni les mycoplasmes. L’Assurance Maladie déconseille l’automédication en cas de pertes jaunes, vertes ou malodorantes.
+
+**Faut-il refaire un dépistage après ?** Ton ou ta professionnelle te dira si un contrôle est utile, notamment en cas de symptômes persistants ou de récidive.
+
+## Quand demander conseil
+Consulte dans les jours qui viennent en cas de pertes vertes, jaunes, mousseuses ou malodorantes, de démangeaisons, de brûlures ou de saignements après les rapports. Consulte dans la journée si tu es enceinte ou peux l’être, ou en cas de douleurs dans le bas-ventre. Fièvre avec douleurs pelviennes : appelle le **15** ou le **112**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['trichomonase','trichomonas','mycoplasme','mycoplasma genitalium','pertes vertes','pertes mousseuses','odeur','IST','vaginite']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Les mycoplasmes et la trichomonase, c’est quoi ?","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-infections-sexuellement-transmissibles/que-sont-les-mycoplasmes-et-la-trichomonase","consulted_on":"2026-10-27"},{"label":"ameli.fr — Symptômes, diagnostic et évolution des IST","url":"https://www.ameli.fr/assure/sante/themes/mst-ist/symptomes-diagnostic-evolution","consulted_on":"2026-10-27","published":"2025-12-02"},{"label":"Santé.fr (contenu CNGOF) — Faire la différence entre les pertes blanches, les infections et mycoses génitales","url":"https://www.sante.fr/faire-la-difference-entre-les-pertes-blanches-les-infections-et-mycoses-genitales","consulted_on":"2026-10-27","published":"2019-03-26"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('tpe-prep-vih-traitement-urgence-48-heures-prevention', (select id from public.content_categories where slug = 'sante-intime'), 'Risque d’exposition au VIH : le traitement d’urgence (TPE) dans les 48 heures, et la PrEP', 'Après un rapport non protégé, un préservatif qui craque ou une agression, un traitement d’urgence peut réduire le risque de VIH s’il est débuté vite : où, quand, comment ; et ce qu’est la PrEP.', '## En bref
+- Après une exposition possible au VIH (rapport sans préservatif ou préservatif rompu, agression sexuelle…), un **traitement post-exposition (TPE)** peut être proposé.
+- Il doit être commencé **le plus tôt possible**, **idéalement dans les 4 heures** et **au plus tard dans les 48 heures**.
+- On l’obtient aux **urgences d’un hôpital** (24 h/24) ou dans un **CeGIDD** aux heures d’ouverture. Il est accessible **à toute personne**, y compris **mineure sans autorisation parentale** et **sans couverture sociale**.
+- La **PrEP** est une autre stratégie : un traitement préventif pris par des personnes séronégatives exposées au VIH. Elle **ne protège pas des autres IST**.
+
+## Comprendre
+**Le TPE** est un traitement antirétroviral pris pendant **30 jours**. QuestionSexualité explique qu’un médecin évalue d’abord le risque et décide si le traitement est nécessaire ou si une surveillance suffit. Il est prescrit pour deux ou trois jours, puis confirmé ou arrêté lors d’un second rendez-vous avec un médecin référent VIH. Plus il est pris tôt, plus il est efficace. QuestionSexualité indique que le traitement est pris en charge à 100 %.
+
+Les situations concernées : un rapport non protégé (absence ou rupture du préservatif, agression sexuelle), un oubli de PrEP suivi d’un rapport à risque, un partage de matériel d’injection, un accident d’exposition au sang.
+
+**La PrEP** (prophylaxie pré-exposition) consiste, selon Sida Info Service, à prendre un traitement en continu ou à la demande pour éviter d’être contaminé. Elle s’adresse aux personnes qui n’ont pas le VIH et qui sont exposées, par exemple en cas de partenaires multiples, et à toute personne qui s’estime exposée et en fait la demande. **Tout médecin** peut la prescrire, en ville, en centre de santé, en CeGIDD ou à l’hôpital. Elle nécessite un suivi et des dépistages réguliers des IST. Sida Info Service rappelle enfin qu’une personne vivant avec le VIH sous traitement efficace, avec une charge virale indétectable, ne transmet pas le virus.
+
+## Au quotidien
+**Si tu as pris un risque :**
+1. N’attends pas le lendemain si tu peux agir tout de suite : rends-toi aux **urgences** ou dans un **CeGIDD**. Tu peux appeler avant de venir.
+2. Si c’est possible, viens avec ton ou ta partenaire : un test rapide des deux peut aider à évaluer le risque.
+3. Un dépistage du VIH et d’autres infections (hépatites, syphilis…) te sera proposé.
+4. Si le TPE est prescrit, prends-le **régulièrement, à heures fixes**, pendant toute la durée prévue. Des effets comme fatigue, nausées, maux de ventre, diarrhée ou maux de tête sont fréquents : signale-les, le traitement peut être ajusté.
+
+**Pense aussi aux autres risques :** si tu n’as pas d’autre contraception, la **contraception d’urgence** (en pharmacie) est à prendre au plus vite ; un **dépistage des autres IST** est utile, au bon moment.
+
+**Pour la PrEP :** parles-en à ton médecin, à un CeGIDD ou à un centre de santé sexuelle si tu te sens régulièrement exposée.
+
+**Trouver un lieu :** l’annuaire de Sida Info Service recense les urgences et CeGIDD proches ; la ligne **0 800 840 800** est anonyme et gratuite.
+
+## Questions fréquentes
+**Il s’est passé plus de 48 heures, que faire ?** Le TPE n’est plus proposé au-delà, mais un dépistage reste essentiel, ainsi qu’un avis en CeGIDD ou chez ton médecin.
+
+**Je suis mineure, puis-je y aller seule ?** Oui, le TPE est accessible aux mineurs sans autorisation parentale.
+
+**La PrEP remplace-t-elle le préservatif ?** Elle protège du VIH, mais seul le préservatif protège aussi des autres IST. Les deux sont complémentaires.
+
+**Après une agression sexuelle ?** Le médecin peut proposer en urgence la contraception d’urgence, le TPE, des traitements contre d’éventuelles infections et établir un certificat. Tu peux aussi appeler le **3919**, gratuit et anonyme.
+
+## Quand demander conseil
+Après une exposition au VIH, c’est une **urgence** : urgences de l’hôpital ou CeGIDD, **sans attendre**, et au plus tard dans les 48 heures. En cas de violences, danger immédiat : **17** ou **112** ; besoin de soins urgents : **15**.
+
+Cet article t’informe et ne remplace pas l’avis d’un ou d’une professionnelle de santé (médecin, sage-femme, gynécologue, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['TPE','traitement post-exposition','VIH','préservatif craqué','rapport à risque','48 heures','PrEP','urgences','CeGIDD','prévention']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Le TPE : le traitement d’urgence après une exposition au VIH","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-moyens-de-protection/que-faire-en-cas-d-urgence-apres-une-exposition-au-vih","consulted_on":"2026-10-27"},{"label":"Sida Info Service — La PrEP protège du VIH","url":"https://www.sida-info-service.org/dossier-la-prep/","consulted_on":"2026-10-27","published":"2026-07-15"},{"label":"QuestionSexualité (Santé publique France) — Où se faire dépister gratuitement ?","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-depistages/ou-se-faire-depister-gratuitement","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('choisir-sa-contraception-criteres-questions', (select id from public.content_categories where slug = 'contraception'), 'Choisir sa contraception : les critères qui comptent vraiment et les questions à te poser', 'Santé, mode de vie, envie ou non d’hormones, projet d’enfant : les repères pour préparer ton choix de contraception avec un médecin ou une sage-femme.', '## En bref
+- Il n’existe pas de « meilleure » contraception dans l’absolu : la bonne, c’est **celle qui te convient et que tu utiliseras correctement** au quotidien.
+- Le choix se fait **avec un médecin ou une sage-femme**, en tenant compte de ta santé, de ton mode de vie, de ton âge et de ton éventuel projet d’enfant.
+- Il existe des méthodes **avec ou sans hormones**, de courte ou de longue durée.
+- Seuls les **préservatifs** protègent des infections sexuellement transmissibles (IST) ; ils peuvent s’ajouter à une autre méthode.
+- Un questionnaire de Santé publique France sur QuestionSexualité t’aide à préparer la consultation.
+
+## Comprendre
+**Efficacité théorique et efficacité pratique.** Chaque méthode a une efficacité « parfaite », mesurée quand elle est utilisée exactement comme prévu, et une efficacité « pratique », qui tient compte de la vraie vie : oublis, décalages, préservatif mis trop tard… L’Assurance Maladie rappelle que l’efficacité pratique se rapproche de l’efficacité théorique seulement si la méthode est adaptée à la personne. Une méthode peu contraignante pour toi limite le risque de grossesse non prévue.
+
+**Les grandes familles.** Santé publique France présente : implant, DIU (stérilet) au cuivre ou hormonal, pilule, contraceptif injectable, anneau vaginal, patch, préservatifs externe et interne, diaphragme, cape cervicale, spermicides, retrait, abstinence périodique et contraception définitive (stérilisation). Certaines contiennent des hormones, d’autres non.
+
+**Ce que le professionnel prend en compte.** Ton état de santé et tes antécédents personnels et familiaux (hypertension, cholestérol, diabète, troubles de la coagulation, migraine, IST), le tabac, les méthodes déjà essayées, les effets que tu souhaites éviter, ton âge, tes pratiques sexuelles et ton désir d’enfant ou non, à court ou à long terme.
+
+## Au quotidien
+Avant la consultation, prends quelques minutes pour réfléchir à ces questions (il n’y a pas de bonne ou de mauvaise réponse) :
+- **Quelle méthode me paraît la moins contraignante ?** Une prise chaque jour, un geste chaque semaine ou chaque mois, ou une méthode posée pour plusieurs années ?
+- **Vais-je l’utiliser correctement ?** Si tes horaires sont décalés ou que tu voyages souvent, une prise quotidienne à heure fixe peut être plus difficile.
+- **Avec ou sans hormones ?** Note ce qui compte pour toi et pourquoi.
+- **Ai-je des contre-indications à signaler ?** Migraine, tabac, antécédent de phlébite dans la famille, traitement en cours…
+- **Comment associer mon ou ma partenaire ?** La contraception concerne les deux personnes, et l’Assurance Maladie encourage à impliquer le partenaire.
+
+Le questionnaire de QuestionSexualité classe en quelques minutes les méthodes en « les plus adaptées », « possibles » et « contre-indications probables ». Tu peux enregistrer le résultat et le montrer au professionnel : c’est un point de départ pour la discussion, pas une prescription.
+
+Garde en tête qu’un choix n’est jamais définitif : si la méthode ne te convient pas (effets gênants, contraintes), tu peux en changer avec l’aide du professionnel qui te suit, en organisant le relais pour ne pas rester sans protection.
+
+## Questions fréquentes
+**Je ne sais pas du tout quoi choisir : est-ce un problème ?**
+Pas du tout. La consultation de contraception sert justement à échanger et à poser toutes tes questions. La décision se prend ensemble.
+
+**Une méthode sans hormones est-elle forcément moins efficace ?**
+Non. Le DIU au cuivre, par exemple, fait partie des méthodes sans hormones. Ce qui change surtout l’efficacité, c’est la facilité d’utilisation au quotidien.
+
+**Ma contraception me protège-t-elle des IST ?**
+Seuls les préservatifs externe et interne protègent des IST. Avec un nouveau partenaire, tu peux les associer à ta contraception habituelle.
+
+**Et si je veux un enfant dans un an ou deux ?**
+Dis-le au professionnel : cela fait partie des critères de choix, et il pourra t’expliquer comment se passe l’arrêt de chaque méthode.
+
+## Quand demander conseil
+Prends rendez-vous avec un médecin ou une sage-femme pour toute première contraception, si ta méthode actuelle te gêne ou si ta santé a changé (nouvelle maladie, nouveau traitement, grossesse récente). Tu peux aussi appeler le numéro vert national « IVG, contraception, sexualités » au **0800 08 11 11**, anonyme et gratuit. En cas de rapport non protégé, pense à la contraception d’urgence sans attendre. En cas de détresse, le **3114** répond jour et nuit.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['choisir sa contraception','quelle contraception','contraception sans hormones','méthode contraceptive','efficacité pratique','consultation contraception','questionnaire contraception']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (QuestionSexualité, Santé publique France) — Comment choisir la contraception qui vous convient ?","url":"https://www.sante.fr/comment-choisir-la-contraception-qui-vous-convient","consulted_on":"2026-10-27","published":"2024-09-26"},{"label":"ameli.fr — Comment bien choisir sa contraception ?","url":"https://www.ameli.fr/assure/sante/themes/contraception/choisir-mode-contraception","consulted_on":"2026-10-27","published":"2026-01-12"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('consultation-contraception-deroulement-examens', (select id from public.content_categories where slug = 'contraception'), 'La consultation de contraception : comment elle se passe, quelles questions, quels examens', 'Entretien, examen, prise de sang avant une contraception hormonale, suivi : ce qui t’attend lors d’un rendez-vous pour ta contraception, et ce qui n’est pas obligatoire.', '## En bref
+- Un **médecin** (généraliste ou gynécologue) ou une **sage-femme** peut te prescrire ta contraception, en cabinet, dans un centre de santé sexuelle ou dans un service de santé étudiante.
+- La consultation commence par un **entretien** sur ta santé, tes antécédents et tes habitudes de vie.
+- L’**examen gynécologique n’est pas obligatoire** : il nécessite ton consentement, et tu peux demander des explications sur chaque geste.
+- Avant une contraception hormonale, une **prise de sang** est prescrite (au minimum cholestérol, triglycérides et glycémie).
+- La consultation est **confidentielle**, y compris pour les mineures.
+
+## Comprendre
+**L’entretien.** Le professionnel te pose des questions pour choisir avec toi une méthode adaptée : âge des premières règles, maladies passées, antécédents dans ta famille (hypertension, cholestérol, diabète, phlébite ou embolie, troubles de la coagulation), migraine, IST, vaccinations, tabac, traitements en cours, pratiques sexuelles. Il ne s’agit pas de te juger : ces informations servent à repérer d’éventuelles contre-indications.
+
+**Les explications.** Il te présente les méthodes possibles, leurs avantages, leurs inconvénients et leur efficacité, la prévention des IST et, si tu fumes, les aides pour arrêter.
+
+**L’examen.** Selon Fil santé jeunes, un examen général peut être réalisé (poids, taille, tension, palpation des seins). Si tu viens seulement pour des renseignements ou une pilule, il peut s’arrêter là. Un examen gynécologique est généralement proposé ; l’Assurance Maladie précise qu’il **n’est pas obligatoire** et nécessite ton accord. Le frottis de dépistage du cancer du col de l’utérus est proposé à partir de 25 ans.
+
+**Les examens biologiques.** Pour une contraception hormonale, un bilan sanguin est prescrit (cholestérol, triglycérides, glycémie au minimum). Des examens de la coagulation sont ajoutés en cas de facteur de risque, par exemple un antécédent de phlébite.
+
+## Au quotidien
+Pour te sentir à l’aise le jour J :
+- **Note tes questions** sur ton téléphone avant d’y aller : effets possibles, que faire en cas d’oubli, comment arrêter plus tard…
+- **Prépare tes infos** : date de tes dernières règles, traitements en cours (y compris ceux pris sans ordonnance ou à base de plantes), antécédents familiaux que tu connais.
+- **Tu peux venir seule ou accompagnée** de la personne de ton choix. Si tu es mineure, le professionnel peut te recevoir seule et l’entretien reste confidentiel.
+- **Tu peux dire stop** à tout moment pendant un examen, ou demander à le reporter.
+- **Demande ce qui est prévu ensuite** : date du bilan sanguin, rendez-vous de suivi, durée de l’ordonnance.
+
+Le médecin ou la sage-femme fixe ensuite le rythme du suivi. Une contraception peut toujours être changée si elle ne te convient pas.
+
+## Questions fréquentes
+**Faut-il forcément aller chez un gynécologue ?**
+Non. Un médecin généraliste ou une sage-femme peuvent aussi prescrire et suivre ta contraception. Les centres de santé sexuelle et les services de santé étudiante en proposent également.
+
+**Je n’ai jamais eu de rapport : dois-je avoir un examen gynécologique ?**
+L’examen n’est pas obligatoire et demande ton consentement. Parle librement de ce qui te met mal à l’aise.
+
+**Pourquoi une prise de sang avant la pilule ?**
+Elle permet de vérifier certains paramètres (cholestérol, triglycérides, glycémie) avant une contraception hormonale et d’adapter le choix si besoin.
+
+**Est-ce que mes parents seront prévenus ?**
+Non : la consultation est confidentielle, et le parcours de contraception est sans avance de frais jusqu’à 26 ans.
+
+## Quand demander conseil
+Consulte sans attendre une nouvelle échéance si tu ressens un effet gênant avec ta contraception, si un nouveau problème de santé apparaît, ou si tu as un doute sur une grossesse. En cas de douleur brutale et intense dans le ventre avec un retard de règles, de saignement très abondant avec malaise ou de fièvre avec douleurs pelviennes, appelle le **15** ou le **112**. Le **0800 08 11 11** (IVG, contraception, sexualités) répond gratuitement et anonymement.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['consultation contraception','premier rendez-vous contraception','examen gynécologique','prise de sang pilule','bilan sanguin contraception','sage-femme','médecin généraliste']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Comment bien choisir sa contraception ?","url":"https://www.ameli.fr/assure/sante/themes/contraception/choisir-mode-contraception","consulted_on":"2026-10-27","published":"2026-01-12"},{"label":"Santé.fr (Fil santé jeunes) — La contraception, qui et où ?","url":"https://www.sante.fr/node/137983","consulted_on":"2026-10-27","published":"2024-07-29"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('contraception-gratuite-confidentielle-mineures-moins-26-ans', (select id from public.content_categories where slug = 'contraception'), 'Contraception gratuite et confidentielle : ce que prévoit la loi pour les mineures et les moins de 26 ans', 'Sans accord des parents, sans avance de frais jusqu’à 26 ans, préservatifs pris en charge sans ordonnance : tes droits pour accéder à la contraception.', '## En bref
+- Une mineure **n’a pas besoin de l’accord de ses parents** pour obtenir une prescription, la délivrance ou la pose d’un contraceptif.
+- Jusqu’à **26 ans**, le parcours de contraception se fait **sans avance de frais** : consultations, certains examens de sang, pose et retrait, contraceptifs remboursables.
+- Les **préservatifs** des marques listées par l’Assurance Maladie sont pris en charge à 100 % **sans ordonnance** en pharmacie avant 26 ans, sans âge minimum.
+- Les **centres de santé sexuelle** délivrent gratuitement certains contraceptifs aux mineures qui souhaitent garder le secret.
+- Une ligne anonyme et gratuite répond à tes questions : **0800 08 11 11**.
+
+## Comprendre
+**La confidentialité.** Selon Service-Public.fr, le consentement des parents n’est pas exigé pour la prescription, la délivrance ou l’administration d’un contraceptif à une mineure. Le médecin ou la sage-femme peut te recevoir seule et l’entretien reste confidentiel. Tu peux aussi aller dans un centre de santé sexuelle sans que tes parents le sachent.
+
+**Ce qui est pris en charge à 100 % avant 26 ans** (et à 65 % ensuite) : DIU, implant, diaphragme, progestatifs injectables et certaines pilules. Les préservatifs listés sont à 100 % sans ordonnance avant 26 ans (60 % sur ordonnance après). La contraception définitive est prise en charge à 80 % quel que soit l’âge. Le patch, l’anneau vaginal, la cape cervicale et les spermicides ne sont pas remboursés.
+
+**Sans avance de frais jusqu’à 26 ans**, d’après Service-Public.fr :
+- les consultations de suivi chez un médecin ou une sage-femme la première année d’accès à la contraception, puis une consultation annuelle ;
+- certains examens de sang (glycémie à jeun, cholestérol total, triglycérides), une fois par an ;
+- les actes de pose, de changement ou de retrait d’un contraceptif ;
+- les contraceptifs remboursables délivrés en pharmacie sur ordonnance.
+
+Fil santé jeunes rappelle aussi que la consultation contraception-prévention est gratuite avant 26 ans et que, dans un centre de santé sexuelle, tu n’as rien à avancer.
+
+## Au quotidien
+- **En pharmacie**, demande les préservatifs pris en charge : une boîte par délivrance (de 6 à 24 préservatifs selon la boîte).
+- **Préservatifs gratuits** : les centres de santé sexuelle et les CeGIDD (centres gratuits d’information, de dépistage et de diagnostic des IST) en distribuent aussi.
+- **Si tu ne veux pas utiliser la carte Vitale de tes parents**, le centre de santé sexuelle est une bonne porte d’entrée : il peut te délivrer certains contraceptifs gratuitement et en toute discrétion.
+- **L’infirmière scolaire** peut renouveler une ordonnance de pilule de moins d’un an et délivrer la contraception d’urgence.
+- **Ta complémentaire santé (mutuelle)** peut rembourser certains frais non pris en charge, selon ton contrat.
+
+## Questions fréquentes
+**À partir de quel âge puis-je avoir une contraception ?**
+Les textes ne fixent pas d’âge minimum pour la contraception, et les préservatifs remboursés sont accessibles sans âge minimum. Le professionnel t’aide à choisir une méthode adaptée.
+
+**Le pharmacien peut-il refuser de me donner des préservatifs parce que je suis mineure ?**
+La prise en charge des préservatifs listés se fait sans ordonnance et sans âge minimum avant 26 ans.
+
+**Un garçon peut-il aussi en profiter ?**
+Oui : les préservatifs externes pris en charge et les consultations de santé sexuelle concernent aussi les garçons et les jeunes hommes.
+
+**Et après 26 ans ?**
+La prise en charge passe à 65 % pour les contraceptifs remboursables ; la mutuelle peut compléter.
+
+## Quand demander conseil
+Après un rapport non protégé ou un accident de préservatif, pense à la contraception d’urgence le plus vite possible (gratuite en pharmacie, sans ordonnance). Pour toute question, appelle le **0800 08 11 11** ou rends-toi dans un centre de santé sexuelle. Si tu subis des pressions ou des violences, ou si un enfant ou un ado est en danger, le **119** est joignable jour et nuit ; en cas d’urgence, le **17** ou le **112**.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid','child']::text[], null, null, 144, null, false, array['contraception gratuite','contraception mineure','sans les parents','moins de 26 ans','préservatifs gratuits','centre de santé sexuelle','confidentialité','remboursement contraception']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Service-Public.fr — Contraception","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F707","consulted_on":"2026-10-27","published":"2026-09-28"},{"label":"ameli.fr — Comment bien choisir sa contraception ?","url":"https://www.ameli.fr/assure/sante/themes/contraception/choisir-mode-contraception","consulted_on":"2026-10-27","published":"2026-01-12"},{"label":"Santé.fr (Fil santé jeunes) — La contraception, qui et où ?","url":"https://www.sante.fr/node/137983","consulted_on":"2026-10-27","published":"2024-07-29"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('renouveler-contraception-ordonnance-pharmacien-infirmier', (select id from public.content_categories where slug = 'contraception'), 'Renouveler sa contraception : ordonnance, pharmacien, infirmier, et que faire si elle arrive à terme', 'Durée d’une ordonnance de pilule, prolongation par un infirmier ou un pharmacien, rendez-vous de suivi : les règles pour ne jamais te retrouver sans contraception.', '## En bref
+- Une pilule peut être **prescrite pour 12 mois** et le pharmacien la délivre **par périodes de 3 mois**.
+- Un **infirmier** peut renouveler une prescription de pilule datant de moins d’un an, pour **6 mois au maximum**, sans nouveau renouvellement ensuite.
+- Un **pharmacien** peut faire des délivrances supplémentaires dans les mêmes conditions de durée.
+- Après cette prolongation, une **nouvelle prescription** par un médecin ou une sage-femme est nécessaire.
+- Anticipe : prends rendez-vous **avant** la dernière plaquette.
+
+## Comprendre
+**Pourquoi l’ordonnance a une durée limitée.** La contraception hormonale demande un suivi régulier : vérifier la tension, refaire si besoin le bilan sanguin, faire le point sur les effets ressentis, ta santé, le tabac, tes nouveaux traitements. C’est le médecin ou la sage-femme qui fixe le rythme des consultations de suivi.
+
+**Les relais possibles.** D’après l’Assurance Maladie et Service-Public.fr :
+- l’**infirmier** peut renouveler certaines prescriptions de contraceptifs oraux de moins d’un an, pour 6 mois au maximum, non renouvelables ;
+- le **pharmacien** peut assurer des délivrances supplémentaires, dans les mêmes conditions de durée ;
+- l’**infirmière scolaire** peut renouveler une ordonnance de pilule de moins d’un an et délivrer la contraception d’urgence ;
+- la **conseillère conjugale et familiale** peut, selon Fil santé jeunes, dépanner d’une plaquette de pilule et délivrer la pilule du lendemain.
+
+**Pour les méthodes de longue durée** (implant, DIU), il n’y a pas de renouvellement mensuel, mais une date de retrait ou de changement à respecter, et un suivi à prévoir avec le professionnel.
+
+## Au quotidien
+- **Note la date de fin de ton ordonnance** dans ton calendrier, avec un rappel un mois avant.
+- **Compte tes plaquettes** : quand il t’en reste une, c’est le moment de prendre rendez-vous.
+- **Garde une photo de ton ordonnance** : en cas de perte, cela aide le professionnel ou le pharmacien à identifier ta pilule exacte.
+- **En voyage**, emporte assez de plaquettes pour toute la durée, plus une de réserve, dans ton bagage à main.
+- **Si tu changes de pilule** lors du renouvellement, demande comment faire la transition pour rester protégée.
+- **Garde une contraception d’urgence** chez toi en cas d’oubli ou de rupture de stock.
+
+## Questions fréquentes
+**Mon ordonnance est expirée et il me reste deux jours de pilule : que faire ?**
+Va voir ton pharmacien avec ta dernière ordonnance : si elle date de moins d’un an, une délivrance supplémentaire est possible dans les conditions prévues. Sinon, un infirmier peut aussi renouveler une prescription de moins d’un an. Prends rendez-vous rapidement pour une nouvelle prescription.
+
+**Puis-je arrêter ma pilule quelques jours, le temps d’avoir un rendez-vous ?**
+Une interruption non prévue expose à un risque de grossesse. Demande conseil à ton pharmacien et utilise des préservatifs en attendant.
+
+**Le renouvellement par l’infirmier concerne-t-il le patch ou l’anneau ?**
+Les sources consultées parlent des contraceptifs oraux (pilules). Pour les autres méthodes, renseigne-toi auprès du professionnel qui te suit.
+
+**La téléconsultation est-elle possible ?**
+Parle-en au professionnel qui te suit : il pourra te dire si un rendez-vous en présentiel est nécessaire, par exemple pour mesurer la tension.
+
+## Quand demander conseil
+Consulte si tu as eu un rapport alors que ta contraception était interrompue (contraception d’urgence le plus vite possible), si tu ressens un effet gênant ou si ta santé a changé depuis la dernière prescription. Appelle le **15** ou le **112** en cas de douleur ou de gonflement d’un mollet, d’essoufflement brutal, de douleur dans la poitrine ou de trouble soudain de la parole ou de la vue.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['renouvellement pilule','ordonnance périmée','ordonnance contraception','pharmacien pilule','infirmier contraception','fin de plaquette','suivi contraception']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Comment bien choisir sa contraception ?","url":"https://www.ameli.fr/assure/sante/themes/contraception/choisir-mode-contraception","consulted_on":"2026-10-27","published":"2026-01-12"},{"label":"Service-Public.fr — Contraception","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F707","consulted_on":"2026-10-27","published":"2026-09-28"},{"label":"Santé.fr (Fil santé jeunes) — La contraception, qui et où ?","url":"https://www.sante.fr/node/137983","consulted_on":"2026-10-27","published":"2024-07-29"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('pilule-vomissements-diarrhee-que-faire', (select id from public.content_categories where slug = 'contraception'), 'Vomissements, diarrhée, gastro : ta pilule est-elle toujours efficace ?', 'Pourquoi des vomissements ou une diarrhée peuvent faire baisser l’efficacité de la pilule, ce que disent les sources officielles et quand penser à la contraception d’urgence.', '## En bref
+- La pilule agit en étant **absorbée par l’intestin**. Si tu vomis ou as une diarrhée importante peu après la prise, les hormones peuvent ne pas avoir été absorbées.
+- L’ANSM rappelle que l’efficacité de la pilule **diminue fortement** en cas d’oubli, de vomissements ou de diarrhée.
+- Pour la pilule combinée, l’Assurance Maladie indique de **reprendre un autre comprimé** (de la même couleur, donc d’une autre plaquette) si tu as vomi ou eu une diarrhée dans les quatre heures suivant la prise, puis de continuer normalement le lendemain.
+- Si les troubles durent plusieurs jours, la situation se rapproche d’un **oubli** : demande conseil à ton pharmacien.
+- Le patch, l’anneau, l’implant et les DIU ne passent pas par l’intestin.
+
+## Comprendre
+**Pourquoi la gastro compte.** Un comprimé avalé doit séjourner assez longtemps dans le tube digestif pour que les hormones passent dans le sang. Des vomissements juste après la prise, ou une diarrhée abondante, peuvent l’en empêcher. Le comprimé est alors considéré comme « non pris ».
+
+**Ce que disent les sources.**
+- L’**Assurance Maladie**, pour la pilule combinée : en cas de vomissements ou de diarrhée dans les quatre heures après la prise, prendre un autre comprimé de même couleur (un comprimé actif), puis reprendre la plaquette le lendemain à l’heure habituelle. Elle conseille aussi, en cas de nausées, de prendre la pilule au cours d’un repas.
+- L’**ANSM** souligne la baisse d’efficacité en cas de vomissements ou de diarrhées, sans détailler de règle unique : la **notice de ta pilule** fait foi.
+- **QuestionSexualité** rappelle que des vomissements ou une diarrhée peuvent éliminer la pilule et compromettre son efficacité.
+
+**Et la pilule progestative ?** Les délais d’oubli sont plus courts pour certaines pilules progestatives (3 heures pour celles au lévonorgestrel). Si tu en prends une, relis la notice ou demande conseil au pharmacien dès que tu es malade.
+
+## Au quotidien
+- **Garde une plaquette de réserve** : prendre un comprimé de remplacement décale ta plaquette, et il te faudra un comprimé en plus.
+- **Note l’heure de la prise et l’heure des vomissements** : c’est ce que le pharmacien te demandera.
+- **Si tu as des nausées le matin**, parles-en au professionnel qui te suit : décaler la prise au repas peut aider (tout changement d’heure se fait selon les règles de ta pilule).
+- **Pendant une gastro qui dure**, utilise des préservatifs jusqu’à ce que tu aies l’avis du pharmacien.
+- **Si tu as eu un rapport** dans les jours précédents et un doute sur la protection, pense à la contraception d’urgence, gratuite et sans ordonnance en pharmacie.
+- **Pour te réhydrater**, bois souvent par petites gorgées ; le pharmacien peut te conseiller une solution de réhydratation.
+
+## Questions fréquentes
+**J’ai vomi six heures après ma pilule : dois-je en reprendre une ?**
+D’après la règle donnée par l’Assurance Maladie pour la pilule combinée, la reprise concerne les troubles survenant dans les quatre heures suivant la prise. Au-delà, demande au pharmacien si ta pilule a une consigne différente.
+
+**La diarrhée d’un seul épisode compte-t-elle ?**
+Ce sont surtout les diarrhées importantes qui posent problème. En cas de doute, considère la situation comme un oubli et demande conseil.
+
+**Je prends un médicament contre la diarrhée : est-ce un problème ?**
+Signale toujours au pharmacien que tu prends une pilule quand tu achètes un médicament, même sans ordonnance.
+
+**Mon anneau ou mon patch sont-ils concernés ?**
+Non, ils ne passent pas par l’intestin. Leurs propres règles (décollement, expulsion) s’appliquent.
+
+## Quand demander conseil
+Demande l’avis d’un pharmacien ou d’un médecin si les vomissements ou la diarrhée durent plus d’une journée, si tu n’as pas tes règles à la fin de la plaquette suivante, ou si tu as un doute sur une grossesse (l’Assurance Maladie indique qu’un test peut être fait 21 jours après un oubli). Appelle le **15** ou le **112** si tu ne peux plus boire, si tu as du sang dans les selles ou les vomissements, une forte fièvre ou un malaise.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['pilule vomissement','gastro pilule','diarrhée pilule','pilule efficacité','vomir après la pilule','malade pilule','intoxication alimentaire']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Contraception hormonale : pilule, patch, anneau vaginal, implant, injection","url":"https://www.ameli.fr/assure/sante/themes/contraception/methodes-contraception-hormonale","consulted_on":"2026-10-27"},{"label":"ANSM — Dossier thématique : pilule contraceptive","url":"https://ansm.sante.fr/dossiers-thematiques/pilule-contraceptive","consulted_on":"2026-10-27","published":"2026-08-11"},{"label":"QuestionSexualité (Santé publique France) — Qu’est-ce que la pilule contraceptive ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/tous-les-modes-de-contraception/la-pilule-comment-ca-marche","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('contraception-medicaments-interactions-pharmacien', (select id from public.content_categories where slug = 'contraception'), 'Contraception et autres médicaments : les interactions à connaître et le bon réflexe en pharmacie', 'Certains traitements et le millepertuis peuvent rendre une contraception hormonale moins efficace : pourquoi signaler ta contraception à chaque nouvelle prescription.', '## En bref
+- Certains médicaments **diminuent l’efficacité** des contraceptifs hormonaux, en particulier de la pilule.
+- L’Assurance Maladie cite des traitements de l’**épilepsie**, de la **tuberculose** et du **VIH**, ainsi que le **millepertuis** (plante), parmi ceux qui peuvent réduire l’efficacité de la pilule d’urgence.
+- L’ANSM précise que les pilules progestatives sont **contre-indiquées** avec le millepertuis.
+- Le bon réflexe : **signale ta contraception** à chaque consultation et à chaque achat en pharmacie, même pour un produit « naturel ».
+- Le **DIU au cuivre** n’est pas concerné par ces interactions hormonales.
+
+## Comprendre
+**Pourquoi un médicament peut gêner une contraception.** Certaines substances accélèrent l’élimination des hormones par le foie : la quantité d’hormones dans le sang devient alors insuffisante pour bloquer l’ovulation. D’autres situations (vomissements, diarrhée) empêchent l’absorption du comprimé. L’ANSM résume que l’efficacité de la pilule « diminue fortement » en cas d’oubli, de vomissements, de diarrhées ou lorsqu’elle est prise avec d’autres médicaments.
+
+**Ce que citent les sources officielles.**
+- **Millepertuis** : cette plante, parfois utilisée contre le moral en baisse, est contre-indiquée avec les pilules progestatives selon l’ANSM, et peut réduire l’efficacité de la pilule d’urgence selon l’Assurance Maladie.
+- **Traitements de l’épilepsie, de la tuberculose et du VIH** : certains peuvent réduire l’efficacité de la contraception d’urgence hormonale (Assurance Maladie). Dans ces situations, le DIU au cuivre est une option à discuter.
+- **Les autres médicaments** : la liste complète figure dans la **notice** de ta contraception, rubrique « Autres médicaments ». QuestionSexualité mentionne aussi l’existence d’interactions sans toutes les nommer.
+
+**L’inverse existe aussi.** Une contraception hormonale peut parfois modifier l’effet d’un autre traitement. C’est pourquoi le médecin ou le pharmacien a besoin de la liste complète de ce que tu prends.
+
+## Au quotidien
+- **Garde à jour une liste** de tes traitements (y compris compléments alimentaires, plantes, tisanes « actives », huiles essentielles) dans ton téléphone.
+- **À chaque nouvelle ordonnance**, dis : « Je prends une contraception hormonale, est-ce compatible ? »
+- **En pharmacie**, même pour un produit sans ordonnance, pose la même question.
+- **Si une interaction existe**, demande combien de temps utiliser des préservatifs en plus, et pendant combien de temps après l’arrêt du traitement.
+- **Pour un traitement long**, discute d’une méthode qui n’est pas concernée (par exemple le DIU au cuivre) avec ton médecin ou ta sage-femme.
+- **Après un rapport** pendant une période où ta contraception était peut-être moins efficace, pense à la contraception d’urgence et précise au pharmacien les traitements en cours.
+
+## Questions fréquentes
+**Les antibiotiques annulent-ils l’effet de la pilule ?**
+Les sources consultées ne donnent pas de règle générale sur les antibiotiques. Demande au médecin ou au pharmacien pour ton traitement précis, et lis la notice.
+
+**Le millepertuis en tisane, c’est pareil ?**
+L’ANSM parle du millepertuis et des médicaments à base de millepertuis. Par prudence, signale toute préparation qui en contient.
+
+**Mon implant ou mon DIU hormonal sont-ils concernés ?**
+Ce sont aussi des contraceptions hormonales : vérifie avec le professionnel qui te suit si ton nouveau traitement est compatible.
+
+**Je prends un traitement depuis longtemps : est-il trop tard pour en parler ?**
+Non. Parles-en dès maintenant, et utilise des préservatifs en attendant la réponse.
+
+## Quand demander conseil
+Consulte ou appelle ton pharmacien avant de commencer un nouveau traitement, ou dès que tu réalises qu’il peut interagir avec ta contraception. Après un rapport non protégé, la contraception d’urgence est à prendre le plus vite possible. Si tu prends du millepertuis parce que ton moral est bas, parles-en aussi à ton médecin ; en cas de détresse ou d’idées noires, le **3114** répond jour et nuit.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['interaction pilule','médicaments pilule','millepertuis','antibiotique pilule','épilepsie contraception','VIH contraception','tuberculose','pharmacien','notice']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ANSM — Dossier thématique : pilule contraceptive","url":"https://ansm.sante.fr/dossiers-thematiques/pilule-contraceptive","consulted_on":"2026-10-27","published":"2026-08-11"},{"label":"ameli.fr — Quelles méthodes de contraception d’urgence ?","url":"https://www.ameli.fr/assure/sante/themes/contraception-urgence/comprendre-contraception-urgence","consulted_on":"2026-10-27","published":"2025-12-15"},{"label":"QuestionSexualité (Santé publique France) — Qu’est-ce que la pilule contraceptive ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/tous-les-modes-de-contraception/la-pilule-comment-ca-marche","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('prendre-sa-pilule-heure-voyage-decalage-horaire', (select id from public.content_categories where slug = 'contraception'), 'Prendre sa pilule au quotidien : heure fixe, changement d’horaire, voyage et décalage horaire', 'Comment choisir ton heure de prise, la changer en restant protégée, et gérer un voyage avec décalage horaire selon les règles de l’Assurance Maladie.', '## En bref
+- La pilule se prend **tous les jours à heure régulière**.
+- Le décalage toléré est de **12 heures** pour la pilule combinée, et de **3 heures** pour certaines pilules progestatives (12 heures pour celles au désogestrel).
+- Pour **changer d’heure**, fais-le en début de plaquette, en **avançant** l’heure de prise.
+- En **voyage avec décalage horaire**, l’Assurance Maladie conseille de garder l’heure française, ou d’avancer la prise, sans dépasser le délai toléré.
+- Un **rappel** (alarme, application) aide beaucoup.
+
+## Comprendre
+**Pourquoi l’heure compte.** La pilule maintient un niveau d’hormones suffisant pour empêcher la grossesse. Si l’écart entre deux prises dépasse la marge de ta pilule, la protection peut ne plus être assurée. Les marges diffèrent :
+- **pilule combinée** (œstrogène + progestatif) : 12 heures ;
+- **pilule progestative au lévonorgestrel** : 3 heures ;
+- **pilule progestative au désogestrel** : 12 heures.
+
+Ta notice indique la marge exacte de ta pilule : c’est elle qui fait foi.
+
+**Changer d’heure de prise.** L’Assurance Maladie conseille de le faire en début de plaquette, en avançant l’heure, sans décalage supérieur à 12 heures (pilules œstroprogestatives) ou 3 heures (pilules progestatives concernées). Avancer, c’est raccourcir un intervalle, ce qui ne fait pas baisser la protection.
+
+**Voyager.** Avec un décalage horaire, deux options selon l’Assurance Maladie : continuer à prendre la pilule à l’heure française, ou avancer l’heure de prise. L’important est de ne jamais retarder la prise au-delà de la marge de ta pilule.
+
+## Au quotidien
+- **Choisis un moment stable** de ta journée, y compris le week-end : réveil, brossage des dents, repas du soir.
+- **Mets une alarme récurrente** et range la plaquette là où tu fais ce geste.
+- **Exemple de voyage vers l’ouest** (tu « gagnes » des heures) : si tu prends ta pilule à 8 h en France et pars à New York, garder l’heure française revient à la prendre à 2 h du matin sur place. Tu peux plutôt la prendre plus tôt, la veille au soir sur place, ce qui avance la prise.
+- **Vers l’est** (tu « perds » des heures), la prise arrive naturellement plus tôt ; garde le même repère.
+- **Emporte tes plaquettes en bagage à main**, avec une de réserve et l’ordonnance.
+- **Ta trousse de voyage** : préservatifs et contraception d’urgence peuvent être utiles, notamment si les pharmacies sont difficiles d’accès sur place.
+
+## Questions fréquentes
+**Je me suis trompée de jour sur la plaquette : est-ce grave ?**
+Si tu as bien pris un comprimé actif chaque jour, l’essentiel est respecté. Pour une pilule avec des comprimés de couleurs différentes, demande conseil au pharmacien pour ne pas te tromper de phase.
+
+**Puis-je prendre ma pilule à des heures différentes en semaine et le week-end ?**
+Seulement si l’écart reste dans la marge de ta pilule. Le plus simple est de garder la même heure tous les jours.
+
+**Que faire si j’ai dépassé la marge ?**
+C’est un oubli : suis la conduite prévue par ta notice et demande conseil au pharmacien. En cas de rapport récent, pense à la contraception d’urgence.
+
+**Une application de suivi peut-elle remplacer l’alarme ?**
+Oui, si elle t’envoie un rappel fiable. L’ANSM cite le réveil ou une application comme aides utiles.
+
+## Quand demander conseil
+Demande conseil à ton pharmacien après tout dépassement de la marge, avant un long voyage si tu as un doute, ou si les oublis deviennent fréquents : d’autres méthodes sans prise quotidienne existent. Consulte en cas de saignements entre les règles qui persistent. Appelle le **15** ou le **112** devant une douleur ou un gonflement d’un mollet, un essoufflement brutal ou une douleur thoracique, surtout après un long trajet.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['heure pilule','changer heure pilule','décalage horaire pilule','voyage pilule','rappel pilule','application pilule','plaquette','retard de pilule']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Contraception hormonale : pilule, patch, anneau vaginal, implant, injection","url":"https://www.ameli.fr/assure/sante/themes/contraception/methodes-contraception-hormonale","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Qu’est-ce que la pilule contraceptive ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/tous-les-modes-de-contraception/la-pilule-comment-ca-marche","consulted_on":"2026-10-27"},{"label":"ANSM — Dossier thématique : pilule contraceptive","url":"https://ansm.sante.fr/dossiers-thematiques/pilule-contraceptive","consulted_on":"2026-10-27","published":"2026-08-11"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('effets-indesirables-contraception-hormonale-humeur-libido-saignements', (select id from public.content_categories where slug = 'contraception'), 'Humeur, libido, saignements, acné : quand ta contraception hormonale ne te convient pas', 'Les effets indésirables les plus fréquents de la contraception hormonale, comment en parler et changer de méthode sans rester sans protection.', '## En bref
+- La contraception hormonale peut entraîner des effets indésirables. Selon l’ANSM, les plus fréquents avec la pilule sont les **saignements irréguliers**, la prise de poids, des **troubles de l’humeur** voire une dépression, des maux de tête, une **baisse de la libido**, de l’acné, une chute de cheveux, une pilosité excessive, des kystes ovariens et des douleurs des seins.
+- Les **saignements entre les règles** sont fréquents au début, mais ne doivent pas durer.
+- Chaque personne réagit différemment : une autre pilule ou une **autre méthode**, avec ou sans hormones, peut mieux te convenir.
+- Tu n’as pas à subir un effet qui te gêne : **parles-en** à ton médecin ou à ta sage-femme.
+- Tu peux aussi **déclarer un effet indésirable** sur le portail de l’ANSM.
+
+## Comprendre
+**Saignements.** D’après Santé.fr, les saignements entre les règles (« spotting ») sont fréquents au début d’une contraception hormonale, le temps que le corps s’habitue. S’ils persistent, le dosage ou la méthode peut ne pas convenir. Avec certaines méthodes progestatives (implant, certaines pilules, DIU hormonal), les règles peuvent devenir irrégulières ou disparaître.
+
+**Libido.** QuestionSexualité explique que les études ne concordent pas : certaines femmes décrivent moins de désir sous contraception hormonale, d’autres davantage, par exemple parce que leurs règles sont moins douloureuses. Une sécheresse vaginale est possible avec les pilules faiblement dosées en œstrogènes ; des lubrifiants peuvent aider. Le patch, l’anneau, l’implant et le DIU hormonal contiennent aussi des hormones et peuvent avoir des effets comparables.
+
+**Humeur.** L’ANSM cite les troubles de l’humeur et la dépression parmi les effets possibles. Un changement de moral après le début d’une contraception mérite d’être signalé, sans attendre la prochaine consultation.
+
+**Rappel important.** Ta contraception n’est pas forcément la cause d’un symptôme. Le professionnel t’aide à faire le point.
+
+## Au quotidien
+- **Note ce que tu ressens** pendant deux ou trois mois : date de début de la contraception, saignements, humeur, désir, maux de tête. Le suivi de cycle de l’app peut t’y aider.
+- **Prépare la liste de tes contraceptions passées** : l’ANSM conseille de l’établir avec le médecin lors d’un changement de pilule.
+- **N’arrête pas brutalement** sans solution de relais : utilise des préservatifs en attendant le rendez-vous, et demande comment passer d’une méthode à l’autre.
+- **Explore les options sans hormones** si tu le souhaites : préservatifs, DIU au cuivre, diaphragme ou cape (avec spermicide).
+- **Pour la sécheresse vaginale**, un lubrifiant peut aider ; demande conseil au pharmacien.
+
+## Questions fréquentes
+**Combien de temps attendre avant de juger une nouvelle pilule ?**
+Les saignements du début peuvent s’atténuer en quelques semaines. Mais un effet qui te pèse (humeur, douleurs, maux de tête) justifie d’en parler tout de suite.
+
+**La pilule fait-elle grossir ?**
+L’ANSM cite la prise de poids parmi les effets possibles, et QuestionSexualité indique que les pilules progestatives peuvent la favoriser chez certaines femmes. Ce n’est pas systématique : parles-en si tu constates un changement.
+
+**Comment déclarer un effet indésirable ?**
+Sur le portail de signalement accessible depuis le site de l’ANSM, toi-même ou avec l’aide d’un professionnel.
+
+**Changer de méthode, c’est compliqué ?**
+Non, mais il faut organiser le passage pour rester protégée. Le professionnel te dira quand commencer la nouvelle méthode.
+
+## Quand demander conseil
+Consulte si un effet te gêne, si des saignements persistent, en cas de douleur intense ou de maux de tête qui changent. Appelle le **15** ou le **112** devant une douleur ou un gonflement d’un mollet, un essoufflement brutal, une douleur dans la poitrine, une faiblesse d’un côté du corps ou un trouble soudain de la parole ou de la vue. Si ton moral s’effondre ou si tu as des idées noires, appelle le **3114**, jour et nuit.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['effets secondaires pilule','pilule humeur','pilule libido','spotting pilule','saignements contraception','acné pilule','dépression pilule','pharmacovigilance','changer de pilule']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ANSM — Dossier thématique : pilule contraceptive","url":"https://ansm.sante.fr/dossiers-thematiques/pilule-contraceptive","consulted_on":"2026-10-27","published":"2026-08-11"},{"label":"QuestionSexualité (Santé publique France) — La contraception fait-elle baisser la libido ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/ma-contraception-et-moi/la-contraception-fait-elle-baisser-la-libido","consulted_on":"2026-10-27"},{"label":"Santé.fr — L’impact de la contraception sur les règles","url":"https://www.sante.fr/limpact-de-la-contraception-sur-les-regles","consulted_on":"2026-10-27","published":"2024-02-23"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('ivg-droits-delais-demarches-etapes', (select id from public.content_categories where slug = 'contraception'), 'IVG : tes droits, les délais et les démarches étape par étape', 'Jusqu’à quand, auprès de qui, avec quelles consultations, à quel coût : le parcours d’une interruption volontaire de grossesse en France, selon les sources officielles.', '## En bref
+- En France, l’IVG est possible **jusqu’à la fin de la 14e semaine de grossesse**, soit 16 semaines après le début des dernières règles.
+- Deux méthodes existent : **médicamenteuse** (jusqu’à la fin de la 7e semaine de grossesse, soit 9 semaines après le début des dernières règles) et **instrumentale** (jusqu’à la fin de la 14e semaine).
+- Elle est réalisée par un **médecin** ou une **sage-femme**, à l’hôpital, en clinique, en cabinet, en centre de santé ou en centre de santé sexuelle selon la méthode.
+- Il n’y a **plus de délai de réflexion obligatoire** entre les consultations.
+- L’IVG et les soins associés sont **pris en charge à 100 %**, sans avance de frais. Le **0800 08 11 11** répond gratuitement et anonymement.
+
+## Comprendre
+**Un droit personnel.** La décision t’appartient. QuestionSexualité rappelle que l’IVG est un droit exercé individuellement, sans l’accord du partenaire. Il n’y a pas d’âge minimum. Entraver l’accès à l’IVG, y compris par des pressions ou des informations volontairement trompeuses, est un délit puni par la loi.
+
+**Les étapes**, d’après ivg.gouv.fr :
+1. **Prendre rendez-vous** avec un médecin ou une sage-femme, en général dans les 5 jours suivant ton appel, en présentiel ou en téléconsultation selon l’offre. Si le professionnel ne pratique pas d’IVG, il doit te le dire et t’orienter vers quelqu’un qui le fait.
+2. **Consultation d’information** : explications sur les deux méthodes, les lieux, les risques et effets possibles ; remise d’un guide et d’une attestation de consultation.
+3. **Entretien psychosocial** : obligatoire pour les mineures, proposé aux majeures, qui peuvent le refuser.
+4. **Consultation de recueil du consentement** : tu donnes ton consentement par écrit, tu choisis la méthode et le lieu. C’est aussi le moment de parler contraception et dépistage des IST. Pour une majeure, information et consentement peuvent se faire lors d’une même consultation.
+5. **Réalisation de l’IVG**, avec des antidouleurs systématiquement prescrits.
+6. **Consultation de suivi** entre le 14e et le 21e jour, en présentiel ou en téléconsultation, pour vérifier que la grossesse est bien interrompue et parler contraception.
+
+**Les examens.** Datation de la grossesse (examen, échographie ou prise de sang), groupe sanguin (une injection est faite si tu es de Rhésus négatif), et, si tu le souhaites, dépistage des IST et du cancer du col.
+
+## Au quotidien
+- **Agis vite si tu hésites** : plus tôt tu prends rendez-vous, plus tu as le choix de la méthode.
+- **Calcule tes semaines** à partir du premier jour de tes dernières règles ; le professionnel datera précisément la grossesse.
+- **Choisis une personne de confiance** pour t’accompagner, si tu le souhaites.
+- **Pour trouver un professionnel**, appelle le 0800 08 11 11 ou utilise le tchat du site ivg-contraception-sexualites.org.
+- **Méfie-toi des sites qui se présentent comme neutres** mais cherchent à te dissuader : privilégie ivg.gouv.fr et les services publics.
+
+## Questions fréquentes
+**Combien ça coûte ?**
+Pour les assurées, l’IVG et les soins associés sont pris en charge à 100 % par l’Assurance Maladie, sans avance de frais ni dépassement d’honoraires, et l’anonymat peut être garanti.
+
+**Dois-je attendre plusieurs jours entre deux rendez-vous ?**
+Non : il n’existe plus de délai de réflexion minimal. Si tu es mineure, l’entretien psychosocial doit avoir lieu avant le consentement.
+
+**Mon médecin peut-il refuser ?**
+Un professionnel peut ne pas pratiquer d’IVG, mais il doit te le dire et te donner le nom de professionnels qui la réalisent.
+
+**Une IVG empêche-t-elle d’avoir un enfant plus tard ?**
+Selon QuestionSexualité, une IVG réalisée dans de bonnes conditions n’affecte pas la fertilité.
+
+## Quand demander conseil
+Prends rendez-vous dès que tu envisages une IVG. Appelle le **15** ou le **112** en cas de douleur brutale et intense dans le ventre avec un retard de règles (une grossesse extra-utérine est possible), de saignement très abondant avec malaise, ou de fièvre avec douleurs. Si tu subis des pressions ou des violences, appelle le **3919** (violences faites aux femmes) ou, en danger immédiat, le **17** ou le **112**. En cas de grande détresse, le **3114** répond jour et nuit.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['IVG','avortement','interruption volontaire de grossesse','délai IVG','14 semaines','démarches IVG','numéro vert IVG','IVG gratuite','délit d’entrave']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Service-Public.fr — Interruption volontaire de grossesse (IVG)","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F1551","consulted_on":"2026-10-27"},{"label":"ivg.gouv.fr (ministère de la Santé) — Quelles sont les étapes de l’IVG ?","url":"https://ivg.gouv.fr/ivg-etape-par-etape","consulted_on":"2026-10-27","published":"2026-01-27"},{"label":"ameli.fr — Deux méthodes d’IVG : IVG médicamenteuse et IVG instrumentale","url":"https://www.ameli.fr/assure/sante/devenir-parent/grossesse/ivg/methodes-ivg-suivi","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('ivg-medicamenteuse-deroulement-saignements-douleurs', (select id from public.content_categories where slug = 'contraception'), 'L’IVG médicamenteuse : comment elle se déroule, à quoi t’attendre et quand appeler', 'Les deux prises de médicaments, les saignements et les douleurs, l’accompagnement à domicile et la visite de contrôle d’une IVG médicamenteuse.', '## En bref
+- L’IVG médicamenteuse est possible **jusqu’à la fin de la 7e semaine de grossesse** (9 semaines après le début des dernières règles).
+- Elle repose sur **deux médicaments pris à 24 à 48 heures d’intervalle** : le premier interrompt la grossesse, le second déclenche l’expulsion.
+- Elle peut se faire **à domicile**, en cabinet, en centre de santé ou à l’hôpital ; la téléconsultation est possible.
+- Les **saignements** ressemblent à des règles abondantes, plus importants le jour de la seconde prise, puis diminuent.
+- Une **visite de contrôle** entre le 14e et le 21e jour est indispensable : les saignements seuls ne prouvent pas que la grossesse est arrêtée.
+
+## Comprendre
+**Les deux étapes.** Selon QuestionSexualité, le premier comprimé (mifépristone) bloque l’hormone qui maintient la grossesse. Le second (misoprostol), pris 24 à 48 heures plus tard, provoque des contractions et l’expulsion. Après une téléconsultation, les médicaments se récupèrent en pharmacie ; le professionnel remet un mémo pratique.
+
+**Le rythme de l’expulsion.** D’après ivg.gouv.fr et QuestionSexualité, elle survient dans les 4 heures suivant la seconde prise dans environ 60 % des cas, et dans les 24 à 72 heures dans les autres cas. L’efficacité est d’environ 95 % ; en cas d’échec, une IVG instrumentale est proposée.
+
+**Les saignements.** Ils peuvent commencer après le premier comprimé, sont très importants le jour du second, puis diminuent. Ils durent souvent une dizaine de jours et peuvent, selon QuestionSexualité, se prolonger jusqu’à 30 jours.
+
+**Les effets possibles.** Des douleurs comparables à des règles, parfois plus fortes (des antidouleurs sont prescrits à l’avance) ; des nausées, vomissements ou diarrhées après le second médicament. Si tu vomis dans les 30 minutes suivant le second médicament, contacte le professionnel qui te suit : une nouvelle prise peut être nécessaire. Si tu es de Rhésus négatif, une injection est prévue.
+
+## Au quotidien
+- **Choisis un moment calme** pour la seconde prise, idéalement un jour sans obligation. Un arrêt de travail peut être prescrit.
+- **Ne reste pas seule** : une personne de confiance à tes côtés est recommandée.
+- **Prépare** des protections hygiéniques épaisses (serviettes plutôt que tampons, sauf avis contraire), une bouillotte, de quoi boire et manger léger, le numéro du lieu qui te suit.
+- **Prends les antidouleurs prescrits** comme indiqué, sans attendre que la douleur soit forte.
+- **Note la date du rendez-vous de contrôle** et ne le saute pas, même si tout semble terminé.
+- **Parle contraception** avant : la fertilité revient immédiatement, et la plupart des méthodes peuvent commencer le jour même.
+
+## Questions fréquentes
+**Est-ce douloureux ?**
+L’intensité varie d’une personne à l’autre. Les contractions ressemblent à des douleurs de règles, parfois plus fortes ; les antalgiques prescrits aident à les atténuer.
+
+**Comment savoir si l’IVG a fonctionné ?**
+Par la visite de contrôle : examen, échographie ou prise de sang. Un test urinaire peut rester positif jusqu’à trois semaines.
+
+**Puis-je la faire si j’habite loin d’un hôpital ?**
+Oui, elle peut se faire à domicile, mais il vaut mieux pouvoir rejoindre rapidement un service d’urgence en cas de besoin. Parle de ta situation avec le professionnel.
+
+**Les symptômes de grossesse vont-ils disparaître ?**
+Fatigue, nausées et seins sensibles disparaissent en quelques jours. S’ils persistent au-delà de sept jours, consulte.
+
+## Quand demander conseil
+Contacte rapidement le professionnel ou le service de gynécologie qui te suit en cas de fièvre au-delà de 38 °C, de saignements très abondants, de très fortes douleurs dans le ventre ou de malaise. Si les saignements sont très importants avec malaise, ou si la fièvre persiste, appelle le **15** ou le **112**. Le **0800 08 11 11** répond à tes questions.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['IVG médicamenteuse','avortement médicamenteux','IVG à domicile','saignements IVG','douleur IVG','téléconsultation IVG','visite de contrôle IVG']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — L’IVG médicamenteuse : comment ça marche ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/l-interruption-volontaire-de-grossesse/comment-se-passe-une-ivg-medicamenteuse","consulted_on":"2026-10-27"},{"label":"ivg.gouv.fr (ministère de la Santé) — Quelles sont les étapes de l’IVG ?","url":"https://ivg.gouv.fr/ivg-etape-par-etape","consulted_on":"2026-10-27","published":"2026-01-27"},{"label":"ameli.fr — Deux méthodes d’IVG : IVG médicamenteuse et IVG instrumentale","url":"https://www.ameli.fr/assure/sante/devenir-parent/grossesse/ivg/methodes-ivg-suivi","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('ivg-instrumentale-aspiration-anesthesie-deroulement', (select id from public.content_categories where slug = 'contraception'), 'L’IVG instrumentale (par aspiration) : anesthésie, déroulement et suites', 'Comment se passe une IVG instrumentale, jusqu’à quand, sous quelle anesthésie, combien de temps sur place et ce qu’il faut surveiller ensuite.', '## En bref
+- L’IVG instrumentale est possible **jusqu’à la fin de la 14e semaine de grossesse** (16 semaines après le début des dernières règles).
+- Elle se fait **en établissement de santé** ou dans certains centres de santé, en **ambulatoire** : tu rentres chez toi le jour même, en général après quelques heures.
+- Le geste dure **de 10 à 20 minutes** environ, sous **anesthésie locale** du col ou **anesthésie générale**.
+- Son efficacité est d’environ **99,7 %** selon ivg.gouv.fr.
+- Une **consultation de suivi** a lieu entre le 14e et le 21e jour.
+
+## Comprendre
+**Quand la choisir.** Jusqu’à 7 semaines de grossesse, les deux méthodes sont possibles ; de 7 à 14 semaines, ivg.gouv.fr indique que la méthode instrumentale est privilégiée. Certaines personnes la préfèrent aussi parce que tout se passe en une fois, sur place.
+
+**Le déroulement.** D’après QuestionSexualité, le col de l’utérus est dilaté, puis une fine canule reliée à un dispositif d’aspiration est introduite pour retirer la grossesse. Le geste lui-même dure une dizaine à une vingtaine de minutes selon les sources.
+
+**L’anesthésie.** Locale (au niveau du col) ou générale. Si tu choisis l’anesthésie générale, une consultation préalable avec un médecin anesthésiste est prévue. Tu restes ensuite sous surveillance quelques heures ; l’Assurance Maladie précise que l’hospitalisation dure souvent moins de 12 heures.
+
+**L’accompagnement.** Il est **obligatoire pour les mineures**, par une personne majeure de leur choix, et recommandé pour les majeures, notamment pour le retour à domicile après une anesthésie.
+
+**Les risques.** Les complications sont rares : saignements, infection, et de façon très rare lésion du col ou de l’utérus, ou complication liée à l’anesthésie.
+
+## Au quotidien
+- **Organise ton retour** : une personne pour te raccompagner, surtout après une anesthésie générale.
+- **Respecte les consignes de jeûne** données si une anesthésie générale est prévue.
+- **Parle contraception avant le geste** : selon QuestionSexualité, un DIU (au cuivre ou hormonal) peut être posé le jour de l’IVG instrumentale, et un implant aussi.
+- **Les jours suivants**, des saignements sont possibles ; prévois des serviettes.
+- **Prends les antidouleurs prescrits** si besoin, et repose-toi.
+- **Va à la consultation de suivi**, même si tu te sens bien : elle vérifie l’absence de complication, fait le point sur ta contraception et peut proposer un accompagnement psychosocial.
+
+## Questions fréquentes
+**Vais-je sentir quelque chose sous anesthésie locale ?**
+Des sensations de contraction ou de gêne sont possibles. Pose toutes tes questions lors de la consultation et indique tes préférences : le choix de l’anesthésie se discute.
+
+**Combien de temps vais-je rester sur place ?**
+Quelques heures en général, sur une journée, en ambulatoire.
+
+**Puis-je reprendre le travail le lendemain ?**
+Cela dépend de ta récupération et de ton activité. Un arrêt de travail peut être prescrit si besoin.
+
+**Ma fertilité est-elle préservée ?**
+Selon QuestionSexualité, une IVG réalisée dans de bonnes conditions n’affecte pas la fertilité, qui reprend immédiatement : d’où l’intérêt de prévoir une contraception.
+
+## Quand demander conseil
+Consulte sans tarder si les saignements sont abondants ou persistants, ou s’ils s’accompagnent de fièvre (au-delà de 38 °C), de vomissements ou de fortes douleurs. Appelle le **15** ou le **112** en cas de saignement très abondant avec malaise ou de douleur intense. Le **0800 08 11 11** reste disponible pour toute question.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['IVG instrumentale','IVG chirurgicale','aspiration','anesthésie IVG','IVG 14 semaines','ambulatoire','IVG hôpital']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Comment se passe une IVG instrumentale","url":"https://www.questionsexualite.fr/choisir-sa-contraception/l-interruption-volontaire-de-grossesse/comment-se-passe-une-ivg-instrumentale","consulted_on":"2026-10-27"},{"label":"ivg.gouv.fr (ministère de la Santé) — Quelles sont les étapes de l’IVG ?","url":"https://ivg.gouv.fr/ivg-etape-par-etape","consulted_on":"2026-10-27","published":"2026-01-27"},{"label":"ameli.fr — Deux méthodes d’IVG : IVG médicamenteuse et IVG instrumentale","url":"https://www.ameli.fr/assure/sante/devenir-parent/grossesse/ivg/methodes-ivg-suivi","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('apres-une-ivg-corps-emotions-contraception', (select id from public.content_categories where slug = 'contraception'), 'Après une IVG : ton corps, tes émotions, ta contraception et la visite de contrôle', 'Saignements, symptômes qui disparaissent, retour de la fertilité, contraception à commencer, émotions et soutien : ce qui se passe dans les semaines qui suivent une IVG.', '## En bref
+- Les **saignements** peuvent durer de quelques jours à plusieurs semaines (jusqu’à 30 jours après une IVG médicamenteuse).
+- La **fertilité revient immédiatement** : la plupart des contraceptions peuvent commencer le jour même de l’IVG.
+- Les symptômes de grossesse disparaissent en **quelques jours** ; un test urinaire peut rester positif jusqu’à **trois semaines**.
+- Les émotions sont très variables : **soulagement, tristesse**, ou les deux. Tu peux en parler à un professionnel, à un proche ou à une association.
+- La **visite de contrôle** entre le 14e et le 21e jour est essentielle.
+
+## Comprendre
+**Le corps après l’IVG.** Selon QuestionSexualité, les douleurs ressemblent à des règles plus intenses, surtout après le second médicament d’une IVG médicamenteuse. Les saignements, souvent plus abondants que des règles, peuvent se prolonger. Fatigue, nausées et seins sensibles disparaissent en quelques jours ; s’ils persistent plus de sept jours, une consultation s’impose. Les complications (hémorragie, infection, douleurs persistantes) sont possibles mais rares.
+
+**La fertilité.** Une IVG réalisée dans de bonnes conditions n’affecte pas la fertilité. Une ovulation peut survenir rapidement, avant même le retour des règles : une nouvelle grossesse est donc possible très vite.
+
+**La contraception**, d’après QuestionSexualité :
+- **pilule** (combinée ou progestative) : le jour de l’IVG ou le lendemain ;
+- **patch** et **anneau** : le jour de l’IVG ;
+- **implant** : posé le jour de l’IVG ;
+- **DIU** (cuivre ou hormonal) : le jour d’une IVG instrumentale, ou lors de la visite de suivi après une IVG médicamenteuse ;
+- **préservatifs** : à tout moment, et en attendant que la méthode choisie soit efficace.
+
+**Les émotions.** Il n’y a pas de « bonne » façon de vivre une IVG. Certaines ressentent surtout du soulagement, d’autres de la tristesse ou un mélange des deux, parfois plus tard. Ces ressentis méritent d’être accueillis sans jugement.
+
+## Au quotidien
+- **Repose-toi** les premiers jours et accepte l’aide de tes proches.
+- **Utilise des serviettes** tant que les saignements sont abondants, et note leur évolution.
+- **Commence ta contraception** comme convenu avec le professionnel, ou utilise des préservatifs en attendant.
+- **Va à la visite de contrôle** : elle vérifie que la grossesse est arrêtée et qu’il n’y a pas de complication, et peut te proposer un suivi psychosocial.
+- **Mentionne ton IVG** dans tes antécédents auprès de ton médecin, gynécologue ou sage-femme : ils sont tenus au secret médical.
+- **Si tu as besoin de parler**, un centre de santé sexuelle, un EVARS (espace vie affective, relationnelle et sexuelle), le Planning familial ou des groupes de parole peuvent t’accompagner.
+
+## Questions fréquentes
+**Quand vais-je retrouver mes règles ?**
+Les sources consultées ne fixent pas de date précise. Si tu n’as pas de règles plusieurs semaines après l’IVG et que tu n’as pas commencé de contraception hormonale, fais un test (au-delà de trois semaines) et parles-en au professionnel.
+
+**Mon test est encore positif deux semaines après : faut-il s’inquiéter ?**
+Un test peut rester positif jusqu’à trois semaines. C’est la visite de contrôle (examen, échographie ou prise de sang) qui confirme l’arrêt de la grossesse.
+
+**Mon ou ma partenaire ne comprend pas ce que je ressens.**
+Chacun peut vivre l’IVG différemment. Une consultation psychosociale ou un groupe de parole peut aider, seule ou à deux.
+
+## Quand demander conseil
+Contacte rapidement le professionnel qui te suit en cas de fièvre au-delà de 38 °C, de pertes de sang très abondantes, de très fortes douleurs abdominales ou de malaise ; si les saignements sont importants avec malaise, ou si la fièvre persiste, appelle le **15** ou le **112**. Si ton moral reste très bas, si tu n’arrives plus à faire face ou si tu as des idées noires, appelle le **3114**, jour et nuit. Le **0800 08 11 11** est gratuit et anonyme.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['après IVG','saignements après IVG','contraception après IVG','émotions IVG','test positif après IVG','fertilité après IVG','soutien IVG','visite de contrôle']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Connaître les effets secondaires après une IVG","url":"https://www.questionsexualite.fr/choisir-sa-contraception/l-interruption-volontaire-de-grossesse/ivg-quels-sont-les-effets-indesirables","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Choisir sa contraception après une IVG","url":"https://www.questionsexualite.fr/choisir-sa-contraception/l-interruption-volontaire-de-grossesse/quelle-contraception-choisir-apres-une-ivg","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — À qui parler de son IVG ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/l-interruption-volontaire-de-grossesse/parler-de-l-ivg","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('ivg-mineure-accompagnement-confidentialite', (select id from public.content_categories where slug = 'contraception'), 'IVG quand on est mineure : confidentialité, adulte accompagnant et entretien', 'Une mineure peut avoir recours à une IVG sans l’accord de ses parents : le rôle de l’adulte de son choix, l’entretien obligatoire et la prise en charge confidentielle.', '## En bref
+- Il n’y a **pas d’âge minimum** pour une IVG.
+- Une mineure peut **impliquer ses parents** ou son représentant légal, ou **garder le secret**.
+- Si elle garde le secret, elle doit être **accompagnée d’une personne majeure de son choix** à chaque étape.
+- L’**entretien psychosocial est obligatoire** pour les mineures, avant le recueil du consentement.
+- L’IVG est **prise en charge à 100 %**, sans avance de frais, et l’anonymat peut être garanti.
+
+## Comprendre
+**Un droit qui t’appartient.** Selon Service-Public.fr, une mineure peut choisir de demander le consentement d’un parent ou de son représentant légal, ou de garder l’IVG confidentielle. QuestionSexualité précise que tu peux demander l’accord de tes parents sans y être obligée.
+
+**L’adulte accompagnant.** Si tu ne veux pas en parler à tes parents, tu choisis une personne majeure qui t’accompagne dans tes démarches : un membre de ta famille, un ami adulte, un professionnel… Son rôle est de te soutenir, pas de décider à ta place. Pour une IVG instrumentale, cet accompagnement est obligatoire le jour du geste.
+
+**L’entretien psychosocial.** Il est obligatoire pour les mineures et a lieu avant le consentement écrit. C’est un temps d’écoute avec un professionnel pour parler de ta situation, de tes questions, de ce que tu ressens, et pour t’aider si tu as besoin d’un adulte accompagnant. Il n’y a pas de délai minimal à respecter entre cet entretien et l’IVG.
+
+**Les étapes ensuite** sont les mêmes que pour une majeure : consultation d’information, consentement, IVG médicamenteuse ou instrumentale selon le terme, puis consultation de suivi entre le 14e et le 21e jour.
+
+## Au quotidien
+- **Appelle le 0800 08 11 11** (gratuit, anonyme) ou utilise le tchat de ivg-contraception-sexualites.org pour savoir où aller près de chez toi.
+- **Un centre de santé sexuelle** peut t’accueillir et t’orienter sans que tes parents le sachent.
+- **L’infirmière scolaire** peut t’écouter et t’orienter.
+- **Agis vite** : le choix de la méthode dépend du terme de la grossesse.
+- **Garde le guide d’information** remis lors de la première consultation : il récapitule les méthodes, les lieux et les numéros utiles.
+- **Si tu hésites encore**, l’entretien psychosocial et le numéro vert peuvent t’aider à réfléchir, sans jugement : la décision reste la tienne.
+- **Pense à la suite** : le professionnel te proposera une contraception, elle aussi accessible confidentiellement et sans avance de frais.
+
+## Questions fréquentes
+**Mes parents recevront-ils un relevé de l’Assurance Maladie ?**
+L’IVG peut être réalisée de façon anonyme et sans avance de frais. Dis-le dès le premier contact que tu souhaites la confidentialité.
+
+**Qui peut être mon adulte accompagnant ?**
+Une personne majeure de ton choix. Si tu n’as personne, parles-en lors de l’entretien psychosocial : les professionnels peuvent t’aider.
+
+**Mon copain doit-il être d’accord ?**
+Non. L’IVG est un droit personnel ; ton partenaire peut t’accompagner si tu le souhaites.
+
+**Et si quelqu’un me met la pression, dans un sens ou dans l’autre ?**
+La décision t’appartient. Parles-en lors de l’entretien ou appelle le numéro vert.
+
+## Quand demander conseil
+Prends contact dès que possible avec le 0800 08 11 11 ou un centre de santé sexuelle. Si tu subis des violences, des menaces ou des pressions, appelle le **119** (enfance en danger), jour et nuit ; en danger immédiat, le **17** ou le **112**. En cas de douleur intense dans le ventre, de saignement très abondant avec malaise ou de fièvre, appelle le **15**. Si tu te sens au bout du rouleau, le **3114** répond à toute heure.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid','child']::text[], null, null, 144, null, false, array['IVG mineure','avortement mineure','sans les parents','adulte accompagnant','entretien psychosocial','IVG anonyme','ado enceinte']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Service-Public.fr — Interruption volontaire de grossesse (IVG)","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F1551","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — À qui parler de son IVG ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/l-interruption-volontaire-de-grossesse/parler-de-l-ivg","consulted_on":"2026-10-27"},{"label":"ivg.gouv.fr (ministère de la Santé) — Quelles sont les étapes de l’IVG ?","url":"https://ivg.gouv.fr/ivg-etape-par-etape","consulted_on":"2026-10-27","published":"2026-01-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('apres-pilule-du-lendemain-regles-test-reprise-contraception', (select id from public.content_categories where slug = 'contraception'), 'Après la pilule du lendemain : règles, protection, test de grossesse et reprise de ta contraception', 'Ce qui peut se passer après une contraception d’urgence hormonale, pourquoi utiliser des préservatifs jusqu’aux règles et comment reprendre ta pilule après un oubli.', '## En bref
+- La pilule d’urgence agit **uniquement sur les rapports qui ont eu lieu avant sa prise** : utilise un **préservatif à chaque rapport jusqu’à tes prochaines règles**.
+- Tes règles arrivent souvent à la date prévue, mais peuvent être **décalées de quelques jours**.
+- **Retard de plus de 5 jours** : fais un test de grossesse. QuestionSexualité conseille aussi de vérifier par un test deux à trois semaines après.
+- Après un oubli de pilule, **reprends ta plaquette** au dernier comprimé oublié et continue normalement.
+- Un rapport non protégé expose aussi aux **IST** : pense au dépistage.
+
+## Comprendre
+**Comment agit la pilule d’urgence.** Selon QuestionSexualité, elle agit surtout en **retardant l’ovulation**. Ce n’est pas une méthode abortive. Elle n’est pas efficace à 100 %, et elle l’est d’autant plus qu’elle est prise tôt. C’est pour cela que les rapports suivants doivent être protégés : si l’ovulation est seulement repoussée, un rapport quelques jours plus tard peut aboutir à une grossesse.
+
+**Les effets possibles.** Nausées, maux de tête ou petits saignements, qui disparaissent en général en 48 heures environ selon QuestionSexualité. Santé.fr précise que des saignements ressemblant à des règles peuvent survenir quelques jours après la prise : ils **ne prouvent pas** que la contraception d’urgence a fonctionné. Le cycle peut être perturbé, avec des règles plus tôt ou plus tard que d’habitude.
+
+**Vomissements.** Si tu vomis dans les trois heures après la prise, un nouveau comprimé est nécessaire (QuestionSexualité mentionne aussi la diarrhée survenant dans les dix heures). Demande conseil au pharmacien.
+
+**Si une grossesse survient malgré tout.** L’Assurance Maladie indique qu’aucun risque de malformation n’a été mis en évidence avec les pilules d’urgence : tu peux poursuivre la grossesse si tu le souhaites, ou t’informer sur l’IVG.
+
+## Au quotidien
+- **Note la date de prise et la date prévue de tes règles** dans ton suivi de cycle.
+- **Garde des préservatifs à portée de main** jusqu’aux prochaines règles.
+- **Si tu prenais déjà la pilule**, l’Assurance Maladie donne cet exemple : en cas d’oubli des comprimés des jours 12 et 13, reprends la plaquette au 12e comprimé puis continue normalement. Ta pilule ne sera à nouveau pleinement efficace qu’à partir de la plaquette suivante : préservatif jusqu’aux règles.
+- **Si tu n’as pas de contraception régulière**, prends rendez-vous avec un médecin, une sage-femme ou un centre de santé sexuelle pour en choisir une.
+- **Pour les IST**, l’Assurance Maladie conseille de consulter dans les 48 heures en cas de risque de VIH : un traitement préventif peut être proposé selon la situation.
+
+## Questions fréquentes
+**J’ai eu des saignements trois jours après : ce sont mes règles ?**
+Pas forcément. Des saignements peuvent survenir après la prise sans signifier que tu n’es pas enceinte. Attends tes règles habituelles et fais un test en cas de retard de plus de 5 jours.
+
+**Puis-je reprendre une pilule d’urgence si j’ai un autre rapport non protégé dans le même cycle ?**
+L’Assurance Maladie déconseille de prendre la pilule d’urgence deux fois dans le même cycle. Demande conseil au pharmacien ou à un médecin : le DIU au cuivre est une autre option.
+
+**Quand faire un test de grossesse ?**
+En cas de retard de règles de plus de 5 jours, selon l’Assurance Maladie. QuestionSexualité conseille aussi de confirmer par un test deux à trois semaines après la prise.
+
+**La pilule d’urgence rend-elle stérile ?**
+Non : elle agit sur l’ovulation du cycle en cours et ne remplace pas une contraception régulière.
+
+## Quand demander conseil
+Consulte en cas de retard de règles, de saignements inhabituels ou de douleurs. Appelle le **15** ou le **112** en cas de douleur brutale et intense dans le bas-ventre, surtout d’un côté, avec un retard de règles (une grossesse extra-utérine est possible), ou de saignement très abondant avec malaise. Pour le VIH, le dépistage ou les urgences dans les 48 heures. Sida info service : **0 800 840 800**, à toute heure.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['pilule du lendemain','après pilule du lendemain','retard de règles','test de grossesse','saignements pilule du lendemain','reprendre sa pilule','contraception d’urgence','pilule du surlendemain']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Les bons réflexes après une contraception d’urgence","url":"https://www.ameli.fr/assure/sante/themes/contraception-urgence/bons-reflexes-contraception-urgence","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Comprendre la contraception d’urgence","url":"https://www.questionsexualite.fr/choisir-sa-contraception/la-contraception-d-urgence/contraception-d-urgence-comment-ca-marche","consulted_on":"2026-10-27"},{"label":"Santé.fr — L’impact de la contraception sur les règles","url":"https://www.sante.fr/limpact-de-la-contraception-sur-les-regles","consulted_on":"2026-10-27","published":"2024-02-23"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('diu-cuivre-contraception-urgence', (select id from public.content_categories where slug = 'contraception'), 'Le stérilet au cuivre en contraception d’urgence : la méthode la plus efficace, comment l’obtenir à temps', 'Jusqu’à 5 jours après un rapport à risque, le DIU au cuivre peut être posé en urgence puis garder son rôle de contraception pendant des années.', '## En bref
+- Le **DIU (stérilet) au cuivre** peut être posé **jusqu’à 5 jours** après un rapport non protégé ou un accident de contraception.
+- L’Assurance Maladie le présente comme **la méthode de contraception d’urgence la plus efficace**.
+- Il demande une **consultation** avec un médecin ou une sage-femme, puis la pose : il faut donc agir vite.
+- Une fois posé, il peut rester en place comme **contraception régulière** pendant plusieurs années.
+- Il **ne protège pas des IST** : pense au dépistage après un rapport non protégé.
+
+## Comprendre
+**Deux options d’urgence.** Après un rapport à risque, tu peux prendre une pilule d’urgence (un seul comprimé, au plus tard dans les 3 ou 5 jours selon la pilule, idéalement dans les 12 heures) ou faire poser un DIU au cuivre (au plus tard dans les 5 jours). Le DIU est la méthode la plus efficace des deux.
+
+**Pourquoi l’envisager.**
+- Tu souhaites de toute façon une contraception de longue durée, sans hormones.
+- Tu prends un traitement qui peut diminuer l’efficacité de la pilule d’urgence : l’Assurance Maladie cite des traitements de l’épilepsie, de la tuberculose, du VIH et le millepertuis.
+- Tu as déjà pris une pilule d’urgence dans le même cycle : l’Assurance Maladie déconseille de la reprendre.
+
+**Le coût.** Le DIU s’obtient sur ordonnance. L’Assurance Maladie indique un prix d’environ 30 euros, remboursé à 65 % ; il est pris en charge à 100 % avant 26 ans selon Service-Public.fr.
+
+**Après la pose.** Les règles reviennent en général à la date prévue. Le DIU joue alors son rôle de contraception régulière ; l’ANSM indique une durée d’efficacité de 3 à 10 ans selon le modèle.
+
+## Au quotidien
+- **Appelle tôt** : ton médecin, une sage-femme, un centre de santé sexuelle ou le **0800 08 11 11** pour savoir qui peut poser un DIU rapidement près de chez toi.
+- **En attendant le rendez-vous**, si le délai risque d’être dépassé, demande au pharmacien une pilule d’urgence : mieux vaut ne pas laisser passer le temps.
+- **Note la date et l’heure du rapport** : le professionnel en aura besoin pour vérifier que tu es dans les délais.
+- **Prévois un antidouleur** conseillé par le professionnel pour après la pose, et quelqu’un pour te raccompagner si tu le souhaites.
+- **Fais le point sur les IST** : un dépistage peut être proposé dans le même temps.
+
+## Questions fréquentes
+**Un DIU peut-il être posé si je n’ai jamais eu d’enfant ?**
+Oui : selon l’ANSM, le DIU peut être utilisé par les adolescentes et par les femmes avec ou sans enfant. Le professionnel vérifie qu’il n’y a pas de contre-indication.
+
+**Est-ce douloureux ?**
+La pose peut provoquer une douleur variable d’une personne à l’autre, et des crampes les jours suivants. Une douleur qui persiste doit être signalée.
+
+**Puis-je le faire retirer rapidement si je ne le supporte pas ?**
+Oui, un DIU peut être retiré à tout moment par un professionnel. Prévois alors une autre contraception.
+
+**Et si les 5 jours sont dépassés ?**
+Parles-en à un professionnel sans attendre, et fais un test de grossesse au moment adapté. Si une grossesse est confirmée, tu peux t’informer sur toutes les options.
+
+## Quand demander conseil
+Agis le jour même du rapport à risque. Après la pose, consulte en cas de fièvre, de douleurs qui augmentent, de pertes malodorantes ou de saignements très abondants. Appelle le **15** ou le **112** en cas de douleur brutale et intense dans le ventre, de saignement très abondant avec malaise ou de fièvre avec douleurs pelviennes.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['stérilet au cuivre urgence','DIU urgence','contraception d’urgence','rapport non protégé','5 jours','stérilet','pilule du lendemain alternative']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Quelles méthodes de contraception d’urgence ?","url":"https://www.ameli.fr/assure/sante/themes/contraception-urgence/comprendre-contraception-urgence","consulted_on":"2026-10-27","published":"2025-12-15"},{"label":"ameli.fr — Les bons réflexes après une contraception d’urgence","url":"https://www.ameli.fr/assure/sante/themes/contraception-urgence/bons-reflexes-contraception-urgence","consulted_on":"2026-10-27"},{"label":"ANSM — Dossier thématique : dispositif intra-utérin (stérilet)","url":"https://ansm.sante.fr/dossiers-thematiques/dispositif-intra-uterin-sterilet","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('contraception-masculine-ou-en-est-on', (select id from public.content_categories where slug = 'contraception'), 'La contraception masculine : ce qui existe vraiment, ce qui est en recherche', 'Préservatif et vasectomie, méthodes thermiques et hormonales encore en étude, retrait peu fiable : l’état des lieux de la contraception côté homme.', '## En bref
+- Selon QuestionSexualité, il existe **deux méthodes contraceptives masculines reconnues** : le **préservatif** et la **vasectomie**.
+- Les méthodes **thermiques** (sous-vêtements chauffants, anneau) et **hormonales** (gel, injections, pilule) sont **encore en recherche** : leur efficacité et leur sécurité restent à démontrer.
+- Le **retrait** n’est pas une méthode fiable.
+- Le préservatif est le **seul contraceptif qui protège aussi des IST**.
+- La contraception concerne les deux partenaires : l’Assurance Maladie encourage à **impliquer le partenaire**.
+
+## Comprendre
+**Le préservatif externe.** Il protège de la grossesse et des IST s’il est bien utilisé, dès le début du rapport. Il peut glisser ou se rompre : d’où l’intérêt d’en connaître le bon usage et, si besoin, de l’associer à une autre méthode. Certains préservatifs sont pris en charge à 100 % sans ordonnance avant 26 ans, et à 60 % sur prescription ensuite.
+
+**La vasectomie.** C’est une contraception définitive, réalisée par un urologue, en général sous anesthésie locale, en une quinzaine de minutes. Elle bloque les canaux qui transportent les spermatozoïdes sans toucher aux hormones, à l’érection, à l’éjaculation, à la libido ou au plaisir. Elle est accessible dès 18 ans, après un délai de réflexion de quatre mois. Des spermatozoïdes peuvent rester présents dans le sperme pendant 8 à 16 semaines : une autre contraception est nécessaire en attendant la confirmation par un examen.
+
+**Les méthodes en recherche.** Les méthodes thermiques visent à réduire la production de spermatozoïdes en augmentant la température des testicules. QuestionSexualité souligne qu’elles ne sont pas reconnues par l’OMS et ne doivent être utilisées que sous suivi médical. Les méthodes hormonales masculines (gel, injections, pilule) sont expérimentales et ne sont pas disponibles en France.
+
+**Le retrait.** Il a un taux d’échec élevé : le liquide qui s’écoule avant l’éjaculation peut contenir des spermatozoïdes, et du sperme déposé près de la vulve peut suffire à une grossesse.
+
+## Au quotidien
+- **Pour un homme qui veut s’impliquer** : acheter et avoir sur soi des préservatifs, apprendre à les utiliser, participer à la consultation de contraception si la partenaire le souhaite, partager les frais, se souvenir des renouvellements.
+- **Si ton partenaire (ou toi) envisage une méthode thermique**, parlez-en d’abord à un médecin ou à un urologue : elle nécessite un suivi médical et ne doit pas être improvisée.
+- **Pour la vasectomie**, il faut prendre le temps du délai de réflexion et poser toutes les questions sur son caractère définitif.
+- **En couple stable**, cherchez ensemble la méthode qui vous convient le mieux à tous les deux, plutôt que de laisser une seule personne en porter la charge.
+
+## Questions fréquentes
+**La vasectomie est-elle réversible ?**
+Elle est considérée comme une contraception définitive : le choix doit être mûrement réfléchi, d’où le délai de réflexion de quatre mois.
+
+**Un slip chauffant acheté en ligne suffit-il ?**
+Non. Selon QuestionSexualité, l’efficacité et la sécurité de ces méthodes restent à démontrer, et elles ne doivent être utilisées que sous suivi médical.
+
+**La pilule pour homme existe-t-elle ?**
+Pas en France : les méthodes hormonales masculines sont encore au stade des essais.
+
+**Le préservatif diminue-t-il le plaisir ?**
+Les sensations varient selon les personnes et les modèles ; il en existe de nombreux types. Un lubrifiant rend le rapport plus confortable et réduit le risque de rupture.
+
+## Quand demander conseil
+Un médecin, un urologue ou un centre de santé sexuelle peut répondre à toutes les questions sur la contraception masculine. Après une rupture de préservatif, la contraception d’urgence est à prendre au plus vite, et un dépistage des IST peut être utile. Une consultation rapide s’impose en cas de douleur ou de gonflement d’un testicule ; une douleur brutale et intense justifie d’appeler le **15**.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['contraception masculine','contraception homme','slip chauffant','anneau thermique','vasectomie','préservatif','pilule pour homme','charge contraceptive']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — La contraception masculine","url":"https://www.questionsexualite.fr/choisir-sa-contraception/ma-contraception-et-moi/contraception-masculine-comment-ca-marche","consulted_on":"2026-10-27"},{"label":"ameli.fr — Comment bien choisir sa contraception ?","url":"https://www.ameli.fr/assure/sante/themes/contraception/choisir-mode-contraception","consulted_on":"2026-10-27","published":"2026-01-12"},{"label":"Service-Public.fr — Contraception","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F707","consulted_on":"2026-10-27","published":"2026-09-28"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('idees-recues-contraception-grossesse-vrai-faux', (select id from public.content_categories where slug = 'contraception'), 'Contraception et grossesse : 10 idées reçues passées au crible', 'Grossesse pendant les règles, première fois, retrait, ovulation au 14e jour, pilule et stérilité : ce que disent vraiment les sources de santé publique.', '## En bref
+- On **peut** être enceinte en ayant un rapport pendant ses règles ou lors de son **premier rapport**.
+- L’ovulation n’a **pas toujours lieu au 14e jour** : compter les jours n’est pas fiable.
+- Le **retrait** et les méthodes dites « naturelles » sont moins efficaces que les autres contraceptions.
+- La **pilule d’urgence** n’est pas une IVG et peut être prise jusqu’à 5 jours après le rapport selon la pilule.
+- Seuls les **préservatifs** protègent des IST.
+
+## Comprendre
+Voici dix idées reçues fréquentes, et ce qu’en disent les sources de Santé publique France (QuestionSexualité).
+
+1. **« On ne peut pas tomber enceinte pendant ses règles. »** Faux : les spermatozoïdes restent actifs plusieurs jours et une ovulation peut survenir tôt après les règles.
+2. **« Pas de risque la première fois. »** Faux : une grossesse est possible dès le premier rapport, et même dès les premières règles, puisqu’elles signalent qu’une ovulation a déjà eu lieu.
+3. **« L’ovulation, c’est toujours le 14e jour. »** Faux : dans un cycle de 28 jours, elle peut survenir entre le 5e et le 25e jour environ.
+4. **« Les spermatozoïdes ne survivent que quelques heures. »** Faux : ils peuvent vivre jusqu’à 5 jours dans les voies génitales.
+5. **« Sans pénétration, aucun risque. »** C’est rare, mais du sperme déposé sur la vulve ou à l’entrée du vagin peut remonter jusqu’à l’utérus.
+6. **« Le retrait suffit. »** Faux : le liquide préséminal peut contenir des spermatozoïdes ; le taux d’échec est élevé.
+7. **« La pilule du lendemain, c’est un avortement. »** Faux : elle agit surtout en retardant l’ovulation.
+8. **« La pilule du lendemain ne marche que le lendemain. »** Elle est d’autant plus efficace qu’elle est prise tôt, mais peut être prise jusqu’à 3 ou 5 jours après selon la pilule ; le DIU au cuivre peut être posé jusqu’à 5 jours après.
+9. **« Avec la pilule, je suis protégée des IST. »** Faux : seuls les préservatifs protègent des IST, d’où l’intérêt de la double protection.
+10. **« À l’approche de la ménopause, plus besoin de contraception. »** Faux : elle reste nécessaire pendant la périménopause, tant que la ménopause n’est pas confirmée (absence de règles depuis un an).
+
+## Au quotidien
+- **Vérifie l’info à la source** : QuestionSexualité, ameli.fr, ivg.gouv.fr ou un professionnel plutôt que les forums.
+- **Adopte la double protection** avec un nouveau partenaire : préservatif + autre contraception.
+- **Garde une contraception d’urgence** chez toi : elle est gratuite en pharmacie, sans ordonnance.
+- **En cas de doute sur une grossesse**, seul un test permet de savoir : test urinaire à partir de la date prévue des règles, ou trois semaines après le rapport si tes cycles sont irréguliers.
+
+## Questions fréquentes
+**Un retard de règles veut-il forcément dire grossesse ?**
+Non, d’autres causes existent (stress important, dérèglement hormonal), mais un retard doit toujours faire penser à une grossesse possible : fais un test.
+
+**Certains saignements peuvent-ils être confondus avec des règles en début de grossesse ?**
+Oui, c’est possible. En cas de doute, consulte rapidement.
+
+**Le préservatif interne est-il aussi efficace contre les IST ?**
+Oui, les préservatifs externe et interne sont les seuls moyens de contraception qui protègent aussi des IST.
+
+**Les applis de suivi de cycle sont-elles une contraception ?**
+Compter les jours n’est pas fiable et les méthodes dites naturelles sont moins efficaces. Un suivi de cycle aide à connaître ton corps, pas à éviter une grossesse.
+
+## Quand demander conseil
+Pose tes questions à un médecin, une sage-femme, un pharmacien ou au **0800 08 11 11** (gratuit, anonyme). Après un rapport à risque, ne tarde pas pour la contraception d’urgence. Appelle le **15** ou le **112** en cas de douleur brutale et intense dans le ventre avec un retard de règles, ou de saignement très abondant avec malaise.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['idées reçues contraception','vrai faux contraception','enceinte pendant les règles','première fois enceinte','retrait','ovulation 14e jour','pilule stérilité','mythes contraception']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Foire aux questions sur la sexualité","url":"https://www.questionsexualite.fr/foire-aux-questions","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Contraception lors des premiers rapports sexuels","url":"https://www.questionsexualite.fr/choisir-sa-contraception/ma-contraception-et-moi/premiers-rapports-sexuels-quelle-contraception","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Comprendre la contraception d’urgence","url":"https://www.questionsexualite.fr/choisir-sa-contraception/la-contraception-d-urgence/contraception-d-urgence-comment-ca-marche","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('contraception-apres-40-ans-perimenopause', (select id from public.content_categories where slug = 'contraception'), 'Contraception après 40 ans et pendant la périménopause : jusqu’à quand, laquelle ?', 'Une grossesse reste possible jusqu’à la ménopause : pourquoi garder une contraception, comment elle peut évoluer avec l’âge et les facteurs de risque, et quand se poser la question de l’arrêt.', '## En bref
+- La fertilité baisse avec l’âge, mais **une grossesse reste possible jusqu’à la ménopause**.
+- L’Assurance Maladie rappelle que la contraception doit être **poursuivie jusqu’à la certitude de la ménopause**, c’est-à-dire après **un an sans règles**.
+- Avec l’âge, le **tabac**, le **surpoids**, la **migraine** ou d’autres facteurs de risque cardiovasculaire, ta méthode peut être **réévaluée**.
+- Le médecin peut proposer de passer d’une contraception œstroprogestative à une contraception **progestative** ou **barrière**.
+- Les méthodes dites **naturelles** sont déconseillées à cette période, faute de fiabilité.
+
+## Comprendre
+**La périménopause.** C’est la période de transition qui précède la ménopause. Elle dure en général 2 à 4 ans, parfois plus, et les premiers signes apparaissent en moyenne vers 47 ans selon l’Assurance Maladie. Les cycles deviennent irréguliers, alternant cycles courts et longs, avec des règles parfois plus abondantes. D’autres signes sont possibles : bouffées de chaleur, sueurs nocturnes, troubles du sommeil, seins tendus, irritabilité, sécheresse vaginale…
+
+**Pourquoi garder une contraception.** Même si les cycles sont irréguliers, une ovulation peut encore survenir. Les cycles imprévisibles rendent d’ailleurs les méthodes d’observation encore moins fiables.
+
+**Pourquoi la méthode peut changer.** Le risque cardiovasculaire augmente avec l’âge, surtout après 35 ans et avec le tabac. L’Assurance Maladie indique que, en préménopause, le médecin peut proposer de remplacer une contraception œstroprogestative (comme la pilule combinée) par une contraception progestative ou barrière, ce qui permet aussi de suivre l’évolution des règles. Un contraceptif oral faiblement dosé ou un traitement progestatif peut parfois soulager certains troubles, en l’absence de contre-indication.
+
+**Quand arrêter.** La ménopause se confirme par l’absence de règles depuis un an. Le moment précis de l’arrêt de la contraception se décide avec ton médecin ou ta sage-femme, d’autant qu’une contraception hormonale peut masquer les règles.
+
+## Au quotidien
+- **Fais le point chaque année** sur ta contraception : tension, tabac, poids, migraines, traitements.
+- **Profite du bilan prévention** proposé entre 45 et 50 ans pour parler de ta contraception et des signes de la périménopause.
+- **Note tes cycles** dans ton suivi : leur durée, l’abondance des règles, les saignements inhabituels. Ces informations aident le professionnel.
+- **Garde une contraception d’urgence** chez toi : elle reste utile en cas d’oubli ou d’accident de préservatif.
+- **Avec un nouveau partenaire**, le préservatif reste le seul moyen de te protéger des IST, à tout âge.
+
+## Questions fréquentes
+**Mes règles sont devenues très irrégulières : suis-je encore fertile ?**
+Une grossesse reste possible tant que la ménopause n’est pas confirmée. Un retard de règles doit faire penser à une grossesse : fais un test en cas de doute.
+
+**Puis-je garder ma pilule combinée après 40 ans ?**
+Cela dépend de tes facteurs de risque. Le tabac après 35 ans, la migraine ou l’hypertension peuvent conduire à changer de méthode : c’est à décider avec le professionnel qui te suit.
+
+**Le DIU hormonal peut-il m’accompagner jusqu’à la ménopause ?**
+Les contraceptions progestatives font partie des options que le médecin peut proposer en préménopause, selon l’Assurance Maladie. Parles-en avec ton médecin ou ta sage-femme.
+
+**Comment savoir si je suis ménopausée sous contraception hormonale ?**
+Certaines contraceptions suppriment les règles et rendent le repère « un an sans règles » difficile à utiliser. Le professionnel t’aidera à organiser l’arrêt.
+
+## Quand demander conseil
+Consulte si tes règles deviennent très abondantes, si tu saignes entre les règles ou après un rapport, ou en cas de retard de règles inhabituel. Tout saignement après la ménopause doit faire consulter. Appelle le **15** ou le **112** en cas de saignement très abondant avec malaise, de douleur ou de gonflement d’un mollet, d’essoufflement brutal, de douleur dans la poitrine ou de trouble soudain de la parole.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['contraception 40 ans','contraception 45 ans','périménopause contraception','préménopause','pilule après 40 ans','arrêter la contraception ménopause','grossesse après 40 ans']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Périménopause (préménopause) : symptômes et contraception","url":"https://www.ameli.fr/assure/sante/themes/menopause/perimenopause-premenopause-symptomes-et-contraception","consulted_on":"2026-10-27","published":"2026-04-09"},{"label":"ameli.fr — Contraception hormonale : pilule, patch, anneau vaginal, implant, injection","url":"https://www.ameli.fr/assure/sante/themes/contraception/methodes-contraception-hormonale","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Foire aux questions sur la sexualité","url":"https://www.questionsexualite.fr/foire-aux-questions","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('contraception-tabac-thrombose-risque-cardiovasculaire', (select id from public.content_categories where slug = 'contraception'), 'Contraception, tabac et risque de thrombose : ce qu’il faut savoir et les signes qui doivent alerter', 'Pourquoi le tabac, l’âge et certains antécédents comptent dans le choix d’une contraception hormonale, et quels symptômes imposent d’appeler le 15.', '## En bref
+- Les contraceptions **œstroprogestatives** (pilule combinée, patch, anneau) augmentent le risque de **thrombose** : phlébite, embolie pulmonaire, AVC.
+- Selon l’ANSM, ce risque augmente avec le **tabac**, l’**obésité**, les **antécédents familiaux** de thrombose, l’**âge au-delà de 35 ans** et d’autres facteurs individuels.
+- La pilule combinée **n’est pas conseillée aux fumeuses de 35 ans et plus**.
+- Des **alternatives** existent : contraception progestative, DIU au cuivre ou hormonal, méthodes barrières.
+- Certains symptômes imposent d’**appeler le 15** immédiatement.
+
+## Comprendre
+**Qu’est-ce qu’une thrombose ?** C’est la formation d’un caillot dans une veine (phlébite, qui peut migrer vers le poumon : embolie pulmonaire) ou dans une artère (infarctus, AVC). Les œstrogènes de synthèse favorisent la coagulation. QuestionSexualité indique que le tabagisme augmente aussi le risque de thrombose artérielle.
+
+**Ce qui fait varier le risque.**
+- **Le type de pilule** : les pilules de 3e et 4e générations exposent à un risque de thrombose veineuse plus élevé que celles de 1re et 2e générations, qui sont à privilégier en première intention.
+- **Le tabac** : l’Assurance Maladie le présente comme un facteur d’aggravation du risque d’AVC ou de phlébite.
+- **L’âge**, surtout au-delà de 35 ans.
+- **Le surpoids, les antécédents familiaux** de thrombose, certaines maladies.
+
+**Le suivi.** L’ANSM rappelle qu’un bilan lipidique et glycémique est nécessaire avant le début et pendant la prise. Une carte patiente, dans la boîte de la pilule, détaille les signes d’alerte. Si une maladie à risque apparaît, il faut consulter, prévenir le médecin et utiliser une autre contraception.
+
+## Au quotidien
+- **Dis-le si tu fumes**, même un peu ou occasionnellement : ce n’est pas un jugement, c’est une donnée essentielle pour choisir.
+- **Si tu veux arrêter**, le professionnel qui te prescrit ta contraception peut te présenter les aides au sevrage tabagique.
+- **Signale tes antécédents familiaux** : phlébite, embolie, AVC ou infarctus jeune chez tes parents, frères ou sœurs.
+- **Lis la carte patiente** fournie avec ta pilule et garde-la à portée de main.
+- **Lors d’une chirurgie, d’une immobilisation ou d’un plâtre**, signale ta contraception aux soignants.
+- **Sur un long trajet**, bouge les jambes régulièrement et hydrate-toi.
+
+## Questions fréquentes
+**Je fume et j’ai moins de 35 ans : puis-je prendre la pilule combinée ?**
+La contre-indication formelle concerne les fumeuses de 35 ans et plus, mais le tabac augmente le risque avant cet âge aussi. Parles-en avec le professionnel : une méthode sans œstrogène peut être préférable.
+
+**La cigarette électronique compte-t-elle ?**
+Les sources consultées ne la détaillent pas. Signale-la au professionnel, qui t’aidera à évaluer ta situation.
+
+**Le patch ou l’anneau sont-ils moins risqués ?**
+Ils contiennent aussi un œstrogène et un progestatif ; l’Assurance Maladie indique un risque de thrombose au moins identique à celui des pilules de 1re et 2e générations pour l’anneau.
+
+**Les contraceptions progestatives sont-elles concernées ?**
+Elles sont utilisables en cas de contre-indication aux œstroprogestatifs, par exemple après 35 ans ou en cas de tabagisme, selon l’Assurance Maladie.
+
+## Quand demander conseil
+Appelle le **15** ou le **112** sans attendre en cas de douleur ou de gonflement d’un mollet, d’essoufflement brutal, de douleur dans la poitrine, de crachats de sang, de faiblesse ou d’engourdissement d’un côté du corps, de déformation de la bouche, de trouble soudain de la parole ou de la vue, ou de mal de tête brutal et inhabituel. Consulte si une migraine apparaît ou change sous contraception.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['pilule et tabac','fumer sous pilule','thrombose pilule','phlébite','embolie pulmonaire','AVC pilule','risque cardiovasculaire contraception','pilule 35 ans']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ANSM — Dossier thématique : pilule contraceptive","url":"https://ansm.sante.fr/dossiers-thematiques/pilule-contraceptive","consulted_on":"2026-10-27","published":"2026-08-11"},{"label":"QuestionSexualité (Santé publique France) — Qu’est-ce que la pilule contraceptive ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/tous-les-modes-de-contraception/la-pilule-comment-ca-marche","consulted_on":"2026-10-27"},{"label":"ameli.fr — Contraception hormonale : pilule, patch, anneau vaginal, implant, injection","url":"https://www.ameli.fr/assure/sante/themes/contraception/methodes-contraception-hormonale","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('parler-contraception-dans-le-couple-charge-contraceptive', (select id from public.content_categories where slug = 'contraception'), 'Parler contraception dans le couple : partager la charge et décider à deux', 'Pourquoi la contraception concerne les deux partenaires, comment aborder le sujet, et ce que chacun peut concrètement faire au quotidien.', '## En bref
+- La contraception **concerne les deux partenaires** : l’Assurance Maladie recommande d’**impliquer le partenaire** dans la contraception et la prévention des IST.
+- Santé publique France invite à te demander : « Comment associer mon partenaire à ma réflexion ? »
+- Côté homme, deux méthodes sont reconnues : le **préservatif** et la **vasectomie**.
+- Arrêter le préservatif dans un couple stable se prépare : **dépistage** des deux partenaires et autre contraception en place.
+- Partager la charge, c’est aussi partager l’**organisation**, les **frais** et l’**attention** aux effets ressentis.
+
+## Comprendre
+**La charge contraceptive.** Dans la plupart des couples hétérosexuels, la contraception repose sur la femme : rendez-vous, prise quotidienne, effets indésirables, renouvellements, contraception d’urgence en cas d’oubli. L’Assurance Maladie rappelle que, chez l’homme, il existe le préservatif externe et la vasectomie ; les autres méthodes masculines sont encore en recherche selon QuestionSexualité.
+
+**Décider ensemble, sans imposer.** La personne qui utilise une méthode reste seule à décider de ce qui entre dans son corps. Parler à deux ne veut pas dire faire pression : il s’agit de comprendre ce que chacun vit et attend, et de chercher la solution la plus confortable.
+
+**Le préservatif dans un couple qui dure.** L’Assurance Maladie conseille d’utiliser des préservatifs pendant les premiers mois d’une relation suivie, puis de faire un test de dépistage : une relation stable et de confiance permet ensuite d’arrêter cette protection, à condition d’avoir une autre contraception si vous ne souhaitez pas de grossesse.
+
+## Au quotidien
+Quelques idées pour lancer la conversation et partager la charge :
+- **Choisir un moment calme**, pas juste avant ou juste après un rapport.
+- **Parler de ce que chacun ressent** : « Ma pilule me pèse », « J’ai peur des oublis », « Je voudrais qu’on partage les frais ».
+- **Venir à deux en consultation**, si la personne concernée le souhaite : le partenaire peut poser ses questions et comprendre les contraintes.
+- **Avoir toujours des préservatifs** sur soi, et apprendre à bien les utiliser, y compris le préservatif interne.
+- **Partager le coût** des méthodes non remboursées (patch, anneau, certaines pilules).
+- **Garder ensemble une contraception d’urgence** à la maison et savoir où la trouver.
+- **Se dépister à deux** avant d’arrêter le préservatif.
+- **Évoquer le projet d’enfant** : pas maintenant, peut-être dans quelques années, ou plus du tout ? Cela oriente le choix (méthode de courte ou longue durée, voire définitive).
+
+## Questions fréquentes
+**Mon partenaire refuse le préservatif : que faire ?**
+Le préservatif est le seul moyen de se protéger des IST. Tu as le droit de l’exiger. Si tu subis des pressions, parles-en à un professionnel ou appelle le 0800 08 11 11.
+
+**On veut arrêter le préservatif : par quoi commencer ?**
+Un dépistage des IST pour chacun, puis la mise en place d’une autre contraception si vous ne souhaitez pas de grossesse.
+
+**Mon partenaire envisage une vasectomie : est-ce une décision de couple ?**
+C’est une décision personnelle, réfléchie (délai de réflexion de quatre mois), qui gagne à être discutée ensemble car elle est considérée comme définitive.
+
+**Et dans un couple de femmes ?**
+La question de la contraception ne se pose pas de la même façon, mais celle de la prévention des IST, du dépistage et du suivi gynécologique reste importante.
+
+## Quand demander conseil
+Tu peux consulter, seule ou à deux, un médecin, une sage-femme ou un centre de santé sexuelle pour toute question. Si la contraception devient un sujet de contrôle, de menace ou de violence (contraception imposée, sabotage, rapports forcés), appelle le **3919** (violences faites aux femmes) ; en danger immédiat, le **17** ou le **112**.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['contraception couple','charge contraceptive','partenaire contraception','parler de contraception','préservatif couple','arrêter le préservatif','dépistage couple']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (QuestionSexualité, Santé publique France) — Comment choisir la contraception qui vous convient ?","url":"https://www.sante.fr/comment-choisir-la-contraception-qui-vous-convient","consulted_on":"2026-10-27","published":"2024-09-26"},{"label":"ameli.fr — Comment bien choisir sa contraception ?","url":"https://www.ameli.fr/assure/sante/themes/contraception/choisir-mode-contraception","consulted_on":"2026-10-27","published":"2026-01-12"},{"label":"QuestionSexualité (Santé publique France) — La contraception masculine","url":"https://www.questionsexualite.fr/choisir-sa-contraception/ma-contraception-et-moi/contraception-masculine-comment-ca-marche","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('sterilet-adolescente-femme-sans-enfant', (select id from public.content_categories where slug = 'contraception'), 'Le stérilet quand on est jeune ou qu’on n’a jamais eu d’enfant : c’est possible', 'Le DIU convient aussi aux adolescentes et aux femmes qui n’ont jamais été enceintes : ce que disent l’ANSM et l’Assurance Maladie, et comment se préparer.', '## En bref
+- Selon l’ANSM et l’Assurance Maladie, le DIU (stérilet) peut être utilisé par les **adolescentes** et par les femmes **avec ou sans enfant**, en l’absence de contre-indication.
+- Il existe un DIU **au cuivre** (sans hormones, de 4 à 10 ans) et un DIU **hormonal** (au lévonorgestrel, 5 ans).
+- Il n’y a **pas d’oubli possible**, et il peut être **retiré à tout moment**.
+- Il **ne protège pas des IST** : le préservatif reste utile avec un nouveau partenaire.
+- Il est pris en charge à **100 % avant 26 ans**, sans avance de frais.
+
+## Comprendre
+**Une idée reçue tenace.** On a longtemps pensé que le stérilet était réservé aux femmes ayant déjà eu des enfants. Ce n’est pas ce que disent les sources officielles actuelles : l’ANSM indique qu’il peut être utilisé par les adolescentes et par les femmes avec ou sans enfant. L’Assurance Maladie rappelle aussi que l’âge ne limite pas le choix de la contraception, à l’exception de la stérilisation, réservée aux majeurs.
+
+**Cuivre ou hormonal ?**
+- Le **DIU au cuivre** agit comme un spermicide. Il ne contient pas d’hormones mais rend souvent les règles plus abondantes. Il peut aussi servir de contraception d’urgence.
+- Le **DIU hormonal** épaissit les sécrétions du col, réduit les règles et peut les supprimer : il est parfois proposé en cas de règles très abondantes. Selon l’ANSM, il n’est pas associé à un surrisque de méningiome.
+
+**Les contre-indications** citées par l’Assurance Maladie : malformation de l’utérus, infection en cours, saignements inexpliqués, et contre-indications propres au DIU hormonal.
+
+**Le suivi.** Une visite de contrôle est prévue dans les 3 mois suivant la pose, puis une consultation annuelle.
+
+## Au quotidien
+- **Pose toutes tes questions** lors de la consultation : douleur à la pose, effets sur les règles, durée, retrait.
+- **Demande comment soulager la douleur** pendant et après la pose ; les sensations varient d’une personne à l’autre.
+- **Prévois une journée tranquille** après la pose, avec une bouillotte et la possibilité de te reposer.
+- **Tu peux faire du sport** et utiliser des tampons (à changer au moins deux fois par jour, selon l’Assurance Maladie).
+- **Avec un nouveau partenaire**, associe le préservatif (double protection) et pense au dépistage des IST.
+- **Pour les parents** : si ton ado envisage un DIU, sache que la consultation est confidentielle. Tu peux lui dire que tu es disponible pour en parler, sans exiger de savoir.
+
+## Questions fréquentes
+**Le stérilet empêche-t-il d’avoir des enfants plus tard ?**
+Non. Il peut être retiré à tout moment, notamment en cas de désir de grossesse.
+
+**La pose est-elle plus douloureuse quand on n’a jamais accouché ?**
+La douleur est très variable d’une personne à l’autre. Les crampes s’atténuent en général en quelques jours ; une douleur qui persiste doit être signalée.
+
+**Puis-je le faire retirer si je veux un enfant ?**
+Oui, à tout moment, par un professionnel. L’ANSM précise qu’il peut aussi être remplacé si besoin.
+
+**Combien ça coûte ?**
+Avant 26 ans, le DIU, sa pose et le suivi sont pris en charge sans avance de frais ; ensuite, le DIU est remboursé à 65 %.
+
+## Quand demander conseil
+Consulte en cas de saignements anormaux, de fièvre, de douleurs dans le ventre ou de pertes inhabituelles. Appelle le **15** ou le **112** en cas de douleur brutale et intense dans le bas-ventre avec un retard de règles, de fièvre avec douleurs pelviennes importantes, ou de saignement très abondant avec malaise.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid','child']::text[], null, null, 144, null, false, array['stérilet jeune','DIU sans enfant','stérilet nullipare','stérilet adolescente','stérilet 18 ans','DIU cuivre','DIU hormonal','idées reçues stérilet']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ANSM — Dossier thématique : dispositif intra-utérin (stérilet)","url":"https://ansm.sante.fr/dossiers-thematiques/dispositif-intra-uterin-sterilet","consulted_on":"2026-10-27"},{"label":"ameli.fr — La contraception par stérilet ou dispositif intra-utérin (DIU)","url":"https://www.ameli.fr/assure/sante/themes/contraception/contraception-sterilet","consulted_on":"2026-10-27"},{"label":"ameli.fr — L’entrée dans la vie sexuelle et la contraception à l’adolescence","url":"https://www.ameli.fr/assure/sante/themes/puberte/entree-vie-sexuelle-contraception-adolescence","consulted_on":"2026-10-27","published":"2021-01-03"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('retrait-methodes-observation-fiabilite-chiffres', (select id from public.content_categories where slug = 'contraception'), 'Retrait, température, glaire, calendrier : ce que valent vraiment les méthodes dites naturelles', 'Les taux d’échec publiés par Santé publique France pour chaque méthode sans contraceptif, leurs conditions d’utilisation et pourquoi elles ne conviennent pas à tout le monde.', '## En bref
+- Les méthodes dites naturelles reposent sur l’**observation du cycle** ou sur le **retrait** ; l’Assurance Maladie juge leur taux d’échec **élevé**.
+- Selon QuestionSexualité, environ **22 %** des personnes qui utilisent le retrait connaissent une grossesse en un an, **23 %** avec l’observation seule de la glaire, **15 à 25 %** avec le calendrier (Ogino).
+- La **symptothermie** (température + glaire) affiche environ **2 %** d’échec, mais demande une **formation** et environ **un an d’observation** sans contraception hormonale.
+- Ces méthodes ne conviennent pas aux **cycles irréguliers** et **ne protègent pas des IST**.
+- Pour éviter une grossesse, l’Assurance Maladie les réserve aux femmes qui connaissent bien leur cycle, maîtrisent la méthode et **acceptent le risque** d’une grossesse.
+
+## Comprendre
+**Le retrait.** Il consiste à retirer le pénis avant l’éjaculation. Il demande une grande maîtrise et reste peu fiable : le liquide préséminal peut contenir des spermatozoïdes, et du sperme déposé près de la vulve suffit parfois. Le risque augmente en cas de nouvelle pénétration après une éjaculation. Le tableau comparatif de QuestionSexualité indique une efficacité d’environ 78 % en pratique.
+
+**Les méthodes d’observation.**
+- **Température** : une prise chaque matin pour repérer la légère hausse qui suit l’ovulation. Elle indique que l’ovulation est passée, pas qu’elle approche.
+- **Glaire cervicale (Billings)** : l’observation de la glaire, qui change au cours du cycle. Elle peut être confondue avec du sperme ou d’autres pertes, et devient difficile à lire en cas de mycose ou d’infection.
+- **Calendrier (Ogino)** : il suppose que l’ovulation survient toujours au même moment, ce qui est faux ; c’est l’une des moins efficaces.
+- **Méthode des jours fixes** (environ 12 % d’échec, cycles de 26 à 32 jours uniquement) et **méthode des deux jours** (environ 14 %).
+- **Symptothermie** : elle combine plusieurs signes et demande une formation et environ douze cycles d’observation.
+
+**Après un accouchement**, la méthode MAMA (allaitement exclusif) a ses propres conditions strictes : bébé de moins de 6 mois, absence de retour de couches, tétées espacées de 4 à 6 heures au maximum.
+
+## Au quotidien
+- **Si tu utilises une de ces méthodes**, garde toujours une **contraception d’urgence** à la maison.
+- **Associe le préservatif** pendant la période fertile, et avec tout nouveau partenaire.
+- **Ne te fie pas à une appli seule** : un suivi de cycle t’aide à mieux connaître ton corps, mais calculer des « jours sûrs » reste peu fiable.
+- **Si tu veux te former** à la symptothermie, parles-en avec une sage-femme ou un médecin ; la période d’apprentissage nécessite une autre protection.
+- **Si une grossesse serait difficile à vivre pour toi**, parles-en : d’autres méthodes, avec ou sans hormones, sont bien plus efficaces.
+
+## Questions fréquentes
+**Le retrait vaut-il mieux que rien ?**
+Il réduit un peu le risque par rapport à l’absence de toute méthode, mais reste peu fiable. Après un retrait raté ou un doute, pense à la contraception d’urgence.
+
+**Les tests d’ovulation peuvent-ils servir de contraception ?**
+L’Assurance Maladie les cite parmi les méthodes naturelles, dont le taux d’échec est élevé. Ils sont surtout conçus pour repérer la période fertile quand on souhaite concevoir.
+
+**Et si on veut un bébé bientôt ?**
+Les méthodes d’observation peuvent aider à repérer la période fertile. Pour un projet bébé, le module projet bébé de l’app t’accompagne.
+
+**Les méthodes naturelles conviennent-elles aux cycles irréguliers ?**
+La plupart supposent des cycles réguliers : elles sont encore moins fiables dans ce cas.
+
+## Quand demander conseil
+Consulte un médecin, une sage-femme ou un centre de santé sexuelle pour discuter d’une méthode plus adaptée. En cas de retard de règles, fais un test de grossesse. Appelle le **15** ou le **112** en cas de douleur brutale et intense dans le ventre avec un retard de règles, ou de saignement très abondant avec malaise.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid','ttc']::text[], null, null, null, null, false, array['retrait','coït interrompu','méthodes naturelles','méthode des températures','glaire cervicale','Ogino','symptothermie','MAMA','fiabilité contraception']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Qu’est-ce que la contraception naturelle ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/tous-les-modes-de-contraception/que-sont-les-methodes-naturelles","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Tous les moyens de contraception dans un tableau comparatif","url":"https://www.questionsexualite.fr/choisir-sa-contraception/ma-contraception-et-moi/tableau-comparatif-pour-vous-guider-dans-votre-choix-de-contraception","consulted_on":"2026-10-27"},{"label":"ameli.fr — Les méthodes naturelles de contraception","url":"https://www.ameli.fr/assure/sante/themes/contraception/methodes-naturelles-contraception","consulted_on":"2026-10-27","published":"2018-05-30"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('injection-contraceptive-progestative', (select id from public.content_categories where slug = 'contraception'), 'L’injection contraceptive : une méthode de dernier recours, pour qui et avec quelles précautions', 'Le progestatif injectable protège environ trois mois par injection, mais il est réservé aux situations où aucune autre méthode n’est possible : ce qu’il faut savoir.', '## En bref
+- L’injection contraceptive est une **injection intramusculaire de progestatif**, faite par un **médecin, une infirmière ou une sage-femme**.
+- Elle protège environ **trois mois** ; le tableau de QuestionSexualité indique des injections **toutes les 8 à 12 semaines**.
+- L’Assurance Maladie précise que son indication est **limitée aux cas où aucune autre méthode n’est possible**, et que sa durée d’utilisation est **limitée dans le temps**.
+- Ses risques cités : **thrombose veineuse**, **diminution de la densité minérale osseuse**, **prise de poids** ; les **règles irrégulières** sont fréquentes.
+- Elle est **remboursée**, à 100 % avant 26 ans.
+
+## Comprendre
+**Comment elle agit.** Comme d’autres contraceptifs progestatifs, elle libère une hormone qui empêche la grossesse. Selon le tableau comparatif de Santé publique France, son efficacité est d’environ 94 % en utilisation courante et 99,7 % en utilisation parfaite : l’écart vient surtout des injections faites en retard.
+
+**Pourquoi c’est une méthode de dernier recours.** L’Assurance Maladie liste plusieurs risques : thrombose veineuse, baisse de la densité des os, prise de poids. Les saignements irréguliers sont un effet indésirable fréquent. C’est pourquoi d’autres méthodes sont proposées en priorité et pourquoi l’injection n’est pas prévue pour être utilisée très longtemps.
+
+**Ses atouts dans certaines situations.** Aucune manipulation au moment des rapports, pas de prise quotidienne, une méthode discrète. Elle peut être envisagée quand les autres méthodes sont contre-indiquées ou impossibles à utiliser.
+
+**Le délai d’efficacité.** QuestionSexualité indique une efficacité qui peut demander jusqu’à 7 jours selon le moment de l’injection : utilise des préservatifs en attendant, selon les consignes du professionnel.
+
+## Au quotidien
+- **Note la date de la prochaine injection** dans ton calendrier, avec un rappel une ou deux semaines avant.
+- **Prends rendez-vous à l’avance** avec le professionnel qui la réalise.
+- **En cas de retard**, utilise des préservatifs et demande conseil rapidement ; pense à la contraception d’urgence si un rapport non protégé a eu lieu.
+- **Prends soin de tes os** : activité physique régulière, alimentation riche en calcium, pas de tabac. Parles-en avec ton médecin.
+- **Fais le point régulièrement** sur la pertinence de cette méthode : une autre peut devenir possible.
+- **Avec un nouveau partenaire**, ajoute le préservatif : l’injection ne protège pas des IST.
+
+## Questions fréquentes
+**Puis-je me faire l’injection moi-même ?**
+Selon l’Assurance Maladie, elle est réalisée par un médecin, une infirmière ou une sage-femme.
+
+**Mes règles vont-elles changer ?**
+Les règles irrégulières sont fréquentes avec cette méthode. Un saignement inhabituel, très abondant ou prolongé mérite une consultation.
+
+**Combien de temps puis-je l’utiliser ?**
+Sa durée d’utilisation est limitée dans le temps : le professionnel qui te suit réévalue régulièrement la situation.
+
+**Est-elle remboursée ?**
+Oui. Service-Public.fr indique une prise en charge à 100 % avant 26 ans et à 65 % ensuite.
+
+## Quand demander conseil
+Consulte si tu as dépassé la date d’injection, en cas de saignements très abondants ou prolongés, ou de douleurs. Appelle le **15** ou le **112** en cas de douleur ou de gonflement d’un mollet, d’essoufflement brutal, de douleur dans la poitrine, ou de saignement très abondant avec malaise.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['injection contraceptive','piqûre contraceptive','progestatif injectable','contraception tous les 3 mois','densité osseuse','contraception sans oubli']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Contraception hormonale : pilule, patch, anneau vaginal, implant, injection","url":"https://www.ameli.fr/assure/sante/themes/contraception/methodes-contraception-hormonale","consulted_on":"2026-10-27"},{"label":"QuestionSexualité (Santé publique France) — Tous les moyens de contraception dans un tableau comparatif","url":"https://www.questionsexualite.fr/choisir-sa-contraception/ma-contraception-et-moi/tableau-comparatif-pour-vous-guider-dans-votre-choix-de-contraception","consulted_on":"2026-10-27"},{"label":"Service-Public.fr — Contraception","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F707","consulted_on":"2026-10-27","published":"2026-09-28"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('double-protection-preservatif-contraception-ist', (select id from public.content_categories where slug = 'contraception'), 'La double protection : préservatif + contraception, quand et pourquoi', 'Associer le préservatif à une autre contraception protège à la fois des IST et d’une grossesse : dans quelles situations, jusqu’à quand, et comment arrêter le préservatif en sécurité.', '## En bref
+- Le **préservatif** (externe ou interne) est le **seul** moyen de contraception qui protège aussi des **IST**.
+- La **double protection** associe le préservatif à une autre contraception (pilule, implant, DIU…) : le préservatif protège des IST, l’autre méthode prend le relais en cas de rupture ou de mauvaise utilisation.
+- Selon Santé publique France, en 2016, seules **16 %** des jeunes femmes de 15 à 19 ans utilisaient la double protection lors du premier rapport.
+- L’Assurance Maladie conseille les **préservatifs pendant les premiers mois** d’une relation, puis un **dépistage** avant de les arrêter.
+- Le **lubrifiant** rend le rapport plus confortable et réduit le risque de rupture.
+
+## Comprendre
+**Pourquoi deux protections ?** Une contraception hormonale ou un DIU sont très efficaces contre la grossesse, mais ne protègent pas des IST (chlamydia, VIH, hépatite B, etc.). À l’inverse, le préservatif protège des IST mais peut glisser ou se rompre. Associer les deux couvre les deux risques.
+
+**Quand y penser ?** Avec un nouveau partenaire, lors des premiers rapports, en cas de partenaires multiples, ou tant que le dépistage n’a pas été fait. L’Assurance Maladie rappelle que le préservatif est indispensable tant qu’il n’y a pas de relation stable et de dépistage du VIH.
+
+**Bien utiliser le préservatif.** QuestionSexualité insiste : il doit être mis **dès le début**, avant toute pénétration ou éjaculation. Le lubrifiant est essentiel pour les rapports anaux.
+
+**Arrêter le préservatif.** L’Assurance Maladie conseille d’utiliser des préservatifs pendant les trois premiers mois d’une relation suivie, puis de faire un test de dépistage. Une relation stable et de confiance permet alors d’arrêter, avec une autre contraception en place si vous ne souhaitez pas de grossesse.
+
+## Au quotidien
+- **Garde toujours des préservatifs** sur toi : avant 26 ans, ceux des marques listées sont pris en charge sans ordonnance en pharmacie ; les centres de santé sexuelle et les CeGIDD en distribuent gratuitement.
+- **Vérifie la date de péremption** et le marquage CE ; conserve-les à l’abri de la chaleur et des frottements (pas dans un portefeuille serré).
+- **Utilise un lubrifiant** adapté au préservatif.
+- **En cas de rupture**, la partenaire peut prendre une contraception d’urgence ; pour le VIH, consulte dans les **48 heures** (dépistage ou urgences) : un traitement préventif peut être proposé.
+- **Faites-vous dépister à deux** avant d’arrêter le préservatif. Les consultations et dépistages sont possibles en CeGIDD et en centre de santé sexuelle, de façon confidentielle.
+
+## Questions fréquentes
+**Je prends la pilule : ai-je vraiment besoin du préservatif ?**
+Pour la grossesse, ta pilule suffit si elle est bien prise. Pour les IST, seul le préservatif protège. Avec un nouveau partenaire, la double protection est recommandée.
+
+**Les mineurs peuvent-ils se faire dépister sans leurs parents ?**
+Oui : les consultations en centre de santé sexuelle et en CeGIDD sont confidentielles, et les mineurs peuvent y aller sans autorisation parentale.
+
+**Le préservatif interne est-il une bonne alternative ?**
+Oui, il protège aussi des IST. Il se place dans le vagin avant le rapport.
+
+## Quand demander conseil
+Après un rapport à risque, consulte dans les 48 heures pour le VIH (CeGIDD, centre de santé sexuelle ou urgences) et pense à la contraception d’urgence. Consulte aussi en cas de brûlures, de pertes inhabituelles, de plaies ou de démangeaisons génitales. Sida info service répond 24 h/24 au **0 800 840 800**, et Fil santé jeunes au **0 800 235 236**.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['double protection','préservatif et pilule','IST','dépistage','nouveau partenaire','rupture préservatif','arrêter le préservatif','VIH']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Contraception lors des premiers rapports sexuels","url":"https://www.questionsexualite.fr/choisir-sa-contraception/ma-contraception-et-moi/premiers-rapports-sexuels-quelle-contraception","consulted_on":"2026-10-27"},{"label":"ameli.fr — Les bons réflexes après une contraception d’urgence","url":"https://www.ameli.fr/assure/sante/themes/contraception-urgence/bons-reflexes-contraception-urgence","consulted_on":"2026-10-27"},{"label":"ameli.fr — L’entrée dans la vie sexuelle et la contraception à l’adolescence","url":"https://www.ameli.fr/assure/sante/themes/puberte/entree-vie-sexuelle-contraception-adolescence","consulted_on":"2026-10-27","published":"2021-01-03"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('changer-de-contraception-sans-periode-non-protegee', (select id from public.content_categories where slug = 'contraception'), 'Changer de contraception sans te retrouver sans protection', 'Les bonnes raisons de changer, les trois règles de Santé publique France pour la transition, et les questions à poser au professionnel.', '## En bref
+- Il est tout à fait possible de **changer de contraception** si la tienne ne te convient plus : effets gênants, oublis, nouvelle situation de vie.
+- Santé publique France donne trois règles : **en parler à un professionnel**, **prendre des précautions pendant la transition**, et **ne pas arrêter la pilule avant d’avoir une nouvelle méthode**.
+- Pendant la transition, utilise des **préservatifs en plus**, pendant une période qui peut aller d’environ une semaine à un mois selon les méthodes.
+- Entre deux pilules, **ne laisse pas de « trou »**.
+- Prépare la **liste de tes contraceptions passées** pour la consultation.
+
+## Comprendre
+**Les raisons de changer.** QuestionSexualité cite : saignements entre les règles, acné, douleurs des seins, sécheresse vaginale, baisse de moral, oublis fréquents. Une méthode difficile à suivre au quotidien est en soi un inconvénient. Ta vie change aussi : nouvelle relation, fin de relation, projet d’enfant, âge, tabac, nouveau traitement, nouvelle maladie.
+
+**Pourquoi éviter l’arrêt brutal.** Arrêter une pilule sans relais expose à une grossesse non prévue. QuestionSexualité ajoute que l’arrêt peut s’accompagner de cycles irréguliers, d’un retard de règles, ou de règles plus abondantes ou douloureuses.
+
+**Le rôle du professionnel.** Le médecin ou la sage-femme fixe le moment exact où commencer la nouvelle méthode, selon l’ancienne et la nouvelle (pilule vers DIU, implant vers pilule, etc.), et te dit pendant combien de temps ajouter des préservatifs. L’ANSM conseille d’établir avec le médecin la liste des contraceptions hormonales déjà utilisées lors d’un changement de pilule.
+
+## Au quotidien
+Avant la consultation :
+- **Note ce qui ne va pas** et depuis quand (saignements, humeur, douleurs, oublis).
+- **Liste tes anciennes méthodes** et ce que tu en as pensé.
+- **Réfléchis à tes attentes** : avec ou sans hormones, durée, contraintes acceptables, envie d’enfant à moyen terme. Le tableau comparatif de QuestionSexualité peut t’aider.
+
+Pendant la transition :
+- **Continue l’ancienne méthode** jusqu’au jour indiqué par le professionnel.
+- **Ajoute des préservatifs** pendant la période indiquée.
+- **Si tu changes de pilule**, enchaîne sans pause supplémentaire, sauf consigne contraire.
+- **Garde une contraception d’urgence** à la maison en cas de doute.
+
+## Questions fréquentes
+**Faut-il attendre la fin de la plaquette pour changer ?**
+Cela dépend des méthodes. Demande au professionnel le jour exact pour commencer la nouvelle.
+
+**Je veux arrêter toute contraception hormonale : que me reste-t-il ?**
+Le DIU au cuivre, les préservatifs, le diaphragme ou la cape (avec un spermicide), et les méthodes d’observation, nettement moins fiables.
+
+**Après un implant ou un DIU, la fertilité revient-elle vite ?**
+Le retrait est possible à tout moment ; une grossesse peut survenir rapidement après. Si tu ne souhaites pas de grossesse, la nouvelle méthode doit être prête.
+
+**Combien de temps tester une nouvelle méthode ?**
+Les saignements du début peuvent s’atténuer en quelques semaines. Un effet qui te pèse justifie d’en parler sans attendre.
+
+## Quand demander conseil
+Consulte un médecin, une sage-femme ou un centre de santé sexuelle avant de changer. En cas de rapport non protégé pendant la transition, prends une contraception d’urgence au plus vite. Appelle le **15** ou le **112** en cas de douleur ou de gonflement d’un mollet, d’essoufflement brutal, de douleur thoracique ou de trouble soudain de la parole ou de la vue.
+
+Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, pharmacien).', array['avoid']::text[], null, null, null, null, false, array['changer de contraception','changer de pilule','passer de la pilule au stérilet','arrêter la pilule','relais contraception','préservatif transition']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Comment changer de contraception ?","url":"https://www.questionsexualite.fr/choisir-sa-contraception/ma-contraception-et-moi/comment-changer-de-contraception","consulted_on":"2026-10-27"},{"label":"ameli.fr — Comment bien choisir sa contraception ?","url":"https://www.ameli.fr/assure/sante/themes/contraception/choisir-mode-contraception","consulted_on":"2026-10-27","published":"2026-01-12"},{"label":"ANSM — Dossier thématique : pilule contraceptive","url":"https://ansm.sante.fr/dossiers-thematiques/pilule-contraceptive","consulted_on":"2026-10-27","published":"2026-08-11"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('premiere-visite-chez-le-dentiste-enfant-age-preparer', (select id from public.content_categories where slug = 'sante-enfant'), 'La première visite chez le dentiste : à quel âge et comment la préparer ?', 'Pourquoi ne pas attendre l’école ou une douleur, ce qui se passe pendant ce premier rendez-vous et comment aider votre enfant à le vivre sereinement.', '## En bref
+- L’Assurance maladie situe la **première visite entre 6 et 12 mois** ; l’UFSBD conseille qu’elle ait lieu dans les six mois qui suivent la première dent, et au plus tard avant le premier anniversaire.
+- Il n’est pas utile d’attendre l’entrée à l’école ni une douleur : ce rendez-vous sert d’abord à **prévenir**.
+- Le dentiste repère les enfants plus exposés aux caries, donne des conseils aux parents et commence à créer une relation de confiance.
+- Votre attitude compte : parlez-en positivement et ne présentez jamais le dentiste comme une punition.
+
+## Comprendre
+Les dents de lait ont un rôle important : elles permettent de croquer et de mastiquer, de bien prononcer, et elles guident les dents définitives vers leur place. Leur émail est plus fin que celui des dents définitives, donc plus vulnérable aux caries. Une carie précoce peut faire mal et gêner le sommeil, l’alimentation ou la parole, rappelle l’Assurance maladie.
+
+C’est pour cela que la première visite est conseillée tôt. Selon l’Assurance maladie, elle permet de repérer les enfants fragiles, de mettre en place une prévention adaptée et d’instaurer une relation de confiance. Le praticien en profite pour conseiller les parents.
+
+D’après la fiche de l’UFSBD, pendant ce rendez-vous le dentiste :
+- regarde s’il existe une blessure, une carie ou un autre problème ;
+- évalue si votre enfant est particulièrement exposé au risque de carie ;
+- nettoie les dents et explique les gestes d’hygiène ;
+- aborde la dentition et les habitudes comme la tétine ou le pouce ;
+- décide des soins éventuels et de la date de la prochaine visite.
+
+Ensuite, en l’absence de risque particulier, les pédiatres de mpedia indiquent qu’un contrôle annuel suffit à partir de 3 ans. En cas de risque carieux familial ou personnel, le dentiste peut proposer des visites plus rapprochées.
+
+## Au quotidien
+**Avant le rendez-vous**
+- Choisissez si possible un rendez-vous **le matin**, moment où beaucoup d’enfants sont plus coopératifs (conseil de l’UFSBD).
+- Si vous avez vous-même un rendez-vous, mpedia suggère d’emmener votre enfant pour qu’il découvre le lieu, le fauteuil, les bruits.
+- Lisez ensemble un livre sur le dentiste ou jouez « au dentiste » avec une peluche : compter les dents, ouvrir grand la bouche.
+- Préparez vos questions : brossage, dentifrice, tétine, biberon du soir, chute à venir.
+
+**Pendant la visite**
+- Restez calme : les enfants perçoivent les émotions des adultes. Si vous redoutez vous-même le dentiste, gardez cette inquiétude pour vous.
+- Laissez le praticien parler directement à votre enfant.
+- Si votre enfant refuse d’ouvrir la bouche, ce n’est pas un échec : la première visite sert aussi à se familiariser.
+
+**Après**
+- Valorisez ce qu’il a fait (« tu as montré tes dents au dentiste »).
+- Notez dans le carnet de santé la date du prochain contrôle.
+
+**Les mots à éviter** : « ça ne fera pas mal », « si tu ne te brosses pas les dents, le dentiste va te piquer ». La visite ne doit jamais servir de menace.
+
+## Questions fréquentes
+**Mon bébé n’a que deux dents, est-ce vraiment utile ?**
+Oui : l’Assurance maladie situe la première visite entre 6 et 12 mois, justement pour prévenir avant que les problèmes apparaissent et conseiller les parents sur l’hygiène et l’alimentation.
+
+**Faut-il un dentiste spécialisé pour enfants ?**
+Votre dentiste habituel peut recevoir votre enfant. Certains praticiens se consacrent davantage aux enfants ; demandez conseil à votre dentiste ou à votre médecin si votre enfant a des besoins particuliers.
+
+**La visite est-elle prise en charge ?**
+Les consultations chez le chirurgien-dentiste sont remboursées par l’Assurance maladie, et à partir de 3 ans le dispositif M’T dents permet un examen de prévention chaque année sans avance de frais.
+
+**Mon enfant a très peur. Que faire ?**
+Parlez-en au dentiste à la prise de rendez-vous. Plusieurs courtes visites de familiarisation peuvent aider. Évitez de minimiser sa peur : nommez-la et rassurez-le.
+
+## Quand demander conseil
+Consultez rapidement un chirurgien-dentiste si vous voyez une dent qui noircit ou se creuse, si votre enfant a mal en mangeant, s’il dort mal à cause d’une douleur, après un choc sur une dent, ou si la succion du pouce ou de la tétine persiste après 4 ans. Un gonflement de la joue avec fièvre demande un avis médical sans attendre. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child']::text[], null, null, 6, 72, false, array['dentiste','premier rendez-vous dentiste','dentiste bébé','dentiste enfant','peur du dentiste','dents de lait','contrôle dentaire','carie']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"UFSBD (Union française pour la santé bucco-dentaire) — Fiche conseil « Sa première fois chez le dentiste »","url":"https://www.ufsbd.fr/wp-content/uploads/2013/08/Fiche-Sa-premiere-fois-chez-le-dentiste.pdf","consulted_on":"2026-10-27"},{"label":"ameli.fr — L’importance des dents de lait et les risques liés aux caries chez le tout-petit","url":"https://www.ameli.fr/assure/sante/themes/poussee-dentaire/dents-lait-importance-risque-lie-caries","consulted_on":"2026-10-27"},{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — Brossage de dent du bébé : quelles recommandations ?","url":"https://www.mpedia.fr/art-brossage-dent-bebe-recommandations/","consulted_on":"2026-10-27","published":"2023-07-17"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('mt-dents-examen-bucco-dentaire-gratuit-enfant-chaque-annee', (select id from public.content_categories where slug = 'droits-demarches'), 'M’T dents : l’examen bucco-dentaire offert à votre enfant chaque année', 'De 3 à 24 ans, un rendez-vous de prévention chez le dentiste est pris en charge chaque année, sans avance de frais, ainsi que les soins réalisés dans les 6 mois qui suivent.', '## En bref
+- Le dispositif **M’T dents** s’adresse aux enfants et jeunes de **3 à 24 ans**, qui y ont droit **chaque année** (Santé.fr, page publiée en septembre 2025).
+- L’examen est pris en charge par l’Assurance maladie et la complémentaire santé, **sans avance de frais**.
+- Les **soins réalisés dans les 6 mois** qui suivent l’examen bénéficient aussi de la dispense d’avance de frais, sauf certaines exceptions (prothèses, orthodontie, inlay-onlays).
+- L’invitation n’est pas obligatoire : il suffit de préciser « M’T dents » en prenant rendez-vous.
+
+## Comprendre
+Pendant longtemps, M’T dents proposait un examen tous les trois ans (3, 6, 9, 12 ans…), comme l’indiquent encore certaines fiches plus anciennes. Selon la page de Santé.fr publiée le 23 septembre 2025, le dispositif s’adresse désormais aux 3–24 ans **chaque année**. Il concerne tous les mineurs et jeunes majeurs rattachés à l’Assurance maladie, quelle que soit leur nationalité, au régime général comme au régime agricole.
+
+**Ce que comprend l’examen** (Santé.fr) :
+- le repérage des facteurs de risque : grignotage, sucres ou aliments acides, brossage insuffisant, succion du pouce, tabac ;
+- l’examen des dents et des gencives ;
+- des conseils sur le brossage (méthode, fréquence, fluor), l’alimentation, la protection des dents pendant le sport, et la vaccination contre les papillomavirus (HPV) ;
+- si besoin, un plan de soins. Des radiographies peuvent être réalisées.
+
+**Ce qui n’en fait pas partie** : les traitements orthodontiques et les prothèses. Si le dentiste en propose, il doit vous informer des tarifs et des remboursements.
+
+**La prise en charge** : l’Assurance maladie règle 60 % et la complémentaire 40 %. Sans complémentaire, l’Assurance maladie prend en charge la totalité.
+
+## Au quotidien
+**Comment faire**
+1. Prenez rendez-vous chez un chirurgien-dentiste (habituel ou proche de chez vous) en précisant « M’T dents tous les ans ».
+2. Apportez la carte Vitale de l’enfant ou celle du parent qui l’a rattaché, et votre carte de mutuelle.
+3. Apportez le **carnet de santé** pour que le dentiste le complète.
+
+**L’invitation** : elle est envoyée aux parents jusqu’aux 17 ans, puis directement au jeune. Elle arrive par courrier à 3, 6, 12 et 18 ans, et par e-mail les autres années ; un compte ameli est nécessaire pour la recevoir.
+
+**Ce qui est surveillé selon l’âge** (fiche UFSBD) :
+- **3 ans** : la mise en place des dents de lait, l’hygiène et l’alimentation ;
+- **6 ans** : l’arrivée des premières molaires définitives, qui peuvent bénéficier d’un scellement des sillons ;
+- **9 ans** : l’éruption des incisives et la surveillance orthodontique ;
+- **12 ans** : les deuxièmes molaires définitives et la fin de la denture de lait ;
+- **15 ans et plus** : orthodontie éventuelle, tabac, piercings, dents de sagesse.
+
+**Une astuce** : notez le mois anniversaire de votre enfant comme rappel annuel, même si vous ne recevez pas l’invitation.
+
+## Questions fréquentes
+**L’examen est-il obligatoire ?**
+Le Code de la santé publique prévoit des examens bucco-dentaires de prévention ; l’UFSBD rappelle que les examens à 6 et 12 ans figurent parmi les examens obligatoires, avec une page dédiée dans le carnet de santé. Profiter de l’examen chaque année reste le plus simple.
+
+**Et si mon enfant a une carie ?**
+Les soins réalisés dans les 6 mois suivant l’examen sont dispensés d’avance de frais, à l’exception des inlay-onlays, des prothèses et des traitements d’orthopédie dento-faciale.
+
+**J’ai perdu l’invitation.**
+Elle n’est pas indispensable : présentez simplement la carte Vitale et la carte de mutuelle en précisant le dispositif.
+
+**L’orthodontie est-elle couverte ?**
+Non, pas dans le cadre de M’T dents. Interrogez votre dentiste et votre complémentaire sur les conditions de prise en charge.
+
+## Quand demander conseil
+N’attendez pas l’examen annuel si votre enfant a mal, si une dent change de couleur, après un choc dentaire ou en cas de gonflement de la joue : consultez un dentiste rapidement. Pour vos droits, votre caisse d’Assurance maladie ou votre compte ameli peuvent vous renseigner. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['child']::text[], null, null, 36, 216, false, array['M’T dents','mt dents','examen bucco-dentaire','dentiste gratuit','prévention dentaire','carte Vitale','invitation ameli','soins dentaires enfant']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Examens et soins bucco-dentaires gratuits pour les jeunes (M’T Dents)","url":"https://www.sante.fr/node/1247628","consulted_on":"2026-10-27","published":"2025-09-23"},{"label":"UFSBD — Fiche conseil « L’examen bucco-dentaire de prévention M’T dents ! »","url":"https://www.ufsbd.fr/wp-content/uploads/2021/11/Fiche-conseils-au-patient-RENDEZ-VOUS-PREVENTION-MT-DENTS.pdf","consulted_on":"2026-10-27","published":"2021-09"},{"label":"ameli.fr — L’importance des dents de lait et les risques liés aux caries chez le tout-petit","url":"https://www.ameli.fr/assure/sante/themes/poussee-dentaire/dents-lait-importance-risque-lie-caries","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('dentifrice-fluor-quel-dentifrice-selon-age-enfant', (select id from public.content_categories where slug = 'sante-enfant'), 'Dentifrice et fluor : lequel choisir selon l’âge de votre enfant ?', 'Le fluor protège l’émail, mais en excès il peut tacher les dents : les repères officiels de concentration et de quantité de dentifrice, du premier sourire à l’école.', '## En bref
+- Le fluor renforce l’émail et limite les caries ; en excès pendant la formation des dents, il peut provoquer des **taches blanches** (fluorose).
+- L’Assurance maladie recommande une concentration **adaptée à l’âge** : ≤ 500 ppm avant 3 ans, 500 ppm dès 3 ans, 1 000 à 1 500 ppm dès 6 ans.
+- La **quantité** compte aussi : une **trace** de dentifrice dès les premières dents, puis la **taille d’un petit pois** à partir des premières molaires (vers 12–18 mois).
+- Votre dentiste peut adapter ces repères au risque carieux de votre enfant.
+
+## Comprendre
+Les jeunes enfants ne savent pas encore cracher : ils avalent une partie du dentifrice. C’est pour cela que la teneur en fluor doit être adaptée à l’âge, explique l’Assurance maladie. Un excès pendant la minéralisation des dents peut laisser des taches blanches sur l’émail.
+
+**Les repères de l’Assurance maladie** (page « L’importance des dents de lait ») :
+- **jusqu’à 3 ans** : dentifrice dont la teneur en fluor est inférieure ou égale à 500 ppm ;
+- **dès 3 ans** : 500 ppm ;
+- **dès 6 ans** : 1 000 à 1 500 ppm.
+
+La concentration figure sur le tube, en **ppm** (parties par million) de fluor. Lisez aussi l’âge indiqué sur l’emballage.
+
+**Des repères qui peuvent varier.** Les pédiatres de mpedia citent les recommandations de l’UFSBD, qui proposent des concentrations différentes selon que le risque carieux est faible ou élevé. C’est le dentiste ou le médecin qui évalue ce risque : si vous recevez des conseils différents, suivez ceux du professionnel qui connaît votre enfant.
+
+## Au quotidien
+**Dès la première dent (vers 6 mois)**
+- Nettoyez les dents chaque soir avant le coucher avec une compresse humide ou une brosse imprégnée d’une **trace** de dentifrice fluoré adapté à l’âge (Assurance maladie).
+- Avant 1 an, une compresse enroulée autour du doigt ou un doigtier en silicone peut suffire (mpedia).
+
+**Dès les premières molaires (12–18 mois)**
+- Au moins un brossage par jour, avec une quantité de dentifrice de la **taille d’un petit pois**.
+- Brosse à petite tête et poils souples, à changer dès que les poils s’écartent, et au moins tous les trois mois.
+- Mpedia conseille de passer à deux brossages par jour après 2 ans : le matin après le petit déjeuner et le soir avant le coucher, sans rien manger ensuite.
+
+**Qui brosse ?**
+- **De 0 à 3 ans** : un adulte.
+- **De 3 à 6 ans** : l’adulte brosse ou aide l’enfant, selon ses capacités.
+- Après, gardez un œil sur le brossage du soir, en particulier sur la **première molaire définitive** qui pousse vers 6 ans tout au fond, derrière les dents de lait.
+
+**Rendre le moment agréable**
+- Un sablier de deux minutes, une chanson, un brossage « en miroir » avec vous.
+- Les goûts fruités sont souvent mieux acceptés que le menthol (mpedia).
+- La formule « du rose vers le blanc » aide les enfants à brosser de la gencive vers la dent (ameli).
+
+**Bien choisir et ranger**
+- Vérifiez l’âge et la teneur en fluor indiqués sur le tube.
+- Rangez le dentifrice hors de portée : un tube n’est pas un jouet ni une friandise.
+- Chaque brosse est personnelle et sèche à l’air libre.
+
+## Questions fréquentes
+**Mon enfant avale tout le dentifrice. Est-ce grave ?**
+C’est justement pour cela que les quantités sont très petites chez le jeune enfant. Respectez la trace ou le petit pois, et rangez le tube hors de portée. En cas d’ingestion d’une grande quantité, appelez un centre antipoison ou le 15.
+
+**Faut-il un dentifrice sans fluor ?**
+L’Assurance maladie recommande un dentifrice fluoré, en adaptant la concentration à l’âge. Parlez-en au dentiste si vous hésitez.
+
+**Les comprimés ou gouttes de fluor sont-ils utiles ?**
+Ils ne se donnent que sur avis d’un professionnel, après évaluation de l’ensemble des apports en fluor. Ne les ajoutez jamais de votre propre initiative.
+
+**Dois-je rincer après le brossage ?**
+Demandez au dentiste : il vous indiquera la pratique adaptée à l’âge de votre enfant.
+
+## Quand demander conseil
+Consultez le dentiste si vous voyez des taches blanches ou brunes, une dent qui noircit, des gencives qui saignent souvent, ou si le brossage est impossible depuis plusieurs semaines. En cas d’ingestion importante de dentifrice ou d’un produit d’hygiène, appelez un centre antipoison. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child']::text[], null, null, 6, 144, false, array['dentifrice enfant','fluor','ppm','fluorose','quantité dentifrice','brossage bébé','brosse à dents enfant','petit pois']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — L’importance des dents de lait et les risques liés aux caries chez le tout-petit","url":"https://www.ameli.fr/assure/sante/themes/poussee-dentaire/dents-lait-importance-risque-lie-caries","consulted_on":"2026-10-27"},{"label":"ameli.fr — Comment bien se brosser les dents ?","url":"https://www.ameli.fr/assure/sante/bons-gestes/quotidien/brosser-dents","consulted_on":"2026-10-27"},{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — Brossage de dent du bébé : quelles recommandations ?","url":"https://www.mpedia.fr/art-brossage-dent-bebe-recommandations/","consulted_on":"2026-10-27","published":"2023-07-17"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('caries-precoces-biberon-du-soir-boissons-sucrees-prevenir', (select id from public.content_categories where slug = 'sante-bebe'), 'Caries précoces : biberon du soir, boissons sucrées et habitudes qui protègent', 'La « carie du biberon » peut détruire très vite les dents de lait : comprendre le mécanisme et adopter des gestes simples, du coucher au goûter.', '## En bref
+- Les caries se développent quand les dents restent en contact avec des liquides sucrés, y compris le **lait** (et le lait maternel), rappelle l’Assurance maladie.
+- Le **biberon au coucher** est la situation la plus à risque : la nuit, la salive ne nettoie plus les dents.
+- L’**eau** est la boisson à privilégier en dehors des repas ; évitez que votre enfant se promène avec un biberon ou un gobelet de boisson sucrée.
+- Un **brossage le soir**, après le dernier repas, protège les dents dès la première.
+
+## Comprendre
+L’émail des dents de lait est plus fin que celui des dents définitives, donc plus fragile. Les bactéries de la bouche transforment les sucres en acides qui attaquent l’émail. Plus le contact est long et fréquent, plus le risque augmente.
+
+L’Assurance maladie décrit la « **carie du biberon** » : quand l’enfant s’endort avec un biberon, la boisson reste dans la bouche pendant le sommeil, la salive ne joue plus son rôle de nettoyage et les dents se détériorent très vite. L’UFSBD précise qu’elle touche surtout les **incisives du haut**.
+
+Les conséquences ne sont pas anodines : douleurs, difficultés à dormir, à manger ou à parler si la dent est détruite. Les enfants qui ont des caries très jeunes risquent davantage d’en avoir sur leurs dents définitives.
+
+Les bactéries se transmettent aussi par la salive : l’Assurance maladie conseille de ne pas partager la cuillère ou la tétine de l’enfant.
+
+## Au quotidien
+**Au coucher**
+- Ne donnez pas de biberon de lait, de jus ou de soda au lit (Assurance maladie). La brochure de 1000 premiers jours déconseille de laisser l’enfant dans son lit avec un biberon, car il peut s’habituer à avoir besoin de nourriture pour s’endormir.
+- Placez le dernier biberon avant le brossage et le rituel du soir, pas pendant l’endormissement.
+- Si votre enfant a besoin de succion pour s’endormir, parlez-en au médecin ou à la PMI pour trouver une alternative adaptée à son âge.
+
+**Dans la journée**
+- Proposez de l’**eau** comme boisson.
+- Évitez qu’il se promène avec un biberon de lait ou un gobelet à bec contenant une boisson sucrée.
+- Réservez les jus de fruits et les sodas à des occasions, plutôt qu’en boisson courante.
+- Gardez des repas et un goûter à heures régulières, plutôt que du grignotage en continu.
+- Ne trempez pas la tétine dans du sucre, du miel ou du sirop.
+
+**Le brossage**
+- Dès la première dent, nettoyez-la chaque soir avec une compresse ou une brosse et une trace de dentifrice fluoré adapté à l’âge.
+- Brossez le soir après le dernier repas : rien à manger ni à boire de sucré ensuite.
+
+**La tétine et le pouce**
+L’Assurance maladie conseille d’arrêter l’habitude idéalement vers 2 ans, sans la prolonger au-delà de 4 ans, et de préférer les tétines de forme physiologique.
+
+## Questions fréquentes
+**Le lait maternel peut-il provoquer des caries ?**
+L’Assurance maladie cite le lait, y compris maternel, parmi les liquides qui favorisent les caries quand ils restent au contact des dents. L’allaitement reste recommandé ; l’important est le nettoyage des dents dès leur apparition. Parlez-en à la sage-femme ou au dentiste si vous allaitez la nuit.
+
+**Les jus « sans sucres ajoutés » sont-ils sans effet sur les dents ?**
+Non : les jus de fruits contiennent naturellement des sucres et sont acides. L’eau reste la boisson de référence.
+
+**Comment reconnaître une carie ?**
+Une tache blanche ou brune, une dent qui noircit, se creuse ou se casse, une douleur au chaud, au froid ou au sucré. Consultez un dentiste rapidement.
+
+**Mon enfant refuse de s’endormir sans biberon. Comment faire ?**
+Avancez progressivement le biberon avant le brossage, puis remplacez le biberon du lit par un doudou, une berceuse ou votre présence. La puéricultrice de PMI peut vous accompagner.
+
+## Quand demander conseil
+Consultez rapidement un dentiste si une dent noircit, se creuse ou tombe en morceaux, ou si votre enfant a mal, dort mal ou refuse de manger. Une carie suspectée demande des soins sans tarder, rappelle l’Assurance maladie. En cas de joue gonflée avec fièvre, demandez un avis médical rapidement. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child']::text[], null, null, 0, 72, false, array['carie du biberon','caries précoces','biberon du soir','jus de fruits','boissons sucrées','dents de lait noires','tétine','grignotage']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — L’importance des dents de lait et les risques liés aux caries chez le tout-petit","url":"https://www.ameli.fr/assure/sante/themes/poussee-dentaire/dents-lait-importance-risque-lie-caries","consulted_on":"2026-10-27"},{"label":"UFSBD (Union française pour la santé bucco-dentaire) — Fiche conseil « Sa première fois chez le dentiste »","url":"https://www.ufsbd.fr/wp-content/uploads/2013/08/Fiche-Sa-premiere-fois-chez-le-dentiste.pdf","consulted_on":"2026-10-27"},{"label":"1000-premiers-jours.fr — Le petit guide de la diversification alimentaire « Pas à pas, votre enfant mange comme un grand » (brochure)","url":"https://www.1000-premiers-jours.fr/sites/default/files/2021-09/Brochure%20diversification%20alimentaire.pdf","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('chute-des-dents-de-lait-arrivee-dents-definitives', (select id from public.content_categories where slug = 'sante-enfant'), 'Chute des dents de lait et arrivée des dents définitives : ce qui se passe', 'Entre 5–6 ans et environ 12 ans, la bouche de votre enfant change : la première molaire définitive, les dents qui bougent et les bons réflexes.', '## En bref
+- Les **20 dents de lait** ont une durée de vie limitée, **entre 6 et 13 ans** selon les dents (Assurance maladie).
+- Les **premières dents définitives** sortent vers **5–6 ans**, les dernières vers **12 ans** environ ; les dents de sagesse, inconstantes, arrivent vers 18–20 ans.
+- La **première molaire définitive** pousse vers 6 ans tout au fond, **sans qu’aucune dent ne tombe** : elle passe souvent inaperçue alors qu’elle est fragile.
+- Les dents de lait doivent être soignées jusqu’au bout : elles guident les dents définitives.
+
+## Comprendre
+Selon l’Assurance maladie, les dents de lait se forment pendant la grossesse ; à 3 ans, la plupart des enfants les ont toutes. Vers 4–5 ans, des espaces peuvent apparaître entre les incisives de lait : ils accompagnent la croissance de la mâchoire et laisseront la place aux dents définitives, plus volumineuses.
+
+Les dents de lait ne sont pas de simples dents « provisoires ». Elles définissent le visage, permettent de mastiquer et de parler sans trouble de l’articulation, et **guident les dents définitives** vers leur bonne position. Une dent de lait cariée ou perdue trop tôt mérite donc l’avis d’un dentiste.
+
+**La molaire de 6 ans.** Elle s’ajoute derrière les molaires de lait. Comme aucune dent ne tombe à ce moment-là, beaucoup de parents ne la remarquent pas. L’Assurance maladie la décrit comme très importante mais fragile et souvent vite cariée : d’où l’intérêt de la brosser dès son apparition. Lors des examens de prévention, le dentiste peut vous proposer des soins pour la protéger.
+
+Le rythme varie beaucoup d’un enfant à l’autre : un enfant peut perdre ses premières dents plus tôt ou plus tard que ses camarades.
+
+## Au quotidien
+**Quand une dent bouge**
+- Laissez-la tomber d’elle-même ; évitez de l’arracher de force.
+- Quand elle tombe, un petit saignement peut survenir. En cas de saignement de la bouche après un choc, l’Assurance maladie conseille de faire mordre une compresse propre pliée.
+- La « petite souris » peut accompagner ce moment : beaucoup d’enfants sont fiers de cette étape.
+
+**Le brossage pendant cette période**
+- Continuez d’aider ou de vérifier le brossage du soir, même si votre enfant se brosse seul.
+- Insistez tout au fond sur la molaire de 6 ans, avec une brosse à petite tête.
+- Dès 6 ans, l’Assurance maladie conseille un dentifrice dosé de 1 000 à 1 500 ppm de fluor.
+
+**L’alimentation**
+- Les zones où une dent manque peuvent rendre la mastication moins confortable : proposez des aliments faciles à croquer en morceaux.
+- Limitez le grignotage et les boissons sucrées, qui exposent les nouvelles dents aux caries.
+
+**Les rendez-vous**
+- L’examen M’T dents annuel permet de suivre la poussée, de repérer un mauvais positionnement et de discuter d’un éventuel avis orthodontique.
+
+## Questions fréquentes
+**Une dent définitive pousse derrière la dent de lait qui n’est pas tombée. Que faire ?**
+Parlez-en au dentiste : il vérifiera si la dent de lait doit être retirée ou si la situation va se régler d’elle-même.
+
+**Mon enfant a 7 ans et n’a perdu aucune dent. Faut-il s’inquiéter ?**
+Les âges varient beaucoup. Demandez l’avis du dentiste lors du contrôle annuel ; il pourra examiner la bouche et, si besoin, proposer une radiographie.
+
+**Une dent définitive est tombée après une chute. Que faire ?**
+C’est une urgence. Selon l’Assurance maladie, tenez la dent uniquement par la couronne (la partie visible), jamais par la racine, rincez-la très légèrement à l’eau si elle est sale sans la frotter, conservez-la dans du lait ou du sérum physiologique (jamais à sec ni dans la glace) et consultez un chirurgien-dentiste le plus vite possible : les meilleurs résultats sont obtenus dans les 20 minutes.
+
+**Et si c’est une dent de lait qui tombe après un choc ?**
+L’Assurance maladie précise qu’il ne faut pas la remettre en place, car le germe de la dent définitive pourrait s’infecter. Consultez quand même le dentiste.
+
+## Quand demander conseil
+Consultez un dentiste en cas de douleur, de dent qui noircit, de gonflement de la gencive ou de la joue, de dent définitive qui pousse de travers, ou si la succion du pouce persiste après 4 ans. Après un choc, consultez un dentiste en urgence si une dent est tombée, cassée ou déplacée. Appelez les secours si le choc a touché violemment la tête, en cas de perte de connaissance ou de vomissements. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['child']::text[], null, null, 48, 156, false, array['dent qui bouge','chute dents de lait','dents définitives','molaire 6 ans','petite souris','molaire définitive','dentition','orthodontie']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Comprendre les poussées dentaires","url":"https://www.ameli.fr/assure/sante/themes/poussee-dentaire/comprendre-poussee-dents-de-lait","consulted_on":"2026-10-27"},{"label":"ameli.fr — L’importance des dents de lait et les risques liés aux caries chez le tout-petit","url":"https://www.ameli.fr/assure/sante/themes/poussee-dentaire/dents-lait-importance-risque-lie-caries","consulted_on":"2026-10-27"},{"label":"ameli.fr — Traumatisme dentaire : dent contuse, fêlée, cassée ou luxée","url":"https://www.ameli.fr/assure/sante/urgence/accidents-domestiques/traumatisme-dentaire","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('lire-courbes-de-croissance-carnet-de-sante', (select id from public.content_categories where slug = 'developpement'), 'Lire les courbes de croissance du carnet de santé', 'Poids, taille, périmètre crânien, IMC : comment se lisent les courbes du carnet de santé, ce que signifie un « couloir » et pourquoi c’est l’évolution qui compte.', '## En bref
+- Le carnet de santé contient des courbes de **poids**, de **taille**, de **périmètre crânien** et d’**IMC**, différentes pour les filles et les garçons.
+- Chaque mesure est un point ; reliés entre eux, ces points dessinent la **trajectoire** de votre enfant.
+- Un enfant suit en général son propre **« couloir »** : c’est la régularité de la courbe qui compte, plus qu’un chiffre isolé.
+- Une **cassure**, une accélération inhabituelle ou un changement de couloir doivent être signalés au médecin.
+
+## Comprendre
+**Ce qui est mesuré.** Selon Santé.fr, le médecin mesure le périmètre crânien chez le nourrisson, la taille et le poids, puis calcule l’IMC (indice de masse corporelle). Les valeurs sont reportées sur les courbes du carnet de santé et comparées aux références françaises. Il est conseillé de mesurer l’enfant tous les 3 mois la première année, au moins tous les 6 mois de 1 à 4 ans, puis au moins une fois par an jusqu’à la puberté.
+
+**Les lignes du graphique.** Les courbes de référence dessinent une zone de valeurs habituelles. Les pédiatres de mpedia expliquent que l’enfant évolue normalement dans son couloir de départ, entre +2 et −2 écarts-types pour la taille. Pour l’IMC, les références françaises sont exprimées en **centiles** : sous le 3e centile, on parle d’insuffisance pondérale ; au-delà du 97e, de surpoids.
+
+**Une courbe, pas une note.** Être « en bas » ou « en haut » de la zone n’est pas un problème en soi si la courbe reste régulière. Pour le périmètre crânien, mpedia souligne que la régularité compte davantage que la valeur absolue. Pour la taille, le médecin tient compte de la **taille cible**, estimée à partir de la taille des deux parents.
+
+**L’IMC évolue avec l’âge.** Contrairement à l’adulte, l’IMC de l’enfant n’a pas de seuil fixe : il augmente la première année, diminue entre 1 et 6 ans, puis remonte. Ce point de remontée s’appelle le **rebond d’adiposité** ; l’Assurance maladie précise qu’il se situe normalement vers six ans et qu’un rebond avant cinq ans augmente le risque de surpoids.
+
+## Au quotidien
+**Pour bien suivre la courbe**
+- Apportez le carnet de santé à chaque consultation, y compris chez un remplaçant.
+- Demandez au médecin de vous montrer la courbe : « Où se situe-t-il ? Sa courbe est-elle régulière ? »
+- Les courbes sont aussi disponibles dans le carnet de santé numérique de **Mon espace santé**, où vous pouvez saisir des mesures.
+
+**Pour mesurer à la maison (si on vous le demande)**
+- Toujours dans les mêmes conditions : même balance, enfant déshabillé, à la même heure.
+- Pendant le premier mois, mpedia conseille de peser bébé idéalement sur la même balance (sage-femme, PMI) plutôt que sur des balances différentes.
+- Évitez de peser trop souvent : un chiffre isolé fluctue.
+
+**Pour lire sans s’inquiéter**
+- Repérez le couloir dans lequel la courbe évolue depuis plusieurs mois.
+- Comparez la courbe à elle-même, pas à celle d’un frère, d’une cousine ou d’un camarade.
+- Un petit écart ponctuel, par exemple après une maladie, peut se rattraper : c’est la tendance sur plusieurs mesures qui compte.
+
+## Questions fréquentes
+**Mon enfant est sous la courbe du milieu. Est-il trop petit ?**
+La ligne du milieu représente la moyenne, pas une norme à atteindre. Si sa courbe est régulière et dans la zone de référence, le médecin tiendra compte de la taille des parents pour interpréter.
+
+**Pourquoi l’IMC plutôt que le poids ?**
+Selon mpedia, la courbe de corpulence est plus sensible que la courbe de poids pour repérer tôt une dérive vers la maigreur ou le surpoids, car elle rapporte le poids à la taille.
+
+**Les courbes sont-elles les mêmes pour un bébé allaité ?**
+Les pédiatres interprètent la courbe en tenant compte du mode d’alimentation et du contexte. Posez la question à votre médecin si vous avez un doute.
+
+**Faut-il tracer la courbe soi-même ?**
+Ce n’est pas indispensable, mais cela aide à comprendre. Le médecin reste le mieux placé pour l’interpréter.
+
+## Quand demander conseil
+Parlez-en au médecin si la courbe de taille, de poids ou de périmètre crânien fléchit ou casse, si elle accélère de façon inhabituelle, si elle change de couloir, ou si l’IMC remonte avant 5 ans. Chez le nouveau-né, mpedia conseille de consulter si le poids de naissance n’est pas retrouvé à 10 jours. Une perte de poids rapide, un refus de boire ou un bébé très somnolent demandent un avis médical sans attendre. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child']::text[], null, null, 0, 216, false, array['courbe de croissance','carnet de santé','couloir','percentile','écart-type','périmètre crânien','IMC enfant','courbe de poids']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — À quoi servent les courbes de croissance : poids, taille et périmètre crânien","url":"https://www.mpedia.fr/art-les-courbes-croissance/","consulted_on":"2026-10-27","published":"2022-02-07"},{"label":"Santé.fr — Retard de croissance chez l’enfant","url":"https://www.sante.fr/retard-de-croissance-chez-lenfant","consulted_on":"2026-10-27","published":"2023-08-07"},{"label":"ameli.fr — Détecter le surpoids de l’enfant et de l’adolescent(e) et connaître les complications","url":"https://www.ameli.fr/assure/sante/themes/surpoids-obesite-enfant-adolescent/detecter-surpoids-connaitre-complications","consulted_on":"2026-10-27","published":"2025-12-02"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('croissance-2-a-10-ans-taille-poids-imc-reperes', (select id from public.content_categories where slug = 'developpement'), 'La croissance de 2 à 10 ans : taille, poids et IMC', 'Combien grandit un enfant entre 2 ans et la puberté, comment évolue sa corpulence et quels repères aident à suivre une croissance harmonieuse.', '## En bref
+- La croissance ralentit après les deux premières années : selon Santé.fr, l’enfant gagne en moyenne un peu plus de 8 cm la troisième année et environ 7 cm la quatrième.
+- Avant la puberté, mpedia indique un gain d’environ **5 à 6 cm par an**, avec parfois un léger ralentissement juste avant le pic pubertaire.
+- Entre 1 et 6 ans, l’**IMC diminue** : l’enfant paraît de plus en plus mince. Il remonte ensuite, normalement vers 6 ans.
+- Les moyennes ne sont que des moyennes : la régularité de la courbe est le meilleur repère.
+
+## Comprendre
+**La taille.** Santé.fr rappelle les gains moyens : environ 24 cm la première année, 11 cm la deuxième, un peu plus de 8 cm la troisième, environ 7 cm la quatrième. Pour les enfants de 6 à 11 ans, le Dr Liliane Cret (mpedia) cite environ 5 à 6 cm par an avant la puberté. Un léger ralentissement peut survenir avant le pic pubertaire, vers 9–10 ans chez les filles et vers 12 ans chez les garçons ; il est transitoire et se rattrape.
+
+**La corpulence.** L’IMC se calcule en divisant le poids (en kg) par la taille (en mètres) au carré. Chez l’enfant, il se lit sur les **courbes de corpulence** du carnet de santé, car il change avec l’âge. Il diminue entre 1 et 6 ans, au moment où l’enfant marche, court et dépense davantage, puis remonte : c’est le **rebond d’adiposité**. L’Assurance maladie précise qu’un rebond avant cinq ans augmente le risque de surpoids pendant l’enfance. Elle cite aussi deux signaux qui alertent le médecin : une courbe d’IMC qui monte sans cesse depuis la naissance, et le passage à un couloir supérieur, à tout âge.
+
+**Ce qui influence la croissance.** L’hérédité joue un rôle important : le médecin estime une taille cible à partir de la taille des parents. Le sommeil, l’alimentation, l’activité physique et le bien-être affectif comptent aussi.
+
+**Les examens de suivi.** Le médecin mesure et pèse l’enfant lors des examens de santé prévus dans le carnet ; Santé.fr conseille au moins une mesure tous les 6 mois de 1 à 4 ans, puis au moins une par an jusqu’à la puberté.
+
+## Au quotidien
+**Ce qui favorise une croissance harmonieuse**
+- Des **repas réguliers** et variés, sans forcer l’enfant à finir son assiette.
+- De l’**eau** comme boisson, et peu de boissons sucrées.
+- Bouger chaque jour : jeux dehors, marche, vélo, parc, et limiter le temps passé assis devant les écrans.
+- Un **sommeil suffisant** et des horaires réguliers.
+
+**Les signes que l’Assurance maladie invite à surveiller**
+- Des vêtements qui deviennent vite trop larges ;
+- un essoufflement à la course ;
+- des moqueries sur l’apparence.
+
+**À l’inverse**, Santé.fr cite comme signes qui peuvent amener à consulter pour une petite taille : des vêtements qui s’usent avant d’être trop petits, une taille qui ne change plus, un enfant souvent pris pour plus jeune.
+
+**Parler du corps sans blesser**
+- Évitez les commentaires sur le poids ou la taille devant l’enfant.
+- Parlez plutôt de forme, d’énergie, de plaisir à bouger.
+
+## Questions fréquentes
+**Mon enfant mange peu mais grandit bien. Faut-il s’inquiéter ?**
+Si sa courbe reste régulière, c’est un repère rassurant à discuter avec le médecin. L’appétit varie d’un jour à l’autre chez l’enfant.
+
+**Puis-je calculer l’IMC de mon enfant avec un calculateur pour adultes ?**
+Non : l’Assurance maladie précise que les seuils adultes ne s’appliquent pas. Chez l’enfant, c’est la courbe de corpulence selon l’âge et le sexe qui fait référence.
+
+**Mon enfant est plus petit que ses camarades.**
+Comparez sa courbe à elle-même et tenez compte de la taille des parents. Le médecin pourra en parler avec vous lors de la prochaine visite.
+
+**Le rebond d’adiposité, c’est grave ?**
+C’est une étape normale de la courbe d’IMC. C’est sa **précocité** (avant 5 ans) qui doit amener à en parler au médecin, pour agir tôt sur l’alimentation et l’activité.
+
+## Quand demander conseil
+Consultez si la courbe de taille ou de poids change de couloir, si votre enfant grandit nettement moins vite, si l’IMC remonte avant 5 ans, si vous observez un essoufflement important, une fatigue durable, des troubles du sommeil ou des moqueries qui le font souffrir. Une perte de poids inexpliquée demande un avis médical rapide. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['child']::text[], null, null, 24, 120, false, array['croissance enfant','taille enfant','poids enfant','IMC enfant','rebond d’adiposité','centimètres par an','corpulence','examen médical']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Retard de croissance chez l’enfant","url":"https://www.sante.fr/retard-de-croissance-chez-lenfant","consulted_on":"2026-10-27","published":"2023-08-07"},{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — Les retards de croissance chez l’enfant de six à onze ans","url":"https://www.mpedia.fr/art-les-retards-croissance/","consulted_on":"2026-10-27","published":"2021-06-23"},{"label":"ameli.fr — Détecter le surpoids de l’enfant et de l’adolescent(e) et connaître les complications","url":"https://www.ameli.fr/assure/sante/themes/surpoids-obesite-enfant-adolescent/detecter-surpoids-connaitre-complications","consulted_on":"2026-10-27","published":"2025-12-02"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('cassure-courbe-croissance-petite-taille-quand-consulter', (select id from public.content_categories where slug = 'sante-enfant'), 'Cassure de la courbe, petite taille : quand consulter ?', 'Une courbe régulièrement basse n’a pas la même signification qu’une courbe qui ralentit : les signes qui doivent amener à consulter et ce que fait le médecin.', '## En bref
+- On parle le plus souvent de retard de croissance quand la taille se situe à plus de **2 écarts-types sous la moyenne** pour l’âge et le sexe, ou quand l’enfant gagne **moins de 3,5 cm en 12 mois** (Santé.fr).
+- Une courbe **régulièrement basse**, parallèle aux courbes de référence, correspond souvent à une petite taille familiale.
+- Une courbe qui **ralentit ou sort de son couloir** (cassure) doit amener à consulter.
+- Plus de 70 % des retards de croissance ont une cause constitutionnelle ; d’autres sont liés à une maladie qui se soigne.
+
+## Comprendre
+**Deux situations différentes.** Pour une petite taille, le Dr Liliane Cret (mpedia) distingue :
+1. la courbe régulièrement basse, qui évolue parallèlement aux courbes de référence : le médecin estime alors la taille cible à partir de la taille des parents, et recherche d’autres éléments (taille à la naissance, prématurité) ;
+2. la courbe qui ralentit et sort de son couloir : c’est la **cassure**, qui demande un bilan.
+
+**Les causes possibles.** Santé.fr les classe en trois groupes :
+- **constitutionnelles** (plus de 70 % des cas), souvent génétiques, ou chez des enfants nés petits pour leur âge gestationnel ;
+- **acquises**, liées à une autre maladie : digestive (maladie cœliaque, maladie de Crohn, allergie aux protéines du lait de vache), hormonale (thyroïde, hormone de croissance), rénale, cardiaque, respiratoire, sanguine, ou psychologique ;
+- **idiopathiques**, quand aucune cause n’est retrouvée.
+
+Mpedia ajoute que des événements de vie (deuil, séparation, naissance d’un frère ou d’une sœur) peuvent ralentir transitoirement la croissance.
+
+**Le bilan.** Le médecin examine la morphologie et le stade pubertaire, interroge sur les antécédents familiaux, les symptômes digestifs, respiratoires ou urinaires et l’alimentation. Selon la situation, il peut demander une radiographie de l’**âge osseux**, des analyses de sang et d’urine, ou orienter vers un spécialiste. Un traitement par hormone de croissance n’est envisagé que dans des situations précises, quand un déficit est prouvé et que des critères de taille et de vitesse de croissance sont réunis (Santé.fr).
+
+## Au quotidien
+**Rassembler les bonnes informations avant la consultation**
+- Le carnet de santé, avec toutes les mesures depuis la naissance.
+- Votre taille et celle de l’autre parent, et l’âge de votre propre puberté si vous le connaissez.
+- Les maladies chroniques, traitements au long cours, symptômes digestifs (diarrhée, ventre gonflé), fatigue.
+- Les changements récents dans la vie de l’enfant.
+
+**Les signes que Santé.fr cite pour consulter**
+- Les vêtements s’usent avant d’être trop petits, ou la taille n’a pas changé depuis longtemps.
+- L’enfant est plus petit que ses parents, ses frères et sœurs au même âge.
+- Il est nettement plus petit que les enfants de son âge, souvent pris pour plus jeune, ou moqué pour sa taille.
+
+**Accompagner votre enfant**
+- Valorisez ses qualités et ses réussites, sans faire de la taille un sujet permanent.
+- Prenez au sérieux les moqueries : parlez-en à l’enseignant si besoin.
+
+## Questions fréquentes
+**Mon enfant est petit comme nous. Faut-il consulter ?**
+Si sa courbe est régulière et cohérente avec la taille des parents, le médecin vous le dira lors du suivi habituel. Une cassure, en revanche, justifie un avis même dans une famille de petite taille.
+
+**Le bilan est-il douloureux ?**
+Il repose surtout sur l’examen, la courbe et parfois une radiographie de la main et des prises de sang. Le médecin vous expliquera chaque étape.
+
+**Le sport ou l’alimentation peuvent-ils faire grandir davantage ?**
+Une alimentation suffisante et équilibrée, un bon sommeil et l’activité physique soutiennent la croissance, mais ne remplacent pas un bilan en cas de cassure.
+
+**Une petite taille peut-elle cacher une maladie ?**
+Parfois, oui : c’est l’objet du bilan. Santé.fr rappelle aussi que, sans cause claire, le pédiatre peut temporiser et rassurer.
+
+## Quand demander conseil
+Consultez votre médecin si la courbe de taille fléchit ou casse, si votre enfant ne grandit presque plus, s’il perd du poids, s’il a des maux de ventre ou des diarrhées persistants, une grande fatigue, des maux de tête répétés ou des troubles de la vue. Une perte de poids rapide ou un enfant très abattu demandent un avis médical sans attendre. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child']::text[], null, null, 0, 192, false, array['cassure de courbe','petite taille','retard de croissance','ne grandit plus','hormone de croissance','âge osseux','taille cible','endocrinologue']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr — Retard de croissance chez l’enfant","url":"https://www.sante.fr/retard-de-croissance-chez-lenfant","consulted_on":"2026-10-27","published":"2023-08-07"},{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — Les retards de croissance chez l’enfant de six à onze ans","url":"https://www.mpedia.fr/art-les-retards-croissance/","consulted_on":"2026-10-27","published":"2021-06-23"},{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — À quoi servent les courbes de croissance : poids, taille et périmètre crânien","url":"https://www.mpedia.fr/art-les-courbes-croissance/","consulted_on":"2026-10-27","published":"2022-02-07"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('puberte-precoce-signes-qui-doivent-faire-consulter', (select id from public.content_categories where slug = 'sante-enfant'), 'Puberté précoce : les signes qui doivent faire consulter', 'Seins, poils pubiens, testicules qui grossissent, croissance qui s’emballe : à partir de quel âge on parle de puberté précoce et ce que fait le médecin.', '## En bref
+- L’Assurance maladie parle de puberté précoce quand les signes apparaissent **avant 8 ans chez la fille** et **avant 9 ans chez le garçon** (mpedia retient avant 10 ans chez le garçon).
+- Les signes à repérer : **développement des seins**, **poils pubiens**, augmentation du **volume des testicules**, parfois premières règles.
+- Une **accélération de la croissance** (plus de 9 cm par an selon l’Assurance maladie) peut précéder ou accompagner ces signes.
+- Une consultation médicale est indispensable : le plus souvent aucune cause n’est retrouvée, mais un bilan est nécessaire.
+
+## Comprendre
+**Les âges habituels.** Selon mpedia, la puberté débute en général vers 10 ans chez la fille (entre 9 et 13 ans) et vers 12 ans chez le garçon (le plus souvent entre 11 et 14 ans). Entre 8 et 10 ans chez la fille, ou 9 et 11 ans chez le garçon, l’Assurance maladie parle de **puberté avancée**, qui n’est pas considérée comme anormale.
+
+**Les premiers signes**
+- **Chez la fille** : les seins se développent, parfois de façon douloureuse et asymétrique au début ; puis viennent les poils pubiens, ceux des aisselles, et les règles environ deux ans après le début.
+- **Chez le garçon** : les testicules augmentent de volume (parfois d’un seul côté au début), puis apparaissent les poils pubiens.
+- **Dans les deux cas** : la croissance s’accélère.
+
+**Pourquoi consulter.** Une puberté qui démarre trop tôt peut isoler l’enfant de ses camarades et, à l’extrême, réduire la taille adulte, car les os mûrissent plus vite (mpedia). Le plus souvent, aucune cause n’est retrouvée. Mais le bilan recherche une cause qui nécessiterait un traitement : anomalie au niveau du cerveau (hypothalamus, hypophyse), des ovaires, des testicules ou des glandes surrénales, prise de certains médicaments, anomalie chromosomique (Assurance maladie).
+
+Mpedia cite aussi des facteurs pouvant jouer un rôle : antécédents familiaux, conditions de vie, surpoids chez les filles. L’Assurance maladie note qu’en cas de surpoids, la puberté peut être avancée chez les filles.
+
+**Le bilan possible** : suivi de la courbe de croissance, radiographie de la main et du poignet pour l’âge osseux, prise de sang hormonale, échographie pelvienne chez la fille ou des testicules chez le garçon, parfois IRM cérébrale ou recherche génétique.
+
+**Le traitement.** Il dépend de l’âge, de la cause et de l’évolution. Les signes régressent parfois spontanément, notamment quand seul un caractère se développe (seins ou poils seuls). Quand un traitement est nécessaire, il freine la puberté ; mpedia indique qu’il est bien toléré et qu’à l’arrêt la puberté reprend son cours.
+
+## Au quotidien
+- Notez ce que vous observez et depuis quand.
+- Apportez le carnet de santé : la courbe de taille est un élément clé.
+- Signalez les médicaments ou crèmes utilisés à la maison.
+- Expliquez simplement à votre enfant pourquoi vous allez voir le médecin, avec des mots adaptés à son âge, sans dramatiser.
+- Respectez sa pudeur : il peut préférer que l’examen se fasse avec un seul parent.
+- Préparez-le aux changements avec des livres adaptés à son âge, en particulier aux règles si les seins se développent tôt.
+
+## Questions fréquentes
+**Ma fille de 7 ans a un petit bourgeon sous un mamelon. Faut-il consulter ?**
+Oui : avant 8 ans, l’Assurance maladie considère que les signes pubertaires justifient une consultation. Le médecin dira s’il s’agit d’un début de puberté et s’il faut un bilan.
+
+**Quelques poils pubiens à 6 ans, est-ce une puberté ?**
+Pas forcément, mais seul un examen permet de le dire. Prenez rendez-vous avec le médecin de votre enfant.
+
+**La puberté précoce est-elle de ma faute ?**
+Non. Le plus souvent, aucune cause n’est retrouvée.
+
+**Que se passe-t-il en cas de puberté tardive ?**
+L’Assurance maladie parle de retard pubertaire en l’absence de développement des seins à 13 ans ou de règles à 15 ans chez la fille, et en l’absence de développement des testicules à 14 ans chez le garçon. Une consultation est aussi indispensable.
+
+## Quand demander conseil
+Consultez le médecin de votre enfant devant un développement des seins ou des poils pubiens avant 8 ans chez la fille, une augmentation du volume des testicules ou des poils pubiens avant 9 ans chez le garçon, des saignements génitaux chez une petite fille, ou une croissance qui s’accélère nettement. Des maux de tête inhabituels, des troubles de la vue ou des vomissements associés demandent un avis rapide. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['child']::text[], null, null, 24, 132, false, array['puberté précoce','seins petite fille','poils pubiens','testicules','croissance rapide','âge osseux','endocrinologue pédiatrique','puberté avancée']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Puberté précoce et puberté tardive","url":"https://www.ameli.fr/assure/sante/themes/puberte/puberte-precoce-tardive","consulted_on":"2026-10-27"},{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — Démarrage de la puberté : premiers signes et puberté précoce","url":"https://www.mpedia.fr/art-demarrage-puberte/","consulted_on":"2026-10-27","published":"2020-10-21"},{"label":"ameli.fr — Détecter le surpoids de l’enfant et de l’adolescent(e) et connaître les complications","url":"https://www.ameli.fr/assure/sante/themes/surpoids-obesite-enfant-adolescent/detecter-surpoids-connaitre-complications","consulted_on":"2026-10-27","published":"2025-12-02"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('choisir-un-prenom-ce-que-dit-la-loi', (select id from public.content_categories where slug = 'droits-demarches'), 'Choisir un prénom : ce que dit la loi', 'Les parents sont libres de choisir le prénom de leur enfant, dans certaines limites : prénoms contraires à son intérêt, signalement au procureur, orthographe et accents.', '## En bref
+- Les parents choisissent librement le ou les prénoms au moment de la **déclaration de naissance** : il n’existe **pas de liste officielle** de prénoms autorisés.
+- Le prénom ne doit pas être **contraire à l’intérêt de l’enfant** (par exemple ridicule ou grossier), seul ou associé au nom de famille.
+- L’officier d’état civil **ne peut pas refuser** un prénom, mais il peut **prévenir le procureur de la République**, qui peut saisir le juge aux affaires familiales.
+- Seules les lettres de l’alphabet français sont admises ; l’orthographe et les tirets se précisent à la déclaration.
+
+## Comprendre
+**Une liberté encadrée.** Selon Service-Public.fr (fiche vérifiée le 20 mars 2026), vous pouvez reprendre un prénom existant ou en créer un. La loi ne fixe pas de nombre maximal de prénoms, mais l’officier d’état civil peut estimer qu’un nombre excessif va contre l’intérêt de l’enfant.
+
+**Les limites**
+- Le prénom, seul ou avec le nom, ne doit pas nuire à l’enfant : un prénom ridicule, grossier, ou une association prénom-nom qui l’exposerait aux moqueries.
+- Il ne doit pas porter atteinte au droit d’une autre personne à protéger son nom de famille (par exemple utiliser comme prénom le nom d’une personne connue).
+- Un enfant qui ne porte que le nom d’un parent ne peut pas recevoir comme prénom le nom de famille de l’autre parent.
+
+**Le contrôle.** L’officier d’état civil vérifie chaque prénom, leur combinaison et leur association avec le nom. S’il estime le choix contraire à l’intérêt de l’enfant, il ne refuse pas l’inscription : il **avertit le procureur de la République**. Celui-ci peut saisir le **juge aux affaires familiales (JAF)**, qui peut ordonner la suppression du prénom des registres et, faute d’un nouveau choix des parents, en attribuer un.
+
+**L’écriture**
+- Plusieurs prénoms sont séparés par des virgules.
+- Pour un prénom composé, vous indiquez s’il s’écrit avec un tiret ou une espace.
+- Seules les lettres de l’alphabet français sont autorisées ; la fiche donne l’exemple du « ñ », refusé.
+- Une erreur d’orthographe peut être rectifiée sur l’acte de naissance.
+
+**L’ordre des prénoms.** N’importe quel prénom inscrit sur l’acte peut servir de prénom usuel, quelle que soit sa place. En revanche, la carte d’identité et le passeport suivent l’ordre de l’acte ; le modifier demande une procédure de changement de prénom.
+
+## Au quotidien
+**Avant la naissance**
+- Dites le prénom à voix haute avec le nom de famille, et imaginez-le à l’école, à l’adolescence, à l’âge adulte.
+- Vérifiez les initiales et les jeux de mots possibles.
+- Mettez-vous d’accord sur l’orthographe exacte, les accents, les tirets et l’ordre des prénoms.
+- Notez-le par écrit pour la personne qui fera la déclaration.
+
+**Le jour de la déclaration**
+- Épelez chaque prénom et précisez les séparateurs (virgule, tiret, espace).
+- Relisez attentivement l’orthographe des prénoms sur l’acte de naissance, et demandez une rectification au plus vite en cas d’erreur.
+
+**En cas de désaccord entre parents**
+Service-Public.fr indique que le juge aux affaires familiales tranche ; il est saisi auprès du tribunal judiciaire, sans avocat obligatoire. Avant d’en arriver là, chercher un compromis (prénoms multiples, prénom usuel différent) apaise souvent la situation.
+
+## Questions fréquentes
+**Puis-je donner un prénom inventé ?**
+Oui, il n’existe pas de liste officielle. La seule limite est l’intérêt de l’enfant et le respect du nom d’autrui.
+
+**Combien de prénoms puis-je donner ?**
+La loi ne fixe pas de limite, mais un nombre excessif peut être jugé contraire à l’intérêt de l’enfant.
+
+**Que se passe-t-il si le procureur est saisi ?**
+Le prénom est inscrit, puis le procureur peut saisir le JAF. Si le juge ordonne sa suppression, vous pouvez proposer un autre prénom ; à défaut, le juge en attribue un.
+
+**L’enfant pourra-t-il changer de prénom plus tard ?**
+Oui, une procédure existe en mairie, avec un « intérêt légitime ». Elle est détaillée dans un article dédié.
+
+## Quand demander conseil
+Pour toute question sur votre situation, adressez-vous au service d’état civil de votre mairie ou à Allô Service Public (gratuit), qui répond aux questions générales. En cas de conflit, un juriste ou un point-justice peut vous orienter. Si les tensions dans le couple deviennent pesantes ou violentes, parlez-en à un professionnel ; en cas de danger, appelez le **17** ou le **112**. Si vous vous sentez à bout ou envahi(e) par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['pregnant','newborn']::text[], null, null, null, null, false, array['prénom','choisir un prénom','prénom refusé','procureur','officier d’état civil','déclaration de naissance','prénom composé','accents prénom']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Service-Public.fr — Choix du prénom de l’enfant","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F882","consulted_on":"2026-10-27","published":"2026-03-20"},{"label":"Service-Public.fr — Changement de prénom","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F885","consulted_on":"2026-10-27","published":"2026-10-09"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('changer-le-prenom-d-un-enfant-mineur-demarche', (select id from public.content_categories where slug = 'droits-demarches'), 'Changer le prénom d’un enfant mineur : démarche en mairie', 'Changer, ajouter, supprimer un prénom ou en modifier l’ordre : qui fait la demande, l’accord de l’enfant de plus de 13 ans, le dossier et ce qui se passe ensuite.', '## En bref
+- La demande se fait à la **mairie** (du lieu de résidence ou qui détient l’acte de naissance), avec le formulaire **cerfa n° 16234** ; la démarche est **gratuite**.
+- Elle doit reposer sur un **intérêt légitime** et ne pas être contraire à l’intérêt de l’enfant.
+- Quand l’autorité parentale est conjointe, **les deux parents** font la demande ; l’**accord de l’enfant de plus de 13 ans** est obligatoire.
+- Si l’officier d’état civil doute de l’intérêt légitime, il saisit le **procureur de la République**.
+
+## Comprendre
+Selon Service-Public.fr (fiche vérifiée le 9 octobre 2026), la procédure permet de **changer** un prénom, d’en **ajouter**, d’en **supprimer** ou de **modifier l’ordre** des prénoms.
+
+Avant de lancer la démarche, rappelez-vous que tout prénom inscrit sur l’acte de naissance peut déjà servir de **prénom usuel**, quelle que soit sa position. Si votre enfant se fait appeler par son deuxième prénom, aucune procédure n’est nécessaire pour la vie quotidienne.
+
+**Qu’est-ce qu’un intérêt légitime ?** La fiche cite notamment : l’usage prolongé d’un autre prénom que celui de l’état civil, la suppression d’un prénom ou d’une association nom-prénom jugée ridicule, l’ajout ou la suppression d’un tiret après un usage prolongé, la transidentité.
+
+**Qui fait la demande ?**
+- Le ou les représentants légaux de l’enfant.
+- En cas d’autorité parentale conjointe, les deux parents ensemble.
+- Si des parents séparés ne sont pas d’accord, le parent qui souhaite le changement saisit le juge aux affaires familiales.
+- L’enfant de plus de 13 ans signe le formulaire pour donner son accord.
+
+**Une précision d’actualité.** La fiche signale qu’un décret doit préciser l’application d’une loi du 27 juillet 2026 ; certains justificatifs ne seront exigés qu’après sa publication. Vérifiez la fiche à jour avant de déposer votre dossier.
+
+## Au quotidien
+**Le dossier (selon Service-Public.fr)**
+- Le formulaire signé par le ou les représentants légaux, et par l’enfant de plus de 13 ans.
+- La pièce d’identité du représentant légal et, si besoin, la preuve de sa qualité de représentant.
+- Un justificatif de domicile récent.
+- La copie intégrale de l’acte de naissance de l’enfant de moins de 3 mois et sa pièce d’identité.
+- Des documents qui montrent l’intérêt de la demande : carnet de santé, documents scolaires, attestations de proches, inscription à une activité.
+- Pour un enfant de plus de 13 ans, le bulletin n° 3 du casier judiciaire.
+Aucun certificat médical n’est exigé.
+
+**Le déroulement**
+1. Vous déposez le dossier et recevez un récépissé.
+2. L’officier d’état civil examine la demande. S’il l’accepte, il vous notifie sa décision et met à jour les actes.
+3. S’il estime que l’intérêt légitime n’est pas démontré, il saisit le procureur, qui accepte ou refuse.
+4. En cas de refus, un recours est possible devant le juge aux affaires familiales, avec avocat obligatoire.
+
+**Après l’acceptation** : la carte d’identité et le passeport doivent être mis à jour dans les **3 mois** suivant la mise à jour de l’acte de naissance. Pensez aussi à prévenir l’école, la caisse d’Assurance maladie, la Caf.
+
+## Questions fréquentes
+**Combien de temps cela prend-il ?**
+La fiche ne donne pas de délai fixe : il dépend de la mairie et d’une éventuelle saisine du procureur.
+
+**Mon enfant de 10 ans doit-il donner son accord ?**
+L’accord écrit est obligatoire à partir de 13 ans. Pour un enfant plus jeune, l’écouter et lui expliquer la démarche reste important.
+
+**Peut-on simplement ajouter un tiret ?**
+Oui, l’ajout ou la suppression d’un tiret après un usage prolongé fait partie des exemples d’intérêt légitime.
+
+**La démarche coûte-t-elle quelque chose ?**
+Non, elle est gratuite en mairie. Seul un recours devant le juge implique un avocat.
+
+## Quand demander conseil
+Votre mairie (service état civil) et Allô Service Public peuvent répondre à vos questions générales ; un point-justice ou un avocat peut vous aider en cas de désaccord ou de refus. Si votre enfant vit une souffrance importante liée à son prénom ou à son identité, parlez-en avec son médecin ou un psychologue. Si vous vous sentez à bout ou envahi(e) par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child']::text[], null, null, null, null, false, array['changement de prénom','changer prénom enfant','intérêt légitime','cerfa 16234','mairie','procureur','juge aux affaires familiales','prénom usuel']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Service-Public.fr — Changement de prénom","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F885","consulted_on":"2026-10-27","published":"2026-10-09"},{"label":"Service-Public.fr — Choix du prénom de l’enfant","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F882","consulted_on":"2026-10-27","published":"2026-03-20"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('nom-d-usage-double-nom-enfant-mineur', (select id from public.content_categories where slug = 'droits-demarches'), 'Nom d’usage et double nom de l’enfant : ce qui est possible', 'Sans changer l’état civil, votre enfant peut porter au quotidien le nom de ses deux parents : qui décide, l’information de l’autre parent, l’accord dès 13 ans et les papiers d’identité.', '## En bref
+- Le **nom d’usage** est le nom utilisé au quotidien ; il ne remplace pas le nom de famille inscrit à l’état civil.
+- Pour un enfant mineur, il peut s’agir d’un **double nom** (son nom + celui du parent qui ne l’a pas transmis), du **seul nom de l’autre parent**, ou d’une partie du double nom d’un parent.
+- Les parents qui exercent l’autorité parentale le choisissent ; un parent peut aussi **ajouter son nom** seul, à condition d’**informer l’autre parent à l’avance**.
+- À partir de **13 ans**, le **consentement de l’enfant** est obligatoire.
+
+## Comprendre
+Selon Service-Public.fr (fiche vérifiée le 7 août 2025), le nom d’usage est **facultatif**, **jamais automatique** et relève d’un choix. Il s’appuie sur la loi du 2 mars 2022 relative au choix du nom issu de la filiation.
+
+**Les noms possibles**
+- Un **double nom** composé du nom de l’enfant et du nom du parent qui ne l’a pas transmis, dans la limite d’un nom par parent, dans l’ordre que vous choisissez.
+- Le **nom du parent** qui ne l’a pas transmis, à la place.
+- Si un parent seul porte un double nom, l’un des éléments de ce nom.
+Le nom du parent doit figurer sur l’acte de naissance de l’enfant.
+
+**Qui décide ?**
+- **Autorité parentale conjointe** : les parents choisissent ensemble ; il est conseillé de formaliser l’accord par écrit (un modèle existe en annexe d’une circulaire du 15 juin 2023). En cas de désaccord, le juge aux affaires familiales peut être saisi.
+- **Autorité parentale exercée par un seul parent** : ce parent décide.
+- **Le parent qui n’a pas transmis son nom** peut l’**ajouter** dans l’usage sans l’accord de l’autre, mais doit l’en **informer au préalable** pour qu’il puisse s’y opposer ou saisir le juge. Il est conseillé de garder une preuve de cette information. Dans ce cas, l’ordre des noms ne peut pas être modifié et le nom ne peut pas être substitué.
+- **Dès 13 ans**, l’enfant doit consentir ; s’il refuse, il ne peut pas porter ce nom d’usage.
+
+**À ne pas confondre** : le choix du nom de famille à la naissance, et le changement de nom de famille, sont d’autres procédures. Le nom d’usage, lui, ne modifie pas l’acte de naissance.
+
+## Au quotidien
+**Faire figurer le nom d’usage sur les papiers d’identité**
+Lors d’une demande de carte d’identité ou de passeport :
+- remplissez la rubrique « Nom d’usage » du formulaire ou de la pré-demande ;
+- joignez l’accord écrit des deux parents, ou la preuve que l’autre parent a été informé ;
+- joignez le consentement de l’enfant s’il a 13 ans ou plus ;
+- si l’état civil du lieu de naissance n’est pas dématérialisé, fournissez un acte de naissance de moins de 3 mois mentionnant les deux parents.
+
+**Au renouvellement** : si le nom d’usage ne change pas, il suffit de remplir la rubrique. Pour le modifier ou l’abandonner, les mêmes justificatifs sont demandés.
+
+**Dans la vie de tous les jours** : le nom d’usage peut être utilisé dans tous les actes de la vie privée, familiale et sociale. Dès la demande, l’administration doit l’employer dans ses courriers. Prévenez les organismes (école, Assurance maladie via le compte ameli, Caf).
+
+**Parler avec votre enfant** : expliquez-lui pourquoi il porte deux noms ou en porte un nouveau, avec des mots simples ; c’est une partie de son histoire.
+
+## Questions fréquentes
+**Le nom d’usage remplace-t-il le nom de famille ?**
+Non. Le nom de famille reste celui de l’acte de naissance ; le nom d’usage s’y ajoute pour la vie courante.
+
+**L’autre parent peut-il bloquer l’ajout de mon nom ?**
+Il peut saisir le juge, mais selon la fiche, son désaccord ou la saisine du juge n’empêchent pas l’ajout. Le juge peut ensuite trancher.
+
+**Peut-on choisir l’ordre des noms ?**
+Oui lorsque les deux parents décident ensemble. Quand un seul parent ajoute son nom, l’ordre ne peut pas être modifié.
+
+**À 13 ans, mon enfant peut-il refuser ?**
+Oui, son consentement est obligatoire à partir de 13 ans.
+
+## Quand demander conseil
+Votre mairie, Allô Service Public, un point-justice ou un avocat peuvent vous aider à vérifier votre situation. Si le sujet ravive des conflits importants entre parents, une médiation familiale (renseignements auprès de la Caf) peut aider. En cas de violences, appelez le **17** ou le **112**. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child']::text[], null, null, null, null, false, array['nom d’usage','double nom','nom de la mère','nom du père','ajouter nom','carte d’identité enfant','autorité parentale','loi 2022']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Service-Public.fr — Nom d’usage d’un enfant mineur : utilisation du nom des parents","url":"https://www.service-public.gouv.fr/particuliers/vosdroits/F36441","consulted_on":"2026-10-27","published":"2025-08-07"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('conserver-transporter-biberons-sorties-creche-voyage', (select id from public.content_categories where slug = 'alimentation-bebe'), 'Conserver et transporter les biberons : sorties, crèche et voyage', 'Eau et poudre séparées, délais à respecter, lait maternel au frais, réchauffage sans micro-ondes : les règles d’hygiène pour nourrir bébé hors de la maison.', '## En bref
+- Une fois reconstitué, le lait infantile en poudre devient **très fragile** : l’Anses rappelle que la poudre n’est pas stérile.
+- En sortie, transportez **l’eau dans le biberon et la poudre à part**, et mélangez au dernier moment.
+- Un biberon préparé se boit **dans l’heure** à température ambiante, **dans la demi-heure** après réchauffage ; un biberon entamé ne se garde **jamais** pour la tétée suivante.
+- Le lait maternel tiré se transporte au **froid** (glacière ou sac isotherme avec pack réfrigérant).
+
+## Comprendre
+Les préparations pour nourrissons en poudre peuvent contenir de rares micro-organismes, qui se multiplient après reconstitution. L’Anses souligne que des contaminations peuvent provoquer des infections graves, surtout chez les prématurés et les bébés de faible poids. Les laits liquides prêts à l’emploi sont stériles tant qu’ils ne sont pas ouverts.
+
+**Les délais de référence** (ameli.fr, Anses) :
+- à température ambiante : **une heure maximum**, puis on jette ;
+- après réchauffage : **dans la demi-heure** ;
+- au réfrigérateur, exceptionnellement, pour un biberon préparé à l’avance : **à 4 °C maximum**, dans la partie la plus froide, jamais dans la porte ;
+- lait liquide stérile entamé : 48 heures maximum, dans son emballage d’origine, dans la partie la plus froide du réfrigérateur.
+
+**Le lait maternel** se conserve différemment. Le guide de l’allaitement de Santé publique France indique : 4 heures maximum à température ambiante, 48 heures au réfrigérateur (4 °C ou moins), 4 mois au congélateur (−18 °C). Le lait décongelé se consomme dans les 24 heures et ne se recongèle jamais.
+
+## Au quotidien
+**Pour une sortie courte**
+- Avant de partir : un biberon propre rempli d’eau (froide du robinet ou eau en bouteille adaptée aux nourrissons) et la poudre mesurée dans une boîte doseuse propre et sèche.
+- Sur place : lavez-vous soigneusement les mains, ajoutez la poudre, agitez fortement, vérifiez l’absence de grumeaux.
+- Le lait peut être donné à température ambiante : le réchauffer n’est pas indispensable.
+
+**Pour la crèche ou l’assistante maternelle**
+- Renseignez-vous auprès de la structure ou de l’assistante maternelle sur son organisation (fourniture du lait, boîte à apporter, horaires).
+- Pour le lait maternel : notez sur chaque récipient la date et l’heure du recueil (et le nom de votre enfant si on vous le demande), remplissez-le aux trois quarts, transportez-le dans une glacière ou un sac isotherme avec pack réfrigérant, et remettez-le au réfrigérateur dès l’arrivée.
+
+**En voyage**
+- Emportez suffisamment de poudre dans son emballage d’origine et une réserve d’eau adaptée.
+- Une bouteille d’eau entamée se garde au réfrigérateur et se consomme dans les 24 heures (ameli).
+- À l’étranger, sans eau potable ni eau en bouteille adaptée, l’Assurance maladie indique qu’on peut utiliser de l’eau bouillie puis refroidie.
+- Prévoyez de quoi laver les biberons : goupillon, liquide vaisselle, séchage à l’air libre.
+
+**Réchauffer hors de chez soi**
+- Au bain-marie ou au chauffe-biberon, rapidement. **Jamais au micro-ondes** : il crée des points très chauds qui peuvent brûler la bouche et la gorge.
+- Agitez, puis testez quelques gouttes sur l’intérieur du poignet.
+
+## Questions fréquentes
+**Puis-je préparer le biberon de nuit à l’avance ?**
+L’idéal est de le préparer juste avant la tétée. À titre exceptionnel, ameli indique qu’un biberon préparé peut être gardé au réfrigérateur à 4 °C maximum, dans la partie la plus froide.
+
+**Bébé n’a bu que la moitié. Puis-je garder le reste ?**
+Non : un biberon entamé ne se conserve pas pour la tétée suivante, même au réfrigérateur.
+
+**Puis-je utiliser l’eau d’une carafe filtrante ?**
+Non : l’Anses et ameli déconseillent l’eau filtrée ou adoucie, qui peut favoriser la multiplication des microbes.
+
+**Faut-il stériliser les biberons en voyage ?**
+La stérilisation systématique n’est plus jugée nécessaire ; un lavage soigneux à l’eau chaude avec liquide vaisselle et goupillon, puis un séchage à l’air libre, suffisent.
+
+## Quand demander conseil
+Demandez l’avis du médecin, de la sage-femme ou de la PMI si votre bébé est prématuré ou de petit poids, avant un voyage dans un pays où l’eau n’est pas potable, ou en cas de diarrhée ou de vomissements. Un bébé qui refuse de boire, vomit à répétition, a de la fièvre avant 3 mois, mouille peu ses couches ou paraît très somnolent doit être vu rapidement. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn']::text[], null, null, 0, 24, false, array['transporter biberon','biberon sortie','biberon crèche','biberon voyage','conserver lait','lait maternel transport','sac isotherme','biberon à l’avance']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Bien préparer un biberon","url":"https://www.ameli.fr/assure/sante/themes/alimentation/alimentation-0-3-ans/preparer-biberon","consulted_on":"2026-10-27","published":"2024-11-12"},{"label":"Anses — Biberon : comment le préparer et le conserver ?","url":"https://www.anses.fr/fr/content/biberon-comment-le-preparer-et-le-conserver","consulted_on":"2026-10-27","published":"2013-01-17"},{"label":"Santé publique France — Le guide de l’allaitement maternel (édition 2023, diffusé par l’ARS Provence-Alpes-Côte d’Azur)","url":"https://www.paca.ars.sante.fr/system/files/2023-04/GuideAllaitement.pdf","consulted_on":"2026-10-27","published":"2023-01"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('lait-infantile-bien-choisir-age-etiquette-laits-non-adaptes', (select id from public.content_categories where slug = 'alimentation-bebe'), 'Laits infantiles : bien choisir selon l’âge et éviter les laits non adaptés', 'Premier âge, deuxième âge, lait de croissance : à quoi correspond chaque étape, comment lire l’étiquette sans se fier au marketing, et pourquoi lait de vache, laits de ferme et boissons végétales ne conviennent pas au nourrisson.', '## En bref
+- L’allaitement maternel reste la référence ; quand bébé est nourri au biberon, il reçoit une **préparation pour nourrissons** (« 1er âge ») jusqu’au début de la diversification.
+- On passe au **2e âge** (préparation de suite) quand l’enfant prend au moins un **repas complet sans lait** par jour ; entre 1 et 3 ans, un **lait de croissance** peut être proposé.
+- Tous les laits infantiles vendus en France respectent une **réglementation européenne stricte** de composition.
+- Le **lait de vache** avant 1 an, les **laits de ferme** (chèvre, brebis, ânesse…) et les **boissons végétales** ne sont pas adaptés au nourrisson.
+
+## Comprendre
+**Les étapes** (brochure de 1000 premiers jours et Santé.fr) :
+- **1er âge** : de la naissance jusqu’au début de la diversification, entre 4 et 6 mois.
+- **2e âge** : dès que l’enfant a au moins un repas complet sans lait par jour.
+- **Lait de croissance** : entre 1 et 3 ans, enrichi en fer, à choisir sans sucre ni arôme ajouté. La brochure indique qu’il peut être alterné avec du lait de vache entier UHT, à condition de proposer des aliments riches en fer et en vitamine C.
+
+**Une composition encadrée.** Santé.fr rappelle que la composition des préparations pour nourrissons et de suite est fixée par un règlement européen, et que la publicité pour les laits 1er âge est interdite afin de ne pas concurrencer l’allaitement. Il existe trois catégories : les laits **standard**, les laits pour **troubles fonctionnels** (petits troubles digestifs) et les laits **thérapeutiques**, vendus uniquement en pharmacie (allergie aux protéines du lait de vache, reflux, intolérance au lactose).
+
+**Les laits non adaptés**
+- **Lait de vache avant 1 an** : trop de protéines, de sodium et de sels minéraux, pas assez de fer, de zinc, de vitamines et d’acides gras essentiels.
+- **Laits demi-écrémés, écrémés** : ne conviennent pas aux nourrissons, qui ont besoin de matières grasses pour se développer.
+- **Boissons végétales** (amande, avoine, riz, soja, coco…) : même enrichies en calcium, elles ne couvrent pas les besoins des moins de 1 an et exposent à des carences. Le soja est déconseillé avant 3 ans selon la brochure.
+- **Laits de chèvre, brebis, jument, ânesse** produits à la ferme : non conformes. Seules les préparations infantiles transformées pour respecter la réglementation conviennent.
+
+## Au quotidien
+**Bien choisir en magasin ou en pharmacie**
+- Vérifiez la **dénomination** : « préparation pour nourrissons » (1er âge) ou « préparation de suite » (2e âge).
+- Vérifiez l’**âge** indiqué sur la boîte.
+- Demandez conseil au médecin ou à la sage-femme avant de choisir un lait 1er âge, recommande Santé.fr : le choix dépend de l’âge, de la santé et des particularités de votre enfant (risque allergique, tolérance).
+- Ne vous fiez pas aux mentions marketing : les laits standard sont tous strictement contrôlés.
+- En cas d’antécédents d’allergie dans la famille, demandez s’il faut un lait hypoallergénique.
+
+**Bien conserver la boîte**
+- Une boîte de poudre ouverte se garde environ un mois, bien refermée, au frais et au sec (ameli).
+- Utilisez uniquement la dosette fournie, gardez-la sèche, et respectez une dose rase pour 30 ml d’eau.
+
+**Changer de lait ?**
+Santé.fr déconseille de changer sans cesse de lait infantile : tout changement se décide avec le médecin, selon les symptômes observés. Les laits « anti-régurgitations », « confort » ou « satiété » relèvent de situations précises.
+
+**Les rappels de produits** : consultez le site officiel Rappel Conso en cas de doute sur un lot.
+
+## Questions fréquentes
+**Le lait le plus cher est-il le meilleur ?**
+Non. Tous les laits standard respectent la même réglementation. Le bon lait est celui qui convient à votre enfant, choisi avec le professionnel qui le suit.
+
+**Puis-je donner du lait de vache à 10 mois ?**
+Non : le lait de vache n’est pas adapté avant 1 an.
+
+**Une boisson à l’amande « enrichie » peut-elle remplacer le lait infantile ?**
+Non, les boissons végétales ne couvrent pas les besoins des moins de 1 an, même enrichies.
+
+**Et si je veux arrêter l’allaitement ?**
+Parlez-en à la sage-femme ou au médecin : ils vous aideront à choisir la préparation et à organiser la transition.
+
+## Quand demander conseil
+Consultez le médecin si votre bébé vomit souvent, a du sang dans les selles, de l’eczéma important, pleure beaucoup après les biberons, ne prend pas de poids, ou si vous envisagez un lait spécial. Des vomissements répétés, un bébé qui refuse de boire, mouille peu ses couches ou paraît très mou demandent un avis rapide. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child']::text[], null, null, 0, 36, false, array['lait infantile','lait 1er âge','lait 2e âge','lait de croissance','boisson végétale bébé','lait de chèvre bébé','étiquette lait bébé','préparation pour nourrissons']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu mpedia / AFPA) — Quel lait infantile choisir ?","url":"https://www.sante.fr/quel-lait-infantile-choisir","consulted_on":"2026-10-27","published":"2026-07-24"},{"label":"1000-premiers-jours.fr — Le petit guide de la diversification alimentaire « Pas à pas, votre enfant mange comme un grand » (brochure)","url":"https://www.1000-premiers-jours.fr/sites/default/files/2021-09/Brochure%20diversification%20alimentaire.pdf","consulted_on":"2026-10-27"},{"label":"ameli.fr — Bien préparer un biberon","url":"https://www.ameli.fr/assure/sante/themes/alimentation/alimentation-0-3-ans/preparer-biberon","consulted_on":"2026-10-27","published":"2024-11-12"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('signes-de-faim-et-satiete-bebe-nourri-au-biberon', (select id from public.content_categories where slug = 'alimentation-bebe'), 'Bébé au biberon : reconnaître les signes de faim et de satiété', 'Mouvements de succion, bouche ouverte, tête qui se détourne : apprendre à lire les signaux de votre bébé pour le nourrir à son rythme, sans le forcer.', '## En bref
+- Les **signes de faim** : bébé s’agite, fait des mouvements de succion, ouvre la bouche à l’approche du biberon ; les pleurs viennent souvent plus tard.
+- Les **signes de satiété** : il ralentit, s’endort, tourne la tête, regarde ailleurs.
+- On **propose sans jamais forcer** : l’appétit varie d’un jour à l’autre, et on n’oblige jamais un enfant à finir son biberon.
+- Les **quantités** et le nombre de biberons se voient avec le médecin ou la sage-femme, selon l’âge, le poids et la courbe de votre bébé.
+
+## Comprendre
+Santé.fr (contenu mpedia) conseille de répondre à la demande du bébé lorsqu’il manifeste sa faim, plutôt que de suivre un horaire strict, sans avoir besoin de surveiller la montre. Le moment de proposer le biberon, c’est quand le bébé bouge ou fait des **mouvements de succion**.
+
+La brochure de 1000 premiers jours décrit les signaux :
+- **faim** : pleurs, agitation des bras et des jambes, bouche ouverte à l’approche du sein, du biberon ou de la cuillère ;
+- **satiété** : endormissement pendant la tétée, ralentissement, tête tournée, regard ailleurs.
+
+Chaque bébé a sa façon de s’exprimer : en l’observant pendant quelques jours, vous apprendrez à reconnaître ses propres signaux.
+
+**Les pleurs ne veulent pas toujours dire faim.** Santé.fr (pleurs et coliques) rappelle que si la courbe de poids est régulière, des pleurs fréquents ne signifient pas forcément que bébé a faim : « la solution ne se trouve pas dans l’augmentation des rations ». Les pleurs du soir sont souvent apaisés par le bercement, le portage, la présence ou la succion, plutôt que par un repas supplémentaire.
+
+## Au quotidien
+**Pendant le biberon** (conseils de Santé.fr)
+- Installez-vous confortablement, bébé en position **demi-assise**, la tête soutenue. Ne donnez pas le biberon allongé, à cause du risque de fausse route.
+- Inclinez le biberon pour que la tétine reste pleine de lait.
+- Frottez doucement la tétine contre ses lèvres pour déclencher la succion.
+- Regardez-le, parlez-lui : c’est un moment d’échange.
+- S’il s’agite, faites une **pause**, mettez-le contre l’épaule pour un rot, puis reprenez s’il le souhaite.
+- S’il boit bien, laissez-le téter à son rythme, sans l’interrompre.
+
+**Quand il montre qu’il n’a plus faim**
+- Arrêtez, même s’il reste du lait : un biberon entamé ne se garde pas pour la suite.
+- Ne le relancez pas en secouant le biberon ou en insistant.
+- Pour un bébé qui avale goulûment, des pauses et un repas au calme peuvent aider.
+
+**Garder des repères**
+- Notez si besoin l’heure des biberons et l’état des couches les premières semaines, pour en parler au professionnel.
+- La meilleure façon de savoir si votre bébé mange assez reste le suivi de son **poids** et de sa **courbe** par le médecin, la sage-femme ou la PMI.
+
+## Questions fréquentes
+**Combien de millilitres doit-il boire ?**
+Les besoins varient selon l’âge, le poids et chaque enfant. Demandez au médecin, à la sage-femme ou à la PMI de vous indiquer des repères adaptés et de suivre sa courbe.
+
+**Faut-il le réveiller pour le biberon ?**
+Chez le nouveau-né, Santé.fr indique que s’il ne réclame pas pendant 3 à 4 heures la nuit, il n’est pas nécessaire de le réveiller, l’objectif étant le total sur 24 heures. Demandez conseil si votre bébé est prématuré, de petit poids ou s’il prend mal du poids.
+
+**Il réclame encore juste après avoir fini. Dois-je refaire un biberon ?**
+Il peut avoir besoin de succion, de réconfort ou de câlins. Si cela se répète souvent ou si sa courbe vous inquiète, parlez-en au médecin.
+
+**Ajouter des céréales pour qu’il dorme mieux ?**
+Ne modifiez pas la préparation sans avis médical : respectez la dose de poudre indiquée et parlez au médecin de vos difficultés de nuit.
+
+## Quand demander conseil
+Consultez le médecin si votre bébé refuse régulièrement le biberon, boit très peu, vomit souvent, pleure intensément pendant ou après les repas, prend mal du poids ou mouille peu ses couches. Un bébé très mou, difficile à réveiller, qui refuse de boire ou a de la fièvre avant 3 mois doit être vu en urgence. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn']::text[], null, null, 0, 12, false, array['signes de faim','satiété bébé','biberon à la demande','bébé ne finit pas biberon','forcer biberon','rythme biberon','pleurs faim','rot']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"1000-premiers-jours.fr — Le petit guide de la diversification alimentaire « Pas à pas, votre enfant mange comme un grand » (brochure)","url":"https://www.1000-premiers-jours.fr/sites/default/files/2021-09/Brochure%20diversification%20alimentaire.pdf","consulted_on":"2026-10-27"},{"label":"Santé.fr (contenu mpedia / AFPA) — Premiers biberons à la maternité : mode d’emploi","url":"https://www.sante.fr/premiers-biberons-la-maternite-mode-demploi","consulted_on":"2026-10-27","published":"2022-02-10"},{"label":"Santé.fr (contenu mpedia / AFPA) — Coliques et pleurs du nourrisson, comment les décoder ?","url":"https://www.sante.fr/coliques-et-pleurs-du-nourrisson-comment-les-decoder","consulted_on":"2026-10-27","published":"2022-04-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('retrouver-son-poids-apres-grossesse-sans-regime', (select id from public.content_categories where slug = 'post-partum'), 'Retrouver son poids après la grossesse, sans régime', 'Pourquoi le corps garde des réserves, pourquoi les régimes sont déconseillés au début, et comment avancer à votre rythme avec l’allaitement, le sommeil et une reprise progressive de l’activité.', '## En bref
+- L’Assurance maladie rappelle qu’il est fréquent de **ne pas retrouver tout de suite son poids** d’avant la grossesse : le corps a constitué des réserves, notamment pour l’allaitement.
+- **Pas de régime** pendant l’allaitement, ni avant les **3 mois** de l’enfant si vous n’allaitez pas.
+- Une alimentation **variée et équilibrée**, en mangeant **à sa faim**, et une bonne hydratation suffisent au début.
+- L’**activité physique** reprend progressivement, après avis médical et rééducation périnéale pour les sports à impact.
+
+## Comprendre
+**Le corps a besoin de temps.** À la maternité, la sage-femme surveille le retour de l’utérus à sa taille habituelle, qui prend **environ deux mois**, précise l’Assurance maladie. Le ventre reste donc arrondi plusieurs semaines après la naissance.
+
+**L’allaitement et le poids.** Les pédiatres de mpedia expliquent que produire du lait demande de l’énergie, sans qu’il soit nécessaire de « manger pour deux » : l’organisme puise dans les réserves de graisse constituées pendant la grossesse, ce qui explique que l’allaitement puisse favoriser la perte de poids. Ils déconseillent tout régime amaigrissant pendant cette période. Aucun régime particulier n’est nécessaire : il suffit de manger varié, à sa faim, sans excès, et de boire régulièrement.
+
+**Pourquoi pas de régime tout de suite ?** Les semaines qui suivent la naissance demandent beaucoup d’énergie : récupération de l’accouchement, nuits courtes, éventuellement allaitement. L’Assurance maladie recommande de ne pas faire de régime pendant l’allaitement, ni avant les 3 mois de l’enfant si vous n’allaitez pas.
+
+**L’activité physique.** Selon l’Assurance maladie, elle reprend progressivement, d’abord en intensité légère à modérée (marche, escaliers, natation), après avis médical, en général 4 à 6 semaines après un accouchement par voie basse et 8 à 10 semaines après une césarienne. Les activités à impact (course, sports collectifs, trampoline) attendent la fin de la rééducation périnéale et l’accord du médecin. L’allaitement n’est pas altéré par l’activité physique.
+
+## Au quotidien
+**Dans l’assiette**
+- Des repas à heures à peu près régulières, même simples : légumes, féculents, une source de protéines, un produit laitier, un fruit.
+- Des en-cas pratiques à portée de main pendant les tétées : fruit, yaourt, pain, fromage.
+- De l’eau à proximité ; si vous allaitez, mpedia conseille environ 1,5 litre de liquide par jour.
+- Acceptez les repas proposés par l’entourage : c’est une aide précieuse.
+
+**Bouger sans s’épuiser**
+- Les promenades avec bébé en poussette ou en porte-bébé sont un bon début.
+- Écoutez votre fatigue : courtes siestes, relais avec l’autre parent ou un proche.
+- Attendez l’avis du professionnel après la consultation postnatale pour aller plus loin.
+
+**Le regard sur soi**
+- Comparez-vous à vous-même, pas aux photos des réseaux sociaux.
+- Le corps a porté et mis au monde un enfant : vergetures, ventre, seins peuvent changer durablement, et chacune se réapproprie son corps à son rythme.
+
+## Questions fréquentes
+**Au bout de combien de temps retrouve-t-on son poids ?**
+Il n’existe pas de délai valable pour toutes. Cela dépend de la prise de poids pendant la grossesse, de l’allaitement, du sommeil et de l’activité. Parlez-en à la consultation postnatale.
+
+**Puis-je commencer un régime après 3 mois si j’allaite ?**
+L’Assurance maladie et mpedia déconseillent le régime pendant l’allaitement. Si vous souhaitez perdre du poids, demandez un accompagnement au médecin, à la sage-femme ou à un diététicien.
+
+**Faire des abdominaux aide-t-il à retrouver un ventre plat ?**
+La rééducation périnéale passe avant, puis la rééducation abdominale si nécessaire. Demandez au professionnel les exercices adaptés.
+
+**Je n’arrive pas à manger, je n’ai pas le temps.**
+C’est fréquent les premières semaines. Simplifiez les repas, déléguez les courses et la cuisine, et parlez-en si vous perdez du poids rapidement ou si vous n’avez plus d’appétit.
+
+## Quand demander conseil
+Parlez-en au médecin ou à la sage-femme si vous perdez du poids très vite, si vous n’avez plus d’appétit, si vous vous sentez épuisée, triste, ou si votre rapport à la nourriture devient une source d’angoisse (restriction, crises de grignotage, culpabilité). Une fièvre, des saignements abondants ou une douleur au mollet après l’accouchement demandent un avis rapide. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**. Si vous vous sentez à bout ou envahi(e) par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child','family']::text[], null, null, 0, 24, true, array['poids après grossesse','perdre du poids après accouchement','régime post-partum','allaitement poids','kilos de grossesse','ventre après bébé','reprise sport','alimentation post-partum','sommeil-parents']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Après l’accouchement : le retour à la maison","url":"https://www.ameli.fr/assure/sante/devenir-parent/accouchement-nouveau-ne-et-retour-la-maison/suivi-domicile","consulted_on":"2026-10-27","published":"2026-08-27"},{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — Que boire et manger quand on allaite ?","url":"https://www.mpedia.fr/art-allaitement-et-alimentation/","consulted_on":"2026-10-27","published":"2019-09-13"},{"label":"ameli.fr — Suivi de la mère à la maternité","url":"https://www.ameli.fr/assure/sante/devenir-parent/accouchement-nouveau-ne-et-retour-la-maison/suivi-mere-apres-accouchement","consulted_on":"2026-10-27","published":"2026-03-12"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('hyperemese-gravidique-perte-de-poids-quand-consulter-vite', (select id from public.content_categories where slug = 'sante-grossesse'), 'Vomissements sévères pendant la grossesse : perte de poids et quand consulter vite', 'L’hyperémèse gravidique se repère à la perte de poids, à la déshydratation et à l’intensité des vomissements : les seuils utilisés, la prise en charge et le soutien possible.', '## En bref
+- On parle d’**hyperémèse gravidique** en cas de **perte de poids d’au moins 5 %** par rapport au poids d’avant la grossesse, de **signes de déshydratation**, ou d’un **score PUQE d’au moins 7** (Assurance maladie, CNGOF).
+- Une **perte de poids de 10 % ou plus**, une déshydratation importante, des vomissements mal tolérés ou un bilan sanguin perturbé peuvent conduire à une **hospitalisation**.
+- Il ne faut prendre **aucun médicament sans avis médical** ; plusieurs traitements existent.
+- Un **soutien psychologique** est proposé : ces vomissements peuvent être très éprouvants.
+
+## Comprendre
+Les nausées et vomissements touchent une grande majorité des femmes enceintes et disparaissent en général à la fin du premier trimestre. Ils restent le plus souvent sans gravité. L’hyperémèse gravidique en est une forme sévère.
+
+**Le poids, un repère clé.** Le poids de référence est celui d’**avant la grossesse**. Par exemple, pour une personne qui pesait 60 kg, une perte de 3 kg correspond à 5 %, et une perte de 6 kg à 10 %. D’où l’intérêt de vous peser régulièrement et de noter les chiffres.
+
+**Le score PUQE.** Ce questionnaire de trois questions évalue, sur 24 heures, la durée des nausées, le nombre de vomissements et les haut-le-cœur. Le CNGOF distingue les formes légères (6 ou moins), modérées (7 à 12) et sévères (13 ou plus). L’Assurance maladie conseille de le préparer avant la consultation.
+
+**Pourquoi c’est sérieux.** Des vomissements répétés peuvent perturber le potassium et le sodium dans le sang et altérer le fonctionnement des reins. Lors d’une réhydratation par perfusion, la **vitamine B1** est systématiquement donnée pour prévenir une complication neurologique rare mais grave, l’encéphalopathie de Gayet-Wernicke.
+
+**La prise en charge** (Assurance maladie, CNGOF)
+- Sans complication : traitement à domicile, sans bilan systématique.
+- En cas d’hyperémèse : un bilan évalue les conséquences sur l’équilibre nutritionnel et recherche d’autres causes, surtout si les vomissements persistent après 9 semaines.
+- Le médecin peut suspendre les vitamines prénatales contenant du fer au premier trimestre, en gardant l’acide folique.
+- Plusieurs médicaments contre les vomissements existent ; le choix se fait selon leur tolérance.
+- L’aromathérapie est déconseillée pendant la grossesse.
+- À l’hôpital, l’isolement (chambre dans le noir, téléphone retiré) n’est **pas** recommandé par le CNGOF.
+
+## Au quotidien
+- **Mangez ce que vous supportez, quand vous le supportez** : il n’existe pas de régime prouvé efficace (CNGOF).
+- Privilégiez de petites quantités, à votre rythme.
+- Buvez par petites gorgées, régulièrement.
+- Pesez-vous régulièrement, dans les mêmes conditions, et notez le poids pour le montrer au professionnel.
+- Notez le nombre de vomissements par jour et ce qui passe ou non : ces informations aident le professionnel.
+- Reposez-vous ; demandez de l’aide pour les courses, les repas, les enfants.
+- Parlez de votre état à votre médecin ou sage-femme : la capacité à travailler fait partie des éléments évalués.
+
+## Questions fréquentes
+**Les vomissements peuvent-ils faire du mal au bébé ?**
+Le bilan évalue justement les conséquences pour vous et pour l’enfant à naître. Une prise en charge adaptée permet de limiter les complications : n’attendez pas pour consulter.
+
+**Le gingembre ou l’acupression peuvent-ils suffire ?**
+Ils peuvent être proposés pour les formes légères, mais leur efficacité n’est pas clairement démontrée. Ils ne remplacent pas une consultation en cas de perte de poids ou de déshydratation.
+
+**Est-ce que ça recommencera à la prochaine grossesse ?**
+Le risque de récidive est mal connu et varie beaucoup selon les études ; le CNGOF recommande une vigilance accrue lors des grossesses suivantes.
+
+**Je me sens découragée, isolée.**
+C’est une réaction fréquente face à des vomissements intenses. Un soutien psychologique est proposé, et des associations de patientes peuvent vous accompagner, vous et vos proches.
+
+## Quand demander conseil
+Consultez rapidement votre médecin, votre sage-femme ou les urgences de la maternité si vous ne gardez **ni liquide ni aliment** depuis plusieurs heures, si vous avez **perdu 5 % de votre poids** ou plus, si vous urinez peu ou foncé, avez la bouche sèche et une soif intense, des vertiges, des vomissements de sang, des douleurs abdominales, de la fièvre, ou une confusion, des troubles de la vue ou de l’équilibre. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**. Si vous vous sentez à bout ou envahi(e) par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['pregnant']::text[], 4, 24, null, null, false, array['hyperémèse gravidique','vomissements grossesse','perte de poids grossesse','déshydratation','score PUQE','nausées sévères','hospitalisation grossesse','vitamine B1']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr — Nausées et vomissements chez la femme enceinte : consultation et traitement","url":"https://www.ameli.fr/assure/sante/devenir-parent/grossesse/difficultes-et-maladies-pendant-la-grossesse/grossesse-nausees-et-vomissements/nauses-vomissements-grossesse-consultation-traitement","consulted_on":"2026-10-27"},{"label":"CNGOF — Nausées et vomissements gravidiques : recommandations pour la pratique clinique (consensus formalisé d’experts, 2022)","url":"https://cngof.fr/app/uploads/2025/11/Nausees-et-vomissements-gravidiques202022-CFE.pdf","consulted_on":"2026-10-27","published":"2022-09-21"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('reprise-de-la-sexualite-apres-l-accouchement', (select id from public.content_categories where slug = 'sexualite'), 'Reprendre une vie sexuelle après l’accouchement', 'Il n’y a pas de délai « normal » : récupération du corps, désir qui fluctue, contraception à anticiper dès le 21e jour, et des pistes pour retrouver une intimité à deux.', '## En bref
+- Il **n’existe pas de norme** : certains parents ressentent moins de désir, d’autres aucune différence (QuestionSexualité).
+- Le corps a besoin de **temps** : saignements (lochies) pendant deux à six semaines, périnée sensible, cicatrice éventuelle.
+- Une **grossesse est possible avant le retour des règles** : sans allaitement, une contraception est nécessaire dès le **21e jour** après l’accouchement (ameli).
+- La reprise se fait **quand vous êtes prête**, à deux, sans pression.
+
+## Comprendre
+**Le corps récupère.** Selon QuestionSexualité, le site d’information de Santé publique France, les saignements sont abondants les premières 24 à 48 heures puis ressemblent à des règles ; ils peuvent durer de deux à six semaines. Le périnée est temporairement étiré, parfois gonflé et sensible. Une épisiotomie ou une déchirure peut faire mal plusieurs jours, une cicatrice de césarienne quelques semaines.
+
+**Le désir change.** La fatigue, les nuits courtes, la nouvelle image de son corps, les émotions intenses des premières semaines et la charge mentale pèsent sur le désir. L’allaitement fait baisser les œstrogènes, ce qui peut diminuer le désir chez certaines femmes et favoriser une sécheresse vaginale, tout en libérant de l’ocytocine, une hormone liée au plaisir.
+
+**La contraception, à anticiper.** L’Assurance maladie rappelle qu’une nouvelle grossesse est possible avant le retour des règles. Sans allaitement, l’ovulation ne reprend pas avant le 21e jour ; à partir de là, une contraception est nécessaire. En allaitement exclusif, la méthode MAMA n’est fiable que si trois conditions sont réunies : bébé a moins de 6 mois, il est nourri exclusivement au sein, à la demande, jour et nuit, et vos règles ne sont pas revenues. Le choix de la méthode se fait avec le médecin ou la sage-femme, idéalement dès la maternité.
+
+**La consultation postnatale**, entre 6 et 8 semaines après l’accouchement, est un bon moment pour parler sexualité, contraception et douleurs. Des séances de rééducation périnéale peuvent y être prescrites (ameli).
+
+## Au quotidien
+- **Parlez-en** à deux : de vos envies, de vos craintes, de votre fatigue. Le sujet peut sembler tabou, mais il se partage.
+- **Retrouvez la tendresse** avant tout : caresses, baisers, massages, moments de proximité sans objectif.
+- **Ne vous limitez pas à la pénétration** : QuestionSexualité invite à privilégier la sensualité et à construire le désir par les gestes et les mots.
+- **Utilisez un lubrifiant** : la sécheresse est fréquente après l’accouchement, surtout en allaitant.
+- **Variez les positions** ; après une césarienne, évitez celles qui appuient sur le ventre.
+- **Si vous allaitez**, une tétée ou un tirage avant le rapport peut limiter les fuites de lait.
+- **Créez des moments pour le couple** : un temps dédié, un lieu tranquille.
+- **Partagez les tâches** : QuestionSexualité souligne qu’un partage équitable des tâches domestiques et des soins au bébé laisse plus de place au désir.
+
+## Questions fréquentes
+**Faut-il attendre la visite postnatale pour reprendre les rapports ?**
+Aucun délai unique ne s’impose : le bon moment dépend de la cicatrisation, des saignements et de votre envie. En cas de doute, posez la question à la sage-femme ou au médecin.
+
+**Je n’ai aucune envie depuis la naissance. Est-ce inquiétant ?**
+La baisse du désir est fréquente après une naissance. Si elle s’accompagne d’une tristesse persistante, d’une grande fatigue ou d’un désintérêt pour tout, parlez-en : ce peut être un signe de dépression du post-partum, qui se soigne.
+
+**L’allaitement protège-t-il d’une grossesse ?**
+Seulement si les trois conditions de la méthode MAMA sont réunies. Dès que les tétées s’espacent, que bébé prend un biberon, que les règles reviennent ou qu’il atteint 6 mois, une autre contraception est nécessaire.
+
+**Et pour le second parent ?**
+Lui aussi peut ressentir fatigue, inquiétude ou changement de désir. En parler ensemble aide chacun à trouver sa place.
+
+## Quand demander conseil
+Consultez si les rapports sont douloureux ou si la douleur persiste, si les saignements durent au-delà de six semaines, en cas de fièvre, de pertes malodorantes ou de douleurs du bas-ventre, ou pour choisir une contraception. Une sage-femme, un médecin, un psychologue ou un sexologue peuvent vous accompagner. Si vous vous sentez à bout ou envahi(e) par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit. En cas de violences dans le couple, appelez le **3919** (gratuit, anonyme) ou, en danger, le **17** ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn']::text[], null, null, 0, 24, false, array['sexualité après accouchement','reprise des rapports','post-partum','premier rapport après bébé','contraception post-partum','lochies','libido','intimité']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — La sexualité après l’arrivée d’un enfant","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/la-sexualite-au-cours-de-la-vie/la-sexualite-apres-l-arrivee-d-un-enfant","consulted_on":"2026-10-27"},{"label":"ameli.fr — Quelle contraception après un accouchement ?","url":"https://www.ameli.fr/assure/sante/devenir-parent/accouchement-et-nouveau-ne/contraception-apres-un-accouchement","consulted_on":"2026-10-27"},{"label":"ameli.fr — Après l’accouchement : le retour à la maison","url":"https://www.ameli.fr/assure/sante/devenir-parent/accouchement-nouveau-ne-et-retour-la-maison/suivi-domicile","consulted_on":"2026-10-27","published":"2026-08-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('douleurs-pendant-les-rapports-apres-la-naissance', (select id from public.content_categories where slug = 'sexualite'), 'Douleurs pendant les rapports après la naissance : en parler et se faire aider', 'Cicatrice d’épisiotomie, sécheresse, périnée contracté, appréhension : les douleurs lors des rapports après un accouchement sont fréquentes et méritent d’être prises en charge.', '## En bref
+- Avoir mal pendant ou après un rapport **n’est pas une fatalité** : QuestionSexualité rappelle qu’il ne faut pas s’y résigner, et que des solutions existent quelle que soit la cause.
+- Après un accouchement, ces douleurs sont **fréquentes** : des études citées par la HAS rapportent des douleurs chez une part importante des femmes à 2 mois.
+- Les causes possibles : **cicatrice** d’épisiotomie ou de déchirure, **sécheresse** vaginale (notamment en allaitant), **périnée** contracté, appréhension.
+- La sage-femme, le médecin ou le gynécologue sont les premiers interlocuteurs ; la **rééducation périnéale** peut aider.
+
+## Comprendre
+**Un problème fréquent et sous-estimé.** Le rapport de la HAS (anciennement ANAES) sur la rééducation post-partum, publié en 2002, cite une étude britannique où 53 % des femmes déclaraient une douleur lors des rapports deux mois après l’accouchement. Les douleurs du périnée étaient plus fréquentes après une épisiotomie qu’avec un périnée intact.
+
+**Les causes possibles** (QuestionSexualité)
+- Une lubrification insuffisante ou une **sécheresse vaginale**, fréquente après l’accouchement et pendant l’allaitement.
+- Une **cicatrice d’épisiotomie** ou de déchirure.
+- Un **dysfonctionnement musculaire du périnée** (contraction).
+- Une infection (mycose, infection sexuellement transmissible).
+- Des facteurs psychologiques, une fois les causes physiques écartées : un **accouchement vécu comme difficile**, l’anxiété, un état dépressif, des tensions dans le couple. La douleur est alors bien réelle.
+
+Sans prise en charge, ces douleurs peuvent entraîner une baisse du désir et des difficultés de couple.
+
+**Le rôle de la rééducation.** Selon la HAS, la rééducation périnéale n’est pas systématique : elle découle des symptômes et de l’examen de la consultation postnatale. Des douleurs périnéales persistantes, surtout avec des douleurs lors des rapports, en font partie des indications. À la consultation postnatale, le professionnel interroge sur la douleur (où, quand, quelle intensité) et sur ses conséquences sur la vie quotidienne et sexuelle.
+
+## Au quotidien
+- **Ne forcez pas** : si c’est douloureux, arrêtez. Avoir mal peut nourrir l’appréhension du rapport suivant.
+- **Utilisez un gel lubrifiant**, premier geste conseillé par QuestionSexualité ; demandez au pharmacien un produit compatible avec les préservatifs si vous en utilisez.
+- **Prenez votre temps** : préliminaires plus longs, positions qui vous permettent de contrôler la profondeur et le rythme.
+- **Explorez d’autres formes de plaisir** que la pénétration le temps de la récupération.
+- **Parlez-en à votre partenaire** : il ou elle ne mesure pas toujours la douleur ressentie.
+- **Notez** ce qui déclenche la douleur (entrée du vagin, en profondeur, après le rapport) pour le décrire au professionnel.
+- Les crèmes anesthésiantes diminuent aussi la sensibilité : demandez conseil à un médecin ou un pharmacien avant de les utiliser.
+
+## Questions fréquentes
+**À qui en parler ?**
+À la sage-femme, au médecin traitant ou au gynécologue en premier. Un masseur-kinésithérapeute formé au périnée, un sexologue ou un psychologue peuvent compléter la prise en charge.
+
+**La rééducation périnéale est-elle remboursée ?**
+QuestionSexualité indique qu’elle est prise en charge à 100 % par l’Assurance maladie lorsqu’elle est prescrite, en général après la consultation postnatale.
+
+**J’ai mal à cause du souvenir de l’accouchement.**
+Un accouchement vécu comme difficile peut laisser une appréhension qui se manifeste dans le corps. En parler à un professionnel, sage-femme ou psychologue, permet souvent d’avancer.
+
+**Combien de temps cela dure-t-il ?**
+C’est très variable. Le rapport de la HAS cite des douleurs encore présentes chez une partie des femmes plus d’un an après l’accouchement : ne restez pas seule avec ce problème.
+
+## Quand demander conseil
+Consultez si la douleur persiste au-delà des premières semaines, si elle empêche les rapports, si la cicatrice est rouge, gonflée ou suinte, en cas de fièvre, de pertes inhabituelles ou de saignements anormaux. Si la douleur s’accompagne d’une grande tristesse ou d’une anxiété envahissante, parlez-en aussi. Si vous vous sentez à bout ou envahi(e) par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit. En cas de rapports imposés ou de violences, appelez le **3919** ou, en danger, le **17** ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn']::text[], null, null, 0, 24, false, array['douleurs rapports après accouchement','dyspareunie','épisiotomie','sécheresse vaginale','périnée','rééducation périnéale','déchirure','post-partum']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — Dyspareunies : douleurs pendant les rapports sexuels","url":"https://www.questionsexualite.fr/s-informer-sur-les-infections-et-les-maladies/les-troubles-de-la-sexualite/dyspareunies-douleurs-pendant-les-rapports-sexuels","consulted_on":"2026-10-27"},{"label":"HAS (ANAES) — Rééducation dans le cadre du post-partum, recommandations (décembre 2002)","url":"https://www.has-sante.fr/upload/docs/application/pdf/post_partum_rap.pdf","consulted_on":"2026-10-27","published":"2002-12"},{"label":"QuestionSexualité (Santé publique France) — La sexualité après l’arrivée d’un enfant","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/la-sexualite-au-cours-de-la-vie/la-sexualite-apres-l-arrivee-d-un-enfant","consulted_on":"2026-10-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('desir-fatigue-et-couple-apres-bebe', (select id from public.content_categories where slug = 'sexualite'), 'Désir, fatigue et couple après bébé', 'Nuits courtes, charge mentale, corps qui change : comment préserver le lien amoureux pendant les premiers mois, sans culpabilité et en avançant au rythme de chacun.', '## En bref
+- Après une naissance, chaque couple doit trouver un **nouvel équilibre** entre son rôle d’amants et son rôle de parents (QuestionSexualité).
+- La **fatigue**, l’**image du corps**, les **émotions** et la **charge mentale** pèsent souvent sur le désir, chez l’un comme chez l’autre.
+- **Partager équitablement** les tâches et les soins au bébé laisse plus de place au désir.
+- La reprise des relations intimes se fait **quand la mère est prête** : c’est une affaire de couple (guide de l’allaitement de Santé publique France).
+
+## Comprendre
+**Un bouleversement pour les deux.** Psycom rappelle qu’après la naissance, la vie de couple, la famille et le quotidien se réorganisent, et que devenir parent peut réveiller des angoisses liées à sa propre enfance. Chacun peut ressentir de la culpabilité, des doutes, et hésiter à en parler par peur d’être jugé.
+
+**Ce qui freine le désir** (QuestionSexualité)
+- La **fatigue** : un nouveau-né demande de l’attention jour et nuit.
+- L’**image de soi** : ventre, seins, vergetures changent, et chacune se réapproprie son corps à son rythme.
+- Les **émotions** : baby blues fréquent, parfois chez le père aussi.
+- La **charge mentale**, souvent portée par les femmes, qui laisse peu de place au désir.
+- L’**allaitement**, qui modifie les hormones et peut diminuer le désir chez certaines femmes.
+
+**Le second parent aussi.** Le désir, la fatigue et l’inquiétude concernent les deux parents. Psycom souligne qu’un père peut se sentir désemparé si sa compagne ne va pas bien, et que la dépression périnatale touche aussi environ un homme sur dix.
+
+## Au quotidien
+**Prendre soin du lien**
+- Gardez des **gestes de tendresse** au quotidien : un câlin, une main sur l’épaule, un mot gentil.
+- Prévoyez des **moments à deux**, même courts : un repas, une promenade, une soirée sans écrans.
+- Parlez de **vos besoins** respectifs sans reproches : « j’ai besoin de dormir », « tu me manques ».
+
+**Alléger la fatigue**
+- Faites la liste de ce qui doit vraiment être fait et de ce qui peut attendre.
+- Répartissez clairement : courses, repas, lessive, change, bain, nuits.
+- Acceptez l’aide de l’entourage ou renseignez-vous sur l’aide à domicile (Caf, PMI).
+- Alternez les nuits ou les siestes quand c’est possible.
+
+**Le désir**
+- Il se construit aussi par l’imagination, les mots et les caresses, rappelle QuestionSexualité.
+- Ne vous comparez pas à d’autres couples : chacun avance à son rythme.
+- Si vous allaitez, une tétée avant un moment d’intimité peut limiter les fuites de lait.
+
+## Questions fréquentes
+**Nous ne faisons plus l’amour depuis des mois. Est-ce grave ?**
+Il n’y a pas de norme. Ce qui compte, c’est que chacun puisse en parler et que la situation ne devienne pas une source de souffrance. Sinon, un professionnel peut vous aider.
+
+**Mon partenaire se sent mis de côté.**
+C’est un ressenti fréquent. Lui proposer de participer aux soins du bébé, parler ensemble et prévoir des moments à deux aide chacun à trouver sa place.
+
+**Nous nous disputons beaucoup depuis la naissance.**
+La fatigue et la nouvelle organisation créent souvent des tensions. Psycom cite l’augmentation des conflits parmi les signes possibles de dépression chez le père : si l’irritabilité ou le repli s’installent, parlez-en à un professionnel.
+
+**Qui peut nous aider ?**
+Une sage-femme, un psychologue, un sexologue ou un conseiller conjugal. QuestionSexualité cite l’Association française des centres de consultation conjugale.
+
+## Quand demander conseil
+Consultez si la fatigue devient épuisement, si l’un de vous se sent triste, vide ou irritable depuis plus de deux semaines, si les disputes deviennent violentes, ou si la sexualité est source de souffrance. Si vous vous sentez à bout ou envahi(e) par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit. En cas de violences conjugales, appelez le **3919** ou, en danger, le **17** ou le **112**. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child','family']::text[], null, null, 0, 36, false, array['couple après bébé','désir après bébé','fatigue parents','charge mentale','libido post-partum','vie de couple','tendresse','conseiller conjugal','sommeil-parents']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"QuestionSexualité (Santé publique France) — La sexualité après l’arrivée d’un enfant","url":"https://www.questionsexualite.fr/connaitre-son-corps-et-sa-sexualite/la-sexualite-au-cours-de-la-vie/la-sexualite-apres-l-arrivee-d-un-enfant","consulted_on":"2026-10-27"},{"label":"Psycom — La santé mentale des parents","url":"https://www.psycom.org/sinformer/la-sante-mentale/la-sante-mentale-des-parents/","consulted_on":"2026-10-27","published":"2026-08-04"},{"label":"Santé publique France — Le guide de l’allaitement maternel (édition 2023, diffusé par l’ARS Provence-Alpes-Côte d’Azur)","url":"https://www.paca.ars.sante.fr/system/files/2023-04/GuideAllaitement.pdf","consulted_on":"2026-10-27","published":"2023-01"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('second-parent-et-allaitement-comment-soutenir', (select id from public.content_categories where slug = 'post-partum'), 'Le second parent et l’allaitement : comment soutenir au quotidien', 'Peau à peau, gestion des visites, soins au bébé, tâches de la maison, biberon de lait maternel : le rôle essentiel du père ou du co-parent dans un allaitement serein.', '## En bref
+- Le soutien du partenaire **aide la mère à traverser les difficultés** et à gagner en assurance ; il aide aussi à comprendre les signaux du bébé (1000 premiers jours).
+- Avant la naissance : s’informer **ensemble** (séances de préparation, réunions d’associations de soutien à l’allaitement).
+- Après la naissance : **peau à peau**, protection du calme et du repos, soins au bébé, tâches de la maison.
+- Un **biberon de lait maternel** donné par le partenaire est possible ponctuellement, une fois l’allaitement bien installé.
+
+## Comprendre
+Le guide de l’allaitement maternel de Santé publique France (2023) consacre une large place au partenaire. Il rappelle qu’un père mieux informé soutient souvent davantage la mère, et que le projet d’allaiter peut se réfléchir à deux.
+
+Pour le Dr Daniel Marcelli (mpedia), juste après la naissance, la mère vit souvent quelques semaines de grande proximité avec son bébé. Le second parent peut se glisser peu à peu dans cette « bulle », sans s’interposer, en participant aux soins et aux tâches, ce qui permet à la mère de se reposer des tétées de nuit. Il crée son propre lien en berçant l’enfant, en lui parlant, en le regardant.
+
+Allaiter n’empêche donc pas l’autre parent de nourrir la relation avec le bébé : le bain, le change, le portage, l’endormissement sont autant de moments à lui.
+
+## Au quotidien
+**Pendant la grossesse**
+- Participez aux séances de préparation à la naissance et à la parentalité, et, si possible, à une réunion d’association de soutien à l’allaitement.
+- Lisez ensemble le guide de l’allaitement ; repérez à l’avance les personnes ressources (sage-femme, consultante en lactation, PMI).
+
+**À la maternité**
+- Après une césarienne, si la mère ne peut pas prendre tout de suite le bébé contre elle, vous pouvez faire du **peau à peau** en attendant.
+- Veillez à **limiter le nombre de visites** en même temps pour préserver le calme.
+
+**À la maison**
+- Prenez en charge une grande partie des **tâches** : repas, courses, ménage, aînés.
+- Apportez un verre d’eau, un coussin, une collation au moment des tétées.
+- Occupez-vous du **bain**, du **change**, du **portage** ; en fin de journée, quand bébé pleure, vous pouvez le porter, le masser, le promener en écharpe.
+- Si les pleurs deviennent difficiles à supporter : couchez bébé sur le dos dans son lit, quittez la pièce pour souffler, revenez régulièrement. **Ne secouez jamais un bébé.**
+- Aidez à trouver de l’aide : entourage, PMI, aide à domicile via la Caf.
+
+**Le biberon de lait maternel**
+- La mère peut tirer son lait pour que vous le donniez en son absence. Une fois la lactation bien établie et le bébé habitué au sein, un biberon occasionnel ne pose pas de problème selon le guide.
+- Le lait se donne au biberon, à la tasse, à la cuillère ou à la pipette ; respectez les règles de conservation (48 heures au réfrigérateur, 4 mois au congélateur).
+- Le guide déconseille les biberons de complément sans indication médicale, car ils peuvent réduire la production de lait.
+
+## Questions fréquentes
+**Je me sens inutile pendant les tétées.**
+Votre présence compte. Mpedia suggère de vous installer tout contre la mère et le bébé pendant la tétée. Et tout le reste du temps, vos soins créent votre propre lien.
+
+**Faut-il que je donne un biberon la nuit pour qu’elle dorme ?**
+Le guide recommande à la mère d’allaiter la nuit, berceau près d’elle, car ces tétées entretiennent la production de lait. Vous pouvez en revanche vous lever pour le change, le rot, le recoucher.
+
+**Elle a mal en allaitant. Que faire ?**
+Encouragez-la à consulter rapidement une sage-femme, une consultante en lactation ou la PMI : la douleur se prend en charge.
+
+**Et si l’allaitement s’arrête plus tôt que prévu ?**
+Votre rôle est de soutenir son choix, quel qu’il soit, sans jugement.
+
+## Quand demander conseil
+Contactez la sage-femme, la PMI ou le médecin si la mère a une douleur intense, de la fièvre, un sein rouge et chaud, si le bébé tète peu, mouille peu ses couches ou prend mal du poids. Si l’un de vous se sent épuisé, triste ou irritable depuis plus de deux semaines, parlez-en. Si vous vous sentez à bout ou envahi(e) par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['pregnant','newborn']::text[], null, null, 0, 24, true, array['père allaitement','co-parent allaitement','soutenir allaitement','peau à peau papa','lait maternel biberon','second parent','visites maternité','tire-lait']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé publique France — Le guide de l’allaitement maternel (édition 2023, diffusé par l’ARS Provence-Alpes-Côte d’Azur)","url":"https://www.paca.ars.sante.fr/system/files/2023-04/GuideAllaitement.pdf","consulted_on":"2026-10-27","published":"2023-01"},{"label":"1000-premiers-jours.fr (Santé publique France) — Le soutien à l’allaitement (transcription vidéo)","url":"https://admin.1000-premiers-jours.fr/fr/transcription/le-soutien-lallaitement","consulted_on":"2026-10-27","published":"2021-11-03"},{"label":"mpedia.fr (Association française de pédiatrie ambulatoire) — Place du papa à la naissance","url":"https://www.mpedia.fr/art-place-du-papa/","consulted_on":"2026-10-27","published":"2019-11-15"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('second-parent-se-preparer-naissance-sejour-maternite', (select id from public.content_categories where slug = 'accouchement'), 'Second parent : se préparer à la naissance et au séjour à la maternité', 'Séances de préparation, rôle pendant l’accouchement, premiers jours à la maternité, démarches et retour à la maison : une feuille de route pour le père ou le co-parent.', '## En bref
+- La femme enceinte a droit à **7 séances** de préparation à la naissance et à la parentalité ; l’**autre parent peut assister à certaines**, dont certaines sont ouvertes aux futurs pères (Santé.fr).
+- Pendant l’accouchement, votre rôle : **présence, soutien, relais** avec l’équipe, et respect des choix de la future mère.
+- À la maternité, le séjour a duré en moyenne **3,7 jours** en 2021 (ameli) : c’est le moment d’apprendre les soins au bébé.
+- La **déclaration de naissance** se fait en mairie **dans les 5 jours** ; l’enfant peut être inscrit sur la carte Vitale de l’autre parent.
+
+## Comprendre
+**Les séances de préparation.** Selon Santé.fr, elles commencent par l’entretien prénatal précoce, idéalement au premier trimestre, puis se déroulent le plus souvent à partir du 7e mois, en groupe ou parfois en individuel. Elles abordent la grossesse, l’accouchement, les suites de couches, les besoins du bébé et le retour à la maison. Un père témoigne y avoir appris à aider sa compagne « plutôt que d’être simple spectateur ». Ces séances sont prises en charge à 100 % lorsqu’elles sont assurées par un médecin ou une sage-femme.
+
+**À la maternité** (ameli). Après un accouchement par voie basse, la mère reste au moins deux heures en salle de naissance, sous surveillance. En suites de couches, la sage-femme l’examine chaque jour et évalue son moral. L’équipe vous montre aussi la toilette, le change, l’allaitement ou les biberons, et vous aide à décoder les pleurs. La durée moyenne de séjour était de 3,7 jours en 2021.
+
+**Le retour à la maison** (ameli). Une sage-femme peut suivre la mère et le bébé à domicile jusqu’au 12e jour ; en cas de sortie précoce, le dispositif PRADO organise sa visite dans les 24 heures. La consultation postnatale a lieu dans les 6 à 8 semaines.
+
+## Au quotidien
+**Pendant la grossesse**
+- Participez à l’entretien prénatal précoce si la future mère le souhaite, et aux séances ouvertes aux pères ou co-parents.
+- Repérez le trajet vers la maternité, le parking, l’entrée de nuit.
+- Préparez avec elle la valise et les papiers ; gardez les numéros utiles dans votre téléphone.
+- Organisez à l’avance la garde des aînés et des animaux.
+- Renseignez-vous auprès de votre employeur sur vos congés.
+
+**Le jour J**
+- Restez disponible et attentif : massages, boissons si autorisées, encouragements, présence calme.
+- Faites le lien avec l’équipe sans parler à la place de la future mère.
+- Si l’accouchement ne se passe pas comme prévu, vous pouvez ressentir de la peur : n’hésitez pas à en parler ensuite à l’équipe ou à un professionnel.
+
+**À la maternité et après**
+- Participez aux premiers soins : change, bain, peau à peau.
+- Filtrez les visites pour préserver le repos.
+- Faites la déclaration de naissance en mairie dans les 5 jours, puis l’affiliation auprès de la CPAM via le compte ameli.
+- Au retour, prenez en charge les repas, les courses et l’organisation de la maison.
+
+## Questions fréquentes
+**Puis-je assister à toutes les séances de préparation ?**
+Certaines seulement sont ouvertes à l’autre parent. Renseignez-vous auprès de la sage-femme qui les anime.
+
+**Puis-je rester la nuit à la maternité ?**
+Cela dépend des établissements. Posez la question lors de l’inscription ou de la visite de la maternité.
+
+**Je ne me sens pas à la hauteur.**
+Beaucoup de futurs parents ressentent cela. Les séances de préparation, la sage-femme et la PMI sont là pour vous accompagner.
+
+**Quand faire la déclaration de naissance ?**
+Selon l’Assurance maladie, elle se fait en mairie dans les 5 jours qui suivent la naissance. Renseignez-vous à l’avance sur les pièces demandées par la mairie du lieu de naissance ; le second parent peut s’en charger pendant que la mère est encore à la maternité.
+
+## Quand demander conseil
+Appelez la maternité ou le **15** en cas de saignements abondants, de perte des eaux, de contractions régulières avant terme, de fièvre, de maux de tête intenses ou de diminution des mouvements du bébé. Après la naissance, consultez si la mère a de la fièvre, des saignements très abondants ou une douleur au mollet, ou si vous la trouvez très triste ou confuse. En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**. Si vous vous sentez à bout ou envahi(e) par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['pregnant','newborn']::text[], 20, 42, null, null, false, array['futur papa','co-parent accouchement','préparation naissance père','maternité second parent','salle de naissance','déclaration de naissance','retour maison','congé paternité']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu 1000 premiers jours / Santé publique France) — Les séances de préparation à la naissance et à la parentalité","url":"https://www.sante.fr/les-seances-de-preparation-la-naissance-et-la-parentalite","consulted_on":"2026-10-27","published":"2022-10-21"},{"label":"ameli.fr — Suivi de la mère à la maternité","url":"https://www.ameli.fr/assure/sante/devenir-parent/accouchement-nouveau-ne-et-retour-la-maison/suivi-mere-apres-accouchement","consulted_on":"2026-10-27","published":"2026-03-12"},{"label":"ameli.fr — Après l’accouchement : le retour à la maison","url":"https://www.ameli.fr/assure/sante/devenir-parent/accouchement-nouveau-ne-et-retour-la-maison/suivi-domicile","consulted_on":"2026-10-27","published":"2026-08-27"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('grands-parents-entourage-demander-et-organiser-l-aide', (select id from public.content_categories where slug = 'vie-pratique'), 'Grands-parents et entourage : demander et organiser l’aide', 'Dire ce dont vous avez besoin, répartir les coups de main, accueillir les conseils sans vous laisser déborder et connaître l’aide à domicile proposée par la Caf.', '## En bref
+- L’arrivée d’un bébé **transforme toute la famille** : les parents deviennent grands-parents, les frères et sœurs oncles et tantes. Une source de joie, parfois aussi de tensions (Santé.fr).
+- Pour bien vivre cette période : **communiquer, exprimer ses besoins, écouter ceux des autres**, et prendre du recul face aux nombreux conseils.
+- L’entourage peut aider concrètement : **repas, courses, aînés, garde ponctuelle** pour que vous puissiez souffler.
+- Si l’entourage est loin ou ne suffit pas, la **Caf** cofinance une **aide et un accompagnement à domicile** pendant la grossesse et jusqu’aux 2 ans de l’enfant.
+
+## Comprendre
+**Un nouvel équilibre.** Santé.fr (contenu 1000 premiers jours) rappelle que l’arrivée d’un bébé change les places de chacun dans la famille élargie. Les grands-parents peuvent avoir leurs habitudes, leurs souvenirs et leurs idées sur la façon de faire. Les conseils, même bienveillants, peuvent être nombreux et parfois contradictoires avec ceux des professionnels.
+
+**Vous êtes les parents.** Faire confiance à son ressenti fait partie des conseils de Santé.fr : vous connaissez votre enfant. Accueillir l’expérience des grands-parents n’oblige pas à tout appliquer.
+
+**Pourquoi demander de l’aide.** Psycom cite le manque de soutien et le manque chronique de sommeil parmi les situations qui fragilisent la santé mentale des parents, et propose comme pistes de répit de confier les enfants à un proche, de déléguer et de rencontrer d’autres parents.
+
+**L’aide à domicile de la Caf.** Selon caf.fr (actualité du 5 octobre 2026), l’aide et l’accompagnement à domicile s’adresse aux familles qui vivent un événement bouleversant l’équilibre familial, dont la grossesse, la naissance (jusqu’aux 2 ans de l’enfant) ou l’adoption. Les interventions sont assurées par un accompagnant éducatif et social (AES) ou un technicien de l’intervention sociale et familiale (TISF). Une participation est demandée selon le quotient familial. La demande se fait directement auprès d’un service d’aide à domicile conventionné, jusqu’à un an après l’événement.
+
+## Au quotidien
+**Dire ce dont vous avez besoin**
+- Faites une liste concrète : un repas par semaine, les courses, la lessive, emmener l’aîné à l’école, garder bébé une heure pour une sieste.
+- Quand on vous demande « Tu as besoin de quelque chose ? », répondez par une tâche précise.
+- Proposez à chacun ce qu’il aime faire : cuisiner, se promener avec la poussette, jouer avec l’aîné.
+
+**Organiser les visites**
+- Fixez des créneaux courts, à des moments où vous êtes disponibles.
+- Demandez qu’on prévienne avant de passer, et qu’on évite de venir malade.
+- Invitez les visiteurs à s’intéresser aussi aux aînés, conseil de Santé.fr pour accompagner la fratrie.
+
+**Accueillir les conseils**
+- Remerciez, écoutez, puis décidez à deux : « Merci, on va y réfléchir. »
+- Sur la santé et la sécurité (couchage, alimentation, siège auto), appuyez-vous sur l’avis de votre médecin, de la sage-femme ou de la PMI, et partagez-le avec les grands-parents.
+- Quand bébé dort chez eux, transmettez par écrit vos habitudes : couchage sur le dos, préparation des biberons, numéros utiles.
+
+**Si l’entourage est loin**
+- Les appels vidéo gardent le lien.
+- Renseignez-vous auprès de la Caf, de la PMI et des lieux d’accueil enfants-parents de votre ville.
+
+## Questions fréquentes
+**Les grands-parents s’imposent trop. Comment le dire ?**
+Exprimez vos besoins calmement, en parlant de vous : « Nous avons besoin de calme ces jours-ci. » Proposez une autre façon d’aider.
+
+**Ma mère critique mes choix.**
+Les désaccords sont fréquents. Rappelez que les recommandations évoluent et que vous suivez celles des professionnels. Si les tensions persistent, une médiation familiale peut aider.
+
+**Je n’ose pas demander, j’ai peur de déranger.**
+Beaucoup de proches attendent qu’on leur dise comment aider. Accepter de l’aide n’est pas un aveu de faiblesse.
+
+**L’aide à domicile de la Caf, est-ce pour tout le monde ?**
+Elle s’adresse aux allocataires du régime général qui attendent un enfant ou ont un enfant à charge et vivent un événement comme une naissance. Le service d’aide à domicile évalue votre situation.
+
+## Quand demander conseil
+Parlez-en à la sage-femme, à la PMI ou au médecin si vous vous sentez isolée, épuisée, si vous n’arrivez plus à dormir même quand bébé dort, ou si la tristesse s’installe. Si des tensions familiales deviennent violentes, appelez le **17** ou le **112**. Si vous vous sentez à bout ou envahi(e) par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['pregnant','newborn']::text[], null, null, 0, 36, false, array['grands-parents','aide entourage','demander de l’aide','conseils famille','visites','aide à domicile caf','TISF','famille élargie']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"Santé.fr (contenu 1000 premiers jours / Santé publique France) — La vie de famille après la naissance","url":"https://www.sante.fr/la-vie-de-famille-apres-la-naissance","consulted_on":"2026-10-27","published":"2024-08-26"},{"label":"caf.fr — Parents : tout savoir sur l’aide et l’accompagnement à domicile !","url":"https://www.caf.fr/allocataires/actualites/actualites-nationales/parents-tout-savoir-sur-l-aide-et-l-accompagnement-domicile","consulted_on":"2026-10-27","published":"2026-10-05"},{"label":"Psycom — La santé mentale des parents","url":"https://www.psycom.org/sinformer/la-sante-mentale/la-sante-mentale-des-parents/","consulted_on":"2026-10-27","published":"2026-08-04"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, false) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('anxiete-du-post-partum-reperer-et-se-faire-aider', (select id from public.content_categories where slug = 'sante-mentale'), 'Anxiété du post-partum : la repérer et se faire aider', 'Inquiétude permanente pour le bébé, hypervigilance, sommeil impossible même quand il dort : l’anxiété après la naissance est fréquente, se repère et se soigne.', '## En bref
+- Environ **15 % des parents** seraient concernés par des troubles anxieux pendant la période périnatale (Psycom).
+- Les signes fréquents : **inquiétude excessive** pour le bébé ou sa capacité à être parent, **hypervigilance**, **troubles du sommeil** et de la concentration, symptômes physiques (douleurs, maux de tête), repli sur soi (ameli).
+- L’anxiété est souvent **mêlée à la dépression** du post-partum ; les deux se soignent.
+- Les **entretiens et consultations** après la naissance sont des moments pour en parler ; une **psychothérapie** est recommandée quelle que soit la sévérité.
+
+## Comprendre
+**Une période propice à l’anxiété.** Psycom rappelle que la grossesse et la naissance entraînent des changements corporels, émotionnels et identitaires. Le manque de sommeil, un accouchement différent de ce qui était prévu, un bébé né prématurément ou des difficultés d’allaitement peuvent peser.
+
+**Ce qui la caractérise** (ameli, espace professionnel sage-femme)
+- Une anxiété excessive et anticipatoire : pour le bébé, pour sa santé, pour sa capacité à être mère.
+- Une hypervigilance : vérifier sans cesse que le bébé respire, ne pas réussir à le confier.
+- Des troubles du sommeil et de la concentration.
+- Des symptômes physiques marqués, comme des douleurs ou des maux de tête.
+- Un repli sur soi.
+- Un risque de consommer de l’alcool ou d’autres substances pour calmer l’angoisse.
+Les principaux troubles anxieux sont le trouble anxieux généralisé et le trouble panique (crises d’angoisse).
+
+**Les facteurs de risque** cités par ameli : antécédents d’anxiété, de TOC ou de dépression, événement très stressant, antécédents de traumatisme, précarité, faible soutien, problème de santé de la mère ou du bébé.
+
+**Le second parent aussi.** Psycom souligne que l’anxiété peut toucher les pères, par exemple après un accouchement difficile, avec la peur d’avoir perdu sa compagne ou son bébé.
+
+## Au quotidien
+**Ce qui aide, selon ameli**
+- Protéger son **sommeil** autant que possible : relais la nuit, siestes quand bébé dort.
+- Lutter contre l’**isolement** : parler à des proches, à d’autres parents.
+- Manger équilibré, éviter l’alcool, arrêter le tabac.
+- Bouger un peu chaque jour, de façon adaptée.
+
+**Des gestes simples au quotidien**
+- Notez vos inquiétudes sur un carnet pour les poser au professionnel plutôt que de les ressasser.
+- Limitez les recherches répétées sur internet, qui entretiennent souvent l’angoisse.
+- Ralentissez, ménagez-vous des moments calmes, parlez de vos peurs avec votre partenaire (Psycom).
+
+**Les rendez-vous pour en parler**
+- Les visites de la sage-femme jusqu’au 12e jour, l’**entretien postnatal précoce** entre la 4e et la 8e semaine, la **consultation postnatale** entre la 6e et la 8e semaine.
+- Le dispositif **Mon soutien psy** permet des séances chez un psychologue conventionné, remboursées par l’Assurance maladie, pour une souffrance psychique légère à modérée.
+- Les psychologues de PMI et les centres médico-psychologiques (CMP) peuvent aussi vous recevoir.
+
+## Questions fréquentes
+**Toutes les mères s’inquiètent. Comment savoir si c’est trop ?**
+Quand l’inquiétude est presque permanente, empêche de dormir même quand bébé dort, de se détendre, de confier le bébé, ou quand elle s’accompagne de crises d’angoisse, il est utile d’en parler à un professionnel.
+
+**Les médicaments sont-ils compatibles avec l’allaitement ?**
+Signalez toujours que vous allaitez : le médecin adapte le traitement. La psychothérapie peut suffire dans les formes légères à modérées.
+
+**Je n’ose pas en parler, j’ai peur qu’on me juge.**
+C’est une crainte fréquente. Les professionnels de la périnatalité sont formés à ces difficultés : en parler, c’est prendre soin de vous et de votre bébé.
+
+**Existe-t-il des lignes d’écoute ?**
+Psycom cite notamment Allo Parents bébé (0 800 003 456) et l’association Maman Blues.
+
+## Quand demander conseil
+Consultez rapidement votre médecin, votre sage-femme ou la PMI si l’angoisse vous empêche de dormir ou de manger, si vous avez des crises d’angoisse, si vous évitez de rester seule avec votre bébé, ou si la tristesse s’installe plus de deux semaines. En cas d’idées suicidaires, appelez le **3114** ou rendez-vous aux urgences. Si vous ne dormez plus du tout, entendez ou voyez des choses inhabituelles, ou craignez de vous faire du mal ou de faire du mal à votre bébé, appelez le **15** ou le **112**. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child','family']::text[], null, null, 0, 24, false, array['anxiété post-partum','angoisse après accouchement','peur pour bébé','hypervigilance','crise d’angoisse','santé mentale périnatale','entretien postnatal','Mon soutien psy','sommeil-parents']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr (espace sage-femme) — Troubles anxieux et TOC durant la grossesse","url":"https://www.ameli.fr/sage-femme/sante-et-prevention/sante-mentale-et-maternite/troubles-anxieux-et-toc-durant-la-grossesse","consulted_on":"2026-10-27"},{"label":"Psycom — Brochure « Santé mentale, grossesse et parentalité »","url":"https://www.psycom.org/wp-content/uploads/2024/04/PSYCOM_Brochures-A5_SM_Grossesse_2025_WEB.pdf","consulted_on":"2026-10-27","published":"2025-03"},{"label":"Psycom — La santé mentale des parents","url":"https://www.psycom.org/sinformer/la-sante-mentale/la-sante-mentale-des-parents/","consulted_on":"2026-10-27","published":"2026-08-04"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
+insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, updated_on, status, editorial_status, is_premium, is_safety_critical) values ('pensees-intrusives-toc-du-post-partum', (select id from public.content_categories where slug = 'sante-mentale'), 'Pensées intrusives et TOC du post-partum : comprendre et se faire aider', 'Des images effrayantes de faire du mal à son bébé qui s’imposent et horrifient : ce que sont les pensées intrusives, quand on parle de TOC, et vers qui se tourner sans honte.', '## En bref
+- Les **pensées intrusives** sont des idées ou images qui s’imposent, répétitives et dérangeantes ; **tout le monde en a parfois** (Psycom).
+- Après une naissance, elles prennent souvent la forme d’une **peur de faire du mal à son bébé** (« phobie d’impulsion »), accompagnée de vérifications ou de rituels (ameli).
+- Dans le **TOC**, ces pensées deviennent envahissantes et douloureuses, et la personne les **vit comme étrangères** à ses désirs.
+- Ces troubles **se soignent**, notamment par une thérapie cognitive et comportementale ; en parler est la première étape.
+
+## Comprendre
+**Ce que sont les obsessions.** Psycom les décrit comme des idées, images ou impulsions intrusives, répétitives et inappropriées, dont la personne essaie de se débarrasser sans y parvenir. La plupart des personnes savent que leurs pensées sont exagérées ou absurdes, mais elles les prennent au sérieux et en ressentent une forte angoisse. Parmi les thèmes fréquents : les **obsessions agressives**, c’est-à-dire la peur de perdre le contrôle et de blesser quelqu’un, sans aucun désir de passer à l’acte.
+
+**Après la naissance.** L’Assurance maladie (espace sage-femme) décrit, dans le TOC du post-partum, la **peur de faire du mal à son bébé**, avec une crainte irrationnelle de commettre un acte violent ou irréparable, et des compulsions mentales (répéter des mots, vérifier). Psycom cite aussi la peur de se faire du mal ou de faire du mal à son bébé parmi les symptômes possibles de la dépression du post-partum. Le TOC peut apparaître ou s’aggraver après un événement de vie comme une naissance.
+
+**Le cercle vicieux.** La pensée surgit, l’angoisse monte, la personne cherche à la neutraliser : éviter de donner le bain, cacher les couteaux, ne plus rester seule avec le bébé, demander sans cesse d’être rassurée. Le soulagement est bref, et la pensée revient plus fort. L’évitement entretient la peur (Psycom).
+
+**Une différence importante.** Dans les pensées intrusives et le TOC, la personne est **horrifiée** par ses pensées. C’est très différent de la **psychose du post-partum**, rare, où la personne perd le contact avec la réalité (idées délirantes, hallucinations, agitation, perte totale de sommeil) : c’est une urgence médicale.
+
+## Au quotidien
+- **Nommez ce qui se passe** : « c’est une pensée intrusive, pas une envie ». Psycom explique que la psychoéducation aide à considérer ces pensées comme des symptômes et non comme des menaces réelles.
+- **Parlez-en** à une personne de confiance et à un professionnel : la honte entretient le secret, le secret entretient le trouble.
+- **Évitez de tout réorganiser autour des peurs** : l’entourage, même bienveillant, renforce le TOC en participant aux rituels. Mieux vaut convenir avec lui d’un cadre, par exemple limiter les demandes de réassurance.
+- **Prenez soin de vous** : sommeil, repas, sortir, ne pas rester seule toute la journée.
+- **Pour le partenaire** : écoutez sans juger ni tourner les rituels en dérision, et aidez à prendre rendez-vous.
+
+**Les soins.** Psycom indique que la **thérapie cognitive et comportementale** (TCC) est le traitement recommandé en premier, avec une technique spécifique d’exposition progressive. Des médicaments peuvent être proposés en complément ; signalez au médecin la grossesse ou l’allaitement. La psychothérapie peut débuter sans attendre, avec Mon soutien psy, un psychologue de PMI ou un CMP, en parallèle d’un avis médical (ameli).
+
+## Questions fréquentes
+**Avoir ces pensées veut-il dire que je suis dangereuse ?**
+Dans le TOC, ces pensées sont vécues comme insupportables et contraires à ce que vous voulez : c’est justement ce qui les rend si angoissantes. Un professionnel peut évaluer la situation avec vous et vous aider.
+
+**On va m’enlever mon bébé si j’en parle ?**
+Les professionnels de la périnatalité connaissent ces pensées. En parler permet d’être aidée et soignée, pour vous et pour votre bébé.
+
+**Le second parent peut-il en avoir ?**
+Oui, les pensées intrusives peuvent toucher tout parent.
+
+**Est-ce que ça passe tout seul ?**
+Le TOC disparaît rarement seul, mais il se soigne bien avec un traitement adapté (Psycom).
+
+## Quand demander conseil
+Parlez-en dès que possible à votre médecin, votre sage-femme, la PMI ou un psychologue si ces pensées vous envahissent, si vous évitez des soins au bébé ou si les vérifications prennent beaucoup de temps. Appelez le **15** ou le **112** sans attendre si vous sentez que vous pourriez passer à l’acte, si vous ne dormez plus du tout, si vous entendez ou voyez des choses inhabituelles, ou si un proche semble confus ou coupé de la réalité. En cas d’idées suicidaires, appelez le **3114**. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit.
+
+_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._', array['newborn','child','family']::text[], null, null, 0, 24, false, array['pensées intrusives','TOC post-partum','phobie d’impulsion','peur de faire du mal à bébé','obsessions','vérifications','anxiété post-partum','TCC','sommeil-parents']::text[], 'Rédaction assistée par une IA (Claude, Anthropic)', '[{"label":"ameli.fr (espace sage-femme) — Troubles anxieux et TOC durant la grossesse","url":"https://www.ameli.fr/sage-femme/sante-et-prevention/sante-mentale-et-maternite/troubles-anxieux-et-toc-durant-la-grossesse","consulted_on":"2026-10-27"},{"label":"Psycom — Le TOC et les troubles apparentés","url":"https://www.psycom.org/sinformer/la-sante-mentale/les-troubles-psy/le-toc-et-les-troubles-apparentes/","consulted_on":"2026-10-27","published":"2026-07-06"},{"label":"Psycom — La santé mentale des parents","url":"https://www.psycom.org/sinformer/la-sante-mentale/la-sante-mentale-des-parents/","consulted_on":"2026-10-27","published":"2026-08-04"}]'::jsonb, '2026-10-27', 'published', 'to_review', false, true) on conflict (slug) do nothing;
 -- Textes enrichis des articles existants (seulement ceux qui ne sont pas encore relus)
 update public.articles set title = 'Comprendre la fenêtre fertile', summary = 'La fenêtre fertile regroupe les quelques jours où un rapport peut aboutir à une grossesse : on peut l’estimer, jamais la prédire avec certitude.', body_md = 'Beaucoup de calendriers et d''applications affichent une « période fertile ». Ce sont des estimations utiles pour mieux connaître son cycle, mais pas des certitudes. Comprendre comment elle se calcule aide à l''utiliser sans se mettre de pression.
 

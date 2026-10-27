@@ -39,4 +39,24 @@ describe('assistant local de la bibliothèque', () => {
   it('hors sujet : le dit au lieu d’inventer', () => {
     expect(answer(kb, 'quelle est la capitale de l’Australie').kind).toBe('none');
   });
+
+  it('règles, cycle, santé intime et contraception : le bon article', () => {
+    const cases: [string, RegExp][] = [
+      ['J’ai du retard dans mes règles', /^Retard de règles/],
+      ['Mes règles sont très abondantes', /^Règles abondantes/],
+      ['J’ai oublié ma pilule', /^Oubli de pilule/],
+      ['Comment soulager le syndrome prémenstruel ?', /^Syndrome prémenstruel/],
+      ['Combien de temps garder une coupe menstruelle ?', /^Coupe menstruelle/],
+      ['J’ai une mycose', /^Mycose vaginale/],
+      ['Ça brûle quand je fais pipi', /^Cystite/],
+      ['J’ai des pertes qui sentent mauvais', /^Vaginose/],
+      ['Comment se faire dépister des IST ?', /^Dépistage des IST/],
+      ['Jusqu’à quand peut-on faire une IVG ?', /^IVG : tes droits/],
+      ['C’est quoi l’endométriose ?', /^Endométriose : comprendre/],
+      ['J’ai des bouffées de chaleur', /^Bouffées de chaleur/],
+      ['Quand faire un test de grossesse ?', /test de grossesse/i],
+      ['Quand mon bébé va-t-il perdre ses dents de lait ?', /^Chute des dents de lait/],
+    ];
+    for (const [q, re] of cases) expect([q, answer(kb, q).main?.title]).toEqual([q, expect.stringMatching(re)]);
+  });
 });

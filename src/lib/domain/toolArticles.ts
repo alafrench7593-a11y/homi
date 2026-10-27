@@ -11,6 +11,8 @@ export interface ToolTopic {
   cats?: string[];
   /** Parcours à privilégier. */
   journeys?: string[];
+  /** Articles à écarter (cas particuliers qui prendraient la place des articles de fond). */
+  not?: string[];
   /** Question proposée à l'assistant local. */
   ask: string;
 }
@@ -76,27 +78,27 @@ export const TOOL_TOPICS: Record<string, ToolTopic> = {
   family_urgent: { words: ['urgence', 'premiers secours', 'enfant en danger', '119', 'chute', 'intoxication', 'etouffement', 'secou'], cats: ['premiers-secours', 'securite'], ask: 'Que faire en cas d’urgence ?' },
   family_review: { words: ['charge mentale', 'organisation', 'epuisement', 'partage', 'couple'], cats: ['vie-pratique', 'sante-mentale'], ask: 'Comment faire le point à deux ?' },
   // Cycle et contraception
-  avoid_cycle: { words: ['regles', 'cycle', 'spm', 'premenstruel', 'saignement', 'retard', 'ovulation'], cats: ['regles', 'cycle', 'cycle-ages'], journeys: CYCLE, ask: 'Pourquoi j’ai mal au ventre pendant mes règles ?' },
-  avoid_contraception: { words: ['contracep', 'pilule', 'sterilet', 'diu', 'implant', 'preservatif', 'patch', 'anneau'], cats: ['contraception'], journeys: CYCLE, ask: 'Comment choisir ma contraception ?' },
-  avoid_methods: { words: ['contracep', 'pilule', 'sterilet', 'diu', 'implant', 'preservatif', 'patch', 'anneau', 'methode'], cats: ['contraception'], journeys: CYCLE, ask: 'Quelle contraception est la plus efficace ?' },
+  avoid_cycle: { not: ['ivg', 'fausse couche', 'veut un enfant', 'adolescence', 'menopause'], words: ['duree, abondance', 'douleurs de regles', 'syndrome premenstruel', 'regles', 'cycle', 'spm', 'retard', 'saignement', 'ovulation'], cats: ['regles', 'cycle', 'cycle-ages'], journeys: CYCLE, ask: 'Pourquoi j’ai mal au ventre pendant mes règles ?' },
+  avoid_contraception: { not: ['urgence', 'arreter sa contraception'], words: ['choisir sa contraception', 'consultation de contraception', 'methodes de contraception', 'contracep', 'pilule', 'sterilet', 'diu', 'implant', 'preservatif', 'patch', 'anneau'], cats: ['contraception'], journeys: CYCLE, ask: 'Comment choisir ma contraception ?' },
+  avoid_methods: { not: ['urgence', 'arreter sa contraception'], words: ['methodes de contraception', 'choisir sa contraception', 'changer de contraception', 'contracep', 'pilule', 'sterilet', 'diu', 'implant', 'preservatif', 'patch', 'anneau', 'methode'], cats: ['contraception'], journeys: CYCLE, ask: 'Quelle contraception est la plus efficace ?' },
   avoid_emergency: { words: ['contraception d', 'pilule du lendemain', 'urgence', 'oubli', 'ivg', 'rapport non protege'], cats: ['contraception'], journeys: CYCLE, ask: 'J’ai oublié ma pilule' },
   avoid_fertile: { words: ['ovulation', 'periode fertile', 'fertil', 'cycle', 'calendrier', 'glaire', 'temperature'], cats: ['cycle', 'cycle-ages', 'fertilite'], journeys: CYCLE, ask: 'Quand a lieu l’ovulation ?' },
   cycle_symptoms: { words: ['regles', 'spm', 'premenstruel', 'douleur', 'migraine', 'humeur', 'pertes', 'seins', 'ballonn', 'fatigue'], cats: ['regles', 'cycle'], journeys: CYCLE, ask: 'Comment soulager le syndrome prémenstruel ?' },
   avoid_consult: { words: ['consultation', 'gyneco', 'sage-femme', 'frottis', 'depistage', 'contracep', 'premiere'], cats: ['sante-intime', 'contraception'], journeys: CYCLE, ask: 'Comment se passe une consultation gynécologique ?' },
-  cycle_home: { words: ['regles', 'cycle', 'spm', 'ovulation', 'retard', 'abondant'], cats: ['regles', 'cycle', 'cycle-ages'], journeys: CYCLE, ask: 'J’ai du retard dans mes règles' },
+  cycle_home: { not: ['ivg', 'fausse couche', 'veut un enfant', 'adolescence', 'menopause'], words: ['duree, abondance', 'retard de regles', 'regles abondantes', 'regles', 'cycle', 'spm', 'ovulation', 'retard', 'abondant'], cats: ['regles', 'cycle', 'cycle-ages'], journeys: CYCLE, ask: 'J’ai du retard dans mes règles' },
   cycle_calendar: { words: ['cycle', 'regles', 'ovulation', 'irregul', 'calendrier', 'retard'], cats: ['regles', 'cycle'], journeys: CYCLE, ask: 'Mes cycles sont irréguliers' },
   cycle_journal: { words: ['cycle', 'regles', 'humeur', 'spm', 'symptome', 'suivre'], cats: ['regles', 'cycle'], journeys: CYCLE, ask: 'Que noter pour suivre son cycle ?' },
   cycle_stats: { words: ['cycle', 'irregul', 'duree', 'regles', 'retard', 'abondant'], cats: ['regles', 'cycle'], journeys: CYCLE, ask: 'Quelle durée de cycle doit faire consulter ?' },
   cycle_guides: { words: ['pertes', 'glaire', 'mycose', 'vaginose', 'infection', 'demangeaison', 'odeur'], cats: ['sante-intime'], journeys: CYCLE, ask: 'Mes pertes ont changé' },
   // Projet bébé
-  ttc_start_pregnancy: { words: ['test de grossesse', 'debut de grossesse', 'premier trimestre', 'declaration', 'premiere consultation', 'signes'], cats: ['suivi-grossesse', 'fertilite'], journeys: ['ttc', 'pregnant'], ask: 'Quand faire un test de grossesse ?' },
+  ttc_start_pregnancy: { words: ['test de grossesse', 'declarer sa grossesse', 'la premiere consultation', 'debut de grossesse', 'premier trimestre', 'declaration'], cats: ['suivi-grossesse', 'fertilite'], journeys: ['ttc', 'pregnant'], ask: 'Quand faire un test de grossesse ?' },
   ttc_cycle: { words: ['ovulation', 'fertil', 'concevoir', 'cycle', 'conception'], cats: ['fertilite', 'preparer-grossesse'], journeys: ['ttc'], ask: 'Quand ai-je le plus de chances de concevoir ?' },
   ttc_calendar: { words: ['ovulation', 'fertil', 'cycle', 'calendrier', 'periode fertile'], cats: ['fertilite'], journeys: ['ttc'], ask: 'Quelle est ma période fertile ?' },
   ttc_periods: { words: ['regles', 'cycle', 'irregul', 'retard', 'absentes'], cats: ['fertilite', 'regles'], journeys: ['ttc'], ask: 'Mes cycles sont irréguliers' },
   ttc_tests: { words: ['test d', 'test de grossesse', 'ovulation', 'lh'], cats: ['fertilite'], journeys: ['ttc'], ask: 'Comment utiliser un test d’ovulation ?' },
-  ttc_mucus: { words: ['glaire', 'pertes', 'ovulation', 'col'], cats: ['fertilite', 'cycle-ages'], journeys: ['ttc'], ask: 'À quoi ressemble la glaire fertile ?' },
+  ttc_mucus: { not: ['fausse couche'], words: ['glaire', 'ovulation', 'pertes', 'col'], cats: ['fertilite', 'cycle-ages'], journeys: ['ttc'], ask: 'À quoi ressemble la glaire fertile ?' },
   ttc_temperature: { words: ['temperature', 'courbe', 'ovulation', 'signes'], cats: ['fertilite', 'cycle-ages'], journeys: ['ttc'], ask: 'Comment lire une courbe de température ?' },
-  ttc_intimacy: { words: ['rapport', 'sexualite', 'desir', 'couple', 'fertil', 'stress'], cats: ['sexualite', 'fertilite'], journeys: ['ttc'], ask: 'À quelle fréquence avoir des rapports pour concevoir ?' },
+  ttc_intimacy: { not: ['endometriose'], words: ['rythme avoir des rapports', 'rapport', 'sexualite', 'desir', 'couple', 'fertil', 'stress'], cats: ['sexualite', 'fertilite'], journeys: ['ttc'], ask: 'À quelle fréquence avoir des rapports pour concevoir ?' },
   ttc_exams: { words: ['examen', 'bilan', 'spermogramme', 'echograph', 'hormon', 'fertilite', 'amh'], cats: ['fertilite', 'difficultes-conception'], journeys: ['ttc'], ask: 'Quels examens de fertilité ?' },
   ttc_understand: { words: ['cycle', 'hormon', 'ovulation', 'fertil', 'conception', 'sopk', 'endometriose'], cats: ['fertilite', 'cycle-ages'], journeys: ['ttc'], ask: 'Comment fonctionne le cycle ?' },
   ttc_consult: { words: ['consulter', 'consultation', 'pma', 'infertil', 'bilan', 'preconception', 'vaccin'], cats: ['difficultes-conception', 'preparer-grossesse'], journeys: ['ttc'], ask: 'Quand consulter si la grossesse tarde ?' },
@@ -115,7 +117,7 @@ export const TOOL_TOPICS: Record<string, ToolTopic> = {
   pp_body: { words: ['perinee', 'reeducation', 'abdomin', 'diastasis', 'cicatrice', 'reprise', 'sport', 'fuites'], cats: ['reeducation', 'post-partum'], journeys: BABY, ask: 'Quand reprendre le sport après l’accouchement ?' },
   pp_mental: { words: ['baby blues', 'depression', 'moral', 'anxi', 'psych', 'epuisement', 'post-partum'], cats: ['sante-mentale'], journeys: BABY, ask: 'Baby blues ou dépression ?' },
   pp_support: { words: ['aide', 'soutien', 'pmi', 'sage-femme', 'entretien postnatal', 'solitude', 'association', 'tisf', 'aide a domicile'], cats: ['sante-mentale', 'droits-demarches'], journeys: BABY, ask: 'Qui peut m’aider après la naissance ?' },
-  pp_partner: { words: ['pere', 'second parent', 'couple', 'conge paternite', 'conge de naissance', 'partenaire'], cats: ['sante-mentale', 'droits-demarches'], journeys: BABY, ask: 'Comment le second parent peut-il aider ?' },
+  pp_partner: { not: ['deuil'], words: ['second parent', 'pere', 'conge de paternite', 'couple', 'conge de naissance', 'partenaire'], cats: ['sante-mentale', 'droits-demarches'], journeys: BABY, ask: 'Comment le second parent peut-il aider ?' },
 };
 
 const norm = (s: string) => ` ${s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'`]/g, ' ').replace(/[^a-z0-9œ\- ]+/g, ' ').replace(/\s+/g, ' ')} `;
@@ -124,12 +126,14 @@ const norm = (s: string) => ` ${s.toLowerCase().normalize('NFD').replace(/[̀-ͯ
 export function toolArticleScore(topic: ToolTopic, a: { title: string; tags?: string[]; journeys?: string[] }, catSlug?: string): number {
   const title = norm(a.title);
   const tags = norm((a.tags ?? []).join(' '));
+  if (topic.not?.some((w) => title.includes(` ${norm(w).trim()}`))) return 0;
   let s = 0;
-  for (const w of topic.words) {
+  topic.words.forEach((w, i) => {
     const k = ` ${norm(w).trim()}`;
-    if (title.includes(k)) s += 3;
+    // les 3 premiers mots-clés désignent le cœur de l'outil
+    if (title.includes(k)) s += i < 3 ? 4.5 : 3;
     else if (tags.includes(k)) s += 1.5;
-  }
+  });
   if (!s) return 0;
   // parcours : un article réservé à un autre moment de vie (ex. « Anxiété pendant la grossesse » pour l'humeur de l'enfant) est écarté
   if (topic.journeys?.length && a.journeys?.length) {
