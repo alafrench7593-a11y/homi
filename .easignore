@@ -1,0 +1,16 @@
+# Fichiers envoyés à la compilation EAS : comme .gitignore, SAUF .env (clés PUBLIQUES Supabase nécessaires à l'app).
+# Aucun secret serveur ne doit se trouver dans .env.
+node_modules/
+.expo/
+dist/
+web-build/
+ios/
+android/
+*.log
+.env.local
+expo-env.d.ts
+.claude/
+__pycache__/
+e2e/
+docs/
+supabase/

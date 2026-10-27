@@ -5,6 +5,8 @@ const BRAND = require('./src/config/brand.json');
 const config: ExpoConfig = {
   name: BRAND.name,
   slug: BRAND.slug,
+  // Compte Expo qui compile l'app (projet « Au fil de nous »)
+  owner: 'babavos94s-team',
   version: '0.1.0',
   scheme: BRAND.scheme,
   orientation: 'portrait',
@@ -57,7 +59,7 @@ const config: ExpoConfig = {
   ],
   experiments: { typedRoutes: true },
   extra: {
-    eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID },
+    eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID || 'eda6d45e-c9ca-4e87-adf1-55e6d79af2de' },
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
     // Seulement « configurée ou non » (jamais la valeur) pour afficher un état clair si la carte manque
