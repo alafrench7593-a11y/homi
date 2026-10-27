@@ -67,7 +67,7 @@ export default function Library() {
     && score(a) > 0).sort((x, y) => score(y) - score(x));
 
   // Guide : parcours par défaut d'après le profil (enceinte, bébé, enfant, projet bébé)
-  const profileJourney = pregnancy ? 'pregnant' : (children ?? []).some((c) => childAge(c.birth_date).months < 24) ? 'newborn' : (children ?? []).length ? 'child' : (profile?.journeys ?? []).includes('ttc') ? 'ttc' : 'pregnant';
+  const profileJourney = pregnancy ? 'pregnant' : (children ?? []).some((c) => childAge(c.birth_date).months < 24) ? 'newborn' : (children ?? []).length ? 'child' : (profile?.journeys ?? []).includes('ttc') ? 'ttc' : (profile?.journeys ?? []).includes('avoid') ? 'avoid' : 'pregnant';
   const guideJourney = (CATEGORY_GROUPS.some((g) => g.journey === journey) ? journey : profileJourney) as (typeof CATEGORY_GROUPS)[number]['journey'];
   const group = CATEGORY_GROUPS.find((g) => g.journey === guideJourney)!;
   const guideCards = group.slugs.map((slug) => {

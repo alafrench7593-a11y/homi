@@ -250,6 +250,21 @@ function CycleHub() {
         </Glass>
       ) : null}
 
+      {/* Questions : l'assistant local répond à partir des articles « Mon cycle et ma santé » */}
+      <Glass>
+        <Row style={{ alignItems: 'flex-start' }}>
+          <IconBadge name="guide" tone="period" />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Ink weight="bold">{tr('cy.ask.title' as TKey)}</Ink>
+            <Ink variant="caption" soft>{tr('cy.ask.hint' as TKey)}</Ink>
+          </View>
+        </Row>
+        <Row style={{ flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.xs }}>
+          <Button label={tr('cy.ask.ask' as TKey)} icon="message-circle" onPress={() => router.push('/assistant/local?journey=avoid' as never)} testID="cycle-ask" />
+          <Button label={tr('cy.ask.read' as TKey)} icon="book-open" variant="ghost" onPress={() => router.push('/library?journey=avoid' as never)} testID="cycle-articles" />
+        </Row>
+      </Glass>
+
       {/* Vue d'ensemble : ce qui est ENREGISTRÉ d'abord, puis ce qui est ESTIMÉ (libellé comme tel) */}
       <Rise>
         <Glass>

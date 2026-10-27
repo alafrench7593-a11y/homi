@@ -85,7 +85,7 @@ const SYN: string[][] = [
   ['accouchement', 'accoucher', 'naissance', 'debut du travail', 'salle de naissance'],
   ['pma', 'amp', 'fiv', 'insemination', 'procreation medicalement assistee'],
   ['concevoir', 'tomber enceinte', 'conception', 'avoir un bebe', 'essai bebe'],
-  ['contraception', 'pilule', 'sterilet', 'preservatif'],
+  ['contraception', 'pilule', 'sterilet', 'preservatif', 'diu', 'contraceptif', 'contraceptive'],
   ['vaccin', 'vaccins', 'vaccination', 'rappel'],
   ['ecran', 'ecrans', 'tablette', 'telephone', 'television', 'tele'],
   ['colere', 'coleres', 'crise', 'crises'],
@@ -111,6 +111,23 @@ const SYN: string[][] = [
   ['refus scolaire', 'ne veut pas aller a l ecole', 'phobie scolaire', 'peur de l ecole'],
   ['activite', 'activites', 'jeu', 'jeux', 'jouer', 'occuper', 'quoi faire avec', 'eveil'],
   ['dent', 'dents', 'poussee dentaire', 'dentaire'],
+  // Règles, cycle, santé intime, contraception
+  ['spm', 'syndrome premenstruel', 'premenstruel', 'premenstruelle', 'premenstruels', 'tdpm', 'trouble dysphorique premenstruel'],
+  ['retard de regles', 'regles en retard', 'pas eu mes regles', 'pas eu de regles', 'toujours pas mes regles', 'pas encore eu mes regles'],
+  ['abondantes', 'abondante', 'abondant', 'regles abondantes', 'menorragie', 'menorragies', 'regles hemorragiques', 'beaucoup de sang'],
+  ['protection', 'protections', 'protection periodique', 'protections periodiques', 'tampon', 'tampons', 'serviette hygienique', 'serviettes hygieniques', 'coupe menstruelle', 'cup', 'cups', 'culotte menstruelle', 'culottes menstruelles'],
+  ['menopause', 'menopausee', 'perimenopause', 'premenopause'],
+  ['bouffees de chaleur', 'bouffee de chaleur', 'sueurs nocturnes'],
+  ['mycose', 'mycoses', 'candidose', 'champignon'],
+  ['cystite', 'cystites', 'infection urinaire', 'infections urinaires', 'brulures en urinant', 'brule quand je fais pipi'],
+  ['ist', 'mst', 'infection sexuellement transmissible', 'infections sexuellement transmissibles'],
+  ['frottis', 'depistage du col', 'test hpv', 'cancer du col', 'col de l uterus'],
+  ['ivg', 'avortement', 'avorter', 'interruption volontaire de grossesse'],
+  ['dyspareunie', 'douleur pendant les rapports', 'douleurs pendant les rapports', 'mal pendant les rapports', 'rapports douloureux'],
+  ['oubli', 'oublie', 'oubliee', 'oublier', 'oublies'],
+  ['pilule du lendemain', 'contraception d urgence', 'pilule d urgence'],
+  ['puberte', 'premieres regles', 'pubere'],
+  ['ovulation', 'ovule', 'ovuler', 'periode fertile'],
 ];
 const SYN_MAP = new Map<string, string>();
 const SYN_PHRASES: [string, string][] = [];

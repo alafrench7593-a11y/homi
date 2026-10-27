@@ -13,7 +13,9 @@ export interface LibArticle {
     | 'suivi-grossesse' | 'alimentation-grossesse' | 'corps-grossesse' | 'sante-grossesse' | 'quotidien-grossesse' | 'droits-demarches'
     | 'alimentation-bebe' | 'sante-bebe' | 'developpement' | 'securite'
     | 'sante-enfant' | 'education' | 'ecole-garde' | 'maladies-chroniques'
-    | 'activites-eveil' | 'sport' | 'materiel' | 'vie-pratique' | 'premiers-secours';
+    | 'activites-eveil' | 'sport' | 'materiel' | 'vie-pratique' | 'premiers-secours'
+    // Règles, cycle et santé intime (27/10/2026)
+    | 'regles' | 'cycle-ages' | 'sante-intime' | 'contraception';
   tags: string[];
   min_week?: number; max_week?: number;              // pregnancy weeks (SA) if relevant
   min_age_months?: number; max_age_months?: number;  // child age if relevant

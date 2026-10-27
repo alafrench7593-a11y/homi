@@ -18,6 +18,7 @@ import { toolForPath, type PathTool } from '@/lib/domain/toolForPath';
 import { glyphColor } from './ToolGlyph';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { Button, type IconName } from './ui';
+import { ToolArticles } from '@/features/ToolArticles';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -102,6 +103,8 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       showsVerticalScrollIndicator={false}
     >
       {children}
+      {/* Chaque outil : ses articles « Pour aller plus loin » */}
+      {tool ? <ToolArticles toolId={tool.id} /> : null}
     </ScrollView>
   ) : (
     <View style={[styles.wide, { flex: 1, paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? 0 : insets.top }, contentStyle]}>{children}</View>

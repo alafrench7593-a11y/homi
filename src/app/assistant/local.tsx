@@ -29,6 +29,7 @@ const SUGGEST: Record<string, string[]> = {
   pregnant: ['Puis-je boire du café enceinte ?', 'Quels aliments éviter ?', 'Quand partir à la maternité ?', 'Comment se passe la péridurale ?', 'Combien dure le congé maternité ?'],
   ttc: ['Quand ai-je le plus de chances de concevoir ?', 'Quand consulter si la grossesse tarde ?', 'Qui peut accéder à la PMA ?', 'Quels vaccins avant une grossesse ?'],
   newborn: ['Mon bébé pleure tout le soir', 'Comment conserver le lait maternel ?', 'Quand commencer la diversification ?', 'Que faire en cas de bronchiolite ?', 'Quels vaccins sont obligatoires ?'],
+  avoid: ['Pourquoi j’ai mal au ventre pendant mes règles ?', 'J’ai du retard dans mes règles', 'Mes règles sont très abondantes', 'J’ai oublié ma pilule', 'Comment soulager le syndrome prémenstruel ?'],
   child: ['Mon enfant a peut-être un TDAH', 'Comment savoir si mon enfant est autiste ?', 'Qu’est-ce que la dyslexie ?', 'Comment obtenir une AESH ?', 'Mon enfant fait pipi au lit'],
 };
 
@@ -121,7 +122,7 @@ function Related({ items }: { items: { slug: string; title: string }[] }) {
 export default function LocalAssistant() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ q?: string }>();
+  const params = useLocalSearchParams<{ q?: string; journey?: string }>();
   const articlesQ = useArticles();
   const { data: profile } = useProfile();
   const pregnancy = useActivePregnancy();
@@ -143,7 +144,7 @@ export default function LocalAssistant() {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const list = useRef<FlatList<Msg>>(null);
 
-  const journey = pregnancy ? 'pregnant' : (children ?? []).some((c) => childAge(c.birth_date).months < 24) ? 'newborn' : (children ?? []).length ? 'child' : (profile?.journeys ?? []).includes('ttc') ? 'ttc' : 'pregnant';
+  const journey = typeof params.journey === 'string' && SUGGEST[params.journey] ? params.journey : pregnancy ? 'pregnant' : (children ?? []).some((c) => childAge(c.birth_date).months < 24) ? 'newborn' : (children ?? []).length ? 'child' : (profile?.journeys ?? []).includes('ttc') ? 'ttc' : (profile?.journeys ?? []).includes('avoid') ? 'avoid' : 'pregnant';
   const suggestions = [...SUGGEST[journey], ...(journey !== 'child' ? SUGGEST.child.slice(0, 2) : [])];
 
   // Question venue de l'onglet « Questions » : posée automatiquement dès que l'assistant est prêt

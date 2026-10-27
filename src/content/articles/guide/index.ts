@@ -35,7 +35,12 @@ import { GUIDE_B27 } from './b27';
 import { GUIDE_B28 } from './b28';
 import { GUIDE_B29 } from './b29';
 import { GUIDE_B30 } from './b30';
+import { GUIDE_B31 } from './b31';
+import { GUIDE_B32 } from './b32';
+import { GUIDE_B33 } from './b33';
+import { GUIDE_B34 } from './b34';
+import { GUIDE_B35 } from './b35';
 
 export const GUIDE_UPDATED_ON = '2026-10-27';
 export const GUIDE_ARTICLES = [...GUIDE_CONCEPTION, ...GUIDE_GROSSESSE, ...GUIDE_BEBE, ...GUIDE_ENFANT, ...GUIDE_TROUBLES, ...GUIDE_EXTRA,
-  ...GUIDE_B01, ...GUIDE_B02, ...GUIDE_B03, ...GUIDE_B04, ...GUIDE_B05, ...GUIDE_B06, ...GUIDE_B07, ...GUIDE_B08, ...GUIDE_B09, ...GUIDE_B10, ...GUIDE_B11, ...GUIDE_B12, ...GUIDE_B13, ...GUIDE_B14, ...GUIDE_B15, ...GUIDE_B16, ...GUIDE_B17, ...GUIDE_B18, ...GUIDE_B19, ...GUIDE_B20, ...GUIDE_B21, ...GUIDE_B22, ...GUIDE_B23, ...GUIDE_B24, ...GUIDE_B25, ...GUIDE_B26, ...GUIDE_B27, ...GUIDE_B28, ...GUIDE_B29, ...GUIDE_B30].map((a) => ({ ...a, updated_on: GUIDE_UPDATED_ON }));
+  ...GUIDE_B01, ...GUIDE_B02, ...GUIDE_B03, ...GUIDE_B04, ...GUIDE_B05, ...GUIDE_B06, ...GUIDE_B07, ...GUIDE_B08, ...GUIDE_B09, ...GUIDE_B10, ...GUIDE_B11, ...GUIDE_B12, ...GUIDE_B13, ...GUIDE_B14, ...GUIDE_B15, ...GUIDE_B16, ...GUIDE_B17, ...GUIDE_B18, ...GUIDE_B19, ...GUIDE_B20, ...GUIDE_B21, ...GUIDE_B22, ...GUIDE_B23, ...GUIDE_B24, ...GUIDE_B25, ...GUIDE_B26, ...GUIDE_B27, ...GUIDE_B28, ...GUIDE_B29, ...GUIDE_B30, ...GUIDE_B31, ...GUIDE_B32, ...GUIDE_B33, ...GUIDE_B34, ...GUIDE_B35].map((a) => ({ ...a, updated_on: GUIDE_UPDATED_ON }));
