@@ -13,6 +13,7 @@ export const common: Messages<typeof fr> = {
   'error.screen.title': 'Sorry, something went wrong on this screen',
   'error.screen.body': 'Your data is safe. Try again, or head back to the home screen.',
   'error.screen.home': 'Back to home',
+  'error.screen.detail': 'Detail for support: {detail}',
   'error.screen.emergency': 'In an emergency, call your local emergency number (112 in Europe).',
   'demo.badge': 'Demo',
   'demo.badgeA11y': 'Demo: sample data, stored only on this device',

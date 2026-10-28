@@ -22,6 +22,10 @@ export function AppErrorBoundary({ error, retry }: ErrorBoundaryProps) {
         <Button label={tr('error.screen.home')} variant="secondary" icon="home" onPress={() => { router.replace('/'); retry(); }} full />
       </View>
       <Text variant="caption" center color="#5B4A5E" style={{ marginTop: spacing.sm }}>{tr('error.screen.emergency')}</Text>
+      {/* Détail technique (aucune donnée personnelle) : à envoyer au support pour corriger le problème */}
+      <Text variant="caption" center color="#8A7A8C" selectable style={{ maxWidth: 360, marginTop: spacing.xs }} testID="error-detail">
+        {tr('error.screen.detail', { detail: `${error?.name ?? 'Error'}: ${(error?.message ?? '').slice(0, 160)}` })}
+      </Text>
     </View>
   );
 }
