@@ -29,6 +29,7 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NACRE, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { BrandLogo } from '@/components/BrandLogo';
+import { GALETS_CLIP, STORY_3D_CLIP, VideoBackdrop } from '@/components/VideoBackdrop';
 
 type Universe = 'cycle' | 'pregnancy' | 'child' | 'health' | 'tools' | 'community';
 const UNIVERSES: { key: Universe; hero: ToolTheme; heroIcon: IconName; sats: [ToolTheme, IconName][]; icons: IconName[] }[] = [
@@ -39,8 +40,16 @@ const UNIVERSES: { key: Universe; hero: ToolTheme; heroIcon: IconName; sats: [To
   { key: 'tools', hero: 'calendar', heroIcon: 'calendar', sats: [['tasks', 'check-square'], ['relay', 'moon'], ['metime', 'sun']], icons: ['calendar', 'repeat', 'bell'] },
   { key: 'community', hero: 'resources', heroIcon: 'users', sats: [['mood', 'message-circle'], ['memories', 'book-open'], ['prevention', 'feather']], icons: ['users', 'shield', 'message-circle'] },
 ];
-type Slide = 'hello' | Universe | 'privacy';
-const SLIDES: Slide[] = ['hello', ...UNIVERSES.map((u) => u.key), 'privacy'];
+/** « Comment ça marche » : 4 étapes concrètes d'utilisation, juste après l'accueil. */
+type How = 'how1' | 'how2' | 'how3' | 'how4';
+const HOW: { key: How; theme: ToolTheme; icon: IconName; icons: IconName[] }[] = [
+  { key: 'how1', theme: 'pregnancy', icon: 'compass', icons: ['user-plus', 'layers', 'refresh-cw'] },
+  { key: 'how2', theme: 'calendar', icon: 'home', icons: ['sun', 'bell', 'grid'] },
+  { key: 'how3', theme: 'feeding', icon: 'grid', icons: ['plus-circle', 'bar-chart-2', 'book-open'] },
+  { key: 'how4', theme: 'resources', icon: 'message-circle', icons: ['cpu', 'wifi-off', 'alert-triangle'] },
+];
+type Slide = 'hello' | How | Universe | 'privacy';
+const SLIDES: Slide[] = ['hello', ...HOW.map((h) => h.key), ...UNIVERSES.map((u) => u.key), 'privacy'];
 
 /** Logo animé : la tuile « Au fil de nous » pivote et se pose, une lumière respire derrière (pas en boucle si animations réduites). */
 function AnimatedMark({ size = 84 }: { size?: number }) {
@@ -123,6 +132,8 @@ export default function Intro() {
     v.setValue(0);
     setI(n);
     timeTo(v, 1, duration.slow, reduce, easing.decelerate).start();
+    // filet de sécurité : si l'animation est ralentie (vidéo de fond qui décode), le contenu s'affiche quand même
+    setTimeout(() => v.setValue(1), duration.slow + 250);
   }
   const goRef = useRef(go);
   goRef.current = go;
@@ -156,7 +167,15 @@ export default function Intro() {
   const enter = { opacity: v, transform: [{ translateX: v.interpolate({ inputRange: [0, 1], outputRange: [shift, 0] }) }] };
   const last = i === SLIDES.length - 1;
 
+  const how = HOW.find((h) => h.key === slide);
   return (
+    <View style={{ flex: 1 }}>
+      {/* Fond : la vidéo des galets puis l'histoire en 3D (de la grossesse aux 10 ans), sous un voile pour la lecture */}
+      <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} testID="intro-backdrop">
+        <VideoBackdrop only={[GALETS_CLIP, STORY_3D_CLIP]} />
+        <LinearGradient colors={t.isDark ? ['rgba(31,35,68,0.55)', 'rgba(31,35,68,0.25)', 'rgba(31,35,68,0.7)'] : ['rgba(242,221,216,0.55)', 'rgba(242,221,216,0.15)', 'rgba(242,221,216,0.7)']}
+          locations={[0, 0.45, 1]} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+      </View>
     <View style={{ flex: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg }} {...pan.panHandlers}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 44 }}>
         <View accessibilityRole="progressbar" accessibilityLabel={tr('intro.progress', { step: i + 1, total: SLIDES.length })} style={{ flexDirection: 'row', gap: 5 }}>
@@ -193,6 +212,29 @@ export default function Intro() {
               <Text variant="caption" muted center>{tr('intro.languageHint')}</Text>
             </Appear>
           </View>
+        ) : null}
+
+        {how ? (
+          <GlassSurface fill={t.colors.surface} depth={2} padded={spacing.md}>
+            <View style={{ gap: spacing.sm }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                <ToolGlyph theme={how.theme} icon={how.icon} size={56} play={1} />
+                <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('intro.howStep', { step: HOW.indexOf(how) + 1, total: HOW.length })}</Text>
+              </View>
+              <Appear kind="mask" delay={0.1}><Text variant="title" accessibilityRole="header">{tr(`intro.${how.key}.title` as TKey)}</Text></Appear>
+              <Appear kind="soft" delay={0.25}><Text>{tr(`intro.${how.key}.body` as TKey)}</Text></Appear>
+              <View style={{ gap: 6 }}>
+                {[1, 2, 3].map((n, k) => (
+                  <StaggerItem key={n} index={k + 2}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                      <Icon name={how.icons[k]} size={18} color={t.colors.primary} />
+                      <Text style={{ flex: 1 }}>{tr(`intro.${how.key}.p${n}` as TKey)}</Text>
+                    </View>
+                  </StaggerItem>
+                ))}
+              </View>
+            </View>
+          </GlassSurface>
         ) : null}
 
         {universe ? (
@@ -237,6 +279,7 @@ export default function Intro() {
           <Button label={i === 0 ? tr('intro.start') : tr('intro.next')} icon={rtl ? 'arrow-left' : 'arrow-right'} onPress={() => go(i + 1)} style={{ flex: 2 }} />
         </View>
       )}
+    </View>
     </View>
   );
 }

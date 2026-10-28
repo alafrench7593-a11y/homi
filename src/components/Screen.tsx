@@ -20,6 +20,7 @@ import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { Button, type IconName } from './ui';
 import { ToolArticles } from '@/features/ToolArticles';
 import { ScreenToolContext } from '@/lib/screenTool';
+import { ChildBackdrop, isChildPage } from '@/features/story/ChildBackdrop';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -117,6 +118,8 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   return (
     <Animated.View style={[{ flex: 1, backgroundColor: 'transparent' }, entrance]} pointerEvents={focused ? 'auto' : 'none'}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
+      {/* Pages du bébé et de l'enfant : vidéo des galets le jour et l'animation de la maman avec son enfant */}
+      {isChildPage(pathname, tool?.id) ? <ChildBackdrop /> : null}
       {(stars || t.isDark) && <StarField density={t.name === 'night' ? 30 : stars ? 26 : 16} color="#FFF1E6" />}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {header}

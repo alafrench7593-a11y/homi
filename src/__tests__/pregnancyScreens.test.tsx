@@ -92,7 +92,8 @@ describe(`grossesse (${Platform.OS})`, () => {
     await press(r, 'feel-sym-nausea');
     await press(r, 'feel-intensity-1');
     await press(r, 'feel-more'); // heure, fréquence, note : repliées par défaut
-    await type(r, 'feel-time', '07:30');
+    // heure toujours passée, quelle que soit l'heure du test (une heure future est refusée)
+    await type(r, 'feel-time', '00:00');
     await press(r, 'feel-freq-several');
     await type(r, 'feel-note', 'Le matin surtout');
     await press(r, 'feel-save', 400);

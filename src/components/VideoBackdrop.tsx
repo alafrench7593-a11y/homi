@@ -56,6 +56,17 @@ export const BACKDROP_CLIPS: { day: BackdropClip[]; night: BackdropClip[] } = {
 /** Compatibilité : première vidéo et première image de jour. */
 export const BACKGROUND_VIDEO: number = BACKDROP_CLIPS.day[0].video;
 export const BACKGROUND_POSTER: number = BACKDROP_CLIPS.day[0].poster;
+/** Vidéo des galets (ciel, galets flottants, bateau en papier) : fond de l'introduction. */
+export const GALETS_CLIP: BackdropClip = BACKDROP_CLIPS.day[2];
+/**
+ * Histoire en 3D « du fœtus aux 10 ans » (vidéo fournie le 28/10/2026), recadrée au format téléphone :
+ * l'histoire complète (introduction), le bébé dans les bras, et l'enfant qui marche main dans la main.
+ */
+/* eslint-disable @typescript-eslint/no-require-imports */
+export const STORY_3D_CLIP: BackdropClip = { video: require('../../assets/video/histoire-3d.mp4'), poster: require('../../assets/video/histoire-3d.jpg') };
+export const STORY_BABY_CLIP: BackdropClip = { video: require('../../assets/video/histoire-bebe.mp4'), poster: require('../../assets/video/histoire-bebe.jpg') };
+export const STORY_WALK_CLIP: BackdropClip = { video: require('../../assets/video/histoire-marche.mp4'), poster: require('../../assets/video/histoire-marche.jpg') };
+/* eslint-enable @typescript-eslint/no-require-imports */
 /** Première vidéo de fond (boucle de 4 s, paysage) ; sa version téléphone de 8 s, jour-galets.mp4, tourne avec les fonds de jour. */
 export const FIRST_BACKGROUND_VIDEO_FILE = 'assets/video/fond-ciel.mp4';
 /** Vidéo du prompt MOSS (Movento), essayée le 26/10/2026, remplacée par la vidéo générée pour l'application. */
@@ -195,13 +206,14 @@ function VideoLayers({ clips, playing, onReady }: { clips: BackdropClip[]; playi
   );
 }
 
-export function VideoBackdrop({ fallback }: { fallback?: React.ReactNode }) {
+/** `only` : liste de vidéos imposée (ex. l'introduction ne montre que les galets), toujours sous le voile de jour. */
+export function VideoBackdrop({ fallback, only }: { fallback?: React.ReactNode; only?: BackdropClip[] }) {
   const t = useTheme();
   const [ready, setReady] = useState(false);
   const opacity = useFadeIn(ready);
   const onReady = React.useCallback(() => setReady(true), []);
-  const night = t.isDark;
-  const clips = night ? BACKDROP_CLIPS.night : BACKDROP_CLIPS.day;
+  const night = only ? false : t.isDark;
+  const clips = only?.length ? only : night ? BACKDROP_CLIPS.night : BACKDROP_CLIPS.day;
   const [stillSeed] = useState(() => Math.random());
   const reduceMotion = useReduceMotion();
   const lowPower = useLowPower();
