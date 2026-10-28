@@ -29,6 +29,9 @@ Il applique les migrations, enregistre les secrets serveur sans les afficher, d�
 4. **Database › Webhooks** : `INSERT` sur `public.notifications` → fonction `send-push`, en-tête secret `PUSH_WEBHOOK_SECRET`.
 5. **Database › Replication** : vérifier la publication `supabase_realtime`.
 6. **RevenueCat** : entitlement `premium`, produits `toietmoi_premium_monthly` et `toietmoi_premium_annual`, webhook vers `https://<ref>.supabase.co/functions/v1/revenuecat-webhook` avec l'en-tête `Authorization: Bearer <REVENUECAT_WEBHOOK_SECRET>`.
+   - **App Store Connect** (Abonnements) : un groupe d'abonnements « Au fil de nous Premium » ; produit `toietmoi_premium_monthly` à **5,99 €** (niveau de prix le plus proche proposé par Apple), durée 1 mois ; **offre de lancement « Essai gratuit » de 3 jours** sur ce produit. Le produit annuel `toietmoi_premium_annual` existe aussi dans le code (39,99 €, essai 7 jours) : à créer ou à retirer de l'offering si tu ne le veux pas.
+   - **RevenueCat** : offering par défaut contenant les packages Monthly (et Annual si gardé), rattachés à l'entitlement `premium`. L'appli lit le prix et l'essai **depuis la boutique** et n'affiche l'essai que si Apple confirme l'éligibilité.
+   - Test : compte Sandbox Apple sur un iPhone avec un build de développement ou TestFlight (jamais dans Expo Go).
 7. **EAS** : `eas credentials` pour les clés APNs (iOS) et FCM (Android).
 
 ## 5. Vérifications à faire une fois en ligne
@@ -40,3 +43,12 @@ Il applique les migrations, enregistre les secrets serveur sans les afficher, d�
 - [ ] Notification push (réponse dans la communauté).
 - [ ] Export RGPD et suppression du compte.
 - [ ] Supprimer les comptes de démonstration du seed.
+
+
+## Album photo des enfants (migration 20261031000100)
+
+Appliquer la migration `20261031000100_child_photos.sql` (crée l'espace privé `child-photos`, la table `child_photos` et ses règles), puis redéployer la fonction `delete-account` (efface aussi les photos lors de la suppression d'un compte).
+
+## Gemini (assistant, scanner, photo de glaire)
+
+La clé `GEMINI_API_KEY` doit venir d'un projet Google **avec facturation activée** (offre payante) : les conditions de l'API Gemini n'autorisent que l'offre payante pour des utilisatrices dans l'Espace économique européen, et seule l'offre payante garantit que les données ne servent pas à entraîner les modèles. Même en offre payante, Google conserve les requêtes jusqu'à 55 jours pour détecter les abus (mentionné dans l'appli).

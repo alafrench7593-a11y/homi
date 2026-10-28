@@ -92,8 +92,8 @@ Corrections au passage : les panneaux du bas ne défilaient plus quand leur cont
 | Suivi de santé : TDAH (observations par contexte), diabète et maladies suivies (mesures, unités, contexte, consignes du professionnel), sources distinguées, export (§ 12) | ✅ `child/[id]/health-tracking.tsx` ; seuils uniquement depuis le plan du professionnel (refusé sinon, côté serveur) ; aucune dose |
 | Vaccins : registre + calendrier officiel (§ 14) | ✅ `child/[id]/vaccines.tsx` ; lien vers le calendrier vaccinal du ministère, pas d'échéances recalculées |
 | Scanner : liste « à éviter » du foyer, signalée à chaque scan (§ 15) | ✅ `scanner/avoid.tsx` |
-| Courbes de croissance de référence (OMS) | ⬜ non fait : il faut intégrer les tables officielles OMS (LMS) et les faire valider ; l'appli continue d'afficher les mesures sans zone « normale ». |
-| Photos et albums de souvenirs | ⬜ non fait : nécessite un stockage privé chiffré pour les photos d'enfants (comme celui des photos de tests du cycle) ; à faire dans un lot dédié. |
+| Courbes de croissance de référence (OMS) | ✅ 0–5 ans (voir § 7) · ⬜ 5–10 ans : les références OMS 2007 (5–19 ans) restent à intégrer ; licence des tables OMS à faire valider pour un usage commercial. |
+| Photos et albums de souvenirs | ✅ album par enfant (§ 28) |
 | Recommandations de produits (§ 16) | ⬜ non fait : sans catalogue éditorial vérifié, l'application ne recommande rien plutôt que d'inventer. Les données nécessaires (sources, limites, mention sponsorisé / éditorial) sont décrites dans ce document. |
 
 ## 3. Relecture de sécurité indépendante (18 octobre 2026)
@@ -434,6 +434,25 @@ Remplace l'ancien « Sommeil intelligent ». Inspiré du principe des applicatio
 - **Version web plus légère** : le SDK de paiement (inutile sur le web) et le code du widget ne sont plus embarqués : 9,3 → 8,2 Mo de JavaScript, ouverture mesurée de 3,2 s à 2,9 s sur un processeur ralenti ×4. Le découpage par écran a été essayé puis écarté (plus lent ici : 4,2 s).
 - **Traduction anglaise** de l'onglet Suivi, de l'écran Aujourd'hui, des cartes de suivi, du résumé du jour et de la communauté.
 - **Préparation** : guide d'installation sur téléphone (`docs/INSTALLER_SUR_TELEPHONE.md`, `expo-dev-client` ajouté), script de mise en service (`scripts/deploy-supabase.sh`, lit `.env` localement, mode `--dry-run`), guide `docs/MISE_EN_SERVICE.md`, brouillon d'AIPD et point HDS (`docs/CONFORMITE_RGPD.md`), fiches stores (`docs/FICHES_STORES.md`), liste des contenus à faire relire (`docs/RELECTURE_CONTENUS.md`).
+
+## 28. Chantier « finalisation » (28 octobre 2026)
+
+| Sujet | État | Preuve |
+|---|---|---|
+| Nom « Au fil de nous » partout où il est visible (crédits, e-mails, assistant, agenda, widget, documentation) ; identifiants techniques (`toietmoi`, `toi-et-moi`, produits RevenueCat) **inchangés** pour ne rien casser | ✅ | recherche : plus aucune mention visible de l'ancien nom |
+| Abonnement mensuel 5,99 € avec **3 jours d'essai** (mode démonstration) ; en production prix et essai viennent de l'App Store | ✅ code · ⬜ App Store Connect | `purchasesTrial.test.ts` |
+| Essai affiché seulement si Apple confirme l'éligibilité (`checkTrialOrIntroductoryPriceEligibility`) ; sinon prix normal | ✅ | `purchasesTrial.test.ts` (5 cas) |
+| Webhook RevenueCat : événement renvoyé deux fois ignoré (pas de notification en double) | ✅ | `webhookDuplicate.test.ts` |
+| Album photo par enfant : espace privé `child-photos`, droits du foyer + enfant (`child_scope`), photo « moi seulement », légende, date, chronologie par mois, modification, suppression, fichiers effacés avec le profil et lors de la suppression du compte, export RGPD | ✅ | migration `20261031000100_child_photos.sql`, SQL `64_child_photos.sql` (30 contrôles), `childAlbum.test.tsx` (10) |
+| Compression sur le téléphone (1 600 px, JPEG 80 %), sans GPS (`exif: false`) | ✅ | `childAlbum.test.tsx` |
+| Textes IA exacts : Google ne s'en sert pas pour entraîner ses modèles mais peut garder la requête 55 jours (offre payante de l'API) | ✅ | conditions Gemini API consultées le 28/10/2026 |
+
+**Pas fait dans ce chantier (et pourquoi)** :
+- Synchronisation bidirectionnelle Google Agenda / Outlook : nécessite des identifiants OAuth Google et Microsoft côté serveur et un test avec de vrais comptes.
+- Recommandations de produits : aucun catalogue éditorial vérifié ; l'appli ne recommande rien plutôt que d'inventer.
+- Courbes OMS 5–10 ans : tables OMS 2007 à intégrer et licence à valider.
+- Analyse photo de la glaire : décision produit en attente (analyse sur le téléphone, Vertex AI sans conservation, ou Gemini avec conservation annoncée).
+- Lint : le projet n'a pas de configuration ESLint ; `npx expo lint` veut l'installer depuis Internet.
 
 ## 4. Décisions et limites documentées
 

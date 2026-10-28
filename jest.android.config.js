@@ -12,4 +12,7 @@ for (const [key, value] of Object.entries(main.transform)) {
     ? ['babel-jest', { ...value[1], caller: { ...(value[1].caller || {}), platform: 'android' } }]
     : value;
 }
-module.exports = { ...base, rootDir: __dirname, transform, haste: { ...main.haste, defaultPlatform: 'android' }, cacheDirectory: '/tmp/jest-android-cache' };
+// expo-notifications charge des modules natifs Android à l'import (absents sous Node) : remplacé par un module vide
+// pour les suites qui ne le simulent pas elles-mêmes.
+const moduleNameMapper = { ...base.moduleNameMapper, '^expo-notifications$': '<rootDir>/jest-stubs/expoNotifications.js' };
+module.exports = { ...base, rootDir: __dirname, transform, moduleNameMapper, haste: { ...main.haste, defaultPlatform: 'android' }, cacheDirectory: '/tmp/jest-android-cache' };
