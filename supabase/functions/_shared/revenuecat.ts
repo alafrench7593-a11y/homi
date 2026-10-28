@@ -50,3 +50,11 @@ export function subscriptionFromEvent(event: RcEvent, expiresAt: number | null, 
 /** Un événement plus ancien que le dernier traité est ignoré (RevenueCat peut renvoyer des événements dans le désordre). */
 export const isStale = (event: RcEvent, lastEventAt: string | null | undefined) =>
   !!lastEventAt && event.event_timestamp_ms != null && event.event_timestamp_ms < Date.parse(lastEventAt);
+
+/**
+ * Même événement reçu une seconde fois (RevenueCat réessaie tant qu'il n'a pas reçu de réponse 200) :
+ * même type et même horodatage que le dernier traité → rien à refaire (ni écriture, ni notification en double).
+ */
+export const isDuplicate = (event: RcEvent, last: { last_event?: string | null; last_event_at?: string | null } | null | undefined) =>
+  !!last?.last_event_at && last.last_event === event.type && event.event_timestamp_ms != null
+  && event.event_timestamp_ms === Date.parse(last.last_event_at);

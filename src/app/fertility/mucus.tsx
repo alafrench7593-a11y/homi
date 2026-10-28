@@ -89,7 +89,7 @@ export default function MucusScreen() {
     if (!uri) return;
     const ok = await confirm(
       'Envoyer cette photo pour analyse ?',
-      'La photo est envoyée de façon chiffrée à notre serveur, puis à l’intelligence artificielle Google Gemini, uniquement pour proposer une catégorie. Au fil de nous ne la conserve pas, ne l’utilise pas pour entraîner une IA et ne la publie jamais. Le résultat reste une suggestion éducative, sans diagnostic.',
+      'La photo est envoyée de façon chiffrée à notre serveur, puis à l’intelligence artificielle Google Gemini, uniquement pour proposer une catégorie. Au fil de nous ne la conserve pas et ne la publie jamais. Google ne l’utilise pas pour entraîner ses modèles, mais peut la garder jusqu’à 55 jours pour détecter les abus. Le résultat reste une suggestion éducative, sans diagnostic : il ne confirme jamais une ovulation.',
       'Envoyer la photo',
     );
     if (!ok) return;

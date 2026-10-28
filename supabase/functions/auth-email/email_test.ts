@@ -24,8 +24,10 @@ Deno.test('lien de vérification Supabase et gabarit français', () => {
   eq(verifyLink('https://proj.supabase.co', payload.email_data), 'https://proj.supabase.co/auth/v1/verify?token=abc&type=recovery&redirect_to=toietmoi%3A%2F%2Fauth%2Fcallback');
   const m = buildEmail('Au fil de nous', 'https://proj.supabase.co', payload);
   eq(m.subject, 'Réinitialiser votre mot de passe — Au fil de nous');
-  eq(m.html.includes('Toi &amp; Moi'), true);
+  eq(m.html.includes('Au fil de nous'), true);
   eq(m.text.includes('123456'), true);
+  // un nom contenant « & » reste échappé dans le HTML
+  eq(buildEmail('A & B', 'https://proj.supabase.co', payload).html.includes('A &amp; B'), true);
 });
 
 Deno.test('appel Resend : URL, en-tête et corps ; un refus n’est jamais présenté comme un succès', async () => {

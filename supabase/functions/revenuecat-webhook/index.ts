@@ -3,7 +3,7 @@
 // en-tête Authorization = « Bearer <REVENUECAT_WEBHOOK_SECRET> ».
 // L'identifiant RevenueCat (appUserID) est l'identifiant Supabase de l'utilisateur.
 import { adminClient, env, json } from '../_shared/http.ts';
-import { isStale, subscriptionFromEvent, type RcEvent } from '../_shared/revenuecat.ts';
+import { isDuplicate, isStale, subscriptionFromEvent, type RcEvent } from '../_shared/revenuecat.ts';
 
 const ENTITLEMENT = Deno.env.get('REVENUECAT_ENTITLEMENT') ?? 'premium';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -51,8 +51,9 @@ Deno.serve(async (req) => {
   }
 
   const admin = adminClient();
-  const { data: current } = await admin.from('subscriptions').select('last_event_at').eq('user_id', userId).maybeSingle();
+  const { data: current } = await admin.from('subscriptions').select('last_event, last_event_at').eq('user_id', userId).maybeSingle();
   if (isStale(event, current?.last_event_at)) return json({ ok: true, ignored: 'stale_event' });
+  if (isDuplicate(event, current)) return json({ ok: true, ignored: 'duplicate_event' });
   const { error } = await admin.from('subscriptions').upsert({
     user_id: userId,
     ...subscriptionFromEvent(event, expiresAt, productId, ENTITLEMENT),
