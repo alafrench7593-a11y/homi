@@ -667,7 +667,7 @@ const ART: Record<ArtTheme, { c: [string, string, string]; glyph: TrackKey }> = 
   growth: { c: ['#FFD6C4', '#DCD2FF', '#D3ECF0'], glyph: 'growth' },
 };
 
-/** Illustration propre à Toi & Moi (formes douces + pictogramme), jamais une image générée. */
+/** Illustration propre à Au fil de nous (formes douces + pictogramme), jamais une image générée. */
 function ArticleArt({ theme }: { theme: ArtTheme }) {
   const id = React.useId().replace(/:/g, '');
   const a = ART[theme];

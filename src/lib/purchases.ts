@@ -35,7 +35,7 @@ export interface Plan {
 
 // Prix affichés en mode test uniquement ; en production ils viennent de la boutique
 const TEST_PLANS: Plan[] = [
-  { id: 'toietmoi_premium_monthly', period: 'monthly', title: 'Mensuel', price: '5,99 €', detail: 'par mois, sans engagement', billed: '5,99 € facturés chaque mois' },
+  { id: 'toietmoi_premium_monthly', period: 'monthly', title: 'Mensuel', price: '5,99 €', detail: 'par mois, sans engagement', trialLabel: '3 jours offerts', trialDays: 3, billed: '5,99 € facturés chaque mois' },
   { id: 'toietmoi_premium_annual', period: 'annual', title: 'Annuel', price: '39,99 €', detail: 'par an — soit environ 3,33 € par mois', trialLabel: '7 jours offerts', trialDays: 7, billed: '39,99 € facturés une fois par an' },
 ];
 
@@ -63,7 +63,7 @@ export async function getPlans(): Promise<Plan[]> {
   if (purchaseMode !== 'store') return TEST_PLANS;
   const offerings = await Purchases.getOfferings();
   const pkgs = offerings.current?.availablePackages ?? [];
-  return pkgs
+  const plans: Plan[] = pkgs
     .filter((p) => p.packageType === 'MONTHLY' || p.packageType === 'ANNUAL')
     .map((p) => ({
       id: p.product.identifier,
@@ -76,6 +76,28 @@ export async function getPlans(): Promise<Plan[]> {
       billed: p.packageType === 'ANNUAL' ? `${p.product.priceString} facturés une fois par an` : `${p.product.priceString} facturés chaque mois`,
       pkg: p,
     }));
+  return applyTrialEligibility(plans);
+}
+
+/**
+ * iOS : Apple n'accorde l'essai gratuit qu'une fois par groupe d'abonnements.
+ * On n'affiche « 3 jours offerts » que si la boutique confirme l'éligibilité ;
+ * statut inconnu ou non éligible → prix normal affiché (recommandation RevenueCat).
+ * Android : Google Play applique lui-même l'éligibilité au moment de l'achat.
+ */
+export async function applyTrialEligibility(plans: Plan[], os: string = Platform.OS): Promise<Plan[]> {
+  if (os !== 'ios') return plans;
+  const withTrial = plans.filter((p) => (p.trialDays ?? 0) > 0).map((p) => p.id);
+  if (!withTrial.length) return plans;
+  let status: Record<string, { status: number }> = {};
+  try {
+    status = await Purchases.checkTrialOrIntroductoryPriceEligibility(withTrial);
+  } catch {
+    status = {};
+  }
+  return plans.map((p) => (status[p.id]?.status === Purchases.INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE
+    ? p
+    : { ...p, trialLabel: undefined, trialDays: 0 }));
 }
 
 /** Achat. Retourne true si les droits sont confirmés PAR LE SERVEUR. */

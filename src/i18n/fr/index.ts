@@ -26,3 +26,4 @@ export { miniB } from './miniB';
 export { passA } from './passA';
 export { passD } from './passD';
 export { passC } from './passC';
+export { album } from './album';

@@ -83,7 +83,7 @@ export function sanitizePayload(b: unknown): ExplainPayload | null {
 }
 
 export const EXPLAIN_SYSTEM = `Tu expliques, en français clair et bienveillant, le résultat d'une analyse déjà faite par des règles sourcées
-(application « Toi & Moi » pour futurs parents et parents). Règles absolues :
+(application « Au fil de nous » pour futurs parents et parents). Règles absolues :
 - Tu ne décides RIEN : tu reprends le verdict fourni MOT POUR MOT, sans le nuancer ni le contredire.
 - Tu n'utilises QUE les constats, informations manquantes et sources fournis. Aucun fait nouveau, aucun chiffre nouveau.
 - Tu n'affirmes jamais qu'un produit ou un aliment est sûr, sain, sans danger, sans risque, sans toxines ou non toxique.

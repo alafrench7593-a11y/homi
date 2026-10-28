@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: { http_code: 500, message: 'Envoi d’e-mail non configuré : RESEND_API_KEY et RESEND_FROM_EMAIL manquants' } }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
   const payload = JSON.parse(body) as HookPayload;
-  const mail = buildEmail(Deno.env.get('APP_NAME') ?? 'Toi & Moi', Deno.env.get('SUPABASE_URL') ?? '', payload);
+  const mail = buildEmail(Deno.env.get('APP_NAME') ?? 'Au fil de nous', Deno.env.get('SUPABASE_URL') ?? '', payload);
   const sent = await sendWithResend(apiKey, from, payload.user.email, mail);
   if (!sent.ok) {
     console.error('resend_error', sent.status);

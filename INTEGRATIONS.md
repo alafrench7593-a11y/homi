@@ -1,4 +1,4 @@
-# Registre des intégrations — Toi & Moi
+# Registre des intégrations — Au fil de nous
 
 Dernière mise à jour : 18 octobre 2026. Ce registre fait foi : une intégration n'est dite « fonctionnelle » que si elle a été testée, et on indique **comment**.
 

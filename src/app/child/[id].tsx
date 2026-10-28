@@ -13,6 +13,7 @@ import { ChildTabs, CHILD_TABS, EditChildSheet, FoodsTab, GrowthTab, HealthTab, 
 import { backend, eq } from '@/lib/backend';
 import { useActiveSubject, useChild, useChildren, useInvalidate, useMemberships } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
+import { removeChildPhotoFiles } from '@/lib/data/hooks-photos';
 import { childAge, initials } from '@/lib/domain/child';
 import { formatDateFr } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
@@ -55,12 +56,14 @@ export default function ChildProfile() {
     if (!child) return;
     const ok = await confirm(
       `Supprimer le profil de ${child.first_name} ?`,
-      'Toutes ses données (suivi quotidien, mesures, moments, santé, alimentation) seront définitivement supprimées pour toutes les personnes du foyer.',
+      'Toutes ses données (suivi quotidien, mesures, moments, santé, alimentation, album photo) seront définitivement supprimées pour toutes les personnes du foyer.',
       'Supprimer',
     );
     if (!ok) return;
     setDeleting(true);
     try {
+      // fichiers de l'album effacés d'abord (les lignes partent ensuite en cascade avec le profil)
+      await removeChildPhotoFiles(child.id);
       await backend.remove('children', [eq('id', child.id)]);
       if (subject.type === 'child' && subject.id === child.id) setSubject(null);
       inv('children');

@@ -46,6 +46,26 @@ Deno.serve(async (req) => {
     return json({ error: 'server_error' }, 500);
   }
 
+  // Album des enfants : fichiers des foyers qui vont disparaître + photos privées de la personne
+  const { data: photoPaths, error: photoErr } = await admin.rpc('child_photo_paths_for_account', { p_user: auth.user.id });
+  if (photoErr) {
+    console.error('delete_account_child_photos_error', photoErr.code);
+    return json({ error: 'server_error' }, 500);
+  }
+  const photos = (photoPaths ?? []) as string[];
+  for (let i = 0; i < photos.length; i += PAGE) {
+    const { error: rmErr } = await admin.storage.from('child-photos').remove(photos.slice(i, i + PAGE));
+    if (rmErr) {
+      console.error('delete_account_child_photos_storage_error');
+      return json({ error: 'server_error' }, 500);
+    }
+  }
+  const { error: forgetErr } = await admin.rpc('forget_private_child_photos', { p_user: auth.user.id });
+  if (forgetErr) {
+    console.error('delete_account_child_photos_error', forgetErr.code);
+    return json({ error: 'server_error' }, 500);
+  }
+
   const { data: paths, error } = await admin.rpc('delete_user_account', { p_user: auth.user.id });
   if (error) {
     console.error('delete_account_error', error.code);
@@ -55,5 +75,5 @@ Deno.serve(async (req) => {
   for (let i = 0; i < files.length; i += PAGE) {
     await admin.storage.from('documents').remove(files.slice(i, i + PAGE));
   }
-  return json({ ok: true, files_removed: files.length + cycle.count + community.count });
+  return json({ ok: true, files_removed: files.length + photos.length + cycle.count + community.count });
 });

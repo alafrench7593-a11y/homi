@@ -95,6 +95,8 @@ const OWNER_TABLES: Record<string, string> = {
   assistant_conversations: 'user_id', assistant_messages: 'user_id', assistant_feedback: 'user_id', consents: 'user_id', posts: 'author_id', comments: 'author_id', post_photos: 'author_id', community_notification_prefs: 'user_id',
   post_likes: 'user_id', saved_posts: 'user_id', reports: 'reporter_id', user_blocks: 'blocker_id', notes: 'author_id',
   documents: 'uploaded_by', name_votes: 'user_id',
+  // Album photo d'un enfant : l'autrice est toujours la personne connectée
+  child_photos: 'created_by',
   // Scanner : historique, résultats et favoris strictement personnels
   scan_results: 'user_id', scan_favorites: 'user_id',
   parent_sleep_logs: 'user_id',

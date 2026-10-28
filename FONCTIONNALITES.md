@@ -1,4 +1,4 @@
-# Toi & Moi — fonctionnalités : fait / à faire
+# Au fil de nous — fonctionnalités : fait / à faire
 
 Document vivant tenu pendant la mise en œuvre du « prompt maître ultime » (plateforme familiale 0–10 ans + post-partum).
 Règles qui s'appliquent à chaque ligne : **aucune couleur modifiée** (test `palette de marque inchangée`), **rien de supprimé**, migrations **non destructives**, **aucun diagnostic, aucune dose, aucune quantité calculée**, **aucune donnée fictive présentée comme réelle**, secrets uniquement côté serveur.
@@ -428,7 +428,7 @@ Remplace l'ancien « Sommeil intelligent ». Inspiré du principe des applicatio
 
 - **Partage du cycle avec le ou la partenaire** (Premium, `/cycle/share`, `/partner/cycle`) : avec un membre du foyer seulement, élément par élément (dates de règles, fenêtre fertile estimée, humeur et symptômes des 14 derniers jours), en lecture seule, révocable à tout moment par la personne, et le ou la partenaire peut cesser de le recevoir. **Jamais** : rapports, contraception, notes, étiquettes, photos, tests, symptômes intimes (vérifié en SQL). Les estimations sont recalculées chez le ou la partenaire à partir des seules dates partagées. Fin d'abonnement : partage en pause, rien n'est supprimé. Base : migration `20261025000100_cycle_share.sql` (`cycle_shares`, `cycle_shared_with_me`, `partner_cycle`), tests SQL `59_cycle_share.sql`.
 - **Résumé du mois** (Premium, `/cycle/month`) : débuts et jours de règles, cycle terminé, symptômes et humeurs les plus notés, douleur la plus forte, nuits difficiles ; PDF fabriqué sur l'appareil, sans l'intime ; « ce n'est pas un diagnostic ».
-- **Widget iOS « Mon cycle »** (`expo-widgets`, SDK 57) : discret par défaut (« Toi & Moi · Ouvrir l'application »), détaillé seulement si activé dans Confidentialité du cycle, jamais si le cycle est masqué ou verrouillé ; chargé à la demande (aucun plantage dans Expo Go).
+- **Widget iOS « Mon cycle »** (`expo-widgets`, SDK 57) : discret par défaut (« Au fil de nous · Ouvrir l'application »), détaillé seulement si activé dans Confidentialité du cycle, jamais si le cycle est masqué ou verrouillé ; chargé à la demande (aucun plantage dans Expo Go).
 - **« Mon cycle » allégé** : 6 rubriques essentielles, les autres derrière « Afficher toutes les rubriques ».
 - **Zones tactiles harmonisées** avec les boutons : pression 0,98, soulèvement d'1 px au survol, inclinaison des cartes réduite.
 - **Version web plus légère** : le SDK de paiement (inutile sur le web) et le code du widget ne sont plus embarqués : 9,3 → 8,2 Mo de JavaScript, ouverture mesurée de 3,2 s à 2,9 s sur un processeur ralenti ×4. Le découpage par écran a été essayé puis écarté (plus lent ici : 4,2 s).

@@ -16,6 +16,7 @@ import { GrowthChart } from '@/components/GrowthChart';
 import { ageInMonths, describePosition, sexForStandards, WHO_MAX_MONTHS, type GrowthIndicator } from '@/lib/domain/growthStandards';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
+import { t as tr } from '@/i18n';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { ChildToday } from '@/features/home';
 import { BottleTimerCard } from '@/features/bottle';
@@ -164,6 +165,7 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
         <ListRow icon="trending-up" title="Croissance" subtitle={last ? [last.weight_kg != null ? `${fmt(last.weight_kg, 3)} kg` : null, last.height_cm != null ? `${fmt(last.height_cm)} cm` : null].filter(Boolean).join(' · ') : 'Aucune mesure pour l’instant'} onPress={() => onTab('croissance')} />
         <ListRow icon="heart" title="Santé" subtitle={child.allergies_declared.length ? `Allergies déclarées : ${child.allergies_declared.join(', ')}` : 'Vaccins à vérifier, traitements, contacts'} onPress={() => onTab('sante')} />
         <ListRow icon="calendar" title="Rendez-vous" subtitle="Pédiatre, vaccins, bilans" onPress={() => router.push('/appointments')} />
+        <ListRow icon="image" title={tr('alb.title')} subtitle={tr('alb.rowSubtitle')} onPress={() => router.push(`/child/${child.id}/album`)} testID="child-album" />
       </Card>
     </>
   );

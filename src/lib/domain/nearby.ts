@@ -7,7 +7,7 @@
  * Sources :
  *  · recherche de commune : API de géocodage de la Géoplateforme (IGN), accès ouvert, sans clé ;
  *  · lieux (parcs, bibliothèques, cafés équipés pour les familles, centres sociaux, mairies) : OpenStreetMap via
- *    l'API Overpass (données contributives : affichées comme « non vérifiées par Toi & Moi ») ;
+ *    l'API Overpass (données contributives : affichées comme « non vérifiées par Au fil de nous ») ;
  *  · lieux sans données ouvertes fiables (lieux d'accueil enfants-parents, associations, soutien à l'allaitement,
  *    écoute) : annuaires officiels ou associatifs reconnus, jamais de lieu inventé.
  * Les adresses des services sont réglables (NEARBY_CONFIG) : en production, utiliser un fournisseur de tuiles et un

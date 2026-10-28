@@ -172,7 +172,7 @@ export function toIcs(items: CalendarItem[], o: IcsOptions = {}): string {
   const stamp = utc((o.now ?? new Date()).toISOString());
   const tz = o.timeZone ?? 'Europe/Paris';
   const dateOnly = (iso: string) => localStamp(iso, tz).slice(0, 8);
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Toi & Moi//Agenda familial//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', `X-WR-CALNAME:${esc(o.calendarName ?? 'Agenda familial')}`];
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Au fil de nous//Agenda familial//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', `X-WR-CALNAME:${esc(o.calendarName ?? 'Agenda familial')}`];
   if (o.refreshMinutes) {
     const h = Math.floor(o.refreshMinutes / 60); const m = o.refreshMinutes % 60;
     lines.push(`REFRESH-INTERVAL;VALUE=DURATION:PT${h ? `${h}H` : ''}${m ? `${m}M` : ''}`, `X-PUBLISHED-TTL:PT${h ? `${h}H` : ''}${m ? `${m}M` : ''}`);

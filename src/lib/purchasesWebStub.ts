@@ -8,6 +8,8 @@ const Purchases = {
   configure: () => undefined,
   logIn: unavailable, logOut: unavailable, getOfferings: unavailable, purchasePackage: unavailable,
   restorePurchases: unavailable, showManageSubscriptions: unavailable,
+  checkTrialOrIntroductoryPriceEligibility: async () => ({}),
+  INTRO_ELIGIBILITY_STATUS: { INTRO_ELIGIBILITY_STATUS_UNKNOWN: 0, INTRO_ELIGIBILITY_STATUS_INELIGIBLE: 1, INTRO_ELIGIBILITY_STATUS_ELIGIBLE: 2, INTRO_ELIGIBILITY_STATUS_NO_INTRO_OFFER_EXISTS: 3 },
 };
 export type PurchasesPackage = { identifier: string; product: { priceString: string; price: number; title: string } };
 export default Purchases;

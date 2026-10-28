@@ -1,4 +1,4 @@
-/** Primitives d'interface du design system « Toi & Moi ». */
+/** Primitives d'interface du design system « Au fil de nous ». */
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import React from 'react';
 import {

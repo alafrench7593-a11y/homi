@@ -9,7 +9,7 @@ import type { PhotoInfo } from './types';
 export const AI_PHOTOS: Record<string, PhotoInfo> = {
   'puree-carotte-pomme-de-terre': {
     kind: 'generated',
-    source: 'ElevenLabs (modèle Seedream 5 Lite de ByteDance), généré le 20/10/2026 pour Toi & Moi',
+    source: 'ElevenLabs (modèle Seedream 5 Lite de ByteDance), généré le 20/10/2026 pour Au fil de nous',
     author: 'ElevenLabs (Seedream 5 Lite)',
     license: 'conditions d’utilisation d’ElevenLabs',
     url: null,

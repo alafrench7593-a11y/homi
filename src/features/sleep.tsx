@@ -1,7 +1,7 @@
 /**
  * Sommeil de l'enfant : enregistrement en deux grands boutons, planning du jour estimé, modification des horaires.
  * Inspiré du principe des applications spécialisées (estimation des périodes d'éveil), avec une interface et des
- * textes propres à Toi & Moi.
+ * textes propres à Au fil de nous.
  *  · Gratuit : enregistrer siestes, nuits, réveils nocturnes ; modifier ou supprimer un horaire ; état actuel ;
  *    totaux du jour ; aide pour la nuit ; sommeil en sécurité.
  *  · Premium : estimations personnalisées (prochaine sieste, routine, coucher), recalcul en temps réel,
