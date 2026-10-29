@@ -35,6 +35,9 @@ const config: ExpoConfig = {
     },
     permissions: ['CAMERA', 'POST_NOTIFICATIONS', 'SCHEDULE_EXACT_ALARM'],
     predictiveBackGestureEnabled: false,
+    // pas de sauvegarde automatique Android (cache, file hors ligne, clé des photos du cycle) : les
+    // données intimes restent sur le serveur protégé et sur le téléphone, jamais dans une copie Google Drive
+    allowBackup: false,
   },
   web: { bundler: 'metro', favicon: './assets/favicon.png', output: 'single' },
   plugins: [
