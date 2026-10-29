@@ -19,8 +19,8 @@ $SB link --project-ref "$REF" || { $SB login && $SB link --project-ref "$REF"; }
 echo "2/3 Migrations manquantes (le détail s'affiche, réponds « Y » pour confirmer)…"
 $SB db push --include-all || { read -r -p "Échec des migrations (rien n'a été modifié pour celle qui a échoué). Entrée pour fermer…"; exit 1; }
 
-echo "3/3 Fonctions serveur modifiées par l'audit…"
-for f in delete-account revenuecat-webhook auth-email send-push places document-extract product-lookup; do
+echo "3/3 Fonctions serveur (modifiées par l'audit + 4 jamais déployées)…"
+for f in delete-account revenuecat-webhook auth-email send-push places document-extract product-lookup calendar-feed community-ai cycle-photo document-read; do
   echo "  - $f"
   $SB functions deploy "$f" --project-ref "$REF" || echo "    ⚠︎ échec pour $f"
 done
