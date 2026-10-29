@@ -27,10 +27,10 @@ has OPENFOODFACTS_USER_AGENT || args+=("OPENFOODFACTS_USER_AGENT=AuFilDeNous/1.0
 if [ ${#args[@]} -gt 0 ]; then
   echo "Enregistrement de ${#args[@]} clé(s) dans Supabase…"
   $SB secrets set --project-ref "$REF" "${args[@]}" >/dev/null || { read -r -p "Échec de l'enregistrement. Entrée pour fermer…"; exit 1; }
-  # copie locale dans .env (jamais versionné) pour les prochains déploiements
-  touch .env
-  for kv in "${args[@]}"; do k="${kv%%=*}"; grep -q "^$k=" .env || printf '%s="%s"\n' "$k" "${kv#*=}" >> .env; done
-  echo "OK. (copie aussi enregistrée dans le fichier .env de ce dossier)"
+  # copie locale dans .env.local (jamais versionné ni envoyé à la compilation EAS)
+  touch .env.local
+  for kv in "${args[@]}"; do k="${kv%%=*}"; grep -q "^$k=" .env.local || printf '%s="%s"\n' "$k" "${kv#*=}" >> .env.local; done
+  echo "OK. (copie aussi enregistrée dans .env.local, jamais envoyé à la compilation)"
 fi
 
 echo
