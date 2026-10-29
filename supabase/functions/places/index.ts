@@ -31,7 +31,9 @@ Deno.serve(async (req) => {
 
   try {
     if (body?.check === true) {
-      // Petite recherche réelle (Paris, 1 km) pour vérifier que la clé fonctionne : seul l'état est renvoyé
+      // Petite recherche réelle (Paris, 1 km) pour vérifier que la clé fonctionne : seul l'état est renvoyé.
+      // Chaque vérification est facturée par Google : 5 par heure et par personne au plus.
+      if (!(await rateLimit(admin, `places_check:${auth.user.id}`, 5, 3600))) return json({ google: 'quota' });
       const res = await search(key, buildSearch({ category: 'parks', lat: 48.86, lon: 2.35, radius: 1000 }));
       return json({ google: res.ok ? 'ok' : googleErrorState(res.status) });
     }

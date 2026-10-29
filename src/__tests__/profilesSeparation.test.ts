@@ -63,7 +63,8 @@ describe('Noé : médicament prescrit chaque jour à 17 h', () => {
     expect(reqs.length).toBeGreaterThan(0);
     for (const q of reqs) {
       expect(q.content.categoryIdentifier).toBe(TREATMENT_CATEGORY);
-      expect(q.content.title).toBe('Noé · Traitement prescrit');
+      expect(q.content.title).toBe('Rappel de traitement'); // écran verrouillé : ni prénom, ni médicament, ni dose
+      expect(JSON.stringify([q.content.title, q.content.body])).not.toContain('Noé');
       const tr = q.trigger as { hour?: number; minute?: number; date?: Date };
       if (tr.date) { const d = new Date(tr.date); expect([d.getHours(), d.getMinutes()]).toEqual([17, 0]); } else expect([tr.hour, tr.minute]).toEqual([17, 0]);
     }

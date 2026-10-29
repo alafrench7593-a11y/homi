@@ -3,13 +3,13 @@
 // Déclenchement : Database Webhook sur INSERT public.notifications, ou tâche planifiée.
 // Les rappels personnels (biberon, rendez-vous…) sont des notifications LOCALES
 // programmées sur le téléphone : ils fonctionnent sans réseau.
-import { adminClient, env, json } from '../_shared/http.ts';
+import { adminClient, env, json, safeEqual } from '../_shared/http.ts';
 
 type Row = { id: string; user_id: string; title: string; body: string | null; deep_link: string | null; category: string };
 
 Deno.serve(async (req) => {
   // Protégé par un secret partagé (en-tête du Database Webhook)
-  if (req.headers.get('x-webhook-secret') !== env('PUSH_WEBHOOK_SECRET')) return json({ error: 'unauthorized' }, 401);
+  if (!safeEqual(req.headers.get('x-webhook-secret') ?? '', env('PUSH_WEBHOOK_SECRET'))) return json({ error: 'unauthorized' }, 401);
   const admin = adminClient();
 
   const { data: pending } = await admin
@@ -29,8 +29,9 @@ Deno.serve(async (req) => {
   const messages = rows.flatMap((r) =>
     (tokensByUser.get(r.user_id) ?? []).map((to) => ({
       to,
-      title: r.title,
-      // Écran verrouillé : aucun contenu de conversation, seulement une invitation à ouvrir l'app
+      // Écran verrouillé : ni pseudonyme, ni nom de groupe (un groupe peut révéler un sujet de santé),
+      // ni contenu de conversation ; le détail s'affiche dans l'application.
+      title: r.category.startsWith('community') ? 'Nouvelle activité dans la communauté' : r.title,
       body: r.category.startsWith('community') ? 'Ouvrez l’application pour lire le message.' : r.body ?? undefined,
       sound: 'default',
       channelId: r.category === 'product_recall' ? 'alerts' : 'community',

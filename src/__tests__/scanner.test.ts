@@ -271,8 +271,12 @@ describe('RappelConso : lecteur tolérant et correspondance', () => {
   });
   it('requête et ligne de cache', () => {
     expect(rappelConsoUrl('3017620422003')).toBe('https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/records?where=%223017620422003%22&limit=20');
-    const row = recallRow(parseRecallRecords(V21)[0], '3017620422003');
+    const row = recallRow(parseRecallRecords(V21)[0]);
     expect(row).toMatchObject({ source_key: 'rappelconso:2026-10-0042', is_demo: false, source: 'RappelConso (data.economie.gouv.fr)' });
+  });
+  it('rappel sans GTIN : jamais rattaché au code-barres envoyé par l’application (pas de fausse alerte aux autres)', () => {
+    const rec = { ...parseRecallRecords(V21)[0], gtins: [] as string[] };
+    expect(recallRow(rec).barcode).toBeNull();
   });
 });
 

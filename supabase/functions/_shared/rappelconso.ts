@@ -177,11 +177,17 @@ export function matchRecalls(records: RecallRecord[], product: { barcode?: strin
   return out;
 }
 
-/** Ligne à mettre en cache dans public.product_recalls (écriture par la fonction serveur). */
-export function recallRow(r: RecallRecord, barcode: string | null) {
+/**
+ * Ligne à mettre en cache dans public.product_recalls (écriture par la fonction serveur).
+ * Le code-barres vient UNIQUEMENT de la fiche officielle : jamais du code envoyé par l'application
+ * (sinon un rappel sans GTIN, retrouvé par marque et nom, serait rattaché au produit scanné par
+ * n'importe qui, et toutes les personnes ayant scanné ce produit recevraient une fausse alerte).
+ * Les rappels sans GTIN restent retrouvés par marque et nom au moment du scan.
+ */
+export function recallRow(r: RecallRecord) {
   return {
     source_key: r.key,
-    barcode: r.gtins[0] ?? barcode,
+    barcode: r.gtins[0] ?? null,
     gtins: r.gtins,
     lot_numbers: r.lot_numbers,
     title: r.title.slice(0, 300),

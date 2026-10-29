@@ -23,7 +23,7 @@ export async function verifyHook(secret: string, headers: Headers, body: string,
   const expected = bytesToB64(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${id}.${ts}.${body}`)));
   return sig.split(' ').some((part) => {
     const [v, s] = part.split(',');
-    return v === 'v1' && s === expected;
+    return v === 'v1' && typeof s === 'string' && constantTimeEqual(s, expected);
   });
 }
 
@@ -70,4 +70,12 @@ export async function sendWithResend(apiKey: string, from: string, to: string, m
   });
   const out = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, id: (out as { id?: string }).id };
+}
+
+/** Comparaison en temps constant de la signature du webhook. */
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let r = 0;
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return r === 0;
 }

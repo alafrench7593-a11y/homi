@@ -454,6 +454,31 @@ Remplace l'ancien « Sommeil intelligent ». Inspiré du principe des applicatio
 - Analyse photo de la glaire : décision produit en attente (analyse sur le téléphone, Vertex AI sans conservation, ou Gemini avec conservation annoncée).
 - Lint : le projet n'a pas de configuration ESLint ; `npx expo lint` veut l'installer depuis Internet.
 
+## 29. Audit de sécurité « fuites de données » (29 octobre 2026)
+
+Méthode : recherche de secrets (fichiers, 160 versions de l'historique git, version web compilée) ; audit automatique de la base (165 tables, 431 règles d'accès, 171 fonctions privilégiées) ; attaques rejouées sur une base temporaire ; relecture indépendante des fonctions serveur et de l'appli, constats vérifiés dans le code.
+
+| Gravité | Problème | Correction | Preuve |
+|---|---|---|---|
+| 🔴 élevée | Anonymat de la communauté levé en une requête : `community_actor_label(id, publication)` répondait à toute membre ; les identifiants des profils étant lisibles, on retrouvait l'autrice d'un témoignage anonyme | fonction réservée au serveur | SQL `65_security_audit.sql` (attaque rejouée) |
+| 🔴 élevée | Photos d'une publication anonyme : leur chemin commence par l'identifiant de l'autrice | photos d'une publication anonyme invisibles des autres (fil, table, fichiers) ; plus de photo possible dans une publication anonyme | idem |
+| 🟠 moyenne | Saisies hors ligne (humeur, rapports, règles…) gardées en clair et renvoyées sous le compte suivant sur un téléphone partagé | file rattachée au compte ; effacée quand un autre compte se connecte | `offlineQueue.test.ts` |
+| 🟠 moyenne | Cache de l'appli écrit en clair avec les données de cycle, glaire, rapports, post-partum, traitements | 25 types de données intimes exclus du cache persisté | code `_layout.tsx` |
+| 🟠 moyenne | Fausse alerte de rappel produit envoyée à d'autres personnes (rappel sans code-barres rattaché au code envoyé par l'appli) | code-barres pris uniquement dans la fiche officielle | `scanner.test.ts` |
+| 🟠 moyenne | Écran verrouillé iOS : prénom de l'enfant, médicament et dose | texte neutre « Rappel de traitement » | `lockScreen.test.ts` |
+| 🟡 faible | Qui a bloqué qui : visible de tous | réponse réelle seulement pour les personnes concernées | SQL 65 |
+| 🟡 faible | Notifications communauté : pseudonyme / nom de groupe sur l'écran verrouillé ; canal Android non privé | titre neutre, canal privé | code |
+| 🟡 faible | Secrets de webhook comparés en temps non constant (push, e-mails) | comparaison en temps constant | Deno 45/45 |
+| 🟡 faible | Limite d'appels levée en cas d'erreur de la base (coûts Gemini/Places illimités) ; vérification Places sans limite | refus par défaut ; 5 vérifications/heure | code |
+| 🟡 faible | Extraction de documents : type non vérifié, enregistrement hors règles d'accès | type vérifié, enregistrement soumis aux droits | code |
+| 🟡 faible | Fichiers d'export complets laissés dans le cache ; clé des photos du cycle non effacée (mauvais nom) | exports effacés avant chaque nouvel export et à l'effacement ; bon nom de clé | code |
+| 🟡 faible | Plantages natifs envoyés à Sentry sans filtre ni accord | désactivés (erreurs JavaScript seulement, filtrées et consenties) | code |
+| 🟡 faible | Droit TRUNCATE (non soumis à la RLS) laissé aux rôles de l'appli | retiré | SQL 65 |
+
+**Vérifié et correct** : aucun secret dans le dépôt ni dans la version compilée (seule la clé publique anon) ; RLS active sur 165/165 tables ; aucun espace de stockage public ; fonctions privilégiées avec `search_path` fixé ; pas d'accès croisé entre foyers dans les fonctions serveur ; journaux sans contenu ; données envoyées aux services tiers minimisées.
+
+**Reste ouvert (faible, documenté)** : `has_premium(id)` et `is_group_member(groupe, id)` révèlent le statut Premium ou l'appartenance à un groupe d'une personne dont on connaît l'identifiant (fonctions utilisées par d'autres fonctions : à scinder dans un lot dédié) ; 89 fonctions restent exécutables sans connexion mais contrôlent les droits en interne ; lien d'invitation par schéma `toietmoi://` (pas de lien universel) ; sauvegarde Android (`allowBackup`) à désactiver dans `app.config.ts` ; la base EN LIGNE n'a pas été auditée (réseau bloqué) : appliquer les migrations `20261031000100` et `20261101000100`.
+
 ## 4. Décisions et limites documentées
 
 - **EPDS non intégrée.** Le Royal College of Psychiatrists détient les droits ; la diffusion à des tiers (ce qu'est une app) exige une autorisation écrite, et l'intégration complète a déjà été refusée à un logiciel clinique (documentation CamCOPS). Conformément au § 22.4, l'app propose un check-in de bien-être **non diagnostique**. À rouvrir uniquement avec une autorisation écrite et la version française validée (Guedeney & Fermanian, 1998).

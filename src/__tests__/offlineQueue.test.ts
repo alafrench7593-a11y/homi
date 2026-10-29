@@ -27,12 +27,13 @@ jest.mock('@/lib/backend', () => {
   };
 });
 
-import { flushQueue, insertOrQueue, retryConflict, useOfflineStore, discardConflict } from '@/lib/offline';
+import { flushQueue, insertOrQueue, retryConflict, setQueueOwner, useOfflineStore, discardConflict } from '@/lib/offline';
 
-beforeEach(() => {
+beforeEach(async () => {
   mockSent.length = 0;
   mockMode = 'ok';
   useOfflineStore.setState({ online: true, pending: [], conflicts: [], syncing: false });
+  await setQueueOwner('compte-a');
 });
 
 describe('file hors ligne', () => {
@@ -85,5 +86,29 @@ describe('file hors ligne', () => {
     useOfflineStore.setState({ conflicts: [{ id: 'x', table: 'symptom_logs', row: { id: 'x' }, queuedAt: new Date().toISOString(), error: 'refus' }] });
     await discardConflict('x');
     expect(useOfflineStore.getState().conflicts).toHaveLength(0);
+  });
+});
+
+describe('file hors ligne : téléphone partagé', () => {
+  it('les saisies en attente d’un compte ne partent jamais sous un autre compte et sont effacées quand un autre se connecte', async () => {
+    useOfflineStore.setState({ online: false });
+    await insertOrQueue('mood_checkins', { user_id: 'compte-a', mood: 2, journal: 'note privée' });
+    expect(useOfflineStore.getState().pending[0].owner).toBe('compte-a');
+    await setQueueOwner(null); // déconnexion
+    useOfflineStore.setState({ online: true });
+    expect(await flushQueue()).toBe(0); // personne de connecté : rien n'est envoyé
+    await setQueueOwner('compte-b'); // une autre personne se connecte
+    expect(useOfflineStore.getState().pending).toHaveLength(0);
+    expect(await flushQueue()).toBe(0);
+    expect(mockSent).toHaveLength(0);
+  });
+  it('la même personne qui se reconnecte retrouve et envoie ses saisies', async () => {
+    useOfflineStore.setState({ online: false });
+    await insertOrQueue('period_entries', { user_id: 'compte-a', start_date: '2026-10-20' });
+    await setQueueOwner(null);
+    await setQueueOwner('compte-a');
+    useOfflineStore.setState({ online: true });
+    expect(await flushQueue()).toBe(1);
+    expect(mockSent).toHaveLength(1);
   });
 });

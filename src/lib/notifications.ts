@@ -67,7 +67,7 @@ export function configureNotifications() {
   if (Platform.OS === 'android') {
     // Écran verrouillé : contenu masqué (PRIVATE) par défaut ; le système affiche « contenu masqué » si l'utilisatrice l'a choisi
     Notifications.setNotificationChannelAsync('reminders', { name: 'Rappels', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200], lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
-    Notifications.setNotificationChannelAsync('community', { name: 'Communauté', importance: Notifications.AndroidImportance.DEFAULT }).catch(() => undefined);
+    Notifications.setNotificationChannelAsync('community', { name: 'Communauté', importance: Notifications.AndroidImportance.DEFAULT, lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
     Notifications.setNotificationChannelAsync('alerts', { name: 'Alertes officielles', importance: Notifications.AndroidImportance.HIGH }).catch(() => undefined);
     // Sommeil : estimations choisies par le parent, contenu masqué sur l'écran verrouillé, importance normale
     Notifications.setNotificationChannelAsync(SLEEP_CHANNEL, { name: 'Sommeil (estimations)', importance: Notifications.AndroidImportance.DEFAULT, lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
@@ -149,6 +149,15 @@ const signature = (r: Reminder) => JSON.stringify([r.title, r.body, r.schedule, 
  * crée, modifie (annule puis reprogramme) et annule ce qui doit l'être.
  * Idempotent : peut être appelé à chaque ouverture et sur chaque appareil.
  */
+/**
+ * Texte visible sur l'écran verrouillé. Traitement d'un enfant : ni prénom, ni médicament, ni dose
+ * (iOS affiche le contenu complet sans réglage particulier). Le détail s'affiche dans l'appli.
+ */
+export function lockScreenText(r: Pick<Reminder, 'title' | 'body' | 'category' | 'treatment_id'>): { title: string; body?: string } {
+  if (r.treatment_id || r.category === 'medication') return { title: 'Rappel de traitement', body: 'Ouvrez Au fil de nous pour voir le détail.' };
+  return { title: r.title, body: r.body ?? undefined };
+}
+
 export async function syncLocalReminders(reminders: Reminder[]): Promise<{ scheduled: number; skipped: number }> {
   if (!notificationsSupported) return { scheduled: 0, skipped: 0 };
   let map: ScheduledMap = {};
@@ -182,8 +191,7 @@ export async function syncLocalReminders(reminders: Reminder[]): Promise<{ sched
       }
       const id = await Notifications.scheduleNotificationAsync({
         content: {
-          title: r.title,
-          body: r.body ?? undefined,
+          ...lockScreenText(r),
           categoryIdentifier: r.treatment_id ? TREATMENT_CATEGORY : 'reminder',
           data: r.treatment_id
             ? { url: r.deep_link ?? '/notifications', reminderId: r.id, source: 'treatment', treatmentId: r.treatment_id, householdId: r.household_id, dose: doseOf(r) }

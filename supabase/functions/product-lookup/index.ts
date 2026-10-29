@@ -63,7 +63,7 @@ async function checkRecalls(admin: Any, product: { barcode?: string | null; bran
     const matches = matchRecalls(records, product);
     if (matches.length) {
       // Cache : l'insertion d'un nouveau rappel déclenche les notifications (historique et favoris)
-      await admin.from('product_recalls').upsert(matches.map((m) => recallRow(m.record, product.barcode ?? null)), { onConflict: 'source_key', ignoreDuplicates: true });
+      await admin.from('product_recalls').upsert(matches.map((m) => recallRow(m.record)), { onConflict: 'source_key', ignoreDuplicates: true });
     }
   }
   // Lecture du cache (inclut les rappels déjà connus, et ceux de démonstration identifiés comme tels)

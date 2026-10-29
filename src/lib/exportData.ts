@@ -3,11 +3,28 @@
  * Les fichiers sont créés sur l'appareil puis partagés ; rien n'est envoyé ailleurs.
  */
 import { Platform } from 'react-native';
-import { File, Paths } from 'expo-file-system';
+import { Directory, File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { BRAND } from '@/config/brand';
 
 const stamp = () => new Date().toISOString().slice(0, 10);
+
+/**
+ * Efface du téléphone les fichiers d'export déjà créés (toutes les données de la personne en clair).
+ * Appelé avant chaque nouvel export et lors de l'effacement des données locales.
+ */
+export function purgeExportFiles(): number {
+  if (Platform.OS === 'web') return 0;
+  let n = 0;
+  try {
+    for (const item of new Directory(Paths.cache).list()) {
+      if (item instanceof File && (item.name.startsWith(`${BRAND.slug}-export-`) || item.name.startsWith(`${BRAND.slug}-mes-donnees-`))) {
+        try { item.delete(); n++; } catch { /* fichier déjà absent */ }
+      }
+    }
+  } catch { /* dossier illisible : rien à faire */ }
+  return n;
+}
 
 /** Fichier JSON : partage (téléphone) ou téléchargement (web). */
 export async function exportJson(data: unknown): Promise<'file' | 'download' | 'text'> {
@@ -25,6 +42,7 @@ export async function exportJson(data: unknown): Promise<'file' | 'download' | '
     return 'text';
   }
   if (await Sharing.isAvailableAsync()) {
+    purgeExportFiles();
     const file = new File(Paths.cache, name);
     if (file.exists) file.delete();
     file.create();
@@ -49,6 +67,7 @@ export async function exportTextFile(content: string, name: string, mimeType: st
     return 'text';
   }
   if (await Sharing.isAvailableAsync()) {
+    purgeExportFiles();
     const file = new File(Paths.cache, name);
     if (file.exists) file.delete();
     file.create();
@@ -117,6 +136,7 @@ export async function exportPdf(data: unknown, email: string | null): Promise<'f
     await Print.printAsync({ html });
     return 'print';
   }
+  purgeExportFiles();
   const { uri } = await Print.printToFileAsync({ html });
   const named = new File(Paths.cache, `${BRAND.slug}-mes-donnees-${stamp()}.pdf`);
   try {

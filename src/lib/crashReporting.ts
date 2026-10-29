@@ -55,6 +55,10 @@ export function initCrashReporting(): void {
   Sentry.init({
     dsn: DSN,
     sendDefaultPii: false,
+    // Plantages natifs : envoyés par le SDK natif SANS passer par le filtre ci-dessous ni par l'accord
+    // de la personne → désactivés. Seules les erreurs JavaScript, filtrées et consenties, partent.
+    enableNativeCrashHandling: false,
+    enableNativeNagger: false,
     attachScreenshot: false,
     attachViewHierarchy: false,
     enableAutoSessionTracking: false,

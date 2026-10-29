@@ -45,9 +45,10 @@ export async function requireUser(req: Request): Promise<{ user: User; client: S
 export async function rateLimit(admin: SupabaseClient, key: string, limit: number, windowSeconds: number): Promise<boolean> {
   const { data, error } = await admin.rpc('rate_limit_hit', { p_key: key, p_limit: limit, p_window_seconds: windowSeconds });
   if (error) {
-    // Journal minimal, sans donnée personnelle
+    // Journal minimal, sans donnée personnelle. Refus par défaut : sans compteur, pas d'appels
+    // illimités aux services payants (Gemini, Google Places…).
     console.error('rate_limit_error', error.code);
-    return true;
+    return false;
   }
   return data === true;
 }
@@ -62,4 +63,12 @@ export async function hasConsent(admin: SupabaseClient, userId: string, purpose:
     .limit(1)
     .maybeSingle();
   return data?.granted === true;
+}
+
+/** Comparaison de secrets en temps constant (pas d'indice sur la longueur commune par le temps de réponse). */
+export function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let r = 0;
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return r === 0;
 }

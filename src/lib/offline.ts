@@ -22,6 +22,8 @@ export interface PendingOp {
   conflict?: string;
   /** Vrai : la saisie remplace l'existante (ex. une observation par jour). */
   merge?: boolean;
+  /** Compte qui a fait la saisie : jamais envoyée ni montrée sous un autre compte. */
+  owner?: string | null;
 }
 
 function uuidLike(): string {
@@ -56,6 +58,31 @@ export const useOfflineStore = create<OfflineState>((set) => ({
   setOnline: (online) => set({ online }),
 }));
 
+/** Compte connecté sur ce téléphone (null : personne). */
+let queueOwner: string | null = null;
+
+/**
+ * Appelé à chaque changement de session. Si un AUTRE compte se connecte, les saisies en attente
+ * du compte précédent sont effacées de ce téléphone : elles ne sont ni envoyées sous la mauvaise
+ * session, ni affichées à quelqu'un d'autre (téléphone partagé, coparent).
+ */
+export async function setQueueOwner(userId: string | null) {
+  queueOwner = userId;
+  if (!userId) return;
+  const { pending, conflicts } = useOfflineStore.getState();
+  const mine = (op: PendingOp) => op.owner == null || op.owner === userId;
+  if (pending.every(mine) && conflicts.every(mine)) {
+    // anciennes saisies sans compte noté : rattachées au compte connecté (elles ont été faites avant la mise à jour)
+    if (pending.some((o) => o.owner == null) || conflicts.some((o) => o.owner == null)) {
+      useOfflineStore.setState({ pending: pending.map((o) => ({ ...o, owner: o.owner ?? userId })), conflicts: conflicts.map((o) => ({ ...o, owner: o.owner ?? userId })) });
+      await save();
+    }
+    return;
+  }
+  useOfflineStore.setState({ pending: pending.filter(mine), conflicts: conflicts.filter(mine) });
+  await save();
+}
+
 async function save() {
   const { pending, conflicts } = useOfflineStore.getState();
   await AsyncStorage.setItem(KEY, JSON.stringify({ pending, conflicts }));
@@ -67,6 +94,7 @@ export async function loadQueue() {
     if (raw) {
       const { pending, conflicts } = JSON.parse(raw);
       useOfflineStore.setState({ pending: pending ?? [], conflicts: conflicts ?? [] });
+      if (queueOwner) await setQueueOwner(queueOwner); // chargée après la connexion : même filtre
     }
   } catch {
     // file illisible : on n'écrase rien
@@ -75,7 +103,7 @@ export async function loadQueue() {
 
 export async function enqueue(table: string, row: PendingOp['row'], opts: { conflict?: string; merge?: boolean } = {}) {
   const id = String(row.client_id ?? row.id ?? uuidLike());
-  useOfflineStore.setState((s) => ({ pending: [...s.pending, { id, table, row, queuedAt: new Date().toISOString(), ...opts }] }));
+  useOfflineStore.setState((s) => ({ pending: [...s.pending, { id, table, row, queuedAt: new Date().toISOString(), owner: queueOwner, ...opts }] }));
   await save();
 }
 
@@ -109,12 +137,13 @@ export async function insertOrQueue(table: string, input: Record<string, unknown
 
 export async function flushQueue(): Promise<number> {
   const st = useOfflineStore.getState();
-  if (st.syncing || !st.pending.length || backend.mode === 'demo') return 0;
+  if (st.syncing || !st.pending.length || backend.mode === 'demo' || !queueOwner) return 0;
   useOfflineStore.setState({ syncing: true });
   let sent = 0;
   const remaining: PendingOp[] = [];
   const conflicts: PendingOp[] = [...st.conflicts];
   for (const op of st.pending) {
+    if (op.owner != null && op.owner !== queueOwner) { remaining.push(op); continue; } // jamais sous une autre session
     try {
       await send(op);
       sent++;

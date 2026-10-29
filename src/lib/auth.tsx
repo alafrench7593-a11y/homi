@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { backend, initBackendMode, onBackendSwitch, type Session } from './backend';
+import { setQueueOwner } from './offline';
 import { useUiStore } from './store';
 
 interface AuthState {
@@ -43,6 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       currentUser.current = s?.userId ?? null;
       if (changed) {
         qc.clear(); // aucune donnée d'un compte ne doit rester visible pour un autre
+        void setQueueOwner(s?.userId ?? null); // saisies hors ligne d'un autre compte effacées de ce téléphone
         if (!s) useUiStore.getState().reset();
         // Hors de l'écouteur d'authentification : Supabase interdit d'y attendre un autre appel (blocage)
         else setTimeout(() => { void bootstrapAccount().then(() => qc.invalidateQueries()); }, 0);
