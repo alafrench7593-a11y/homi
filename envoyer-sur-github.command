@@ -1,10 +1,10 @@
 #!/bin/bash
-# Envoie tout l'historique d'« Au fil de nous » dans le dépôt PRIVÉ github.com/robonomic/au-fil-de-nous.
+# Envoie tout l'historique d'« Au fil de nous » dans le dépôt PRIVÉ github.com/aufildenous/au-fil-de-nous.
 # - L'historique vient du fichier historique.bundle (à côté de ce script) ; ton dossier n'est pas modifié.
 # - La connexion à GitHub se fait par TOI, dans ton navigateur (aucune clé n'est collée ni affichée ici).
 # - Les fichiers .env / .env.local (clés) ne sont PAS dans l'historique.
 cd "$(dirname "$0")" || exit 1
-DEPOT="https://github.com/robonomic/au-fil-de-nous.git"
+DEPOT="https://github.com/aufildenous/au-fil-de-nous.git"
 pause() { read -r -p "Appuie sur Entrée pour fermer…"; }
 echo "=== Au fil de nous → GitHub (dépôt privé) ==="
 [ -f historique.bundle ] || { echo "historique.bundle introuvable à côté de ce fichier."; pause; exit 1; }
@@ -19,13 +19,13 @@ if ! command -v gh >/dev/null 2>&1 && command -v brew >/dev/null 2>&1; then
 fi
 if command -v gh >/dev/null 2>&1; then
   if ! gh auth status -h github.com >/dev/null 2>&1; then
-    echo "Connexion à GitHub : un code va s'afficher, puis ton navigateur s'ouvre. Connecte-toi avec le compte « robonomic »."
+    echo "Connexion à GitHub : un code va s'afficher, puis ton navigateur s'ouvre. Connecte-toi avec le compte « aufildenous »."
     gh auth login -h github.com -p https -w || { echo "Connexion annulée."; pause; exit 1; }
   fi
   gh auth setup-git -h github.com >/dev/null 2>&1
 else
   echo "Outil gh indisponible : Git va demander « Username » puis « Password »."
-  echo "  Username : robonomic"
+  echo "  Username : aufildenous"
   echo "  Password : un jeton GitHub (pas ton mot de passe), à créer ici, case « repo » cochée :"
   echo "  https://github.com/settings/tokens/new?scopes=repo&description=au-fil-de-nous"
   echo "  Tape-le seulement dans CETTE fenêtre, jamais dans une conversation."
