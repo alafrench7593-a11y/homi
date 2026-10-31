@@ -275,7 +275,7 @@ export default function Chat() {
         <Card tone="lavender">
           <Text variant="heading">Avant de commencer</Text>
           <Text style={{ marginTop: spacing.xs }}>
-            Vos questions sont envoyées à un service d’intelligence artificielle sécurisé, depuis nos serveurs. Votre situation (parcours, semaine de grossesse, âge des enfants…) n’est transmise que si vous l’autorisez, conversation par conversation — jamais de prénom ni de document.
+            Vos questions sont envoyées, depuis nos serveurs, à l’intelligence artificielle Google Gemini (service externe). Votre situation (parcours, semaine de grossesse, âge des enfants…) n’est transmise que si vous l’autorisez, conversation par conversation — jamais de prénom ni de document.
           </Text>
           <Text style={{ marginTop: spacing.xs }}>L’assistant informe et vous aide à préparer vos rendez-vous. Il ne pose pas de diagnostic, ne prescrit rien et ne remplace pas un professionnel. Vos conversations restent privées et ne sont jamais publiées.</Text>
           <Row style={{ marginTop: spacing.md, justifyContent: 'space-between' }}>

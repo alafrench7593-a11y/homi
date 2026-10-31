@@ -21,8 +21,8 @@ import { radius, spacing } from '@/theme/tokens';
 
 const CONSENTS: { purpose: ConsentPurpose; title: string; detail: string; warnOff?: string }[] = [
   { purpose: 'health_data', title: 'Données de santé', detail: 'Enregistrer le suivi de grossesse, des enfants et votre suivi personnel.', warnOff: 'Sans ce consentement, nous ne pourrons plus enregistrer de nouvelles données de suivi. Les données existantes restent consultables, exportables et supprimables.' },
-  { purpose: 'ai_assistant', title: 'Assistant', detail: 'Transmettre vos questions à un service d’intelligence artificielle pour y répondre.' },
-  { purpose: 'document_reading', title: 'Lecture automatique des documents', detail: 'Extraire les informations d’un document que vous choisissez d’analyser.' },
+  { purpose: 'ai_assistant', title: 'Assistant', detail: 'Transmettre vos questions à l’intelligence artificielle Google Gemini (service externe) pour y répondre.' },
+  { purpose: 'document_reading', title: 'Lecture automatique des documents', detail: 'Envoyer le document que vous choisissez d’analyser à l’intelligence artificielle Google Gemini (service externe) pour en extraire les informations.' },
   { purpose: 'marketing', title: 'Nouvelles de l’application', detail: 'Recevoir occasionnellement des nouveautés par e-mail.' },
 ];
 const RETENTION = [6, 12, 24, 36, 60, 120];

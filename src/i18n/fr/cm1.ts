@@ -182,8 +182,8 @@ export const cm1 = {
   'cm1.folders.created': 'Dossier « {name} » créé.',
   'cm1.folders.premiumOnly': 'Créer des dossiers est réservé à Premium. Vos enregistrements restent tous accessibles.',
   // Résumé IA
-  'cm1.ai.preview': 'Cette discussion compte {count} réponses : le résumé en présente l’essentiel, sous forme de témoignages.',
-  'cm1.ai.note': 'Résumé automatique : relisez la discussion pour les détails.',
+  'cm1.ai.preview': 'Cette discussion compte {count} réponses : le résumé en présente l’essentiel, sous forme de témoignages. Pour le produire, les messages de la discussion sont envoyés à l’intelligence artificielle Google Gemini (service externe).',
+  'cm1.ai.note': 'Résumé automatique par l’intelligence artificielle Google Gemini (service externe), à partir des messages publics de la discussion : relisez-la pour les détails.',
   'cm1.ai.essentials': 'L’essentiel de la discussion',
   'cm1.ai.cta': '{count} réponses : voir l’essentiel',
   'cm1.ai.summarize': 'Résumer la discussion',

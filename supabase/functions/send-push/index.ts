@@ -31,8 +31,11 @@ Deno.serve(async (req) => {
       to,
       // Écran verrouillé : ni pseudonyme, ni nom de groupe (un groupe peut révéler un sujet de santé),
       // ni contenu de conversation ; le détail s'affiche dans l'application.
-      title: r.category.startsWith('community') ? 'Nouvelle activité dans la communauté' : r.title,
-      body: r.category.startsWith('community') ? 'Ouvrez l’application pour lire le message.' : r.body ?? undefined,
+      // Rappel de produit : le nom du produit (ex. un lait infantile) peut révéler une naissance.
+      title: r.category.startsWith('community') ? 'Nouvelle activité dans la communauté'
+        : r.category === 'product_recall' ? 'Alerte sur un produit enregistré' : r.title,
+      body: r.category.startsWith('community') ? 'Ouvrez l’application pour lire le message.'
+        : r.category === 'product_recall' ? 'Ouvrez l’application pour voir le détail du rappel.' : r.body ?? undefined,
       sound: 'default',
       channelId: r.category === 'product_recall' ? 'alerts' : 'community',
       data: { url: r.deep_link ?? '/notifications', notificationId: r.id },

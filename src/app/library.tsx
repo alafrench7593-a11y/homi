@@ -177,7 +177,7 @@ export default function Library() {
         <View testID="videos-empty">
           <EmptyStateCard illustration="leaf" title={tr('art.videosEmpty')} text={tr('art.videosBody')} />
           <Card>
-            {(['massage', 'bath', 'carry', 'swaddle', 'bottle'] as const).map((k) => <Text key={k} variant="small" style={{ marginTop: 4 }}>• {tr(`art.videoTopic.${k}`)} — {tr('art.status.to_review')}</Text>)}
+            {(['massage', 'bath', 'carry', 'swaddle', 'bottle'] as const).map((k) => <Text key={k} variant="small" style={{ marginTop: 4 }}>• {tr(`art.videoTopic.${k}`)}</Text>)}
             <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('art.videoNote')}</Text>
           </Card>
         </View>

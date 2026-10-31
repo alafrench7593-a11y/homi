@@ -184,8 +184,8 @@ export const cm1: Messages<typeof fr> = {
   'cm1.folders.created': 'Folder “{name}” created.',
   'cm1.folders.premiumOnly': 'Creating folders is a Premium feature. All your saved posts stay available.',
   // AI summary
-  'cm1.ai.preview': 'This conversation has {count} replies: the summary brings out the key points, as shared experiences.',
-  'cm1.ai.note': 'Automatic summary: read the conversation for the details.',
+  'cm1.ai.preview': 'This conversation has {count} replies: the summary brings out the key points, as shared experiences. To produce it, the messages are sent to Google Gemini, an external AI service.',
+  'cm1.ai.note': 'Automatic summary by Google Gemini (an external AI service), based on the public messages of the conversation: read it for the details.',
   'cm1.ai.essentials': 'Key points of the conversation',
   'cm1.ai.cta': '{count} replies: see the key points',
   'cm1.ai.summarize': 'Summarise the conversation',

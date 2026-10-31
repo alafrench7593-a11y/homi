@@ -52,7 +52,7 @@ export default function Onboarding() {
   const [children, setChildren] = useState<ChildDraft[]>([emptyChild()]);
   const [cErrors, setCErrors] = useState<Record<string, string>[]>([{}]);
   const [reminders, setReminders] = useState<string[]>([]);
-  const [consents, setConsents] = useState<Record<ConsentPurpose, boolean>>({ terms: true, health_data: true, ai_assistant: true, document_reading: false, analytics: false, crash_reports: false, marketing: false });
+  const [consents, setConsents] = useState<Record<ConsentPurpose, boolean>>({ terms: true, health_data: true, ai_assistant: false, document_reading: false, analytics: false, crash_reports: false, marketing: false });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bottleFeeding, setBottleFeeding] = useState<BottleFeeding>(null);
