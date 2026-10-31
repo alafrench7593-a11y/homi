@@ -14,6 +14,7 @@ import { confirm, useToast } from '@/components/Overlays';
 import { BRAND } from '@/config/brand';
 import { useInvalidate } from '@/lib/data/hooks';
 import { useEntitlement } from '@/lib/data/hooks-premium';
+import { LegalLink } from '@/features/auth';
 import { friendlyError, usePlanLimits } from '@/lib/data/hooks-settings';
 import { ALWAYS_FREE, FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
 import { billingDates, getPlans, MANAGE_URLS, manageSubscription, purchase, purchaseMode, restore, type Plan } from '@/lib/purchases';
@@ -265,6 +266,11 @@ export default function SubscriptionScreen() {
       <Text variant="caption" muted testID="sub-terms">
         {'Annulation : à tout moment depuis les réglages de votre compte App Store ou Google Play, au moins 24 h avant la date de renouvellement ; l’accès Premium reste ouvert jusqu’à la fin de la période déjà payée. Pendant un essai gratuit, une annulation avant la fin de l’essai évite tout prélèvement. Le prix affiché est celui de votre boutique, toutes taxes comprises. Après la fin d’un abonnement, toutes vos données restent consultables et exportables.'}
       </Text>
+      {/* Liens exigés par l'App Store (règle 3.1.2) : conditions d'utilisation et confidentialité */}
+      <Row wrap testID="sub-legal-links">
+        <LegalLink doc="terms">Conditions d’utilisation</LegalLink>
+        <LegalLink doc="privacy">Politique de confidentialité</LegalLink>
+      </Row>
     </Screen>
   );
 }

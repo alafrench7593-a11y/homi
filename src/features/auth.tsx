@@ -6,6 +6,8 @@ import { Button, Icon, Row, Text } from '@/components/ui';
 import { backend, isDemo } from '@/lib/backend';
 import { BackendError } from '@/lib/backend/types';
 import { passwordRules, resendRemaining } from '@/lib/authFlow';
+import { enabledSocialProviders } from '@/lib/socialProviders';
+export { enabledSocialProviders };
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -54,6 +56,13 @@ export function LegalLink({ doc, children }: { doc: 'terms' | 'privacy'; childre
   return <Text variant="small" color={t.colors.primary} weight="bold" accessibilityRole="link" onPress={() => router.push(`/legal/${doc}`)}>{children}</Text>;
 }
 
+/** Vrai si au moins un bouton social est affiché (sert aussi à masquer la note qui les accompagne). */
+export function hasSocialSignIn(): boolean {
+  if (isDemo) return false;
+  const p = enabledSocialProviders();
+  return p.apple || p.google;
+}
+
 /** « Continuer avec Apple / Google ». Erreurs affichées en français ; fermeture de la fenêtre ignorée. */
 export function SocialButtons({ onError, disabled }: { onError: (msg: string) => void; disabled?: boolean }) {
   const [busy, setBusy] = useState<'apple' | 'google' | null>(null);
@@ -69,13 +78,14 @@ export function SocialButtons({ onError, disabled }: { onError: (msg: string) =>
       setBusy(null);
     }
   }
-  if (isDemo) return null;
+  if (!hasSocialSignIn()) return null;
+  const providers = enabledSocialProviders();
   return (
     <View style={{ gap: spacing.xs }}>
-      {Platform.OS === 'ios' ? <AppleNativeButton onPress={() => go('apple')} /> : (
+      {providers.apple ? (Platform.OS === 'ios' ? <AppleNativeButton onPress={() => go('apple')} /> : (
         <Button label={tr('auth.social.apple')} icon="smartphone" variant="secondary" loading={busy === 'apple'} disabled={disabled || !!busy} onPress={() => go('apple')} full />
-      )}
-      <Button label={tr('auth.social.google')} icon="globe" variant="secondary" loading={busy === 'google'} disabled={disabled || !!busy} onPress={() => go('google')} full />
+      )) : null}
+      {providers.google ? <Button label={tr('auth.social.google')} icon="globe" variant="secondary" loading={busy === 'google'} disabled={disabled || !!busy} onPress={() => go('google')} full /> : null}
     </View>
   );
 }

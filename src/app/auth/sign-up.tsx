@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, Row, Text } from '@/components/ui';
-import { CheckRow, LegalLink, PasswordRules, ResendButton, SocialButtons } from '@/features/auth';
+import { CheckRow, hasSocialSignIn, LegalLink, PasswordRules, ResendButton, SocialButtons } from '@/features/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { LEGAL_VERSIONS, peekPendingInvite, savePendingConsents } from '@/lib/authFlow';
 import { emailSchema, fieldErrors, issueText, signUpSchema } from '@/lib/validation';
@@ -100,7 +100,7 @@ export default function SignUp() {
 
       <Button label={tr('auth.signUp.create')} size="lg" loading={loading} disabled={loading} onPress={submit} />
       <SocialButtons onError={(m) => setErrors({ _: m })} disabled={loading} />
-      <Text variant="caption" muted center>{tr('auth.signUp.socialNote')}</Text>
+      {hasSocialSignIn() ? <Text variant="caption" muted center>{tr('auth.signUp.socialNote')}</Text> : null}
       <Button label={tr('auth.signUp.haveAccount')} variant="ghost" onPress={() => router.replace('/auth/sign-in')} />
     </Screen>
   );
