@@ -1,6 +1,7 @@
 /** Écran de lancement : oriente vers l'accueil, l'onboarding ou la connexion. */
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
+import { CINEMATIC_POSTER } from '@/features/cinematicIntro/CinematicIntro';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { useProfile } from '@/lib/data/hooks';
@@ -24,7 +25,10 @@ export default function Launch() {
   const [hydrated, setHydrated] = useState(() => useUiStore.persist?.hasHydrated?.() ?? true);
   useEffect(() => (hydrated ? undefined : useUiStore.persist?.onFinishHydration?.(() => setHydrated(true))), [hydrated]);
   const introSeen = useUiStore((s) => s.introSeen);
+  const cinematicSeen = useUiStore((s) => s.cinematicSeen);
 
+  // Toute première ouverture (pas encore de compte) : introduction cinématique, une seule fois, « Passer » possible
+  if (ready && !session && hydrated && !cinematicSeen) return <Redirect href="/cinematic" />;
   // Première ouverture sans compte : introduction (toujours « Passer » possible)
   if (ready && !session && hydrated && !introSeen) return <Redirect href="/intro" />;
   if (ready && !session && hydrated) return <Redirect href="/welcome" />;
@@ -34,6 +38,8 @@ export default function Launch() {
   if (ready && session && !isLoading && (!profile || !profile.onboarding_completed) && !isError) return <Redirect href="/onboarding" />;
   if (ready && session && (profile?.onboarding_completed || isError)) return <Redirect href="/(tabs)" />;
 
+  // Première ouverture : on attend la session sur la première image de l'introduction (enchaînement sans saut)
+  if (hydrated && !cinematicSeen && !ready) return <Image source={CINEMATIC_POSTER} style={StyleSheet.absoluteFill} resizeMode="cover" accessible={false} />;
   return (
     <View style={{ flex: 1, backgroundColor: '#1C1128', alignItems: 'center', justifyContent: 'center', gap: 18 }} accessibilityLabel={tr('common.appLoading', { app: BRAND.name })}>
       <Aurora mood="evening" intensity={1.25} />

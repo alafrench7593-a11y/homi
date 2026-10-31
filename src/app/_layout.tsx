@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router, Stack } from 'expo-router';
+import { router, Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Notifications from 'expo-notifications';
 import { useFonts } from 'expo-font';
@@ -129,6 +129,7 @@ function Navigator() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="track/[kind]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="night" options={{ animation: 'fade', gestureEnabled: false }} />
+      <Stack.Screen name="cinematic" options={{ animation: 'fade', animationDuration: 500, gestureEnabled: false }} />
       <Stack.Screen name="sleep/tonight" options={{ animation: 'fade' }} />
       <Stack.Screen name="emergency" options={{ presentation: 'modal' }} />
       <Stack.Screen name="assistant/chat" options={{ presentation: Platform.OS === 'ios' ? 'modal' : 'card' }} />
@@ -224,6 +225,9 @@ function Backdrop() {
   }, [light, reduce, v]);
   // Lueur du coucher de soleil sur le ciel de nuit, de 18 h 30 à 20 h 30 (mode automatique)
   const glow = preference === 'auto' && t.name === 'dark' ? Math.max(0, Math.min(1, (20.5 - hour) / 2)) : 0;
+  // Pendant l'introduction cinématique, elle seule joue une vidéo (fond fixe dessous, jamais noir)
+  const pathname = usePathname();
+  if (pathname === '/cinematic') return <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t.colors.background }} />;
   return (
     <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: t.colors.background }}>
       {mounted.dark ? (

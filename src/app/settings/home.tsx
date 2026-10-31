@@ -84,6 +84,7 @@ export default function HomeSettings() {
 
       <Button label={tr('cy.home.customize')} variant="secondary" icon="sliders" onPress={() => router.push('/cycle/home-card' as never)} />
       <Button label="Réinitialiser l’accueil" variant="secondary" icon="rotate-ccw" onPress={() => { setLayout([], []); setShortcuts(null); for (const k of Object.keys(dailyFavs ?? {})) setDailyFavs(k, null); toast('Accueil réinitialisé.'); }} />
+      <Button label={tr('cine.replay')} variant="ghost" icon="film" testID="settings-replay-cinematic" onPress={() => router.push({ pathname: '/cinematic', params: { replay: '1' } } as never)} />
       <Button label="Revoir l’introduction" variant="ghost" icon="play-circle" onPress={() => { setIntroSeen(false); router.push('/intro'); }} />
       <Text variant="caption" muted>Ces préférences sont gardées sur cet appareil.</Text>
     </Screen>

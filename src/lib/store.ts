@@ -75,6 +75,9 @@ interface UiState {
   /** Introduction vue (ou passée) : ne se relance pas toute seule. */
   introSeen: boolean;
   setIntroSeen: (v: boolean) => void;
+  /** Introduction cinématique vue (ou passée) : jouée une seule fois, à la première ouverture. */
+  cinematicSeen: boolean;
+  setCinematicSeen: (v: boolean) => void;
   setOverloadTipsOff: (on: boolean) => void;
   setTheme: (t: UiState['themePreference']) => void;
   setNightMode: (on: boolean) => void;
@@ -142,6 +145,8 @@ export const useUiStore = create<UiState>()(
       setRegion: (region) => set({ region }),
       introSeen: false,
       setIntroSeen: (introSeen) => set({ introSeen }),
+      cinematicSeen: false,
+      setCinematicSeen: (cinematicSeen) => set({ cinematicSeen }),
       setOverloadTipsOff: (overloadTipsOff) => set({ overloadTipsOff }),
       setTheme: (themePreference) => set({ themePreference }),
       setNightMode: (nightMode) => set({ nightMode }),

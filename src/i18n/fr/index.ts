@@ -27,3 +27,4 @@ export { passA } from './passA';
 export { passD } from './passD';
 export { passC } from './passC';
 export { album } from './album';
+export { cinema } from './cinema';
