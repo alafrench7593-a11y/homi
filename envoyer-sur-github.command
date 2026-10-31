@@ -12,7 +12,6 @@ if ! git --version >/dev/null 2>&1; then
   echo "Git n'est pas installé : macOS va proposer « Outils de ligne de commande ». Installe-les puis relance ce fichier."
   xcode-select --install 2>/dev/null; pause; exit 1
 fi
-git bundle verify historique.bundle >/dev/null 2>&1 || { echo "Le fichier historique.bundle est abîmé."; pause; exit 1; }
 
 # Connexion GitHub par le navigateur (via l'outil officiel « gh ») si possible
 if ! command -v gh >/dev/null 2>&1 && command -v brew >/dev/null 2>&1; then
