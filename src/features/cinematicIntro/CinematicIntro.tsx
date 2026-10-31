@@ -15,7 +15,7 @@
  * vidéo n'apparaît qu'à sa première image rendue.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, AppState, Easing, Image, Platform, StyleSheet, Text as RNText, useWindowDimensions, View } from 'react-native';
+import { Animated, AppState, Easing, Image, PixelRatio, Platform, StyleSheet, Text as RNText, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useVideoPlayer, VideoView } from 'expo-video';
@@ -25,12 +25,14 @@ import { Tappable } from '@/components/Tappable';
 import { Icon } from '@/components/ui';
 import { BRAND } from '@/config/brand';
 import { t as tr } from '@/i18n';
-import { CINE_CHAPTERS, CINE_DURATION_S, CINE_LOGO, CINE_OPENING, type CineChapter, windowCurve } from '@/lib/domain/cinematicIntro';
+import { CINE_CHAPTERS, CINE_DURATION_S, CINE_LOGO, CINE_OPENING, type CineChapter, introVideoQuality, windowCurve } from '@/lib/domain/cinematicIntro';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { fonts, NACRE, NATIVE_DRIVER } from '@/theme/tokens';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const VIDEO = require('../../../assets/video/intro-cinematique.mp4');
+const VIDEO_4K = require('../../../assets/video/intro-cinematique.mp4');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const VIDEO_1080 = require('../../../assets/video/intro-cinematique-1080.mp4');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 export const CINEMATIC_POSTER: number = require('../../../assets/video/intro-cinematique.jpg');
 const POSTER = CINEMATIC_POSTER;
@@ -266,7 +268,9 @@ function MotionIntro({ onDone }: { onDone: () => void }) {
   const sync = useRef({ from: 0, wall: 0, running: false });
   const leaving = useRef(false);
 
-  const player = useVideoPlayer(VIDEO, (p) => {
+  // 4K sur iPhone et grands écrans Android, 1080p ailleurs (choisie une fois pour toutes)
+  const [source] = useState(() => (introVideoQuality(Platform.OS, Math.max(w, h) * PixelRatio.get()) === '4k' ? VIDEO_4K : VIDEO_1080));
+  const player = useVideoPlayer(source, (p) => {
     p.muted = true;
     p.loop = false;
     p.timeUpdateEventInterval = 0.25;

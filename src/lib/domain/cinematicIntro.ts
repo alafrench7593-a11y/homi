@@ -67,3 +67,13 @@ export function windowCurve(w: CineWindow, fadeIn = 0.45, fadeOut = 0.35, delay 
   const d = round(Math.max(c + 0.001, w.end));
   return { inputRange: [-1, a, b, c, d, CINE_DURATION_S + 10], outputRange: [0, 0, 1, 1, 0, 0] };
 }
+
+/**
+ * Version de la vidéo : 4K (2160×3840) sur iPhone et sur les Android à grand écran (≥ 2560 pixels de haut),
+ * 1080×1920 ailleurs (Android d'entrée de gamme, web) : même montage, décodage plus léger.
+ */
+export function introVideoQuality(platform: string, longSidePx: number): '4k' | '1080p' {
+  if (platform === 'ios') return '4k';
+  if (platform === 'android' && longSidePx >= 2560) return '4k';
+  return '1080p';
+}

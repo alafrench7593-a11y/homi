@@ -1,4 +1,4 @@
-import { CINE_CHAPTERS, CINE_DURATION_S, CINE_LOGO, CINE_OPENING, CINE_SEGMENTS_S, chapterAt, segmentStarts, windowCurve } from '@/lib/domain/cinematicIntro';
+import { CINE_CHAPTERS, CINE_DURATION_S, CINE_LOGO, CINE_OPENING, CINE_SEGMENTS_S, chapterAt, introVideoQuality, segmentStarts, windowCurve } from '@/lib/domain/cinematicIntro';
 import { cinema as fr } from '@/i18n/fr/cinema';
 import { cinema as en } from '@/i18n/en/cinema';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -42,6 +42,12 @@ describe('introduction cinématique : chronologie', () => {
     for (const v of [...Object.values(fr), ...Object.values(en)]) expect(String(v).trim().length).toBeGreaterThan(0);
   });
   it('la vidéo et son image d’attente sont fournies avec l’application', () => {
-    for (const f of ['intro-cinematique.mp4', 'intro-cinematique.jpg']) expect(fs.existsSync(`assets/video/${f}`)).toBe(true);
+    for (const f of ['intro-cinematique.mp4', 'intro-cinematique-1080.mp4', 'intro-cinematique.jpg']) expect(fs.existsSync(`assets/video/${f}`)).toBe(true);
+  });
+  it('4K sur iPhone et grands écrans Android, 1080p ailleurs', () => {
+    expect(introVideoQuality('ios', 1334)).toBe('4k');
+    expect(introVideoQuality('android', 3200)).toBe('4k');
+    expect(introVideoQuality('android', 2400)).toBe('1080p');
+    expect(introVideoQuality('web', 3000)).toBe('1080p');
   });
 });
