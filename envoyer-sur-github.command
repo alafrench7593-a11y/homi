@@ -13,23 +13,31 @@ if ! git --version >/dev/null 2>&1; then
   xcode-select --install 2>/dev/null; pause; exit 1
 fi
 
-# Connexion GitHub par le navigateur (via l'outil officiel « gh ») si possible
-if ! command -v gh >/dev/null 2>&1 && command -v brew >/dev/null 2>&1; then
-  echo "Installation de l'outil officiel GitHub (gh)…"; brew install gh
+# Connexion GitHub par le navigateur, avec l'outil OFFICIEL de GitHub (« gh »).
+# S'il manque, il est téléchargé depuis github.com/cli/cli (version 2.103.3), empreinte SHA-256 vérifiée.
+GH="$(command -v gh)"
+if [ -z "$GH" ]; then
+  V="2.103.3"; ARCH="arm64"; [ "$(uname -m)" = "x86_64" ] && ARCH="amd64"
+  SUM_arm64="d700207eae9ae98fe2b89535c2c087c07823d4628c56364695a5a07ef311c062"
+  SUM_amd64="a2f86418f4350ae6e9ec60d5000bdf7665728436946a97fc27fe50e6ae752682"
+  ATTENDU="$( [ "$ARCH" = arm64 ] && echo $SUM_arm64 || echo $SUM_amd64 )"
+  DIR="$HOME/.local/gh-officiel"; mkdir -p "$DIR"
+  ZIP="$DIR/gh_${V}_macOS_${ARCH}.zip"
+  echo "Téléchargement de l'outil officiel GitHub (gh $V)…"
+  curl -fsSL -o "$ZIP" "https://github.com/cli/cli/releases/download/v${V}/gh_${V}_macOS_${ARCH}.zip" || { echo "Téléchargement impossible."; pause; exit 1; }
+  [ "$(shasum -a 256 "$ZIP" | cut -d' ' -f1)" = "$ATTENDU" ] || { echo "Empreinte incorrecte : fichier refusé."; pause; exit 1; }
+  ditto -x -k "$ZIP" "$DIR" && GH="$DIR/gh_${V}_macOS_${ARCH}/bin/gh"
+  [ -x "$GH" ] || { echo "Installation de gh impossible."; pause; exit 1; }
 fi
-if command -v gh >/dev/null 2>&1; then
-  if ! gh auth status -h github.com >/dev/null 2>&1; then
-    echo "Connexion à GitHub : un code va s'afficher, puis ton navigateur s'ouvre. Connecte-toi avec le compte « aufildenous »."
-    gh auth login -h github.com -p https -w || { echo "Connexion annulée."; pause; exit 1; }
-  fi
-  gh auth setup-git -h github.com >/dev/null 2>&1
-else
-  echo "Outil gh indisponible : Git va demander « Username » puis « Password »."
-  echo "  Username : aufildenous"
-  echo "  Password : un jeton GitHub (pas ton mot de passe), à créer ici, case « repo » cochée :"
-  echo "  https://github.com/settings/tokens/new?scopes=repo&description=au-fil-de-nous"
-  echo "  Tape-le seulement dans CETTE fenêtre, jamais dans une conversation."
+if ! "$GH" auth status -h github.com >/dev/null 2>&1; then
+  echo
+  echo "Connexion à GitHub : un CODE de 8 caractères va s'afficher ci-dessous."
+  echo "Ouvre https://github.com/login/device (connecté au compte « aufildenous »), entre ce code puis « Authorize »."
+  echo "Quand le code s'affiche, appuie sur Entrée ici (sans rien taper d'autre)."
+  "$GH" auth login -h github.com -p https -w -s repo || { echo "Connexion annulée."; pause; exit 1; }
 fi
+"$GH" auth setup-git -h github.com >/dev/null 2>&1
+echo "Compte GitHub connecté : $("$GH" api user --jq .login 2>/dev/null)"
 
 TMP="$(mktemp -d)"
 git clone -q historique.bundle "$TMP/depot" || { echo "Échec de lecture de l'historique."; pause; exit 1; }
