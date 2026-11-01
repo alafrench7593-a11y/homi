@@ -21,7 +21,7 @@ import { FETAL_SIZE_SOURCE, formatLength, formatWeight, weekInfo } from '@/lib/d
 import type { ExpectedBaby } from '@/lib/types';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
-import { t as tr, formatDate } from '@/i18n';
+import { t as tr, formatDate, getLocale } from '@/i18n';
 
 const HUES = ['rose', 'lavande', 'or'] as const;
 const multLabel = (m: string) => tr(`u2.preg.mult_${m}` as never);
@@ -139,7 +139,7 @@ export default function PregnancyUniverse() {
       {/* carte transparente : le fond de l'application (vidéo jour / nuit) reste visible derrière le bébé */}
       <View style={{ paddingVertical: spacing.md, gap: spacing.sm }} testID="preg-hero">
         <Text variant="small" color={heroGold} center>{multLabel(pregnancy.multiplicity)}</Text>
-        <Text variant="hero" color={heroText} center>{w} SA</Text>
+        <Text variant="hero" color={heroText} center>{w} {getLocale() === 'en' ? 'wks' : 'SA'}</Text>
         <Text center color={heroMuted}>{tr('u2.preg.weeks_trimester', { weeks: Math.max(0, w - 2), trimester: w < 15 ? 1 : w < 29 ? 2 : 3 })}</Text>
         <View style={{ alignItems: 'center', paddingVertical: spacing.sm }}>
           <WeeksRing week={w} size={310}><FetusArt week={w} growth={info.growth} size={n > 1 ? 220 : 250} hue={HUES[selected % 3]} accessibilityLabel={babies?.[selected]?.nickname ? tr('u2.preg.art_a11y_named', { name: babies[selected].nickname as string, week: w }) : tr('u2.preg.art_a11y', { week: w })} /></WeeksRing>

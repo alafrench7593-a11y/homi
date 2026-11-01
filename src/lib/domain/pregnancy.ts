@@ -6,7 +6,7 @@
  * outils utilisent 40 SA (DDR + 280 j). La date retenue est celle donnée
  * par le professionnel : l'application ne fait que l'afficher.
  */
-import { t as tr } from '@/i18n';
+import { t as tr, getLocale } from '@/i18n';
 import { addDays, daysBetween, type ISODate, todayISO } from './dates';
 
 export const DAYS_LMP_TO_DUE_FR = 287; // 41 SA
@@ -46,7 +46,8 @@ export function pregnancyProgress(due: ISODate, today: ISODate = todayISO()): Pr
     trimester,
     daysToDue,
     progress: Math.min(1, Math.max(0, daysSinceLmp / DAYS_LMP_TO_DUE_FR)),
-    label: `${weeksSA} SA${extraDays ? ` + ${extraDays} j` : ''}`,
+    // Semaines d'aménorrhée : « 26 SA + 3 j » en français, « 26 wks + 3 d » en anglais
+    label: getLocale() === 'en' ? `${weeksSA} wks${extraDays ? ` + ${extraDays} d` : ''}` : `${weeksSA} SA${extraDays ? ` + ${extraDays} j` : ''}`,
   };
 }
 

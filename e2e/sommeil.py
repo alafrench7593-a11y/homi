@@ -89,7 +89,7 @@ def run(p):
     R['grand_bouton_s_endort'] = 'Mon enfant s’endort' in text(pg, 'sleep-record')
     R['gratuit_estimations_en_apercu'] = has(pg, 'premium-sleep_insights') and not has(pg, 'sleep-next')
     tl = text(pg, 'sleep-timeline')
-    R['planning_realise_gratuit'] = 'Nuit' in tl and 'Sieste' in tl and 'Éveil en cours' in tl and '(estimation)' not in tl and 'Sommeil de jour : 1 h · 1 sieste(s)' in tl
+    R['planning_realise_gratuit'] = 'Nuit' in tl and 'Sieste' in tl and 'Éveil en cours' in tl and '(estimation)' not in tl and 'Sommeil de jour : 1 h · 1 sieste' in tl
     pg.screenshot(path=f'{SHOTS}/sommeil_gratuit.png', full_page=True)
 
     # ================================================================ Premium : estimations, textes exacts
@@ -147,7 +147,7 @@ def run(p):
     # ================================================================ Profil : enregistré, estimations recalculées
     go(pg, f'/sleep/{lina}?tab=profile', 2800)
     tid(pg, 'profile-wake').fill('07:00'); tid(pg, 'profile-bedtime').fill('20:30')
-    pg.get_by_label('2 sieste(s)').filter(visible=True).first.click()
+    pg.get_by_label('2 siestes').filter(visible=True).first.click()
     pg.get_by_text('Réveils fréquents', exact=True).filter(visible=True).first.click()
     tid(pg, 'profile-save').click(); pg.wait_for_timeout(1500)
     prof = demo(pg, f"s => s.tables.sleep_profiles.find(p => p.child_id === '{lina}')")
@@ -182,8 +182,8 @@ def run(p):
 
     # ================================================================ Tendances
     go(pg, f'/sleep/{lina}?tab=trends', 2800)
-    R['resume_nuit'] = 'Coucher 19 h 30 · réveil 7 h' in text(pg, 'sleep-night-summary') and '1 réveil(s)' in text(pg, 'sleep-night-summary')
-    R['resume_jour'] = 'sieste(s)' in text(pg, 'sleep-day-summary')
+    R['resume_nuit'] = 'Coucher 19 h 30 · réveil 7 h' in text(pg, 'sleep-night-summary') and '1 réveil' in text(pg, 'sleep-night-summary')
+    R['resume_jour'] = 'sieste' in text(pg, 'sleep-day-summary')
     R['moyennes_7_jours'] = all(x in text(pg, 'sleep-rhythm') for x in ['Coucher moyen', 'Réveil moyen', 'Siestes', 'réveils'])
     R['vue_7_jours'] = has(pg, 'sleep-weekly') and has(pg, 'sleep-changes')
     R['assistant_explique_sans_diagnostic'] = has(pg, 'sleep-ask') and 'sans poser de diagnostic' in T(pg)
@@ -234,7 +234,7 @@ with sync_playwright() as p:
     try:
         run(p)
     except Exception as e:  # noqa: BLE001 — le rapport est affiché quoi qu'il arrive
-        errs.append('SCRIPT ' + str(e).splitlines()[0][:200])
+        errs.append('SCRIPT ' + ' | '.join(str(e).splitlines()[:4])[:400])
 ok = sum(1 for v in R.values() if v)
 print(json.dumps(R, ensure_ascii=False, indent=1))
 print('erreurs:', errs[:8])
