@@ -158,7 +158,7 @@ export function PhotoViewer({ photos, index, onClose }: { photos: FeedPhoto[]; i
 
 // ─── Signaler / bloquer ────────────────────────────────────────────────────────────────────────────
 
-export function ReportSheet({ visible, onClose, postId, commentId, handle }: { visible: boolean; onClose: () => void; postId?: string; commentId?: string; handle?: string | null }) {
+export function ReportSheet({ visible, onClose, postId, commentId, handle, anonymous }: { visible: boolean; onClose: () => void; postId?: string; commentId?: string; handle?: string | null; anonymous?: boolean }) {
   const toast = useToast();
   const reportM = useReport();
   const reportMember = useReportMember();
@@ -197,7 +197,8 @@ export function ReportSheet({ visible, onClose, postId, commentId, handle }: { v
           <Text>{r.label}</Text>
         </Tappable>
       ))}
-      <Chip label={tr('cm1.report.block')} icon="slash" onPress={block} />
+      {/* Publication anonyme : pas de blocage (il révélerait l'identité de l'autrice) */}
+      {anonymous ? null : <Chip label={tr('cm1.report.block')} icon="slash" onPress={block} />}
       <Text variant="caption" muted>{tr('cm1.report.emergency')}</Text>
     </Sheet>
   );
@@ -354,9 +355,9 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
             <Chip label={tr('cm1.post.reportOrBlock')} icon="flag" onPress={() => { setMenu(false); setReporting(true); }} />
           </>
         )}
-        <Chip label={tr('cm1.post.shareLink')} icon="share-2" onPress={() => { setMenu(false); sharePost(post).catch(() => undefined); }} />
+        <Chip label={tr('cm1.post.shareLink')} icon="share-2" onPress={() => { setMenu(false); sharePost(post).catch(() => toast(tr('cm1.post.shareUnavailable'), 'error')); }} />
       </Sheet>
-      <ReportSheet visible={reporting} onClose={() => setReporting(false)} postId={post.id} />
+      <ReportSheet visible={reporting} onClose={() => setReporting(false)} postId={post.id} anonymous={!!post.anonymous} />
       {folders ? <FolderSheet visible={folders} onClose={() => setFolders(false)} post={post} /> : null}
       <PhotoViewer photos={post.photos ?? []} index={viewer} onClose={() => setViewer(null)} />
     </Card>

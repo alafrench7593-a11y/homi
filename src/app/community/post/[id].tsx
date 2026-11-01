@@ -162,7 +162,7 @@ export default function PostScreen() {
       <PostCard post={post} full forum={forums?.find((f) => f.id === post.forum_id) ?? null} onCommentPress={() => inputRef.current?.focus()}
         canPin={!!groupQ.data?.is_owner && groupQ.data.kind === 'private'} />
       <AiSummaryCard postId={post.id} commentCount={post.comment_count} />
-      <Text variant="heading">{tr('cm2.post.commentCount', { count: String(post.comment_count) })}</Text>
+      <Text variant="heading">{tr('cm2.post.commentCount', { count: String(commentsQ.data ? rows.length : post.comment_count) })}</Text>
       {commentsLoading ? <Skeleton kind="list" rows={2} /> : commentsError ? (
         <ErrorView error={commentsQ.error} onRetry={() => void commentsQ.refetch()} title={tr('cm2.post.commentsError')} />
       ) : null}

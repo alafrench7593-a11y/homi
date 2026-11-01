@@ -6,7 +6,7 @@ import React from 'react';
 import { View } from 'react-native';
 import * as Linking from 'expo-linking';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
 import { Button, Card, Icon, Row, Text } from '@/components/ui';
 import { PremiumBadge } from '@/features/communitySocial';
@@ -41,20 +41,23 @@ export default function Events() {
 
   return (
     <Screen back title={tr('cm3.events.title')} subtitle={tr('cm3.events.subtitle')}>
-      {events.isLoading && !events.data ? <Skeleton kind="card" rows={2} /> : upcoming.length ? (
+      {events.isLoading && !events.data ? <Skeleton kind="card" rows={2} /> : events.isError && !events.data ? (
+        <ErrorView error={events.error} onRetry={() => void events.refetch()} />
+      ) : upcoming.length ? (
         <View style={{ gap: spacing.sm }}>
           {upcoming.map((e) => (
             <Card key={e.id} testID={`event-${e.id}`}>
               <Row><Icon name={e.kind === 'atelier' ? 'video' : 'users'} size={18} color={t.colors.primary} /><Text weight="bold" style={{ flex: 1 }}>{e.title}</Text>{e.premium_only ? <PremiumBadge /> : null}</Row>
               <Text variant="small" muted style={{ marginTop: 4 }}>{new Date(e.starts_at).toLocaleString(localeTag(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</Text>
               {e.description ? <Text variant="small" style={{ marginTop: 4 }}>{e.description}</Text> : null}
+              {/* Atelier déjà commencé : l'inscription n'est plus possible (le serveur la refuse) */}
               <Row gap={6} style={{ marginTop: spacing.xs }}>
                 {registered.has(e.id) ? (
                   <>
                     <Button label={tr('cm3.events.join')} size="sm" icon="video" onPress={() => void join(e.id)} />
                     <Button label={tr('cm3.events.cancel')} size="sm" variant="ghost" onPress={() => void toggle(e.id, false, e.premium_only)} />
                   </>
-                ) : <Button label={tr('cm3.events.register')} size="sm" icon="check" onPress={() => void toggle(e.id, true, e.premium_only)} testID={`event-register-${e.id}`} />}
+                ) : Date.parse(e.starts_at) <= Date.now() ? null : <Button label={tr('cm3.events.register')} size="sm" icon="check" onPress={() => void toggle(e.id, true, e.premium_only)} testID={`event-register-${e.id}`} />}
               </Row>
             </Card>
           ))}

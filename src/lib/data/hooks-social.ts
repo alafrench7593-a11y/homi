@@ -192,7 +192,8 @@ export function useAlbumAction() {
 
 // ---------------------------------------------------------------- ateliers et rencontres
 export function useEvents() {
-  return useRows<CommunityEvent>(['community_events'], { table: 'community_events', order: [{ col: 'starts_at' }] });
+  // Colonnes listées : join_url n'est lisible que par les inscrites (fonction dédiée) ; « * » faisait échouer toute la requête
+  return useRows<CommunityEvent>(['community_events'], { table: 'community_events', columns: 'id,title,description,kind,starts_at,ends_at,premium_only,capacity,archived,created_at', order: [{ col: 'starts_at' }] });
 }
 export function useEventRegistrations() {
   const userId = useUserId();

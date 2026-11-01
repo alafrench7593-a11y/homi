@@ -227,8 +227,9 @@ export function useDeletePost() {
   return useMutation({
     mutationFn: async (post: Pick<FeedPost, 'id' | 'photos'>) => {
       const paths = (post.photos ?? []).map((p) => p.path);
-      if (paths.length) await backend.storage.remove(COMMUNITY_BUCKET, paths).catch(() => undefined);
+      // D'abord la publication : si sa suppression échoue, les photos restent intactes (plus d'images cassées)
       await backend.remove('posts', [eq('id', post.id)]);
+      if (paths.length) await backend.storage.remove(COMMUNITY_BUCKET, paths).catch(() => undefined);
     },
     onSuccess: () => inv(...FEED_KEYS, 'community_profiles'),
   });
