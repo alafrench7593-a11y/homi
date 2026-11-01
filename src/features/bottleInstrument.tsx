@@ -31,6 +31,7 @@ import type { Child } from '@/lib/types';
 import { easing, spring } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
+import { localeTag, t as tr } from '@/i18n';
 
 interface Running { id: string; started_at: string; paused_at: string | null; paused_seconds: number; ended_at: string | null; prepared_ml: number | null }
 interface Finished { id: string; at: string; consumed_ml: number | null }
@@ -141,19 +142,19 @@ export function BottleInstrument({ child }: { child: Child }) {
   async function start() {
     haptic('success'); contractThenDeploy(); setPulse((p) => p + 1); setDone(null);
     const at = new Date().toISOString();
-    await run(() => backend.insert('bottles', { child_id: child.id, household_id: child.household_id, at, started_at: at, in_progress: true }), 'C’est parti. Le temps continue même si vous quittez l’écran.');
+    await run(() => backend.insert('bottles', { child_id: child.id, household_id: child.household_id, at, started_at: at, in_progress: true }), tr('u4.bi.started'));
   }
   async function pause() { haptic('light'); contractThenDeploy(); await run(() => backend.update('bottles', { paused_at: new Date().toISOString() }, [eq('id', running!.id)])); }
   async function resume() { haptic('light'); contractThenDeploy(); setPulse((p) => p + 1); await run(() => backend.update('bottles', resumePatch(running!), [eq('id', running!.id)])); }
   function openSummary() { haptic('selection'); setSummary(true); }
-  async function cancel() { await run(() => backend.remove('bottles', [eq('id', running!.id)]), 'Minuteur annulé, rien n’a été enregistré.'); setSummary(false); }
+  async function cancel() { await run(() => backend.remove('bottles', [eq('id', running!.id)]), tr('u4.bi.cancelled')); setSummary(false); }
 
   async function finish() {
     if (!running) return;
     const p = prepared.trim() ? Number(prepared) : null;
     const c = consumed.trim() ? Number(consumed) : null;
-    if ((p != null && (!Number.isInteger(p) || p < 0 || p > 500)) || (c != null && (!Number.isInteger(c) || c < 0 || c > 500))) return toast('Quantités entre 0 et 500 ml.', 'error');
-    if (p != null && c != null && c > p) return toast('La quantité bue ne peut pas dépasser la quantité préparée.', 'error');
+    if ((p != null && (!Number.isInteger(p) || p < 0 || p > 500)) || (c != null && (!Number.isInteger(c) || c < 0 || c > 500))) return toast(tr('u4.bi.qtyRange'), 'error');
+    if (p != null && c != null && c > p) return toast(tr('u4.bi.qtyOver'), 'error');
     const end = new Date();
     const patch = { ...resumePatch(running, end), ended_at: (running.paused_at ? new Date(running.paused_at) : end).toISOString(), in_progress: false, at: running.started_at, prepared_ml: p, consumed_ml: c, milk_type: milk.trim() || null, note: note.trim() || null };
     const seconds = bottleElapsed({ ...running, ...patch });
@@ -168,7 +169,7 @@ export function BottleInstrument({ child }: { child: Child }) {
       }
     }, undefined);
     if (!ok) return;
-    toast(next ? `Biberon enregistré. Prochain rappel ${atClock(next)}.` : 'Biberon enregistré.');
+    toast(next ? tr('u4.bi.savedNext', { time: atClock(next) }) : tr('u4.bi.saved'));
     haptic('success'); setPulse((x) => x + 1);
     setSummary(false); setDone({ seconds, consumed: c, prepared: p });
     setPrepared(''); setConsumed(''); setMilk(''); setNote('');
@@ -180,8 +181,8 @@ export function BottleInstrument({ child }: { child: Child }) {
   const lit = state === 'idle' ? 0 : sec;
   const beads = state === 'idle' ? 0 : Math.min(30, minutes);
   const lastAgo = last ? formatDuration((now.getTime() - Date.parse(last.at)) / 60000) : null;
-  const stateText = state === 'running' ? 'en cours' : state === 'paused' ? 'en pause' : done ? 'enregistré' : 'prêt';
-  const a11y = state === 'idle' ? 'Minuteur de biberon prêt. Touchez pour démarrer.' : `Prise ${stateText} depuis ${minutes} minute${minutes > 1 ? 's' : ''} ${sec} seconde${sec > 1 ? 's' : ''}. Touchez pour ${state === 'running' ? 'mettre en pause' : 'reprendre'}, appui long pour terminer.`;
+  const stateText = state === 'running' ? tr('u4.bi.running') : state === 'paused' ? tr('u4.bi.paused') : done ? tr('u4.bi.recorded') : tr('u4.bi.ready');
+  const a11y = state === 'idle' ? tr('u4.bi.a11yIdle') : tr('u4.bi.a11y', { state: stateText, min: tr('u4.bi.minutes', { count: minutes }), sec: tr('u4.bi.seconds', { count: sec }), action: state === 'running' ? tr('u4.bi.actPause') : tr('u4.bi.actResume') });
 
   return (
     <View style={{ alignItems: 'center', gap: spacing.sm }}>
@@ -229,23 +230,23 @@ export function BottleInstrument({ child }: { child: Child }) {
               <View style={{ width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
                 <Icon name="play" size={28} color={t.colors.primaryText} />
               </View>
-              <Text weight="bold">Démarrer</Text>
-              <Text variant="caption" muted>{new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</Text>
+              <Text weight="bold">{tr('u4.bi.start')}</Text>
+              <Text variant="caption" muted>{new Date().toLocaleTimeString(localeTag(), { hour: '2-digit', minute: '2-digit' })}</Text>
             </View>
           ) : done && state === 'idle' ? (
             <View style={{ alignItems: 'center', gap: 4 }}>
               <DrawCheck size={52} color={t.colors.success} />
-              <MotionNumber text={formatChrono(done.seconds)} style={{ fontSize: 30, fontWeight: '700', color: t.colors.text }} accessibilityLabel={`Durée ${formatChrono(done.seconds)}`} />
-              <Text variant="caption" muted>{done.consumed != null ? `${done.consumed} ml bus` : 'enregistré'}</Text>
+              <MotionNumber text={formatChrono(done.seconds)} style={{ fontSize: 30, fontWeight: '700', color: t.colors.text }} accessibilityLabel={tr('u4.bi.duration', { x: formatChrono(done.seconds) })} />
+              <Text variant="caption" muted>{done.consumed != null ? tr('u4.bi.drunk', { n: done.consumed }) : tr('u4.bi.recorded')}</Text>
             </View>
           ) : (
             <View style={{ alignItems: 'center', gap: 2 }}>
-              <MotionNumber text={formatChrono(elapsed)} style={{ fontSize: 46, fontWeight: '700', letterSpacing: -1, color: state === 'paused' ? t.colors.textMuted : t.colors.text }} accessibilityLabel={`Temps de prise ${formatChrono(elapsed)}`} />
+              <MotionNumber text={formatChrono(elapsed)} style={{ fontSize: 46, fontWeight: '700', letterSpacing: -1, color: state === 'paused' ? t.colors.textMuted : t.colors.text }} accessibilityLabel={tr('u4.bi.feedTime', { x: formatChrono(elapsed) })} />
               <Row gap={6} style={{ alignItems: 'center' }}>
                 <Icon name={state === 'paused' ? 'pause' : 'activity'} size={14} color={state === 'paused' ? t.colors.textMuted : t.colors.primary} />
                 <Text variant="caption" weight="bold" color={state === 'paused' ? t.colors.textMuted : t.colors.primary}>{stateText.toUpperCase()}</Text>
               </Row>
-              <Text variant="caption" muted>{state === 'paused' ? 'toucher pour reprendre' : 'appui long pour terminer'}</Text>
+              <Text variant="caption" muted>{state === 'paused' ? tr('u4.bi.tapResume') : tr('u4.bi.longFinish')}</Text>
             </View>
           )}
         </Pressable>
@@ -253,10 +254,10 @@ export function BottleInstrument({ child }: { child: Child }) {
 
       {/* Informations qui se déploient au démarrage */}
       <Row style={{ justifyContent: 'center' }} wrap>
-        <Text variant="caption" muted>{lastAgo ? `Dernière prise il y a ${lastAgo}` : 'Aucune prise enregistrée'}</Text>
+        <Text variant="caption" muted>{lastAgo ? tr('u4.bi.lastAgo', { ago: lastAgo }) : tr('u4.bi.noFeed')}</Text>
         {running ? (
           <Animated.View style={{ opacity: reveal, transform: [{ translateY: reveal.interpolate({ inputRange: [0, 1], outputRange: [6, 0] }) }] }}>
-            <Text variant="caption" muted>· début {new Date(running.started_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}{minutes >= 1 ? ` · ${minutes} perle${minutes > 1 ? 's' : ''} = ${minutes} min` : ''}</Text>
+            <Text variant="caption" muted>{tr('u4.bi.begin', { time: new Date(running.started_at).toLocaleTimeString(localeTag(), { hour: '2-digit', minute: '2-digit' }) })}{minutes >= 1 ? tr('u4.bi.beads', { count: minutes }) : ''}</Text>
           </Animated.View>
         ) : null}
       </Row>
@@ -264,8 +265,8 @@ export function BottleInstrument({ child }: { child: Child }) {
       {/* Commandes accessibles (mêmes actions que les gestes) */}
       {running && !summary ? (
         <Animated.View style={{ opacity: reveal, flexDirection: 'row', gap: spacing.xs, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {paused ? <Button label="Reprendre" icon="play" onPress={resume} loading={busy} /> : <Button label="Pause" icon="pause" variant="secondary" onPress={pause} loading={busy} />}
-          <Button label="Terminer" icon="check" onPress={openSummary} />
+          {paused ? <Button label={tr('u4.bi.resume')} icon="play" onPress={resume} loading={busy} /> : <Button label={tr('u4.bi.pause')} icon="pause" variant="secondary" onPress={pause} loading={busy} />}
+          <Button label={tr('u4.bi.finish')} icon="check" onPress={openSummary} />
         </Animated.View>
       ) : null}
 
@@ -273,20 +274,20 @@ export function BottleInstrument({ child }: { child: Child }) {
       {summary && running ? (
         <GlassSurface fill={t.colors.surface} depth={2} padded={spacing.md} style={{ alignSelf: 'stretch', gap: spacing.sm }}>
           <Row style={{ justifyContent: 'space-between' }}>
-            <Text weight="bold">Récapitulatif</Text>
+            <Text weight="bold">{tr('u4.bi.recap')}</Text>
             <MotionNumber text={formatChrono(elapsed)} style={{ fontSize: 22, fontWeight: '700', color: t.colors.text }} />
           </Row>
           <Row>
-            <View style={{ flex: 1 }}><Field label="Préparé (ml)" optional value={prepared} onChangeText={setPrepared} keyboardType="number-pad" maxLength={3} /></View>
-            <View style={{ flex: 1 }}><Field label="Bu (ml)" optional value={consumed} onChangeText={setConsumed} keyboardType="number-pad" maxLength={3} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u4.bi.prepared')} optional value={prepared} onChangeText={setPrepared} keyboardType="number-pad" maxLength={3} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u4.bi.consumed')} optional value={consumed} onChangeText={setConsumed} keyboardType="number-pad" maxLength={3} /></View>
           </Row>
-          <Field label="Type de lait" optional value={milk} onChangeText={setMilk} maxLength={80} />
-          <Field label="Note" optional value={note} onChangeText={setNote} maxLength={1000} />
-          <Text variant="caption" muted>Vous pouvez corriger avant d’enregistrer. Les quantités sont celles que vous avez préparées et observées : l’application n’en calcule ni n’en recommande.</Text>
+          <Field label={tr('u4.bi.milkType')} optional value={milk} onChangeText={setMilk} maxLength={80} />
+          <Field label={tr('u4.bi.note')} optional value={note} onChangeText={setNote} maxLength={1000} />
+          <Text variant="caption" muted>{tr('u4.bi.correct')}</Text>
           <Row wrap>
-            <Button label="Enregistrer le biberon" icon="check" onPress={finish} loading={busy} />
-            <Button label="Continuer le minuteur" variant="secondary" onPress={() => setSummary(false)} />
-            <Button label="Annuler" variant="ghost" onPress={cancel} />
+            <Button label={tr('u4.bi.saveBottle')} icon="check" onPress={finish} loading={busy} />
+            <Button label={tr('u4.bi.keepTimer')} variant="secondary" onPress={() => setSummary(false)} />
+            <Button label={tr('u4.bi.cancel')} variant="ghost" onPress={cancel} />
           </Row>
         </GlassSurface>
       ) : null}
@@ -321,22 +322,22 @@ export function ReminderRibbon({ lastAt, dueAt, now, remainingLabel, overdue }: 
     return () => loop.stop();
   }, [reduce, pulse]);
   const ticks = Math.floor(total / 1800000);
-  const hm = (ms: number) => new Date(ms).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const hm = (ms: number) => new Date(ms).toLocaleTimeString(localeTag(), { hour: '2-digit', minute: '2-digit' });
   const inner = Math.max(1, w - 24);
   return (
     <GlassSurface fill={t.colors.surface} depth={2} padded={spacing.md} style={{ alignSelf: 'stretch', gap: spacing.sm }}>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <View>
-          <Text variant="caption" muted>{overdue ? 'rappel prévu il y a' : 'rappel dans'}</Text>
+          <Text variant="caption" muted>{overdue ? tr('u4.bi.rem.past') : tr('u4.bi.rem.in')}</Text>
           <MotionNumber text={remainingLabel} style={{ fontSize: 34, fontWeight: '700', letterSpacing: -0.5, color: overdue ? t.colors.danger : t.colors.text }} />
         </View>
         <View style={{ alignItems: 'flex-end' }}>
-          <Text variant="caption" muted>rappel</Text>
+          <Text variant="caption" muted>{tr('u4.bi.rem.label')}</Text>
           <Text weight="bold">{hm(end)}</Text>
         </View>
       </Row>
       <View onLayout={(e) => setW(e.nativeEvent.layout.width)} style={{ height: 34, justifyContent: 'center' }}
-        accessible accessibilityRole="progressbar" accessibilityLabel={`Depuis le dernier biberon à ${hm(start)}, rappel à ${hm(end)}${overdue ? ', heure dépassée' : ''}`}>
+        accessible accessibilityRole="progressbar" accessibilityLabel={tr('u4.bi.rem.a11y', { start: hm(start), end: hm(end), over: overdue ? tr('u4.bi.rem.overSuffix') : '' })}>
         <View style={{ position: 'absolute', left: 12, right: 12, height: 8, borderRadius: 4, backgroundColor: t.colors.border }} />
         {Array.from({ length: ticks }, (_, i) => (
           <View key={i} style={{ position: 'absolute', left: 12 + (((i + 1) * 1800000) / total) * inner - 1, width: 2, height: 14, borderRadius: 1, backgroundColor: t.colors.textMuted, opacity: 0.35 }} />
@@ -355,8 +356,8 @@ export function ReminderRibbon({ lastAt, dueAt, now, remainingLabel, overdue }: 
         ) : null}
       </View>
       <Row style={{ justifyContent: 'space-between' }}>
-        <Text variant="caption" muted>dernier biberon {hm(start)}</Text>
-        <Text variant="caption" muted>{overdue ? 'heure dépassée' : `maintenant ${hm(now.getTime())}`}</Text>
+        <Text variant="caption" muted>{tr('u4.bi.rem.lastBottle', { time: hm(start) })}</Text>
+        <Text variant="caption" muted>{overdue ? tr('u4.bi.rem.over') : tr('u4.bi.rem.now', { time: hm(now.getTime()) })}</Text>
       </Row>
     </GlassSurface>
   );

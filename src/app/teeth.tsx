@@ -19,6 +19,7 @@ import { addDays, frToISO, todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { formatDate, t as tr } from '@/i18n';
 
 
 export default function Teeth() {
@@ -54,55 +55,55 @@ export default function Teeth() {
   async function save() {
     if (!child || !picked) return;
     const iso = frToISO(date);
-    if (!iso || iso > todayISO()) return toast('Date invalide (jj/mm/aaaa, pas dans le futur).', 'error');
+    if (!iso || iso > todayISO()) return toast(tr('u5.teeth.date_bad'), 'error');
     setBusy(picked);
     try {
       if (pickedRow) await backend.update('child_milestones', { happened_on: iso, note: note.trim() || null }, [eq('id', pickedRow.id)]);
       else await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind: 'tooth', title: picked, happened_on: iso, note: note.trim() || null, domain: null });
       inv('child_milestones');
       haptic('success');
-      toast(pickedRow ? 'Dent mise à jour.' : 'Dent notée.', 'success');
+      toast(pickedRow ? tr('u5.teeth.updated') : tr('u5.teeth.noted'), 'success');
       setPicked(null);
     } catch (e) {
-      toast(friendlyError(e, 'Enregistrement impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u5.pp_checkin.save_failed')), 'error');
     } finally { setBusy(null); }
   }
 
   async function removeTooth() {
-    if (!pickedRow || !(await confirm('Retirer cette dent ?', `${pickedRow.title} (${pickedRow.happened_on ?? 'sans date'})`, 'Retirer'))) return;
-    try { await backend.remove('child_milestones', [eq('id', pickedRow.id)]); inv('child_milestones'); toast('Dent retirée.'); setPicked(null); } catch (e) { toast(friendlyError(e), 'error'); }
+    if (!pickedRow || !(await confirm(tr('u5.teeth.rm_t'), `${pickedRow.title} (${pickedRow.happened_on ?? tr('u5.teeth.no_date')})`, tr('u5.teeth.rm_ok')))) return;
+    try { await backend.remove('child_milestones', [eq('id', pickedRow.id)]); inv('child_milestones'); toast(tr('u5.teeth.removed')); setPicked(null); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   async function hygieneReminder() {
     try {
-      await saveReminder.mutateAsync({ draft: { title: 'Brossage des dents', body: 'Petit rappel du soir.', category: 'custom', schedule: { type: 'daily', hour: 19, minute: 45 }, enabled: true, deep_link: '/teeth', child_id: child?.id ?? null } });
-      toast('Rappel quotidien de brossage à 19 h 45 (modifiable dans Rappels).');
+      await saveReminder.mutateAsync({ draft: { title: tr('u5.teeth.rem_t'), body: tr('u5.teeth.rem_b'), category: 'custom', schedule: { type: 'daily', hour: 19, minute: 45 }, enabled: true, deep_link: '/teeth', child_id: child?.id ?? null } });
+      toast(tr('u5.teeth.rem_ok'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   return (
-    <Screen back title="Dents" subtitle={child ? child.first_name : 'Ajoutez d’abord un enfant.'}>
-      <Banner tone="info">Chaque enfant a son rythme : les premières dents arrivent souvent entre 6 et 12 mois, parfois plus tôt ou plus tard. En cas de doute, parlez-en à votre pédiatre ou à la PMI.</Banner>
+    <Screen back title={tr('u5.teeth.title')} subtitle={child ? child.first_name : tr('u5.teeth.add_first')}>
+      <Banner tone="info">{tr('u5.teeth.banner')}</Banner>
       {childrenQ.isLoading && !children ? <Skeleton rows={4} /> : childrenQ.isError && !children ? (
         <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} />
       ) : !child ? (
-        <EmptyState icon="smile" title="Aucun enfant pour l’instant" body="Ajoutez le profil de votre enfant pour noter ses premières dents." action={{ label: 'Ajouter un enfant', onPress: () => router.push('/profiles/new?kind=child' as never) }} />
+        <EmptyState icon="smile" title={tr('u5.teeth.no_child')} body={tr('u5.teeth.no_child_b')} action={{ label: tr('u5.teeth.add_child'), onPress: () => router.push('/profiles/new?kind=child' as never) }} />
       ) : milestonesQ.isLoading && !milestones ? <Skeleton kind="detail" rows={6} /> : milestonesQ.isError && !milestones ? (
-        <ErrorView error={milestonesQ.error} onRetry={() => void milestonesQ.refetch()} title="Impossible d’afficher les dents notées" />
+        <ErrorView error={milestonesQ.error} onRetry={() => void milestonesQ.refetch()} title={tr('u5.teeth.err')} />
       ) : (
         <>
           {(() => {
             const dated = teeth.filter((m) => m.happened_on).sort((x, y) => (y.happened_on ?? '').localeCompare(x.happened_on ?? ''));
             return (
-              <TodaySummary title="En bref" testID="teeth-summary" items={[
-                { icon: 'smile', value: `${teeth.length}/20`, label: 'Dents notées' },
-                { icon: 'calendar', value: dated[0]?.happened_on ? new Date(dated[0].happened_on).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '—', label: 'Dernière apparue' },
+              <TodaySummary title={tr('u5.teeth.brief')} testID="teeth-summary" items={[
+                { icon: 'smile', value: `${teeth.length}/20`, label: tr('u5.teeth.count') },
+                { icon: 'calendar', value: dated[0]?.happened_on ? formatDate(dated[0].happened_on, { day: 'numeric', month: 'short' }) : '—', label: tr('u5.teeth.last') },
               ]} />
             );
           })()}
           <Card>
             <ToothChart present={new Set(teeth.map((m) => m.title))} onPick={open} />
-            <Text variant="caption" muted center>Touchez une dent pour noter sa date d’apparition et vos observations.</Text>
+            <Text variant="caption" muted center>{tr('u5.teeth.tap')}</Text>
           </Card>
           {teeth.length ? (
             <Card>
@@ -113,34 +114,34 @@ export default function Teeth() {
                     <Text>{m.title}</Text>
                     {m.note ? <Text variant="caption" muted>{m.note}</Text> : null}
                   </View>
-                  {m.happened_on ? <Text variant="caption" muted>{new Date(m.happened_on).toLocaleDateString('fr-FR')}</Text> : null}
+                  {m.happened_on ? <Text variant="caption" muted>{formatDate(m.happened_on, { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text> : null}
                 </Tappable>
               ))}
             </Card>
           ) : null}
           <Card tone="soft">
-            <Text weight="bold">Soins et rendez-vous</Text>
+            <Text weight="bold">{tr('u5.teeth.care')}</Text>
             <Row wrap style={{ marginTop: spacing.xs }}>
-              <Button label="Rappel de brossage" icon="bell" size="sm" variant="secondary" onPress={hygieneReminder} loading={saveReminder.isPending} />
-              <Button label="Rendez-vous dentiste" icon="calendar" size="sm" variant="secondary" onPress={() => router.push('/appointments')} />
+              <Button label={tr('u5.teeth.b_rem')} icon="bell" size="sm" variant="secondary" onPress={hygieneReminder} loading={saveReminder.isPending} />
+              <Button label={tr('u5.teeth.b_dentist')} icon="calendar" size="sm" variant="secondary" onPress={() => router.push('/appointments')} />
             </Row>
           </Card>
-          <Text variant="caption" muted>Fièvre, diarrhée ou fort inconfort ne sont pas automatiquement dus aux dents : si un symptôme vous inquiète ou dure, demandez un avis médical.</Text>
+          <Text variant="caption" muted>{tr('u5.teeth.warn')}</Text>
         </>
       )}
 
       <Sheet visible={!!picked} onClose={() => setPicked(null)} title={picked ?? ''}>
         {/* date en un geste (modifiable dans le champ juste en dessous) */}
         <Row wrap testID="teeth-date-quick">
-          {[{ label: 'Aujourd’hui', d: 0 }, { label: 'Hier', d: 1 }, { label: 'Il y a 3 jours', d: 3 }, { label: 'Il y a une semaine', d: 7 }].map((o) => {
+          {[{ label: tr('u5.teeth.q_today'), d: 0 }, { label: tr('u5.teeth.q_yest'), d: 1 }, { label: tr('u5.teeth.q_3'), d: 3 }, { label: tr('u5.teeth.q_7'), d: 7 }].map((o) => {
             const iso = addDays(todayISO(), -o.d);
             return <Chip key={o.d} label={o.label} selected={frToISO(date) === iso} onPress={() => { haptic('selection'); setDate(toFrDate(iso)); }} />;
           })}
         </Row>
-        <Field label="Date d’apparition" value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" />
-        <Field label="Observations" optional multiline value={note} onChangeText={setNote} maxLength={4000} placeholder="Gencive gonflée, mâchouille beaucoup…" />
-        <Button label={pickedRow ? 'Enregistrer' : 'Noter cette dent'} onPress={save} loading={!!busy} />
-        {pickedRow ? <Button label="Retirer cette dent" variant="ghost" onPress={removeTooth} /> : null}
+        <Field label={tr('u5.teeth.date_lbl')} value={date} onChangeText={setDate} placeholder={tr('u5.fert.date_ph')} keyboardType="numbers-and-punctuation" />
+        <Field label={tr('u5.teeth.obs')} optional multiline value={note} onChangeText={setNote} maxLength={4000} placeholder={tr('u5.teeth.obs_ph')} />
+        <Button label={pickedRow ? tr('u5.pp_checkin.save') : tr('u5.teeth.note_tooth')} onPress={save} loading={!!busy} />
+        {pickedRow ? <Button label={tr('u5.teeth.rm_t')} variant="ghost" onPress={removeTooth} /> : null}
       </Sheet>
     </Screen>
   );

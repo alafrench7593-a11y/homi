@@ -15,6 +15,7 @@ import { STORY_IMAGES } from '@/features/story/storyImages';
 import { STORY_CHAPTERS, storyA11y, storyPoseAt } from '@/lib/domain/familyStory';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export default function Story() {
   const t = useTheme();
@@ -28,7 +29,7 @@ export default function Story() {
   const last = STORY_CHAPTERS.length - 1;
 
   return (
-    <Screen back title="Au fil de nous" subtitle="De l’avant-grossesse aux dix ans de votre enfant" scroll={false}>
+    <Screen back title={tr('u5.story.title')} subtitle={tr('u5.story.subtitle')} scroll={false}>
       <View style={{ flex: 1 }} testID="story">
         {reduce ? null : (
           <View style={{ height: artH }} testID="story-art">
@@ -56,8 +57,8 @@ export default function Story() {
             </View>
           ))}
           <View style={{ gap: spacing.sm, paddingTop: spacing.md }}>
-            <Text muted>Sur l’accueil, l’illustration montre l’étape du profil affiché : votre cycle, votre grossesse ou l’âge de chacun de vos enfants.</Text>
-            <Button label="Retour à l’accueil" icon="home" variant="secondary" onPress={() => router.back()} testID="story-done" />
+            <Text muted>{tr('u5.story.home_note')}</Text>
+            <Button label={tr('u5.story.back')} icon="home" variant="secondary" onPress={() => router.back()} testID="story-done" />
           </View>
         </ScrollView>
         {/* fondu sous l'illustration : les textes s'effacent en douceur en remontant */}

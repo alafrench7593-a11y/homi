@@ -17,6 +17,7 @@ import { emergencyContacts, type SupportPlan, type TrendPoint } from '@/lib/doma
 import { usePostpartumCheckins, usePostpartumSettings, useSharedWithMe } from '@/lib/data/hooks-postpartum';
 import { todayISO } from '@/lib/domain/dates';
 import { Tappable } from '@/components/Tappable';
+import { t as tr, formatDate } from '@/i18n';
 
 // ------------------------------------------------------------------ échelle 1 à 5
 export function Scale({ label, value, onChange, low, high }: { label: string; value: number | null; onChange: (v: number | null) => void; low: string; high: string }) {
@@ -24,7 +25,7 @@ export function Scale({ label, value, onChange, low, high }: { label: string; va
     <View style={{ gap: 6 }}>
       <Text weight="medium">{label}</Text>
       <View accessibilityRole="radiogroup" accessibilityLabel={label} style={{ flexDirection: 'row', gap: 6 }}>
-        {[1, 2, 3, 4, 5].map((n) => <ScaleDot key={n} n={n} selected={value === n} onPress={() => { haptic('selection'); onChange(value === n ? null : n); }} label={`${label} : ${n} sur 5${n === 1 ? ` (${low})` : n === 5 ? ` (${high})` : ''}`} />)}
+        {[1, 2, 3, 4, 5].map((n) => <ScaleDot key={n} n={n} selected={value === n} onPress={() => { haptic('selection'); onChange(value === n ? null : n); }} label={n === 1 || n === 5 ? tr('u1.pp.scaleNote', { label, n, note: n === 1 ? low : high }) : tr('u1.pp.scale', { label, n })} />)}
       </View>
       <Row style={{ justifyContent: 'space-between' }}>
         <Text variant="caption" muted>{low}</Text>
@@ -54,17 +55,17 @@ export function DangerPanel({ country = 'FR' }: { country?: string }) {
   const t = useTheme();
   const toast = useToast();
   return (
-    <Banner tone="danger" title="Vous méritez d’être aidée tout de suite">
+    <Banner tone="danger" title={tr('u1.pp.dangerTitle')}>
       <Text variant="small">
-        Appelez maintenant. Si vous le pouvez, demandez à quelqu’un de rester avec vous et de garder le bébé en sécurité. Vous n’avez rien à justifier.
+        {tr('u1.pp.dangerBody')}
       </Text>
       <View style={{ gap: spacing.xs, marginTop: spacing.xs }}>
         {emergencyContacts(country).map((e) => (
           <Tappable
             key={e.phone}
             accessibilityRole="button"
-            accessibilityLabel={`Appeler le ${e.phone.split('').join(' ')}, ${e.label}`}
-            onPress={() => { haptic('warning'); Linking.openURL(`tel:${e.phone}`).catch(() => toast(`Composez le ${e.phone} depuis votre téléphone.`, 'error')); }}
+            accessibilityLabel={tr('u1.pp.callA11y', { phone: e.phone.split('').join(' '), label: e.label })}
+            onPress={() => { haptic('warning'); Linking.openURL(`tel:${e.phone}`).catch(() => toast(tr('u1.pp.dial', { phone: e.phone }), 'error')); }}
             style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH + 8, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surface, opacity: pressed ? 0.85 : 1 })}
           >
             <Text weight="bold" color={t.colors.danger} style={{ fontSize: 20, minWidth: 52 }}>{e.phone}</Text>
@@ -76,7 +77,7 @@ export function DangerPanel({ country = 'FR' }: { country?: string }) {
           </Tappable>
         ))}
       </View>
-      <Text variant="caption" style={{ marginTop: 6 }}>L’application ne prévient personne à votre place : une notification ne remplace jamais une aide humaine.</Text>
+      <Text variant="caption" style={{ marginTop: 6 }}>{tr('u1.pp.noNotify')}</Text>
     </Banner>
   );
 }
@@ -96,7 +97,7 @@ export function SupportPlanCard({ plan, country }: { plan: SupportPlan; country?
           </StaggerItem>
         ))}
       </View>
-      <Text variant="caption" muted style={{ marginTop: 6 }}>Des pistes, pas des obligations. Rien n’est envoyé à personne sans votre accord.</Text>
+      <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u1.pp.leads')}</Text>
     </Card>
   );
 }
@@ -104,12 +105,12 @@ export function SupportPlanCard({ plan, country }: { plan: SupportPlan; country?
 // ------------------------------------------------------------------ mini-tendance (14 jours)
 export function MiniTrend({ label, points, positive, description }: { label: string; points: TrendPoint[]; positive: boolean; description: string }) {
   const t = useTheme();
-  const summary = points.filter((p) => p.value != null).map((p) => `${new Date(`${p.date}T12:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })} : ${p.value}`).join(', ');
+  const summary = points.filter((p) => p.value != null).map((p) => `${formatDate(`${p.date}T12:00:00`, { day: 'numeric', month: 'short' })} : ${p.value}`).join(', ');
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={`${label}. ${summary || 'Aucun jour noté'}. ${description}`} style={{ gap: 6 }}>
+    <View accessible accessibilityRole="image" accessibilityLabel={tr('u1.pp.trendA11y', { label, summary: summary || tr('u1.pp.noDay'), description })} style={{ gap: 6 }}>
       <Row style={{ justifyContent: 'space-between' }}>
         <Text weight="medium">{label}</Text>
-        <Text variant="caption" muted>14 derniers jours</Text>
+        <Text variant="caption" muted>{tr('u1.pp.last14')}</Text>
       </Row>
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 54 }}>
         {points.map((p, i) => <TrendBar key={p.date} index={i} value={p.value} color={positive ? t.colors.lavender : t.colors.accent} empty={t.colors.border} />)}
@@ -147,7 +148,7 @@ export function SectionCard({ s, index }: { s: Section; index: number }) {
           <View style={{ marginTop: spacing.xs, gap: 2 }}>
             {s.sources.map((k) => (
               <Tappable key={k} accessibilityRole="link" onPress={() => void Linking.openURL(SOURCES[k].url)} style={{ minHeight: 32, justifyContent: 'center' }}>
-                <Text variant="caption" color={t.colors.primary}>Source : {SOURCES[k].publisher} — {SOURCES[k].title}</Text>
+                <Text variant="caption" color={t.colors.primary}>{tr('u1.pp.source', { publisher: SOURCES[k].publisher, title: SOURCES[k].title })}</Text>
               </Tappable>
             ))}
           </View>
@@ -162,14 +163,14 @@ export function RecoveryWarnings() {
   const t = useTheme();
   const src = SOURCES[RECOVERY_WARNINGS.source];
   return (
-    <Banner tone="warning" title="Quand agir vite">
-      <Text variant="small" weight="bold" style={{ marginTop: 2 }}>Appelez le 15 (ou le 112) :</Text>
+    <Banner tone="warning" title={tr('u1.pp.actFast')}>
+      <Text variant="small" weight="bold" style={{ marginTop: 2 }}>{tr('u1.pp.call15')}</Text>
       {RECOVERY_WARNINGS.call15.map((x) => <Text key={x} variant="small">• {x}</Text>)}
-      <Text variant="small" weight="bold" style={{ marginTop: 6 }}>Contactez le jour même votre sage-femme ou votre médecin (sinon le 15) :</Text>
+      <Text variant="small" weight="bold" style={{ marginTop: 6 }}>{tr('u1.pp.callPro')}</Text>
       {RECOVERY_WARNINGS.callPro.map((x) => <Text key={x} variant="small">• {x}</Text>)}
-      <Text variant="caption" muted style={{ marginTop: 6 }}>Cette application ne peut pas dire si un symptôme fait partie d’une récupération normale.</Text>
+      <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u1.pp.cannotTell')}</Text>
       <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
-        <Text variant="caption" color={t.colors.primary}>Source : {src.publisher}</Text>
+        <Text variant="caption" color={t.colors.primary}>{tr('u1.pp.sourceOnly', { publisher: src.publisher })}</Text>
       </Tappable>
     </Banner>
   );
@@ -187,12 +188,12 @@ export function PostpartumHomeCard({ main }: { main?: boolean }) {
   const ask = shared.data.find((s) => s.relay_requested || s.rest_need === 'high' || s.rest_need === 'some');
   if (ask) {
     return (
-      <Card onPress={() => router.push('/postpartum/partner')} accessibilityLabel="Votre partenaire a partagé un besoin. Voir comment l’aider">
+      <Card onPress={() => router.push('/postpartum/partner')} accessibilityLabel={tr('u1.pp.partnerA11y')}>
         <Row>
           <Icon name={ask.relay_requested ? 'repeat' : 'moon'} color={t.colors.primary} />
           <View style={{ flex: 1 }}>
-            <Text weight="bold">{ask.relay_requested ? 'Votre partenaire demande un relais' : 'Votre partenaire a besoin de repos'}</Text>
-            <Text variant="small" muted>{ask.relay_note ?? 'Voir des gestes concrets pour l’aider.'}</Text>
+            <Text weight="bold">{ask.relay_requested ? tr('u1.pp.partnerRelay') : tr('u1.pp.partnerRest')}</Text>
+            <Text variant="small" muted>{ask.relay_note ?? tr('u1.pp.partnerHelp')}</Text>
           </View>
           <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
         </Row>
@@ -203,12 +204,12 @@ export function PostpartumHomeCard({ main }: { main?: boolean }) {
   if (!main) return null;
   const doneToday = checkins.data?.[0]?.checkin_date === todayISO();
   return (
-    <Card tone="soft" onPress={() => router.push('/postpartum')} accessibilityLabel="Après la naissance : votre espace privé">
+    <Card tone="soft" onPress={() => router.push('/postpartum')} accessibilityLabel={tr('u1.pp.homeA11y')}>
       <Row>
         <Icon name="sun" color={t.colors.heart} />
         <View style={{ flex: 1 }}>
-          <Text weight="bold">{doneToday ? 'Après la naissance' : 'Et vous, comment ça va ?'}</Text>
-          <Text variant="small" muted>{doneToday ? 'Votre point du jour est noté. Votre plan de soutien est là si besoin.' : 'Un point d’une minute, si vous en avez envie. Privé.'}</Text>
+          <Text weight="bold">{doneToday ? tr('u1.pp.afterBirth') : tr('u1.pp.howAreYou')}</Text>
+          <Text variant="small" muted>{doneToday ? tr('u1.pp.doneToday') : tr('u1.pp.oneMinute')}</Text>
         </View>
         <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
       </Row>

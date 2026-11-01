@@ -22,17 +22,10 @@ import {
 import { ALL_DOMAINS, type Domain, type HouseholdMember } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr, formatDate, formatList, type TKey } from '@/i18n';
 
-const DOMAIN_LABEL: Record<Domain, { title: string; detail: string }> = {
-  daily: { title: 'Quotidien', detail: 'Tétées, biberons, couches, sommeil, repas' },
-  health: { title: 'Santé', detail: 'Mesures, rendez-vous, vaccins, traitements' },
-  documents: { title: 'Documents', detail: 'Coffre de documents partagés' },
-  pregnancy: { title: 'Grossesse', detail: 'Suivi de grossesse' },
-  lists: { title: 'Listes et organisation', detail: 'Valise, achats, tâches, relais, routines, agenda familial' },
-  names: { title: 'Prénoms', detail: 'Favoris et votes' },
-  profile: { title: 'Profils', detail: 'Fiches des enfants' },
-};
-const ROLE_LABEL: Record<HouseholdMember['role'], string> = { owner: 'Propriétaire', coparent: 'Coparent', caregiver: 'Proche ou garde' };
+const domainLabel = (d: Domain): { title: string; detail: string } => ({ title: tr(`u1.fam.dom.${d}.title` as TKey), detail: tr(`u1.fam.dom.${d}.detail` as TKey) });
+const roleLabel = (role: HouseholdMember['role']): string => tr(`u1.fam.role.${role}` as TKey);
 const DEFAULT_VIEW: Domain[] = [...ALL_DOMAINS];
 const DEFAULT_EDIT: Domain[] = ['daily', 'lists', 'names'];
 
@@ -53,11 +46,11 @@ function ProfileScopePicker({ value, onChange, disabled }: { value: Scope; onCha
   };
   return (
     <View style={{ gap: 6 }} testID="profile-scope">
-      <Text variant="label">Profils partagés</Text>
+      <Text variant="label">{tr('u1.fam.sharedProfiles')}</Text>
       <Row wrap>
-        <Chip label="Tous les enfants" selected={all} onPress={disabled ? undefined : () => onChange({ ...value, children: all ? kids.map((k) => k.id) : null })} />
+        <Chip label={tr('u1.fam.allChildren')} selected={all} onPress={disabled ? undefined : () => onChange({ ...value, children: all ? kids.map((k) => k.id) : null })} />
         {kids.map((k) => <Chip key={k.id} label={k.first_name} selected={has(k.id)} onPress={disabled ? undefined : () => toggle(k.id)} />)}
-        {pregnancy ? <Chip label="Ma grossesse" selected={value.pregnancy} onPress={disabled ? undefined : () => onChange({ ...value, pregnancy: !value.pregnancy })} /> : null}
+        {pregnancy ? <Chip label={tr('u1.fam.myPregnancy')} selected={value.pregnancy} onPress={disabled ? undefined : () => onChange({ ...value, pregnancy: !value.pregnancy })} /> : null}
       </Row>
     </View>
   );
@@ -80,11 +73,11 @@ function PermissionMatrix({ value, onChange, disabled }: { value: Rights; onChan
       {ALL_DOMAINS.map((d) => (
         <View key={d} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingVertical: 6, borderBottomWidth: 0.5, borderColor: t.colors.border }}>
           <View style={{ flex: 1 }}>
-            <Text weight="medium">{DOMAIN_LABEL[d].title}</Text>
-            <Text variant="caption" muted>{DOMAIN_LABEL[d].detail}</Text>
+            <Text weight="medium">{domainLabel(d).title}</Text>
+            <Text variant="caption" muted>{domainLabel(d).detail}</Text>
           </View>
-          <Chip label="Voir" icon="eye" selected={value.view.includes(d)} onPress={disabled ? undefined : () => toggle(d, 'view')} />
-          <Chip label="Modifier" icon="edit-2" selected={value.edit.includes(d)} onPress={disabled ? undefined : () => toggle(d, 'edit')} />
+          <Chip label={tr('u1.fam.view')} icon="eye" selected={value.view.includes(d)} onPress={disabled ? undefined : () => toggle(d, 'view')} />
+          <Chip label={tr('u1.fam.edit')} icon="edit-2" selected={value.edit.includes(d)} onPress={disabled ? undefined : () => toggle(d, 'edit')} />
         </View>
       ))}
     </View>
@@ -106,7 +99,7 @@ function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: 
   async function save() {
     try {
       await update.mutateAsync({ householdId: member.household_id, userId: member.user_id, canView: rights.view, canEdit: rights.edit });
-      toast('Droits mis à jour.');
+      toast(tr('u1.fam.rightsUpdated'));
     } catch (e) {
       toast(friendlyError(e), 'error');
     }
@@ -115,48 +108,48 @@ function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: 
   async function saveScope() {
     try {
       await setMemberScope.mutateAsync({ householdId: member.household_id, userId: member.user_id, childScope: scope.children, pregnancyAccess: scope.pregnancy });
-      toast('Profils partagés mis à jour.');
+      toast(tr('u1.fam.scopeUpdated'));
     } catch (e) {
       toast(friendlyError(e), 'error');
     }
   }
 
   async function revoke() {
-    if (!(await confirm('Retirer ce membre ?', 'Cette personne n’aura plus accès aux informations du foyer. Ses propres données personnelles ne sont pas supprimées.', 'Retirer'))) return;
+    if (!(await confirm(tr('u1.fam.removeTitle'), tr('u1.fam.removeBody'), tr('u1.fam.remove')))) return;
     try {
       await remove.mutateAsync(member);
-      toast('Accès retiré.');
+      toast(tr('u1.fam.accessRemoved'));
     } catch (e) {
       toast(friendlyError(e), 'error');
     }
   }
 
   const summary = member.role === 'owner'
-    ? 'Accès complet'
-    : `Voit ${member.can_view.length}/${ALL_DOMAINS.length} domaines · modifie ${member.can_edit.length ? member.can_edit.map((d) => DOMAIN_LABEL[d].title.toLowerCase()).join(', ') : 'rien'}`;
+    ? tr('u1.fam.fullAccess')
+    : tr('u1.fam.summary', { view: member.can_view.length, total: ALL_DOMAINS.length, edit: member.can_edit.length ? member.can_edit.map((d) => domainLabel(d).title.toLowerCase()).join(', ') : tr('u1.fam.nothing') });
 
   return (
     <Card>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <View style={{ flex: 1, gap: 2 }}>
-          <Text weight="bold">{isMe ? `Vous · ${ROLE_LABEL[member.role]}` : ROLE_LABEL[member.role]}</Text>
-          <Text variant="small" muted>{`Membre depuis le ${new Date(member.joined_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`}</Text>
+          <Text weight="bold">{isMe ? tr('u1.fam.youRole', { role: roleLabel(member.role) }) : roleLabel(member.role)}</Text>
+          <Text variant="small" muted>{tr('u1.fam.memberSince', { date: formatDate(member.joined_at) })}</Text>
           <Text variant="small" muted>{summary}</Text>
         </View>
-        {member.role !== 'owner' ? <Button label={open ? 'Masquer' : editable ? 'Gérer' : 'Détails'} size="sm" variant="ghost" onPress={() => setOpen(!open)} /> : null}
+        {member.role !== 'owner' ? <Button label={open ? tr('u1.fam.hide') : editable ? tr('u1.fam.manage') : tr('u1.fam.details')} size="sm" variant="ghost" onPress={() => setOpen(!open)} /> : null}
       </Row>
       {open ? (
         <View style={{ marginTop: spacing.sm, gap: spacing.sm }}>
           <ProfileScopePicker value={scope} onChange={setScope} disabled={!editable} />
-          {editable ? <Button label="Enregistrer les profils partagés" size="sm" variant="secondary" loading={setMemberScope.isPending} onPress={saveScope} style={{ alignSelf: 'flex-start' }} /> : null}
+          {editable ? <Button label={tr('u1.fam.saveScope')} size="sm" variant="secondary" loading={setMemberScope.isPending} onPress={saveScope} style={{ alignSelf: 'flex-start' }} /> : null}
           <PermissionMatrix value={rights} onChange={setRights} disabled={!editable} />
           {editable ? (
             <Row wrap>
-              <Button label="Enregistrer les droits" size="sm" disabled={!dirty} loading={update.isPending} onPress={save} />
-              <Button label="Retirer du foyer" size="sm" variant="ghost" icon="user-x" loading={remove.isPending} onPress={revoke} />
+              <Button label={tr('u1.fam.saveRights')} size="sm" disabled={!dirty} loading={update.isPending} onPress={save} />
+              <Button label={tr('u1.fam.removeFromHousehold')} size="sm" variant="ghost" icon="user-x" loading={remove.isPending} onPress={revoke} />
             </Row>
           ) : (
-            <Text variant="caption" muted>Seul le propriétaire du foyer peut modifier ces droits.</Text>
+            <Text variant="caption" muted>{tr('u1.fam.ownerOnly')}</Text>
           )}
         </View>
       ) : null}
@@ -171,15 +164,15 @@ function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: 
 function InvitedWithoutAccount({ code }: { code: string | null }) {
   useEffect(() => { if (code) void savePendingInvite(code); }, [code]);
   return (
-    <Screen back title="Invitation" subtitle="Rejoindre un foyer sur Au fil de nous">
+    <Screen back title={tr('u1.fam.invitation')} subtitle={tr('u1.fam.joinOn')}>
       <Card tone="lavender">
-        <Text weight="bold">Vous êtes invité·e à rejoindre un foyer</Text>
-        <Text variant="small" style={{ marginTop: 4 }}>{code ? 'Créez votre compte ou connectez-vous : l’invitation vous attendra, puis vous la confirmerez en un geste.' : 'Ce lien d’invitation est incomplet. Demandez à la personne qui vous a invité·e de vous le renvoyer.'}</Text>
+        <Text weight="bold">{tr('u1.fam.invitedTitle')}</Text>
+        <Text variant="small" style={{ marginTop: 4 }}>{code ? tr('u1.fam.invitedWithCode') : tr('u1.fam.invitedIncomplete')}</Text>
       </Card>
       {code ? (
         <>
-          <Button label="Créer mon compte" size="lg" onPress={() => router.replace('/auth/sign-up')} />
-          <Button label="J’ai déjà un compte" variant="secondary" onPress={() => router.replace('/auth/sign-in')} />
+          <Button label={tr('u1.fam.createAccount')} size="lg" onPress={() => router.replace('/auth/sign-up')} />
+          <Button label={tr('u1.fam.haveAccount')} variant="secondary" onPress={() => router.replace('/auth/sign-in')} />
         </>
       ) : null}
     </Screen>
@@ -234,10 +227,10 @@ function FamilyScreenSignedIn() {
 
   async function invite() {
     if (!hid) return;
-    if (!rights.view.length) return toast('Choisissez au moins un domaine visible.', 'error');
-    if (scope.children && !scope.children.length && !scope.pregnancy) return toast('Choisissez au moins un profil à partager.', 'error');
+    if (!rights.view.length) return toast(tr('u1.fam.errDomain'), 'error');
+    if (scope.children && !scope.children.length && !scope.pregnancy) return toast(tr('u1.fam.errProfile'), 'error');
     const names = (kidsForPreview ?? []).filter((k) => scope.children == null || scope.children.includes(k.id)).map((k) => k.first_name);
-    if (!inviteAccess.require(<Text variant="small">{`${names.join(' et ') || 'Vos profils'} : biberons, sommeil, couches et rendez-vous synchronisés sur les deux téléphones, avec « qui a noté » sur chaque saisie.`}</Text>)) return;
+    if (!inviteAccess.require(<Text variant="small">{tr('u1.fam.premiumPreview', { names: formatList(names) || tr('u1.fam.yourProfiles') })}</Text>)) return;
     try {
       const tk = await createInvitation.mutateAsync({ householdId: hid, role, canView: rights.view, canEdit: rights.edit, childScope: scope.children, pregnancyAccess: scope.pregnancy });
       setToken(tk);
@@ -249,20 +242,20 @@ function FamilyScreenSignedIn() {
   async function shareInvite() {
     if (!token || !link) return;
     await Share.share({
-      title: `Rejoindre notre famille sur ${BRAND.name}`,
-      message: `Je t’invite à rejoindre notre famille sur ${BRAND.name}.\n\nOuvre ce lien depuis ton téléphone : ${link}\n\nOu saisis ce code dans Réglages › Famille & partage › « J’ai un code » :\n${token}\n\nL’invitation expire dans 7 jours.`,
+      title: tr('u1.fam.shareTitle', { app: BRAND.name }),
+      message: tr('u1.fam.shareMessage', { app: BRAND.name, link, token }),
     }).catch(() => undefined);
   }
 
   async function join() {
     const c = code.trim().replace(/\s+/g, '');
-    if (c.length < 16) return setCodeError('Ce code paraît incomplet : copiez-le en entier.');
+    if (c.length < 16) return setCodeError(tr('u1.fam.codeIncomplete'));
     setCodeError(null);
     try {
       await accept.mutateAsync(c);
       setCode('');
       await takePendingInvite(); // l'invitation en attente est utilisée
-      toast('Bienvenue dans ce foyer !');
+      toast(tr('u1.fam.welcome'));
       if (params.code) router.replace('/'); // arrivé·e par le lien : on continue (onboarding ou accueil)
     } catch (e) {
       setCodeError(friendlyError(e));
@@ -271,10 +264,10 @@ function FamilyScreenSignedIn() {
 
   async function leave() {
     if (!membership) return;
-    if (!(await confirm('Quitter ce foyer ?', 'Vous n’aurez plus accès aux informations partagées de ce foyer. Vos données personnelles (humeur, cycle, poids…) restent à vous.', 'Quitter'))) return;
+    if (!(await confirm(tr('u1.fam.leaveTitle'), tr('u1.fam.leaveBody'), tr('u1.fam.leave')))) return;
     try {
       await removeMember.mutateAsync(membership);
-      toast('Vous avez quitté le foyer.');
+      toast(tr('u1.fam.left'));
     } catch (e) {
       toast(friendlyError(e), 'error');
     }
@@ -295,91 +288,91 @@ function FamilyScreenSignedIn() {
   async function saveName() {
     if (!household) return;
     const v = name.trim();
-    if (v.length < 1 || v.length > 60) return toast('Le nom doit compter de 1 à 60 caractères.', 'error');
+    if (v.length < 1 || v.length > 60) return toast(tr('u1.fam.errName'), 'error');
     try {
       await rename.mutateAsync({ id: household.id, name: v });
-      toast('Nom du foyer enregistré.');
+      toast(tr('u1.fam.nameSaved'));
     } catch (e) {
       toast(friendlyError(e), 'error');
     }
   }
 
   return (
-    <Screen back title="Famille & partage" subtitle="Suivez à plusieurs, chacun avec les accès choisis.">
+    <Screen back title={tr('u1.fam.title')} subtitle={tr('u1.fam.subtitle')}>
       {params.code && !isDemo ? (
         <Card tone="lavender">
-          <Text weight="bold">Rejoindre le foyer qui vous a invité·e ?</Text>
-          <Text variant="small" style={{ marginTop: 4 }}>Vous verrez et modifierez seulement ce que la personne a choisi de partager. Vos données personnelles restent à vous.</Text>
+          <Text weight="bold">{tr('u1.fam.joinQuestion')}</Text>
+          <Text variant="small" style={{ marginTop: 4 }}>{tr('u1.fam.joinBody')}</Text>
           <Row wrap style={{ marginTop: spacing.sm }}>
-            <Button label="Rejoindre le foyer" icon="log-in" loading={accept.isPending} onPress={join} />
-            <Button label="Plus tard" variant="ghost" onPress={async () => { await takePendingInvite(); router.replace('/'); }} />
+            <Button label={tr('u1.fam.joinHousehold')} icon="log-in" loading={accept.isPending} onPress={join} />
+            <Button label={tr('u1.fam.later')} variant="ghost" onPress={async () => { await takePendingInvite(); router.replace('/'); }} />
           </Row>
           {codeError ? <Text variant="small" color={t.colors.danger} style={{ marginTop: 4 }}>{codeError}</Text> : null}
         </Card>
       ) : null}
       {isDemo ? (
-        <Banner tone="demo" title="Mode démonstration">{'Un seul compte existe sur cet appareil : vous pouvez préparer une invitation, mais la rejoindre nécessite la connexion à Supabase.'}</Banner>
+        <Banner tone="demo" title={tr('u1.fam.demoTitle')}>{tr('u1.fam.demoBody')}</Banner>
       ) : null}
 
       {!hid && !isLoading ? (
         <Card tone="soft">
-          <Text weight="bold">Vous n’avez pas encore de foyer</Text>
-          <Text variant="small" muted style={{ marginTop: 4 }}>Créez-le pour inviter un coparent, ou rejoignez celui d’un proche avec un code.</Text>
-          <Button label="Créer mon foyer" size="sm" loading={creating} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={createHousehold} />
+          <Text weight="bold">{tr('u1.fam.noHousehold')}</Text>
+          <Text variant="small" muted style={{ marginTop: 4 }}>{tr('u1.fam.noHouseholdD')}</Text>
+          <Button label={tr('u1.fam.createHousehold')} size="sm" loading={creating} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={createHousehold} />
         </Card>
       ) : null}
 
       {hid ? (
         <>
-          <SectionTitle title={household?.name ?? 'Mon foyer'} />
+          <SectionTitle title={household?.name ?? tr('u1.fam.myHousehold')} />
           {amOwner ? (
             <Card>
-              <Field label="Nom du foyer" value={name} onChangeText={setName} maxLength={60} />
-              <Button label="Renommer" size="sm" variant="secondary" disabled={name.trim() === household?.name} loading={rename.isPending} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={saveName} />
+              <Field label={tr('u1.fam.householdName')} value={name} onChangeText={setName} maxLength={60} />
+              <Button label={tr('u1.fam.rename')} size="sm" variant="secondary" disabled={name.trim() === household?.name} loading={rename.isPending} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={saveName} />
             </Card>
           ) : null}
           {isLoading ? <Loading /> : (members ?? []).map((m) => <MemberCard key={m.user_id} member={m} isMe={m.user_id === me} amOwner={amOwner} />)}
-          <Text variant="caption" muted>Pour protéger la vie privée de chacun, seul le rôle des membres est affiché. Les données personnelles (humeur, cycle, poids) ne sont jamais partagées.</Text>
+          <Text variant="caption" muted>{tr('u1.fam.privacyNote')}</Text>
 
           {amOwner ? (
             <>
-              <SectionTitle title="Inviter quelqu’un" />
+              <SectionTitle title={tr('u1.fam.inviteSomeone')} />
               <Card>
                 <View style={{ gap: spacing.sm }}>
-                  <Segmented label="Rôle de la personne invitée" value={role} onChange={setRole} options={[{ value: 'coparent', label: 'Coparent' }, { value: 'caregiver', label: 'Proche ou garde' }]} />
-                  <Text variant="small" muted>Choisissez ce que cette personne pourra voir et modifier. Vous pourrez changer ces droits à tout moment.</Text>
+                  <Segmented label={tr('u1.fam.inviteeRole')} value={role} onChange={setRole} options={[{ value: 'coparent', label: tr('u1.fam.role.coparent') }, { value: 'caregiver', label: tr('u1.fam.role.caregiver') }]} />
+                  <Text variant="small" muted>{tr('u1.fam.chooseRights')}</Text>
                   <ProfileScopePicker value={scope} onChange={setScope} />
                   <PermissionMatrix value={rights} onChange={setRights} />
-                  <Button label="Créer l’invitation" icon="user-plus" loading={createInvitation.isPending} onPress={invite} testID="invite-create" />
-                  {!inviteAccess.premium ? <Text variant="caption" muted>Inviter un coparent fait partie de Premium. Retirer un membre ou quitter un foyer reste toujours possible.</Text> : null}
+                  <Button label={tr('u1.fam.createInvitation')} icon="user-plus" loading={createInvitation.isPending} onPress={invite} testID="invite-create" />
+                  {!inviteAccess.premium ? <Text variant="caption" muted>{tr('u1.fam.premiumNote')}</Text> : null}
                 </View>
               </Card>
               {token ? (
                 <Card tone="lavender">
-                  <Text weight="bold">Invitation prête</Text>
-                  <Text variant="small" muted style={{ marginTop: 4 }}>Ce code n’est affiché qu’une seule fois. Il est valable 7 jours et ne peut servir qu’une fois.</Text>
+                  <Text weight="bold">{tr('u1.fam.ready')}</Text>
+                  <Text variant="small" muted style={{ marginTop: 4 }}>{tr('u1.fam.codeOnce')}</Text>
                   <View style={{ marginVertical: spacing.sm, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surface }}>
-                    <Text selectable weight="bold" center style={{ letterSpacing: 1 }} accessibilityLabel={`Code d’invitation : ${token.split('').join(' ')}`}>{token}</Text>
+                    <Text selectable weight="bold" center style={{ letterSpacing: 1 }} accessibilityLabel={tr('u1.fam.codeA11y', { code: token.split('').join(' ') })}>{token}</Text>
                   </View>
                   <Row wrap>
-                    <Button label="Partager l’invitation" icon="share-2" size="sm" onPress={shareInvite} />
-                    <Button label="Fermer" size="sm" variant="ghost" onPress={() => setToken(null)} />
+                    <Button label={tr('u1.fam.shareInvitation')} icon="share-2" size="sm" onPress={shareInvite} />
+                    <Button label={tr('u1.fam.close')} size="sm" variant="ghost" onPress={() => setToken(null)} />
                   </Row>
                 </Card>
               ) : null}
               {pending.length ? (
                 <Card>
-                  <Text weight="bold">Invitations en attente</Text>
+                  <Text weight="bold">{tr('u1.fam.pendingInvites')}</Text>
                   {pending.map((i, idx) => (
                     <View key={i.id}>
                       {idx > 0 ? <Divider /> : null}
                       <Row style={{ justifyContent: 'space-between', paddingVertical: 6 }}>
                         <View style={{ flex: 1 }}>
-                          <Text>{ROLE_LABEL[i.role]}</Text>
-                          <Text variant="caption" muted>{`Expire le ${new Date(i.expires_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}`}</Text>
+                          <Text>{roleLabel(i.role)}</Text>
+                          <Text variant="caption" muted>{tr('u1.fam.expires', { date: formatDate(i.expires_at, { day: 'numeric', month: 'long' }) })}</Text>
                         </View>
-                        <Button label="Révoquer" size="sm" variant="ghost" onPress={async () => {
-                          try { await revokeInvitation.mutateAsync(i.id); toast('Invitation révoquée.'); } catch (e) { toast(friendlyError(e), 'error'); }
+                        <Button label={tr('u1.fam.revoke')} size="sm" variant="ghost" onPress={async () => {
+                          try { await revokeInvitation.mutateAsync(i.id); toast(tr('u1.fam.revoked')); } catch (e) { toast(friendlyError(e), 'error'); }
                         }} />
                       </Row>
                     </View>
@@ -391,17 +384,17 @@ function FamilyScreenSignedIn() {
         </>
       ) : null}
 
-      <SectionTitle title="J’ai un code" />
+      <SectionTitle title={tr('u1.fam.haveCode')} />
       <Card>
-        <Field label="Code d’invitation" value={code} onChangeText={setCode} autoCapitalize="none" autoCorrect={false} error={codeError} hint="Reçu de la personne qui gère le foyer." />
-        <Button label="Rejoindre le foyer" variant="secondary" icon="log-in" loading={accept.isPending} disabled={!code.trim()} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={join} />
+        <Field label={tr('u1.fam.inviteCode')} value={code} onChangeText={setCode} autoCapitalize="none" autoCorrect={false} error={codeError} hint={tr('u1.fam.codeHint')} />
+        <Button label={tr('u1.fam.joinHousehold')} variant="secondary" icon="log-in" loading={accept.isPending} disabled={!code.trim()} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={join} />
       </Card>
 
       {membership && !amOwner ? (
-        <Button label="Quitter ce foyer" variant="ghost" icon="log-out" loading={removeMember.isPending} onPress={leave} />
+        <Button label={tr('u1.fam.leaveBtn')} variant="ghost" icon="log-out" loading={removeMember.isPending} onPress={leave} />
       ) : null}
       {amOwner ? (
-        <Text variant="caption" muted>En tant que propriétaire, vous ne pouvez pas quitter ce foyer. Si vous supprimez votre compte, le foyer partagé est transmis à un coparent.</Text>
+        <Text variant="caption" muted>{tr('u1.fam.ownerCantLeave')}</Text>
       ) : null}
     </Screen>
   );

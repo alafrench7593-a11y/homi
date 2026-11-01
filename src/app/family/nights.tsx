@@ -22,13 +22,17 @@ import { GlassSurface } from '@/components/Glass';
 import { Icon } from '@/components/ui';
 import { tint } from '@/components/ToolGlyph';
 import { useTheme } from '@/theme/ThemeProvider';
-import { countdown } from '@/lib/domain/dayThread';
+import { t as tr, formatDate, formatRelative, formatTime } from '@/i18n';
 
-const fmtNight = (s: { starts_at: string; ends_at: string }) => {
-  const a = new Date(s.starts_at);
-  const b = new Date(s.ends_at);
-  return `Nuit du ${a.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} · ${a.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} – ${b.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
-};
+const fmtNight = (s: { starts_at: string; ends_at: string }) => tr('u2.nights.night_of', { date: formatDate(s.starts_at, { weekday: 'long', day: 'numeric', month: 'long' }), from: formatTime(s.starts_at), to: formatTime(s.ends_at) });
+
+/** « dans 20 minutes », « dans 3 heures »… dans la langue courante. */
+function startsIn(iso: string) {
+  const min = Math.max(1, Math.round((Date.parse(iso) - Date.now()) / 60000));
+  if (min < 60) return formatRelative(min, 'minute');
+  if (min < 1440) return formatRelative(Math.round(min / 60), 'hour');
+  return formatRelative(Math.round(min / 1440), 'day');
+}
 
 export default function NightRelay() {
   const toast = useToast();
@@ -61,28 +65,28 @@ export default function NightRelay() {
   function toggleOrder(id: string) { setOrder((cur) => { const base = cur.length ? cur : []; return base.includes(id) ? base.filter((x) => x !== id) : [...base, id]; }); }
 
   async function submit() {
-    if (!plan.length) return toast('Vérifiez la date de départ.', 'error');
-    const msg = conflicts.length ? `${conflicts.length} nuit(s) chevauchent un relais déjà prévu pour la même personne. Enregistrer quand même ?` : `${plan.length} nuit(s) vont être ajoutées à l’agenda du foyer.`;
-    if (!(await confirm('Enregistrer ce planning ?', msg, 'Enregistrer', false))) return;
-    try { await save.mutateAsync(plan); toast('Planning enregistré. Chacun peut confirmer sa nuit.'); } catch (e) { toast(friendlyError(e), 'error'); }
+    if (!plan.length) return toast(tr('u2.nights.check_start'), 'error');
+    const msg = conflicts.length ? tr('u2.nights.conflict_confirm', { count: conflicts.length }) : tr('u2.nights.will_add', { count: plan.length });
+    if (!(await confirm(tr('u2.nights.save_title'), msg, tr('u2.nights.save'), false))) return;
+    try { await save.mutateAsync(plan); toast(tr('u2.nights.saved')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   async function setStatus(s: CareShift, status: CareShift['status'], msg: string) {
     try { await update.mutateAsync({ id: s.id, patch: { status } }); toast(msg); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function remove(s: CareShift) {
-    if (!(await confirm('Retirer cette nuit du planning ?', fmtNight(s), 'Retirer'))) return;
-    try { await del.mutateAsync(s.id); toast('Nuit retirée.'); } catch (e) { toast(friendlyError(e), 'error'); }
+    if (!(await confirm(tr('u2.nights.remove_title'), fmtNight(s), tr('u2.nights.remove')))) return;
+    try { await del.mutateAsync(s.id); toast(tr('u2.nights.removed')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   return (
-    <Screen back title="Relais de nuit" subtitle="Qui se lève, quelle nuit. Sans compter les points."
-      action={myPending ? { label: 'Je confirme ma prochaine nuit', icon: 'check', onPress: () => setStatus(myPending, 'confirmed', 'Nuit confirmée.'), testID: 'nights-confirm-next' }
-        : plan.length ? { label: `Enregistrer ce planning (${plan.length} nuit${plan.length > 1 ? 's' : ''})`, icon: 'calendar', onPress: submit, disabled: save.isPending, testID: 'nights-save-plan' } : undefined}>
+    <Screen back title={tr('u2.nights.title')} subtitle={tr('u2.nights.subtitle')}
+      action={myPending ? { label: tr('u2.nights.confirm_next'), icon: 'check', onPress: () => setStatus(myPending, 'confirmed', tr('u2.nights.confirmed_toast')), testID: 'nights-confirm-next' }
+        : plan.length ? { label: tr('u2.nights.save_plan', { count: plan.length }), icon: 'calendar', onPress: submit, disabled: save.isPending, testID: 'nights-save-plan' } : undefined}>
       <TodaySummary items={[
-        { icon: 'moon', value: tonight ? labelOf(tonight.user_id) : '—', label: 'Cette nuit' },
-        { icon: 'calendar', value: String(upcoming.filter((x) => x.user_id === me).length), label: 'Mes nuits à venir' },
-        { icon: 'check-circle', value: String(upcoming.filter((x) => x.user_id === me && x.status === 'planned').length), label: 'À confirmer' },
+        { icon: 'moon', value: tonight ? labelOf(tonight.user_id) : '—', label: tr('u2.nights.tonight') },
+        { icon: 'calendar', value: String(upcoming.filter((x) => x.user_id === me).length), label: tr('u2.nights.my_upcoming') },
+        { icon: 'check-circle', value: String(upcoming.filter((x) => x.user_id === me && x.status === 'planned').length), label: tr('u2.nights.to_confirm') },
       ]} />
       {tonight ? (
         // Ce soir, en grand : qui se lève, à quelle heure ; confirmer ou proposer un échange en un geste
@@ -93,25 +97,25 @@ export default function NightRelay() {
                 <Icon name="moon" size={24} color={t.colors.lavender} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>{Date.parse(tonight.starts_at) <= Date.now() ? 'Cette nuit' : 'Ce soir'}</Text>
-                <Text weight="bold" style={{ fontSize: 28, lineHeight: 33 }} testID="nights-tonight-who">{tonight.user_id === me ? 'Vous' : labelOf(tonight.user_id)}</Text>
+                <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>{Date.parse(tonight.starts_at) <= Date.now() ? tr('u2.nights.tonight') : tr('u2.nights.this_evening')}</Text>
+                <Text weight="bold" style={{ fontSize: 28, lineHeight: 33 }} testID="nights-tonight-who">{tonight.user_id === me ? tr('u2.nights.you') : labelOf(tonight.user_id)}</Text>
               </View>
             </Row>
             <Text variant="small" muted>
-              {`${new Date(tonight.starts_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} – ${new Date(tonight.ends_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`}
-              {Date.parse(tonight.starts_at) > Date.now() ? ` · commence ${countdown(tonight.starts_at)}` : ''}
-              {tonight.status === 'confirmed' ? ' · confirmée' : tonight.status === 'swapped' ? ' · échangée' : ' · à confirmer'}
+              {`${formatTime(tonight.starts_at)} – ${formatTime(tonight.ends_at)}`}
+              {Date.parse(tonight.starts_at) > Date.now() ? ` · ${tr('u2.nights.starts', { when: startsIn(tonight.starts_at) })}` : ''}
+              {tonight.status === 'confirmed' ? ` · ${tr('u2.nights.confirmed')}` : tonight.status === 'swapped' ? ` · ${tr('u2.nights.swapped')}` : ` · ${tr('u2.nights.to_confirm_lc')}`}
             </Text>
             {tonight.user_id === me ? (
               <Row wrap>
-                {tonight.status === 'planned' ? <Button label="Je confirme" icon="check" size="sm" onPress={() => setStatus(tonight, 'confirmed', 'Nuit confirmée.')} testID="nights-tonight-confirm" style={{ flexGrow: 1 }} /> : null}
-                <Button label="Proposer un échange" icon="shuffle" size="sm" variant="secondary" onPress={() => setSwap(tonight.id)} testID="nights-tonight-swap" style={{ flexGrow: 1 }} />
+                {tonight.status === 'planned' ? <Button label={tr('u2.nights.i_confirm')} icon="check" size="sm" onPress={() => setStatus(tonight, 'confirmed', tr('u2.nights.confirmed_toast'))} testID="nights-tonight-confirm" style={{ flexGrow: 1 }} /> : null}
+                <Button label={tr('u2.nights.propose_swap')} icon="shuffle" size="sm" variant="secondary" onPress={() => setSwap(tonight.id)} testID="nights-tonight-swap" style={{ flexGrow: 1 }} />
               </Row>
             ) : null}
           </View>
         </GlassSurface>
       ) : null}
-      <SectionTitle title="Nuits prévues" />
+      <SectionTitle title={tr('u2.nights.planned')} />
       {upcoming.length ? (
         <Card padded={false} style={{ paddingVertical: spacing.sm }}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md }}>
@@ -120,42 +124,42 @@ export default function NightRelay() {
         </Card>
       ) : null}
       {shiftsQ.isLoading && !shiftsQ.data ? <Skeleton rows={2} /> : null}
-      {shiftsQ.isError && !shiftsQ.data ? <ErrorView error={shiftsQ.error} onRetry={() => void shiftsQ.refetch()} title="Impossible d’afficher les nuits prévues" /> : null}
-      {shiftsQ.data && upcoming.length === 0 ? <EmptyState icon="moon" title="Aucune nuit prévue" body="Préparez un planning ci-dessous : il reste modifiable à tout moment." /> : null}
+      {shiftsQ.isError && !shiftsQ.data ? <ErrorView error={shiftsQ.error} onRetry={() => void shiftsQ.refetch()} title={tr('u2.nights.load_error')} /> : null}
+      {shiftsQ.data && upcoming.length === 0 ? <EmptyState icon="moon" title={tr('u2.nights.none_title')} body={tr('u2.nights.none_body')} /> : null}
       {upcoming.map((s, i) => (
         <StaggerItem key={s.id} index={i}>
           <Card>
-            <ListRow icon={s.status === 'confirmed' ? 'check-circle' : s.status === 'swapped' ? 'shuffle' : 'moon'} title={labelOf(s.user_id)} subtitle={`${fmtNight(s)}${s.status === 'confirmed' ? ' · confirmée' : s.status === 'swapped' ? ' · échangée' : ''}`} />
+            <ListRow icon={s.status === 'confirmed' ? 'check-circle' : s.status === 'swapped' ? 'shuffle' : 'moon'} title={labelOf(s.user_id)} subtitle={`${fmtNight(s)}${s.status === 'confirmed' ? ` · ${tr('u2.nights.confirmed')}` : s.status === 'swapped' ? ` · ${tr('u2.nights.swapped')}` : ''}`} />
             <Row wrap style={{ marginTop: spacing.xs }}>
-              {s.user_id === me && s.status === 'planned' ? <Button label="Je confirme" size="sm" icon="check" onPress={() => setStatus(s, 'confirmed', 'Nuit confirmée.')} /> : null}
-              {s.user_id === me ? <Button label="Proposer un échange" size="sm" variant="secondary" onPress={() => setSwap(s.id)} /> : null}
-              <Button label="Retirer" size="sm" variant="ghost" onPress={() => remove(s)} />
+              {s.user_id === me && s.status === 'planned' ? <Button label={tr('u2.nights.i_confirm')} size="sm" icon="check" onPress={() => setStatus(s, 'confirmed', tr('u2.nights.confirmed_toast'))} /> : null}
+              {s.user_id === me ? <Button label={tr('u2.nights.propose_swap')} size="sm" variant="secondary" onPress={() => setSwap(s.id)} /> : null}
+              <Button label={tr('u2.nights.remove')} size="sm" variant="ghost" onPress={() => remove(s)} />
             </Row>
           </Card>
         </StaggerItem>
       ))}
 
-      <SectionTitle title="Préparer un planning" />
+      <SectionTitle title={tr('u2.nights.prepare')} />
       <Card>
         <View style={{ gap: spacing.sm }}>
-          <Segmented label="Fonctionnement" value={pattern} onChange={setPattern} options={[{ value: 'alternate', label: 'Chacun son tour' }, { value: 'fixed', label: 'Toujours la même personne' }, { value: 'custom', label: 'Nuit par nuit' }]} />
-          <Text variant="label">{pattern === 'fixed' ? 'Qui ?' : 'Qui participe (dans l’ordre) ?'}</Text>
+          <Segmented label={tr('u2.nights.mode')} value={pattern} onChange={setPattern} options={[{ value: 'alternate', label: tr('u2.nights.m_alternate') }, { value: 'fixed', label: tr('u2.nights.m_fixed') }, { value: 'custom', label: tr('u2.nights.m_custom') }]} />
+          <Text variant="label">{pattern === 'fixed' ? tr('u2.nights.who') : tr('u2.nights.who_order')}</Text>
           <Row wrap>{people.map((p) => <Chip key={p.id} label={`${p.label}${order.includes(p.id) ? ` (${order.indexOf(p.id) + 1})` : ''}`} selected={order.includes(p.id)} onPress={() => (pattern === 'fixed' ? setOrder([p.id]) : toggleOrder(p.id))} />)}</Row>
-          {people.length === 1 ? <Text variant="caption" muted>Vous êtes seul·e dans le foyer : le planning vous aide à voir les nuits à venir. Vous pouvez inviter un proche ou un aidant depuis Réglages › Famille.</Text> : null}
+          {people.length === 1 ? <Text variant="caption" muted>{tr('u2.nights.alone')}</Text> : null}
           <Row>
-            <View style={{ flex: 2 }}><Field label="À partir du" value={start} onChangeText={setStart} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" error={startIso ? undefined : 'Date non reconnue.'} /></View>
-            <View style={{ flex: 1 }}><Field label="Nuits" value={nights} onChangeText={setNights} keyboardType="number-pad" maxLength={2} /></View>
+            <View style={{ flex: 2 }}><Field label={tr('u2.nights.from_date')} value={start} onChangeText={setStart} placeholder={tr('u2.nights.date_ph')} keyboardType="numbers-and-punctuation" error={startIso ? undefined : tr('u2.nights.date_error')} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u2.nights.nights')} value={nights} onChangeText={setNights} keyboardType="number-pad" maxLength={2} /></View>
           </Row>
           <Row>
-            <View style={{ flex: 1 }}><Field label="De (heure)" value={startHour} onChangeText={setStartHour} keyboardType="number-pad" maxLength={2} /></View>
-            <View style={{ flex: 1 }}><Field label="À (heure)" value={endHour} onChangeText={setEndHour} keyboardType="number-pad" maxLength={2} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u2.nights.from_hour')} value={startHour} onChangeText={setStartHour} keyboardType="number-pad" maxLength={2} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u2.nights.to_hour')} value={endHour} onChangeText={setEndHour} keyboardType="number-pad" maxLength={2} /></View>
           </Row>
         </View>
       </Card>
 
       {plan.length ? (
         <>
-          <SectionTitle title="Aperçu (rien n’est encore enregistré)" />
+          <SectionTitle title={tr('u2.nights.preview')} />
           <Card>
             {plan.map((p, i) => (
               <View key={p.starts_at} style={{ paddingVertical: 6, gap: 4 }}>
@@ -166,8 +170,8 @@ export default function NightRelay() {
               </View>
             ))}
           </Card>
-          {conflicts.length ? <Banner tone="warning">{`${conflicts.length} nuit(s) chevauchent un relais déjà prévu pour la même personne.`}</Banner> : null}
-          <Button label="Enregistrer ce planning" icon="calendar" full onPress={submit} loading={save.isPending} />
+          {conflicts.length ? <Banner tone="warning">{tr('u2.nights.conflict_banner', { count: conflicts.length })}</Banner> : null}
+          <Button label={tr('u2.nights.save_plan_short')} icon="calendar" full onPress={submit} loading={save.isPending} />
         </>
       ) : null}
 

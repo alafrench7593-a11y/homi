@@ -71,16 +71,7 @@ export default function LanguageScreen() {
         })}
       </Card>
 
-      <SectionTitle title={tr('language.planned')} />
-      <Card tone="soft">
-        <Text variant="small" muted>{tr('language.plannedHint')}</Text>
-        <Row wrap style={{ marginTop: spacing.xs }}>
-          {LOCALES.filter((l) => l.status === 'planned').map((l) => (
-            <Text key={l.code} variant="caption" muted style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999, borderWidth: 1, borderColor: t.colors.border }}>{l.native}</Text>
-          ))}
-        </Row>
-      </Card>
-
+      {/* Deux langues distinctes : français et anglais (les autres ne sont plus listées tant qu'elles ne sont pas prêtes) */}
       <SectionTitle title={tr('language.region')} />
       <Text variant="small" muted>{tr('language.regionHint')}</Text>
       <Card padded={false}>

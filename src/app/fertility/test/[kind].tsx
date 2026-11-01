@@ -23,10 +23,12 @@ import { discardLocalImage } from '@/lib/cycleAnalysis/privacy';
 import { localTextRecognitionAvailable, readTextFromImage } from '@/lib/scanner/localRecognition';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
+import type { TKey } from '@/i18n';
+import { t as tr } from '@/i18n';
 
 type Step = 'questions' | 'photo' | 'crop' | 'manual' | 'result' | 'saved';
 
-const FORMAT_LABEL: Record<TestFormat, string> = { lines: 'Test à lignes', cross: 'Test à croix (+ / −)', digital: 'Écran numérique' };
+const FORMAT_LABEL: Record<TestFormat, TKey> = { lines: 'u3.fertTest.fmtLines', cross: 'u3.fertTest.fmtCross', digital: 'u3.fertTest.fmtDigital' };
 
 function parseHour(s: string): Date | null {
   const m = s.trim().match(/^(\d{1,2})\s*[h:]\s*(\d{2})?$/i);
@@ -90,11 +92,11 @@ export default function TestPhotoScreen() {
 
   function validateQuestions() {
     const e: Record<string, string> = {};
-    if (!ruleId) e.brand = 'Choisissez votre test, ou « Autre test / je ne sais pas ».';
-    if (ruleId === UNKNOWN_TEST_ID && !customBrand.trim()) e.custom = 'Indiquez la marque et le modèle (tels qu’écrits sur la boîte).';
-    if (hour.trim() && !parseHour(hour)) e.hour = 'Heure attendue au format 7h30 ou 07:30.';
-    if (elapsed.trim() && (minutes == null || !Number.isFinite(minutes) || minutes < 0 || minutes > 1440)) e.elapsed = 'Nombre de minutes entre 0 et 1440.';
-    if (kind === 'pregnancy' && expectedPeriod.trim() && !frToISO(expectedPeriod)) e.period = 'Date attendue au format JJ/MM/AAAA.';
+    if (!ruleId) e.brand = tr('u3.fertTest.errBrand');
+    if (ruleId === UNKNOWN_TEST_ID && !customBrand.trim()) e.custom = tr('u3.fertTest.errCustom');
+    if (hour.trim() && !parseHour(hour)) e.hour = tr('u3.fertTest.errHour');
+    if (elapsed.trim() && (minutes == null || !Number.isFinite(minutes) || minutes < 0 || minutes > 1440)) e.elapsed = tr('u3.fertTest.errElapsed');
+    if (kind === 'pregnancy' && expectedPeriod.trim() && !frToISO(expectedPeriod)) e.period = tr('u3.fertTest.errPeriod');
     setErrors(e);
     if (Object.keys(e).length) return;
     const manualOnly = rule?.mode === 'manual_only';
@@ -116,7 +118,7 @@ export default function TestPhotoScreen() {
     try {
       if (!localTextRecognitionAvailable()) {
         const a = analyseDigitalText('', ctx);
-        setAnalysis({ ...a, messages: ['La lecture de l’écran sur le téléphone n’est pas disponible ici (version web ou application sans module de reconnaissance). L’application ne devine pas le résultat : indiquez ce que vous lisez.'] });
+        setAnalysis({ ...a, messages: [tr('u3.fertTest.noOcr')] });
       } else {
         const r = await readTextFromImage(u);
         setAnalysis(analyseDigitalText(r.text, ctx));
@@ -140,7 +142,7 @@ export default function TestPhotoScreen() {
       setConfirmed(null);
       setStep('result');
     } catch (err) {
-      toast(friendlyError(err, 'Analyse impossible sur cette photo. Reprenez une photo ou lisez le test vous-même.'), 'error');
+      toast(friendlyError(err, tr('u3.fertTest.errAnalyse')), 'error');
     } finally {
       setBusy(false);
     }
@@ -155,7 +157,7 @@ export default function TestPhotoScreen() {
 
   async function submit() {
     if (!analysis || !confirmed) return;
-    if (!userId) return toast('Connectez-vous pour enregistrer ce résultat.', 'error');
+    if (!userId) return toast(tr('u3.fertTest.signIn'), 'error');
     try {
       const testedAt = parseHour(hour)?.toISOString() ?? new Date().toISOString();
       const res = await save.mutateAsync({
@@ -180,87 +182,87 @@ export default function TestPhotoScreen() {
     }
   }
 
-  const title = kind === 'ovulation' ? 'Test d’ovulation' : 'Test de grossesse';
+  const title = kind === 'ovulation' ? tr('u3.fertTest.tOvul') : tr('u3.fertTest.tPreg');
   const manualOptions = rule?.manualOptions ?? genericManualOptions(kind, effectiveFormat);
 
   return (
-    <Screen back title={title} subtitle="Photo analysée sur votre téléphone, résultat à confirmer">
-      <PrivateBanner>La photo est analysée sur ce téléphone puis supprimée. Rien n’est publié, rien n’est enregistré dans votre galerie.</PrivateBanner>
+    <Screen back title={title} subtitle={tr('u3.fertTest.subtitle')}>
+      <PrivateBanner>{tr('u3.fertTest.private')}</PrivateBanner>
 
       {step === 'questions' && (
         <Appear kind="soft">
-          <SectionTitle title="1. Votre test" />
+          <SectionTitle title={tr('u3.fertTest.s1')} />
           <Card>
-            <Text variant="label">Marque et modèle</Text>
+            <Text variant="label">{tr('u3.fertTest.brandModel')}</Text>
             <View style={{ gap: 6, marginTop: 6 }}>
               {rules.map((r) => <Chip key={r.id} label={`${r.brand} — ${r.model}`} selected={ruleId === r.id} onPress={() => setRuleId(r.id)} />)}
-              <Chip label="Autre test / je ne sais pas" selected={ruleId === UNKNOWN_TEST_ID} onPress={() => setRuleId(UNKNOWN_TEST_ID)} />
+              <Chip label={tr('u3.fertTest.other')} selected={ruleId === UNKNOWN_TEST_ID} onPress={() => setRuleId(UNKNOWN_TEST_ID)} />
             </View>
             {errors.brand ? <Text variant="caption" color="#C2416E" style={{ marginTop: 4 }}>{errors.brand}</Text> : null}
             {ruleId === UNKNOWN_TEST_ID && (
               <View style={{ marginTop: spacing.sm, gap: spacing.sm }}>
-                <Field label="Marque et modèle (écrits sur la boîte)" value={customBrand} onChangeText={setCustomBrand} error={errors.custom} maxLength={80} />
-                <Segmented label="Type de test" value={format} onChange={setFormat} options={(kind === 'pregnancy' ? ['lines', 'cross', 'digital'] : ['lines', 'digital']).map((f) => ({ value: f as TestFormat, label: FORMAT_LABEL[f as TestFormat] }))} />
-                <Banner tone="warning">Ce test n’est pas dans la liste des tests compatibles : l’application ne proposera pas de résultat automatique. Vous pourrez noter ce que vous lisez.</Banner>
+                <Field label={tr('u3.fertTest.brandBox')} value={customBrand} onChangeText={setCustomBrand} error={errors.custom} maxLength={80} />
+                <Segmented label={tr('u3.fertTest.testType')} value={format} onChange={setFormat} options={(kind === 'pregnancy' ? ['lines', 'cross', 'digital'] : ['lines', 'digital']).map((f) => ({ value: f as TestFormat, label: tr(FORMAT_LABEL[f as TestFormat]) }))} />
+                <Banner tone="warning">{tr('u3.fertTest.notListed')}</Banner>
               </View>
             )}
             {rule && (
               <View style={{ marginTop: spacing.sm, gap: 2 }}>
-                <Text variant="small" weight="bold">{FORMAT_LABEL[rule.format]} — règles de la notice</Text>
+                <Text variant="small" weight="bold">{tr('u3.fertTest.rulesOf', { format: tr(FORMAT_LABEL[rule.format]) })}</Text>
                 {rule.readingRules.map((l) => <Text key={l} variant="small" muted>• {l}</Text>)}
                 {rule.source.note ? <Text variant="caption" muted>{rule.source.note}</Text> : null}
               </View>
             )}
           </Card>
 
-          <SectionTitle title="2. Le délai de lecture" />
+          <SectionTitle title={tr('u3.fertTest.s2')} />
           <Card>
-            <Field label="Heure du test" optional value={hour} onChangeText={setHour} error={errors.hour} placeholder="7h30" hint="Calcule automatiquement le temps écoulé." />
+            <Field label={tr('u3.fertTest.testHour')} optional value={hour} onChangeText={setHour} error={errors.hour} placeholder={tr('u3.fertTest.hourPh')} hint={tr('u3.fertTest.hourHint')} />
             <View style={{ marginTop: spacing.sm }}>
-              <Field label="Temps écoulé depuis le test" optional value={elapsed} onChangeText={setElapsed} error={errors.elapsed} keyboardType="number-pad" suffix="min" />
+              <Field label={tr('u3.fertTest.elapsed')} optional value={elapsed} onChangeText={setElapsed} error={errors.elapsed} keyboardType="number-pad" suffix={tr('u3.fertTest.min')} />
             </View>
             {rule && (rule.readMinMinutes != null || rule.readMaxMinutes != null) ? (
-              <Text variant="caption" muted style={{ marginTop: 4 }}>{`Délai de lecture de la notice : ${rule.readMinMinutes != null ? `à partir de ${rule.readMinMinutes} min` : ''}${rule.readMinMinutes != null && rule.readMaxMinutes != null ? ', ' : ''}${rule.readMaxMinutes != null ? `au plus tard ${rule.readMaxMinutes} min` : ''}.`}</Text>
+              <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u3.fertTest.readDelay', { min: rule.readMinMinutes != null ? tr('u3.fertTest.from', { n: rule.readMinMinutes }) : '', sep: rule.readMinMinutes != null && rule.readMaxMinutes != null ? ', ' : '', max: rule.readMaxMinutes != null ? tr('u3.fertTest.upTo', { n: rule.readMaxMinutes }) : '' })}</Text>
             ) : null}
             <View style={{ marginTop: spacing.sm }}>
-              <Segmented label="La photo sera-t-elle prise pendant le délai de lecture indiqué par le fabricant ?" value={inWindow} onChange={setInWindow} options={[{ value: 'yes', label: 'Oui' }, { value: 'no', label: 'Non' }, { value: 'unknown', label: 'Je ne sais pas' }]} />
+              <Segmented label={tr('u3.fertTest.inWin')} value={inWindow} onChange={setInWindow} options={[{ value: 'yes', label: tr('u3.fertTest.yes') }, { value: 'no', label: tr('u3.fertTest.no') }, { value: 'unknown', label: tr('u3.fertTest.unknown') }]} />
             </View>
             {kind === 'pregnancy' && (
               <View style={{ marginTop: spacing.sm }}>
-                <Field label="Date prévue des règles" optional value={expectedPeriod} onChangeText={setExpectedPeriod} error={errors.period} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" />
+                <Field label={tr('u3.fertTest.expPeriod')} optional value={expectedPeriod} onChangeText={setExpectedPeriod} error={errors.period} placeholder={tr('u3.fertBody.datePh')} keyboardType="numbers-and-punctuation" />
               </View>
             )}
           </Card>
-          <Button label="Continuer" icon="arrow-right" onPress={validateQuestions} full />
+          <Button label={tr('u3.fertTest.continue')} icon="arrow-right" onPress={validateQuestions} full />
         </Appear>
       )}
 
       {step === 'photo' && (
         <Appear kind="soft">
-          <SectionTitle title="3. La photo" />
+          <SectionTitle title={tr('u3.fertTest.s3')} />
           <PhotoGuide kind="test" />
-          {busy ? <Loading label="Lecture de l’écran sur le téléphone…" /> : <PhotoButtons onPicked={onPicked} onError={(m) => toast(m, 'error')} />}
-          <Button label="Je préfère lire le test moi-même" variant="ghost" onPress={() => setStep('manual')} />
+          {busy ? <Loading label={tr('u3.fertTest.reading')} /> : <PhotoButtons onPicked={onPicked} onError={(m) => toast(m, 'error')} />}
+          <Button label={tr('u3.fertTest.manualSelf')} variant="ghost" onPress={() => setStep('manual')} />
         </Appear>
       )}
 
       {step === 'crop' && uri && (
         <Appear kind="soft">
-          <SectionTitle title="4. Cadrage de la fenêtre de résultat" />
+          <SectionTitle title={tr('u3.fertTest.s4')} />
           <Card><CropPicker uri={uri} value={crop} onChange={setCrop} /></Card>
-          <Button label="Analyser sur le téléphone" icon="cpu" onPress={runLines} disabled={!crop.c || !crop.t} loading={busy} full />
+          <Button label={tr('u3.fertTest.analyse')} icon="cpu" onPress={runLines} disabled={!crop.c || !crop.t} loading={busy} full />
           <Row wrap>
-            <Button label="Reprendre une photo" variant="secondary" icon="camera" onPress={async () => { await dropPhoto(); setStep('photo'); }} />
-            <Button label="Supprimer la photo maintenant" variant="ghost" icon="trash-2" onPress={async () => { await dropPhoto(); setStep('photo'); toast('Photo supprimée.'); }} />
+            <Button label={tr('u3.fertTest.retake')} variant="secondary" icon="camera" onPress={async () => { await dropPhoto(); setStep('photo'); }} />
+            <Button label={tr('u3.fertMucus.dropNow')} variant="ghost" icon="trash-2" onPress={async () => { await dropPhoto(); setStep('photo'); toast(tr('u3.fertMucus.photoDeleted')); }} />
           </Row>
         </Appear>
       )}
 
       {step === 'manual' && (
         <Appear kind="soft">
-          <SectionTitle title="Ce que vous lisez sur le test" />
+          <SectionTitle title={tr('u3.fertTest.sRead')} />
           <Card>
-            <Text variant="small" muted>{rule?.mode === 'manual_only' ? 'Ce format se lit à l’œil : l’analyse photo automatique n’est pas prise en charge.' : 'Indiquez ce que vous voyez, selon la notice.'}</Text>
+            <Text variant="small" muted>{rule?.mode === 'manual_only' ? tr('u3.fertTest.eye') : tr('u3.fertTest.seeWhat')}</Text>
             <View style={{ gap: 6, marginTop: spacing.sm }}>
               {manualOptions.map((o) => <Button key={o.value} label={o.label} variant="secondary" onPress={() => chooseManual(o.outcome as TestOutcome)} full />)}
             </View>
@@ -270,25 +272,25 @@ export default function TestPhotoScreen() {
 
       {step === 'result' && analysis && (
         <Appear kind="soft">
-          <SectionTitle title="5. Résultat proposé" />
+          <SectionTitle title={tr('u3.fertTest.s5')} />
           <AnalysisCard analysis={analysis} />
 
-          <SectionTitle title="6. Votre confirmation" />
+          <SectionTitle title={tr('u3.fertTest.s6')} />
           <Card>
-            <Text>Qu’indique le test lorsque vous le regardez vous-même ?</Text>
+            <Text>{tr('u3.fertTest.whatShows')}</Text>
             <View style={{ gap: 6, marginTop: spacing.sm }}>
               {outcomesFor(kind).filter((o) => o !== 'unusable').map((o) => (
-                <Chip key={o} label={o === analysis.outcome ? `${OUTCOME_LABEL[o]} (proposé)` : OUTCOME_LABEL[o]} selected={confirmed === o} onPress={() => setConfirmed(o)} />
+                <Chip key={o} label={o === analysis.outcome ? tr('u3.fertTest.proposed', { label: OUTCOME_LABEL[o] }) : OUTCOME_LABEL[o]} selected={confirmed === o} onPress={() => setConfirmed(o)} />
               ))}
             </View>
-            {analysis.outcome === 'unusable' && <Text variant="caption" muted style={{ marginTop: 6 }}>Vous pouvez reprendre une photo, ou noter ce que vous lisez vous-même.</Text>}
-            <View style={{ marginTop: spacing.sm }}><Field label="Note" optional value={note} onChangeText={setNote} maxLength={500} /></View>
+            {analysis.outcome === 'unusable' && <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u3.fertTest.retakeOrSelf')}</Text>}
+            <View style={{ marginTop: spacing.sm }}><Field label={tr('u3.fertBody.note')} optional value={note} onChangeText={setNote} maxLength={500} /></View>
             {uri ? <View style={{ marginTop: spacing.sm }}><KeepPhotoChoice value={keepPhoto} onChange={setKeepPhoto} /></View> : null}
-            <Button label="Enregistrer dans mon calendrier privé" icon="check" style={{ marginTop: spacing.sm }} disabled={!confirmed} loading={save.isPending} onPress={submit} full />
+            <Button label={tr('u3.fertTest.saveCal')} icon="check" style={{ marginTop: spacing.sm }} disabled={!confirmed} loading={save.isPending} onPress={submit} full />
           </Card>
           <Row wrap>
-            {uri ? <Button label="Supprimer la photo maintenant" variant="ghost" icon="trash-2" onPress={async () => { await dropPhoto(); setKeepPhoto(false); toast('Photo supprimée. Le résultat peut toujours être enregistré.'); }} /> : null}
-            {rule?.mode !== 'manual_only' && <Button label="Reprendre une photo" variant="ghost" icon="camera" onPress={async () => { await dropPhoto(); setAnalysis(null); setStep('photo'); }} />}
+            {uri ? <Button label={tr('u3.fertMucus.dropNow')} variant="ghost" icon="trash-2" onPress={async () => { await dropPhoto(); setKeepPhoto(false); toast(tr('u3.fertTest.dropSaved')); }} /> : null}
+            {rule?.mode !== 'manual_only' && <Button label={tr('u3.fertTest.retake')} variant="ghost" icon="camera" onPress={async () => { await dropPhoto(); setAnalysis(null); setStep('photo'); }} />}
           </Row>
         </Appear>
       )}
@@ -296,13 +298,13 @@ export default function TestPhotoScreen() {
       {step === 'saved' && (
         <Appear kind="pop">
           <Card>
-            <Text variant="heading">Enregistré</Text>
-            <Text muted style={{ marginTop: 4 }}>{savedPhoto ? 'Le résultat et la photo chiffrée sont dans votre calendrier privé.' : 'Le résultat est dans votre calendrier privé. La photo a été supprimée.'}</Text>
+            <Text variant="heading">{tr('u3.fertTest.saved')}</Text>
+            <Text muted style={{ marginTop: 4 }}>{savedPhoto ? tr('u3.fertTest.savedPhoto') : tr('u3.fertTest.savedNoPhoto')}</Text>
             {kind === 'ovulation' && <Text variant="small" muted style={{ marginTop: spacing.xs }}>{OVULATION_REMINDER}</Text>}
           </Card>
-          <Button label="Voir mon calendrier" icon="calendar" onPress={() => router.replace('/fertility/calendar')} full />
-          <Button label="Faire un autre test" variant="secondary" onPress={() => { setStep('questions'); setAnalysis(null); setConfirmed(null); setNote(''); setKeepPhoto(false); }} full />
-          {kind === 'pregnancy' && <Text variant="caption" muted center>{`Date du jour : ${todayISO().split('-').reverse().join('/')}. En cas de doute, refaites un test au moment recommandé par la notice ou parlez-en à un professionnel.`}</Text>}
+          <Button label={tr('u3.fertTest.seeCal')} icon="calendar" onPress={() => router.replace('/fertility/calendar')} full />
+          <Button label={tr('u3.fertTest.another')} variant="secondary" onPress={() => { setStep('questions'); setAnalysis(null); setConfirmed(null); setNote(''); setKeepPhoto(false); }} full />
+          {kind === 'pregnancy' && <Text variant="caption" muted center>{tr('u3.fertTest.today', { date: todayISO().split('-').reverse().join('/') })}</Text>}
         </Appear>
       )}
     </Screen>

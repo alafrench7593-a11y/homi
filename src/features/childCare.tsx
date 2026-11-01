@@ -18,6 +18,7 @@ import type { Child } from '@/lib/types';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { t as tr, formatTime } from '@/i18n';
 
 // ------------------------------------------------------------------ chronomètre de biberon
 interface RunningBottle { id: string; started_at: string; paused_at: string | null; paused_seconds: number; ended_at: string | null; prepared_ml: number | null }
@@ -53,7 +54,7 @@ export function BottleStopwatch({ child }: { child: Child }) {
     setBusy(true);
     try { await fn(); inv('bottles'); if (msg) toast(msg); } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
   };
-  const start = () => { haptic('success'); return act(() => backend.insert('bottles', { child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), started_at: new Date().toISOString(), in_progress: true }), 'C’est parti. Le temps continue même si vous quittez l’écran.'); };
+  const start = () => { haptic('success'); return act(() => backend.insert('bottles', { child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), started_at: new Date().toISOString(), in_progress: true }), tr('u3.care.started')); };
   const pause = () => act(() => backend.update('bottles', { paused_at: new Date().toISOString() }, [eq('id', running!.id)]));
   const resume = () => act(() => backend.update('bottles', resumePatch(running!), [eq('id', running!.id)]));
 
@@ -61,53 +62,53 @@ export function BottleStopwatch({ child }: { child: Child }) {
     if (!running) return;
     const p = prepared.trim() ? Number(prepared) : null;
     const c = consumed.trim() ? Number(consumed) : null;
-    if ((p != null && (!Number.isInteger(p) || p < 0 || p > 500)) || (c != null && (!Number.isInteger(c) || c < 0 || c > 500))) return toast('Quantités entre 0 et 500 ml.', 'error');
-    if (p != null && c != null && c > p) return toast('La quantité bue ne peut pas dépasser la quantité préparée.', 'error');
+    if ((p != null && (!Number.isInteger(p) || p < 0 || p > 500)) || (c != null && (!Number.isInteger(c) || c < 0 || c > 500))) return toast(tr('u3.care.qty'), 'error');
+    if (p != null && c != null && c > p) return toast(tr('u3.care.over'), 'error');
     const end = new Date();
     const patch = { ...resumePatch(running, end), ended_at: (running.paused_at ? new Date(running.paused_at) : end).toISOString(), in_progress: false, at: running.started_at, prepared_ml: p, consumed_ml: c, milk_type: milk.trim() || null, note: note.trim() || null };
-    await act(() => backend.update('bottles', patch, [eq('id', running.id)]), `Biberon enregistré : ${formatChrono(bottleElapsed({ ...running, ...patch }))} de prise.`);
+    await act(() => backend.update('bottles', patch, [eq('id', running.id)]), tr('u3.care.saved', { time: formatChrono(bottleElapsed({ ...running, ...patch })) }));
     haptic('success');
     setFinishing(false); setPrepared(''); setConsumed(''); setMilk(''); setNote('');
   }
-  const cancel = () => act(() => backend.remove('bottles', [eq('id', running!.id)]), 'Chronomètre annulé.');
+  const cancel = () => act(() => backend.remove('bottles', [eq('id', running!.id)]), tr('u3.care.cancelled'));
 
   return (
     <Card>
       <Row style={{ alignItems: 'center' }}>
         <Animated.View style={{ transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] }) }] }}>
-          <ProgressRing progress={running ? (elapsed % 60) / 60 : 0} size={104} label={running ? `Prise en cours depuis ${formatChrono(elapsed)}${paused ? ', en pause' : ''}` : 'Chronomètre arrêté'}>
+          <ProgressRing progress={running ? (elapsed % 60) / 60 : 0} size={104} label={running ? tr('u3.care.ring', { time: formatChrono(elapsed), paused: paused ? tr('u3.care.ringPaused') : '' }) : tr('u3.care.stopped')}>
             <Text variant="title" style={{ fontVariant: ['tabular-nums'] }}>{formatChrono(elapsed)}</Text>
-            <Text variant="caption" muted>{running ? (paused ? 'en pause' : 'en cours') : 'prise'}</Text>
+            <Text variant="caption" muted>{running ? (paused ? tr('u3.care.state') : tr('u3.care.stateOn')) : tr('u3.care.stateIdle')}</Text>
           </ProgressRing>
         </Animated.View>
         <View style={{ flex: 1, gap: spacing.xs }}>
-          <Text weight="bold">Chronomètre de prise</Text>
+          <Text weight="bold">{tr('u3.care.timerT')}</Text>
           {!running ? (
             <>
-              <Text variant="caption" muted>Démarrez au début du biberon. Le temps est calculé à partir de l’heure de début.</Text>
-              <Button label="Démarrer" icon="play" size="sm" onPress={start} loading={busy} style={{ alignSelf: 'flex-start' }} />
+              <Text variant="caption" muted>{tr('u3.care.timerHelp')}</Text>
+              <Button label={tr('u3.care.start')} icon="play" size="sm" onPress={start} loading={busy} style={{ alignSelf: 'flex-start' }} />
             </>
           ) : (
             <Row wrap>
-              {paused ? <Button label="Reprendre" icon="play" size="sm" onPress={resume} loading={busy} /> : <Button label="Pause" icon="pause" size="sm" variant="secondary" onPress={pause} loading={busy} />}
-              <Button label="Terminer" icon="check" size="sm" onPress={() => setFinishing(true)} />
+              {paused ? <Button label={tr('u3.care.resume')} icon="play" size="sm" onPress={resume} loading={busy} /> : <Button label={tr('u3.care.pause')} icon="pause" size="sm" variant="secondary" onPress={pause} loading={busy} />}
+              <Button label={tr('u3.care.finish')} icon="check" size="sm" onPress={() => setFinishing(true)} />
             </Row>
           )}
-          {running ? <Text variant="caption" muted>Début : {new Date(running.started_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</Text> : null}
+          {running ? <Text variant="caption" muted>{tr('u3.care.begin', { time: formatTime(running.started_at) })}</Text> : null}
         </View>
       </Row>
       {finishing && running ? (
         <View style={{ gap: spacing.sm, marginTop: spacing.sm }}>
           <Row>
-            <View style={{ flex: 1 }}><Field label="Préparé (ml)" optional value={prepared} onChangeText={setPrepared} keyboardType="number-pad" maxLength={3} /></View>
-            <View style={{ flex: 1 }}><Field label="Bu (ml)" optional value={consumed} onChangeText={setConsumed} keyboardType="number-pad" maxLength={3} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u3.care.prepared')} optional value={prepared} onChangeText={setPrepared} keyboardType="number-pad" maxLength={3} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u3.care.drunk')} optional value={consumed} onChangeText={setConsumed} keyboardType="number-pad" maxLength={3} /></View>
           </Row>
-          <Field label="Type de lait" optional value={milk} onChangeText={setMilk} maxLength={80} />
-          <Field label="Note" optional value={note} onChangeText={setNote} maxLength={1000} />
-          <Text variant="caption" muted>Les quantités sont celles que vous avez préparées et observées : l’application n’en calcule ni n’en recommande.</Text>
+          <Field label={tr('u3.care.milk')} optional value={milk} onChangeText={setMilk} maxLength={80} />
+          <Field label={tr('u3.fertBody.note')} optional value={note} onChangeText={setNote} maxLength={1000} />
+          <Text variant="caption" muted>{tr('u3.care.qtyNote')}</Text>
           <Row wrap>
-            <Button label="Enregistrer le biberon" icon="check" onPress={finish} loading={busy} />
-            <Button label="Annuler ce chronomètre" variant="ghost" onPress={cancel} />
+            <Button label={tr('u3.care.saveBottle')} icon="check" onPress={finish} loading={busy} />
+            <Button label={tr('u3.care.cancelTimer')} variant="ghost" onPress={cancel} />
           </Row>
         </View>
       ) : null}
@@ -124,13 +125,13 @@ export function SafetyNoticeCard({ n }: { n: SafetyNotice }) {
       <Text variant="small">{n.body}</Text>
       {n.source === 'dehydration' ? (
         <View style={{ marginTop: 4 }}>
-          <Text variant="small" weight="bold">Signes de déshydratation à surveiller :</Text>
+          <Text variant="small" weight="bold">{tr('u3.care.dehyd')}</Text>
           {DEHYDRATION_SIGNS.map((s) => <Text key={s} variant="small">• {s}</Text>)}
         </View>
       ) : null}
-      <Text variant="caption" muted style={{ marginTop: 4 }}>Ce repère ne dit pas ce que votre enfant a : seul un professionnel peut le faire.</Text>
+      <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u3.care.noDiag')}</Text>
       <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
-        <Text variant="caption" color={t.colors.primary}>Source : {src.publisher}</Text>
+        <Text variant="caption" color={t.colors.primary}>{tr('u3.care.source', { publisher: src.publisher })}</Text>
       </Tappable>
     </Banner>
   );
@@ -140,16 +141,16 @@ export function SafeSleepCard() {
   const t = useTheme();
   const [open, setOpen] = useState(false);
   return (
-    <Card tone="soft" onPress={() => setOpen((v) => !v)} accessibilityLabel="Repères pour un couchage sûr">
-      <Text weight="bold">Repères pour un couchage sûr</Text>
+    <Card tone="soft" onPress={() => setOpen((v) => !v)} accessibilityLabel={tr('u3.care.sleepT')}>
+      <Text weight="bold">{tr('u3.care.sleepT')}</Text>
       {open ? (
         <View style={{ gap: 4, marginTop: 6 }}>
           {SAFE_SLEEP.map((s) => <Text key={s} variant="small">• {s}</Text>)}
           <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(CHILD_SOURCES.sleep.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
-            <Text variant="caption" color={t.colors.primary}>Source : {CHILD_SOURCES.sleep.publisher}</Text>
+            <Text variant="caption" color={t.colors.primary}>{tr('u3.care.source', { publisher: CHILD_SOURCES.sleep.publisher })}</Text>
           </Tappable>
         </View>
-      ) : <Text variant="caption" muted>Touchez pour afficher les 7 repères.</Text>}
+      ) : <Text variant="caption" muted>{tr('u3.care.sleepTap')}</Text>}
     </Card>
   );
 }
@@ -172,10 +173,10 @@ export function ToothChart({ present, onPick }: { present: Set<string>; onPick: 
           const p = tooth(d.arch, d.index);
           return <ToothDot key={d.id} label={d.label} on={present.has(d.label)} x={p.x} y={p.y} size={d.label.includes('molaire') ? 26 : 22} onPick={onPick} />;
         })}
-        <Text variant="caption" muted style={{ position: 'absolute', top: 104, width: W, textAlign: 'center' }}>haut ↑   ·   bas ↓</Text>
+        <Text variant="caption" muted style={{ position: 'absolute', top: 104, width: W, textAlign: 'center' }}>{tr('u3.care.topBottom')}</Text>
       </View>
       <Row wrap style={{ justifyContent: 'center' }}>
-        <Chip label={`${present.size} / 20 notées`} />
+        <Chip label={tr('u3.care.noted', { n: present.size })} />
       </Row>
     </View>
   );

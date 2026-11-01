@@ -19,6 +19,7 @@ import {
 } from '@/lib/domain/postpartum';
 import { todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 const QUICK = ['feeling', 'fatigue', 'stress', 'sleep_quality'];
 
@@ -72,22 +73,22 @@ export default function PostpartumCheckin() {
       await save.mutateAsync({ id: existing?.id, input: { ...v, need_other: v.needs.includes('other') ? v.need_other?.trim() || null : null, comment: v.comment?.trim() || null, urgent_orientation_shown: v.urgent_orientation_shown || danger.length > 0 } });
       haptic('success');
       setSaved(true);
-      toast('Enregistré. Cela reste privé.');
+      toast(tr('u5.pp_checkin.saved'));
       // Retour à l'espace, où les propositions de soutien du jour s'affichent en premier
       // (sauf si une question de sécurité est cochée : les numéros restent sous les yeux)
       if (danger.length === 0) router.replace('/postpartum');
     } catch (e) {
-      toast(friendlyError(e, 'Enregistrement impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u5.pp_checkin.save_failed')), 'error');
     }
   }
 
   return (
-    <Screen back title="Faire le point" subtitle="3 taps suffisent. Tout est facultatif."
-      action={{ label: existing ? 'Mettre à jour mon point' : 'Enregistrer', icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'pp-checkin-save' }}>
+    <Screen back title={tr('u5.pp_checkin.title')} subtitle={tr('u5.pp_checkin.subtitle')}
+      action={{ label: existing ? tr('u5.pp_checkin.update') : tr('u5.pp_checkin.save'), icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'pp-checkin-save' }}>
       {!scales ? (
         <>
           <PostpartumExpress value={v} onAnswer={(k, n) => set(k, n as never)} />
-          <Button label="Toutes les échelles (stress…)" variant="ghost" size="sm" icon="sliders" onPress={() => setScales(true)} testID="pp-all-scales" />
+          <Button label={tr('u5.pp_checkin.all_scales')} variant="ghost" size="sm" icon="sliders" onPress={() => setScales(true)} testID="pp-all-scales" />
         </>
       ) : (
       <Card>
@@ -100,43 +101,43 @@ export default function PostpartumCheckin() {
       )}
 
       <Card>
-        <Text weight="bold">De quoi auriez-vous le plus besoin ? <Text variant="small" muted>(plusieurs choix)</Text></Text>
+        <Text weight="bold">{tr('u5.pp_checkin.need_q')}{' '}<Text variant="small" muted>{tr('u5.pp_checkin.multi')}</Text></Text>
         <Row wrap style={{ marginTop: spacing.sm }}>
           {NEEDS.map((n) => <Chip key={n.value} label={n.label} selected={v.needs.includes(n.value)} onPress={() => toggleNeed(n.value)} />)}
         </Row>
-        {v.needs.includes('other') ? <Field label="De quoi avez-vous besoin ?" optional value={v.need_other ?? ''} onChangeText={(x) => set('need_other', x)} maxLength={300} style={{ marginTop: spacing.sm }} /> : null}
+        {v.needs.includes('other') ? <Field label={tr('u5.pp_checkin.need_other')} optional value={v.need_other ?? ''} onChangeText={(x) => set('need_other', x)} maxLength={300} style={{ marginTop: spacing.sm }} /> : null}
       </Card>
 
-      <Button label={more ? 'Masquer les autres questions' : 'Plus de questions (facultatif)'} variant="ghost" icon={more ? 'chevron-up' : 'chevron-down'} onPress={() => setMore((m) => !m)} />
+      <Button label={more ? tr('u5.pp_checkin.hide_more') : tr('u5.pp_checkin.show_more')} variant="ghost" icon={more ? 'chevron-up' : 'chevron-down'} onPress={() => setMore((m) => !m)} />
       {more ? (
         <Card>
           <View style={{ gap: spacing.md }}>
             {SCALES.filter((s) => !QUICK.includes(s.key)).map((s) => (
               <Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} />
             ))}
-            <Field label="Un mot sur aujourd’hui" optional multiline value={v.comment ?? ''} onChangeText={(x) => set('comment', x)} maxLength={3000} style={{ minHeight: 90, textAlignVertical: 'top' }} />
+            <Field label={tr('u5.pp_checkin.comment')} optional multiline value={v.comment ?? ''} onChangeText={(x) => set('comment', x)} maxLength={3000} style={{ minHeight: 90, textAlignVertical: 'top' }} />
           </View>
         </Card>
       ) : null}
 
-      <Button label={physical ? 'Masquer la récupération physique' : 'Ma récupération physique (facultatif)'} variant="ghost" icon={physical ? 'chevron-up' : 'activity'} onPress={() => setPhysical((m) => !m)} />
+      <Button label={physical ? tr('u5.pp_checkin.hide_physical') : tr('u5.pp_checkin.show_physical')} variant="ghost" icon={physical ? 'chevron-up' : 'activity'} onPress={() => setPhysical((m) => !m)} />
       {physical ? (
         <Card>
           <View style={{ gap: spacing.md }}>
             {PHYSICAL_SCALES.map((s) => (
               <Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} />
             ))}
-            <Field label="Où, comment ? (douleurs)" optional value={v.pain_note ?? ''} onChangeText={(x) => set('pain_note', x)} maxLength={500} />
-            <Field label="Allaitement ou alimentation du bébé" hint="Seulement si vous avez envie d’en parler." optional multiline value={v.feeding_note ?? ''} onChangeText={(x) => set('feeding_note', x)} maxLength={1000} />
-            <Field label="Difficultés ressenties" optional multiline value={v.difficulties ?? ''} onChangeText={(x) => set('difficulties', x)} maxLength={1000} />
+            <Field label={tr('u5.pp_checkin.pain_note')} optional value={v.pain_note ?? ''} onChangeText={(x) => set('pain_note', x)} maxLength={500} />
+            <Field label={tr('u5.pp_checkin.feeding')} hint={tr('u5.pp_checkin.feeding_hint')} optional multiline value={v.feeding_note ?? ''} onChangeText={(x) => set('feeding_note', x)} maxLength={1000} />
+            <Field label={tr('u5.pp_checkin.difficulties')} optional multiline value={v.difficulties ?? ''} onChangeText={(x) => set('difficulties', x)} maxLength={1000} />
             <RecoveryWarnings />
           </View>
         </Card>
       ) : null}
 
-      <SectionTitle title="Sécurité (facultatif)" />
+      <SectionTitle title={tr('u5.pp_checkin.safety')} />
       <Card tone="soft">
-        <Text variant="small" muted>Ces réponses ne sont pas enregistrées. Si l’une est vraie, des numéros s’affichent tout de suite, juste en dessous.</Text>
+        <Text variant="small" muted>{tr('u5.pp_checkin.safety_note')}</Text>
         <View style={{ gap: spacing.sm, marginTop: spacing.sm }}>
           {DANGER_QUESTIONS.map((q) => (
             <Row key={q.key} style={{ alignItems: 'flex-start' }}>
@@ -148,7 +149,7 @@ export default function PostpartumCheckin() {
       </Card>
       {danger.length > 0 ? <DangerPanel country={settings?.country} /> : null}
 
-      <Button label="Passer pour aujourd’hui" variant="ghost" full onPress={() => router.back()} />
+      <Button label={tr('u5.pp_checkin.skip')} variant="ghost" full onPress={() => router.back()} />
 
       {saved && plan.level !== 'danger' ? <SupportPlanCard plan={plan} country={settings?.country} /> : null}
     </Screen>

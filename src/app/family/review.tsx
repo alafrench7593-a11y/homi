@@ -19,6 +19,7 @@ import { REST_LABEL, AVAILABILITY_LABEL } from '@/lib/domain/postpartum';
 import { weeklyReview } from '@/lib/domain/familyLoad';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export default function WeeklyReview() {
   const t = useTheme();
@@ -33,54 +34,54 @@ export default function WeeklyReview() {
   const max = Math.max(1, ...r.byCategory.map((c) => c.count));
 
   return (
-    <Screen back title="Bilan de la semaine" subtitle="Ce qui a été fait, ce qui arrive. Sans classement.">
-      <TodaySummary title="Cette semaine" items={[
-        { icon: 'check-square', value: String(r.doneCount), label: 'Tâches faites' },
-        { icon: 'repeat', value: String(r.requests.total), label: 'Demandes' },
-        { icon: 'moon', value: String(r.nightsCount), label: 'Nuits de relais' },
-        { icon: 'sun', value: String(r.restCount), label: 'Moments pour soi' },
+    <Screen back title={tr('u2.review.title')} subtitle={tr('u2.review.subtitle')}>
+      <TodaySummary title={tr('u2.review.this_week')} items={[
+        { icon: 'check-square', value: String(r.doneCount), label: tr('u2.review.tasks_done') },
+        { icon: 'repeat', value: String(r.requests.total), label: tr('u2.review.requests') },
+        { icon: 'moon', value: String(r.nightsCount), label: tr('u2.review.nights') },
+        { icon: 'sun', value: String(r.restCount), label: tr('u2.review.me_time') },
       ]} />
       {tasksQ.isLoading && !tasksQ.data ? <Skeleton kind="card" rows={2} /> : null}
       <Card>
-        <Text weight="bold">{r.doneCount ? `${r.doneCount} tâche${r.doneCount > 1 ? 's' : ''} faite${r.doneCount > 1 ? 's' : ''} ces 7 derniers jours` : 'Aucune tâche cochée ces 7 derniers jours'}</Text>
-        <Text variant="caption" muted>Ensemble, d’après ce qui a été noté.</Text>
+        <Text weight="bold">{r.doneCount ? tr('u2.review.done_week', { count: r.doneCount }) : tr('u2.review.done_none')}</Text>
+        <Text variant="caption" muted>{tr('u2.review.together')}</Text>
         <View style={{ gap: spacing.sm, marginTop: spacing.sm }}>
           {r.byCategory.map((c, i) => (
             <StaggerItem key={c.value} index={i}>
               <Row><Icon name={c.icon} size={16} color={t.colors.primary} /><Text variant="small" style={{ flex: 1 }}>{c.label}</Text><Text variant="small" weight="bold">{c.count}</Text></Row>
-              <View style={{ marginTop: 4 }}><ProgressBar value={c.count / max} color={t.colors.primary} track={t.colors.surfaceAlt} height={6} accessibilityLabel={`${c.label} : ${c.count}`} /></View>
+              <View style={{ marginTop: 4 }}><ProgressBar value={c.count / max} color={t.colors.primary} track={t.colors.surfaceAlt} height={6} accessibilityLabel={tr('u2.review.cat_a11y', { label: c.label, count: c.count })} /></View>
             </StaggerItem>
           ))}
         </View>
       </Card>
 
-      <SectionTitle title="Entraide" />
+      <SectionTitle title={tr('u2.review.mutual')} />
       <Card>
-        <ListRow icon="repeat" title={`${r.requests.total} demande${r.requests.total > 1 ? 's' : ''} de relais ou d’aide`} subtitle={`${r.requests.accepted} acceptée${r.requests.accepted > 1 ? 's' : ''} · ${r.requests.open} en attente`} />
-        <ListRow icon="sun" title={`${r.restCount} moment${r.restCount > 1 ? 's' : ''} pour soi`} subtitle="Pris ces 7 jours ou prévus les 7 prochains" />
-        <ListRow icon="moon" title={`${r.nightsCount} nuit${r.nightsCount > 1 ? 's' : ''} de relais`} subtitle="Passées ces 7 jours ou prévues les 7 prochains" />
+        <ListRow icon="repeat" title={tr('u2.review.req_title', { count: r.requests.total })} subtitle={`${tr('u2.review.accepted', { count: r.requests.accepted })} · ${tr('u2.review.pending', { count: r.requests.open })}`} />
+        <ListRow icon="sun" title={tr('u2.review.rest_title', { count: r.restCount })} subtitle={tr('u2.review.past_next')} />
+        <ListRow icon="moon" title={tr('u2.review.nights_title', { count: r.nightsCount })} subtitle={tr('u2.review.nights_past_next')} />
       </Card>
 
       {shared.data.length ? (
         <>
-          <SectionTitle title="Partagé avec vous" />
+          <SectionTitle title={tr('u2.review.shared')} />
           <Card>
             {shared.data.map((s) => (
-              <ListRow key={s.user_id} icon="heart" title={[s.rest_need ? REST_LABEL[s.rest_need] : null, s.availability ? AVAILABILITY_LABEL[s.availability] : null, s.relay_requested ? 'Demande un relais' : null].filter(Boolean).join(' · ') || 'Message partagé'} subtitle={s.summary ?? undefined} onPress={() => router.push('/postpartum/partner')} />
+              <ListRow key={s.user_id} icon="heart" title={[s.rest_need ? REST_LABEL[s.rest_need] : null, s.availability ? AVAILABILITY_LABEL[s.availability] : null, s.relay_requested ? tr('u2.review.asks_relay') : null].filter(Boolean).join(' · ') || tr('u2.review.shared_msg')} subtitle={s.summary ?? undefined} onPress={() => router.push('/postpartum/partner')} />
             ))}
-            <Text variant="caption" muted>Uniquement ce qu’elle a choisi de partager.</Text>
+            <Text variant="caption" muted>{tr('u2.review.only_shared')}</Text>
           </Card>
         </>
       ) : null}
 
-      <SectionTitle title="La semaine qui vient" />
+      <SectionTitle title={tr('u2.review.next_week')} />
       <Card>
         {week.map((a) => <ListRow key={a.id} icon="calendar" title={a.title} subtitle={fmtWhen(a.starts_at)} />)}
         {r.upcoming.map((x) => <ListRow key={x.id} icon="check-square" title={x.title} subtitle={`${fmtWhen(x.due_at!)} · ${labelOf(x.assignee_id)}`} />)}
-        {!week.length && !r.upcoming.length ? <Text variant="small" muted>Rien de prévu dans l’application pour les 7 prochains jours.</Text> : null}
+        {!week.length && !r.upcoming.length ? <Text variant="small" muted>{tr('u2.review.nothing_next')}</Text> : null}
       </Card>
 
-      <SectionTitle title="À ajuster ensemble" />
+      <SectionTitle title={tr('u2.review.adjust')} />
       <Card tone="soft">{r.points.map((p) => <ListRow key={p} icon="message-circle" title={p} />)}</Card>
     </Screen>
   );

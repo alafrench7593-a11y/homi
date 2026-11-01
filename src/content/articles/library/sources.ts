@@ -1,4 +1,5 @@
 /** Sources réellement consultées, citées par les articles de la bibliothèque. */
+import type { ArticleSource } from './types';
 
 const C = '2026-10-20';
 

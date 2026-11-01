@@ -20,22 +20,23 @@ import {
   durationInput, estimateSleepMinutes, formatHHMM, nightLabel, nightMinutes, parseDuration, parseHHMM, resolveNight,
   sleepTips, summarizeWeek, supportSignal, timeOfIso, totalNapMinutes, validateSleepForm,
 } from '@/lib/domain/parentSleep';
+import { formatNumber, t as tr } from '@/i18n';
 import { toFrDate } from '@/lib/validation';
 import type { Nap, ParentSleepInput, ParentSleepLog, Scale5 } from '@/lib/types-sleep';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 
-const QUALITY = ['Très agitée', 'Agitée', 'Moyenne', 'Plutôt reposante', 'Reposante'];
-const FATIGUE = ['Reposé·e', 'Un peu fatigué·e', 'Fatigué·e', 'Très fatigué·e', 'Épuisé·e'];
-const MOOD = ['Très difficile', 'Difficile', 'Entre les deux', 'Plutôt bien', 'Bien'];
+const qualityLabels = () => [tr('u8.sleep.q1'), tr('u8.sleep.q2'), tr('u8.sleep.q3'), tr('u8.sleep.q4'), tr('u8.sleep.q5')];
+const fatigueLabels = () => [tr('u8.sleep.f1'), tr('u8.sleep.f2'), tr('u8.sleep.f3'), tr('u8.sleep.f4'), tr('u8.sleep.f5')];
+const moodLabels = () => [tr('u8.sleep.m1'), tr('u8.sleep.m2'), tr('u8.sleep.m3'), tr('u8.sleep.m4'), tr('u8.sleep.m5')];
 
 // ---------------------------------------------------------------- petits composants
 function ScalePicker({ label, labels, value, onChange }: { label: string; labels: string[]; value: Scale5 | null; onChange: (v: Scale5 | null) => void }) {
   const t = useTheme();
   return (
     <View style={{ gap: 6 }}>
-      <Text variant="label">{label}<Text variant="small" muted>{'  '}(facultatif)</Text></Text>
+      <Text variant="label">{label}<Text variant="small" muted>{'  '}({tr('u8.sleep.optional')})</Text></Text>
       <View accessibilityRole="radiogroup" accessibilityLabel={label} style={{ flexDirection: 'row', gap: 6 }}>
         {([1, 2, 3, 4, 5] as Scale5[]).map((v) => {
           const sel = value === v;
@@ -44,7 +45,7 @@ function ScalePicker({ label, labels, value, onChange }: { label: string; labels
               key={v}
               accessibilityRole="radio"
               accessibilityState={{ selected: sel }}
-              accessibilityLabel={`${v} sur 5 : ${labels[v - 1]}`}
+              accessibilityLabel={tr('u8.sleep.scaleOf5', { v, label: labels[v - 1] })}
               onPress={() => { haptic('selection'); onChange(sel ? null : v); }}
               style={({ pressed }) => ({
                 flex: 1, minHeight: MIN_TOUCH, borderRadius: radius.md, borderWidth: 1.2, alignItems: 'center', justifyContent: 'center',
@@ -56,7 +57,7 @@ function ScalePicker({ label, labels, value, onChange }: { label: string; labels
           );
         })}
       </View>
-      <Text variant="caption" muted>{value ? labels[value - 1] : `1 = ${labels[0].toLowerCase()} · 5 = ${labels[4].toLowerCase()}`}</Text>
+      <Text variant="caption" muted>{value ? labels[value - 1] : tr('u8.sleep.scaleHint', { low: labels[0].toLowerCase(), high: labels[4].toLowerCase() })}</Text>
     </View>
   );
 }
@@ -72,22 +73,22 @@ function TimeField({ label, value, onChange, error, placeholder }: { label: stri
 function SupportBanner({ fatigue, lowMood }: { fatigue: boolean; lowMood: boolean }) {
   const toast = useToast();
   const what = fatigue && lowMood
-    ? 'Vous avez noté une grande fatigue plusieurs jours de suite, et une humeur très basse.'
-    : fatigue ? 'Vous avez noté une grande fatigue plusieurs jours de suite.' : 'Vous avez noté une humeur très basse ces derniers jours.';
+    ? tr('u8.sleep.sup.both')
+    : fatigue ? tr('u8.sleep.sup.fatigue') : tr('u8.sleep.sup.mood');
   return (
     <Banner
       tone="warning"
       icon="heart"
-      title="Prendre soin de vous compte aussi"
+      title={tr('u8.sleep.sup.title')}
       action={
         <Row wrap style={{ marginTop: spacing.xs }}>
-          <Button label="Appeler le 3114" size="sm" variant="secondary" icon="phone" onPress={() => Linking.openURL('tel:3114').catch(() => toast('Appel impossible depuis cet appareil. Composez le 3114.', 'error'))} />
-          <Button label="Ressources d’aide" size="sm" variant="secondary" icon="life-buoy" onPress={() => router.push('/emergency')} />
+          <Button label={tr('u8.sleep.sup.call')} size="sm" variant="secondary" icon="phone" onPress={() => Linking.openURL('tel:3114').catch(() => toast(tr('u8.sleep.sup.callFail'), 'error'))} />
+          <Button label={tr('u8.sleep.sup.help')} size="sm" variant="secondary" icon="life-buoy" onPress={() => router.push('/emergency')} />
         </Row>
       }
     >
       <Text variant="small">
-        {`${what} Ce n’est pas un diagnostic : simplement, en parler à votre médecin, votre sage-femme ou à la PMI peut vraiment aider, et vous n’avez pas à attendre le prochain rendez-vous. Si vous vous sentez en détresse, le 3114 répond gratuitement, 24 h/24. En cas de danger immédiat, appelez le 15 ou le 112.`}
+        {tr('u8.sleep.sup.body', { what })}
       </Text>
     </Banner>
   );
@@ -166,12 +167,12 @@ function SleepFormSheet({ initial, logs, onClose }: { initial: FormState; logs: 
   async function submit() {
     const today = todayISO();
     const e: Record<string, string> = {};
-    if (!iso) e.logDate = 'Date attendue au format JJ/MM/AAAA.';
+    if (!iso) e.logDate = tr('u8.sleep.f.dateFormat');
     Object.assign(e, iso ? validateSleepForm({ logDate: iso, bed: f.bed, wake: f.wake, wakings: f.wakings, details: f.details, duration: f.durationEdited ? f.duration : '', durationEdited: f.durationEdited, naps: f.naps }, today) : {});
-    if (!e.logDate && iso && logs.some((l) => l.log_date === iso && l.id !== f.id)) e.logDate = 'Une nuit est déjà notée pour ce jour : ouvrez-la depuis la liste pour la modifier.';
+    if (!e.logDate && iso && logs.some((l) => l.log_date === iso && l.id !== f.id)) e.logDate = tr('u8.sleep.f.dup');
     const minutes = f.durationEdited ? parseDuration(f.duration) : auto;
     const hasContent = !!night || minutes != null || f.naps.length > 0 || count > 0 || f.quality || f.fatigue || f.mood || f.note.trim();
-    if (!hasContent && !Object.keys(e).length) e.form = 'Notez au moins une information (heures, durée, sieste, ressenti…).';
+    if (!hasContent && !Object.keys(e).length) e.form = tr('u8.sleep.f.needOne');
     setErrors(e);
     if (Object.keys(e).length || !iso) return;
     const details = detailsNum.filter((d) => d.at != null || d.minutes != null);
@@ -190,19 +191,19 @@ function SleepFormSheet({ initial, logs, onClose }: { initial: FormState; logs: 
     try {
       await save.mutateAsync({ id: f.id, input });
       haptic('success');
-      toast(f.id ? 'Nuit modifiée.' : 'Nuit enregistrée, elle reste privée.');
+      toast(f.id ? tr('u8.sleep.f.edited') : tr('u8.sleep.f.saved'));
       onClose();
     } catch (err) {
-      toast(friendlyError(err, 'Enregistrement impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(err, tr('u8.sleep.f.saveFail')), 'error');
     }
   }
 
   async function remove() {
     if (!f.id) return;
-    if (!(await confirm('Supprimer cette nuit ?', 'Cette action est définitive.', 'Supprimer'))) return;
+    if (!(await confirm(tr('u8.sleep.f.delQ'), tr('u8.sleep.f.final'), tr('u8.sleep.f.delete')))) return;
     try {
       await del.mutateAsync(f.id);
-      toast('Nuit supprimée.');
+      toast(tr('u8.sleep.f.deleted'));
       onClose();
     } catch (err) {
       toast(friendlyError(err), 'error');
@@ -210,84 +211,84 @@ function SleepFormSheet({ initial, logs, onClose }: { initial: FormState; logs: 
   }
 
   return (
-    <Sheet visible onClose={onClose} title={f.id ? 'Modifier ma nuit' : 'Noter ma nuit'}>
-      <Field label="Jour du réveil" value={f.date} onChangeText={(v) => set('date', v)} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" maxLength={10} error={errors.logDate}
+    <Sheet visible onClose={onClose} title={f.id ? tr('u8.sleep.f.editTitle') : tr('u8.sleep.f.addTitle')}>
+      <Field label={tr('u8.sleep.f.wakeDay')} value={f.date} onChangeText={(v) => set('date', v)} placeholder={tr('u8.sleep.f.datePh')} keyboardType="numbers-and-punctuation" maxLength={10} error={errors.logDate}
         hint={iso ? `${nightLabel(iso)}` : undefined} />
       {!f.id && (
         <Row>
-          <Chip label="Cette nuit" selected={iso === todayISO()} onPress={() => set('date', toFrDate(todayISO()))} />
-          <Chip label="La nuit d’avant" selected={iso === addDays(todayISO(), -1)} onPress={() => set('date', toFrDate(addDays(todayISO(), -1)))} />
+          <Chip label={tr('u8.sleep.f.tonight')} selected={iso === todayISO()} onPress={() => set('date', toFrDate(todayISO()))} />
+          <Chip label={tr('u8.sleep.f.lastNightChip')} selected={iso === addDays(todayISO(), -1)} onPress={() => set('date', toFrDate(addDays(todayISO(), -1)))} />
         </Row>
       )}
 
-      {!initial.id && initial.bed ? <Text variant="caption" muted testID="sleep-prefilled">Horaires repris de votre dernière nuit : ajustez si besoin, puis enregistrez.</Text> : null}
+      {!initial.id && initial.bed ? <Text variant="caption" muted testID="sleep-prefilled">{tr('u8.sleep.f.prefilled')}</Text> : null}
       <Row style={{ alignItems: 'flex-start' }}>
-        <TimeField label="Coucher" value={f.bed} onChange={(v) => set('bed', v)} placeholder="22:30" error={errors.bed} />
-        <TimeField label="Réveil" value={f.wake} onChange={(v) => set('wake', v)} placeholder="07:00" error={errors.wake} />
+        <TimeField label={tr('u8.sleep.f.bed')} value={f.bed} onChange={(v) => set('bed', v)} placeholder="22:30" error={errors.bed} />
+        <TimeField label={tr('u8.sleep.f.wake')} value={f.wake} onChange={(v) => set('wake', v)} placeholder="07:00" error={errors.wake} />
       </Row>
 
       <View style={{ gap: 6 }}>
-        <Text variant="label">Réveils dans la nuit</Text>
+        <Text variant="label">{tr('u8.sleep.f.wakings')}</Text>
         <Row>
-          <IconButton icon="minus" label="Un réveil de moins" onPress={() => setCount(count - 1)} style={{ backgroundColor: t.colors.surfaceAlt }} />
+          <IconButton icon="minus" label={tr('u8.sleep.f.less')} onPress={() => setCount(count - 1)} style={{ backgroundColor: t.colors.surfaceAlt }} />
           <Text variant="heading" style={{ minWidth: 40, textAlign: 'center' }} accessibilityLiveRegion="polite">{Number.isFinite(count) ? count : 0}</Text>
-          <IconButton icon="plus" label="Un réveil de plus" onPress={() => setCount(count + 1)} style={{ backgroundColor: t.colors.surfaceAlt }} />
+          <IconButton icon="plus" label={tr('u8.sleep.f.more')} onPress={() => setCount(count + 1)} style={{ backgroundColor: t.colors.surfaceAlt }} />
         </Row>
         {errors.wakings ? <Text variant="small" color={t.colors.danger}>{errors.wakings}</Text> : null}
         {f.details.map((d, i) => (
           <View key={i} style={{ gap: 4 }}>
             <Row style={{ alignItems: 'flex-end' }}>
-              <TimeField label={`Réveil ${i + 1} · heure`} value={d.at} placeholder="03:15" onChange={(v) => set('details', f.details.map((x, j) => (j === i ? { ...x, at: v } : x)))} />
+              <TimeField label={tr('u8.sleep.f.wakingTime', { n: i + 1 })} value={d.at} placeholder="03:15" onChange={(v) => set('details', f.details.map((x, j) => (j === i ? { ...x, at: v } : x)))} />
               <View style={{ flex: 1 }}>
-                <Field label="Éveillé·e (min)" value={d.minutes} onChangeText={(v) => set('details', f.details.map((x, j) => (j === i ? { ...x, minutes: v } : x)))} placeholder="20" keyboardType="number-pad" maxLength={3} />
+                <Field label={tr('u8.sleep.f.awake')} value={d.minutes} onChangeText={(v) => set('details', f.details.map((x, j) => (j === i ? { ...x, minutes: v } : x)))} placeholder="20" keyboardType="number-pad" maxLength={3} />
               </View>
-              <IconButton icon="x" label={`Retirer le réveil ${i + 1}`} onPress={() => set('details', f.details.filter((_, j) => j !== i))} />
+              <IconButton icon="x" label={tr('u8.sleep.f.removeWaking', { n: i + 1 })} onPress={() => set('details', f.details.filter((_, j) => j !== i))} />
             </Row>
             {errors[`detail${i}`] ? <Text variant="small" color={t.colors.danger}>{errors[`detail${i}`]}</Text> : null}
           </View>
         ))}
         {f.details.length < 30 && (
-          <Button label="Préciser un réveil (heure, durée)" size="sm" variant="ghost" icon="plus" style={{ alignSelf: 'flex-start' }}
+          <Button label={tr('u8.sleep.f.addWaking')} size="sm" variant="ghost" icon="plus" style={{ alignSelf: 'flex-start' }}
             onPress={() => { set('details', [...f.details, { at: '', minutes: '' }]); if (count <= f.details.length) setCount(f.details.length + 1); }} />
         )}
       </View>
 
       <View style={{ gap: 6 }}>
-        <Field label="Durée approximative de sommeil" optional value={durationShown} placeholder="7h30" maxLength={8} error={errors.duration}
+        <Field label={tr('u8.sleep.f.approx')} optional value={durationShown} placeholder="7h30" maxLength={8} error={errors.duration}
           onChangeText={(v) => setF((cur) => ({ ...cur, duration: v, durationEdited: true }))}
-          hint={f.durationEdited ? 'Durée saisie par vous.' : 'Calculée à partir du coucher, du réveil et des éveils notés. Vous pouvez la corriger.'} />
+          hint={f.durationEdited ? tr('u8.sleep.f.hintEdited') : tr('u8.sleep.f.hintAuto')} />
         {f.durationEdited && auto != null && (
-          <Button label={`Revenir au calcul (${formatDuration(auto)})`} size="sm" variant="ghost" icon="refresh-cw" style={{ alignSelf: 'flex-start' }}
+          <Button label={tr('u8.sleep.f.revert', { duration: formatDuration(auto) })} size="sm" variant="ghost" icon="refresh-cw" style={{ alignSelf: 'flex-start' }}
             onPress={() => setF((cur) => ({ ...cur, duration: '', durationEdited: false }))} />
         )}
       </View>
 
       <View style={{ gap: 6 }}>
-        <Text variant="label">Siestes de la journée</Text>
+        <Text variant="label">{tr('u8.sleep.f.naps')}</Text>
         {f.naps.map((n, i) => (
           <View key={i} style={{ gap: 4 }}>
             <Row style={{ alignItems: 'flex-end' }}>
-              <TimeField label={`Sieste ${i + 1} · début`} value={n.start} placeholder="14:00" onChange={(v) => set('naps', f.naps.map((x, j) => (j === i ? { ...x, start: v } : x)))} />
-              <TimeField label="Fin" value={n.end} placeholder="14:45" onChange={(v) => set('naps', f.naps.map((x, j) => (j === i ? { ...x, end: v } : x)))} />
-              <IconButton icon="x" label={`Retirer la sieste ${i + 1}`} onPress={() => set('naps', f.naps.filter((_, j) => j !== i))} />
+              <TimeField label={tr('u8.sleep.f.napStart', { n: i + 1 })} value={n.start} placeholder="14:00" onChange={(v) => set('naps', f.naps.map((x, j) => (j === i ? { ...x, start: v } : x)))} />
+              <TimeField label={tr('u8.sleep.f.napEnd')} value={n.end} placeholder="14:45" onChange={(v) => set('naps', f.naps.map((x, j) => (j === i ? { ...x, end: v } : x)))} />
+              <IconButton icon="x" label={tr('u8.sleep.f.removeNap', { n: i + 1 })} onPress={() => set('naps', f.naps.filter((_, j) => j !== i))} />
             </Row>
             {errors[`nap${i}`] ? <Text variant="small" color={t.colors.danger}>{errors[`nap${i}`]}</Text> : null}
           </View>
         ))}
         {f.naps.length < 12 && (
-          <Button label="Ajouter une sieste" size="sm" variant="ghost" icon="plus" style={{ alignSelf: 'flex-start' }} onPress={() => set('naps', [...f.naps, { start: '', end: '' }])} />
+          <Button label={tr('u8.sleep.f.addNap')} size="sm" variant="ghost" icon="plus" style={{ alignSelf: 'flex-start' }} onPress={() => set('naps', [...f.naps, { start: '', end: '' }])} />
         )}
       </View>
 
-      <ScalePicker label="Qualité du sommeil" labels={QUALITY} value={f.quality} onChange={(v) => set('quality', v)} />
-      <ScalePicker label="Fatigue aujourd’hui" labels={FATIGUE} value={f.fatigue} onChange={(v) => set('fatigue', v)} />
-      <ScalePicker label="Humeur" labels={MOOD} value={f.mood} onChange={(v) => set('mood', v)} />
+      <ScalePicker label={tr('u8.sleep.f.quality')} labels={qualityLabels()} value={f.quality} onChange={(v) => set('quality', v)} />
+      <ScalePicker label={tr('u8.sleep.f.fatigue')} labels={fatigueLabels()} value={f.fatigue} onChange={(v) => set('fatigue', v)} />
+      <ScalePicker label={tr('u8.sleep.f.mood')} labels={moodLabels()} value={f.mood} onChange={(v) => set('mood', v)} />
 
-      <Field label="Notes" optional value={f.note} onChangeText={(v) => set('note', v)} multiline maxLength={2000} placeholder="Ce qui a aidé, ce qui a gêné…" style={{ minHeight: 90, textAlignVertical: 'top' }} />
+      <Field label={tr('u8.sleep.f.notes')} optional value={f.note} onChangeText={(v) => set('note', v)} multiline maxLength={2000} placeholder={tr('u8.sleep.f.notesPh')} style={{ minHeight: 90, textAlignVertical: 'top' }} />
 
       {errors.form ? <Banner tone="warning">{errors.form}</Banner> : null}
-      <Button label={f.id ? 'Enregistrer les modifications' : 'Enregistrer ma nuit'} onPress={submit} loading={save.isPending} full />
-      {f.id && <Button label="Supprimer cette nuit" variant="ghost" icon="trash-2" loading={del.isPending} onPress={remove} />}
+      <Button label={f.id ? tr('u8.sleep.f.saveChanges') : tr('u8.sleep.f.saveNight')} onPress={submit} loading={save.isPending} full />
+      {f.id && <Button label={tr('u8.sleep.f.deleteNight')} variant="ghost" icon="trash-2" loading={del.isPending} onPress={remove} />}
     </Sheet>
   );
 }
@@ -296,12 +297,12 @@ function SleepFormSheet({ initial, logs, onClose }: { initial: FormState; logs: 
 function logSubtitle(l: ParentSleepLog): string {
   const parts: string[] = [];
   if (l.bedtime && l.wake_time) parts.push(`${timeOfIso(l.bedtime)} → ${timeOfIso(l.wake_time)}`);
-  if (l.night_wakings) parts.push(`${l.night_wakings} réveil${l.night_wakings > 1 ? 's' : ''}`);
+  if (l.night_wakings) parts.push(tr('u8.sleep.sub.wakings', { count: l.night_wakings }));
   const naps = (l.naps ?? []).length;
-  if (naps) parts.push(`${naps} sieste${naps > 1 ? 's' : ''} (${formatDuration(totalNapMinutes(l.naps))})`);
-  if (l.quality) parts.push(`qualité ${l.quality}/5`);
-  if (l.fatigue) parts.push(`fatigue ${l.fatigue}/5`);
-  if (l.mood) parts.push(`humeur ${l.mood}/5`);
+  if (naps) parts.push(tr('u8.sleep.sub.naps', { count: naps, duration: formatDuration(totalNapMinutes(l.naps)) }));
+  if (l.quality) parts.push(tr('u8.sleep.sub.quality', { v: l.quality }));
+  if (l.fatigue) parts.push(tr('u8.sleep.sub.fatigue', { v: l.fatigue }));
+  if (l.mood) parts.push(tr('u8.sleep.sub.mood', { v: l.mood }));
   return parts.join(' · ');
 }
 
@@ -323,11 +324,11 @@ export default function MySleepScreen() {
   const todayLog = logs?.find((l) => l.log_date === today);
 
   async function remove(l: ParentSleepLog) {
-    if (!(await confirm('Supprimer cette nuit ?', 'Cette action est définitive.', 'Supprimer'))) return;
+    if (!(await confirm(tr('u8.sleep.f.delQ'), tr('u8.sleep.f.final'), tr('u8.sleep.f.delete')))) return;
     setRemovingId(l.id);
     try {
       await del.mutateAsync(l.id);
-      toast('Nuit supprimée.');
+      toast(tr('u8.sleep.f.deleted'));
     } catch (err) {
       toast(friendlyError(err), 'error');
     } finally {
@@ -335,14 +336,14 @@ export default function MySleepScreen() {
     }
   }
 
-  const tipsTitle = ctx.postpartum && ctx.pregnant ? 'Repères pour vous, en ce moment' : ctx.postpartum ? 'Repères après la naissance' : ctx.pregnant ? 'Repères pendant la grossesse' : 'Repères pour mieux dormir';
+  const tipsTitle = ctx.postpartum && ctx.pregnant ? tr('u8.sleep.tips.both') : ctx.postpartum ? tr('u8.sleep.tips.post') : ctx.pregnant ? tr('u8.sleep.tips.preg') : tr('u8.sleep.tips.gen');
 
   const loading = logsQ.isLoading && !logs;
   const failed = logsQ.isError && !logs;
 
   return (
-    <Screen back title="Mon sommeil" subtitle="Votre sommeil à vous, sans objectif ni note." scroll={false} padded={false}
-      action={{ label: todayLog ? 'Modifier ma nuit' : 'Noter ma nuit', icon: 'moon', onPress: () => setForm(todayLog ? formFromLog(todayLog) : usualForm(logs ?? [])), testID: 'sleep-main-action' }}>
+    <Screen back title={tr('u8.sleep.title')} subtitle={tr('u8.sleep.subtitle')} scroll={false} padded={false}
+      action={{ label: todayLog ? tr('u8.sleep.f.editTitle') : tr('u8.sleep.f.addTitle'), icon: 'moon', onPress: () => setForm(todayLog ? formFromLog(todayLog) : usualForm(logs ?? [])), testID: 'sleep-main-action' }}>
       <VirtualList
         data={loading || failed ? [] : logs ?? []}
         keyExtractor={(l) => l.id}
@@ -350,47 +351,47 @@ export default function MySleepScreen() {
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
         ListHeaderComponent={(
           <View style={{ gap: spacing.md }}>
-            <Banner tone="info" icon="lock">{'Ce carnet est visible uniquement par vous, même au sein de votre foyer. Il décrit vos nuits sans les comparer à une norme et ne pose aucun diagnostic.'}</Banner>
+            <Banner tone="info" icon="lock">{tr('u8.sleep.banner')}</Banner>
 
             {signal.show && <SupportBanner fatigue={signal.fatigue} lowMood={signal.lowMood} />}
 
             <Appear kind="soft">
-              <TodaySummary title="Cette nuit" items={[
-                { icon: 'moon', value: todayLog && nightMinutes(todayLog) != null ? formatDuration(nightMinutes(todayLog)!) : '—', label: 'Sommeil' },
-                { icon: 'star', value: todayLog?.quality ? `${todayLog.quality}/5` : '—', label: 'Qualité' },
-                { icon: 'battery', value: todayLog?.fatigue ? `${todayLog.fatigue}/5` : '—', label: 'Fatigue' },
+              <TodaySummary title={tr('u8.sleep.f.tonight')} items={[
+                { icon: 'moon', value: todayLog && nightMinutes(todayLog) != null ? formatDuration(nightMinutes(todayLog)!) : '—', label: tr('u8.sleep.sleep') },
+                { icon: 'star', value: todayLog?.quality ? `${todayLog.quality}/5` : '—', label: tr('u8.sleep.qualityS') },
+                { icon: 'battery', value: todayLog?.fatigue ? `${todayLog.fatigue}/5` : '—', label: tr('u8.sleep.fatigueS') },
               ]} />
             </Appear>
 
-            <SectionTitle title="Mes 7 derniers jours" />
+            <SectionTitle title={tr('u8.sleep.last7')} />
             {loading ? <Skeleton kind="card" rows={1} /> : failed ? (
-              <ErrorView error={logsQ.error} onRetry={() => void logsQ.refetch()} title="Impossible d’afficher vos nuits" />
+              <ErrorView error={logsQ.error} onRetry={() => void logsQ.refetch()} title={tr('u8.sleep.listErr')} />
             ) : (
             <Card>
               {week.nightsLogged > 0 ? (
                 <BarChart
                   data={week.days.map((d) => ({ label: d.label, value: d.minutes != null ? Math.round((d.minutes / 60) * 10) / 10 : 0 }))}
                   unit="h"
-                  accessibilityLabel="Durée de sommeil de chaque nuit, en heures, sur les 7 derniers jours"
+                  accessibilityLabel={tr('u8.sleep.chartA11y')}
                 />
               ) : (
-                <Text muted>Aucune nuit notée ces 7 derniers jours. Il n’y a aucune obligation : notez seulement si cela vous aide.</Text>
+                <Text muted>{tr('u8.sleep.noneWeek')}</Text>
               )}
               <Row wrap style={{ marginTop: spacing.sm }}>
-                <StatPill value={week.avgSleepMinutes != null ? formatDuration(week.avgSleepMinutes) : '—'} label={`Durée moyenne (${week.nightsLogged} nuit${week.nightsLogged > 1 ? 's' : ''})`} />
-                <StatPill value={String(week.napsCount)} label={week.napsCount ? `Sieste${week.napsCount > 1 ? 's' : ''} · ${formatDuration(week.napMinutes)}` : 'Siestes'} />
-                <StatPill value={String(week.totalWakings)} label="Réveils nocturnes" />
+                <StatPill value={week.avgSleepMinutes != null ? formatDuration(week.avgSleepMinutes) : '—'} label={tr('u8.sleep.avg', { count: week.nightsLogged })} />
+                <StatPill value={String(week.napsCount)} label={week.napsCount ? tr('u8.sleep.napsDur', { count: week.napsCount, duration: formatDuration(week.napMinutes) }) : tr('u8.sleep.napsLabel')} />
+                <StatPill value={String(week.totalWakings)} label={tr('u8.sleep.wakingsStat')} />
               </Row>
               <Row wrap style={{ marginTop: spacing.xs }}>
-                <StatPill value={week.avgQuality != null ? `${String(week.avgQuality).replace('.', ',')}/5` : '—'} label="Qualité moyenne" />
-                <StatPill value={week.avgFatigue != null ? `${String(week.avgFatigue).replace('.', ',')}/5` : '—'} label="Fatigue moyenne" />
+                <StatPill value={week.avgQuality != null ? `${formatNumber(week.avgQuality)}/5` : '—'} label={tr('u8.sleep.avgQ')} />
+                <StatPill value={week.avgFatigue != null ? `${formatNumber(week.avgFatigue)}/5` : '—'} label={tr('u8.sleep.avgF')} />
               </Row>
-              <Text variant="caption" muted style={{ marginTop: spacing.sm }}>Ces chiffres décrivent simplement ce que vous avez noté. Chaque période de vie a ses nuits.</Text>
+              <Text variant="caption" muted style={{ marginTop: spacing.sm }}>{tr('u8.sleep.numbers')}</Text>
             </Card>
             )}
 
             <SectionTitle title={tipsTitle} />
-            <Text variant="small" muted>Des idées générales, à prendre ou à laisser. Elles ne remplacent pas l’avis de votre médecin ou de votre sage-femme.</Text>
+            <Text variant="small" muted>{tr('u8.sleep.tipsIntro')}</Text>
             {tips.map((tip) => (
               <Card key={tip.key} tone="lavender">
                 <Row style={{ alignItems: 'flex-start' }}>
@@ -402,16 +403,16 @@ export default function MySleepScreen() {
                 </Row>
               </Card>
             ))}
-            <Banner tone="info" title="Quand en parler ?">
-              {'Si le sommeil reste difficile même quand vous en avez l’occasion, si la fatigue pèse sur vos journées ou sur votre moral, votre médecin, votre sage-femme ou la PMI peuvent en parler avec vous.'}
+            <Banner tone="info" title={tr('u8.sleep.whenTitle')}>
+              {tr('u8.sleep.whenBody')}
             </Banner>
 
-            <SectionTitle title="Mes nuits" />
+            <SectionTitle title={tr('u8.sleep.myNights')} />
             {loading ? <Skeleton rows={3} /> : null}
           </View>
         )}
         ListEmptyComponent={loading || failed ? null : (
-          <EmptyState icon="moon" title="Aucune nuit notée pour l’instant" body="Notez seulement si cela vous aide." action={{ label: 'Noter ma nuit', icon: 'moon', onPress: () => setForm(emptyForm()) }} />
+          <EmptyState icon="moon" title={tr('u8.sleep.none')} body={tr('u8.sleep.noneBody')} action={{ label: tr('u8.sleep.f.addTitle'), icon: 'moon', onPress: () => setForm(emptyForm()) }} />
         )}
         renderItem={({ item: l }) => {
           const m = nightMinutes(l);
@@ -422,14 +423,14 @@ export default function MySleepScreen() {
                 title={`${nightLabel(l.log_date)}${m != null ? ` · ${formatDuration(m)}` : ''}`}
                 subtitle={[logSubtitle(l), l.note ? (l.note.length > 80 ? `${l.note.slice(0, 80)}…` : l.note) : null].filter(Boolean).join(' — ') || undefined}
                 onPress={() => setForm(formFromLog(l))}
-                right={<Button label="Supprimer" size="sm" variant="ghost" loading={removingId === l.id} onPress={() => remove(l)} accessibilityLabel={`Supprimer la ${nightLabel(l.log_date).toLowerCase()}`} />}
+                right={<Button label={tr('u8.sleep.f.delete')} size="sm" variant="ghost" loading={removingId === l.id} onPress={() => remove(l)} accessibilityLabel={tr('u8.sleep.delA11y', { night: nightLabel(l.log_date).toLowerCase() })} />}
               />
             </Card>
           );
         }}
         ListFooterComponent={(
           <View style={{ marginTop: spacing.sm }}>
-            <ListRow icon="life-buoy" title="Besoin d’aide maintenant" subtitle="3114, 15, 112 et autres ressources gratuites" onPress={() => router.push('/emergency')} />
+            <ListRow icon="life-buoy" title={tr('u8.sleep.helpNow')} subtitle={tr('u8.sleep.helpNowSub')} onPress={() => router.push('/emergency')} />
           </View>
         )}
       />

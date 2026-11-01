@@ -15,6 +15,7 @@ import { exportJson, exportPdf } from '@/lib/exportData';
 import { wipeLocalData } from '@/lib/localWipe';
 import { passwordSchema } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export default function AccountScreen() {
   const toast = useToast();
@@ -29,19 +30,20 @@ export default function AccountScreen() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [typed, setTyped] = useState('');
   const inFlight = useRef(false);
+  const confirmWord = tr('u1.acc.confirmWord');
 
   async function changePassword() {
     if (inFlight.current) return;
     const p = passwordSchema.safeParse(pw);
     if (!p.success) return setPwError(p.error.issues[0].message);
-    if (pw !== pw2) return setPwError('Les deux mots de passe ne correspondent pas.');
+    if (pw !== pw2) return setPwError(tr('u1.acc.pwMismatch'));
     setPwError(null);
     inFlight.current = true;
     setPwBusy(true);
     try {
       await backend.auth.updatePassword(pw);
       setPw(''); setPw2('');
-      toast('Mot de passe modifié.');
+      toast(tr('u1.acc.pwChanged'));
     } catch (e) {
       setPwError(friendlyError(e));
     } finally {
@@ -56,12 +58,12 @@ export default function AccountScreen() {
       const data = await exportData.mutateAsync();
       if (kind === 'json') {
         const how = await exportJson(data);
-        toast(how === 'download' ? 'Fichier téléchargé.' : how === 'file' ? 'Export prêt.' : 'Le partage de fichier n’est pas disponible sur cet appareil.', how === 'text' ? 'error' : 'success');
+        toast(how === 'download' ? tr('u1.acc.downloaded') : how === 'file' ? tr('u1.acc.exportReady') : tr('u1.acc.shareUnavailable'), how === 'text' ? 'error' : 'success');
       } else {
         await exportPdf(data, session?.email ?? null);
       }
     } catch (e) {
-      toast(friendlyError(e, 'L’export n’a pas pu être préparé. Réessayez.'), 'error');
+      toast(friendlyError(e, tr('u1.acc.exportFailed')), 'error');
     } finally {
       setBusy(null);
     }
@@ -69,9 +71,9 @@ export default function AccountScreen() {
 
   async function startDelete() {
     const ok = await confirm(
-      'Supprimer définitivement votre compte ?',
-      'Toutes vos données seront effacées : suivi, documents, photos, conversations, publications. Un foyer partagé dont vous êtes propriétaire sera transmis au membre le plus ancien. Pensez à exporter vos données avant. Un abonnement en cours se résilie depuis l’App Store ou Google Play.',
-      'Continuer',
+      tr('u1.acc.deleteTitle'),
+      tr('u1.acc.deleteBody'),
+      tr('u1.acc.continue'),
     );
     if (ok) { setTyped(''); setDeleteOpen(true); }
   }
@@ -81,48 +83,48 @@ export default function AccountScreen() {
       await deleteAccount.mutateAsync();
       await wipeLocalData();
       setDeleteOpen(false);
-      toast('Votre compte et vos données ont été supprimés.', 'info');
+      toast(tr('u1.acc.deleted'), 'info');
       router.replace('/welcome');
     } catch (e) {
-      toast(friendlyError(e, 'La suppression n’a pas pu aboutir. Réessayez ou écrivez-nous.'), 'error');
+      toast(friendlyError(e, tr('u1.acc.deleteFailed')), 'error');
     }
   }
 
   return (
-    <Screen back title="Mon compte">
+    <Screen back title={tr('u1.acc.title')}>
       <Card>
-        <ListRow icon="mail" title="Adresse e-mail" subtitle={session?.email ?? '—'} />
-        {isDemo ? <Text variant="caption" muted>Compte de démonstration enregistré uniquement sur ce téléphone.</Text> : null}
+        <ListRow icon="mail" title={tr('u1.acc.email')} subtitle={session?.email ?? '—'} />
+        {isDemo ? <Text variant="caption" muted>{tr('u1.acc.demoAccount')}</Text> : null}
       </Card>
 
-      <SectionTitle title="Mot de passe" />
+      <SectionTitle title={tr('u1.acc.password')} />
       <Card>
         {pwError ? <Banner tone="danger">{pwError}</Banner> : null}
-        <Field label="Nouveau mot de passe" value={pw} onChangeText={setPw} secureTextEntry revealable autoComplete="new-password" textContentType="newPassword" />
+        <Field label={tr('u1.acc.newPassword')} value={pw} onChangeText={setPw} secureTextEntry revealable autoComplete="new-password" textContentType="newPassword" />
         <PasswordRules value={pw} />
-        <Field label="Confirmer le mot de passe" value={pw2} onChangeText={setPw2} secureTextEntry revealable autoComplete="new-password" onSubmitEditing={changePassword} />
-        <Button label="Changer le mot de passe" icon="lock" loading={pwBusy} disabled={pwBusy || !pw} style={{ marginTop: spacing.sm }} onPress={changePassword} />
-        <Text variant="caption" muted style={{ marginTop: 4 }}>Connecté·e avec Apple ou Google ? Ce mot de passe permettra aussi de vous connecter par e-mail.</Text>
+        <Field label={tr('u1.acc.confirmPassword')} value={pw2} onChangeText={setPw2} secureTextEntry revealable autoComplete="new-password" onSubmitEditing={changePassword} />
+        <Button label={tr('u1.acc.changePassword')} icon="lock" loading={pwBusy} disabled={pwBusy || !pw} style={{ marginTop: spacing.sm }} onPress={changePassword} />
+        <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u1.acc.socialHint')}</Text>
       </Card>
 
-      <SectionTitle title="Mes données" />
+      <SectionTitle title={tr('u1.acc.myData')} />
       <Card>
-        <Text variant="small" muted>Tout ce que vous avez saisi, dans un fichier que vous gardez. Les photos chiffrées ne sont pas incluses : elles ne peuvent être ouvertes que sur ce téléphone.</Text>
-        <Button label="Exporter (fichier JSON)" icon="download" variant="secondary" loading={busy === 'json'} disabled={!!busy} style={{ marginTop: spacing.sm }} onPress={() => doExport('json')} />
-        <Button label="Exporter (PDF lisible)" icon="file-text" variant="secondary" loading={busy === 'pdf'} disabled={!!busy} style={{ marginTop: spacing.xs }} onPress={() => doExport('pdf')} />
+        <Text variant="small" muted>{tr('u1.acc.exportIntro')}</Text>
+        <Button label={tr('u1.acc.exportJson')} icon="download" variant="secondary" loading={busy === 'json'} disabled={!!busy} style={{ marginTop: spacing.sm }} onPress={() => doExport('json')} />
+        <Button label={tr('u1.acc.exportPdf')} icon="file-text" variant="secondary" loading={busy === 'pdf'} disabled={!!busy} style={{ marginTop: spacing.xs }} onPress={() => doExport('pdf')} />
       </Card>
 
-      <SectionTitle title="Supprimer mon compte" />
+      <SectionTitle title={tr('u1.acc.deleteSection')} />
       <Card>
-        <Text variant="small">La suppression efface réellement vos données et vos photos, sur le serveur et sur ce téléphone. Elle est immédiate et définitive.</Text>
-        <Button label="Supprimer mon compte" variant="danger" icon="trash-2" style={{ marginTop: spacing.sm }} onPress={startDelete} />
+        <Text variant="small">{tr('u1.acc.deleteExplain')}</Text>
+        <Button label={tr('u1.acc.deleteSection')} variant="danger" icon="trash-2" style={{ marginTop: spacing.sm }} onPress={startDelete} />
       </Card>
-      <Button label="Confidentialité et consentements" variant="ghost" icon="shield" onPress={() => router.push('/settings/privacy')} />
+      <Button label={tr('u1.acc.privacy')} variant="ghost" icon="shield" onPress={() => router.push('/settings/privacy')} />
 
-      <Sheet visible={deleteOpen} onClose={() => setDeleteOpen(false)} title="Confirmer la suppression">
-        <Banner tone="danger" title="Action irréversible">{'Pour confirmer, saisissez SUPPRIMER en majuscules.'}</Banner>
-        <Field label="Confirmation" value={typed} onChangeText={setTyped} autoCapitalize="characters" autoCorrect={false} placeholder="SUPPRIMER" />
-        <Button label="Supprimer définitivement" variant="danger" disabled={typed.trim() !== 'SUPPRIMER'} loading={deleteAccount.isPending} onPress={finalDelete} />
+      <Sheet visible={deleteOpen} onClose={() => setDeleteOpen(false)} title={tr('u1.acc.confirmDelete')}>
+        <Banner tone="danger" title={tr('u1.acc.irreversible')}>{tr('u1.acc.typeToConfirm', { word: confirmWord })}</Banner>
+        <Field label={tr('u1.acc.confirmation')} value={typed} onChangeText={setTyped} autoCapitalize="characters" autoCorrect={false} placeholder={confirmWord} />
+        <Button label={tr('u1.acc.deleteForever')} variant="danger" disabled={typed.trim() !== confirmWord} loading={deleteAccount.isPending} onPress={finalDelete} />
       </Sheet>
     </Screen>
   );

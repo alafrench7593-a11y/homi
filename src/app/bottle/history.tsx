@@ -16,12 +16,12 @@ import { useBottleChildren, useBottleHistory, useRecorderLabel } from '@/lib/dat
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { consultationSummary, dailySummaries, dayLabel, groupByDay, lastDays, withIntervals } from '@/lib/domain/bottleHistory';
 import { formatClock, formatHM } from '@/lib/domain/bottleTimer';
+import { formatDate, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
 type View_ = 'day' | 'week';
-const SHORT = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
-const shortDay = (key: string) => SHORT[new Date(`${key}T12:00:00Z`).getUTCDay()];
+const shortDay = (key: string) => formatDate(new Date(`${key}T12:00:00`), { weekday: 'short' });
 
 export default function BottleHistory() {
   const t = useTheme();
@@ -52,12 +52,12 @@ export default function BottleHistory() {
 
   async function remove(id: string, at: string) {
     if (del.isPending) return;
-    if (!(await confirm('Supprimer ce biberon ?', `Le biberon de ${formatClock(at)} sera supprimé pour toutes les personnes du foyer.`, 'Supprimer'))) return;
+    if (!(await confirm(tr('u6.bhist.delete_q'), tr('u6.bhist.delete_body', { time: formatClock(at) }), tr('u6.bhist.delete')))) return;
     try {
       await del.mutateAsync(id);
-      toast('Biberon supprimé.');
+      toast(tr('u6.bhist.deleted'));
     } catch (e) {
-      toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u6.bhist.delete_failed')), 'error');
     }
   }
 
@@ -68,15 +68,15 @@ export default function BottleHistory() {
 
   if (!childId) {
     return (
-      <Screen back title="Historique des biberons">
+      <Screen back title={tr('u6.bhist.title')}>
         {childrenQ.isLoading && !children ? <Skeleton kind="list" rows={4} /> : childrenQ.isError && !children ? (
-          <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} title="Impossible d’afficher l’historique" />
+          <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} title={tr('u6.bhist.error')} />
         ) : (
           <EmptyState
             icon="coffee"
-            title="Aucun enfant à suivre"
-            body="Ajoutez d’abord le profil d’un enfant."
-            action={{ label: 'Ajouter un enfant', onPress: () => router.push({ pathname: '/profiles/new', params: { kind: 'child' } }) }}
+            title={tr('u6.bottle_index.empty_title')}
+            body={tr('u6.bottle_index.empty_body')}
+            action={{ label: tr('u6.bottle_index.add_child'), onPress: () => router.push({ pathname: '/profiles/new', params: { kind: 'child' } }) }}
           />
         )}
       </Screen>
@@ -95,7 +95,7 @@ export default function BottleHistory() {
       )}
       {child ? (
         <>
-          <Button label={chrono ? 'Masquer le chronomètre de prise' : 'Chronométrer une prise (facultatif)'} variant="ghost" size="sm" icon="watch" onPress={() => setChrono(!chrono)} style={{ alignSelf: 'flex-start' }} />
+          <Button label={chrono ? tr('u6.bhist.hide_timer') : tr('u6.bhist.show_timer')} variant="ghost" size="sm" icon="watch" onPress={() => setChrono(!chrono)} style={{ alignSelf: 'flex-start' }} />
           {chrono ? <BottleInstrument child={child} /> : null}
         </>
       ) : null}
@@ -104,20 +104,20 @@ export default function BottleHistory() {
         const gaps = list.map((b) => b.interval_minutes).filter((m): m is number => m != null);
         return (
           <TodaySummary title={dayLabel(day)} items={[
-            { icon: 'droplet', value: String(d?.count ?? 0), label: (d?.count ?? 0) > 1 ? 'Biberons' : 'Biberon' },
-            { icon: 'bar-chart-2', value: d?.consumedCount ? `${d.consumedTotal} ml` : '—', label: 'Bu (noté)' },
-            { icon: 'clock', value: gaps.length ? formatHM(Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length)) : '—', label: 'Écart moyen' },
+            { icon: 'droplet', value: String(d?.count ?? 0), label: tr('u6.bchild.bottles', { count: d?.count ?? 0 }) },
+            { icon: 'bar-chart-2', value: d?.consumedCount ? `${d.consumedTotal} ml` : '—', label: tr('u6.bchild.drunk_logged') },
+            { icon: 'clock', value: gaps.length ? formatHM(Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length)) : '—', label: tr('u6.bhist.avg_gap') },
           ]} testID="bottle-history-today" />
         );
       })() : null}
-      <Segmented label="Affichage" value={view} onChange={setView} options={[{ value: 'day', label: 'Jour' }, { value: 'week', label: 'Semaine' }]} />
+      <Segmented label={tr('u6.bhist.display')} value={view} onChange={setView} options={[{ value: 'day', label: tr('u6.bhist.day') }, { value: 'week', label: tr('u6.bhist.week') }]} />
       {isLoading ? <Skeleton kind="list" rows={4} /> : loadError ? (
-        <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher l’historique" />
+        <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title={tr('u6.bhist.error')} />
       ) : view === 'day' ? (
         <>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
             {days.map((k, i) => (
-              <Chip key={k} label={i === 0 ? 'Aujourd’hui' : i === 1 ? 'Hier' : `${shortDay(k)} ${Number(k.slice(8, 10))}`} selected={k === day} onPress={() => setDay(k)} />
+              <Chip key={k} label={i === 0 ? tr('u6.bhist.today') : i === 1 ? tr('u6.bhist.yesterday') : `${shortDay(k)} ${Number(k.slice(8, 10))}`} selected={k === day} onPress={() => setDay(k)} />
             ))}
           </ScrollView>
           <SectionTitle title={`${dayLabel(day)[0].toUpperCase()}${dayLabel(day).slice(1)}`} />
@@ -131,16 +131,16 @@ export default function BottleHistory() {
       {view === 'week' && !isLoading && !loadError ? (
         <>
           <Card>
-            <Text weight="medium">Quantité bue enregistrée par jour</Text>
-            <BarChart data={[...week].reverse().map((d) => ({ label: shortDay(d.key), value: d.consumedTotal }))} unit="ml" accessibilityLabel="Quantité bue enregistrée chaque jour sur 7 jours" />
-            <Text variant="caption" muted>Somme des quantités « bu » saisies. Graphique descriptif : il ne dit pas si c’est suffisant.</Text>
+            <Text weight="medium">{tr('u6.bhist.chart_title')}</Text>
+            <BarChart data={[...week].reverse().map((d) => ({ label: shortDay(d.key), value: d.consumedTotal }))} unit="ml" accessibilityLabel={tr('u6.bhist.chart_a11y')} />
+            <Text variant="caption" muted>{tr('u6.bhist.chart_note')}</Text>
           </Card>
           <Card>
             {week.map((d) => (
               <Row key={d.key} style={{ paddingVertical: 8, borderBottomWidth: 1, borderColor: t.colors.border, borderRadius: radius.sm }}>
                 <Text style={{ flex: 1 }}>{d.label}</Text>
                 <Text variant="small" muted>
-                  {d.count ? `${d.count} biberon${d.count > 1 ? 's' : ''}${d.consumedCount ? ` · bu ${d.consumedTotal} ml` : ''}${d.preparedCount ? ` · préparé ${d.preparedTotal} ml` : ''}` : '—'}
+                  {d.count ? `${tr('u6.bhist.count', { count: d.count })}${d.consumedCount ? tr('u6.bhist.row_drunk', { n: d.consumedTotal }) : ''}${d.preparedCount ? tr('u6.bhist.row_prepared', { n: d.preparedTotal }) : ''}` : '—'}
                 </Text>
               </Row>
             ))}
@@ -148,21 +148,21 @@ export default function BottleHistory() {
         </>
       ) : null}
 
-      <Button label="Résumé pour une consultation (7 jours)" icon="file-text" variant="secondary" disabled={!child || isLoading} onPress={openSummary} />
-      <Text variant="caption" muted>Relevé de vos saisies, sans interprétation. Ne remplace pas l’avis d’un professionnel de santé.</Text>
+      <Button label={tr('u6.bhist.summary_btn')} icon="file-text" variant="secondary" disabled={!child || isLoading} onPress={openSummary} />
+      <Text variant="caption" muted>{tr('u6.bhist.disclaimer')}</Text>
     </View>
   );
 
   return (
-    <Screen scroll={false} padded={false} back title="Historique des biberons" subtitle={child ? `${child.first_name} · 7 derniers jours` : undefined}
-      action={{ label: 'Enregistrer un biberon', icon: 'plus', onPress: addBottle, testID: 'bottle-history-add' }}>
+    <Screen scroll={false} padded={false} back title={tr('u6.bhist.title')} subtitle={child ? tr('u6.bhist.last7', { name: child.first_name }) : undefined}
+      action={{ label: tr('u6.bchild.record'), icon: 'plus', onPress: addBottle, testID: 'bottle-history-add' }}>
       <VirtualList
         data={dayRows}
         keyExtractor={(b) => b.id}
         ListHeaderComponent={header}
         ListFooterComponent={footer}
         ListEmptyComponent={view === 'day' && !isLoading && !loadError ? (
-          <EmptyState icon="coffee" title="Aucun biberon enregistré ce jour-là." action={{ label: 'Enregistrer un biberon', onPress: addBottle }} />
+          <EmptyState icon="coffee" title={tr('u6.bhist.empty_day')} action={{ label: tr('u6.bchild.record'), onPress: addBottle }} />
         ) : null}
         renderItem={({ item: b }) => {
           const who = recorder(b.created_by);
@@ -172,17 +172,17 @@ export default function BottleHistory() {
                 <Text variant="heading" style={{ width: 74 }}>{formatClock(b.at)}</Text>
                 <View style={{ flex: 1, gap: 2 }}>
                   <Text weight="medium">
-                    {[b.prepared_ml != null ? `Préparé ${b.prepared_ml} ml` : null, b.consumed_ml != null ? `bu ${b.consumed_ml} ml` : null].filter(Boolean).join(' · ') || 'Quantité non renseignée'}
+                    {[b.prepared_ml != null ? tr('u6.bhist.prepared', { n: b.prepared_ml }) : null, b.consumed_ml != null ? tr('u6.bhist.drunk', { n: b.consumed_ml }) : null].filter(Boolean).join(' · ') || tr('u6.bhist.no_qty')}
                   </Text>
-                  {b.interval_minutes != null && <Text variant="small" muted>{formatHM(b.interval_minutes)} après le biberon précédent</Text>}
+                  {b.interval_minutes != null && <Text variant="small" muted>{tr('u6.bhist.after_prev', { delay: formatHM(b.interval_minutes) })}</Text>}
                   {b.milk_type ? <Text variant="small" muted>{b.milk_type}</Text> : null}
-                  {b.planned_next_ml != null && <Text variant="small" muted>Prévu pour le suivant : {b.planned_next_ml} ml</Text>}
-                  {b.note ? <Text variant="small" italic>« {b.note} »</Text> : null}
-                  {who && <Text variant="caption" muted>Enregistré par {who}</Text>}
+                  {b.planned_next_ml != null && <Text variant="small" muted>{tr('u6.bhist.planned_next', { n: b.planned_next_ml })}</Text>}
+                  {b.note ? <Text variant="small" italic>{tr('u6.bhist.note', { note: b.note })}</Text> : null}
+                  {who && <Text variant="caption" muted>{tr('u6.bhist.by', { who })}</Text>}
                 </View>
                 <View>
-                  <IconButton icon="edit-2" label={`Modifier le biberon de ${formatClock(b.at)}`} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, id: b.id } })} />
-                  <IconButton icon="trash-2" label={`Supprimer le biberon de ${formatClock(b.at)}`} onPress={() => remove(b.id, b.at)} />
+                  <IconButton icon="edit-2" label={tr('u6.clock.edit', { time: formatClock(b.at) })} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, id: b.id } })} />
+                  <IconButton icon="trash-2" label={tr('u6.bhist.delete_a11y', { time: formatClock(b.at) })} onPress={() => remove(b.id, b.at)} />
                 </View>
               </Row>
             </Card>
@@ -192,12 +192,12 @@ export default function BottleHistory() {
         showsVerticalScrollIndicator={false}
       />
 
-      <Sheet visible={summary != null} onClose={() => setSummary(null)} title="Résumé à partager">
+      <Sheet visible={summary != null} onClose={() => setSummary(null)} title={tr('u6.bhist.share_title')}>
         <Row wrap>
-          <Button label="Partager" icon="share-2" size="sm" onPress={() => Share.share({ message: summary ?? '', title: `Biberons de ${child?.first_name ?? ''}` }).catch(() => toast('Le partage n’est pas disponible sur cet appareil. Utilisez « Copier ».', 'error'))} />
-          <Button label="Copier" icon="copy" size="sm" variant="secondary" onPress={async () => {
+          <Button label={tr('u6.bhist.share')} icon="share-2" size="sm" onPress={() => Share.share({ message: summary ?? '', title: tr('u6.bhist.share_msg', { name: child?.first_name ?? '' }) }).catch(() => toast(tr('u6.bhist.share_unavailable'), 'error'))} />
+          <Button label={tr('u6.bhist.copy')} icon="copy" size="sm" variant="secondary" onPress={async () => {
             const ok = await copyText(summary ?? '');
-            toast(ok ? 'Résumé copié.' : 'Appuyez longuement sur le texte pour le sélectionner et le copier.', ok ? 'success' : 'info');
+            toast(ok ? tr('u6.bhist.copied') : tr('u6.bhist.long_press'), ok ? 'success' : 'info');
           }} />
         </Row>
         <View style={{ borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, padding: spacing.sm }}>

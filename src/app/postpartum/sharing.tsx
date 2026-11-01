@@ -14,17 +14,19 @@ import { useMySharedStatus, usePostpartumSettings, useSaveSettings, useStopShari
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { AVAILABILITY_LABEL, REST_LABEL, anySharing, helpIdeas, type PostpartumSettings, type SharedStatus } from '@/lib/domain/postpartum';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 type ShareKey = 'share_rest_need' | 'share_availability' | 'share_relay_requests' | 'share_summary';
-const SHARE_OPTIONS: { key: ShareKey; title: string; detail: string }[] = [
-  { key: 'share_rest_need', title: 'Mon besoin de repos', detail: '« Pas de besoin particulier », « besoin de souffler » ou « vraiment besoin de repos ».' },
-  { key: 'share_availability', title: 'Ma disponibilité', detail: 'Disponible, je me repose, ou pas disponible pour le moment.' },
-  { key: 'share_relay_requests', title: 'Mes demandes de relais', detail: 'Pour demander qu’on prenne le bébé, avec un petit mot si vous voulez.' },
-  { key: 'share_summary', title: 'Un résumé que j’écris moi-même', detail: 'Quelques mots que vous choisissez — jamais vos réponses détaillées.' },
+const shareOptions = (): { key: ShareKey; title: string; detail: string }[] => [
+  { key: 'share_rest_need', title: tr('u5.pp_share.o_rest'), detail: tr('u5.pp_share.o_rest_d') },
+  { key: 'share_availability', title: tr('u5.pp_share.o_avail'), detail: tr('u5.pp_share.o_avail_d') },
+  { key: 'share_relay_requests', title: tr('u5.pp_share.o_relay'), detail: tr('u5.pp_share.o_relay_d') },
+  { key: 'share_summary', title: tr('u5.pp_share.o_sum'), detail: tr('u5.pp_share.o_sum_d') },
 ];
 
 export default function PostpartumSharing() {
   const toast = useToast();
+  const SHARE_OPTIONS = shareOptions();
   const hid = useHouseholdId();
   const household = useHousehold();
   const settingsQ = usePostpartumSettings();
@@ -40,10 +42,10 @@ export default function PostpartumSharing() {
   }, [mine.data?.updated_at]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function toggle(key: ShareKey, on: boolean) {
-    if (!hid) return toast('Créez ou rejoignez d’abord un foyer.', 'error');
+    if (!hid) return toast(tr('u5.pp_share.need_home'), 'error');
     try {
       await saveSettings.mutateAsync({ existing: !!settings, patch: { [key]: on, share_household_id: hid } as Partial<PostpartumSettings> });
-      toast(on ? 'Autorisé. Rien n’est visible tant que vous ne l’avez pas publié.' : 'Arrêté : l’information n’est plus visible.');
+      toast(on ? tr('u5.pp_share.allowed') : tr('u5.pp_share.stopped'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
@@ -51,7 +53,7 @@ export default function PostpartumSharing() {
     if (!settings) return;
     try {
       await update.mutateAsync({ settings, exists: !!mine.data, value: next });
-      toast('Votre foyer voit maintenant ce que vous avez choisi.');
+      toast(tr('u5.pp_share.published'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
@@ -60,27 +62,27 @@ export default function PostpartumSharing() {
       await saveSettings.mutateAsync({ existing: !!settings, patch: { share_rest_need: false, share_availability: false, share_relay_requests: false, share_summary: false } });
       await stop.mutateAsync().catch(() => undefined);
       setValue({});
-      toast('Plus rien n’est partagé.');
+      toast(tr('u5.pp_share.none'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
-  if (settingsQ.isLoading && !settingsQ.data) return <Screen back title="Ce que je partage"><Skeleton kind="detail" rows={4} /></Screen>;
+  if (settingsQ.isLoading && !settingsQ.data) return <Screen back title={tr('u5.pp_home.l_share')}><Skeleton kind="detail" rows={4} /></Screen>;
   const s = settings ?? { share_rest_need: false, share_availability: false, share_relay_requests: false, share_summary: false };
   const sharing = anySharing(s);
 
   return (
-    <Screen back title="Ce que je partage" subtitle={household ? `Avec le foyer « ${household.name} »` : 'Avec votre foyer'}
-      action={sharing ? { label: 'Publier pour mon foyer', icon: 'send', onPress: () => void publish(value), disabled: update.isPending, testID: 'pp-share-publish' } : undefined}>
-      <TodaySummary title="Mon partage" items={[
-        { icon: sharing ? 'eye' : 'eye-off', value: sharing ? 'Actif' : 'Privé', label: 'État' },
-        { icon: 'sliders', value: `${SHARE_OPTIONS.filter((o) => !!s[o.key]).length}/${SHARE_OPTIONS.length}`, label: 'Éléments autorisés' },
-        { icon: 'send', value: mine.data ? 'Oui' : '—', label: 'Publié au foyer' },
+    <Screen back title={tr('u5.pp_home.l_share')} subtitle={household ? tr('u5.pp_share.with_home', { name: household.name }) : tr('u5.pp_share.with_yours')}
+      action={sharing ? { label: tr('u5.pp_share.publish'), icon: 'send', onPress: () => void publish(value), disabled: update.isPending, testID: 'pp-share-publish' } : undefined}>
+      <TodaySummary title={tr('u5.pp_share.my_share')} items={[
+        { icon: sharing ? 'eye' : 'eye-off', value: sharing ? tr('u5.pp_share.active') : tr('u5.pp_share.private'), label: tr('u5.pp_share.state') },
+        { icon: 'sliders', value: `${SHARE_OPTIONS.filter((o) => !!s[o.key]).length}/${SHARE_OPTIONS.length}`, label: tr('u5.pp_share.allowed_n') },
+        { icon: 'send', value: mine.data ? tr('u5.pp_share.yes') : '—', label: tr('u5.pp_share.pub_lbl') },
       ]} />
       <Banner tone="info" icon="lock">
-        {'Par défaut, rien n’est partagé. Vos points du jour, vos notes, vos contacts et vos questions restent toujours privés : même un membre du foyer avec tous les droits ne peut pas les voir. Il n’existe aucun accès caché.'}
+        {tr('u5.pp_share.banner')}
       </Banner>
 
-      <SectionTitle title="Ce que j’autorise" />
+      <SectionTitle title={tr('u5.pp_share.allow')} />
       <Card>
         {SHARE_OPTIONS.map((o) => (
           <Row key={o.key} style={{ alignItems: 'flex-start', paddingVertical: spacing.xs }}>
@@ -95,47 +97,47 @@ export default function PostpartumSharing() {
 
       {sharing ? (
         <>
-          <SectionTitle title="Ce que je publie maintenant" />
+          <SectionTitle title={tr('u5.pp_share.pub_now')} />
           <Card>
             <View style={{ gap: spacing.md }}>
               {s.share_rest_need ? (
                 <View style={{ gap: 6 }}>
-                  <Text weight="medium">Besoin de repos</Text>
+                  <Text weight="medium">{tr('u5.pp_share.rest')}</Text>
                   <Row wrap>{(Object.keys(REST_LABEL) as (keyof typeof REST_LABEL)[]).map((k) => <Chip key={k} label={REST_LABEL[k]} selected={value.rest_need === k} onPress={() => setValue({ ...value, rest_need: value.rest_need === k ? null : k })} />)}</Row>
                 </View>
               ) : null}
               {s.share_availability ? (
                 <View style={{ gap: 6 }}>
-                  <Text weight="medium">Disponibilité</Text>
+                  <Text weight="medium">{tr('u5.pp_share.avail')}</Text>
                   <Row wrap>{(Object.keys(AVAILABILITY_LABEL) as (keyof typeof AVAILABILITY_LABEL)[]).map((k) => <Chip key={k} label={AVAILABILITY_LABEL[k]} selected={value.availability === k} onPress={() => setValue({ ...value, availability: value.availability === k ? null : k })} />)}</Row>
                 </View>
               ) : null}
               {s.share_relay_requests ? (
                 <View style={{ gap: 6 }}>
                   <Row style={{ alignItems: 'flex-start' }}>
-                    <Text weight="medium" style={{ flex: 1 }}>Je demande un relais</Text>
-                    <Toggle label="Je demande un relais" value={!!value.relay_requested} onChange={(v) => setValue({ ...value, relay_requested: v })} />
+                    <Text weight="medium" style={{ flex: 1 }}>{tr('u5.pp_share.ask_relay')}</Text>
+                    <Toggle label={tr('u5.pp_share.ask_relay')} value={!!value.relay_requested} onChange={(v) => setValue({ ...value, relay_requested: v })} />
                   </Row>
-                  {value.relay_requested ? <Field label="Un petit mot" optional value={value.relay_note ?? ''} onChangeText={(x) => setValue({ ...value, relay_note: x })} maxLength={200} placeholder="Peux-tu prendre la nuit ?" /> : null}
+                  {value.relay_requested ? <Field label={tr('u5.pp_share.note')} optional value={value.relay_note ?? ''} onChangeText={(x) => setValue({ ...value, relay_note: x })} maxLength={200} placeholder={tr('u5.pp_share.note_ph')} /> : null}
                 </View>
               ) : null}
-              {s.share_summary ? <Field label="Mon résumé" optional multiline value={value.summary ?? ''} onChangeText={(x) => setValue({ ...value, summary: x })} maxLength={500} hint="Écrit par vous, partagé tel quel." /> : null}
+              {s.share_summary ? <Field label={tr('u5.pp_share.summary')} optional multiline value={value.summary ?? ''} onChangeText={(x) => setValue({ ...value, summary: x })} maxLength={500} hint={tr('u5.pp_share.summary_hint')} /> : null}
             </View>
           </Card>
 
-          <SectionTitle title="Ce que voit mon foyer" />
+          <SectionTitle title={tr('u5.pp_share.sees')} />
           <Card tone="soft">
-            {!mine.data ? <Text variant="small" muted>Rien pour l’instant : vous n’avez encore rien publié.</Text> : (
+            {!mine.data ? <Text variant="small" muted>{tr('u5.pp_share.nothing')}</Text> : (
               <>
                 {mine.data.rest_need ? <ListRow icon="moon" title={REST_LABEL[mine.data.rest_need]} /> : null}
                 {mine.data.availability ? <ListRow icon="clock" title={AVAILABILITY_LABEL[mine.data.availability]} /> : null}
-                {mine.data.relay_requested ? <ListRow icon="repeat" title="Demande un relais" subtitle={mine.data.relay_note ?? undefined} /> : null}
-                {mine.data.summary ? <ListRow icon="message-circle" title="Son résumé" subtitle={mine.data.summary} /> : null}
-                <Text variant="caption" muted style={{ marginTop: 6 }}>Avec des idées concrètes pour vous aider, comme : « {helpIdeas(mine.data)[0]} »</Text>
+                {mine.data.relay_requested ? <ListRow icon="repeat" title={tr('u5.pp_partner.relay')} subtitle={mine.data.relay_note ?? undefined} /> : null}
+                {mine.data.summary ? <ListRow icon="message-circle" title={tr('u5.pp_share.her_summary')} subtitle={mine.data.summary} /> : null}
+                <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u5.pp_share.ideas', { idea: helpIdeas(mine.data)[0] })}</Text>
               </>
             )}
           </Card>
-          <Button label="Tout arrêter de partager" variant="ghost" icon="eye-off" onPress={stopAll} loading={stop.isPending} />
+          <Button label={tr('u5.pp_share.stop_all')} variant="ghost" icon="eye-off" onPress={stopAll} loading={stop.isPending} />
         </>
       ) : null}
     </Screen>

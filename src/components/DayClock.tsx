@@ -9,6 +9,7 @@ import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
 import { palette, fonts } from '@/theme/tokens';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { Text } from './ui';
+import { t as tr } from '@/i18n';
 
 export interface ClockEvent {
   kind: 'sleep' | 'feed' | 'diaper';
@@ -43,7 +44,7 @@ export function DayClock({ events, size = 280, children, now = new Date(), label
   const counts = { sleep: recent.filter((e) => e.kind === 'sleep').length, feed: recent.filter((e) => e.kind === 'feed').length, diaper: recent.filter((e) => e.kind === 'diaper').length };
 
   return (
-    <View style={{ width: size, height: size }} accessible accessibilityRole="image" accessibilityLabel={`${label}. Sur les dernières 24 heures : ${counts.feed} repas, ${counts.sleep} sommeils, ${counts.diaper} changes.`}>
+    <View style={{ width: size, height: size }} accessible accessibilityRole="image" accessibilityLabel={tr('u4.clock.a11y', { label, feeds: counts.feed, sleeps: counts.sleep, diapers: counts.diaper })}>
       <Svg width={size} height={size}>
         {/* cadran : nuit (18h-6h) teintée, jour clair */}
         <Path d={arc(c, c, rSleep, angleOf(new Date(2000, 0, 1, 18)), angleOf(new Date(2000, 0, 1, 6)))} stroke={t.isDark ? '#262B57' : '#DCD5EE'} strokeWidth={26} fill="none" />
@@ -105,9 +106,9 @@ export function ClockLegend() {
   );
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 16 }}>
-      {item(palette.lavender, 'Sommeil', 'arc')}
-      {item(palette.clay, 'Repas', 'dot')}
-      {item(palette.gold, 'Change', 'bar')}
+      {item(palette.lavender, tr('u4.clock.sleep'), 'arc')}
+      {item(palette.clay, tr('u4.clock.meal'), 'dot')}
+      {item(palette.gold, tr('u4.clock.change'), 'bar')}
     </View>
   );
 }

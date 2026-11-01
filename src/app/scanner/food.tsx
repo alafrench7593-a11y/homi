@@ -2,10 +2,11 @@
 import React from 'react';
 import { Screen } from '@/components/Screen';
 import { ScanFlow } from '@/features/scanner/ScanFlow';
+import { t as tr } from '@/i18n';
 
 export default function ScanFoodScreen() {
   return (
-    <Screen back title="Puis-je manger ou donner cet aliment ?" subtitle="Selon la grossesse, l’allaitement ou l’âge de l’enfant, avec les sources.">
+    <Screen back title={tr('u8.food.title')} subtitle={tr('u8.food.subtitle')}>
       <ScanFlow kind="food" />
     </Screen>
   );

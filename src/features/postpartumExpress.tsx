@@ -12,6 +12,7 @@ import { tint } from '@/components/ToolGlyph';
 import { SCALES, type CheckinInput } from '@/lib/domain/postpartum';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export const EXPRESS_KEYS = ['feeling', 'fatigue', 'sleep_quality'] as const;
 type ExpressKey = (typeof EXPRESS_KEYS)[number];
@@ -31,7 +32,11 @@ export function PostpartumExpress({ value, onAnswer, testID = 'pp-express' }: {
   const [forced, setForced] = React.useState<number | null>(null);
   const step = forced ?? expressStep(value);
   const done = step >= EXPRESS_KEYS.length;
-  const scale = (k: ExpressKey) => SCALES.find((s) => s.key === k)!;
+  // libellés traduits ici (les clés restent celles de SCALES)
+  const scale = (k: ExpressKey) => {
+    const s = SCALES.find((x) => x.key === k)!;
+    return { ...s, label: tr(`u2.express.${k}` as never), low: tr(`u2.express.${k}_low` as never), high: tr(`u2.express.${k}_high` as never) };
+  };
   return (
     <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
       <View style={{ padding: spacing.lg, gap: spacing.md }} testID={testID}>
@@ -48,17 +53,17 @@ export function PostpartumExpress({ value, onAnswer, testID = 'pp-express' }: {
           <View style={{ gap: spacing.sm }} testID={`${testID}-done`}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <Icon name="check-circle" color={t.colors.gold} />
-              <Text variant="heading">C’est noté, en 3 taps.</Text>
+              <Text variant="heading">{tr('u2.express.noted')}</Text>
             </View>
             {EXPRESS_KEYS.map((k, i) => (
-              <Tappable key={k} bare accessibilityRole="button" accessibilityLabel={`Modifier : ${scale(k).label}`} onPress={() => setForced(i)}>
+              <Tappable key={k} bare accessibilityRole="button" accessibilityLabel={tr('u2.express.edit', { label: scale(k).label })} onPress={() => setForced(i)}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 }}>
                   <Text variant="small" muted>{scale(k).label}</Text>
                   <Text variant="small" weight="bold">{value[k]}/5</Text>
                 </View>
               </Tappable>
             ))}
-            <Text variant="caption" muted>Touchez une ligne pour la changer, puis enregistrez.</Text>
+            <Text variant="caption" muted>{tr('u2.express.tap_line')}</Text>
           </View>
         ) : (
           <View style={{ gap: spacing.sm }}>
@@ -69,7 +74,7 @@ export function PostpartumExpress({ value, onAnswer, testID = 'pp-express' }: {
                 const selected = value[k] === n;
                 return (
                   <Tappable key={n} accessibilityRole="radio" accessibilityState={{ selected }}
-                    accessibilityLabel={`${scale(k).label} : ${n} sur 5${n === 1 ? ` (${scale(k).low})` : n === 5 ? ` (${scale(k).high})` : ''}`}
+                    accessibilityLabel={`${tr('u2.express.n_of_5', { label: scale(k).label, n })}${n === 1 ? ` (${scale(k).low})` : n === 5 ? ` (${scale(k).high})` : ''}`}
                     onPress={() => { haptic('selection'); onAnswer(k, n); setForced(null); }}
                     style={{ flex: 1 }} testID={`${testID}-${k}-${n}`}>
                     <View style={{ height: 64, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 1.2,
@@ -84,7 +89,7 @@ export function PostpartumExpress({ value, onAnswer, testID = 'pp-express' }: {
               <Text variant="caption" muted>{scale(EXPRESS_KEYS[step]).low}</Text>
               <Text variant="caption" muted>{scale(EXPRESS_KEYS[step]).high}</Text>
             </View>
-            {step > 0 ? <Button label="Question précédente" size="sm" variant="ghost" icon="arrow-left" onPress={() => setForced(step - 1)} style={{ alignSelf: 'flex-start' }} /> : null}
+            {step > 0 ? <Button label={tr('u2.express.previous')} size="sm" variant="ghost" icon="arrow-left" onPress={() => setForced(step - 1)} style={{ alignSelf: 'flex-start' }} /> : null}
           </View>
         )}
       </View>

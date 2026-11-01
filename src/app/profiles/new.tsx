@@ -1,5 +1,5 @@
 /** Ajouter une grossesse ou un enfant (et, après une naissance, les profils des bébés). */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -18,6 +18,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { uuid } from '@/lib/uuid';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 type Kind = 'pregnancy' | 'child';
 
@@ -69,7 +70,7 @@ export default function NewProfile() {
   const remaining = Math.max(0, childLimit - existingChildren);
   const birthFlow = !!fromPregnancy;
 
-  const title = useMemo(() => (birthFlow ? (drafts.length > 1 ? 'Bienvenue aux bébés' : 'Bienvenue, bébé') : 'Ajouter un profil'), [birthFlow, drafts.length]);
+  const title = birthFlow ? (drafts.length > 1 ? tr('u8.pnew.welcomeMany') : tr('u8.pnew.welcomeOne')) : tr('u8.pnew.addProfile');
 
   async function household() {
     return hid ?? (await ensureHousehold());
@@ -86,7 +87,7 @@ export default function NewProfile() {
       inv('pregnancies', 'expected_babies', 'checklists', 'checklist_items', 'memberships');
       setSubject({ type: 'pregnancy', id: p.id });
       haptic('success');
-      toast('Grossesse ajoutée.');
+      toast(tr('u8.pnew.added'));
       router.replace('/pregnancy');
     } catch (e) {
       setError(errorMessage(e));
@@ -120,8 +121,8 @@ export default function NewProfile() {
       inv('children', 'memberships', 'user_journeys', 'profile');
       setSubject({ type: 'child', id: created[0] });
       haptic('success');
-      if (linkFailed) toast(`${created.length > 1 ? 'Profils créés' : 'Profil créé'}, mais le lien avec la grossesse n’a pas pu être enregistré.`, 'info');
-      else toast(created.length > 1 ? 'Profils créés.' : 'Profil créé.');
+      if (linkFailed) toast(tr('u8.pnew.createdLink', { count: created.length }), 'info');
+      else toast(tr('u8.pnew.created', { count: created.length }));
       router.replace({ pathname: '/child/[id]', params: { id: created[0] } });
     } catch (e) {
       if (created.length) inv('children');
@@ -139,7 +140,7 @@ export default function NewProfile() {
 
   const footer = (
     <Button
-      label={kind === 'pregnancy' ? 'Ajouter la grossesse' : drafts.length > 1 ? `Créer les ${drafts.length} profils` : 'Créer le profil'}
+      label={kind === 'pregnancy' ? tr('u8.pnew.addPregnancy') : drafts.length > 1 ? tr('u8.pnew.createN', { count: drafts.length }) : tr('u8.pnew.createOne')}
       size="lg"
       loading={saving}
       disabled={initialLoading || !!initialError || (kind === 'pregnancy' && !!activePregnancy) || (kind === 'child' && overLimit)}
@@ -148,23 +149,23 @@ export default function NewProfile() {
   );
 
   return (
-    <Screen back title={title} subtitle={birthFlow ? 'Créez leur profil pour commencer le suivi. Tout reste modifiable ensuite.' : 'Une grossesse en cours ou un enfant à suivre.'} footer={footer}>
+    <Screen back title={title} subtitle={birthFlow ? tr('u8.pnew.subBirth') : tr('u8.pnew.subDefault')} footer={footer}>
       {!birthFlow && (
         <Segmented
-          label="Type de profil"
+          label={tr('u8.pnew.kind')}
           value={kind}
           onChange={(v) => { if (v === 'pregnancy') { router.push('/pregnancy/start'); return; } setKind(v); setError(null); setErrors(v === 'child' ? drafts.map(() => ({})) : [{}]); }}
-          options={[{ value: 'child', label: 'Un enfant' }, { value: 'pregnancy', label: 'Une grossesse' }]}
+          options={[{ value: 'child', label: tr('u8.pnew.kChild') }, { value: 'pregnancy', label: tr('u8.pnew.kPreg') }]}
         />
       )}
       {error ? <Banner tone="danger">{error}</Banner> : null}
 
       {initialLoading ? <Skeleton kind="detail" rows={5} /> : initialError ? (
-        <ErrorView error={initialError.error} onRetry={() => { void pregnanciesQ.refetch(); void childrenQ.refetch(); }} title="Impossible de préparer le formulaire" />
+        <ErrorView error={initialError.error} onRetry={() => { void pregnanciesQ.refetch(); void childrenQ.refetch(); }} title={tr('u8.pnew.formErr')} />
       ) : kind === 'pregnancy' ? (
         activePregnancy ? (
-          <Banner tone="info" title="Une grossesse est déjà en cours" action={<Button label="Modifier la grossesse" size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => router.replace('/pregnancy/edit')} />}>
-            {'Pour des jumeaux ou des triplés, indiquez simplement le nombre de bébés dans la grossesse en cours.'}
+          <Banner tone="info" title={tr('u8.pnew.alreadyTitle')} action={<Button label={tr('u8.pnew.editPreg')} size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => router.replace('/pregnancy/edit')} />}>
+            {tr('u8.pnew.twins')}
           </Banner>
         ) : (
           <PregnancyForm value={pregnancy} onChange={setPregnancy} errors={errors[0] ?? {}} />
@@ -173,27 +174,27 @@ export default function NewProfile() {
         <>
           {(overLimit || limitReached) && (
             <View style={{ gap: spacing.sm }}>
-              <Banner tone="warning" title="Limite de la version gratuite">
+              <Banner tone="warning" title={tr('u8.pnew.limitTitle')}>
                 {remaining > 0
-                  ? `La version gratuite permet de suivre ${childLimit} enfants par foyer. Vous pouvez encore en ajouter ${remaining}.`
-                  : `La version gratuite permet de suivre ${childLimit} enfants par foyer.`}
+                  ? tr('u8.pnew.limitRemaining', { limit: childLimit, count: remaining })
+                  : tr('u8.pnew.limitFull', { limit: childLimit })}
               </Banner>
-              <PremiumGate feature="Suivre plus d’enfants"><View /></PremiumGate>
+              <PremiumGate feature={tr('u8.pnew.moreKids')}><View /></PremiumGate>
             </View>
           )}
           {drafts.map((d, i) => (
             <Card key={i} tone={drafts.length > 1 ? 'surface' : 'soft'}>
               <View style={{ gap: spacing.md }}>
-                {drafts.length > 1 && <Text variant="heading" accessibilityRole="header">Bébé {i + 1}</Text>}
+                {drafts.length > 1 && <Text variant="heading" accessibilityRole="header">{tr('u8.pnew.baby', { n: i + 1 })}</Text>}
                 <ChildForm value={d} onChange={(v) => setDrafts((ds) => ds.map((x, j) => (j === i ? v : x)))} errors={errors[i] ?? {}} />
                 {birthFlow && drafts.length > 1 && (
-                  <Button label="Ne pas créer ce profil maintenant" variant="ghost" size="sm" icon="x" onPress={() => { setDrafts((ds) => ds.filter((_, j) => j !== i)); setErrors((es) => es.filter((_, j) => j !== i)); }} />
+                  <Button label={tr('u8.pnew.skip')} variant="ghost" size="sm" icon="x" onPress={() => { setDrafts((ds) => ds.filter((_, j) => j !== i)); setErrors((es) => es.filter((_, j) => j !== i)); }} />
                 )}
               </View>
             </Card>
           ))}
           {birthFlow && (
-            <Text variant="caption" muted>Vous pourrez ajouter les mesures de naissance (poids, taille) dans l’onglet Croissance de chaque profil.</Text>
+            <Text variant="caption" muted>{tr('u8.pnew.birthMeasures')}</Text>
           )}
         </>
       )}

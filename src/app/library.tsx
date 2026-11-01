@@ -84,23 +84,23 @@ export default function Library() {
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xs }}>
       {articles ? (
-        <TodaySummary title="En bref" items={[
-          { icon: 'book-open', value: String(articles.length), label: 'Articles' },
-          { icon: 'heart', value: String(forYou.length), label: 'Pour vous en ce moment' },
-          { icon: 'grid', value: categories ? String(categories.length) : '—', label: 'Thèmes' },
+        <TodaySummary title={tr('u1.lib.brief')} items={[
+          { icon: 'book-open', value: String(articles.length), label: tr('u1.lib.articles') },
+          { icon: 'heart', value: String(forYou.length), label: tr('u1.lib.forYouNow') },
+          { icon: 'grid', value: categories ? String(categories.length) : '—', label: tr('u1.lib.themes') },
         ]} />
       ) : null}
-      <Field label="Rechercher" placeholder="Posez votre question : péridurale, fièvre, fer…" value={q} onChangeText={setQ} returnKeyType="search" />
+      <Field label={tr('u1.lib.search')} placeholder={tr('u1.lib.searchPh')} value={q} onChangeText={setQ} returnKeyType="search" />
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
         {([
-          ['heart', 'Moi aussi', 'Post-partum, émotions, rééducation', '/me', t.colors.heart],
-          ['maximize', 'Scanner', 'Composition, précautions, rappels', '/scanner', t.colors.lavender],
-          ['star', 'Prénoms', 'Idées, favoris, vote', '/names', t.colors.gold],
-          ['life-buoy', 'Urgences', 'Numéros gratuits, 24 h/24', '/emergency', t.colors.danger],
+          ['heart', tr('u1.lib.meToo'), tr('u1.lib.meTooD'), '/me', t.colors.heart],
+          ['maximize', tr('u1.lib.scanner'), tr('u1.lib.scannerD'), '/scanner', t.colors.lavender],
+          ['star', tr('u1.lib.names'), tr('u1.lib.namesD'), '/names', t.colors.gold],
+          ['life-buoy', tr('u1.lib.emergency'), tr('u1.lib.emergencyD'), '/emergency', t.colors.danger],
         ] as const).map(([icon, title, sub, href, color]) => (
           <View key={title} style={{ width: '48.5%' }}>
-            <Card onPress={() => router.push(href)} accessibilityLabel={`${title} : ${sub}`} style={{ minHeight: 118 }}>
+            <Card onPress={() => router.push(href)} accessibilityLabel={tr('u1.lib.tileA11y', { title, sub })} style={{ minHeight: 118 }}>
               <Icon name={icon} color={color} />
               <Text variant="heading" style={{ marginTop: 6 }}>{title}</Text>
               <Text variant="caption" muted>{sub}</Text>
@@ -111,7 +111,7 @@ export default function Library() {
 
       {!q && !activeCat && !journey && forYou.length > 0 && (
         <>
-          <SectionTitle title="Pour vous en ce moment" />
+          <SectionTitle title={tr('u1.lib.forYouNow')} />
           {forYou.map((a) => (
             <Card key={a.id} tone="soft" onPress={() => router.push(`/article/${a.slug}`)}>
               <Text weight="bold">{a.title}</Text>
@@ -123,8 +123,8 @@ export default function Library() {
 
       {showGuide ? (
         <View style={{ gap: spacing.sm }} testID="library-guide">
-          <SectionTitle title="Le guide" />
-          <Text variant="small" muted>Toutes les questions d’un même moment de vie, rangées par thème.</Text>
+          <SectionTitle title={tr('u1.lib.guide')} />
+          <Text variant="small" muted>{tr('u1.lib.guideD')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
             {CATEGORY_GROUPS.map((g) => <Chip key={g.journey} label={g.title} selected={guideJourney === g.journey} onPress={() => setJourney(g.journey)} testID={`guide-${g.journey}`} />)}
           </View>
@@ -132,13 +132,13 @@ export default function Library() {
             {guideCards.map(({ c, n }) => (
               <View key={c.id} style={{ width: '48.5%' }}>
                 <GlassSurface fill={t.colors.surface} depth={1} radius={20}>
-                  <Tappable bare accessibilityRole="button" accessibilityLabel={`${c.label} : ${n} articles`} testID={`guide-cat-${c.slug}`}
+                  <Tappable bare accessibilityRole="button" accessibilityLabel={tr('u1.lib.catA11y', { label: c.label, count: n })} testID={`guide-cat-${c.slug}`}
                     onPress={() => { setJourney(guideJourney); setCat(c.id); }} style={{ padding: spacing.md, gap: 6, minHeight: 104 }}>
                     <View style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: tint(t.colors.gold, t.isDark ? 0.22 : 0.14) }}>
                       <Icon name={(c.icon ?? 'book-open') as IconName} size={16} color={t.colors.gold} />
                     </View>
                     <Text weight="bold" numberOfLines={2}>{c.label}</Text>
-                    <Text variant="caption" muted>{n} article{n > 1 ? 's' : ''}</Text>
+                    <Text variant="caption" muted>{tr('u1.ta.count', { count: n })}</Text>
                   </Tappable>
                 </GlassSurface>
               </View>
@@ -149,7 +149,7 @@ export default function Library() {
         <Tappable accessibilityRole="button" onPress={() => { setCat(null); router.setParams({ cat: undefined } as never); }} testID="guide-back"
           style={{ flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start' }}>
           <Icon name="arrow-left" size={16} color={t.colors.primary} />
-          <Text weight="bold" color={t.colors.primary}>{(categories ?? []).find((c) => c.id === activeCat)?.label ?? 'Thème'} · {list.length} article{list.length > 1 ? 's' : ''}</Text>
+          <Text weight="bold" color={t.colors.primary}>{(categories ?? []).find((c) => c.id === activeCat)?.label ?? tr('u1.lib.theme')} · {tr('u1.ta.count', { count: list.length })}</Text>
         </Tappable>
       ) : null}
 
@@ -158,13 +158,13 @@ export default function Library() {
         {(['ttc', 'avoid', 'pregnant', 'newborn', 'child'] as const).map((j) => <Chip key={j} label={tr(`art.j.${j}`)} selected={journey === j} onPress={() => setJourney(journey === j ? null : j)} />)}
         <Chip label={tr('art.parentsSleep')} selected={journey === 'parents_sleep'} onPress={() => setJourney(journey === 'parents_sleep' ? null : 'parents_sleep')} />
       </ScrollView>
-      <SectionTitle title="Tous les thèmes" />
+      <SectionTitle title={tr('u1.lib.allThemes')} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
-        <Chip label="Tout" selected={!activeCat} onPress={() => { setCat(null); router.setParams({ cat: undefined } as never); }} />
+        <Chip label={tr('u1.lib.all')} selected={!activeCat} onPress={() => { setCat(null); router.setParams({ cat: undefined } as never); }} />
         {(categories ?? []).map((c) => <Chip key={c.id} label={c.label} selected={activeCat === c.id} onPress={() => { if (activeCat === c.id) { setCat(null); router.setParams({ cat: undefined } as never); } else setCat(c.id); }} />)}
       </ScrollView>
       {loading ? <Skeleton rows={5} /> : null}
-      {failed ? <ErrorView error={articlesQ.error} onRetry={() => void articlesQ.refetch()} title="Impossible d’afficher les articles" /> : null}
+      {failed ? <ErrorView error={articlesQ.error} onRetry={() => void articlesQ.refetch()} title={tr('u1.lib.loadError')} /> : null}
     </View>
   );
 
@@ -187,8 +187,8 @@ export default function Library() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Screen back title="Bibliothèque" subtitle="Des informations claires, sourcées et datées." scroll={false} padded={false}
-        action={{ label: 'Demander aux articles', icon: 'cpu', onPress: () => router.push({ pathname: '/assistant/local', params: q ? { q } : {} } as never), testID: 'library-ask' }}>
+      <Screen back title={tr('u1.lib.title')} subtitle={tr('u1.lib.subtitle')} scroll={false} padded={false}
+        action={{ label: tr('u1.lib.askArticles'), icon: 'cpu', onPress: () => router.push({ pathname: '/assistant/local', params: q ? { q } : {} } as never), testID: 'library-ask' }}>
         <VirtualList
           data={loading || failed ? [] : list}
           keyExtractor={(a) => a.id}
@@ -206,9 +206,9 @@ export default function Library() {
             </Card>
           )}
           ListEmptyComponent={loading || failed ? null : q || activeCat || journey ? (
-            <EmptyState icon="search" title="Aucun article ne correspond à cette recherche." body="Essayez un autre mot ou un autre thème." action={{ label: 'Voir tous les articles', icon: 'refresh-cw', onPress: () => { setQ(''); setCat(null); setJourney(null); router.setParams({ cat: undefined, journey: undefined } as never); } }} />
+            <EmptyState icon="search" title={tr('u1.lib.noMatch')} body={tr('u1.lib.noMatchD')} action={{ label: tr('u1.lib.seeAll'), icon: 'refresh-cw', onPress: () => { setQ(''); setCat(null); setJourney(null); router.setParams({ cat: undefined, journey: undefined } as never); } }} />
           ) : (
-            <EmptyState icon="book-open" title="Aucun article pour l’instant" body="Les articles arrivent bientôt. Vous pouvez poser vos questions à l’assistant en attendant." action={{ label: 'Poser une question', icon: 'message-circle', onPress: () => router.push('/assistant/chat' as never) }} />
+            <EmptyState icon="book-open" title={tr('u1.lib.noneYet')} body={tr('u1.lib.noneYetD')} action={{ label: tr('u1.lib.askQuestion'), icon: 'message-circle', onPress: () => router.push('/assistant/chat' as never) }} />
           )}
           ListFooterComponent={footer}
         />

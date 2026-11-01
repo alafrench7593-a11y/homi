@@ -15,6 +15,7 @@ import { easing } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { formatList, localeTag, t as tr } from '@/i18n';
 
 export type RibbonEvent =
   | { kind: 'sleep'; start: string; end: string | null; nap?: boolean }
@@ -77,7 +78,7 @@ export function DayRibbon({ events, now = new Date() }: { events: RibbonEvent[];
   const points = events.filter((e): e is Extract<RibbonEvent, { at: string }> => e.kind !== 'sleep').sort((a, b) => (a.at < b.at ? -1 : 1));
   const counts = { feed: points.filter((p) => p.kind === 'feed').length, diaper: points.filter((p) => p.kind === 'diaper').length, obs: points.filter((p) => p.kind === 'obs').length };
   const sleepMin = sleeps.reduce((s, e) => s + Math.max(0, (Math.min(e.end ? Date.parse(e.end) : now.getTime(), base + 86400000) - Math.max(Date.parse(e.start), base)) / 60000), 0);
-  const summary = `Aujourd’hui : ${counts.feed} repas ou biberon${counts.feed > 1 ? 's' : ''}, ${counts.diaper} change${counts.diaper > 1 ? 's' : ''}, ${formatDuration(sleepMin)} de sommeil enregistré${counts.obs ? `, ${counts.obs} observation${counts.obs > 1 ? 's' : ''}` : ''}.`;
+  const summary = tr('u4.mv.sumToday', { feeds: tr('u4.mv.feeds', { count: counts.feed }), diapers: tr('u4.mv.diapers', { count: counts.diaper }), sleep: formatDuration(sleepMin), obs: counts.obs ? tr('u4.mv.obsPart', { count: counts.obs }) : '' });
   const X = (ms: number) => frac(ms, base) * w;
 
   return (
@@ -126,10 +127,10 @@ export function DayRibbon({ events, now = new Date() }: { events: RibbonEvent[];
         {['0 h', '6 h', '12 h', '18 h', '24 h'].map((h) => <Text key={h} variant="caption" muted>{h}</Text>)}
       </Row>
       <Row wrap gap={spacing.sm}>
-        <Legend shape="drop" label={`Repas · ${counts.feed}`} />
-        <Legend shape="ribbon" label={`Sommeil · ${formatDuration(sleepMin)}`} />
-        <Legend shape="square" label={`Changes · ${counts.diaper}`} />
-        {counts.obs ? <Legend shape="diamond" label={`Observations · ${counts.obs}`} /> : null}
+        <Legend shape="drop" label={tr('u4.mv.lgMeals', { n: counts.feed })} />
+        <Legend shape="ribbon" label={tr('u4.mv.lgSleep', { d: formatDuration(sleepMin) })} />
+        <Legend shape="square" label={tr('u4.mv.lgChanges', { n: counts.diaper })} />
+        {counts.obs ? <Legend shape="diamond" label={tr('u4.mv.lgObs', { n: counts.obs })} /> : null}
       </Row>
     </View>
   );
@@ -150,15 +151,15 @@ export function SleepNights({ sleeps, days = 7 }: { sleeps: { started_at: string
   const [w, setW] = useState(0);
   const today = dayStart();
   const rows = Array.from({ length: days }, (_, i) => today - (days - 1 - i) * 86400000);
-  const label = (ms: number) => new Date(ms).toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '');
+  const label = (ms: number) => new Date(ms).toLocaleDateString(localeTag(), { weekday: 'short' }).replace('.', '');
   const totals = rows.map((b) => sleeps.reduce((s, x) => {
     const a = Math.max(Date.parse(x.started_at), b);
     const e = Math.min(x.ended_at ? Date.parse(x.ended_at) : Date.now(), b + 86400000);
     return s + Math.max(0, e - a) / 60000;
   }, 0));
-  const summary = rows.map((b, i) => `${label(b)} : ${formatDuration(totals[i])}`).join(', ');
+  const summary = rows.map((b, i) => tr('u4.mv.dayDur', { day: label(b), dur: formatDuration(totals[i]) })).join(', ');
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={`Sommeil enregistré sur ${days} jours. ${summary}`} style={{ gap: 6 }}>
+    <View accessible accessibilityRole="image" accessibilityLabel={tr('u4.mv.sleepOver', { days, summary })} style={{ gap: 6 }}>
       {rows.map((b, r) => (
         <Row key={b} gap={spacing.xs} style={{ alignItems: 'center' }}>
           <Text variant="caption" muted style={{ width: 30 }}>{label(b)}</Text>
@@ -186,8 +187,8 @@ export function SleepNights({ sleeps, days = 7 }: { sleeps: { started_at: string
         {['0 h', '12 h', '24 h'].map((h) => <Text key={h} variant="caption" muted>{h}</Text>)}
       </Row>
       <Row gap={spacing.sm}>
-        <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 8, borderRadius: 4, backgroundColor: t.colors.lavender }} /><Text variant="caption" muted>Nuit ou non précisé</Text></Row>
-        <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 8, borderRadius: 4, borderWidth: 2, borderColor: t.colors.lavender }} /><Text variant="caption" muted>Sieste</Text></Row>
+        <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 8, borderRadius: 4, backgroundColor: t.colors.lavender }} /><Text variant="caption" muted>{tr('u4.mv.nightOrNA')}</Text></Row>
+        <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 8, borderRadius: 4, borderWidth: 2, borderColor: t.colors.lavender }} /><Text variant="caption" muted>{tr('u4.mv.nap')}</Text></Row>
       </Row>
     </View>
   );
@@ -219,9 +220,9 @@ export function RelayStrip({ nights, labelOf }: { nights: { id: string; user_id:
   if (!list.length) return null;
   const nowMs = Date.now();
   const current = Math.max(0, list.findIndex((n) => Date.parse(n.ends_at) > nowMs));
-  const day = (iso: string) => new Date(iso).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }).replace('.', '');
+  const day = (iso: string) => new Date(iso).toLocaleDateString(localeTag(), { weekday: 'short', day: 'numeric' }).replace('.', '');
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={`Relais de nuit : ${list.map((n) => `${day(n.starts_at)}, ${labelOf(n.user_id)}`).join(' ; ')}`}>
+    <View accessible accessibilityRole="image" accessibilityLabel={tr('u4.mv.relay', { list: formatList(list.map((n) => `${day(n.starts_at)}, ${labelOf(n.user_id)}`)) })}>
       <View style={{ flexDirection: 'row', gap: GAP, paddingVertical: spacing.xs }}>
         {/* fil qui relie les nuits */}
         <View style={{ position: 'absolute', left: NODE / 2, width: (list.length - 1) * (NODE + GAP), top: 34, height: 2, backgroundColor: t.colors.border }} />
@@ -237,7 +238,7 @@ export function RelayStrip({ nights, labelOf }: { nights: { id: string; user_id:
               <Text variant="caption" muted>{day(n.starts_at)}</Text>
               <View style={{ width: isCur ? 22 : 16, height: isCur ? 22 : 16, borderRadius: 11, borderWidth: 3, borderColor: isCur ? t.colors.primary : t.colors.lavender, backgroundColor: n.status === 'confirmed' ? t.colors.lavender : t.colors.surface }} />
               <Text variant="small" weight={isCur ? 'bold' : 'medium'}>{labelOf(n.user_id)}</Text>
-              <Text variant="caption" muted>{isCur ? (Date.parse(n.starts_at) <= nowMs ? 'cette nuit' : 'prochaine') : n.status === 'confirmed' ? 'confirmée' : n.status === 'swapped' ? 'échangée' : 'prévue'}</Text>
+              <Text variant="caption" muted>{isCur ? (Date.parse(n.starts_at) <= nowMs ? tr('u4.mv.tonight') : tr('u4.mv.next')) : n.status === 'confirmed' ? tr('u4.mv.confirmed') : n.status === 'swapped' ? tr('u4.mv.swapped') : tr('u4.mv.planned')}</Text>
             </View>
           );
         })}
@@ -272,7 +273,7 @@ export function DayAvailability({ day, busy, free, reserved, onPick }: {
   const from = new Date(y, m - 1, d, 8).getTime();
   const to = new Date(y, m - 1, d, 21).getTime();
   const X = (iso: string) => Math.max(0, Math.min(1, (Date.parse(iso) - from) / (to - from))) * w;
-  const hm = (iso: string) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const hm = (iso: string) => new Date(iso).toLocaleTimeString(localeTag(), { hour: '2-digit', minute: '2-digit' });
   const inDay = (x: { starts_at: string; ends_at: string }) => Date.parse(x.ends_at) > from && Date.parse(x.starts_at) < to;
   busy = busy.filter(inDay); reserved = reserved.filter(inDay);
   return (
@@ -285,7 +286,7 @@ export function DayAvailability({ day, busy, free, reserved, onPick }: {
                 borderLeftWidth: 1, borderRightWidth: 1, borderColor: t.colors.textMuted }} accessibilityElementsHidden />
             ))}
             {free.map((f, i) => (
-              <Tappable key={`f${i}`} accessibilityRole="button" accessibilityLabel={`Créneau libre de ${hm(f.starts_at)} à ${hm(f.ends_at)}. Toucher pour réserver une heure.`} onPress={() => onPick(f)}
+              <Tappable key={`f${i}`} accessibilityRole="button" accessibilityLabel={tr('u4.mv.slotA11y', { from: hm(f.starts_at), to: hm(f.ends_at) })} onPress={() => onPick(f)}
                 style={{ position: 'absolute', left: X(f.starts_at) + 2, width: Math.max(10, X(f.ends_at) - X(f.starts_at) - 4), top: 4, bottom: 4 }}>
                 <Animated.View style={{ flex: 1, borderRadius: 9, borderWidth: 2, borderStyle: 'dashed', borderColor: t.colors.primary, opacity: breathe.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] }) }} />
               </Tappable>
@@ -293,7 +294,7 @@ export function DayAvailability({ day, busy, free, reserved, onPick }: {
             {reserved.map((r, i) => (
               <Grow key={`r${i}`} index={i} left={X(r.starts_at)} width={X(r.ends_at) - X(r.starts_at)}>
                 <View style={{ flex: 1, margin: 4, borderRadius: 9, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
-                  <Text variant="caption" weight="bold" color={t.colors.primaryText}>pour moi</Text>
+                  <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('u4.mv.forMe')}</Text>
                 </View>
               </Grow>
             ))}
@@ -302,9 +303,9 @@ export function DayAvailability({ day, busy, free, reserved, onPick }: {
       </View>
       <Row style={{ justifyContent: 'space-between' }}>{['8 h', '12 h', '16 h', '21 h'].map((h) => <Text key={h} variant="caption" muted>{h}</Text>)}</Row>
       <Row wrap gap={spacing.sm}>
-        <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 10, borderRadius: 3, backgroundColor: t.colors.border, borderWidth: 1, borderColor: t.colors.textMuted }} /><Text variant="caption" muted>Occupé</Text></Row>
-        <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 10, borderRadius: 3, borderWidth: 2, borderStyle: 'dashed', borderColor: t.colors.primary }} /><Text variant="caption" muted>Libre (toucher pour réserver)</Text></Row>
-        <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 10, borderRadius: 3, backgroundColor: t.colors.primary }} /><Text variant="caption" muted>Réservé</Text></Row>
+        <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 10, borderRadius: 3, backgroundColor: t.colors.border, borderWidth: 1, borderColor: t.colors.textMuted }} /><Text variant="caption" muted>{tr('u4.mv.busy')}</Text></Row>
+        <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 10, borderRadius: 3, borderWidth: 2, borderStyle: 'dashed', borderColor: t.colors.primary }} /><Text variant="caption" muted>{tr('u4.mv.free')}</Text></Row>
+        <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 10, borderRadius: 3, backgroundColor: t.colors.primary }} /><Text variant="caption" muted>{tr('u4.mv.reserved')}</Text></Row>
       </Row>
     </View>
   );
@@ -357,12 +358,12 @@ export function LoadBar({ done, assigned, unassigned }: { done: number; assigned
   const total = done + assigned + unassigned;
   if (!total) return null;
   const parts = [
-    { n: done, color: t.colors.success, label: done > 1 ? 'faites' : 'faite', style: {} },
-    { n: assigned, color: t.colors.primary, label: assigned > 1 ? 'attribuées' : 'attribuée', style: {} },
-    { n: unassigned, color: 'transparent', label: 'sans responsable', style: { borderWidth: 2, borderStyle: 'dashed' as const, borderColor: t.colors.textMuted } },
+    { n: done, color: t.colors.success, label: tr('u4.mv.done', { count: done }), style: {} },
+    { n: assigned, color: t.colors.primary, label: tr('u4.mv.assigned', { count: assigned }), style: {} },
+    { n: unassigned, color: 'transparent', label: tr('u4.mv.unassigned'), style: { borderWidth: 2, borderStyle: 'dashed' as const, borderColor: t.colors.textMuted } },
   ].filter((p) => p.n > 0);
   return (
-    <View accessible accessibilityLabel={`Tâches du jour : ${done} faites, ${assigned} attribuées, ${unassigned} sans responsable.`} style={{ gap: 6 }}>
+    <View accessible accessibilityLabel={tr('u4.mv.loadA11y', { done, assigned, unassigned })} style={{ gap: 6 }}>
       <View style={{ flexDirection: 'row', height: 14, gap: 3 }}>
         {parts.map((p, i) => (
           <View key={p.label} style={{ flex: p.n, height: 14 }}>

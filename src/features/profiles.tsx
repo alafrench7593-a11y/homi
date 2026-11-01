@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { backend } from '@/lib/backend';
 import { addDays, frToISO, todayISO } from '@/lib/domain/dates';
-import { babiesCount, dueDateFromLmp, multiplicityLabel, type Multiplicity, validateDueDate } from '@/lib/domain/pregnancy';
+import { babiesCount, dueDateFromLmp, type Multiplicity, validateDueDate } from '@/lib/domain/pregnancy';
 import type { Child, ChecklistKind, Pregnancy } from '@/lib/types';
 import { Chip, Field, Row, Text } from '@/components/ui';
 import { CHECKLIST_TEMPLATES } from '@/content/checklists';
 import { spacing } from '@/theme/tokens';
 import { toFrDate } from '@/lib/validation';
+import { t as tr } from '@/i18n';
 
 export interface PregnancyDraft {
   /** due : terme indiqué ; lmp : dernières règles ; conception : date de début de grossesse (terme = + 39 semaines, soit 41 SA) */
@@ -21,13 +22,17 @@ export interface PregnancyDraft {
 
 export const emptyPregnancy = (): PregnancyDraft => ({ dateMode: 'due', date: '', multiplicity: 'single', nicknames: ['', '', '', ''], topics: [] });
 
+/** Valeurs enregistrées (françaises) ; l'affichage passe par topicLabel(). */
 export const PREGNANCY_TOPICS = ['Accouchement', 'Allaitement', 'Alimentation', 'Émotions', 'Sommeil', 'Préparer les aînés', 'Démarches', 'Après la naissance'];
+
+const TOPIC_KEYS: Record<string, string> = { 'Accouchement': 'u2.profiles.topic_birth', 'Allaitement': 'u2.profiles.topic_breastfeeding', 'Alimentation': 'u2.profiles.topic_food', 'Émotions': 'u2.profiles.topic_emotions', 'Sommeil': 'u2.profiles.topic_sleep', 'Préparer les aînés': 'u2.profiles.topic_elder', 'Démarches': 'u2.profiles.topic_admin', 'Après la naissance': 'u2.profiles.topic_after' };
+const topicLabel = (tp: string) => (TOPIC_KEYS[tp] ? tr(TOPIC_KEYS[tp] as never) : tp);
 
 export function validatePregnancy(d: PregnancyDraft): { errors: Record<string, string>; due?: string; lmp?: string | null } {
   const iso = frToISO(d.date);
-  if (!iso) return { errors: { date: 'Format attendu : JJ/MM/AAAA.' } };
+  if (!iso) return { errors: { date: tr('u2.profiles.format_date') } };
   if (d.dateMode === 'conception') {
-    if (iso > todayISO()) return { errors: { date: 'La date de début de grossesse ne peut pas être dans le futur.' } };
+    if (iso > todayISO()) return { errors: { date: tr('u2.profiles.conception_future') } };
     // Convention française : 2 semaines entre le début des dernières règles et la conception (41 SA = 39 SG)
     const lmp = addDays(iso, -14);
     const due = dueDateFromLmp(lmp);
@@ -35,7 +40,7 @@ export function validatePregnancy(d: PregnancyDraft): { errors: Record<string, s
     return err ? { errors: { date: err } } : { errors: {}, due, lmp };
   }
   if (d.dateMode === 'lmp') {
-    if (iso > todayISO()) return { errors: { date: 'La date des dernières règles ne peut pas être dans le futur.' } };
+    if (iso > todayISO()) return { errors: { date: tr('u2.profiles.lmp_future') } };
     const due = dueDateFromLmp(iso);
     const err = validateDueDate(due);
     return err ? { errors: { date: err } } : { errors: {}, due, lmp: iso };
@@ -47,54 +52,55 @@ export function validatePregnancy(d: PregnancyDraft): { errors: Record<string, s
 export function PregnancyForm({ value, onChange, errors }: { value: PregnancyDraft; onChange: (v: PregnancyDraft) => void; errors: Record<string, string> }) {
   const set = <K extends keyof PregnancyDraft>(k: K, v: PregnancyDraft[K]) => onChange({ ...value, [k]: v });
   const n = babiesCount(value.multiplicity);
+  const setMode = (m: PregnancyDraft['dateMode']) => set('dateMode', m);
   return (
     <View style={{ gap: spacing.md }}>
       <View style={{ gap: spacing.xs }}>
-        <Text variant="label">Date connue</Text>
+        <Text variant="label">{tr('u2.profiles.known_date')}</Text>
         <Row wrap>
-          {([['due', 'Date prévue du terme'], ['lmp', 'Dernières règles'], ['conception', 'Début de grossesse']] as const).map(([k, l]) => (
-            <Chip key={k} label={l} selected={value.dateMode === k} onPress={() => set('dateMode', k)} testID={`preg-date-mode-${k}`} />
+          {([['due', tr('u2.profiles.m_due')], ['lmp', tr('u2.profiles.m_lmp')], ['conception', tr('u2.profiles.m_conception')]] as const).map(([k, l]) => (
+            <Chip key={k} label={l} selected={value.dateMode === k} onPress={() => setMode(k)} testID={`preg-date-mode-${k}`} />
           ))}
         </Row>
       </View>
       <Field
-        label={value.dateMode === 'due' ? 'Date prévue d’accouchement' : value.dateMode === 'lmp' ? 'Premier jour des dernières règles' : 'Date de début de grossesse'}
+        label={value.dateMode === 'due' ? tr('u2.profiles.l_due') : value.dateMode === 'lmp' ? tr('u2.profiles.l_lmp') : tr('u2.profiles.l_conception')}
         testID="preg-date"
-        placeholder="JJ/MM/AAAA"
+        placeholder={tr('u2.profiles.date_ph')}
         keyboardType="numbers-and-punctuation"
         value={value.date}
         onChangeText={(v) => set('date', v)}
         error={errors.date}
         hint={value.dateMode === 'due'
-          ? 'Celle indiquée par votre sage-femme ou votre médecin. Elle sert à adapter les semaines et les contenus.'
+          ? tr('u2.profiles.h_due')
           : value.dateMode === 'lmp'
-            ? 'Le terme sera estimé à 41 semaines d’aménorrhée (convention française). Vous pourrez le corriger après l’échographie.'
-            : 'Date de conception indiquée par un professionnel (par exemple après une FIV). Le terme sera estimé à 39 semaines de grossesse : à confirmer avec votre sage-femme ou votre médecin.'}
+            ? tr('u2.profiles.h_lmp')
+            : tr('u2.profiles.h_conception')}
       />
       <View style={{ gap: spacing.xs }}>
-        <Text variant="label">Combien de bébés ?</Text>
+        <Text variant="label">{tr('u2.profiles.how_many')}</Text>
         <Row wrap>
           {(['single', 'twins', 'triplets', 'unknown'] as Multiplicity[]).map((m) => (
-            <Chip key={m} label={multiplicityLabel(m)} selected={value.multiplicity === m} onPress={() => set('multiplicity', m)} />
+            <Chip key={m} label={tr(`u2.preg.mult_${m}` as never)} selected={value.multiplicity === m} onPress={() => set('multiplicity', m)} />
           ))}
         </Row>
       </View>
       {Array.from({ length: n }, (_, i) => (
         <Field
           key={i}
-          label={n > 1 ? `Prénom ou surnom du bébé ${i + 1}` : 'Prénom ou surnom du bébé'}
+          label={n > 1 ? tr('u2.profiles.baby_name_n', { n: i + 1 }) : tr('u2.profiles.baby_name')}
           optional
           value={value.nicknames[i]}
           onChangeText={(v) => set('nicknames', value.nicknames.map((x, j) => (j === i ? v : x)))}
-          placeholder={n > 1 ? ['Petite Lune', 'Petit Soleil', 'Petite Étoile'][i] : 'Petit Haricot'}
+          placeholder={n > 1 ? [tr('u2.profiles.ph_moon'), tr('u2.profiles.ph_sun'), tr('u2.profiles.ph_star')][i] : tr('u2.profiles.ph_bean')}
           maxLength={40}
         />
       ))}
       <View style={{ gap: spacing.xs }}>
-        <Text variant="label">Les sujets qui vous intéressent <Text variant="small" muted>(facultatif)</Text></Text>
+        <Text variant="label">{tr('u2.profiles.topics')} <Text variant="small" muted>{tr('u2.profiles.optional')}</Text></Text>
         <Row wrap>
           {PREGNANCY_TOPICS.map((tp) => (
-            <Chip key={tp} label={tp} tone="lavender" selected={value.topics.includes(tp)} onPress={() => set('topics', value.topics.includes(tp) ? value.topics.filter((x) => x !== tp) : [...value.topics, tp])} />
+            <Chip key={tp} label={topicLabel(tp)} tone="lavender" selected={value.topics.includes(tp)} onPress={() => set('topics', value.topics.includes(tp) ? value.topics.filter((x) => x !== tp) : [...value.topics, tp])} />
           ))}
         </Row>
       </View>
@@ -139,11 +145,11 @@ export const TRACKING_OPTIONS: { key: string; label: string }[] = [
 
 export function validateChild(d: ChildDraft): { errors: Record<string, string>; birth?: string } {
   const errors: Record<string, string> = {};
-  if (!d.first_name.trim()) errors.first_name = 'Indiquez un prénom ou un surnom.';
+  if (!d.first_name.trim()) errors.first_name = tr('u2.profiles.need_name');
   const iso = frToISO(d.birth_date);
-  if (!iso) errors.birth_date = 'Format attendu : JJ/MM/AAAA.';
-  else if (iso > todayISO()) errors.birth_date = 'La date de naissance ne peut pas être dans le futur.';
-  else if (iso < addDays(todayISO(), -365 * 12)) errors.birth_date = 'Le suivi est prévu jusqu’à 10 ans.';
+  if (!iso) errors.birth_date = tr('u2.profiles.format_date');
+  else if (iso > todayISO()) errors.birth_date = tr('u2.profiles.birth_future');
+  else if (iso < addDays(todayISO(), -365 * 12)) errors.birth_date = tr('u2.profiles.max_age');
   return { errors, birth: iso ?? undefined };
 }
 
@@ -151,25 +157,25 @@ export function ChildForm({ value, onChange, errors }: { value: ChildDraft; onCh
   const set = <K extends keyof ChildDraft>(k: K, v: ChildDraft[K]) => onChange({ ...value, [k]: v });
   return (
     <View style={{ gap: spacing.md }}>
-      <Field label="Prénom ou surnom" value={value.first_name} onChangeText={(v) => set('first_name', v)} error={errors.first_name} maxLength={40} autoCapitalize="words" />
-      <Field label="Date de naissance" placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" value={value.birth_date} onChangeText={(v) => set('birth_date', v)} error={errors.birth_date} hint="Elle permet d’adapter les conseils et les repères à son âge." />
+      <Field label={tr('u2.profiles.c_name')} value={value.first_name} onChangeText={(v) => set('first_name', v)} error={errors.first_name} maxLength={40} autoCapitalize="words" />
+      <Field label={tr('u2.profiles.c_birth')} placeholder={tr('u2.profiles.date_ph')} keyboardType="numbers-and-punctuation" value={value.birth_date} onChangeText={(v) => set('birth_date', v)} error={errors.birth_date} hint={tr('u2.profiles.c_birth_hint')} />
       <View style={{ gap: spacing.xs }}>
-        <Text variant="label">Sexe <Text variant="small" muted>(facultatif — seulement si vous le souhaitez)</Text></Text>
+        <Text variant="label">{tr('u2.profiles.sex')} <Text variant="small" muted>{tr('u2.profiles.sex_optional')}</Text></Text>
         <Row wrap>
-          {([['female', 'Fille'], ['male', 'Garçon'], ['unspecified', 'Je préfère ne pas préciser']] as const).map(([k, l]) => (
+          {([['female', tr('u2.profiles.girl')], ['male', tr('u2.profiles.boy')], ['unspecified', tr('u2.profiles.unspecified')]] as const).map(([k, l]) => (
             <Chip key={k} label={l} selected={value.sex === k} onPress={() => set('sex', value.sex === k ? null : k)} />
           ))}
         </Row>
       </View>
       <View style={{ gap: spacing.xs }}>
-        <Text variant="label">Ce que vous souhaitez suivre</Text>
+        <Text variant="label">{tr('u2.profiles.track')}</Text>
         <Row wrap>
           {TRACKING_OPTIONS.map((o) => (
-            <Chip key={o.key} label={o.label} tone="lavender" selected={value.tracking.includes(o.key)} onPress={() => set('tracking', value.tracking.includes(o.key) ? value.tracking.filter((x) => x !== o.key) : [...value.tracking, o.key])} />
+            <Chip key={o.key} label={tr(`u2.profiles.track_${o.key}` as never)} tone="lavender" selected={value.tracking.includes(o.key)} onPress={() => set('tracking', value.tracking.includes(o.key) ? value.tracking.filter((x) => x !== o.key) : [...value.tracking, o.key])} />
           ))}
         </Row>
       </View>
-      <Field label="Allergies déclarées par un professionnel" optional value={value.allergies} onChangeText={(v) => set('allergies', v)} placeholder="ex. arachide, lait" hint="Séparées par des virgules. Utilisées pour le scanner de produits." />
+      <Field label={tr('u2.profiles.allergies')} optional value={value.allergies} onChangeText={(v) => set('allergies', v)} placeholder={tr('u2.profiles.allergies_ph')} hint={tr('u2.profiles.allergies_hint')} />
     </View>
   );
 }

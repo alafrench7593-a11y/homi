@@ -18,6 +18,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { t as tr } from '@/i18n';
 
 function Big({ icon, label, onPress, tone }: { icon: IconName; label: string; onPress: () => void; tone?: 'danger' }) {
   const t = useTheme();
@@ -46,28 +47,28 @@ export default function OrgEmergency() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.sm }}>
-      <Tappable accessibilityRole="button" accessibilityLabel="Retour" onPress={() => goBack()} style={{ minHeight: 44, justifyContent: 'center' }}>
-        <Text weight="bold" color={t.colors.primary}>← Retour</Text>
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('u2.urgent.back_label')} onPress={() => goBack()} style={{ minHeight: 44, justifyContent: 'center' }}>
+        <Text weight="bold" color={t.colors.primary}>{tr('u2.urgent.back')}</Text>
       </Tappable>
-      <Text variant="title" accessibilityRole="header">Respirez. Une chose à la fois.</Text>
+      <Text variant="title" accessibilityRole="header">{tr('u2.urgent.title')}</Text>
       {/* urgence vitale toujours en premier, sans animation */}
-      <Big icon="alert-octagon" label="Urgence médicale ou danger : 15 · 112 · 3114" tone="danger" onPress={() => router.push('/emergency')} />
+      <Big icon="alert-octagon" label={tr('u2.urgent.medical')} tone="danger" onPress={() => router.push('/emergency')} />
 
-      <Big icon="users" label="Demander un relais" onPress={() => send('relay', 'Demande de relais envoyée.')} />
-      <Big icon="life-buoy" label="J’ai besoin d’aide aujourd’hui" onPress={() => send('help_today', 'Demande d’aide envoyée.')} />
-      <Big icon="share" label="Déléguer une tâche" onPress={() => router.push('/family')} />
-      <Big icon="skip-forward" label={plan.length ? `Reporter ${plan.length} tâche${plan.length > 1 ? 's' : ''} non essentielle${plan.length > 1 ? 's' : ''} à demain` : 'Rien à reporter'} onPress={() => (plan.length ? batch.mutateAsync({ postpone: plan.map((p) => ({ id: p.id, to: p.to })) }).then(() => toast('Reporté à demain.')).catch((e) => toast(friendlyError(e), 'error')) : undefined)} />
-      <Big icon="phone" label="Appeler une personne de confiance" onPress={() => setShowContacts((v) => !v)} />
+      <Big icon="users" label={tr('u2.urgent.relay')} onPress={() => send('relay', tr('u2.urgent.relay_sent'))} />
+      <Big icon="life-buoy" label={tr('u2.urgent.help')} onPress={() => send('help_today', tr('u2.urgent.help_sent'))} />
+      <Big icon="share" label={tr('u2.urgent.delegate')} onPress={() => router.push('/family')} />
+      <Big icon="skip-forward" label={plan.length ? tr('u2.urgent.postpone', { count: plan.length }) : tr('u2.urgent.nothing_postpone')} onPress={() => (plan.length ? batch.mutateAsync({ postpone: plan.map((p) => ({ id: p.id, to: p.to })) }).then(() => toast(tr('u2.urgent.postponed'))).catch((e) => toast(friendlyError(e), 'error')) : undefined)} />
+      <Big icon="phone" label={tr('u2.urgent.call_trusted')} onPress={() => setShowContacts((v) => !v)} />
       {showContacts ? (
         <View style={{ gap: spacing.xs }}>
           {(contacts ?? []).filter((c) => c.phone).map((c) => <Big key={c.id} icon="phone-call" label={`${c.name}${c.relation ? ` (${c.relation})` : ''}`} onPress={() => callNumber(c.phone!, toast)} />)}
-          {!(contacts ?? []).some((c) => c.phone) ? <Text>Aucun numéro enregistré. Ajoutez-en dans Après la naissance › Mon plan de soutien.</Text> : null}
+          {!(contacts ?? []).some((c) => c.phone) ? <Text>{tr('u2.urgent.no_number')}</Text> : null}
         </View>
       ) : null}
-      <Big icon="heart" label="Infos indispensables des enfants" onPress={() => setShowChild((v) => !v)} />
+      <Big icon="heart" label={tr('u2.urgent.child_info')} onPress={() => setShowChild((v) => !v)} />
       {showChild ? <ChildEssentials large /> : null}
 
-      <Text variant="small" muted>Ce mode aide à s’organiser. Il ne remplace pas les services d’urgence médicale ou psychologique.</Text>
+      <Text variant="small" muted>{tr('u2.urgent.disclaimer')}</Text>
     </ScrollView>
   );
 }

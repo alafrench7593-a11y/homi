@@ -7,6 +7,7 @@ import { linkFrame } from '@/components/linkFrame';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
+import { t as tr } from '@/i18n';
 import { Icon, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { useActivePregnancy, useTrackedChildren } from '@/lib/data/hooks';
@@ -76,13 +77,13 @@ export function StoryHomeStrip() {
     weeksLabel: pregnancy && scope.scope === 'pregnancy' ? pregnancyProgress(pregnancy.due_date).label : null,
   });
   return (
-    <Tappable accessibilityRole="button" accessibilityLabel={`Au fil de nous. ${caption}. ${storyA11y(scene)} Ouvrir la présentation.`} onPress={() => router.push('/story' as never)} testID="home-story"
+    <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.story.strip.a11y', { caption, scene: storyA11y(scene) })} onPress={() => router.push('/story' as never)} testID="home-story"
       style={{ height: STORY_STRIP_HEIGHT, flexDirection: 'row', alignItems: 'flex-end' }}>
       <View style={{ flex: 1, alignSelf: 'center', gap: 4, paddingRight: spacing.xs }}>
-        <Text variant="caption" muted style={{ letterSpacing: 1.2, textTransform: 'uppercase' }}>Au fil de nous</Text>
+        <Text variant="caption" muted style={{ letterSpacing: 1.2, textTransform: 'uppercase' }}>{tr('u4.story.strip.title')}</Text>
         <Text weight="bold" numberOfLines={2} testID="home-story-caption">{caption}</Text>
         <View style={[linkFrame(t.isDark), { marginTop: 4, minHeight: 34, paddingHorizontal: 12 }]}>
-          <Text variant="caption" weight="bold" color={t.colors.primary}>Notre histoire</Text>
+          <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('u4.story.strip.cta')}</Text>
           <Icon name="arrow-right" size={13} color={t.colors.primary} />
         </View>
       </View>

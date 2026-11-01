@@ -12,7 +12,7 @@ import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, Row, Text } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
-import { BottleNotificationSettings, NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
+import { BottleNotificationSettings, noRecommendationNote, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { TimePicker } from '@/features/tracking';
 import { useChild, useLogs, useMemberships } from '@/lib/data/hooks';
 import { addDays, todayISO } from '@/lib/domain/dates';
@@ -23,6 +23,7 @@ import {
   atClock, cancelTimer, computeDueAt, formatClock, formatHM, modifyInterval, nextReminderSentence, parseDelay, remainingMinutes, resolveReminderChoice,
   setReminderAt, snoozeTimer, SNOOZE_PRESETS, type ReminderChoice,
 } from '@/lib/domain/bottleTimer';
+import { formatDate, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { bottleDayPlan, nextSlot, slotClock } from '@/lib/domain/bottleDayPlan';
 import { BottleDayTimeline, openSlot } from '@/features/bottleDay';
@@ -67,14 +68,14 @@ export default function BottleReminderScreen() {
 
   if (!child) {
     return (
-      <Screen back title="Rappel biberon">
+      <Screen back title={tr('u6.bchild.reminder_title')}>
         {loadingChildren ? <Skeleton kind="detail" rows={4} /> : childrenError ? (
-          <ErrorView error={childrenError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce rappel" />
+          <ErrorView error={childrenError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title={tr('u6.bchild.error')} />
         ) : (
           anyChild ? (
-            <EmptyState icon="info" title={`Pas de biberon pour ${anyChild.first_name}`} body="Le rappel biberon concerne les bébés jusqu’à 2 ans (profil « Mon bébé est né »)." action={{ label: 'Retour', icon: 'arrow-left', onPress: () => router.back() }} />
+            <EmptyState icon="info" title={tr('u6.bchild.no_bottle', { name: anyChild.first_name })} body={tr('u6.bchild.baby_only')} action={{ label: tr('u6.bchild.back'), icon: 'arrow-left', onPress: () => router.back() }} />
           ) : (
-            <EmptyState icon="user-x" title="Profil introuvable" body="Ce profil est introuvable. Il a peut-être été supprimé." action={{ label: 'Tous les rappels', icon: 'clock', onPress: () => router.replace('/bottle') }} />
+            <EmptyState icon="user-x" title={tr('u6.bchild.not_found')} body={tr('u6.bchild.not_found_body')} action={{ label: tr('u6.bchild.all'), icon: 'clock', onPress: () => router.replace('/bottle') }} />
           )
         )}
       </Screen>
@@ -90,11 +91,11 @@ export default function BottleReminderScreen() {
       toast(message);
       setSheet(null);
     } catch (e) {
-      toast(friendlyError(e, 'Modification impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u6.bchild.edit_failed')), 'error');
     }
   }
   const tryPatch = (fn: () => Parameters<typeof update.mutateAsync>[0]['patch'], message: (p: { due_at?: string }) => string) => {
-    try { const p = fn(); return patch(p, message(p as { due_at?: string })); } catch (e) { toast(e instanceof Error ? e.message : 'Valeur invalide.', 'error'); return undefined; }
+    try { const p = fn(); return patch(p, message(p as { due_at?: string })); } catch (e) { toast(e instanceof Error ? e.message : tr('u6.bchild.invalid'), 'error'); return undefined; }
   };
 
   function openStart() {
@@ -114,7 +115,7 @@ export default function BottleReminderScreen() {
 
   async function submitStart() {
     const minutes = resolveReminderChoice(choice);
-    if (minutes == null) return toast('Choisissez un délai avant le rappel.', 'error');
+    if (minutes == null) return toast(tr('u6.bchild.choose_delay'), 'error');
     const ml = parseMl(planned);
     if (ml.error) return toast(ml.error, 'error');
     try {
@@ -123,7 +124,7 @@ export default function BottleReminderScreen() {
       toast(nextReminderSentence(name, timer.due_at));
       setSheet(null);
     } catch (e) {
-      toast(friendlyError(e, 'Programmation impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u6.bchild.schedule_failed')), 'error');
     }
   }
 
@@ -134,7 +135,7 @@ export default function BottleReminderScreen() {
   const drunk = todays.reduce((n, b) => n + (b.consumed_ml ?? 0), 0);
   const days = Array.from({ length: 7 }, (_, i) => addDays(today, i - 6));
   const perDay = days.map((d) => week.filter((b) => todayISO(new Date(b.at)) === d).length);
-  const dayLetters = days.map((d) => ['di', 'lu', 'ma', 'me', 'je', 've', 'sa'][new Date(`${d}T12:00:00`).getDay()]);
+  const dayLetters = days.map((d) => formatDate(new Date(`${d}T12:00:00`), { weekday: 'short' }).slice(0, 2).toLowerCase());
   const passed = active ? remainingMinutes(active, now) <= 0 : false;
   // Journée biberons : créneaux d'après le délai choisi par le parent (rappel en cours, sinon le dernier choisi)
   const dayInterval = active?.interval_minutes ?? lastInterval ?? null;
@@ -150,15 +151,15 @@ export default function BottleReminderScreen() {
       haptic('success');
       toast(nextReminderSentence(name, timer.due_at));
     } catch (e) {
-      toast(friendlyError(e, 'Programmation impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u6.bchild.schedule_failed')), 'error');
     }
   }
 
   return (
-    <Screen back title={`Biberon de ${name}`} subtitle="Journée, rappels et quantités"
-      action={{ label: upcoming ? `Noter le biberon de ${slotClock(upcoming.at)}` : todays.length ? 'Enregistrer un biberon' : 'Noter le premier biberon', icon: 'plus', testID: 'bottle-record',
+    <Screen back title={tr('u6.bchild.title', { name })} subtitle={tr('u6.bchild.subtitle')}
+      action={{ label: upcoming ? tr('u6.bchild.note_at', { time: slotClock(upcoming.at) }) : todays.length ? tr('u6.bchild.record') : tr('u6.bchild.note_first'), icon: 'plus', testID: 'bottle-record',
         onPress: () => (upcoming ? openSlot(childId, upcoming, active?.id) : router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, from: 'day', ...(active ? { timer: active.id } : {}) } })) }}
-      right={<Button label="Historique" icon="list" variant="ghost" size="sm" onPress={() => router.push({ pathname: '/bottle/history', params: { child: childId } })} />}>
+      right={<Button label={tr('u6.bchild.history')} icon="list" variant="ghost" size="sm" onPress={() => router.push({ pathname: '/bottle/history', params: { child: childId } })} />}>
       {others.length > 0 && (
         <Row wrap>
           {[child, ...others].map((c) => (
@@ -168,15 +169,15 @@ export default function BottleReminderScreen() {
       )}
 
       <TodaySummary items={[
-        { icon: 'droplet', value: String(todays.length), label: todays.length > 1 ? 'Biberons' : 'Biberon', testID: 'bottle-today-count' },
-        { icon: 'bar-chart-2', value: drunk ? `${drunk} ml` : '—', label: 'Bu (noté)' },
-        { icon: 'bell', value: active && !passed ? formatClock(active.due_at) : '—', label: 'Prochain rappel' },
+        { icon: 'droplet', value: String(todays.length), label: tr('u6.bchild.bottles', { count: todays.length }), testID: 'bottle-today-count' },
+        { icon: 'bar-chart-2', value: drunk ? `${drunk} ml` : '—', label: tr('u6.bchild.drunk_logged') },
+        { icon: 'bell', value: active && !passed ? formatClock(active.due_at) : '—', label: tr('u6.bchild.next_reminder') },
       ]} />
       <BottleDayTimeline childId={childId} slots={slots} intervalMinutes={dayInterval} timerId={active?.id} onPickInterval={pickInterval} name={name} />
       {perDay.some((n) => n > 0) ? <MiniBars values={perDay} labels={dayLetters} testID="bottle-week" /> : null}
 
       {isLoading ? <Skeleton kind="detail" rows={2} /> : timerQ.isError && !timerQ.data ? (
-        <ErrorView error={timerQ.error} onRetry={() => void timerQ.refetch()} title="Impossible d’afficher le rappel" />
+        <ErrorView error={timerQ.error} onRetry={() => void timerQ.refetch()} title={tr('u6.bchild.error_reminder')} />
       ) : (
         <Card>
           <View style={{ gap: spacing.sm }}>
@@ -184,68 +185,68 @@ export default function BottleReminderScreen() {
               <Icon name={active ? 'bell' : 'bell-off'} size={18} color={th.colors.primary} />
               <View style={{ flex: 1, gap: 2 }} testID="bottle-next" accessibilityLiveRegion="polite">
                 <Text weight="bold">
-                  {active ? (passed ? `Le rappel choisi pour ${name} était prévu ${atClock(active.due_at, now)}.` : nextReminderSentence(name, active.due_at, now)) : `Aucun rappel prévu pour ${name}.`}
+                  {active ? (passed ? tr('u6.bottle.was_due', { name, when: atClock(active.due_at, now) }) : nextReminderSentence(name, active.due_at, now)) : tr('u6.bchild.none_for', { name })}
                 </Text>
-                {active ? <Text variant="caption" muted>Délai choisi : {formatHM(active.interval_minutes)} après le biberon de {formatClock(active.last_bottle_at)}.</Text> : null}
+                {active ? <Text variant="caption" muted>{tr('u6.bchild.chosen_delay', { delay: formatHM(active.interval_minutes), time: formatClock(active.last_bottle_at) })}</Text> : null}
               </View>
             </Row>
             <View testID="bottle-last">
               <Text variant="caption" muted>
-                Dernier biberon enregistré : {lastBottle
-                  ? `${atClock(lastBottle.at, now).replace(/^à /, 'aujourd’hui à ')}${lastBottle.consumed_ml != null ? ` · ${lastBottle.consumed_ml} ml bus` : ''}${lastBottle.prepared_ml != null ? ` · ${lastBottle.prepared_ml} ml préparés` : ''}`
-                  : 'aucun pour l’instant.'}
+                {tr('u6.bchild.last', { what: lastBottle
+                  ? `${atClock(lastBottle.at, now)}${lastBottle.consumed_ml != null ? tr('u6.bchild.consumed', { n: lastBottle.consumed_ml }) : ''}${lastBottle.prepared_ml != null ? tr('u6.bchild.prepared', { n: lastBottle.prepared_ml }) : ''}`
+                  : tr('u6.bchild.none_yet') })}
               </Text>
             </View>
-            {active && scheduledHere === false && !passed ? <Text variant="caption" muted>Aucune notification programmée sur cet appareil (voir les réglages ci-dessous).</Text> : null}
+            {active && scheduledHere === false && !passed ? <Text variant="caption" muted>{tr('u6.bchild.no_notif')}</Text> : null}
             {active ? (
               <Row wrap>
-                <Button label="Modifier" icon="edit-2" size="sm" variant="secondary" onPress={openEdit} testID="bottle-edit" style={{ flexGrow: 1 }} />
-                <Button label="Annuler le rappel" icon="x" size="sm" variant="ghost" testID="bottle-cancel" style={{ flexGrow: 1 }} onPress={async () => {
-                  if (await confirm('Annuler le rappel ?', `Le rappel prévu ${atClock(active.due_at)} pour ${name} sera annulé, sur tous les appareils du foyer.`, 'Annuler le rappel')) {
-                    await patch(cancelTimer(), `Rappel de ${name} annulé.`);
+                <Button label={tr('u6.bchild.modify')} icon="edit-2" size="sm" variant="secondary" onPress={openEdit} testID="bottle-edit" style={{ flexGrow: 1 }} />
+                <Button label={tr('u6.bchild.cancel_reminder')} icon="x" size="sm" variant="ghost" testID="bottle-cancel" style={{ flexGrow: 1 }} onPress={async () => {
+                  if (await confirm(tr('u6.bchild.cancel_q'), tr('u6.bchild.cancel_body', { when: atClock(active.due_at), name }), tr('u6.bchild.cancel_reminder'))) {
+                    await patch(cancelTimer(), tr('u6.bchild.cancelled', { name }));
                   }
                 }} />
               </Row>
             ) : (
-              <Button label="Programmer un rappel" icon="bell" size="sm" variant="secondary" onPress={openStart} testID="bottle-program" />
+              <Button label={tr('u6.bchild.program')} icon="bell" size="sm" variant="secondary" onPress={openStart} testID="bottle-program" />
             )}
           </View>
         </Card>
       )}
 
       <BottleNotificationSettings />
-      <Text variant="caption" muted>{NO_RECOMMENDATION_NOTE}</Text>
+      <Text variant="caption" muted>{noRecommendationNote()}</Text>
 
       {/* ------------------------------------------------ modifier le rappel */}
-      <Sheet visible={sheet === 'edit'} onClose={() => setSheet(null)} title={`Modifier le rappel de ${name}`}>
+      <Sheet visible={sheet === 'edit'} onClose={() => setSheet(null)} title={tr('u6.bchild.edit_title', { name })}>
         {active ? (
           <View style={{ gap: spacing.sm }}>
-            <Text variant="label">Reporter de</Text>
+            <Text variant="label">{tr('u6.bchild.snooze_by')}</Text>
             <Row wrap>
               {SNOOZE_PRESETS.map((m) => (
-                <Chip key={m} icon="clock" label={`${m} min`} onPress={() => tryPatch(() => snoozeTimer(active, m), (p) => `Rappel reporté : ${nextReminderSentence(name, p.due_at!).replace('Prochain rappel de biberon de ', '').replace(/\.$/, '')}.`)} />
+                <Chip key={m} icon="clock" label={tr('u6.clock.min', { n: m })} onPress={() => tryPatch(() => snoozeTimer(active, m), (p) => `${tr('u6.bchild.snoozed')} ${nextReminderSentence(name, p.due_at!)}`)} />
               ))}
             </Row>
             <Row>
-              <View style={{ flex: 1 }}><Field label="Autre report" placeholder="20 min, 1h…" value={snoozeText} onChangeText={setSnoozeText} autoCapitalize="none" autoCorrect={false} /></View>
-              <Button label="Reporter" size="sm" variant="secondary" onPress={() => {
+              <View style={{ flex: 1 }}><Field label={tr('u6.bchild.other_snooze')} placeholder={tr('u6.bchild.other_ph')} value={snoozeText} onChangeText={setSnoozeText} autoCapitalize="none" autoCorrect={false} /></View>
+              <Button label={tr('u6.bchild.snooze')} size="sm" variant="secondary" onPress={() => {
                 const m = parseDelay(snoozeText);
-                if (m == null || m > 360) return toast('Durée attendue entre 10 minutes et 6 heures.', 'error');
-                return tryPatch(() => snoozeTimer(active, m), () => `Rappel reporté de ${formatHM(m)}.`);
+                if (m == null || m > 360) return toast(tr('u6.bchild.snooze_range'), 'error');
+                return tryPatch(() => snoozeTimer(active, m), () => tr('u6.bchild.snoozed_by', { delay: formatHM(m) }));
               }} />
             </Row>
 
-            <Text variant="label" style={{ marginTop: spacing.sm }}>Heure du rappel</Text>
-            <TimePicker value={dueTime} onChange={setDueTime} label="Rappel à" future />
-            <Button label="Enregistrer l’heure" size="sm" variant="secondary" onPress={() => tryPatch(() => setReminderAt(active, dueTime), (p) => nextReminderSentence(name, p.due_at!))} testID="bottle-set-time" />
+            <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u6.bchild.reminder_time')}</Text>
+            <TimePicker value={dueTime} onChange={setDueTime} label={tr('u6.bchild.reminder_at')} future />
+            <Button label={tr('u6.bchild.save_time')} size="sm" variant="secondary" onPress={() => tryPatch(() => setReminderAt(active, dueTime), (p) => nextReminderSentence(name, p.due_at!))} testID="bottle-set-time" />
 
-            <Text variant="label" style={{ marginTop: spacing.sm }}>Intervalle habituel</Text>
-            <Text variant="small" muted>Recalculé à partir du dernier biberon ({formatClock(active.last_bottle_at)}) et repris pour les prochains biberons.</Text>
+            <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u6.bchild.usual')}</Text>
+            <Text variant="small" muted>{tr('u6.bchild.recalc', { time: formatClock(active.last_bottle_at) })}</Text>
             <ReminderChoicePicker value={choice} onChange={setChoice} lastInterval={lastInterval} allowNone={false} />
-            {resolveReminderChoice(choice) != null ? <Text variant="small" muted>Nouveau rappel : {atClock(computeDueAt(active.last_bottle_at, resolveReminderChoice(choice)!), now)}.</Text> : null}
-            <Button label="Enregistrer l’intervalle" size="sm" testID="bottle-save-interval" onPress={() => {
+            {resolveReminderChoice(choice) != null ? <Text variant="small" muted>{tr('u6.bchild.new_reminder', { when: atClock(computeDueAt(active.last_bottle_at, resolveReminderChoice(choice)!), now) })}</Text> : null}
+            <Button label={tr('u6.bchild.save_interval')} size="sm" testID="bottle-save-interval" onPress={() => {
               const m = resolveReminderChoice(choice);
-              if (m == null) return toast('Choisissez un délai.', 'error');
+              if (m == null) return toast(tr('u6.bchild.choose'), 'error');
               return tryPatch(() => modifyInterval(active, m), (p) => nextReminderSentence(name, p.due_at!));
             }} />
           </View>
@@ -253,13 +254,13 @@ export default function BottleReminderScreen() {
       </Sheet>
 
       {/* ------------------------------------------------ programmer un rappel sans nouveau biberon */}
-      <Sheet visible={sheet === 'start'} onClose={() => setSheet(null)} title={`Rappel pour ${name}`}>
-        <TimePicker value={startAt} onChange={setStartAt} label="Heure du dernier biberon" />
-        <Text variant="label">Délai avant le rappel</Text>
+      <Sheet visible={sheet === 'start'} onClose={() => setSheet(null)} title={tr('u6.bchild.sheet_title', { name })}>
+        <TimePicker value={startAt} onChange={setStartAt} label={tr('u6.bchild.last_time')} />
+        <Text variant="label">{tr('u6.bottle.custom_label')}</Text>
         <ReminderChoicePicker value={choice} onChange={setChoice} lastInterval={lastInterval} allowNone={false} />
         {resolveReminderChoice(choice) != null ? <Banner tone="info">{nextReminderSentence(name, computeDueAt(startAt, resolveReminderChoice(choice)!), now)}</Banner> : null}
-        <Field label="Quantité prévue pour le prochain biberon" optional value={planned} onChangeText={setPlanned} keyboardType="number-pad" suffix="ml" hint="Telle que vous l’avez décidée ou qu’un professionnel vous l’a indiquée." />
-        <Button label="Programmer le rappel" onPress={submitStart} testID="bottle-start-save" />
+        <Field label={tr('u6.bchild.planned')} optional value={planned} onChangeText={setPlanned} keyboardType="number-pad" suffix="ml" hint={tr('u6.bchild.planned_hint')} />
+        <Button label={tr('u6.bchild.program_save')} onPress={submitStart} testID="bottle-start-save" />
       </Sheet>
     </Screen>
   );

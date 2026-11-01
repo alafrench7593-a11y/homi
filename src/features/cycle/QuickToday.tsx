@@ -68,7 +68,7 @@ export function QuickToday({ openPeriod }: { openPeriod: PeriodEntry | null }) {
       await backend.update('period_entries', { flow: next }, [eq('id', openPeriod.id)]);
       inv('period_entries');
       haptic('success');
-      toast(pd('pd.quick.flowSaved', { what: next ? tr(`cy.flow.${next}` as 'cy.flow.light') : '—' }));
+      toast(tr('pd.quick.flowSaved' as TKey, { what: next ? tr(`cy.flow.${next}` as 'cy.flow.light') : '—' }));
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
   }
 
@@ -108,7 +108,7 @@ export function QuickToday({ openPeriod }: { openPeriod: PeriodEntry | null }) {
               return (
                 <Tappable key={n} bare accessibilityRole="button" accessibilityState={{ selected: on }}
                   accessibilityLabel={`${pd('pd.quick.mood')} ${n}/5`}
-                  onPress={() => void saveDay({ mood: on ? null : n }, pd('pd.quick.moodSaved'))}
+                  onPress={() => void saveDay({ mood: on ? null : n }, tr('pd.quick.moodSaved' as TKey))}
                   testID={`quick-mood-${n}`}
                   style={{ flex: 1, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 9, flexDirection: 'row', gap: 2, paddingHorizontal: 10,
                     backgroundColor: on ? c.period : c.powder, borderWidth: on ? 0 : 1, borderColor: c.glassBorder }}>

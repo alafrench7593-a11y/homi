@@ -11,6 +11,7 @@ import { FOETUS_IMAGES } from '@/assets/foetus';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { FetusOrb } from './FetusOrb';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
+import { t as tr } from '@/i18n';
 
 export function foetusImageFor(week: number) {
   const available = Object.keys(FOETUS_IMAGES).map(Number).sort((a, b) => a - b);
@@ -86,7 +87,7 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
       {...pan.panHandlers}
       accessible
       accessibilityRole="image"
-      accessibilityLabel={accessibilityLabel ?? 'Illustration artistique du bébé à naître'}
+      accessibilityLabel={accessibilityLabel ?? tr('u8.fetus.a11y')}
       style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}
     >
       <Animated.View style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', opacity: fade, transform: [{ perspective: 800 }, { translateY }, { rotateY }] }}>

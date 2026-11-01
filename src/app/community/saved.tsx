@@ -8,6 +8,7 @@ import { PostCard } from '@/features/community';
 import { useForums } from '@/lib/data/hooks';
 import { useSavedPosts } from '@/lib/data/hooks-community';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export default function SavedPosts() {
   const insets = useSafeAreaInsets();
@@ -16,7 +17,7 @@ export default function SavedPosts() {
   const loading = isLoading && !data;
   const failed = isError && !data;
   return (
-    <Screen back scroll={false} padded={false} title="Mes favoris" subtitle="Les discussions que vous avez enregistrées. Personne d’autre ne voit cette liste.">
+    <Screen back scroll={false} padded={false} title={tr('u5.saved.title')} subtitle={tr('u5.saved.subtitle')}>
       <VirtualList
         data={loading || failed ? [] : (data ?? [])}
         keyExtractor={(p) => p.id}
@@ -25,9 +26,9 @@ export default function SavedPosts() {
         ListEmptyComponent={loading || failed ? null : (
           <EmptyState
             icon="bookmark"
-            title="Aucun favori pour l’instant"
-            body="Touchez le marque-page d’une publication pour la retrouver ici."
-            action={{ label: 'Parcourir la communauté', icon: 'users', onPress: () => router.replace('/(tabs)/community') }}
+            title={tr('u5.saved.empty_t')}
+            body={tr('u5.saved.empty_b')}
+            action={{ label: tr('u5.saved.browse'), icon: 'users', onPress: () => router.replace('/(tabs)/community') }}
           />
         )}
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}

@@ -2,10 +2,11 @@
 import React from 'react';
 import { Screen } from '@/components/Screen';
 import { ConsultationChecklist } from '@/components/Fertility';
+import { t as tr } from '@/i18n';
 
 export default function ContraceptionConsultationScreen() {
   return (
-    <Screen back title="Mes questions" subtitle="À garder sous la main pour votre prochain rendez-vous.">
+    <Screen back title={tr('u7.contra.consult.title')} subtitle={tr('u7.contra.consult.subtitle')}>
       <ConsultationChecklist journey="avoid" />
     </Screen>
   );

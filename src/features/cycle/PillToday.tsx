@@ -23,13 +23,13 @@ import { todayISO } from '@/lib/domain/dates';
 import type { ContraceptionMethodKind } from '@/lib/types-fertility';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr, formatDate, type TKey } from '@/i18n';
 
-const DAILY: Partial<Record<ContraceptionMethodKind, { kind: string; label: string; done: string; icon: 'check-circle' | 'refresh-cw' | 'circle' }>> = {
-  pill: { kind: 'pill_taken', label: 'J’ai pris ma pilule aujourd’hui', done: 'Pilule prise aujourd’hui', icon: 'check-circle' },
-  patch: { kind: 'patch_changed', label: 'J’ai changé mon patch aujourd’hui', done: 'Patch changé aujourd’hui', icon: 'refresh-cw' },
-  ring: { kind: 'ring_inserted', label: 'J’ai posé mon anneau aujourd’hui', done: 'Anneau posé aujourd’hui', icon: 'circle' },
+const DAILY: Partial<Record<ContraceptionMethodKind, { kind: string; label: TKey; done: TKey; icon: 'check-circle' | 'refresh-cw' | 'circle' }>> = {
+  pill: { kind: 'pill_taken', label: 'u3.pill.pillL', done: 'u3.pill.pillD', icon: 'check-circle' },
+  patch: { kind: 'patch_changed', label: 'u3.pill.patchL', done: 'u3.pill.patchD', icon: 'refresh-cw' },
+  ring: { kind: 'ring_inserted', label: 'u3.pill.ringL', done: 'u3.pill.ringD', icon: 'circle' },
 };
-const LETTERS = ['di', 'lu', 'ma', 'me', 'je', 've', 'sa'];
 
 /** Méthode qui se prend ou se change à un jour précis, sinon null (rien à cocher). */
 export function dailyKindFor(method: ContraceptionMethodKind | null | undefined) {
@@ -60,10 +60,10 @@ export function PillToday({ method }: { method: ContraceptionMethodKind }) {
     try {
       if (todayRow) {
         await backend.remove('contraception_logs', [eq('id', todayRow.id)]);
-        toast('Prise du jour retirée.');
+        toast(tr('u3.pill.removed'));
       } else {
         await insertOrQueue('contraception_logs', { user_id: userId, logged_on: today, kind: spec!.kind, label: null, note: null });
-        toast(daily ? 'Prise du jour notée.' : 'Noté pour aujourd’hui.');
+        toast(daily ? tr('u3.pill.noted') : tr('u3.pill.notedToday'));
       }
       inv('contraception_logs');
       haptic('success');
@@ -77,7 +77,7 @@ export function PillToday({ method }: { method: ContraceptionMethodKind }) {
   return (
     <Card>
       <View style={{ gap: spacing.sm }} testID="contra-today">
-        <Tappable bare accessibilityRole="button" accessibilityState={{ checked: !!todayRow, busy }} accessibilityLabel={todayRow ? `${spec.done}. Toucher pour retirer.` : spec.label}
+        <Tappable bare accessibilityRole="button" accessibilityState={{ checked: !!todayRow, busy }} accessibilityLabel={todayRow ? tr('u3.pill.tapRemove', { done: tr(spec.done) }) : tr(spec.label)}
           onPress={() => void toggle()} testID="contra-today-toggle"
           style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md, borderRadius: 22,
             backgroundColor: todayRow ? tint(gold, t.isDark ? 0.28 : 0.16) : tint(t.colors.primary, t.isDark ? 0.14 : 0.07),
@@ -86,32 +86,32 @@ export function PillToday({ method }: { method: ContraceptionMethodKind }) {
             <Icon name={todayRow ? 'check' : spec.icon} size={22} color={todayRow ? '#FFFFFF' : t.colors.primary} />
           </View>
           <View style={{ flex: 1, gap: 2 }}>
-            <Text weight="bold">{todayRow ? spec.done : spec.label}</Text>
-            <Text variant="caption" muted>{todayRow ? 'Touchez pour retirer si c’est une erreur.' : 'Un geste suffit, c’est enregistré tout de suite.'}</Text>
+            <Text weight="bold">{todayRow ? tr(spec.done) : tr(spec.label)}</Text>
+            <Text variant="caption" muted>{todayRow ? tr('u3.pill.undo') : tr('u3.pill.oneTap')}</Text>
           </View>
         </Tappable>
 
         {daily ? (
           <View style={{ gap: 6 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <Text variant="label" muted>7 derniers jours</Text>
-              <Text variant="caption" weight="bold" color={gold} testID="contra-streak">{streak > 0 ? `${streak} jour${streak > 1 ? 's' : ''} d’affilée` : '—'}</Text>
+              <Text variant="label" muted>{tr('u3.pill.last7')}</Text>
+              <Text variant="caption" weight="bold" color={gold} testID="contra-streak">{streak > 0 ? tr('u3.pill.streak', { count: streak }) : '—'}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               {week.map((d) => (
-                <View key={d.date} style={{ alignItems: 'center', gap: 4 }} accessibilityLabel={`${d.date} : ${d.done ? 'prise notée' : 'rien de noté'}`}>
+                <View key={d.date} style={{ alignItems: 'center', gap: 4 }} accessibilityLabel={tr('u3.pill.dayA11y', { date: d.date, state: d.done ? tr('u3.pill.doneNoted') : tr('u3.pill.nothingNoted') })}>
                   <View style={{ width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center',
                     backgroundColor: d.done ? gold : 'transparent', borderWidth: d.done ? 0 : 1.5, borderColor: tint(gold, 0.6), borderStyle: d.done ? 'solid' : 'dashed' }}>
                     {d.done ? <Icon name="check" size={13} color="#FFFFFF" /> : null}
                   </View>
-                  <Text variant="caption" muted>{LETTERS[new Date(`${d.date}T12:00:00`).getDay()]}</Text>
+                  <Text variant="caption" muted>{formatDate(`${d.date}T12:00:00`, { weekday: 'short' }).slice(0, 2)}</Text>
                 </View>
               ))}
             </View>
           </View>
         ) : null}
         <View style={{ alignSelf: 'flex-start' }}>
-          <Chip icon="alert-circle" label="Un oubli ou un incident ? Le noter" onPress={() => router.push('/cycle/calendar' as never)} testID="contra-today-incident" />
+          <Chip icon="alert-circle" label={tr('u3.pill.incident')} onPress={() => router.push('/cycle/calendar' as never)} testID="contra-today-incident" />
         </View>
       </View>
     </Card>

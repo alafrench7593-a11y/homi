@@ -38,7 +38,9 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { DemoTag, RecallCard } from './components';
 import { RECALL_DISCLAIMER } from '@/lib/domain/scanCommon';
+import { t as tr } from '@/i18n';
 
+const OPENED_KEY = 'openedDaysAgo';
 const cameraAvailable = Platform.OS === 'ios' || Platform.OS === 'android';
 const DEMO_CODES: Record<ScanKind, string[]> = {
   product: ['0000000000062', '0000000000079', '0000000000086', '0000000000017'],
@@ -120,7 +122,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
   async function identifyBarcode(raw: string, m: ScanMethod) {
     const check = checkBarcode(raw);
     if (!check.ok) { setNotice(check.error); return; }
-    setBusy('Recherche du produit…');
+    setBusy(tr('u6.sf.searching_product'));
     try {
       const r = await lookupBarcode.mutateAsync({ barcode: check.code, kind });
       setScannedBarcode(check.code);
@@ -132,7 +134,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
       setMethod(m);
       setStep('confirm');
     } catch (e) {
-      toast(friendlyError(e, 'La recherche n’a pas abouti. Vérifiez votre connexion.'), 'error');
+      toast(friendlyError(e, tr('u6.sf.search_failed')), 'error');
     } finally {
       setBusy(null);
     }
@@ -142,8 +144,8 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
     const q = text.trim();
     const digits = q.replace(/[\s-]/g, '');
     if (/^\d{8,14}$/.test(digits)) return identifyBarcode(digits, m === 'search' ? 'manual' : m);
-    if (q.length < 2) { setNotice('Saisissez au moins 2 caractères, ou les chiffres du code-barres.'); return; }
-    setBusy('Recherche…');
+    if (q.length < 2) { setNotice(tr('u6.sf.min_chars')); return; }
+    setBusy(tr('u6.sf.searching'));
     try {
       const [r, cq] = await Promise.all([search.mutateAsync({ query: q, kind }), kind === 'food' ? searchCiqual(q) : Promise.resolve([] as CiqualFood[])]);
       setCandidates(r.candidates ?? []);
@@ -155,7 +157,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
       setMethod(m);
       setStep('confirm');
     } catch (e) {
-      toast(friendlyError(e, 'La recherche n’a pas abouti. Vérifiez votre connexion.'), 'error');
+      toast(friendlyError(e, tr('u6.sf.search_failed')), 'error');
     } finally {
       setBusy(null);
     }
@@ -180,7 +182,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
       setCameraDenied(null);
       setCameraOn(true);
     } catch {
-      setNotice('La caméra n’a pas pu être ouverte. Saisissez le code-barres ou le nom du produit.');
+      setNotice(tr('u6.sf.camera_failed'));
     }
   }
 
@@ -198,19 +200,19 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
       const perm = source === 'camera' ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!perm.granted) {
         if (source === 'camera') setCameraDenied(perm.canAskAgain ? 'ask' : 'settings');
-        else toast('Autorisez l’accès aux photos dans les réglages du téléphone.', 'error');
+        else toast(tr('u6.sf.photos_access'), 'error');
         return;
       }
       res = source === 'camera'
         ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.9 })
         : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.9, allowsMultipleSelection: false });
     } catch {
-      toast(source === 'camera' ? 'L’appareil photo n’a pas pu être ouvert.' : 'La galerie n’a pas pu être ouverte.', 'error');
+      toast(source === 'camera' ? tr('u6.sf.camera_open_failed') : tr('u6.sf.gallery_open_failed'), 'error');
       return;
     }
     if (res.canceled || !res.assets?.[0]) return;
     const uri = res.assets[0].uri;
-    setBusy('Lecture de la photo sur le téléphone…');
+    setBusy(tr('u6.sf.reading_photo'));
     try {
       if (purpose === 'product') {
         const codes = localBarcode ? await readBarcodesFromImage(uri) : [];
@@ -220,18 +222,18 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
         if (reading.printedBarcode) { setBusy(null); await identifyBarcode(reading.printedBarcode, source === 'camera' ? 'photo' : 'import'); return; }
         const q = frontTextToQuery(reading.text);
         if (q.length >= 2) { setQuery(q); setBusy(null); await runSearch(q, source === 'camera' ? 'photo' : 'import'); return; }
-        setNotice('Ni code-barres ni nom lisible sur la photo. Saisissez le nom ou le code-barres du produit.');
+        setNotice(tr('u6.sf.nothing_readable'));
       } else {
         const reading = await readTextFromImage(uri);
         applyReading(reading);
         if (step === 'input') {
           setMethod('ingredients_photo');
           if (reading.printedBarcode) { setBusy(null); await identifyBarcode(reading.printedBarcode, 'ingredients_photo'); return; }
-          setNotice('Liste des ingrédients lue. Identifiez maintenant le produit (nom ou code-barres) pour continuer ; vous pourrez relire le texte.');
+          setNotice(tr('u6.sf.ingredients_read'));
         }
       }
     } catch (e) {
-      setNotice(e instanceof LocalRecognitionUnavailable ? e.message : 'La photo n’a pas pu être lue. Réessayez avec plus de lumière, ou saisissez les informations.');
+      setNotice(e instanceof LocalRecognitionUnavailable ? e.message : tr('u6.sf.photo_unreadable'));
     } finally {
       setBusy(null);
     }
@@ -243,7 +245,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
       const r = await checkRecalls.mutateAsync({ barcode: s.barcode, brand: s.brand, name: s.name });
       setLookup((l) => ({ ...l, recalls: r.recalls ?? [], recall_check: r.recall_check ?? null }));
     } catch {
-      setLookup((l) => ({ ...l, recall_check: { checked: false, source: 'RappelConso', error: 'La vérification des rappels officiels n’a pas pu être faite (connexion). Consultez rappel.conso.gouv.fr.' } }));
+      setLookup((l) => ({ ...l, recall_check: { checked: false, source: 'RappelConso', error: tr('u6.sf.recall_check_failed') } }));
     }
   }
 
@@ -273,8 +275,8 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
   const needsAge = !!generic?.needsAge && profile?.ageMonths == null;
 
   async function analyse() {
-    if (!subject || !profile) { toast('Choisissez pour qui est ce produit.', 'error'); return; }
-    setBusy('Analyse selon les règles…');
+    if (!subject || !profile) { toast(tr('u6.sf.choose_who'), 'error'); return; }
+    setBusy(tr('u6.sf.analysing'));
     try {
       const recallCheck = recallCheckOf(lookup.recall_check);
       let analysis;
@@ -301,7 +303,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
       router.replace(`/scanner/result/${id}`);
     } catch (e) {
       if (e instanceof QuotaReachedError) setQuotaReached(true);
-      else toast(friendlyError(e, 'L’analyse n’a pas pu être enregistrée.'), 'error');
+      else toast(friendlyError(e, tr('u6.sf.save_failed')), 'error');
     } finally {
       setBusy(null);
     }
@@ -310,15 +312,15 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
   // ------------------------------------------------------------ rendu
   const recallsBlock = lookup.recalls.length ? (
     <>
-      <SectionTitle title="Rappels officiels" />
+      <SectionTitle title={tr('u6.sc.recalls_title')} />
       {lookup.recalls.map((r) => <RecallCard key={r.id} r={{ ...r, lot_numbers: r.lot_numbers ?? [], match: r.match ?? 'gtin' }} />)}
       <Text variant="caption" muted>{RECALL_DISCLAIMER}</Text>
     </>
   ) : null;
 
   const demoNote = isDemo ? (
-    <Banner tone="demo" title="Données de démonstration">
-      {`Sans serveur connecté, seule une base FICTIVE est consultée : aucun résultat n’est une analyse réelle. Essayez ${DEMO_CODES[kind].slice(0, 2).join(' ou ')}.`}
+    <Banner tone="demo" title={tr('u6.sc.demo_data')}>
+      {tr('u6.sf.demo_note', { codes: DEMO_CODES[kind].slice(0, 2).join(tr('u6.sf.or')) })}
     </Banner>
   ) : null;
 
@@ -327,63 +329,63 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
       <>
         {demoNote}
         <Card>
-          <Text variant="label">Code-barres</Text>
+          <Text variant="label">{tr('u6.sf.barcode')}</Text>
           {cameraAvailable ? (
             cameraOn ? (
               <View style={[styles.camera, { borderColor: t.colors.border, marginTop: spacing.xs }]}>
                 <CameraView style={StyleSheet.absoluteFill} facing="back" barcodeScannerSettings={{ barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'] }} onBarcodeScanned={onScanned} />
                 <ScanFrame reading={reading} />
                 <View style={styles.cameraFooter}>
-                  <Button label="Fermer la caméra" size="sm" variant="secondary" style={{ backgroundColor: 'rgba(255,255,255,0.85)' }} onPress={() => setCameraOn(false)} />
+                  <Button label={tr('u6.sf.close_camera')} size="sm" variant="secondary" style={{ backgroundColor: 'rgba(255,255,255,0.85)' }} onPress={() => setCameraOn(false)} />
                 </View>
               </View>
             ) : (
               <>
-                <Text variant="caption" muted style={{ marginTop: 2 }}>La caméra sert uniquement à lire le code-barres ; aucune image n’est envoyée.</Text>
-                <Button label="Scanner le code-barres" icon="camera" size="lg" style={{ marginTop: spacing.sm }} onPress={openCamera} />
+                <Text variant="caption" muted style={{ marginTop: 2 }}>{tr('u6.sf.camera_note')}</Text>
+                <Button label={tr('u6.sf.scan_barcode')} icon="camera" size="lg" style={{ marginTop: spacing.sm }} onPress={openCamera} />
               </>
             )
           ) : (
-            <Text variant="small" muted style={{ marginTop: 2 }}>Le scan par caméra est disponible sur téléphone. Ici, saisissez les chiffres du code-barres ci-dessous.</Text>
+            <Text variant="small" muted style={{ marginTop: 2 }}>{tr('u6.sf.no_camera_here')}</Text>
           )}
           {cameraDenied ? (
-            <Banner tone="warning" title="Accès à la caméra refusé"
-              action={cameraDenied === 'settings' ? <Button label="Ouvrir les réglages" size="sm" variant="secondary" style={{ marginTop: 6, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings().catch(() => undefined)} /> : undefined}>
+            <Banner tone="warning" title={tr('u6.sf.camera_denied')}
+              action={cameraDenied === 'settings' ? <Button label={tr('u6.sf.open_settings')} size="sm" variant="secondary" style={{ marginTop: 6, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings().catch(() => undefined)} /> : undefined}>
               {cameraDenied === 'settings'
-                ? 'Autorisez la caméra pour Au fil de nous dans les réglages du téléphone, ou saisissez le code-barres à la main.'
-                : 'Sans la caméra, vous pouvez saisir le code-barres ou le nom du produit.'}
+                ? tr('u6.sf.camera_denied_settings')
+                : tr('u6.sf.camera_denied_ask')}
             </Banner>
           ) : null}
         </Card>
 
         <Card>
-          <Text variant="label">Photo</Text>
+          <Text variant="label">{tr('u6.sf.photo')}</Text>
           {localText || localBarcode ? (
             <>
-              <Text variant="caption" muted style={{ marginTop: 2 }}>La photo est lue sur votre téléphone (Google ML Kit) : elle n’est pas envoyée.</Text>
+              <Text variant="caption" muted style={{ marginTop: 2 }}>{tr('u6.sf.photo_local')}</Text>
               <Row wrap style={{ marginTop: spacing.sm }}>
-                <Button label={kind === 'food' ? 'Photographier l’emballage' : 'Prendre une photo'} icon="camera" size="sm" variant="secondary" onPress={() => fromPhoto('camera', 'product')} />
-                <Button label="Photographier les ingrédients" icon="file-text" size="sm" variant="secondary" onPress={() => fromPhoto('camera', 'ingredients')} />
-                <Button label="Importer une photo" icon="image" size="sm" variant="ghost" onPress={() => fromPhoto('library', 'product')} />
+                <Button label={kind === 'food' ? tr('u6.sf.photo_packaging') : tr('u6.sf.take_photo')} icon="camera" size="sm" variant="secondary" onPress={() => fromPhoto('camera', 'product')} />
+                <Button label={tr('u6.sf.photo_ingredients')} icon="file-text" size="sm" variant="secondary" onPress={() => fromPhoto('camera', 'ingredients')} />
+                <Button label={tr('u6.sf.import_photo')} icon="image" size="sm" variant="ghost" onPress={() => fromPhoto('library', 'product')} />
               </Row>
             </>
           ) : (
-            <Banner tone="info">{`${LOCAL_RECOGNITION_UNAVAILABLE}. La lecture des photos nécessite l’application installée sur téléphone (build de développement), pas le web ni Expo Go.`}</Banner>
+            <Banner tone="info">{tr('u6.sf.photo_needs_app', { reason: LOCAL_RECOGNITION_UNAVAILABLE })}</Banner>
           )}
         </Card>
 
         <Card>
-          <Field label={kind === 'food' ? 'Nom de l’aliment ou code-barres' : 'Nom du produit ou code-barres (EAN)'} value={query} onChangeText={setQuery}
-            hint={kind === 'food' ? 'Ex. « brie », « saumon fumé », « compote pomme »' : 'Ex. « lingettes bébé » ou les 13 chiffres sous les barres'}
+          <Field label={kind === 'food' ? tr('u6.sf.food_name_or_code') : tr('u6.sf.product_name_or_code')} value={query} onChangeText={setQuery}
+            hint={kind === 'food' ? tr('u6.sf.hint_food') : tr('u6.sf.hint_product')}
             returnKeyType="search" onSubmitEditing={() => runSearch(query, 'search')} />
-          <Button label="Rechercher" icon="search" variant="secondary" loading={!!busy} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => runSearch(query, 'search')} />
+          <Button label={tr('u6.sf.search')} icon="search" variant="secondary" loading={!!busy} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => runSearch(query, 'search')} />
           {isDemo ? (
             <Row wrap style={{ marginTop: spacing.sm }}>
               {DEMO_CODES[kind].map((c) => <Chip key={c} label={c} onPress={() => { setQuery(c); identifyBarcode(c, 'manual'); }} />)}
             </Row>
           ) : null}
         </Card>
-        {ocr && method === 'ingredients_photo' ? <Banner tone="success">{'Liste des ingrédients lue : vous pourrez la relire après avoir identifié le produit.'}</Banner> : null}
+        {ocr && method === 'ingredients_photo' ? <Banner tone="success">{tr('u6.sf.ingredients_read_banner')}</Banner> : null}
         {notice ? <Banner tone="info">{notice}</Banner> : null}
         {busy ? <Text variant="small" muted>{busy}</Text> : null}
       </>
@@ -397,22 +399,22 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
         {demoNote}
         {notice ? <Banner tone="warning">{notice}</Banner> : null}
         {recallsBlock}
-        <SectionTitle title="Est-ce bien ce produit ?" />
+        <SectionTitle title={tr('u6.sf.is_it')} />
         {lookup.message && (nothing || lookup.database === 'demo' || lookup.outage) ? <Banner tone={lookup.outage ? 'warning' : 'info'}>{lookup.message}</Banner> : null}
-        {lookup.stale && candidates[0] ? <Banner tone="warning">{`La base Open Food Facts n’a pas pu être consultée : fiche enregistrée le ${candidates[0].data_retrieved_at.split('-').reverse().join('/')}, peut-être plus à jour. Vérifiez l’emballage.`}</Banner> : null}
+        {lookup.stale && candidates[0] ? <Banner tone="warning">{tr('u6.sf.stale', { date: candidates[0].data_retrieved_at.split('-').reverse().join('/') })}</Banner> : null}
         {candidates.map((c, i) => (
           <Card key={`${c.barcode}${i}`}>
             <Row gap={spacing.md} style={{ alignItems: 'flex-start' }}>
-              {c.image_url ? <Image source={{ uri: c.image_url }} style={{ width: 64, height: 64, borderRadius: radius.md }} resizeMode="contain" accessibilityLabel="Photo du produit" /> : null}
+              {c.image_url ? <Image source={{ uri: c.image_url }} style={{ width: 64, height: 64, borderRadius: radius.md }} resizeMode="contain" accessibilityLabel={tr('u6.sc.photo')} /> : null}
               <View style={{ flex: 1, gap: 2 }}>
                 {c.is_demo || isDemo ? <DemoTag /> : null}
-                <Text weight="bold">{c.name ?? 'Nom non renseigné'}</Text>
+                <Text weight="bold">{c.name ?? tr('u6.sf.name_missing')}</Text>
                 <Text variant="small" muted>{[c.brand, c.barcode ? `EAN ${c.barcode}` : null].filter(Boolean).join(' · ')}</Text>
-                <Text variant="caption" muted>{`Source : ${c.data_source}${c.data_retrieved_at ? `, consultée le ${c.data_retrieved_at.split('-').reverse().join('/')}` : ''}`}</Text>
+                <Text variant="caption" muted>{`${tr('u6.sc.source', { text: c.data_source })}${c.data_retrieved_at ? `, ${tr('u6.sf.consulted', { date: c.data_retrieved_at.split('-').reverse().join('/') })}` : ''}`}</Text>
               </View>
             </Row>
             <Row wrap style={{ marginTop: spacing.sm }}>
-              <Button label="Oui, c’est ce produit" size="sm" onPress={() => confirmSubject({ candidate: c, name: c.name, brand: c.brand, barcode: c.barcode || scannedBarcode, imageUrl: c.image_url })} />
+              <Button label={tr('u6.sf.yes_product')} size="sm" onPress={() => confirmSubject({ candidate: c, name: c.name, brand: c.brand, barcode: c.barcode || scannedBarcode, imageUrl: c.image_url })} />
             </Row>
           </Card>
         ))}
@@ -420,20 +422,20 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
           <Card key={f.code}>
             {f.is_demo || isDemo ? <DemoTag /> : null}
             <Text weight="bold">{f.nom}</Text>
-            <Text variant="caption" muted>{`Aliment générique — table Ciqual (${f.source_version})`}</Text>
-            <Button label="Oui, c’est cet aliment" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }}
+            <Text variant="caption" muted>{tr('u6.sf.generic_food', { version: f.source_version })}</Text>
+            <Button label={tr('u6.sf.yes_food')} size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }}
               onPress={() => confirmSubject({ candidate: null, ciqual: f, name: f.nom, brand: null, barcode: null, imageUrl: null })} />
           </Card>
         ))}
         <Card tone="soft">
-          <Text weight="medium">{nothing ? 'Produit non trouvé dans les bases consultées.' : 'Aucun ne correspond ?'}</Text>
-          <Text variant="small" muted style={{ marginTop: 2 }}>Indiquez le produit vous-même : l’analyse le signalera comme saisi à la main.</Text>
-          <Field label={kind === 'food' ? 'Nom de l’aliment' : 'Nom du produit'} value={manualName} onChangeText={setManualName} />
-          {kind === 'product' || scannedBarcode ? <Field label="Marque" optional value={manualBrand} onChangeText={setManualBrand} /> : null}
+          <Text weight="medium">{nothing ? tr('u6.sf.not_found') : tr('u6.sf.none_match')}</Text>
+          <Text variant="small" muted style={{ marginTop: 2 }}>{tr('u6.sf.enter_yourself')}</Text>
+          <Field label={kind === 'food' ? tr('u6.sf.food_name') : tr('u6.sf.product_name')} value={manualName} onChangeText={setManualName} />
+          {kind === 'product' || scannedBarcode ? <Field label={tr('u6.sf.brand')} optional value={manualBrand} onChangeText={setManualBrand} /> : null}
           <Row wrap style={{ marginTop: spacing.sm }}>
-            <Button label="Continuer avec ce nom" size="sm" variant="secondary" disabled={manualName.trim().length < 2}
+            <Button label={tr('u6.sf.continue_name')} size="sm" variant="secondary" disabled={manualName.trim().length < 2}
               onPress={() => confirmSubject({ candidate: null, name: manualName.trim(), brand: manualBrand.trim() || null, barcode: scannedBarcode, imageUrl: null })} />
-            <Button label="Recommencer" size="sm" variant="ghost" onPress={reset} />
+            <Button label={tr('u6.sf.restart')} size="sm" variant="ghost" onPress={reset} />
           </Row>
         </Card>
         {busy ? <Text variant="small" muted>{busy}</Text> : null}
@@ -448,80 +450,80 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
       <Card>
         <Row style={{ alignItems: 'center' }}>
           <View style={{ flex: 1 }}>
-            <Text variant="caption" muted>Produit confirmé</Text>
+            <Text variant="caption" muted>{tr('u6.sf.confirmed')}</Text>
             <Text weight="bold">{subject?.name ?? '—'}</Text>
-            <Text variant="small" muted>{[subject?.brand, subject?.barcode ? `EAN ${subject.barcode}` : null].filter(Boolean).join(' · ') || (subject?.candidate ? '' : 'Saisi à la main')}</Text>
+            <Text variant="small" muted>{[subject?.brand, subject?.barcode ? `EAN ${subject.barcode}` : null].filter(Boolean).join(' · ') || (subject?.candidate ? '' : tr('u6.sf.manual'))}</Text>
           </View>
-          <Button label="Changer" size="sm" variant="ghost" onPress={reset} />
+          <Button label={tr('u6.sf.change')} size="sm" variant="ghost" onPress={reset} />
         </Row>
       </Card>
       {recallsBlock}
       {!lookup.recalls.length && lookup.recall_check ? (
         <Text variant="caption" muted>
-          {lookup.recall_check.checked ? `Aucun rappel officiel trouvé (RappelConso). ${RECALL_DISCLAIMER}` : lookup.recall_check.error ?? ''}
+          {lookup.recall_check.checked ? tr('u6.sf.no_recall', { disclaimer: RECALL_DISCLAIMER }) : lookup.recall_check.error ?? ''}
         </Text>
       ) : null}
 
-      <SectionTitle title="Pour qui ?" />
+      <SectionTitle title={tr('u6.sf.for_whom')} />
       <Card>
         <Row wrap>
           {options.map((o) => <Chip key={o.key} label={o.label} selected={selectedKey === o.key} onPress={() => setProfileKey(o.key)} />)}
           {GENERIC_PROFILES.map((g) => <Chip key={g.key} label={g.label} selected={selectedKey === g.key} onPress={() => setProfileKey(g.key)} />)}
         </Row>
         {generic?.needsAge ? (
-          <Field label={generic.kind === 'child' ? 'Âge (en années)' : 'Âge (en mois)'} keyboardType="number-pad" value={ageText} onChangeText={setAgeText}
-            error={needsAge && ageText.trim() ? 'Âge invalide' : null} hint="L’âge exact est nécessaire pour appliquer les règles liées à l’âge." />
+          <Field label={generic.kind === 'child' ? tr('u6.sf.age_years') : tr('u6.sf.age_months')} keyboardType="number-pad" value={ageText} onChangeText={setAgeText}
+            error={needsAge && ageText.trim() ? tr('u6.sf.age_invalid') : null} hint={tr('u6.sf.age_hint')} />
         ) : null}
-        {profile ? <Text variant="caption" muted style={{ marginTop: 6 }}>{`Analyse pour : ${profileLabel(profile)}. Ces informations restent dans votre compte.`}</Text> : null}
+        {profile ? <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u6.sf.analysis_for', { profile: profileLabel(profile) })}</Text> : null}
       </Card>
 
       {kind === 'product' ? (
         <>
-          <SectionTitle title="Type et usage" />
+          <SectionTitle title={tr('u6.sf.type_use')} />
           <Card>
-            <Text variant="label">Type de produit</Text>
+            <Text variant="label">{tr('u6.sf.product_type')}</Text>
             <Row wrap style={{ marginTop: 4 }}>
               {PRODUCT_TYPES.filter((x) => x !== 'other').map((x) => <Chip key={x} label={PRODUCT_TYPE_LABEL[x]} selected={ptype === x} onPress={() => setPtype(ptype === x ? null : x)} />)}
             </Row>
-            <Text variant="label" style={{ marginTop: spacing.sm }}>Utilisation</Text>
+            <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u6.sf.use')}</Text>
             <Row wrap style={{ marginTop: 4 }}>
               {EXPOSURES.map((x) => <Chip key={x} label={EXPOSURE_LABEL[x]} selected={exposure === x} onPress={() => setExposure(exposure === x ? null : x)} />)}
             </Row>
-            <Text variant="label" style={{ marginTop: spacing.sm }}>Zone d’application</Text>
+            <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u6.sf.zone')}</Text>
             <Row wrap style={{ marginTop: 4 }}>
               {ZONES.map((x) => <Chip key={x} label={ZONE_LABEL[x]} selected={zone === x} onPress={() => setZone(zone === x ? null : x)} />)}
             </Row>
-            <Text variant="caption" muted style={{ marginTop: 6 }}>Sans précision, l’application déduit l’usage du type de produit, et le signale.</Text>
+            <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u6.sf.no_precision')}</Text>
           </Card>
         </>
       ) : null}
 
-      <SectionTitle title="Ingrédients" />
+      <SectionTitle title={tr('u6.sc.ingredients')} />
       <Card>
-        <Field label={kind === 'food' ? 'Liste des ingrédients (si emballé)' : 'Liste des ingrédients (INCI)'} optional multiline value={ingredients}
+        <Field label={kind === 'food' ? tr('u6.sf.list_food') : tr('u6.sf.list_inci')} optional multiline value={ingredients}
           onChangeText={(v) => { setIngredients(v); if (origin === 'database' || origin === null) setOrigin(v.trim() ? 'manual' : null); }}
-          hint={origin === 'database' ? 'Texte de la base produit : comparez-le avec l’emballage.' : origin === 'ocr_reviewed' ? 'Texte lu sur la photo : relisez-le et corrigez-le si besoin.' : 'Vous pouvez coller ou recopier la liste de l’emballage.'} />
+          hint={origin === 'database' ? tr('u6.sf.hint_db') : origin === 'ocr_reviewed' ? tr('u6.sf.hint_ocr') : tr('u6.sf.hint_manual')} />
         {origin === 'ocr_reviewed' && ocr ? (
-          <Text variant="caption" muted>{`Lisibilité estimée de la photo : ${Math.round(ocr.readability * 100)} % (indice, pas une garantie d’exactitude).`}</Text>
+          <Text variant="caption" muted>{tr('u6.sf.readability', { pct: Math.round(ocr.readability * 100) })}</Text>
         ) : null}
         {localText ? (
-          <Button label="Photographier la liste des ingrédients" icon="camera" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => fromPhoto('camera', 'ingredients')} />
+          <Button label={tr('u6.sf.photo_list')} icon="camera" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => fromPhoto('camera', 'ingredients')} />
         ) : <Text variant="caption" muted>{LOCAL_RECOGNITION_UNAVAILABLE}.</Text>}
         {kind === 'product' ? (
           <>
-            <Field label="Précautions d’emploi de l’emballage" optional multiline value={precautions} onChangeText={setPrecautions} />
-            <Field label="Durée après ouverture (ex. 12M)" optional value={pao} onChangeText={setPao} />
+            <Field label={tr('u6.sf.precautions')} optional multiline value={precautions} onChangeText={setPrecautions} />
+            <Field label={tr('u6.sf.pao')} optional value={pao} onChangeText={setPao} />
           </>
         ) : null}
-        <Field label="Allergies connues (déclarées par un professionnel)" optional value={allergiesText} onChangeText={setAllergiesText}
-          hint="Séparées par des virgules. L’application ne diagnostique aucune allergie." />
+        <Field label={tr('u6.sf.allergies')} optional value={allergiesText} onChangeText={setAllergiesText}
+          hint={tr('u6.sf.allergies_hint')} />
       </Card>
 
       {kind === 'food' && questions.length ? (
         <>
-          <SectionTitle title="Questions complémentaires" />
+          <SectionTitle title={tr('u6.sf.questions')} />
           <Card>
-            <Text variant="caption" muted>Une photo ne permet pas de connaître la cuisson, la conservation ou la préparation : vos réponses complètent l’analyse.</Text>
+            <Text variant="caption" muted>{tr('u6.sf.questions_note')}</Text>
             {questions.map((q, i) => (
               <View key={q.key} style={{ marginTop: spacing.sm }}>
                 {i > 0 ? <Divider /> : null}
@@ -534,26 +536,26 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
                         onPress={() => setAnswers((a) => ({ ...a, [q.key]: o.value }))} />
                     ))}
                   </Row>
-                ) : q.key === 'openedDaysAgo' ? (
-                  <Field label="Nombre de jours" optional keyboardType="number-pad" value={openedText} onChangeText={setOpenedText} />
+                ) : q.key === OPENED_KEY ? (
+                  <Field label={tr('u6.sf.days')} optional keyboardType="number-pad" value={openedText} onChangeText={setOpenedText} />
                 ) : null}
               </View>
             ))}
-            <Text variant="caption" muted style={{ marginTop: spacing.sm }}>* Sans réponse, le résultat sera « Impossible à confirmer ».</Text>
+            <Text variant="caption" muted style={{ marginTop: spacing.sm }}>{tr('u6.sf.unanswered')}</Text>
           </Card>
         </>
       ) : null}
 
       {quotaReached ? (
-        <Banner tone="info" title="Analyses gratuites du mois utilisées"
-          action={<Button label="Découvrir l’abonnement" size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />}>
-          {'Les rappels officiels restent toujours affichés gratuitement (voir ci-dessus). En cas de doute, lisez l’emballage ou demandez conseil à votre pharmacien.'}
+        <Banner tone="info" title={tr('u6.sf.quota_used')}
+          action={<Button label={tr('u6.sf.discover')} size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />}>
+          {tr('u6.sf.quota_body')}
         </Banner>
       ) : quota ? (
-        <Text variant="caption" muted>{`Analyses restantes ce mois-ci : ${quota.remaining} sur ${quota.quota}. Les rappels officiels sont toujours gratuits.`}</Text>
+        <Text variant="caption" muted>{tr('u6.sf.quota_left', { remaining: quota.remaining, quota: quota.quota })}</Text>
       ) : null}
-      <Button label="Analyser" icon="check" size="lg" loading={!!busy} disabled={!profile || needsAge || quotaReached} onPress={analyse} />
-      {needsAge ? <Text variant="caption" muted>Indiquez l’âge de l’enfant pour lancer l’analyse.</Text> : null}
+      <Button label={tr('u6.sf.analyse')} icon="check" size="lg" loading={!!busy} disabled={!profile || needsAge || quotaReached} onPress={analyse} />
+      {needsAge ? <Text variant="caption" muted>{tr('u6.sf.need_age')}</Text> : null}
       {busy ? <Text variant="small" muted>{busy}</Text> : null}
     </>
   );

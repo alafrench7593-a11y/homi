@@ -10,16 +10,12 @@ import { Banner, Button, Card, IconButton, ListRow, Row, SectionTitle, Text } fr
 import { discardConflict, flushQueue, retryConflict, useOfflineStore, type PendingOp } from '@/lib/offline';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { spacing } from '@/theme/tokens';
+import { t as tr, formatDate, type TKey } from '@/i18n';
 
-const TABLE_LABEL: Record<string, string> = {
-  bottles: 'Biberon', breastfeeds: 'Tétée', pumpings: 'Tire-lait', diapers: 'Couche', sleeps: 'Sommeil', meals: 'Repas',
-  child_observations: 'Observation', period_entries: 'Règles', symptom_logs: 'Symptômes', ovulation_tests: 'Test d’ovulation',
-  pregnancy_tests: 'Test de grossesse', fertility_observations: 'Température ou glaire', intercourse_logs: 'Rapport',
-  mood_checkins: 'Humeur', maternal_weights: 'Poids', child_measurements: 'Mesure', child_milestones: 'Étape', food_introductions: 'Aliment',
-  child_health_items: 'Santé',
-};
+const TABLE_KEYS = new Set(['bottles','breastfeeds','pumpings','diapers','sleeps','meals','child_observations','period_entries','symptom_logs','ovulation_tests','pregnancy_tests','fertility_observations','intercourse_logs','mood_checkins','maternal_weights','child_measurements','child_milestones','food_introductions','child_health_items']);
+const tableLabel = (table: string) => (TABLE_KEYS.has(table) ? tr(`u1.sync.t.${table}` as TKey) : tr('u1.sync.entry'));
 
-const when = (iso: string) => new Date(iso).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+const when = (iso: string) => formatDate(iso, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 export default function SyncScreen() {
   const toast = useToast();
@@ -30,7 +26,7 @@ export default function SyncScreen() {
     setBusy(true);
     try {
       const n = await flushQueue();
-      toast(n ? `${n} saisie${n > 1 ? 's' : ''} envoyée${n > 1 ? 's' : ''}.` : online ? 'Rien à envoyer pour le moment.' : 'Toujours hors ligne : nouvel essai automatique au retour du réseau.');
+      toast(n ? tr('u1.sync.sent', { count: n }) : online ? tr('u1.sync.nothing') : tr('u1.sync.stillOffline'));
     } catch (e) {
       toast(friendlyError(e), 'error');
     } finally {
@@ -42,13 +38,13 @@ export default function SyncScreen() {
     <ListRow
       key={op.id}
       icon={conflict ? 'alert-circle' : 'clock'}
-      title={TABLE_LABEL[op.table] ?? 'Saisie'}
-      subtitle={`Notée le ${when(op.queuedAt)}${op.error ? ` · ${op.error}` : ''}`}
+      title={tableLabel(op.table)}
+      subtitle={`${tr('u1.sync.noted', { date: when(op.queuedAt) })}${op.error ? ` · ${op.error}` : ''}`}
       right={conflict ? (
         <Row gap={0}>
-          <IconButton icon="refresh-cw" label="Réessayer l’envoi" onPress={() => retryConflict(op.id).catch((e) => toast(friendlyError(e), 'error'))} />
-          <IconButton icon="trash-2" label="Retirer cette saisie" onPress={async () => {
-            if (await confirm('Retirer cette saisie ?', 'Elle n’a pas pu être enregistrée sur le serveur. La retirer la supprime définitivement de ce téléphone.', 'Retirer')) await discardConflict(op.id).catch((e) => toast(friendlyError(e), 'error'));
+          <IconButton icon="refresh-cw" label={tr('u1.sync.retry')} onPress={() => retryConflict(op.id).catch((e) => toast(friendlyError(e), 'error'))} />
+          <IconButton icon="trash-2" label={tr('u1.sync.remove')} onPress={async () => {
+            if (await confirm(tr('u1.sync.removeTitle'), tr('u1.sync.removeBody'), tr('u1.sync.removeBtn'))) await discardConflict(op.id).catch((e) => toast(friendlyError(e), 'error'));
           }} />
         </Row>
       ) : undefined}
@@ -56,19 +52,19 @@ export default function SyncScreen() {
   );
 
   return (
-    <Screen back title="Synchronisation" subtitle="Vos saisies faites hors connexion">
-      <Banner tone={online ? 'success' : 'warning'} title={online ? 'En ligne' : 'Hors ligne'}>
-        {online ? 'Les saisies en attente sont envoyées automatiquement.' : 'Vous pouvez continuer à tout noter : rien n’est perdu, l’envoi se fera au retour du réseau.'}
+    <Screen back title={tr('u1.sync.title')} subtitle={tr('u1.sync.subtitle')}>
+      <Banner tone={online ? 'success' : 'warning'} title={online ? tr('u1.sync.online') : tr('u1.sync.offline')}>
+        {online ? tr('u1.sync.onlineBody') : tr('u1.sync.offlineBody')}
       </Banner>
-      <Button label="Synchroniser maintenant" icon="refresh-cw" loading={busy || syncing} disabled={!pending.length} onPress={syncNow} />
+      <Button label={tr('u1.sync.now')} icon="refresh-cw" loading={busy || syncing} disabled={!pending.length} onPress={syncNow} />
 
-      <SectionTitle title={`En attente (${pending.length})`} />
-      {pending.length ? <Card>{pending.map((op) => row(op, false))}</Card> : <EmptyState icon="check-circle" title="Tout est envoyé" body="Aucune saisie en attente sur ce téléphone." />}
+      <SectionTitle title={tr('u1.sync.pending', { count: pending.length })} />
+      {pending.length ? <Card>{pending.map((op) => row(op, false))}</Card> : <EmptyState icon="check-circle" title={tr('u1.sync.allSent')} body={tr('u1.sync.allSentBody')} />}
 
       {conflicts.length ? (
         <>
-          <SectionTitle title={`À vérifier (${conflicts.length})`} />
-          <Text variant="small" muted>Le serveur a refusé ces saisies (droits retirés, doublon, valeur non acceptée…). Réessayez ou retirez-les.</Text>
+          <SectionTitle title={tr('u1.sync.review', { count: conflicts.length })} />
+          <Text variant="small" muted>{tr('u1.sync.refused')}</Text>
           <Card style={{ marginTop: spacing.xs }}>{conflicts.map((op) => row(op, true))}</Card>
         </>
       ) : null}

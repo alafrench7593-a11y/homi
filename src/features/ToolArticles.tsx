@@ -10,6 +10,7 @@ import { useArticles, useCategories } from '@/lib/data/hooks';
 import { articlesForTool, TOOL_TOPICS } from '@/lib/domain/toolArticles';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export function ToolArticles({ toolId }: { toolId: string }) {
   const topic = TOOL_TOPICS[toolId];
@@ -29,11 +30,11 @@ function Inner({ toolId, ask }: { toolId: string; ask: string }) {
       testID={`tool-articles-${toolId}`}
       style={{ marginTop: spacing.md, borderRadius: 18, borderWidth: 1, borderColor: t.isDark ? 'rgba(231,192,143,0.28)' : 'rgba(176,132,84,0.22)', padding: spacing.md, gap: spacing.sm }}
     >
-      <Pressable onPress={() => setOpen((v) => !v)} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel="Pour aller plus loin : articles liés"
+      <Pressable onPress={() => setOpen((v) => !v)} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={tr('u1.ta.a11y')}
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }} hitSlop={6} testID="tool-articles-toggle">
         <Icon name="book-open" size={18} color={t.colors.gold} />
-        <Text weight="bold" style={{ flex: 1 }}>Pour aller plus loin</Text>
-        <Text variant="caption" muted>{open ? 'Replier' : `${picks.length} articles`}</Text>
+        <Text weight="bold" style={{ flex: 1 }}>{tr('u1.ta.title')}</Text>
+        <Text variant="caption" muted>{open ? tr('u1.ta.collapse') : tr('u1.ta.count', { count: picks.length })}</Text>
         <Icon name={open ? 'chevron-up' : 'chevron-down'} size={18} color={t.colors.textMuted} />
       </Pressable>
       {open ? (
@@ -43,7 +44,7 @@ function Inner({ toolId, ask }: { toolId: string; ask: string }) {
           ))}
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
             <Chip icon="message-circle" label={ask} onPress={() => router.push({ pathname: '/assistant/local', params: { q: ask } } as never)} testID="tool-articles-ask" />
-            <Chip icon="edit-3" label="Poser ma question" onPress={() => router.push('/assistant/local' as never)} testID="tool-articles-own" />
+            <Chip icon="edit-3" label={tr('u1.ta.ask')} onPress={() => router.push('/assistant/local' as never)} testID="tool-articles-own" />
           </View>
         </>
       ) : null}

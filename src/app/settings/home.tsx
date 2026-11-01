@@ -39,12 +39,12 @@ export default function HomeSettings() {
   const chosen = shortcuts ?? [];
   const pick = (k: string) => {
     const next = chosen.includes(k) ? chosen.filter((x) => x !== k) : chosen.length >= 4 ? chosen : [...chosen, k];
-    if (!chosen.includes(k) && chosen.length >= 4) toast('Quatre raccourcis au maximum : retirez-en un d’abord.', 'info');
+    if (!chosen.includes(k) && chosen.length >= 4) toast(tr('u1.home.maxShortcuts'), 'info');
     setShortcuts(next.length ? next : null);
   };
 
   return (
-    <Screen back title="Mon accueil" subtitle="Ce que vous voyez en premier, dans l’ordre qui vous convient.">
+    <Screen back title={tr('u1.home.title')} subtitle={tr('u1.home.subtitle')}>
       <Card>
         <Row>
           <View style={{ flex: 1, gap: 2 }}>
@@ -54,7 +54,7 @@ export default function HomeSettings() {
           <Toggle label={tr('pj.simple.title')} value={simple} onChange={setSimple} />
         </Row>
       </Card>
-      <SectionTitle title="Cartes" />
+      <SectionTitle title={tr('u1.home.cards')} />
       {full.map((key, i) => {
         const c = HOME_CARDS.find((x) => x.key === key)!;
         const visible = !hidden.includes(key);
@@ -66,16 +66,16 @@ export default function HomeSettings() {
                   <Text weight="medium">{c.label}</Text>
                   {c.detail ? <Text variant="caption" muted>{c.detail}</Text> : null}
                 </View>
-                <IconButton icon="arrow-up" label={`Monter « ${c.label} »`} onPress={() => move(key, -1)} />
-                <IconButton icon="arrow-down" label={`Descendre « ${c.label} »`} onPress={() => move(key, 1)} />
-                <Toggle label={`Afficher « ${c.label} »`} value={visible} onChange={(v) => toggle(key, v)} />
+                <IconButton icon="arrow-up" label={tr('u1.home.up', { name: c.label })} onPress={() => move(key, -1)} />
+                <IconButton icon="arrow-down" label={tr('u1.home.down', { name: c.label })} onPress={() => move(key, 1)} />
+                <Toggle label={tr('u1.home.show', { name: c.label })} value={visible} onChange={(v) => toggle(key, v)} />
               </Row>
             </Card>
           </StaggerItem>
         );
       })}
 
-      <SectionTitle title="Raccourcis" />
+      <SectionTitle title={tr('u1.home.shortcuts')} />
       <Card>
         {/* Les raccourcis se choisissent dans « Mes actions du jour », profil par profil : jamais un outil hors sujet */}
         <Text variant="small" muted>{tr('da.settingsHint')}</Text>
@@ -83,10 +83,10 @@ export default function HomeSettings() {
       </Card>
 
       <Button label={tr('cy.home.customize')} variant="secondary" icon="sliders" onPress={() => router.push('/cycle/home-card' as never)} />
-      <Button label="Réinitialiser l’accueil" variant="secondary" icon="rotate-ccw" onPress={() => { setLayout([], []); setShortcuts(null); for (const k of Object.keys(dailyFavs ?? {})) setDailyFavs(k, null); toast('Accueil réinitialisé.'); }} />
+      <Button label={tr('u1.home.reset')} variant="secondary" icon="rotate-ccw" onPress={() => { setLayout([], []); setShortcuts(null); for (const k of Object.keys(dailyFavs ?? {})) setDailyFavs(k, null); toast(tr('u1.home.resetDone')); }} />
       <Button label={tr('cine.replay')} variant="ghost" icon="film" testID="settings-replay-cinematic" onPress={() => router.push({ pathname: '/cinematic', params: { replay: '1' } } as never)} />
-      <Button label="Revoir l’introduction" variant="ghost" icon="play-circle" onPress={() => { setIntroSeen(false); router.push('/intro'); }} />
-      <Text variant="caption" muted>Ces préférences sont gardées sur cet appareil.</Text>
+      <Button label={tr('u1.home.replayIntro')} variant="ghost" icon="play-circle" onPress={() => { setIntroSeen(false); router.push('/intro'); }} />
+      <Text variant="caption" muted>{tr('u1.home.local')}</Text>
     </Screen>
   );
 }

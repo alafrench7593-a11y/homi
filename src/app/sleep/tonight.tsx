@@ -20,6 +20,7 @@ import { clock, planLines, span, tonightInfo } from '@/lib/domain/sleepPlanner';
 import { NIGHT_BANDS } from '@/content/nightHelp';
 import type { Child } from '@/lib/types';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 // Bleu nuit, lumière réduite (couleurs propres à cet écran)
 const BG = '#070B1C';
@@ -50,18 +51,18 @@ export default function Tonight() {
       <StatusBar style="light" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.md, gap: spacing.sm }}>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Tappable accessibilityRole="button" accessibilityLabel="Fermer l’aide pour cette nuit" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
-            <Row gap={6}><Icon name="x" color={MUTED} size={20} /><Text color={MUTED}>Fermer</Text></Row>
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.tonight.closeA11y')} onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
+            <Row gap={6}><Icon name="x" color={MUTED} size={20} /><Text color={MUTED}>{tr('u4.tonight.close')}</Text></Row>
           </Tappable>
-          <Tappable accessibilityRole="button" accessibilityLabel="Numéros d’urgence" onPress={() => router.push('/emergency')} hitSlop={10} style={{ minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' }}>
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.tonight.emergency')} onPress={() => router.push('/emergency')} hitSlop={10} style={{ minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="life-buoy" color="#C7A0A0" size={22} />
           </Tappable>
         </Row>
-        <Text variant="title" color={TEXT}>Aide pour cette nuit</Text>
+        <Text variant="title" color={TEXT}>{tr('u4.tonight.title')}</Text>
         {kids.length > 1 ? (
           <Row wrap>{kids.map((c) => <Chip key={c.id} label={c.first_name} selected={c.id === child?.id} onPress={() => router.setParams({ child: c.id })} />)}</Row>
         ) : null}
-        {child ? <TonightBody child={child} /> : <Text color={TEXT}>Ajoutez le profil d’un enfant pour utiliser cette aide.</Text>}
+        {child ? <TonightBody child={child} /> : <Text color={TEXT}>{tr('u4.tonight.noChild')}</Text>}
       </ScrollView>
     </View>
   );
@@ -78,25 +79,25 @@ function TonightBody({ child }: { child: Child }) {
     <View style={{ flexGrow: 1, gap: spacing.sm }}>
       <Text color={TEXT} testID="tonight-state">{`${child.first_name} · ${state}`}</Text>
       <Row wrap>
-        <Info label="Dernier réveil" value={info.lastWake ? clock(info.lastWake) : '—'} testID="tonight-last-wake" />
-        <Info label="Dernier repas de nuit" value={info.lastFeed ? clock(info.lastFeed) : 'non noté'} testID="tonight-last-feed" />
-        <Info label="Sommeil précédent" value={info.previousSleepMinutes !== null ? span(info.previousSleepMinutes) : '—'} testID="tonight-previous" />
-        <Info label="Réveils cette nuit" value={String(info.wakings)} testID="tonight-wakings" />
+        <Info label={tr('u4.tonight.lastWake')} value={info.lastWake ? clock(info.lastWake) : '—'} testID="tonight-last-wake" />
+        <Info label={tr('u4.tonight.lastFeed')} value={info.lastFeed ? clock(info.lastFeed) : tr('u4.tonight.notNoted')} testID="tonight-last-feed" />
+        <Info label={tr('u4.tonight.prevSleep')} value={info.previousSleepMinutes !== null ? span(info.previousSleepMinutes) : '—'} testID="tonight-previous" />
+        <Info label={tr('u4.tonight.wakings')} value={String(info.wakings)} testID="tonight-wakings" />
       </Row>
       <View style={{ backgroundColor: CARD, borderRadius: radius.lg, borderWidth: 1, borderColor: LINE, padding: spacing.sm, gap: 4 }}>
-        <Text variant="small" weight="bold" color={TEXT}>{`Repères généraux · ${band.title.toLowerCase()}`}</Text>
+        <Text variant="small" weight="bold" color={TEXT}>{tr('u4.tonight.general', { band: band.title.toLowerCase() })}</Text>
         {band.points.slice(0, 3).map((p) => <Text key={p} variant="small" color={MUTED}>{`• ${p}`}</Text>)}
-        <Text variant="small" color={MUTED}>• Si vous sentez la fatigue ou l’agacement monter, couchez votre enfant sur le dos dans son lit, en sécurité, et accordez-vous quelques minutes au calme.</Text>
-        <Tappable accessibilityRole="link" accessibilityLabel="Plus d’aide pour la nuit" onPress={() => router.push({ pathname: '/night/help', params: { child: child.id } })} style={{ minHeight: 44, justifyContent: 'center' }}>
-          <Text variant="small" color={TEXT}>Plus d’aide pour la nuit, couchage en sécurité →</Text>
+        <Text variant="small" color={MUTED}>{tr('u4.tonight.tired')}</Text>
+        <Tappable accessibilityRole="link" accessibilityLabel={tr('u4.tonight.moreA11y')} onPress={() => router.push({ pathname: '/night/help', params: { child: child.id } })} style={{ minHeight: 44, justifyContent: 'center' }}>
+          <Text variant="small" color={TEXT}>{tr('u4.tonight.more')}</Text>
         </Tappable>
       </View>
-      <Text variant="caption" color={MUTED}>Aucun son n’est joué. Les estimations de sommeil ne s’affichent pas la nuit.</Text>
+      <Text variant="caption" color={MUTED}>{tr('u4.tonight.noSound')}</Text>
       {/* Grands boutons en bas : prochaine action enregistrable, utilisable d'une main */}
       <View style={{ marginTop: 'auto', gap: spacing.xs }} testID="tonight-actions">
         <SleepRecordButtons child={child} plan={plan} tone="night" />
         <Row wrap>
-          <BigButton tone="night" icon="droplet" label="Repas de nuit" hint="Tétée ou biberon, en mode nuit" onPress={() => router.push('/night')} testID="tonight-feed" />
+          <BigButton tone="night" icon="droplet" label={tr('u4.tonight.nightFeed')} hint={tr('u4.tonight.nightFeedHint')} onPress={() => router.push('/night')} testID="tonight-feed" />
         </Row>
       </View>
     </View>

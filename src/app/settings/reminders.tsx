@@ -20,19 +20,20 @@ import type { Reminder } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { t as tr, formatDate } from '@/i18n';
 
-const CATEGORIES: { value: Reminder['category']; label: string }[] = [
-  { value: 'custom', label: 'Personnel' },
-  { value: 'medication', label: 'Médicament' },
-  { value: 'bottle', label: 'Biberon' },
-  { value: 'meal', label: 'Repas' },
-  { value: 'appointment', label: 'Rendez-vous' },
-  { value: 'tracking', label: 'Suivi' },
-  { value: 'postnatal', label: 'Post-partum' },
-  { value: 'checklist', label: 'Préparatifs' },
+const categories = (): { value: Reminder['category']; label: string }[] => [
+  { value: 'custom', label: tr('u1.rem.cat.custom') },
+  { value: 'medication', label: tr('u1.rem.cat.medication') },
+  { value: 'bottle', label: tr('u1.rem.cat.bottle') },
+  { value: 'meal', label: tr('u1.rem.cat.meal') },
+  { value: 'appointment', label: tr('u1.rem.cat.appointment') },
+  { value: 'tracking', label: tr('u1.rem.cat.tracking') },
+  { value: 'postnatal', label: tr('u1.rem.cat.postnatal') },
+  { value: 'checklist', label: tr('u1.rem.cat.checklist') },
 ];
-const WEEKDAYS: { d: Weekday; label: string }[] = [
-  { d: 1, label: 'Lun' }, { d: 2, label: 'Mar' }, { d: 3, label: 'Mer' }, { d: 4, label: 'Jeu' }, { d: 5, label: 'Ven' }, { d: 6, label: 'Sam' }, { d: 7, label: 'Dim' },
+const weekdays = (): { d: Weekday; label: string }[] => [
+  { d: 1, label: tr('u1.rem.wd.1') }, { d: 2, label: tr('u1.rem.wd.2') }, { d: 3, label: tr('u1.rem.wd.3') }, { d: 4, label: tr('u1.rem.wd.4') }, { d: 5, label: tr('u1.rem.wd.5') }, { d: 6, label: tr('u1.rem.wd.6') }, { d: 7, label: tr('u1.rem.wd.7') },
 ];
 const INTERVALS = [60, 120, 180, 240];
 type Kind = ReminderSchedule['type'];
@@ -70,28 +71,28 @@ function buildSchedule(f: Form): { schedule?: ReminderSchedule; errors: Record<s
   const errors: Record<string, string> = {};
   let schedule: ReminderSchedule | undefined;
   const tm = parseTime(f.time);
-  if (f.kind !== 'interval' && !tm) errors.time = 'Heure attendue au format HH:MM (ex. 08:30).';
+  if (f.kind !== 'interval' && !tm) errors.time = tr('u1.rem.errTime');
   if (f.kind === 'once') {
     const iso = frToISO(f.date);
-    if (!iso) errors.date = 'Date attendue au format JJ/MM/AAAA.';
+    if (!iso) errors.date = tr('u1.rem.errDate');
     if (iso && tm) {
       const [y, mo, d] = iso.split('-').map(Number);
       const at = new Date(y, mo - 1, d, tm.hour, tm.minute);
-      if (at.getTime() <= Date.now()) errors.date = 'Choisissez un moment dans le futur.';
+      if (at.getTime() <= Date.now()) errors.date = tr('u1.rem.errFuture');
       else schedule = { type: 'once', at: at.toISOString() };
     }
   } else if (f.kind === 'daily' && tm) schedule = { type: 'daily', hour: tm.hour, minute: tm.minute };
   else if (f.kind === 'weekly') {
-    if (!f.weekdays.length) errors.weekdays = 'Choisissez au moins un jour.';
+    if (!f.weekdays.length) errors.weekdays = tr('u1.rem.errDays');
     else if (tm) schedule = { type: 'weekly', weekdays: [...f.weekdays].sort(), hour: tm.hour, minute: tm.minute };
   } else if (f.kind === 'interval') {
     const from = Number(f.from);
     const to = Number(f.to);
-    if (!Number.isInteger(from) || !Number.isInteger(to) || from < 0 || to > 24 || from >= to) errors.range = 'Plage horaire invalide (ex. de 7 à 21 h).';
+    if (!Number.isInteger(from) || !Number.isInteger(to) || from < 0 || to > 24 || from >= to) errors.range = tr('u1.rem.errRange');
     else schedule = { type: 'interval', minutes: f.every, from_hour: from, to_hour: to };
   }
   if (schedule && !validateSchedule(schedule)) {
-    errors.time = 'Cette planification n’est pas valide.';
+    errors.time = tr('u1.rem.errInvalid');
     schedule = undefined;
   }
   return { schedule, errors };
@@ -111,11 +112,12 @@ function ReminderEditor({ reminder, visible, onClose, supplement }: { reminder?:
     if (visible) { setF(reminder ? toForm(reminder) : supplement ? { ...toForm(), category: 'medication', kind: 'daily', forPregnancy: !!pregnancy } : toForm()); setErrors({}); }
   }, [visible, reminder, supplement, pregnancy?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
+  const setPreg = (v: boolean) => set('forPregnancy', v);
 
   async function submit() {
     const { schedule, errors: e } = buildSchedule(f);
-    if (!f.title.trim()) e.title = 'Donnez un titre à ce rappel.';
-    if (f.body.length > 240) e.body = '240 caractères au maximum.';
+    if (!f.title.trim()) e.title = tr('u1.rem.errTitle');
+    if (f.body.length > 240) e.body = tr('u1.rem.errBody');
     setErrors(e);
     if (Object.keys(e).length || !schedule) return;
     const draft: ReminderDraft = {
@@ -125,21 +127,21 @@ function ReminderEditor({ reminder, visible, onClose, supplement }: { reminder?:
     };
     try {
       const res = await save.mutateAsync({ id: reminder?.id, draft });
-      toast(reminder ? 'Rappel modifié.' : 'Rappel créé.');
+      toast(reminder ? tr('u1.rem.modified') : tr('u1.rem.created'));
       onClose(res);
     } catch (err) {
       // Limite des rappels personnels (jamais pour un médicament prescrit, un biberon, un vaccin ou un rendez-vous)
-      if (isPremiumRequired(err)) { moreReminders.showPreview(<Text variant="small">{`« ${draft.title} » est prêt : avec Premium, il s’ajoute à vos autres rappels personnels.`}</Text>, { used: remLimit, quota: remLimit, unit: 'rappels personnels actifs', monthly: false }); return; }
+      if (isPremiumRequired(err)) { moreReminders.showPreview(<Text variant="small">{tr('u1.rem.premiumReady', { title: draft.title })}</Text>, { used: remLimit, quota: remLimit, unit: tr('u1.rem.activeUnit'), monthly: false }); return; }
       toast(friendlyError(err), 'error');
     }
   }
 
   async function remove() {
     if (!reminder) return;
-    if (!(await confirm('Supprimer ce rappel ?', 'Les notifications programmées seront annulées.', 'Supprimer'))) return;
+    if (!(await confirm(tr('u1.rem.deleteTitle'), tr('u1.rem.deleteBody'), tr('u1.rem.delete')))) return;
     try {
       await del.mutateAsync(reminder.id);
-      toast('Rappel supprimé.');
+      toast(tr('u1.rem.deleted'));
       onClose();
     } catch (err) {
       toast(friendlyError(err), 'error');
@@ -148,44 +150,44 @@ function ReminderEditor({ reminder, visible, onClose, supplement }: { reminder?:
 
   const preview = buildSchedule(f).schedule;
   return (
-    <Sheet visible={visible} onClose={() => onClose()} title={reminder ? 'Modifier le rappel' : 'Nouveau rappel'}>
-      {f.category === 'medication' ? <Banner tone="info">{'Enregistrez uniquement un médicament ou un complément déjà prescrit ou conseillé par votre professionnel de santé, avec la dose qu’il a indiquée. L’application ne propose et ne calcule aucune dose. Pour un enfant : sa fiche › Besoins particuliers › Traitements.'}</Banner> : null}
+    <Sheet visible={visible} onClose={() => onClose()} title={reminder ? tr('u1.rem.edit') : tr('u1.rem.new')}>
+      {f.category === 'medication' ? <Banner tone="info">{tr('u1.rem.medBanner')}</Banner> : null}
       {pregnancy || f.forPregnancy ? (
         <View style={{ gap: 6 }}>
-          <Text variant="label">Pour qui ?</Text>
+          <Text variant="label">{tr('u1.rem.forWhom')}</Text>
           <Row wrap>
-            <Chip label="Moi" selected={!f.forPregnancy} onPress={() => set('forPregnancy', false)} />
-            <Chip label="Ma grossesse" selected={f.forPregnancy} onPress={() => set('forPregnancy', true)} />
+            <Chip label={tr('u1.rem.me')} selected={!f.forPregnancy} onPress={() => setPreg(false)} />
+            <Chip label={tr('u1.rem.myPregnancy')} selected={f.forPregnancy} onPress={() => setPreg(true)} />
           </Row>
         </View>
       ) : null}
-      <Field label="Titre" value={f.title} onChangeText={(v) => set('title', v)} maxLength={80} error={errors.title} placeholder={f.category === 'medication' ? 'ex. Fer, comme prescrit' : 'ex. Vitamine D'} testID="rem-title" />
-      <Field label="Note" optional value={f.body} onChangeText={(v) => set('body', v)} maxLength={240} error={errors.body} hint="Affichée dans la notification. Évitez les informations trop personnelles : l’écran verrouillé peut être vu." />
-      <Text variant="label">Catégorie</Text>
-      <Row wrap>{CATEGORIES.map((c) => <Chip key={c.value} label={c.label} selected={f.category === c.value} onPress={() => set('category', c.value)} />)}</Row>
-      <Segmented label="Fréquence" value={f.kind} onChange={(v) => set('kind', v)} options={[{ value: 'once', label: 'Une fois' }, { value: 'daily', label: 'Chaque jour' }, { value: 'weekly', label: 'Jours choisis' }, { value: 'interval', label: 'Régulier' }]} />
-      {f.kind === 'once' ? <Field label="Date" value={f.date} onChangeText={(v) => set('date', v)} keyboardType="numbers-and-punctuation" error={errors.date} placeholder="JJ/MM/AAAA" /> : null}
+      <Field label={tr('u1.rem.fieldTitle')} value={f.title} onChangeText={(v) => set('title', v)} maxLength={80} error={errors.title} placeholder={f.category === 'medication' ? tr('u1.rem.phMed') : tr('u1.rem.phOther')} testID="rem-title" />
+      <Field label={tr('u1.rem.note')} optional value={f.body} onChangeText={(v) => set('body', v)} maxLength={240} error={errors.body} hint={tr('u1.rem.noteHint')} />
+      <Text variant="label">{tr('u1.rem.category')}</Text>
+      <Row wrap>{categories().map((c) => <Chip key={c.value} label={c.label} selected={f.category === c.value} onPress={() => set('category', c.value)} />)}</Row>
+      <Segmented label={tr('u1.rem.frequency')} value={f.kind} onChange={(v) => set('kind', v)} options={[{ value: 'once', label: tr('u1.rem.once') }, { value: 'daily', label: tr('u1.rem.daily') }, { value: 'weekly', label: tr('u1.rem.weekly') }, { value: 'interval', label: tr('u1.rem.interval') }]} />
+      {f.kind === 'once' ? <Field label={tr('u1.rem.date')} value={f.date} onChangeText={(v) => set('date', v)} keyboardType="numbers-and-punctuation" error={errors.date} placeholder={tr('u1.rem.phDate')} /> : null}
       {f.kind === 'weekly' ? (
         <View style={{ gap: 6 }}>
-          <Text variant="label">Jours</Text>
-          <Row wrap>{WEEKDAYS.map((w) => <Chip key={w.d} label={w.label} selected={f.weekdays.includes(w.d)} onPress={() => set('weekdays', f.weekdays.includes(w.d) ? f.weekdays.filter((x) => x !== w.d) : [...f.weekdays, w.d])} />)}</Row>
+          <Text variant="label">{tr('u1.rem.days')}</Text>
+          <Row wrap>{weekdays().map((w) => <Chip key={w.d} label={w.label} selected={f.weekdays.includes(w.d)} onPress={() => set('weekdays', f.weekdays.includes(w.d) ? f.weekdays.filter((x) => x !== w.d) : [...f.weekdays, w.d])} />)}</Row>
           {errors.weekdays ? <Text variant="small" color={t.colors.danger}>{errors.weekdays}</Text> : null}
         </View>
       ) : null}
-      {f.kind !== 'interval' ? <Field label="Heure" value={f.time} onChangeText={(v) => set('time', v)} keyboardType="numbers-and-punctuation" error={errors.time} placeholder="HH:MM" testID="rem-time" /> : (
+      {f.kind !== 'interval' ? <Field label={tr('u1.rem.time')} value={f.time} onChangeText={(v) => set('time', v)} keyboardType="numbers-and-punctuation" error={errors.time} placeholder={tr('u1.rem.phTime')} testID="rem-time" /> : (
         <View style={{ gap: spacing.sm }}>
-          <Text variant="label">Toutes les</Text>
+          <Text variant="label">{tr('u1.rem.every')}</Text>
           <Row wrap>{INTERVALS.map((m) => <Chip key={m} label={m < 60 ? `${m} min` : `${m / 60} h`} selected={f.every === m} onPress={() => set('every', m)} />)}</Row>
           <Row style={{ alignItems: 'flex-start' }}>
-            <View style={{ flex: 1 }}><Field label="De" value={f.from} onChangeText={(v) => set('from', v.replace(/\D/g, ''))} keyboardType="number-pad" suffix="h" maxLength={2} /></View>
-            <View style={{ flex: 1 }}><Field label="À" value={f.to} onChangeText={(v) => set('to', v.replace(/\D/g, ''))} keyboardType="number-pad" suffix="h" maxLength={2} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u1.rem.from')} value={f.from} onChangeText={(v) => set('from', v.replace(/\D/g, ''))} keyboardType="number-pad" suffix="h" maxLength={2} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u1.rem.to')} value={f.to} onChangeText={(v) => set('to', v.replace(/\D/g, ''))} keyboardType="number-pad" suffix="h" maxLength={2} /></View>
           </Row>
           {errors.range ? <Text variant="small" color={t.colors.danger}>{errors.range}</Text> : null}
         </View>
       )}
-      {preview ? <Text variant="small" muted>{`Rappel ${describeSchedule(preview)}.`}</Text> : null}
-      <Button label={reminder ? 'Enregistrer' : 'Créer le rappel'} loading={save.isPending} onPress={submit} />
-      {reminder ? <Button label="Supprimer ce rappel" variant="ghost" icon="trash-2" loading={del.isPending} onPress={remove} /> : null}
+      {preview ? <Text variant="small" muted>{tr('u1.rem.preview', { schedule: describeSchedule(preview) })}</Text> : null}
+      <Button label={reminder ? tr('u1.rem.save') : tr('u1.rem.create')} loading={save.isPending} onPress={submit} />
+      {reminder ? <Button label={tr('u1.rem.deleteBtn')} variant="ghost" icon="trash-2" loading={del.isPending} onPress={remove} /> : null}
     </Sheet>
   );
 }
@@ -213,9 +215,9 @@ export default function RemindersScreen() {
   useEffect(refreshStatus, [refreshStatus, reminders]);
 
   async function ask() {
-    const p = await askNotificationPermission('Pour recevoir les rappels que vous avez choisis (biberon, rendez-vous, cycle…).');
+    const p = await askNotificationPermission(tr('u1.rem.permWhy'));
     setPermission(p);
-    if (p === 'granted') toast('Notifications autorisées.');
+    if (p === 'granted') toast(tr('u1.rem.permGranted'));
     refreshStatus();
   }
 
@@ -232,35 +234,35 @@ export default function RemindersScreen() {
   const list = reminders ?? [];
   const suggestions = reminderSuggestions(profile?.journeys ?? []).filter((sg) => !list.some((r) => r.title === sg.title));
   return (
-    <Screen back title="Rappels" subtitle="Des notifications sur ce téléphone, même hors connexion." footer={<Button label="Nouveau rappel" icon="plus" onPress={() => { setEditing(undefined); setSupplement(false); setOpen(true); }} testID="reminder-new" />}>
+    <Screen back title={tr('u1.rem.title')} subtitle={tr('u1.rem.subtitle')} footer={<Button label={tr('u1.rem.new')} icon="plus" onPress={() => { setEditing(undefined); setSupplement(false); setOpen(true); }} testID="reminder-new" />}>
       {permission === 'unsupported' ? (
-        <Banner tone="info">{'Les notifications de rappel s’affichent sur téléphone (iOS et Android). Vous pouvez préparer vos rappels ici : ils seront programmés à la prochaine ouverture de l’application sur votre téléphone.'}</Banner>
+        <Banner tone="info">{tr('u1.rem.unsupported')}</Banner>
       ) : permission === 'undetermined' ? (
-        <Banner tone="warning" title="Notifications désactivées" action={<Button label="Autoriser les notifications" size="sm" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={ask} />}>
-          {'Autorisez les notifications pour recevoir vos rappels à l’heure prévue.'}
+        <Banner tone="warning" title={tr('u1.rem.notifOff')} action={<Button label={tr('u1.rem.allow')} size="sm" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={ask} />}>
+          {tr('u1.rem.allowBody')}
         </Banner>
       ) : permission === 'denied' ? (
-        <Banner tone="warning" title="Notifications refusées" action={<Button label="Ouvrir les réglages du téléphone" size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings().catch(() => undefined)} />}>
-          {'Vos rappels sont enregistrés mais ne pourront pas s’afficher tant que les notifications sont refusées pour l’application.'}
+        <Banner tone="warning" title={tr('u1.rem.notifDenied')} action={<Button label={tr('u1.rem.openSettings')} size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings().catch(() => undefined)} />}>
+          {tr('u1.rem.deniedBody')}
         </Banner>
       ) : null}
 
       {isLoading ? <Loading /> : error ? (
-        <Banner tone="danger" title="Impossible d’afficher les rappels" action={<Button label="Réessayer" size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => refetch()} />}>{friendlyError(error)}</Banner>
+        <Banner tone="danger" title={tr('u1.rem.loadError')} action={<Button label={tr('u1.rem.retry')} size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => refetch()} />}>{friendlyError(error)}</Banner>
       ) : list.length === 0 ? (
-        <EmptyStateCard illustration="moon" title="Aucun rappel pour l’instant" text="Vitamine, biberon, rendez-vous, rééducation… Créez un rappel et nous vous préviendrons au bon moment." />
+        <EmptyStateCard illustration="moon" title={tr('u1.rem.emptyTitle')} text={tr('u1.rem.emptyText')} />
       ) : (
         <Card>
           {list.map((r, i) => {
             const next = r.enabled ? nextOccurrence(r.schedule) : null;
             return (
               <View key={r.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
-                <Tappable accessibilityRole="button" accessibilityLabel={`Modifier le rappel ${r.title}`} style={{ flex: 1, minHeight: 48, justifyContent: 'center', opacity: r.enabled ? 1 : 0.55 }} onPress={() => { setEditing(r); setOpen(true); }}>
-                  <Text weight="medium">{r.title}{r.pregnancy_id ? ' · Ma grossesse' : ''}</Text>
-                  <Text variant="small" muted>{validateSchedule(r.schedule) ? describeSchedule(r.schedule) : 'Planification à corriger'}</Text>
-                  {next ? <Text variant="caption" muted>{`Prochain : ${next.toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`}</Text> : null}
+                <Tappable accessibilityRole="button" accessibilityLabel={tr('u1.rem.editA11y', { title: r.title })} style={{ flex: 1, minHeight: 48, justifyContent: 'center', opacity: r.enabled ? 1 : 0.55 }} onPress={() => { setEditing(r); setOpen(true); }}>
+                  <Text weight="medium">{r.title}{r.pregnancy_id ? ` · ${tr('u1.rem.myPregnancy')}` : ''}</Text>
+                  <Text variant="small" muted>{validateSchedule(r.schedule) ? describeSchedule(r.schedule) : tr('u1.rem.fixSchedule')}</Text>
+                  {next ? <Text variant="caption" muted>{tr('u1.rem.next', { date: formatDate(next, { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}</Text> : null}
                 </Tappable>
-                <Toggle label={`${r.enabled ? 'Désactiver' : 'Activer'} le rappel ${r.title}`} value={r.enabled} onChange={(v) => onToggle(r, v)} />
+                <Toggle label={tr(r.enabled ? 'u1.rem.disableA11y' : 'u1.rem.enableA11y', { title: r.title })} value={r.enabled} onChange={(v) => onToggle(r, v)} />
               </View>
             );
           })}
@@ -269,15 +271,15 @@ export default function RemindersScreen() {
 
       {suggestions.length > 0 && (
         <Card>
-          <Text weight="bold">Suggestions pour votre parcours</Text>
-          <Text variant="small" muted>Rien n’est activé sans vous : ajoutez seulement ce qui vous aide.</Text>
+          <Text weight="bold">{tr('u1.rem.suggestions')}</Text>
+          <Text variant="small" muted>{tr('u1.rem.suggestionsD')}</Text>
           {suggestions.map((sg) => (
             <View key={sg.key} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
               <Text style={{ flex: 1 }}>{sg.label}</Text>
-              <Button label="Ajouter" size="sm" variant="secondary" onPress={async () => {
+              <Button label={tr('u1.rem.add')} size="sm" variant="secondary" onPress={async () => {
                 try {
                   await save.mutateAsync({ draft: { category: sg.category, title: sg.title, body: sg.body, schedule: sg.schedule, enabled: true, deep_link: sg.deep_link } });
-                  toast('Rappel ajouté.');
+                  toast(tr('u1.rem.added'));
                 } catch (e) { toast(friendlyError(e), 'error'); }
               }} />
             </View>
@@ -286,20 +288,20 @@ export default function RemindersScreen() {
       )}
 
       {skipped > 0 ? (
-        <Banner tone="warning">{`${skipped} notification${skipped > 1 ? 's n’ont' : ' n’a'} pas pu être programmée${skipped > 1 ? 's' : ''} : la limite du téléphone est atteinte. Désactivez des rappels peu utiles ou espacez-les.`}</Banner>
+        <Banner tone="warning">{tr('u1.rem.skipped', { count: skipped })}</Banner>
       ) : null}
 
-      <SectionTitle title="Bon à savoir" />
+      <SectionTitle title={tr('u1.rem.goodToKnow')} />
       <Card tone="soft">
         <Text variant="small">
-          {`Sur iPhone, une application ne peut pas programmer plus de ${IOS_PENDING_LIMIT} notifications à l’avance. Un rappel « régulier » en utilise une par horaire de la journée, un rappel « jours choisis » une par jour coché.`}
+          {tr('u1.rem.iosLimit', { limit: IOS_PENDING_LIMIT })}
         </Text>
-        {Platform.OS === 'ios' && pendingCount != null ? <Text variant="small" muted style={{ marginTop: 6 }}>{`Actuellement programmées : ${pendingCount} / ${IOS_PENDING_LIMIT}.`}</Text> : null}
-        {Platform.OS === 'android' && pendingCount != null ? <Text variant="small" muted style={{ marginTop: 6 }}>{`Actuellement programmées : ${pendingCount}.`}</Text> : null}
-        <Text variant="small" muted style={{ marginTop: 6 }}>Les rappels respectent le mode silencieux et « Ne pas déranger » de votre téléphone, ainsi que le changement d’heure.</Text>
+        {Platform.OS === 'ios' && pendingCount != null ? <Text variant="small" muted style={{ marginTop: 6 }}>{tr('u1.rem.scheduledIos', { count: pendingCount, limit: IOS_PENDING_LIMIT })}</Text> : null}
+        {Platform.OS === 'android' && pendingCount != null ? <Text variant="small" muted style={{ marginTop: 6 }}>{tr('u1.rem.scheduled', { count: pendingCount })}</Text> : null}
+        <Text variant="small" muted style={{ marginTop: 6 }}>{tr('u1.rem.silent')}</Text>
       </Card>
       {permission === 'granted' ? (
-        <Button label="Envoyer une notification de test" variant="secondary" icon="bell" onPress={async () => { await sendTestNotification(); toast('Notification de test envoyée dans 3 secondes.', 'info'); }} />
+        <Button label={tr('u1.rem.test')} variant="secondary" icon="bell" onPress={async () => { await sendTestNotification(); toast(tr('u1.rem.testSent'), 'info'); }} />
       ) : null}
 
       <ReminderEditor reminder={editing} visible={open} supplement={supplement} onClose={(res) => { setOpen(false); setSupplement(false); if (res) setSkipped(res.skipped); refreshStatus(); }} />

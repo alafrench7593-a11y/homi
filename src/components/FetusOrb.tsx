@@ -9,6 +9,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, PanResponder, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, Path, RadialGradient, Stop } from 'react-native-svg';
 import { useReduceMotion } from '@/theme/ThemeProvider';
+import { t as tr } from '@/i18n';
 
 interface Props {
   /** 0..1 — progression de la grossesse (fait évoluer la silhouette) */
@@ -69,6 +70,7 @@ export function FetusOrb({ growth, size = 280, hue = 'rose', interactive = true,
   // Silhouette : un « germe » lumineux au début, puis un bébé recroquevillé qui s'affirme
   const early = g < 0.12;
   const s = 0.55 + g * 0.45; // échelle de la silhouette
+  const bodyTransform = ['translate(100 102)', `scale(${s})`, 'translate(-100 -102)'].join(' ');
   const layer = { position: 'absolute' as const, width: size, height: size };
 
   return (
@@ -76,8 +78,8 @@ export function FetusOrb({ growth, size = 280, hue = 'rose', interactive = true,
       {...pan.panHandlers}
       accessible
       accessibilityRole="image"
-      accessibilityLabel={accessibilityLabel ?? 'Illustration artistique du bébé, qui évolue avec les semaines. Ce n’est pas une échographie.'}
-      accessibilityHint={interactive ? 'Glissez horizontalement pour faire tourner l’illustration.' : undefined}
+      accessibilityLabel={accessibilityLabel ?? tr('u3.orb.a11y')}
+      accessibilityHint={interactive ? tr('u3.orb.hint') : undefined}
       style={{ width: size, height: size }}
     >
       {/* Halo et sphère (arrière-plan) */}
@@ -116,7 +118,7 @@ export function FetusOrb({ growth, size = 280, hue = 'rose', interactive = true,
               <Circle cx="104" cy="92" r="9" fill={`url(#skin${uid})`} />
             </G>
           ) : (
-            <G transform={`translate(100 102) scale(${s}) translate(-100 -102)`}>
+            <G transform={bodyTransform}>
               {/* dos et corps recroquevillé */}
               <Path d="M78 70 C 58 86, 56 124, 80 144 C 100 160, 132 152, 140 128 C 146 110, 136 94, 120 92 C 108 90, 100 98, 98 110" fill={`url(#skin${uid})`} />
               {/* tête */}

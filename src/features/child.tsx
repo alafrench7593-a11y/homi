@@ -16,7 +16,10 @@ import { GrowthChart } from '@/components/GrowthChart';
 import { ageInMonths, describePosition, sexForStandards, WHO_MAX_MONTHS, type GrowthIndicator } from '@/lib/domain/growthStandards';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
-import { t as tr } from '@/i18n';
+import { t as tr, formatDate, type TKey } from '@/i18n';
+
+/** Date lisible dans la langue courante, à partir d'une date ISO (jour civil, sans décalage de fuseau). */
+const fd = (iso: string, withYear = true) => formatDate(`${iso.slice(0, 10)}T00:00:00Z`, { day: 'numeric', month: 'long', ...(withYear ? { year: 'numeric' as const } : {}), timeZone: 'UTC' });
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { ChildToday } from '@/features/home';
 import { BottleTimerCard } from '@/features/bottle';
@@ -29,7 +32,7 @@ import {
   useFoodIntroductions, useFoods, useHealthItems, useMilestones,
 } from '@/lib/data/hooks-family';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
+import { frToISO, todayISO } from '@/lib/domain/dates';
 import { BabySleepCard } from './sleep';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { PremiumSection } from '@/components/Premium';
@@ -138,33 +141,33 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
       {/* noter en un geste : grandes tuiles plutôt que petites puces */}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }} testID="child-quick">
         {[...quick.map((k) => ({ key: k, icon: KIND_META[k].icon, label: KIND_META[k].label, go: () => router.push({ pathname: '/track/[kind]', params: { kind: k, child: child.id } }) })),
-          ...(child.enabled_tracking.includes('sleep') ? [{ key: 'sleep', icon: 'moon' as IconName, label: 'Sommeil', go: () => router.push('/night') }] : [])].map((x) => (
+          ...(child.enabled_tracking.includes('sleep') ? [{ key: 'sleep', icon: 'moon' as IconName, label: tr('u7.track.sleep'), go: () => router.push('/night') }] : [])].map((x) => (
           <QuickTile key={x.key} icon={x.icon} label={x.label} onPress={x.go} />
         ))}
       </View>
 
-      <SectionTitle title="Dernières entrées" />
+      <SectionTitle title={tr('u7.child.latestEntries')} />
       {logsLoading ? <Skeleton kind="list" rows={3} /> : logsError ? (
-        <ErrorView error={logsError.error} onRetry={() => logQueries.forEach((q) => { void q.refetch(); })} title="Impossible d’afficher les dernières entrées" />
+        <ErrorView error={logsError.error} onRetry={() => logQueries.forEach((q) => { void q.refetch(); })} title={tr('u7.child.latestError')} />
       ) : recent.length ? (
         <Card><Timeline logs={recent} childId={child.id} /></Card>
       ) : (
         <EmptyState
           icon="edit-3"
-          title="Rien d’enregistré ces trois derniers jours"
-          action={quick.length ? { label: `Noter : ${KIND_META[quick[0]].label}`, icon: 'plus', onPress: () => router.push({ pathname: '/track/[kind]', params: { kind: quick[0], child: child.id } }) } : undefined}
+          title={tr('u7.child.nothingThree')}
+          action={quick.length ? { label: tr('u7.child.logKind', { kind: KIND_META[quick[0]].label }), icon: 'plus', onPress: () => router.push({ pathname: '/track/[kind]', params: { kind: quick[0], child: child.id } }) } : undefined}
         />
       )}
 
-      <SectionTitle title="En bref" />
+      <SectionTitle title={tr('u7.child.inBrief')} />
       <Row wrap>
-        <StatPill value={last ? formatDateFr(last.measured_on, false) : '—'} label="dernière mesure" />
-        <StatPill value={String(milestones?.length ?? 0)} label="moments notés" />
+        <StatPill value={last ? fd(last.measured_on, false) : '—'} label={tr('u7.child.lastMeasureLabel')} />
+        <StatPill value={String(milestones?.length ?? 0)} label={tr('u7.child.momentsLogged')} />
       </Row>
       <Card>
-        <ListRow icon="trending-up" title="Croissance" subtitle={last ? [last.weight_kg != null ? `${fmt(last.weight_kg, 3)} kg` : null, last.height_cm != null ? `${fmt(last.height_cm)} cm` : null].filter(Boolean).join(' · ') : 'Aucune mesure pour l’instant'} onPress={() => onTab('croissance')} />
-        <ListRow icon="heart" title="Santé" subtitle={child.allergies_declared.length ? `Allergies déclarées : ${child.allergies_declared.join(', ')}` : 'Vaccins à vérifier, traitements, contacts'} onPress={() => onTab('sante')} />
-        <ListRow icon="calendar" title="Rendez-vous" subtitle="Pédiatre, vaccins, bilans" onPress={() => router.push('/appointments')} />
+        <ListRow icon="trending-up" title={tr('u7.child.growth')} subtitle={last ? [last.weight_kg != null ? `${fmt(last.weight_kg, 3)} kg` : null, last.height_cm != null ? `${fmt(last.height_cm)} cm` : null].filter(Boolean).join(' · ') : tr('u7.child.noMeasureYet')} onPress={() => onTab('croissance')} />
+        <ListRow icon="heart" title={tr('u7.child.health')} subtitle={child.allergies_declared.length ? tr('u7.child.allergiesDeclared', { list: child.allergies_declared.join(', ') }) : tr('u7.child.healthSub')} onPress={() => onTab('sante')} />
+        <ListRow icon="calendar" title={tr('u7.child.appointments')} subtitle={tr('u7.child.appointmentsSub')} onPress={() => router.push('/appointments')} />
         <ListRow icon="image" title={tr('alb.title')} subtitle={tr('alb.rowSubtitle')} onPress={() => router.push(`/child/${child.id}/album`)} testID="child-album" />
       </Card>
     </>
@@ -174,7 +177,7 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
 function QuickTile({ icon, label, onPress }: { icon: IconName; label: string; onPress: () => void }) {
   const t = useTheme();
   return (
-    <Tappable accessibilityRole="button" accessibilityLabel={`Noter : ${label}`} onPress={onPress}
+    <Tappable accessibilityRole="button" accessibilityLabel={tr('u7.child.logKind', { kind: label })} onPress={onPress}
       style={{ flexGrow: 1, flexBasis: '30%', minWidth: 92, alignItems: 'center', gap: 6, paddingVertical: spacing.md, borderRadius: 20, borderWidth: 1,
         borderColor: t.isDark ? 'rgba(240,217,207,0.2)' : 'rgba(184,134,90,0.28)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,250,246,0.7)' }}>
       <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
@@ -188,11 +191,12 @@ function QuickTile({ icon, label, onPress }: { icon: IconName; label: string; on
 // ---------------------------------------------------------------- Croissance
 type Metric = 'weight_kg' | 'height_cm' | 'head_cm';
 const WHO_IND: Record<Metric, GrowthIndicator> = { weight_kg: 'weight', height_cm: 'length', head_cm: 'head' };
-const METRICS: { key: Metric; label: string; unit: string; min: number; max: number; digits: number }[] = [
-  { key: 'weight_kg', label: 'Poids', unit: 'kg', min: 0.3, max: 80, digits: 3 },
-  { key: 'height_cm', label: 'Taille', unit: 'cm', min: 20, max: 180, digits: 1 },
-  { key: 'head_cm', label: 'Périmètre crânien', unit: 'cm', min: 20, max: 65, digits: 1 },
+const METRICS: { key: Metric; unit: string; min: number; max: number; digits: number }[] = [
+  { key: 'weight_kg', unit: 'kg', min: 0.3, max: 80, digits: 3 },
+  { key: 'height_cm', unit: 'cm', min: 20, max: 180, digits: 1 },
+  { key: 'head_cm', unit: 'cm', min: 20, max: 65, digits: 1 },
 ];
+const metricLabel = (k: Metric) => tr(`u7.child.metric.${k}` as TKey);
 
 export function GrowthTab({ child }: { child: Child }) {
   const toast = useToast();
@@ -202,13 +206,13 @@ export function GrowthTab({ child }: { child: Child }) {
   const { data: measurements } = measurementsQ;
   const growthAccess = usePremiumAccess('growth_export', child.first_name);
   async function exportGrowth() {
-    if (!growthAccess.require(<Text variant="small">{`${(measurements ?? []).length} mesure(s) de ${child.first_name} prêtes pour un tableur. Elles figurent aussi, gratuitement, dans l’export complet de vos données (Réglages › Confidentialité).`}</Text>)) return;
+    if (!growthAccess.require(<Text variant="small">{tr('u7.child.exportPreview', { count: (measurements ?? []).length, name: child.first_name })}</Text>)) return;
     const cell = csvCell;
     const rows = [...(measurements ?? [])].sort((a, b) => a.measured_on.localeCompare(b.measured_on));
-    const csv = `\uFEFF# Mesures de ${child.first_name} — saisies de la famille\r\n` + [['Date', 'Poids (kg)', 'Taille (cm)', 'Périmètre crânien (cm)', 'Source', 'Note'].map(cell).join(';'),
-      ...rows.map((m) => [formatDateFr(m.measured_on), m.weight_kg != null ? String(m.weight_kg).replace('.', ',') : '', m.height_cm != null ? String(m.height_cm).replace('.', ',') : '', m.head_cm != null ? String(m.head_cm).replace('.', ',') : '', m.source === 'professional' ? 'Professionnel' : 'Maison', m.note ?? ''].map(cell).join(';'))].join('\r\n');
-    const r = await exportTextFile(csv, `mesures-${safeFileName(child.first_name)}.csv`, 'text/csv', 'public.comma-separated-values-text', 'Exporter les mesures');
-    toast(r === 'text' ? 'Export impossible sur cet appareil.' : 'Mesures exportées.', r === 'text' ? 'error' : 'success');
+    const csv = `\uFEFF${tr('u7.child.csvTitle', { name: child.first_name })}\r\n` + [[tr('u7.child.csv.date'), tr('u7.child.csv.weight'), tr('u7.child.csv.height'), tr('u7.child.csv.head'), tr('u7.child.csv.source'), tr('u7.child.csv.note')].map(cell).join(';'),
+      ...rows.map((m) => [fd(m.measured_on), m.weight_kg != null ? String(m.weight_kg).replace('.', ',') : '', m.height_cm != null ? String(m.height_cm).replace('.', ',') : '', m.head_cm != null ? String(m.head_cm).replace('.', ',') : '', m.source === 'professional' ? tr('u7.child.professional') : tr('u7.child.home'), m.note ?? ''].map(cell).join(';'))].join('\r\n');
+    const r = await exportTextFile(csv, `mesures-${safeFileName(child.first_name)}.csv`, 'text/csv', 'public.comma-separated-values-text', tr('u7.child.exportMeasures'));
+    toast(r === 'text' ? tr('u7.child.exportFail') : tr('u7.child.exported'), r === 'text' ? 'error' : 'success');
   }
   const [metric, setMetric] = useState<Metric>('weight_kg');
   const [date, setDate] = useState(toFrDate(todayISO()));
@@ -223,14 +227,14 @@ export function GrowthTab({ child }: { child: Child }) {
   const whoSex = sexForStandards(child.sex);
   const agePoints = (measurements ?? [])
     .filter((x) => x[metric] != null)
-    .map((x) => ({ m: ageInMonths(child.birth_date, x.measured_on), y: Number(x[metric]), label: formatDateFr(x.measured_on, false) }))
+    .map((x) => ({ m: ageInMonths(child.birth_date, x.measured_on), y: Number(x[metric]), label: fd(x.measured_on, false) }))
     .filter((p) => p.m >= 0 && p.m <= WHO_MAX_MONTHS);
   const tooOld = (measurements ?? []).some((x) => x[metric] != null && ageInMonths(child.birth_date, x.measured_on) > WHO_MAX_MONTHS);
   const lastAge = agePoints.slice().sort((a, b) => a.m - b.m).at(-1);
   const position = whoSex && lastAge ? describePosition(WHO_IND[metric], whoSex, lastAge.m, lastAge.y) : null;
   const points = (measurements ?? [])
     .filter((x) => x[metric] != null)
-    .map((x) => ({ x: new Date(x.measured_on).getTime(), y: Number(x[metric]), label: formatDateFr(x.measured_on, false) }));
+    .map((x) => ({ x: new Date(x.measured_on).getTime(), y: Number(x[metric]), label: fd(x.measured_on, false) }));
 
   // Dernière valeur connue de chaque mesure (saisies de la famille) : affichée en tuiles et reprise d'un geste dans le formulaire
   const sortedM = [...(measurements ?? [])].sort((a, b) => b.measured_on.localeCompare(a.measured_on));
@@ -247,18 +251,18 @@ export function GrowthTab({ child }: { child: Child }) {
   async function add() {
     const e: Record<string, string> = {};
     const iso = frToISO(date);
-    if (!iso) e.date = 'Format attendu : JJ/MM/AAAA.';
-    else if (iso > todayISO()) e.date = 'La date ne peut pas être dans le futur.';
-    else if (iso < child.birth_date) e.date = 'La date précède la naissance.';
+    if (!iso) e.date = tr('u7.contra.rem.formatErr');
+    else if (iso > todayISO()) e.date = tr('u7.child.err.future');
+    else if (iso < child.birth_date) e.date = tr('u7.child.err.beforeBirth');
     const row: Record<string, number | null> = {};
     for (const x of METRICS) {
       const raw = values[x.key].trim();
       if (!raw) { row[x.key] = null; continue; }
       const v = num(raw);
-      if (!Number.isFinite(v) || v < x.min || v > x.max) e[x.key] = `Valeur attendue entre ${String(x.min).replace('.', ',')} et ${x.max} ${x.unit}.`;
+      if (!Number.isFinite(v) || v < x.min || v > x.max) e[x.key] = tr('u7.child.err.range', { min: String(x.min).replace('.', ','), max: x.max, unit: x.unit });
       else row[x.key] = v;
     }
-    if (!e.weight_kg && !e.height_cm && !e.head_cm && METRICS.every((x) => row[x.key] == null)) e.form = 'Indiquez au moins une mesure.';
+    if (!e.weight_kg && !e.height_cm && !e.head_cm && METRICS.every((x) => row[x.key] == null)) e.form = tr('u7.child.err.atLeastOne');
     setErrors(e);
     if (Object.keys(e).length) return;
     setSaving(true);
@@ -268,7 +272,7 @@ export function GrowthTab({ child }: { child: Child }) {
       setValues({ weight_kg: '', height_cm: '', head_cm: '' });
       setNote('');
       haptic('success');
-      toast('Mesure enregistrée.');
+      toast(tr('u7.child.measureSaved'));
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
@@ -277,97 +281,99 @@ export function GrowthTab({ child }: { child: Child }) {
   }
 
   async function remove(x: Measurement) {
-    if (!(await confirm('Supprimer cette mesure ?', 'Elle sera supprimée pour toutes les personnes du foyer.', 'Supprimer'))) return;
+    if (!(await confirm(tr('u7.child.delMeasureAsk'), tr('u7.child.delHousehold'), tr('u7.child.delete')))) return;
     await write.run(async () => {
       await backend.remove('child_measurements', [eq('id', x.id)]);
       inv('child_measurements');
-    }, 'Mesure supprimée.');
+    }, tr('u7.child.measureDeleted'));
   }
 
   return (
     <>
-      <TodaySummary title="Dernières mesures" testID="growth-last" items={[
-        { icon: 'trending-up', value: lastOf('weight_kg') ? `${fmt(lastOf('weight_kg')!.weight_kg!, 3)} kg` : '—', label: lastOf('weight_kg') ? `Poids · ${formatDateFr(lastOf('weight_kg')!.measured_on, false)}` : 'Poids' },
-        { icon: 'maximize-2', value: lastOf('height_cm') ? `${fmt(lastOf('height_cm')!.height_cm!)} cm` : '—', label: lastOf('height_cm') ? `Taille · ${formatDateFr(lastOf('height_cm')!.measured_on, false)}` : 'Taille' },
-        { icon: 'circle', value: lastOf('head_cm') ? `${fmt(lastOf('head_cm')!.head_cm!)} cm` : '—', label: 'Crâne' },
+      <TodaySummary title={tr('u7.child.latestMeasures')} testID="growth-last" items={[
+        { icon: 'trending-up', value: lastOf('weight_kg') ? `${fmt(lastOf('weight_kg')!.weight_kg!, 3)} kg` : '—', label: lastOf('weight_kg') ? tr('u7.child.weightOn', { date: fd(lastOf('weight_kg')!.measured_on, false) }) : metricLabel('weight_kg') },
+        { icon: 'maximize-2', value: lastOf('height_cm') ? `${fmt(lastOf('height_cm')!.height_cm!)} cm` : '—', label: lastOf('height_cm') ? tr('u7.child.heightOn', { date: fd(lastOf('height_cm')!.measured_on, false) }) : metricLabel('height_cm') },
+        { icon: 'circle', value: lastOf('head_cm') ? `${fmt(lastOf('head_cm')!.head_cm!)} cm` : '—', label: tr('u7.child.headShort') },
       ]} />
-      <Segmented label="Mesure affichée" value={metric} onChange={setMetric} options={METRICS.map((x) => ({ value: x.key, label: x.key === 'head_cm' ? 'Crâne' : x.label }))} />
+      <Segmented label={tr('u7.child.displayedMeasure')} value={metric} onChange={setMetric} options={METRICS.map((x) => ({ value: x.key, label: x.key === 'head_cm' ? tr('u7.child.headShort') : metricLabel(x.key) }))} />
       {whoOn && whoSex && agePoints.length >= 1 ? (
         <Card>
-          <Text weight="bold">{m.label} ({m.unit}) · repères OMS</Text>
-          <GrowthChart indicator={WHO_IND[metric]} sex={whoSex} points={agePoints} unit={m.unit} accessibilityLabel={`${m.label} de ${child.first_name} et repères de l’OMS`} />
-          {position ? <Text variant="small" style={{ marginTop: spacing.xs }}>{`Dernière mesure : ${position.text.charAt(0).toLowerCase()}${position.text.slice(1)}`}</Text> : null}
+          <Text weight="bold">{tr('u7.child.whoRef', { label: metricLabel(metric), unit: m.unit })}</Text>
+          <GrowthChart indicator={WHO_IND[metric]} sex={whoSex} points={agePoints} unit={m.unit} accessibilityLabel={tr('u7.child.whoA11y', { label: metricLabel(metric), name: child.first_name })} />
+          {position ? <Text variant="small" style={{ marginTop: spacing.xs }}>{tr('u7.child.lastMeasureText', { text: `${position.text.charAt(0).toLowerCase()}${position.text.slice(1)}` })}</Text> : null}
         </Card>
       ) : points.length >= 2 ? (
         <Card>
-          <Text weight="bold">{m.label} ({m.unit})</Text>
-          <LineChart points={points} unit={m.unit} accessibilityLabel={`Mesures de ${m.label.toLowerCase()} de ${child.first_name}`} formatX={(x) => new Date(x).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' })} />
+          <Text weight="bold">{metricLabel(metric)} ({m.unit})</Text>
+          <LineChart points={points} unit={m.unit} accessibilityLabel={tr('u7.child.chartA11y', { label: metricLabel(metric).toLowerCase(), name: child.first_name })} formatX={(x) => formatDate(x, { month: 'short', year: '2-digit' })} />
         </Card>
       ) : (
-        <Card tone="soft"><Text muted>{points.length === 1 ? 'Ajoutez une deuxième mesure pour afficher la courbe.' : 'Ajoutez au moins deux mesures pour afficher la courbe.'}</Text></Card>
+        <Card tone="soft"><Text muted>{points.length === 1 ? tr('u7.child.addSecond') : tr('u7.child.addTwo')}</Text></Card>
       )}
       <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text variant="small" weight="medium" style={{ flex: 1 }}>Afficher les repères de l’OMS</Text>
-        <Toggle value={whoOn} onChange={setWhoOn} label="Afficher les repères de croissance de l’OMS" />
+        <Text variant="small" weight="medium" style={{ flex: 1 }}>{tr('u7.child.showWho')}</Text>
+        <Toggle value={whoOn} onChange={setWhoOn} label={tr('u7.child.showWhoA11y')} />
       </Row>
-      {whoOn && !whoSex ? <Text variant="caption" muted>Les repères de l’OMS diffèrent selon le sexe de l’enfant : indiquez-le dans son profil pour les afficher.</Text> : null}
-      {whoOn && whoSex && tooOld ? <Text variant="caption" muted>Les repères de l’OMS intégrés couvrent la naissance à 5 ans. Au-delà, référez-vous aux courbes du carnet de santé.</Text> : null}
+      {whoOn && !whoSex ? <Text variant="caption" muted>{tr('u7.child.whoSex')}</Text> : null}
+      {whoOn && whoSex && tooOld ? <Text variant="caption" muted>{tr('u7.child.whoOld')}</Text> : null}
       <Text variant="caption" muted>{whoOn
-        ? 'Repères : Standards de croissance de l’enfant de l’OMS (2006). Ils aident à situer une mesure, sans rien diagnostiquer : c’est l’évolution, lue par votre médecin ou votre sage-femme, qui compte. Le carnet de santé français utilise les courbes 2018 (AFPA–CRESS/Inserm), qui peuvent légèrement différer.'
-        : 'Ce graphique reprend simplement vos mesures. Les courbes de référence figurent dans le carnet de santé : c’est votre médecin ou votre sage-femme qui les interprète avec vous.'}</Text>
+        ? tr('u7.child.whoSource')
+        : tr('u7.child.noWhoNote')}</Text>
 
-      <SectionTitle title="Ajouter une mesure" />
+      <SectionTitle title={tr('u7.child.addMeasure')} />
       <Card>
         <View style={{ gap: spacing.sm }}>
           {errors.form ? <Banner tone="danger">{errors.form}</Banner> : null}
-          <Field label="Date" value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" error={errors.date} />
-          {sortedM.length ? <Chip icon="copy" label="Repartir de la dernière mesure" onPress={prefillLast} testID="growth-prefill" /> : null}
+          <Field label={tr('u7.child.date')} value={date} onChangeText={setDate} placeholder={tr('u7.contra.rem.datePh')} keyboardType="numbers-and-punctuation" error={errors.date} />
+          {sortedM.length ? <Chip icon="copy" label={tr('u7.child.prefill')} onPress={prefillLast} testID="growth-prefill" /> : null}
           <Row style={{ alignItems: 'flex-start' }}>
-            <View style={{ flex: 1 }}><Field label="Poids" optional value={values.weight_kg} onChangeText={(v) => setValues({ ...values, weight_kg: v })} keyboardType="decimal-pad" suffix="kg" error={errors.weight_kg} /></View>
-            <View style={{ flex: 1 }}><Field label="Taille" optional value={values.height_cm} onChangeText={(v) => setValues({ ...values, height_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.height_cm} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.weight_kg')} optional value={values.weight_kg} onChangeText={(v) => setValues({ ...values, weight_kg: v })} keyboardType="decimal-pad" suffix="kg" error={errors.weight_kg} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.height_cm')} optional value={values.height_cm} onChangeText={(v) => setValues({ ...values, height_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.height_cm} /></View>
           </Row>
-          <Field label="Périmètre crânien" optional value={values.head_cm} onChangeText={(v) => setValues({ ...values, head_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.head_cm} />
-          <Segmented label="Mesure prise" value={source} onChange={setSource} options={[{ value: 'professional', label: 'Par un professionnel' }, { value: 'home', label: 'À la maison' }]} />
-          <Field label="Note" optional value={note} onChangeText={setNote} maxLength={1000} />
-          <Button label="Enregistrer la mesure" loading={saving} onPress={add} />
+          <Field label={tr('u7.child.metric.head_cm')} optional value={values.head_cm} onChangeText={(v) => setValues({ ...values, head_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.head_cm} />
+          <Segmented label={tr('u7.child.measureTaken')} value={source} onChange={setSource} options={[{ value: 'professional', label: tr('u7.child.byPro') }, { value: 'home', label: tr('u7.child.atHome') }]} />
+          <Field label={tr('u7.child.note')} optional value={note} onChangeText={setNote} maxLength={1000} />
+          <Button label={tr('u7.child.saveMeasure')} loading={saving} onPress={add} />
         </View>
       </Card>
 
-      <SectionTitle title="Historique" action={measurements?.length ? 'Exporter (CSV)' : undefined} onAction={() => void exportGrowth()} />
+      <SectionTitle title={tr('u7.child.history')} action={measurements?.length ? tr('u7.child.exportCsv') : undefined} onAction={() => void exportGrowth()} />
       {measurementsQ.isLoading && !measurements ? <Skeleton kind="list" rows={2} /> : measurementsQ.isError && !measurements ? (
-        <ErrorView error={measurementsQ.error} onRetry={() => void measurementsQ.refetch()} title="Impossible d’afficher les mesures" />
+        <ErrorView error={measurementsQ.error} onRetry={() => void measurementsQ.refetch()} title={tr('u7.child.measuresError')} />
       ) : <Card>
         {(measurements ?? []).slice().reverse().map((x) => (
           <ListRow
             key={x.id}
-            title={[x.weight_kg != null ? `${fmt(x.weight_kg, 3)} kg` : null, x.height_cm != null ? `${fmt(x.height_cm)} cm` : null, x.head_cm != null ? `PC ${fmt(x.head_cm)} cm` : null].filter(Boolean).join(' · ')}
-            subtitle={[formatDateFr(x.measured_on), x.source === 'professional' ? 'professionnel' : 'maison', x.note].filter(Boolean).join(' · ')}
-            right={<IconButton icon="trash-2" label={`Supprimer la mesure du ${formatDateFr(x.measured_on)}`} size={18} onPress={() => remove(x)} />}
+            title={[x.weight_kg != null ? `${fmt(x.weight_kg, 3)} kg` : null, x.height_cm != null ? `${fmt(x.height_cm)} cm` : null, x.head_cm != null ? tr('u7.child.hc', { v: fmt(x.head_cm) }) : null].filter(Boolean).join(' · ')}
+            subtitle={[fd(x.measured_on), x.source === 'professional' ? tr('u7.child.pro') : tr('u7.child.homeLower'), x.note].filter(Boolean).join(' · ')}
+            right={<IconButton icon="trash-2" label={tr('u7.child.delMeasureOn', { date: fd(x.measured_on) })} size={18} onPress={() => remove(x)} />}
           />
         ))}
-        {!measurements?.length && <Text muted>Aucune mesure. Utilisez le formulaire ci-dessus pour ajouter la première.</Text>}
+        {!measurements?.length && <Text muted>{tr('u7.child.noMeasures')}</Text>}
       </Card>}
     </>
   );
 }
 
 // ---------------------------------------------------------------- Étapes
-const MILESTONE_KINDS: { value: MilestoneKind; label: string; icon: IconName }[] = [
-  { value: 'milestone', label: 'Première fois', icon: 'star' },
-  { value: 'memory', label: 'Souvenir', icon: 'camera' },
-  { value: 'tooth', label: 'Dent', icon: 'smile' },
-  { value: 'learning', label: 'Découverte', icon: 'compass' },
-  { value: 'habit', label: 'Habitude', icon: 'repeat' },
+const milestoneKinds = (): { value: MilestoneKind; label: string; icon: IconName }[] => [
+  { value: 'milestone', label: tr('u7.child.mk.milestone'), icon: 'star' },
+  { value: 'memory', label: tr('u7.child.mk.memory'), icon: 'camera' },
+  { value: 'tooth', label: tr('u7.child.mk.tooth'), icon: 'smile' },
+  { value: 'learning', label: tr('u7.child.mk.learning'), icon: 'compass' },
+  { value: 'habit', label: tr('u7.child.mk.habit'), icon: 'repeat' },
 ];
-const MILESTONE_IDEAS = ['Premier sourire', 'Premier éclat de rire', 'S’est retourné·e', 'Tient assis·e', 'Premiers pas', 'Premier mot', 'Première dent', 'Premier repas à table'];
+const MILESTONE_IDEAS = ['smile', 'laugh', 'rolled', 'sit', 'steps', 'word', 'tooth', 'table'] as const;
+/** Repère interne pour les moments sans date (jamais affiché tel quel). */
+const NO_DATE = '__none__';
 
 function groupByYear(list: Milestone[]): [string, Milestone[]][] {
   const map = new Map<string, Milestone[]>();
   for (const m of list) {
-    const y = m.happened_on ? m.happened_on.slice(0, 4) : 'Sans date';
+    const y = m.happened_on ? m.happened_on.slice(0, 4) : NO_DATE;
     map.set(y, [...(map.get(y) ?? []), m]);
   }
-  return [...map.entries()].sort((a, b) => (a[0] === 'Sans date' ? 1 : b[0] === 'Sans date' ? -1 : b[0].localeCompare(a[0])));
+  return [...map.entries()].sort((a, b) => (a[0] === NO_DATE ? 1 : b[0] === NO_DATE ? -1 : b[0].localeCompare(a[0])));
 }
 
 export function MilestonesTab({ child }: { child: Child }) {
@@ -387,9 +393,9 @@ export function MilestonesTab({ child }: { child: Child }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
-  function start(prefill?: string) {
-    setTitle(prefill ?? '');
-    setKind(prefill === 'Première dent' ? 'tooth' : 'milestone');
+  function start(idea?: (typeof MILESTONE_IDEAS)[number]) {
+    setTitle(idea ? tr(`u7.child.idea.${idea}` as TKey) : '');
+    setKind(idea === 'tooth' ? 'tooth' : 'milestone');
     setDate(toFrDate(todayISO()));
     setNote('');
     setDomain(null);
@@ -399,12 +405,12 @@ export function MilestonesTab({ child }: { child: Child }) {
 
   async function save() {
     const e: Record<string, string> = {};
-    if (!title.trim()) e.title = 'Donnez un titre à ce moment.';
+    if (!title.trim()) e.title = tr('u7.child.err.title');
     let iso: string | null = null;
     if (date.trim()) {
       iso = frToISO(date);
-      if (!iso) e.date = 'Format attendu : JJ/MM/AAAA.';
-      else if (iso > todayISO()) e.date = 'La date ne peut pas être dans le futur.';
+      if (!iso) e.date = tr('u7.contra.rem.formatErr');
+      else if (iso > todayISO()) e.date = tr('u7.child.err.future');
     }
     setErrors(e);
     if (Object.keys(e).length) return;
@@ -413,7 +419,7 @@ export function MilestonesTab({ child }: { child: Child }) {
       await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind, title: title.trim(), happened_on: iso, note: note.trim() || null, domain });
       inv('child_milestones');
       haptic('success');
-      toast('Moment ajouté.');
+      toast(tr('u7.child.momentAdded'));
       setOpen(false);
     } catch (err) {
       setErrors({ form: errorMessage(err) });
@@ -423,83 +429,83 @@ export function MilestonesTab({ child }: { child: Child }) {
   }
 
   async function remove(x: Milestone) {
-    if (!(await confirm('Supprimer ce moment ?', `« ${x.title} » sera supprimé.`, 'Supprimer'))) return;
+    if (!(await confirm(tr('u7.child.delMomentAsk'), tr('u7.child.willBeDeleted', { title: x.title }), tr('u7.child.delete')))) return;
     await write.run(async () => {
       await backend.remove('child_milestones', [eq('id', x.id)]);
       inv('child_milestones');
-    }, 'Moment supprimé.');
+    }, tr('u7.child.momentDeleted'));
   }
 
-  const meta = (k: MilestoneKind) => MILESTONE_KINDS.find((x) => x.value === k) ?? MILESTONE_KINDS[0];
+  const meta = (k: MilestoneKind) => milestoneKinds().find((x) => x.value === k) ?? milestoneKinds()[0];
 
   return (
     <>
       <Card tone="lavender">
-        <Text>Le journal des premières fois de {child.first_name}. Chaque enfant avance à son propre rythme : notez ce qui compte pour vous, quand cela arrive.</Text>
+        <Text>{tr('u7.child.journalIntro', { name: child.first_name })}</Text>
       </Card>
-      <Button label="Noter un moment" icon="plus" onPress={() => start()} />
+      <Button label={tr('u7.child.logMoment')} icon="plus" onPress={() => start()} />
       <Row wrap>
-        {MILESTONE_IDEAS.map((idea) => <Chip key={idea} label={idea} tone="lavender" onPress={() => start(idea)} />)}
+        {MILESTONE_IDEAS.map((idea) => <Chip key={idea} label={tr(`u7.child.idea.${idea}` as TKey)} tone="lavender" onPress={() => start(idea)} />)}
       </Row>
 
-      <SectionTitle title="Moments notés" />
+      <SectionTitle title={tr('u7.child.momentsTitle')} />
       {milestonesQ.isLoading && !milestones ? <Skeleton kind="list" rows={2} /> : milestonesQ.isError && !milestones ? (
-        <ErrorView error={milestonesQ.error} onRetry={() => void milestonesQ.refetch()} title="Impossible d’afficher les moments" />
+        <ErrorView error={milestonesQ.error} onRetry={() => void milestonesQ.refetch()} title={tr('u7.child.momentsError')} />
       ) : !milestones?.length ? (
-        <EmptyState icon="star" title="Aucun moment noté pour l’instant" action={{ label: 'Noter un moment', onPress: () => start() }} />
+        <EmptyState icon="star" title={tr('u7.child.noMoments')} action={{ label: tr('u7.child.logMoment'), onPress: () => start() }} />
       ) : (
         <>
-          <Field label="Rechercher un souvenir" optional value={search} onChangeText={setSearch} placeholder="premiers pas, plage…" />
+          <Field label={tr('u7.child.searchMemory')} optional value={search} onChangeText={setSearch} placeholder={tr('u7.child.searchPh')} />
           <Row wrap>
-            <Chip label="Tous" selected={!filter} onPress={() => setFilter(null)} />
+            <Chip label={tr('u7.child.all')} selected={!filter} onPress={() => setFilter(null)} />
             {DEV_DOMAINS.filter((d) => milestones.some((m) => m.domain === d.value)).map((d) => <Chip key={d.value} label={d.label} selected={filter === d.value} onPress={() => setFilter(filter === d.value ? null : d.value)} />)}
           </Row>
           {/* Frise : regroupée par année */}
           {groupByYear(milestones.filter((m) => (!filter || m.domain === filter) && (!search.trim() || `${m.title} ${m.note ?? ''}`.toLowerCase().includes(search.trim().toLowerCase())))).map(([year, list]) => (
             <View key={year} style={{ gap: spacing.xs }}>
-              <Text weight="bold">{year}</Text>
+              <Text weight="bold">{year === NO_DATE ? tr('u7.child.noDate') : year}</Text>
               <Card>
                 {list.map((x) => (
                   <ListRow
                     key={x.id}
                     icon={meta(x.kind).icon}
                     title={x.title}
-                    subtitle={[meta(x.kind).label, x.domain ? DEV_DOMAINS.find((d) => d.value === x.domain)?.label : null, x.happened_on ? formatDateFr(x.happened_on) : null, x.note].filter(Boolean).join(' · ')}
-                    right={<IconButton icon="trash-2" label={`Supprimer ${x.title}`} size={18} onPress={() => remove(x)} />}
+                    subtitle={[meta(x.kind).label, x.domain ? DEV_DOMAINS.find((d) => d.value === x.domain)?.label : null, x.happened_on ? fd(x.happened_on) : null, x.note].filter(Boolean).join(' · ')}
+                    right={<IconButton icon="trash-2" label={tr('u7.child.deleteX', { name: x.title })} size={18} onPress={() => remove(x)} />}
                   />
                 ))}
               </Card>
             </View>
           ))}
-          <Text variant="caption" muted>Les étapes sont des repères, pas des échéances : chaque enfant avance à son rythme. Une question ? Parlez-en à votre médecin ou à la PMI.</Text>
+          <Text variant="caption" muted>{tr('u7.child.milestonesNote')}</Text>
         </>
       )}
 
-      <Sheet visible={open} onClose={() => setOpen(false)} title="Noter un moment">
+      <Sheet visible={open} onClose={() => setOpen(false)} title={tr('u7.child.logMoment')}>
         {errors.form ? <Banner tone="danger">{errors.form}</Banner> : null}
         <View style={{ gap: spacing.xs }}>
-          <Text variant="label">Type</Text>
-          <Row wrap>{MILESTONE_KINDS.map((k) => <Chip key={k.value} icon={k.icon} label={k.label} selected={kind === k.value} onPress={() => setKind(k.value)} />)}</Row>
+          <Text variant="label">{tr('u7.child.type')}</Text>
+          <Row wrap>{milestoneKinds().map((k) => <Chip key={k.value} icon={k.icon} label={k.label} selected={kind === k.value} onPress={() => setKind(k.value)} />)}</Row>
         </View>
         <View style={{ gap: spacing.xs }}>
-          <Text variant="label">Domaine (facultatif)</Text>
+          <Text variant="label">{tr('u7.child.domain')}</Text>
           <Row wrap>{DEV_DOMAINS.map((d) => <Chip key={d.value} label={d.label} selected={domain === d.value} onPress={() => setDomain(domain === d.value ? null : d.value)} />)}</Row>
         </View>
-        <Field label="Titre" value={title} onChangeText={setTitle} maxLength={120} error={errors.title} placeholder="Premier sourire" />
-        <Field label="Date" optional value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" error={errors.date} />
-        <Field label="Note ou souvenir" optional value={note} onChangeText={setNote} multiline maxLength={4000} />
-        <Button label="Enregistrer" loading={saving} onPress={save} />
+        <Field label={tr('u7.child.titleField')} value={title} onChangeText={setTitle} maxLength={120} error={errors.title} placeholder={tr('u7.child.firstSmilePh')} />
+        <Field label={tr('u7.child.dateOpt')} optional value={date} onChangeText={setDate} placeholder={tr('u7.contra.rem.datePh')} keyboardType="numbers-and-punctuation" error={errors.date} />
+        <Field label={tr('u7.child.noteMemory')} optional value={note} onChangeText={setNote} multiline maxLength={4000} />
+        <Button label={tr('u7.child.save')} loading={saving} onPress={save} />
       </Sheet>
     </>
   );
 }
 
 // ---------------------------------------------------------------- Santé
-const HEALTH_KINDS: { value: HealthItemKind; label: string; icon: IconName; hint: string }[] = [
-  { value: 'vaccine_to_check', label: 'Vaccins à vérifier', icon: 'shield', hint: 'Notez ce que vous souhaitez vérifier avec le carnet de santé ou votre médecin.' },
-  { value: 'allergy', label: 'Allergies', icon: 'alert-circle', hint: 'Uniquement celles identifiées par un professionnel.' },
-  { value: 'treatment', label: 'Traitements prescrits', icon: 'package', hint: 'Tels que prescrits : l’application n’indique aucune dose.' },
-  { value: 'contact', label: 'Contacts utiles', icon: 'phone', hint: 'Pédiatre, médecin traitant, PMI, crèche…' },
+const healthKinds = (): { value: HealthItemKind; label: string; icon: IconName; hint: string }[] => [
+  { value: 'vaccine_to_check', label: tr('u7.child.hk.vaccine_to_check'), icon: 'shield', hint: tr('u7.child.hk.vaccine_to_check.hint') },
+  { value: 'allergy', label: tr('u7.child.hk.allergy'), icon: 'alert-circle', hint: tr('u7.child.hk.allergy.hint') },
+  { value: 'treatment', label: tr('u7.child.hk.treatment'), icon: 'package', hint: tr('u7.child.hk.treatment.hint') },
+  { value: 'contact', label: tr('u7.child.hk.contact'), icon: 'phone', hint: tr('u7.child.hk.contact.hint') },
 ];
 
 export function HealthTab({ child }: { child: Child }) {
@@ -528,11 +534,11 @@ export function HealthTab({ child }: { child: Child }) {
   async function save() {
     if (!adding) return;
     const e: Record<string, string> = {};
-    if (!label.trim()) e.label = 'Indiquez un libellé.';
+    if (!label.trim()) e.label = tr('u7.child.err.labelReq');
     let dueIso: string | null = null;
     if (due.trim()) {
       dueIso = frToISO(due);
-      if (!dueIso) e.due = 'Format attendu : JJ/MM/AAAA.';
+      if (!dueIso) e.due = tr('u7.contra.rem.formatErr');
     }
     setErrors(e);
     if (Object.keys(e).length) return;
@@ -540,7 +546,7 @@ export function HealthTab({ child }: { child: Child }) {
     try {
       await insertOrQueue('child_health_items', { child_id: child.id, household_id: child.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: dueIso, done_on: null });
       inv('child_health_items');
-      toast('Ajouté.');
+      toast(tr('u7.child.added'));
       setAdding(null);
     } catch (err) {
       setErrors({ form: errorMessage(err) });
@@ -557,37 +563,37 @@ export function HealthTab({ child }: { child: Child }) {
   }
 
   async function remove(x: HealthItem) {
-    if (!(await confirm('Supprimer cet élément ?', `« ${x.label} » sera supprimé.`, 'Supprimer'))) return;
+    if (!(await confirm(tr('u7.child.delItemAsk'), tr('u7.child.willBeDeleted', { title: x.label }), tr('u7.child.delete')))) return;
     await write.run(async () => {
       await backend.remove('child_health_items', [eq('id', x.id)]);
       inv('child_health_items');
-    }, 'Élément supprimé.');
+    }, tr('u7.child.itemDeleted'));
   }
 
-  const meta = HEALTH_KINDS.find((k) => k.value === adding);
+  const meta = healthKinds().find((k) => k.value === adding);
 
   return (
     <>
-      <Banner tone="info">{'Un aide-mémoire pour préparer vos rendez-vous. Le carnet de santé et votre médecin font référence, notamment pour le calendrier des vaccins.'}</Banner>
+      <Banner tone="info">{tr('u7.child.healthBanner')}</Banner>
       <Card>
-        <ListRow icon="shield" title="Vaccins faits" subtitle="Registre : date, vaccin, lot — et le calendrier officiel" onPress={() => router.push(`/child/${child.id}/vaccines` as never)} />
-        <ListRow icon="activity" title="Suivi de santé" subtitle="Mesures et observations, selon le plan du professionnel" onPress={() => router.push(`/child/${child.id}/health-tracking` as never)} />
-        <ListRow icon="smile" title="Humeur et bien-être" subtitle="Pleurs, énergie, appétit, sommeil, confort digestif" onPress={() => router.push(`/child/${child.id}/wellbeing` as never)} />
-        {simple ? null : <ListRow icon="book-open" title="Journal complet" subtitle="Tout ce qui a été noté, avec filtres et export" onPress={() => router.push('/journal')} />}
+        <ListRow icon="shield" title={tr('u7.child.vaccDone')} subtitle={tr('u7.child.vaccDoneSub')} onPress={() => router.push(`/child/${child.id}/vaccines` as never)} />
+        <ListRow icon="activity" title={tr('u7.child.healthTracking')} subtitle={tr('u7.child.healthTrackingSub')} onPress={() => router.push(`/child/${child.id}/health-tracking` as never)} />
+        <ListRow icon="smile" title={tr('u7.child.mood')} subtitle={tr('u7.child.moodSub')} onPress={() => router.push(`/child/${child.id}/wellbeing` as never)} />
+        {simple ? null : <ListRow icon="book-open" title={tr('u7.child.journal')} subtitle={tr('u7.child.journalSub')} onPress={() => router.push('/journal')} />}
       </Card>
       {child.allergies_declared.length > 0 && (
         <Card tone="gold">
-          <Row><Icon name="alert-circle" size={18} /><Text weight="bold" style={{ flex: 1 }}>Allergies déclarées au profil</Text></Row>
+          <Row><Icon name="alert-circle" size={18} /><Text weight="bold" style={{ flex: 1 }}>{tr('u7.child.allergiesProfile')}</Text></Row>
           <Text style={{ marginTop: 4 }}>{child.allergies_declared.join(', ')}</Text>
         </Card>
       )}
       {itemsQ.isLoading && !items ? <Skeleton kind="list" rows={3} /> : itemsQ.isError && !items ? (
-        <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title="Impossible d’afficher la santé" />
-      ) : HEALTH_KINDS.map((k) => {
+        <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title={tr('u7.child.healthDisplayError')} />
+      ) : healthKinds().map((k) => {
         const list = (items ?? []).filter((x) => x.kind === k.value);
         return (
           <View key={k.value} style={{ gap: spacing.xs }}>
-            <SectionTitle title={k.label} action="Ajouter" onAction={() => start(k.value)} />
+            <SectionTitle title={k.label} action={tr('u7.child.add')} onAction={() => start(k.value)} />
             <Card>
               {list.map((x) => (
                 <View key={x.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
@@ -595,7 +601,7 @@ export function HealthTab({ child }: { child: Child }) {
                     <Tappable
                       accessibilityRole="checkbox"
                       accessibilityState={{ checked: !!x.done_on }}
-                      accessibilityLabel={`${x.label} : ${x.done_on ? 'vérifié' : 'à vérifier'}`}
+                      accessibilityLabel={tr(x.done_on ? 'u7.child.checked' : 'u7.child.toCheck', { label: x.label })}
                       disabled={write.pending}
                       onPress={() => { haptic('selection'); void toggleDone(x); }}
                       hitSlop={6}
@@ -607,8 +613,8 @@ export function HealthTab({ child }: { child: Child }) {
                   <View style={{ flex: 1 }}>
                     <ListRow
                       title={x.label}
-                      subtitle={[x.details, x.due_on ? `À vérifier vers le ${formatDateFr(x.due_on)}` : null, x.done_on ? `Vérifié le ${formatDateFr(x.done_on)}` : null].filter(Boolean).join(' · ') || undefined}
-                      right={<IconButton icon="trash-2" label={`Supprimer ${x.label}`} size={18} onPress={() => remove(x)} />}
+                      subtitle={[x.details, x.due_on ? tr('u7.child.checkAround', { date: fd(x.due_on) }) : null, x.done_on ? tr('u7.child.checkedOn', { date: fd(x.done_on) }) : null].filter(Boolean).join(' · ') || undefined}
+                      right={<IconButton icon="trash-2" label={tr('u7.child.deleteX', { name: x.label })} size={18} onPress={() => remove(x)} />}
                     />
                   </View>
                 </View>
@@ -618,15 +624,15 @@ export function HealthTab({ child }: { child: Child }) {
           </View>
         );
       })}
-      <Banner tone="danger" title="En cas d’urgence">{'Difficultés à respirer, malaise, somnolence inhabituelle, fièvre chez un bébé de moins de 3 mois : appelez le 15 ou le 112.'}</Banner>
+      <Banner tone="danger" title={tr('u7.child.emergencyTitle')}>{tr('u7.child.emergencyBody')}</Banner>
 
-      <Sheet visible={!!adding} onClose={() => setAdding(null)} title={meta?.label ?? 'Ajouter'}>
+      <Sheet visible={!!adding} onClose={() => setAdding(null)} title={meta?.label ?? tr('u7.child.add')}>
         {errors.form ? <Banner tone="danger">{errors.form}</Banner> : null}
         {meta ? <Text variant="small" muted>{meta.hint}</Text> : null}
-        <Field label={adding === 'contact' ? 'Nom ou rôle' : 'Libellé'} value={label} onChangeText={setLabel} maxLength={160} error={errors.label} placeholder={adding === 'contact' ? 'Pédiatre' : adding === 'vaccine_to_check' ? 'Rappel prévu à la visite des 11 mois' : undefined} />
-        <Field label={adding === 'contact' ? 'Téléphone, adresse' : 'Détails'} optional value={details} onChangeText={setDetails} multiline maxLength={2000} />
-        {adding === 'vaccine_to_check' && <Field label="À vérifier vers le" optional value={due} onChangeText={setDue} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" error={errors.due} />}
-        <Button label="Ajouter" loading={saving} onPress={save} />
+        <Field label={adding === 'contact' ? tr('u7.child.nameOrRole') : tr('u7.child.label')} value={label} onChangeText={setLabel} maxLength={160} error={errors.label} placeholder={adding === 'contact' ? tr('u7.child.paediatrician') : adding === 'vaccine_to_check' ? tr('u7.child.vaccPh') : undefined} />
+        <Field label={adding === 'contact' ? tr('u7.child.phoneAddress') : tr('u7.child.details')} optional value={details} onChangeText={setDetails} multiline maxLength={2000} />
+        {adding === 'vaccine_to_check' && <Field label={tr('u7.child.checkAroundField')} optional value={due} onChangeText={setDue} placeholder={tr('u7.contra.rem.datePh')} keyboardType="numbers-and-punctuation" error={errors.due} />}
+        <Button label={tr('u7.child.add')} loading={saving} onPress={save} />
       </Sheet>
     </>
   );
@@ -640,8 +646,8 @@ export function FoodsTab({ child }: { child: Child }) {
   return (
     <>
       <ChildShortcuts child={child} />
-      <Button label={`Ouvrir « Ses découvertes »`} icon="feather" onPress={() => router.push(`/child/${child.id}/discoveries` as never)} testID="foods-open-discoveries" />
-      <Banner tone="danger" title="Réaction importante ?">{'Gêne pour respirer, gonflement du visage ou des lèvres, vomissements répétés, malaise : appelez le 15 ou le 112 immédiatement.'}</Banner>
+      <Button label={tr('u7.child.openDiscoveries')} icon="feather" onPress={() => router.push(`/child/${child.id}/discoveries` as never)} testID="foods-open-discoveries" />
+      <Banner tone="danger" title={tr('u7.child.reactionTitle')}>{tr('u7.track.reactionBody')}</Banner>
     </>
   );
 }
@@ -672,11 +678,11 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
   async function add() {
     const e: Record<string, string> = {};
     const food = name.trim();
-    if (!food) e.name = 'Indiquez un aliment.';
-    else if (tried.has(norm(food))) e.name = 'Cet aliment est déjà noté.';
+    if (!food) e.name = tr('u7.child.err.food');
+    else if (tried.has(norm(food))) e.name = tr('u7.child.err.foodDup');
     const iso = frToISO(date);
-    if (!iso) e.date = 'Format attendu : JJ/MM/AAAA.';
-    else if (iso > todayISO()) e.date = 'La date ne peut pas être dans le futur.';
+    if (!iso) e.date = tr('u7.contra.rem.formatErr');
+    else if (iso > todayISO()) e.date = tr('u7.child.err.future');
     setErrors(e);
     if (Object.keys(e).length) return;
     setSaving(true);
@@ -686,7 +692,7 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
       setName('');
       setReaction('');
       haptic('success');
-      toast(`${food} ajouté.`);
+      toast(tr('u7.child.foodAdded', { food }));
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
@@ -700,69 +706,69 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
     const ok = await write.run(async () => {
       await backend.update('food_introductions', { reaction_note: editNote.trim() || null }, [eq('id', id)]);
       inv('food_introductions');
-    }, 'Note enregistrée.');
+    }, tr('u7.child.noteSaved'));
     if (ok) setEditing(null);
   }
 
   async function remove() {
     if (!editing) return;
     const { id, food_name } = editing;
-    if (!(await confirm('Retirer cet aliment ?', `« ${food_name} » sera retiré de la liste.`, 'Retirer'))) return;
+    if (!(await confirm(tr('u7.child.removeFoodAsk'), tr('u7.child.removeFoodBody', { food: food_name }), tr('u7.child.remove')))) return;
     const ok = await write.run(async () => {
       await backend.remove('food_introductions', [eq('id', id)]);
       inv('food_introductions');
-    }, 'Aliment retiré.');
+    }, tr('u7.child.foodRemoved'));
     if (ok) setEditing(null);
   }
 
   return (
     <View style={{ gap: spacing.md }}>
-      <Banner tone="info" title="Allergènes">{'Pour l’introduction des aliments allergènes (œuf, arachide, lait, blé, poisson…), parlez-en à votre médecin, surtout s’il existe des allergies dans la famille.'}</Banner>
+      <Banner tone="info" title={tr('u7.child.allergens')}>{tr('u7.child.allergensBody')}</Banner>
       <Row wrap>
-        <StatPill value={String(intros?.length ?? 0)} label="aliments découverts" />
-        <StatPill value={String((intros ?? []).filter((i) => isAllergen(i.food_name)).length)} label="dont allergènes majeurs" />
+        <StatPill value={String(intros?.length ?? 0)} label={tr('u7.child.foodsDiscovered')} />
+        <StatPill value={String((intros ?? []).filter((i) => isAllergen(i.food_name)).length)} label={tr('u7.child.majorAllergens')} />
       </Row>
 
-      {readOnly ? <Banner tone="info">{'Vos aliments déjà notés restent consultables. Ajouter de nouveaux aliments fait partie de Premium.'}</Banner> : null}
-      {readOnly ? null : <SectionTitle title="Nouvel aliment" />}
+      {readOnly ? <Banner tone="info">{tr('u7.child.readOnlyFoods')}</Banner> : null}
+      {readOnly ? null : <SectionTitle title={tr('u7.child.newFood')} />}
       {readOnly ? null : <Card>
         <View style={{ gap: spacing.sm }}>
           {errors.form ? <Banner tone="danger">{errors.form}</Banner> : null}
-          <Field label="Aliment" value={name} onChangeText={setName} maxLength={60} error={errors.name} placeholder="Courgette, banane…" />
+          <Field label={tr('u7.child.food')} value={name} onChangeText={setName} maxLength={60} error={errors.name} placeholder={tr('u7.child.foodPh')} />
           {suggestions.length > 0 && (
             <Row wrap>
               {suggestions.map((f) => <Chip key={f.id} label={f.name} icon={f.is_major_allergen ? 'alert-circle' : undefined} selected={norm(name) === norm(f.name)} onPress={() => setName(f.name)} />)}
             </Row>
           )}
-          {pendingAllergen ? <Banner tone="warning">{'Allergène majeur : parlez-en à votre médecin avant ou pendant son introduction.'}</Banner> : null}
-          <Field label="Première fois le" value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" error={errors.date} />
-          <Field label="Réaction observée" optional value={reaction} onChangeText={setReaction} multiline maxLength={1000} hint="Ce que vous avez remarqué, tel quel. L’application ne l’interprète pas." />
-          <Button label="Ajouter" icon="plus" loading={saving} onPress={add} />
+          {pendingAllergen ? <Banner tone="warning">{tr('u7.child.majorAllergenWarn')}</Banner> : null}
+          <Field label={tr('u7.child.firstTimeOn')} value={date} onChangeText={setDate} placeholder={tr('u7.contra.rem.datePh')} keyboardType="numbers-and-punctuation" error={errors.date} />
+          <Field label={tr('u7.child.reaction')} optional value={reaction} onChangeText={setReaction} multiline maxLength={1000} hint={tr('u7.child.reactionHint')} />
+          <Button label={tr('u7.child.add')} icon="plus" loading={saving} onPress={add} />
         </View>
       </Card>}
 
-      <SectionTitle title="Aliments découverts" />
+      <SectionTitle title={tr('u7.child.foodsDiscoveredTitle')} />
       {introsQ.isLoading && !intros ? <Skeleton kind="list" rows={2} /> : introsQ.isError && !intros ? (
-        <ErrorView error={introsQ.error} onRetry={() => void introsQ.refetch()} title="Impossible d’afficher les aliments" />
+        <ErrorView error={introsQ.error} onRetry={() => void introsQ.refetch()} title={tr('u7.child.foodsError')} />
       ) : <Card>
         {(intros ?? []).map((i) => (
           <ListRow
             key={i.id}
             icon={isAllergen(i.food_name) ? 'alert-circle' : 'feather'}
             title={i.food_name}
-            subtitle={[`Première fois le ${formatDateFr(i.first_tried_on)}`, isAllergen(i.food_name) ? 'allergène majeur' : null, i.reaction_note].filter(Boolean).join(' · ')}
+            subtitle={[tr('u7.child.firstTimeDate', { date: fd(i.first_tried_on) }), isAllergen(i.food_name) ? tr('u7.child.majorAllergenLower') : null, i.reaction_note].filter(Boolean).join(' · ')}
             onPress={() => { setEditing(i); setEditNote(i.reaction_note ?? ''); }}
           />
         ))}
-        {!intros?.length && <Text muted>Les aliments notés dans les repas apparaissent aussi ici.</Text>}
+        {!intros?.length && <Text muted>{tr('u7.child.foodsAlsoHere')}</Text>}
       </Card>}
 
       <Sheet visible={!!editing} onClose={() => setEditing(null)} title={editing?.food_name ?? ''}>
-        {editing ? <Text muted>Première fois le {formatDateFr(editing.first_tried_on)}</Text> : null}
-        {editing && isAllergen(editing.food_name) ? <Text variant="small" color={t.colors.textMuted}>Allergène majeur : parlez-en à votre médecin.</Text> : null}
-        <Field label="Réaction observée" optional value={editNote} onChangeText={setEditNote} multiline maxLength={1000} />
-        <Button label="Enregistrer" loading={write.pending} onPress={saveNote} />
-        <Button label="Retirer de la liste" variant="ghost" icon="trash-2" disabled={write.pending} onPress={remove} />
+        {editing ? <Text muted>{tr('u7.child.firstTimeDate', { date: fd(editing.first_tried_on) })}</Text> : null}
+        {editing && isAllergen(editing.food_name) ? <Text variant="small" color={t.colors.textMuted}>{tr('u7.child.majorAllergenTalk')}</Text> : null}
+        <Field label={tr('u7.child.reaction')} optional value={editNote} onChangeText={setEditNote} multiline maxLength={1000} />
+        <Button label={tr('u7.child.save')} loading={write.pending} onPress={saveNote} />
+        <Button label={tr('u7.child.removeFromList')} variant="ghost" icon="trash-2" disabled={write.pending} onPress={remove} />
       </Sheet>
     </View>
   );
@@ -790,7 +796,7 @@ export function EditChildSheet({ child, visible, onClose }: { child: Child; visi
       }, [eq('id', child.id)]);
       inv('children');
       haptic('success');
-      toast('Profil mis à jour.');
+      toast(tr('u7.child.profileUpdated'));
       onClose();
     } catch (e) {
       setError(errorMessage(e));
@@ -800,10 +806,10 @@ export function EditChildSheet({ child, visible, onClose }: { child: Child; visi
   }
 
   return (
-    <Sheet visible={visible} onClose={onClose} title={`Modifier le profil de ${child.first_name}`}>
+    <Sheet visible={visible} onClose={onClose} title={tr('u7.child.editProfile', { name: child.first_name })}>
       {error ? <Banner tone="danger">{error}</Banner> : null}
       <ChildForm value={draft} onChange={setDraft} errors={errors} />
-      <Button label="Enregistrer" loading={saving} onPress={save} />
+      <Button label={tr('u7.child.save')} loading={saving} onPress={save} />
     </Sheet>
   );
 }

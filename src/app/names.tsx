@@ -15,9 +15,8 @@ import { useUserId } from '@/lib/auth';
 import { backend, eq } from '@/lib/backend';
 import { ensureHousehold, useActivePregnancy, useBabyNames, useChildren, useHouseholdId, useHouseholdMembers, useInvalidate, useNameFavorites, useNameVotes } from '@/lib/data/hooks';
 import { buildNames, filterNames, fold, LETTERS, lenOf, originsOf, popOf, siblingSuggestions, twinSuggestions, type Gender, type Len, type NameEntry, type Pop } from '@/lib/domain/names';
-import { getLocale, t as tr, type TKey } from '@/i18n';
+import { getLocale, t as tr, formatNumber, type TKey } from '@/i18n';
 
-const L = (fr: string, en: string) => (getLocale().startsWith('fr') ? fr : en);
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { NameSwipeDeck } from '@/features/namesSwipe';
 import type { NameFavorite, NameVote } from '@/lib/types';
@@ -80,7 +79,7 @@ export default function NamesScreen() {
   const hasPartner = (members?.length ?? 0) > 1;
   const votesFor = (f: NameFavorite) => (votes ?? []).filter((v) => v.favorite_id === f.id);
   const score = (f: NameFavorite) => votesFor(f).reduce((s, v) => s + v.vote, 0);
-  const sortedFavorites = [...(favorites ?? [])].sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name, 'fr'));
+  const sortedFavorites = [...(favorites ?? [])].sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name, getLocale()));
 
   async function addFavorite(name: string) {
     const clean = name.trim();
@@ -90,23 +89,23 @@ export default function NamesScreen() {
       const h = hid ?? (await ensureHousehold());
       await backend.insert('name_favorites', { household_id: h, name: clean, list_label: 'Favoris', added_by: userId });
       inv('name_favorites', 'memberships');
-      toast(`${clean} ajouté aux favoris.`);
+      toast(tr('u7.names.added', { name: clean }));
     } catch (e) {
-      toast(friendlyError(e, 'Ajout impossible.'), 'error');
+      toast(friendlyError(e, tr('u7.names.addFail')), 'error');
     } finally {
       setBusy(null);
     }
   }
 
   async function removeFavorite(f: NameFavorite, ask = false) {
-    if (ask && votesFor(f).length && !(await confirm(`Retirer ${f.name} ?`, 'Les votes associés seront aussi supprimés.', 'Retirer'))) return;
+    if (ask && votesFor(f).length && !(await confirm(tr('u7.names.removeAsk', { name: f.name }), tr('u7.names.removeBody'), tr('u7.names.remove')))) return;
     setBusy(f.name);
     try {
       await backend.remove('name_votes', [eq('favorite_id', f.id), eq('user_id', userId)]).catch(() => undefined);
       await backend.remove('name_favorites', [eq('id', f.id)]);
       inv('name_favorites', 'name_votes');
     } catch (e) {
-      toast(friendlyError(e, 'Suppression impossible.'), 'error');
+      toast(friendlyError(e, tr('u7.names.removeFail')), 'error');
     } finally {
       setBusy(null);
     }
@@ -127,7 +126,7 @@ export default function NamesScreen() {
       else await backend.insert('name_votes', { favorite_id: f.id, household_id: f.household_id, user_id: userId, vote: next });
       inv('name_votes');
     } catch (e) {
-      toast(friendlyError(e, 'Vote impossible.'), 'error');
+      toast(friendlyError(e, tr('u7.names.voteFail')), 'error');
     } finally {
       setBusy(null);
     }
@@ -135,9 +134,9 @@ export default function NamesScreen() {
 
   async function addCustom() {
     const clean = custom.trim();
-    if (!clean) return setCustomError('Indiquez un prénom.');
-    if (clean.length > 40) return setCustomError('40 caractères maximum.');
-    if (favByName.has(norm(clean))) return setCustomError('Ce prénom est déjà dans vos favoris.');
+    if (!clean) return setCustomError(tr('u7.names.enterName'));
+    if (clean.length > 40) return setCustomError(tr('u7.names.max40'));
+    if (favByName.has(norm(clean))) return setCustomError(tr('u7.names.already'));
     setCustomError(null);
     await addFavorite(clean);
     setCustom('');
@@ -150,7 +149,7 @@ export default function NamesScreen() {
 
   const renderName = (n: NameEntry) => {
     const fav = favByName.has(norm(n.name));
-    const meta = [genderLabel(n.gender), n.recent ? tr('nm.births', { count: n.recent.toLocaleString('fr-FR') }) : popLabel('old'), n.origin, n.meaning].filter(Boolean).join(' · ');
+    const meta = [genderLabel(n.gender), n.recent ? tr('nm.births', { count: formatNumber(n.recent) }) : popLabel('old'), n.origin, n.meaning].filter(Boolean).join(' · ');
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, height: ROW_H - 8 }}>
         <View style={{ flex: 1, gap: 2 }}>
@@ -160,7 +159,7 @@ export default function NamesScreen() {
         <IconButton
           icon="heart"
           color={fav ? t.colors.primary : t.colors.textMuted}
-          label={fav ? `Retirer ${n.name} des favoris` : `Ajouter ${n.name} aux favoris`}
+          label={fav ? tr('u7.names.removeFav', { name: n.name }) : tr('u7.names.addFav', { name: n.name })}
           onPress={() => { if (busy !== n.name) void toggleFavorite(n); }}
           style={fav ? { backgroundColor: t.colors.surfaceAlt } : undefined}
         />
@@ -168,7 +167,7 @@ export default function NamesScreen() {
     );
   };
   const nameChips = (list: NameEntry[]) => (
-    <Row wrap>{list.map((n) => <Chip key={n.key} label={n.name} selected={favByName.has(n.key)} onPress={() => void toggleFavorite(n)} accessibilityLabel={`${n.name}, ${genderLabel(n.gender)}. ${favByName.has(n.key) ? 'Retirer des favoris' : 'Ajouter aux favoris'}`} />)}</Row>
+    <Row wrap>{list.map((n) => <Chip key={n.key} label={n.name} selected={favByName.has(n.key)} onPress={() => void toggleFavorite(n)} accessibilityLabel={tr(favByName.has(n.key) ? 'u7.names.chipRemove' : 'u7.names.chipAdd', { name: n.name, gender: genderLabel(n.gender) })} />)}</Row>
   );
 
   const renderFavorite = (f: NameFavorite) => {
@@ -176,18 +175,18 @@ export default function NamesScreen() {
     const mine = vs.find((v) => v.user_id === userId)?.vote ?? 0;
     const others = vs.filter((v) => v.user_id !== userId && v.vote !== 0);
     const othersLabel = others.length
-      ? others.map((v) => (v.vote > 0 ? 'aime' : 'n’est pas convaincu·e')).join(', ')
-      : hasPartner ? 'pas encore de vote' : null;
+      ? others.map((v) => (v.vote > 0 ? tr('u7.names.likes') : tr('u7.names.unsure'))).join(', ')
+      : hasPartner ? tr('u7.names.noVote') : null;
     const voting = busy === `vote-${f.id}`;
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 56, paddingVertical: spacing.xs }}>
         <View style={{ flex: 1, gap: 2 }}>
           <Text weight="medium">{f.name}</Text>
-          <Text variant="small" muted>{[othersLabel ? `Coparent : ${othersLabel}` : null, `score ${score(f) > 0 ? '+' : ''}${score(f)}`].filter(Boolean).join(' · ')}</Text>
+          <Text variant="small" muted>{[othersLabel ? tr('u7.names.coparent', { label: othersLabel }) : null, tr('u7.names.score', { score: `${score(f) > 0 ? '+' : ''}${score(f)}` })].filter(Boolean).join(' · ')}</Text>
         </View>
-        <IconButton icon="thumbs-up" label={`J’aime ${f.name}${mine === 1 ? ' (sélectionné)' : ''}`} color={mine === 1 ? t.colors.primary : t.colors.textMuted} style={mine === 1 ? { backgroundColor: t.colors.surfaceAlt } : undefined} onPress={() => { if (!voting) void vote(f, 1); }} />
-        <IconButton icon="thumbs-down" label={`Je n’aime pas ${f.name}${mine === -1 ? ' (sélectionné)' : ''}`} color={mine === -1 ? t.colors.primary : t.colors.textMuted} style={mine === -1 ? { backgroundColor: t.colors.surfaceAlt } : undefined} onPress={() => { if (!voting) void vote(f, -1); }} />
-        <IconButton icon="x" label={`Retirer ${f.name} des favoris`} color={t.colors.textMuted} onPress={() => { if (busy !== f.name) void removeFavorite(f, true); }} />
+        <IconButton icon="thumbs-up" label={tr(mine === 1 ? 'u7.names.likeSel' : 'u7.names.like', { name: f.name })} color={mine === 1 ? t.colors.primary : t.colors.textMuted} style={mine === 1 ? { backgroundColor: t.colors.surfaceAlt } : undefined} onPress={() => { if (!voting) void vote(f, 1); }} />
+        <IconButton icon="thumbs-down" label={tr(mine === -1 ? 'u7.names.dislikeSel' : 'u7.names.dislike', { name: f.name })} color={mine === -1 ? t.colors.primary : t.colors.textMuted} style={mine === -1 ? { backgroundColor: t.colors.surfaceAlt } : undefined} onPress={() => { if (!voting) void vote(f, -1); }} />
+        <IconButton icon="x" label={tr('u7.names.removeFav', { name: f.name })} color={t.colors.textMuted} onPress={() => { if (busy !== f.name) void removeFavorite(f, true); }} />
       </View>
     );
   };
@@ -197,16 +196,16 @@ export default function NamesScreen() {
   const extraActive = (len ? 1 : 0) + (pop ? 1 : 0) + (origin ? 1 : 0);
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xs }}>
-      <TodaySummary title={L('Nos prénoms', 'Our names')} items={[
-        { icon: 'heart', value: String(favorites?.length ?? 0), label: L('Favoris', 'Favourites') },
-        { icon: 'award', value: top ? top.name : '—', label: L('En tête', 'Top pick') },
-        { icon: 'thumbs-up', value: String(myVotes), label: L('Mes votes', 'My votes') },
+      <TodaySummary title={tr('u7.names.ourNames')} items={[
+        { icon: 'heart', value: String(favorites?.length ?? 0), label: tr('u7.names.favourites') },
+        { icon: 'award', value: top ? top.name : '—', label: tr('u7.names.top') },
+        { icon: 'thumbs-up', value: String(myVotes), label: tr('u7.names.myVotes') },
       ]} />
       <Segmented
-        label="Affichage"
+        label={tr('u7.names.display')}
         value={view}
         onChange={setView}
-        options={[{ value: 'explore', label: tr('nm.tab.explore') }, { value: 'swipe', label: L('Coups de cœur', 'Swipe'), testID: 'names-tab-swipe' }, { value: 'ideas', label: tr('nm.tab.ideas') }, { value: 'favorites', label: `${tr('nm.tab.favorites')}${favorites?.length ? ` (${favorites.length})` : ''}` }]}
+        options={[{ value: 'explore', label: tr('nm.tab.explore') }, { value: 'swipe', label: tr('u7.names.swipe'), testID: 'names-tab-swipe' }, { value: 'ideas', label: tr('nm.tab.ideas') }, { value: 'favorites', label: `${tr('nm.tab.favorites')}${favorites?.length ? ` (${favorites.length})` : ''}` }]}
       />
       {explore ? (
         <>
@@ -217,7 +216,7 @@ export default function NamesScreen() {
           </ScrollView>
           <Row wrap>
             {(['f', 'm', 'x'] as Gender[]).map((g) => <Chip key={g} label={genderLabel(g)} selected={gender === g} onPress={() => setGender(gender === g ? null : g)} />)}
-            <Chip label={`${L('Plus de filtres', 'More filters')}${extraActive ? ` · ${extraActive}` : ''}`} icon={moreFilters ? 'chevron-up' : 'sliders'} selected={moreFilters || extraActive > 0} onPress={() => setMoreFilters(!moreFilters)} testID="names-more-filters" />
+            <Chip label={`${tr('u7.names.moreFilters')}${extraActive ? ` · ${extraActive}` : ''}`} icon={moreFilters ? 'chevron-up' : 'sliders'} selected={moreFilters || extraActive > 0} onPress={() => setMoreFilters(!moreFilters)} testID="names-more-filters" />
           </Row>
           {moreFilters ? (
             <>
@@ -233,7 +232,7 @@ export default function NamesScreen() {
             </>
           ) : null}
           <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text variant="small" muted testID="names-count">{tr('nm.count', { count: filtered.length.toLocaleString('fr-FR') })}</Text>
+            <Text variant="small" muted testID="names-count">{tr('nm.count', { count: filtered.length })}</Text>
             <Row gap={4}>
               <Chip label={tr('nm.sort.az')} selected={sort === 'az'} onPress={() => setSort('az')} />
               <Chip label={tr('nm.sort.pop')} selected={sort === 'pop'} onPress={() => setSort('pop')} />
@@ -247,7 +246,7 @@ export default function NamesScreen() {
             names={swipeNames}
             favorites={new Set(favByName.keys())}
             onLike={(n) => void addFavorite(n.name)}
-            describe={(n) => [genderLabel(n.gender), n.recent ? tr('nm.births', { count: n.recent.toLocaleString('fr-FR') }) : popLabel('old'), n.origin, n.meaning].filter(Boolean).join(' · ')}
+            describe={(n) => [genderLabel(n.gender), n.recent ? tr('nm.births', { count: formatNumber(n.recent) }) : popLabel('old'), n.origin, n.meaning].filter(Boolean).join(' · ')}
           />
         </View>
       ) : view === 'ideas' ? (
@@ -273,21 +272,21 @@ export default function NamesScreen() {
           <Text variant="caption" muted>{tr('nm.ideas.note')}</Text>
         </View>
       ) : !hasPartner ? (
-        <Banner tone="info" title="Voter à deux">{'Invitez votre coparent dans le foyer : chacun vote de son côté et vous voyez les prénoms qui vous plaisent à tous les deux.'}</Banner>
+        <Banner tone="info" title={tr('u7.names.voteTogether')}>{tr('u7.names.voteTogetherBody')}</Banner>
       ) : null}
       {loading ? <Skeleton rows={5} /> : null}
-      {failed ? <ErrorView error={activeQ.error} onRetry={() => void activeQ.refetch()} title={explore ? 'Impossible d’afficher les prénoms' : 'Impossible d’afficher vos favoris'} /> : null}
+      {failed ? <ErrorView error={activeQ.error} onRetry={() => void activeQ.refetch()} title={explore ? tr('u7.names.errNames') : tr('u7.names.errFavs')} /> : null}
     </View>
   );
 
   const footer = (
     <View style={{ gap: spacing.md, marginTop: spacing.sm }}>
       {explore ? <Text variant="caption" muted>{tr('nm.source')}</Text> : null}
-      <SectionTitle title="Votre propre idée" />
+      <SectionTitle title={tr('u7.names.ownIdea')} />
       <Card>
         <View style={{ gap: spacing.sm }}>
-          <Field label="Prénom" value={custom} onChangeText={(v) => { setCustom(v); setCustomError(null); }} maxLength={40} autoCapitalize="words" error={customError} onSubmitEditing={addCustom} returnKeyType="done" />
-          <Button label="Ajouter aux favoris" icon="plus" variant="secondary" loading={busy === custom.trim() && !!custom.trim()} onPress={addCustom} />
+          <Field label={tr('u7.names.firstName')} value={custom} onChangeText={(v) => { setCustom(v); setCustomError(null); }} maxLength={40} autoCapitalize="words" error={customError} onSubmitEditing={addCustom} returnKeyType="done" />
+          <Button label={tr('u7.names.addToFavs')} icon="plus" variant="secondary" loading={busy === custom.trim() && !!custom.trim()} onPress={addCustom} />
         </View>
       </Card>
     </View>
@@ -295,23 +294,23 @@ export default function NamesScreen() {
 
   const empty = loading || failed || view === 'ideas' || view === 'swipe' ? null : explore ? (
     query.trim() ? (
-      <EmptyState icon="search" title="Aucun prénom ne correspond" body="Vous pouvez ajouter votre propre idée à vos favoris." action={{ label: `Ajouter « ${query.trim().slice(0, 40)} »`, icon: 'heart', onPress: () => void addFavorite(query.trim().slice(0, 40)) }} />
+      <EmptyState icon="search" title={tr('u7.names.noMatch')} body={tr('u7.names.noMatchAdd')} action={{ label: tr('u7.names.addQuoted', { q: query.trim().slice(0, 40) }), icon: 'heart', onPress: () => void addFavorite(query.trim().slice(0, 40)) }} />
     ) : (
-      <EmptyState icon="search" title="Aucun prénom ne correspond" body="Essayez un autre filtre, ou ajoutez votre propre idée ci-dessous." action={{ label: 'Voir tous les prénoms', icon: 'refresh-cw', onPress: () => { setGender(null); setLetter(null); setLen(null); setPop(null); setOrigin(null); } }} />
+      <EmptyState icon="search" title={tr('u7.names.noMatch')} body={tr('u7.names.noMatchTry')} action={{ label: tr('u7.names.seeAll'), icon: 'refresh-cw', onPress: () => { setGender(null); setLetter(null); setLen(null); setPop(null); setOrigin(null); } }} />
     )
   ) : (
-    <EmptyState icon="heart" title="Aucun favori pour l’instant" body="Touchez le cœur à côté d’un prénom pour le mettre de côté." action={{ label: 'Explorer les prénoms', icon: 'search', onPress: () => setView('explore') }} />
+    <EmptyState icon="heart" title={tr('u7.names.noFav')} body={tr('u7.names.noFavBody')} action={{ label: tr('u7.names.explore'), icon: 'search', onPress: () => setView('explore') }} />
   );
 
   const contentStyle = { paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.xs };
 
   return (
-    <Screen back title="Prénoms" subtitle="Idées, coups de cœur, vote à deux." scroll={false} padded={false}
+    <Screen back title={tr('u7.names.title')} subtitle={tr('u7.names.subtitle')} scroll={false} padded={false}
       action={(() => {
         const q = query.trim().slice(0, 40);
-        if (explore && q && !favByName.has(norm(q))) return { label: L(`Ajouter « ${q} » aux favoris`, `Add “${q}” to favourites`), icon: 'heart' as const, onPress: () => void addFavorite(q), testID: 'names-main-action' };
-        if (view === 'favorites') return { label: L('Explorer les prénoms', 'Explore names'), icon: 'search' as const, onPress: () => setView('explore'), testID: 'names-main-action' };
-        return { label: `${L('Mes favoris', 'My favourites')}${favorites?.length ? ` (${favorites.length})` : ''}`, icon: 'heart' as const, onPress: () => setView('favorites'), testID: 'names-main-action' };
+        if (explore && q && !favByName.has(norm(q))) return { label: tr('u7.names.addQuotedFav', { q }), icon: 'heart' as const, onPress: () => void addFavorite(q), testID: 'names-main-action' };
+        if (view === 'favorites') return { label: tr('u7.names.explore'), icon: 'search' as const, onPress: () => setView('explore'), testID: 'names-main-action' };
+        return { label: `${tr('u7.names.myFavs')}${favorites?.length ? ` (${favorites.length})` : ''}`, icon: 'heart' as const, onPress: () => setView('favorites'), testID: 'names-main-action' };
       })()}>
       {explore ? (
         <VirtualList

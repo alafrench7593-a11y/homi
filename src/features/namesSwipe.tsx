@@ -9,11 +9,10 @@ import { GlassSurface } from '@/components/Glass';
 import { IconButton, Text, haptic } from '@/components/ui';
 import { deck } from '@/lib/domain/quickPicks';
 import type { NameEntry } from '@/lib/domain/names';
-import { getLocale } from '@/i18n';
+import { t as tr } from '@/i18n';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
-const L = (fr: string, en: string) => (getLocale().startsWith('fr') ? fr : en);
 const THRESHOLD = 90;
 
 export function NameSwipeDeck({ names, favorites, onLike, describe }: {
@@ -56,8 +55,8 @@ export function NameSwipeDeck({ names, favorites, onLike, describe }: {
     return (
       <GlassSurface fill={t.colors.surface} depth={2} radius={28}>
         <View style={{ padding: spacing.xl, alignItems: 'center', gap: 6 }} testID="names-swipe-empty">
-          <Text variant="heading" center>{L('Plus de prénoms avec ces filtres', 'No more names with these filters')}</Text>
-          <Text muted center>{L('Changez de filtre ou retrouvez vos coups de cœur dans les favoris.', 'Change filters or find your picks in favourites.')}</Text>
+          <Text variant="heading" center>{tr('u6.names_swipe.none_title')}</Text>
+          <Text muted center>{tr('u6.names_swipe.none_body')}</Text>
         </View>
       </GlassSurface>
     );
@@ -67,7 +66,7 @@ export function NameSwipeDeck({ names, favorites, onLike, describe }: {
   const passOp = x.interpolate({ inputRange: [-THRESHOLD, 0], outputRange: [1, 0], extrapolate: 'clamp' });
   return (
     <View style={{ gap: spacing.md }} testID="names-swipe">
-      <Text variant="caption" muted center>{L('Glissez à droite : favori · à gauche : passer', 'Swipe right: favourite · left: skip')}{liked ? ` · ${liked} ♥` : ''}</Text>
+      <Text variant="caption" muted center>{tr('u6.names_swipe.hint')}{liked ? ` · ${liked} ♥` : ''}</Text>
       <View style={{ height: 230 }}>
         {pile[1] ? (
           <View style={{ position: 'absolute', left: 14, right: 14, top: 10, bottom: -6, opacity: 0.55 }}>
@@ -81,17 +80,17 @@ export function NameSwipeDeck({ names, favorites, onLike, describe }: {
               <Text muted center numberOfLines={3}>{describe(current)}</Text>
             </View>
             <Animated.View pointerEvents="none" style={{ position: 'absolute', top: 18, left: 18, opacity: likeOp, transform: [{ rotate: '-10deg' }], borderWidth: 2, borderColor: t.colors.primary, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 2 }}>
-              <Text weight="bold" color={t.colors.primary}>♥ {L('FAVORI', 'LIKE')}</Text>
+              <Text weight="bold" color={t.colors.primary}>♥ {tr('u6.names_swipe.like')}</Text>
             </Animated.View>
             <Animated.View pointerEvents="none" style={{ position: 'absolute', top: 18, right: 18, opacity: passOp, transform: [{ rotate: '10deg' }], borderWidth: 2, borderColor: t.colors.textMuted, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 2 }}>
-              <Text weight="bold" color={t.colors.textMuted}>{L('PASSER', 'SKIP')}</Text>
+              <Text weight="bold" color={t.colors.textMuted}>{tr('u6.names_swipe.skip')}</Text>
             </Animated.View>
           </GlassSurface>
         </Animated.View>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.xl }}>
-        <IconButton icon="x" tone="filled" size={26} label={L(`Passer ${current.name}`, `Skip ${current.name}`)} onPress={() => fling(false)} />
-        <IconButton icon="heart" tone="primary" size={26} label={L(`Ajouter ${current.name} aux favoris`, `Add ${current.name} to favourites`)} onPress={() => fling(true)} />
+        <IconButton icon="x" tone="filled" size={26} label={tr('u6.names_swipe.skip_name', { name: current.name })} onPress={() => fling(false)} />
+        <IconButton icon="heart" tone="primary" size={26} label={tr('u6.names_swipe.add_name', { name: current.name })} onPress={() => fling(true)} />
       </View>
     </View>
   );

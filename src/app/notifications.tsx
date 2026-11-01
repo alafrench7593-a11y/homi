@@ -11,27 +11,28 @@ import { useToast } from '@/components/Overlays';
 import { useRelevantNotifications } from '@/lib/data/hooks-scope';
 import { useDeleteNotification, useMarkAllNotificationsRead, useMarkNotificationRead } from '@/lib/data/hooks-me';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { timeAgo } from '@/lib/domain/dates';
 import type { AppNotification } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { t as tr, formatRelative } from '@/i18n';
 
+/** `label` = clé de traduction (voir catLabel). */
 const CATEGORY: Record<AppNotification['category'], { icon: IconName; label: string }> = {
-  reminder: { icon: 'bell', label: 'Rappel' },
-  community_reply: { icon: 'message-circle', label: 'Communauté' },
-  community_comment: { icon: 'message-square', label: 'Communauté' },
-  community_like: { icon: 'heart', label: 'Communauté' },
-  community_saved: { icon: 'bookmark', label: 'Communauté' },
-  community_moderation: { icon: 'shield', label: 'Modération' },
-  community_follow: { icon: 'user-plus', label: 'Communauté' },
-  community_mention: { icon: 'at-sign', label: 'Mention' },
-  community_group: { icon: 'users', label: 'Groupe' },
-  assistant: { icon: 'help-circle', label: 'Assistant' },
-  subscription: { icon: 'star', label: 'Abonnement' },
-  product_recall: { icon: 'alert-triangle', label: 'Rappel de produit' },
-  system: { icon: 'info', label: 'Au fil de nous' },
-  family: { icon: 'users', label: 'Foyer' },
+  reminder: { icon: 'bell', label: 'u2.notif.cat_reminder' },
+  community_reply: { icon: 'message-circle', label: 'u2.notif.cat_community' },
+  community_comment: { icon: 'message-square', label: 'u2.notif.cat_community' },
+  community_like: { icon: 'heart', label: 'u2.notif.cat_community' },
+  community_saved: { icon: 'bookmark', label: 'u2.notif.cat_community' },
+  community_moderation: { icon: 'shield', label: 'u2.notif.cat_moderation' },
+  community_follow: { icon: 'user-plus', label: 'u2.notif.cat_community' },
+  community_mention: { icon: 'at-sign', label: 'u2.notif.cat_mention' },
+  community_group: { icon: 'users', label: 'u2.notif.cat_group' },
+  assistant: { icon: 'help-circle', label: 'u2.notif.cat_assistant' },
+  subscription: { icon: 'star', label: 'u2.notif.cat_subscription' },
+  product_recall: { icon: 'alert-triangle', label: 'u2.notif.cat_recall' },
+  system: { icon: 'info', label: 'u2.notif.cat_system' },
+  family: { icon: 'users', label: 'u2.notif.cat_family' },
 };
 
 type Group = 'all' | 'reminders' | 'community' | 'products' | 'home';
@@ -39,12 +40,24 @@ type Group = 'all' | 'reminders' | 'community' | 'products' | 'home';
 const GROUP_OF = (c: AppNotification['category']): Exclude<Group, 'all'> =>
   c === 'reminder' ? 'reminders' : c.startsWith('community') ? 'community' : c === 'product_recall' ? 'products' : 'home';
 const GROUPS: { value: Group; label: string; icon: IconName }[] = [
-  { value: 'all', label: 'Tout', icon: 'inbox' },
-  { value: 'reminders', label: 'Rappels', icon: 'bell' },
-  { value: 'community', label: 'Communauté', icon: 'message-circle' },
-  { value: 'products', label: 'Produits', icon: 'alert-triangle' },
-  { value: 'home', label: 'Foyer et compte', icon: 'home' },
+  { value: 'all', label: 'u2.notif.g_all', icon: 'inbox' },
+  { value: 'reminders', label: 'u2.notif.g_reminders', icon: 'bell' },
+  { value: 'community', label: 'u2.notif.cat_community', icon: 'message-circle' },
+  { value: 'products', label: 'u2.notif.g_products', icon: 'alert-triangle' },
+  { value: 'home', label: 'u2.notif.g_home', icon: 'home' },
 ];
+
+const catLabel = (key: string) => tr(key as never);
+
+/** « il y a 5 minutes », « hier »… dans la langue courante. */
+function ago(iso: string) {
+  const min = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60000));
+  if (min < 1) return formatRelative(0, 'second');
+  if (min < 60) return formatRelative(-min, 'minute');
+  const h = Math.floor(min / 60);
+  if (h < 24) return formatRelative(-h, 'hour');
+  return formatRelative(-Math.floor(h / 24), 'day');
+}
 
 /** Lien interne de la notification : deep_link, sinon payload.route / payload.url / payload.deep_link. */
 function routeOf(n: Pick<AppNotification, 'deep_link' | 'payload'>): string | null {
@@ -83,8 +96,8 @@ export default function NotificationsScreen() {
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: isUnread ? t.colors.surface : t.colors.surfaceAlt }}>
         <Tappable
           accessibilityRole="button"
-          accessibilityLabel={`${isUnread ? 'Non lue. ' : ''}${meta.label} : ${n.title}${n.body ? `. ${n.body}` : ''}`}
-          accessibilityHint={to ? 'Ouvre l’écran concerné' : isUnread ? 'Marque comme lue' : undefined}
+          accessibilityLabel={`${isUnread ? `${tr('u2.notif.unread_dot')} ` : ''}${catLabel(meta.label)} : ${n.title}${n.body ? `. ${n.body}` : ''}`}
+          accessibilityHint={to ? tr('u2.notif.hint_open') : isUnread ? tr('u2.notif.hint_mark') : undefined}
           onPress={() => { haptic('selection'); openNotif(n); }}
           style={({ pressed }) => ({ flex: 1, flexDirection: 'row', gap: spacing.sm, padding: spacing.md, paddingRight: 0, minHeight: MIN_TOUCH, opacity: pressed ? 0.8 : 1 })}
         >
@@ -97,21 +110,21 @@ export default function NotificationsScreen() {
               <Text weight={isUnread ? 'bold' : 'medium'} style={{ flex: 1 }}>{n.title}</Text>
             </Row>
             {n.body ? <Text variant="small" muted numberOfLines={3}>{n.body}</Text> : null}
-            <Text variant="caption" muted>{meta.label} · {timeAgo(n.created_at)}</Text>
+            <Text variant="caption" muted>{catLabel(meta.label)} · {ago(n.created_at)}</Text>
           </View>
           {to && <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
         </Tappable>
-        {isUnread ? <IconButton icon="check" label={`Marquer comme lue : ${n.title}`} color={t.colors.primary} size={18} onPress={() => { haptic('selection'); markRead.mutate(n.id, { onError: (e) => toast(friendlyError(e), 'error') }); }} /> : null}
-        <IconButton icon="x" label={`Supprimer la notification ${n.title}`} color={t.colors.textMuted} size={18} onPress={() => { if (del.isPending && del.variables === n.id) return; del.mutate(n.id, { onError: (e) => toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error') }); }} />
+        {isUnread ? <IconButton icon="check" label={tr('u2.notif.mark_read', { title: n.title })} color={t.colors.primary} size={18} onPress={() => { haptic('selection'); markRead.mutate(n.id, { onError: (e) => toast(friendlyError(e), 'error') }); }} /> : null}
+        <IconButton icon="x" label={tr('u2.notif.delete_a11y', { title: n.title })} color={t.colors.textMuted} size={18} onPress={() => { if (del.isPending && del.variables === n.id) return; del.mutate(n.id, { onError: (e) => toast(friendlyError(e, tr('u2.notif.delete_failed')), 'error') }); }} />
       </View>
     );
   }
 
   type Item = { kind: 'section'; title: string } | { kind: 'notif'; n: AppNotification };
   const items = useMemo<Item[]>(() => [
-    ...(unread.length ? [{ kind: 'section', title: 'Non lues' } as const] : []),
+    ...(unread.length ? [{ kind: 'section', title: tr('u2.notif.unread') } as const] : []),
     ...unread.map((n) => ({ kind: 'notif', n }) as const),
-    ...(read.length ? [{ kind: 'section', title: 'Déjà lues' } as const] : []),
+    ...(read.length ? [{ kind: 'section', title: tr('u2.notif.read') } as const] : []),
     ...read.map((n) => ({ kind: 'notif', n }) as const),
   ], [unread, read]);
   const loading = isLoading && !data;
@@ -120,11 +133,11 @@ export default function NotificationsScreen() {
   return (
     <Screen
       back
-      title="Notifications"
-      subtitle={allUnread.length ? `${allUnread.length} non lue${allUnread.length > 1 ? 's' : ''}` : 'Vous êtes à jour.'}
+      title={tr('u2.notif.title')}
+      subtitle={allUnread.length ? tr('u2.notif.n_unread', { count: allUnread.length }) : tr('u2.notif.up_to_date')}
       action={allUnread.length > 0
-        ? { label: 'Tout marquer comme lu', icon: 'check', disabled: markAll.isPending, testID: 'notif-mark-all', onPress: () => markAll.mutate(undefined, { onSuccess: () => toast('Tout est marqué comme lu.'), onError: (e) => toast(friendlyError(e), 'error') }) }
-        : { label: 'Gérer mes rappels', icon: 'settings', testID: 'notif-settings', onPress: () => router.push('/settings/reminders' as never) }}
+        ? { label: tr('u2.notif.mark_all'), icon: 'check', disabled: markAll.isPending, testID: 'notif-mark-all', onPress: () => markAll.mutate(undefined, { onSuccess: () => toast(tr('u2.notif.all_marked')), onError: (e) => toast(friendlyError(e), 'error') }) }
+        : { label: tr('u2.notif.manage'), icon: 'settings', testID: 'notif-settings', onPress: () => router.push('/settings/reminders' as never) }}
       scroll={false}
       padded={false}
     >
@@ -136,27 +149,27 @@ export default function NotificationsScreen() {
         onRefresh={() => void refetch()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
-        ListHeaderComponent={loading ? <Skeleton rows={5} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} title="Impossible d’afficher vos notifications" /> : (
+        ListHeaderComponent={loading ? <Skeleton rows={5} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} title={tr('u2.notif.load_error')} /> : (
           <View style={{ gap: spacing.sm }}>
-          <TodaySummary title="En bref" items={[
-            { icon: 'bell', value: String(allUnread.length), label: allUnread.length > 1 ? 'Non lues' : 'Non lue' },
-            { icon: 'clock', value: String((data ?? []).filter((n) => n.category === 'reminder').length), label: 'Rappels' },
-            { icon: 'alert-triangle', value: String((data ?? []).filter((n) => n.category === 'product_recall').length), label: 'Rappels de produit' },
+          <TodaySummary title={tr('u2.notif.brief')} items={[
+            { icon: 'bell', value: String(allUnread.length), label: allUnread.length > 1 ? tr('u2.notif.unread') : tr('u2.notif.one_unread') },
+            { icon: 'clock', value: String((data ?? []).filter((n) => n.category === 'reminder').length), label: tr('u2.notif.g_reminders') },
+            { icon: 'alert-triangle', value: String((data ?? []).filter((n) => n.category === 'product_recall').length), label: tr('u2.notif.cat_recall') },
           ]} />
           {(data ?? []).length ? (
             <Row wrap gap={6} testID="notif-filters">
               {GROUPS.filter((g) => g.value === 'all' || (data ?? []).some((n) => GROUP_OF(n.category) === g.value)).map((g) => {
                 const c = g.value === 'all' ? allUnread.length : allUnread.filter((n) => GROUP_OF(n.category) === g.value).length;
-                return <Chip key={g.value} icon={g.icon} label={c ? `${g.label} · ${c}` : g.label} selected={group === g.value} onPress={() => { haptic('selection'); setGroup(g.value); }} testID={`notif-filter-${g.value}`} />;
+                return <Chip key={g.value} icon={g.icon} label={c ? `${catLabel(g.label)} · ${c}` : catLabel(g.label)} selected={group === g.value} onPress={() => { haptic('selection'); setGroup(g.value); }} testID={`notif-filter-${g.value}`} />;
               })}
             </Row>
           ) : null}
           </View>
         )}
         ListEmptyComponent={loading || failed ? null : (
-          <EmptyState icon="bell" title="Rien de nouveau" body="Vos rappels, les réponses de la communauté et les alertes importantes apparaîtront ici." action={{ label: 'Gérer mes rappels', icon: 'settings', onPress: () => router.push('/settings/reminders' as never) }} />
+          <EmptyState icon="bell" title={tr('u2.notif.nothing')} body={tr('u2.notif.nothing_body')} action={{ label: tr('u2.notif.manage'), icon: 'settings', onPress: () => router.push('/settings/reminders' as never) }} />
         )}
-        ListFooterComponent={<Text variant="caption" muted center style={{ marginTop: spacing.sm }}>Gérez vos rappels et autorisations de notification dans les réglages.</Text>}
+        ListFooterComponent={<Text variant="caption" muted center style={{ marginTop: spacing.sm }}>{tr('u2.notif.footer')}</Text>}
       />
     </Screen>
   );

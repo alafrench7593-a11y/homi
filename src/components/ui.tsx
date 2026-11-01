@@ -544,8 +544,8 @@ function BannerText({ text, fold, accent }: { text: string; fold: boolean; accen
     <>
       <Text variant="small" color={t.colors.text} numberOfLines={long && !open ? 2 : undefined} accessibilityLabel={text}>{text}</Text>
       {long ? (
-        <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? 'Réduire' : 'Lire la suite'} hitSlop={10} style={{ alignSelf: 'flex-start', paddingVertical: 2 }}>
-          <Text variant="caption" weight="bold" color={accent}>{open ? 'Réduire' : 'Lire la suite'}</Text>
+        <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')} hitSlop={10} style={{ alignSelf: 'flex-start', paddingVertical: 2 }}>
+          <Text variant="caption" weight="bold" color={accent}>{open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')}</Text>
         </Pressable>
       ) : null}
     </>

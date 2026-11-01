@@ -17,15 +17,16 @@ import {
 import { timeAgo } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
-const STATUS_LABEL: Record<string, string> = { visible: 'Visible', hidden: 'Masqué', pending_review: 'En attente de relecture', removed: 'Supprimé' };
-const ARTICLE_STATUS: Record<string, string> = { draft: 'Brouillons', in_review: 'En relecture', published: 'Publiés', archived: 'Archivés' };
-const JOURNEY_LABEL: Record<string, string> = { avoid: 'Contraception', ttc: 'Projet de bébé', pregnant: 'Grossesse', newborn: 'Nouveau-né', child: 'Enfant', family: 'Famille' };
+const statusLabel = (): Record<string, string> => ({ visible: tr('u5.admin.st_visible'), hidden: tr('u5.admin.st_hidden'), pending_review: tr('u5.admin.st_pending'), removed: tr('u5.admin.st_removed') });
+const articleStatus = (): Record<string, string> => ({ draft: tr('u5.admin.as_draft'), in_review: tr('u5.admin.as_review'), published: tr('u5.admin.as_published'), archived: tr('u5.admin.as_archived') });
+const journeyLabel = (): Record<string, string> => ({ avoid: tr('u5.admin.j_avoid'), ttc: tr('u5.admin.j_ttc'), pregnant: tr('u5.admin.j_pregnant'), newborn: tr('u5.admin.j_newborn'), child: tr('u5.admin.j_child'), family: tr('u5.admin.j_family') });
 
 function Stat({ label, value }: { label: string; value: number | string | undefined }) {
   const t = useTheme();
   return (
-    <View style={{ flexBasis: '47%', flexGrow: 1, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, gap: 2 }} accessible accessibilityLabel={`${label} : ${value ?? 'inconnu'}`}>
+    <View style={{ flexBasis: '47%', flexGrow: 1, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, gap: 2 }} accessible accessibilityLabel={tr('u5.admin.stat_a11y', { label, value: value ?? tr('u5.admin.unknown') })}>
       <Text variant="heading">{value ?? '—'}</Text>
       <Text variant="caption" muted>{label}</Text>
     </View>
@@ -38,7 +39,7 @@ function ModerationCard({ item }: { item: ModItem }) {
   const moderate = useModerate();
   const act = async (action: ModAction, label: string) => {
     if (moderate.isPending) return;
-    if (action === 'remove' && !(await confirm('Supprimer ce contenu ?', 'Il ne sera plus visible par personne. L’action est journalisée.', 'Supprimer'))) return;
+    if (action === 'remove' && !(await confirm(tr('u5.admin.rm_t'), tr('u5.admin.rm_b'), tr('u5.admin.delete')))) return;
     try {
       await moderate.mutateAsync({ item, action });
       toast(label);
@@ -50,18 +51,18 @@ function ModerationCard({ item }: { item: ModItem }) {
     <Card>
       <Row style={{ justifyContent: 'space-between' }}>
         <Text variant="caption" weight="bold" color={item.status === 'visible' ? t.colors.textMuted : t.colors.danger}>
-          {`${item.kind === 'post' ? 'Publication' : 'Commentaire'} · ${STATUS_LABEL[item.status] ?? item.status}`}
+          {`${item.kind === 'post' ? tr('u5.admin.post') : tr('u5.admin.comment')} · ${statusLabel()[item.status] ?? item.status}`}
         </Text>
         <Text variant="caption" muted>{timeAgo(item.created_at)}</Text>
       </Row>
       {item.title ? <Text weight="bold" style={{ marginTop: 4 }}>{item.title}</Text> : null}
       <Text variant="small" numberOfLines={6} style={{ marginTop: 2 }}>{item.body}</Text>
-      {item.report_count ? <Text variant="caption" muted style={{ marginTop: 4 }}>{`${item.report_count} signalement${item.report_count > 1 ? 's' : ''}`}</Text> : null}
+      {item.report_count ? <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u5.admin.reports', { count: item.report_count })}</Text> : null}
       <Row wrap style={{ marginTop: spacing.sm }}>
-        {item.status !== 'visible' ? <Button label="Rétablir" size="sm" variant="secondary" disabled={moderate.isPending} onPress={() => act('restore', 'Contenu rétabli.')} /> : null}
-        {item.status === 'visible' ? <Button label="Masquer" size="sm" variant="secondary" disabled={moderate.isPending} onPress={() => act('hide', 'Contenu masqué.')} /> : null}
-        {item.report_count && item.status === 'visible' ? <Button label="Classer sans suite" size="sm" variant="ghost" disabled={moderate.isPending} onPress={() => act('dismiss_report', 'Signalements classés.')} /> : null}
-        <Button label="Supprimer" size="sm" variant="ghost" disabled={moderate.isPending} onPress={() => act('remove', 'Contenu supprimé.')} />
+        {item.status !== 'visible' ? <Button label={tr('u5.admin.restore')} size="sm" variant="secondary" disabled={moderate.isPending} onPress={() => act('restore', tr('u5.admin.restored'))} /> : null}
+        {item.status === 'visible' ? <Button label={tr('u5.admin.hide')} size="sm" variant="secondary" disabled={moderate.isPending} onPress={() => act('hide', tr('u5.admin.hidden'))} /> : null}
+        {item.report_count && item.status === 'visible' ? <Button label={tr('u5.admin.dismiss')} size="sm" variant="ghost" disabled={moderate.isPending} onPress={() => act('dismiss_report', tr('u5.admin.dismissed'))} /> : null}
+        <Button label={tr('u5.admin.delete')} size="sm" variant="ghost" disabled={moderate.isPending} onPress={() => act('remove', tr('u5.admin.removed'))} />
       </Row>
     </Card>
   );
@@ -99,39 +100,39 @@ export default function AdminScreen() {
 
   async function send() {
     const e: Record<string, string> = {};
-    if (title.trim().length < 3 || title.trim().length > 80) e.title = 'Titre de 3 à 80 caractères.';
-    if (body.trim().length < 3 || body.trim().length > 240) e.body = 'Message de 3 à 240 caractères.';
-    if (link.trim() && !link.trim().startsWith('/')) e.link = 'Lien interne commençant par « / » (ex. /settings/subscription).';
+    if (title.trim().length < 3 || title.trim().length > 80) e.title = tr('u5.admin.e_title');
+    if (body.trim().length < 3 || body.trim().length > 240) e.body = tr('u5.admin.e_body');
+    if (link.trim() && !link.trim().startsWith('/')) e.link = tr('u5.admin.e_link');
     setBErrors(e);
     if (Object.keys(e).length) return;
     const ok = await confirm(
-      'Envoyer cette annonce à tous les comptes ?',
-      `« ${title.trim()} »\n\n${body.trim()}\n\nElle apparaîtra dans le centre de notifications de chaque personne. Cette action ne peut pas être annulée.`,
-      'Envoyer',
+      tr('u5.admin.send_t'),
+      tr('u5.admin.send_b', { title: title.trim(), body: body.trim() }),
+      tr('u5.admin.send_ok'),
     );
     if (!ok || broadcast.isPending) return;
     try {
       const n = await broadcast.mutateAsync({ title: title.trim(), body: body.trim(), deepLink: link.trim() || null });
-      toast(`Annonce envoyée à ${n} compte${n > 1 ? 's' : ''}.`);
+      toast(tr('u5.admin.sent', { count: n }));
       setTitle(''); setBody(''); setLink('');
     } catch (err) {
       toast(friendlyError(err), 'error');
     }
   }
 
-  if (isLoading) return <Screen back title="Administration"><Skeleton kind="detail" rows={5} /></Screen>;
+  if (isLoading) return <Screen back title={tr('u5.admin.title')}><Skeleton kind="detail" rows={5} /></Screen>;
 
   if (!moderator && !editor) {
     return (
-      <Screen back title="Accès réservé">
+      <Screen back title={tr('u5.admin.denied')}>
         <Card tone="soft">
-          <Text weight="bold">Cet espace est réservé à l’équipe</Text>
-          <Text variant="small" muted style={{ marginTop: 4 }}>Il permet à l’équipe de modération et d’administration de veiller sur la communauté. Si vous pensez devoir y accéder, contactez l’administrateur de l’application.</Text>
-          <Button label="Retour aux réglages" size="sm" variant="secondary" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => (router.canGoBack() ? router.back() : router.replace('/settings'))} />
+          <Text weight="bold">{tr('u5.admin.team_only')}</Text>
+          <Text variant="small" muted style={{ marginTop: 4 }}>{tr('u5.admin.team_only_b')}</Text>
+          <Button label={tr('u5.admin.back')} size="sm" variant="secondary" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => (router.canGoBack() ? router.back() : router.replace('/settings'))} />
         </Card>
         {isDemo ? (
-          <Banner tone="demo" title="Mode démonstration" action={<Button label="Afficher un aperçu" size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => setPreview(true)} />}>
-            {'Aucun rôle n’existe hors connexion à Supabase. Vous pouvez afficher un aperçu du tableau de bord avec les données de cet appareil.'}
+          <Banner tone="demo" title={tr('u5.admin.demo')} action={<Button label={tr('u5.admin.preview')} size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => setPreview(true)} />}>
+            {tr('u5.admin.demo_b')}
           </Banner>
         ) : null}
       </Screen>
@@ -144,34 +145,34 @@ export default function AdminScreen() {
 
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xxs }}>
-      {preview ? <Banner tone="demo" title="Aperçu de démonstration">{'Données de cet appareil uniquement. Une annonce n’est envoyée qu’à vous-même.'}</Banner> : null}
+      {preview ? <Banner tone="demo" title={tr('u5.admin.preview_t')}>{tr('u5.admin.preview_b')}</Banner> : null}
 
       {admin ? (
         <>
-          <SectionTitle title="En chiffres" action="Actualiser" onAction={() => stats.refetch()} />
+          <SectionTitle title={tr('u5.admin.figures')} action={tr('u5.admin.refresh')} onAction={() => stats.refetch()} />
           {stats.isLoading && !stats.data ? <Skeleton kind="card" rows={1} /> : stats.isError && !stats.data ? (
-            <ErrorView error={stats.error} onRetry={() => void stats.refetch()} title="Statistiques indisponibles" />
+            <ErrorView error={stats.error} onRetry={() => void stats.refetch()} title={tr('u5.admin.stats_err')} />
           ) : (
             <Card>
               <Row wrap>
-                <Stat label="Comptes" value={stats.data?.accounts} />
-                <Stat label="Parcours d’accueil terminés" value={stats.data?.onboarded} />
-                <Stat label="Grossesses en cours" value={stats.data?.active_pregnancies} />
-                <Stat label="dont grossesses multiples" value={stats.data?.multiple_pregnancies} />
-                <Stat label="Profils enfants" value={stats.data?.children} />
-                <Stat label="Abonnements actifs" value={stats.data?.premium} />
-                <Stat label="Publications (7 jours)" value={stats.data?.posts_7d} />
-                <Stat label="Signalements ouverts" value={stats.data?.open_reports} />
+                <Stat label={tr('u5.admin.s_acc')} value={stats.data?.accounts} />
+                <Stat label={tr('u5.admin.s_onb')} value={stats.data?.onboarded} />
+                <Stat label={tr('u5.admin.s_preg')} value={stats.data?.active_pregnancies} />
+                <Stat label={tr('u5.admin.s_mult')} value={stats.data?.multiple_pregnancies} />
+                <Stat label={tr('u5.admin.s_child')} value={stats.data?.children} />
+                <Stat label={tr('u5.admin.s_prem')} value={stats.data?.premium} />
+                <Stat label={tr('u5.admin.s_posts')} value={stats.data?.posts_7d} />
+                <Stat label={tr('u5.admin.s_rep')} value={stats.data?.open_reports} />
               </Row>
               {stats.data?.journeys && Object.keys(stats.data.journeys).length ? (
                 <View style={{ marginTop: spacing.sm, gap: 2 }}>
-                  <Text variant="label">Parcours déclarés</Text>
+                  <Text variant="label">{tr('u5.admin.journeys')}</Text>
                   {Object.entries(stats.data.journeys).sort((a, b) => b[1] - a[1]).map(([j, n]) => (
-                    <Row key={j} style={{ justifyContent: 'space-between' }}><Text variant="small">{JOURNEY_LABEL[j] ?? j}</Text><Text variant="small" weight="bold">{n}</Text></Row>
+                    <Row key={j} style={{ justifyContent: 'space-between' }}><Text variant="small">{journeyLabel()[j] ?? j}</Text><Text variant="small" weight="bold">{n}</Text></Row>
                   ))}
                 </View>
               ) : null}
-              <Text variant="caption" muted style={{ marginTop: spacing.sm }}>Agrégats uniquement : aucune donnée individuelle n’est consultable ici.</Text>
+              <Text variant="caption" muted style={{ marginTop: spacing.sm }}>{tr('u5.admin.agg')}</Text>
             </Card>
           )}
         </>
@@ -179,9 +180,9 @@ export default function AdminScreen() {
 
       {moderator ? (
         <>
-          <SectionTitle title="File de modération" action="Actualiser" onAction={() => queue.refetch()} />
+          <SectionTitle title={tr('u5.admin.queue')} action={tr('u5.admin.refresh')} onAction={() => queue.refetch()} />
           {queueLoading ? <Skeleton kind="card" rows={2} /> : queueError ? (
-            <ErrorView error={queue.error} onRetry={() => void queue.refetch()} title="File de modération indisponible" />
+            <ErrorView error={queue.error} onRetry={() => void queue.refetch()} title={tr('u5.admin.queue_err')} />
           ) : null}
         </>
       ) : null}
@@ -191,31 +192,31 @@ export default function AdminScreen() {
   const footer = (
     <View style={{ gap: spacing.md, marginTop: spacing.xxs }}>
 
-      {editor ? <Button label="Recettes : relecture et validation" icon="book-open" variant="secondary" onPress={() => router.push('/admin/recipes')} testID="admin-open-recipes" /> : null}
-      {editor ? <Button label="Recettes : importer des brouillons" icon="upload" variant="secondary" onPress={() => router.push('/admin/import-recipes')} testID="admin-open-import" /> : null}
-      {editor ? <Button label="Produits enfants : catalogue et prix" icon="shopping-bag" variant="secondary" onPress={() => router.push('/admin/products')} testID="admin-open-products" /> : null}
-      {editor ? <Button label="Sources et lectures" icon="link" variant="secondary" onPress={() => router.push('/admin/resources')} testID="admin-open-resources" /> : null}
+      {editor ? <Button label={tr('u5.admin.b_recipes')} icon="book-open" variant="secondary" onPress={() => router.push('/admin/recipes')} testID="admin-open-recipes" /> : null}
+      {editor ? <Button label={tr('u5.admin.b_import')} icon="upload" variant="secondary" onPress={() => router.push('/admin/import-recipes')} testID="admin-open-import" /> : null}
+      {editor ? <Button label={tr('u5.admin.b_products')} icon="shopping-bag" variant="secondary" onPress={() => router.push('/admin/products')} testID="admin-open-products" /> : null}
+      {editor ? <Button label={tr('u5.admin.b_resources')} icon="link" variant="secondary" onPress={() => router.push('/admin/resources')} testID="admin-open-resources" /> : null}
       {editor ? (
         <>
-          <SectionTitle title="Validation des articles" />
+          <SectionTitle title={tr('u5.admin.articles')} />
           {articles.isLoading && !articles.data ? <Skeleton kind="card" rows={1} /> : articles.isError && !articles.data ? (
-            <ErrorView error={articles.error} onRetry={() => void articles.refetch()} title="Articles indisponibles" />
+            <ErrorView error={articles.error} onRetry={() => void articles.refetch()} title={tr('u5.admin.articles_err')} />
           ) : (
             <Card>
               <Row wrap>
-                {Object.entries(ARTICLE_STATUS).map(([k, label]) => <Stat key={k} label={label} value={articleOverview.byStatus[k] ?? 0} />)}
+                {Object.entries(articleStatus()).map(([k, label]) => <Stat key={k} label={label} value={articleOverview.byStatus[k] ?? 0} />)}
               </Row>
               <Divider />
-              <Text variant="small">{`Publiés sans relecture professionnelle enregistrée : ${articleOverview.unreviewed.length}`}</Text>
+              <Text variant="small">{tr('u5.admin.unrev', { count: articleOverview.unreviewed.length })}</Text>
               {articleOverview.safetyUnreviewed.length ? (
-                <Text variant="small" weight="bold">{`dont ${articleOverview.safetyUnreviewed.length} article${articleOverview.safetyUnreviewed.length > 1 ? 's' : ''} de sécurité — à faire relire en priorité`}</Text>
+                <Text variant="small" weight="bold">{tr('u5.admin.unrev_safety', { count: articleOverview.safetyUnreviewed.length })}</Text>
               ) : null}
-              <Text variant="small">{`Relus il y a plus d’un an : ${articleOverview.stale.length}`}</Text>
+              <Text variant="small">{tr('u5.admin.stale', { count: articleOverview.stale.length })}</Text>
               {articleOverview.unreviewed.slice(0, 8).map((a) => (
-                <Text key={a.id} variant="caption" muted>{`• ${a.title}${a.is_safety_critical ? ' (sécurité)' : ''}`}</Text>
+                <Text key={a.id} variant="caption" muted>{`• ${a.title}${a.is_safety_critical ? ` (${tr('u5.admin.safety')})` : ''}`}</Text>
               ))}
-              {articleOverview.unreviewed.length > 8 ? <Text variant="caption" muted>{`… et ${articleOverview.unreviewed.length - 8} autres`}</Text> : null}
-              <Text variant="caption" muted style={{ marginTop: spacing.xs }}>Un relecteur n’est jamais inventé : le champ reste vide tant qu’aucun professionnel n’a validé l’article.</Text>
+              {articleOverview.unreviewed.length > 8 ? <Text variant="caption" muted>{tr('u5.admin.others', { count: articleOverview.unreviewed.length - 8 })}</Text> : null}
+              <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('u5.admin.no_invent')}</Text>
             </Card>
           )}
         </>
@@ -223,14 +224,14 @@ export default function AdminScreen() {
 
       {admin ? (
         <>
-          <SectionTitle title="Annonce à tous" />
+          <SectionTitle title={tr('u5.admin.broadcast')} />
           <Card>
             <View style={{ gap: spacing.sm }}>
-              <Banner tone="warning">{'À réserver aux informations importantes (maintenance, nouveauté majeure, alerte officielle). Pas de message commercial.'}</Banner>
-              <Field label="Titre" value={title} onChangeText={setTitle} maxLength={80} error={bErrors.title} />
-              <Field label="Message" value={body} onChangeText={setBody} maxLength={240} multiline error={bErrors.body} />
-              <Field label="Lien dans l’application" optional value={link} onChangeText={setLink} autoCapitalize="none" placeholder="/settings/subscription" error={bErrors.link} />
-              <Button label="Envoyer l’annonce" icon="send" loading={broadcast.isPending} onPress={send} />
+              <Banner tone="warning">{tr('u5.admin.broadcast_w')}</Banner>
+              <Field label={tr('u5.admin.f_title')} value={title} onChangeText={setTitle} maxLength={80} error={bErrors.title} />
+              <Field label={tr('u5.admin.f_msg')} value={body} onChangeText={setBody} maxLength={240} multiline error={bErrors.body} />
+              <Field label={tr('u5.admin.f_link')} optional value={link} onChangeText={setLink} autoCapitalize="none" placeholder="/settings/subscription" error={bErrors.link} />
+              <Button label={tr('u5.admin.send')} icon="send" loading={broadcast.isPending} onPress={send} />
             </View>
           </Card>
         </>
@@ -239,7 +240,7 @@ export default function AdminScreen() {
   );
 
   return (
-    <Screen back scroll={false} padded={false} title="Administration" subtitle={admin ? 'Statistiques anonymisées, modération, annonces.' : 'Modération de la communauté.'}>
+    <Screen back scroll={false} padded={false} title={tr('u5.admin.title')} subtitle={admin ? tr('u5.admin.sub_admin') : tr('u5.admin.sub_mod')}>
       <VirtualList
         data={queueRows}
         keyExtractor={(item) => `${item.kind}-${item.id}`}
@@ -249,9 +250,9 @@ export default function AdminScreen() {
         ListEmptyComponent={moderator && !queueLoading && !queueError ? (
           <EmptyState
             icon="check-circle"
-            title="Rien à examiner pour le moment"
-            body="Aucun contenu signalé, masqué ou en attente."
-            action={{ label: 'Actualiser', icon: 'refresh-cw', onPress: () => void queue.refetch() }}
+            title={tr('u5.admin.empty_t')}
+            body={tr('u5.admin.empty_b')}
+            action={{ label: tr('u5.admin.refresh'), icon: 'refresh-cw', onPress: () => void queue.refetch() }}
           />
         ) : null}
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}

@@ -10,9 +10,10 @@ import { Banner, Button, Card, Chip, Row, SectionTitle, Text } from '@/component
 import { consultationGuidance } from '@/lib/domain/cycle';
 import { EXAMS_FOOTER, EXAMS_INTRO, POSSIBLE_EXAMS, WHEN_TO_TALK, WHO_TO_SEE } from '@/content/fertility';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
-const AGES = [{ label: 'Moins de 35 ans', value: 30 }, { label: '35 à 39 ans', value: 37 }, { label: '40 ans ou plus', value: 41 }];
-const MONTHS = [{ label: 'Moins de 6 mois', value: 3 }, { label: '6 à 11 mois', value: 8 }, { label: '12 mois ou plus', value: 12 }];
+const AGES = [{ k: 'u3.fertExams.age1', value: 30 }, { k: 'u3.fertExams.age2', value: 37 }, { k: 'u3.fertExams.age3', value: 41 }] as const;
+const MONTHS = [{ k: 'u3.fertExams.mo1', value: 3 }, { k: 'u3.fertExams.mo2', value: 8 }, { k: 'u3.fertExams.mo3', value: 12 }] as const;
 
 const Bullets = ({ items }: { items: string[] }) => (
   <View style={{ gap: 6 }}>{items.map((i) => <Text key={i} variant="small">{`• ${i}`}</Text>)}</View>
@@ -26,41 +27,41 @@ export default function ExamsScreen() {
   const g = useMemo(() => consultationGuidance({ age, monthsTrying: months ?? 0, irregularCycles: irregular, knownCondition: known }), [age, months, irregular, known]);
 
   return (
-    <Screen back title="Examens et consultations possibles" subtitle="En cas de difficulté à concevoir.">
-      <Banner tone="info" title="Information, pas diagnostic">{EXAMS_INTRO}</Banner>
+    <Screen back title={tr('u3.fertExams.title')} subtitle={tr('u3.fertExams.subtitle')}>
+      <Banner tone="info" title={tr('u3.fertExams.infoT')}>{EXAMS_INTRO}</Banner>
 
-      <SectionTitle title="Quand en parler ?" />
+      <SectionTitle title={tr('u3.fertExams.when')} />
       <Card><Bullets items={WHEN_TO_TALK} /></Card>
 
       <Card tone="lavender">
-        <Text weight="bold">Un repère pour vous</Text>
-        <Text variant="small" muted>Rien n’est enregistré : ces réponses servent uniquement à afficher le repère ci-dessous.</Text>
-        <Text variant="label" style={{ marginTop: spacing.sm }}>Votre âge</Text>
-        <Row wrap style={{ marginTop: 6 }}>{AGES.map((a) => <Chip key={a.label} label={a.label} selected={age === a.value} onPress={() => setAge(age === a.value ? null : a.value)} />)}</Row>
-        <Text variant="label" style={{ marginTop: spacing.sm }}>Depuis combien de temps essayez-vous ?</Text>
-        <Row wrap style={{ marginTop: 6 }}>{MONTHS.map((m) => <Chip key={m.label} label={m.label} selected={months === m.value} onPress={() => setMonths(months === m.value ? null : m.value)} />)}</Row>
+        <Text weight="bold">{tr('u3.fertExams.hint')}</Text>
+        <Text variant="small" muted>{tr('u3.fertExams.nothingSaved')}</Text>
+        <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u3.fertExams.yourAge')}</Text>
+        <Row wrap style={{ marginTop: 6 }}>{AGES.map((a) => <Chip key={a.k} label={tr(a.k)} selected={age === a.value} onPress={() => setAge(age === a.value ? null : a.value)} />)}</Row>
+        <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u3.fertExams.howLong')}</Text>
+        <Row wrap style={{ marginTop: 6 }}>{MONTHS.map((m) => <Chip key={m.k} label={tr(m.k)} selected={months === m.value} onPress={() => setMonths(months === m.value ? null : m.value)} />)}</Row>
         <Row wrap style={{ marginTop: spacing.sm }}>
-          <Chip label="Cycles très irréguliers ou absents" selected={irregular} onPress={() => setIrregular((v) => !v)} />
-          <Chip label="Antécédent ou situation connue" selected={known} onPress={() => setKnown((v) => !v)} />
+          <Chip label={tr('u3.fertExams.irreg')} selected={irregular} onPress={() => setIrregular((v) => !v)} />
+          <Chip label={tr('u3.fertExams.known')} selected={known} onPress={() => setKnown((v) => !v)} />
         </Row>
         <View style={{ marginTop: spacing.sm, gap: 4 }}>
           {g.suggestTalkingNow ? (
             <>
-              <Text weight="bold">Il peut être utile d’en parler dès maintenant à un professionnel.</Text>
+              <Text weight="bold">{tr('u3.fertExams.talkNow')}</Text>
               {g.reasons.map((r) => <Text key={r} variant="small">{`• ${r}`}</Text>)}
             </>
           ) : (
-            <Text variant="small">{`Repère général : en parler après ${g.thresholdMonths} mois d’essais sans grossesse — ou plus tôt si vous en ressentez le besoin.`}</Text>
+            <Text variant="small">{tr('u3.fertExams.general', { months: g.thresholdMonths })}</Text>
           )}
-          <Text variant="caption" muted>Ce repère ne dit rien de votre fertilité : seul un professionnel peut évaluer votre situation.</Text>
+          <Text variant="caption" muted>{tr('u3.fertExams.noFert')}</Text>
         </View>
       </Card>
 
-      <SectionTitle title="À qui en parler ?" />
+      <SectionTitle title={tr('u3.fertExams.who')} />
       <Card><Bullets items={WHO_TO_SEE} /></Card>
 
-      <SectionTitle title="Ce qui peut être discuté ou proposé" />
-      <Text variant="small" muted>Selon votre situation, le professionnel peut évoquer certains examens. C’est lui qui décide de ce qui est utile : cette liste n’est ni complète ni une prescription.</Text>
+      <SectionTitle title={tr('u3.fertExams.disc')} />
+      <Text variant="small" muted>{tr('u3.fertExams.discNote')}</Text>
       <Card>
         {POSSIBLE_EXAMS.map((e) => (
           <View key={e.title} style={{ gap: 2, paddingVertical: 6 }}>
@@ -70,8 +71,8 @@ export default function ExamsScreen() {
         ))}
       </Card>
       <Text variant="small" muted>{EXAMS_FOOTER}</Text>
-      <Banner tone="info" title="Prendre soin de soi">Les essais qui durent peuvent peser sur le moral et sur le couple. En parler — à un proche, un professionnel ou un psychologue — peut aider.</Banner>
-      <Button label="Préparer mes questions" icon="help-circle" onPress={() => router.push('/fertility/consultation' as never)} />
+      <Banner tone="info" title={tr('u3.fertExams.care')}>{tr('u3.fertExams.careBody')}</Banner>
+      <Button label={tr('u3.fertExams.prep')} icon="help-circle" onPress={() => router.push('/fertility/consultation' as never)} />
     </Screen>
   );
 }

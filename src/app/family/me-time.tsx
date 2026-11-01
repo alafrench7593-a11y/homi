@@ -19,9 +19,10 @@ import { addLocalDays, suggestFreeSlots, type CareShift } from '@/lib/domain/fam
 import { todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
+import { t as tr, formatDate, formatTime } from '@/i18n';
 
-const hm = (iso: string) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-const fmt = (s: { starts_at: string; ends_at: string }) => `${new Date(s.starts_at).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} · ${hm(s.starts_at)} – ${hm(s.ends_at)}`;
+const hm = (iso: string) => formatTime(iso);
+const fmt = (s: { starts_at: string; ends_at: string }) => `${formatDate(s.starts_at, { weekday: 'long', day: 'numeric', month: 'long' })} · ${hm(s.starts_at)} – ${hm(s.ends_at)}`;
 
 export default function MeTime() {
   const toast = useToast();
@@ -60,94 +61,94 @@ export default function MeTime() {
   async function reserve(slot: { starts_at: string; ends_at: string }, withRelay: boolean) {
     try {
       await save.mutateAsync([{ kind: 'me_time', user_id: me, starts_at: slot.starts_at, ends_at: slot.ends_at, note: note.trim() || null }]);
-      if (withRelay) await ask.mutateAsync({ kind: 'relay', message: `Je réserve ${hm(slot.starts_at)} – ${hm(slot.ends_at)} pour souffler : peux-tu prendre le relais ?`, starts_at: slot.starts_at, ends_at: slot.ends_at });
+      if (withRelay) await ask.mutateAsync({ kind: 'relay', message: tr('u2.metime.msg_book', { range: `${hm(slot.starts_at)} – ${hm(slot.ends_at)}` }), starts_at: slot.starts_at, ends_at: slot.ends_at });
       setNote('');
-      toast(withRelay ? 'Réservé, et demande de relais envoyée.' : 'Moment réservé.');
+      toast(withRelay ? tr('u2.metime.reserved_relay') : tr('u2.metime.reserved'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   async function reserveManual(withRelay: boolean) {
     const a = parseFrDateTime(date, from);
     const b = parseFrDateTime(date, to);
-    if (!a || !b || b <= a) return toast('Vérifiez la date et les heures (ex. 14h, 15h30).', 'error');
-    if (Date.parse(b) <= Date.now()) return toast('Ce créneau est déjà passé : choisissez une heure à venir.', 'error');
+    if (!a || !b || b <= a) return toast(tr('u2.metime.check_dates'), 'error');
+    if (Date.parse(b) <= Date.now()) return toast(tr('u2.metime.past'), 'error');
     await reserve({ starts_at: a, ends_at: b }, withRelay);
   }
 
   async function postpone(s: CareShift) {
     const shift = (iso: string) => new Date(Date.parse(iso) + 86400000).toISOString();
-    try { await update.mutateAsync({ id: s.id, patch: { starts_at: shift(s.starts_at), ends_at: shift(s.ends_at) } }); toast('Reporté au lendemain, même heure.'); } catch (e) { toast(friendlyError(e), 'error'); }
+    try { await update.mutateAsync({ id: s.id, patch: { starts_at: shift(s.starts_at), ends_at: shift(s.ends_at) } }); toast(tr('u2.metime.postponed')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function cancel(s: CareShift) {
-    if (!(await confirm('Annuler ce moment ?', fmt(s), 'Annuler le moment'))) return;
-    try { await del.mutateAsync(s.id); toast('Annulé.'); } catch (e) { toast(friendlyError(e), 'error'); }
+    if (!(await confirm(tr('u2.metime.cancel_title'), fmt(s), tr('u2.metime.cancel_confirm')))) return;
+    try { await del.mutateAsync(s.id); toast(tr('u2.metime.cancelled')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   return (
-    <Screen back title="Temps pour soi" subtitle="Un moment à vous, sans avoir à le justifier."
-      action={slots[0] ? { label: `Réserver ${hm(slots[0].starts_at)} – ${hm(new Date(Math.min(Date.parse(slots[0].ends_at), Date.parse(slots[0].starts_at) + 3600000)).toISOString())}`, icon: 'sun', disabled: save.isPending, testID: 'metime-next-slot',
+    <Screen back title={tr('u2.metime.title')} subtitle={tr('u2.metime.subtitle')}
+      action={slots[0] ? { label: tr('u2.metime.book_range', { range: `${hm(slots[0].starts_at)} – ${hm(new Date(Math.min(Date.parse(slots[0].ends_at), Date.parse(slots[0].starts_at) + 3600000)).toISOString())}` }), icon: 'sun', disabled: save.isPending, testID: 'metime-next-slot',
         onPress: () => reserve({ starts_at: slots[0].starts_at, ends_at: new Date(Math.min(Date.parse(slots[0].ends_at), Date.parse(slots[0].starts_at) + 3600000)).toISOString() }, false) } : undefined}>
-      <TodaySummary title="Mon temps" items={[
-        { icon: 'sun', value: String(mine.length), label: mine.length > 1 ? 'Moments réservés' : 'Moment réservé' },
-        { icon: 'clock', value: mine[0] ? hm([...mine].sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1))[0].starts_at) : '—', label: 'Prochain' },
-        { icon: 'calendar', value: String(slots.length), label: which === 'today' ? 'Créneaux libres aujourd’hui' : 'Créneaux libres demain' },
+      <TodaySummary title={tr('u2.metime.my_time')} items={[
+        { icon: 'sun', value: String(mine.length), label: mine.length > 1 ? tr('u2.metime.booked_pl') : tr('u2.metime.booked_one') },
+        { icon: 'clock', value: mine[0] ? hm([...mine].sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1))[0].starts_at) : '—', label: tr('u2.metime.next') },
+        { icon: 'calendar', value: String(slots.length), label: which === 'today' ? tr('u2.metime.free_today') : tr('u2.metime.free_tomorrow') },
       ]} />
-      <SectionTitle title="Mes moments réservés" />
-      {mine.length === 0 ? <EmptyState icon="sun" title="Aucun moment réservé" body="Même 30 minutes comptent." /> : null}
+      <SectionTitle title={tr('u2.metime.my_booked')} />
+      {mine.length === 0 ? <EmptyState icon="sun" title={tr('u2.metime.none_title')} body={tr('u2.metime.none_body')} /> : null}
       {mine.map((s, i) => (
         <StaggerItem key={s.id} index={i}>
           <Card>
             <ListRow icon="sun" title={fmt(s)} subtitle={s.note ?? undefined} />
             <Row wrap style={{ marginTop: spacing.xs }}>
-              <Button label="Demander le relais" size="sm" variant="secondary" onPress={() => ask.mutateAsync({ kind: 'relay', message: `Je souffle ${hm(s.starts_at)} – ${hm(s.ends_at)} : peux-tu prendre le relais ?`, starts_at: s.starts_at, ends_at: s.ends_at }).then(() => toast('Demande envoyée.')).catch((e) => toast(friendlyError(e), 'error'))} />
-              <Button label="Reporter à demain" size="sm" variant="ghost" onPress={() => postpone(s)} />
-              <Button label="Annuler" size="sm" variant="ghost" onPress={() => cancel(s)} />
+              <Button label={tr('u2.metime.ask_relay')} size="sm" variant="secondary" onPress={() => ask.mutateAsync({ kind: 'relay', message: tr('u2.metime.msg_breathe', { range: `${hm(s.starts_at)} – ${hm(s.ends_at)}` }), starts_at: s.starts_at, ends_at: s.ends_at }).then(() => toast(tr('u2.metime.request_sent'))).catch((e) => toast(friendlyError(e), 'error'))} />
+              <Button label={tr('u2.metime.postpone')} size="sm" variant="ghost" onPress={() => postpone(s)} />
+              <Button label={tr('u2.metime.cancel')} size="sm" variant="ghost" onPress={() => cancel(s)} />
             </Row>
           </Card>
         </StaggerItem>
       ))}
 
-      <SectionTitle title="Créneaux libres dans l’agenda" />
-      <Segmented label="Jour" value={which} onChange={setWhich} options={[{ value: 'today', label: 'Aujourd’hui' }, { value: 'tomorrow', label: 'Demain' }]} />
+      <SectionTitle title={tr('u2.metime.free_in_calendar')} />
+      <Segmented label={tr('u2.metime.day')} value={which} onChange={setWhich} options={[{ value: 'today', label: tr('u2.metime.today') }, { value: 'tomorrow', label: tr('u2.metime.tomorrow') }]} />
       <Card>
         <DayAvailability day={day} busy={busyList} free={slots} onPick={(f) => reserve({ starts_at: f.starts_at, ends_at: new Date(Math.min(Date.parse(f.ends_at), Date.parse(f.starts_at) + 3600000)).toISOString() }, false)}
           reserved={shifts.filter((s) => s.kind === 'me_time' && s.user_id === me && s.status !== 'cancelled')} />
       </Card>
       <Card>
-        {slots.length === 0 ? <Text variant="small" muted>Pas de créneau d’une heure libre ce jour-là d’après l’agenda. Vous pouvez quand même en réserver un ci-dessous.</Text> : null}
+        {slots.length === 0 ? <Text variant="small" muted>{tr('u2.metime.no_slot')}</Text> : null}
         {slots.map((s) => (
           <View key={s.starts_at} style={{ paddingVertical: 6 }}>
             <Text weight="medium">{hm(s.starts_at)} – {hm(s.ends_at)}</Text>
             <Row wrap style={{ marginTop: 4 }}>
-              <Button label="Réserver 1 h" size="sm" onPress={() => reserve({ starts_at: s.starts_at, ends_at: new Date(Math.min(Date.parse(s.ends_at), Date.parse(s.starts_at) + 3600000)).toISOString() }, false)} loading={save.isPending} />
-              <Button label="Réserver + demander le relais" size="sm" variant="secondary" onPress={() => reserve({ starts_at: s.starts_at, ends_at: new Date(Math.min(Date.parse(s.ends_at), Date.parse(s.starts_at) + 3600000)).toISOString() }, true)} />
+              <Button label={tr('u2.metime.book_1h')} size="sm" onPress={() => reserve({ starts_at: s.starts_at, ends_at: new Date(Math.min(Date.parse(s.ends_at), Date.parse(s.starts_at) + 3600000)).toISOString() }, false)} loading={save.isPending} />
+              <Button label={tr('u2.metime.book_relay')} size="sm" variant="secondary" onPress={() => reserve({ starts_at: s.starts_at, ends_at: new Date(Math.min(Date.parse(s.ends_at), Date.parse(s.starts_at) + 3600000)).toISOString() }, true)} />
             </Row>
           </View>
         ))}
-        <Text variant="caption" muted style={{ marginTop: 6 }}>Calculé à partir des rendez-vous, des relais et de vos tâches datées. Ce n’est qu’une suggestion.</Text>
+        <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u2.metime.computed')}</Text>
       </Card>
 
-      <SectionTitle title="Choisir moi-même" />
+      <SectionTitle title={tr('u2.metime.choose')} />
       <Card>
         <View style={{ gap: spacing.sm }}>
-          <Field label="Date" value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" />
+          <Field label={tr('u2.metime.date')} value={date} onChangeText={setDate} placeholder={tr('u2.metime.date_ph')} keyboardType="numbers-and-punctuation" />
           <Row>
-            <View style={{ flex: 1 }}><Field label="De" value={from} onChangeText={setFrom} placeholder="14h" /></View>
-            <View style={{ flex: 1 }}><Field label="À" value={to} onChangeText={setTo} placeholder="15h30" /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u2.metime.from')} value={from} onChangeText={setFrom} placeholder="14h" /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u2.metime.to')} value={to} onChangeText={setTo} placeholder="15h30" /></View>
           </Row>
-          <Field label="Pour quoi faire ?" optional value={note} onChangeText={setNote} maxLength={300} placeholder="Dormir, marcher, ne rien faire" />
+          <Field label={tr('u2.metime.what_for')} optional value={note} onChangeText={setNote} maxLength={300} placeholder={tr('u2.metime.what_for_ph')} />
           <Row wrap>
-            <Button label="Réserver" icon="sun" onPress={() => reserveManual(false)} loading={save.isPending} />
-            <Button label="Réserver + relais" variant="secondary" onPress={() => reserveManual(true)} />
+            <Button label={tr('u2.metime.book')} icon="sun" onPress={() => reserveManual(false)} loading={save.isPending} />
+            <Button label={tr('u2.metime.book_relay_short')} variant="secondary" onPress={() => reserveManual(true)} />
           </Row>
         </View>
       </Card>
 
       {others.length ? (
         <>
-          <SectionTitle title="Les moments des autres" />
+          <SectionTitle title={tr('u2.metime.others')} />
           <Card>{others.map((s) => <ListRow key={s.id} icon="sun" title={labelOf(s.user_id)} subtitle={fmt(s)} />)}</Card>
-          <Text variant="caption" muted>Pour les protéger : pas de sollicitation pendant ces moments-là.</Text>
+          <Text variant="caption" muted>{tr('u2.metime.protect')}</Text>
         </>
       ) : null}
     </Screen>

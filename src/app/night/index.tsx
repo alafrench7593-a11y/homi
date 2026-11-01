@@ -20,6 +20,7 @@ import type { Breastfeed, Diaper } from '@/lib/types';
 import { Aurora } from '@/components/Aurora';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { t as tr } from '@/i18n';
 
 const GOLD = '#FF8FB1';
 const TEXT = '#F2DFC1';
@@ -80,7 +81,7 @@ export default function NightMode() {
     try {
       await fn();
     } catch (e) {
-      toast(friendlyError(e, 'Action impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u6.night.action_failed')), 'error');
     } finally {
       setBusy(null);
     }
@@ -93,14 +94,14 @@ export default function NightMode() {
       if (openSleep) {
         await backend.update('sleeps', { ended_at: new Date().toISOString() }, [eq('id', openSleep.id)]);
         inv('sleeps');
-        toast(`Sommeil enregistré : ${formatDuration(elapsedMin)}.`);
+        toast(tr('u6.night.sleep_saved', { duration: formatDuration(elapsedMin) }));
       } else {
         await addSleep.mutateAsync({ child_id: child.id, household_id: child.household_id, started_at: new Date().toISOString(), kind: new Date().getHours() >= 19 || new Date().getHours() < 7 ? 'night' : 'nap' });
-        toast('Bonne nuit. Le sommeil est en cours.', 'info');
+        toast(tr('u6.night.good_night'), 'info');
       }
       haptic('success');
     } catch (e) {
-      toast(friendlyError(e, 'Action impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u6.night.action_failed')), 'error');
     } finally {
       setBusy(null);
     }
@@ -115,7 +116,7 @@ export default function NightMode() {
       const events = [...(current[0]?.wake_events ?? []), { at: new Date().toISOString() }].slice(-50);
       await backend.update('sleeps', { wakeups: (current[0]?.wakeups ?? 0) + 1, wake_events: events }, [eq('id', sleepId)]);
       inv('sleeps');
-      toast('Réveil noté.', 'info');
+      toast(tr('u6.night.wake_noted'), 'info');
     });
   }
 
@@ -125,7 +126,7 @@ export default function NightMode() {
       const start = feedStart;
       await run('feed', async () => {
         await addFeed.mutateAsync({ child_id: child.id, household_id: child.household_id, side, started_at: start.at.toISOString(), ended_at: new Date().toISOString() });
-        toast(`Tétée enregistrée (${formatDuration((Date.now() - start.at.getTime()) / 60000)}).`);
+        toast(tr('u6.night.feed_saved', { duration: formatDuration((Date.now() - start.at.getTime()) / 60000) }));
         setFeedStart(null);
       });
     } else {
@@ -137,7 +138,7 @@ export default function NightMode() {
     if (!child) return;
     await run('diaper', async () => {
       await addDiaper.mutateAsync({ child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), wet: true, stool: false });
-      toast('Couche enregistrée.');
+      toast(tr('u6.night.diaper_saved'));
     });
   }
 
@@ -149,11 +150,11 @@ export default function NightMode() {
       {/* Défilement : sur petit écran (ou texte agrandi) rien n'est coupé ; le décor reste à l'intérieur de l'écran */}
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, gap: spacing.md }}>
         <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
-          <Tappable accessibilityRole="button" accessibilityLabel="Quitter le mode nuit" onPress={() => router.back()} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
-            <Row gap={6}><Icon name="x" color={MUTED} size={20} /><Text color={MUTED}>Quitter</Text></Row>
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.night.quit_a11y')} onPress={() => router.back()} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
+            <Row gap={6}><Icon name="x" color={MUTED} size={20} /><Text color={MUTED}>{tr('u6.night.quit')}</Text></Row>
           </Tappable>
           <Text variant="small" color={MUTED}>{formatTime(new Date(now))}</Text>
-          <Tappable accessibilityRole="button" accessibilityLabel="Numéros d’urgence" onPress={() => router.push('/emergency')} hitSlop={10} style={{ minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' }}>
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.night.emergency')} onPress={() => router.push('/emergency')} hitSlop={10} style={{ minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="life-buoy" color="#F0A0A0" size={22} />
           </Tappable>
         </Row>
@@ -170,8 +171,8 @@ export default function NightMode() {
           <View style={{ marginTop: spacing.xl }}><ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} /></View>
         ) : !child ? (
           <View style={{ marginTop: spacing.xxl, gap: spacing.md, alignItems: 'center' }}>
-            <Text color={TEXT} center>Ajoutez le profil d’un enfant pour utiliser le mode nuit.</Text>
-            <Button label="Ajouter un enfant" icon="plus" variant="night" onPress={() => router.push('/profiles/new?kind=child' as never)} />
+            <Text color={TEXT} center>{tr('u6.night.add_profile')}</Text>
+            <Button label={tr('u6.night.add_child')} icon="plus" variant="night" onPress={() => router.push('/profiles/new?kind=child' as never)} />
           </View>
         ) : (
           <>
@@ -179,58 +180,58 @@ export default function NightMode() {
               <Text variant="small" color={MUTED} center>{child.first_name}</Text>
               {openSleep ? (
                 <>
-                  <Text variant="small" color={GOLD}>dort depuis</Text>
+                  <Text variant="small" color={GOLD}>{tr('u6.night.sleeping_for')}</Text>
                   <Text style={{ fontSize: 56, lineHeight: 64 }} color={TEXT} accessibilityLiveRegion="polite">{formatDuration(elapsedMin)}</Text>
-                  <Text variant="small" color={MUTED}>depuis {formatTime(openSleep.started_at)}</Text>
+                  <Text variant="small" color={MUTED}>{tr('u6.night.since', { time: formatTime(openSleep.started_at) })}</Text>
                 </>
               ) : (
-                <Text variant="title" color={TEXT} center>Éveil</Text>
+                <Text variant="title" color={TEXT} center>{tr('u6.night.awake')}</Text>
               )}
               <Tappable
                 accessibilityRole="button"
-                accessibilityLabel={openSleep ? 'Arrêter le sommeil' : 'Démarrer le sommeil'}
+                accessibilityLabel={openSleep ? tr('u6.night.stop_sleep') : tr('u6.night.start_sleep')}
                 accessibilityState={{ busy: busy === 'sleep' }}
                 onPress={toggleSleep}
                 style={({ pressed }) => ({ marginTop: spacing.md, width: 168, height: 168, borderRadius: 84, borderWidth: 2, borderColor: GOLD, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? '#1D2450' : 'rgba(226,184,132,0.08)' })}
               >
                 <Icon name={openSleep ? 'sun' : 'moon'} color={GOLD} size={34} />
-                <Text weight="medium" color={TEXT} style={{ marginTop: 6 }}>{openSleep ? 'Réveil' : 'Il/elle dort'}</Text>
+                <Text weight="medium" color={TEXT} style={{ marginTop: 6 }}>{openSleep ? tr('u6.night.wake') : tr('u6.night.sleeps')}</Text>
               </Tappable>
               {openSleep && (
-                <Tappable onPress={addWakeup} accessibilityRole="button" accessibilityLabel="Noter un réveil nocturne" style={{ minHeight: 48, justifyContent: 'center' }}>
-                  <Text color={GOLD}>+ Noter un réveil</Text>
+                <Tappable onPress={addWakeup} accessibilityRole="button" accessibilityLabel={tr('u6.night.note_wake_a11y')} style={{ minHeight: 48, justifyContent: 'center' }}>
+                  <Text color={GOLD}>{tr('u6.night.note_wake')}</Text>
                 </Tappable>
               )}
             </View>
 
             {/* Cette nuit en un coup d'œil (saisies des dernières 24 h) */}
             <View testID="night-counts" style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.lg }} accessibilityRole="summary"
-              accessibilityLabel={`Dernières 24 heures : ${feeds?.length ?? 0} tétées, ${diapers?.length ?? 0} couches`}>
-              {[{ icon: 'droplet' as const, n: feeds?.length ?? 0, l: 'tétées' }, { icon: 'wind' as const, n: diapers?.length ?? 0, l: 'couches' }].map((x) => (
+              accessibilityLabel={tr('u6.night.counts_a11y', { feeds: feeds?.length ?? 0, diapers: diapers?.length ?? 0 })}>
+              {[{ icon: 'droplet' as const, n: feeds?.length ?? 0, l: 'feeds' }, { icon: 'wind' as const, n: diapers?.length ?? 0, l: 'diapers' }].map((x) => (
                 <Row key={x.l} gap={6}>
                   <Icon name={x.icon} color={GOLD} size={16} />
                   <Text weight="bold" color={TEXT}>{x.n}</Text>
-                  <Text variant="small" color={MUTED}>{x.l} · 24 h</Text>
+                  <Text variant="small" color={MUTED}>{x.l === 'feeds' ? tr('u6.night.feeds_24h') : tr('u6.night.diapers_24h')}</Text>
                 </Row>
               ))}
             </View>
 
             {feedStart && (
-              <Text center color={GOLD} accessibilityLiveRegion="polite">Tétée {feedStart.side === 'left' ? 'gauche' : 'droite'} en cours depuis {timeAgo(feedStart.at).replace('il y a ', '')} — touchez à nouveau pour terminer</Text>
+              <Text center color={GOLD} accessibilityLiveRegion="polite">{tr(feedStart.side === 'left' ? 'u6.night.feeding_left' : 'u6.night.feeding_right', { duration: formatDuration((now - feedStart.at.getTime()) / 60000) })}</Text>
             )}
             <Row>
-              <BigButton icon="droplet" label={feedStart?.side === 'left' ? 'Terminer' : 'Sein gauche'} sub={feeds?.[0] ? `dernière : ${timeAgo(feeds[0].started_at)}` : undefined} onPress={() => feed('left')} />
-              <BigButton icon="droplet" label={feedStart?.side === 'right' ? 'Terminer' : 'Sein droit'} onPress={() => feed('right')} />
+              <BigButton icon="droplet" label={feedStart?.side === 'left' ? tr('u6.night.finish') : tr('u6.night.left_breast')} sub={feeds?.[0] ? tr('u6.night.last', { ago: timeAgo(feeds[0].started_at) }) : undefined} onPress={() => feed('left')} />
+              <BigButton icon="droplet" label={feedStart?.side === 'right' ? tr('u6.night.finish') : tr('u6.night.right_breast')} onPress={() => feed('right')} />
             </Row>
             <Row>
-              <BigButton icon="coffee" label="Biberon" onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: child.id } })} />
-              <BigButton icon="wind" label="Couche" sub={diapers?.[0] ? `dernière : ${timeAgo(diapers[0].at)}` : undefined} onPress={diaper} />
+              <BigButton icon="coffee" label={tr('u6.night.bottle')} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: child.id } })} />
+              <BigButton icon="wind" label={tr('u6.night.diaper')} sub={diapers?.[0] ? tr('u6.night.last', { ago: timeAgo(diapers[0].at) }) : undefined} onPress={diaper} />
             </Row>
             <Row style={{ justifyContent: 'space-between' }}>
-              <Text variant="small" color={MUTED} style={{ flex: 1 }}>Vibrations</Text>
-              <Toggle label="Vibrations en mode nuit" value={vibrations} onChange={setVibrations} />
+              <Text variant="small" color={MUTED} style={{ flex: 1 }}>{tr('u6.night.vibrations')}</Text>
+              <Toggle label={tr('u6.night.vibrations_a11y')} value={vibrations} onChange={setVibrations} />
             </Row>
-            <Text variant="caption" color={MUTED} center>Aucun son. La luminosité de votre téléphone n’est pas modifiée.</Text>
+            <Text variant="caption" color={MUTED} center>{tr('u6.night.footer')}</Text>
           </>
         )}
       </ScrollView>

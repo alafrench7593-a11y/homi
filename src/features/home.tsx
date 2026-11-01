@@ -24,7 +24,7 @@ import type { Appointment, Bottle, Breastfeed, Child, Diaper, Pregnancy, Sleep }
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, NACRE, palette, radius, spacing } from '@/theme/tokens';
 import { LinearGradient } from 'expo-linear-gradient';
-import { formatDate, t as tr } from '@/i18n';
+import { formatDate, localeTag, t as tr } from '@/i18n';
 import { HomeCycleCard } from '@/features/cycle/HomeCycleCard';
 import { Tappable } from '@/components/Tappable';
 import { useBottleTimer } from '@/lib/data/hooks-bottle';
@@ -45,43 +45,43 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
     <View style={{ gap: spacing.xs }}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Grossesse : ${p.label}, ${countdownLabel(p.daysToDue)}. Ouvrir l’univers de la grossesse.`}
+        accessibilityLabel={tr('u5.home.preg_a11y', { label: p.label, countdown: countdownLabel(p.daysToDue) })}
         onPress={() => { haptic('selection'); router.push('/pregnancy'); }}
         style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })}
       >
         <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, minHeight: 236 }}>
           <LinearGradient colors={t.isDark ? ['rgba(255,255,255,0.02)', 'rgba(255,134,168,0.16)'] : ['rgba(255,255,255,0.55)', 'rgba(255,200,215,0.35)']} start={{ x: 0.2, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
-          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{n > 1 ? `GROSSESSE · ${n} BÉBÉS` : 'GROSSESSE'}</Text>
+          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{n > 1 ? tr('u5.home.preg_many', { n }) : tr('u5.home.preg')}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: spacing.md }}>
             <Text style={{ fontFamily: fonts.display, fontSize: 92, lineHeight: 90, letterSpacing: -5 }}>{p.weeksSA}</Text>
-            <Text variant="heading" color={t.colors.primary} style={{ marginBottom: 12, marginLeft: 4 }}>SA{p.extraDays ? ` +${p.extraDays} j` : ''}</Text>
+            <Text variant="heading" color={t.colors.primary} style={{ marginBottom: 12, marginLeft: 4 }}>{tr('u5.home.wa')}{p.extraDays ? tr('u5.home.wa_extra', { n: p.extraDays }) : ''}</Text>
           </View>
-          <Text variant="small" muted style={{ maxWidth: '52%' }}>Trimestre {p.trimester} · {p.weeksSG} semaines de grossesse</Text>
+          <Text variant="small" muted style={{ maxWidth: '52%' }}>{tr('u5.home.trimester', { trimester: p.trimester, weeks: p.weeksSG })}</Text>
           <View style={{ position: 'absolute', right: -14, top: 34, flexDirection: 'row' }} pointerEvents="none">
             {Array.from({ length: n }, (_, i) => (
-              <View key={i} style={{ marginLeft: i ? -orbSize * 0.35 : 0 }}><FetusArt week={p.weeksSA} growth={info.growth} size={orbSize} hue={ORB_HUES[i % 3]} interactive={false} accessibilityLabel={`Illustration artistique ${babies?.[i]?.nickname ? 'de ' + babies[i].nickname : 'du bébé'}, pas une échographie`} /></View>
+              <View key={i} style={{ marginLeft: i ? -orbSize * 0.35 : 0 }}><FetusArt week={p.weeksSA} growth={info.growth} size={orbSize} hue={ORB_HUES[i % 3]} interactive={false} accessibilityLabel={babies?.[i]?.nickname ? tr('u5.home.art_named', { name: babies[i].nickname as string }) : tr('u5.home.art_baby')} /></View>
             ))}
           </View>
           <View style={{ marginTop: 'auto', paddingTop: spacing.md }}>
             <Text variant="caption" muted style={{ alignSelf: 'flex-end', marginBottom: 4 }}>{pct} %</Text>
-            <ProgressBar value={pct / 100} color={NACRE[1]} gradient={NACRE} track={t.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(233,88,124,0.12)'} accessibilityLabel={`Grossesse avancée à ${pct} %`} />
+            <ProgressBar value={pct / 100} color={NACRE[1]} gradient={NACRE} track={t.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(233,88,124,0.12)'} accessibilityLabel={tr('u5.home.progress_a11y', { pct })} />
           </View>
         </View>
       </Pressable>
       <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-        <View style={tile} accessible accessibilityLabel={`Terme le ${new Date(pregnancy.due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}, ${countdownLabel(p.daysToDue)}`}>
-          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>TERME</Text>
-          <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 36, letterSpacing: -1 }}>{p.daysToDue > 0 ? `J-${p.daysToDue}` : 'Bientôt'}</Text>
-          <Text variant="small" muted>{new Date(pregnancy.due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</Text>
+        <View style={tile} accessible accessibilityLabel={tr('u5.home.due_a11y', { date: formatDate(pregnancy.due_date), countdown: countdownLabel(p.daysToDue) })}>
+          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('u5.home.due')}</Text>
+          <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 36, letterSpacing: -1 }}>{p.daysToDue > 0 ? tr('u5.home.d_minus', { n: p.daysToDue }) : tr('u5.home.soon')}</Text>
+          <Text variant="small" muted>{formatDate(pregnancy.due_date)}</Text>
           {isEstimatedDue(pregnancy) ? <Text variant="caption" weight="bold" color={t.colors.primary} testID="due-estimated">{tr('pj.due.estimated')}</Text> : null}
         </View>
-        <View style={tile} accessible accessibilityLabel={`Taille moyenne : ${formatLength(info.lengthCm)}, comme ${info.compare}`}>
-          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>TAILLE</Text>
-          <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 36, letterSpacing: -1 }}>{info.lengthCm == null ? '< 5 mm' : `${info.lengthCm} cm`}</Text>
+        <View style={tile} accessible accessibilityLabel={tr('u5.home.size_a11y', { length: formatLength(info.lengthCm), compare: info.compare })}>
+          <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('u5.home.size')}</Text>
+          <Text style={{ fontFamily: fonts.display, fontSize: 30, lineHeight: 36, letterSpacing: -1 }}>{info.lengthCm == null ? tr('u5.home.under5mm') : `${info.lengthCm} cm`}</Text>
           <Text variant="small" muted>{formatWeight(info.weightG)} · {info.compare}</Text>
         </View>
       </View>
-      <Text variant="caption" muted center>Moyennes générales sourcées (mpedia), pas les mesures de votre bébé · illustration artistique</Text>
+      <Text variant="caption" muted center>{tr('u5.home.averages')}</Text>
     </View>
   );
 }
@@ -104,28 +104,28 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
   const { active: bottleReminder } = useBottleTimer(child.id);
   // Heures (pas de « il y a … ») : l'information principale est le prochain rappel choisi par le parent
   const stats: { label: string; value: string }[] = [
-    { label: 'dernier repas', value: s.lastFeedAt ? formatClock(s.lastFeedAt) : '—' },
+    { label: tr('u5.home.last_meal'), value: s.lastFeedAt ? formatClock(s.lastFeedAt) : '—' },
     bottleReminder && Date.parse(bottleReminder.due_at) > Date.now()
-      ? { label: 'prochain rappel biberon', value: formatClock(bottleReminder.due_at) }
-      : { label: 'dernier change', value: lastDiaper ? formatClock(lastDiaper.at) : '—' },
-    { label: 'sommeil aujourd’hui', value: formatDuration(s.sleepMinutes) },
+      ? { label: tr('u5.home.next_bottle'), value: formatClock(bottleReminder.due_at) }
+      : { label: tr('u5.home.last_change'), value: lastDiaper ? formatClock(lastDiaper.at) : '—' },
+    { label: tr('u5.home.sleep_today'), value: formatDuration(s.sleepMinutes) },
   ];
 
   return (
     <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.xl, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, gap: spacing.sm }}>
       <View style={{ alignItems: 'center' }}>
-        <DayClock events={events} size={compact ? 220 : 290} label={`Journée de ${child.first_name}`}>
+        <DayClock events={events} size={compact ? 220 : 290} label={tr('u5.home.day_of', { name: child.first_name })}>
           {openSleep ? (
             <>
               <Icon name="moon" color={palette.lavenderInk} />
-              <Text variant="heading" center>dort</Text>
-              <Text variant="caption" muted center>depuis {timeAgo(openSleep.started_at).replace('il y a ', '')}</Text>
+              <Text variant="heading" center>{tr('u5.home.asleep')}</Text>
+              <Text variant="caption" muted center>{tr('u5.home.since', { time: timeAgo(openSleep.started_at).replace('il y a ', '') })}</Text>
             </>
           ) : (
             <>
               <Text variant="caption" muted center>{childAge(child.birth_date).label}</Text>
               <Text variant="title" center>{child.first_name}</Text>
-              <Text variant="caption" muted center>{s.bottleMl ? `${s.bottleMl} ml aujourd’hui` : 'les 24 dernières heures'}</Text>
+              <Text variant="caption" muted center>{s.bottleMl ? tr('u5.home.ml_today', { ml: s.bottleMl }) : tr('u5.home.last_24')}</Text>
             </>
           )}
         </DayClock>
@@ -141,7 +141,7 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
       </View>
       {openSleep && (
         <Tappable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: 12, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center' }}>
-          <Text weight="medium" color={palette.milk}>Ouvrir le mode nuit</Text>
+          <Text weight="medium" color={palette.milk}>{tr('u5.home.open_night')}</Text>
         </Tappable>
       )}
     </View>
@@ -203,9 +203,9 @@ export function QuickActions({ keys, childId, onCustomize }: { keys: string[]; c
         ))}
       </View>
       {onCustomize ? (
-        <Tappable accessibilityRole="button" accessibilityLabel="Choisir mes raccourcis et personnaliser l’accueil" onPress={onCustomize} style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 36, paddingHorizontal: 6 }}>
+        <Tappable accessibilityRole="button" accessibilityLabel={tr('u5.home.customize_a11y')} onPress={onCustomize} style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 36, paddingHorizontal: 6 }}>
           <Icon name="sliders" size={14} color={t.colors.textMuted} />
-          <Text variant="caption" muted>Personnaliser</Text>
+          <Text variant="caption" muted>{tr('u5.home.customize')}</Text>
         </Tappable>
       ) : null}
     </View>
@@ -219,7 +219,7 @@ function QuickButton({ k, childId }: { k: string; childId?: string }) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`Ajouter : ${QUICK[k].label}`}
+      accessibilityLabel={tr('u5.home.add_a11y', { label: QUICK[k].label })}
       onPress={() => { haptic('light'); setPlay((p) => p + 1); QUICK[k].go(childId); }}
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
@@ -258,10 +258,10 @@ export function UpcomingCard({ single = false }: { single?: boolean } = {}) {
   );
   return (
     <View>
-      {next && (!single || !nextReminder || Date.parse(next.starts_at) <= nextReminder.at!.getTime()) && row('calendar', next.title, new Date(next.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }), () => router.push('/appointments'))}
-      {nextReminder && (!single || !next || nextReminder.at!.getTime() < Date.parse(next.starts_at)) && row('bell', nextReminder.r.title, `Rappel ${nextReminder.at!.toLocaleString('fr-FR', { weekday: 'long', hour: '2-digit', minute: '2-digit' })}`, () => router.push('/settings/reminders'))}
+      {next && (!single || !nextReminder || Date.parse(next.starts_at) <= nextReminder.at!.getTime()) && row('calendar', next.title, new Date(next.starts_at).toLocaleString(localeTag(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }), () => router.push('/appointments'))}
+      {nextReminder && (!single || !next || nextReminder.at!.getTime() < Date.parse(next.starts_at)) && row('bell', nextReminder.r.title, tr('u5.home.reminder_at', { when: nextReminder.at!.toLocaleString(localeTag(), { weekday: 'long', hour: '2-digit', minute: '2-digit' }) }), () => router.push('/settings/reminders'))}
       {/* Résumé du jour : rendez-vous, sieste estimée, biberon, réponses, nouveautés (sans notification si on ne l'a pas choisie) */}
-      {row('sun', 'Résumé du jour', new Date().getHours() >= 17 ? 'La journée en bref' : 'Ce qui compte aujourd’hui', () => router.push('/today' as never), 'home-today')}
+      {row('sun', tr('u5.home.summary'), new Date().getHours() >= 17 ? tr('u5.home.day_brief') : tr('u5.home.what_matters'), () => router.push('/today' as never), 'home-today')}
     </View>
   );
 }
@@ -279,16 +279,16 @@ export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' | 'cycle' }) {
  * (Réglages › Mon accueil) mais sont masquées par défaut.
  */
 export const HOME_CARDS: { key: string; label: string; detail: string; defaultHidden?: boolean }[] = [
-  { key: 'story', label: 'Au fil de nous', detail: 'L’illustration de votre étape (cycle, grossesse ou âge de l’enfant affiché), discrète, en haut de l’accueil' },
-  { key: 'main', label: 'Carte principale', detail: 'Grossesse, post-partum, enfant, famille ou cycle selon le profil affiché' },
-  { key: 'quick', label: 'Mes actions du jour', detail: 'Quatre raccourcis au plus, propres au profil affiché, personnalisables' },
-  { key: 'upcoming', label: 'Prochain rendez-vous ou rappel', detail: '' },
-  { key: 'outings', label: 'Sorties près de chez moi', detail: 'Carte des cafés, parcs et activités pour sortir en famille' },
-  { key: 'community', label: 'Dans la communauté', detail: 'Une publication choisie pour vous et « Voir la communauté »' },
-  { key: 'recommendation', label: 'Recommandation du jour', detail: 'Un article ou une idée de repas adaptés' },
-  { key: 'article', label: 'Article recommandé', detail: '', defaultHidden: true },
-  { key: 'recipe', label: 'Recette recommandée', detail: 'Une seule idée de repas, adaptée au profil affiché', defaultHidden: true },
-  { key: 'assistant', label: 'Poser une question', detail: 'Assistant d’information', defaultHidden: true },
+  { key: 'story', get label() { return 'Au fil de nous'; }, get detail() { return tr('u5.home.hc_story_d'); } },
+  { key: 'main', get label() { return tr('u5.home.hc_main'); }, get detail() { return tr('u5.home.hc_main_d'); } },
+  { key: 'quick', get label() { return tr('u5.home.hc_quick'); }, get detail() { return tr('u5.home.hc_quick_d'); } },
+  { key: 'upcoming', get label() { return tr('u5.home.hc_upcoming'); }, get detail() { return ''; } },
+  { key: 'outings', get label() { return tr('u5.home.hc_outings'); }, get detail() { return tr('u5.home.hc_outings_d'); } },
+  { key: 'community', get label() { return tr('u5.home.hc_community'); }, get detail() { return tr('u5.home.hc_community_d'); } },
+  { key: 'recommendation', get label() { return tr('u5.home.hc_recommendation'); }, get detail() { return tr('u5.home.hc_recommendation_d'); } },
+  { key: 'article', get label() { return tr('u5.home.hc_article'); }, get detail() { return ''; }, defaultHidden: true },
+  { key: 'recipe', get label() { return tr('u5.home.hc_recipe'); }, get detail() { return tr('u5.home.hc_recipe_d'); }, defaultHidden: true },
+  { key: 'assistant', get label() { return tr('u5.home.hc_assistant'); }, get detail() { return tr('u5.home.hc_assistant_d'); }, defaultHidden: true },
 ];
 
 /** Cartes masquées : choix de la personne + cartes masquées par défaut qu'elle n'a jamais placées dans son ordre. */

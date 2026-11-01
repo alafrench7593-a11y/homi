@@ -24,11 +24,12 @@ import { useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { childAge } from '@/lib/domain/child';
 import { gentleTips, reviewLines, sleepReview } from '@/lib/domain/nightsHelp';
-import { agree, basisText, clock, notifyPrefs, type Estimate } from '@/lib/domain/sleepPlanner';
+import { basisText, clock, notifyPrefs, type Estimate } from '@/lib/domain/sleepPlanner';
 import { NIGHT_SOURCES, SAFE_SLEEP, SOOTHING_ROUTINES } from '@/content/nightHelp';
 import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export default function NightsHelp() {
   const t = useTheme();
@@ -43,21 +44,21 @@ export default function NightsHelp() {
   const review = useMemo(() => (child ? sleepReview(sleeps, child.id) : null), [child, sleeps]);
   if (!child) {
     return (
-      <Screen back title="M’aider pour les nuits">
+      <Screen back title={tr('u4.nh.title')}>
         {isLoading ? <Skeleton kind="detail" rows={5} /> : loadError ? (
-          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce profil" />
+          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title={tr('u4.child.loadError')} />
         ) : (
           <EmptyState
             icon="user-x"
-            title="Profil introuvable"
-            body="Ce profil est introuvable. Il a peut-être été supprimé."
-            action={{ label: 'Retour à l’accueil', icon: 'home', onPress: () => router.replace('/(tabs)') }}
+            title={tr('u4.child.notFound')}
+            body={tr('u4.child.notFoundBody')}
+            action={{ label: tr('u4.child.backHome'), icon: 'home', onPress: () => router.replace('/(tabs)') }}
           />
         )}
       </Screen>
     );
   }
-  if (loading || !plan || !review) return <Screen back title="M’aider pour les nuits"><Skeleton kind="detail" rows={5} /></Screen>;
+  if (loading || !plan || !review) return <Screen back title={tr('u4.nh.title')}><Skeleton kind="detail" rows={5} /></Screen>;
   const name = child.first_name;
   const age = childAge(child.birth_date);
   const prefs = notifyPrefs(profile);
@@ -65,64 +66,64 @@ export default function NightsHelp() {
   const routineSteps = profile?.routine_note ? profile.routine_note.split(/[,·→\n]+/).map((s) => s.trim()).filter(Boolean) : SOOTHING_ROUTINES[0].steps.slice(0, 4);
 
   return (
-    <Screen back title="M’aider pour les nuits" subtitle={`${name} · ${age.label}`}>
+    <Screen back title={tr('u4.nh.title')} subtitle={`${name} · ${age.label}`}>
       <View testID="nights-help" />
       <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(122,95,184,0.10)', 'rgba(40,32,70,0.0)'] : ['#EEF0FB', '#FFF7EE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2400, borderRadius: 32 }} />
 
       <Row wrap>
-        <Button label="La nuit est difficile" icon="moon" onPress={() => router.push(`/sleep/difficult/${child.id}` as never)} testID="nh-difficult" />
-        <Button label="Demander à l’IA sommeil" icon="message-circle" variant="secondary" onPress={() => router.push({ pathname: '/assistant/chat', params: { topic: 'sleep', child: child.id } })} testID="nh-ai" />
+        <Button label={tr('u4.nh.difficult')} icon="moon" onPress={() => router.push(`/sleep/difficult/${child.id}` as never)} testID="nh-difficult" />
+        <Button label={tr('u4.nh.askAi')} icon="message-circle" variant="secondary" onPress={() => router.push({ pathname: '/assistant/chat', params: { topic: 'sleep', child: child.id } })} testID="nh-ai" />
       </Row>
 
-      <SectionTitle title="Sommeil récent" />
+      <SectionTitle title={tr('u4.nh.recent')} />
       <Card testID="nh-review">
         {reviewLines(review).map((l) => <Text key={l} variant="small" style={{ marginBottom: 4 }}>{l}</Text>)}
         {review.changes.length ? (
           <View style={{ marginTop: spacing.xs, gap: 4 }} testID="nh-changes">
-            <Text variant="label">Changements par rapport au rythme habituel</Text>
+            <Text variant="label">{tr('u4.nh.changes')}</Text>
             {review.changes.map((c) => <Text key={c.kind} variant="small">• {c.text}</Text>)}
           </View>
-        ) : review.enough ? <Text variant="caption" muted>Pas de changement marqué par rapport aux jours précédents.</Text> : null}
-        <Button label="Graphiques et historique" icon="bar-chart-2" size="sm" variant="ghost" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => router.push({ pathname: '/sleep/[childId]', params: { childId: child.id, tab: 'trends' } } as never)} testID="nh-history" />
+        ) : review.enough ? <Text variant="caption" muted>{tr('u4.nh.noChange')}</Text> : null}
+        <Button label={tr('u4.nh.charts')} icon="bar-chart-2" size="sm" variant="ghost" style={{ alignSelf: 'flex-start', marginTop: 6 }} onPress={() => router.push({ pathname: '/sleep/[childId]', params: { childId: child.id, tab: 'trends' } } as never)} testID="nh-history" />
       </Card>
 
-      <SectionTitle title="Aujourd’hui" />
+      <SectionTitle title={tr('u4.nh.today')} />
       <SleepRecordButtons child={child} plan={plan} />
       <PremiumSection feature="sleep_insights" name={name}
-        preview={<Text variant="small">{`Avec Premium, la prochaine sieste et le moment du rituel du coucher de ${name} sont estimés d’après ses propres relevés, et vos avis « trop tôt » ou « trop tard » affinent les estimations suivantes.`}</Text>}>
+        preview={<Text variant="small">{tr('u4.nh.preview', { name })}</Text>}>
         <Card testID="nh-plan">
-          {plan.state !== 'awake' ? <Text variant="small">{plan.state === 'asleep_nap' ? `${name} fait la sieste.` : `${name} est ${agree(child.sex, 'endormi', 'endormie', 'endormi·e')}.`}</Text> : null}
-          {plan.nextNap && !plan.nextNap.overdue ? <Suggestion label="Prochaine sieste estimée" e={plan.nextNap} target="nap" child={child} /> : null}
-          {plan.bedtime && !plan.bedtime.overdue ? <Suggestion label="Rituel du coucher possible à partir de" e={plan.bedtime} target="bedtime" useRoutine child={child} /> : null}
-          {!plan.nextNap && !plan.bedtime ? <Text variant="small" muted>Pas d’estimation pour le moment : notez le prochain réveil pour en obtenir une.</Text> : null}
-          <Text variant="caption" muted style={{ marginTop: 6 }} testID="nh-basis">{`${basisText(plan, name)} Ce sont des repères souples, pas des horaires à respecter.`}</Text>
+          {plan.state !== 'awake' ? <Text variant="small">{plan.state === 'asleep_nap' ? tr('u4.nh.napping', { name }) : tr(child.sex === 'female' ? 'u4.nh.asleepF' : child.sex === 'male' ? 'u4.nh.asleepM' : 'u4.nh.asleepX', { name })}</Text> : null}
+          {plan.nextNap && !plan.nextNap.overdue ? <Suggestion label={tr('u4.nh.nextNap')} e={plan.nextNap} target="nap" child={child} /> : null}
+          {plan.bedtime && !plan.bedtime.overdue ? <Suggestion label={tr('u4.nh.bedtimeFrom')} e={plan.bedtime} target="bedtime" useRoutine child={child} /> : null}
+          {!plan.nextNap && !plan.bedtime ? <Text variant="small" muted>{tr('u4.nh.noEstimate')}</Text> : null}
+          <Text variant="caption" muted style={{ marginTop: 6 }} testID="nh-basis">{tr('u4.nh.soft', { basis: basisText(plan, name) })}</Text>
         </Card>
       </PremiumSection>
 
       <Card testID="nh-routine">
-        <Text weight="bold">Routine du soir</Text>
-        <Text variant="small" muted>{profile?.routine_note ? 'Votre routine :' : 'Une idée de départ, à adapter :'}</Text>
+        <Text weight="bold">{tr('u4.nh.evening')}</Text>
+        <Text variant="small" muted>{profile?.routine_note ? tr('u4.nh.yourRoutine') : tr('u4.nh.startIdea')}</Text>
         {routineSteps.map((s, i) => <Text key={`${i}-${s}`} variant="small">{`${i + 1}. ${s}`}</Text>)}
         <Row wrap style={{ marginTop: 6 }}>
-          <Button label="Personnaliser la routine" icon="edit-3" size="sm" variant="secondary" onPress={() => router.push({ pathname: '/sleep/[childId]', params: { childId: child.id, routine: '1' } } as never)} testID="nh-routine-edit" />
-          <Button label={prefs.enabled ? 'Mes rappels sont activés' : 'Choisir mes rappels'} icon="bell" size="sm" variant="ghost" onPress={() => router.push({ pathname: '/sleep/[childId]', params: { childId: child.id, tab: 'alerts' } } as never)} testID="nh-reminders" />
+          <Button label={tr('u4.nh.customise')} icon="edit-3" size="sm" variant="secondary" onPress={() => router.push({ pathname: '/sleep/[childId]', params: { childId: child.id, routine: '1' } } as never)} testID="nh-routine-edit" />
+          <Button label={prefs.enabled ? tr('u4.nh.remindersOn') : tr('u4.nh.chooseReminders')} icon="bell" size="sm" variant="ghost" onPress={() => router.push({ pathname: '/sleep/[childId]', params: { childId: child.id, tab: 'alerts' } } as never)} testID="nh-reminders" />
         </Row>
-        <Text variant="caption" muted>Chaque rappel est facultatif, modifiable et désactivable. Aucun réveil de bébé n’est jamais programmé.</Text>
+        <Text variant="caption" muted>{tr('u4.nh.reminderNote')}</Text>
       </Card>
 
-      <SectionTitle title="Petits conseils pour son âge" />
+      <SectionTitle title={tr('u4.nh.tipsTitle')} />
       <Card testID="nh-tips">
         {tips.map((x) => <Row key={x} style={{ alignItems: 'flex-start', marginBottom: 4 }}><Icon name="feather" size={14} color={t.colors.lavender} /><Text variant="small" style={{ flex: 1 }}>{x}</Text></Row>)}
-        <Text variant="caption" muted>Chaque enfant a son propre rythme. Aucune méthode n’est imposée, et il n’est jamais nécessaire de laisser pleurer votre bébé.</Text>
+        <Text variant="caption" muted>{tr('u4.nh.ownRhythm')}</Text>
       </Card>
 
-      <SectionTitle title="Couchage sécuritaire" />
+      <SectionTitle title={tr('u4.nh.safeTitle')} />
       <Card testID="nh-safe">
         {(allSafe ? SAFE_SLEEP : SAFE_SLEEP.slice(0, 4)).map((x) => <Text key={x} variant="small" style={{ marginBottom: 4 }}>• {x}</Text>)}
-        {!allSafe ? <Button label="Voir tous les repères" size="sm" variant="ghost" onPress={() => setAllSafe(true)} style={{ alignSelf: 'flex-start' }} testID="nh-safe-all" /> : null}
-        <Text variant="caption" muted>{`Sources : ${NIGHT_SOURCES.ameliCoucher.label} ; ${NIGHT_SOURCES.mpediaCoucher.label}.`}</Text>
+        {!allSafe ? <Button label={tr('u4.nh.seeAll')} size="sm" variant="ghost" onPress={() => setAllSafe(true)} style={{ alignSelf: 'flex-start' }} testID="nh-safe-all" /> : null}
+        <Text variant="caption" muted>{tr('u4.nh.sources', { a: NIGHT_SOURCES.ameliCoucher.label, b: NIGHT_SOURCES.mpediaCoucher.label })}</Text>
       </Card>
-      <Banner tone="info" icon="heart" title="Une difficulté qui dure ?">Si les nuits restent difficiles plusieurs semaines, si vous êtes épuisé·e ou si quelque chose vous inquiète, parlez-en à son médecin ou à la PMI. Allô Parents Bébé : 0 800 00 34 56 (gratuit).</Banner>
+      <Banner tone="info" icon="heart" title={tr('u4.nh.lasting')}>{tr('u4.nh.lastingBody')}</Banner>
     </Screen>
   );
 }
@@ -137,18 +138,18 @@ function Suggestion({ label, e, target, child, useRoutine }: { label: string; e:
       await addSleepFeedback(child, target, verdict, e.initial);
       inv('sleep_feedback');
       setSent(verdict);
-      toast(verdict === 'right' ? 'Merci, c’est noté.' : 'Merci : les prochaines estimations en tiendront compte.');
+      toast(verdict === 'right' ? tr('u4.nh.thanks') : tr('u4.nh.thanksNext'));
     } catch (err) { toast(friendlyError(err), 'error'); }
   }
   return (
     <View style={{ gap: 4, marginBottom: spacing.sm }} testID={`nh-suggest-${target}`}>
       <Text variant="small" muted>{label}</Text>
-      <Text variant="heading">{`vers ${clock(at)}`}</Text>
-      {useRoutine ? <Text variant="caption" muted>{`Coucher estimé vers ${clock(e.at)}.`}</Text> : null}
+      <Text variant="heading">{tr('u4.nh.around', { time: clock(at) })}</Text>
+      {useRoutine ? <Text variant="caption" muted>{tr('u4.nh.bedEst', { time: clock(e.at) })}</Text> : null}
       <Row wrap>
-        <Chip label="Trop tôt" selected={sent === 'early'} onPress={() => vote('early')} testID={`nh-${target}-early`} />
-        <Chip label="Trop tard" selected={sent === 'late'} onPress={() => vote('late')} testID={`nh-${target}-late`} />
-        <Chip label="Utile" icon="check" selected={sent === 'right'} onPress={() => vote('right')} testID={`nh-${target}-right`} />
+        <Chip label={tr('u4.nh.early')} selected={sent === 'early'} onPress={() => vote('early')} testID={`nh-${target}-early`} />
+        <Chip label={tr('u4.nh.late')} selected={sent === 'late'} onPress={() => vote('late')} testID={`nh-${target}-late`} />
+        <Chip label={tr('u4.nh.useful')} icon="check" selected={sent === 'right'} onPress={() => vote('right')} testID={`nh-${target}-right`} />
       </Row>
     </View>
   );

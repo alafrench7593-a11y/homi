@@ -23,6 +23,7 @@ import { overloadSignals, sameLocalDay, type FamilyTask, type RequestKind } from
 import { todayISO } from '@/lib/domain/dates';
 import { useUiStore } from '@/lib/store';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 type Filter = 'today' | 'upcoming' | 'unassigned' | 'done';
 
@@ -69,13 +70,13 @@ export default function FamilyHome() {
       state: x.status === 'todo' && x.due_at && !sameLocalDay(x.due_at, day) ? 'late' : state,
       time: x.due_at && sameLocalDay(x.due_at, day) ? clockFr(x.due_at) : '',
       title: x.title,
-      sub: [x.assignee_id ? labelOf(x.assignee_id) : 'Personne pour l’instant', x.essential ? 'essentielle' : null].filter(Boolean).join(' · '),
+      sub: [x.assignee_id ? labelOf(x.assignee_id) : tr('u2.fam.nobody_yet'), x.essential ? tr('u2.fam.essential_lc') : null].filter(Boolean).join(' · '),
       icon: 'check',
       onPress: () => setEditing(x),
       testID: `family-day-${x.id}`,
       action: x.status === 'done' ? undefined
-        : !x.assignee_id && me ? { label: 'Je m’en charge', onPress: () => void quickSave(x.id, { assignee_id: me }, 'C’est noté : vous vous en chargez.'), testID: `family-take-${x.id}` }
-          : { label: 'Fait', onPress: () => void quickSave(x.id, { status: 'done' }, 'Fait.'), testID: `family-done-${x.id}` },
+        : !x.assignee_id && me ? { label: tr('u2.fam.take'), onPress: () => void quickSave(x.id, { assignee_id: me }, tr('u2.fam.taken')), testID: `family-take-${x.id}` }
+          : { label: tr('u2.fam.done'), onPress: () => void quickSave(x.id, { status: 'done' }, tr('u2.fam.done_toast')), testID: `family-done-${x.id}` },
     }));
   }, [tasks, day, me, labelOf]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -87,7 +88,7 @@ export default function FamilyHome() {
     if (!title) return;
     try {
       await saveTask.mutateAsync({ input: { title: title.slice(0, 120), category: 'other', due_at: null, assignee_id: null, priority: 'normal', essential: false, recurrence: null, notes: null } });
-      haptic('success'); setQuick(''); toast('Ajoutée pour aujourd’hui.');
+      haptic('success'); setQuick(''); toast(tr('u2.fam.added_today'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
@@ -99,41 +100,41 @@ export default function FamilyHome() {
   }
 
   return (
-    <Screen back title="Organisation familiale" subtitle="Partager la charge, à plusieurs." right={<IconButton icon="plus" label="Nouvelle tâche" onPress={() => setCreating(true)} />}
-      action={{ label: 'Ajouter une tâche', icon: 'plus', onPress: () => setCreating(true), testID: 'family-main-action' }}>
+    <Screen back title={tr('u2.fam.title')} subtitle={tr('u2.fam.subtitle')} right={<IconButton icon="plus" label={tr('u2.fam.new_task')} onPress={() => setCreating(true)} />}
+      action={{ label: tr('u2.fam.add_task'), icon: 'plus', onPress: () => setCreating(true), testID: 'family-main-action' }}>
       {(() => {
         const todo = tasks.filter((x) => x.status === 'todo');
         const dueToday = todo.filter((x) => !x.due_at || sameLocalDay(x.due_at, day) || Date.parse(x.due_at) < Date.now()).length;
         const doneToday = tasks.filter((x) => x.status === 'done' && x.done_at && sameLocalDay(x.done_at, day)).length;
         return tasksQ.data ? (
           <TodaySummary items={[
-            { icon: 'check-square', value: String(dueToday), label: 'À faire' },
-            { icon: 'user-x', value: String(todo.filter((x) => !x.assignee_id).length), label: 'Sans responsable' },
-            { icon: 'check', value: String(doneToday), label: 'Faites' },
-            { icon: 'message-circle', value: String(open.length), label: 'Demandes ouvertes' },
+            { icon: 'check-square', value: String(dueToday), label: tr('u2.fam.to_do') },
+            { icon: 'user-x', value: String(todo.filter((x) => !x.assignee_id).length), label: tr('u2.fam.unassigned') },
+            { icon: 'check', value: String(doneToday), label: tr('u2.fam.done_pl') },
+            { icon: 'message-circle', value: String(open.length), label: tr('u2.fam.open_requests') },
           ]} />
         ) : null;
       })()}
-      <DayThread title="Notre journée" caption="Touchez « Fait » ou « Je m’en charge » : un seul geste." rows={dayRows} testID="family-day"
-        empty={<Text variant="small" muted>Rien de prévu aujourd’hui. Ajoutez ci-dessous ce qui doit être fait.</Text>} />
+      <DayThread title={tr('u2.fam.our_day')} caption={tr('u2.fam.our_day_caption')} rows={dayRows} testID="family-day"
+        empty={<Text variant="small" muted>{tr('u2.fam.nothing_planned')}</Text>} />
       <Row style={{ alignItems: 'flex-end' }}>
         <View style={{ flex: 1 }}>
-          <Field label="Ajout rapide" placeholder="Ex. racheter du lait, sortir les poubelles…" value={quick} onChangeText={setQuick} onSubmitEditing={() => void quickAdd()} returnKeyType="done" testID="family-quick" />
+          <Field label={tr('u2.fam.quick_add')} placeholder={tr('u2.fam.quick_ph')} value={quick} onChangeText={setQuick} onSubmitEditing={() => void quickAdd()} returnKeyType="done" testID="family-quick" />
         </View>
-        <Button label="Ajouter" icon="plus" size="sm" onPress={() => void quickAdd()} disabled={!quick.trim()} testID="family-quick-add" />
+        <Button label={tr('u2.fam.add')} icon="plus" size="sm" onPress={() => void quickAdd()} disabled={!quick.trim()} testID="family-quick-add" />
       </Row>
 
-      <Card tone="soft" onPress={() => router.push('/family/difficult')} accessibilityLabel="Journée difficile : simplifier l’application">
-        <ListRow icon="wind" title="Journée difficile ?" subtitle="Ne garder que l’essentiel et demander de l’aide en un geste" />
+      <Card tone="soft" onPress={() => router.push('/family/difficult')} accessibilityLabel={tr('u2.fam.hard_a11y')}>
+        <ListRow icon="wind" title={tr('u2.fam.hard_title')} subtitle={tr('u2.fam.hard_sub')} />
       </Card>
 
-      <SectionTitle title="Actions rapides" />
+      <SectionTitle title={tr('u2.fam.quick_actions')} />
       <QuickActionsGrid onPick={pick} />
-      {proposeHint ? <Banner tone="info">{'Touchez « Proposer » à côté de la tâche que vous aimeriez confier.'}</Banner> : null}
+      {proposeHint ? <Banner tone="info">{tr('u2.fam.propose_hint')}</Banner> : null}
 
       {signals.length ? (
         <>
-          <SectionTitle title="Pour alléger" action="Masquer ces suggestions" onAction={() => setTipsOff(true)} />
+          <SectionTitle title={tr('u2.fam.lighten')} action={tr('u2.fam.hide_tips')} onAction={() => setTipsOff(true)} />
           {signals.map((s, i) => (
             <StaggerItem key={s.key} index={i}>
               <Card>
@@ -145,25 +146,25 @@ export default function FamilyHome() {
               </Card>
             </StaggerItem>
           ))}
-          <Text variant="caption" muted>Ces suggestions s’appuient seulement sur ce qui est noté dans l’application. Elles ne jugent personne.</Text>
+          <Text variant="caption" muted>{tr('u2.fam.tips_note')}</Text>
         </>
-      ) : tipsOff ? <Button label="Réafficher les suggestions pour alléger" size="sm" variant="ghost" onPress={() => setTipsOff(false)} /> : null}
+      ) : tipsOff ? <Button label={tr('u2.fam.show_tips')} size="sm" variant="ghost" onPress={() => setTipsOff(false)} /> : null}
 
-      {open.length || recent.length ? <SectionTitle title="Demandes" /> : null}
+      {open.length || recent.length ? <SectionTitle title={tr('u2.fam.requests')} /> : null}
       {[...open, ...recent].map((r, i) => <StaggerItem key={r.id} index={i}><RequestCard r={r} tasks={tasks} /></StaggerItem>)}
 
-      <SectionTitle title="Tâches" />
+      <SectionTitle title={tr('u2.fam.tasks')} />
       {(() => {
         const todays = tasks.filter((x) => x.due_at && sameLocalDay(x.due_at, day) && x.status !== 'cancelled');
         return todays.length ? <Card><LoadBar done={todays.filter((x) => x.status === 'done').length} assigned={todays.filter((x) => x.status === 'todo' && x.assignee_id).length} unassigned={todays.filter((x) => x.status === 'todo' && !x.assignee_id).length} /></Card> : null;
       })()}
       <Row wrap>
-        {([['today', 'Aujourd’hui'], ['upcoming', 'À venir'], ['unassigned', 'Sans responsable'], ['done', 'Faites']] as const).map(([v, l]) => <Chip key={v} label={l} selected={filter === v} onPress={() => setFilter(v)} />)}
+        {([['today', tr('u2.fam.f_today')], ['upcoming', tr('u2.fam.f_upcoming')], ['unassigned', tr('u2.fam.unassigned')], ['done', tr('u2.fam.done_pl')]] as const).map(([v, l]) => <Chip key={v} label={l} selected={filter === v} onPress={() => setFilter(v)} />)}
       </Row>
       {tasksQ.isLoading && !tasksQ.data ? <Skeleton rows={3} /> : null}
       {tasksQ.isError && !tasksQ.data ? <ErrorView error={tasksQ.error} onRetry={() => void tasksQ.refetch()} /> : null}
       {tasksQ.data && list.length === 0 ? (
-        <EmptyState icon="check-square" title={filter === 'done' ? 'Rien de coché pour l’instant' : 'Rien à faire ici'} body={filter === 'today' ? 'Ajoutez ce qui doit être fait, et qui s’en charge.' : undefined} action={filter !== 'done' ? { label: 'Ajouter une tâche', onPress: () => setCreating(true) } : undefined} />
+        <EmptyState icon="check-square" title={filter === 'done' ? tr('u2.fam.empty_done') : tr('u2.fam.empty_todo')} body={filter === 'today' ? tr('u2.fam.empty_body') : undefined} action={filter !== 'done' ? { label: tr('u2.fam.add_task'), onPress: () => setCreating(true) } : undefined} />
       ) : null}
       {list.map((task, i) => (
         <StaggerItem key={task.id} index={i}>
@@ -171,16 +172,16 @@ export default function FamilyHome() {
         </StaggerItem>
       ))}
 
-      <SectionTitle title="S’organiser" />
+      <SectionTitle title={tr('u2.fam.organise')} />
       <Card>
         {[
-          { icon: 'moon' as const, title: 'Relais de nuit', subtitle: 'Qui se lève quelle nuit, échanges, confirmations', to: '/family/nights' },
-          { icon: 'sun' as const, title: 'Temps pour soi', subtitle: 'Réserver un moment, planifier le relais', to: '/family/me-time' },
-          { icon: 'list' as const, title: 'Routines', subtitle: 'Sac, coucher, lendemain, courses…', to: '/family/routines' },
-          { icon: 'calendar' as const, title: 'Agenda familial', subtitle: 'Rendez-vous, tâches, relais : jour, semaine, mois', to: '/calendar' },
-          { icon: 'pie-chart' as const, title: 'Bilan de la semaine', subtitle: 'Ce qui a été fait, ce qui arrive — sans classement', to: '/family/review' },
-          { icon: 'clock' as const, title: 'Historique des modifications', subtitle: 'Qui a créé, confié, terminé quoi', to: '/family/history' },
-          { icon: 'zap' as const, title: 'Mode urgence organisationnelle', subtitle: 'L’essentiel en très gros, sans animation', to: '/family/urgent' },
+          { icon: 'moon' as const, title: tr('u2.fam.nights'), subtitle: tr('u2.fam.nights_sub'), to: '/family/nights' },
+          { icon: 'sun' as const, title: tr('u2.fam.me_time'), subtitle: tr('u2.fam.me_time_sub'), to: '/family/me-time' },
+          { icon: 'list' as const, title: tr('u2.fam.routines'), subtitle: tr('u2.fam.routines_sub'), to: '/family/routines' },
+          { icon: 'calendar' as const, title: tr('u2.fam.calendar'), subtitle: tr('u2.fam.calendar_sub'), to: '/calendar' },
+          { icon: 'pie-chart' as const, title: tr('u2.fam.review'), subtitle: tr('u2.fam.review_sub'), to: '/family/review' },
+          { icon: 'clock' as const, title: tr('u2.fam.history'), subtitle: tr('u2.fam.history_sub'), to: '/family/history' },
+          { icon: 'zap' as const, title: tr('u2.fam.urgent'), subtitle: tr('u2.fam.urgent_sub'), to: '/family/urgent' },
         ].map((l) => <ListRow key={l.to} icon={l.icon} title={l.title} subtitle={l.subtitle} onPress={() => router.push(l.to as never)} />)}
       </Card>
 

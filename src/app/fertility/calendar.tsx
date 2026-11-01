@@ -17,6 +17,7 @@ import { conceptionDayKind, type ConceptionDayKind } from '@/lib/domain/cycle';
 import { formatDateFr, todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 const LH_TEST_ROUTE = '/fertility/test/ovulation';
 
@@ -33,11 +34,11 @@ export default function CycleCalendarScreen() {
 
   const styleOf = useCallback((k: ConceptionDayKind): CalendarStyle | null => {
     switch (k) {
-      case 'period': return { bg: t.colors.heart, fg: '#fff', label: 'Règles saisies' };
-      case 'next_period_estimate': return { bg: t.colors.heart + '44', label: 'Règles estimées (estimation)' };
-      case 'ovulation_estimate': return { bg: t.colors.lavender, fg: '#fff', label: 'Ovulation estimée (estimation)' };
-      case 'higher_chance_estimate': return { bg: t.colors.lavender + '88', label: 'Chances possiblement plus élevées (estimation)' };
-      case 'fertile_estimate': return { bg: t.colors.lavender + '33', label: 'Période fertile estimée (estimation)' };
+      case 'period': return { bg: t.colors.heart, fg: '#fff', label: tr('u3.fertCal.period') };
+      case 'next_period_estimate': return { bg: t.colors.heart + '44', label: tr('u3.fertCal.nextEst') };
+      case 'ovulation_estimate': return { bg: t.colors.lavender, fg: '#fff', label: tr('u3.fertCal.ovEst') };
+      case 'higher_chance_estimate': return { bg: t.colors.lavender + '88', label: tr('u3.fertCal.higher') };
+      case 'fertile_estimate': return { bg: t.colors.lavender + '33', label: tr('u3.fertCal.fertile') };
       default: return null;
     }
   }, [t]);
@@ -47,24 +48,24 @@ export default function CycleCalendarScreen() {
   const dayEvents = selected ? events.get(selected) ?? [] : [];
 
   return (
-    <Screen back title="Mon calendrier du cycle" subtitle="Privé : visible uniquement par vous">
+    <Screen back title={tr('u3.fertCal.title')} subtitle={tr('u3.fertCal.subtitle')}>
       <TodaySummary items={[
-        { icon: 'droplet', value: lastStart ? fmt(lastStart) : '—', label: 'Dernières règles' },
-        { icon: 'heart', value: windows[0] ? `${fmt(windows[0].start)} – ${fmt(windows[0].end)}` : '—', label: 'Période fertile (estimation)' },
-        { icon: 'calendar', value: windows[0] ? fmt(windows[0].nextPeriod) : '—', label: 'Prochaines règles (estimation)' },
+        { icon: 'droplet', value: lastStart ? fmt(lastStart) : '—', label: tr('u3.fertCal.lastPeriods') },
+        { icon: 'heart', value: windows[0] ? `${fmt(windows[0].start)} – ${fmt(windows[0].end)}` : '—', label: tr('u3.fertCal.fertileWin') },
+        { icon: 'calendar', value: windows[0] ? fmt(windows[0].nextPeriod) : '—', label: tr('u3.fertCal.nextPeriods') },
       ]} />
-      <PrivateBanner>Ce calendrier n’est jamais partagé avec votre foyer, votre coparent ni la communauté.</PrivateBanner>
+      <PrivateBanner>{tr('u3.fertCal.private')}</PrivateBanner>
 
       {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (
-        <ErrorView error={cycleQ.error} onRetry={() => void cycleQ.refetch()} title="Impossible d’afficher votre cycle" />
+        <ErrorView error={cycleQ.error} onRetry={() => void cycleQ.refetch()} title={tr('u3.fertCal.errShow')} />
       ) : crossed ? (
         <Card tone="lavender">
-          <Text variant="caption" muted weight="bold">ESTIMATION</Text>
+          <Text variant="caption" muted weight="bold">{tr('u3.fertCal.estimation')}</Text>
           <Text style={{ marginTop: 4 }}>{crossed.text}</Text>
-          <Text variant="caption" muted style={{ marginTop: 4 }}>Ni une ovulation ni une grossesse ne peuvent être confirmées par l’application : seul un professionnel de santé, avec des examens adaptés, peut le faire.</Text>
+          <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u3.fertCal.noConfirm')}</Text>
         </Card>
       ) : (
-        <Banner tone="info">Notez la date de vos dernières règles pour afficher des estimations.</Banner>
+        <Banner tone="info">{tr('u3.fertCal.noteStart')}</Banner>
       )}
 
       <Card>
@@ -96,22 +97,22 @@ export default function CycleCalendarScreen() {
                   {e.detail ? <Text variant="small" muted>{e.detail}</Text> : null}
                 </View>
               </View>
-            )) : <Text muted>Rien de noté ce jour-là.</Text>}
-            {windows[0] && selected >= windows[0].start && selected <= windows[0].end ? <EstimateLine label="Ce jour" value="dans la période fertile estimée" /> : null}
+            )) : <Text muted>{tr('u3.fertCal.nothing')}</Text>}
+            {windows[0] && selected >= windows[0].start && selected <= windows[0].end ? <EstimateLine label={tr('u3.fertCal.thisDay')} value={tr('u3.fertCal.inFertile')} /> : null}
           </Card>
         </>
       ) : null}
 
-      <SectionTitle title="Ajouter" />
+      <SectionTitle title={tr('u3.fertCal.add')} />
       <Row wrap>
-        <Button label="Glaire" icon="droplet" variant="secondary" size="sm" onPress={() => router.push('/fertility/mucus')} />
-        <Button label="Test LH (photo)" icon="camera" variant="secondary" size="sm" onPress={() => router.push(LH_TEST_ROUTE)} />
-        <Button label="Test de grossesse" icon="camera" variant="secondary" size="sm" onPress={() => router.push('/fertility/test/pregnancy')} />
-        <Button label="Règles, symptômes" icon="edit-3" variant="secondary" size="sm" onPress={() => router.push('/fertility/log')} />
-        <Button label="Température" icon="thermometer" variant="secondary" size="sm" onPress={() => router.push('/fertility/body')} />
-        {trackIntercourse ? <Button label="Rapport" icon="lock" variant="secondary" size="sm" onPress={() => router.push('/fertility/intimacy')} /> : null}
+        <Button label={tr('u3.fertCal.bMucus')} icon="droplet" variant="secondary" size="sm" onPress={() => router.push('/fertility/mucus')} />
+        <Button label={tr('u3.fertCal.bLh')} icon="camera" variant="secondary" size="sm" onPress={() => router.push(LH_TEST_ROUTE)} />
+        <Button label={tr('u3.fertCal.bPreg')} icon="camera" variant="secondary" size="sm" onPress={() => router.push('/fertility/test/pregnancy')} />
+        <Button label={tr('u3.fertCal.bLog')} icon="edit-3" variant="secondary" size="sm" onPress={() => router.push('/fertility/log')} />
+        <Button label={tr('u3.fertCal.bTemp')} icon="thermometer" variant="secondary" size="sm" onPress={() => router.push('/fertility/body')} />
+        {trackIntercourse ? <Button label={tr('u3.fertCal.bInt')} icon="lock" variant="secondary" size="sm" onPress={() => router.push('/fertility/intimacy')} /> : null}
       </Row>
-      <Text variant="caption" muted>{`Dernière règle notée : ${lastStart ? fmt(lastStart) : '—'}.`}</Text>
+      <Text variant="caption" muted>{tr('u3.fertCal.lastNoted', { date: lastStart ? fmt(lastStart) : '—' })}</Text>
     </Screen>
   );
 }

@@ -30,6 +30,7 @@ import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { t as tr } from '@/i18n';
 
 const SIGN_COLOUR = { less_fertile: '#C9B79C', intermediate: '#F2C46D', potentially_fertile: '#7FB6E8', see_professional: '#E0607E', none: '#B9B9C6' } as const;
 
@@ -72,7 +73,7 @@ export default function MucusScreen() {
       const q = assessQuality(await decodeImage(u));
       setQualityMsg(q.ok ? [] : q.issues.map((i) => QUALITY_MESSAGES[i]));
     } catch {
-      setQualityMsg(['Image illisible.']);
+      setQualityMsg([tr('u3.fertMucus.unreadable')]);
     }
   }
 
@@ -88,9 +89,9 @@ export default function MucusScreen() {
   async function askSuggestion() {
     if (!uri) return;
     const ok = await confirm(
-      'Envoyer cette photo pour analyse ?',
-      'La photo est envoyée de façon chiffrée à notre serveur, puis à l’intelligence artificielle Google Gemini, uniquement pour proposer une catégorie. Au fil de nous ne la conserve pas et ne la publie jamais. Google ne l’utilise pas pour entraîner ses modèles, mais peut la garder jusqu’à 55 jours pour détecter les abus. Le résultat reste une suggestion éducative, sans diagnostic : il ne confirme jamais une ovulation.',
-      'Envoyer la photo',
+      tr('u3.fertMucus.sendQ'),
+      tr('u3.fertMucus.sendBody'),
+      tr('u3.fertMucus.sendOk'),
     );
     if (!ok) return;
     setAsking(true);
@@ -99,7 +100,7 @@ export default function MucusScreen() {
       setSuggestion(await requestMucusSuggestion(b64));
     } catch (err) {
       const code = err instanceof BackendError ? err.code : null;
-      toast(code === 'ai_not_configured' ? 'Analyse de photo indisponible : le service n’est pas configuré. Choisissez vous-même la description.' : friendlyError(err), 'error');
+      toast(code === 'ai_not_configured' ? tr('u3.fertMucus.aiOff') : friendlyError(err), 'error');
     } finally {
       setAsking(false);
     }
@@ -107,8 +108,8 @@ export default function MucusScreen() {
 
   async function submit() {
     const iso = frToISO(date);
-    if (!iso || iso > todayISO()) return setError('Date invalide (JJ/MM/AAAA, pas dans le futur).');
-    if (!category && !texture && !sensation && !note.trim()) return setError('Choisissez au moins un aspect, une texture, une sensation ou ajoutez une note.');
+    if (!iso || iso > todayISO()) return setError(tr('u3.fertBody.dateInvalid'));
+    if (!category && !texture && !sensation && !note.trim()) return setError(tr('u3.fertMucus.needOne'));
     setError(null);
     if (!userId) return;
     try {
@@ -119,7 +120,7 @@ export default function MucusScreen() {
       setQualityMsg(null);
       setCategory(null); setTexture(null); setSensation(null); setNote(''); setKeepPhoto(false);
       haptic('success');
-      toast(res.photoPath ? 'Observation enregistrée avec la photo chiffrée.' : 'Observation enregistrée. La photo éventuelle a été supprimée.');
+      toast(res.photoPath ? tr('u3.fertMucus.savedPhoto') : tr('u3.fertMucus.savedNoPhoto'));
     } catch (err) {
       setUri(null);
       toast(friendlyError(err), 'error');
@@ -127,7 +128,7 @@ export default function MucusScreen() {
   }
 
   async function remove(id: string, on: string, photoPath?: string | null) {
-    if (!(await confirm(`Supprimer l’observation du ${formatDateFr(on)} ?`, 'L’observation et sa photo éventuelle seront supprimées définitivement.', 'Supprimer'))) return;
+    if (!(await confirm(tr('u3.fertBody.delTitle', { date: formatDateFr(on) }), tr('u3.fertMucus.delBody'), tr('u3.fertBody.delOk')))) return;
     try {
       await deleteEncryptedPhoto(photoPath);
       await backend.remove('fertility_observations', [eq('id', id)]);
@@ -138,10 +139,10 @@ export default function MucusScreen() {
   }
 
   async function removePhotoOnly(id: string, photoPath: string) {
-    if (!(await confirm('Supprimer la photo ?', 'L’observation est conservée, la photo est effacée définitivement.', 'Supprimer'))) return;
+    if (!(await confirm(tr('u3.fertMucus.delPhotoQ'), tr('u3.fertMucus.delPhotoBody'), tr('u3.fertBody.delOk')))) return;
     try {
       await delPhoto.mutateAsync({ table: 'fertility_observations', id, photoPath });
-      toast('Photo supprimée.');
+      toast(tr('u3.fertMucus.photoDeleted'));
     } catch (err) {
       toast(friendlyError(err), 'error');
     }
@@ -151,7 +152,7 @@ export default function MucusScreen() {
     try {
       setViewing(await loadEncryptedPhoto(path));
     } catch {
-      toast('Photo illisible sur ce téléphone (la clé de chiffrement est propre à l’appareil qui l’a prise).', 'error');
+      toast(tr('u3.fertMucus.photoUnreadable'), 'error');
     }
   }
 
@@ -170,21 +171,21 @@ export default function MucusScreen() {
   const lastObs = useMemo(() => [...(obs ?? [])].filter((o) => o.cervical_mucus).sort((a, b) => b.observed_on.localeCompare(a.observed_on))[0] ?? null, [obs]);
 
   return (
-    <Screen back title="Ma glaire cervicale" subtitle="Observer son corps, à son rythme. Rien n’est obligatoire."
-      action={{ label: 'Enregistrer l’observation', icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'mucus-save' }}>
-      <TodaySummary title="Dernière observation" items={[
-        { icon: 'droplet', value: lastObs ? mucusLabel(lastObs.cervical_mucus as MucusCategory) ?? '—' : '—', label: lastObs ? formatDateFr(lastObs.observed_on, false) : 'Aspect' },
-        { icon: 'calendar', value: String(cycles[0]?.days.length ?? 0), label: 'Jours notés ce cycle' },
+    <Screen back title={tr('u3.fertMucus.title')} subtitle={tr('u3.fertMucus.subtitle')}
+      action={{ label: tr('u3.fertMucus.saveObs'), icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'mucus-save' }}>
+      <TodaySummary title={tr('u3.fertBody.lastObs')} items={[
+        { icon: 'droplet', value: lastObs ? mucusLabel(lastObs.cervical_mucus as MucusCategory) ?? '—' : '—', label: lastObs ? formatDateFr(lastObs.observed_on, false) : tr('u3.fertMucus.aspect') },
+        { icon: 'calendar', value: String(cycles[0]?.days.length ?? 0), label: tr('u3.fertMucus.daysCycle') },
       ]} />
-      <PrivateBanner>Ces observations et leurs photos ne sont jamais partagées avec votre foyer, votre coparent ni la communauté.</PrivateBanner>
+      <PrivateBanner>{tr('u3.fertMucus.private')}</PrivateBanner>
 
       <Card>
-        <Field label="Date" value={date} onChangeText={setDate} keyboardType="numbers-and-punctuation" placeholder="JJ/MM/AAAA" />
-        <Text variant="label" style={{ marginTop: spacing.sm }}>Quel aspect aujourd’hui ?</Text>
+        <Field label={tr('u3.fertBody.date')} value={date} onChangeText={setDate} keyboardType="numbers-and-punctuation" placeholder={tr('u3.fertBody.datePh')} />
+        <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u3.fertMucus.whichAspect')}</Text>
         {/* reprise en un geste de l'aspect noté la dernière fois (à vérifier avant d'enregistrer) */}
         {!category && lastObs && MUCUS_CATEGORIES.some((m) => m.value === lastObs.cervical_mucus) ? (
           <View style={{ marginTop: 6, alignSelf: 'flex-start' }}>
-            <Chip icon="corner-down-left" label={`Comme le ${formatDateFr(lastObs.observed_on, false)} : ${mucusLabel(lastObs.cervical_mucus as MucusCategory) ?? ''}`} onPress={() => setCategory(lastObs.cervical_mucus as MucusCategory)} testID="mucus-prefill" />
+            <Chip icon="corner-down-left" label={tr('u3.fertMucus.like', { date: formatDateFr(lastObs.observed_on, false), label: mucusLabel(lastObs.cervical_mucus as MucusCategory) ?? '' })} onPress={() => setCategory(lastObs.cervical_mucus as MucusCategory)} testID="mucus-prefill" />
           </View>
         ) : null}
         <View style={{ gap: 6, marginTop: 6 }}>
@@ -196,92 +197,92 @@ export default function MucusScreen() {
             </Tappable>
           ))}
         </View>
-        <Text variant="label" style={{ marginTop: spacing.sm }}>Texture</Text>
+        <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u3.fertMucus.texture')}</Text>
         <Row wrap style={{ marginTop: 6 }}>{MUCUS_TEXTURES.map((m) => <Chip key={m.value} label={m.label} selected={texture === m.value} onPress={() => setTexture(texture === m.value ? null : m.value)} />)}</Row>
-        <Text variant="label" style={{ marginTop: spacing.sm }}>Sensation ressentie</Text>
+        <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u3.fertMucus.sensation')}</Text>
         <Row wrap style={{ marginTop: 6 }}>{MUCUS_SENSATIONS.map((m) => <Chip key={m.value} label={m.label} selected={sensation === m.value} onPress={() => setSensation(sensation === m.value ? null : m.value)} />)}</Row>
-        <View style={{ marginTop: spacing.sm }}><Field label="Note" optional value={note} onChangeText={setNote} maxLength={500} /></View>
+        <View style={{ marginTop: spacing.sm }}><Field label={tr('u3.fertBody.note')} optional value={note} onChangeText={setNote} maxLength={500} /></View>
         {message ? <Banner tone={fertilitySign(category) === 'see_professional' ? 'warning' : 'info'}>{message}</Banner> : null}
       </Card>
 
-      <SectionTitle title="Photo (facultative)" />
+      <SectionTitle title={tr('u3.fertMucus.photoT')} />
       <Card>
         {!uri ? (
           <>
-            <Text variant="small" muted>Une photo peut aider à proposer une catégorie éducative. Elle est vérifiée sur votre téléphone ; elle n’est envoyée pour analyse que si vous l’acceptez explicitement.</Text>
+            <Text variant="small" muted>{tr('u3.fertMucus.photoHelp')}</Text>
             <View style={{ marginTop: spacing.sm }}><PhotoGuide kind="mucus" /></View>
             <View style={{ marginTop: spacing.sm }}><PhotoButtons onPicked={onPicked} onError={(m) => toast(m, 'error')} /></View>
           </>
         ) : (
           <>
             <Row>
-              <Image source={{ uri }} style={{ width: 84, height: 84, borderRadius: radius.md }} accessibilityLabel="Aperçu de la photo" />
+              <Image source={{ uri }} style={{ width: 84, height: 84, borderRadius: radius.md }} accessibilityLabel={tr('u3.fertMucus.preview')} />
               <View style={{ flex: 1, gap: 4 }}>
-                {qualityMsg == null ? <Loading label="Vérification de la photo…" /> : qualityMsg.length ? qualityMsg.map((m) => <Text key={m} variant="small">{m}</Text>) : <Text variant="small">Photo nette et bien éclairée.</Text>}
+                {qualityMsg == null ? <Loading label={tr('u3.fertMucus.checking')} /> : qualityMsg.length ? qualityMsg.map((m) => <Text key={m} variant="small">{m}</Text>) : <Text variant="small">{tr('u3.fertMucus.sharp')}</Text>}
               </View>
             </Row>
             {!suggestion ? (
-              <Button label="Proposer une catégorie à partir de la photo" icon="send" variant="secondary" style={{ marginTop: spacing.sm }} loading={asking} disabled={!qualityMsg || qualityMsg.length > 0} onPress={askSuggestion} />
+              <Button label={tr('u3.fertMucus.propose')} icon="send" variant="secondary" style={{ marginTop: spacing.sm }} loading={asking} disabled={!qualityMsg || qualityMsg.length > 0} onPress={askSuggestion} />
             ) : (
               <View style={{ marginTop: spacing.sm, gap: 4 }}>
-                <Text variant="caption" muted weight="bold">SUGGESTION ÉDUCATIVE (IA) — À VÉRIFIER</Text>
-                {suggestion.analyzable && suggestion.category !== 'unanalyzable' ? <Text weight="bold">{mucusLabel(suggestion.category)} · confiance {suggestionConfidenceLabel(suggestion.confidence)}</Text> : null}
+                <Text variant="caption" muted weight="bold">{tr('u3.fertMucus.sugg')}</Text>
+                {suggestion.analyzable && suggestion.category !== 'unanalyzable' ? <Text weight="bold">{tr('u3.fertMucus.conf', { label: mucusLabel(suggestion.category) ?? '', level: suggestionConfidenceLabel(suggestion.confidence) })}</Text> : null}
                 <Text variant="small">{photoSuggestionMessage(suggestion)}</Text>
                 {suggestion.analyzable && suggestion.category !== 'unanalyzable' && suggestion.category !== category ? (
-                  <Button label="Utiliser cette suggestion" size="sm" variant="secondary" onPress={() => setCategory(suggestion.category as MucusCategory)} />
+                  <Button label={tr('u3.fertMucus.useSugg')} size="sm" variant="secondary" onPress={() => setCategory(suggestion.category as MucusCategory)} />
                 ) : null}
               </View>
             )}
             <View style={{ marginTop: spacing.sm }}><KeepPhotoChoice value={keepPhoto} onChange={setKeepPhoto} /></View>
-            <Button label="Supprimer la photo maintenant" icon="trash-2" variant="ghost" onPress={async () => { await dropPhoto(); toast('Photo supprimée.'); }} />
+            <Button label={tr('u3.fertMucus.dropNow')} icon="trash-2" variant="ghost" onPress={async () => { await dropPhoto(); toast(tr('u3.fertMucus.photoDeleted')); }} />
           </>
         )}
       </Card>
 
       {error ? <Banner tone="danger">{error}</Banner> : null}
 
-      <SectionTitle title="Au fil de mes cycles" />
+      <SectionTitle title={tr('u3.fertMucus.overT')} />
       {obsQ.isLoading && !obs ? <Skeleton kind="card" rows={1} /> : obsQ.isError && !obs ? (
-        <ErrorView error={obsQ.error} onRetry={() => void obsQ.refetch()} title="Impossible d’afficher vos observations" />
+        <ErrorView error={obsQ.error} onRetry={() => void obsQ.refetch()} title={tr('u3.fertBody.errShow')} />
       ) : cycles.some((c) => c.days.length) ? (
         <Card>
           {cycles.map((c) => (
             <View key={c.start} style={{ marginBottom: spacing.sm }}>
-              <Text variant="caption" muted>{`Cycle commencé le ${formatDateFr(c.start)}`}</Text>
+              <Text variant="caption" muted>{tr('u3.fertMucus.cycleStarted', { date: formatDateFr(c.start) })}</Text>
               <Row gap={2} style={{ marginTop: 4, flexWrap: 'wrap' }}>
                 {Array.from({ length: 35 }, (_, i) => {
                   const d = c.days.find((x) => x.day === i + 1);
-                  return <View key={i} accessibilityLabel={d ? `Jour ${i + 1} : ${mucusLabel(d.cat)}` : undefined} style={{ width: 8, height: 14, borderRadius: 2, backgroundColor: d ? SIGN_COLOUR[fertilitySign(d.cat)] : t.colors.border + '66' }} />;
+                  return <View key={i} accessibilityLabel={d ? tr('u3.fertMucus.dayN', { n: i + 1, label: mucusLabel(d.cat) ?? '' }) : undefined} style={{ width: 8, height: 14, borderRadius: 2, backgroundColor: d ? SIGN_COLOUR[fertilitySign(d.cat)] : t.colors.border + '66' }} />;
                 })}
               </Row>
             </View>
           ))}
           <View style={{ gap: 2 }}>
-            {([['less_fertile', 'Sèche, épaisse ou collante'], ['intermediate', 'Crémeuse'], ['potentially_fertile', 'Transparente, étirable ou aqueuse'], ['see_professional', 'Inhabituelle']] as const).map(([k, l]) => (
-              <Row key={k} gap={6}><View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: SIGN_COLOUR[k] }} /><Text variant="caption" muted>{l}</Text></Row>
+            {([['less_fertile', 'u3.fert_mucus.lg1'], ['intermediate', 'u3.fert_mucus.lg2'], ['potentially_fertile', 'u3.fert_mucus.lg3'], ['see_professional', 'u3.fert_mucus.lg4']] as const).map(([k, l]) => (
+              <Row key={k} gap={6}><View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: SIGN_COLOUR[k] }} /><Text variant="caption" muted>{tr(l)}</Text></Row>
             ))}
           </View>
-          <Text variant="caption" muted style={{ marginTop: 6 }}>Chaque case est un jour du cycle, à partir du premier jour des règles. Ce schéma décrit vos saisies ; il ne confirme pas une ovulation.</Text>
+          <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u3.fertMucus.legendNote')}</Text>
         </Card>
       ) : (
-        <Card tone="soft"><Text muted>Notez vos règles et quelques observations pour comparer vos cycles.</Text></Card>
+        <Card tone="soft"><Text muted>{tr('u3.fertMucus.compare')}</Text></Card>
       )}
 
       {(obs ?? []).some((o) => o.cervical_mucus || o.mucus_texture || o.mucus_sensation) ? (
         <>
-          <SectionTitle title="Mes observations" />
+          <SectionTitle title={tr('u3.fertBody.mine')} />
           <Card>
             {(obs ?? []).filter((o) => o.cervical_mucus || o.mucus_texture || o.mucus_sensation).slice(0, 20).map((o) => (
               <ListRow
                 key={o.id}
                 icon="droplet"
                 title={formatDateFr(o.observed_on)}
-                subtitle={[mucusLabel(o.cervical_mucus), MUCUS_TEXTURES.find((x) => x.value === o.mucus_texture)?.label, MUCUS_SENSATIONS.find((x) => x.value === o.mucus_sensation)?.label, o.photo_path ? 'photo chiffrée' : null, o.note].filter(Boolean).join(' · ')}
+                subtitle={[mucusLabel(o.cervical_mucus), MUCUS_TEXTURES.find((x) => x.value === o.mucus_texture)?.label, MUCUS_SENSATIONS.find((x) => x.value === o.mucus_sensation)?.label, o.photo_path ? tr('u3.fertMucus.encPhoto') : null, o.note].filter(Boolean).join(' · ')}
                 right={(
                   <Row gap={0}>
-                    {o.photo_path ? <IconButton icon="eye" label="Voir la photo" onPress={() => view(o.photo_path!)} /> : null}
-                    {o.photo_path ? <IconButton icon="image" label="Supprimer la photo seulement" onPress={() => removePhotoOnly(o.id, o.photo_path!)} /> : null}
-                    <IconButton icon="trash-2" label={`Supprimer l’observation du ${formatDateFr(o.observed_on)}`} onPress={() => remove(o.id, o.observed_on, o.photo_path)} />
+                    {o.photo_path ? <IconButton icon="eye" label={tr('u3.fertMucus.viewPhoto')} onPress={() => view(o.photo_path!)} /> : null}
+                    {o.photo_path ? <IconButton icon="image" label={tr('u3.fertMucus.delPhotoOnly')} onPress={() => removePhotoOnly(o.id, o.photo_path!)} /> : null}
+                    <IconButton icon="trash-2" label={tr('u3.fertBody.delA11y', { date: formatDateFr(o.observed_on) })} onPress={() => remove(o.id, o.observed_on, o.photo_path)} />
                   </Row>
                 )}
               />
@@ -291,9 +292,9 @@ export default function MucusScreen() {
       ) : null}
 
       <Modal visible={!!viewing} transparent animationType="fade" onRequestClose={() => setViewing(null)}>
-        <Pressable accessibilityLabel="Fermer la photo" onPress={() => setViewing(null)} style={{ flex: 1, backgroundColor: '#000d', alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}>
+        <Pressable accessibilityLabel={tr('u3.fertMucus.closePhoto')} onPress={() => setViewing(null)} style={{ flex: 1, backgroundColor: '#000d', alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}>
           {viewing ? <Image source={{ uri: viewing }} style={{ width: '100%', height: '70%' }} resizeMode="contain" /> : null}
-          <Text color="#fff" style={{ marginTop: spacing.sm }}>Touchez pour fermer</Text>
+          <Text color="#fff" style={{ marginTop: spacing.sm }}>{tr('u3.fertMucus.tapClose')}</Text>
         </Pressable>
       </Modal>
     </Screen>

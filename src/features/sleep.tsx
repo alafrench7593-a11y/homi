@@ -19,10 +19,11 @@ import { useInvalidate, usePremium, useTrackedChildren } from '@/lib/data/hooks'
 import { notificationsSupported } from '@/lib/notifications';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { addSleepFeedback, SleepError, useSleepActions, useSleepNotificationSync, useSleepPlan } from '@/lib/data/hooks-sleepPlanner';
-import { agree, clock, estimateBefore, parseHM, planLines, sleepKind, span, type SleepFeedback, type SleepPlan, type SleepProfile, type SleepRecord } from '@/lib/domain/sleepPlanner';
+import { clock, estimateBefore, parseHM, planLines, sleepKind, span, type SleepFeedback, type SleepPlan, type SleepProfile, type SleepRecord } from '@/lib/domain/sleepPlanner';
 import type { Child, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { palette, radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 const MIN = 60_000;
 const errText = (e: unknown) => (e instanceof SleepError ? e.message : friendlyError(e));
@@ -50,21 +51,21 @@ export function TimeSheet({ visible, title, onClose, onConfirm, kind, onKind }: 
   async function go() {
     const now = new Date();
     const at = typed.trim() ? pastTime(typed, now) : new Date(now.getTime() - offset * MIN);
-    if (!at) { setError('Heure attendue au format HH:MM (ex. 14:05).'); return; }
+    if (!at) { setError(tr('u4.sl.badTime')); return; }
     setBusy(true);
     try { await onConfirm(at); setTyped(''); setOffset(0); setError(null); onClose(); } catch (e) { setError(errText(e)); } finally { setBusy(false); }
   }
   return (
     <Sheet visible={visible} onClose={onClose} title={title}>
       <View style={{ gap: spacing.sm }} testID="sleep-time-sheet">
-        {kind && onKind ? <Segmented label="Type de sommeil" value={kind} onChange={onKind} options={[{ value: 'nap', label: 'Sieste' }, { value: 'night', label: 'Nuit' }]} /> : null}
+        {kind && onKind ? <Segmented label={tr('u4.sl.sleepType')} value={kind} onChange={onKind} options={[{ value: 'nap', label: tr('u4.sl.nap') }, { value: 'night', label: tr('u4.sl.night') }]} /> : null}
         <Row wrap>
           {[0, 5, 10, 15, 30, 45].map((m) => (
-            <Chip key={m} label={m ? `Il y a ${m} min` : 'Maintenant'} selected={!typed && offset === m} onPress={() => { setOffset(m); setTyped(''); }} />
+            <Chip key={m} label={m ? tr('u4.sl.minAgo', { m }) : tr('u4.sl.now')} selected={!typed && offset === m} onPress={() => { setOffset(m); setTyped(''); }} />
           ))}
         </Row>
-        <Field label="Ou une heure précise" optional value={typed} onChangeText={(v) => { setTyped(v); setError(null); }} placeholder="14:05" keyboardType="numbers-and-punctuation" maxLength={5} testID="sleep-time-input" error={error ?? undefined} />
-        <Button label="Enregistrer" onPress={go} loading={busy} testID="sleep-time-save" />
+        <Field label={tr('u4.sl.exactTime')} optional value={typed} onChangeText={(v) => { setTyped(v); setError(null); }} placeholder="14:05" keyboardType="numbers-and-punctuation" maxLength={5} testID="sleep-time-input" error={error ?? undefined} />
+        <Button label={tr('u4.sl.save')} onPress={go} loading={busy} testID="sleep-time-save" />
       </View>
     </Sheet>
   );
@@ -106,40 +107,40 @@ export function SleepRecordButtons({ child, plan, tone = 'primary' }: { child: C
     try { await fn(); haptic('success'); toast(msg, 'success'); } catch (e) { toast(errText(e), 'error'); } finally { setBusy(false); }
   }
   const now = () => new Date();
-  const asleepNow = () => run(() => act.asleep(now(), defaultKind), `${name} : ${defaultKind === 'night' ? 'nuit' : 'sieste'} notée depuis ${clock(Date.now())}.`);
-  const awakeNow = () => run(() => act.awake(now()), `Réveil de ${name} noté à ${clock(Date.now())}.`);
+  const asleepNow = () => run(() => act.asleep(now(), defaultKind), tr(defaultKind === 'night' ? 'u4.sl.noteNight' : 'u4.sl.noteNap', { name, time: clock(Date.now()) }));
+  const awakeNow = () => run(() => act.awake(now()), tr('u4.sl.wakeNoted', { name, time: clock(Date.now()) }));
   const otherTime = (k: typeof sheet) => { setKind(defaultKind); setSheet(k); };
 
   return (
     <View style={{ gap: spacing.xs }} testID="sleep-record">
       <Row wrap>
-        {state === 'asleep_nap' ? <BigButton tone={tone} icon="sun" label="Mon enfant se réveille" hint={name} onPress={awakeNow} loading={busy} testID="sleep-awake" /> : null}
+        {state === 'asleep_nap' ? <BigButton tone={tone} icon="sun" label={tr('u4.sl.wakes')} hint={name} onPress={awakeNow} loading={busy} testID="sleep-awake" /> : null}
         {state === 'asleep_night' ? (
           <>
-            <BigButton tone={tone} icon="moon" label="Réveil pendant la nuit" hint={name} onPress={() => run(() => act.nightWaking(now()), `Réveil de nuit noté à ${clock(Date.now())}.`)} loading={busy} testID="sleep-night-waking" />
-            <BigButton tone={tone === 'night' ? 'night' : 'soft'} icon="sun" label="Mon enfant se réveille" hint="Réveil du matin" onPress={awakeNow} loading={busy} testID="sleep-awake" />
+            <BigButton tone={tone} icon="moon" label={tr('u4.sl.nightWaking')} hint={name} onPress={() => run(() => act.nightWaking(now()), tr('u4.sl.nightWakingNoted', { time: clock(Date.now()) }))} loading={busy} testID="sleep-night-waking" />
+            <BigButton tone={tone === 'night' ? 'night' : 'soft'} icon="sun" label={tr('u4.sl.wakes')} hint={tr('u4.sl.morningWake')} onPress={awakeNow} loading={busy} testID="sleep-awake" />
           </>
         ) : null}
         {state === 'night_waking' ? (
           <>
-            <BigButton tone={tone} icon="moon" label="Mon enfant se rendort" hint={name} onPress={() => run(() => act.backToSleep(now()), `${name} se rendort à ${clock(Date.now())}.`)} loading={busy} testID="sleep-back" />
-            <BigButton tone={tone === 'night' ? 'night' : 'soft'} icon="sun" label="Réveil du matin" hint={name} onPress={awakeNow} loading={busy} testID="sleep-awake" />
+            <BigButton tone={tone} icon="moon" label={tr('u4.sl.backToSleep')} hint={name} onPress={() => run(() => act.backToSleep(now()), tr('u4.sl.backNoted', { name, time: clock(Date.now()) }))} loading={busy} testID="sleep-back" />
+            <BigButton tone={tone === 'night' ? 'night' : 'soft'} icon="sun" label={tr('u4.sl.morningWake')} hint={name} onPress={awakeNow} loading={busy} testID="sleep-awake" />
           </>
         ) : null}
-        {state === 'awake' || state === 'unknown' || state === 'stale' ? <BigButton tone={tone} icon="moon" label="Mon enfant s’endort" hint={`${name}, ${defaultKind === 'night' ? 'nuit' : 'sieste'}`} onPress={asleepNow} loading={busy} testID="sleep-asleep" /> : null}
+        {state === 'awake' || state === 'unknown' || state === 'stale' ? <BigButton tone={tone} icon="moon" label={tr('u4.sl.fallsAsleep')} hint={tr(defaultKind === 'night' ? 'u4.sl.hintNight' : 'u4.sl.hintNap', { name })} onPress={asleepNow} loading={busy} testID="sleep-asleep" /> : null}
       </Row>
       <Row wrap>
-        <Button size="sm" variant="ghost" icon="clock" label="Autre heure…" testID="sleep-other-time"
+        <Button size="sm" variant="ghost" icon="clock" label={tr('u4.sl.otherTime')} testID="sleep-other-time"
           onPress={() => otherTime(state === 'asleep_nap' ? 'awake' : state === 'asleep_night' ? 'waking' : state === 'night_waking' ? 'back' : 'asleep')} />
       </Row>
-      <TimeSheet visible={sheet === 'asleep'} title={`${name} s’est endormi${agree(child.sex, '', 'e', '·e')} à…`} onClose={() => setSheet(null)} kind={kind} onKind={setKind}
-        onConfirm={async (at) => { await act.asleep(at, kind); toast(`Sommeil noté depuis ${clock(at)}.`, 'success'); }} />
-      <TimeSheet visible={sheet === 'awake'} title={`${name} s’est réveillé${agree(child.sex, '', 'e', '·e')} à…`} onClose={() => setSheet(null)}
-        onConfirm={async (at) => { await act.awake(at); toast(`Réveil noté à ${clock(at)}.`, 'success'); }} />
-      <TimeSheet visible={sheet === 'waking'} title="Réveil pendant la nuit à…" onClose={() => setSheet(null)}
-        onConfirm={async (at) => { await act.nightWaking(at); toast(`Réveil de nuit noté à ${clock(at)}.`, 'success'); }} />
-      <TimeSheet visible={sheet === 'back'} title={`${name} s’est rendormi${agree(child.sex, '', 'e', '·e')} à…`} onClose={() => setSheet(null)}
-        onConfirm={async (at) => { await act.backToSleep(at); toast(`Rendormi${agree(child.sex, '', 'e', '·e')} à ${clock(at)}.`, 'success'); }} />
+      <TimeSheet visible={sheet === 'asleep'} title={tr(child.sex === 'female' ? 'u4.sl.tAsleepF' : child.sex === 'male' ? 'u4.sl.tAsleepM' : 'u4.sl.tAsleepX', { name })} onClose={() => setSheet(null)} kind={kind} onKind={setKind}
+        onConfirm={async (at) => { await act.asleep(at, kind); toast(tr('u4.sl.sleepNoted', { time: clock(at) }), 'success'); }} />
+      <TimeSheet visible={sheet === 'awake'} title={tr(child.sex === 'female' ? 'u4.sl.tAwakeF' : child.sex === 'male' ? 'u4.sl.tAwakeM' : 'u4.sl.tAwakeX', { name })} onClose={() => setSheet(null)}
+        onConfirm={async (at) => { await act.awake(at); toast(tr('u4.sl.wakeNotedShort', { time: clock(at) }), 'success'); }} />
+      <TimeSheet visible={sheet === 'waking'} title={tr('u4.sl.tNightWake')} onClose={() => setSheet(null)}
+        onConfirm={async (at) => { await act.nightWaking(at); toast(tr('u4.sl.nightWakingNoted', { time: clock(at) }), 'success'); }} />
+      <TimeSheet visible={sheet === 'back'} title={tr(child.sex === 'female' ? 'u4.sl.tBackF' : child.sex === 'male' ? 'u4.sl.tBackM' : 'u4.sl.tBackX', { name })} onClose={() => setSheet(null)}
+        onConfirm={async (at) => { await act.backToSleep(at); toast(tr(child.sex === 'female' ? 'u4.sl.backF' : child.sex === 'male' ? 'u4.sl.backM' : 'u4.sl.backX', { time: clock(at) }), 'success'); }} />
     </View>
   );
 }
@@ -167,17 +168,17 @@ export function SleepNowCard({ child }: { child: Child }) {
         <Row style={{ alignItems: 'center' }}>
           <Icon name={plan?.state === 'awake' ? 'sun' : 'moon'} color={palette.lavenderInk} />
           <View style={{ flex: 1 }}>
-            <Text variant="caption" muted>{`Sommeil de ${child.first_name}`}</Text>
+            <Text variant="caption" muted>{tr('u4.sl.cardTitle', { name: child.first_name })}</Text>
             <Text weight="bold" testID="sleep-now-state">{state ?? '—'}</Text>
           </View>
         </Row>
         {next ? (premium
-          ? <Text variant="small" style={{ marginTop: 4 }} testID="sleep-now-next">{`${next.text} (estimation)`}</Text>
-          : <Text variant="small" muted style={{ marginTop: 4 }}>Prochaine sieste et coucher estimés avec Premium</Text>) : null}
+          ? <Text variant="small" style={{ marginTop: 4 }} testID="sleep-now-next">{tr('u4.sl.estimation', { text: next.text })}</Text>
+          : <Text variant="small" muted style={{ marginTop: 4 }}>{tr('u4.sl.premiumNext')}</Text>) : null}
         <View style={{ marginTop: spacing.xs }}><SleepRecordButtons child={child} plan={plan} /></View>
         <Row wrap>
-          <Button size="sm" variant="ghost" iconRight="arrow-right" label="Planning complet" onPress={() => router.push(`/sleep/${child.id}` as never)} testID="sleep-open" />
-          {isNightTime ? <Button size="sm" variant="ghost" icon="moon" label="Aide pour cette nuit" onPress={() => router.push({ pathname: '/sleep/tonight', params: { child: child.id } } as never)} testID="sleep-now-tonight" /> : null}
+          <Button size="sm" variant="ghost" iconRight="arrow-right" label={tr('u4.sl.fullPlan')} onPress={() => router.push(`/sleep/${child.id}` as never)} testID="sleep-open" />
+          {isNightTime ? <Button size="sm" variant="ghost" icon="moon" label={tr('u4.tonight.title')} onPress={() => router.push({ pathname: '/sleep/tonight', params: { child: child.id } } as never)} testID="sleep-now-tonight" /> : null}
         </Row>
       </Card>
     </View>
@@ -192,19 +193,19 @@ export function BabySleepCard({ child }: { child: Child }) {
     <View testID="baby-sleep" style={{ gap: spacing.xs }}>
       <SleepNowCard child={child} />
       <Card tone="soft">
-        <Text variant="small">{`Aujourd’hui : ${plan?.napsDone ?? 0} sieste(s) · ${span(today)}`}{sleeps.length ? '' : ' · aucun relevé pour l’instant'}</Text>
+        <Text variant="small">{tr('u4.sl.todayLine', { naps: tr('u4.sl.naps', { count: plan?.napsDone ?? 0 }), span: span(today) })}{sleeps.length ? '' : tr('u4.sl.noRecords')}</Text>
         <Row wrap style={{ marginTop: spacing.xs }}>
-          <Button label="Noter un sommeil passé" size="sm" variant="ghost" icon="edit-3" onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'sleep', child: child.id } })} />
-          <Button label="Mode nuit" size="sm" variant="ghost" icon="moon" onPress={() => router.push('/night')} />
-          <Button label="Aide pour cette nuit" size="sm" variant="ghost" icon="star" onPress={() => router.push({ pathname: '/sleep/tonight', params: { child: child.id } } as never)} testID="sleep-tonight-link" />
+          <Button label={tr('u4.sl.logPast')} size="sm" variant="ghost" icon="edit-3" onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'sleep', child: child.id } })} />
+          <Button label={tr('u4.sl.nightMode')} size="sm" variant="ghost" icon="moon" onPress={() => router.push('/night')} />
+          <Button label={tr('u4.tonight.title')} size="sm" variant="ghost" icon="star" onPress={() => router.push({ pathname: '/sleep/tonight', params: { child: child.id } } as never)} testID="sleep-tonight-link" />
         </Row>
       </Card>
       <View testID="sleep-estimate">
         <PremiumSection feature="sleep_insights" name={child.first_name} testID="premium-sleep"
-          preview={<Text variant="small">{`${plan?.samples ?? 0} temps d’éveil déjà notés : Premium en tire la prochaine sieste, la routine et le coucher estimés de ${child.first_name}, recalculés à chaque relevé.`}</Text>}>
-          <Card onPress={() => router.push(`/sleep/${child.id}` as never)} accessibilityLabel={`Planning de sommeil de ${child.first_name}`}>
-            <Text weight="bold">{`Planning de sommeil de ${child.first_name}`}</Text>
-            <Text variant="small" muted>Estimations personnalisées, notifications, tendances sur 7 jours</Text>
+          preview={<Text variant="small">{tr('u4.sl.previewPrem', { n: plan?.samples ?? 0, name: child.first_name })}</Text>}>
+          <Card onPress={() => router.push(`/sleep/${child.id}` as never)} accessibilityLabel={tr('u4.sl.planOf', { name: child.first_name })}>
+            <Text weight="bold">{tr('u4.sl.planOf', { name: child.first_name })}</Text>
+            <Text variant="small" muted>{tr('u4.sl.planSub')}</Text>
           </Card>
         </PremiumSection>
       </View>
@@ -214,22 +215,21 @@ export function BabySleepCard({ child }: { child: Child }) {
 
 // ─── Planning visuel ───────────────────────────────────────────────────────────────────────────────
 
-const ITEM_LABEL: Record<SleepPlan['items'][number]['kind'], string> = {
-  night: 'Nuit', nap: 'Sieste', awake: 'Éveil en cours', nap_est: 'Sieste estimée', routine: 'Routine du soir', bedtime: 'Coucher estimé',
-};
+const ITEM_KEY = { night: 'u4.sl.k.night', nap: 'u4.sl.k.nap', awake: 'u4.sl.k.awake', nap_est: 'u4.sl.k.nap_est', routine: 'u4.sl.k.routine', bedtime: 'u4.sl.k.bedtime' } as const satisfies Record<SleepPlan['items'][number]['kind'], string>;
+const itemLabel = (k: SleepPlan['items'][number]['kind']) => tr(ITEM_KEY[k]);
 
 /** Frise verticale de la journée : réalisé (plein) puis estimé (pointillés). Toucher un sommeil noté pour le modifier. */
 export function SleepTimeline({ plan, showEstimates, onEdit, now }: { plan: SleepPlan; showEstimates: boolean; onEdit?: (id: string) => void; now: Date }) {
   const t = useTheme();
   const items = plan.items.filter((i) => showEstimates || !i.estimated);
-  if (!items.length) return <Text variant="small" muted>Rien de noté aujourd’hui pour l’instant.</Text>;
+  if (!items.length) return <Text variant="small" muted>{tr('u4.sl.nothingToday')}</Text>;
   return (
-    <View accessibilityLabel="Planning de la journée" testID="sleep-timeline">
+    <View accessibilityLabel={tr('u4.sl.dayPlan')} testID="sleep-timeline">
       {items.map((i, k) => {
         const done = !i.estimated;
         const color = i.kind === 'night' || i.kind === 'nap' ? palette.lavenderInk : i.kind === 'awake' ? t.colors.gold : t.colors.textMuted;
         const dur = i.to !== null ? span((i.to - i.from) / MIN) : i.ongoing ? span((now.getTime() - i.from) / MIN) : null;
-        const when = i.kind === 'nap_est' ? `vers ${clock(i.from)}` : i.kind === 'bedtime' && plan.bedtime ? `${clock(plan.bedtime.from)} – ${clock(plan.bedtime.to)}` : i.to !== null && i.kind !== 'routine' ? `${clock(i.from)} – ${clock(i.to)}` : i.kind === 'routine' ? `vers ${clock(i.from)}` : `depuis ${clock(i.from)}`;
+        const when = i.kind === 'nap_est' ? tr('u4.sl.around', { time: clock(i.from) }) : i.kind === 'bedtime' && plan.bedtime ? `${clock(plan.bedtime.from)} – ${clock(plan.bedtime.to)}` : i.to !== null && i.kind !== 'routine' ? `${clock(i.from)} – ${clock(i.to)}` : i.kind === 'routine' ? tr('u4.sl.around', { time: clock(i.from) }) : tr('u4.sl.since', { time: clock(i.from) });
         const body = (
           <Row style={{ alignItems: 'stretch' }}>
             <View style={{ width: 14, alignItems: 'center' }}>
@@ -237,17 +237,17 @@ export function SleepTimeline({ plan, showEstimates, onEdit, now }: { plan: Slee
               {k < items.length - 1 ? <View style={{ flex: 1, width: 2, backgroundColor: t.colors.border, marginTop: 2 }} /> : null}
             </View>
             <View style={{ flex: 1, paddingBottom: spacing.sm }}>
-              <Text weight={done ? 'bold' : undefined}>{`${ITEM_LABEL[i.kind]}${i.estimated ? ' (estimation)' : ''}`}</Text>
+              <Text weight={done ? 'bold' : undefined}>{`${itemLabel(i.kind)}${i.estimated ? tr('u4.sl.estSuffix') : ''}`}</Text>
               <Text variant="small" muted>{`${when}${dur && i.kind !== 'routine' ? ` · ${dur}` : ''}`}</Text>
             </View>
             {done && i.id && onEdit ? <Icon name="edit-3" size={16} color={t.colors.textMuted} /> : null}
           </Row>
         );
         return done && i.id && onEdit
-          ? <Tappable key={`${i.kind}-${i.from}`} accessibilityRole="button" accessibilityLabel={`Modifier : ${ITEM_LABEL[i.kind]} ${when}`} onPress={() => onEdit(i.id!)} testID={`sleep-item-${i.kind}`}>{body}</Tappable>
+          ? <Tappable key={`${i.kind}-${i.from}`} accessibilityRole="button" accessibilityLabel={tr('u4.sl.editItem', { label: itemLabel(i.kind), when })} onPress={() => onEdit(i.id!)} testID={`sleep-item-${i.kind}`}>{body}</Tappable>
           : <View key={`${i.kind}-${i.from}`} testID={`sleep-item-${i.kind}`}>{body}</View>;
       })}
-      <Text variant="small" weight="bold">{`Sommeil de jour : ${span(plan.daySleepMinutes)} · ${plan.napsDone} sieste(s)`}</Text>
+      <Text variant="small" weight="bold">{tr('u4.sl.daySleep', { span: span(plan.daySleepMinutes), naps: tr('u4.sl.naps', { count: plan.napsDone }) })}</Text>
     </View>
   );
 }
@@ -271,29 +271,29 @@ export function SleepEditSheet({ child, sleep, all, onClose }: { child: Child; s
   async function save() {
     const base = new Date(sleep!.started_at);
     const s = parseHM(start); const e = end.trim() ? parseHM(end) : null;
-    if (s === null || (end.trim() && e === null)) { setError('Heures attendues au format HH:MM.'); return; }
+    if (s === null || (end.trim() && e === null)) { setError(tr('u4.sl.badHours')); return; }
     const a = new Date(base.getFullYear(), base.getMonth(), base.getDate(), 0, s);
     let b: Date | null = null;
     if (e !== null) { b = new Date(a.getFullYear(), a.getMonth(), a.getDate(), 0, e); if (b <= a) b.setDate(b.getDate() + 1); }
     if (!sleep!.ended_at && b === null) b = null;
     setBusy(true);
-    try { await act.edit(sleep!, { started_at: a, ended_at: b, kind }, all); toast('Horaires modifiés : le planning est recalculé.', 'success'); onClose(); } catch (err) { setError(errText(err)); } finally { setBusy(false); }
+    try { await act.edit(sleep!, { started_at: a, ended_at: b, kind }, all); toast(tr('u4.sl.edited'), 'success'); onClose(); } catch (err) { setError(errText(err)); } finally { setBusy(false); }
   }
   async function del() {
-    if (!(await confirm('Supprimer ce sommeil ?', 'Le planning sera recalculé sans lui.', 'Supprimer'))) return;
-    try { await act.remove(sleep!); toast('Sommeil supprimé : le planning est recalculé.', 'success'); onClose(); } catch (err) { setError(errText(err)); }
+    if (!(await confirm(tr('u4.sl.delQ'), tr('u4.sl.delBody'), tr('u4.sl.delete')))) return;
+    try { await act.remove(sleep!); toast(tr('u4.sl.deleted'), 'success'); onClose(); } catch (err) { setError(errText(err)); }
   }
   return (
-    <Sheet visible={!!sleep} onClose={onClose} title={`Modifier — ${child.first_name}`}>
+    <Sheet visible={!!sleep} onClose={onClose} title={tr('u4.sl.editTitle', { name: child.first_name })}>
       <View style={{ gap: spacing.sm }} testID="sleep-edit">
-        <Segmented label="Type de sommeil" value={kind} onChange={setKind} options={[{ value: 'nap', label: 'Sieste' }, { value: 'night', label: 'Nuit' }]} />
+        <Segmented label={tr('u4.sl.sleepType')} value={kind} onChange={setKind} options={[{ value: 'nap', label: tr('u4.sl.nap') }, { value: 'night', label: tr('u4.sl.night') }]} />
         <Row>
-          <View style={{ flex: 1 }}><Field label="Endormissement" value={start} onChangeText={setStart} keyboardType="numbers-and-punctuation" maxLength={5} testID="sleep-edit-start" /></View>
-          <View style={{ flex: 1 }}><Field label="Réveil" optional={!sleep.ended_at} value={end} onChangeText={setEnd} placeholder={sleep.ended_at ? '' : 'en cours'} keyboardType="numbers-and-punctuation" maxLength={5} testID="sleep-edit-end" /></View>
+          <View style={{ flex: 1 }}><Field label={tr('u4.sl.fellAsleep')} value={start} onChangeText={setStart} keyboardType="numbers-and-punctuation" maxLength={5} testID="sleep-edit-start" /></View>
+          <View style={{ flex: 1 }}><Field label={tr('u4.sl.wake')} optional={!sleep.ended_at} value={end} onChangeText={setEnd} placeholder={sleep.ended_at ? '' : tr('u4.sl.ongoing')} keyboardType="numbers-and-punctuation" maxLength={5} testID="sleep-edit-end" /></View>
         </Row>
         {error ? <Text variant="small" color={palette.danger}>{error}</Text> : null}
-        <Button label="Enregistrer" onPress={save} loading={busy} testID="sleep-edit-save" />
-        <Button label="Supprimer ce sommeil" variant="ghost" icon="trash-2" onPress={del} testID="sleep-edit-delete" />
+        <Button label={tr('u4.sl.save')} onPress={save} loading={busy} testID="sleep-edit-save" />
+        <Button label={tr('u4.sl.deleteBtn')} variant="ghost" icon="trash-2" onPress={del} testID="sleep-edit-delete" />
       </View>
     </Sheet>
   );
@@ -321,18 +321,18 @@ export function FeedbackPrompt({ child, sleeps, profile, feedback }: { child: Ch
       await addSleepFeedback(child, target!.target, verdict, target!.at);
       setSent(String(target!.at));
       inv('sleep_feedback');
-      toast('Merci : les prochaines estimations en tiendront compte.', 'success');
+      toast(tr('u4.sl.thanks'), 'success');
     } catch (e) { toast(errText(e), 'error'); }
   }
   return (
     <Card tone="lavender">
       <View testID="sleep-feedback">
-        <Text weight="bold">{`${target.target === 'nap' ? 'Sieste' : 'Coucher'} estimé${target.target === 'nap' ? 'e' : ''} vers ${clock(target.at)}, ${child.first_name} s’est endormi${agree(child.sex, '', 'e', '·e')} à ${clock(target.startedAt)}`}</Text>
-        <Text variant="small" muted>Cette estimation vous a-t-elle paru adaptée ?</Text>
+        <Text weight="bold">{tr(`u4.sl.fb${target.target === 'nap' ? 'Nap' : 'Bed'}${child.sex === 'female' ? 'F' : child.sex === 'male' ? 'M' : 'X'}` as 'u4.sl.fbNapF', { est: clock(target.at), name: child.first_name, at: clock(target.startedAt) })}</Text>
+        <Text variant="small" muted>{tr('u4.sl.fbAsk')}</Text>
         <Row wrap style={{ marginTop: spacing.xs }}>
-          <Chip label="Cette estimation était juste" onPress={() => send('right')} />
-          <Chip label="Trop tôt" onPress={() => send('early')} />
-          <Chip label="Trop tard" onPress={() => send('late')} />
+          <Chip label={tr('u4.sl.fbRight')} onPress={() => send('right')} />
+          <Chip label={tr('u4.nh.early')} onPress={() => send('early')} />
+          <Chip label={tr('u4.nh.late')} onPress={() => send('late')} />
         </Row>
       </View>
     </Card>

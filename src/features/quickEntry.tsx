@@ -14,6 +14,7 @@ import { useAddLog, useInvalidate, useTrackedChildren } from '@/lib/data/hooks';
 import { useConsumeQuota, usePremiumAccess, useQuota } from '@/lib/data/hooks-premium';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { formatClock } from '@/lib/domain/bottleTimer';
+import { formatDate, t as tr } from '@/i18n';
 import { parseQuickEntry, type QuickError, type QuickParse, type QuickResult } from '@/lib/domain/quickEntry';
 
 type SpeechCtor = new () => { lang: string; interimResults: boolean; onresult: (e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void; onerror: () => void; onend: () => void; start: () => void };
@@ -23,28 +24,28 @@ const speech = (): SpeechCtor | null => {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 };
 
-const ERR: Record<QuickError, string> = {
-  child: 'Précisez le prénom de l’enfant (ex. « Lina a bu 150 ml à 14 h »).',
-  kind: 'Je n’ai pas compris quoi noter : biberon, sommeil, couche, rendez-vous ou rappel de médicament.',
-  ml: 'Quantité attendue entre 1 et 500 ml.',
-  time: 'Précisez l’heure (ex. « à 17 h ») : elle n’est jamais devinée.',
-  date: 'Précisez le jour du rendez-vous (« mardi », « demain », « le 12 »).',
-};
+const errText = (e: QuickError): string => ({
+  child: tr('u6.quick.err_child'),
+  kind: tr('u6.quick.err_kind'),
+  ml: tr('u6.quick.err_ml'),
+  time: tr('u6.quick.err_time'),
+  date: tr('u6.quick.err_date'),
+}[e]);
 
 const when = (v: QuickResult) => {
   const today = v.at.toDateString() === new Date().toDateString();
-  const day = today ? '' : `${v.at.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}, `;
-  return v.timeGiven ? `${day}${formatClock(v.at.toISOString())}` : `maintenant (${formatClock(v.at.toISOString())})`;
+  const day = today ? '' : `${formatDate(v.at, { weekday: 'long', day: 'numeric', month: 'long' })}, `;
+  return v.timeGiven ? `${day}${formatClock(v.at.toISOString())}` : tr('u6.quick.now_at', { time: formatClock(v.at.toISOString()) });
 };
 
 export function describe(v: QuickResult): string {
   switch (v.kind) {
-    case 'bottle': return `Biberon · ${v.childName}${v.ml != null ? ` · ${v.ml} ml` : ' · quantité non dite'} · ${when(v)}`;
-    case 'sleep_start': return `${v.childName} s’endort · ${when(v)}`;
-    case 'sleep_end': return `${v.childName} se réveille · ${when(v)}`;
-    case 'diaper': return `Couche · ${v.childName} · ${when(v)}`;
-    case 'appointment': return `Rendez-vous « ${v.title} »${v.childName ? ` pour ${v.childName}` : ''} · ${when(v)}`;
-    case 'medication': return `Rappel du médicament déjà prescrit de ${v.childName} à ${v.time}`;
+    case 'bottle': return `${tr('u6.quick.bottle')} · ${v.childName}${v.ml != null ? ` · ${v.ml} ml` : ` · ${tr('u6.quick.qty_unsaid')}`} · ${when(v)}`;
+    case 'sleep_start': return `${tr('u6.quick.falls_asleep', { name: v.childName ?? '' })} · ${when(v)}`;
+    case 'sleep_end': return `${tr('u6.quick.wakes_up', { name: v.childName ?? '' })} · ${when(v)}`;
+    case 'diaper': return `${tr('u6.quick.diaper')} · ${v.childName} · ${when(v)}`;
+    case 'appointment': return `${tr('u6.quick.appt', { title: v.title ?? '' })}${v.childName ? ` ${tr('u6.quick.for_child', { name: v.childName })}` : ''} · ${when(v)}`;
+    case 'medication': return tr('u6.quick.med', { name: v.childName ?? '', time: v.time ?? '' });
   }
 }
 
@@ -81,7 +82,7 @@ export function QuickEntry({ activeChildId }: { activeChildId?: string | null })
     if (access.premium) return true;
     const r = await consume();
     if (!r.allowed) {
-      access.showPreview(<Text variant="small">{`« ${describe(v)} » : avec Premium, cette phrase serait enregistrée en un appui.`}</Text>, { used: r.used, quota: r.quota, unit: 'saisies vocales' });
+      access.showPreview(<Text variant="small">{tr('u6.quick.preview', { text: describe(v) })}</Text>, { used: r.used, quota: r.quota, unit: tr('u6.quick.unit') });
       return false;
     }
     return true;
@@ -101,19 +102,19 @@ export function QuickEntry({ activeChildId }: { activeChildId?: string | null })
           break;
         case 'sleep_start':
           await addSleep.mutateAsync({ child_id: v.childId, household_id: child?.household_id, started_at: v.at.toISOString(), kind: v.at.getHours() >= 19 || v.at.getHours() < 7 ? 'night' : 'nap' });
-          toast(`Enregistré : ${describe(v)}.`, 'success');
+          toast(tr('u6.quick.saved', { text: describe(v) }), 'success');
           break;
         case 'sleep_end': {
           const open = await backend.select<{ id: string; started_at: string }>({ table: 'sleeps', filters: [eq('child_id', v.childId!), { col: 'ended_at', op: 'is', value: null }] });
-          if (!open[0]) { toast(`Aucun sommeil en cours pour ${v.childName} : notez d’abord l’endormissement.`, 'info'); return; }
-          if (v.at.toISOString() < open[0].started_at) { toast('L’heure du réveil précède l’endormissement noté.', 'error'); return; }
+          if (!open[0]) { toast(tr('u6.quick.no_sleep', { name: v.childName ?? '' }), 'info'); return; }
+          if (v.at.toISOString() < open[0].started_at) { toast(tr('u6.quick.wake_before', {}), 'error'); return; }
           await backend.update('sleeps', { ended_at: v.at.toISOString() }, [eq('id', open[0].id)]);
           inv('sleeps');
-          toast(`Enregistré : ${describe(v)}.`, 'success');
+          toast(tr('u6.quick.saved', { text: describe(v) }), 'success');
           break;
         }
         case 'appointment':
-          router.push({ pathname: '/appointments', params: { new: 'quick', title: v.title ?? 'Rendez-vous', at: v.at.toISOString(), ...(v.childId ? { child: v.childId } : {}) } });
+          router.push({ pathname: '/appointments', params: { new: 'quick', title: v.title ?? tr('u6.quick.appt_default'), at: v.at.toISOString(), ...(v.childId ? { child: v.childId } : {}) } });
           break;
         case 'medication':
           router.push({ pathname: '/child/[id]/needs', params: { id: v.childId!, tab: 'treatments', time: v.time! } });
@@ -129,26 +130,26 @@ export function QuickEntry({ activeChildId }: { activeChildId?: string | null })
     <View testID="quick-entry">
       <Card>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Text weight="bold">Saisie vocale ou en une phrase</Text>
-          {left != null ? <Text variant="caption" muted testID="quick-left">{`${left} essai(s) gratuit(s) ce mois`}</Text> : null}
+          <Text weight="bold">{tr('u6.quick.title')}</Text>
+          {left != null ? <Text variant="caption" muted testID="quick-left">{tr('u6.quick.left', { count: left })}</Text> : null}
         </Row>
-        <Field label="Dites ou écrivez" value={text} onChangeText={(v) => { setText(v); setRes(null); }} placeholder="Lina a bu 150 ml à 13 h 10" returnKeyType="done" onSubmitEditing={() => analyse()} testID="quick-text" />
+        <Field label={tr('u6.quick.say')} value={text} onChangeText={(v) => { setText(v); setRes(null); }} placeholder={tr('u6.quick.placeholder')} returnKeyType="done" onSubmitEditing={() => analyse()} testID="quick-text" />
         <Row wrap>
-          <Button label="Comprendre" size="sm" variant="secondary" icon="check" onPress={() => analyse()} testID="quick-parse" />
-          {Rec ? <Button label={listening ? 'J’écoute…' : 'Dicter'} size="sm" variant="ghost" icon="mic" onPress={dictate} disabled={listening} /> : null}
+          <Button label={tr('u6.quick.parse')} size="sm" variant="secondary" icon="check" onPress={() => analyse()} testID="quick-parse" />
+          {Rec ? <Button label={listening ? tr('u6.quick.listening') : tr('u6.quick.dictate')} size="sm" variant="ghost" icon="mic" onPress={dictate} disabled={listening} /> : null}
         </Row>
-        {res && !res.ok ? <Banner tone="warning">{ERR[res.error]}</Banner> : null}
+        {res && !res.ok ? <Banner tone="warning">{errText(res.error)}</Banner> : null}
         {res && res.ok ? (
           <View testID="quick-result" style={{ gap: 4, marginTop: 4 }}>
             <Text weight="bold">{describe(res.value)}</Text>
-            {res.value.kind === 'medication' ? <Text variant="caption" muted>Le nom et la dose viennent uniquement du traitement déjà enregistré depuis l’ordonnance ; rien n’est ajouté ici.</Text> : null}
+            {res.value.kind === 'medication' ? <Text variant="caption" muted>{tr('u6.quick.med_note')}</Text> : null}
             <Row wrap>
-              <Button label={res.value.kind === 'sleep_start' || res.value.kind === 'sleep_end' ? 'Confirmer et enregistrer' : 'Vérifier et enregistrer'} size="sm" icon="arrow-right" loading={busy} onPress={() => confirm(res.value)} testID="quick-open" />
-              <Button label="Annuler" size="sm" variant="ghost" onPress={() => setRes(null)} />
+              <Button label={res.value.kind === 'sleep_start' || res.value.kind === 'sleep_end' ? tr('u6.quick.confirm_save') : tr('u6.quick.check_save')} size="sm" icon="arrow-right" loading={busy} onPress={() => confirm(res.value)} testID="quick-open" />
+              <Button label={tr('u6.quick.cancel')} size="sm" variant="ghost" onPress={() => setRes(null)} />
             </Row>
           </View>
         ) : null}
-        <Text variant="caption" muted>Analyse faite sur l’appareil ; rien n’est enregistré avant votre confirmation.</Text>
+        <Text variant="caption" muted>{tr('u6.quick.footer')}</Text>
       </Card>
     </View>
   );

@@ -17,14 +17,15 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { ACTION_KINDS, NEEDS, describeTrend, trendSeries, type CheckinInput } from '@/lib/domain/postpartum';
 import { todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
+import { formatDate, t as tr } from '@/i18n';
 
-const TRENDS: { key: keyof CheckinInput; label: string; positive: boolean }[] = [
-  { key: 'feeling', label: 'Comment je me sens', positive: true },
-  { key: 'fatigue', label: 'Fatigue', positive: false },
-  { key: 'sleep_quality', label: 'Sommeil', positive: true },
-  { key: 'stress', label: 'Stress', positive: false },
-  { key: 'mood', label: 'Humeur', positive: true },
-  { key: 'supported', label: 'Sentiment d’être soutenue', positive: true },
+const trends = (): { key: keyof CheckinInput; label: string; positive: boolean }[] => [
+  { key: 'feeling', label: tr('u5.pp_history.t_feeling'), positive: true },
+  { key: 'fatigue', label: tr('u5.pp_history.t_fatigue'), positive: false },
+  { key: 'sleep_quality', label: tr('u5.pp_history.t_sleep_quality'), positive: true },
+  { key: 'stress', label: tr('u5.pp_history.t_stress'), positive: false },
+  { key: 'mood', label: tr('u5.pp_history.t_mood'), positive: true },
+  { key: 'supported', label: tr('u5.pp_history.t_supported'), positive: true },
 ];
 
 export default function PostpartumHistory() {
@@ -36,54 +37,54 @@ export default function PostpartumHistory() {
   const list = q.data ?? [];
 
   async function remove(id: string, date: string) {
-    if (!(await confirm('Supprimer ce point ?', `Le point du ${new Date(`${date}T12:00:00`).toLocaleDateString('fr-FR')} sera supprimé définitivement.`, 'Supprimer'))) return;
-    try { await del.mutateAsync(id); toast('Supprimé.'); } catch (e) { toast(friendlyError(e), 'error'); }
+    if (!(await confirm(tr('u5.pp_history.del_title'), tr('u5.pp_history.del_body', { date: formatDate(new Date(`${date}T12:00:00`)) }), tr('u5.pp_history.del_ok')))) return;
+    try { await del.mutateAsync(id); toast(tr('u5.pp_history.deleted')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   return (
-    <Screen back title="Mon évolution" subtitle="Ce que vous avez noté, sans jugement."
-      action={{ label: list.some((c) => c.checkin_date === today) ? 'Relire mon point du jour' : 'Faire le point', icon: 'feather', onPress: () => router.push('/postpartum/checkin'), testID: 'pp-history-action' }}>
+    <Screen back title={tr('u5.pp_history.title')} subtitle={tr('u5.pp_history.subtitle')}
+      action={{ label: list.some((c) => c.checkin_date === today) ? tr('u5.pp_history.reread') : tr('u5.pp_checkin.title'), icon: 'feather', onPress: () => router.push('/postpartum/checkin'), testID: 'pp-history-action' }}>
       {q.isLoading && !q.data ? <Skeleton kind="card" rows={3} /> : null}
       {q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : null}
       {q.data && list.length === 0 ? (
-        <EmptyState icon="trending-up" title="Rien de noté pour l’instant" body="Il n’y a aucune obligation. Si vous notez quelques jours, une évolution apparaîtra ici." action={{ label: 'Faire le point', icon: 'feather', onPress: () => router.push('/postpartum/checkin') }} />
+        <EmptyState icon="trending-up" title={tr('u5.pp_history.empty_t')} body={tr('u5.pp_history.empty_b')} action={{ label: tr('u5.pp_checkin.title'), icon: 'feather', onPress: () => router.push('/postpartum/checkin') }} />
       ) : null}
 
       {list.length > 0 ? (
         <>
           <Card>
             <View style={{ gap: spacing.lg }}>
-              {TRENDS.map((tr) => {
-                const pts = trendSeries(list, tr.key, today, 14);
-                return <MiniTrend key={tr.key} label={tr.label} points={pts} positive={tr.positive} description={describeTrend(pts, tr.positive)} />;
+              {trends().map((tt) => {
+                const pts = trendSeries(list, tt.key, today, 14);
+                return <MiniTrend key={tt.key} label={tt.label} points={pts} positive={tt.positive} description={describeTrend(pts, tt.positive)} />;
               })}
             </View>
           </Card>
-          <Text variant="caption" muted>Une évolution ne veut rien dire à elle seule, ni dans un sens ni dans l’autre. Si quelque chose vous inquiète, parlez-en à un professionnel.</Text>
+          <Text variant="caption" muted>{tr('u5.pp_history.disclaimer')}</Text>
 
           {actionsQ.data?.length ? (
             <>
-              <SectionTitle title="Mes démarches et soutiens" />
+              <SectionTitle title={tr('u5.pp_history.actions')} />
               <Card>
                 {actionsQ.data.slice(0, 10).map((a) => (
-                  <ListRow key={a.id} icon="check" title={ACTION_KINDS.find((k) => k.value === a.kind)?.label ?? a.kind} subtitle={[new Date(`${a.done_on}T12:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }), a.note].filter(Boolean).join(' — ')} />
+                  <ListRow key={a.id} icon="check" title={ACTION_KINDS.find((k) => k.value === a.kind)?.label ?? a.kind} subtitle={[formatDate(new Date(`${a.done_on}T12:00:00`), { day: 'numeric', month: 'long' }), a.note].filter(Boolean).join(' — ')} />
                 ))}
               </Card>
             </>
           ) : null}
 
-          <HistoryHeader title="Mes points du jour" count={list.length} />
+          <HistoryHeader title={tr('u5.pp_history.list')} count={list.length} />
           {list.map((c, i) => (
             <StaggerItem key={c.id} index={i}>
               <Card>
                 <ListRow
                   icon="calendar"
-                  title={new Date(`${c.checkin_date}T12:00:00`).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                  title={formatDate(new Date(`${c.checkin_date}T12:00:00`), { weekday: 'long', day: 'numeric', month: 'long' })}
                   subtitle={[
                     c.needs.filter((n) => n !== 'no_answer').map((n) => NEEDS.find((x) => x.value === n)?.label).join(', '),
                     c.comment ? (c.comment.length > 90 ? `${c.comment.slice(0, 90)}…` : c.comment) : null,
-                  ].filter(Boolean).join(' — ') || 'Point noté'}
-                  right={<Button label="Supprimer" size="sm" variant="ghost" onPress={() => remove(c.id, c.checkin_date)} accessibilityLabel={`Supprimer le point du ${c.checkin_date}`} />}
+                  ].filter(Boolean).join(' — ') || tr('u5.pp_history.noted')}
+                  right={<Button label={tr('u5.pp_history.del_ok')} size="sm" variant="ghost" onPress={() => remove(c.id, c.checkin_date)} accessibilityLabel={tr('u5.pp_history.del_a11y', { date: c.checkin_date })} />}
                 />
               </Card>
             </StaggerItem>

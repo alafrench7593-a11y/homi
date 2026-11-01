@@ -19,8 +19,9 @@ import { lightenDay, sameLocalDay, type FamilyTask } from '@/lib/domain/familyLo
 import { todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr, formatDate, formatTime } from '@/i18n';
 
-const hm = (iso: string) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+const hm = (iso: string) => formatTime(iso);
 
 export default function DifficultDay() {
   const t = useTheme();
@@ -44,70 +45,70 @@ export default function DifficultDay() {
     try {
       await ask.mutateAsync({ kind: 'help_today', message: 'Journée difficile : j’ai besoin d’aide aujourd’hui.' });
       setAsked(true);
-      toast('Demande d’aide envoyée à votre foyer.');
+      toast(tr('u2.difficult.help_sent'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   async function applyPlan() {
     if (!plan.length) return;
-    const lines = plan.map((p) => `• ${p.title} → ${new Date(p.to).toLocaleString('fr-FR', { weekday: 'long', hour: '2-digit', minute: '2-digit' })}`).join('\n');
-    if (!(await confirm('Appliquer le planning allégé ?', `Ces tâches seront reportées :\n${lines}`, 'Reporter', false))) return;
-    try { await batch.mutateAsync({ postpone: plan.map((p) => ({ id: p.id, to: p.to })) }); toast('C’est reporté. Une chose à la fois.'); } catch (e) { toast(friendlyError(e), 'error'); }
+    const lines = plan.map((p) => `• ${p.title} → ${formatDate(p.to, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}`).join('\n');
+    if (!(await confirm(tr('u2.difficult.apply_title'), tr('u2.difficult.apply_body', { lines }), tr('u2.difficult.postpone'), false))) return;
+    try { await batch.mutateAsync({ postpone: plan.map((p) => ({ id: p.id, to: p.to })) }); toast(tr('u2.difficult.postponed')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   return (
-    <Screen back title="Journée difficile" subtitle="Juste l’essentiel. Le reste peut attendre."
-      action={{ label: asked ? 'Demande envoyée' : 'J’ai besoin d’aide aujourd’hui', icon: asked ? 'check' : 'life-buoy', onPress: askHelp, disabled: asked || ask.isPending, testID: 'difficult-help' }}>
+    <Screen back title={tr('u2.difficult.title')} subtitle={tr('u2.difficult.subtitle')}
+      action={{ label: asked ? tr('u2.difficult.asked') : tr('u2.difficult.need_help'), icon: asked ? 'check' : 'life-buoy', onPress: askHelp, disabled: asked || ask.isPending, testID: 'difficult-help' }}>
       <TodaySummary items={[
-        { icon: 'star', value: String(essential.length), label: 'Essentiel' },
-        { icon: 'calendar', value: String(todayAppointments.length), label: 'Rendez-vous' },
-        { icon: 'skip-forward', value: String(plan.length), label: 'Peut attendre' },
+        { icon: 'star', value: String(essential.length), label: tr('u2.difficult.essential') },
+        { icon: 'calendar', value: String(todayAppointments.length), label: tr('u2.difficult.appointments') },
+        { icon: 'skip-forward', value: String(plan.length), label: tr('u2.difficult.can_wait') },
       ]} />
       <Card tone="soft">
-        <Text weight="bold">Demander de l’aide, en un geste</Text>
-        <Text variant="small" muted>Votre foyer reçoit « Besoin d’aide aujourd’hui » (bouton en bas).</Text>
+        <Text weight="bold">{tr('u2.difficult.ask_title')}</Text>
+        <Text variant="small" muted>{tr('u2.difficult.ask_body')}</Text>
         <Row wrap style={{ marginTop: spacing.sm }}>
-          <Button label="Demander un relais" variant="secondary" onPress={() => ask.mutateAsync({ kind: 'relay' }).then(() => toast('Demande de relais envoyée.')).catch((e) => toast(friendlyError(e), 'error'))} />
+          <Button label={tr('u2.difficult.relay')} variant="secondary" onPress={() => ask.mutateAsync({ kind: 'relay' }).then(() => toast(tr('u2.difficult.relay_sent'))).catch((e) => toast(friendlyError(e), 'error'))} />
         </Row>
       </Card>
 
-      <SectionTitle title="L’essentiel aujourd’hui" />
-      {essential.length === 0 ? <Text variant="small" muted>Aucune tâche marquée essentielle ou importante. Vous pouvez en marquer une comme « essentielle » dans la tâche.</Text> : null}
+      <SectionTitle title={tr('u2.difficult.essential_today')} />
+      {essential.length === 0 ? <Text variant="small" muted>{tr('u2.difficult.no_essential')}</Text> : null}
       {essential.map((task) => <TaskRow key={task.id} task={task} onEdit={setEditing} />)}
 
       {todayAppointments.length ? (
         <>
-          <SectionTitle title="À ne pas oublier" />
+          <SectionTitle title={tr('u2.difficult.dont_forget')} />
           <Card>{todayAppointments.map((a) => <ListRow key={a.id} icon="calendar" title={a.title} subtitle={`${hm(a.starts_at)}${a.location_label ? ` · ${a.location_label}` : ''}`} />)}</Card>
         </>
       ) : null}
 
-      <SectionTitle title="Ce qui peut attendre" />
-      {plan.length === 0 ? <Text variant="small" muted>Rien à reporter aujourd’hui.</Text> : (
+      <SectionTitle title={tr('u2.difficult.can_wait_title')} />
+      {plan.length === 0 ? <Text variant="small" muted>{tr('u2.difficult.nothing_postpone')}</Text> : (
         <Card>
-          {plan.map((p) => <ListRow key={p.id} icon="skip-forward" title={p.title} subtitle={`Proposé : ${new Date(p.to).toLocaleString('fr-FR', { weekday: 'long', hour: '2-digit', minute: '2-digit' })}`} />)}
-          <Button label="Valider ce planning allégé" icon="check" size="sm" style={{ alignSelf: 'flex-start', marginTop: spacing.xs }} onPress={applyPlan} loading={batch.isPending} />
-          <Text variant="caption" muted style={{ marginTop: 6 }}>Rien n’est reporté sans votre validation.</Text>
+          {plan.map((p) => <ListRow key={p.id} icon="skip-forward" title={p.title} subtitle={tr('u2.difficult.proposed', { when: formatDate(p.to, { weekday: 'long', hour: '2-digit', minute: '2-digit' }) })} />)}
+          <Button label={tr('u2.difficult.validate')} icon="check" size="sm" style={{ alignSelf: 'flex-start', marginTop: spacing.xs }} onPress={applyPlan} loading={batch.isPending} />
+          <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u2.difficult.no_postpone_without')}</Text>
         </Card>
       )}
 
-      <SectionTitle title="Infos indispensables des enfants" />
+      <SectionTitle title={tr('u2.difficult.child_info')} />
       <ChildEssentials />
 
-      <SectionTitle title="Qui peut aider" />
+      <SectionTitle title={tr('u2.difficult.who_helps')} />
       <Card>
-        {available.map((r) => <ListRow key={r.id} icon="check-circle" title={`${labelOf(r.from_user)} est disponible`} subtitle={r.message ?? undefined} />)}
+        {available.map((r) => <ListRow key={r.id} icon="check-circle" title={tr('u2.difficult.available', { name: labelOf(r.from_user) })} subtitle={r.message ?? undefined} />)}
         {(contacts ?? []).filter((c) => c.kind === 'trusted').slice(0, 4).map((c) => <ListRow key={c.id} icon="user" title={c.name} subtitle={[c.relation, c.phone].filter(Boolean).join(' · ') || undefined} onPress={c.phone ? () => router.push('/postpartum/support') : undefined} />)}
-        {!available.length && !(contacts ?? []).some((c) => c.kind === 'trusted') ? <Text variant="small" muted>Ajoutez des personnes de confiance dans votre plan de soutien pour les retrouver ici.</Text> : null}
-        <ListRow icon="users" title="Mes personnes de confiance" subtitle="Plan de soutien" onPress={() => router.push('/postpartum/support')} />
+        {!available.length && !(contacts ?? []).some((c) => c.kind === 'trusted') ? <Text variant="small" muted>{tr('u2.difficult.add_trusted')}</Text> : null}
+        <ListRow icon="users" title={tr('u2.difficult.my_trusted')} subtitle={tr('u2.difficult.support_plan')} onPress={() => router.push('/postpartum/support')} />
       </Card>
 
       <Banner tone="info">
         <Row style={{ alignItems: 'flex-start' }}>
           <Icon name="info" size={16} color={t.colors.lavender} />
-          <Text variant="small" style={{ flex: 1 }}>Si vous vous sentez en danger, ou votre enfant : 15, 112, ou 3114 pour la prévention du suicide.</Text>
+          <Text variant="small" style={{ flex: 1 }}>{tr('u2.difficult.danger')}</Text>
         </Row>
-        <Button label="Numéros d’urgence" size="sm" variant="ghost" icon="life-buoy" onPress={() => router.push('/emergency')} style={{ alignSelf: 'flex-start' }} />
+        <Button label={tr('u2.difficult.emergency_numbers')} size="sm" variant="ghost" icon="life-buoy" onPress={() => router.push('/emergency')} style={{ alignSelf: 'flex-start' }} />
       </Banner>
       <View style={{ height: spacing.md }} />
       <TaskSheet task={editing} open={!!editing} onClose={() => setEditing(null)} />

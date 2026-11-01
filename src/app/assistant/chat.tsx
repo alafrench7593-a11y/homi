@@ -24,6 +24,7 @@ import type { AssistantMessage } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { t as tr } from '@/i18n';
 
 interface LocalMsg {
   id: string;
@@ -131,7 +132,7 @@ export default function Chat() {
         inv('assistant_conversations');
       } catch {
         // Le choix est de toute façon transmis avec la prochaine question : on le signale sans bloquer
-        toast('Préférence non enregistrée pour l’instant : elle sera appliquée à votre prochaine question.', 'info');
+        toast(tr('u8.chat.prefSaveFail'), 'info');
       }
     }
   }
@@ -172,10 +173,10 @@ export default function Chat() {
       if (res.quota) setQuota(res.quota);
       patchMsg(answerId, {
         streaming: false, raw: undefined, serverId: res.message_id ?? null, content: res.answer, structured: res.structured ?? null,
-        sources: res.sources, safety: res.safety, urgent: res.urgent_contacts, devMode: res.dev_mode ?? (res.demo ? 'Mode démonstration' : undefined),
+        sources: res.sources, safety: res.safety, urgent: res.urgent_contacts, devMode: res.dev_mode ?? (res.demo ? tr('u8.chat.demoMode') : undefined),
       });
       if (res.safety !== 'none') haptic('warning');
-      if (res.replaced) toast('Réponse remplacée par une version plus prudente.', 'info');
+      if (res.replaced) toast(tr('u8.chat.replaced'), 'info');
       inv('assistant_conversations', 'assistant_usage');
     } catch (e) {
       if (e instanceof BackendError && e.isPremiumRequired) {
@@ -183,9 +184,9 @@ export default function Chat() {
         setMsgs((m) => m.filter((x) => x.id !== answerId));
         inv('assistant_usage');
       } else if (e instanceof BackendError && e.code === 'aborted') {
-        patchMsg(answerId, { streaming: false, raw: undefined, stopped: true, content: 'Réponse arrêtée.' });
+        patchMsg(answerId, { streaming: false, raw: undefined, stopped: true, content: tr('u8.chat.stopped') });
       } else {
-        patchMsg(answerId, { streaming: false, raw: undefined, error: true, content: friendlyError(e, 'L’assistant est indisponible pour le moment. Réessayez dans un instant.') });
+        patchMsg(answerId, { streaming: false, raw: undefined, error: true, content: friendlyError(e, tr('u8.chat.unavailable')) });
       }
     } finally {
       abortRef.current = null;
@@ -216,9 +217,9 @@ export default function Chat() {
       await backend.insert('assistant_feedback', { user_id: userId, message_id: m.serverId, value }, { onConflict: 'user_id,message_id' });
       patchMsg(m.id, { feedback: value });
       inv('assistant_messages');
-      toast('Merci pour votre retour.', 'info');
+      toast(tr('u8.chat.thanks'), 'info');
     } catch (e) {
-      toast(friendlyError(e, 'Retour non enregistré. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u8.chat.feedbackFail')), 'error');
     } finally {
       setBusyAction(false);
     }
@@ -226,18 +227,18 @@ export default function Chat() {
 
   const saveAccess = usePremiumAccess('assistant_saved');
   async function toggleSave(m: LocalMsg) {
-    if (!m.serverId) return toast('Activez l’historique pour enregistrer des réponses.', 'info');
+    if (!m.serverId) return toast(tr('u8.chat.enableHistory'), 'info');
     if (busyAction) return;
     // Enregistrer une nouvelle réponse : Premium (retirer ou relire une réponse déjà enregistrée reste gratuit)
-    if (!m.saved && !saveAccess.require(<Text variant="small" numberOfLines={3}>{`« ${m.content.slice(0, 160)}${m.content.length > 160 ? '…' : ''} » serait gardée dans « Mes réponses favorites ».`}</Text>)) return;
+    if (!m.saved && !saveAccess.require(<Text variant="small" numberOfLines={3}>{tr('u8.chat.savePreview', { text: `${m.content.slice(0, 160)}${m.content.length > 160 ? '…' : ''}` })}</Text>)) return;
     setBusyAction(true);
     try {
       await backend.update('assistant_messages', { saved: !m.saved }, [eq('id', m.serverId)]);
       patchMsg(m.id, (x) => ({ saved: !x.saved }));
       inv('assistant_messages');
-      toast(m.saved ? 'Réponse retirée des favoris.' : 'Réponse ajoutée aux favoris.');
+      toast(m.saved ? tr('u8.chat.unsaved') : tr('u8.chat.savedFav'));
     } catch (e) {
-      toast(friendlyError(e, 'Favori non enregistré. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u8.chat.favFail')), 'error');
     } finally {
       setBusyAction(false);
     }
@@ -246,15 +247,15 @@ export default function Chat() {
   async function deleteConversation() {
     if (!conversationId) return router.back();
     if (busyAction) return;
-    if (!(await confirm('Supprimer cette conversation ?', 'Elle sera définitivement effacée, avec vos favoris et retours associés.', 'Supprimer'))) return;
+    if (!(await confirm(tr('u8.chat.delQ'), tr('u8.chat.delBody'), tr('u8.chat.delete')))) return;
     setBusyAction(true);
     try {
       await backend.remove('assistant_conversations', [eq('id', conversationId)]);
       inv('assistant_conversations', 'assistant_messages');
-      toast('Conversation supprimée.');
+      toast(tr('u8.chat.deleted'));
       router.back();
     } catch (e) {
-      toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u8.chat.delFail')), 'error');
     } finally {
       setBusyAction(false);
     }
@@ -272,22 +273,22 @@ export default function Chat() {
 
   if (!consented) {
     return (
-      <Screen back title={sleepTopic ? "Assistant sommeil · IA" : "Assistant"}>
+      <Screen back title={sleepTopic ? tr('u8.chat.titleSleep') : tr('u8.chat.title')}>
         <AssistantIntro />
         <Card tone="lavender">
-          <Text variant="heading">Avant de commencer</Text>
+          <Text variant="heading">{tr('u8.chat.before')}</Text>
           <Text style={{ marginTop: spacing.xs }}>
-            Vos questions sont envoyées, depuis nos serveurs, à l’intelligence artificielle Google Gemini (service externe). Votre situation (parcours, semaine de grossesse, âge des enfants…) n’est transmise que si vous l’autorisez, conversation par conversation — jamais de prénom ni de document.
+            {tr('u8.chat.consent1')}
           </Text>
-          <Text style={{ marginTop: spacing.xs }}>L’assistant informe et vous aide à préparer vos rendez-vous. Il ne pose pas de diagnostic, ne prescrit rien et ne remplace pas un professionnel. Vos conversations restent privées et ne sont jamais publiées.</Text>
+          <Text style={{ marginTop: spacing.xs }}>{tr('u8.chat.consent2')}</Text>
           <Row style={{ marginTop: spacing.md, justifyContent: 'space-between' }}>
-            <Text weight="medium" style={{ flex: 1 }}>J’accepte d’utiliser l’assistant</Text>
+            <Text weight="medium" style={{ flex: 1 }}>{tr('u8.chat.accept')}</Text>
             <Toggle
-              label="Accepter l’utilisation de l’assistant"
+              label={tr('u8.chat.acceptA11y')}
               value={setConsent.isPending}
               onChange={() => {
                 if (setConsent.isPending) return;
-                setConsent.mutate({ purpose: 'ai_assistant', granted: true }, { onError: (e) => toast(friendlyError(e, 'Votre accord n’a pas pu être enregistré. Réessayez.'), 'error') });
+                setConsent.mutate({ purpose: 'ai_assistant', granted: true }, { onError: (e) => toast(friendlyError(e, tr('u8.chat.consentFail')), 'error') });
               }}
             />
           </Row>
@@ -305,15 +306,15 @@ export default function Chat() {
     && !!history && history.length === 0 && !!conversations && !conversations.some((c) => c.id === params.id);
   if (historyLoading || historyError || notFound) {
     return (
-      <Screen back title={sleepTopic ? "Assistant sommeil · IA" : "Assistant"}>
+      <Screen back title={sleepTopic ? tr('u8.chat.titleSleep') : tr('u8.chat.title')}>
         {historyLoading ? <Skeleton kind="detail" rows={5} /> : historyError ? (
-          <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher cette conversation" />
+          <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title={tr('u8.chat.histErr')} />
         ) : (
           <EmptyState
             icon="message-circle"
-            title="Conversation introuvable"
-            body="Elle a peut-être été supprimée."
-            action={{ label: 'Nouvelle conversation', icon: 'plus', onPress: newConversation }}
+            title={tr('u8.chat.notFound')}
+            body={tr('u8.chat.notFoundBody')}
+            action={{ label: tr('u8.chat.newConv'), icon: 'plus', onPress: newConversation }}
           />
         )}
       </Screen>
@@ -326,12 +327,12 @@ export default function Chat() {
   return (
     <Screen
       back
-      title={sleepTopic ? "Assistant sommeil · IA" : "Assistant"}
+      title={sleepTopic ? tr('u8.chat.titleSleep') : tr('u8.chat.title')}
       scroll={false}
       right={
         <Row gap={0}>
-          {msgs.length > 0 && <IconButton icon="plus" label="Nouvelle conversation" onPress={newConversation} />}
-          <IconButton icon="trash-2" label="Supprimer la conversation" onPress={deleteConversation} />
+          {msgs.length > 0 && <IconButton icon="plus" label={tr('u8.chat.newConv')} onPress={newConversation} />}
+          <IconButton icon="trash-2" label={tr('u8.chat.delConvA11y')} onPress={deleteConversation} />
         </Row>
       }
     >
@@ -354,34 +355,34 @@ export default function Chat() {
             <Card padded>
               <Row style={{ justifyContent: 'space-between' }}>
                 <View style={{ flex: 1, gap: 2 }}>
-                  <Text weight="medium">{sleepTopic ? `Utiliser les données de sommeil de ${sleepChild!.first_name}` : 'Utiliser ma situation'}</Text>
-                  <Text variant="caption" muted>Pour cette conversation uniquement. Vous pouvez changer d’avis à tout moment.</Text>
+                  <Text weight="medium">{sleepTopic ? tr('u8.chat.useSleep', { name: sleepChild!.first_name }) : tr('u8.chat.useMine')}</Text>
+                  <Text variant="caption" muted>{tr('u8.chat.thisOnly')}</Text>
                 </View>
-                <Toggle label="Utiliser ma situation pour cette conversation" value={useContext} onChange={changeContext} />
+                <Toggle label={tr('u8.chat.useMineA11y')} value={useContext} onChange={changeContext} />
               </Row>
               {useContext && (
                 <Tappable accessibilityRole="button" onPress={() => setShowContext((v) => !v)} style={{ marginTop: spacing.xs, minHeight: MIN_TOUCH, justifyContent: 'center' }}>
-                  <Text variant="small" color={t.colors.primary}>{showContext ? 'Masquer' : 'Voir'} ce qui est transmis</Text>
+                  <Text variant="small" color={t.colors.primary}>{showContext ? tr('u8.chat.hideCtx') : tr('u8.chat.showCtx')}</Text>
                 </Tappable>
               )}
               {useContext && showContext && <Text variant="small" muted>{describeContext(context)}</Text>}
             </Card>
             {sleepTopic && !msgs.length ? (
               <View style={{ gap: spacing.xs }} testID="chat-sleep-questions">
-                <Text variant="label">{`Questions fréquentes sur le sommeil de ${sleepChild!.first_name}`}</Text>
+                <Text variant="label">{tr('u8.chat.sleepQ', { name: sleepChild!.first_name })}</Text>
                 <Row wrap>{SLEEP_QUESTIONS.map((q) => <Chip key={q} label={q} onPress={() => void send(q)} />)}</Row>
-                <Text variant="caption" muted>L’assistant tient compte de son âge et des sommeils notés, explique ses incertitudes et ne pose jamais de diagnostic.</Text>
+                <Text variant="caption" muted>{tr('u8.chat.sleepNote')}</Text>
               </View>
             ) : null}
             <Card padded>
               <Row style={{ justifyContent: 'space-between' }}>
                 <View style={{ flex: 1, gap: 2 }}>
-                  <Text weight="medium">Garder mes conversations</Text>
-                  <Text variant="caption" muted testID="chat-history-note">{historyOn ? 'Vos conversations sont enregistrées dans votre espace privé, visibles par vous seule ou vous seul, et supprimables à tout moment.' : 'Désactivé : vos questions et les réponses ne sont pas enregistrées après l’échange.'}</Text>
+                  <Text weight="medium">{tr('u8.chat.keep')}</Text>
+                  <Text variant="caption" muted testID="chat-history-note">{historyOn ? tr('u8.chat.keepOn') : tr('u8.chat.keepOff')}</Text>
                 </View>
-                <Toggle label="Garder mes conversations" value={historyOn} onChange={(v) => updatePrivacy.mutate({ ai_history_enabled: v }, { onError: (e) => toast(friendlyError(e), 'error') })} />
+                <Toggle label={tr('u8.chat.keep')} value={historyOn} onChange={(v) => updatePrivacy.mutate({ ai_history_enabled: v }, { onError: (e) => toast(friendlyError(e), 'error') })} />
               </Row>
-              {historyOn ? <Button label="Mes conversations" icon="clock" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => router.push('/(tabs)/ask' as never)} /> : null}
+              {historyOn ? <Button label={tr('u8.chat.myConvs')} icon="clock" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => router.push('/(tabs)/ask' as never)} /> : null}
             </Card>
           </View>
         )}
@@ -403,7 +404,7 @@ export default function Chat() {
                   m.raw ? <StructuredAnswerView answer={parseStructuredAnswer(m.raw)} streaming /> : (
                     <Row>
                       <ActivityIndicator color={t.colors.lavender} />
-                      <Text variant="small" muted>L’assistant prépare une réponse…</Text>
+                      <Text variant="small" muted>{tr('u8.chat.preparing')}</Text>
                     </Row>
                   )
                 ) : m.structured ? (
@@ -413,16 +414,16 @@ export default function Chat() {
                 )}
               </View>
               {(m.error || m.stopped) && m.question ? (
-                <Button label="Réessayer" icon="refresh-cw" size="sm" variant="secondary" style={{ alignSelf: 'flex-start' }} disabled={sending} onPress={() => retry(m)} testID="chat-retry" />
+                <Button label={tr('u8.chat.retry')} icon="refresh-cw" size="sm" variant="secondary" style={{ alignSelf: 'flex-start' }} disabled={sending} onPress={() => retry(m)} testID="chat-retry" />
               ) : null}
               {!m.streaming && !m.error && !m.stopped && (
-                <Text variant="caption" muted>Réponse générée par une IA, à titre d’information : elle ne remplace pas un professionnel de santé.</Text>
+                <Text variant="caption" muted>{tr('u8.chat.aiNote')}</Text>
               )}
               {m.serverId && !m.streaming && (
                 <Row wrap>
-                  <Chip label="Utile" icon="thumbs-up" selected={m.feedback === 1} onPress={() => feedback(m, 1)} />
-                  <Chip label="Pas utile" icon="thumbs-down" selected={m.feedback === -1} onPress={() => feedback(m, -1)} />
-                  <Chip label={m.saved ? 'Dans mes favoris' : 'Favori'} icon="bookmark" selected={m.saved} onPress={() => toggleSave(m)} />
+                  <Chip label={tr('u8.chat.useful')} icon="thumbs-up" selected={m.feedback === 1} onPress={() => feedback(m, 1)} />
+                  <Chip label={tr('u8.chat.notUseful')} icon="thumbs-down" selected={m.feedback === -1} onPress={() => feedback(m, -1)} />
+                  <Chip label={m.saved ? tr('u8.chat.inFav') : tr('u8.chat.fav')} icon="bookmark" selected={m.saved} onPress={() => toggleSave(m)} />
                 </Row>
               )}
             </View>
@@ -430,9 +431,9 @@ export default function Chat() {
         )}
         ListFooterComponent={premiumNeeded || blocked ? (
           <Card tone="gold">
-            <Text weight="bold">{premiumNeeded ?? `Vous avez utilisé vos ${limit} questions de ce mois.`}</Text>
-            <Text variant="small" muted>Avec Au fil de nous Premium, posez jusqu’à 300 questions par mois. L’orientation en cas d’urgence et les numéros d’urgence restent toujours gratuits.</Text>
-            <Button label="Découvrir Au fil de nous Premium" size="sm" variant="secondary" icon="star" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
+            <Text weight="bold">{premiumNeeded ?? tr('u8.chat.usedAll', { limit: limit ?? 0 })}</Text>
+            <Text variant="small" muted>{tr('u8.chat.premiumPitch')}</Text>
+            <Button label={tr('u8.chat.discover')} size="sm" variant="secondary" icon="star" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
           </Card>
         ) : null}
       />
@@ -440,31 +441,31 @@ export default function Chat() {
       <View style={{ paddingBottom: insets.bottom + spacing.sm, gap: 4 }}>
         {remaining != null && (
           <Text variant="caption" muted center>
-            {remaining > 0 ? `Il vous reste ${remaining} question${remaining > 1 ? 's' : ''} ce mois-ci (sur ${limit}).` : 'Plus de question disponible ce mois-ci.'}
+            {remaining > 0 ? tr('u8.chat.left', { count: remaining, limit: limit ?? 0 }) : tr('u8.chat.noneLeft')}
           </Text>
         )}
-        {tooLong && <Text variant="caption" color={t.colors.danger} center>{input.length} / {MAX_QUESTION_LENGTH} caractères</Text>}
+        {tooLong && <Text variant="caption" color={t.colors.danger} center>{tr('u8.chat.chars', { n: input.length, max: MAX_QUESTION_LENGTH })}</Text>}
         <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: 6 }}>
           <TextInput
             value={input}
             onChangeText={setInput}
-            placeholder={blocked ? 'Limite mensuelle atteinte' : 'Écrivez votre question…'}
+            placeholder={blocked ? tr('u8.chat.limitReached') : tr('u8.chat.placeholder')}
             placeholderTextColor={t.colors.textMuted}
-            accessibilityLabel="Votre question"
+            accessibilityLabel={tr('u8.chat.yourQ')}
             multiline
             editable={!blocked}
             maxLength={MAX_QUESTION_LENGTH}
             style={{ flex: 1, minHeight: 44, maxHeight: 140, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, paddingHorizontal: spacing.sm, paddingTop: 10 }}
           />
           {sending ? (
-            <Tappable accessibilityRole="button" accessibilityLabel="Arrêter la réponse" onPress={() => abortRef.current?.abort()} testID="chat-stop"
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('u8.chat.stop')} onPress={() => abortRef.current?.abort()} testID="chat-stop"
               style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="square" color={t.colors.primaryText} size={18} />
             </Tappable>
           ) : (
             <Tappable
               accessibilityRole="button"
-              accessibilityLabel="Envoyer"
+              accessibilityLabel={tr('u8.chat.send')}
               disabled={blocked || input.trim().length < 2}
               onPress={() => send()}
               testID="chat-send"
@@ -474,8 +475,8 @@ export default function Chat() {
             </Tappable>
           )}
         </View>
-        <Tappable accessibilityRole="link" accessibilityLabel="Numéros d’urgence : 15, 112, SMS 114, 3114" onPress={() => router.push('/emergency')} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
-          <Text variant="caption" color={t.colors.danger} center>Urgence : 15 ou 112 · SMS 114 (sourds, malentendants) · Détresse : 3114</Text>
+        <Tappable accessibilityRole="link" accessibilityLabel={tr('u8.chat.emergA11y')} onPress={() => router.push('/emergency')} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
+          <Text variant="caption" color={t.colors.danger} center>{tr('u8.chat.emerg')}</Text>
         </Tappable>
       </View>
     </Screen>

@@ -13,14 +13,15 @@ import { useDeleteAllScans, useDeleteScan, useScanFavorites, useScanHistory, use
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { ScanListRow } from '@/features/scanner/components';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 type Filter = 'all' | 'product' | 'food' | 'favorites';
-const FILTERS: { value: Filter; label: string }[] = [
-  { value: 'all', label: 'Tout' }, { value: 'product', label: 'Produits' }, { value: 'food', label: 'Aliments' }, { value: 'favorites', label: 'Favoris' },
-];
 
 export default function ScanHistoryScreen() {
   const params = useLocalSearchParams<{ filter?: string }>();
+  const FILTERS: { value: Filter; label: string }[] = [
+    { value: 'all', label: tr('u8.history.all') }, { value: 'product', label: tr('u8.history.products') }, { value: 'food', label: tr('u8.history.foods') }, { value: 'favorites', label: tr('u8.history.favorites') },
+  ];
   const toast = useToast();
   const [filter, setFilter] = useState<Filter>(params.filter === 'favorites' ? 'favorites' : 'all');
   const insets = useSafeAreaInsets();
@@ -35,21 +36,21 @@ export default function ScanHistoryScreen() {
   const [profile, setProfile] = useState<string | null>(null);
   const profAccess = usePremiumAccess('scanner_more');
   const PROFILES: { value: string[]; key: string; label: string }[] = [
-    { key: 'pregnant', value: ['pregnant', 'breastfeeding'], label: 'Grossesse et allaitement' }, { key: 'baby', value: ['newborn', 'baby'], label: 'Bébé' }, { key: 'child', value: ['child'], label: 'Enfant' },
+    { key: 'pregnant', value: ['pregnant', 'breastfeeding'], label: tr('u8.history.pregnancy') }, { key: 'baby', value: ['newborn', 'baby'], label: tr('u8.history.baby') }, { key: 'child', value: ['child'], label: tr('u8.history.child') },
   ];
   const rows = (data ?? []).filter((s) => (filter === 'all' ? true : filter === 'favorites' ? favorites.has(s.id) : s.kind === filter))
     .filter((s) => !profile || (PROFILES.find((p) => p.key === profile)?.value ?? []).includes(String((s as { target_profile?: string }).target_profile ?? '')));
 
   async function removeOne(id: string) {
-    if (!(await confirm('Supprimer cette analyse ?', 'Elle sera retirée de l’historique et des favoris.', 'Supprimer'))) return;
-    delOne.mutate(id, { onSuccess: () => toast('Analyse supprimée.'), onError: (e) => toast(friendlyError(e), 'error') });
+    if (!(await confirm(tr('u8.history.delOneQ'), tr('u8.history.delOneBody'), tr('u8.history.delete')))) return;
+    delOne.mutate(id, { onSuccess: () => toast(tr('u8.history.delOneDone')), onError: (e) => toast(friendlyError(e), 'error') });
   }
   async function removeAll() {
     if (delAll.isPending) return;
-    if (!(await confirm('Supprimer tout l’historique ?', 'Toutes vos analyses, résultats et favoris du scanner seront effacés. Le quota du mois n’est pas modifié.', 'Tout supprimer'))) return;
+    if (!(await confirm(tr('u8.history.delAllQ'), tr('u8.history.delAllBody'), tr('u8.history.delAllBtn')))) return;
     try {
       await delAll.mutateAsync();
-      toast('Historique du scanner supprimé.', 'success');
+      toast(tr('u8.history.delAllDone'), 'success');
     } catch (e) {
       toast(friendlyError(e), 'error');
     }
@@ -61,8 +62,8 @@ export default function ScanHistoryScreen() {
   };
 
   return (
-    <Screen back scroll={false} padded={false} title="Historique du scanner" subtitle="Vos analyses restent privées : elles ne sont pas partagées avec le foyer."
-      action={{ label: 'Scanner un produit', icon: 'camera', onPress: () => router.push('/scanner/product'), testID: 'scan-history-new' }}>
+    <Screen back scroll={false} padded={false} title={tr('u8.history.title')} subtitle={tr('u8.history.subtitle')}
+      action={{ label: tr('u8.history.scanProduct'), icon: 'camera', onPress: () => router.push('/scanner/product'), testID: 'scan-history-new' }}>
       <VirtualList
         data={isLoading || failed ? [] : rows}
         keyExtractor={(s) => s.id}
@@ -70,36 +71,36 @@ export default function ScanHistoryScreen() {
           <View>
             <ScanListRow s={s} favorite={favorites.has(s.id)} />
             <Row style={{ justifyContent: 'flex-end' }}>
-              <IconButton icon="star" label={favorites.has(s.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'} onPress={() => toggleFavorite(s.id)} />
-              <IconButton icon="trash-2" label="Supprimer cette analyse" onPress={() => removeOne(s.id)} />
+              <IconButton icon="star" label={favorites.has(s.id) ? tr('u8.history.unfav') : tr('u8.history.fav')} onPress={() => toggleFavorite(s.id)} />
+              <IconButton icon="trash-2" label={tr('u8.history.delLabel')} onPress={() => removeOne(s.id)} />
             </Row>
           </View>
         )}
         ListHeaderComponent={(
           <View style={{ gap: spacing.md, marginBottom: spacing.xxs }}>
             {data ? (
-              <TodaySummary title="En bref" items={[
-                { icon: 'maximize', value: String(data.filter((x) => x.kind === 'product').length), label: 'Produits' },
-                { icon: 'search', value: String(data.filter((x) => x.kind === 'food').length), label: 'Aliments' },
-                { icon: 'star', value: String(data.filter((x) => favorites.has(x.id)).length), label: 'Favoris' },
+              <TodaySummary title={tr('u8.history.brief')} items={[
+                { icon: 'maximize', value: String(data.filter((x) => x.kind === 'product').length), label: tr('u8.history.products') },
+                { icon: 'search', value: String(data.filter((x) => x.kind === 'food').length), label: tr('u8.history.foods') },
+                { icon: 'star', value: String(data.filter((x) => favorites.has(x.id)).length), label: tr('u8.history.favorites') },
               ]} />
             ) : null}
             <Row wrap>{FILTERS.map((f) => <Chip key={f.value} label={f.label} selected={filter === f.value} onPress={() => setFilter(f.value)} />)}</Row>
             <View testID="scan-profile-filter"><Row wrap>{PROFILES.map((p) => <Chip key={p.key} icon={profAccess.premium ? undefined : 'star'} label={p.label} selected={profile === p.key}
-              onPress={() => { if (profile === p.key) { setProfile(null); return; } if (profAccess.require(<Text variant="small">{`${(data ?? []).filter((x) => p.value.includes(String((x as { target_profile?: string }).target_profile ?? ''))).length} analyse(s) faites pour « ${p.label} » dans votre historique.`}</Text>)) setProfile(p.key); }} />)}</Row></View>
+              onPress={() => { if (profile === p.key) { setProfile(null); return; } if (profAccess.require(<Text variant="small">{tr('u8.history.profCount', { count: (data ?? []).filter((x) => p.value.includes(String((x as { target_profile?: string }).target_profile ?? ''))).length, profile: p.label })}</Text>)) setProfile(p.key); }} />)}</Row></View>
             {isLoading ? <Skeleton kind="card" rows={3} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} /> : null}
           </View>
         )}
         ListEmptyComponent={isLoading || failed ? null : filter === 'favorites' && data?.length ? (
-          <EmptyState icon="star" title="Aucun favori pour le moment." body="Touchez l’étoile d’une analyse pour la retrouver ici." action={{ label: 'Voir toutes les analyses', icon: 'list', onPress: () => setFilter('all') }} />
+          <EmptyState icon="star" title={tr('u8.history.noFav')} body={tr('u8.history.noFavBody')} action={{ label: tr('u8.history.seeAll'), icon: 'list', onPress: () => setFilter('all') }} />
         ) : (
-          <EmptyState icon="maximize" title="Aucune analyse pour le moment." action={{ label: 'Scanner un produit', icon: 'camera', onPress: () => router.push('/scanner/product') }} />
+          <EmptyState icon="maximize" title={tr('u8.history.none')} action={{ label: tr('u8.history.scanProduct'), icon: 'camera', onPress: () => router.push('/scanner/product') }} />
         )}
         ListFooterComponent={(
           <View style={{ gap: spacing.md, marginTop: spacing.xxs }}>
-            {data?.length ? <Button label="Comparer deux produits" icon="columns" variant="secondary" onPress={() => router.push('/scanner/compare')} /> : null}
-            {data?.length ? <Button label="Tout supprimer" icon="trash-2" variant="danger" loading={delAll.isPending} onPress={removeAll} /> : null}
-            <Text variant="caption" muted>Supprimer l’historique ne rend pas d’analyse au quota du mois. Les alertes de rappel ne concernent que les produits encore présents dans l’historique ou les favoris.</Text>
+            {data?.length ? <Button label={tr('u8.history.compare')} icon="columns" variant="secondary" onPress={() => router.push('/scanner/compare')} /> : null}
+            {data?.length ? <Button label={tr('u8.history.delAllBtn')} icon="trash-2" variant="danger" loading={delAll.isPending} onPress={removeAll} /> : null}
+            <Text variant="caption" muted>{tr('u8.history.footer')}</Text>
           </View>
         )}
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}

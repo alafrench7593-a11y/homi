@@ -18,7 +18,7 @@ import { SafeSleepCard, SafetyNoticeCard } from '@/features/childCare';
 import { STOOL_COLORS, STOOL_CONSISTENCY, digestionNotices, stoolNotice, type StoolColor } from '@/lib/domain/childCare';
 import { childAge } from '@/lib/domain/child';
 import { useBottleChildren, useBottleTimer, useStartBottleTimer, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
-import { NO_RECOMMENDATION_NOTE, parseMl, ReminderChoicePicker } from '@/features/bottle';
+import { noRecommendationNote, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { atClock, bottleDraftDefaults, computeDueAt, markBottleGiven, nextReminderSentence, resolveReminderChoice, type ReminderChoice } from '@/lib/domain/bottleTimer';
 import { getPermission, notificationsSupported } from '@/lib/notifications';
 import { askNotificationPermission } from '@/lib/notificationPrompt';
@@ -31,19 +31,17 @@ import { DayStrip } from '@/features/dayStrip/DayStrip';
 import { LastSideCard, QuickDiaperCard } from '@/features/dayStrip/QuickLog';
 import { lastSide, nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { spacing } from '@/theme/tokens';
+import { t as tr, type TKey } from '@/i18n';
 
 type Side = 'left' | 'right' | 'both';
 const editing0 = (id: string | undefined) => !!id;
 /** La file hors connexion ne sait envoyer que des ajouts : une modification exige le réseau. */
-const OFFLINE_EDIT = 'Modification impossible hors connexion, réessayez une fois en ligne.';
+const offlineEdit = () => tr('u7.track.offlineEdit');
 
 /** Lien vers un type de saisie inconnu : écran « introuvable » au lieu d'un plantage. */
 const DIGESTIVE: Observation['kind'][] = ['vomit', 'regurgitation', 'diarrhea', 'abdominal_pain', 'bloating', 'crying'];
-const OBS_KINDS: { value: Observation['kind']; label: string }[] = [
-  { value: 'temperature', label: 'Température' }, { value: 'vomit', label: 'Vomissement' }, { value: 'regurgitation', label: 'Régurgitation' },
-  { value: 'diarrhea', label: 'Diarrhée' }, { value: 'abdominal_pain', label: 'Douleur au ventre' }, { value: 'bloating', label: 'Ballonnements' },
-  { value: 'crying', label: 'Pleurs inhabituels' }, { value: 'symptom', label: 'Autre symptôme' }, { value: 'medication', label: 'Traitement prescrit' }, { value: 'note', label: 'Note' },
-];
+const OBS_VALUES: Observation['kind'][] = ['temperature', 'vomit', 'regurgitation', 'diarrhea', 'abdominal_pain', 'bloating', 'crying', 'symptom', 'medication', 'note'];
+const obsKinds = (): { value: Observation['kind']; label: string }[] => OBS_VALUES.map((value) => ({ value, label: tr(`u7.track.obs.${value}` as TKey) }));
 
 /**
  * Résumé du jour pour ce type de saisie et cet enfant : combien de fois, à quelle heure la dernière, et un total utile
@@ -56,24 +54,24 @@ function TrackToday({ kind, childId }: { kind: LogKind; childId: string }) {
   const rows = (q.data ?? []).filter((r) => typeof r[col] === 'string' && todayISO(new Date(r[col] as string)) === today);
   const last = rows[0] ? formatTime(rows[0][col] as string) : '—';
   const items: SummaryItem[] = [
-    { icon: KIND_META[kind].icon, value: String(rows.length), label: rows.length > 1 ? 'Saisies' : 'Saisie', testID: 'track-today-count' },
-    { icon: 'clock', value: last, label: 'Dernière' },
+    { icon: KIND_META[kind].icon, value: String(rows.length), label: tr('u7.track.entries', { count: rows.length }), testID: 'track-today-count' },
+    { icon: 'clock', value: last, label: tr('u7.track.last') },
   ];
   const minutes = (a: unknown, b: unknown) => (typeof a === 'string' && typeof b === 'string' ? Math.max(0, (Date.parse(b) - Date.parse(a)) / 60000) : 0);
   if (kind === 'bottle') {
     const ml = rows.reduce((n, r) => n + (typeof r.consumed_ml === 'number' ? r.consumed_ml : 0), 0);
-    items.push({ icon: 'droplet', value: ml ? `${ml} ml` : '—', label: 'Bu (noté)' });
+    items.push({ icon: 'droplet', value: ml ? `${ml} ml` : '—', label: tr('u7.track.drunk') });
   } else if (kind === 'sleep') {
     const m = rows.reduce((n, r) => n + minutes(r.started_at, r.ended_at), 0);
-    items.push({ icon: 'moon', value: m ? formatDuration(m) : '—', label: 'Sommeil' });
+    items.push({ icon: 'moon', value: m ? formatDuration(m) : '—', label: tr('u7.track.sleep') });
   } else if (kind === 'breastfeed') {
     const m = rows.reduce((n, r) => n + minutes(r.started_at, r.ended_at), 0);
-    items.push({ icon: 'watch', value: m ? formatDuration(m) : '—', label: 'Durée totale' });
+    items.push({ icon: 'watch', value: m ? formatDuration(m) : '—', label: tr('u7.track.totalDuration') });
   } else if (kind === 'diaper') {
-    items.push({ icon: 'circle', value: String(rows.filter((r) => r.stool).length), label: 'Avec selles' });
+    items.push({ icon: 'circle', value: String(rows.filter((r) => r.stool).length), label: tr('u7.track.withStool') });
   } else if (kind === 'pumping') {
     const ml = rows.reduce((n, r) => n + (typeof r.amount_ml === 'number' ? r.amount_ml : 0), 0);
-    items.push({ icon: 'droplet', value: ml ? `${ml} ml` : '—', label: 'Tiré' });
+    items.push({ icon: 'droplet', value: ml ? `${ml} ml` : '—', label: tr('u7.track.pumped') });
   }
   return <TodaySummary items={items} testID="track-today" />;
 }
@@ -82,8 +80,8 @@ export default function TrackEntryRoute() {
   const params = useLocalSearchParams<{ kind: string }>();
   if (params.kind && !(params.kind in LOG_TABLE)) {
     return (
-      <Screen back title="Saisie introuvable">
-        <EmptyState icon="help-circle" title="Ce type de saisie n’existe pas" body="Le lien utilisé est peut-être incomplet. Choisissez ce que vous voulez noter depuis l’onglet Suivi." action={{ label: 'Aller au suivi', icon: 'activity', onPress: () => router.replace('/(tabs)/track') }} />
+      <Screen back title={tr('u7.track.notFoundTitle')}>
+        <EmptyState icon="help-circle" title={tr('u7.track.noType')} body={tr('u7.track.noTypeBody')} action={{ label: tr('u7.track.goTracking'), icon: 'activity', onPress: () => router.replace('/(tabs)/track') }} />
       </Screen>
     );
   }
@@ -156,7 +154,7 @@ function TrackEntry() {
   const [texture, setTexture] = useState<Meal['texture']>(null);
   const [reaction, setReaction] = useState('');
   // Ouverture depuis « + Ajouter » (symptôme, note) : le type est présélectionné
-  const [obsKind, setObsKind] = useState<Observation['kind']>(() => (OBS_KINDS.some((o) => o.value === params.obs) ? params.obs as Observation['kind'] : 'temperature'));
+  const [obsKind, setObsKind] = useState<Observation['kind']>(() => (OBS_VALUES.some((v) => v === params.obs) ? params.obs as Observation['kind'] : 'temperature'));
   const [temp, setTemp] = useState('');
   const [label, setLabel] = useState('');
   const [note, setNote] = useState('');
@@ -217,38 +215,38 @@ function TrackEntry() {
     const base = { child_id: childId, household_id: child?.household_id, note: note.trim() || null };
     switch (kind) {
       case 'bottle':
-        if (prepared != null && consumed != null && consumed > prepared) return setError('La quantité bue ne peut pas dépasser la quantité préparée.'), null;
-        if ((prepared ?? 0) > 500 || (consumed ?? 0) > 500) return setError('Quantité attendue entre 0 et 500 ml.'), null;
+        if (prepared != null && consumed != null && consumed > prepared) return setError(tr('u7.track.err.consumedMax')), null;
+        if ((prepared ?? 0) > 500 || (consumed ?? 0) > 500) return setError(tr('u7.track.err.qty500')), null;
         {
           const next = parseMl(plannedNext);
           if (next.error) return setError(next.error), null;
-          if (!editing && reminder.kind !== 'none' && resolveReminderChoice(reminder) == null) return setError('Choisissez une durée de rappel valide (10 min à 12 h).'), null;
+          if (!editing && reminder.kind !== 'none' && resolveReminderChoice(reminder) == null) return setError(tr('u7.track.err.reminder')), null;
           return { ...base, at: time.toISOString(), prepared_ml: prepared, consumed_ml: consumed, planned_next_ml: next.value, milk_type: milkType.trim() || null };
         }
       case 'breastfeed': {
         const mins = timerStart ? elapsed / 60 : Number(duration.replace(',', '.'));
-        if (!timerStart && duration && (!Number.isFinite(mins) || mins <= 0 || mins > 180)) return setError('Durée attendue entre 1 et 180 minutes.'), null;
+        if (!timerStart && duration && (!Number.isFinite(mins) || mins <= 0 || mins > 180)) return setError(tr('u7.track.err.duration')), null;
         const start = timerStart ?? time;
         return { ...base, side, started_at: start.toISOString(), ended_at: mins ? new Date(start.getTime() + mins * 60000).toISOString() : null };
       }
       case 'pumping':
-        if (!amount) return setError('Indiquez la quantité tirée.'), null;
+        if (!amount) return setError(tr('u7.track.err.pumped')), null;
         return { ...base, at: time.toISOString(), amount_ml: amount, side };
       case 'diaper':
-        if (!wet && !stool && !note.trim()) return setError('Cochez « mouillée », « selles » ou ajoutez une note.'), null;
+        if (!wet && !stool && !note.trim()) return setError(tr('u7.track.err.diaper')), null;
         return { ...base, at: time.toISOString(), wet, stool, stool_color: stool ? stoolColor : null, stool_consistency: stool ? consistency : null, blood_seen: stool && blood };
       case 'sleep':
-        if (end < time) return setError('La fin du sommeil ne peut pas précéder son début.'), null;
+        if (end < time) return setError(tr('u7.track.err.sleepEnd')), null;
         return { ...base, started_at: time.toISOString(), ended_at: end.toISOString(), wakeups, kind: sleepKind === 'unknown' ? null : sleepKind };
       case 'meal':
         return { ...base, at: time.toISOString(), description: description.trim() || null, foods: foods.split(',').map((f) => f.trim()).filter(Boolean), texture, reaction_note: reaction.trim() || null };
       case 'observation': {
         if (obsKind === 'temperature') {
           const v = Number(temp.replace(',', '.'));
-          if (!Number.isFinite(v) || v < 34 || v > 43) return setError('Température attendue entre 34 et 43 °C.'), null;
+          if (!Number.isFinite(v) || v < 34 || v > 43) return setError(tr('u7.track.err.temp')), null;
           return { ...base, at: time.toISOString(), kind: obsKind, value_num: v, label: null, temp_method: tempMethod, intensity: null };
         }
-        if (!DIGESTIVE.includes(obsKind) && !label.trim() && !note.trim()) return setError('Ajoutez un libellé ou une note.'), null;
+        if (!DIGESTIVE.includes(obsKind) && !label.trim() && !note.trim()) return setError(tr('u7.track.err.label')), null;
         return { ...base, at: time.toISOString(), kind: obsKind, value_num: null, label: label.trim() || null, temp_method: null, intensity: DIGESTIVE.includes(obsKind) ? intensity : null };
       }
     }
@@ -262,18 +260,18 @@ function TrackEntry() {
     try {
       if (editing) {
         if (!formReady) return; // entrée pas encore chargée : rien n'est écrasé
-        if (backend.mode !== 'demo' && !useOfflineStore.getState().online) return setError(OFFLINE_EDIT);
+        if (backend.mode !== 'demo' && !useOfflineStore.getState().online) return setError(offlineEdit());
         // L'enfant et le foyer de l'entrée ne changent jamais lors d'une modification
         const { household_id: _h, child_id: _c, ...patch } = row; // eslint-disable-line @typescript-eslint/no-unused-vars
         await backend.update(LOG_TABLE[kind], patch, [eq('id', params.id)]);
         inv(LOG_TABLE[kind]);
-        toast('Modification enregistrée.');
+        toast(tr('u7.track.edited'));
       } else if (kind === 'bottle') {
         const id = uuid();
         const res = await add.mutateAsync({ ...row, id });
         const timerNote = await afterBottleSaved(res === 'sent' ? id : null, (row.planned_next_ml as number | null) ?? null);
         toast(
-          (res === 'queued' ? 'Biberon enregistré sur l’appareil — synchronisation au retour du réseau.' : 'Biberon enregistré.') + (timerNote ? ` ${timerNote}` : ''),
+          (res === 'queued' ? tr('u7.track.bottleQueued') : tr('u7.track.bottleSaved')) + (timerNote ? ` ${timerNote}` : ''),
           res === 'queued' ? 'info' : 'success',
         );
       } else {
@@ -287,7 +285,7 @@ function TrackEntry() {
             inv('food_introductions');
           }
         }
-        toast(res === 'queued' ? 'Enregistré sur l’appareil — synchronisation au retour du réseau.' : `${KIND_META[kind].label} enregistré.`, res === 'queued' ? 'info' : 'success');
+        toast(res === 'queued' ? tr('u7.track.queued') : tr('u7.track.kindSaved', { kind: KIND_META[kind].label }), res === 'queued' ? 'info' : 'success');
       }
       haptic('success');
       if (kind === 'bottle' && !editing && firstOfDay && params.from !== 'day' && childId && time.toDateString() === new Date().toDateString()) {
@@ -296,7 +294,7 @@ function TrackEntry() {
         goBack('/(tabs)/track');
       }
     } catch (e) {
-      setError(editing && e instanceof BackendError && e.isNetwork ? OFFLINE_EDIT : friendlyError(e, 'Enregistrement impossible.'));
+      setError(editing && e instanceof BackendError && e.isNetwork ? offlineEdit() : friendlyError(e, tr('u7.track.saveFail')));
     } finally {
       setSaving(false);
     }
@@ -310,28 +308,28 @@ function TrackEntry() {
   async function afterBottleSaved(bottleId: string | null, plannedMl: number | null): Promise<string | null> {
     const minutes = resolveReminderChoice(reminder);
     const active = bottleTimer.active;
-    const name = child?.first_name ?? 'l’enfant';
+    const name = child?.first_name ?? tr('u7.track.theChild');
     try {
       if (minutes == null) {
         // Nouveau biberon sans rappel : l'ancien rappel (encore actif) est clos, jamais laissé en double
         if (!active) return null;
         await updateTimer.mutateAsync({ id: active.id, patch: markBottleGiven() });
-        return `Ancien rappel de ${name} clos, aucun nouveau rappel.`;
+        return tr('u7.track.oldReminderClosed', { name });
       }
       // Consentement : la première fois qu'un rappel est choisi, le téléphone demande l'autorisation
       if (notificationsSupported && (await getPermission()) === 'undetermined') {
-        await askNotificationPermission('Pour être prévenu·e à l’heure que vous avez choisie pour le prochain biberon, même quand l’application est fermée.').catch(() => undefined);
+        await askNotificationPermission(tr('u7.track.notifReason')).catch(() => undefined);
       }
       // L'ancien rappel est annulé et remplacé par le nouveau (un seul rappel par enfant)
       const timer = await startTimer.mutateAsync({ childId, lastBottleAt: time, intervalMinutes: minutes, plannedMl, bottleId, replace: active ? 'new_bottle' : false });
       return nextReminderSentence(name, timer.due_at);
     } catch (e) {
-      return `Rappel non programmé : ${e instanceof Error ? e.message : 'erreur inconnue'}`;
+      return tr('u7.track.reminderFail', { reason: e instanceof Error ? e.message : tr('u7.track.unknownError') });
     }
   }
 
   async function remove() {
-    if (!(await confirm('Supprimer cette entrée ?', 'Elle sera supprimée pour toutes les personnes du foyer.', 'Supprimer'))) return;
+    if (!(await confirm(tr('u7.track.delAsk'), tr('u7.track.delBody'), tr('u7.track.delete')))) return;
     try {
       await del.mutateAsync(params.id!);
     } catch (e) {
@@ -339,12 +337,12 @@ function TrackEntry() {
       toast(friendlyError(e), 'error');
       return;
     }
-    toast('Entrée supprimée.');
+    toast(tr('u7.track.deleted'));
     goBack('/(tabs)/track');
   }
 
   if (editing && !formReady) {
-    const title = `Modifier : ${KIND_META[kind].label.toLowerCase()}`;
+    const title = tr('u7.track.titleEdit', { kind: KIND_META[kind].label.toLowerCase() });
     if (existingQ.isError) {
       return (
         <Screen back title={title}>
@@ -354,13 +352,13 @@ function TrackEntry() {
     }
     if (existingQ.isSuccess && !existing?.[0]) {
       return (
-        <Screen back title="Saisie introuvable">
-          <EmptyState icon="help-circle" title="Cette saisie n’existe plus" body="Elle a peut-être été supprimée par une autre personne du foyer." action={{ label: 'Retour', icon: 'arrow-left', onPress: () => goBack('/(tabs)/track') }} />
+        <Screen back title={tr('u7.track.notFoundTitle')}>
+          <EmptyState icon="help-circle" title={tr('u7.track.goneTitle')} body={tr('u7.track.goneBody')} action={{ label: tr('u7.track.back'), icon: 'arrow-left', onPress: () => goBack('/(tabs)/track') }} />
         </Screen>
       );
     }
     return (
-      <Screen back title={title} footer={<Button label="Enregistrer les modifications" size="lg" disabled onPress={save} testID="track-save" />}>
+      <Screen back title={title} footer={<Button label={tr('u7.track.saveChanges')} size="lg" disabled onPress={save} testID="track-save" />}>
         <Skeleton kind="detail" rows={5} />
       </Screen>
     );
@@ -369,15 +367,15 @@ function TrackEntry() {
   if (notBottleChild) {
     return (
       <Screen back title={KIND_META[kind].label}>
-        <Banner tone="info">{'Le biberon concerne les bébés jusqu’à 2 ans (profil « Mon bébé est né »). Ce profil n’est pas concerné.'}</Banner>
+        <Banner tone="info">{tr('u7.track.notBottle')}</Banner>
       </Screen>
     );
   }
   if (!childId) {
     return (
       <Screen back title={KIND_META[kind].label}>
-        <Banner tone="info">{kind === 'bottle' ? 'Le rappel biberon concerne les bébés jusqu’à 2 ans : ajoutez le profil d’un bébé.' : 'Ajoutez d’abord le profil d’un enfant.'}</Banner>
-        <Button label="Ajouter un profil" onPress={() => router.replace('/profiles/new')} />
+        <Banner tone="info">{kind === 'bottle' ? tr('u7.track.addBaby') : tr('u7.track.addChildFirst')}</Banner>
+        <Button label={tr('u7.track.addProfile')} onPress={() => router.replace('/profiles/new')} />
       </Screen>
     );
   }
@@ -387,12 +385,12 @@ function TrackEntry() {
   return (
     <Screen
       back
-      title={`${editing ? 'Modifier' : 'Ajouter'} : ${KIND_META[kind].label.toLowerCase()}`}
-      subtitle={child ? `Pour ${child.first_name}` : undefined}
+      title={tr(editing ? 'u7.track.titleEdit' : 'u7.track.titleAdd', { kind: KIND_META[kind].label.toLowerCase() })}
+      subtitle={child ? tr('u7.track.forName', { name: child.first_name }) : undefined}
       footer={
         <View style={{ gap: spacing.xs }}>
-          <Button label={editing ? 'Enregistrer les modifications' : child ? `Enregistrer pour ${child.first_name}` : 'Enregistrer'} size="lg" loading={saving} disabled={editing && !formReady} onPress={save} testID="track-save" />
-          {editing && <Button label="Supprimer" variant="ghost" icon="trash-2" onPress={remove} />}
+          <Button label={editing ? tr('u7.track.saveChanges') : child ? tr('u7.track.saveFor', { name: child.first_name }) : tr('u7.track.save')} size="lg" loading={saving} disabled={editing && !formReady} onPress={save} testID="track-save" />
+          {editing && <Button label={tr('u7.track.delete')} variant="ghost" icon="trash-2" onPress={remove} />}
         </View>
       }
     >
@@ -403,7 +401,7 @@ function TrackEntry() {
       )}
       {child ? (
         <View testID="track-for" accessibilityRole="header" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Text variant="caption" weight="bold" muted>PROFIL CONCERNÉ</Text>
+          <Text variant="caption" weight="bold" muted>{tr('u7.track.concerned')}</Text>
           <Text weight="bold">{child.first_name}</Text>
         </View>
       ) : null}
@@ -419,58 +417,58 @@ function TrackEntry() {
       {!editing && (kind === 'diaper' || kind === 'breastfeed' || kind === 'sleep') ? (
         <DayStrip
           testID="track-day-strip"
-          title={kind === 'diaper' ? 'Changes du jour' : kind === 'sleep' ? 'Sommeils du jour' : 'Tétées du jour'}
+          title={kind === 'diaper' ? tr('u7.track.diaperChanges') : kind === 'sleep' ? tr('u7.track.sleepsToday') : tr('u7.track.feedsToday')}
           events={toDayEvents(kind === 'diaper' ? 'diaper' : kind === 'sleep' ? 'sleep' : 'feed', dayRows)}
           now={nowMinute()}
-          legend={kind === 'diaper' ? [{ kind: 'diaper', label: 'Mouillée' }, { kind: 'feed', label: 'Avec selles' }] : undefined}
-          empty={kind === 'diaper' ? 'Rien de noté aujourd’hui : un geste ci-dessus suffit.' : 'Rien de noté aujourd’hui.'}
+          legend={kind === 'diaper' ? [{ kind: 'diaper', label: tr('u7.track.wet') }, { kind: 'feed', label: tr('u7.track.withStool') }] : undefined}
+          empty={kind === 'diaper' ? tr('u7.track.emptyDiaper') : tr('u7.track.emptyToday')}
         />
       ) : null}
-      {!editing && (kind === 'diaper' || kind === 'breastfeed') ? <Text variant="label" muted style={{ marginTop: spacing.xs }}>Ou en détail</Text> : null}
+      {!editing && (kind === 'diaper' || kind === 'breastfeed') ? <Text variant="label" muted style={{ marginTop: spacing.xs }}>{tr('u7.track.orDetail')}</Text> : null}
       {error ? <Banner tone="danger">{error}</Banner> : null}
 
       {kind === 'bottle' && (
         <>
-          <TimePicker value={time} onChange={setTime} label="Heure du biberon" />
-          <Stepper label="Quantité préparée (facultatif)" value={prepared} onChange={setPrepared} presets={[60, 90, 120, 150, 180, 210, 240]} />
-          <Stepper label="Quantité bue (facultatif)" value={consumed} onChange={setConsumed} />
+          <TimePicker value={time} onChange={setTime} label={tr('u7.track.bottleTime')} />
+          <Stepper label={tr('u7.track.prepared')} value={prepared} onChange={setPrepared} presets={[60, 90, 120, 150, 180, 210, 240]} />
+          <Stepper label={tr('u7.track.consumed')} value={consumed} onChange={setConsumed} />
           {!editing && (
             <View style={{ gap: spacing.xs }} testID="bottle-reminder">
-              <Text variant="label">Prochain rappel pour {child?.first_name}</Text>
+              <Text variant="label">{tr('u7.track.nextReminder', { name: child?.first_name ?? '' })}</Text>
               <ReminderChoicePicker value={reminder} onChange={(c) => { reminderTouched.current = true; setReminder(c); }} lastInterval={bottleTimer.lastInterval} />
               {resolveReminderChoice(reminder) != null
                 ? <Banner tone="info" icon="bell">{nextReminderSentence(child?.first_name ?? '', computeDueAt(time, resolveReminderChoice(reminder)!))}</Banner>
-                : <Text variant="small" muted>Aucun rappel ne sera programmé.</Text>}
-              {bottleTimer.active ? <Text variant="small" muted>Le rappel en cours (prévu {atClock(bottleTimer.active.due_at)}) sera remplacé.</Text> : null}
-              <Text variant="caption" muted>{NO_RECOMMENDATION_NOTE}</Text>
+                : <Text variant="small" muted>{tr('u7.track.noReminder')}</Text>}
+              {bottleTimer.active ? <Text variant="small" muted>{tr('u7.track.replaced', { time: atClock(bottleTimer.active.due_at) })}</Text> : null}
+              <Text variant="caption" muted>{noRecommendationNote()}</Text>
             </View>
           )}
-          <Button label={moreBottle ? 'Moins de détails' : 'Plus de détails (type de lait, quantité prévue)'} variant="ghost" size="sm" icon={moreBottle ? 'chevron-up' : 'chevron-down'} onPress={() => setMoreBottle(!moreBottle)} style={{ alignSelf: 'flex-start' }} />
+          <Button label={moreBottle ? tr('u7.track.lessDetail') : tr('u7.track.moreDetail')} variant="ghost" size="sm" icon={moreBottle ? 'chevron-up' : 'chevron-down'} onPress={() => setMoreBottle(!moreBottle)} style={{ alignSelf: 'flex-start' }} />
           {moreBottle || editing ? (
             <>
-              <Field label="Type de lait" optional value={milkType} onChangeText={setMilkType} placeholder="Lait infantile 1er âge, lait maternel…" hint="Tel que vous l’indiquez : l’application ne recommande pas de lait." />
-              <Field label="Quantité prévue pour le prochain biberon" optional value={plannedNext} onChangeText={setPlannedNext} keyboardType="number-pad" suffix="ml" hint="Celle que vous avez décidée ou qu’un professionnel vous a indiquée." />
+              <Field label={tr('u7.track.milkType')} optional value={milkType} onChangeText={setMilkType} placeholder={tr('u7.track.milkPh')} hint={tr('u7.track.milkHint')} />
+              <Field label={tr('u7.track.plannedNext')} optional value={plannedNext} onChangeText={setPlannedNext} keyboardType="number-pad" suffix="ml" hint={tr('u7.track.plannedHint')} />
             </>
           ) : null}
         </>
       )}
 
       {(kind === 'breastfeed' || kind === 'pumping') && (
-        <Segmented label="Côté" value={side} onChange={setSide} options={[{ value: 'left', label: 'Gauche' }, { value: 'right', label: 'Droite' }, { value: 'both', label: 'Les deux' }]} />
+        <Segmented label={tr('u7.track.side')} value={side} onChange={setSide} options={[{ value: 'left', label: tr('u7.track.left') }, { value: 'right', label: tr('u7.track.right') }, { value: 'both', label: tr('u7.track.both') }]} />
       )}
       {kind === 'breastfeed' && (
         <>
           {!editing && (
             <View style={{ alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.md }}>
               <Text variant="hero" accessibilityLiveRegion="polite">{timerStart ? fmtTimer : '0:00'}</Text>
-              <Button label={timerStart ? 'Arrêter et enregistrer' : 'Démarrer le chronomètre'} icon={timerStart ? 'square' : 'play'} variant={timerStart ? 'primary' : 'secondary'} onPress={timerStart ? save : () => { setTimerStart(new Date()); haptic('light'); }} />
+              <Button label={timerStart ? tr('u7.track.stopSave') : tr('u7.track.startTimer')} icon={timerStart ? 'square' : 'play'} variant={timerStart ? 'primary' : 'secondary'} onPress={timerStart ? save : () => { setTimerStart(new Date()); haptic('light'); }} />
             </View>
           )}
           {!timerStart && (
             <>
-              <Text muted center>— ou saisie après coup —</Text>
-              <TimePicker value={time} onChange={setTime} label="Début" />
-              <Field label="Durée (minutes)" optional value={duration} onChangeText={setDuration} keyboardType="number-pad" />
+              <Text muted center>{tr('u7.track.orAfter')}</Text>
+              <TimePicker value={time} onChange={setTime} label={tr('u7.track.start')} />
+              <Field label={tr('u7.track.durationMin')} optional value={duration} onChangeText={setDuration} keyboardType="number-pad" />
             </>
           )}
         </>
@@ -478,7 +476,7 @@ function TrackEntry() {
       {kind === 'pumping' && (
         <>
           <TimePicker value={time} onChange={setTime} />
-          <Stepper label="Quantité tirée" value={amount} onChange={setAmount} presets={[40, 60, 80, 100, 120, 150]} />
+          <Stepper label={tr('u7.track.amountPumped')} value={amount} onChange={setAmount} presets={[40, 60, 80, 100, 120, 150]} />
         </>
       )}
 
@@ -486,16 +484,16 @@ function TrackEntry() {
         <>
           <TimePicker value={time} onChange={setTime} />
           <Row wrap>
-            <Chip label="Mouillée" icon="droplet" selected={wet} onPress={() => setWet(!wet)} />
-            <Chip label="Selles" icon="circle" selected={stool} onPress={() => setStool(!stool)} />
+            <Chip label={tr('u7.track.wet')} icon="droplet" selected={wet} onPress={() => setWet(!wet)} />
+            <Chip label={tr('u7.track.stool')} icon="circle" selected={stool} onPress={() => setStool(!stool)} />
           </Row>
           {stool ? (
             <View style={{ gap: spacing.xs }}>
-              <Text variant="label">Couleur (facultatif)</Text>
+              <Text variant="label">{tr('u7.track.color')}</Text>
               <Row wrap>{STOOL_COLORS.map((c) => <Chip key={c.value} label={c.label} selected={stoolColor === c.value} onPress={() => setStoolColor(stoolColor === c.value ? null : c.value)} />)}</Row>
-              <Text variant="label">Consistance (facultatif)</Text>
+              <Text variant="label">{tr('u7.track.consistency')}</Text>
               <Row wrap>{STOOL_CONSISTENCY.map((c) => <Chip key={c.value} label={c.label} selected={consistency === c.value} onPress={() => setConsistency(consistency === c.value ? null : c.value)} />)}</Row>
-              <Row wrap><Chip label="J’ai vu du sang" icon="alert-triangle" selected={blood} onPress={() => setBlood(!blood)} /></Row>
+              <Row wrap><Chip label={tr('u7.track.sawBlood')} icon="alert-triangle" selected={blood} onPress={() => setBlood(!blood)} /></Row>
               {stoolNotice({ stool_color: stoolColor, blood_seen: blood }) ? <SafetyNoticeCard n={stoolNotice({ stool_color: stoolColor, blood_seen: blood })!} /> : null}
             </View>
           ) : null}
@@ -504,11 +502,11 @@ function TrackEntry() {
 
       {kind === 'sleep' && (
         <>
-          <Segmented label="Type de sommeil" value={sleepKind} onChange={setSleepKind} options={[{ value: 'nap', label: 'Sieste' }, { value: 'night', label: 'Nuit' }, { value: 'unknown', label: 'Non précisé' }]} />
-          <TimePicker value={time} onChange={setTime} label="Endormissement" />
-          <TimePicker value={end} onChange={setEnd} label="Réveil" />
-          <Text muted>Durée : {formatDuration((end.getTime() - time.getTime()) / 60000)}</Text>
-          <Stepper label="Réveils pendant ce sommeil" value={wakeups} onChange={(v) => setWakeups(v ?? 0)} step={1} unit="réveil(s)" />
+          <Segmented label={tr('u7.track.sleepType')} value={sleepKind} onChange={setSleepKind} options={[{ value: 'nap', label: tr('u7.track.nap') }, { value: 'night', label: tr('u7.track.night') }, { value: 'unknown', label: tr('u7.track.unspecified') }]} />
+          <TimePicker value={time} onChange={setTime} label={tr('u7.track.fellAsleep')} />
+          <TimePicker value={end} onChange={setEnd} label={tr('u7.track.wake')} />
+          <Text muted>{tr('u7.track.durationLine', { duration: formatDuration((end.getTime() - time.getTime()) / 60000) })}</Text>
+          <Stepper label={tr('u7.track.wakeups')} value={wakeups} onChange={(v) => setWakeups(v ?? 0)} step={1} unit={tr('u7.track.wakeupsUnit')} />
           <SafeSleepCard />
         </>
       )}
@@ -516,51 +514,51 @@ function TrackEntry() {
       {kind === 'meal' && (
         <>
           <TimePicker value={time} onChange={setTime} />
-          <Field label="Repas" optional value={description} onChangeText={setDescription} placeholder="Purée de courgette, compote…" />
-          <Field label="Aliments" optional value={foods} onChangeText={setFoods} placeholder="Séparés par des virgules" hint="Les nouveaux aliments apparaîtront dans « Diversification »." />
+          <Field label={tr('u7.track.meal')} optional value={description} onChangeText={setDescription} placeholder={tr('u7.track.mealPh')} />
+          <Field label={tr('u7.track.foods')} optional value={foods} onChangeText={setFoods} placeholder={tr('u7.track.foodsPh')} hint={tr('u7.track.foodsHint')} />
           <View style={{ gap: spacing.xs }}>
-            <Text variant="label">Texture</Text>
+            <Text variant="label">{tr('u7.track.texture')}</Text>
             <Row wrap>
-              {([['smooth', 'Lisse'], ['mashed', 'Écrasée'], ['pieces', 'Petits morceaux'], ['family', 'Comme à table']] as const).map(([k, l]) => (
-                <Chip key={k} label={l} selected={texture === k} onPress={() => setTexture(texture === k ? null : k)} />
+              {(['smooth', 'mashed', 'pieces', 'family'] as const).map((k) => (
+                <Chip key={k} label={tr(`u7.track.tex.${k}` as TKey)} selected={texture === k} onPress={() => setTexture(texture === k ? null : k)} />
               ))}
             </Row>
           </View>
-          <Field label="Réaction observée" optional value={reaction} onChangeText={setReaction} multiline />
-          <Banner tone="danger" title="Réaction importante ?">{'Gêne pour respirer, gonflement du visage ou des lèvres, vomissements répétés, malaise : appelez le 15 ou le 112 immédiatement.'}</Banner>
+          <Field label={tr('u7.track.reaction')} optional value={reaction} onChangeText={setReaction} multiline />
+          <Banner tone="danger" title={tr('u7.track.reactionTitle')}>{tr('u7.track.reactionBody')}</Banner>
         </>
       )}
 
       {kind === 'observation' && (
         <>
-          <Text variant="label">Type</Text>
-          <Row wrap>{OBS_KINDS.map((o) => <Chip key={o.value} label={o.label} selected={obsKind === o.value} onPress={() => setObsKind(o.value)} />)}</Row>
+          <Text variant="label">{tr('u7.track.type')}</Text>
+          <Row wrap>{obsKinds().map((o) => <Chip key={o.value} label={o.label} selected={obsKind === o.value} onPress={() => setObsKind(o.value)} />)}</Row>
           <TimePicker value={time} onChange={setTime} />
           {obsKind === 'temperature' ? (
             <>
-              <Field label="Température mesurée" value={temp} onChangeText={setTemp} keyboardType="decimal-pad" suffix="°C" />
-              <Row wrap>{([['rectal', 'Rectale'], ['axillary', 'Sous le bras'], ['ear', 'Oreille'], ['forehead', 'Front'], ['other', 'Autre']] as const).map(([k, l]) => <Chip key={k} label={l} selected={tempMethod === k} onPress={() => setTempMethod(tempMethod === k ? null : k)} />)}</Row>
+              <Field label={tr('u7.track.tempMeasured')} value={temp} onChangeText={setTemp} keyboardType="decimal-pad" suffix="°C" />
+              <Row wrap>{(['rectal', 'axillary', 'ear', 'forehead', 'other'] as const).map((k) => <Chip key={k} label={tr(`u7.track.m.${k}` as TKey)} selected={tempMethod === k} onPress={() => setTempMethod(tempMethod === k ? null : k)} />)}</Row>
             </>
           ) : DIGESTIVE.includes(obsKind) ? (
             <>
-              <Text variant="label">Intensité (facultatif)</Text>
-              <Row wrap>{([[1, 'Légère'], [2, 'Moyenne'], [3, 'Forte']] as const).map(([k, l]) => <Chip key={k} label={l} selected={intensity === k} onPress={() => setIntensity(intensity === k ? null : k)} />)}</Row>
+              <Text variant="label">{tr('u7.track.intensity')}</Text>
+              <Row wrap>{([1, 2, 3] as const).map((k) => <Chip key={k} label={tr(`u7.track.i.${k}` as TKey)} selected={intensity === k} onPress={() => setIntensity(intensity === k ? null : k)} />)}</Row>
             </>
           ) : (
             <Field
-              label={obsKind === 'medication' ? 'Traitement déjà prescrit' : obsKind === 'symptom' ? 'Symptôme observé' : 'Titre'}
+              label={obsKind === 'medication' ? tr('u7.track.medLabel') : obsKind === 'symptom' ? tr('u7.track.symptomLabel') : tr('u7.track.titleLabel')}
               value={label}
               onChangeText={setLabel}
-              hint={obsKind === 'medication' ? 'Uniquement un traitement prescrit par un professionnel. L’application n’indique aucune dose.' : undefined}
+              hint={obsKind === 'medication' ? tr('u7.track.medHint') : undefined}
             />
           )}
           {notices.map((n) => <SafetyNoticeCard key={n.title} n={n} />)}
-          <Banner tone="warning">{'Ces notes servent à préparer un rendez-vous. Elles ne sont pas interprétées et ne disent pas ce que votre enfant a. Un comportement inhabituel qui vous inquiète, une peau très pâle ou avec des petits boutons : appelez rapidement votre médecin ou le 15.'}</Banner>
+          <Banner tone="warning">{tr('u7.track.obsBanner')}</Banner>
         </>
       )}
 
-      <Field label="Note" optional value={note} onChangeText={setNote} multiline maxLength={1000} />
-      {kind === 'observation' && <Text variant="caption" muted color={t.colors.textMuted}>Ne remplace pas l’avis d’un professionnel de santé.</Text>}
+      <Field label={tr('u7.track.note')} optional value={note} onChangeText={setNote} multiline maxLength={1000} />
+      {kind === 'observation' && <Text variant="caption" muted color={t.colors.textMuted}>{tr('u7.track.noReplace')}</Text>}
     </Screen>
   );
 }

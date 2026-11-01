@@ -19,12 +19,13 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { CATEGORIES, QUICK_ACTIONS, REQUEST_LABEL, categoryOf, sameLocalDay, type CareRequest, type FamilyTask, type RequestKind } from '@/lib/domain/familyLoad';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
+import { formatDate, formatTime, t as tr } from '@/i18n';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 
 const pad = (n: number) => String(n).padStart(2, '0');
-export const fmtWhen = (iso: string) => new Date(iso).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+export const fmtWhen = (iso: string) => formatDate(iso, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 /** « 18/10/2026 » + « 14h30 » → ISO (heure locale). `null` si vide, `undefined` si invalide. */
 export function parseFrDateTime(date: string, time: string): string | null | undefined {
@@ -75,7 +76,7 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
     });
     try {
       await save.mutateAsync({ id: task.id, input: { status: next ? 'done' : 'todo' } });
-      if (next) toast(task.recurrence ? 'Fait. La prochaine fois est déjà prévue.' : 'Fait.');
+      if (next) toast(task.recurrence ? tr('u6.fl.done_next') : tr('u6.fl.done'));
     } catch (e) {
       setOptimistic(null); fill.setValue(done ? 1 : 0); strike.setValue(done ? 1 : 0); leave.setValue(1);
       toast(friendlyError(e), 'error');
@@ -86,13 +87,13 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
     <Animated.View style={{ opacity: leave, transform: [{ translateX: leave.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }, { scale: leave.interpolate({ inputRange: [0, 1], outputRange: [0.97, 1] }) }] }}>
       <Card style={{ paddingVertical: spacing.xs }}>
         <Row style={{ alignItems: 'center' }}>
-          <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: done }} accessibilityLabel={`${task.title} : ${done ? 'fait' : 'à faire'}`} onPress={toggle} {...press.handlers} hitSlop={8}>
+          <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: done }} accessibilityLabel={`${task.title} : ${done ? tr('u6.fl.state_done') : tr('u6.fl.state_todo')}`} onPress={toggle} {...press.handlers} hitSlop={8}>
             <Animated.View style={[{ width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderColor: done ? t.colors.success : t.colors.border }, press.style]}>
               <Animated.View style={{ position: 'absolute', width: 30, height: 30, borderRadius: 15, backgroundColor: t.colors.success, transform: [{ scale: fill }] }} />
               {done ? <DrawCheck size={22} color={t.colors.surface} play={optimistic === true} /> : null}
             </Animated.View>
           </Pressable>
-          <Tappable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={`Modifier ${task.title}`} onPress={() => onEdit(task)}>
+          <Tappable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('u6.fl.edit_task_a11y', { title: task.title })} onPress={() => onEdit(task)}>
             <View style={{ alignSelf: 'flex-start' }} onLayout={(e) => setTw(e.nativeEvent.layout.width)}>
               <Animated.Text style={{ opacity: strike.interpolate({ inputRange: [0, 1], outputRange: [1, 0.55] }) }}>
                 <Text weight="medium">{task.title}</Text>
@@ -101,11 +102,11 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
                 transform: [{ translateX: strike.interpolate({ inputRange: [0, 1], outputRange: [-tw / 2, 0] }) }, { scaleX: strike.interpolate({ inputRange: [0, 1], outputRange: [0.001, 1] }) }] }} />
             </View>
             <Text variant="caption" muted>
-              {[cat.label, task.due_at ? fmtWhen(task.due_at) : null, labelOf(task.assignee_id), task.recurrence ? 'récurrente' : null, task.essential ? 'essentielle' : null].filter(Boolean).join(' · ')}
+              {[cat.label, task.due_at ? fmtWhen(task.due_at) : null, labelOf(task.assignee_id), task.recurrence ? tr('u6.fl.recurring') : null, task.essential ? tr('u6.fl.essential_tag') : null].filter(Boolean).join(' · ')}
             </Text>
-            {late ? <Text variant="caption" color={t.colors.gold}>En retard — pas grave, à reprogrammer si besoin</Text> : null}
+            {late ? <Text variant="caption" color={t.colors.gold}>{tr('u6.fl.late')}</Text> : null}
           </Tappable>
-          {onPropose && !done ? <Button label="Proposer" size="sm" variant="ghost" onPress={() => onPropose(task)} accessibilityLabel={`Proposer « ${task.title} » à quelqu’un`} /> : null}
+          {onPropose && !done ? <Button label={tr('u6.fl.propose')} size="sm" variant="ghost" onPress={() => onPropose(task)} accessibilityLabel={tr('u6.fl.propose_a11y', { title: task.title })} /> : null}
         </Row>
       </Card>
     </Animated.View>
@@ -135,10 +136,10 @@ export function TaskSheet({ task, open, onClose, defaults }: { task: FamilyTask 
   async function submit() {
     if (!d) return;
     const e: Record<string, string> = {};
-    if (!d.title.trim()) e.title = 'Donnez un titre à la tâche.';
+    if (!d.title.trim()) e.title = tr('u6.fl.err_title');
     const due = parseFrDateTime(d.date, d.time);
-    if (due === undefined) e.date = 'Date ou heure non reconnue (jj/mm/aaaa, 14h30).';
-    if (d.recurrence !== 'none' && !due) e.date = 'Une tâche récurrente a besoin d’une date de départ.';
+    if (due === undefined) e.date = tr('u6.fl.err_date');
+    if (d.recurrence !== 'none' && !due) e.date = tr('u6.fl.err_recurring');
     setErrors(e);
     if (Object.keys(e).length) return;
     const input: Partial<TaskInput> = {
@@ -148,46 +149,46 @@ export function TaskSheet({ task, open, onClose, defaults }: { task: FamilyTask 
     try {
       await save.mutateAsync({ id: d.id, input });
       haptic('success');
-      toast(d.id ? 'Tâche modifiée.' : 'Tâche ajoutée.');
+      toast(d.id ? tr('u6.fl.task_edited') : tr('u6.fl.task_added'));
       onClose();
     } catch (err) { toast(friendlyError(err), 'error'); }
   }
 
   async function remove() {
-    if (!d?.id || !(await confirm('Supprimer cette tâche ?', 'Elle disparaîtra pour tout le foyer.', 'Supprimer'))) return;
-    try { await del.mutateAsync(d.id); toast('Tâche supprimée.'); onClose(); } catch (e) { toast(friendlyError(e), 'error'); }
+    if (!d?.id || !(await confirm(tr('u6.fl.delete_q'), tr('u6.fl.delete_body'), tr('u6.bhist.delete')))) return;
+    try { await del.mutateAsync(d.id); toast(tr('u6.fl.task_deleted')); onClose(); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   return (
-    <Sheet visible={open} onClose={onClose} title={task ? 'Modifier la tâche' : 'Nouvelle tâche'}>
+    <Sheet visible={open} onClose={onClose} title={task ? tr('u6.fl.edit_task') : tr('u6.fl.new_task')}>
       {d ? (
         <View style={{ gap: spacing.sm }}>
-          <Field label="Titre" value={d.title} onChangeText={(v) => setD({ ...d, title: v })} error={errors.title} maxLength={120} placeholder="Préparer les biberons de la nuit" />
-          <Text variant="label">Catégorie</Text>
+          <Field label={tr('u6.fl.title')} value={d.title} onChangeText={(v) => setD({ ...d, title: v })} error={errors.title} maxLength={120} placeholder={tr('u6.fl.title_ph')} />
+          <Text variant="label">{tr('u6.fl.category')}</Text>
           <Row wrap>{CATEGORIES.map((c) => <Chip key={c.value} label={c.label} icon={c.icon} selected={d.category === c.value} onPress={() => setD({ ...d, category: c.value })} />)}</Row>
           <Row>
-            <View style={{ flex: 3 }}><Field label="Date" optional value={d.date} onChangeText={(v) => setD({ ...d, date: v })} error={errors.date} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" /></View>
-            <View style={{ flex: 2 }}><Field label="Heure" optional value={d.time} onChangeText={(v) => setD({ ...d, time: v })} placeholder="14h30" keyboardType="numbers-and-punctuation" /></View>
+            <View style={{ flex: 3 }}><Field label={tr('u6.fl.date')} optional value={d.date} onChangeText={(v) => setD({ ...d, date: v })} error={errors.date} placeholder={tr('u6.fl.date_ph')} keyboardType="numbers-and-punctuation" /></View>
+            <View style={{ flex: 2 }}><Field label={tr('u6.fl.time')} optional value={d.time} onChangeText={(v) => setD({ ...d, time: v })} placeholder="14h30" keyboardType="numbers-and-punctuation" /></View>
           </Row>
-          <Text variant="label">Qui s’en occupe ?</Text>
+          <Text variant="label">{tr('u6.fl.who')}</Text>
           <Row wrap>
-            <Chip label="Personne pour l’instant" selected={!d.assignee} onPress={() => setD({ ...d, assignee: null })} />
+            <Chip label={tr('u6.fl.nobody')} selected={!d.assignee} onPress={() => setD({ ...d, assignee: null })} />
             {people.map((p) => <Chip key={p.id} label={p.label} selected={d.assignee === p.id} onPress={() => setD({ ...d, assignee: p.id })} />)}
           </Row>
-          <Text variant="label">Priorité</Text>
-          <Segmented label="Priorité" value={d.priority} onChange={(v) => setD({ ...d, priority: v })} options={[{ value: 'low', label: 'Peut attendre' }, { value: 'normal', label: 'Normale' }, { value: 'high', label: 'Importante' }]} />
-          <Text variant="label">Fréquence</Text>
-          <Segmented label="Fréquence" value={d.recurrence} onChange={(v) => setD({ ...d, recurrence: v })} options={[{ value: 'none', label: 'Une fois' }, { value: 'daily', label: 'Chaque jour' }, { value: 'weekly', label: 'Chaque semaine' }, { value: 'monthly', label: 'Chaque mois' }]} />
+          <Text variant="label">{tr('u6.fl.priority')}</Text>
+          <Segmented label={tr('u6.fl.priority')} value={d.priority} onChange={(v) => setD({ ...d, priority: v })} options={[{ value: 'low', label: tr('u6.fl.p_low') }, { value: 'normal', label: tr('u6.fl.p_normal') }, { value: 'high', label: tr('u6.fl.p_high') }]} />
+          <Text variant="label">{tr('u6.fl.frequency')}</Text>
+          <Segmented label={tr('u6.fl.frequency')} value={d.recurrence} onChange={(v) => setD({ ...d, recurrence: v })} options={[{ value: 'none', label: tr('u6.fl.once') }, { value: 'daily', label: tr('u6.fl.daily') }, { value: 'weekly', label: tr('u6.fl.weekly') }, { value: 'monthly', label: tr('u6.fl.monthly') }]} />
           <Row style={{ alignItems: 'flex-start' }}>
             <View style={{ flex: 1 }}>
-              <Text weight="medium">Essentielle</Text>
-              <Text variant="caption" muted>Reste visible en mode « journée difficile ».</Text>
+              <Text weight="medium">{tr('u6.fl.essential')}</Text>
+              <Text variant="caption" muted>{tr('u6.fl.essential_sub')}</Text>
             </View>
-            <Toggle label="Tâche essentielle" value={d.essential} onChange={(v) => setD({ ...d, essential: v })} />
+            <Toggle label={tr('u6.fl.essential_task')} value={d.essential} onChange={(v) => setD({ ...d, essential: v })} />
           </Row>
-          <Field label="Notes" optional multiline value={d.notes} onChangeText={(v) => setD({ ...d, notes: v })} maxLength={1000} />
-          <Button label={d.id ? 'Enregistrer' : 'Ajouter'} full onPress={submit} loading={save.isPending} />
-          {d.id ? <Button label="Supprimer la tâche" variant="ghost" onPress={remove} /> : null}
+          <Field label={tr('u6.fl.notes')} optional multiline value={d.notes} onChangeText={(v) => setD({ ...d, notes: v })} maxLength={1000} />
+          <Button label={d.id ? tr('u6.fl.save') : tr('u6.fl.add')} full onPress={submit} loading={save.isPending} />
+          {d.id ? <Button label={tr('u6.fl.delete_task')} variant="ghost" onPress={remove} /> : null}
         </View>
       ) : null}
     </Sheet>
@@ -233,7 +234,7 @@ export function RequestSheet({ kind, onClose, taskId, shiftId }: { kind: Request
     try {
       await create.mutateAsync({ kind, message: msg.trim() || null, to_user: to, task_id: taskId ?? null, shift_id: shiftId ?? null });
       haptic('success');
-      toast(others.length ? 'Envoyé à votre foyer.' : 'Noté. Invitez un proche dans votre foyer pour qu’il la reçoive.');
+      toast(others.length ? tr('u6.fl.sent') : tr('u6.fl.noted'));
       onClose();
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
@@ -245,17 +246,17 @@ export function RequestSheet({ kind, onClose, taskId, shiftId }: { kind: Request
           <Text variant="small" muted>{action?.detail}</Text>
           {others.length > 1 ? (
             <>
-              <Text variant="label">À qui ?</Text>
+              <Text variant="label">{tr('u6.fl.to_whom')}</Text>
               <Row wrap>
-                <Chip label="Tout le foyer" selected={!to} onPress={() => setTo(null)} />
+                <Chip label={tr('u6.fl.whole_household')} selected={!to} onPress={() => setTo(null)} />
                 {others.map((p) => <Chip key={p.id} label={p.label} selected={to === p.id} onPress={() => setTo(p.id)} />)}
               </Row>
             </>
           ) : null}
-          {others.length === 0 ? <Text variant="small">Personne d’autre n’est encore dans votre foyer : vous pouvez inviter un proche depuis Réglages › Famille.</Text> : null}
-          <Field label="Un mot" optional value={msg} onChangeText={setMsg} maxLength={300} placeholder={kind === 'rest' ? 'Je voudrais dormir 2 heures' : kind === 'relay' ? 'Peux-tu prendre le bébé ?' : ''} />
-          <Text variant="caption" muted>La notification sur l’écran verrouillé reste neutre : « Ouvrez l’application pour répondre ».</Text>
-          <Button label="Envoyer" icon="send" full onPress={send} loading={create.isPending} />
+          {others.length === 0 ? <Text variant="small">{tr('u6.fl.alone')}</Text> : null}
+          <Field label={tr('u6.fl.a_word')} optional value={msg} onChangeText={setMsg} maxLength={300} placeholder={kind === 'rest' ? tr('u6.fl.ph_rest') : kind === 'relay' ? tr('u6.fl.ph_relay') : ''} />
+          <Text variant="caption" muted>{tr('u6.fl.lock_note')}</Text>
+          <Button label={tr('u6.fl.send')} icon="send" full onPress={send} loading={create.isPending} />
         </View>
       ) : null}
     </Sheet>
@@ -271,7 +272,7 @@ export function RequestCard({ r, tasks }: { r: CareRequest; tasks: FamilyTask[] 
   const mine = r.from_user === me;
   const forMe = !mine && (!r.to_user || r.to_user === me);
   const task = r.task_id ? tasks.find((x) => x.id === r.task_id) : null;
-  const status = { open: 'En attente', accepted: 'Acceptée', declined: 'Déclinée', cancelled: 'Annulée', done: 'Close' }[r.status];
+  const status = { open: tr('u6.fl.s_open'), accepted: tr('u6.fl.s_accepted'), declined: tr('u6.fl.s_declined'), cancelled: tr('u6.fl.s_cancelled'), done: tr('u6.fl.s_done') }[r.status];
 
   async function act(s: CareRequest['status'], msg: string) {
     try { await respond.mutateAsync({ id: r.id, status: s }); haptic('success'); toast(msg); } catch (e) { toast(friendlyError(e), 'error'); }
@@ -283,20 +284,20 @@ export function RequestCard({ r, tasks }: { r: CareRequest; tasks: FamilyTask[] 
         <Icon name={QUICK_ACTIONS.find((a) => a.kind === r.kind)?.icon ?? 'message-circle'} color={t.colors.primary} />
         <View style={{ flex: 1, gap: 2 }}>
           <Text weight="bold">{REQUEST_LABEL[r.kind]}</Text>
-          <Text variant="caption" muted>{mine ? 'Vous' : labelOf(r.from_user)} · {new Date(r.created_at).toLocaleString('fr-FR', { weekday: 'short', hour: '2-digit', minute: '2-digit' })} · {status}{r.responded_by && r.status !== 'open' ? ` par ${labelOf(r.responded_by)}` : ''}</Text>
-          {task ? <Text variant="small">Tâche : {task.title}</Text> : null}
-          {r.message ? <Text variant="small">« {r.message} »</Text> : null}
+          <Text variant="caption" muted>{mine ? tr('u6.fl.you') : labelOf(r.from_user)} · {formatDate(r.created_at, { weekday: 'short', hour: '2-digit', minute: '2-digit' })} · {status}{r.responded_by && r.status !== 'open' ? ` ${tr('u6.fl.by', { who: labelOf(r.responded_by) })}` : ''}</Text>
+          {task ? <Text variant="small">{tr('u6.fl.task', { title: task.title })}</Text> : null}
+          {r.message ? <Text variant="small">{tr('u6.bhist.note', { note: r.message })}</Text> : null}
         </View>
       </Row>
       {r.status === 'open' ? (
         <Row style={{ marginTop: spacing.xs }} wrap>
           {forMe ? (
             <>
-              <Button label={r.kind === 'taking_over' || r.kind === 'available' ? 'Merci, bien reçu' : 'J’accepte'} size="sm" icon="check" onPress={() => act('accepted', 'Réponse envoyée.')} loading={respond.isPending} />
-              {r.kind !== 'taking_over' && r.kind !== 'available' ? <Button label="Pas possible" size="sm" variant="ghost" onPress={() => act('declined', 'Réponse envoyée.')} /> : null}
+              <Button label={r.kind === 'taking_over' || r.kind === 'available' ? tr('u6.fl.thanks') : tr('u6.fl.accept')} size="sm" icon="check" onPress={() => act('accepted', tr('u6.fl.answer_sent'))} loading={respond.isPending} />
+              {r.kind !== 'taking_over' && r.kind !== 'available' ? <Button label={tr('u6.fl.decline')} size="sm" variant="ghost" onPress={() => act('declined', tr('u6.fl.answer_sent'))} /> : null}
             </>
           ) : null}
-          {mine ? <Button label="Annuler la demande" size="sm" variant="ghost" onPress={() => act('cancelled', 'Demande annulée.')} /> : null}
+          {mine ? <Button label={tr('u6.fl.cancel_request')} size="sm" variant="ghost" onPress={() => act('cancelled', tr('u6.fl.request_cancelled'))} /> : null}
         </Row>
       ) : null}
     </Card>
@@ -320,10 +321,10 @@ function ChildEssentialCard({ child, large }: { child: Child; large?: boolean })
   return (
     <Card>
       <Text weight="bold" style={large ? { fontSize: 20 } : undefined}>{child.first_name} · {childAge(child.birth_date).label}</Text>
-      <Text variant={v} color={allergies.length ? t.colors.danger : undefined}>Allergies notées : {allergies.length ? allergies.join(', ') : 'aucune notée'}</Text>
-      {treatments.length ? <Text variant={v}>Traitements notés : {treatments.map((x) => `${x.label}${x.details ? ` (${x.details})` : ''}`).join(' ; ')}</Text> : null}
-      {contacts.length ? <Text variant={v}>Contacts : {contacts.map((x) => `${x.label}${x.details ? ` ${x.details}` : ''}`).join(' ; ')}</Text> : null}
-      <Text variant="caption" muted>Tel que noté dans l’application — vérifiez le carnet de santé en cas de doute.</Text>
+      <Text variant={v} color={allergies.length ? t.colors.danger : undefined}>{tr('u6.fl.allergies', { list: allergies.length ? allergies.join(', ') : tr('u6.fl.none_noted') })}</Text>
+      {treatments.length ? <Text variant={v}>{tr('u6.fl.treatments', { list: treatments.map((x) => `${x.label}${x.details ? ` (${x.details})` : ''}`).join(' ; ') })}</Text> : null}
+      {contacts.length ? <Text variant={v}>{tr('u6.fl.contacts', { list: contacts.map((x) => `${x.label}${x.details ? ` ${x.details}` : ''}`).join(' ; ') })}</Text> : null}
+      <Text variant="caption" muted>{tr('u6.fl.essentials_note')}</Text>
     </Card>
   );
 }
@@ -343,11 +344,11 @@ export function FamilyHomeCard() {
   return (
     <View style={{ gap: spacing.xs }}>
       {waiting.length || mineToday.length ? (
-        <Card onPress={() => router.push('/family')} accessibilityLabel="Ouvrir l’organisation familiale">
+        <Card onPress={() => router.push('/family')} accessibilityLabel={tr('u6.fl.open_family')}>
           <Row>
             <Icon name={waiting.length ? 'bell' : 'check-square'} color={t.colors.primary} />
             <View style={{ flex: 1 }}>
-              <Text weight="bold">{waiting.length ? `${waiting.length} demande${waiting.length > 1 ? 's' : ''} du foyer ${waiting.length > 1 ? 'attendent' : 'attend'} une réponse` : `${mineToday.length} tâche${mineToday.length > 1 ? 's' : ''} pour vous aujourd’hui`}</Text>
+              <Text weight="bold">{waiting.length ? tr('u6.fl.waiting', { count: waiting.length }) : tr('u6.fl.today_tasks', { count: mineToday.length })}</Text>
               <Text variant="small" muted>{waiting.length ? REQUEST_LABEL[waiting[0].kind] : mineToday.map((x) => x.title).join(' · ')}</Text>
             </View>
             <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
@@ -355,17 +356,17 @@ export function FamilyHomeCard() {
         </Card>
       ) : null}
       {nextNight ? (
-        <Card onPress={() => router.push('/family/nights')} accessibilityLabel="Prochain relais de nuit">
+        <Card onPress={() => router.push('/family/nights')} accessibilityLabel={tr('u6.fl.next_night_a11y')}>
           <Row>
             <Icon name="moon" color={t.colors.lavender} />
-            <Text style={{ flex: 1 }}><Text weight="bold">Prochain relais : </Text>{labelOf(nextNight.user_id)} · {new Date(nextNight.starts_at).toLocaleDateString('fr-FR', { weekday: 'long' })} {new Date(nextNight.starts_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</Text>
+            <Text style={{ flex: 1 }}><Text weight="bold">{tr('u6.fl.next_relay')} </Text>{labelOf(nextNight.user_id)} · {formatDate(nextNight.starts_at, { weekday: 'long' })} {formatTime(nextNight.starts_at)}</Text>
             <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
           </Row>
         </Card>
       ) : null}
-      <Tappable accessibilityRole="button" accessibilityLabel="Journée difficile : ne garder que l’essentiel" onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: 12, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.fl.hard_day_a11y')} onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: 12, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
         <Icon name="wind" size={16} color={t.colors.primary} />
-        <Text variant="small" weight="bold">Journée difficile ?</Text>
+        <Text variant="small" weight="bold">{tr('u6.fl.hard_day')}</Text>
       </Tappable>
     </View>
   );

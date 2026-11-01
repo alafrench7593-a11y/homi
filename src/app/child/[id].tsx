@@ -15,8 +15,8 @@ import { useActiveSubject, useChild, useChildren, useInvalidate, useMemberships 
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { removeChildPhotoFiles } from '@/lib/data/hooks-photos';
 import { childAge, initials } from '@/lib/domain/child';
-import { formatDateFr } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
+import { formatDate, formatNumber, t as tr } from '@/i18n';
 
 export default function ChildProfile() {
   const params = useLocalSearchParams<{ id: string; tab?: string }>();
@@ -35,15 +35,15 @@ export default function ChildProfile() {
 
   if (!child) {
     return (
-      <Screen back title="Profil">
+      <Screen back title={tr('u4.child.profile')}>
         {isLoading ? <Skeleton kind="detail" rows={4} /> : loadError ? (
-          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce profil" />
+          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title={tr('u4.child.loadError')} />
         ) : (
           <EmptyState
             icon="user-x"
-            title="Profil introuvable"
-            body="Ce profil est introuvable. Il a peut-être été supprimé."
-            action={{ label: 'Retour à l’accueil', icon: 'home', onPress: () => router.replace('/(tabs)') }}
+            title={tr('u4.child.notFound')}
+            body={tr('u4.child.notFoundBody')}
+            action={{ label: tr('u4.child.backHome'), icon: 'home', onPress: () => router.replace('/(tabs)') }}
           />
         )}
       </Screen>
@@ -55,9 +55,9 @@ export default function ChildProfile() {
   async function remove() {
     if (!child) return;
     const ok = await confirm(
-      `Supprimer le profil de ${child.first_name} ?`,
-      'Toutes ses données (suivi quotidien, mesures, moments, santé, alimentation, album photo) seront définitivement supprimées pour toutes les personnes du foyer.',
-      'Supprimer',
+      tr('u4.child.deleteQ', { name: child.first_name }),
+      tr('u4.child.deleteBody'),
+      tr('u4.child.delete'),
     );
     if (!ok) return;
     setDeleting(true);
@@ -67,10 +67,10 @@ export default function ChildProfile() {
       await backend.remove('children', [eq('id', child.id)]);
       if (subject.type === 'child' && subject.id === child.id) setSubject(null);
       inv('children');
-      toast('Profil supprimé.');
+      toast(tr('u4.child.deleted'));
       router.replace('/(tabs)');
     } catch (e) {
-      toast(friendlyError(e, 'Suppression impossible. Réessayez dans un instant.'), 'error');
+      toast(friendlyError(e, tr('u4.child.deleteFail')), 'error');
     } finally {
       setDeleting(false);
     }
@@ -79,15 +79,15 @@ export default function ChildProfile() {
   return (
     <Screen
       back
-      right={<IconButton icon="edit-2" label={`Modifier le profil de ${child.first_name}`} onPress={() => setEditing(true)} />}
+      right={<IconButton icon="edit-2" label={tr('u4.child.editA11y', { name: child.first_name })} onPress={() => setEditing(true)} />}
     >
       <Row style={{ gap: spacing.md }}>
         <ChildAvatar child={child} size={64} />
         <View style={{ flex: 1, gap: 2 }}>
           <Text variant="title" accessibilityRole="header">{child.first_name}</Text>
-          <Text muted>{age.label} · né{child.sex === 'female' ? 'e' : child.sex === 'male' ? '' : '·e'} le {formatDateFr(child.birth_date)}{child.birth_time ? ` à ${child.birth_time.slice(0, 5)}` : ''}</Text>
+          <Text muted>{tr(child.sex === 'female' ? 'u4.child.bornF' : child.sex === 'male' ? 'u4.child.bornM' : 'u4.child.bornX', { age: age.label, date: formatDate(`${child.birth_date}T12:00:00`), time: child.birth_time ? tr('u4.child.atTime', { time: child.birth_time.slice(0, 5) }) : '' })}</Text>
           {child.birth_weight_g || child.birth_length_cm || child.birth_term_weeks ? (
-            <Text variant="small" muted testID="birth-facts">{[child.birth_weight_g ? `${child.birth_weight_g} g` : null, child.birth_length_cm ? `${String(child.birth_length_cm).replace('.', ',')} cm` : null, child.birth_term_weeks ? `${child.birth_term_weeks} SA` : null].filter(Boolean).join(' · ')}</Text>
+            <Text variant="small" muted testID="birth-facts">{[child.birth_weight_g ? `${child.birth_weight_g} g` : null, child.birth_length_cm ? tr('u4.child.cm', { n: formatNumber(Number(child.birth_length_cm)) }) : null, child.birth_term_weeks ? tr('u4.child.weeksGa', { n: child.birth_term_weeks }) : null].filter(Boolean).join(' · ')}</Text>
           ) : null}
         </View>
       </Row>
@@ -103,8 +103,8 @@ export default function ChildProfile() {
 
       {tab === 'apercu' && (
         <View style={{ gap: spacing.xs, marginTop: spacing.md }}>
-          <Button label="Modifier le profil" variant="secondary" icon="edit-2" onPress={() => setEditing(true)} />
-          <Button label="Supprimer le profil" variant="ghost" icon="trash-2" loading={deleting} onPress={remove} />
+          <Button label={tr('u4.child.edit')} variant="secondary" icon="edit-2" onPress={() => setEditing(true)} />
+          <Button label={tr('u4.child.deleteProfile')} variant="ghost" icon="trash-2" loading={deleting} onPress={remove} />
         </View>
       )}
 

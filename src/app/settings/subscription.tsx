@@ -20,17 +20,18 @@ import { ALWAYS_FREE, FEATURES, featureTitle, type PremiumFeature } from '@/lib/
 import { billingDates, getPlans, MANAGE_URLS, manageSubscription, purchase, purchaseMode, restore, type Plan } from '@/lib/purchases';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr, formatDate } from '@/i18n';
 
 const PREMIUM = `${BRAND.shortName} Premium`;
-const STORE_LABEL: Record<string, string> = { app_store: 'App Store', play_store: 'Google Play', test: 'Démonstration (aucun paiement)', promotional: 'Offert' };
-const day = (d: Date | string) => new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+const storeLabel = (store: string) => (store === 'test' ? tr('u1.sub.storeTest') : store === 'promotional' ? tr('u1.sub.storePromo') : store === 'app_store' ? 'App Store' : store === 'play_store' ? 'Google Play' : store);
+const day = (d: Date | string) => formatDate(d, { day: 'numeric', month: 'long', year: 'numeric' });
 
 interface Row3 { label: string; free: string | boolean; plus: string | boolean }
 
 function Cell({ v }: { v: string | boolean }) {
   const t = useTheme();
   if (v === true) return <View style={{ flex: 1, alignItems: 'center' }}><Icon name="check" size={18} color={t.colors.success} /></View>;
-  if (v === false) return <View style={{ flex: 1, alignItems: 'center' }}><Text variant="small" muted accessibilityLabel="Non inclus">—</Text></View>;
+  if (v === false) return <View style={{ flex: 1, alignItems: 'center' }}><Text variant="small" muted accessibilityLabel={tr('u1.sub.notIncluded')}>—</Text></View>;
   return <Text variant="small" center style={{ flex: 1 }}>{v}</Text>;
 }
 
@@ -51,50 +52,50 @@ export default function SubscriptionScreen() {
 
   const lim = (key: string, unit: string) => {
     const l = limits?.find((x) => x.key === key);
-    return l ? { free: `${l.free_value}${unit}`, plus: `${l.premium_value}${unit}` } : { free: 'Limité', plus: 'Étendu' };
+    return l ? { free: `${l.free_value}${unit}`, plus: `${l.premium_value}${unit}` } : { free: tr('u1.sub.limited'), plus: tr('u1.sub.extended') };
   };
-  const q = lim('assistant_questions_per_month', ' / mois');
-  const scans = lim('product_scans_per_month', ' / mois');
-  const voice = lim('voice_entries_per_month', ' / mois');
-  const exportsL = lim('summary_exports_per_month', ' / mois');
+  const q = lim('assistant_questions_per_month', tr('u1.sub.perMonth'));
+  const scans = lim('product_scans_per_month', tr('u1.sub.perMonth'));
+  const voice = lim('voice_entries_per_month', tr('u1.sub.perMonth'));
+  const exportsL = lim('summary_exports_per_month', tr('u1.sub.perMonth'));
   const kids = lim('children_count', '');
   const docs = lim('documents_count', '');
   const lists = lim('checklists_count', '');
   const rem = lim('custom_reminders_count', '');
 
   const rows: Row3[] = [
-    { label: 'Suivi quotidien : biberons, tétées, sommeil, couches, repas', free: true, plus: true },
-    { label: 'Rappel du prochain biberon', free: true, plus: true },
-    { label: 'Calendrier du cycle et estimations', free: true, plus: true },
-    { label: 'Grossesse semaine par semaine, rendez-vous', free: true, plus: true },
-    { label: 'Sommeil : rythme moyen, estimation, changements, graphiques, routine', free: false, plus: true },
-    { label: 'Partage avec le coparent, par profil', free: false, plus: true },
-    { label: 'Résumés (jour)', free: true, plus: true },
-    { label: 'Résumés de la semaine et avant rendez-vous', free: false, plus: true },
-    { label: 'Export PDF ou partage d’un résumé', free: exportsL.free, plus: exportsL.plus },
-    { label: 'Saisie vocale ou en une phrase', free: voice.free, plus: voice.plus },
-    { label: 'Questions à l’assistant', free: q.free, plus: q.plus },
-    { label: 'Réponses enregistrées et questions suggérées pour votre enfant', free: false, plus: true },
-    { label: 'Analyses du scanner', free: scans.free, plus: scans.plus },
-    { label: 'Comparer deux produits', free: false, plus: true },
-    { label: 'Recettes, favoris, filtres', free: true, plus: true },
-    { label: 'Menus de la semaine et courses automatiques', free: false, plus: true },
-    { label: 'Statistiques du cycle et export PDF', free: false, plus: true },
-    { label: 'Résumé familial du jour', free: false, plus: true },
-    { label: 'Rappels personnels actifs', free: rem.free, plus: rem.plus },
-    { label: 'Profils enfants', free: kids.free, plus: kids.plus },
-    { label: 'Documents dans le coffre', free: docs.free, plus: docs.plus },
-    { label: 'Listes de préparation', free: lists.free, plus: lists.plus },
-    { label: 'Suivi de la diversification, export des mesures', free: false, plus: true },
-    { label: 'Communauté : profil, publications avec photos, commentaires, réactions, suivre des membres et des catégories', free: true, plus: true },
-    { label: 'Groupes thématiques et par mois de naissance, sondages, notifications de réponses', free: true, plus: true },
-    { label: 'Signaler, bloquer, règles et informations de sécurité', free: true, plus: true },
-    { label: 'Profil personnalisé (couleur, bannière, présentation) et badge facultatif', free: false, plus: true },
-    { label: 'Groupes privés et invitations', free: false, plus: true },
-    { label: 'Albums photo privés ou partagés', free: false, plus: true },
-    { label: 'Filtres et recherche avancés, dossiers d’enregistrements, journal d’activité', free: false, plus: true },
-    { label: 'Résumé et traduction des longues discussions', free: false, plus: true },
-    { label: 'Ateliers et rencontres réservés aux abonné·es', free: false, plus: true },
+    { label: tr('u1.sub.r01'), free: true, plus: true },
+    { label: tr('u1.sub.r02'), free: true, plus: true },
+    { label: tr('u1.sub.r03'), free: true, plus: true },
+    { label: tr('u1.sub.r04'), free: true, plus: true },
+    { label: tr('u1.sub.r05'), free: false, plus: true },
+    { label: tr('u1.sub.r06'), free: false, plus: true },
+    { label: tr('u1.sub.r07'), free: true, plus: true },
+    { label: tr('u1.sub.r08'), free: false, plus: true },
+    { label: tr('u1.sub.r09'), free: exportsL.free, plus: exportsL.plus },
+    { label: tr('u1.sub.r10'), free: voice.free, plus: voice.plus },
+    { label: tr('u1.sub.r11'), free: q.free, plus: q.plus },
+    { label: tr('u1.sub.r12'), free: false, plus: true },
+    { label: tr('u1.sub.r13'), free: scans.free, plus: scans.plus },
+    { label: tr('u1.sub.r14'), free: false, plus: true },
+    { label: tr('u1.sub.r15'), free: true, plus: true },
+    { label: tr('u1.sub.r16'), free: false, plus: true },
+    { label: tr('u1.sub.r17'), free: false, plus: true },
+    { label: tr('u1.sub.r18'), free: false, plus: true },
+    { label: tr('u1.sub.r19'), free: rem.free, plus: rem.plus },
+    { label: tr('u1.sub.r20'), free: kids.free, plus: kids.plus },
+    { label: tr('u1.sub.r21'), free: docs.free, plus: docs.plus },
+    { label: tr('u1.sub.r22'), free: lists.free, plus: lists.plus },
+    { label: tr('u1.sub.r23'), free: false, plus: true },
+    { label: tr('u1.sub.r24'), free: true, plus: true },
+    { label: tr('u1.sub.r25'), free: true, plus: true },
+    { label: tr('u1.sub.r26'), free: true, plus: true },
+    { label: tr('u1.sub.r27'), free: false, plus: true },
+    { label: tr('u1.sub.r28'), free: false, plus: true },
+    { label: tr('u1.sub.r29'), free: false, plus: true },
+    { label: tr('u1.sub.r30'), free: false, plus: true },
+    { label: tr('u1.sub.r31'), free: false, plus: true },
+    { label: tr('u1.sub.r32'), free: false, plus: true },
   ];
 
   async function buy(plan: Plan) {
@@ -102,7 +103,7 @@ export default function SubscriptionScreen() {
     try {
       const ok = await purchase(plan);
       inv('subscriptions');
-      toast(ok ? `Bienvenue dans ${PREMIUM} !` : 'Achat enregistré : la confirmation peut prendre quelques minutes.', ok ? 'success' : 'info');
+      toast(ok ? tr('u1.sub.welcome', { name: PREMIUM }) : tr('u1.sub.purchaseSaved'), ok ? 'success' : 'info');
     } catch (e) {
       const msg = friendlyError(e);
       if (!/cancel|annul/i.test(msg)) toast(msg, 'error');
@@ -116,7 +117,7 @@ export default function SubscriptionScreen() {
     try {
       const ok = await restore();
       inv('subscriptions');
-      toast(ok ? 'Abonnement restauré.' : 'Aucun abonnement actif trouvé pour ce compte.', ok ? 'success' : 'info');
+      toast(ok ? tr('u1.sub.restored') : tr('u1.sub.noneFound'), ok ? 'success' : 'info');
     } catch (e) {
       toast(friendlyError(e), 'error');
     } finally {
@@ -126,13 +127,13 @@ export default function SubscriptionScreen() {
 
   async function manage() {
     if (purchaseMode === 'test') {
-      if (!(await confirm('Arrêter l’abonnement de démonstration ?', 'Aucun paiement n’a eu lieu : l’application revient à la version gratuite. Toutes vos données restent consultables.', 'Arrêter'))) return;
+      if (!(await confirm(tr('u1.sub.stopDemoTitle'), tr('u1.sub.stopDemoBody'), tr('u1.sub.stop')))) return;
     }
     setBusy('manage');
     try {
       await manageSubscription();
       inv('subscriptions');
-      if (purchaseMode === 'test') toast('Retour à la version gratuite. Vos données restent consultables.');
+      if (purchaseMode === 'test') toast(tr('u1.sub.backToFree'));
     } catch (e) {
       toast(friendlyError(e), 'error');
     } finally {
@@ -143,7 +144,7 @@ export default function SubscriptionScreen() {
   const sorted = [...(plans.data ?? [])].sort((a, b) => (a.period === 'annual' ? -1 : b.period === 'annual' ? 1 : 0));
 
   return (
-    <Screen back title="Abonnement" subtitle={`${PREMIUM} finance une application sans publicité et sans revente de données.`}>
+    <Screen back title={tr('u1.sub.title')} subtitle={tr('u1.sub.subtitle', { name: PREMIUM })}>
       {tried && !premium ? (
         <Card tone="gold">
           <View testID="sub-tried">
@@ -158,22 +159,22 @@ export default function SubscriptionScreen() {
         <Card tone={premium ? 'gold' : 'soft'}>
           <Row>
             <Icon name={premium ? 'star' : 'heart'} size={20} />
-            <Text weight="bold" style={{ flex: 1 }}>{premium ? `${PREMIUM} actif` : 'Version gratuite'}</Text>
+            <Text weight="bold" style={{ flex: 1 }}>{premium ? tr('u1.sub.active', { name: PREMIUM }) : tr('u1.sub.freeVersion')}</Text>
           </Row>
-          <Text variant="small" style={{ marginTop: 6 }} testID="sub-message">{premium && (!sub || sub.status === 'none') ? 'Accès partagé par le propriétaire de votre foyer.' : ent.message}</Text>
+          <Text variant="small" style={{ marginTop: 6 }} testID="sub-message">{premium && (!sub || sub.status === 'none') ? tr('u1.sub.sharedAccess') : ent.message}</Text>
           {sub && sub.status !== 'none' ? (
             <View style={{ marginTop: 4, gap: 2 }}>
-              {sub.period_type ? <Text variant="small" muted>{`Formule : ${sub.period_type === 'annual' ? 'annuelle' : sub.period_type === 'monthly' ? 'mensuelle' : sub.period_type === 'trial' ? 'essai' : sub.period_type}`}</Text> : null}
-              {sub.store ? <Text variant="small" muted>{`Boutique : ${STORE_LABEL[sub.store] ?? sub.store}`}</Text> : null}
+              {sub.period_type ? <Text variant="small" muted>{tr('u1.sub.planLine', { kind: sub.period_type === 'annual' ? tr('u1.sub.annual') : sub.period_type === 'monthly' ? tr('u1.sub.monthly') : sub.period_type === 'trial' ? tr('u1.sub.trial') : sub.period_type })}</Text> : null}
+              {sub.store ? <Text variant="small" muted>{tr('u1.sub.storeLine', { store: storeLabel(sub.store) })}</Text> : null}
             </View>
           ) : null}
-          {ent.state === 'billing_issue' || ent.state === 'grace' ? <Banner tone="warning">{'Mettez à jour votre moyen de paiement dans les réglages de votre boutique.'}</Banner> : null}
+          {ent.state === 'billing_issue' || ent.state === 'grace' ? <Banner tone="warning">{tr('u1.sub.updatePayment')}</Banner> : null}
         </Card>
       </View>
 
       {!premium ? (
         <>
-          <SectionTitle title="Ce que Premium change au quotidien" />
+          <SectionTitle title={tr('u1.sub.benefitsTitle')} />
           <Card>
             {BENEFITS.map((f, i) => (
               <Row key={f} style={{ alignItems: 'flex-start', paddingVertical: 6, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
@@ -186,13 +187,13 @@ export default function SubscriptionScreen() {
             ))}
           </Card>
 
-          <SectionTitle title={`Choisir ${PREMIUM}`} />
+          <SectionTitle title={tr('u1.sub.choose', { name: PREMIUM })} />
           {purchaseMode === 'unavailable' ? (
-            <Banner tone="info" title="Achats bientôt disponibles">{'Les achats intégrés ne sont pas encore configurés pour cette version de l’application.'}</Banner>
-          ) : plans.isLoading ? <Loading label="Chargement des offres…" /> : plans.isError ? (
+            <Banner tone="info" title={tr('u1.sub.soonTitle')}>{tr('u1.sub.soonBody')}</Banner>
+          ) : plans.isLoading ? <Loading label={tr('u1.sub.loadingOffers')} /> : plans.isError ? (
             <>
-              <Banner tone="warning" title="Offres indisponibles">{friendlyError(plans.error, 'Impossible de joindre la boutique pour le moment.')}</Banner>
-              <Button label="Réessayer" icon="refresh-cw" variant="secondary" onPress={() => void plans.refetch()} testID="plans-retry" />
+              <Banner tone="warning" title={tr('u1.sub.offersDown')}>{friendlyError(plans.error, tr('u1.sub.storeUnreachable'))}</Banner>
+              <Button label={tr('u1.sub.retry')} icon="refresh-cw" variant="secondary" onPress={() => void plans.refetch()} testID="plans-retry" />
             </>
           ) : (
             sorted.map((p) => {
@@ -201,7 +202,7 @@ export default function SubscriptionScreen() {
               return (
                 <View key={p.id} testID={`plan-${p.period}`}>
                   <Card tone={annual ? 'lavender' : 'surface'} style={annual ? { borderWidth: 2, borderColor: t.colors.primary } : undefined}>
-                    {annual ? <View style={{ alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: t.colors.primary, marginBottom: 6 }}><Text variant="caption" weight="bold" color="#FFFFFF">Le plus avantageux</Text></View> : null}
+                    {annual ? <View style={{ alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: t.colors.primary, marginBottom: 6 }}><Text variant="caption" weight="bold" color="#FFFFFF">{tr('u1.sub.bestValue')}</Text></View> : null}
                     <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <View style={{ flex: 1 }}>
                         <Text weight="bold">{p.title}</Text>
@@ -211,29 +212,29 @@ export default function SubscriptionScreen() {
                     </Row>
                     <View style={{ marginTop: 6, gap: 2 }} testID={`plan-terms-${p.period}`}>
                       <Text variant="small" weight="bold">{p.billed}</Text>
-                      {p.trialDays ? <Text variant="small">{`${p.trialDays} jours gratuits, puis premier prélèvement le ${day(dates.firstCharge)}.`}</Text> : <Text variant="small">{`Premier prélèvement aujourd’hui.`}</Text>}
-                      <Text variant="small" muted>{`Renouvellement automatique le ${day(dates.renewal)}, sauf annulation au moins 24 h avant.`}</Text>
+                      {p.trialDays ? <Text variant="small">{tr('u1.sub.trialThenCharge', { days: p.trialDays, date: day(dates.firstCharge) })}</Text> : <Text variant="small">{tr('u1.sub.chargeToday')}</Text>}
+                      <Text variant="small" muted>{tr('u1.sub.autoRenew', { date: day(dates.renewal) })}</Text>
                     </View>
-                    <Button label={p.trialDays ? `Commencer l’essai gratuit de ${p.trialDays} jours` : `Choisir la formule ${p.title.toLowerCase()}`} style={{ marginTop: spacing.sm }} loading={busy === p.id} disabled={!!busy && busy !== p.id} onPress={() => buy(p)} testID={`plan-buy-${p.period}`} />
+                    <Button label={p.trialDays ? tr('u1.sub.startTrial', { days: p.trialDays }) : tr('u1.sub.choosePlan', { plan: p.title.toLowerCase() })} style={{ marginTop: spacing.sm }} loading={busy === p.id} disabled={!!busy && busy !== p.id} onPress={() => buy(p)} testID={`plan-buy-${p.period}`} />
                   </Card>
                 </View>
               );
             })
           )}
-          {purchaseMode === 'test' ? <Banner tone="demo" title="Mode démonstration">{'L’achat est simulé : aucun paiement n’est demandé ni débité.'}</Banner> : null}
+          {purchaseMode === 'test' ? <Banner tone="demo" title={tr('u1.sub.demoTitle')}>{tr('u1.sub.demoBody')}</Banner> : null}
         </>
       ) : null}
 
-      <SectionTitle title="Comparer Gratuit et Premium" />
+      <SectionTitle title={tr('u1.sub.compare')} />
       <Card>
         <View style={{ flexDirection: 'row', paddingVertical: 6 }}>
           <Text variant="label" style={{ flex: 2.2 }}> </Text>
-          <Text variant="label" center style={{ flex: 1 }}>Gratuit</Text>
-          <Text variant="label" center style={{ flex: 1 }}>Premium</Text>
+          <Text variant="label" center style={{ flex: 1 }}>{tr('u1.sub.colFree')}</Text>
+          <Text variant="label" center style={{ flex: 1 }}>{tr('u1.sub.colPremium')}</Text>
         </View>
         <Divider />
         {rows.map((r, i) => (
-          <View key={r.label} accessible accessibilityLabel={`${r.label} : gratuit ${r.free === true ? 'inclus' : r.free === false ? 'non inclus' : r.free}, Premium ${r.plus === true ? 'inclus' : r.plus === false ? 'non inclus' : r.plus}`}
+          <View key={r.label} accessible accessibilityLabel={tr('u1.sub.rowA11y', { label: r.label, free: r.free === true ? tr('u1.sub.included') : r.free === false ? tr('u1.sub.notIncludedLc') : r.free, plus: r.plus === true ? tr('u1.sub.included') : r.plus === false ? tr('u1.sub.notIncludedLc') : r.plus })}
             style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
             <Text variant="small" style={{ flex: 2.2, paddingRight: 6 }}>{r.label}</Text>
             <Cell v={r.free} />
@@ -242,7 +243,7 @@ export default function SubscriptionScreen() {
         ))}
       </Card>
 
-      <SectionTitle title="Toujours gratuit" />
+      <SectionTitle title={tr('u1.sub.alwaysFree')} />
       <View testID="always-free">
         <Card tone="soft">
           {ALWAYS_FREE.map((label, i) => (
@@ -251,28 +252,28 @@ export default function SubscriptionScreen() {
               <Text variant="small" style={{ flex: 1 }}>{label}</Text>
             </Row>
           ))}
-          <Button label="Voir les numéros d’urgence" size="sm" variant="ghost" icon="life-buoy" style={{ alignSelf: 'flex-start', marginTop: 4 }} onPress={() => router.push('/emergency')} />
+          <Button label={tr('u1.sub.emergency')} size="sm" variant="ghost" icon="life-buoy" style={{ alignSelf: 'flex-start', marginTop: 4 }} onPress={() => router.push('/emergency')} />
         </Card>
         <Text variant="caption" muted style={{ marginTop: spacing.xs }} testID="no-targeted-ads">
-          Vos profils privés, les données de vos enfants et vos données de santé ne servent jamais à afficher de la publicité ciblée. Il n’y a aujourd’hui aucun contenu sponsorisé dans l’application.
+          {tr('u1.sub.noAds')}
         </Text>
       </View>
 
       <View style={{ gap: spacing.xs }}>
-        {purchaseMode !== 'unavailable' ? <Button label="Restaurer mes achats" variant="secondary" icon="refresh-cw" loading={busy === 'restore'} onPress={doRestore} testID="sub-restore" /> : null}
+        {purchaseMode !== 'unavailable' ? <Button label={tr('u1.sub.restore')} variant="secondary" icon="refresh-cw" loading={busy === 'restore'} onPress={doRestore} testID="sub-restore" /> : null}
         {premium && sub && sub.status !== 'none' && purchaseMode !== 'unavailable' ? (
-          <Button label={purchaseMode === 'test' ? 'Arrêter l’abonnement de démonstration' : 'Gérer ou résilier mon abonnement'} variant="ghost" loading={busy === 'manage'} onPress={manage} testID="sub-manage" />
+          <Button label={purchaseMode === 'test' ? tr('u1.sub.stopDemoTitle') : tr('u1.sub.manage')} variant="ghost" loading={busy === 'manage'} onPress={manage} testID="sub-manage" />
         ) : null}
-        <Button label={Platform.OS === 'android' ? 'Gérer mes abonnements sur Google Play' : 'Gérer mes abonnements (App Store)'} variant="ghost" icon="external-link" size="sm"
+        <Button label={Platform.OS === 'android' ? tr('u1.sub.manageAndroid') : tr('u1.sub.manageIos')} variant="ghost" icon="external-link" size="sm"
           onPress={() => void Linking.openURL(Platform.OS === 'android' ? MANAGE_URLS.android : MANAGE_URLS.ios)} testID="sub-manage-link" />
       </View>
       <Text variant="caption" muted testID="sub-terms">
-        {'Annulation : à tout moment depuis les réglages de votre compte App Store ou Google Play, au moins 24 h avant la date de renouvellement ; l’accès Premium reste ouvert jusqu’à la fin de la période déjà payée. Pendant un essai gratuit, une annulation avant la fin de l’essai évite tout prélèvement. Le prix affiché est celui de votre boutique, toutes taxes comprises. Après la fin d’un abonnement, toutes vos données restent consultables et exportables.'}
+        {tr('u1.sub.terms')}
       </Text>
       {/* Liens exigés par l'App Store (règle 3.1.2) : conditions d'utilisation et confidentialité */}
       <Row wrap testID="sub-legal-links">
-        <LegalLink doc="terms">Conditions d’utilisation</LegalLink>
-        <LegalLink doc="privacy">Politique de confidentialité</LegalLink>
+        <LegalLink doc="terms">{tr('u1.sub.termsLink')}</LegalLink>
+        <LegalLink doc="privacy">{tr('u1.sub.privacyLink')}</LegalLink>
       </Row>
     </Screen>
   );

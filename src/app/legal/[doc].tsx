@@ -5,12 +5,13 @@ import { Screen } from '@/components/Screen';
 import { Banner, Card, Text } from '@/components/ui';
 import { LEGAL_DRAFT_NOTICE, PRIVACY, TERMS } from '@/content/legal';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export default function LegalScreen() {
   const { doc } = useLocalSearchParams<{ doc: string }>();
   const d = doc === 'privacy' ? PRIVACY : TERMS;
   return (
-    <Screen back title={d.title} subtitle={`Mise à jour : ${d.updated}`}>
+    <Screen back title={d.title} subtitle={tr('u6.legal.updated', { date: d.updated })}>
       <Banner tone="warning">{LEGAL_DRAFT_NOTICE}</Banner>
       {d.sections.map((s) => (
         <Card key={s.title}>

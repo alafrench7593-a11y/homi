@@ -12,6 +12,7 @@ import { usePremiumSheet, quotaResetLabel, usePremiumAccess } from '@/lib/data/h
 import { FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export function PremiumPreviewHost() {
   const t = useTheme();
@@ -26,31 +27,31 @@ export function PremiumPreviewHost() {
             <View testID="premium-limit">
               {open.limit.monthly === false ? (
                 <>
-                  <Text weight="bold">{`Limite de la version gratuite atteinte : ${open.limit.quota} ${open.limit.unit}.`}</Text>
-                  <Text variant="small" muted>Rien de ce que vous avez déjà enregistré n’est perdu : tout reste consultable et modifiable.</Text>
+                  <Text weight="bold">{tr('u1.pr.limitReached', { quota: open.limit.quota, unit: open.limit.unit })}</Text>
+                  <Text variant="small" muted>{tr('u1.pr.nothingLostEditable')}</Text>
                 </>
               ) : (
                 <>
-                  <Text weight="bold">{`Vous avez utilisé vos ${open.limit.quota} ${open.limit.unit} gratuites de ce mois.`}</Text>
-                  <Text variant="small" muted>{`Elles reviennent le ${quotaResetLabel()}. Rien de ce que vous avez déjà enregistré n’est perdu.`}</Text>
+                  <Text weight="bold">{tr('u1.pr.usedMonth', { quota: open.limit.quota, unit: open.limit.unit })}</Text>
+                  <Text variant="small" muted>{tr('u1.pr.backOn', { date: quotaResetLabel() })}</Text>
                 </>
               )}
             </View>
           ) : null}
           {open.preview ? (
             <View testID="premium-preview-real" style={{ borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, backgroundColor: t.colors.surfaceAlt, gap: 4 }}>
-              <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>APERÇU AVEC VOS DONNÉES</Text>
+              <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('u1.pr.previewHeader')}</Text>
               {open.preview}
             </View>
           ) : null}
           <Text>{f.benefit}</Text>
           <Card tone="soft">
-            <Row style={{ alignItems: 'flex-start' }}><Icon name="check" size={16} /><Text variant="small" style={{ flex: 1 }}>{`Gratuit : ${f.free}`}</Text></Row>
-            <Row style={{ alignItems: 'flex-start', marginTop: 4 }}><Icon name="star" size={16} color={t.colors.gold} /><Text variant="small" style={{ flex: 1 }}>{`Premium : ${f.premium}`}</Text></Row>
+            <Row style={{ alignItems: 'flex-start' }}><Icon name="check" size={16} /><Text variant="small" style={{ flex: 1 }}>{tr('u1.pr.free', { text: f.free })}</Text></Row>
+            <Row style={{ alignItems: 'flex-start', marginTop: 4 }}><Icon name="star" size={16} color={t.colors.gold} /><Text variant="small" style={{ flex: 1 }}>{tr('u1.pr.premium', { text: f.premium })}</Text></Row>
           </Card>
-          <Button label="Voir les formules" icon="star" onPress={() => { hide(); router.push({ pathname: '/settings/subscription', params: { feature: open.feature } }); }} testID="premium-see-plans" full />
-          <Button label="Plus tard" variant="ghost" onPress={hide} testID="premium-later" full />
-          <Text variant="caption" muted center>Urgences, ressources post-partum, alertes de rappel de produits et vos données restent toujours accessibles gratuitement.</Text>
+          <Button label={tr('u1.pr.seePlans')} icon="star" onPress={() => { hide(); router.push({ pathname: '/settings/subscription', params: { feature: open.feature } }); }} testID="premium-see-plans" full />
+          <Button label={tr('u1.pr.later')} variant="ghost" onPress={hide} testID="premium-later" full />
+          <Text variant="caption" muted center>{tr('u1.pr.alwaysFree')}</Text>
         </View>
       ) : null}
     </Sheet>
@@ -64,7 +65,7 @@ export function PremiumSection({ feature, name, preview, children, testID }: { f
   if (access.premium) return <>{children}</>;
   return (
     <View testID={testID ?? `premium-${feature}`}>
-      <Card tone="gold" onPress={() => access.showPreview(preview)} accessibilityLabel={`${featureTitle(feature, name)} : aperçu Premium`}>
+      <Card tone="gold" onPress={() => access.showPreview(preview)} accessibilityLabel={tr('u1.pr.a11y', { title: featureTitle(feature, name) })}>
         <Row>
           <Icon name="star" size={18} color={t.colors.gold} />
           <Text weight="bold" style={{ flex: 1 }}>{featureTitle(feature, name)}</Text>

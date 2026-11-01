@@ -17,6 +17,7 @@ import { ROUTINE_TEMPLATES, routinePreview, type Routine } from '@/lib/domain/fa
 import { todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 type Draft = { id?: string; title: string; kind: Routine['kind']; items: string; assignee: string | null };
 
@@ -35,87 +36,87 @@ export default function Routines() {
   async function submit() {
     if (!draft) return;
     const items = draft.items.split('\n').map((x) => x.trim()).filter(Boolean).slice(0, 30);
-    if (!draft.title.trim() || !items.length) return toast('Un titre et au moins une étape.', 'error');
+    if (!draft.title.trim() || !items.length) return toast(tr('u2.routines.need_title'), 'error');
     try {
       await save.mutateAsync({ id: draft.id, input: { title: draft.title.trim().slice(0, 80), kind: draft.kind, items, default_assignee: draft.assignee } });
-      toast(draft.id ? 'Routine modifiée.' : 'Routine créée.');
+      toast(draft.id ? tr('u2.routines.edited') : tr('u2.routines.created'));
       setDraft(null);
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   async function remove(r: Routine) {
-    if (!(await confirm('Supprimer cette routine ?', r.title, 'Supprimer'))) return;
-    try { await del.mutateAsync(r.id); toast('Routine supprimée.'); } catch (e) { toast(friendlyError(e), 'error'); }
+    if (!(await confirm(tr('u2.routines.delete_title'), r.title, tr('u2.routines.delete')))) return;
+    try { await del.mutateAsync(r.id); toast(tr('u2.routines.deleted')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   const due = parseFrDateTime(date, time);
   const preview = launch ? routinePreview(launch, due ?? null) : [];
 
   async function run() {
-    if (!launch || due === undefined) return toast('Date ou heure non reconnue.', 'error');
+    if (!launch || due === undefined) return toast(tr('u2.routines.bad_date'), 'error');
     try {
       await batch.mutateAsync({ create: preview.map((p) => ({ ...p, routine_id: launch.id })) });
-      toast(`${preview.length} tâche${preview.length > 1 ? 's' : ''} ajoutée${preview.length > 1 ? 's' : ''}.`);
+      toast(tr('u2.routines.tasks_added', { count: preview.length }));
       setLaunch(null);
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   const list = q.data ?? [];
   return (
-    <Screen back title="Routines" subtitle="Ce qui revient souvent, préparé une fois pour toutes."
-      action={{ label: 'Nouvelle routine', icon: 'plus', onPress: () => setDraft({ title: '', kind: 'custom', items: '', assignee: null }), testID: 'routines-new' }}>
+    <Screen back title={tr('u2.routines.title')} subtitle={tr('u2.routines.subtitle')}
+      action={{ label: tr('u2.routines.new'), icon: 'plus', onPress: () => setDraft({ title: '', kind: 'custom', items: '', assignee: null }), testID: 'routines-new' }}>
       {q.data ? (
-        <TodaySummary title="Mes routines" items={[
-          { icon: 'list', value: String(list.length), label: list.length > 1 ? 'Routines' : 'Routine' },
-          { icon: 'check-square', value: String(list.reduce((n, r) => n + r.items.length, 0)), label: 'Étapes préparées' },
-          { icon: 'user-check', value: String(list.filter((r) => r.default_assignee).length), label: 'Déjà confiées' },
+        <TodaySummary title={tr('u2.routines.mine')} items={[
+          { icon: 'list', value: String(list.length), label: list.length > 1 ? tr('u2.routines.title') : tr('u2.routines.one') },
+          { icon: 'check-square', value: String(list.reduce((n, r) => n + r.items.length, 0)), label: tr('u2.routines.steps_ready') },
+          { icon: 'user-check', value: String(list.filter((r) => r.default_assignee).length), label: tr('u2.routines.assigned') },
         ]} />
       ) : null}
       {q.isLoading && !q.data ? <Skeleton rows={2} /> : null}
-      {q.data && !list.length ? <EmptyState icon="list" title="Aucune routine" body="Partez d’un modèle ci-dessous, puis adaptez-le." /> : null}
+      {q.data && !list.length ? <EmptyState icon="list" title={tr('u2.routines.none_title')} body={tr('u2.routines.none_body')} /> : null}
       {list.map((r, i) => (
         <StaggerItem key={r.id} index={i}>
           <Card>
-            <ListRow icon="list" title={r.title} subtitle={`${r.items.length} étape${r.items.length > 1 ? 's' : ''}${r.default_assignee ? ` · ${labelOf(r.default_assignee)}` : ''}`} onPress={() => setDraft({ id: r.id, title: r.title, kind: r.kind, items: r.items.join('\n'), assignee: r.default_assignee })} />
+            <ListRow icon="list" title={r.title} subtitle={`${tr('u2.routines.steps', { count: r.items.length })}${r.default_assignee ? ` · ${labelOf(r.default_assignee)}` : ''}`} onPress={() => setDraft({ id: r.id, title: r.title, kind: r.kind, items: r.items.join('\n'), assignee: r.default_assignee })} />
             <Row wrap style={{ marginTop: spacing.xs }}>
-              <Button label="Lancer" size="sm" icon="play" onPress={() => setLaunch(r)} />
-              <Button label="Supprimer" size="sm" variant="ghost" onPress={() => remove(r)} />
+              <Button label={tr('u2.routines.launch')} size="sm" icon="play" onPress={() => setLaunch(r)} />
+              <Button label={tr('u2.routines.delete')} size="sm" variant="ghost" onPress={() => remove(r)} />
             </Row>
           </Card>
         </StaggerItem>
       ))}
 
-      <SectionTitle title="Modèles" />
+      <SectionTitle title={tr('u2.routines.templates')} />
       <Row wrap>
         {ROUTINE_TEMPLATES.map((m) => <Chip key={m.kind} label={m.title} icon="plus" onPress={() => setDraft({ title: m.title, kind: m.kind, items: m.items.join('\n'), assignee: null })} />)}
-        <Chip label="Routine vide" icon="plus" onPress={() => setDraft({ title: '', kind: 'custom', items: '', assignee: null })} />
+        <Chip label={tr('u2.routines.empty')} icon="plus" onPress={() => setDraft({ title: '', kind: 'custom', items: '', assignee: null })} />
       </Row>
 
-      <Sheet visible={!!draft} onClose={() => setDraft(null)} title={draft?.id ? 'Modifier la routine' : 'Nouvelle routine'}>
+      <Sheet visible={!!draft} onClose={() => setDraft(null)} title={draft?.id ? tr('u2.routines.edit') : tr('u2.routines.new')}>
         {draft ? (
           <View style={{ gap: spacing.sm }}>
-            <Field label="Titre" value={draft.title} onChangeText={(v) => setDraft({ ...draft, title: v })} maxLength={80} />
-            <Field label="Étapes" hint="Une par ligne (30 au plus)." multiline value={draft.items} onChangeText={(v) => setDraft({ ...draft, items: v })} style={{ minHeight: 140, textAlignVertical: 'top' }} />
-            <Text variant="label">Confiée par défaut à</Text>
+            <Field label={tr('u2.routines.f_title')} value={draft.title} onChangeText={(v) => setDraft({ ...draft, title: v })} maxLength={80} />
+            <Field label={tr('u2.routines.f_steps')} hint={tr('u2.routines.f_steps_hint')} multiline value={draft.items} onChangeText={(v) => setDraft({ ...draft, items: v })} style={{ minHeight: 140, textAlignVertical: 'top' }} />
+            <Text variant="label">{tr('u2.routines.default_to')}</Text>
             <Row wrap>
-              <Chip label="Personne" selected={!draft.assignee} onPress={() => setDraft({ ...draft, assignee: null })} />
+              <Chip label={tr('u2.routines.nobody')} selected={!draft.assignee} onPress={() => setDraft({ ...draft, assignee: null })} />
               {people.map((p) => <Chip key={p.id} label={p.label} selected={draft.assignee === p.id} onPress={() => setDraft({ ...draft, assignee: p.id })} />)}
             </Row>
-            <Button label="Enregistrer" full onPress={submit} loading={save.isPending} />
+            <Button label={tr('u2.routines.save')} full onPress={submit} loading={save.isPending} />
           </View>
         ) : null}
       </Sheet>
 
-      <Sheet visible={!!launch} onClose={() => setLaunch(null)} title={launch ? `Lancer « ${launch.title} »` : ''}>
+      <Sheet visible={!!launch} onClose={() => setLaunch(null)} title={launch ? tr('u2.routines.launch_title', { title: launch.title }) : ''}>
         {launch ? (
           <View style={{ gap: spacing.sm }}>
             <Row>
-              <View style={{ flex: 3 }}><Field label="Pour le" value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" /></View>
-              <View style={{ flex: 2 }}><Field label="Heure" value={time} onChangeText={setTime} placeholder="18h" /></View>
+              <View style={{ flex: 3 }}><Field label={tr('u2.routines.for_date')} value={date} onChangeText={setDate} placeholder={tr('u2.routines.date_ph')} keyboardType="numbers-and-punctuation" /></View>
+              <View style={{ flex: 2 }}><Field label={tr('u2.routines.time')} value={time} onChangeText={setTime} placeholder="18h" /></View>
             </Row>
-            <Text variant="label">Ces tâches vont être ajoutées</Text>
+            <Text variant="label">{tr('u2.routines.will_add')}</Text>
             <Card tone="soft">{preview.map((p) => <ListRow key={p.title} icon="check-square" title={p.title} subtitle={labelOf(p.assignee_id)} />)}</Card>
-            <Button label="Valider et ajouter" icon="check" full onPress={run} loading={batch.isPending} />
+            <Button label={tr('u2.routines.confirm_add')} icon="check" full onPress={run} loading={batch.isPending} />
           </View>
         ) : null}
       </Sheet>

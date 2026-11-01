@@ -16,6 +16,7 @@ import { Tappable } from '@/components/Tappable';
 import { tint } from '@/components/ToolGlyph';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export interface ArticleSection { title: string; body: string }
 
@@ -138,7 +139,7 @@ export function ArticleBody({ source }: { source: string }) {
               <Tappable accessibilityRole="button" onPress={() => router.push('/emergency')} testID="article-emergency"
                 style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: t.colors.danger }}>
                 <Icon name="life-buoy" size={14} color="#FFFFFF" />
-                <Text variant="caption" weight="bold" color="#FFFFFF">Urgences · 15 · 112 · 3114</Text>
+                <Text variant="caption" weight="bold" color="#FFFFFF">{tr('u3.tools.urg')}</Text>
               </Tappable>
             </View>
           );

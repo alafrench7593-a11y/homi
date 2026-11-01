@@ -20,17 +20,19 @@ import { childAge } from '@/lib/domain/child';
 import { answer, buildIndex, type KbIndex, type LocalAnswer } from '@/lib/localAI/engine';
 
 let CACHE: { n: number; index: KbIndex } | null = null;
+import { ui8 as frUi8 } from '@/i18n/fr/ui8';
+import { type TKey, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, spacing } from '@/theme/tokens';
 
 interface Msg { id: string; q: string; a: LocalAnswer }
 
-const SUGGEST: Record<string, string[]> = {
-  pregnant: ['Puis-je boire du café enceinte ?', 'Quels aliments éviter ?', 'Quand partir à la maternité ?', 'Comment se passe la péridurale ?', 'Combien dure le congé maternité ?'],
-  ttc: ['Quand ai-je le plus de chances de concevoir ?', 'Quand consulter si la grossesse tarde ?', 'Qui peut accéder à la PMA ?', 'Quels vaccins avant une grossesse ?'],
-  newborn: ['Mon bébé pleure tout le soir', 'Comment conserver le lait maternel ?', 'Quand commencer la diversification ?', 'Que faire en cas de bronchiolite ?', 'Quels vaccins sont obligatoires ?'],
-  avoid: ['Pourquoi j’ai mal au ventre pendant mes règles ?', 'J’ai du retard dans mes règles', 'Mes règles sont très abondantes', 'J’ai oublié ma pilule', 'Comment soulager le syndrome prémenstruel ?'],
-  child: ['Mon enfant a peut-être un TDAH', 'Comment savoir si mon enfant est autiste ?', 'Qu’est-ce que la dyslexie ?', 'Comment obtenir une AESH ?', 'Mon enfant fait pipi au lit'],
+const SUGGEST: Record<string, TKey[]> = {
+  pregnant: ['u8.local.sg.pregnant1', 'u8.local.sg.pregnant2', 'u8.local.sg.pregnant3', 'u8.local.sg.pregnant4', 'u8.local.sg.pregnant5'],
+  ttc: ['u8.local.sg.ttc1', 'u8.local.sg.ttc2', 'u8.local.sg.ttc3', 'u8.local.sg.ttc4'],
+  newborn: ['u8.local.sg.newborn1', 'u8.local.sg.newborn2', 'u8.local.sg.newborn3', 'u8.local.sg.newborn4', 'u8.local.sg.newborn5'],
+  avoid: ['u8.local.sg.avoid1', 'u8.local.sg.avoid2', 'u8.local.sg.avoid3', 'u8.local.sg.avoid4', 'u8.local.sg.avoid5'],
+  child: ['u8.local.sg.child1', 'u8.local.sg.child2', 'u8.local.sg.child3', 'u8.local.sg.child4', 'u8.local.sg.child5'],
 };
 
 function AnswerCard({ m }: { m: Msg }) {
@@ -41,7 +43,7 @@ function AnswerCard({ m }: { m: Msg }) {
     return (
       <View style={{ gap: spacing.sm }}>
         <UrgentCard level={a.safety} contacts={a.urgent} />
-        {a.related.length ? <Text variant="caption" muted>Quand vous le pourrez, ces articles peuvent aussi aider :</Text> : null}
+        {a.related.length ? <Text variant="caption" muted>{tr('u8.local.urgentRelated')}</Text> : null}
         <Related items={a.related} />
       </View>
     );
@@ -50,11 +52,11 @@ function AnswerCard({ m }: { m: Msg }) {
     return (
       <GlassSurface fill={t.colors.surface} depth={1} radius={22}>
         <View style={{ padding: spacing.md, gap: spacing.sm }} testID="local-none">
-          <Text weight="bold">Je n’ai pas trouvé de réponse précise dans les articles.</Text>
-          <Text variant="small" muted>Je préfère ne rien inventer. Essayez avec d’autres mots, ou posez la question à un professionnel de santé (médecin, sage-femme, PMI, pharmacien).</Text>
-          {a.related.length ? <Text variant="caption" muted>Articles les plus proches :</Text> : null}
+          <Text weight="bold">{tr('u8.local.none')}</Text>
+          <Text variant="small" muted>{tr('u8.local.noneBody')}</Text>
+          {a.related.length ? <Text variant="caption" muted>{tr('u8.local.closest')}</Text> : null}
           <Related items={a.related} />
-          <Chip icon="cloud" label="Demander à l’assistant en ligne" onPress={() => router.push({ pathname: '/assistant/chat', params: { q: m.q } })} testID="local-online" />
+          <Chip icon="cloud" label={tr('u8.local.online')} onPress={() => router.push({ pathname: '/assistant/chat', params: { q: m.q } })} testID="local-online" />
         </View>
       </GlassSurface>
     );
@@ -64,13 +66,13 @@ function AnswerCard({ m }: { m: Msg }) {
       <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="local-answer">
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Icon name="book-open" size={14} color={gold} />
-          <Text variant="caption" weight="bold" color={gold} style={{ flex: 1 }} numberOfLines={2}>D’après « {a.main.title} »</Text>
+          <Text variant="caption" weight="bold" color={gold} style={{ flex: 1 }} numberOfLines={2}>{tr('u8.local.from', { title: a.main.title })}</Text>
         </View>
         {a.main.section && !/^introduction$/i.test(a.main.section) ? <Text weight="bold">{a.main.section}</Text> : null}
         <Markdown source={a.answer ?? ''} />
         {a.keyPoints?.length ? (
           <View style={{ borderRadius: 18, padding: spacing.md, gap: 6, backgroundColor: tint(gold, t.isDark ? 0.16 : 0.09) }}>
-            <Text variant="caption" weight="bold" color={gold} style={{ letterSpacing: 1, textTransform: 'uppercase' }}>À retenir</Text>
+            <Text variant="caption" weight="bold" color={gold} style={{ letterSpacing: 1, textTransform: 'uppercase' }}>{tr('u8.local.keep')}</Text>
             {a.keyPoints.map((p, i) => (
               <View key={i} style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-start' }}>
                 <Icon name="check" size={14} color={gold} />
@@ -83,7 +85,7 @@ function AnswerCard({ m }: { m: Msg }) {
           <View style={{ borderRadius: 18, padding: spacing.md, gap: 6, backgroundColor: t.colors.dangerSoft }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Icon name="alert-circle" size={14} color={t.colors.danger} />
-              <Text variant="caption" weight="bold" color={t.colors.danger}>Quand demander conseil</Text>
+              <Text variant="caption" weight="bold" color={t.colors.danger}>{tr('u8.local.care')}</Text>
             </View>
             <Markdown source={a.care} />
           </View>
@@ -92,18 +94,18 @@ function AnswerCard({ m }: { m: Msg }) {
           <Tappable accessibilityRole="button" onPress={() => router.push(`/article/${a.main!.slug}`)} testID="local-read"
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: t.colors.primary }}>
             <Icon name="book-open" size={14} color={t.colors.primaryText} />
-            <Text variant="caption" weight="bold" color={t.colors.primaryText}>Lire l’article complet</Text>
+            <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('u8.local.read')}</Text>
           </Tappable>
         </View>
         {a.main.sources.length ? (
           <View style={{ gap: 4 }}>
-            <Text variant="caption" muted>Sources :</Text>
+            <Text variant="caption" muted>{tr('u8.local.sources')}</Text>
             {a.main.sources.slice(0, 3).map((s) => (
               <Text key={s.url} variant="caption" color={t.colors.primary} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ textDecorationLine: 'underline' }}>{s.label}</Text>
             ))}
           </View>
         ) : null}
-        {a.related.length ? <Text variant="caption" muted>Voir aussi :</Text> : null}
+        {a.related.length ? <Text variant="caption" muted>{tr('u8.local.seeAlso')}</Text> : null}
         <Related items={a.related} />
       </View>
     </GlassSurface>
@@ -155,24 +157,25 @@ export default function LocalAssistant() {
     ask(params.q);
   }, [index]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function ask(q: string) {
+  /** `label` : texte affiché ; `query` : formulation française cherchée dans les articles (identique par défaut). */
+  function ask(q: string, query?: string) {
     const question = q.trim();
     if (!question || !index) return;
     haptic('light');
-    setMsgs((m) => [...m, { id: `${Date.now()}`, q: question, a: answer(index, question) }]);
+    setMsgs((m) => [...m, { id: `${Date.now()}`, q: question, a: answer(index, query ?? question) }]);
     setText('');
     setTimeout(() => list.current?.scrollToEnd({ animated: true }), 80);
   }
 
   return (
-    <Screen back title="Assistant des articles" subtitle="Répond à partir des articles sourcés, sur votre téléphone" scroll={false} padded={false}
+    <Screen back title={tr('u8.local.title')} subtitle={tr('u8.local.subtitle')} scroll={false} padded={false}
       footer={(
         <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm }}>
-          <TextInput value={text} onChangeText={setText} placeholder="Posez votre question…" placeholderTextColor={t.colors.textMuted} multiline maxLength={300}
-            onSubmitEditing={() => ask(text)} blurOnSubmit returnKeyType="send" testID="local-input" accessibilityLabel="Votre question"
+          <TextInput value={text} onChangeText={setText} placeholder={tr('u8.local.ph')} placeholderTextColor={t.colors.textMuted} multiline maxLength={300}
+            onSubmitEditing={() => ask(text)} blurOnSubmit returnKeyType="send" testID="local-input" accessibilityLabel={tr('u8.local.yourQ')}
             style={{ flex: 1, minHeight: 48, maxHeight: 120, borderRadius: 24, paddingHorizontal: 18, paddingVertical: 12, color: t.colors.text, fontFamily: fonts.body, fontSize: 16,
               backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.9)', borderWidth: 1, borderColor: t.isDark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.3)' }} />
-          <IconButton icon="send" label="Envoyer" tone="primary" onPress={() => ask(text)} disabled={!text.trim() || !index} />
+          <IconButton icon="send" label={tr('u8.local.send')} tone="primary" onPress={() => ask(text)} disabled={!text.trim() || !index} />
         </View>
       )}>
       <FlatList
@@ -183,14 +186,14 @@ export default function LocalAssistant() {
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.md }}
         ListHeaderComponent={(
           <View style={{ gap: spacing.md }}>
-            <Banner tone="info" icon="lock">Privé et hors ligne : vos questions restent sur ce téléphone. L’assistant cite les articles de l’application ; il ne pose aucun diagnostic et ne remplace pas un professionnel.</Banner>
+            <Banner tone="info" icon="lock">{tr('u8.local.banner')}</Banner>
             {!index ? <Skeleton rows={2} /> : msgs.length === 0 ? (
               <View style={{ gap: spacing.sm }}>
-                <Text variant="caption" muted style={{ letterSpacing: 1, textTransform: 'uppercase' }}>Exemples de questions</Text>
+                <Text variant="caption" muted style={{ letterSpacing: 1, textTransform: 'uppercase' }}>{tr('u8.local.examples')}</Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-                  {suggestions.map((s) => <Chip key={s} icon="help-circle" label={s} onPress={() => ask(s)} />)}
+                  {suggestions.map((s) => <Chip key={s} icon="help-circle" label={tr(s)} onPress={() => ask(tr(s), (frUi8 as unknown as Record<string, string>)[s])} />)}
                 </View>
-                <Text variant="caption" muted>{index.articles.size} articles · grossesse, projet bébé, bébé, enfant, TDAH, autisme, dys, maladies…</Text>
+                <Text variant="caption" muted>{tr('u8.local.count', { count: index.articles.size })}</Text>
               </View>
             ) : null}
           </View>

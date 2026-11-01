@@ -18,6 +18,7 @@ import { slotClock, type DaySlot } from '@/lib/domain/bottleDayPlan';
 import { BottleClock } from './bottleClock';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 const NODE = 22;
 
@@ -72,8 +73,8 @@ export function BottleDayTimeline({ childId, slots, intervalMinutes, timerId, on
     return (
       <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
         <View style={{ padding: spacing.lg, gap: 6 }} testID="bottle-day-empty">
-          <Text variant="heading">Ma journée biberons</Text>
-          <Text muted>Notez le premier biberon de la journée : toute la journée de {name} s’affiche ensuite ici, prête à remplir.</Text>
+          <Text variant="heading">{tr('u7.bottleDay.title')}</Text>
+          <Text muted>{tr('u7.bottleDay.emptyBody', { name })}</Text>
         </View>
       </GlassSurface>
     );
@@ -92,14 +93,14 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval, don
     <View style={{ borderRadius: 26, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,231,176,0.22)' : 'rgba(156,102,80,0.22)' }}>
       <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="bottle-day">
         <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: spacing.sm }}>
-          <Text variant="heading">Ma journée biberons</Text>
+          <Text variant="heading">{tr('u7.bottleDay.title')}</Text>
           <Text variant="caption" muted>{done}/{slots.length}</Text>
         </View>
         {intervalMinutes ? (
-          <Text variant="caption" muted>Toutes les {formatHM(intervalMinutes)}, le délai que vous avez choisi.</Text>
+          <Text variant="caption" muted>{tr('u7.bottleDay.every', { interval: formatHM(intervalMinutes) })}</Text>
         ) : (
           <View style={{ gap: 6 }} testID="bottle-day-pick">
-            <Text variant="small" muted>Choisissez votre délai habituel pour voir les prochains biberons de la journée :</Text>
+            <Text variant="small" muted>{tr('u7.bottleDay.pick')}</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
               {DELAY_PRESETS.map((p) => <Chip key={p.minutes} icon="clock" label={p.label} onPress={() => onPickInterval(p.minutes)} testID={`bottle-day-interval-${p.minutes}`} />)}
             </View>
@@ -111,18 +112,18 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval, don
           <BottleClock childId={childId} slots={slots} timerId={timerId} />
         </View>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.md }}>
-          {[{ k: 'Donné', c: gold, fill: true }, { k: 'Suivant', c: accent, fill: true }, { k: 'Prévu', c: gold, fill: false }].map((x) => (
+          {[{ k: 'done', c: gold, fill: true }, { k: 'next', c: accent, fill: true }, { k: 'planned', c: gold, fill: false }].map((x) => (
             <View key={x.k} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: x.fill ? x.c : 'transparent', borderWidth: x.fill ? 0 : 1.5, borderColor: x.c, alignItems: 'center', justifyContent: 'center' }}>
-                {x.k === 'Suivant' ? <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#FFFFFF' }} /> : null}
+                {x.k === 'next' ? <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#FFFFFF' }} /> : null}
               </View>
-              <Text variant="caption" muted>{x.k}</Text>
+              <Text variant="caption" muted>{tr(x.k === 'done' ? 'u7.bottleDay.given' : x.k === 'next' ? 'u7.bottleDay.next' : 'u7.bottleDay.planned')}</Text>
             </View>
           ))}
         </View>
         <Tappable accessibilityRole="button" onPress={() => setShowList((v) => !v)} testID="bottle-day-toggle"
           style={{ alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8 }}>
-          <Text variant="caption" weight="bold" color={accent}>{showList ? 'Masquer le détail' : 'Voir le détail heure par heure'}</Text>
+          <Text variant="caption" weight="bold" color={accent}>{showList ? tr('u7.bottleDay.hide') : tr('u7.bottleDay.show')}</Text>
           <Icon name={showList ? 'chevron-up' : 'chevron-down'} size={14} color={accent} />
         </Tappable>
         {showList ? <View style={{ marginTop: spacing.xs }}>
@@ -131,9 +132,9 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval, don
             const isNext = s.status === 'next';
             const color = s.status === 'done' ? gold : isNext ? accent : s.status === 'missed' ? t.colors.heart : line;
             const ml = s.status === 'done'
-              ? [s.bottle?.prepared_ml != null ? `${s.bottle.prepared_ml} ml préparés` : null, s.bottle?.consumed_ml != null ? `${s.bottle.consumed_ml} ml bus` : null].filter(Boolean).join(' · ') || 'Biberon noté'
-              : s.suggestedMl != null ? `${s.suggestedMl} ml habituels` : 'Quantité à noter';
-            const label = s.status === 'done' ? 'Donné' : isNext ? 'Suivant' : s.status === 'missed' ? 'À remplir' : 'Prévu';
+              ? [s.bottle?.prepared_ml != null ? tr('u7.bottleDay.prepared', { ml: s.bottle.prepared_ml }) : null, s.bottle?.consumed_ml != null ? tr('u7.bottleDay.drunk', { ml: s.bottle.consumed_ml }) : null].filter(Boolean).join(' · ') || tr('u7.bottleDay.noted')
+              : s.suggestedMl != null ? tr('u7.bottleDay.usual', { ml: s.suggestedMl }) : tr('u7.bottleDay.qty');
+            const label = s.status === 'done' ? tr('u7.bottleDay.given') : isNext ? tr('u7.bottleDay.next') : s.status === 'missed' ? tr('u7.bottleDay.toFill') : tr('u7.bottleDay.planned');
             return (
               <View key={`${s.at}-${i}`} style={{ flexDirection: 'row', gap: spacing.md }}>
                 {/* fil d'or vertical et perles */}
@@ -149,7 +150,7 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval, don
                 <Tappable
                   bare
                   accessibilityRole="button"
-                  accessibilityLabel={`${label} : biberon de ${slotClock(s.at)}, ${ml}.${s.status === 'done' ? ' Modifier' : s.status === 'planned' ? '' : ' Remplir'}`}
+                  accessibilityLabel={tr(s.status === 'done' ? 'u7.bottleDay.a11yDone' : s.status === 'planned' ? 'u7.bottleDay.a11yPlanned' : 'u7.bottleDay.a11yFill', { label, clock: slotClock(s.at), ml })}
                   disabled={s.status === 'planned'}
                   onPress={() => (s.status === 'done' && s.bottle ? router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, id: s.bottle.id } }) : openSlot(childId, s, timerId))}
                   testID={`bottle-slot-${i}`}
@@ -166,7 +167,7 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval, don
                     </View>
                     {s.status === 'done' ? <Icon name="edit-2" size={15} color={t.colors.textMuted} /> : s.status === 'planned' ? <Icon name="clock" size={15} color={t.colors.textMuted} /> : (
                       <View style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: isNext ? accent : tint(accent, t.isDark ? 0.2 : 0.12) }}>
-                        <Text variant="caption" weight="bold" color={isNext ? t.colors.primaryText : accent}>{isNext ? 'Noter' : 'Remplir'}</Text>
+                        <Text variant="caption" weight="bold" color={isNext ? t.colors.primaryText : accent}>{isNext ? tr('u7.bottleDay.log') : tr('u7.bottleDay.fill')}</Text>
                       </View>
                     )}
                   </View>
@@ -175,7 +176,7 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval, don
             );
           })}
         </View> : null}
-        <Text variant="caption" muted>Heures et quantités reprises de vos propres saisies : vous les vérifiez avant d’enregistrer.</Text>
+        <Text variant="caption" muted>{tr('u7.bottleDay.footer')}</Text>
       </View>
     </View>
   );

@@ -4,13 +4,13 @@ import { formatDate, formatNumber, formatUnit, getLocale, initialLocale, setLoca
 import { availableLocales, LOCALES, proposeLocale } from '@/i18n/locales';
 import type { Msg } from '@/i18n/types';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { scan } = require('../../scripts/i18n-scan.js');
+const { scan, listFiles } = require('../../scripts/i18n-scan.js');
 
 /** Fichiers entièrement traduits : aucun texte affiché ne doit y être écrit en dur (régression bloquée). */
 export const MIGRATED = [
   'src/app/child/[id]/discoveries.tsx', 'src/app/child/[id]/grow.tsx', 'src/app/nearby.tsx', 'src/app/outings.tsx', 'src/features/outings/PlaceVisuals.tsx', 'src/features/outings/FamilyMap.tsx', 'src/features/outings/FamilyMap.web.tsx', 'src/features/outings/TownPicker.tsx', 'src/features/outings/OutingsHomeCard.tsx', 'src/features/discoveries/ChildShortcuts.tsx',
   'src/app/pregnancy/feel.tsx', 'src/app/pregnancy/calendar.tsx', 'src/app/pregnancy/eat.tsx', 'src/features/care/CareSheets.tsx', 'src/features/dailyActions/DailyActions.tsx',
-  'src/features/cocoon/Cocoon.tsx', 'src/lib/domain/cocoon.ts', 'src/components/DaySky.tsx', 'src/app/child/[id]/vaccines.tsx', 'src/app/night/help.tsx', 'src/app/meals/rankings.tsx', 'src/features/recipes/ScorePanel.tsx',
+  'src/features/cocoon/Cocoon.tsx', 'src/lib/domain/cocoon.ts', 'src/app/child/[id]/vaccines.tsx', 'src/app/night/help.tsx', 'src/app/meals/rankings.tsx', 'src/features/recipes/ScorePanel.tsx',
   'src/app/products/index.tsx', 'src/app/products/[id].tsx', 'src/app/products/compare.tsx', 'src/app/admin/products.tsx', 'src/features/products/ProductCard.tsx',
   'src/app/sources.tsx', 'src/app/admin/resources.tsx', 'src/app/admin/import-recipes.tsx',
   'src/app/meals/index.tsx', 'src/app/meals/[slug].tsx', 'src/app/meals/menu.tsx', 'src/app/meals/shopping.tsx', 'src/app/meals/pantry.tsx',
@@ -101,5 +101,8 @@ describe('textes en dur', () => {
   it('aucun texte affiché écrit en dur dans les fichiers déjà traduits', () => {
     const res = scan(MIGRATED); // chemins relatifs à la racine du projet (dossier de lancement de Jest)
     expect(res).toEqual({});
+  });
+  it('appli entièrement en deux langues : aucun texte affiché écrit en dur dans les écrans et composants', () => {
+    expect(scan(listFiles(['src/app', 'src/features', 'src/components']))).toEqual({});
   });
 });

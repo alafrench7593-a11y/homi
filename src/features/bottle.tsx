@@ -15,7 +15,11 @@ import {
 import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
+/** Mention affichée sous les rappels (traduite au moment de l'affichage). */
+export const noRecommendationNote = () => tr('u6.bottle.no_reco');
+/** @deprecated Texte figé en français : utiliser noRecommendationNote(). */
 export const NO_RECOMMENDATION_NOTE = 'L’application ne propose ni quantité ni rythme : elle affiche uniquement ce que vous avez saisi, ou ce que vous a indiqué un professionnel de santé.';
 
 /** Lecture d'une quantité facultative en ml (vide = non renseignée). */
@@ -23,7 +27,7 @@ export function parseMl(text: string): { value: number | null; error: string | n
   const s = text.trim();
   if (!s) return { value: null, error: null };
   const n = Number(s.replace(',', '.'));
-  if (!Number.isInteger(n) || n < 0 || n > 500) return { value: null, error: 'Quantité attendue entre 0 et 500 ml (nombre entier).' };
+  if (!Number.isInteger(n) || n < 0 || n > 500) return { value: null, error: tr('u6.bottle.ml_range') };
   return { value: n, error: null };
 }
 
@@ -40,27 +44,27 @@ export function ReminderChoicePicker({ value, onChange, lastInterval, allowNone 
     setCustom(text);
     if (!text.trim()) return setError(null);
     const m = parseDelay(text);
-    if (m == null) return setError('Durée entre 10 min et 12 h, par exemple 3h30 ou 45 min.');
+    if (m == null) return setError(tr('u6.bottle.delay_range'));
     setError(null);
     onChange({ kind: 'delay', minutes: m });
   };
   return (
     <View style={{ gap: spacing.xs }}>
       <Row wrap>
-        {allowNone && <Chip label="Aucun rappel" icon="bell-off" selected={value.kind === 'none'} onPress={() => { setCustomOpen(false); onChange({ kind: 'none' }); }} />}
+        {allowNone && <Chip label={tr('u6.bottle.no_reminder')} icon="bell-off" selected={value.kind === 'none'} onPress={() => { setCustomOpen(false); onChange({ kind: 'none' }); }} />}
         {lastInterval != null && (
-          <Chip label={`Reprendre l’intervalle précédent (${formatHM(lastInterval)})`} icon="rotate-ccw" selected={value.kind === 'previous'} onPress={() => { setCustomOpen(false); onChange({ kind: 'previous', minutes: lastInterval }); }} />
+          <Chip label={tr('u6.bottle.previous', { interval: formatHM(lastInterval) })} icon="rotate-ccw" selected={value.kind === 'previous'} onPress={() => { setCustomOpen(false); onChange({ kind: 'previous', minutes: lastInterval }); }} />
         )}
       </Row>
-      <Text variant="small" muted>Rappel dans…</Text>
+      <Text variant="small" muted>{tr('u6.bottle.in')}</Text>
       <Row wrap>
         {DELAY_PRESETS.map((p) => (
           <Chip key={p.minutes} label={p.label} selected={!customOpen && value.kind === 'delay' && value.minutes === p.minutes} onPress={() => { setCustomOpen(false); onChange({ kind: 'delay', minutes: p.minutes }); }} />
         ))}
-        <Chip label="Durée personnalisée" icon="edit-3" selected={customOpen} onPress={() => { setCustomOpen(true); if (custom) applyCustom(custom); }} />
+        <Chip label={tr('u6.bottle.custom')} icon="edit-3" selected={customOpen} onPress={() => { setCustomOpen(true); if (custom) applyCustom(custom); }} />
       </Row>
       {customOpen && (
-        <Field label="Durée avant le rappel" placeholder="3h30, 2h15, 45 min…" value={custom} onChangeText={applyCustom} error={error} autoCapitalize="none" autoCorrect={false} />
+        <Field label={tr('u6.bottle.custom_label')} placeholder={tr('u6.bottle.custom_ph')} value={custom} onChangeText={applyCustom} error={error} autoCapitalize="none" autoCorrect={false} />
       )}
     </View>
   );
@@ -75,16 +79,16 @@ export function BottleTimerCard({ child }: { child: Child }) {
   if (isLoading) return <Skeleton kind="list" rows={1} />;
   const passed = !!active && remainingMinutes(active, now) <= 0;
   const line = active
-    ? passed ? `Le rappel choisi pour ${child.first_name} était prévu ${atClock(active.due_at, now)}.` : nextReminderSentence(child.first_name, active.due_at, now)
-    : `Aucun rappel de biberon prévu pour ${child.first_name}.`;
+    ? passed ? tr('u6.bottle.was_due', { name: child.first_name, when: atClock(active.due_at, now) }) : nextReminderSentence(child.first_name, active.due_at, now)
+    : tr('u6.bottle.none_for', { name: child.first_name });
   return (
-    <Card onPress={open} accessibilityLabel={`${line} Ouvrir le rappel biberon.`}>
+    <Card onPress={open} accessibilityLabel={tr('u6.bottle.open_a11y', { line })}>
       <Row>
         <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name={active ? 'bell' : 'bell-off'} size={20} color={passed ? t.colors.danger : t.colors.primary} />
         </View>
         <View style={{ flex: 1, gap: 2 }}>
-          <Text weight="medium">Rappel biberon · {child.first_name}</Text>
+          <Text weight="medium">{tr('u6.bottle.card_title', { name: child.first_name })}</Text>
           <Text variant="small" muted={!active}>{line}</Text>
         </View>
         <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
@@ -100,10 +104,10 @@ export function BottleNotificationSettings() {
   const [asking, setAsking] = useState(false);
   if (!s.supported) {
     return (
-      <Banner tone="info" icon="bell-off" title="Notifications indisponibles ici">
+      <Banner tone="info" icon="bell-off" title={tr('u6.bottle.unavail_title')}>
         {Platform.OS === 'web'
-          ? 'Sur la version web, le rappel s’affiche dans l’application mais aucune notification n’est envoyée. Installez l’application sur votre téléphone pour être prévenu, même application fermée.'
-          : 'Ce support ne permet pas les notifications. Le rappel reste visible dans l’application.'}
+          ? tr('u6.bottle.unavail_web')
+          : tr('u6.bottle.unavail_device')}
       </Banner>
     );
   }
@@ -111,33 +115,33 @@ export function BottleNotificationSettings() {
     <Card>
       <Row>
         <View style={{ flex: 1, gap: 2 }}>
-          <Text weight="medium">Notifications du rappel biberon</Text>
-          <Text variant="small" muted>Sur cet appareil uniquement. Désactivées, le rappel reste affiché dans l’application.</Text>
+          <Text weight="medium">{tr('u6.bottle.notif_title')}</Text>
+          <Text variant="small" muted>{tr('u6.bottle.notif_sub')}</Text>
         </View>
-        <Toggle value={s.enabled} onChange={(v) => { s.setEnabled(v).catch(() => toast('Le réglage des notifications n’a pas pu être modifié. Réessayez.', 'error')); }} label="Notifications du rappel biberon sur cet appareil" />
+        <Toggle value={s.enabled} onChange={(v) => { s.setEnabled(v).catch(() => toast(tr('u6.bottle.notif_err'), 'error')); }} label={tr('u6.bottle.notif_a11y')} />
       </Row>
       {s.enabled ? (
         <Row style={{ marginTop: spacing.sm }}>
           <View style={{ flex: 1, gap: 2 }}>
-            <Text weight="medium">Afficher la quantité dans la notification</Text>
-            <Text variant="small" muted>Désactivé par défaut : la notification ne montre que le prénom et l’heure choisie.</Text>
+            <Text weight="medium">{tr('u6.bottle.qty_title')}</Text>
+            <Text variant="small" muted>{tr('u6.bottle.qty_sub')}</Text>
           </View>
-          <Toggle value={s.showQuantity} onChange={(v) => { s.setShowQuantity(v).catch(() => toast('Le réglage n’a pas pu être modifié. Réessayez.', 'error')); }} label="Afficher la quantité dans la notification" />
+          <Toggle value={s.showQuantity} onChange={(v) => { s.setShowQuantity(v).catch(() => toast(tr('u6.bottle.setting_err'), 'error')); }} label={tr('u6.bottle.qty_title')} />
         </Row>
       ) : null}
-      {s.enabled && s.permission === 'granted' && <Text variant="small" muted style={{ marginTop: spacing.xs }}>Autorisation accordée : vous serez prévenu à l’heure prévue, même application fermée (selon les réglages du téléphone).</Text>}
+      {s.enabled && s.permission === 'granted' && <Text variant="small" muted style={{ marginTop: spacing.xs }}>{tr('u6.bottle.granted')}</Text>}
       {s.enabled && s.permission === 'undetermined' && (
         <View style={{ gap: spacing.xs, marginTop: spacing.sm }}>
-          <Text variant="small">Pour être prévenu à l’heure du rappel, même quand l’application est fermée, le téléphone doit vous demander l’autorisation d’afficher des notifications. Vous pourrez la retirer à tout moment dans les réglages.</Text>
-          <Button label="Autoriser les notifications" icon="bell" size="sm" loading={asking} style={{ alignSelf: 'flex-start' }} onPress={async () => {
+          <Text variant="small">{tr('u6.bottle.ask')}</Text>
+          <Button label={tr('u6.bottle.allow')} icon="bell" size="sm" loading={asking} style={{ alignSelf: 'flex-start' }} onPress={async () => {
             setAsking(true);
-            await s.request().catch(() => toast('La demande d’autorisation n’a pas abouti. Autorisez les notifications dans les réglages du téléphone.', 'error'));
+            await s.request().catch(() => toast(tr('u6.bottle.ask_err'), 'error'));
             setAsking(false);
           }} />
         </View>
       )}
       {s.enabled && s.permission === 'denied' && (
-        <Banner tone="warning" icon="bell-off">{'Les notifications sont refusées dans les réglages du téléphone. Le rappel reste affiché dans l’application ; pour être prévenu, autorisez « Au fil de nous » dans Réglages > Notifications.'}</Banner>
+        <Banner tone="warning" icon="bell-off">{tr('u6.bottle.denied')}</Banner>
       )}
     </Card>
   );

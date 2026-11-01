@@ -16,6 +16,7 @@ import { slotClock, type DaySlot } from '@/lib/domain/bottleDayPlan';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { openSlot } from './bottleDay';
+import { t as tr } from '@/i18n';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -37,10 +38,10 @@ function arcPath(c: number, r: number, a0: number, a1: number) {
 /** « dans 32 min », « dans 1 h 05 », « prévu il y a 12 min ». */
 export function untilLabel(at: string, now: Date): string {
   const m = Math.round((Date.parse(at) - now.getTime()) / 60000);
-  const fmt = (x: number) => (x >= 60 ? `${Math.floor(x / 60)} h ${String(x % 60).padStart(2, '0')}` : `${x} min`);
-  if (m > 0) return `dans ${fmt(m)}`;
-  if (m === 0) return 'maintenant';
-  return `prévu il y a ${fmt(-m)}`;
+  const fmt = (x: number) => (x >= 60 ? tr('u6.clock.hm', { h: Math.floor(x / 60), m: String(x % 60).padStart(2, '0') }) : tr('u6.clock.min', { n: x }));
+  if (m > 0) return tr('u6.clock.in', { delay: fmt(m) });
+  if (m === 0) return tr('u6.clock.now');
+  return tr('u6.clock.ago', { delay: fmt(-m) });
 }
 
 export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: string; slots: DaySlot[]; timerId?: string | null; size?: number }) {
@@ -108,7 +109,7 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
 
   return (
     <View style={{ width: size, height: size, alignSelf: 'center' }} testID="bottle-clock" accessibilityRole="image"
-      accessibilityLabel={`Cadran de la journée. ${slots.filter((s) => s.status === 'done').length} biberons donnés.${next ? ` Prochain biberon à ${slotClock(next.at)}, ${untilLabel(next.at, now)}.` : ''}`}>
+      accessibilityLabel={tr('u6.clock.a11y', { count: slots.filter((s) => s.status === 'done').length }) + (next ? ' ' + tr('u6.clock.a11y_next', { time: slotClock(next.at), until: untilLabel(next.at, now) }) : '')}>
       <Svg width={size} height={size} style={{ position: 'absolute' }}>
         <Defs>
           <LinearGradient id="bcBezel" x1="0" y1="0" x2="1" y2="1">
@@ -212,19 +213,19 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
         <View style={{ alignItems: 'center', paddingHorizontal: 14, paddingVertical: 8 }}>
           {next ? (
             <>
-              <Text variant="caption" weight="bold" color={goldB} style={{ letterSpacing: 1.4, textTransform: 'uppercase', fontSize: 10 }}>Prochain biberon</Text>
+              <Text variant="caption" weight="bold" color={goldB} style={{ letterSpacing: 1.4, textTransform: 'uppercase', fontSize: 10 }}>{tr('u6.clock.next')}</Text>
               <Text weight="bold" color={ink} style={{ fontSize: 30, lineHeight: 34 }} testID="bottle-clock-next">{slotClock(next.at)}</Text>
-              <Text variant="caption" color={muted}>{untilLabel(next.at, now)}{next.suggestedMl != null ? ` · ${next.suggestedMl} ml` : ''}</Text>
+              <Text variant="caption" color={muted}>{untilLabel(next.at, now)}{next.suggestedMl != null ? tr('u6.clock.ml', { n: next.suggestedMl }) : ''}</Text>
               {lastDone ? (
                 <Text variant="caption" color={muted} numberOfLines={1} style={{ fontSize: 10, marginTop: 4 }} testID="bottle-clock-last">
-                  Dernier : {slotClock(lastDone.at)}{lastDrunk != null ? ` · ${lastDrunk} ml` : ''}
+                  {tr('u6.clock.last', { time: slotClock(lastDone.at) })}{lastDrunk != null ? tr('u6.clock.ml', { n: lastDrunk }) : ''}
                 </Text>
               ) : null}
             </>
           ) : (
             <>
               <Icon name="droplet" size={18} color={goldB} />
-              <Text variant="caption" color={muted}>{slots.filter((s) => s.status === 'done').length} biberon(s) aujourd’hui</Text>
+              <Text variant="caption" color={muted}>{tr('u6.clock.today', { count: slots.filter((s) => s.status === 'done').length })}</Text>
             </>
           )}
         </View>
@@ -234,7 +235,7 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
       {slots.map((s, i) => {
         if (s.status === 'planned') return null;
         const p = pt(c, rTrack, dayAngle(new Date(s.at)));
-        const label = s.status === 'done' ? `Modifier le biberon de ${slotClock(s.at)}` : `Noter le biberon de ${slotClock(s.at)}`;
+        const label = s.status === 'done' ? tr('u6.clock.edit', { time: slotClock(s.at) }) : tr('u6.clock.note', { time: slotClock(s.at) });
         return (
           <Pressable key={i} accessibilityRole="button" accessibilityLabel={label} testID={`bottle-clock-slot-${i}`} hitSlop={6}
             onPress={() => (s.status === 'done' && s.bottle ? router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, id: s.bottle.id } }) : openSlot(childId, s, timerId))}

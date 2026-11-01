@@ -63,7 +63,7 @@ export default function Tools() {
     else if (activeFilter !== 'all') list = list.filter((x) => x.theme === activeFilter);
     return list;
   }, [catalog, q, activeFilter, favIds]);
-  const groups = useMemo(() => (activeFilter === 'fav' ? [{ key: 'fav' as const, title: 'Mes raccourcis', short: '', items: visible }] : groupByTheme(visible)), [visible, activeFilter]);
+  const groups = useMemo(() => (activeFilter === 'fav' ? [{ key: 'fav' as const, title: tr('u3.tools.shortcuts'), short: '', items: visible }] : groupByTheme(visible)), [visible, activeFilter]);
   const urgent = catalog.find((x) => x.urgent);
   // Tous les outils restent visibles : ceux des autres profils (chaque enfant, grossesse, moi) sont listés ensuite
   const { setSubject } = useActiveSubject();
@@ -85,7 +85,7 @@ export default function Tools() {
   function toggleFav(tool: CatalogTool) {
     const on = !favIds.includes(tool.id);
     setFavIds(toggleFavorite(favIds, tool.id));
-    toast(on ? `« ${tool.label} » ajouté à vos raccourcis.` : `« ${tool.label} » retiré des raccourcis.`);
+    toast(on ? tr('u3.tools.favAdd', { label: tool.label }) : tr('u3.tools.favDel', { label: tool.label }));
   }
   const statusOf = (tool: CatalogTool) => { const k = statusKeyFor(tool); return k ? statuses[k] : undefined; };
 
@@ -101,24 +101,24 @@ export default function Tools() {
       {/* Ajout rapide (anciennement derrière le bouton « + ») : toujours à portée */}
       {!q && activeFilter === 'all' && !simple ? (
         <View style={{ gap: spacing.xs }}>
-          <Text variant="heading" accessibilityRole="header">Ajouter maintenant</Text>
+          <Text variant="heading" accessibilityRole="header">{tr('u3.tools.addNow')}</Text>
           <QuickAddGrid compact />
         </View>
       ) : null}
 
-      <Field label="Rechercher un outil" value={q} onChangeText={setQ} placeholder="Biberon, relais, vaccins…" returnKeyType="search" autoCorrect={false} accessibilityLabel="Rechercher un outil" />
+      <Field label={tr('u3.tools.search')} value={q} onChangeText={setQ} placeholder={tr('u3.tools.searchPh')} returnKeyType="search" autoCorrect={false} accessibilityLabel={tr('u3.tools.search')} />
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }} style={{ marginHorizontal: -2, flexGrow: 0 }} accessibilityRole="tablist" accessibilityLabel="Filtrer les outils">
-        <Chip label="Tous" selected={activeFilter === 'all'} onPress={() => { haptic('selection'); setFilter('all'); }} />
-        <Chip label={`Favoris${favs.length ? ` (${favs.length})` : ''}`} icon="star" selected={activeFilter === 'fav'} onPress={() => { haptic('selection'); setFilter('fav'); }} />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }} style={{ marginHorizontal: -2, flexGrow: 0 }} accessibilityRole="tablist" accessibilityLabel={tr('u3.tools.filterTools')}>
+        <Chip label={tr('u3.tools.all')} selected={activeFilter === 'all'} onPress={() => { haptic('selection'); setFilter('all'); }} />
+        <Chip label={`${tr('u3.tools.favs')}${favs.length ? ` (${favs.length})` : ''}`} icon="star" selected={activeFilter === 'fav'} onPress={() => { haptic('selection'); setFilter('fav'); }} />
         {THEMES.filter((th) => present.has(th.key)).map((th) => (
-          <Chip key={th.key} label={th.short} selected={activeFilter === th.key} onPress={() => { haptic('selection'); setFilter(activeFilter === th.key ? 'all' : th.key); }} accessibilityLabel={`Filtrer : ${th.title}`} />
+          <Chip key={th.key} label={th.short} selected={activeFilter === th.key} onPress={() => { haptic('selection'); setFilter(activeFilter === th.key ? 'all' : th.key); }} accessibilityLabel={tr('u3.tools.filter', { title: th.title })} />
         ))}
       </ScrollView>
 
       {activeFilter === 'all' && !q && favs.length ? (
         <Appear kind="soft" delay={0.05} style={{ gap: spacing.xs }}>
-          <Text variant="heading" accessibilityRole="header">Mes raccourcis</Text>
+          <Text variant="heading" accessibilityRole="header">{tr('u3.tools.shortcuts')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }}>
             {favs.map((tool) => <ToolShortcut key={tool.id} tool={tool} status={statusOf(tool)} />)}
           </ScrollView>
@@ -126,11 +126,11 @@ export default function Tools() {
       ) : null}
 
       {profileQ.isLoading && !profile ? <Skeleton kind="card" rows={4} /> : profileQ.isError && !profile ? (
-        <ErrorView error={profileQ.error} onRetry={() => void profileQ.refetch()} title="Impossible d’afficher vos outils" />
+        <ErrorView error={profileQ.error} onRetry={() => void profileQ.refetch()} title={tr('u3.tools.errTools')} />
       ) : !visible.length && !otherGroups.length ? (
         activeFilter === 'fav' && !q
-          ? <EmptyState icon="star" title="Aucun raccourci pour l’instant" body="Touchez l’étoile d’un outil pour le retrouver ici et en haut de cette page." />
-          : <EmptyState icon="search" title="Aucun outil trouvé" body="Essayez un autre mot, ou retirez le filtre." action={{ label: 'Tout afficher', onPress: () => { setQ(''); setFilter('all'); } }} />
+          ? <EmptyState icon="star" title={tr('u3.tools.noShortcut')} body={tr('u3.tools.noShortcutB')} />
+          : <EmptyState icon="search" title={tr('u3.tools.noTool')} body={tr('u3.tools.noToolB')} action={{ label: tr('u3.tools.showAll'), onPress: () => { setQ(''); setFilter('all'); } }} />
       ) : groups.map((g, gi) => (
         <Appear key={g.key} kind="soft" delay={0.05 + Math.min(gi, 6) * 0.06} style={{ gap: spacing.sm }}>
           <SectionHead theme={g.key === 'fav' ? null : g.key} title={g.title} count={g.items.length} index={gi} />
@@ -151,8 +151,8 @@ export default function Tools() {
       {otherGroups.length && (!simple || q || open.__others) ? (
         <View testID="tools-other-profiles" style={{ gap: spacing.md, marginTop: spacing.md }}>
           <View style={{ gap: 2 }}>
-            <Text variant="title" accessibilityRole="header">Outils des autres profils</Text>
-            <Text variant="small" muted>Touchez un outil : le bon profil est sélectionné avant de l’ouvrir, les données ne sont jamais mélangées.</Text>
+            <Text variant="title" accessibilityRole="header">{tr('u3.tools.others')}</Text>
+            <Text variant="small" muted>{tr('u3.tools.othersB')}</Text>
           </View>
           {otherGroups.map((o) => (
             <View key={o.key} style={{ gap: spacing.sm }} testID={`tools-for-${o.key}`}>
@@ -180,7 +180,7 @@ function SectionHead({ theme, title, count, index }: { theme: ToolTheme | null; 
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minHeight: 36 }}>
       {theme ? <ToolGlyph theme={theme} icon={THEME_ICON[theme]} size={32} play={play} /> : <Icon name="star" size={20} color={t.colors.primary} />}
       <Text variant="heading" accessibilityRole="header" style={{ flex: 1 }}>{title}</Text>
-      <Text variant="caption" muted accessibilityLabel={`${count} outil${count > 1 ? 's' : ''}`}>{count}</Text>
+      <Text variant="caption" muted accessibilityLabel={tr('u3.tools.count', { count })}>{count}</Text>
     </View>
   );
 }
@@ -198,12 +198,12 @@ function UrgentStrip({ tool }: { tool: CatalogTool }) {
   return (
     <Tappable
       accessibilityRole="button"
-      accessibilityLabel="Urgences : 15, 112, 3114. Ouvrir les numéros utiles."
+      accessibilityLabel={tr('u3.tools.urgA11y')}
       onPress={() => router.push('/emergency')}
       style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 52, paddingHorizontal: spacing.md, borderRadius: radius.md, backgroundColor: pressed ? tint(c, 0.2) : t.colors.dangerSoft, borderWidth: 1, borderColor: tint(c, 0.35) })}
     >
       <Icon name="life-buoy" size={20} color={c} />
-      <Text weight="bold" style={{ flex: 1, color: c }}>Urgences · 15 · 112 · 3114</Text>
+      <Text weight="bold" style={{ flex: 1, color: c }}>{tr('u3.tools.urg')}</Text>
       <Icon name="chevron-right" size={18} color={c} />
     </Tappable>
   );

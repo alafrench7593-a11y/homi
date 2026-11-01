@@ -10,12 +10,14 @@ import { backend, eq } from '@/lib/backend';
 import { useExpectedBabies, useInvalidate, useJourneyState, usePregnancies } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { PregnancyForm, validatePregnancy, type PregnancyDraft } from '@/features/profiles';
-import { babiesCount, multiplicityLabel } from '@/lib/domain/pregnancy';
-import { addDays, formatDateFr, todayISO } from '@/lib/domain/dates';
+import { babiesCount } from '@/lib/domain/pregnancy';
+import { addDays, todayISO } from '@/lib/domain/dates';
 import type { ExpectedBaby, Pregnancy } from '@/lib/types';
 import { toFrDate } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
-import { t as tr } from '@/i18n';
+import { t as tr, formatDate } from '@/i18n';
+
+const multLabel = (m: string) => tr(`u2.preg.mult_${m}` as never);
 
 function toDraft(p: Pregnancy, babies: ExpectedBaby[]): PregnancyDraft {
   const lmpMode = p.due_date_source === 'lmp' && !!p.lmp_date;
@@ -45,23 +47,23 @@ export default function EditPregnancy() {
   }, [draft, pregnancy, babies]);
 
   if (pregnanciesQ.isLoading && !pregnanciesQ.data) {
-    return <Screen back title="Modifier la grossesse"><Skeleton kind="card" rows={3} /></Screen>;
+    return <Screen back title={tr('u2.pedit.title')}><Skeleton kind="card" rows={3} /></Screen>;
   }
   if (pregnanciesQ.isError && !pregnanciesQ.data) {
-    return <Screen back title="Modifier la grossesse"><ErrorView error={pregnanciesQ.error} onRetry={() => void pregnanciesQ.refetch()} /></Screen>;
+    return <Screen back title={tr('u2.pedit.title')}><ErrorView error={pregnanciesQ.error} onRetry={() => void pregnanciesQ.refetch()} /></Screen>;
   }
   if (!pregnancy) {
     return (
-      <Screen back title="Grossesse">
-        <EmptyState icon="heart" title="Aucune grossesse en cours" action={{ label: 'Ajouter une grossesse', onPress: () => router.replace({ pathname: '/profiles/new', params: { kind: 'pregnancy' } }) }} />
+      <Screen back title={tr('u2.pedit.pregnancy')}>
+        <EmptyState icon="heart" title={tr('u2.pedit.none')} action={{ label: tr('u2.pedit.add'), onPress: () => router.replace({ pathname: '/profiles/new', params: { kind: 'pregnancy' } }) }} />
       </Screen>
     );
   }
   if (babiesQ.isError && !babies) {
-    return <Screen back title="Modifier la grossesse"><ErrorView error={babiesQ.error} onRetry={() => void babiesQ.refetch()} /></Screen>;
+    return <Screen back title={tr('u2.pedit.title')}><ErrorView error={babiesQ.error} onRetry={() => void babiesQ.refetch()} /></Screen>;
   }
   if (!draft || !babies) {
-    return <Screen back title="Modifier la grossesse"><Skeleton kind="card" rows={3} /></Screen>;
+    return <Screen back title={tr('u2.pedit.title')}><Skeleton kind="card" rows={3} /></Screen>;
   }
 
   async function save() {
@@ -72,8 +74,8 @@ export default function EditPregnancy() {
     const n = babiesCount(draft.multiplicity);
     const removed = babies.filter((b) => b.position > n);
     if (removed.some((b) => b.notes)) {
-      const names = removed.map((b) => b.nickname ?? `Bébé ${b.position}`).join(', ');
-      if (!(await confirm('Retirer des notes ?', `Les notes de ${names} seront supprimées.`, 'Continuer'))) return;
+      const names = removed.map((b) => b.nickname ?? tr('u2.pedit.baby_n', { n: b.position })).join(', ');
+      if (!(await confirm(tr('u2.pedit.remove_notes'), tr('u2.pedit.notes_deleted', { names }), tr('u2.pedit.continue')))) return;
     }
     setSaving(true);
     setError(null);
@@ -93,21 +95,21 @@ export default function EditPregnancy() {
       }
       inv('pregnancies', 'expected_babies');
       haptic('success');
-      toast('Grossesse mise à jour.');
+      toast(tr('u2.pedit.updated'));
       router.back();
     } catch (e) {
-      setError(friendlyError(e, 'Enregistrement impossible. Réessayez dans un instant.'));
+      setError(friendlyError(e, tr('u2.pedit.save_failed')));
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <Screen back title="Modifier la grossesse" subtitle={`${multiplicityLabel(pregnancy.multiplicity)} · terme actuel le ${formatDateFr(pregnancy.due_date)}`}
-      action={{ label: 'Enregistrer les modifications', icon: 'check', onPress: () => void save(), disabled: saving, testID: 'preg-edit-save' }}>
+    <Screen back title={tr('u2.pedit.title')} subtitle={tr('u2.pedit.subtitle', { mult: multLabel(pregnancy.multiplicity), date: formatDate(pregnancy.due_date, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) })}
+      action={{ label: tr('u2.pedit.save'), icon: 'check', onPress: () => void save(), disabled: saving, testID: 'preg-edit-save' }}>
       {error ? <Banner tone="danger">{error}</Banner> : null}
       <PregnancyForm value={draft} onChange={setDraft} errors={errors} />
-      <Text variant="caption" muted>La date retenue reste celle donnée par votre sage-femme ou votre médecin : l’application l’affiche sans l’interpréter.</Text>
+      <Text variant="caption" muted>{tr('u2.pedit.date_note')}</Text>
 
       <SectionTitle title={tr('pj.end.title')} />
       <Card tone="soft">

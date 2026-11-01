@@ -22,22 +22,23 @@ import { Tappable } from '@/components/Tappable';
 import { tint } from '@/components/ToolGlyph';
 import { countdown } from '@/lib/domain/dayThread';
 import { spacing } from '@/theme/tokens';
+import { t as tr, formatDate } from '@/i18n';
 
-const KINDS: { value: AppointmentKind; label: string; icon: IconName }[] = [
-  { value: 'consultation', label: 'Consultation', icon: 'user' },
-  { value: 'ultrasound', label: 'Échographie', icon: 'radio' },
-  { value: 'exam', label: 'Examen', icon: 'clipboard' },
-  { value: 'blood_test', label: 'Prise de sang', icon: 'droplet' },
-  { value: 'postnatal', label: 'Visite postnatale', icon: 'heart' },
-  { value: 'perineal_rehab', label: 'Rééducation', icon: 'feather' },
-  { value: 'pediatric', label: 'Pédiatre', icon: 'smile' },
-  { value: 'vaccination', label: 'Vaccin', icon: 'shield' },
-  { value: 'other', label: 'Autre', icon: 'calendar' },
+const kinds = (): { value: AppointmentKind; label: string; icon: IconName }[] => [
+  { value: 'consultation', label: tr('u1.appt.kind.consultation'), icon: 'user' },
+  { value: 'ultrasound', label: tr('u1.appt.kind.ultrasound'), icon: 'radio' },
+  { value: 'exam', label: tr('u1.appt.kind.exam'), icon: 'clipboard' },
+  { value: 'blood_test', label: tr('u1.appt.kind.blood_test'), icon: 'droplet' },
+  { value: 'postnatal', label: tr('u1.appt.kind.postnatal'), icon: 'heart' },
+  { value: 'perineal_rehab', label: tr('u1.appt.kind.perineal_rehab'), icon: 'feather' },
+  { value: 'pediatric', label: tr('u1.appt.kind.pediatric'), icon: 'smile' },
+  { value: 'vaccination', label: tr('u1.appt.kind.vaccination'), icon: 'shield' },
+  { value: 'other', label: tr('u1.appt.kind.other'), icon: 'calendar' },
 ];
-const kindMeta = (k: AppointmentKind) => KINDS.find((x) => x.value === k) ?? KINDS[KINDS.length - 1];
+const kindMeta = (k: AppointmentKind) => { const all = kinds(); return all.find((x) => x.value === k) ?? all[all.length - 1]; };
 
-const LEADS: { value: string; label: string }[] = [
-  { value: '0', label: 'Aucun' }, { value: '60', label: '1 h avant' }, { value: '180', label: '3 h avant' }, { value: '1440', label: 'La veille' },
+const leads = (): { value: string; label: string }[] => [
+  { value: '0', label: tr('u1.appt.leadNone') }, { value: '60', label: tr('u1.appt.lead1h') }, { value: '180', label: tr('u1.appt.lead3h') }, { value: '1440', label: tr('u1.appt.leadDay') },
 ];
 
 type Concern = 'me' | 'pregnancy' | `child:${string}`;
@@ -47,7 +48,7 @@ interface Draft {
 }
 
 const pad = (n: number) => String(n).padStart(2, '0');
-const fmtWhen = (iso: string) => new Date(iso).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+const fmtWhen = (iso: string) => formatDate(iso, { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
 function emptyDraft(concern: Concern): Draft {
   return { id: null, kind: 'consultation', title: '', date: '', time: '', location: '', notes: '', questions: '', concern, lead: 60, private: false };
@@ -88,12 +89,12 @@ export default function AppointmentsScreen() {
   const reminderFor = (id: string) => reminders?.find((r) => r.appointment_id === id);
 
   const concerns: { value: Concern; label: string }[] = [
-    { value: 'me', label: 'Moi' },
-    ...(pregnancy ? [{ value: 'pregnancy' as Concern, label: 'Grossesse' }] : []),
+    { value: 'me', label: tr('u1.appt.me') },
+    ...(pregnancy ? [{ value: 'pregnancy' as Concern, label: tr('u1.appt.pregnancy') }] : []),
     ...(children ?? []).map((c) => ({ value: `child:${c.id}` as Concern, label: c.first_name })),
   ];
   const concernLabel = (a: Appointment) =>
-    a.child_id ? children?.find((c) => c.id === a.child_id)?.first_name ?? 'Enfant' : a.pregnancy_id ? 'Grossesse' : a.for_parent ? 'Moi' : null;
+    a.child_id ? children?.find((c) => c.id === a.child_id)?.first_name ?? tr('u1.appt.child') : a.pregnancy_id ? tr('u1.appt.pregnancy') : a.for_parent ? tr('u1.appt.me') : null;
 
   // Ouverture directe depuis l'espace post-partum : nouveau rendez-vous postnatal, privé par défaut
   const params = useLocalSearchParams<{ new?: string; title?: string; at?: string; child?: string }>();
@@ -107,7 +108,7 @@ export default function AppointmentsScreen() {
         date: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`, time: `${pad(d.getHours())}:${pad(d.getMinutes())}` });
     }
   }, [params.new, params.at]); // eslint-disable-line react-hooks/exhaustive-deps
-  const focusLabel = focus ? (focus === 'pregnancy' ? 'Grossesse' : children?.find((c) => c.id === focus.slice(6))?.first_name ?? null) : null;
+  const focusLabel = focus ? (focus === 'pregnancy' ? tr('u1.appt.pregnancy') : children?.find((c) => c.id === focus.slice(6))?.first_name ?? null) : null;
 
   function openNew() {
     setErrors({});
@@ -131,9 +132,9 @@ export default function AppointmentsScreen() {
     const e: Record<string, string> = {};
     const iso = frToISO(draft.date);
     const m = draft.time.trim().match(/^(\d{1,2})[h:.]?(\d{2})?$/);
-    if (!draft.title.trim()) e.title = 'Donnez un nom à ce rendez-vous.';
-    if (!iso) e.date = 'Format attendu : JJ/MM/AAAA.';
-    if (!m || Number(m[1]) > 23 || Number(m[2] ?? 0) > 59) e.time = 'Format attendu : 14h30.';
+    if (!draft.title.trim()) e.title = tr('u1.appt.errTitle');
+    if (!iso) e.date = tr('u1.appt.errDate');
+    if (!m || Number(m[1]) > 23 || Number(m[2] ?? 0) > 59) e.time = tr('u1.appt.errTime');
     setErrors(e);
     if (Object.keys(e).length || !iso || !m) return;
     const [y, mo, da] = iso.split('-').map(Number);
@@ -159,26 +160,26 @@ export default function AppointmentsScreen() {
         appt = c;
         if (!hid) inv('memberships');
       }
-      if (draft.lead && notificationsSupported) await askNotificationPermission('Pour vous rappeler ce rendez-vous à l’avance.').catch(() => undefined);
+      if (draft.lead && notificationsSupported) await askNotificationPermission(tr('u1.appt.permWhy')).catch(() => undefined);
       await setAppointmentReminder(appt, draft.lead, reminders ?? []);
       inv('appointments', 'reminders');
       haptic('success');
-      toast(draft.id ? 'Rendez-vous modifié.' : 'Rendez-vous ajouté.');
+      toast(draft.id ? tr('u1.appt.modified') : tr('u1.appt.added'));
       setDraft(null);
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Enregistrement impossible.', 'error');
+      toast(err instanceof Error ? err.message : tr('u1.appt.saveFailed'), 'error');
     } finally {
       setSaving(false);
     }
   }
 
   async function remove(a: Appointment) {
-    if (!(await confirm('Supprimer ce rendez-vous ?', `« ${a.title} » et son rappel éventuel seront supprimés.`, 'Supprimer'))) return;
+    if (!(await confirm(tr('u1.appt.deleteTitle'), tr('u1.appt.deleteBody', { title: a.title }), tr('u1.appt.delete')))) return;
     await backend.remove('reminders', [eq('appointment_id', a.id)]).catch(() => undefined);
     await backend.remove('appointments', [eq('id', a.id)]);
     inv('appointments', 'reminders');
     setDraft(null);
-    toast('Rendez-vous supprimé.');
+    toast(tr('u1.appt.deleted'));
   }
 
   async function addQuestion(a: Appointment) {
@@ -189,9 +190,9 @@ export default function AppointmentsScreen() {
       inv('appointments');
       haptic('success');
       setNewQ('');
-      toast('Question ajoutée.');
+      toast(tr('u1.appt.questionAdded'));
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Enregistrement impossible.', 'error');
+      toast(err instanceof Error ? err.message : tr('u1.appt.saveFailed'), 'error');
     }
   }
 
@@ -208,17 +209,17 @@ export default function AppointmentsScreen() {
               <Icon name={meta.icon} color={t.colors.primary} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>Prochain rendez-vous</Text>
+              <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>{tr('u1.appt.next')}</Text>
               <Text weight="bold" style={{ fontSize: 26, lineHeight: 31 }} color={t.colors.primary} testID="appt-countdown">{cd.replace(/^./, (c) => c.toUpperCase())}</Text>
             </View>
           </Row>
-          <Tappable bare onPress={() => openEdit(a)} accessibilityRole="button" accessibilityLabel={`${a.title}, ${fmtWhen(a.starts_at)}. Modifier`}>
+          <Tappable bare onPress={() => openEdit(a)} accessibilityRole="button" accessibilityLabel={tr('u1.appt.editA11y', { title: a.title, when: fmtWhen(a.starts_at) })}>
             <Text variant="heading">{a.title}</Text>
             <Text variant="small">{fmtWhen(a.starts_at)}</Text>
             <Text variant="caption" muted>{[meta.label, who, a.location_label].filter(Boolean).join(' · ')}</Text>
           </Tappable>
           <View style={{ gap: 6, marginTop: spacing.xs }}>
-            <Text variant="label">Questions à poser {a.questions.length ? `· ${a.questions.filter((_, i) => asked[`${a.id}:${i}`]).length}/${a.questions.length}` : ''}</Text>
+            <Text variant="label">{tr('u1.appt.questionsToAsk')} {a.questions.length ? `· ${a.questions.filter((_, i) => asked[`${a.id}:${i}`]).length}/${a.questions.length}` : ''}</Text>
             {a.questions.map((q, i) => {
               const k = `${a.id}:${i}`;
               const on = !!asked[k];
@@ -234,9 +235,9 @@ export default function AppointmentsScreen() {
             })}
             <Row style={{ alignItems: 'flex-end' }}>
               <View style={{ flex: 1 }}>
-                <Field label="Nouvelle question" optional value={newQ} onChangeText={setNewQ} placeholder="Ce qui vous préoccupe…" onSubmitEditing={() => void addQuestion(a)} returnKeyType="done" testID="appt-q-new" />
+                <Field label={tr('u1.appt.newQuestion')} optional value={newQ} onChangeText={setNewQ} placeholder={tr('u1.appt.newQuestionPh')} onSubmitEditing={() => void addQuestion(a)} returnKeyType="done" testID="appt-q-new" />
               </View>
-              <Button label="Ajouter" icon="plus" size="sm" variant="secondary" disabled={!newQ.trim()} onPress={() => void addQuestion(a)} testID="appt-q-add" />
+              <Button label={tr('u1.appt.add')} icon="plus" size="sm" variant="secondary" disabled={!newQ.trim()} onPress={() => void addQuestion(a)} testID="appt-q-add" />
             </Row>
           </View>
         </View>
@@ -249,14 +250,14 @@ export default function AppointmentsScreen() {
     const who = concernLabel(a);
     const rem = reminderFor(a.id);
     return (
-      <Card key={a.id} onPress={() => openEdit(a)} accessibilityLabel={`${a.title}, ${fmtWhen(a.starts_at)}. Modifier`} style={faded ? { opacity: 0.8 } : undefined}>
+      <Card key={a.id} onPress={() => openEdit(a)} accessibilityLabel={tr('u1.appt.editA11y', { title: a.title, when: fmtWhen(a.starts_at) })} style={faded ? { opacity: 0.8 } : undefined}>
         <Row style={{ alignItems: 'flex-start' }}>
           <Icon name={meta.icon} color={t.colors.lavender} />
           <View style={{ flex: 1, gap: 2 }}>
             <Text weight="bold">{a.title}</Text>
             <Text variant="small">{fmtWhen(a.starts_at)}</Text>
             <Text variant="caption" muted>{[meta.label, who, a.location_label].filter(Boolean).join(' · ')}</Text>
-            {a.questions.length > 0 && <Text variant="caption" muted>{a.questions.length} question{a.questions.length > 1 ? 's' : ''} à poser</Text>}
+            {a.questions.length > 0 && <Text variant="caption" muted>{tr('u1.appt.questionsCount', { count: a.questions.length })}</Text>}
           </View>
           {rem && !faded && <Icon name="bell" size={16} color={t.colors.textMuted} />}
         </Row>
@@ -265,75 +266,75 @@ export default function AppointmentsScreen() {
   }
 
   return (
-    <Screen back title="Rendez-vous" subtitle="Consultations, échographies, examens, questions à poser."
-      action={{ label: 'Ajouter un rendez-vous', icon: 'plus', onPress: openNew, testID: 'appointments-add' }}>
-      {loadFailed ? <ErrorView error={appointmentsQ.error} onRetry={() => void appointmentsQ.refetch()} title="Impossible d’afficher vos rendez-vous" /> : null}
+    <Screen back title={tr('u1.appt.title')} subtitle={tr('u1.appt.subtitle')}
+      action={{ label: tr('u1.appt.addAppt'), icon: 'plus', onPress: openNew, testID: 'appointments-add' }}>
+      {loadFailed ? <ErrorView error={appointmentsQ.error} onRetry={() => void appointmentsQ.refetch()} title={tr('u1.appt.loadError')} /> : null}
       {!isLoading && !loadFailed ? (() => {
         const next = upcoming[0];
         const days = next ? Math.round((new Date(next.starts_at).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 86400000) : null;
         return (
-          <TodaySummary title="En bref" items={[
-            { icon: 'clock', value: days == null ? '—' : days <= 0 ? 'Aujourd’hui' : days === 1 ? 'Demain' : `J-${days}`, label: next ? `Prochain : ${next.title}` : 'Prochain rendez-vous' },
-            { icon: 'calendar', value: String(upcoming.length), label: 'À venir' },
-            { icon: 'help-circle', value: String(upcoming.reduce((n, a) => n + a.questions.length, 0)), label: 'Questions à poser' },
+          <TodaySummary title={tr('u1.appt.brief')} items={[
+            { icon: 'clock', value: days == null ? '—' : days <= 0 ? tr('u1.appt.today') : days === 1 ? tr('u1.appt.tomorrow') : tr('u1.appt.inDays', { days }), label: next ? tr('u1.appt.nextNamed', { title: next.title }) : tr('u1.appt.next') },
+            { icon: 'calendar', value: String(upcoming.length), label: tr('u1.appt.upcoming') },
+            { icon: 'help-circle', value: String(upcoming.reduce((n, a) => n + a.questions.length, 0)), label: tr('u1.appt.questionsToAsk') },
           ]} />
         );
       })() : null}
       {focusLabel ? (
         <Row wrap>
-          <Chip label={`Pour ${focusLabel}`} selected={!everyone} onPress={() => setEveryone(false)} />
-          <Chip label="Toute la famille" selected={everyone} onPress={() => setEveryone(true)} />
+          <Chip label={tr('u1.appt.forName', { name: focusLabel })} selected={!everyone} onPress={() => setEveryone(false)} />
+          <Chip label={tr('u1.appt.wholeFamily')} selected={everyone} onPress={() => setEveryone(true)} />
         </Row>
       ) : null}
       {upcoming[0] ? NextCard({ a: upcoming[0] }) : null}
-      {upcoming.length > 1 ? <SectionTitle title="Ensuite" /> : null}
+      {upcoming.length > 1 ? <SectionTitle title={tr('u1.appt.then')} /> : null}
       {upcoming.slice(1).map((a) => renderAppt(a))}
-      {!isLoading && !loadFailed && !upcoming.length && <EmptyStateCard illustration="leaf" title="Aucun rendez-vous à venir" text="Notez vos prochains rendez-vous pour les retrouver ici, avec les questions que vous voulez poser." />}
+      {!isLoading && !loadFailed && !upcoming.length && <EmptyStateCard illustration="leaf" title={tr('u1.appt.emptyTitle')} text={tr('u1.appt.emptyText')} />}
 
       {past.length > 0 && (
         <>
-          <SectionTitle title="Passés" action={past.length > 5 ? (showAllPast ? 'Réduire' : 'Tout afficher') : undefined} onAction={() => setShowAllPast((v) => !v)} />
+          <SectionTitle title={tr('u1.appt.past')} action={past.length > 5 ? (showAllPast ? tr('u1.appt.reduce') : tr('u1.appt.showAll')) : undefined} onAction={() => setShowAllPast((v) => !v)} />
           {(showAllPast ? past : past.slice(0, 5)).map((a) => renderAppt(a, true))}
         </>
       )}
 
-      <Sheet visible={!!draft} onClose={() => setDraft(null)} title={draft?.id ? 'Modifier le rendez-vous' : 'Nouveau rendez-vous'}>
+      <Sheet visible={!!draft} onClose={() => setDraft(null)} title={draft?.id ? tr('u1.appt.editTitle') : tr('u1.appt.newTitle')}>
         {draft && (
           <>
-            <Text variant="label">Type</Text>
+            <Text variant="label">{tr('u1.appt.type')}</Text>
             <Row wrap>
-              {KINDS.map((k) => (
-                <Chip key={k.value} label={k.label} icon={k.icon} selected={draft.kind === k.value} onPress={() => { set('kind', k.value); if (!draft.title.trim() || KINDS.some((x) => x.label === draft.title)) set('title', k.label); }} />
+              {kinds().map((k) => (
+                <Chip key={k.value} label={k.label} icon={k.icon} selected={draft.kind === k.value} onPress={() => { set('kind', k.value); if (!draft.title.trim() || kinds().some((x) => x.label === draft.title)) set('title', k.label); }} />
               ))}
             </Row>
-            <Field label="Intitulé" value={draft.title} onChangeText={(v) => set('title', v)} error={errors.title} maxLength={120} placeholder="Échographie du 2e trimestre" />
+            <Field label={tr('u1.appt.fieldTitle')} value={draft.title} onChangeText={(v) => set('title', v)} error={errors.title} maxLength={120} placeholder={tr('u1.appt.titlePh')} />
             <Row style={{ alignItems: 'flex-start' }}>
-              <View style={{ flex: 3 }}><Field label="Date" value={draft.date} onChangeText={(v) => set('date', v)} error={errors.date} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" /></View>
-              <View style={{ flex: 2 }}><Field label="Heure" value={draft.time} onChangeText={(v) => set('time', v)} error={errors.time} placeholder="14h30" keyboardType="numbers-and-punctuation" /></View>
+              <View style={{ flex: 3 }}><Field label={tr('u1.appt.date')} value={draft.date} onChangeText={(v) => set('date', v)} error={errors.date} placeholder={tr('u1.appt.datePh')} keyboardType="numbers-and-punctuation" /></View>
+              <View style={{ flex: 2 }}><Field label={tr('u1.appt.time')} value={draft.time} onChangeText={(v) => set('time', v)} error={errors.time} placeholder={tr('u1.appt.timePh')} keyboardType="numbers-and-punctuation" /></View>
             </Row>
             {concerns.length > 1 && (
               <>
-                <Text variant="label">Pour qui ?</Text>
+                <Text variant="label">{tr('u1.appt.forWhom')}</Text>
                 <Row wrap>{concerns.map((c) => <Chip key={c.value} label={c.label} selected={draft.concern === c.value} onPress={() => set('concern', c.value)} />)}</Row>
               </>
             )}
             {draft.concern === 'me' ? (
               <Row style={{ alignItems: 'flex-start' }}>
                 <View style={{ flex: 1 }}>
-                  <Text weight="medium">Visible uniquement par moi</Text>
-                  <Text variant="caption" muted>Sinon, ce rendez-vous apparaît aux membres du foyer qui ont accès à la santé.</Text>
+                  <Text weight="medium">{tr('u1.appt.privateOnly')}</Text>
+                  <Text variant="caption" muted>{tr('u1.appt.privateD')}</Text>
                 </View>
-                <Toggle label="Visible uniquement par moi" value={draft.private} onChange={(v) => set('private', v)} />
+                <Toggle label={tr('u1.appt.privateOnly')} value={draft.private} onChange={(v) => set('private', v)} />
               </Row>
             ) : null}
-            <Field label="Lieu" optional value={draft.location} onChangeText={(v) => set('location', v)} maxLength={160} placeholder="Maternité, cabinet…" />
-            <Field label="Questions à poser" optional value={draft.questions} onChangeText={(v) => set('questions', v)} multiline hint="Une question par ligne." style={{ minHeight: 90, textAlignVertical: 'top' }} />
-            <Field label="Notes" optional value={draft.notes} onChangeText={(v) => set('notes', v)} multiline maxLength={4000} style={{ minHeight: 70, textAlignVertical: 'top' }} />
-            <Text variant="label">Rappel</Text>
-            <Segmented label="Rappel" value={String(draft.lead)} onChange={(v) => set('lead', Number(v) as ReminderLead)} options={LEADS} />
-            {draft.lead !== 0 && !notificationsSupported && <Banner tone="info">{'Les rappels s’affichent sur votre téléphone (iOS ou Android). Sur le web, ils sont enregistrés mais ne sonnent pas.'}</Banner>}
-            <Button label={draft.id ? 'Enregistrer les modifications' : 'Ajouter'} onPress={save} loading={saving} full />
-            {draft.id && <Button label="Supprimer ce rendez-vous" variant="ghost" onPress={() => { const a = appointments?.find((x) => x.id === draft.id); if (a) remove(a); }} />}
+            <Field label={tr('u1.appt.place')} optional value={draft.location} onChangeText={(v) => set('location', v)} maxLength={160} placeholder={tr('u1.appt.placePh')} />
+            <Field label={tr('u1.appt.questionsToAsk')} optional value={draft.questions} onChangeText={(v) => set('questions', v)} multiline hint={tr('u1.appt.oneLine')} style={{ minHeight: 90, textAlignVertical: 'top' }} />
+            <Field label={tr('u1.appt.notes')} optional value={draft.notes} onChangeText={(v) => set('notes', v)} multiline maxLength={4000} style={{ minHeight: 70, textAlignVertical: 'top' }} />
+            <Text variant="label">{tr('u1.appt.reminder')}</Text>
+            <Segmented label={tr('u1.appt.reminder')} value={String(draft.lead)} onChange={(v) => set('lead', Number(v) as ReminderLead)} options={leads()} />
+            {draft.lead !== 0 && !notificationsSupported && <Banner tone="info">{tr('u1.appt.webNote')}</Banner>}
+            <Button label={draft.id ? tr('u1.appt.saveChanges') : tr('u1.appt.add')} onPress={save} loading={saving} full />
+            {draft.id && <Button label={tr('u1.appt.deleteBtn')} variant="ghost" onPress={() => { const a = appointments?.find((x) => x.id === draft.id); if (a) remove(a); }} />}
           </>
         )}
       </Sheet>

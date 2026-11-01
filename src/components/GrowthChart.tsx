@@ -12,6 +12,7 @@ import { referenceCurves, type GrowthIndicator, type Sex } from '@/lib/domain/gr
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts } from '@/theme/tokens';
 import { Text } from './ui';
+import { t as tr } from '@/i18n';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
@@ -43,7 +44,7 @@ export function GrowthChart({ indicator, sex, points, unit, accessibilityLabel }
   for (let i = 1; i < sorted.length; i++) len += Math.hypot(px(sorted[i].m) - px(sorted[i - 1].m), py(sorted[i].y) - py(sorted[i - 1].y));
   len = Math.max(len, 1);
   const ticksX = Array.from({ length: 5 }, (_, i) => from + ((to - from) * i) / 4);
-  const ageLabel = (m: number) => (m < 24 ? `${Math.round(m)} m` : `${(m / 12).toFixed(m % 12 ? 1 : 0).replace('.', ',')} a`);
+  const ageLabel = (m: number) => (m < 24 ? tr('u7.growth.months', { n: Math.round(m) }) : tr('u7.growth.years', { n: (m / 12).toFixed(m % 12 ? 1 : 0).replace('.', ',') }));
   const fmtV = (v: number) => (spanY < 5 ? v.toFixed(1) : Math.round(v).toString()).replace('.', ',');
   const c = t.colors.lavender;
   return (
@@ -77,9 +78,9 @@ export function GrowthChart({ indicator, sex, points, unit, accessibilityLabel }
         ))}
       </Svg>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 4 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-        <Legend color={t.colors.primary} label="Mesures de l’enfant" solid />
-        <Legend color={tint(c, 0.85)} label="Médiane OMS" dashed />
-        <Legend color={tint(c, 0.35)} label="15e–85e et 3e–97e centiles" />
+        <Legend color={t.colors.primary} label={tr('u7.growth.legendChild')} solid />
+        <Legend color={tint(c, 0.85)} label={tr('u7.growth.legendMedian')} dashed />
+        <Legend color={tint(c, 0.35)} label={tr('u7.growth.legendBands')} />
       </View>
     </View>
   );

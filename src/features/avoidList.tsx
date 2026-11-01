@@ -11,6 +11,7 @@ import { backend, eq } from '@/lib/backend';
 import { useHouseholdId, useInvalidate, useRows } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 export interface AvoidProduct { id: string; household_id: string; child_id: string | null; barcode: string | null; product_name: string; reason: string | null; created_at: string }
 
@@ -26,7 +27,7 @@ export function useSaveAvoid() {
     mutationFn: async (a: { remove?: string; add?: { barcode: string | null; product_name: string; reason: string | null } }) => {
       if (a.remove) await backend.remove('avoid_products', [eq('id', a.remove)]);
       if (a.add) {
-        if (!hid) throw new Error('Créez d’abord votre foyer.');
+        if (!hid) throw new Error(tr('u2.avoid.need_household'));
         await backend.insert('avoid_products', { ...a.add, household_id: hid });
       }
     },
@@ -39,7 +40,7 @@ export function AvoidBanner({ barcode }: { barcode: string | null | undefined })
   const { data } = useAvoidProducts();
   const hit = barcode ? data?.find((x) => x.barcode === barcode) : undefined;
   if (!hit) return null;
-  return <Banner tone="danger" title="Sur votre liste « à éviter »">{`${hit.reason ? `${hit.reason}. ` : ''}Vérifiez toujours l’étiquette actuelle du produit.`}</Banner>;
+  return <Banner tone="danger" title={tr('u2.avoid.on_list')}>{`${hit.reason ? `${hit.reason}. ` : ''}${tr('u2.avoid.check_label')}`}</Banner>;
 }
 
 export function AvoidButton({ barcode, name }: { barcode: string | null | undefined; name: string }) {
@@ -52,20 +53,20 @@ export function AvoidButton({ barcode, name }: { barcode: string | null | undefi
   async function add() {
     try {
       await save.mutateAsync({ add: { barcode: barcode ?? null, product_name: name.slice(0, 160), reason: reason.trim() || null } });
-      toast('Ajouté à la liste à éviter.');
+      toast(tr('u2.avoid.added'));
       setOpen(false); setReason('');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   return (
     <>
-      <Button label={hit ? 'Retirer de « à éviter »' : 'À éviter'} icon="slash" size="sm" variant="ghost" loading={save.isPending}
-        onPress={() => (hit ? save.mutateAsync({ remove: hit.id }).then(() => toast('Retiré de la liste.')).catch((e) => toast(friendlyError(e), 'error')) : setOpen(true))} />
-      <Sheet visible={open} onClose={() => setOpen(false)} title="Ajouter à « à éviter »">
+      <Button label={hit ? tr('u2.avoid.remove') : tr('u2.avoid.avoid')} icon="slash" size="sm" variant="ghost" loading={save.isPending}
+        onPress={() => (hit ? save.mutateAsync({ remove: hit.id }).then(() => toast(tr('u2.avoid.removed'))).catch((e) => toast(friendlyError(e), 'error')) : setOpen(true))} />
+      <Sheet visible={open} onClose={() => setOpen(false)} title={tr('u2.avoid.add_title')}>
         <View style={{ gap: spacing.sm }}>
           <Text>{name}</Text>
-          <Field label="Pourquoi ?" optional value={reason} onChangeText={setReason} maxLength={300} placeholder="Contient des fruits à coque" />
-          <Text variant="caption" muted>Visible par les membres du foyer qui ont accès à la santé. Signalé à chaque nouveau scan de ce produit.</Text>
-          <Button label="Ajouter" full onPress={add} loading={save.isPending} />
+          <Field label={tr('u2.avoid.why')} optional value={reason} onChangeText={setReason} maxLength={300} placeholder={tr('u2.avoid.why_ph')} />
+          <Text variant="caption" muted>{tr('u2.avoid.visible')}</Text>
+          <Button label={tr('u2.avoid.add')} full onPress={add} loading={save.isPending} />
         </View>
       </Sheet>
     </>

@@ -16,27 +16,28 @@ import { frDate } from '@/lib/domain/scanSources';
 import type { ScanRow } from '@/lib/types-scanner';
 import { VerdictBadge, type StoredAnalysis } from '@/features/scanner/components';
 import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 function lines(a: StoredAnalysis): { label: string; value: string }[] {
   const out = [
-    { label: 'Pour', value: a.profileLabel },
-    { label: 'Certitude', value: CERTAINTY_LABEL[a.certainty] },
-    { label: 'Rappels officiels', value: a.recalls.length ? `${a.recalls.length} rappel(s)` : a.recallCheck?.checked ? 'Aucun trouvé' : 'Non vérifié' },
+    { label: tr('u8.compare.for'), value: a.profileLabel },
+    { label: tr('u8.compare.certainty'), value: CERTAINTY_LABEL[a.certainty] },
+    { label: tr('u8.compare.recalls'), value: a.recalls.length ? tr('u8.compare.recallCount', { count: a.recalls.length }) : a.recallCheck?.checked ? tr('u8.compare.noneFound') : tr('u8.compare.notChecked') },
   ];
   if (a.kind === 'product') {
     out.push(
-      { label: 'Type', value: a.product.typeLabel },
-      { label: 'Parfum', value: a.perfume === 'present' ? 'Oui' : a.perfume === 'absent' ? 'Non indiqué' : 'Inconnu' },
-      { label: 'Allergènes de parfum', value: a.fragranceAllergens.length ? a.fragranceAllergens.join(', ') : a.ingredients.length ? 'Aucun repéré' : 'Inconnu' },
-      { label: 'Huiles essentielles', value: a.essentialOils.length ? a.essentialOils.join(', ') : a.ingredients.length ? 'Aucune repérée' : 'Inconnu' },
+      { label: tr('u8.compare.type'), value: a.product.typeLabel },
+      { label: tr('u8.compare.perfume'), value: a.perfume === 'present' ? tr('u8.compare.yes') : a.perfume === 'absent' ? tr('u8.compare.notStated') : tr('u8.compare.unknown') },
+      { label: tr('u8.compare.fragAllergens'), value: a.fragranceAllergens.length ? a.fragranceAllergens.join(', ') : a.ingredients.length ? tr('u8.compare.noneSpotted') : tr('u8.compare.unknown') },
+      { label: tr('u8.compare.essOils'), value: a.essentialOils.length ? a.essentialOils.join(', ') : a.ingredients.length ? tr('u8.compare.noneSpottedF') : tr('u8.compare.unknown') },
     );
   } else {
-    out.push({ label: 'Ingrédients', value: a.ingredients.length ? `${a.ingredients.length} listé(s)` : 'Inconnus' });
+    out.push({ label: tr('u8.compare.ingredients'), value: a.ingredients.length ? tr('u8.compare.listed', { count: a.ingredients.length }) : tr('u8.compare.unknownP') });
   }
   out.push(
-    { label: 'Informations manquantes', value: a.missing.length ? a.missing.join(' ; ') : 'Aucune signalée' },
-    { label: 'Sources', value: a.sources.map((s) => s.publisher).filter((x, i, arr) => arr.indexOf(x) === i).join(', ') },
-    { label: 'Analysé le', value: frDate(a.analysedOn) },
+    { label: tr('u8.compare.missingInfo'), value: a.missing.length ? a.missing.join(' ; ') : tr('u8.compare.noneReported') },
+    { label: tr('u8.compare.sources'), value: a.sources.map((s) => s.publisher).filter((x, i, arr) => arr.indexOf(x) === i).join(', ') },
+    { label: tr('u8.compare.analysedOn'), value: frDate(a.analysedOn) },
   );
   return out;
 }
@@ -44,19 +45,19 @@ function lines(a: StoredAnalysis): { label: string; value: string }[] {
 function Column({ id, onClear }: { id: string; onClear: () => void }) {
   const { scan, result, isLoading, error, refetch } = useScan(id);
   if (isLoading && !scan) return <View style={{ flex: 1 }}><Skeleton kind="detail" rows={4} /></View>;
-  if (error && !scan) return <View style={{ flex: 1 }}><ErrorView error={error} onRetry={refetch} title="Fiche indisponible" /></View>;
+  if (error && !scan) return <View style={{ flex: 1 }}><ErrorView error={error} onRetry={refetch} title={tr('u8.compare.unavailable')} /></View>;
   if (!scan) {
     return (
       <Card style={{ flex: 1 }}>
-        <Text variant="small" muted>Cette analyse n’existe plus.</Text>
-        <Button label="Changer" size="sm" variant="ghost" onPress={onClear} />
+        <Text variant="small" muted>{tr('u8.compare.gone')}</Text>
+        <Button label={tr('u8.compare.change')} size="sm" variant="ghost" onPress={onClear} />
       </Card>
     );
   }
   const a = result?.result as StoredAnalysis | undefined;
   return (
     <Card style={{ flex: 1 }}>
-      <Text weight="bold">{scan?.product_snapshot?.name ?? 'Produit'}</Text>
+      <Text weight="bold">{scan?.product_snapshot?.name ?? tr('u8.compare.product')}</Text>
       <Text variant="caption" muted>{scan?.product_snapshot?.brand ?? ''}</Text>
       {a?.demo ? <Text variant="caption" weight="bold">{DEMO_LABEL}</Text> : null}
       {a ? (
@@ -69,10 +70,10 @@ function Column({ id, onClear }: { id: string; onClear: () => void }) {
             </View>
           ))}
         </>
-      ) : <Text variant="small" muted>Pas d’analyse enregistrée.</Text>}
+      ) : <Text variant="small" muted>{tr('u8.compare.noSaved')}</Text>}
       <Divider />
-      <Button label="Voir la fiche" size="sm" variant="ghost" onPress={() => router.push(`/scanner/result/${id}`)} />
-      <Button label="Changer" size="sm" variant="ghost" onPress={onClear} />
+      <Button label={tr('u8.compare.viewSheet')} size="sm" variant="ghost" onPress={() => router.push(`/scanner/result/${id}`)} />
+      <Button label={tr('u8.compare.change')} size="sm" variant="ghost" onPress={onClear} />
     </Card>
   );
 }
@@ -92,24 +93,24 @@ export default function CompareScreen() {
   }
 
   return (
-    <Screen back title="Comparer deux produits" subtitle="Chaque produit est analysé séparément, avec ses propres sources.">
-      <Banner tone="info">{'Aucun classement ni note globale : comparez les verdicts et les informations de chaque fiche. Deux analyses faites pour des profils différents ne sont pas comparables.'}</Banner>
+    <Screen back title={tr('u8.compare.title')} subtitle={tr('u8.compare.subtitle')}>
+      <Banner tone="info">{tr('u8.compare.banner')}</Banner>
       {a && b && !compareAccess.premium ? (
-        <PremiumSection feature="scanner_compare" preview={<Text variant="small">{`${(history ?? []).find((x: ScanRow) => x.id === a)?.product_snapshot?.name ?? 'Produit 1'} et ${(history ?? []).find((x: ScanRow) => x.id === b)?.product_snapshot?.name ?? 'Produit 2'} : composition, allergènes et précautions côte à côte.`}</Text>}><View /></PremiumSection>
+        <PremiumSection feature="scanner_compare" preview={<Text variant="small">{tr('u8.compare.preview', { a: (history ?? []).find((x: ScanRow) => x.id === a)?.product_snapshot?.name ?? tr('u8.compare.product1'), b: (history ?? []).find((x: ScanRow) => x.id === b)?.product_snapshot?.name ?? tr('u8.compare.product2') })}</Text>}><View /></PremiumSection>
       ) : null}
       <Row style={{ alignItems: 'flex-start' }}>
-        {a && (b == null || compareAccess.premium) ? <Column id={a} onClear={() => setA(null)} /> : <Card style={{ flex: 1 }}><Text variant="small" muted>Choisissez un premier produit ci-dessous.</Text></Card>}
-        {b && compareAccess.premium ? <Column id={b} onClear={() => setB(null)} /> : b ? <Card style={{ flex: 1 }}><Text variant="small">{(history ?? []).find((x: ScanRow) => x.id === b)?.product_snapshot?.name ?? 'Second produit'}</Text><Button label="Changer" size="sm" variant="ghost" onPress={() => setB(null)} /></Card> : <Card style={{ flex: 1 }}><Text variant="small" muted>Choisissez un second produit ci-dessous.</Text></Card>}
+        {a && (b == null || compareAccess.premium) ? <Column id={a} onClear={() => setA(null)} /> : <Card style={{ flex: 1 }}><Text variant="small" muted>{tr('u8.compare.pickFirst')}</Text></Card>}
+        {b && compareAccess.premium ? <Column id={b} onClear={() => setB(null)} /> : b ? <Card style={{ flex: 1 }}><Text variant="small">{(history ?? []).find((x: ScanRow) => x.id === b)?.product_snapshot?.name ?? tr('u8.compare.second')}</Text><Button label={tr('u8.compare.change')} size="sm" variant="ghost" onPress={() => setB(null)} /></Card> : <Card style={{ flex: 1 }}><Text variant="small" muted>{tr('u8.compare.pickSecond')}</Text></Card>}
       </Row>
       {!a || !b ? (
         <>
-          <SectionTitle title="Dans votre historique" />
+          <SectionTitle title={tr('u8.compare.inHistory')} />
           {historyQ.isLoading && !history ? <Skeleton kind="list" rows={2} /> : historyQ.isError && !history ? (
-            <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title="Impossible d’afficher votre historique" />
+            <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title={tr('u8.compare.historyErr')} />
           ) : pickable.length ? (
-            <Row wrap>{pickable.slice(0, 30).map((s) => <Chip key={s.id} label={`${s.product_snapshot?.name ?? 'Sans nom'}${s.kind === 'food' ? ' (aliment)' : ''}`} onPress={() => pick(s.id)} />)}</Row>
+            <Row wrap>{pickable.slice(0, 30).map((s) => <Chip key={s.id} label={`${s.product_snapshot?.name ?? tr('u8.compare.noName')}${s.kind === 'food' ? tr('u8.compare.foodSuffix') : ''}`} onPress={() => pick(s.id)} />)}</Row>
           ) : (
-            <EmptyState icon="columns" title="Analysez d’abord au moins deux produits." action={{ label: 'Scanner un produit', icon: 'camera', onPress: () => router.push('/scanner/product') }} />
+            <EmptyState icon="columns" title={tr('u8.compare.needTwo')} action={{ label: tr('u8.compare.scanProduct'), icon: 'camera', onPress: () => router.push('/scanner/product') }} />
           )}
         </>
       ) : null}

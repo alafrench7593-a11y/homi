@@ -19,13 +19,14 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { progressOf } from '@/lib/domain/quickPicks';
+import { t as tr } from '@/i18n';
 
 type TemplateKind = Exclude<ChecklistKind, 'custom'>;
 const iconOf = (kind: ChecklistKind): IconName => (kind === 'custom' ? 'list' : (CHECKLIST_TEMPLATES[kind].icon as IconName));
 
 function ProgressBar({ done, total }: { done: number; total: number }) {
   const t = useTheme();
-  return <AnimatedProgress value={total ? done / total : 0} color={t.colors.primary} track={t.colors.surfaceAlt} height={6} accessibilityLabel={`${done} sur ${total} fait`} />;
+  return <AnimatedProgress value={total ? done / total : 0} color={t.colors.primary} track={t.colors.surfaceAlt} height={6} accessibilityLabel={tr('u2.lists.progress_a11y', { done, total })} />;
 }
 
 function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => void }) {
@@ -63,8 +64,8 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
 
   async function add() {
     const clean = label.trim();
-    if (!clean) return setError('Indiquez un élément.');
-    if (clean.length > 160) return setError('160 caractères maximum.');
+    if (!clean) return setError(tr('u2.lists.need_item'));
+    if (clean.length > 160) return setError(tr('u2.lists.max160'));
     setError(null);
     setAdding(true);
     try {
@@ -85,7 +86,7 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
     try {
       await backend.remove('checklist_items', [eq('id', item.id)]);
       inv('checklist_items');
-      toast(`« ${item.label} » retiré.`, 'info');
+      toast(tr('u2.lists.item_removed', { label: item.label }), 'info');
     } catch (e) {
       toast(friendlyError(e), 'error');
     } finally {
@@ -94,13 +95,13 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
   }
 
   async function removeList() {
-    if (!(await confirm(`Supprimer « ${list.title} » ?`, 'La liste et tous ses éléments seront supprimés pour toutes les personnes du foyer.', 'Supprimer'))) return;
+    if (!(await confirm(tr('u2.lists.delete_title', { title: list.title }), tr('u2.lists.delete_body'), tr('u2.lists.delete')))) return;
     setRemoving(true);
     try {
       await backend.remove('checklist_items', [eq('checklist_id', list.id)]).catch(() => undefined);
       await backend.remove('checklists', [eq('id', list.id)]);
       inv('checklists', 'checklist_items');
-      toast('Liste supprimée.');
+      toast(tr('u2.lists.deleted'));
       onClose();
     } catch (e) {
       toast(friendlyError(e), 'error');
@@ -115,22 +116,22 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
         <Row>
           <Icon name={iconOf(list.kind)} color={t.colors.primary} />
           <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{list.title}</Text>
-          <IconButton icon="chevron-up" label="Refermer la liste" onPress={onClose} />
+          <IconButton icon="chevron-up" label={tr('u2.lists.close')} onPress={onClose} />
         </Row>
         <Row style={{ alignItems: 'baseline', justifyContent: 'space-between' }}>
-          <Text variant="small" muted>{done} sur {items?.length ?? 0} fait{done > 1 ? 's' : ''}</Text>
+          <Text variant="small" muted>{tr('u2.lists.done_of', { done, total: items?.length ?? 0, count: done })}</Text>
           <Text weight="bold" color={t.colors.primary} testID="list-pct">{prog.pct} %</Text>
         </Row>
         <ProgressBar done={done} total={items?.length ?? 0} />
         {/* ajout rapide en haut : Entrée ajoute et garde le clavier ouvert pour enchaîner */}
         <Row style={{ alignItems: 'flex-end' }}>
           <View style={{ flex: 1 }}>
-            <Field label="Ajouter un élément" value={label} onChangeText={(v) => { setLabel(v); setError(null); }} maxLength={160} error={error} onSubmitEditing={add} returnKeyType="done" blurOnSubmit={false} />
+            <Field label={tr('u2.lists.add_item')} value={label} onChangeText={(v) => { setLabel(v); setError(null); }} maxLength={160} error={error} onSubmitEditing={add} returnKeyType="done" blurOnSubmit={false} />
           </View>
-          <IconButton icon="plus" tone="primary" label="Ajouter" onPress={add} disabled={adding} />
+          <IconButton icon="plus" tone="primary" label={tr('u2.lists.add')} onPress={add} disabled={adding} />
         </Row>
         {isLoading && !items ? <Skeleton kind="detail" rows={4} /> : itemsQ.isError && !items ? (
-          <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title="Impossible d’afficher cette liste" />
+          <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title={tr('u2.lists.load_error')} />
         ) : (
           <View>
             {[...todo, ...(showDone ? doneList : [])].map((item) => (
@@ -147,17 +148,17 @@ function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => vo
                   </View>
                   <Text style={{ flex: 1, textDecorationLine: item.done ? 'line-through' : 'none' }} muted={item.done}>{item.label}</Text>
                 </Tappable>
-                <IconButton icon="trash-2" size={17} color={t.colors.textMuted} label={`Retirer ${item.label}`} onPress={() => removeItem(item)} />
+                <IconButton icon="trash-2" size={17} color={t.colors.textMuted} label={tr('u2.lists.remove_item', { label: item.label })} onPress={() => removeItem(item)} />
               </View>
             ))}
-            {!items?.length && <Text muted>Cette liste est vide.</Text>}
-            {items?.length && !todo.length ? <Text muted center style={{ paddingVertical: spacing.sm }}>Tout est coché.</Text> : null}
+            {!items?.length && <Text muted>{tr('u2.lists.empty')}</Text>}
+            {items?.length && !todo.length ? <Text muted center style={{ paddingVertical: spacing.sm }}>{tr('u2.lists.all_done')}</Text> : null}
             {doneList.length ? (
-              <Button label={showDone ? 'Masquer les éléments cochés' : `Voir les ${doneList.length} élément${doneList.length > 1 ? 's' : ''} coché${doneList.length > 1 ? 's' : ''}`} icon={showDone ? 'chevron-up' : 'chevron-down'} size="sm" variant="ghost" onPress={() => setShowDone((v) => !v)} style={{ alignSelf: 'flex-start' }} testID="list-toggle-done" />
+              <Button label={showDone ? tr('u2.lists.hide_done') : tr('u2.lists.show_done', { count: doneList.length })} icon={showDone ? 'chevron-up' : 'chevron-down'} size="sm" variant="ghost" onPress={() => setShowDone((v) => !v)} style={{ alignSelf: 'flex-start' }} testID="list-toggle-done" />
             ) : null}
           </View>
         )}
-        <Button label="Supprimer la liste" icon="trash-2" variant="ghost" size="sm" loading={removing} onPress={removeList} style={{ alignSelf: 'flex-start' }} />
+        <Button label={tr('u2.lists.delete_list')} icon="trash-2" variant="ghost" size="sm" loading={removing} onPress={removeList} style={{ alignSelf: 'flex-start' }} />
       </View>
     </Card>
   );
@@ -194,7 +195,7 @@ export default function ListsScreen() {
       if (labels.length) await backend.insert('checklist_items', labels.map((label, i) => ({ checklist_id: list.id, household_id: h, label, position: i })));
       inv('checklists', 'checklist_items', 'memberships');
       haptic('success');
-      toast('Liste créée.');
+      toast(tr('u2.lists.created'));
       setCreating(false);
       setCustomTitle('');
       setOpenId(list.id);
@@ -208,8 +209,8 @@ export default function ListsScreen() {
 
   function createCustom() {
     const clean = customTitle.trim();
-    if (!clean) return setTitleError('Donnez un titre à la liste.');
-    if (clean.length > 80) return setTitleError('80 caractères maximum.');
+    if (!clean) return setTitleError(tr('u2.lists.need_title'));
+    if (clean.length > 80) return setTitleError(tr('u2.lists.max80'));
     setTitleError(null);
     create('custom', clean, []);
   }
@@ -224,35 +225,35 @@ export default function ListsScreen() {
   }).filter((x) => x.left > 0).sort((a, b) => Number(b.started) - Number(a.started) || b.pct - a.pct)[0] ?? null;
 
   return (
-    <Screen back title="Listes de préparation" subtitle="Cochez à deux, chacun de son côté."
-      action={atLimit ? undefined : { label: 'Nouvelle liste', icon: 'plus', onPress: () => setCreating(true), testID: 'lists-new' }}>
-      <TodaySummary title="Ma préparation" items={[
-        { icon: 'list', value: premium ? String(count) : `${count}/${limit}`, label: count > 1 ? 'Listes' : 'Liste' },
-        { icon: 'check-square', value: totalItems.length ? `${doneItems}/${totalItems.length}` : '—', label: 'Éléments cochés' },
-        { icon: 'pie-chart', value: totalItems.length ? `${Math.round((doneItems / totalItems.length) * 100)} %` : '—', label: 'Avancement' },
+    <Screen back title={tr('u2.lists.title')} subtitle={tr('u2.lists.subtitle')}
+      action={atLimit ? undefined : { label: tr('u2.lists.new'), icon: 'plus', onPress: () => setCreating(true), testID: 'lists-new' }}>
+      <TodaySummary title={tr('u2.lists.my_prep')} items={[
+        { icon: 'list', value: premium ? String(count) : `${count}/${limit}`, label: count > 1 ? tr('u2.lists.lists') : tr('u2.lists.list') },
+        { icon: 'check-square', value: totalItems.length ? `${doneItems}/${totalItems.length}` : '—', label: tr('u2.lists.ticked') },
+        { icon: 'pie-chart', value: totalItems.length ? `${Math.round((doneItems / totalItems.length) * 100)} %` : '—', label: tr('u2.lists.progress') },
       ]} />
       {atLimit ? (
         <View style={{ gap: spacing.sm }}>
-          <Banner tone="warning" title="Limite de la version gratuite">{`Vous avez atteint ${limit} listes. Supprimez une liste terminée ou passez à Au fil de nous Premium pour en créer davantage.`}</Banner>
-          <PremiumGate feature="Listes illimitées"><View /></PremiumGate>
+          <Banner tone="warning" title={tr('u2.lists.limit_title')}>{tr('u2.lists.limit_body', { limit })}</Banner>
+          <PremiumGate feature={tr('u2.lists.unlimited')}><View /></PremiumGate>
         </View>
       ) : null}
 
       {isLoading && !lists ? <Skeleton rows={3} /> : listsQ.isError && !lists ? (
-        <ErrorView error={listsQ.error} onRetry={() => void listsQ.refetch()} title="Impossible d’afficher vos listes" />
+        <ErrorView error={listsQ.error} onRetry={() => void listsQ.refetch()} title={tr('u2.lists.lists_error')} />
       ) : !lists?.length ? (
-        <EmptyState icon="check-square" title="Aucune liste pour l’instant" body="Partez d’un modèle (valise de maternité, démarches…) puis adaptez-le à votre famille." action={atLimit ? undefined : { label: 'Créer une liste', onPress: () => setCreating(true) }} />
+        <EmptyState icon="check-square" title={tr('u2.lists.none_title')} body={tr('u2.lists.none_body')} action={atLimit ? undefined : { label: tr('u2.lists.create'), onPress: () => setCreating(true) }} />
       ) : (
         <>
           {!open && resume ? (
-            <Tappable accessibilityRole="button" accessibilityLabel={`Reprendre ${resume.list.title}`} onPress={() => setOpenId(resume.list.id)} testID="lists-resume">
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('u2.lists.resume_a11y', { title: resume.list.title })} onPress={() => setOpenId(resume.list.id)} testID="lists-resume">
               <Card tone="lavender">
                 <Row>
                   <Icon name={iconOf(resume.list.kind)} color={t.colors.primary} />
                   <View style={{ flex: 1, gap: 2 }}>
-                    <Text variant="caption" muted>Reprendre</Text>
+                    <Text variant="caption" muted>{tr('u2.lists.resume')}</Text>
                     <Text weight="bold">{resume.list.title}</Text>
-                    <Text variant="small" muted>{resume.left} élément{resume.left > 1 ? 's' : ''} à faire · {resume.pct} %</Text>
+                    <Text variant="small" muted>{tr('u2.lists.left', { count: resume.left, pct: resume.pct })}</Text>
                   </View>
                   <Icon name="chevron-right" color={t.colors.textMuted} />
                 </Row>
@@ -260,29 +261,29 @@ export default function ListsScreen() {
             </Tappable>
           ) : null}
           {open && <ChecklistDetail key={open.id} list={open} onClose={() => setOpenId(null)} />}
-          <SectionTitle title={open ? 'Autres listes' : 'Vos listes'} />
+          <SectionTitle title={open ? tr('u2.lists.others') : tr('u2.lists.yours')} />
           <Card>
             {lists.filter((l) => l.id !== openId).map((l) => {
               const items = (allItems ?? []).filter((i) => i.checklist_id === l.id);
               const done = items.filter((i) => i.done).length;
               return (
                 <View key={l.id} style={{ gap: 4, paddingBottom: spacing.xs }}>
-                  <ListRow icon={iconOf(l.kind)} title={l.title} subtitle={items.length ? `${done} sur ${items.length} fait${done > 1 ? 's' : ''}` : 'Vide'} onPress={() => setOpenId(l.id)} />
+                  <ListRow icon={iconOf(l.kind)} title={l.title} subtitle={items.length ? tr('u2.lists.done_of', { done, total: items.length, count: done }) : tr('u2.lists.blank')} onPress={() => setOpenId(l.id)} />
                   {items.length > 0 && <ProgressBar done={done} total={items.length} />}
                 </View>
               );
             })}
-            {lists.every((l) => l.id === openId) && <Text muted>Aucune autre liste.</Text>}
+            {lists.every((l) => l.id === openId) && <Text muted>{tr('u2.lists.no_other')}</Text>}
           </Card>
         </>
       )}
 
-      <Sheet visible={creating} onClose={() => setCreating(false)} title="Nouvelle liste">
+      <Sheet visible={creating} onClose={() => setCreating(false)} title={tr('u2.lists.new')}>
         {limitReached && !premium ? (
-          <PremiumGate feature="Listes illimitées"><View /></PremiumGate>
+          <PremiumGate feature={tr('u2.lists.unlimited')}><View /></PremiumGate>
         ) : (
           <>
-            <Text variant="label">À partir d’un modèle</Text>
+            <Text variant="label">{tr('u2.lists.from_template')}</Text>
             {(Object.keys(CHECKLIST_TEMPLATES) as TemplateKind[]).map((k) => {
               const tpl = CHECKLIST_TEMPLATES[k];
               return (
@@ -290,14 +291,14 @@ export default function ListsScreen() {
                   key={k}
                   icon={tpl.icon as IconName}
                   title={tpl.title}
-                  subtitle={`${tpl.items.length} éléments${usedKinds.has(k) ? ' · vous avez déjà cette liste' : ''}`}
+                  subtitle={`${tr('u2.lists.items_count', { count: tpl.items.length })}${usedKinds.has(k) ? ` · ${tr('u2.lists.already')}` : ''}`}
                   onPress={() => { if (!busy) create(k, tpl.title, tpl.items); }}
                 />
               );
             })}
-            <Text variant="label" style={{ marginTop: spacing.sm }}>Ou une liste vierge</Text>
-            <Field label="Titre" value={customTitle} onChangeText={(v) => { setCustomTitle(v); setTitleError(null); }} maxLength={80} error={titleError} placeholder="Courses de la semaine 36" />
-            <Button label="Créer la liste" loading={busy} onPress={createCustom} />
+            <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u2.lists.blank_list')}</Text>
+            <Field label={tr('u2.lists.f_title')} value={customTitle} onChangeText={(v) => { setCustomTitle(v); setTitleError(null); }} maxLength={80} error={titleError} placeholder={tr('u2.lists.ph')} />
+            <Button label={tr('u2.lists.create_btn')} loading={busy} onPress={createCustom} />
           </>
         )}
       </Sheet>

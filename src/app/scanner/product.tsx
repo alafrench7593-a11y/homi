@@ -2,10 +2,11 @@
 import React from 'react';
 import { Screen } from '@/components/Screen';
 import { ScanFlow } from '@/features/scanner/ScanFlow';
+import { t as tr } from '@/i18n';
 
 export default function ScanProductScreen() {
   return (
-    <Screen back title="Scanner un produit" subtitle="Composition, précautions et rappels officiels, avec leurs sources.">
+    <Screen back title={tr('u8.product.title')} subtitle={tr('u8.product.subtitle')}>
       <ScanFlow kind="product" />
     </Screen>
   );

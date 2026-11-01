@@ -18,12 +18,13 @@ import { wipeLocalData } from '@/lib/localWipe';
 import type { ConsentPurpose, PrivacySettings } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr, formatDate } from '@/i18n';
 
-const CONSENTS: { purpose: ConsentPurpose; title: string; detail: string; warnOff?: string }[] = [
-  { purpose: 'health_data', title: 'Données de santé', detail: 'Enregistrer le suivi de grossesse, des enfants et votre suivi personnel.', warnOff: 'Sans ce consentement, nous ne pourrons plus enregistrer de nouvelles données de suivi. Les données existantes restent consultables, exportables et supprimables.' },
-  { purpose: 'ai_assistant', title: 'Assistant', detail: 'Transmettre vos questions à l’intelligence artificielle Google Gemini (service externe) pour y répondre.' },
-  { purpose: 'document_reading', title: 'Lecture automatique des documents', detail: 'Envoyer le document que vous choisissez d’analyser à l’intelligence artificielle Google Gemini (service externe) pour en extraire les informations.' },
-  { purpose: 'marketing', title: 'Nouvelles de l’application', detail: 'Recevoir occasionnellement des nouveautés par e-mail.' },
+const consents = (): { purpose: ConsentPurpose; title: string; detail: string; warnOff?: string }[] => [
+  { purpose: 'health_data', title: tr('u1.priv.healthTitle'), detail: tr('u1.priv.healthDetail'), warnOff: tr('u1.priv.healthWarn') },
+  { purpose: 'ai_assistant', title: tr('u1.priv.aiTitle'), detail: tr('u1.priv.aiDetail') },
+  { purpose: 'document_reading', title: tr('u1.priv.docTitle'), detail: tr('u1.priv.docDetail') },
+  { purpose: 'marketing', title: tr('u1.priv.newsTitle'), detail: tr('u1.priv.newsDetail') },
 ];
 const RETENTION = [6, 12, 24, 36, 60, 120];
 
@@ -49,7 +50,7 @@ async function shareJson(data: unknown): Promise<'file' | 'download' | 'text'> {
       if (file.exists) file.delete();
       file.create();
       file.write(json);
-      await Sharing.shareAsync(file.uri, { mimeType: 'application/json', dialogTitle: 'Exporter mes données', UTI: 'public.json' });
+      await Sharing.shareAsync(file.uri, { mimeType: 'application/json', dialogTitle: tr('u1.priv.exportTitle'), UTI: 'public.json' });
       return 'file';
     }
   } catch {
@@ -72,14 +73,15 @@ export default function PrivacyScreen() {
   const [exportText, setExportText] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [typed, setTyped] = useState('');
+  const confirmWord = tr('u1.acc.confirmWord');
 
   const termsAt = consentRows?.find((c) => c.purpose === 'terms' && c.granted)?.created_at;
 
   async function toggleConsent(purpose: ConsentPurpose, granted: boolean, warnOff?: string) {
-    if (!granted && warnOff && !(await confirm('Retirer ce consentement ?', warnOff, 'Retirer'))) return;
+    if (!granted && warnOff && !(await confirm(tr('u1.priv.withdrawTitle'), warnOff, tr('u1.priv.withdraw')))) return;
     try {
       await setConsent.mutateAsync({ purpose, granted });
-      toast(granted ? 'Consentement enregistré.' : 'Consentement retiré.');
+      toast(granted ? tr('u1.priv.consentSaved') : tr('u1.priv.consentWithdrawn'));
     } catch (e) {
       toast(friendlyError(e), 'error');
     }
@@ -100,17 +102,17 @@ export default function PrivacyScreen() {
       const data = await exportData.mutateAsync();
       const how = await shareJson(data);
       if (how === 'text') setExportText(JSON.stringify(data, null, 2));
-      else toast(how === 'download' ? 'Fichier téléchargé.' : 'Export prêt.');
+      else toast(how === 'download' ? tr('u1.acc.downloaded') : tr('u1.acc.exportReady'));
     } catch (e) {
-      toast(friendlyError(e, 'L’export n’a pas pu être préparé.'), 'error');
+      toast(friendlyError(e, tr('u1.priv.exportFailed')), 'error');
     }
   }
 
   async function startDelete() {
     const ok = await confirm(
-      'Supprimer définitivement votre compte ?',
-      'Toutes vos données seront effacées : suivi, documents, conversations, publications. Si vous êtes propriétaire d’un foyer partagé, il sera transmis au membre le plus ancien. Pensez à exporter vos données avant. Un abonnement en cours doit être résilié depuis votre boutique.',
-      'Continuer',
+      tr('u1.acc.deleteTitle'),
+      tr('u1.priv.deleteBody'),
+      tr('u1.acc.continue'),
     );
     if (ok) { setTyped(''); setDeleteOpen(true); }
   }
@@ -121,23 +123,23 @@ export default function PrivacyScreen() {
       await cancelAllLocal().catch(() => undefined);
       await wipeLocalData();
       setDeleteOpen(false);
-      toast('Votre compte a été supprimé.', 'info');
+      toast(tr('u1.priv.deleted'), 'info');
       router.replace('/welcome');
     } catch (e) {
-      toast(friendlyError(e, 'La suppression n’a pas pu aboutir. Réessayez ou écrivez-nous.'), 'error');
+      toast(friendlyError(e, tr('u1.acc.deleteFailed')), 'error');
     }
   }
 
   return (
-    <Screen back title="Confidentialité" subtitle="Vos données vous appartiennent.">
+    <Screen back title={tr('u1.priv.title')} subtitle={tr('u1.priv.subtitle')}>
       <Card tone="soft">
-        <Text variant="small">{`${BRAND.name} n’affiche aucune publicité et ne vend aucune donnée. Vous pouvez à tout moment exporter ou supprimer ce que vous avez saisi.`}</Text>
-        <Button label="Lire la politique de confidentialité" size="sm" variant="ghost" icon="file-text" style={{ alignSelf: 'flex-start', marginTop: 4 }} onPress={() => setPolicyOpen(true)} />
+        <Text variant="small">{tr('u1.priv.intro', { name: BRAND.name })}</Text>
+        <Button label={tr('u1.priv.readPolicy')} size="sm" variant="ghost" icon="file-text" style={{ alignSelf: 'flex-start', marginTop: 4 }} onPress={() => setPolicyOpen(true)} />
       </Card>
 
-      <SectionTitle title="Consentements" />
+      <SectionTitle title={tr('u1.priv.consents')} />
       <Card>
-        {consentsLoading ? <Loading /> : CONSENTS.map((c, i) => (
+        {consentsLoading ? <Loading /> : consents().map((c, i) => (
           <View key={c.purpose}>
             {i > 0 ? <Divider /> : null}
             <Row style={{ paddingVertical: 6, alignItems: 'flex-start' }}>
@@ -151,20 +153,20 @@ export default function PrivacyScreen() {
         ))}
         <Divider />
         <Text variant="caption" muted>
-          {termsAt ? `Conditions d’utilisation acceptées le ${new Date(termsAt).toLocaleDateString('fr-FR')}. ` : ''}
-          {`Chaque choix est horodaté (version ${PRIVACY_POLICY_VERSION}).`}
+          {termsAt ? `${tr('u1.priv.termsAccepted', { date: formatDate(termsAt, {}) })} ` : ''}
+          {tr('u1.priv.timestamped', { version: PRIVACY_POLICY_VERSION })}
         </Text>
       </Card>
 
-      <SectionTitle title="Réglages" />
+      <SectionTitle title={tr('u1.priv.settings')} />
       <Card>
         {privacy ? (
           <View style={{ gap: 4 }}>
             {([
-              ['ai_history_enabled', 'Conserver l’historique de l’assistant', 'Désactivé : vos questions ne sont pas enregistrées après la réponse.', undefined],
-              ['community_visible', 'Apparaître dans la communauté', 'Votre pseudonyme reste visible sur vos publications.', undefined],
-              ['analytics_enabled', 'Statistiques d’utilisation anonymes', 'Nous aide à améliorer l’application. Désactivé par défaut.', 'analytics'],
-              ['crash_reports_enabled', 'Rapports de plantage', 'Envoi automatique d’informations techniques en cas d’erreur.', 'crash_reports'],
+              ['ai_history_enabled', tr('u1.priv.aiHistory'), tr('u1.priv.aiHistoryD'), undefined],
+              ['community_visible', tr('u1.priv.communityVisible'), tr('u1.priv.communityVisibleD'), undefined],
+              ['analytics_enabled', tr('u1.priv.analytics'), tr('u1.priv.analyticsD'), 'analytics'],
+              ['crash_reports_enabled', tr('u1.priv.crash'), tr('u1.priv.crashD'), 'crash_reports'],
             ] as const).map(([key, title, detail, consent], i) => (
               <View key={key}>
                 {i > 0 ? <Divider /> : null}
@@ -178,32 +180,32 @@ export default function PrivacyScreen() {
               </View>
             ))}
             <Divider />
-            <Text weight="medium">Durée de conservation de l’historique</Text>
-            <Text variant="small" muted>Durée maximale pendant laquelle vous souhaitez que votre historique soit conservé. Vous pouvez aussi supprimer chaque entrée à tout moment.</Text>
+            <Text weight="medium">{tr('u1.priv.retention')}</Text>
+            <Text variant="small" muted>{tr('u1.priv.retentionD')}</Text>
             <Row wrap style={{ marginTop: 6 }}>
               {RETENTION.map((m) => (
-                <Chip key={m} label={m < 12 ? `${m} mois` : `${m / 12} an${m >= 24 ? 's' : ''}`} selected={privacy.retention_months === m} onPress={() => setSetting({ retention_months: m })} />
+                <Chip key={m} label={m < 12 ? tr('u1.priv.months', { count: m }) : tr('u1.priv.years', { count: m / 12 })} selected={privacy.retention_months === m} onPress={() => setSetting({ retention_months: m })} />
               ))}
             </Row>
           </View>
         ) : <Loading />}
       </Card>
 
-      <SectionTitle title="Mes données" />
+      <SectionTitle title={tr('u1.acc.myData')} />
       <Card>
-        <Text weight="medium">Exporter mes données</Text>
-        <Text variant="small" muted style={{ marginTop: 2 }}>Un fichier lisible (JSON) contenant tout ce que vous avez saisi : profil, consentements, suivi, rappels, conversations, foyers. Les fichiers du coffre se téléchargent séparément depuis Documents.</Text>
-        <Button label="Exporter mes données" icon="download" variant="secondary" loading={exportData.isPending} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={doExport} />
+        <Text weight="medium">{tr('u1.priv.exportTitle')}</Text>
+        <Text variant="small" muted style={{ marginTop: 2 }}>{tr('u1.priv.exportD')}</Text>
+        <Button label={tr('u1.priv.exportTitle')} icon="download" variant="secondary" loading={exportData.isPending} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={doExport} />
       </Card>
       <Card tone="danger">
-        <Text weight="bold" color={t.colors.danger}>Supprimer mon compte</Text>
-        <Text variant="small" style={{ marginTop: 2 }}>Effacement définitif de toutes vos données et de vos fichiers. Cette action est irréversible.</Text>
-        {isDemo ? <Text variant="caption" muted style={{ marginTop: 4 }}>En mode démonstration, toutes les données de cet appareil sont effacées.</Text> : null}
-        <Button label="Supprimer mon compte" variant="danger" icon="trash-2" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={startDelete} />
+        <Text weight="bold" color={t.colors.danger}>{tr('u1.acc.deleteSection')}</Text>
+        <Text variant="small" style={{ marginTop: 2 }}>{tr('u1.priv.eraseD')}</Text>
+        {isDemo ? <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u1.priv.demoErase')}</Text> : null}
+        <Button label={tr('u1.acc.deleteSection')} variant="danger" icon="trash-2" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={startDelete} />
       </Card>
 
-      <Sheet visible={policyOpen} onClose={() => setPolicyOpen(false)} title="Politique de confidentialité">
-        <Text variant="caption" muted>{`Version ${PRIVACY_POLICY_VERSION}`}</Text>
+      <Sheet visible={policyOpen} onClose={() => setPolicyOpen(false)} title={tr('u1.sub.privacyLink')}>
+        <Text variant="caption" muted>{tr('u1.priv.version', { version: PRIVACY_POLICY_VERSION })}</Text>
         {PRIVACY_POLICY.map((s) => (
           <View key={s.title} style={{ gap: 4 }}>
             <Text weight="bold">{s.title}</Text>
@@ -212,19 +214,19 @@ export default function PrivacyScreen() {
         ))}
       </Sheet>
 
-      <Sheet visible={exportText != null} onClose={() => setExportText(null)} title="Mes données">
-        <Text variant="small" muted>Le partage de fichier n’est pas disponible ici : vous pouvez copier le texte ou l’envoyer.</Text>
-        <Button label="Partager le texte" icon="share-2" size="sm" style={{ alignSelf: 'flex-start' }} onPress={() => Share.share({ message: exportText ?? '', title: 'Mes données' }).catch(() => undefined)} />
+      <Sheet visible={exportText != null} onClose={() => setExportText(null)} title={tr('u1.acc.myData')}>
+        <Text variant="small" muted>{tr('u1.priv.shareUnavailable')}</Text>
+        <Button label={tr('u1.priv.shareText')} icon="share-2" size="sm" style={{ alignSelf: 'flex-start' }} onPress={() => Share.share({ message: exportText ?? '', title: tr('u1.acc.myData') }).catch(() => undefined)} />
         <ScrollView horizontal style={{ maxHeight: 360, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, padding: spacing.sm }}>
           <Text selectable variant="caption">{(exportText ?? '').slice(0, 20000)}{(exportText?.length ?? 0) > 20000 ? '\n…' : ''}</Text>
         </ScrollView>
       </Sheet>
 
-      <Sheet visible={deleteOpen} onClose={() => setDeleteOpen(false)} title="Dernière confirmation">
-        <Banner tone="danger" title="Action irréversible">{'Pour confirmer, saisissez SUPPRIMER en majuscules.'}</Banner>
-        <Field label="Confirmation" value={typed} onChangeText={setTyped} autoCapitalize="characters" autoCorrect={false} placeholder="SUPPRIMER" />
-        <Button label="Supprimer définitivement" variant="danger" disabled={typed.trim() !== 'SUPPRIMER'} loading={deleteAccount.isPending} onPress={finalDelete} />
-        <Button label="Annuler" variant="ghost" onPress={() => setDeleteOpen(false)} />
+      <Sheet visible={deleteOpen} onClose={() => setDeleteOpen(false)} title={tr('u1.priv.lastConfirm')}>
+        <Banner tone="danger" title={tr('u1.acc.irreversible')}>{tr('u1.acc.typeToConfirm', { word: confirmWord })}</Banner>
+        <Field label={tr('u1.acc.confirmation')} value={typed} onChangeText={setTyped} autoCapitalize="characters" autoCorrect={false} placeholder={confirmWord} />
+        <Button label={tr('u1.acc.deleteForever')} variant="danger" disabled={typed.trim() !== confirmWord} loading={deleteAccount.isPending} onPress={finalDelete} />
+        <Button label={tr('u1.priv.cancel')} variant="ghost" onPress={() => setDeleteOpen(false)} />
       </Sheet>
     </Screen>
   );

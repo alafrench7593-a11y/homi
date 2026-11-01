@@ -10,6 +10,7 @@ import { canKeepPhotos } from '@/lib/cycleAnalysis/privacy';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { confidenceLabel, OUTCOME_LABEL, type TestAnalysis } from '@/lib/cycleAnalysis/interpret';
 import { QUALITY_THRESHOLDS } from '@/lib/cycleAnalysis/quality';
+import { formatNumber, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
@@ -22,7 +23,7 @@ export type PhotoSource = 'camera' | 'library';
  */
 export async function pickPhoto(source: PhotoSource): Promise<{ uri: string } | { error: string } | null> {
   const perm = source === 'camera' ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (!perm.granted) return { error: source === 'camera' ? 'Autorisez l’appareil photo dans les réglages pour prendre la photo.' : 'Autorisez l’accès aux photos dans les réglages.' };
+  if (!perm.granted) return { error: source === 'camera' ? tr('u8.cyc.permCam') : tr('u8.cyc.permLib') };
   const opts: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 0.92, exif: false, allowsEditing: Platform.OS !== 'web', base64: false };
   const r = source === 'camera' ? await ImagePicker.launchCameraAsync(opts) : await ImagePicker.launchImageLibraryAsync({ ...opts, allowsMultipleSelection: false });
   if (r.canceled || !r.assets?.[0]?.uri) return null;
@@ -32,10 +33,10 @@ export async function pickPhoto(source: PhotoSource): Promise<{ uri: string } | 
 export function PhotoGuide({ kind }: { kind: 'test' | 'mucus' }) {
   return (
     <Card tone="soft">
-      <Row gap={6}><Icon name="camera" size={18} /><Text weight="bold">Pour une photo exploitable</Text></Row>
+      <Row gap={6}><Icon name="camera" size={18} /><Text weight="bold">{tr('u8.cyc.guideTitle')}</Text></Row>
       {(kind === 'test'
-        ? ['Posez le test à plat sur une surface claire et unie.', 'Lumière naturelle ou blanche, sans flash ni reflet sur la fenêtre.', 'Toute la fenêtre de résultat doit être visible et nette (touchez l’écran pour la mise au point).', 'Prenez la photo pendant le délai de lecture de la notice.']
-        : ['Sur un support propre et clair (papier toilette blanc, bout des doigts).', 'Lumière naturelle, sans flash, photo nette et rapprochée.', 'Ne photographiez que l’échantillon, sans partie du corps reconnaissable.']
+        ? [tr('u8.cyc.g1'), tr('u8.cyc.g2'), tr('u8.cyc.g3'), tr('u8.cyc.g4')]
+        : [tr('u8.cyc.m1'), tr('u8.cyc.m2'), tr('u8.cyc.m3')]
       ).map((l) => <Text key={l} variant="small" style={{ marginTop: 4 }}>• {l}</Text>)}
     </Card>
   );
@@ -51,15 +52,15 @@ export function PhotoButtons({ onPicked, onError, disabled }: { onPicked: (uri: 
       if ('error' in r) onError(r.error);
       else onPicked(r.uri);
     } catch (err) {
-      onError(friendlyErrorMessage(err, source === 'camera' ? 'Impossible d’ouvrir l’appareil photo. Réessayez.' : 'Impossible d’ouvrir vos photos. Réessayez.'));
+      onError(friendlyErrorMessage(err, source === 'camera' ? tr('u8.cyc.openCam') : tr('u8.cyc.openLib')));
     } finally {
       setBusy(null);
     }
   }
   return (
     <Row wrap>
-      <Button label="Prendre une photo" icon="camera" onPress={() => go('camera')} disabled={disabled || busy === 'library'} loading={busy === 'camera'} />
-      <Button label="Choisir une image" icon="image" variant="secondary" onPress={() => go('library')} disabled={disabled || busy === 'camera'} loading={busy === 'library'} />
+      <Button label={tr('u8.cyc.take')} icon="camera" onPress={() => go('camera')} disabled={disabled || busy === 'library'} loading={busy === 'camera'} />
+      <Button label={tr('u8.cyc.choose')} icon="image" variant="secondary" onPress={() => go('library')} disabled={disabled || busy === 'camera'} loading={busy === 'library'} />
     </Row>
   );
 }
@@ -98,13 +99,15 @@ export function CropPicker({ uri, value, onChange }: { uri: string; value: CropV
     return { a, len, ang, thick: Math.max(6, len * value.band) };
   })() : null;
 
+  const segStyle = seg ? ({ position: 'absolute' as const, left: seg.a.left, top: seg.a.top - seg.thick / 2, width: seg.len, height: seg.thick, borderWidth: 2, borderColor: t.colors.primary, backgroundColor: t.colors.primary + '22', transformOrigin: 'left center', transform: [{ rotate: `${seg.ang}rad` }] }) : null;
+
   return (
     <View style={{ gap: spacing.xs }}>
-      <Text weight="bold">{!value.c ? '1. Touchez l’extrémité de la fenêtre côté ligne de contrôle (C)' : !value.t ? '2. Touchez l’autre extrémité de la fenêtre (côté T)' : 'Cadrage prêt : la bande colorée doit couvrir les lignes'}</Text>
+      <Text weight="bold">{!value.c ? tr('u8.cyc.crop1') : !value.t ? tr('u8.cyc.crop2') : tr('u8.cyc.crop3')}</Text>
       <Tappable
         ref={boxRef}
         accessibilityRole="imagebutton"
-        accessibilityLabel="Photo du test : touchez les deux extrémités de la fenêtre de résultat"
+        accessibilityLabel={tr('u8.cyc.photoA11y')}
         onLayout={(e: LayoutChangeEvent) => setBoxW(e.nativeEvent.layout.width)}
         onPress={(e) => {
           // Position du toucher rapportée au cadre (locationX n'est pas fiable sur le web quand on touche l'image)
@@ -116,16 +119,14 @@ export function CropPicker({ uri, value, onChange }: { uri: string; value: CropV
         style={{ width: '100%', height: dispH || 240, borderRadius: radius.md, overflow: 'hidden', backgroundColor: '#0006' }}
       >
         {boxW > 0 && <Image source={{ uri }} style={{ position: 'absolute', left: offX, top: 0, width: dispW, height: dispH }} resizeMode="stretch" />}
-        {seg && (
-          <View pointerEvents="none" style={{ position: 'absolute', left: seg.a.left, top: seg.a.top - seg.thick / 2, width: seg.len, height: seg.thick, borderWidth: 2, borderColor: t.colors.primary, backgroundColor: t.colors.primary + '22', transformOrigin: 'left center', transform: [{ rotate: `${seg.ang}rad` }] }} />
-        )}
+        {segStyle ? <View pointerEvents="none" style={segStyle} /> : null}
         {value.c && <Marker at={P(value.c)} label="C" colour={t.colors.heart} />}
         {value.t && <Marker at={P(value.t)} label="T" colour={t.colors.lavender} />}
       </Tappable>
       <Row wrap>
-        <Button label="Recommencer le cadrage" icon="rotate-ccw" variant="secondary" size="sm" onPress={() => onChange({ ...value, c: null, t: null })} />
+        <Button label={tr('u8.cyc.redo')} icon="rotate-ccw" variant="secondary" size="sm" onPress={() => onChange({ ...value, c: null, t: null })} />
       </Row>
-      <Segmented label="Largeur de la bande analysée" value={value.band <= 0.15 ? 'fine' : value.band >= 0.3 ? 'large' : 'normal'} onChange={(v) => onChange({ ...value, band: v === 'fine' ? 0.12 : v === 'large' ? 0.34 : 0.22 })} options={[{ value: 'fine', label: 'Fine' }, { value: 'normal', label: 'Normale' }, { value: 'large', label: 'Large' }]} />
+      <Segmented label={tr('u8.cyc.bandWidth')} value={value.band <= 0.15 ? 'fine' : value.band >= 0.3 ? 'large' : 'normal'} onChange={(v) => onChange({ ...value, band: v === 'fine' ? 0.12 : v === 'large' ? 0.34 : 0.22 })} options={[{ value: 'fine', label: tr('u8.cyc.fine') }, { value: 'normal', label: tr('u8.cyc.normal') }, { value: 'large', label: tr('u8.cyc.large') }]} />
     </View>
   );
 }
@@ -142,9 +143,9 @@ export function ConfidenceMeter({ value }: { value: number }) {
   const t = useTheme();
   const label = confidenceLabel(value);
   return (
-    <View accessible accessibilityLabel={`Niveau de confiance : ${label}`} style={{ gap: 4 }}>
+    <View accessible accessibilityLabel={tr('u8.cyc.confA11y', { label })} style={{ gap: 4 }}>
       <Row style={{ justifyContent: 'space-between' }}>
-        <Text variant="small" muted>Niveau de confiance</Text>
+        <Text variant="small" muted>{tr('u8.cyc.conf')}</Text>
         <Text variant="small" weight="bold">{label}</Text>
       </Row>
       <ProgressBar value={value} track={t.colors.border} color={value >= 0.75 ? t.colors.success : value >= 0.5 ? t.colors.gold : t.colors.heart} />
@@ -162,7 +163,7 @@ export function LineProfile({ analysis }: { analysis: TestAnalysis }) {
   const vals = Array.from({ length: n }, (_, i) => Math.max(0, ...s.residual.slice(Math.floor(i * step), Math.floor((i + 1) * step))));
   const max = Math.max(10, ...vals);
   return (
-    <View accessible accessibilityLabel={`Lignes détectées : contrôle ${s.control ? 'oui' : 'non'}, test ${s.test ? 'oui' : 'non'}`}>
+    <View accessible accessibilityLabel={tr('u8.cyc.linesA11y', { control: s.control ? tr('u8.cyc.yes') : tr('u8.cyc.no'), test: s.test ? tr('u8.cyc.yes') : tr('u8.cyc.no') })}>
       <Row gap={1} style={{ height: 48, alignItems: 'flex-end' }}>
         {vals.map((v, i) => {
           const pos = (i + 0.5) / n;
@@ -172,8 +173,8 @@ export function LineProfile({ analysis }: { analysis: TestAnalysis }) {
         })}
       </Row>
       <Row style={{ justifyContent: 'space-between', marginTop: 2 }}>
-        <Text variant="caption" muted>côté C</Text>
-        <Text variant="caption" muted>côté T</Text>
+        <Text variant="caption" muted>{tr('u8.cyc.sideC')}</Text>
+        <Text variant="caption" muted>{tr('u8.cyc.sideT')}</Text>
       </Row>
     </View>
   );
@@ -195,21 +196,21 @@ export function AnalysisCard({ analysis }: { analysis: TestAnalysis }) {
   const tone = analysis.outcome === 'unusable' || analysis.outcome === 'invalid' ? 'warning' : 'info';
   return (
     <Card>
-      <Text variant="caption" muted weight="bold" style={{ letterSpacing: 1 }}>RÉSULTAT PROPOSÉ — À CONFIRMER</Text>
+      <Text variant="caption" muted weight="bold" style={{ letterSpacing: 1 }}>{tr('u8.cyc.proposed')}</Text>
       <Text variant="heading" style={{ marginTop: 4 }} accessibilityRole="header">{OUTCOME_LABEL[analysis.outcome]}</Text>
       <View style={{ marginTop: spacing.sm }}><ConfidenceMeter value={analysis.confidence} /></View>
       {analysis.messages.map((m) => <Text key={m} variant="small" style={{ marginTop: spacing.xs }}>{m}</Text>)}
       {q || s ? (
         <View style={{ marginTop: spacing.sm, gap: 4 }}>
-          <Text variant="label">Contrôles effectués sur le téléphone</Text>
-          {q ? <Check ok={!q.issues.includes('too_dark') && !q.issues.includes('too_bright')} label={`Luminosité (${Math.round(q.windowBrightness ?? q.brightness)}/255)`} /> : null}
-          {q ? <Check ok={!q.issues.includes('blurry')} label={`Netteté (indice ${q.sharpness.toFixed(2)}, minimum ${QUALITY_THRESHOLDS.blurry})`} /> : null}
-          {s && q?.ok ? <Check ok={!!s.control} label="Ligne de contrôle" /> : null}
-          {s && q?.ok && s.control ? <Check ok={s.test ? true : null} label={s.test ? `Ligne de test (intensité ${Math.round((s.ratio ?? 0) * 100)} % du contrôle)` : 'Ligne de test non détectée'} /> : null}
+          <Text variant="label">{tr('u8.cyc.checks')}</Text>
+          {q ? <Check ok={!q.issues.includes('too_dark') && !q.issues.includes('too_bright')} label={tr('u8.cyc.bright', { v: Math.round(q.windowBrightness ?? q.brightness) })} /> : null}
+          {q ? <Check ok={!q.issues.includes('blurry')} label={tr('u8.cyc.sharp', { v: formatNumber(q.sharpness, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), min: QUALITY_THRESHOLDS.blurry })} /> : null}
+          {s && q?.ok ? <Check ok={!!s.control} label={tr('u8.cyc.ctrlLine')} /> : null}
+          {s && q?.ok && s.control ? <Check ok={s.test ? true : null} label={s.test ? tr('u8.cyc.testLine', { pct: Math.round((s.ratio ?? 0) * 100) }) : tr('u8.cyc.noTestLine')} /> : null}
         </View>
       ) : null}
       {s && q?.ok ? <View style={{ marginTop: spacing.sm }}><LineProfile analysis={analysis} /></View> : null}
-      <Banner tone={tone}>Ce résultat est une aide à la lecture, pas un diagnostic. Seule la notice du fabricant fait foi.</Banner>
+      <Banner tone={tone}>{tr('u8.cyc.disclaimer')}</Banner>
     </Card>
   );
 }
@@ -217,14 +218,14 @@ export function AnalysisCard({ analysis }: { analysis: TestAnalysis }) {
 /** Choix de conservation : par défaut, rien n'est gardé. */
 export function KeepPhotoChoice({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
   if (!canKeepPhotos()) {
-    return <Text variant="caption" muted>La photo sera supprimée après l’enregistrement. La conservation chiffrée des photos n’est disponible que dans l’application mobile connectée à votre compte.</Text>;
+    return <Text variant="caption" muted>{tr('u8.cyc.delPhoto')}</Text>;
   }
   return (
     <View style={{ gap: 4 }}>
-      <Toggle value={value} onChange={onChange} label="Garder la photo (chiffrée, visible uniquement par vous)" />
+      <Toggle value={value} onChange={onChange} label={tr('u8.cyc.keep')} />
       <Text variant="caption" muted>{value
-        ? 'La photo sera chiffrée sur ce téléphone avant d’être enregistrée dans votre espace privé. La clé reste sur ce téléphone : sans lui, la photo ne peut plus être ouverte.'
-        : 'Par défaut, seul le résultat est gardé : la photo est supprimée juste après l’enregistrement.'}</Text>
+        ? tr('u8.cyc.keepOn')
+        : tr('u8.cyc.keepOff')}</Text>
     </View>
   );
 }

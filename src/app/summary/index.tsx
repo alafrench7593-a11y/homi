@@ -21,8 +21,10 @@ import { eq } from '@/lib/backend';
 import { childSummary, periodStart, summaryText, type SummaryPeriod, type SummarySection } from '@/lib/domain/summary';
 import type { Bottle, Breastfeed, Child, Diaper, MaternalWeight, Meal, Observation, Sleep } from '@/lib/types';
 import { spacing } from '@/theme/tokens';
+import { t as tr, formatDate } from '@/i18n';
 
-const PERIOD_LABEL: Record<SummaryPeriod, string> = { day: 'Aujourd’hui', week: '7 derniers jours', appointment: 'Avant le rendez-vous' };
+const periodLabel = (p: SummaryPeriod): string => tr(p === 'day' ? 'u7.summary.today' : p === 'week' ? 'u7.summary.week' : 'u7.summary.appointment');
+const LONG_DT: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' };
 
 function useChildSections(child: Child | null, period: SummaryPeriod) {
   const id = child?.id;
@@ -46,7 +48,7 @@ function useChildSections(child: Child | null, period: SummaryPeriod) {
 }
 
 function SectionsView({ sections }: { sections: SummarySection[] }) {
-  if (!sections.length) return <Text muted>Rien n’a été noté sur cette période.</Text>;
+  if (!sections.length) return <Text muted>{tr('u7.summary.empty')}</Text>;
   return (
     <View style={{ gap: spacing.xs }}>
       {sections.map((s) => (
@@ -78,7 +80,8 @@ export default function SummaryScreen() {
   const [period, setPeriod] = useState<SummaryPeriod>(params.period === 'week' || params.period === 'appointment' ? params.period : 'day');
   const family = params.family === '1' || subject.type === 'family';
   const child = subject.type === 'child' ? (children ?? []).find((c) => c.id === subject.id) ?? null : null;
-  const name = child?.first_name ?? (subject.type === 'pregnancy' ? 'votre grossesse' : null);
+  const name = child?.first_name ?? (subject.type === 'pregnancy' ? tr('u7.summary.yourPregnancy') : null);
+  const shortName = child?.first_name ?? (subject.type === 'pregnancy' ? tr('u7.summary.pregnancyShort') : null);
   const { sections: childSections, from, next } = useChildSections(child, period);
   const weights = useRows<MaternalWeight>(['maternal_weights', 'summary', pregnancy?.id ?? ''], subject.type === 'pregnancy' && pregnancy ? { table: 'maternal_weights', filters: [eq('pregnancy_id', pregnancy.id)] } : null).data ?? [];
   const allAppts = useAppointments().data ?? [];
@@ -86,11 +89,11 @@ export default function SummaryScreen() {
     if (subject.type !== 'pregnancy' || !pregnancy) return [];
     const out: SummarySection[] = [];
     const w = weights.filter((x) => Date.parse(x.measured_on) >= from.getTime() - 86_400_000).sort((a, b) => b.measured_on.localeCompare(a.measured_on));
-    if (w.length) out.push({ heading: 'Poids noté', lines: w.slice(0, 5).map((x) => `${new Date(x.measured_on).toLocaleDateString('fr-FR')} · ${String(x.weight_kg).replace('.', ',')} kg`) });
+    if (w.length) out.push({ heading: tr('u7.summary.weightNoted'), lines: w.slice(0, 5).map((x) => `${formatDate(x.measured_on)} · ${String(x.weight_kg).replace('.', ',')} kg`) });
     const ap = allAppts.filter((a) => a.pregnancy_id === pregnancy.id && Date.parse(a.starts_at) >= from.getTime()).sort((a, b) => a.starts_at.localeCompare(b.starts_at)).slice(0, 5);
-    if (ap.length) out.push({ heading: 'Rendez-vous et examens', lines: ap.map((a) => `${new Date(a.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })} · ${a.title}`) });
+    if (ap.length) out.push({ heading: tr('u7.summary.apptsExams'), lines: ap.map((a) => `${formatDate(a.starts_at, LONG_DT)} · ${a.title}`) });
     return out;
-  }, [subject.type, pregnancy?.id, weights, allAppts, from.getTime()]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [subject.type, pregnancy?.id, weights, allAppts, from.getTime(), tr('u7.summary.weightNoted')]); // eslint-disable-line react-hooks/exhaustive-deps
   const sections = subject.type === 'pregnancy' ? pregSections : childSections;
 
   const summaries = usePremiumAccess('summaries', name);
@@ -98,31 +101,31 @@ export default function SummaryScreen() {
   const exportQuota = useQuota('summary_exports_per_month');
   const consume = useConsumeQuota('summary_exports_per_month');
   const [busy, setBusy] = useState(false);
-  const title = `Résumé${name ? ` · ${name.replace(/^votre /, '')}` : ''} · ${PERIOD_LABEL[period].toLowerCase()}`;
-  const subtitle = `Du ${from.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} au ${new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+  const title = `${tr('u7.summary.titleBase')}${shortName ? ` · ${shortName}` : ''} · ${periodLabel(period).toLowerCase()}`;
+  const subtitle = tr('u7.summary.range', { from: formatDate(from, { day: 'numeric', month: 'long' }), to: formatDate(new Date(), { day: 'numeric', month: 'long', year: 'numeric' }) });
 
   async function exportPdf(mode: 'pdf' | 'share') {
     setBusy(true);
     try {
       if (!exportAccess.premium) {
         const r = await consume();
-        if (!r.allowed) { exportAccess.showPreview(<Text variant="small">{`${sections.length} rubrique(s) prêtes à exporter pour ${name ?? 'ce profil'}.`}</Text>, { used: r.used, quota: r.quota, unit: 'exports' }); return; }
+        if (!r.allowed) { exportAccess.showPreview(<Text variant="small">{tr('u7.summary.previewReady', { count: sections.length, name: name ?? tr('u7.summary.thisProfile') })}</Text>, { used: r.used, quota: r.quota, unit: tr('u7.summary.exportsUnit') }); return; }
       }
       if (mode === 'share' && Platform.OS !== 'web') {
         await Share.share({ title, message: summaryText(title, subtitle, sections) });
       } else {
-        const bytes = await buildTextPdf(title, [subtitle, 'Faits enregistrés par la famille ; aucun diagnostic ni interprétation médicale.'], sections);
+        const bytes = await buildTextPdf(title, [subtitle, tr('u7.summary.pdfNote')], sections);
         await deliverFile(bytes, `resume-${new Date().toISOString().slice(0, 10)}.pdf`, 'application/pdf', title);
       }
       void exportQuota.refetch();
-      toast('Résumé prêt.', 'success');
+      toast(tr('u7.summary.ready'), 'success');
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
   }
 
   if (family) {
     return (
-      <Screen back title="Résumé familial du jour" subtitle="Chaque enfant séparément, sans rien mélanger.">
-        <PremiumSection feature="family_summary" preview={<Text variant="small">{`${(children ?? []).map((c) => c.first_name).join(', ') || 'Vos enfants'} : repas, sommeil, couches et rendez-vous du jour, chacun dans sa rubrique.`}</Text>}>
+      <Screen back title={tr('u7.summary.familyTitle')} subtitle={tr('u7.summary.familySub')}>
+        <PremiumSection feature="family_summary" preview={<Text variant="small">{tr('u7.summary.familyPreview', { names: (children ?? []).map((c) => c.first_name).join(', ') || tr('u7.summary.yourChildren') })}</Text>}>
           <View style={{ gap: spacing.sm }} testID="family-summary">{(children ?? []).map((c) => <FamilyDay key={c.id} child={c} />)}</View>
         </PremiumSection>
       </Screen>
@@ -131,38 +134,38 @@ export default function SummaryScreen() {
 
   const locked = period !== 'day' && !summaries.premium;
   return (
-    <Screen back title="Résumé" subtitle={name ? `Pour ${name}` : undefined}
+    <Screen back title={tr('u7.summary.titleBase')} subtitle={name ? tr('u7.summary.forName', { name }) : undefined}
       action={!locked && sections.length && (subject.type === 'child' || subject.type === 'pregnancy')
-        ? { label: Platform.OS === 'web' ? 'Télécharger en PDF' : 'Exporter en PDF', icon: 'download', disabled: busy, onPress: () => void exportPdf('pdf'), testID: 'summary-export' } : undefined}>
+        ? { label: Platform.OS === 'web' ? tr('u7.summary.downloadPdf') : tr('u7.summary.exportPdf'), icon: 'download', disabled: busy, onPress: () => void exportPdf('pdf'), testID: 'summary-export' } : undefined}>
       <ProfileSwitcher />
       {subject.type === 'child' || subject.type === 'pregnancy' ? (
-        <TodaySummary title={PERIOD_LABEL[period]} items={[
-          { icon: 'layers', value: String(sections.length), label: sections.length > 1 ? 'Rubriques remplies' : 'Rubrique remplie' },
-          { icon: 'list', value: String(sections.reduce((n, x) => n + x.lines.length, 0)), label: 'Éléments notés' },
-          { icon: 'download', value: exportAccess.premium ? '∞' : exportQuota.status ? String(exportQuota.status.remaining) : '—', label: 'Exports restants' },
+        <TodaySummary title={periodLabel(period)} items={[
+          { icon: 'layers', value: String(sections.length), label: tr('u7.summary.sectionsFilled', { count: sections.length }) },
+          { icon: 'list', value: String(sections.reduce((n, x) => n + x.lines.length, 0)), label: tr('u7.summary.itemsLogged') },
+          { icon: 'download', value: exportAccess.premium ? '∞' : exportQuota.status ? String(exportQuota.status.remaining) : '—', label: tr('u7.summary.exportsLeft') },
         ]} />
       ) : null}
-      {subject.type !== 'child' && subject.type !== 'pregnancy' ? <Banner tone="info">{'Choisissez un enfant ou votre grossesse pour voir son résumé.'}</Banner> : (
+      {subject.type !== 'child' && subject.type !== 'pregnancy' ? <Banner tone="info">{tr('u7.summary.pickProfile')}</Banner> : (
         <>
           <View testID="summary-periods"><Row wrap>
-            {(['day', 'week', 'appointment'] as SummaryPeriod[]).map((p) => <Chip key={p} label={PERIOD_LABEL[p]} selected={period === p} onPress={() => setPeriod(p)} />)}
+            {(['day', 'week', 'appointment'] as SummaryPeriod[]).map((p) => <Chip key={p} label={periodLabel(p)} selected={period === p} onPress={() => setPeriod(p)} />)}
           </Row></View>
-          {period === 'appointment' && next ? <Text variant="small" muted>{`Prochain rendez-vous : ${next.title}, ${new Date(next.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}`}</Text> : null}
+          {period === 'appointment' && next ? <Text variant="small" muted>{tr('u7.summary.nextAppt', { title: next.title, date: formatDate(next.starts_at, LONG_DT) })}</Text> : null}
           <Text variant="caption" muted testID="summary-range">{subtitle}</Text>
           {locked ? (
-            <PremiumSection feature="summaries" name={name} preview={<Text variant="small">{`${sections.length} rubrique(s) déjà remplies avec vos saisies (${sections.map((s) => s.heading.toLowerCase()).slice(0, 3).join(', ')}…).`}</Text>}><View /></PremiumSection>
+            <PremiumSection feature="summaries" name={name} preview={<Text variant="small">{tr('u7.summary.lockedPreview', { count: sections.length, list: sections.map((s) => s.heading.toLowerCase()).slice(0, 3).join(', ') })}</Text>}><View /></PremiumSection>
           ) : (
             <View testID="summary-sections"><SectionsView sections={sections} /></View>
           )}
           {!locked && sections.length ? (
             <View style={{ gap: spacing.xs }}>
               <Row wrap>
-                {Platform.OS !== 'web' ? <Button label="Partager le texte" icon="share" size="sm" variant="secondary" loading={busy} onPress={() => exportPdf('share')} /> : null}
+                {Platform.OS !== 'web' ? <Button label={tr('u7.summary.shareText')} icon="share" size="sm" variant="secondary" loading={busy} onPress={() => exportPdf('share')} /> : null}
               </Row>
-              {!exportAccess.premium && exportQuota.status ? <Text variant="caption" muted testID="summary-export-left">{`${exportQuota.status.remaining} export(s) gratuit(s) restant(s) ce mois.`}</Text> : null}
+              {!exportAccess.premium && exportQuota.status ? <Text variant="caption" muted testID="summary-export-left">{tr('u7.summary.freeLeft', { count: exportQuota.status.remaining })}</Text> : null}
             </View>
           ) : null}
-          <Text variant="caption" muted>Faits enregistrés par la famille, sans diagnostic ni interprétation médicale. Rien n’est envoyé sans votre action.</Text>
+          <Text variant="caption" muted>{tr('u7.summary.footer')}</Text>
         </>
       )}
     </Screen>

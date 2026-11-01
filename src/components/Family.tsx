@@ -165,7 +165,7 @@ export function AskFab({ bottom = 0 }: { bottom?: number }) {
     <Tappable
       accessibilityRole="button"
       accessibilityLabel={tr('ask.button')}
-      accessibilityHint="Ouvre l’assistant d’intelligence artificielle"
+      accessibilityHint={tr('u7.family.askHint')}
       onPress={() => { haptic('light'); router.push('/assistant/chat'); }}
       style={({ pressed }) => [styles.fab, { bottom: bottom + spacing.md, backgroundColor: t.colors.primary, opacity: pressed ? 0.9 : 1 }]}
     >
@@ -185,8 +185,8 @@ export function PremiumGate({ children, feature }: { children: React.ReactNode; 
         <Icon name="star" size={18} />
         <Text weight="bold" style={{ flex: 1 }}>{feature}</Text>
       </Row>
-      <Text variant="small" muted style={{ marginTop: 6 }}>Cette fonction fait partie de Au fil de nous Premium. Le suivi essentiel, la communauté et toutes les informations de sécurité restent gratuits.</Text>
-      <Button label="Découvrir l’abonnement" variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
+      <Text variant="small" muted style={{ marginTop: 6 }}>{tr('u7.family.premiumNote')}</Text>
+      <Button label={tr('u7.family.discover')} variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
     </Card>
   );
 }
@@ -199,12 +199,12 @@ export function EmergencyList({ compact }: { compact?: boolean }) {
   const list = compact ? data?.filter((r) => ['15', '112', '3114'].includes(r.phone)) : data;
   return (
     <View style={{ gap: spacing.xs }}>
-      {(list ?? FALLBACK).map((r) => (
+      {(list ?? fallbackResources()).map((r) => (
         <Tappable
           key={r.phone}
           accessibilityRole="button"
-          accessibilityLabel={`Appeler le ${r.phone.split('').join(' ')}, ${r.label}`}
-          onPress={() => { Linking.openURL(`tel:${r.phone}`).catch(() => toast(`Impossible de lancer l’appel ici : composez le ${r.phone} depuis votre téléphone.`, 'error')); }}
+          accessibilityLabel={tr('u7.family.callA11y', { phone: r.phone.split('').join(' '), label: r.label })}
+          onPress={() => { Linking.openURL(`tel:${r.phone}`).catch(() => toast(tr('u7.emergency.callFail', { phone: r.phone }), 'error')); }}
           style={({ pressed }) => [styles.emergency, { backgroundColor: t.colors.surface, borderColor: t.colors.border, opacity: pressed ? 0.85 : 1 }]}
         >
           <View style={[styles.phone, { backgroundColor: t.colors.dangerSoft }]}>
@@ -223,15 +223,15 @@ export function EmergencyList({ compact }: { compact?: boolean }) {
 }
 
 // Toujours disponible, même sans réseau ni base
-const FALLBACK = [
-  { phone: '15', label: 'SAMU', description: 'Urgence médicale', available: '24 h/24' },
-  { phone: '112', label: 'Numéro d’urgence européen', description: 'Toute urgence', available: '24 h/24' },
-  { phone: '3114', label: 'Prévention du suicide', description: 'Gratuit et confidentiel', available: '24 h/24' },
+const fallbackResources = () => [
+  { phone: '15', label: 'SAMU', description: tr('u7.family.samu.desc'), available: tr('u7.family.samu.avail') },
+  { phone: '112', label: tr('u7.family.eu.label'), description: tr('u7.family.eu.desc'), available: tr('u7.family.samu.avail') },
+  { phone: '3114', label: tr('u7.family.suicide.label'), description: tr('u7.family.suicide.desc'), available: tr('u7.family.samu.avail') },
 ];
 
 export function DemoBanner() {
   if (!isDemo) return null;
-  return <Banner tone="demo" title="Mode démonstration">{'Vos données restent uniquement sur cet appareil. Connectez Supabase pour la synchronisation, le partage familial et les notifications push (voir README).'}</Banner>;
+  return <Banner tone="demo" title={tr('u7.family.demoTitle')}>{tr('u7.family.demoBody')}</Banner>;
 }
 
 export function EmergencyShortcut() {
@@ -240,7 +240,7 @@ export function EmergencyShortcut() {
   return (
     <Tappable
       accessibilityRole="button"
-      accessibilityLabel="Besoin d’aide maintenant : numéros d’urgence"
+      accessibilityLabel={tr('u7.family.helpA11y')}
       onPress={() => router.push('/emergency')}
       hitSlop={8}
       style={{ position: 'absolute', top: insets.top + 6, right: spacing.md, minHeight: MIN_TOUCH, minWidth: MIN_TOUCH, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.dangerSoft }}

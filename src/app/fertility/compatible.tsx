@@ -7,29 +7,31 @@ import { useToast } from '@/components/Overlays';
 import { Banner, Card, Row, SectionTitle, Text } from '@/components/ui';
 import { rulesFor, type AnalysisMode } from '@/lib/cycleAnalysis/brands';
 import { spacing } from '@/theme/tokens';
+import type { TKey } from '@/i18n';
+import { t as tr } from '@/i18n';
 
-const MODE_LABEL: Record<AnalysisMode, string> = {
-  lines_auto: 'Analyse automatique des lignes sur le téléphone',
-  digital_ocr: 'Lecture du texte de l’écran sur le téléphone (application mobile)',
-  manual_only: 'Lecture par vous : l’application note le résultat',
+const MODE_LABEL: Record<AnalysisMode, TKey> = {
+  lines_auto: 'u3.fertCompat.m1',
+  digital_ocr: 'u3.fertCompat.m2',
+  manual_only: 'u3.fertCompat.m3',
 };
 
 export default function CompatibleTestsScreen() {
   const toast = useToast();
   return (
-    <Screen back title="Tests compatibles" subtitle="Seuls ces tests sont interprétés selon leur notice">
-      <Banner tone="warning" title="À savoir">Les règles ci-dessous sont reprises des notices des fabricants. L’analyse photo n’a pas encore été validée sur un grand nombre de vraies photos de ces tests : le résultat proposé doit toujours être vérifié avec la notice. Pour tout autre test, l’application ne propose pas de résultat.</Banner>
+    <Screen back title={tr('u3.fertCompat.title')} subtitle={tr('u3.fertCompat.subtitle')}>
+      <Banner tone="warning" title={tr('u3.fertCompat.know')}>{tr('u3.fertCompat.warn')}</Banner>
       {(['ovulation', 'pregnancy'] as const).map((kind) => (
         <View key={kind} style={{ gap: spacing.sm }}>
-          <SectionTitle title={kind === 'ovulation' ? 'Tests d’ovulation' : 'Tests de grossesse'} />
+          <SectionTitle title={kind === 'ovulation' ? tr('u3.fertCompat.ovT') : tr('u3.fertCompat.pregT')} />
           {rulesFor(kind).map((r) => (
             <Card key={r.id}>
               <Text weight="bold">{`${r.brand} — ${r.model}`}</Text>
-              <Text variant="caption" muted>{MODE_LABEL[r.mode]}</Text>
+              <Text variant="caption" muted>{tr(MODE_LABEL[r.mode])}</Text>
               {r.readingRules.map((l) => <Text key={l} variant="small" style={{ marginTop: 2 }}>• {l}</Text>)}
               <Row style={{ marginTop: spacing.xs }}>
-                <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(r.source.url).catch(() => toast('Impossible d’ouvrir ce lien sur cet appareil.', 'error'))} style={{ flexShrink: 1 }}>
-                  <Text variant="caption" color="#7A5CE0" style={{ flexShrink: 1 }}>{`Source : ${r.source.title} (consultée le ${r.source.consultedOn.split('-').reverse().join('/')})`}</Text>
+                <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(r.source.url).catch(() => toast(tr('u3.fertCompat.linkErr'), 'error'))} style={{ flexShrink: 1 }}>
+                  <Text variant="caption" color="#7A5CE0" style={{ flexShrink: 1 }}>{tr('u3.fertCompat.source', { title: r.source.title, date: r.source.consultedOn.split('-').reverse().join('/') })}</Text>
                 </Tappable>
               </Row>
               {r.source.note ? <Text variant="caption" muted>{r.source.note}</Text> : null}
