@@ -20,7 +20,7 @@ import { useMyBlocks } from '@/lib/data/hooks-community';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
-import { cancelAllLocal } from '@/lib/notifications';
+import { cancelAllLocal, unregisterPushToken } from '@/lib/notifications';
 import { BRAND } from '@/config/brand';
 import { localeTag, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
@@ -94,6 +94,7 @@ function PrivateAccount() {
     setBusy(true);
     try {
       await cancelAllLocal().catch(() => undefined);
+      await unregisterPushToken();
       await backend.auth.signOut(false);
       router.replace('/welcome');
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }

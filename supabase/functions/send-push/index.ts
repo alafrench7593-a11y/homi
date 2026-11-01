@@ -18,7 +18,14 @@ Deno.serve(async (req) => {
     .is('pushed_at', null)
     .gt('created_at', new Date(Date.now() - 24 * 3600 * 1000).toISOString())
     .limit(500);
-  const rows = (pending ?? []) as Row[];
+  const candidates = (pending ?? []) as Row[];
+  if (!candidates.length) return json({ sent: 0 });
+  // Réservation atomique AVANT l'envoi : deux appels simultanés ne peuvent plus envoyer la même
+  // notification (seule la ligne encore « non envoyée » est réservée par un seul appel).
+  const { data: claimed } = await admin.from('notifications').update({ pushed_at: new Date().toISOString() })
+    .in('id', candidates.map((r) => r.id)).is('pushed_at', null).select('id');
+  const claimedIds = new Set((claimed ?? []).map((c: { id: string }) => c.id));
+  const rows = candidates.filter((r) => claimedIds.has(r.id));
   if (!rows.length) return json({ sent: 0 });
 
   const userIds = [...new Set(rows.map((r) => r.user_id))];
@@ -50,13 +57,18 @@ Deno.serve(async (req) => {
       signal: AbortSignal.timeout(8000),
       headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(Deno.env.get('EXPO_ACCESS_TOKEN') ? { Authorization: `Bearer ${Deno.env.get('EXPO_ACCESS_TOKEN')}` } : {}) },
       body: JSON.stringify(chunk),
-    });
+    }).catch(() => null);
+    if (!res || !res.ok) {
+      // Échec d'envoi : ces notifications redeviennent « à envoyer » pour le prochain passage
+      const ids = [...new Set(chunk.map((m) => m.data.notificationId))];
+      await admin.from('notifications').update({ pushed_at: null }).in('id', ids);
+      continue;
+    }
     const out = await res.json().catch(() => ({}));
     (out.data ?? []).forEach((t: { status: string; details?: { error?: string } }, j: number) => {
       if (t.status === 'error' && t.details?.error === 'DeviceNotRegistered') invalid.push(chunk[j].to);
     });
   }
   if (invalid.length) await admin.from('push_devices').delete().in('expo_push_token', invalid);
-  await admin.from('notifications').update({ pushed_at: new Date().toISOString() }).in('id', rows.map((r) => r.id));
   return json({ sent: messages.length, removed_tokens: invalid.length });
 });

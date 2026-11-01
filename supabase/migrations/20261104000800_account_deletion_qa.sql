@@ -50,3 +50,17 @@ revoke execute on function public.delete_user_account(uuid) from public, anon, a
 -- alter table public.documents drop constraint if exists documents_uploaded_by_fkey;
 -- alter table public.documents add constraint documents_uploaded_by_fkey foreign key (uploaded_by) references auth.users(id) on delete cascade;
 -- (delete_user_account : reprendre la définition de 20261015000500_account_storage_admin.sql)
+
+-- A-05 (P1) : les photos de naissance (bucket « avatars », chemin <foyer>/children/<enfant>.jpg)
+-- n'étaient jamais effacées quand le foyer disparaît avec le compte. Liste des fichiers à effacer,
+-- même règle que delete_user_account (foyers dont la personne est propriétaire et sans coparent).
+create or replace function public.avatar_paths_for_account(p_user uuid)
+returns text[] language sql stable security definer set search_path = public as $$
+  select coalesce(array_agg(c.photo_path), '{}')
+  from public.children c
+  join public.household_members m on m.household_id = c.household_id and m.user_id = p_user and m.role = 'owner'
+  where c.photo_path is not null
+    and not exists (select 1 from public.household_members o where o.household_id = c.household_id and o.user_id <> p_user and o.role = 'coparent');
+$$;
+revoke execute on function public.avatar_paths_for_account(uuid) from public, anon, authenticated;
+-- Retour arrière : drop function if exists public.avatar_paths_for_account(uuid);

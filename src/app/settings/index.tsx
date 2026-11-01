@@ -12,7 +12,7 @@ import { useAuth } from '@/lib/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { useHousehold, useHouseholdMembers, usePremium, useProfile, useReminders, useUpdateProfile } from '@/lib/data/hooks';
 import { friendlyError, useMyRoles } from '@/lib/data/hooks-settings';
-import { cancelAllLocal } from '@/lib/notifications';
+import { cancelAllLocal, unregisterPushToken } from '@/lib/notifications';
 import { useUiStore } from '@/lib/store';
 import { useOfflineStore } from '@/lib/offline';
 import { setDeveloperMode, useDeveloperMode } from '@/lib/devMode';
@@ -86,6 +86,7 @@ export default function SettingsScreen() {
     setSigningOut(true);
     try {
       await cancelAllLocal().catch(() => undefined);
+      await unregisterPushToken();
       await backend.auth.signOut(allDevices);
       router.replace('/welcome');
     } catch (e) {

@@ -127,10 +127,24 @@ export async function registerPushToken(): Promise<string | null> {
   if (!projectId) return null;
   try {
     const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
-    await backend.insert('push_devices', { expo_push_token: token, platform: Platform.OS, device_label: Device.modelName ?? null, last_seen_at: new Date().toISOString() }, { onConflict: 'expo_push_token' });
+    // Rattache le jeton au compte connecté (et le retire d'un compte précédent sur un téléphone partagé)
+    await backend.rpc('claim_push_device', { p_token: token, p_platform: Platform.OS, p_label: Device.modelName ?? null });
     return token;
   } catch {
     return null; // réessayé au prochain lancement
+  }
+}
+
+/** Déconnexion : ce téléphone ne reçoit plus les notifications du compte qui se déconnecte. */
+export async function unregisterPushToken(): Promise<void> {
+  if (!notificationsSupported || !Device.isDevice || backend.mode === 'demo') return;
+  const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
+  if (!projectId) return;
+  try {
+    const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId });
+    await backend.rpc('release_push_device', { p_token: token });
+  } catch {
+    /* hors ligne : le serveur retire de toute façon le jeton s'il est repris par un autre compte */
   }
 }
 

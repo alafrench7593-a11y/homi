@@ -77,6 +77,14 @@ Deno.serve(withCors(async (req) => {
     return json({ error: 'server_error' }, 500);
   }
 
+  // Photos de naissance des foyers qui vont disparaître (bucket « avatars ») : liste AVANT la suppression
+  const { data: avatarPaths, error: avatarErr } = await admin.rpc('avatar_paths_for_account', { p_user: auth.user.id });
+  if (avatarErr) {
+    console.error('delete_account_avatars_error', avatarErr.code);
+    return json({ error: 'server_error' }, 500);
+  }
+  const avatars = (avatarPaths ?? []) as string[];
+
   const { data: paths, error } = await admin.rpc('delete_user_account', { p_user: auth.user.id });
   if (error) {
     console.error('delete_account_error', error.code);
@@ -90,6 +98,9 @@ Deno.serve(withCors(async (req) => {
   for (let i = 0; i < files.length; i += PAGE) {
     if (!(await removeWithRetry(admin, 'documents', files.slice(i, i + PAGE)))) pending += files.slice(i, i + PAGE).length;
   }
+  for (let i = 0; i < avatars.length; i += PAGE) {
+    if (!(await removeWithRetry(admin, 'avatars', avatars.slice(i, i + PAGE)))) pending += avatars.slice(i, i + PAGE).length;
+  }
   if (pending > 0) console.error('delete_account_documents_pending', pending);
-  return json({ ok: true, files_removed: files.length - pending + photos.length + cycle.count + community.count, files_pending: pending });
+  return json({ ok: true, files_removed: files.length + avatars.length - pending + photos.length + cycle.count + community.count, files_pending: pending });
 }));
