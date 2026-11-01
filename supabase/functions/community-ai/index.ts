@@ -5,7 +5,7 @@
 // de la personne (RLS : publications et réponses qu'elle peut déjà lire). Seuls les textes sont transmis,
 // mentions et coordonnées neutralisées ; jamais de pseudonyme ni de donnée de l'application.
 // Sans GEMINI_API_KEY : { ai: 'not_configured' } — l'application l'indique, jamais un faux résumé.
-import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser } from '../_shared/http.ts';
 import { geminiConfig } from '../_shared/gemini.ts';
 import { MIN_COMMENTS_FOR_SUMMARY, parseRequest } from '../_shared/community-ai.ts';
 import { runSummary, runTranslation } from '../_shared/community-ai-run.ts';
@@ -24,6 +24,10 @@ Deno.serve(async (req) => {
   if (!cfg) return json({ ai: 'not_configured', message: 'Le résumé et la traduction par IA ne sont pas encore configurés.' });
 
   const admin = adminClient();
+  // Même règle que l'assistant : rien n'est envoyé à l'IA sans l'accord « assistant IA » (désactivé par défaut)
+  if (!(await hasConsent(admin, auth.user.id, 'ai_assistant'))) {
+    return json({ ai: 'consent_required', message: 'Le résumé et la traduction par IA demandent votre accord : Réglages › Confidentialité › Assistant IA.' });
+  }
   if (!(await rateLimit(admin, `community_ai:${auth.user.id}`, 30, 3600))) {
     return json({ ai: 'unavailable', message: 'Trop de demandes en une heure. Réessayez plus tard.' });
   }

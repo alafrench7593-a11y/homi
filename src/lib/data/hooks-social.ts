@@ -242,7 +242,7 @@ export function useDigestSync() {
 export type CommunityAiResult =
   | { ai: 'ok' | 'demo'; kind: 'summary'; points: string[]; caution: string | null; message?: string }
   | { ai: 'ok'; kind: 'translation'; text: string; target: 'fr' | 'en' }
-  | { ai: 'not_configured' | 'unavailable' | 'rejected'; message: string };
+  | { ai: 'not_configured' | 'unavailable' | 'rejected' | 'consent_required'; message: string };
 export function useCommunityAi() {
   return useMutation({
     mutationFn: (p: { action: 'summarize' | 'translate'; postId: string; commentId?: string | null; target?: 'fr' | 'en' }) =>
