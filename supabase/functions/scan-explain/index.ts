@@ -4,12 +4,12 @@
 // L'IA n'explique que ce que les règles ont établi : le verdict est repris tel quel ; une réponse
 // contenant une promesse d'innocuité ou un autre verdict est rejetée. Sans GEMINI_API_KEY :
 // { ai: 'not_configured' } — l'application affiche alors l'explication des règles, jamais un faux texte IA.
-import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { geminiConfig } from '../_shared/gemini.ts';
 import { sanitizePayload } from '../_shared/scan-explain.ts';
 import { runExplain } from '../_shared/scan-explain-run.ts';
 
-Deno.serve(async (req) => {
+Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
@@ -42,4 +42,4 @@ Deno.serve(async (req) => {
     await auth.client.from('scan_results').update({ explanation: result }).eq('scan_id', body.scan_id);
   }
   return json(result);
-});
+}));

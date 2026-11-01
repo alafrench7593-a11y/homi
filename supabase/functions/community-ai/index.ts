@@ -5,12 +5,12 @@
 // de la personne (RLS : publications et réponses qu'elle peut déjà lire). Seuls les textes sont transmis,
 // mentions et coordonnées neutralisées ; jamais de pseudonyme ni de donnée de l'application.
 // Sans GEMINI_API_KEY : { ai: 'not_configured' } — l'application l'indique, jamais un faux résumé.
-import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { geminiConfig } from '../_shared/gemini.ts';
 import { MIN_COMMENTS_FOR_SUMMARY, parseRequest } from '../_shared/community-ai.ts';
 import { runSummary, runTranslation } from '../_shared/community-ai-run.ts';
 
-Deno.serve(async (req) => {
+Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
@@ -59,4 +59,4 @@ Deno.serve(async (req) => {
   const result = await runTranslation(cfg, text, request.target_lang ?? 'fr');
   const { reason: _r, ...publicResult } = result as Record<string, unknown>;
   return json(publicResult);
-});
+}));

@@ -10,7 +10,7 @@
 //             OPEN_FACTS_ENABLED=false pour les couper), RAPPELCONSO_ENABLED (défaut true),
 //             RAPPELCONSO_DATASET (défaut rappelconso-v2-gtin-espaces).
 // Sans base réelle connectée, la réponse le dit explicitement (`database: 'not_connected'`) : aucun résultat n'est inventé.
-import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { assessProduct, type ProductData, type ScanContext } from '../_shared/product-rules.ts';
 import { fromProductRow, lookupOpenFactsCached, searchOpenFactsCached, type LookupStatus, type NormalizedProduct, type OpenFactsStore } from '../_shared/open-facts.ts';
 import { fetchRecallRecords, matchRecalls, recallRow, sameGtin } from '../_shared/rappelconso.ts';
@@ -94,7 +94,7 @@ async function checkRecalls(admin: Any, product: { barcode?: string | null; bran
   return { recalls, status };
 }
 
-Deno.serve(async (req) => {
+Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
@@ -224,4 +224,4 @@ Deno.serve(async (req) => {
     recall_check: status,
     assessment: premium ? assessment : { ...assessment, findings: assessment.findings.filter((f) => f.level === 'avoid_advised'), limited: true },
   });
-});
+}));

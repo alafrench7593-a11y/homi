@@ -5,11 +5,11 @@
 // Uniquement la glaire cervicale (jamais les tests d'ovulation ou de grossesse, analysés sur l'appareil).
 // L'image n'est ni stockée ni journalisée ; la réponse du modèle non plus.
 // Sans GEMINI_API_KEY : 503 { error: 'ai_not_configured' } — jamais de faux résultat.
-import { adminClient, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { geminiConfig } from '../_shared/gemini.ts';
 import { handleCyclePhoto } from './handler.ts';
 
-Deno.serve((req) =>
+Deno.serve(withCors((req) =>
   handleCyclePhoto(req, {
     authenticate: async (r) => {
       const auth = await requireUser(r);
@@ -22,4 +22,4 @@ Deno.serve((req) =>
       return !error;
     },
   })
-);
+));

@@ -6,7 +6,7 @@
 //  - JSON (application/json) : erreurs, orientation urgente, refus, ou réponse complète si stream=false ;
 //  - SSE (text/event-stream) si stream=true : événements « meta », « delta » ({ text }), puis « done »
 //    (même contenu que la réponse JSON complète) ou « error ».
-import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { geminiConfig, geminiGenerate, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
 import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, sanitizeContext, type ArticleRef, type AssistantContext } from '../_shared/assistant-prompt.ts';
@@ -39,7 +39,7 @@ const CAUTIOUS_ANSWER: StructuredAnswer = {
   updated_on: null,
 };
 
-Deno.serve(async (req) => {
+Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
@@ -299,4 +299,4 @@ Deno.serve(async (req) => {
   return new Response(stream, {
     headers: { ...corsHeaders, 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no' },
   });
-});
+}));

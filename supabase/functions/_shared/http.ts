@@ -1,11 +1,40 @@
 // Utilitaires communs des fonctions backend (Deno, Supabase Edge Functions)
 import { createClient, type SupabaseClient, type User } from 'npm:@supabase/supabase-js@2';
 
+// CORS : l'application iPhone/Android n'est pas concernée (pas de navigateur). Seule la version web,
+// servie depuis une adresse connue, peut appeler ces fonctions depuis un navigateur. Pas de cookie de
+// connexion (jeton dans l'en-tête Authorization) : jamais d'Access-Control-Allow-Credentials.
+// Liste : variable ALLOWED_ORIGINS (ex. « https://app.aufildenous.fr,http://localhost:8081 ») ;
+// sans elle, seuls les serveurs de développement Expo locaux sont acceptés.
 export const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
+
+const DEV_ORIGINS = ['http://localhost:8081', 'http://localhost:19006', 'http://127.0.0.1:8081'];
+
+export function allowedOrigins(env: string | undefined = Deno.env.get('ALLOWED_ORIGINS')): string[] {
+  const list = (env ?? '').split(',').map((o) => o.trim().replace(/\/+$/, '')).filter((o) => /^https?:\/\/[^\s/]+$/.test(o));
+  return list.length ? list : DEV_ORIGINS;
+}
+
+/** En-têtes CORS pour CETTE demande : l'origine n'est renvoyée que si elle figure dans la liste. */
+export function corsFor(origin: string | null, allowed: string[] = allowedOrigins()): Record<string, string> {
+  const h: Record<string, string> = { ...corsHeaders, Vary: 'Origin' };
+  if (origin && allowed.includes(origin)) h['Access-Control-Allow-Origin'] = origin;
+  return h;
+}
+
+/** Enveloppe une fonction : applique les en-têtes CORS de la demande à toutes ses réponses (flux compris). */
+export function withCors(handler: (req: Request) => Response | Promise<Response>): (req: Request) => Promise<Response> {
+  return async (req) => {
+    const res = await handler(req);
+    const headers = new Headers(res.headers);
+    headers.delete('Access-Control-Allow-Origin');
+    for (const [k, v] of Object.entries(corsFor(req.headers.get('origin')))) headers.set(k, v);
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+  };
+}
 
 export function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {

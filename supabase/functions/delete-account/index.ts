@@ -6,7 +6,7 @@
 //    persistant est journalisé, jamais ignoré).
 // Aucun nom de fichier n'est journalisé.
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2';
-import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 
 const PAGE = 100;
 
@@ -37,7 +37,7 @@ async function removeWithRetry(admin: SupabaseClient, bucketId: string, batch: s
   return false;
 }
 
-Deno.serve(async (req) => {
+Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   const auth = await requireUser(req);
@@ -92,4 +92,4 @@ Deno.serve(async (req) => {
   }
   if (pending > 0) console.error('delete_account_documents_pending', pending);
   return json({ ok: true, files_removed: files.length - pending + photos.length + cycle.count + community.count, files_pending: pending });
-});
+}));

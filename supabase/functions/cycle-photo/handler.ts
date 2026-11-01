@@ -13,7 +13,7 @@ import {
 } from '../_shared/cycle-photo.ts';
 
 export const CYCLE_PHOTO_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
+  // Origine autorisée ajoutée par withCors (index.ts) selon ALLOWED_ORIGINS
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Cache-Control': 'no-store',

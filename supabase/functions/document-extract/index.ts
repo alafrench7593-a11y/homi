@@ -2,7 +2,7 @@
 // (date, terme, nom de l'examen, mesures, poids fœtal estimé), présentés « à vérifier ».
 // Aucune interprétation. POST { document_id }
 import { geminiConfig, geminiGenerate, GeminiError } from '../_shared/gemini.ts';
-import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { READABLE_MIME } from '../_shared/document-read.ts';
 
 
@@ -22,7 +22,7 @@ function toBase64(buf: ArrayBuffer): string {
   return btoa(s);
 }
 
-Deno.serve(async (req) => {
+Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
@@ -75,4 +75,4 @@ Deno.serve(async (req) => {
     if (saveErr) console.error('extract_save_refused', saveErr.code);
   }
   return json({ fields, status: 'to_verify', notice: 'Éléments lus automatiquement : vérifiez-les sur le document original. Aucune interprétation n’est fournie.' });
-});
+}));

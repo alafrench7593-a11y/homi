@@ -3,10 +3,10 @@
 // Seul le fichier est envoyé (aucun nom, aucun profil). Le texte est renvoyé à l'application, qui le présente « à vérifier ».
 // Le texte n'est jamais écrit dans les journaux. POST { document_id }
 import { geminiConfig, geminiGenerate, GeminiError } from '../_shared/gemini.ts';
-import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { MAX_READ_BYTES, parseReadResponse, READ_INSTRUCTIONS, READ_SCHEMA, READABLE_MIME, toBase64 } from '../_shared/document-read.ts';
 
-Deno.serve(async (req) => {
+Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
@@ -50,4 +50,4 @@ Deno.serve(async (req) => {
   const parsed = parseReadResponse(raw);
   if (!parsed) return json({ status: 'unreadable' });
   return json({ status: 'to_verify', text: parsed.text, illegible: parsed.illegible });
-});
+}));
