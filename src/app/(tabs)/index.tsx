@@ -55,8 +55,9 @@ export default function Home() {
   const childrenQ = useTrackedChildren();
   const children = childrenQ.data;
   const js = useJourneyState();
-  const mainLoading = (profileQ.isLoading && !profile) || (childrenQ.isLoading && !children) || !scope.loaded;
-  const mainError = profileQ.isError && !profile ? profileQ : childrenQ.isError && !children ? childrenQ : null;
+  const journeysFailed = !scope.loaded && js.query.isError;
+  const mainLoading = (profileQ.isLoading && !profile) || (childrenQ.isLoading && !children) || (!scope.loaded && !journeysFailed);
+  const mainError = profileQ.isError && !profile ? profileQ : childrenQ.isError && !children ? childrenQ : journeysFailed ? js.query : null;
   const { data: articles } = useArticles();
   const { data: inbox } = useRelevantNotifications();
   const premium = usePremium();
@@ -102,7 +103,7 @@ export default function Home() {
   const journeyName = js.body ? tr(`pj.type.${js.body.type}` as TKey) : null;
   const cards: Record<string, React.ReactNode> = {
     main: mainLoading ? <Skeleton kind="card" rows={1} />
-      : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); }} />
+      : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); void js.query.refetch(); }} />
       : scope.scope === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
       : childScope && child ? <Cocoon key={child.id} child={child} journey={childScope} now={now} article={article} />
       : scope.scope === 'postpartum' ? <PostpartumHomeCard main />

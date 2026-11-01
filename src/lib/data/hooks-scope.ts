@@ -14,6 +14,8 @@ export interface ScopeState extends ScopeCtx {
   activeScopes: Scope[];
   child: Child | null;
   loaded: boolean;
+  /** Requête des parcours (pour afficher une erreur au lieu d'un chargement sans fin). */
+  query: ReturnType<typeof useJourneyState>['query'];
 }
 
 export function useScope(): ScopeState {
@@ -45,6 +47,7 @@ export function useScope(): ScopeState {
       activeScopes: [...activeScopes],
       child: (childId && children?.find((c) => c.id === childId)) || null,
       loaded: js.loaded,
+      query: js.query,
     };
   }, [subject, js, pregnancy, children]);
 }

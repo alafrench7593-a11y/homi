@@ -169,15 +169,17 @@ export default function Track() {
   const childrenQ = useTrackedChildren();
   const pregnanciesQ = usePregnancies();
   const children = childrenQ.data;
-  const loading = (childrenQ.isLoading && !children) || (pregnanciesQ.isLoading && !pregnanciesQ.data);
-  const failed = childrenQ.isError && !children ? childrenQ : pregnanciesQ.isError && !pregnanciesQ.data ? pregnanciesQ : null;
+  // Les enfants suivis dépendent des parcours : tant qu'ils ne sont pas chargés, on n'affiche pas « aucun suivi »
+  const journeysQ = scope.query;
+  const loading = (childrenQ.isLoading && !children) || (pregnanciesQ.isLoading && !pregnanciesQ.data) || (!scope.loaded && !journeysQ.isError);
+  const failed = childrenQ.isError && !children ? childrenQ : pregnanciesQ.isError && !pregnanciesQ.data ? pregnanciesQ : !scope.loaded && journeysQ.isError ? journeysQ : null;
   const cycle = scope.scope === 'avoid' || scope.scope === 'ttc' || scope.scope === 'cycle';
   return (
     <View style={{ flex: 1 }}>
       <Screen account title={tr('screen.track.title')} bottomInset={96}>
         <ProfileSwitcher />
         {loading ? <Skeleton kind="card" rows={2} /> : failed ? (
-          <ErrorView error={failed.error} onRetry={() => { void childrenQ.refetch(); void pregnanciesQ.refetch(); }} />
+          <ErrorView error={failed.error} onRetry={() => { void childrenQ.refetch(); void pregnanciesQ.refetch(); void journeysQ.refetch(); }} />
         ) : null}
         {subject.type === 'family' && <QuickEntry activeChildId={scope.childId} />}
         {scope.childId && <ChildTracking childId={scope.childId} journey={scope.scope === 'baby' ? 'baby' : scope.scope === 'child' ? 'child' : null} />}

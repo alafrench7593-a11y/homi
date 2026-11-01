@@ -106,9 +106,23 @@ describe('file hors ligne : téléphone partagé', () => {
     useOfflineStore.setState({ online: false });
     await insertOrQueue('period_entries', { user_id: 'compte-a', start_date: '2026-10-20' });
     await setQueueOwner(null);
-    await setQueueOwner('compte-a');
     useOfflineStore.setState({ online: true });
-    expect(await flushQueue()).toBe(1);
+    await setQueueOwner('compte-a');
+    // L'envoi part dès que la session est connue (avant : il fallait attendre un retour de réseau)
+    await new Promise((r) => setTimeout(r, 0));
+    expect(mockSent).toHaveLength(1);
+    expect(useOfflineStore.getState().pending).toHaveLength(0);
+    expect(await flushQueue()).toBe(0);
+  });
+  it('au démarrage, les saisies chargées avant la session partent dès la connexion', async () => {
+    useOfflineStore.setState({ online: false });
+    await setQueueOwner('compte-a');
+    await insertOrQueue('period_entries', { user_id: 'compte-a', start_date: '2026-10-21' });
+    await setQueueOwner(null); // redémarrage : file chargée, personne encore connecté
+    useOfflineStore.setState({ online: true });
+    expect(await flushQueue()).toBe(0);
+    await setQueueOwner('compte-a');
+    await new Promise((r) => setTimeout(r, 0));
     expect(mockSent).toHaveLength(1);
   });
 });

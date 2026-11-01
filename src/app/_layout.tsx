@@ -57,11 +57,12 @@ const queryClient = new QueryClient({
 // Cache des données récentes sur l'appareil : consultation possible hors connexion.
 // Les conversations avec l'assistant et les documents ne sont pas mis en cache.
 const persister = createAsyncStoragePersister({ storage: AsyncStorage, key: 'toietmoi.cache.v1', throttleTime: 2000 });
-// user_journeys : jamais repris d'un ancien cache (un parcours archivé ne doit pas réapparaître à l'ouverture)
+// user_journeys est conservé (types de parcours, pas de donnée de santé) : sans lui, l'accueil et l'onglet Suivi
+// restaient bloqués hors connexion. En ligne, il est rechargé dès l'ouverture (un parcours archivé disparaît aussitôt).
 // google_places / google_photo : contenus Google jamais enregistrés sur l'appareil (conditions d'utilisation de Google Maps Platform)
 // Jamais écrites en clair sur le téléphone (cache persisté) : données intimes et de santé, liens signés des photos.
 // Contrepartie assumée : ces écrans se rechargent depuis le serveur après un redémarrage de l'appli.
-const PRIVATE_KEYS = ['assistant_messages', 'assistant_conversations', 'documents', 'mood_checkins', 'user_journeys', 'google_places', 'google_photo',
+const PRIVATE_KEYS = ['assistant_messages', 'assistant_conversations', 'documents', 'mood_checkins', 'google_places', 'google_photo',
   'period_entries', 'periods', 'symptom_logs', 'bleeding_logs', 'discharge_logs', 'fertility_observations', 'intercourse_logs', 'ovulation_tests', 'pregnancy_tests',
   'cycle_journal', 'cycle_custom_items', 'cycle_shares', 'contraception_logs', 'postpartum_checkins', 'postpartum_actions', 'postpartum_shared_status',
   'trusted_contacts', 'child_treatments', 'treatment_logs', 'child_needs', 'child_need_entries', 'pregnancy_symptom_logs', 'maternal_weights',

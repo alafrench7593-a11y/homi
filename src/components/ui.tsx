@@ -16,6 +16,8 @@ import { linkFrame } from './linkFrame';
 import { usePop, usePressMotion, useShake, useTilt } from './Motion';
 import { duration, interaction, springTo, timeTo } from '@/theme/motion';
 import { t as tr } from '@/i18n';
+import { friendlyErrorMessage } from '@/lib/errors';
+import { useToast } from './Overlays';
 
 export type IconName = React.ComponentProps<typeof Feather>['name'];
 
@@ -197,6 +199,7 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
   const reduce = useReduceMotion();
   const m = useButtonMotion();
   const [pending, setPending] = React.useState(false);
+  const toast = useToast();
   const running = React.useRef(false);
   const mounted = React.useRef(true);
   React.useEffect(() => () => { mounted.current = false; }, []);
@@ -231,7 +234,8 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
     if (r && typeof (r as Promise<unknown>).then === 'function') {
       running.current = true;
       setPending(true);
-      (r as Promise<unknown>).catch(() => undefined).finally(() => { running.current = false; if (mounted.current) setPending(false); });
+      // Une action qui échoue sans gérer son erreur affiche au moins un message (jamais d'échec muet)
+      (r as Promise<unknown>).catch((err) => { if (mounted.current) toast(friendlyErrorMessage(err), 'error'); }).finally(() => { running.current = false; if (mounted.current) setPending(false); });
     }
   };
   const radiusPx = BUTTON.radius[size];

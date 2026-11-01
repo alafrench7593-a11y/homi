@@ -17,7 +17,12 @@ import { t as tr } from '@/i18n';
 
 export default function Launch() {
   const { session, ready } = useAuth();
-  const { data: profile, isLoading, isError } = useProfile();
+  const profileQ = useProfile();
+  const { data: profile, isLoading, isError } = profileQ;
+  // Hors connexion sans profil en cache, la requête est « en pause » : ce n'est PAS un compte sans profil.
+  // On ouvre l'appli (les données en cache et la saisie hors ligne restent utilisables) au lieu de l'inscription.
+  const offlinePaused = profileQ.fetchStatus === 'paused' && !profile;
+  const profileSettled = profileQ.isFetched || isError;
   const t = useTheme();
   const [invite, setInvite] = useState<string | null | undefined>(undefined);
   useEffect(() => { if (session) peekPendingInvite().then(setInvite); }, [session]);
@@ -35,8 +40,8 @@ export default function Launch() {
   // Invitation reçue avant d'avoir un compte : on la propose dès la première connexion
   if (ready && session && invite) return <Redirect href={{ pathname: '/settings/family', params: { code: invite } }} />;
   if (ready && session && invite === undefined) return <View style={{ flex: 1, backgroundColor: '#1C1128' }} />;
-  if (ready && session && !isLoading && (!profile || !profile.onboarding_completed) && !isError) return <Redirect href="/onboarding" />;
-  if (ready && session && (profile?.onboarding_completed || isError)) return <Redirect href="/(tabs)" />;
+  if (ready && session && profileSettled && !offlinePaused && (!profile || !profile.onboarding_completed) && !isError) return <Redirect href="/onboarding" />;
+  if (ready && session && (profile?.onboarding_completed || isError || offlinePaused)) return <Redirect href="/(tabs)" />;
 
   // Première ouverture : on attend la session sur la première image de l'introduction (enchaînement sans saut)
   if (hydrated && !cinematicSeen && !ready) return <Image source={CINEMATIC_POSTER} style={StyleSheet.absoluteFill} resizeMode="cover" accessible={false} />;

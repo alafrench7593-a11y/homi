@@ -9,6 +9,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import { AppState } from 'react-native';
 import { create } from 'zustand';
 import { backend, BackendError } from './backend';
 
@@ -67,6 +68,12 @@ let queueOwner: string | null = null;
  * session, ni affichées à quelqu'un d'autre (téléphone partagé, coparent).
  */
 export async function setQueueOwner(userId: string | null) {
+  await adoptQueueOwner(userId);
+  // La session arrive APRÈS le chargement de la file au démarrage : on envoie ici ce qui attendait
+  if (userId) void flushQueue().then((n) => n && onSyncedCb?.(n));
+}
+
+async function adoptQueueOwner(userId: string | null) {
   queueOwner = userId;
   if (!userId) return;
   const { pending, conflicts } = useOfflineStore.getState();
@@ -94,7 +101,7 @@ export async function loadQueue() {
     if (raw) {
       const { pending, conflicts } = JSON.parse(raw);
       useOfflineStore.setState({ pending: pending ?? [], conflicts: conflicts ?? [] });
-      if (queueOwner) await setQueueOwner(queueOwner); // chargée après la connexion : même filtre
+      if (queueOwner) await adoptQueueOwner(queueOwner); // chargée après la connexion : même filtre
     }
   } catch {
     // file illisible : on n'écrase rien
@@ -170,12 +177,24 @@ export async function discardConflict(id: string) {
   await save();
 }
 
+let onSyncedCb: ((n: number) => void) | undefined;
+
 export function startOfflineSync(onSynced?: (n: number) => void) {
+  onSyncedCb = onSynced;
   loadQueue().then(() => flushQueue().then((n) => n && onSynced?.(n)));
-  return NetInfo.addEventListener((state) => {
+  const offNet = NetInfo.addEventListener((state) => {
     const online = state.isConnected !== false && state.isInternetReachable !== false;
     const was = useOfflineStore.getState().online;
     useOfflineStore.getState().setOnline(online);
     if (online && !was) flushQueue().then((n) => n && onSynced?.(n));
   });
+  // Retour de l'appli au premier plan : on retente l'envoi de ce qui attend encore
+  const appSub = AppState.addEventListener('change', (st) => {
+    if (st === 'active' && useOfflineStore.getState().online) flushQueue().then((n) => n && onSynced?.(n));
+  });
+  return () => {
+    offNet();
+    appSub.remove();
+    if (onSyncedCb === onSynced) onSyncedCb = undefined;
+  };
 }
