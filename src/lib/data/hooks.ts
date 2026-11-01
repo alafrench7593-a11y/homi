@@ -8,6 +8,7 @@ import { isBody, visiblePregnancy, type JourneyRow } from '../journeys/model';
 import { insertOrQueue } from '../offline';
 import { syncLocalReminders } from '../notifications';
 import { uuid } from '../uuid';
+import { getLocale } from '@/i18n';
 import {
   LOG_TABLE, LOG_TIME_COL,
   type AppNotification, type Appointment, type Article, type AssistantMessage, type BabyName, type Category, type Checklist, type ChecklistItem,
@@ -310,11 +311,23 @@ export function useNameVotes() {
 }
 
 // ---------------------------------------------------------------- contenus
+/** Version anglaise d'un article quand elle existe (colonnes *_en) ; sinon le texte français d'origine. */
+export function localizeArticle<T extends Article>(a: T, lang: string = getLocale()): T {
+  if (lang !== 'en' || !a.title_en || !a.body_md_en) return a;
+  return { ...a, title: a.title_en, summary: a.summary_en ?? a.summary, body_md: a.body_md_en };
+}
 export function useArticles() {
-  return useRows<Article>(['articles'], { table: 'articles', filters: [eq('status', 'published')], order: [{ col: 'updated_on', asc: false }] }, { staleTime: 600_000 });
+  const q = useRows<Article>(['articles'], { table: 'articles', filters: [eq('status', 'published')], order: [{ col: 'updated_on', asc: false }] }, { staleTime: 600_000 });
+  // L'arbre est remonté à chaque changement de langue : getLocale() suffit ici
+  const lang = getLocale();
+  const data = useMemo(() => (q.data && lang === 'en' ? q.data.map((a) => localizeArticle(a, lang)) : q.data), [q.data, lang]);
+  return { ...q, data } as typeof q;
 }
 export function useCategories() {
-  return useRows<Category>(['content_categories'], { table: 'content_categories', order: [{ col: 'position' }] }, { staleTime: 3600_000 });
+  const q = useRows<Category>(['content_categories'], { table: 'content_categories', order: [{ col: 'position' }] }, { staleTime: 3600_000 });
+  const lang = getLocale();
+  const data = useMemo(() => (q.data && lang === 'en' ? q.data.map((c) => (c.label_en ? { ...c, label: c.label_en } : c)) : q.data), [q.data, lang]);
+  return { ...q, data } as typeof q;
 }
 export function useEmergencyResources() {
   return useRows<EmergencyResource>(['emergency_resources'], { table: 'emergency_resources', filters: [eq('active', true)], order: [{ col: 'position' }] }, { staleTime: 3600_000 });
