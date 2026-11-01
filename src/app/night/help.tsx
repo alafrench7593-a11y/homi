@@ -47,6 +47,8 @@ export default function NightHelp() {
   const [free, setFree] = useState('');
   const nights = useMemo(() => lastNights(7, { sleeps: sleeps.data ?? [], breastfeeds: feeds.data ?? [], bottles: bottles.data ?? [] }), [sleeps.data, feeds.data, bottles.data]);
 
+  // Pendant le chargement, un squelette (et non « aucun enfant » qui s'affichait un instant)
+  if (!child && !scope.loaded) return <Screen back title={tr('nh.title')}><Skeleton rows={4} /></Screen>;
   if (!child) return <Screen back title={tr('nh.title')}><EmptyState icon="moon" title={tr('nh.noChild')} /></Screen>;
   const months = childAge(child.birth_date).months;
   const band = NIGHT_BANDS.find((b) => months >= b.fromMonths && months < b.toMonths) ?? NIGHT_BANDS[NIGHT_BANDS.length - 1];

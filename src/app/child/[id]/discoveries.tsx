@@ -9,11 +9,11 @@
  * Gratuit : aliments essentiels de chaque catégorie, 15 fiches par enfant, sécurité, historique de 30 jours.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Linking, ScrollView, View, useWindowDimensions } from 'react-native';
+import { Animated, ScrollView, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSurface } from '@/components/Glass';
 import { PremiumSection } from '@/components/Premium';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -23,7 +23,8 @@ import { Tappable } from '@/components/Tappable';
 import { RecipeArt } from '@/features/recipes/RecipeArt';
 import { FoodArt } from '@/features/discoveries/FoodArt';
 import { allergenLabel, textureLabel } from '@/features/recipes/labels';
-import { useChild, usePremium } from '@/lib/data/hooks';
+import { useChild, useChildren, useMemberships, usePremium } from '@/lib/data/hooks';
+import { callNumber, openLink } from '@/lib/links';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { useRecipes } from '@/lib/data/hooks-recipes';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -57,6 +58,10 @@ export default function Discoveries() {
   const t = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const child = useChild(id);
+  const childrenQ = useChildren();
+  const membershipsQ = useMemberships();
+  const isLoading = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
+  const loadError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !childrenQ.data ? childrenQ : null;
   const premium = usePremium();
   const access = usePremiumAccess('diversification', child?.first_name);
   const entriesQ = useFoodEntries(child?.id);
@@ -97,7 +102,22 @@ export default function Discoveries() {
     return true;
   }), [byKey, cat, q, filter, age]);
 
-  if (!child) return <Screen back title={tr('dc.title')}><Skeleton rows={3} /></Screen>;
+  if (!child) {
+    return (
+      <Screen back title={tr('dc.title')}>
+        {isLoading ? <Skeleton rows={3} /> : loadError ? (
+          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title={tr('common.cannotShow')} />
+        ) : (
+          <EmptyState
+            icon="user-x"
+            title={tr('alb.notFound')}
+            body={tr('cm2.member.notFoundBody')}
+            action={{ label: tr('pj.blocked.home'), icon: 'home', onPress: () => router.replace('/(tabs)') }}
+          />
+        )}
+      </Screen>
+    );
+  }
   const name = child.first_name;
   // Largeur réelle du conteneur (marges de l'écran comprises) : 3 colonnes dès 300 px, 4 sur tablette
   const avail = boxW || Math.min(width, 720) - spacing.lg * 2;
@@ -289,8 +309,9 @@ function FoodTile({ food, entry, state, width, locked, onPress }: { food: FoodDe
 
 function SourceLink({ s }: { s: { label: string; url: string; published?: string; consulted: string } }) {
   const t = useTheme();
+  const toast = useToast();
   return (
-    <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+    <Tappable accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: 32, justifyContent: 'center' }}>
       <Text variant="caption" color={t.colors.primary}>{s.label}{s.published ? ` (${formatDate(`${s.published}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' })})` : ''}</Text>
     </Tappable>
   );
@@ -426,6 +447,7 @@ function RecipeLine({ r, onOpen }: { r: Recipe; onOpen: () => void }) {
 
 // ---------------------------------------------------------------- réaction
 function ReactionAdvice({ signs, name }: { signs: ReactionSign[]; name: string }) {
+  const toast = useToast();
   const level = reactionAdvice(signs);
   return (
     <View style={{ gap: 6 }} testID={`dc-rx-${level}`}>
@@ -436,8 +458,8 @@ function ReactionAdvice({ signs, name }: { signs: ReactionSign[]; name: string }
       )}
       {level === 'emergency' ? (
         <Row wrap>
-          <Button label={tr('dc.rx.call15')} icon="phone" onPress={() => void Linking.openURL('tel:15')} testID="dc-call-15" />
-          <Button label={tr('dc.rx.call112')} icon="phone" variant="secondary" onPress={() => void Linking.openURL('tel:112')} />
+          <Button label={tr('dc.rx.call15')} icon="phone" onPress={() => callNumber('15', toast)} testID="dc-call-15" />
+          <Button label={tr('dc.rx.call112')} icon="phone" variant="secondary" onPress={() => callNumber('112', toast)} />
         </Row>
       ) : null}
       <Text variant="caption" muted>{tr('dc.rx.noDiagnosis')}</Text>

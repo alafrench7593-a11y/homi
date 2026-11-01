@@ -4,7 +4,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Card, Field, ListRow, Text } from '@/components/ui';
 import { useChild } from '@/lib/data/hooks';
 import { useAddNeedEntry, useDeleteNeedEntry, useNeedEntries } from '@/lib/data/hooks-needs';
@@ -16,7 +16,10 @@ export default function ChildSchool() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const child = useChild(id);
   const toast = useToast();
-  const { data: entries, isLoading } = useNeedEntries(id, 'school');
+  const entriesQ = useNeedEntries(id, 'school');
+  const { data: entries, isLoading } = entriesQ;
+  // Erreur réseau : on ne l'affiche jamais comme « aucune note »
+  const loadFailed = entriesQ.isError && !entries;
   const add = useAddNeedEntry();
   const del = useDeleteNeedEntry();
   const [title, setTitle] = useState('');
@@ -31,7 +34,7 @@ export default function ChildSchool() {
     <Screen back title={tr('tool.child_school')} subtitle={child?.first_name}
       action={{ label: tr('common.save'), icon: 'check', onPress: () => void save(), testID: 'school-save', disabled: add.isPending }}>
       <TodaySummary title={tr('mb.sc.title')} items={[
-        { icon: 'book', value: String(entries?.length ?? 0), label: tr('mb.sc.count') },
+        { icon: 'book', value: loadFailed ? '—' : String(entries?.length ?? 0), label: tr('mb.sc.count') },
         { icon: 'clock', value: last ? formatDateFr(last.occurred_on) : '—', label: tr('mb.sc.last') },
       ]} />
       <Text muted>{tr('sc.intro')}</Text>
@@ -39,11 +42,13 @@ export default function ChildSchool() {
         <Field label={tr('sc.title')} value={title} onChangeText={setTitle} maxLength={120} placeholder={tr('sc.placeholder')} testID="school-title" />
         <Field label={tr('sc.body')} optional value={body} onChangeText={setBody} multiline maxLength={4000} />
       </Card>
-      {isLoading ? <Skeleton rows={2} /> : !entries?.length ? <EmptyState icon="book" title={tr('sc.none')} /> : (
+      {isLoading && !entries ? <Skeleton rows={2} /> : loadFailed ? (
+        <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} />
+      ) : !entries?.length ? <EmptyState icon="book" title={tr('sc.none')} /> : (
         <Card>
           {entries.map((e) => (
             <ListRow key={e.id} icon="book" title={e.title} subtitle={`${formatDateFr(e.occurred_on)}${e.body ? ` · ${e.body}` : ''}`}
-              onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch(() => undefined); }} />
+              onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch((err) => toast(friendlyError(err), 'error')); }} />
           ))}
         </Card>
       )}

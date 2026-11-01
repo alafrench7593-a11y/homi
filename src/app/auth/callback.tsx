@@ -12,6 +12,15 @@ import { backend } from '@/lib/backend';
 import { parseAuthCallback } from '@/lib/authFlow';
 import { t as tr } from '@/i18n';
 
+/** Session présente ? Une erreur de lecture compte comme « pas de session » : l'écran passe alors à l'état d'erreur au lieu de rester sur « Activation… ». */
+async function hasSession(): Promise<boolean> {
+  try {
+    return !!(await backend.auth.getSession());
+  } catch {
+    return false;
+  }
+}
+
 export default function AuthCallback() {
   const params = useLocalSearchParams<Record<string, string>>();
   const [state, setState] = useState<'loading' | 'expired' | 'error'>('loading');
@@ -28,7 +37,7 @@ export default function AuthCallback() {
           await backend.auth.exchangeCode(r.code);
         } catch (e) {
           // Sur le web, le code a pu être échangé automatiquement : une session suffit
-          if (!(await backend.auth.getSession())) {
+          if (!(await hasSession())) {
             if (cancelled) return;
             setMessage(e instanceof Error ? e.message : '');
             return setState(/expiré/.test(e instanceof Error ? e.message : '') ? 'expired' : 'error');
@@ -38,7 +47,8 @@ export default function AuthCallback() {
         return;
       }
       if (r.kind === 'expired') return setState('expired');
-      if (await backend.auth.getSession()) return router.replace('/');
+      if (await hasSession()) return router.replace('/');
+      if (cancelled) return;
       setMessage(r.kind === 'error' ? r.message : tr('auth.callback.incomplete'));
       setState('error');
     })();

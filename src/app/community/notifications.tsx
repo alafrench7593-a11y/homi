@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Skeleton } from '@/components/States';
+import { ErrorView, Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
 import { Button, Card, Chip, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
@@ -66,7 +66,10 @@ export default function NotificationSettings() {
   return (
     <Screen back title={tr('cm2.notif.title')}>
       <SectionTitle title={tr('cm2.notif.digestSection')} />
-      {digestQ.isLoading && !digestQ.saved ? <Skeleton kind="list" rows={2} /> : (
+      {digestQ.isLoading && !digestQ.saved ? <Skeleton kind="list" rows={2} /> : digestQ.isError && !digestQ.saved ? (
+        // Erreur réseau : on n'affiche pas les réglages par défaut comme s'ils étaient les vôtres
+        <ErrorView error={digestQ.error} onRetry={() => void digestQ.refetch()} />
+      ) : (
         <Card testID="digest-prefs">
           <View style={{ gap: spacing.sm }}>
             <ToggleRow label={tr('cm2.notif.morning')} hint={tr('cm2.notif.morningHint')} value={d.morning} onChange={(v) => void digest({ morning: v })} />
@@ -102,7 +105,9 @@ export default function NotificationSettings() {
       </Card>
 
       <SectionTitle title={tr('cm2.notif.community')} />
-      {q.isLoading && !q.saved ? <Skeleton kind="list" rows={3} /> : (
+      {q.isLoading && !q.saved ? <Skeleton kind="list" rows={3} /> : q.isError && !q.saved ? (
+        <ErrorView error={q.error} onRetry={() => void q.refetch()} />
+      ) : (
         <Card>
           <View style={{ gap: spacing.sm }} testID="community-notif-prefs">
             {ITEMS.map((it) => <ToggleRow key={it.key} label={tr(it.label)} hint={tr(it.hint)} value={p[it.key] !== false} onChange={(v) => void toggle(it.key, v)} />)}

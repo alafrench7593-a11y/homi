@@ -7,11 +7,12 @@
  * Données strictement personnelles (jamais visibles du foyer). Gratuit.
  */
 import React, { useMemo, useState } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
+import { callNumber, openLink } from '@/lib/links';
 import { EmptyState } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, Icon, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
@@ -179,6 +180,7 @@ const SAFETY_TONE: Record<Exclude<SafetyLevel, null>, 'danger' | 'warning'> = { 
 
 export function SymptomInfo({ c, week }: { c: SymptomCard; week: number }) {
   const t = useTheme();
+  const toast = useToast();
   return (
     <Card>
       <View style={{ gap: spacing.xs }} testID={`feel-card-${c.symptom}`}>
@@ -189,7 +191,7 @@ export function SymptomInfo({ c, week }: { c: SymptomCard; week: number }) {
             <Banner tone={SAFETY_TONE[c.safety]} title={tr(`care.safety.${c.safety}.title` as TKey)}>
               <Text variant="small">{tr(`care.safety.${c.safety}.body` as TKey)}</Text>
               <Row wrap style={{ marginTop: 6 }}>
-                {c.safety === 'emergency' ? SAFETY_CONTACTS.slice(0, 2).map((x) => <Button key={x.key} label={tr('care.safety.call', { label: x.label, phone: x.phone })} size="sm" icon="phone" onPress={() => void Linking.openURL(`tel:${x.phone}`)} />) : null}
+                {c.safety === 'emergency' ? SAFETY_CONTACTS.slice(0, 2).map((x) => <Button key={x.key} label={tr('care.safety.call', { label: x.label, phone: x.phone })} size="sm" icon="phone" onPress={() => callNumber(x.phone, toast)} />) : null}
                 <Button label={tr('care.safety.numbers')} size="sm" variant="secondary" icon="life-buoy" onPress={() => router.push('/emergency')} />
               </Row>
             </Banner>
@@ -205,7 +207,7 @@ export function SymptomInfo({ c, week }: { c: SymptomCard; week: number }) {
           {c.ask.map((h) => <Text key={h} variant="small">• {h}</Text>)}
         </Part>
         {c.sources.map((s) => (
-          <Tappable key={s.url} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+          <Tappable key={s.url} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: 32, justifyContent: 'center' }}>
             <Text variant="caption" color={t.colors.primary}>{s.label}{s.published ? ` (${formatDate(`${s.published}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' })})` : ''} · {tr('care.consulted', { date: formatDate(`${s.consulted_on}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Text>
           </Tappable>
         ))}

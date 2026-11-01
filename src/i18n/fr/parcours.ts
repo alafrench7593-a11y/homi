@@ -131,6 +131,7 @@ export const parcours = {
   'pj.detail.note': 'Un parcours archivé ne s’affiche plus dans l’accueil, les outils ou les notifications. Ses données restent ici tant que vous ne les supprimez pas.',
   'pj.blocked.title': 'Ce parcours n’est pas actif',
   'pj.blocked.body': 'Cet outil appartient à un parcours que vous n’avez pas (ou plus). Rien d’un ancien parcours n’est mélangé au parcours actuel.',
+  'pj.blocked.tool': 'Outil demandé',
   'pj.blocked.home': 'Retour à l’accueil',
   'pj.start.button': 'J’ai un test positif / Je démarre une grossesse',
   'pj.start.title': 'Je démarre une grossesse',

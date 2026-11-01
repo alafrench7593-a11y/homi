@@ -4,11 +4,15 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary, type SummaryItem } from '@/components/MiniApp';
-import { EmptyState } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Chip, Field, haptic, Row, Segmented, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { Stepper, TimePicker, KIND_META } from '@/features/tracking';
 import { backend, eq } from '@/lib/backend';
+import { BackendError } from '@/lib/backend/types';
+import { friendlyError } from '@/lib/data/hooks-settings';
+import { goBack } from '@/lib/links';
+import { useOfflineStore } from '@/lib/offline';
 import { useActiveSubject, useAddLog, useChild, useTrackedChildren, useDeleteRow, useInvalidate, useLogs, useRows } from '@/lib/data/hooks';
 import { SafeSleepCard, SafetyNoticeCard } from '@/features/childCare';
 import { STOOL_COLORS, STOOL_CONSISTENCY, digestionNotices, stoolNotice, type StoolColor } from '@/lib/domain/childCare';
@@ -30,6 +34,8 @@ import { spacing } from '@/theme/tokens';
 
 type Side = 'left' | 'right' | 'both';
 const editing0 = (id: string | undefined) => !!id;
+/** La file hors connexion ne sait envoyer que des ajouts : une modification exige le réseau. */
+const OFFLINE_EDIT = 'Modification impossible hors connexion, réessayez une fois en ligne.';
 
 /** Lien vers un type de saisie inconnu : écran « introuvable » au lieu d'un plantage. */
 const DIGESTIVE: Observation['kind'][] = ['vomit', 'regurgitation', 'diarrhea', 'abdominal_pain', 'bloating', 'crying'];
@@ -104,7 +110,8 @@ function TrackEntry() {
   const add = useAddLog(kind);
   const del = useDeleteRow(LOG_TABLE[kind]);
   const editing = !!params.id;
-  const { data: existing } = useRows<Record<string, unknown>>([LOG_TABLE[kind], 'edit', params.id ?? ''], editing ? { table: LOG_TABLE[kind], filters: [eq('id', params.id)] } : null);
+  const existingQ = useRows<Record<string, unknown>>([LOG_TABLE[kind], 'edit', params.id ?? ''], editing ? { table: LOG_TABLE[kind], filters: [eq('id', params.id)] } : null);
+  const existing = existingQ.data;
   const { data: lastBottle } = useRows<Bottle>(['bottles', childId, 'last'], kind === 'bottle' && childId ? { table: 'bottles', filters: [eq('child_id', childId)], order: [{ col: 'at', asc: false }], limit: 1 } : null);
 
   const bottleTimer = useBottleTimer(kind === 'bottle' ? childId : null);
@@ -156,6 +163,8 @@ function TrackEntry() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const loadedRef = useRef(false);
+  // Modification : le formulaire n'est montré (et enregistrable) qu'une fois l'entrée chargée, jamais avec l'heure actuelle et des champs vides
+  const [formReady, setFormReady] = useState(false);
 
   // Pré-remplissage : édition, ou dernier type de lait utilisé (jamais de quantité suggérée)
   useEffect(() => {
@@ -164,6 +173,7 @@ function TrackEntry() {
     if (editing && !r) return;
     if (!editing && kind === 'bottle' && lastBottle === undefined) return;
     loadedRef.current = true;
+    setFormReady(true);
     if (!r) {
       if (lastBottle?.[0]) setMilkType(lastBottle[0].milk_type ?? '');
       return;
@@ -251,7 +261,10 @@ function TrackEntry() {
     setSaving(true);
     try {
       if (editing) {
-        const { household_id: _h, ...patch } = row; // eslint-disable-line @typescript-eslint/no-unused-vars
+        if (!formReady) return; // entrée pas encore chargée : rien n'est écrasé
+        if (backend.mode !== 'demo' && !useOfflineStore.getState().online) return setError(OFFLINE_EDIT);
+        // L'enfant et le foyer de l'entrée ne changent jamais lors d'une modification
+        const { household_id: _h, child_id: _c, ...patch } = row; // eslint-disable-line @typescript-eslint/no-unused-vars
         await backend.update(LOG_TABLE[kind], patch, [eq('id', params.id)]);
         inv(LOG_TABLE[kind]);
         toast('Modification enregistrée.');
@@ -280,10 +293,10 @@ function TrackEntry() {
       if (kind === 'bottle' && !editing && firstOfDay && params.from !== 'day' && childId && time.toDateString() === new Date().toDateString()) {
         router.replace({ pathname: '/bottle/[childId]', params: { childId } });
       } else {
-        router.back();
+        goBack('/(tabs)/track');
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Enregistrement impossible.');
+      setError(editing && e instanceof BackendError && e.isNetwork ? OFFLINE_EDIT : friendlyError(e, 'Enregistrement impossible.'));
     } finally {
       setSaving(false);
     }
@@ -319,9 +332,38 @@ function TrackEntry() {
 
   async function remove() {
     if (!(await confirm('Supprimer cette entrée ?', 'Elle sera supprimée pour toutes les personnes du foyer.', 'Supprimer'))) return;
-    await del.mutateAsync(params.id!);
+    try {
+      await del.mutateAsync(params.id!);
+    } catch (e) {
+      // L'entrée reste affichée : rien n'a été supprimé
+      toast(friendlyError(e), 'error');
+      return;
+    }
     toast('Entrée supprimée.');
-    router.back();
+    goBack('/(tabs)/track');
+  }
+
+  if (editing && !formReady) {
+    const title = `Modifier : ${KIND_META[kind].label.toLowerCase()}`;
+    if (existingQ.isError) {
+      return (
+        <Screen back title={title}>
+          <ErrorView error={existingQ.error} onRetry={() => existingQ.refetch()} />
+        </Screen>
+      );
+    }
+    if (existingQ.isSuccess && !existing?.[0]) {
+      return (
+        <Screen back title="Saisie introuvable">
+          <EmptyState icon="help-circle" title="Cette saisie n’existe plus" body="Elle a peut-être été supprimée par une autre personne du foyer." action={{ label: 'Retour', icon: 'arrow-left', onPress: () => goBack('/(tabs)/track') }} />
+        </Screen>
+      );
+    }
+    return (
+      <Screen back title={title} footer={<Button label="Enregistrer les modifications" size="lg" disabled onPress={save} testID="track-save" />}>
+        <Skeleton kind="detail" rows={5} />
+      </Screen>
+    );
   }
 
   if (notBottleChild) {
@@ -349,7 +391,7 @@ function TrackEntry() {
       subtitle={child ? `Pour ${child.first_name}` : undefined}
       footer={
         <View style={{ gap: spacing.xs }}>
-          <Button label={editing ? 'Enregistrer les modifications' : child ? `Enregistrer pour ${child.first_name}` : 'Enregistrer'} size="lg" loading={saving} onPress={save} testID="track-save" />
+          <Button label={editing ? 'Enregistrer les modifications' : child ? `Enregistrer pour ${child.first_name}` : 'Enregistrer'} size="lg" loading={saving} disabled={editing && !formReady} onPress={save} testID="track-save" />
           {editing && <Button label="Supprimer" variant="ghost" icon="trash-2" onPress={remove} />}
         </View>
       }

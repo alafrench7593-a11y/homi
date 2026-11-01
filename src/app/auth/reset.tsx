@@ -12,6 +12,15 @@ import { issueText, passwordSchema } from '@/lib/validation';
 import { useToast } from '@/components/Overlays';
 import { t as tr } from '@/i18n';
 
+/** Session présente ? Une erreur de lecture compte comme « lien invalide » : l'écran ne reste pas sur « Vérification… ». */
+async function hasSession(): Promise<boolean> {
+  try {
+    return !!(await backend.auth.getSession());
+  } catch {
+    return false;
+  }
+}
+
 export default function ResetPassword() {
   const { code } = useLocalSearchParams<{ code?: string }>();
   const toast = useToast();
@@ -32,7 +41,7 @@ export default function ResetPassword() {
           /* sur le web, le code peut déjà avoir été échangé : on vérifie la session */
         }
       }
-      setState((await backend.auth.getSession()) ? 'ready' : 'invalid');
+      setState((await hasSession()) ? 'ready' : 'invalid');
     })();
   }, [code]);
 

@@ -12,12 +12,15 @@ import { FollowButton, MemberRow } from '@/features/communitySocial';
 import { useSpaces } from '@/lib/data/hooks-community';
 import { useFollows, useForumSubscriptions, useToggleForumSubscription } from '@/lib/data/hooks-social';
 import { t as tr } from '@/i18n';
+import { useToast } from '@/components/Overlays';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { spacing } from '@/theme/tokens';
 
 export default function Following() {
   const follows = useFollows();
   const subs = useForumSubscriptions();
   const toggle = useToggleForumSubscription();
+  const toast = useToast();
   const spaces = useSpaces();
   return (
     <Screen back title={tr('cm3.following.title')} subtitle={tr('cm3.following.subtitle')}>
@@ -30,7 +33,7 @@ export default function Following() {
       <View style={{ gap: spacing.xs }}>
         <Row wrap gap={6} testID="following-categories">
           {[...spaces.all].sort((a, b) => a.position - b.position).map((f) => (
-            <Chip key={f.id} label={f.title} icon={spaceIcon(f)} selected={subs.ids.includes(f.id)} onPress={() => toggle.mutate({ forumId: f.id, on: !subs.ids.includes(f.id) })} />
+            <Chip key={f.id} label={f.title} icon={spaceIcon(f)} selected={subs.ids.includes(f.id)} onPress={() => toggle.mutate({ forumId: f.id, on: !subs.ids.includes(f.id) }, { onError: (e) => toast(friendlyError(e), 'error') })} />
           ))}
         </Row>
       </View>

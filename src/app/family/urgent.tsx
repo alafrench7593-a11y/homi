@@ -3,10 +3,11 @@
  * Gros boutons, aucun formulaire long, aucune animation. Ne remplace pas les services d'urgence.
  */
 import React, { useState } from 'react';
-import { Linking, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useToast } from '@/components/Overlays';
+import { callNumber, goBack } from '@/lib/links';
 import { haptic, Icon, type IconName, Text } from '@/components/ui';
 import { ChildEssentials } from '@/features/familyLoad';
 import { useBatchTasks, useCreateRequest, useFamilyTasks } from '@/lib/data/hooks-family-load';
@@ -45,7 +46,7 @@ export default function OrgEmergency() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.sm }}>
-      <Tappable accessibilityRole="button" accessibilityLabel="Retour" onPress={() => router.back()} style={{ minHeight: 44, justifyContent: 'center' }}>
+      <Tappable accessibilityRole="button" accessibilityLabel="Retour" onPress={() => goBack()} style={{ minHeight: 44, justifyContent: 'center' }}>
         <Text weight="bold" color={t.colors.primary}>← Retour</Text>
       </Tappable>
       <Text variant="title" accessibilityRole="header">Respirez. Une chose à la fois.</Text>
@@ -59,7 +60,7 @@ export default function OrgEmergency() {
       <Big icon="phone" label="Appeler une personne de confiance" onPress={() => setShowContacts((v) => !v)} />
       {showContacts ? (
         <View style={{ gap: spacing.xs }}>
-          {(contacts ?? []).filter((c) => c.phone).map((c) => <Big key={c.id} icon="phone-call" label={`${c.name}${c.relation ? ` (${c.relation})` : ''}`} onPress={() => void Linking.openURL(`tel:${c.phone!.replace(/[^0-9+]/g, '')}`)} />)}
+          {(contacts ?? []).filter((c) => c.phone).map((c) => <Big key={c.id} icon="phone-call" label={`${c.name}${c.relation ? ` (${c.relation})` : ''}`} onPress={() => callNumber(c.phone!, toast)} />)}
           {!(contacts ?? []).some((c) => c.phone) ? <Text>Aucun numéro enregistré. Ajoutez-en dans Après la naissance › Mon plan de soutien.</Text> : null}
         </View>
       ) : null}

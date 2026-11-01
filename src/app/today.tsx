@@ -125,7 +125,7 @@ export default function Today() {
           <Text variant="heading" style={{ marginTop: 4 }}>{question.detail}</Text>
           <Row wrap gap={6} style={{ marginTop: spacing.sm }}>
             <Button label={tr('trk.digest.answer')} size="sm" icon="message-circle" onPress={() => router.push({ pathname: '/community/new', params: { title: question.detail ?? '', kind: 'testimony' } })} testID="digest-question-share" />
-            <Button label={tr('trk.digest.hide')} size="sm" variant="ghost" onPress={() => savePrefs.mutate({ ...prefs, question: false })} />
+            <Button label={tr('trk.digest.hide')} size="sm" variant="ghost" onPress={() => savePrefs.mutateAsync({ ...prefs, question: false })} />
           </Row>
         </Card>
       ) : null}

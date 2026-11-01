@@ -6,7 +6,7 @@ import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
@@ -120,6 +120,7 @@ export default function NightRelay() {
         </Card>
       ) : null}
       {shiftsQ.isLoading && !shiftsQ.data ? <Skeleton rows={2} /> : null}
+      {shiftsQ.isError && !shiftsQ.data ? <ErrorView error={shiftsQ.error} onRetry={() => void shiftsQ.refetch()} title="Impossible d’afficher les nuits prévues" /> : null}
       {shiftsQ.data && upcoming.length === 0 ? <EmptyState icon="moon" title="Aucune nuit prévue" body="Préparez un planning ci-dessous : il reste modifiable à tout moment." /> : null}
       {upcoming.map((s, i) => (
         <StaggerItem key={s.id} index={i}>

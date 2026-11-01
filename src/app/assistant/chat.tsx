@@ -73,6 +73,8 @@ export default function Chat() {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  // Fermer la conversation pendant une réponse l'arrête (pas de quota consommé pour un écran fermé)
+  useEffect(() => () => abortRef.current?.abort(), []);
   const privacy = usePrivacy();
   const updatePrivacy = useUpdatePrivacy();
   const historyOn = privacy.data?.ai_history_enabled === true;

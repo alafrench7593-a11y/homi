@@ -8,7 +8,7 @@ import { Animated, Linking, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
-import { Skeleton } from '@/components/States';
+import { ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem, usePop } from '@/components/Motion';
 import { Flash, SlideSwap } from '@/components/MotionKit';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -49,9 +49,14 @@ export default function FamilyCalendar() {
   const [exportOpen, setExportOpen] = useState(false);
   const [withHealth, setWithHealth] = useState(false);
   const eventsQ = useFamilyEvents();
-  const { data: appointments } = useAppointments();
-  const { data: tasks } = useFamilyTasks();
-  const { data: shifts } = useCareShifts();
+  const appointmentsQ = useAppointments();
+  const tasksQ = useFamilyTasks();
+  const shiftsQ = useCareShifts();
+  const { data: appointments } = appointmentsQ;
+  const { data: tasks } = tasksQ;
+  const { data: shifts } = shiftsQ;
+  // Une source qui n'a pas pu se charger : on le dit, plutôt que d'afficher « rien de prévu »
+  const failedQs = [eventsQ, appointmentsQ, tasksQ, shiftsQ].filter((q) => q.isError && !q.data);
   const { data: children } = useChildren();
   const { labelOf } = usePeople();
   const save = useSaveEvent();
@@ -198,6 +203,7 @@ export default function FamilyCalendar() {
       </Row>
 
       {eventsQ.isLoading && !eventsQ.data ? <Skeleton rows={3} /> : null}
+      {failedQs.length ? <ErrorView error={failedQs[0].error} onRetry={() => failedQs.forEach((q) => void q.refetch())} title="Impossible d’afficher tout l’agenda" /> : null}
 
       <SlideSwap key={`${view}:${range[0]}`} dir={dir.current}>
       {view === 'month' ? (

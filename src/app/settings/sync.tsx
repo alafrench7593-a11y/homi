@@ -48,7 +48,7 @@ export default function SyncScreen() {
         <Row gap={0}>
           <IconButton icon="refresh-cw" label="Réessayer l’envoi" onPress={() => retryConflict(op.id).catch((e) => toast(friendlyError(e), 'error'))} />
           <IconButton icon="trash-2" label="Retirer cette saisie" onPress={async () => {
-            if (await confirm('Retirer cette saisie ?', 'Elle n’a pas pu être enregistrée sur le serveur. La retirer la supprime définitivement de ce téléphone.', 'Retirer')) await discardConflict(op.id);
+            if (await confirm('Retirer cette saisie ?', 'Elle n’a pas pu être enregistrée sur le serveur. La retirer la supprime définitivement de ce téléphone.', 'Retirer')) await discardConflict(op.id).catch((e) => toast(friendlyError(e), 'error'));
           }} />
         </Row>
       ) : undefined}

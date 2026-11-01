@@ -133,6 +133,7 @@ export const parcours: Messages<typeof fr> = {
   'pj.detail.note': 'An archived journey no longer shows on home, tools or notifications. Its data stays here until you delete it.',
   'pj.blocked.title': 'This journey is not active',
   'pj.blocked.body': 'This tool belongs to a journey you do not have (any more). Nothing from an old journey is mixed into your current one.',
+  'pj.blocked.tool': 'Requested tool',
   'pj.blocked.home': 'Back to home',
   'pj.start.button': 'I have a positive test / I’m starting a pregnancy',
   'pj.start.title': 'Starting a pregnancy',

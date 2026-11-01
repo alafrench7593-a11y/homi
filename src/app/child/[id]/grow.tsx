@@ -7,18 +7,19 @@
  * Gratuit : étapes principales, sécurité, sources, résumé à l'écran. Premium : toutes les étapes, activités, PDF.
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { Linking, Platform, ScrollView, Share, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { Platform, ScrollView, Share, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
-import { Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSurface } from '@/components/Glass';
 import { PremiumSection } from '@/components/Premium';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Chip, Field, Icon, Row, SectionTitle, Text, haptic } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
-import { useChild, usePremium } from '@/lib/data/hooks';
+import { useChild, useChildren, useMemberships, usePremium } from '@/lib/data/hooks';
+import { openLink } from '@/lib/links';
 import { useConsumeQuota, usePremiumAccess } from '@/lib/data/hooks-premium';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useChildSteps, useSaveStep } from '@/lib/data/hooks-discoveries';
@@ -42,6 +43,10 @@ export default function Grow() {
   const t = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const child = useChild(id);
+  const childrenQ = useChildren();
+  const membershipsQ = useMemberships();
+  const isLoading = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
+  const loadError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !childrenQ.data ? childrenQ : null;
   const premium = usePremium();
   const access = usePremiumAccess('development_full', child?.first_name);
   const stepsQ = useChildSteps(child?.id);
@@ -55,7 +60,22 @@ export default function Grow() {
   useEffect(() => { setBand(current.key); }, [current.key]);
   const rows = stepsQ.data ?? [];
   const byKey = useMemo(() => new Map(rows.map((r) => [r.step_key, r])), [rows]);
-  if (!child) return <Screen back title={tr('gr.title')}><Skeleton rows={3} /></Screen>;
+  if (!child) {
+    return (
+      <Screen back title={tr('gr.title')}>
+        {isLoading ? <Skeleton rows={3} /> : loadError ? (
+          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title={tr('common.cannotShow')} />
+        ) : (
+          <EmptyState
+            icon="user-x"
+            title={tr('alb.notFound')}
+            body={tr('cm2.member.notFoundBody')}
+            action={{ label: tr('pj.blocked.home'), icon: 'home', onPress: () => router.replace('/(tabs)') }}
+          />
+        )}
+      </Screen>
+    );
+  }
   const name = child.first_name;
   const b = AGE_BANDS.find((x) => x.key === band)!;
   const list = stepsInBand(b, cat);
@@ -177,8 +197,9 @@ function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildS
 
 function SourceLink({ s }: { s: { label: string; url: string; published?: string } }) {
   const t = useTheme();
+  const toast = useToast();
   return (
-    <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+    <Tappable accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: 32, justifyContent: 'center' }}>
       <Text variant="caption" color={t.colors.primary}>{s.label}{s.published ? ` (${formatDate(`${s.published}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' })})` : ''}</Text>
     </Tappable>
   );

@@ -6,11 +6,11 @@ import React from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { confirm, useToast } from '@/components/Overlays';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, ListRow, Text } from '@/components/ui';
 import { journeyDates, journeyLabel, useJourneyProfileLabel } from '@/features/journeys';
 import { eq, gte, lte } from '@/lib/backend';
-import { useChildren, useJourneyState, usePregnancies, useRows } from '@/lib/data/hooks';
+import { useChildren, useJourneys, useJourneyState, usePregnancies, useRows } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { todayISO } from '@/lib/domain/dates';
 import { useRunJourneyOps } from '@/lib/journeys/manager';
@@ -21,6 +21,8 @@ export default function PastJourney() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const toast = useToast();
   const js = useJourneyState();
+  // État à jour de la même requête (js.query n'est recalculé qu'au changement des données : son erreur n'y apparaîtrait pas)
+  const journeysQ = useJourneys();
   const j = js.mine.find((r) => r.id === id) ?? null;
   const { data: pregnancies } = usePregnancies();
   const { data: children } = useChildren();
@@ -48,6 +50,7 @@ export default function PastJourney() {
     }
   }
 
+  if (!js.loaded && journeysQ.isError) return <Screen back title={tr('pj.manager.previous')}><ErrorView error={journeysQ.error} onRetry={() => js.query.refetch()} /></Screen>;
   if (!js.loaded) return <Screen back title={tr('pj.manager.previous')}><Skeleton rows={3} /></Screen>;
   if (!j) return <Screen back title={tr('pj.manager.previous')}><EmptyState icon="archive" title={tr('pj.detail.missing')} /></Screen>;
   return (

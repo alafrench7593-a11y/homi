@@ -366,9 +366,9 @@ export default function DocumentDetail() {
                   <Text weight="medium">{r.title}</Text>
                   <Text variant="caption" muted>{r.schedule.type === 'once' ? `${formatDate(r.schedule.at)} · ${formatTime(r.schedule.at)}` : ''}</Text>
                 </View>
-                <Toggle label={tr('docs.rem.enabled')} value={r.enabled} onChange={(v) => backend.update('reminders', { enabled: v }, [eq('id', r.id)]).then(() => inv('reminders'))} />
+                <Toggle label={tr('docs.rem.enabled')} value={r.enabled} onChange={(v) => backend.update('reminders', { enabled: v }, [eq('id', r.id)]).then(() => inv('reminders')).catch((e) => toast(friendlyError(e), 'error'))} />
                 <IconButton icon="edit-2" label={tr('common.edit')} size={18} onPress={() => setReminder({ id: r.id, date: r.schedule.type === 'once' ? toFrDate(r.schedule.at.slice(0, 10)) : '', time: r.schedule.type === 'once' ? formatTime(r.schedule.at).replace(/\s?[AP]M$/i, '') : '09:00', lead: 'same', discreet: !r.body, label: r.title })} />
-                <IconButton icon="trash-2" label={tr('common.delete')} size={18} color={t.colors.textMuted} onPress={async () => { if (await confirm(tr('docs.rem.deleteTitle'), tr('docs.rem.deleteBody'), tr('common.delete'))) { await backend.remove('reminders', [eq('id', r.id)]); inv('reminders'); } }} />
+                <IconButton icon="trash-2" label={tr('common.delete')} size={18} color={t.colors.textMuted} onPress={async () => { if (await confirm(tr('docs.rem.deleteTitle'), tr('docs.rem.deleteBody'), tr('common.delete'))) { try { await backend.remove('reminders', [eq('id', r.id)]); inv('reminders'); } catch (e) { toast(friendlyError(e), 'error'); } } }} />
               </Row>
             ))}
           </Card>

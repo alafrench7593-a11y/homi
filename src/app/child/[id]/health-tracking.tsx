@@ -10,7 +10,7 @@ import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { LineChart } from '@/components/Charts';
@@ -127,6 +127,9 @@ export default function HealthTracking() {
       <Banner tone="info" icon="info">{'Cet espace aide à noter et à retrouver des informations. Il ne pose aucun diagnostic, ne donne aucun score et n’indique jamais de dose ni de traitement. Les repères affichés sont uniquement ceux du plan écrit par le professionnel qui suit votre enfant.'}</Banner>
 
       {trackersQ.isLoading && !trackersQ.data ? <Skeleton kind="card" rows={2} /> : null}
+      {/* Erreur réseau : jamais présentée comme « aucun suivi » */}
+      {trackersQ.isError && !trackersQ.data ? <ErrorView error={trackersQ.error} onRetry={() => void trackersQ.refetch()} title="Impossible d’afficher les suivis" /> : null}
+      {trackersQ.data && entriesQ.isError && !entriesQ.data ? <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} title="Impossible d’afficher les notes" /> : null}
       {trackersQ.data && !trackers.length ? <EmptyState icon="activity" title="Aucun suivi pour l’instant" body="Partez d’un modèle ci-dessous ou créez le vôtre." /> : null}
 
       {trackers.map((tr, i) => {

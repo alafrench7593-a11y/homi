@@ -71,6 +71,7 @@ const PRIVATE_KEYS = ['assistant_messages', 'assistant_conversations', 'document
 import { useHouseholdId } from '@/lib/data/hooks';
 import { useRealtimeSync, wireFocusAndOnline } from '@/lib/sync';
 import { t as tr } from '@/i18n';
+import { isPublicRoute } from '@/lib/publicRoutes';
 
 function Bootstrap() {
   const { session } = useAuth();
@@ -120,6 +121,20 @@ function Bootstrap() {
   return null;
 }
 
+/**
+ * Garde de session : un lien profond ou une adresse web (/bottle/…, /settings, /cycle…) ouvert sans session,
+ * ou une session qui expire sur un écran ouvert directement, renvoie vers l'accueil de connexion
+ * au lieu d'un écran vide ou d'un chargement sans fin.
+ */
+function SessionGuard() {
+  const { session, ready } = useAuth();
+  const pathname = usePathname();
+  useEffect(() => {
+    if (ready && !session && pathname && !isPublicRoute(pathname)) router.replace('/welcome');
+  }, [ready, session, pathname]);
+  return null;
+}
+
 function Navigator() {
   const t = useTheme();
   const base = t.isDark ? DarkTheme : DefaultTheme;
@@ -163,6 +178,7 @@ export default function RootLayout() {
             <I18nProvider>
               <ToastProvider>
                 <Bootstrap />
+                <SessionGuard />
                 <WebInteractionStyles />
                 <WebFrame>
                   <Backdrop />

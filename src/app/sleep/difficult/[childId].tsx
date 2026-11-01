@@ -8,13 +8,16 @@
  * Jamais de culpabilité, aucune méthode imposée, jamais « laisser pleurer ». Écran sombre et apaisé, gros boutons.
  */
 import React, { useMemo, useState } from 'react';
-import { Linking, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Icon, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
-import { useChild } from '@/lib/data/hooks';
+import { useToast } from '@/components/Overlays';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
+import { useChild, useChildren, useMemberships } from '@/lib/data/hooks';
+import { callNumber, goBack } from '@/lib/links';
 import { useNightFeeds, useSleepPlan } from '@/lib/data/hooks-sleepPlanner';
 import { childAge } from '@/lib/domain/child';
 import { lastEvents, nightPistes, NIGHT_OBSERVATIONS, WORRYING_SIGNS, type NightObservation } from '@/lib/domain/nightsHelp';
@@ -35,7 +38,12 @@ const STEPS = ['Ce que vous observez', 'Ce qui a été noté', 'Pistes douces', 
 export default function DifficultNight() {
   const insets = useSafeAreaInsets();
   const { childId } = useLocalSearchParams<{ childId: string }>();
+  const toast = useToast();
   const child = useChild(childId);
+  const childrenQ = useChildren();
+  const membershipsQ = useMemberships();
+  const isLoading = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
+  const loadError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !childrenQ.data ? childrenQ : null;
   const { sleeps } = useSleepPlan(child);
   const feeds = useNightFeeds(child?.id);
   const [step, setStep] = useState(0);
@@ -43,7 +51,29 @@ export default function DifficultNight() {
   const [signs, setSigns] = useState<string[]>([]);
   const [done, setDone] = useState<string[]>([]);
   const events = useMemo(() => (child ? lastEvents(ownSleeps(sleeps, child.id), feeds.map((f) => f.at)) : []), [child, sleeps, feeds]);
-  if (!child) return <View style={{ flex: 1, backgroundColor: BG }} />;
+  if (!child) {
+    // Toujours un bouton pour fermer, même si le profil ne peut pas s'afficher
+    return (
+      <View style={{ flex: 1, backgroundColor: BG }} testID="difficult-night">
+        <StatusBar style="light" />
+        <View style={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, gap: spacing.md }}>
+          <Row style={{ alignItems: 'center' }}>
+            <Tappable accessibilityRole="button" accessibilityLabel="Fermer" onPress={() => goBack()} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }} testID="dn-close"><Icon name="x" color={MUTED} /></Tappable>
+          </Row>
+          {isLoading ? <Skeleton kind="detail" rows={4} /> : loadError ? (
+            <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce profil" />
+          ) : (
+            <EmptyState
+              icon="user-x"
+              title="Profil introuvable"
+              body="Ce profil est introuvable. Il a peut-être été supprimé."
+              action={{ label: 'Retour à l’accueil', icon: 'home', onPress: () => router.replace('/(tabs)') }}
+            />
+          )}
+        </View>
+      </View>
+    );
+  }
   const name = child.first_name;
   const months = childAge(child.birth_date).months;
   const urgent = signs.filter((s) => s !== 'harm');
@@ -55,7 +85,7 @@ export default function DifficultNight() {
       <StatusBar style="light" />
       <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + 140, gap: spacing.md }}>
         <Row style={{ alignItems: 'center' }}>
-          <Tappable accessibilityRole="button" accessibilityLabel="Fermer" onPress={() => router.back()} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" color={MUTED} /></Tappable>
+          <Tappable accessibilityRole="button" accessibilityLabel="Fermer" onPress={() => goBack()} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" color={MUTED} /></Tappable>
           <Text variant="caption" color={MUTED} style={{ flex: 1 }}>{`Étape ${step + 1} sur ${STEPS.length} · ${name}`}</Text>
         </Row>
         <Text variant="title" color={TEXT}>{STEPS[step]}</Text>
@@ -69,13 +99,13 @@ export default function DifficultNight() {
             {urgent.length ? (
               <Box title="N’attendez pas" tone="danger" testID="dn-urgent">
                 <Text color={TEXT}>Ce module ne peut pas évaluer ces signes. Appelez le 15 (ou le 112). En cas de doute sur la fièvre d’un bébé de moins de 3 mois, consultez en urgence.</Text>
-                <Big label="Appeler le 15" onPress={() => void Linking.openURL('tel:15')} testID="dn-call-15" />
+                <Big label="Appeler le 15" onPress={() => callNumber('15', toast)} testID="dn-call-15" />
               </Box>
             ) : null}
             {harm ? (
               <Box title="Vous n’êtes pas seul·e" tone="danger" testID="dn-harm">
                 <Text color={TEXT}>Posez {name} sur le dos dans son lit, en sécurité, et quittez la pièce quelques minutes. Ne le secouez jamais. Appelez un proche, ou le 119 (24 h/24, gratuit).</Text>
-                <Big label="Appeler le 119" onPress={() => void Linking.openURL('tel:119')} testID="dn-call-119" />
+                <Big label="Appeler le 119" onPress={() => callNumber('119', toast)} testID="dn-call-119" />
               </Box>
             ) : null}
             <Box title="Qu’observez-vous ?">
@@ -121,7 +151,7 @@ export default function DifficultNight() {
         <Row>
           {step > 0 ? <View style={{ flex: 1 }}><Big label="Retour" soft onPress={() => setStep(step - 1)} testID="dn-back" /></View> : null}
           <View style={{ flex: 1 }}>
-            {step < STEPS.length - 1 ? <Big label="Suivant" onPress={() => setStep(step + 1)} testID="dn-next" /> : <Big label="Terminer" onPress={() => router.back()} testID="dn-finish" />}
+            {step < STEPS.length - 1 ? <Big label="Suivant" onPress={() => setStep(step + 1)} testID="dn-next" /> : <Big label="Terminer" onPress={() => goBack()} testID="dn-finish" />}
           </View>
         </Row>
       </View>

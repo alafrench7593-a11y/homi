@@ -5,10 +5,12 @@
  * Un cosmétique n'est jamais présenté comme un traitement ; en cas de rougeur, d'eczéma ou de lésion, on renvoie au médecin.
  */
 import React from 'react';
-import { Image, Linking, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
+import { useToast } from '@/components/Overlays';
+import { openLink } from '@/lib/links';
 import { Banner, Button, Card, Icon, Row, SectionTitle, Text } from '@/components/ui';
 import { euro } from '@/features/products/ProductCard';
 import { useKidProducts, useProductPrices } from '@/lib/data/hooks-products';
@@ -22,16 +24,19 @@ import { Tappable } from '@/components/Tappable';
 
 export default function ProductDetail() {
   const t = useTheme();
+  const toast = useToast();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { isEditor } = useMyRoles();
   const products = useKidProducts({ includeDrafts: isEditor });
   const prices = useProductPrices();
   const p = products.data.find((x) => x.id === id);
   if (products.isLoading && !p) return <Screen back title={tr('pr.title')}><Skeleton kind="detail" rows={5} /></Screen>;
+  // Erreur réseau : jamais présentée comme « produit introuvable »
+  if (!p && products.isError) return <Screen back title={tr('pr.title')}><ErrorView error={products.error} onRetry={() => void products.refetch()} /></Screen>;
   if (!p) return <Screen back title={tr('pr.title')}><EmptyState icon="package" title={tr('pr.notFound')} /></Screen>;
   const c = productCriteria(p);
   const mine = (prices.data ?? []).filter((x) => x.product_id === p.id);
-  const open = (url: string) => void Linking.openURL(url);
+  const open = (url: string) => openLink(url, toast);
   const cosmetic = p.category !== 'food' && p.category !== 'accessory';
 
   return (
@@ -85,7 +90,9 @@ export default function ProductDetail() {
 
       <SectionTitle title={tr('pr.prices')} />
       <View testID="product-prices" style={{ gap: spacing.xs }}>
-        {!mine.length ? <Text variant="small" muted>{tr('pr.pricesNone')}</Text> : mine.map((x) => {
+        {prices.isError && !prices.data ? (
+          <ErrorView error={prices.error} onRetry={() => void prices.refetch()} />
+        ) : !mine.length ? <Text variant="small" muted>{tr('pr.pricesNone')}</Text> : mine.map((x) => {
           const up = unitPrice(Number(x.price), { value: p.quantity_value == null ? null : Number(p.quantity_value), unit: p.quantity_unit });
           return (
             <Card key={x.id}>

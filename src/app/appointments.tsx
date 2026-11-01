@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyStateCard } from '@/components/ui-extra';
+import { ErrorView } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, type IconName, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { backend, eq } from '@/lib/backend';
@@ -59,7 +60,10 @@ export default function AppointmentsScreen() {
   const hid = useHouseholdId();
   const pregnancy = useActivePregnancy();
   const { data: children } = useChildren();
-  const { data: appointments, isLoading } = useAppointments();
+  const appointmentsQ = useAppointments();
+  const { data: appointments, isLoading } = appointmentsQ;
+  // Erreur réseau : jamais présentée comme « aucun rendez-vous »
+  const loadFailed = appointmentsQ.isError && !appointments;
   const { data: reminders } = useReminders(); // programme aussi les notifications locales
   const [draft, setDraft] = useState<Draft | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -263,7 +267,8 @@ export default function AppointmentsScreen() {
   return (
     <Screen back title="Rendez-vous" subtitle="Consultations, échographies, examens, questions à poser."
       action={{ label: 'Ajouter un rendez-vous', icon: 'plus', onPress: openNew, testID: 'appointments-add' }}>
-      {!isLoading ? (() => {
+      {loadFailed ? <ErrorView error={appointmentsQ.error} onRetry={() => void appointmentsQ.refetch()} title="Impossible d’afficher vos rendez-vous" /> : null}
+      {!isLoading && !loadFailed ? (() => {
         const next = upcoming[0];
         const days = next ? Math.round((new Date(next.starts_at).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 86400000) : null;
         return (
@@ -283,7 +288,7 @@ export default function AppointmentsScreen() {
       {upcoming[0] ? NextCard({ a: upcoming[0] }) : null}
       {upcoming.length > 1 ? <SectionTitle title="Ensuite" /> : null}
       {upcoming.slice(1).map((a) => renderAppt(a))}
-      {!isLoading && !upcoming.length && <EmptyStateCard illustration="leaf" title="Aucun rendez-vous à venir" text="Notez vos prochains rendez-vous pour les retrouver ici, avec les questions que vous voulez poser." />}
+      {!isLoading && !loadFailed && !upcoming.length && <EmptyStateCard illustration="leaf" title="Aucun rendez-vous à venir" text="Notez vos prochains rendez-vous pour les retrouver ici, avec les questions que vous voulez poser." />}
 
       {past.length > 0 && (
         <>

@@ -6,7 +6,7 @@
  * membres, aucune position de membre ; la position du moment est facultative, arrondie et jamais enregistrée.
  */
 import React, { useMemo, useState } from 'react';
-import { Linking, Platform, ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
@@ -14,6 +14,8 @@ import { Skeleton } from '@/components/States';
 import { GlassSurface } from '@/components/Glass';
 import { Banner, Button, Chip, Icon, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
+import { useToast } from '@/components/Overlays';
+import { callNumber, openLink } from '@/lib/links';
 import { FamilyMap } from '@/features/outings/FamilyMap';
 import { catLabel, MiniRow, PlaceCard, PlaceSheet } from '@/features/outings/PlaceVisuals';
 import { TownPicker } from '@/features/outings/TownPicker';
@@ -28,6 +30,7 @@ import { spacing } from '@/theme/tokens';
 
 export default function Outings() {
   const t = useTheme();
+  const toast = useToast();
   const params = useLocalSearchParams<{ view?: string }>();
   const town = useUiStore((s) => s.nearbyTown);
   const [here, setHere] = useState<{ lat: number; lon: number } | null>(null);
@@ -115,7 +118,7 @@ export default function Outings() {
           <SectionTitle title={tr('out.favorites')} />
           <View style={{ gap: spacing.xs }} testID="out-favorites">
             {favs.data.map((f) => (
-              <Tappable key={f.id} accessibilityRole="link" disabled={f.lat == null} onPress={() => f.lat != null && f.lon != null && void Linking.openURL(directionsUrl({ lat: f.lat, lon: f.lon, name: f.name }, Platform.OS))} testID={`out-fav-${f.place_id}`} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
+              <Tappable key={f.id} accessibilityRole="link" disabled={f.lat == null} onPress={() => f.lat != null && f.lon != null && openLink(directionsUrl({ lat: f.lat, lon: f.lon, name: f.name }, Platform.OS), toast)} testID={`out-fav-${f.place_id}`} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
                 <Icon name="heart" size={16} color="#E5525F" />
                 <View style={{ flex: 1 }}><Text weight="bold">{f.name}</Text>{f.address ? <Text variant="caption" muted>{f.address}</Text> : null}</View>
                 <Icon name="navigation" size={16} color={t.colors.textMuted} />
@@ -132,6 +135,7 @@ export default function Outings() {
 
 function DirectoryCard({ d, town }: { d: Directory; town: string | null }) {
   const t = useTheme();
+  const toast = useToast();
   const url = directoryUrl(d, town);
   return (
     <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.6)'} depth={1} radius={20} padded={spacing.md}>
@@ -141,8 +145,8 @@ function DirectoryCard({ d, town }: { d: Directory; town: string | null }) {
         {d.hours ? <Text variant="caption" muted>{d.hours}</Text> : null}
         <Text variant="caption" muted>{tr('nb.dirSource', { source: d.source, date: formatDate(`${d.checkedOn}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Text>
         <Row wrap>
-          {url ? <Button label={d.annuaire && town ? tr('nb.openIn', { town }) : tr('nb.open')} icon="external-link" size="sm" variant="secondary" onPress={() => void Linking.openURL(url)} /> : null}
-          {d.phone ? <Button label={tr('nb.call', { phone: d.phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3') })} icon="phone" size="sm" variant="secondary" onPress={() => void Linking.openURL(`tel:${d.phone}`)} /> : null}
+          {url ? <Button label={d.annuaire && town ? tr('nb.openIn', { town }) : tr('nb.open')} icon="external-link" size="sm" variant="secondary" onPress={() => openLink(url, toast)} /> : null}
+          {d.phone ? <Button label={tr('nb.call', { phone: d.phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3') })} icon="phone" size="sm" variant="secondary" onPress={() => callNumber(d.phone!, toast)} /> : null}
         </Row>
       </View>
     </GlassSurface>

@@ -5,9 +5,10 @@
  */
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
+import { goBack } from '@/lib/links';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { PhotoGrid, PhotoViewer } from '@/features/community';
@@ -56,6 +57,8 @@ export default function AlbumScreen() {
   }
 
   if (albums.isLoading && !albums.data) return <Screen back title={tr('cm3.album.title')}><Skeleton kind="card" rows={2} /></Screen>;
+  // Erreur réseau : jamais présentée comme « album introuvable »
+  if (!album && albums.isError) return <Screen back title={tr('cm3.album.title')}><ErrorView error={albums.error} onRetry={() => void albums.refetch()} title={tr('alb.errLoad')} /></Screen>;
   if (!album) return <Screen back title={tr('cm3.album.title')}><EmptyState icon="image" title={tr('cm3.album.notFoundTitle')} body={tr('cm3.album.notFoundBody')} /></Screen>;
   const list = photos.data ?? [];
 
@@ -67,7 +70,9 @@ export default function AlbumScreen() {
           <Button label={tr('cm3.album.share')} icon="user-plus" size="sm" variant="secondary" onPress={() => (access.require() ? setSharing(true) : undefined)} testID="album-share" />
         </Row>
       ) : null}
-      {photos.isLoading && !photos.data ? <Skeleton kind="card" rows={1} /> : list.length ? (
+      {photos.isLoading && !photos.data ? <Skeleton kind="card" rows={1} /> : photos.isError && !photos.data ? (
+        <ErrorView error={photos.error} onRetry={() => void photos.refetch()} title={tr('alb.errLoad')} />
+      ) : list.length ? (
         <View testID="album-photos">
           <PhotoGrid photos={list.map((p) => ({ path: p.path, width: p.width, height: p.height }))} onOpen={setViewer} />
           {album.is_mine ? (
@@ -90,11 +95,11 @@ export default function AlbumScreen() {
       {album.is_mine ? (
         <Button label={tr('cm3.album.delete')} icon="trash-2" variant="ghost" onPress={async () => {
           if (!(await confirm(tr('cm3.album.deleteConfirm'), tr('cm3.album.deleteBody'), tr('cm3.album.deleteAction')))) return;
-          if (await run({ kind: 'delete', id: album.id, paths: list.map((p) => p.path) }, tr('cm3.album.deleted'))) router.back();
+          if (await run({ kind: 'delete', id: album.id, paths: list.map((p) => p.path) }, tr('cm3.album.deleted'))) goBack('/community/albums');
         }} testID="album-delete" />
       ) : (
         <Button label={tr('cm3.album.hide')} variant="ghost" icon="eye-off" onPress={async () => {
-          try { await backend.remove('album_shares', [eq('album_id', album.id), eq('user_id', userId)]); inv('community_albums'); router.back(); }
+          try { await backend.remove('album_shares', [eq('album_id', album.id), eq('user_id', userId)]); inv('community_albums'); goBack('/community/albums'); }
           catch (e) { toast(friendlyError(e), 'error'); }
         }} />
       )}

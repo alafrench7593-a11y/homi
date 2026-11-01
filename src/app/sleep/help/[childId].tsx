@@ -13,12 +13,12 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
-import { Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { PremiumSection } from '@/components/Premium';
 import { useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Icon, Row, SectionTitle, Text } from '@/components/ui';
 import { SleepRecordButtons } from '@/features/sleep';
-import { useChild } from '@/lib/data/hooks';
+import { useChild, useChildren, useMemberships } from '@/lib/data/hooks';
 import { addSleepFeedback, useSleepPlan } from '@/lib/data/hooks-sleepPlanner';
 import { useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -34,10 +34,30 @@ export default function NightsHelp() {
   const t = useTheme();
   const { childId } = useLocalSearchParams<{ childId: string }>();
   const child = useChild(childId);
+  const childrenQ = useChildren();
+  const membershipsQ = useMemberships();
+  const isLoading = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
+  const loadError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !childrenQ.data ? childrenQ : null;
   const { plan, sleeps, profile, loading } = useSleepPlan(child);
   const [allSafe, setAllSafe] = useState(false);
   const review = useMemo(() => (child ? sleepReview(sleeps, child.id) : null), [child, sleeps]);
-  if (!child || loading || !plan || !review) return <Screen back title="M’aider pour les nuits"><Skeleton kind="detail" rows={5} /></Screen>;
+  if (!child) {
+    return (
+      <Screen back title="M’aider pour les nuits">
+        {isLoading ? <Skeleton kind="detail" rows={5} /> : loadError ? (
+          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce profil" />
+        ) : (
+          <EmptyState
+            icon="user-x"
+            title="Profil introuvable"
+            body="Ce profil est introuvable. Il a peut-être été supprimé."
+            action={{ label: 'Retour à l’accueil', icon: 'home', onPress: () => router.replace('/(tabs)') }}
+          />
+        )}
+      </Screen>
+    );
+  }
+  if (loading || !plan || !review) return <Screen back title="M’aider pour les nuits"><Skeleton kind="detail" rows={5} /></Screen>;
   const name = child.first_name;
   const age = childAge(child.birth_date);
   const prefs = notifyPrefs(profile);

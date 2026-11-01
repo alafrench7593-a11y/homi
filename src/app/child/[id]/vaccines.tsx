@@ -8,18 +8,19 @@
  * Ne remplace ni le carnet de santé ni l'avis du médecin.
  */
 import React, { useState } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { GlassSurface } from '@/components/Glass';
 import { GoldTimeline, type GoldState } from '@/features/goldTimeline';
 import { backend, eq } from '@/lib/backend';
-import { useChild, useInvalidate } from '@/lib/data/hooks';
+import { useChild, useChildren, useInvalidate, useMemberships } from '@/lib/data/hooks';
+import { openLink } from '@/lib/links';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useVaccineActions, useVaccineSchedule, type Vaccination, type VaccineAppointment } from '@/lib/data/hooks-vaccines';
 import { byVisit, nextDoses, VACCINE_QUESTIONS, type ScheduledDose } from '@/lib/domain/vaccines';
@@ -56,6 +57,10 @@ export default function Vaccines() {
   const inv = useInvalidate();
   const { id } = useLocalSearchParams<{ id: string }>();
   const child = useChild(id);
+  const childrenQ = useChildren();
+  const membershipsQ = useMemberships();
+  const isLoading = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
+  const loadError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !childrenQ.data ? childrenQ : null;
   const { schedule, vaccinations, appointments, postponements, calendar, supported, loading } = useVaccineSchedule(child);
   const postpone = usePostponeVaccine();
   const [apptSheet, setApptSheet] = useState<{ appt: VaccineAppointment | null; keys: string[]; title: string } | null>(null);
@@ -73,7 +78,22 @@ export default function Vaccines() {
   const [qFree, setQFree] = useState('');
   const [showAll, setShowAll] = useState(false);
 
-  if (!child) return <Screen back title={tr('vx.title')}><Skeleton rows={4} /></Screen>;
+  if (!child) {
+    return (
+      <Screen back title={tr('vx.title')}>
+        {isLoading ? <Skeleton rows={4} /> : loadError ? (
+          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title={tr('common.cannotShow')} />
+        ) : (
+          <EmptyState
+            icon="user-x"
+            title={tr('alb.notFound')}
+            body={tr('cm2.member.notFoundBody')}
+            action={{ label: tr('pj.blocked.home'), icon: 'home', onPress: () => router.replace('/(tabs)') }}
+          />
+        )}
+      </Screen>
+    );
+  }
   const visits = schedule ? byVisit(schedule) : [];
   const next = schedule ? nextDoses(schedule, 6) : [];
   const nextVisits = visits.filter((v) => v.doses.some((x) => next.includes(x)));
@@ -151,7 +171,7 @@ export default function Vaccines() {
           <Text variant="caption" muted testID="vaccine-version">{tr('vx.version', { version: calendar.version, country: calendar.country })}</Text>
           {!supported ? <Text variant="small" weight="bold">{tr('vx.otherCountry')}</Text> : null}
           {Object.values(calendar.sources).map((s) => (
-            <Tappable key={s.key} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ minHeight: 36, justifyContent: 'center' }}>
+            <Tappable key={s.key} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: 36, justifyContent: 'center' }}>
               <Text variant="caption" color={t.colors.primary}>{s.label} ({fmt(s.published)})</Text>
             </Tappable>
           ))}

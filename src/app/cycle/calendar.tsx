@@ -32,6 +32,7 @@ import { springTo } from '@/theme/motion';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { ErrorView, Skeleton } from '@/components/States';
 
 export default function CycleCalendar() {
   const c = useCyclePalette();
@@ -39,7 +40,10 @@ export default function CycleCalendar() {
   const today = todayISO();
   const [ym, setYm] = useState(() => ({ y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 }));
   const [day, setDay] = useState<DayCell | null>(null);
-  const { data: periods } = usePeriods();
+  const periodsQ = usePeriods();
+  const periods = periodsQ.data;
+  // Tant que les règles ne sont pas chargées, aucune action : sinon un jour semble vide et propose « Début des règles » (doublon)
+  const periodsReady = periodsQ.isSuccess;
   const { data: symptoms } = useAllSymptomLogs();
   const { data: discharge } = useDischargeLogs();
   const { data: bleeding } = useBleedingLogs();
@@ -58,11 +62,11 @@ export default function CycleCalendar() {
   const history = useMemo(() => cycleHistory(periods ?? [], today), [periods, today]);
   const delay = useMemo(() => periodDelay(periods ?? [], today), [periods, today]);
   const objective = useObjective();
-  const acts = day ? dayActions(day.iso, rows, today) : { covering: null, actions: [] as DayAction[] };
+  const acts = day && periodsReady ? dayActions(day.iso, rows, today) : { covering: null, actions: [] as DayAction[] };
 
   /** Toucher un jour : début, fin, début plus tôt, suppression (avec confirmation). */
   async function apply(a: DayAction) {
-    if (!day || busy) return;
+    if (!day || busy || !periodsReady) return;
     if (a.kind === 'delete' && !(await confirm(tr('cyc.deleteTitle'), tr('cyc.deleteBody'), tr('common.delete')))) return;
     setBusy(true);
     try {
@@ -112,6 +116,7 @@ export default function CycleCalendar() {
     if (cell) { setDay(cell); setWantToday(false); }
   }, [wantToday, cells, today]);
   function openToday() {
+    if (!periodsReady) return;
     haptic('selection');
     setYm({ y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 });
     setWantToday(true);
@@ -135,6 +140,11 @@ export default function CycleCalendar() {
           <Ink variant="heading" center style={{ flex: 1 }}>{monthLabel.replace(/^./, (x) => x.toUpperCase())}</Ink>
           <IconButton icon="chevron-right" label={tr('cy.cal.next')} onPress={() => go(1)} />
         </Row>
+        {periodsQ.isError ? (
+          <ErrorView error={periodsQ.error} onRetry={() => periodsQ.refetch()} />
+        ) : !periodsReady ? (
+          <Skeleton kind="card" rows={3} />
+        ) : (
         <Animated.View {...swipe.panHandlers} style={{ transform: [{ translateX: slide }], gap: 4 }}>
           <View style={{ flexDirection: 'row' }}>{weekdays.map((w, i) => <View key={i} style={{ flex: 1 }}><Ink variant="caption" soft center>{w.toUpperCase()}</Ink></View>)}</View>
           {Array.from({ length: cells.length / 7 }, (_, w) => (
@@ -155,6 +165,7 @@ export default function CycleCalendar() {
             </View>
           ))}
         </Animated.View>
+        )}
         {/* Légende : forme + couleur + texte */}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.xs }}>
           {(['period', 'estimate', 'fertile', 'symptom', 'discharge', 'note'] as const).map((k) => (

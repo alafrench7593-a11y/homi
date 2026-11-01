@@ -161,7 +161,7 @@ export default function Library() {
       <SectionTitle title="Tous les thèmes" />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
         <Chip label="Tout" selected={!activeCat} onPress={() => { setCat(null); router.setParams({ cat: undefined } as never); }} />
-        {(categories ?? []).map((c) => <Chip key={c.id} label={c.label} selected={activeCat === c.id} onPress={() => setCat(activeCat === c.id ? null : c.id)} />)}
+        {(categories ?? []).map((c) => <Chip key={c.id} label={c.label} selected={activeCat === c.id} onPress={() => { if (activeCat === c.id) { setCat(null); router.setParams({ cat: undefined } as never); } else setCat(c.id); }} />)}
       </ScrollView>
       {loading ? <Skeleton rows={5} /> : null}
       {failed ? <ErrorView error={articlesQ.error} onRetry={() => void articlesQ.refetch()} title="Impossible d’afficher les articles" /> : null}
@@ -205,8 +205,8 @@ export default function Library() {
               />
             </Card>
           )}
-          ListEmptyComponent={loading || failed ? null : q || cat ? (
-            <EmptyState icon="search" title="Aucun article ne correspond à cette recherche." body="Essayez un autre mot ou un autre thème." action={{ label: 'Voir tous les articles', icon: 'refresh-cw', onPress: () => { setQ(''); setCat(null); } }} />
+          ListEmptyComponent={loading || failed ? null : q || activeCat || journey ? (
+            <EmptyState icon="search" title="Aucun article ne correspond à cette recherche." body="Essayez un autre mot ou un autre thème." action={{ label: 'Voir tous les articles', icon: 'refresh-cw', onPress: () => { setQ(''); setCat(null); setJourney(null); router.setParams({ cat: undefined, journey: undefined } as never); } }} />
           ) : (
             <EmptyState icon="book-open" title="Aucun article pour l’instant" body="Les articles arrivent bientôt. Vous pouvez poser vos questions à l’assistant en attendant." action={{ label: 'Poser une question', icon: 'message-circle', onPress: () => router.push('/assistant/chat' as never) }} />
           )}

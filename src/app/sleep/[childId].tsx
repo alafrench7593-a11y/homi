@@ -11,7 +11,7 @@
  */
 import { Tappable } from '@/components/Tappable';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Linking, Platform, Share, View } from 'react-native';
+import { Platform, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
@@ -21,12 +21,13 @@ import { BarChart } from '@/components/Charts';
 import { PremiumSection } from '@/components/Premium';
 import { Banner, Button, Card, Chip, Field, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
-import { Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { FeedbackPrompt, SleepEditSheet, SleepRecordButtons, SleepTimeline } from '@/features/sleep';
 import { WakeCheckReminder } from '@/features/sleepWakeCheck';
 import { backend, eq } from '@/lib/backend';
-import { useChild, useInvalidate, usePremium, useReminders, useRows } from '@/lib/data/hooks';
+import { useChild, useChildren, useInvalidate, useMemberships, usePremium, useReminders, useRows } from '@/lib/data/hooks';
+import { openLink } from '@/lib/links';
 import { friendlyError, useDeleteReminder, useSaveReminder } from '@/lib/data/hooks-settings';
 import { saveSleepProfile, useNightFeeds, useSleepNotificationSync, useSleepPlan, type SleepProfileRow } from '@/lib/data/hooks-sleepPlanner';
 import { childAge } from '@/lib/domain/child';
@@ -60,8 +61,27 @@ export default function SleepPlanner() {
   const params = useLocalSearchParams<{ childId: string; tab?: Tab; routine?: string }>();
   const childId = params.childId;
   const child = useChild(childId);
+  const childrenQ = useChildren();
+  const membershipsQ = useMemberships();
+  const isLoading = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
+  const loadError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !childrenQ.data ? childrenQ : null;
   const [tab, setTab] = useState<Tab>(params.routine ? 'profile' : TABS.some((x) => x.key === params.tab) ? (params.tab as Tab) : 'today');
-  if (!child) return <Screen back title="Sommeil"><Skeleton kind="detail" rows={4} /></Screen>;
+  if (!child) {
+    return (
+      <Screen back title="Sommeil">
+        {isLoading ? <Skeleton kind="detail" rows={4} /> : loadError ? (
+          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title="Impossible d’afficher ce profil" />
+        ) : (
+          <EmptyState
+            icon="user-x"
+            title="Profil introuvable"
+            body="Ce profil est introuvable. Il a peut-être été supprimé."
+            action={{ label: 'Retour à l’accueil', icon: 'home', onPress: () => router.replace('/(tabs)') }}
+          />
+        )}
+      </Screen>
+    );
+  }
   return <PlannerBody child={child} tab={tab} setTab={setTab} />;
 }
 
@@ -476,7 +496,7 @@ function SafetyTab({ child, data }: { child: Child; data: PlanData }) {
         {SAFE_SLEEP_POINTS.map((s) => <Text key={s} variant="small" style={{ marginTop: 2 }}>{`• ${s}`}</Text>)}
         <Text variant="caption" muted style={{ marginTop: spacing.xs }}>Sources officielles :</Text>
         {SAFE_SLEEP_SOURCES.map((s) => (
-          <Tappable key={s.url} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ alignSelf: 'stretch', marginTop: 4 }}>
+          <Tappable key={s.url} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ alignSelf: 'stretch', marginTop: 4 }}>
             <Text variant="caption" color={palette.lavenderInk} style={{ flex: 1 }}>
               {`${s.label} — publié le ${new Date(`${s.published}T12:00:00`).toLocaleDateString('fr-FR')}, consulté le ${new Date(`${s.consulted_on}T12:00:00`).toLocaleDateString('fr-FR')}`}
             </Text>

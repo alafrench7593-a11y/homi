@@ -12,12 +12,12 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, ListRow, Row, Segmented, SectionTitle, Text, Toggle } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { useTheme } from '@/theme/ThemeProvider';
 import { dosesFor, needLabel, type Dose } from '@/features/needs';
-import { useChild } from '@/lib/data/hooks';
+import { useChild, useChildren, useMemberships } from '@/lib/data/hooks';
 import { useNow } from '@/lib/data/hooks-bottle';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { NEURO_ARTICLES, NEURO_UPDATED_ON, type NeuroTopic } from '@/content/articles/neuro';
@@ -53,6 +53,10 @@ const PRACTICAL: NeuroTopic[] = ['daily', 'sleep', 'food', 'emotions', 'appointm
 export default function ChildNeeds() {
   const params = useLocalSearchParams<{ id: string; tab?: Tab; dose?: string; time?: string }>();
   const child = useChild(params.id);
+  const childrenQ = useChildren();
+  const membershipsQ = useMemberships();
+  const isLoading = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
+  const loadError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !childrenQ.data ? childrenQ : null;
   const simple = useUiStore((st) => st.simpleMode);
   const { data: needs } = useChildNeeds(params.id);
   const [tab, setTab] = useState<Tab | null>(params.tab === 'treatments' || params.tab === 'follow' || params.tab === 'profile' || params.tab === 'forYou' ? params.tab : null);
@@ -61,7 +65,22 @@ export default function ChildNeeds() {
   const dayStart = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.toISOString(); }, []);
   const { data: todayLogs } = useTreatmentLogs(active.map((x) => x.id), dayStart);
   const todayDoses = useMemo(() => dosesFor(new Date(), active, todayLogs ?? []), [active, todayLogs]);
-  if (!child) return <Screen back title={tr('nd.title')}><Skeleton kind="detail" rows={4} /></Screen>;
+  if (!child) {
+    return (
+      <Screen back title={tr('nd.title')}>
+        {isLoading ? <Skeleton kind="detail" rows={4} /> : loadError ? (
+          <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title={tr('common.cannotShow')} />
+        ) : (
+          <EmptyState
+            icon="user-x"
+            title={tr('alb.notFound')}
+            body={tr('cm2.member.notFoundBody')}
+            action={{ label: tr('pj.blocked.home'), icon: 'home', onPress: () => router.replace('/(tabs)') }}
+          />
+        )}
+      </Screen>
+    );
+  }
   const current: Tab = tab ?? (needs?.kinds.length ? 'forYou' : 'profile');
   return (
     <Screen back title={tr('nd.title')} subtitle={child.first_name}>
@@ -146,7 +165,8 @@ function NeedsProfile({ childId }: { childId: string }) {
 function FollowUp({ childId }: { childId: string }) {
   const toast = useToast();
   const [filter, setFilter] = useState<EntryKind | null>(null);
-  const { data: entries, isLoading } = useNeedEntries(childId, filter);
+  const entriesQ = useNeedEntries(childId, filter);
+  const { data: entries, isLoading } = entriesQ;
   const add = useAddNeedEntry();
   const del = useDeleteNeedEntry();
   const [open, setOpen] = useState(false);
@@ -178,11 +198,13 @@ function FollowUp({ childId }: { childId: string }) {
         <ListRow icon="calendar" title={tr('tool.appointments')} onPress={() => router.push(`/appointments?child=${childId}`)} />
         <ListRow icon="folder" title={tr('tool.documents')} subtitle={tr('nd.docsHint')} onPress={() => router.push(`/documents?child=${childId}`)} />
       </Card>
-      {isLoading ? <Skeleton rows={3} /> : !entries?.length ? <EmptyState icon="list" title={tr('nd.entry.none')} /> : (
+      {isLoading && !entries ? <Skeleton rows={3} /> : entriesQ.isError && !entries ? (
+        <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} />
+      ) : !entries?.length ? <EmptyState icon="list" title={tr('nd.entry.none')} /> : (
         <Card>
           {entries.map((e) => (
             <ListRow key={e.id} icon="file-text" title={e.title} subtitle={`${tr(`nd.entry.${e.kind}` as TKey)} · ${formatDateFr(e.occurred_on)}${e.body ? ` · ${e.body}` : ''}`}
-              onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch(() => undefined); }} />
+              onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch((err) => toast(friendlyError(err), 'error')); }} />
           ))}
         </Card>
       )}
@@ -358,8 +380,10 @@ function Treatments({ childId, childName, noteDose, askTime }: { childId: string
         <Button label={tr('common.save')} loading={save.isPending} onPress={() => submit()} testID="t-save" />
         {editing && editing !== 'new' ? <Button label={tr('common.delete')} variant="ghost" icon="trash-2" onPress={async () => {
           if (!(await confirm(tr('nd.t.deleteTitle'), editing.name, tr('common.delete')))) return;
-          await remove.mutateAsync(editing.id).catch((e) => toast(friendlyError(e), 'error'));
-          setEditing(null);
+          try {
+            await remove.mutateAsync(editing.id);
+            setEditing(null); // la fiche ne se ferme qu'une fois la suppression réussie
+          } catch (e) { toast(friendlyError(e), 'error'); }
         }} /> : null}
       </Sheet>
 

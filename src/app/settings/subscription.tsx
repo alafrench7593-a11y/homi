@@ -190,7 +190,10 @@ export default function SubscriptionScreen() {
           {purchaseMode === 'unavailable' ? (
             <Banner tone="info" title="Achats bientôt disponibles">{'Les achats intégrés ne sont pas encore configurés pour cette version de l’application.'}</Banner>
           ) : plans.isLoading ? <Loading label="Chargement des offres…" /> : plans.isError ? (
-            <Banner tone="warning" title="Offres indisponibles">{friendlyError(plans.error, 'Impossible de joindre la boutique pour le moment.')}</Banner>
+            <>
+              <Banner tone="warning" title="Offres indisponibles">{friendlyError(plans.error, 'Impossible de joindre la boutique pour le moment.')}</Banner>
+              <Button label="Réessayer" icon="refresh-cw" variant="secondary" onPress={() => void plans.refetch()} testID="plans-retry" />
+            </>
           ) : (
             sorted.map((p) => {
               const dates = billingDates(p);
