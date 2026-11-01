@@ -148,20 +148,28 @@ export async function flushQueue(): Promise<number> {
   if (st.syncing || !st.pending.length || backend.mode === 'demo' || !queueOwner) return 0;
   useOfflineStore.setState({ syncing: true });
   let sent = 0;
+  const batch = st.pending;
+  const processed = new Set(batch.map((op) => op.id));
   const remaining: PendingOp[] = [];
-  const conflicts: PendingOp[] = [...st.conflicts];
-  for (const op of st.pending) {
+  const newConflicts: PendingOp[] = [];
+  for (const op of batch) {
     if (op.owner != null && op.owner !== queueOwner) { remaining.push(op); continue; } // jamais sous une autre session
     try {
       await send(op);
       sent++;
     } catch (e) {
       if (e instanceof BackendError && e.isNetwork) remaining.push(op);
-      else conflicts.push({ ...op, error: e instanceof Error ? e.message : tr('l6.offline.unknownError') });
+      else newConflicts.push({ ...op, error: e instanceof Error ? e.message : tr('l6.offline.unknownError') });
     }
   }
-  useOfflineStore.setState({ pending: remaining, conflicts, syncing: false });
+  // F-01 (QA 02/11/2026, P0) : on FUSIONNE avec l'état courant. Remplacer la file par la copie prise au départ
+  // effaçait sans trace les saisies mises en file pendant l'envoi (réseau instable).
+  const now = useOfflineStore.getState();
+  const arrived = now.pending.filter((op) => !processed.has(op.id));
+  useOfflineStore.setState({ pending: [...remaining, ...arrived], conflicts: [...now.conflicts, ...newConflicts], syncing: false });
   await save();
+  // Saisies arrivées pendant l'envoi : nouvel envoi si le réseau est là
+  if (arrived.length && useOfflineStore.getState().online) sent += await flushQueue();
   return sent;
 }
 

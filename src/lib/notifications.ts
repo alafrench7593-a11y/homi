@@ -173,7 +173,17 @@ export function lockScreenText(r: Pick<Reminder, 'title' | 'body' | 'category' |
   return { title: r.title, body: r.body ?? undefined };
 }
 
-export async function syncLocalReminders(reminders: Reminder[]): Promise<{ scheduled: number; skipped: number }> {
+// A-07 (QA 02/11/2026) : deux synchronisations simultanées (ouverture + modification d'un rappel)
+// lisaient la même table vide et programmaient chacune les rappels → doublons définitifs.
+// Les appels sont désormais enchaînés : un seul passage à la fois, toujours avec la liste la plus récente.
+let syncChain: Promise<unknown> = Promise.resolve();
+export function syncLocalReminders(reminders: Reminder[]): Promise<{ scheduled: number; skipped: number }> {
+  const run = syncChain.catch(() => undefined).then(() => syncLocalRemindersOnce(reminders));
+  syncChain = run;
+  return run;
+}
+
+async function syncLocalRemindersOnce(reminders: Reminder[]): Promise<{ scheduled: number; skipped: number }> {
   if (!notificationsSupported) return { scheduled: 0, skipped: 0 };
   let map: ScheduledMap = {};
   try {
@@ -191,6 +201,19 @@ export async function syncLocalReminders(reminders: Reminder[]): Promise<{ sched
       delete map[id];
     }
   }
+
+  // Réconciliation : notifications de rappel programmées mais absentes de la table (doublons laissés
+  // par une ancienne version, table perdue) → annulées, pour qu'elles ne sonnent jamais deux fois.
+  try {
+    const known = new Set(Object.values(map).flatMap((e) => e.ids));
+    const pending = await Notifications.getAllScheduledNotificationsAsync();
+    await Promise.all(pending
+      .filter((n) => {
+        const src = (n.content?.data as { source?: string } | undefined)?.source;
+        return (src === 'reminder' || src === 'treatment') && !known.has(n.identifier);
+      })
+      .map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier).catch(() => undefined)));
+  } catch { /* lecture impossible : on garde le comportement précédent */ }
 
   let total = Object.values(map).reduce((t, e) => t + e.ids.length, 0);
   let scheduled = 0;
@@ -238,7 +261,8 @@ export async function snoozeLocally(title: string, body: string | undefined, url
 export async function cancelAllLocal() {
   if (!notificationsSupported) return;
   await Notifications.cancelAllScheduledNotificationsAsync();
-  await AsyncStorage.multiRemove([MAP_KEY, BOTTLE_MAP_KEY, SLEEP_MAP_KEY]);
+  // A-08 : la table du résumé est aussi effacée, sinon il n'est jamais reprogrammé après reconnexion
+  await AsyncStorage.multiRemove([MAP_KEY, BOTTLE_MAP_KEY, SLEEP_MAP_KEY, DIGEST_KEY]);
 }
 
 /** Notification de test immédiate : permet de vérifier la réception sur l'appareil. */
@@ -549,7 +573,15 @@ export async function syncDigestNotifications(prefs: { morning: boolean; morning
   let saved: { signature: string; ids: string[] } = { signature: '', ids: [] };
   try { saved = JSON.parse((await AsyncStorage.getItem(DIGEST_KEY)) ?? '{"signature":"","ids":[]}'); } catch { /* état local perdu : on reprogramme */ }
   const signature = JSON.stringify(prefs ? [prefs.morning, prefs.morning_time, prefs.evening, prefs.evening_time] : null);
-  if (signature === saved.signature) return saved.ids.length;
+  if (signature === saved.signature) {
+    // A-08 : même réglage, mais les notifications ont-elles survécu (déconnexion, système) ?
+    let alive = true;
+    try {
+      const pending = new Set((await Notifications.getAllScheduledNotificationsAsync()).map((n) => n.identifier));
+      alive = saved.ids.every((id) => pending.has(id));
+    } catch { /* lecture impossible : on garde l'état enregistré */ }
+    if (alive) return saved.ids.length;
+  }
   await Promise.all(saved.ids.map((nid) => Notifications.cancelScheduledNotificationAsync(nid).catch(() => undefined)));
   const ids: string[] = [];
   for (const moment of ['morning', 'evening'] as const) {
