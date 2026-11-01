@@ -17,7 +17,7 @@ export async function verifyHook(secret: string, headers: Headers, body: string,
   const ts = headers.get('webhook-timestamp');
   const sig = headers.get('webhook-signature');
   if (!id || !ts || !sig || !secret) return false;
-  if (Math.abs(now / 1000 - Number(ts)) > 300) return false; // 5 minutes de tolérance
+  if (!Number.isFinite(Number(ts)) || Math.abs(now / 1000 - Number(ts)) > 300) return false; // 5 minutes de tolérance
   const raw = secret.replace(/^v1,/, '').replace(/^whsec_/, '');
   const key = await crypto.subtle.importKey('raw', b64ToBytes(raw), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   const expected = bytesToB64(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${id}.${ts}.${body}`)));
@@ -67,6 +67,7 @@ export async function sendWithResend(apiKey: string, from: string, to: string, m
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ from, to: [to], subject: mail.subject, html: mail.html, text: mail.text }),
+    signal: AbortSignal.timeout(8000),
   });
   const out = await res.json().catch(() => ({}));
   return { ok: res.ok, status: res.status, id: (out as { id?: string }).id };
@@ -74,8 +75,9 @@ export async function sendWithResend(apiKey: string, from: string, to: string, m
 
 /** Comparaison en temps constant de la signature du webhook. */
 function constantTimeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let r = 0;
-  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  // Pas de retour anticipé sur la longueur : le temps ne dépend que de la plus longue chaîne
+  const n = Math.max(a.length, b.length);
+  let r = a.length ^ b.length;
+  for (let i = 0; i < n; i++) r |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
   return r === 0;
 }

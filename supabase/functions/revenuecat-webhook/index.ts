@@ -9,9 +9,10 @@ const ENTITLEMENT = Deno.env.get('REVENUECAT_ENTITLEMENT') ?? 'premium';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let r = 0;
-  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  // Pas de retour anticipé sur la longueur : le temps ne dépend que de la plus longue chaîne
+  const n = Math.max(a.length, b.length);
+  let r = a.length ^ b.length;
+  for (let i = 0; i < n; i++) r |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
   return r === 0;
 }
 
@@ -40,8 +41,9 @@ Deno.serve(async (req) => {
   if (rcKey) {
     const res = await fetch(`https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(userId)}`, {
       headers: { Authorization: `Bearer ${rcKey}` },
-    });
-    if (res.ok) {
+      signal: AbortSignal.timeout(8000),
+    }).catch(() => null);
+    if (res?.ok) {
       const ent = (await res.json())?.subscriber?.entitlements?.[ENTITLEMENT];
       if (ent) {
         expiresAt = ent.expires_date ? Date.parse(ent.expires_date) : null;

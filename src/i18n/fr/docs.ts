@@ -295,6 +295,7 @@ export const docs = {
   'docs.read.unreadable': 'Le document n’a pas pu être lu. Numérisez-le à nouveau (plus net, mieux éclairé) ou saisissez le texte.',
   'docs.read.demo': 'En mode démonstration, aucun document n’est envoyé à un service de lecture. Saisissez le texte pour essayer la suite.',
   'docs.read.consent': 'La lecture automatique des documents est désactivée. Activez-la dans Réglages › Confidentialité, ou saisissez le texte.',
+  'docs.read.ownerConsent': 'La personne qui a ajouté ce document n’a pas activé la lecture automatique : il ne peut pas être lu par l’IA. Vous pouvez saisir le texte.',
   'docs.read.tooLarge': 'Document trop volumineux pour la lecture automatique (10 Mo maximum).',
   'docs.read.unsupported': 'Ce format ne peut pas être lu automatiquement.',
   'docs.read.rateLimited': 'Trop de lectures en peu de temps. Réessayez dans une heure.',

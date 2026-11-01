@@ -35,16 +35,21 @@ Deno.serve(async (req) => {
   const { document_id } = await req.json().catch(() => ({}));
   if (typeof document_id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(document_id)) return json({ error: 'bad_request' }, 400);
   // Vérification des droits AVEC la RLS de l'utilisateur
-  const { data: doc } = await auth.client.from('documents').select('id,household_id,storage_path,mime_type,size_bytes').eq('id', document_id).maybeSingle();
+  const { data: doc } = await auth.client.from('documents').select('id,household_id,uploaded_by,storage_path,mime_type,size_bytes').eq('id', document_id).maybeSingle();
   if (!doc) return json({ error: 'not_found' }, 404);
   if (!READABLE_MIME.has(doc.mime_type)) return json({ error: 'unsupported' }, 415);
   if (doc.size_bytes > 10 * 1024 * 1024) return json({ error: 'too_large', message: 'Document trop volumineux pour la lecture automatique (10 Mo maximum).' }, 413);
+  if (typeof doc.storage_path !== 'string' || !doc.storage_path.startsWith(`${doc.household_id}/`)) return json({ error: 'not_found' }, 404);
+  if (doc.uploaded_by && doc.uploaded_by !== auth.user.id && !(await hasConsent(admin, doc.uploaded_by, 'document_reading'))) {
+    return json({ error: 'owner_consent_required', message: 'La personne qui a ajouté ce document n’a pas activé la lecture automatique.' }, 403);
+  }
 
   const gemini = geminiConfig();
   if (!gemini) return json({ fields: null, status: 'not_configured', message: 'Lecture automatique non configurée : la clé GEMINI_API_KEY doit être ajoutée aux secrets Supabase.' });
 
   const { data: file, error } = await admin.storage.from('documents').download(doc.storage_path);
   if (error || !file) return json({ error: 'file_unavailable' }, 404);
+  if (file.size > 10 * 1024 * 1024) return json({ error: 'too_large', message: 'Document trop volumineux pour la lecture automatique (10 Mo maximum).' }, 413);
   const data = toBase64(await file.arrayBuffer());
   let text: string;
   try {

@@ -40,7 +40,8 @@ Deno.serve(async (req) => {
     if (typeof body?.photo === 'string') {
       if (!validPhotoName(body.photo)) return json({ error: 'bad_request', message: 'Photo invalide.' }, 400);
       if (!(await rateLimit(admin, `places_photo:${auth.user.id}`, 150, 3600))) return json({ google: 'quota' });
-      const res = await fetch(photoMediaUrl(body.photo, Number(body.maxWidthPx) || 640, key));
+      const res = await fetch(photoMediaUrl(body.photo, Number(body.maxWidthPx) || 640, key), { signal: AbortSignal.timeout(8000) }).catch(() => null);
+      if (!res) return json({ google: 'unavailable' });
       if (!res.ok) { console.error('places_photo', res.status); return json({ google: googleErrorState(res.status) }); }
       const photoUri = parsePhotoMedia(await res.json().catch(() => null));
       return photoUri ? json({ google: 'ok', photoUri }) : json({ google: 'unavailable' });

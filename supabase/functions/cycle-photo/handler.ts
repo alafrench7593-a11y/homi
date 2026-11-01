@@ -30,6 +30,8 @@ export interface CyclePhotoDeps {
   config: () => GeminiConfig | null;
   /** Limitation de débit par personne (true = autorisé). */
   rateLimit?: (userId: string) => Promise<boolean>;
+  /** Enregistre la preuve du consentement (horodatée) avant l'envoi ; false = échec, rien n'est envoyé. */
+  recordConsent?: (userId: string) => Promise<boolean>;
   fetchImpl?: typeof fetch;
 }
 
@@ -72,6 +74,11 @@ export async function handleCyclePhoto(req: Request, deps: CyclePhotoDeps): Prom
 
   if (deps.rateLimit && !(await deps.rateLimit(auth.userId))) {
     return reply({ error: 'rate_limited', message: 'Trop d’analyses demandées en une heure. Vous pouvez choisir l’aspect vous-même.' }, 429);
+  }
+
+  // 4) Preuve du consentement enregistrée en base AVANT tout envoi à l'IA (RGPD art. 9)
+  if (deps.recordConsent && !(await deps.recordConsent(auth.userId))) {
+    return reply({ error: 'consent_not_recorded', message: 'Votre accord n’a pas pu être enregistré : la photo n’a pas été envoyée. Réessayez plus tard.' }, 503);
   }
 
   let suggestion: CyclePhotoSuggestion;

@@ -67,8 +67,9 @@ export async function hasConsent(admin: SupabaseClient, userId: string, purpose:
 
 /** Comparaison de secrets en temps constant (pas d'indice sur la longueur commune par le temps de réponse). */
 export function safeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let r = 0;
-  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  // Pas de retour anticipé sur la longueur : le temps ne dépend que de la plus longue chaîne
+  const n = Math.max(a.length, b.length);
+  let r = a.length ^ b.length;
+  for (let i = 0; i < n; i++) r |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
   return r === 0;
 }

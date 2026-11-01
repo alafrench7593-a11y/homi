@@ -4,7 +4,7 @@
 // L'IA n'explique que ce que les règles ont établi : le verdict est repris tel quel ; une réponse
 // contenant une promesse d'innocuité ou un autre verdict est rejetée. Sans GEMINI_API_KEY :
 // { ai: 'not_configured' } — l'application affiche alors l'explication des règles, jamais un faux texte IA.
-import { adminClient, corsHeaders, json, rateLimit, requireUser } from '../_shared/http.ts';
+import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser } from '../_shared/http.ts';
 import { geminiConfig } from '../_shared/gemini.ts';
 import { sanitizePayload } from '../_shared/scan-explain.ts';
 import { runExplain } from '../_shared/scan-explain-run.ts';
@@ -22,6 +22,11 @@ Deno.serve(async (req) => {
   if (!cfg) return json({ ai: 'not_configured', message: 'Explication IA non configurée.' });
 
   const admin = adminClient();
+  // Le profil (« enceinte », âge du bébé, allergies) est une donnée de santé : pas d'envoi à l'IA
+  // sans l'accord « assistant IA ». L'application garde alors l'explication des règles.
+  if (!(await hasConsent(admin, auth.user.id, 'ai_assistant'))) {
+    return json({ ai: 'consent_required', message: 'L’explication par l’IA demande votre accord (Réglages › Confidentialité › Assistant IA). L’explication des règles reste affichée.' });
+  }
   if (!(await rateLimit(admin, `scan_explain:${auth.user.id}`, 20, 3600))) {
     return json({ ai: 'unavailable', message: 'Trop d’explications demandées en une heure. L’explication des règles reste affichée.' });
   }

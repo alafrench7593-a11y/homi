@@ -40,7 +40,7 @@ export interface ScanRow {
 
 export type ExplainResponse =
   | { ai: 'ok'; model: string; generated_on: string; verdict: string; explanation: Explanation }
-  | { ai: 'not_configured' | 'unavailable' | 'rejected'; message?: string };
+  | { ai: 'not_configured' | 'unavailable' | 'rejected' | 'consent_required'; message?: string };
 
 export interface ScanResultRow {
   id: string;

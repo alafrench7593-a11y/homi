@@ -14,14 +14,15 @@ Deno.serve(async (req) => {
   const from = Deno.env.get('RESEND_FROM_EMAIL') ?? '';
   if (!apiKey || !from) {
     // Aucune simulation : l'envoi échoue explicitement et Supabase Auth renvoie l'erreur à l'application.
-    return new Response(JSON.stringify({ error: { http_code: 500, message: 'Envoi d’e-mail non configuré : RESEND_API_KEY et RESEND_FROM_EMAIL manquants' } }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    console.error('auth_email_not_configured'); // détail pour l'administratrice, jamais renvoyé à l'app
+    return new Response(JSON.stringify({ error: { http_code: 500, message: 'Envoi d’e-mail momentanément indisponible.' } }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
   const payload = JSON.parse(body) as HookPayload;
   const mail = buildEmail(Deno.env.get('APP_NAME') ?? 'Au fil de nous', Deno.env.get('SUPABASE_URL') ?? '', payload);
   const sent = await sendWithResend(apiKey, from, payload.user.email, mail);
   if (!sent.ok) {
     console.error('resend_error', sent.status);
-    return new Response(JSON.stringify({ error: { http_code: 502, message: `Resend a refusé l’envoi (${sent.status})` } }), { status: 502, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: { http_code: 502, message: 'Envoi d’e-mail momentanément indisponible.' } }), { status: 502, headers: { 'Content-Type': 'application/json' } });
   }
   return new Response('{}', { status: 200, headers: { 'Content-Type': 'application/json' } });
 });

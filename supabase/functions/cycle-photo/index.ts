@@ -17,5 +17,9 @@ Deno.serve((req) =>
     },
     config: geminiConfig,
     rateLimit: (userId) => rateLimit(adminClient(), `cycle_photo:${userId}`, 20, 3600),
+    recordConsent: async (userId) => {
+      const { error } = await adminClient().from('consents').insert({ user_id: userId, purpose: 'cycle_photo_ai', granted: true });
+      return !error;
+    },
   })
 );

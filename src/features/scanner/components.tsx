@@ -269,7 +269,7 @@ export function ExplanationCard({ a, explanation, loading }: { a: StoredAnalysis
       </Card>
     );
   }
-  const title = loading ? 'Explication IA en cours…' : explanation?.ai === 'not_configured' || !explanation ? 'Explication IA non configurée' : 'Explication IA indisponible';
+  const title = loading ? 'Explication IA en cours…' : explanation?.ai === 'not_configured' || !explanation ? 'Explication IA non configurée' : explanation.ai === 'consent_required' ? 'Explication IA désactivée' : 'Explication IA indisponible';
   return (
     <Card tone="soft">
       <Text variant="label">{title}</Text>

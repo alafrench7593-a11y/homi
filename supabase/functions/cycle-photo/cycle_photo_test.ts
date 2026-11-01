@@ -152,3 +152,16 @@ Deno.test('aucune journalisation dans la fonction (lecture du code source)', asy
     assert(!/console\.\w+\s*\(/.test(src), `appel console trouvé dans ${f}`);
   }
 });
+
+Deno.test('preuve de consentement non enregistrée : 503, aucun envoi au modèle', async () => {
+  const res = await handleCyclePhoto(post({ image_base64: JPEG, mime_type: 'image/jpeg', consent: true }), deps({ recordConsent: () => Promise.resolve(false) }));
+  assertEquals(res.status, 503);
+  assertEquals((await res.json()).error, 'consent_not_recorded');
+});
+
+Deno.test('preuve de consentement enregistrée AVANT l’appel au modèle', async () => {
+  const order: string[] = [];
+  const fake = ((u: string, i?: RequestInit) => { order.push('modele'); return geminiReply('{"analyzable":false,"category":"unknown","confidence":0,"reason":""}')(u, i); }) as typeof fetch;
+  await handleCyclePhoto(post({ image_base64: JPEG, mime_type: 'image/jpeg', consent: true }), deps({ fetchImpl: fake, recordConsent: () => { order.push('consentement'); return Promise.resolve(true); } }));
+  assertEquals(order, ['consentement', 'modele']);
+});

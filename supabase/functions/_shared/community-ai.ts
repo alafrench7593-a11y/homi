@@ -77,7 +77,9 @@ export function checkSummary(raw: string, pseudonyms: string[] = []): { ok: true
   } catch {
     return { ok: false, reason: 'json' };
   }
-  const points = Array.isArray(parsed.points) ? parsed.points.filter((p): p is string => typeof p === 'string' && p.trim().length > 0).map((p) => p.trim().slice(0, 300)) : [];
+  // Pas de lien dans un résumé montré à d'autres membres (un message piégé ne peut pas en glisser un)
+  const noLinks = (p: string) => p.replace(/\b(?:https?:\/\/|www\.)\S+/gi, '').replace(/\b[a-z0-9-]+\.(?:com|fr|net|org|io|ly|me|co|info|biz|xyz)\b(?:\/\S*)?/gi, '').replace(/\s{2,}/g, ' ').trim();
+  const points = Array.isArray(parsed.points) ? parsed.points.filter((p): p is string => typeof p === 'string' && p.trim().length > 0).map((p) => noLinks(p.trim()).slice(0, 300)).filter((p) => p.length > 0) : [];
   if (points.length < 1 || points.length > 6) return { ok: false, reason: 'points' };
   const all = `${points.join(' ')} ${typeof parsed.caution === 'string' ? parsed.caution : ''}`;
   if (FORBIDDEN.test(all)) return { ok: false, reason: 'promesse' };

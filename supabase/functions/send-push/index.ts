@@ -47,6 +47,7 @@ Deno.serve(async (req) => {
     const chunk = messages.slice(i, i + 100);
     const res = await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
+      signal: AbortSignal.timeout(8000),
       headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(Deno.env.get('EXPO_ACCESS_TOKEN') ? { Authorization: `Bearer ${Deno.env.get('EXPO_ACCESS_TOKEN')}` } : {}) },
       body: JSON.stringify(chunk),
     });

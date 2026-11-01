@@ -137,3 +137,10 @@ verify_jwt = false
 
 [functions.service-status]
 verify_jwt = true
+
+# Déclarées explicitement (audit du 01/11/2026) : appelées par l'application, jeton de connexion obligatoire
+[functions.community-ai]
+verify_jwt = true
+
+[functions.places]
+verify_jwt = true

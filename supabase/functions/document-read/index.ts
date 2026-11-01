@@ -17,16 +17,23 @@ Deno.serve(async (req) => {
   const { document_id } = await req.json().catch(() => ({}));
   if (typeof document_id !== 'string') return json({ error: 'bad_request' }, 400);
   // Droits vérifiés AVEC la RLS de l'utilisatrice : un document privé d'un autre membre est introuvable
-  const { data: doc } = await auth.client.from('documents').select('id,storage_path,mime_type,size_bytes').eq('id', document_id).maybeSingle();
+  const { data: doc } = await auth.client.from('documents').select('id,household_id,uploaded_by,storage_path,mime_type,size_bytes').eq('id', document_id).maybeSingle();
   if (!doc) return json({ error: 'not_found' }, 404);
   if (!READABLE_MIME.has(doc.mime_type)) return json({ error: 'unsupported' }, 415);
   if (doc.size_bytes > MAX_READ_BYTES) return json({ error: 'too_large' }, 413);
+  // Le fichier doit appartenir au foyer du document (jamais un fichier rattaché d'un autre foyer)
+  if (typeof doc.storage_path !== 'string' || !doc.storage_path.startsWith(`${doc.household_id}/`)) return json({ error: 'not_found' }, 404);
+  // Le document d'une autre personne n'est envoyé à l'IA que si CETTE personne a aussi donné son accord
+  if (doc.uploaded_by && doc.uploaded_by !== auth.user.id && !(await hasConsent(admin, doc.uploaded_by, 'document_reading'))) {
+    return json({ error: 'owner_consent_required' }, 403);
+  }
 
   const gemini = geminiConfig();
   if (!gemini) return json({ status: 'not_configured' });
 
   const { data: file, error } = await admin.storage.from('documents').download(doc.storage_path);
   if (error || !file) return json({ error: 'file_unavailable' }, 404);
+  if (file.size > MAX_READ_BYTES) return json({ error: 'too_large' }, 413); // taille réelle, pas celle déclarée
   let raw: string;
   try {
     raw = await geminiGenerate(gemini, {

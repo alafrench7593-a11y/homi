@@ -297,6 +297,7 @@ export const docs: Messages<typeof fr> = {
   'docs.read.unreadable': 'The document couldn’t be read. Scan it again (sharper, better lit) or type in the text.',
   'docs.read.demo': 'In demo mode, no document is sent to a reading service. Type in the text to try the rest.',
   'docs.read.consent': 'Automatic document reading is turned off. Turn it on in Settings › Privacy, or type in the text.',
+  'docs.read.ownerConsent': 'The person who added this document has not turned on automatic reading, so it cannot be read by the AI. You can type in the text.',
   'docs.read.tooLarge': 'Document too large for automatic reading (10 MB maximum).',
   'docs.read.unsupported': 'This format can’t be read automatically.',
   'docs.read.rateLimited': 'Too many readings in a short time. Try again in an hour.',

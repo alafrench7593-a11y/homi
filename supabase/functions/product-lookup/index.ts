@@ -31,17 +31,20 @@ function fromLocal(p: Any): Any {
 }
 
 /** Cache (table open_facts_cache) + quota global : marge sous les limites officielles (15 lectures, 10 recherches / min / IP). */
-function openFactsStore(admin: Any): OpenFactsStore {
+function openFactsStore(admin: Any, userId: string): OpenFactsStore {
   return {
     get: async (key) => (await admin.from('open_facts_cache').select('payload,found,fetched_at').eq('key', key).maybeSingle()).data ?? null,
     set: async (key, e) => { await admin.from('open_facts_cache').upsert({ key, ...e }); },
-    take: (bucket) => rateLimit(admin, `openfacts:${bucket}`, bucket === 'read' ? 12 : 8, 60),
+    // Part individuelle d'abord : un seul compte ne peut plus épuiser le quota commun à tous
+    take: async (bucket) =>
+      (await rateLimit(admin, `openfacts:${bucket}:${userId}`, bucket === 'read' ? 4 : 3, 60)) &&
+      (await rateLimit(admin, `openfacts:${bucket}`, bucket === 'read' ? 12 : 8, 60)),
   };
 }
 
-async function fromOpenFacts(admin: Any, barcode: string, hint?: unknown): Promise<{ product: NormalizedProduct | null; status: LookupStatus | 'disabled' }> {
+async function fromOpenFacts(admin: Any, userId: string, barcode: string, hint?: unknown): Promise<{ product: NormalizedProduct | null; status: LookupStatus | 'disabled' }> {
   if (!openFactsEnabled()) return { product: null, status: 'disabled' };
-  return await lookupOpenFactsCached(barcode, { userAgent: userAgent(), today: today(), hint, store: openFactsStore(admin) });
+  return await lookupOpenFactsCached(barcode, { userAgent: userAgent(), today: today(), hint, store: openFactsStore(admin, userId) });
 }
 
 const UNAVAILABLE_MESSAGE: Partial<Record<LookupStatus, string>> = {
@@ -114,11 +117,11 @@ Deno.serve(async (req) => {
     let searchStatus: LookupStatus | 'disabled' = 'disabled';
     if (openFactsEnabled()) {
       if (/^\d{8,14}$/.test(asCode)) {
-        const r = await fromOpenFacts(admin, asCode, body.kind);
+        const r = await fromOpenFacts(admin, auth.user.id, asCode, body.kind);
         if (r.product) candidates.push(r.product);
         searchStatus = r.status;
       } else {
-        const r = await searchOpenFactsCached(query, { userAgent: userAgent(), today: today(), hint: body.kind, store: openFactsStore(admin) });
+        const r = await searchOpenFactsCached(query, { userAgent: userAgent(), today: today(), hint: body.kind, store: openFactsStore(admin, auth.user.id) });
         candidates.push(...r.products);
         searchStatus = r.status;
       }
@@ -131,7 +134,7 @@ Deno.serve(async (req) => {
     const url = pricesUrl({ barcode: body.barcode ? String(body.barcode).replace(/\D/g, '') : null, categoryTag: body.category_tag ? String(body.category_tag) : null });
     if (!url) return json({ error: 'bad_query', message: 'Code-barres ou catégorie invalide.' }, 400);
     if (!openFactsEnabled()) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'disabled', message: 'Open Prices n’est pas encore activé sur ce serveur (OPENFOODFACTS_USER_AGENT manquant).' });
-    if (!(await rateLimit(admin, 'openprices:read', 10, 60))) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'saturated', message: 'Trop de demandes de prix : réessayez dans une minute.' });
+    if (!(await rateLimit(admin, `openprices:read:${auth.user.id}`, 4, 60)) || !(await rateLimit(admin, 'openprices:read', 10, 60))) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'saturated', message: 'Trop de demandes de prix : réessayez dans une minute.' });
     try {
       const r = await fetch(url, { headers: { 'User-Agent': userAgent(), Accept: 'application/json' }, signal: AbortSignal.timeout(8000) });
       if (!r.ok) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'unavailable', message: 'Open Prices ne répond pas pour le moment : aucun prix n’est affiché.' });
@@ -175,7 +178,7 @@ Deno.serve(async (req) => {
   };
 
   const { data: localRow } = await admin.from('products').select('*').eq('barcode', barcode).maybeSingle();
-  const remote = localRow ? null : await fromOpenFacts(admin, barcode, body.kind);
+  const remote = localRow ? null : await fromOpenFacts(admin, auth.user.id, barcode, body.kind);
   const product: Any = localRow ? fromLocal(localRow) : remote!.product;
   const lookupStatus = localRow ? 'internal' : remote!.status;
   const { recalls, status } = await checkRecalls(admin, { barcode, brand: product?.brand ?? null, name: product?.name ?? null });

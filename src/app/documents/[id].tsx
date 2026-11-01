@@ -130,7 +130,7 @@ export default function DocumentDetail() {
       } else setReadError(tr(r.status === 'not_configured' ? 'docs.read.notConfigured' : r.status === 'unreadable' ? 'docs.read.unreadable' : 'docs.read.demo'));
     } catch (e) {
       const code = e instanceof BackendError ? e.code : null;
-      setReadError(code === 'consent_required' ? tr('docs.read.consent') : code === 'too_large' ? tr('docs.read.tooLarge') : code === 'unsupported' ? tr('docs.read.unsupported') : code === 'rate_limited' ? tr('docs.read.rateLimited') : tr('docs.read.failed'));
+      setReadError(code === 'consent_required' ? tr('docs.read.consent') : code === 'owner_consent_required' ? tr('docs.read.ownerConsent') : code === 'too_large' ? tr('docs.read.tooLarge') : code === 'unsupported' ? tr('docs.read.unsupported') : code === 'rate_limited' ? tr('docs.read.rateLimited') : tr('docs.read.failed'));
     } finally { setBusy(null); }
   }
   async function saveText() {
