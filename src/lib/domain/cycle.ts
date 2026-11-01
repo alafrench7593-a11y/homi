@@ -2,6 +2,8 @@
  * Estimations du cycle. TOUJOURS présentées comme des estimations :
  * elles ne permettent ni de garantir une grossesse, ni de l'éviter.
  */
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 import { addDays, daysBetween, type ISODate, todayISO } from './dates';
 
 export interface PeriodEntry {
@@ -22,11 +24,17 @@ export interface CycleEstimate {
   caveats: string[];
 }
 
-export const CYCLE_CAVEATS = [
+const CYCLE_CAVEATS_FR = [
   'Ces dates sont des estimations calculées à partir de vos saisies.',
   'Elles ne garantissent pas une grossesse et ne permettent pas de l’éviter.',
   'Un cycle peut varier avec le stress, la fatigue, l’allaitement, une maladie ou l’arrêt d’une contraception.',
 ];
+const CYCLE_CAVEATS_EN = [
+  'These dates are estimates calculated from what you have entered.',
+  'They do not guarantee a pregnancy and cannot be used to avoid one.',
+  'A cycle can vary with stress, tiredness, breastfeeding, illness or stopping contraception.',
+];
+export const CYCLE_CAVEATS = localized(CYCLE_CAVEATS_FR, CYCLE_CAVEATS_EN);
 
 export function estimateCycle(entries: PeriodEntry[], today: ISODate = todayISO()): CycleEstimate {
   const starts = [...new Set(entries.map((e) => e.start_date))].sort();
@@ -53,12 +61,12 @@ export function estimateCycle(entries: PeriodEntry[], today: ISODate = todayISO(
   if (recent.length < 3) {
     reliability = recent.length === 0 ? 'insufficient' : 'low';
     caveats.unshift(recent.length === 0
-      ? 'Une seule date de règles est connue : l’estimation utilise une durée de cycle moyenne de 28 jours.'
-      : 'Moins de trois cycles saisis : l’estimation est peu fiable.');
+      ? tr('l6.cycle.oneDate')
+      : tr('l6.cycle.fewCycles'));
   }
   if (sd != null && sd > 4) {
     reliability = 'low';
-    caveats.unshift('Vos cycles varient de plus de quelques jours : les estimations sont moins fiables.');
+    caveats.unshift(tr('l6.cycle.varies'));
   }
 
   return {
@@ -272,12 +280,12 @@ export function consultationGuidance(i: ConsultationInput): ConsultationGuidance
   const reasons: string[] = [];
   if (i.monthsTrying >= thresholdMonths) {
     reasons.push(thresholdMonths === 6
-      ? 'À partir de 35 ans, il est souvent conseillé d’en parler après 6 mois d’essais sans grossesse.'
-      : 'Après 12 mois d’essais sans grossesse, il est souvent conseillé d’en parler à un professionnel.');
+      ? tr('l6.cycle.after6')
+      : tr('l6.cycle.after12'));
   }
-  if (i.irregularCycles) reasons.push('Des cycles très irréguliers ou absents sont une raison d’en parler sans attendre.');
-  if (i.knownCondition) reasons.push('Un antécédent ou une situation connue (endométriose, SOPK, chirurgie, traitement…) justifie d’en parler plus tôt.');
-  if (i.age != null && i.age >= 40) reasons.push('À partir de 40 ans, un échange rapide avec un professionnel est généralement conseillé.');
+  if (i.irregularCycles) reasons.push(tr('l6.cycle.irregular'));
+  if (i.knownCondition) reasons.push(tr('l6.cycle.condition'));
+  if (i.age != null && i.age >= 40) reasons.push(tr('l6.cycle.age40'));
   return { thresholdMonths, suggestTalkingNow: reasons.length > 0, reasons };
 }
 

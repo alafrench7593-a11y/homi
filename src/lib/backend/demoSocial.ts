@@ -4,6 +4,9 @@
  * dossiers et albums (Premium), sujets consultés, journal d'activité, ateliers, réglages du résumé quotidien.
  */
 import { BackendError } from './types';
+import { getLocale, t as tr } from '@/i18n';
+import { lib2 as frDict } from '@/i18n/fr/lib2';
+import { lib2 as enDict } from '@/i18n/en/lib2';
 import { normalizeHandle, textNeedsReview } from '../domain/communityRules';
 import { cohortName, extractMentions } from '../domain/communitySocial';
 import { DIGEST_ITEMS } from '../domain/dailyDigest';
@@ -24,9 +27,9 @@ export interface SocialCtx {
 }
 
 const premiumRequired = (feature: string) => new BackendError(`Fonction Premium (${feature})`, 'P0001', 'premium_required');
-const forbidden = (msg = 'Vous n’avez pas l’autorisation de faire cette action.') => new BackendError(msg, '42501');
+const forbidden = (msg = tr('l2.sb.forbidden')) => new BackendError(msg, '42501');
 
-export const THEME_GROUPS = [
+const THEME_GROUPS_FR = [
   { slug: 'parents-solo', name: 'Parents solos', description: 'S’organiser seul·e avec ses enfants, trouver du relais, se soutenir.', icon: 'users' },
   { slug: 'retour-au-travail', name: 'Retour au travail', description: 'Mode de garde, tire-lait au bureau, organisation, fatigue.', icon: 'briefcase' },
   { slug: 'prematurite', name: 'Naissance prématurée', description: 'Néonatologie, retour à la maison, âge corrigé : des parents qui sont passés par là.', icon: 'heart' },
@@ -34,6 +37,15 @@ export const THEME_GROUPS = [
   { slug: 'papas', name: 'Papas', description: 'Un espace pour les pères et les coparents.', icon: 'user' },
   { slug: 'handicap-maladie', name: 'Enfant malade ou en situation de handicap', description: 'Démarches, soins, fatigue, fratrie : partager son quotidien.', icon: 'shield' },
 ];
+const themeGroupsNow = () => [
+  { slug: 'parents-solo', name: tr('l2.soc.g.parents_solo.n'), description: tr('l2.soc.g.parents_solo.d'), icon: 'users' },
+  { slug: 'retour-au-travail', name: tr('l2.soc.g.retour_au_travail.n'), description: tr('l2.soc.g.retour_au_travail.d'), icon: 'briefcase' },
+  { slug: 'prematurite', name: tr('l2.soc.g.prematurite.n'), description: tr('l2.soc.g.prematurite.d'), icon: 'heart' },
+  { slug: 'allaitement-long', name: tr('l2.soc.g.allaitement_long.n'), description: tr('l2.soc.g.allaitement_long.d'), icon: 'drop' },
+  { slug: 'papas', name: tr('l2.soc.g.papas.n'), description: tr('l2.soc.g.papas.d'), icon: 'user' },
+  { slug: 'handicap-maladie', name: tr('l2.soc.g.handicap_maladie.n'), description: tr('l2.soc.g.handicap_maladie.d'), icon: 'shield' },
+];
+export const THEME_GROUPS: typeof THEME_GROUPS_FR = new Proxy(THEME_GROUPS_FR, { get: (_t, p) => Reflect.get(themeGroupsNow(), p) });
 
 /** Préférence de notification correspondant à un type (mêmes valeurs par défaut que community_notify). */
 const PREF_DEFAULT: Record<string, boolean> = { mention: true, new_follower: true, followed_post: false, group_activity: true, group_invite: true };
@@ -87,24 +99,26 @@ export function createSocial(c: SocialCtx) {
 
   /** Exemples de démonstration (additifs, idempotents) : sondage, groupe thématique, publication épinglée par la modération. */
   function seedSamples() {
+    const other = (k: 'l2.soc.welcomeTitle' | 'l2.soc.pollTitle' | 'l2.soc.papaTitle') => (getLocale() === 'en' ? frDict[k] : enDict[k] as string);
     const forum = (slug: string) => T('forums').find((f) => f.slug === slug)?.id;
     if (!T('community_profiles').some((p) => p.user_id === 'demo-moderation')) {
-      T('community_profiles').push({ user_id: 'demo-moderation', pseudonym: 'Modération', handle: 'moderation_toietmoi', bio: 'L’équipe qui veille au respect des règles.', avatar_preset: 'star', journey_label: null, visibility: 'members', suspended_until: null, created_at: new Date(Date.now() - 300 * 86_400_000).toISOString() });
+      T('community_profiles').push({ user_id: 'demo-moderation', pseudonym: 'Modération', handle: 'moderation_toietmoi', bio: tr('l2.soc.modBio'), avatar_preset: 'star', journey_label: null, visibility: 'members', suspended_until: null, created_at: new Date(Date.now() - 300 * 86_400_000).toISOString() });
       T('user_roles').push({ user_id: 'demo-moderation', role: 'moderator' });
     }
     const post = (o: Row) => {
-      if (!o.forum_id || T('posts').some((x) => x.title === o.title)) return null;
-      const row: Row = { id: c.uuid(), kind: 'question', anonymous: false, status: 'visible', report_count: 0, like_count: 0, comment_count: 0, edited_at: null, area_label: null, group_id: null, pinned_at: null, ...o };
+      if (!o.forum_id || T('posts').some((x) => x.title === o.title || x.title === o.altTitle)) return null;
+      const { altTitle: _alt, ...rest } = o; // eslint-disable-line @typescript-eslint/no-unused-vars
+      const row: Row = { id: c.uuid(), kind: 'question', anonymous: false, status: 'visible', report_count: 0, like_count: 0, comment_count: 0, edited_at: null, area_label: null, group_id: null, pinned_at: null, ...rest };
       T('posts').push(row);
       return row;
     };
     const ago = (h: number) => new Date(Date.now() - h * 3_600_000).toISOString();
-    post({ forum_id: forum('questions-generales'), author_id: 'demo-moderation', title: 'Bienvenue : nos règles en 5 points', created_at: ago(400), pinned_at: ago(400), like_count: 40,
-      body: 'Bienvenue ! 1. Restez bienveillant·e. 2. Pas d’adresse, de numéro ni de date de naissance complète. 3. Les messages sur la santé sont des témoignages, pas des avis médicaux. 4. Signalez ce qui vous inquiète. 5. En cas d’urgence, appelez le 15 ou le 112.' });
-    const poll = post({ forum_id: forum('sommeil'), author_id: 'demo-voisine-1', title: 'À quelle heure couchez-vous votre bébé ?', body: 'Petit sondage pour comparer nos soirées (bébés de 6 à 12 mois).', created_at: ago(6), like_count: 4 });
+    post({ forum_id: forum('questions-generales'), author_id: 'demo-moderation', title: tr('l2.soc.welcomeTitle'), altTitle: other('l2.soc.welcomeTitle'), created_at: ago(400), pinned_at: ago(400), like_count: 40,
+      body: tr('l2.soc.welcomeBody') });
+    const poll = post({ forum_id: forum('sommeil'), author_id: 'demo-voisine-1', title: tr('l2.soc.pollTitle'), altTitle: other('l2.soc.pollTitle'), body: tr('l2.soc.pollBody'), created_at: ago(6), like_count: 4 });
     if (poll) {
       T('post_polls').push({ post_id: poll.id, multiple: false, closes_at: null, created_at: poll.created_at });
-      const labels = ['Avant 19 h 30', 'Entre 19 h 30 et 20 h 30', 'Après 20 h 30'];
+      const labels = [tr('l2.soc.pollOpt1'), tr('l2.soc.pollOpt2'), tr('l2.soc.pollOpt3')];
       const opts = labels.map((label, position) => ({ id: c.uuid(), post_id: poll.id, label, position }));
       T('poll_options').push(...opts);
       T('poll_votes').push({ post_id: poll.id, option_id: opts[1].id, user_id: 'demo-voisin-2', created_at: ago(5) }, { post_id: poll.id, option_id: opts[0].id, user_id: 'demo-voisine-3', created_at: ago(4) });
@@ -112,7 +126,7 @@ export function createSocial(c: SocialCtx) {
     const papas = T('community_groups').find((g) => g.slug === 'papas');
     if (papas) {
       if (!isMember(papas.id, 'demo-voisin-2')) addMember(papas.id, 'demo-voisin-2');
-      post({ forum_id: forum('questions-generales'), author_id: 'demo-voisin-2', group_id: papas.id, title: 'Congé de paternité : vous l’avez pris comment ?', body: 'D’un bloc ou en plusieurs fois ? On hésite pour les jumeaux.', created_at: ago(14), like_count: 6 });
+      post({ forum_id: forum('questions-generales'), author_id: 'demo-voisin-2', group_id: papas.id, title: tr('l2.soc.papaTitle'), altTitle: other('l2.soc.papaTitle'), body: tr('l2.soc.papaBody'), created_at: ago(14), like_count: 6 });
     }
   }
 
@@ -174,9 +188,9 @@ export function createSocial(c: SocialCtx) {
   // ---------------------------------------------------------------- écritures
   function checkProfilePremium(next: Row, before?: Row) {
     if (next.about != null) next.about = String(next.about).trim() || null;
-    if (next.about && String(next.about).length > 1200) throw new BackendError('Présentation enrichie : 1 200 caractères au plus.');
-    if (next.accent != null && !['rose', 'lavande', 'menthe', 'peche', 'ciel', 'sable'].includes(next.accent)) throw new BackendError('Couleur indisponible.');
-    if (next.banner != null && !['aube', 'nuit', 'prairie', 'ocean', 'nacre'].includes(next.banner)) throw new BackendError('Bannière indisponible.');
+    if (next.about && String(next.about).length > 1200) throw new BackendError(tr('l2.soc.aboutLen'));
+    if (next.accent != null && !['rose', 'lavande', 'menthe', 'peche', 'ciel', 'sable'].includes(next.accent)) throw new BackendError(tr('l2.soc.accent'));
+    if (next.banner != null && !['aube', 'nuit', 'prairie', 'ocean', 'nacre'].includes(next.banner)) throw new BackendError(tr('l2.soc.banner'));
     const changed = (k: string) => k in next && next[k] != null && next[k] !== false && next[k] !== (before?.[k] ?? null);
     if ((changed('accent') || changed('banner') || changed('about') || (next.show_premium_badge === true && !before?.show_premium_badge)) && !premiumOf(before?.user_id ?? c.me())) {
       throw premiumRequired('community_profile');
@@ -191,15 +205,15 @@ export function createSocial(c: SocialCtx) {
         throw forbidden();
       case 'forum_subscriptions':
         r.user_id = me; r.created_at = c.nowIso();
-        if (T(table).some((x) => x.user_id === me && x.forum_id === r.forum_id)) throw new BackendError('Catégorie déjà suivie.', '23505');
+        if (T(table).some((x) => x.user_id === me && x.forum_id === r.forum_id)) throw new BackendError(tr('l2.soc.catFollowed'), '23505');
         break;
       case 'posts':
         r.group_id ??= null; r.pinned_at = null;
-        if (r.group_id && !isMember(r.group_id, me)) throw forbidden('Rejoignez ce groupe pour y publier.');
+        if (r.group_id && !isMember(r.group_id, me)) throw forbidden(tr('l2.soc.joinPost'));
         break;
       case 'comments': {
         const post = T('posts').find((p) => p.id === r.post_id);
-        if (post?.group_id && !isMember(post.group_id, me)) throw forbidden('Rejoignez ce groupe pour répondre.');
+        if (post?.group_id && !isMember(post.group_id, me)) throw forbidden(tr('l2.soc.joinReply'));
         break;
       }
       case 'community_profiles':
@@ -212,7 +226,7 @@ export function createSocial(c: SocialCtx) {
       case 'saved_folders':
         assertPremium('saved_folders');
         r.user_id = me; r.name = String(r.name ?? '').trim();
-        if (!r.name || r.name.length > 40) throw new BackendError('Nom du dossier : 1 à 40 caractères.');
+        if (!r.name || r.name.length > 40) throw new BackendError(tr('l2.soc.folderLen'));
         if (T(table).filter((x) => x.user_id === me).length >= c.limit('saved_folders_count')) throw premiumRequired('saved_folders');
         r.created_at = c.nowIso();
         break;
@@ -223,7 +237,7 @@ export function createSocial(c: SocialCtx) {
       case 'post_polls': {
         const p = T('posts').find((x) => x.id === r.post_id);
         if (!p || p.author_id !== me) throw forbidden();
-        if (T(table).some((x) => x.post_id === r.post_id)) throw new BackendError('Sondage déjà créé.', '23505');
+        if (T(table).some((x) => x.post_id === r.post_id)) throw new BackendError(tr('l2.soc.pollExists'), '23505');
         r.multiple = !!r.multiple; r.closes_at ??= null; r.created_at = c.nowIso();
         break;
       }
@@ -231,16 +245,16 @@ export function createSocial(c: SocialCtx) {
         const p = T('posts').find((x) => x.id === r.post_id);
         if (!p || p.author_id !== me || !T('post_polls').some((x) => x.post_id === r.post_id)) throw forbidden();
         if (T('poll_votes').some((v) => v.post_id === r.post_id)) throw forbidden();
-        if (T(table).filter((x) => x.post_id === r.post_id).length >= 6) throw new BackendError('6 choix au plus dans un sondage.');
+        if (T(table).filter((x) => x.post_id === r.post_id).length >= 6) throw new BackendError(tr('l2.soc.pollMax'));
         r.label = String(r.label ?? '').trim();
-        if (!r.label || r.label.length > 80) throw new BackendError('Chaque choix : 1 à 80 caractères.');
-        if (textNeedsReview(r.label)) throw new BackendError('Retirez les informations personnelles du choix.');
+        if (!r.label || r.label.length > 80) throw new BackendError(tr('l2.soc.choiceLen'));
+        if (textNeedsReview(r.label)) throw new BackendError(tr('l2.soc.choicePii'));
         break;
       }
       case 'community_albums':
         assertPremium('community_albums');
         r.owner_id = me; r.title = String(r.title ?? '').trim();
-        if (!r.title || r.title.length > 80) throw new BackendError('Titre : 1 à 80 caractères.');
+        if (!r.title || r.title.length > 80) throw new BackendError(tr('l2.soc.albumTitle'));
         if (T(table).filter((x) => x.owner_id === me).length >= c.limit('albums_count')) throw premiumRequired('community_albums');
         r.description ??= null; r.created_at = c.nowIso();
         break;
@@ -248,28 +262,28 @@ export function createSocial(c: SocialCtx) {
         const a = T('community_albums').find((x) => x.id === r.album_id);
         if (!a || a.owner_id !== me || !String(r.path ?? '').startsWith(`${me}/album-`)) throw forbidden();
         assertPremium('community_albums');
-        if (T(table).filter((x) => x.album_id === r.album_id).length >= 200) throw new BackendError('200 photos au plus par album.');
+        if (T(table).filter((x) => x.album_id === r.album_id).length >= 200) throw new BackendError(tr('l2.soc.photosMax'));
         r.owner_id = me; r.created_at = c.nowIso();
         break;
       }
       case 'event_registrations': {
         const e = T('community_events').find((x) => x.id === r.event_id);
-        if (!e || e.archived || e.starts_at < c.nowIso()) throw new BackendError('Inscription impossible.');
+        if (!e || e.archived || e.starts_at < c.nowIso()) throw new BackendError(tr('l2.soc.joinImpossible'));
         if (e.premium_only) assertPremium('community_events');
-        if (e.capacity && T(table).filter((x) => x.event_id === e.id).length >= e.capacity) throw new BackendError('Cet atelier est complet.');
+        if (e.capacity && T(table).filter((x) => x.event_id === e.id).length >= e.capacity) throw new BackendError(tr('l2.soc.eventFull'));
         r.user_id = me; r.created_at = c.nowIso();
         break;
       }
       case 'daily_digest_prefs':
         r.user_id = me;
-        if (T(table).some((x) => x.user_id === me)) throw new BackendError('Réglages déjà enregistrés.', '23505');
+        if (T(table).some((x) => x.user_id === me)) throw new BackendError(tr('l2.soc.prefsExist'), '23505');
         Object.assign(r, { morning: !!r.morning, morning_time: r.morning_time ?? '08:00', evening: !!r.evening, evening_time: r.evening_time ?? '20:30', question: r.question !== false, hidden_items: r.hidden_items ?? [], ...r });
         checkDigest(r);
         break;
     }
   }
   function checkDigest(r: Row) {
-    if ((r.hidden_items ?? []).some((k: string) => !(DIGEST_ITEMS as readonly string[]).includes(k))) throw new BackendError('Rubrique inconnue.');
+    if ((r.hidden_items ?? []).some((k: string) => !(DIGEST_ITEMS as readonly string[]).includes(k))) throw new BackendError(tr('l2.soc.digestItem'));
     r.updated_at = c.nowIso();
   }
 
@@ -279,7 +293,7 @@ export function createSocial(c: SocialCtx) {
       const target = T('community_profiles').find((p) => p.handle === h)?.user_id;
       if (!target || done.has(target) || c.blockedBetween(target, author)) continue;
       if (post.group_id && !isMember(post.group_id, target)) continue;
-      notifyKind(target, 'mention', { category: 'community_mention', title: `${c.actorLabel(author, post.id)} vous a mentionné·e`, body: text.slice(0, 120),
+      notifyKind(target, 'mention', { category: 'community_mention', title: tr('l2.soc.mention', { who: c.actorLabel(author, post.id) }), body: text.slice(0, 120),
         deep_link: `/community/post/${post.id}${commentId ? `?comment=${commentId}` : ''}`, payload: { post_id: post.id, comment_id: commentId } });
       done.add(target);
     }
@@ -290,12 +304,12 @@ export function createSocial(c: SocialCtx) {
       const done = new Set<string>([r.author_id]);
       notifyMentions(r.author_id, r, null, `${r.title ?? ''} ${r.body}`, done);
       const g = r.group_id ? group(r.group_id) : null;
-      const who = prof(r.author_id)?.pseudonym ?? 'Quelqu’un';
+      const who = prof(r.author_id)?.pseudonym ?? tr('l2.soc.someone');
       const link = `/community/post/${r.id}`;
       if (!r.anonymous && (!g || g.kind !== 'private')) {
         for (const f of T('member_follows').filter((x) => x.followee_id === r.author_id)) {
           if (done.has(f.follower_id) || c.blockedBetween(f.follower_id, r.author_id)) continue;
-          notifyKind(f.follower_id, 'followed_post', { category: 'community_follow', title: `${who} a publié`, body: String(r.title ?? r.body).slice(0, 120), deep_link: link, payload: { post_id: r.id } });
+          notifyKind(f.follower_id, 'followed_post', { category: 'community_follow', title: tr('l2.soc.posted', { who }), body: String(r.title ?? r.body).slice(0, 120), deep_link: link, payload: { post_id: r.id } });
           done.add(f.follower_id);
         }
       }
@@ -304,7 +318,7 @@ export function createSocial(c: SocialCtx) {
           if (done.has(m.user_id) || c.blockedBetween(m.user_id, r.author_id)) continue;
           const recent = T('notifications').some((n) => n.user_id === m.user_id && n.category === 'community_group' && n.payload?.group_id === g.id && n.payload?.post_id && Date.now() - Date.parse(n.created_at) < 6 * 3_600_000);
           if (recent) continue;
-          notifyKind(m.user_id, 'group_activity', { category: 'community_group', title: `Nouvelle publication dans « ${g.name} »`, body: String(r.title ?? r.body).slice(0, 120), deep_link: link, payload: { post_id: r.id, group_id: g.id } });
+          notifyKind(m.user_id, 'group_activity', { category: 'community_group', title: tr('l2.soc.groupPost', { name: g.name }), body: String(r.title ?? r.body).slice(0, 120), deep_link: link, payload: { post_id: r.id, group_id: g.id } });
         }
       }
     }
@@ -379,15 +393,15 @@ export function createSocial(c: SocialCtx) {
   const rpcs: Record<string, (a: Row) => unknown> = {
     follow_member: (a) => {
       const me = c.uid();
-      requireProfile('Créez votre profil communautaire pour suivre un membre');
+      requireProfile(tr('l2.soc.needProfileFollow'));
       const v = byHandle(a.p_handle);
-      if (!v || v.user_id === me) throw new BackendError('Membre introuvable');
-      if (c.blockedBetween(me, v.user_id)) throw forbidden('Impossible de suivre ce membre');
+      if (!v || v.user_id === me) throw new BackendError(tr('l2.soc.memberNotFound'));
+      if (c.blockedBetween(me, v.user_id)) throw forbidden(tr('l2.soc.cannotFollow'));
       if (T('member_follows').some((f) => f.follower_id === me && f.followee_id === v.user_id)) return null;
       T('member_follows').push({ follower_id: me, followee_id: v.user_id, created_at: c.nowIso() });
       const mine = prof(me)!;
       const recent = T('notifications').some((n) => n.user_id === v.user_id && n.category === 'community_follow' && n.payload?.follower === mine.handle && Date.now() - Date.parse(n.created_at) < 7 * 86_400_000);
-      if (!recent) notifyKind(v.user_id, 'new_follower', { category: 'community_follow', title: `${mine.pseudonym} suit maintenant vos publications`, body: null, deep_link: `/community/u/${mine.handle}`, payload: { follower: mine.handle } });
+      if (!recent) notifyKind(v.user_id, 'new_follower', { category: 'community_follow', title: tr('l2.soc.newFollower', { name: mine.pseudonym }), body: null, deep_link: `/community/u/${mine.handle}`, payload: { follower: mine.handle } });
       return null;
     },
     unfollow_member: (a) => {
@@ -431,27 +445,27 @@ export function createSocial(c: SocialCtx) {
     },
     join_group: (a) => {
       const me = c.uid();
-      requireProfile('Créez votre profil communautaire pour rejoindre un groupe');
+      requireProfile(tr('l2.soc.needProfileJoin'));
       const g = group(a.p_group);
-      if (!g || g.archived) throw new BackendError('Groupe introuvable');
-      if (g.kind === 'private') throw forbidden('Ce groupe est privé : il faut une invitation');
+      if (!g || g.archived) throw new BackendError(tr('l2.soc.groupNotFound'));
+      if (g.kind === 'private') throw forbidden(tr('l2.soc.groupPrivate'));
       addMember(g.id, me);
       return null;
     },
     join_cohort_group: (a) => {
       const me = c.uid();
       const type = String(a.p_type);
-      if (!['birth', 'due'].includes(type)) throw new BackendError('Type de groupe inconnu');
+      if (!['birth', 'due'].includes(type)) throw new BackendError(tr('l2.soc.groupType'));
       const month = String(a.p_month).slice(0, 7);
       const now = new Date(); const cur = now.getFullYear() * 12 + now.getMonth();
       const [y, m] = month.split('-').map(Number); const v = y * 12 + (m - 1);
-      if (type === 'birth' && (v > cur || v < cur - 72)) throw new BackendError('Mois de naissance hors des groupes proposés');
-      if (type === 'due' && (v < cur - 2 || v > cur + 10)) throw new BackendError('Mois de terme hors des groupes proposés');
-      requireProfile('Créez votre profil communautaire pour rejoindre un groupe');
+      if (type === 'birth' && (v > cur || v < cur - 72)) throw new BackendError(tr('l2.soc.birthMonth'));
+      if (type === 'due' && (v < cur - 2 || v > cur + 10)) throw new BackendError(tr('l2.soc.dueMonth'));
+      requireProfile(tr('l2.soc.needProfileJoin'));
       let g = T('community_groups').find((x) => x.kind === 'cohort' && x.cohort_type === type && x.cohort_month === `${month}-01`);
       if (!g) {
         g = { id: c.uuid(), slug: `${type === 'birth' ? 'naissance' : 'terme'}-${month}`, name: cohortName(type as 'birth' | 'due', month),
-          description: type === 'birth' ? 'Les parents d’enfants nés le même mois : étapes, nuits, premières fois.' : 'Les futurs parents qui attendent leur bébé le même mois.',
+          description: type === 'birth' ? tr('l2.soc.cohortBirth') : tr('l2.soc.cohortDue'),
           kind: 'cohort', cohort_type: type, cohort_month: `${month}-01`, icon: type === 'birth' ? 'gift' : 'moon', owner_id: null, member_count: 0, archived: false, created_at: c.nowIso() };
         T('community_groups').push(g);
       }
@@ -460,19 +474,19 @@ export function createSocial(c: SocialCtx) {
     },
     leave_group: (a) => {
       const me = c.uid();
-      if (T('group_members').some((m) => m.group_id === a.p_group && m.user_id === me && m.role === 'owner')) throw new BackendError('Vous avez créé ce groupe : supprimez-le ou gardez-le');
+      if (T('group_members').some((m) => m.group_id === a.p_group && m.user_id === me && m.role === 'owner')) throw new BackendError(tr('l2.soc.ownerLeave'));
       removeMember(String(a.p_group), me);
       return null;
     },
     create_private_group: (a) => {
       const me = c.uid();
-      requireProfile('Créez votre profil communautaire');
+      requireProfile(tr('l2.soc.needProfile'));
       assertPremium('community_groups');
       if (T('community_groups').filter((g) => g.owner_id === me && g.kind === 'private' && !g.archived).length >= c.limit('private_groups_count')) throw premiumRequired('community_groups');
       const name = String(a.p_name ?? '').trim();
       const description = String(a.p_description ?? '').trim() || null;
-      if (name.length < 3 || name.length > 60) throw new BackendError('Nom du groupe : 3 à 60 caractères.');
-      if (textNeedsReview(`${name} ${description ?? ''}`)) throw new BackendError('Retirez les informations personnelles (téléphone, adresse…) du nom ou de la description');
+      if (name.length < 3 || name.length > 60) throw new BackendError(tr('l2.soc.groupName'));
+      if (textNeedsReview(`${name} ${description ?? ''}`)) throw new BackendError(tr('l2.soc.groupPii'));
       const g = { id: c.uuid(), slug: null, name, description, kind: 'private', cohort_type: null, cohort_month: null, icon: 'lock', owner_id: me, member_count: 0, archived: false, created_at: c.nowIso() };
       T('community_groups').push(g);
       addMember(g.id, me, 'owner');
@@ -481,39 +495,39 @@ export function createSocial(c: SocialCtx) {
     invite_to_group: (a) => {
       const me = c.uid();
       const g = group(a.p_group);
-      if (!g || g.kind !== 'private' || g.owner_id !== me || g.archived) throw forbidden('Seule la créatrice du groupe peut inviter');
+      if (!g || g.kind !== 'private' || g.owner_id !== me || g.archived) throw forbidden(tr('l2.soc.ownerInvite'));
       assertPremium('community_groups');
-      if ((g.member_count ?? 0) >= 100) throw new BackendError('Un groupe privé compte 100 membres au plus');
+      if ((g.member_count ?? 0) >= 100) throw new BackendError(tr('l2.soc.groupMax'));
       const v = byHandle(a.p_handle);
-      if (!v || v.user_id === me) throw new BackendError('Membre introuvable');
-      if (c.blockedBetween(v.user_id, me)) throw forbidden('Impossible d’inviter ce membre');
-      if (isMember(g.id, v.user_id)) throw new BackendError('Ce membre fait déjà partie du groupe');
-      if (pendingInvite(g.id, v.user_id)) throw new BackendError('Une invitation est déjà en attente');
+      if (!v || v.user_id === me) throw new BackendError(tr('l2.soc.memberNotFound'));
+      if (c.blockedBetween(v.user_id, me)) throw forbidden(tr('l2.soc.cannotInvite'));
+      if (isMember(g.id, v.user_id)) throw new BackendError(tr('l2.soc.alreadyMember'));
+      if (pendingInvite(g.id, v.user_id)) throw new BackendError(tr('l2.soc.invitePending'));
       const inv = { id: c.uuid(), group_id: g.id, invited_id: v.user_id, invited_by: me, status: 'pending', created_at: c.nowIso(), answered_at: null };
       T('group_invitations').push(inv);
-      notifyKind(v.user_id, 'group_invite', { category: 'community_group', title: `${prof(me)?.pseudonym} vous invite dans le groupe privé « ${g.name} »`,
-        body: 'Acceptez ou refusez l’invitation : vous seul·e décidez.', deep_link: `/community/group/${g.id}?invite=${inv.id}`, payload: { group_id: g.id, invitation_id: inv.id } });
+      notifyKind(v.user_id, 'group_invite', { category: 'community_group', title: tr('l2.soc.inviteTitle', { name: String(prof(me)?.pseudonym), group: g.name }),
+        body: tr('l2.soc.inviteBody'), deep_link: `/community/group/${g.id}?invite=${inv.id}`, payload: { group_id: g.id, invitation_id: inv.id } });
       return inv.id;
     },
     respond_group_invitation: (a) => {
       const me = c.uid();
       const inv = T('group_invitations').find((i) => i.id === a.p_invitation && i.invited_id === me && i.status === 'pending');
-      if (!inv) throw new BackendError('Invitation introuvable ou déjà traitée');
-      if (a.p_accept) requireProfile('Créez votre profil communautaire pour rejoindre ce groupe');
+      if (!inv) throw new BackendError(tr('l2.soc.inviteGone'));
+      if (a.p_accept) requireProfile(tr('l2.soc.needProfileThis'));
       inv.status = a.p_accept ? 'accepted' : 'declined'; inv.answered_at = c.nowIso();
       if (a.p_accept) addMember(inv.group_id, me);
       return inv.group_id;
     },
     remove_group_member: (a) => {
       const me = c.uid(); const g = group(a.p_group);
-      if (!g || g.owner_id !== me) throw forbidden('Seule la créatrice du groupe peut retirer un membre');
+      if (!g || g.owner_id !== me) throw forbidden(tr('l2.soc.ownerRemove'));
       const v = byHandle(a.p_handle);
       if (v && v.user_id !== me) removeMember(g.id, v.user_id);
       return null;
     },
     delete_private_group: (a) => {
       const me = c.uid(); const g = group(a.p_group);
-      if (!g || g.owner_id !== me || g.kind !== 'private') throw forbidden('Seule la créatrice du groupe peut le supprimer');
+      if (!g || g.owner_id !== me || g.kind !== 'private') throw forbidden(tr('l2.soc.ownerDelete'));
       const postIds = new Set(T('posts').filter((p) => p.group_id === g.id).map((p) => p.id));
       for (const [t, col] of [['posts', 'id'], ['comments', 'post_id'], ['post_photos', 'post_id'], ['post_likes', 'post_id'], ['saved_posts', 'post_id'], ['post_polls', 'post_id'], ['poll_options', 'post_id'], ['poll_votes', 'post_id']] as const) {
         const rows = T(t); for (let i = rows.length - 1; i >= 0; i--) if (postIds.has(rows[i][col])) rows.splice(i, 1);
@@ -524,11 +538,11 @@ export function createSocial(c: SocialCtx) {
     },
     pin_post: (a) => {
       const p = T('posts').find((x) => x.id === a.p_post);
-      if (!p) throw new BackendError('Publication introuvable');
+      if (!p) throw new BackendError(tr('l2.soc.postNotFound'));
       const g = p.group_id ? group(p.group_id) : null;
-      if (!(c.isModerator() || (g && g.kind === 'private' && g.owner_id === c.me()))) throw forbidden('Épinglage réservé à la modération ou à la créatrice du groupe');
+      if (!(c.isModerator() || (g && g.kind === 'private' && g.owner_id === c.me()))) throw forbidden(tr('l2.soc.pinRestricted'));
       const sameSpot = T('posts').filter((x) => x.id !== p.id && x.pinned_at && x.status === 'visible' && (p.group_id ? x.group_id === p.group_id : !x.group_id && x.forum_id === p.forum_id));
-      if (a.p_pin && sameSpot.length >= 3) throw new BackendError('3 publications épinglées au plus');
+      if (a.p_pin && sameSpot.length >= 3) throw new BackendError(tr('l2.soc.pinMax'));
       p.pinned_at = a.p_pin ? c.nowIso() : null;
       return null;
     },
@@ -536,13 +550,13 @@ export function createSocial(c: SocialCtx) {
       const me = c.uid();
       const p = T('posts').find((x) => x.id === a.p_post);
       const poll = T('post_polls').find((x) => x.post_id === a.p_post);
-      if (!p || !poll || !postInGroupVisible(p) || (p.status !== 'visible' && p.author_id !== me) || c.blockedBetween(p.author_id, me)) throw new BackendError('Sondage introuvable');
-      if (poll.closes_at && poll.closes_at < c.nowIso()) throw new BackendError('Ce sondage est terminé');
-      if (p.group_id && !isMember(p.group_id)) throw forbidden('Rejoignez ce groupe pour voter');
+      if (!p || !poll || !postInGroupVisible(p) || (p.status !== 'visible' && p.author_id !== me) || c.blockedBetween(p.author_id, me)) throw new BackendError(tr('l2.soc.pollNotFound'));
+      if (poll.closes_at && poll.closes_at < c.nowIso()) throw new BackendError(tr('l2.soc.pollClosed'));
+      if (p.group_id && !isMember(p.group_id)) throw forbidden(tr('l2.soc.joinVote'));
       const opts: string[] = Array.isArray(a.p_options) ? a.p_options : [];
-      if (!poll.multiple && opts.length > 1) throw new BackendError('Un seul choix possible');
+      if (!poll.multiple && opts.length > 1) throw new BackendError(tr('l2.soc.oneChoice'));
       const valid = new Set(T('poll_options').filter((o) => o.post_id === p.id).map((o) => o.id));
-      if (opts.some((o) => !valid.has(o))) throw new BackendError('Choix inconnu');
+      if (opts.some((o) => !valid.has(o))) throw new BackendError(tr('l2.soc.choiceUnknown'));
       const votes = T('poll_votes'); for (let i = votes.length - 1; i >= 0; i--) if (votes[i].post_id === p.id && votes[i].user_id === me) votes.splice(i, 1);
       for (const o of opts) votes.push({ post_id: p.id, option_id: o, user_id: me, created_at: c.nowIso() });
       return null;
@@ -571,15 +585,15 @@ export function createSocial(c: SocialCtx) {
     share_album: (a) => {
       const me = c.uid();
       const al = T('community_albums').find((x) => x.id === a.p_album && x.owner_id === me);
-      if (!al) throw forbidden('Album introuvable');
+      if (!al) throw forbidden(tr('l2.soc.albumNotFound'));
       assertPremium('community_albums');
       const v = byHandle(a.p_handle);
-      if (!v || v.user_id === me) throw new BackendError('Membre introuvable');
-      if (c.blockedBetween(v.user_id, me)) throw forbidden('Impossible de partager avec ce membre');
-      if (T('album_shares').filter((s) => s.album_id === al.id).length >= 30) throw new BackendError('30 personnes au plus par album');
+      if (!v || v.user_id === me) throw new BackendError(tr('l2.soc.memberNotFound'));
+      if (c.blockedBetween(v.user_id, me)) throw forbidden(tr('l2.soc.cannotShare'));
+      if (T('album_shares').filter((s) => s.album_id === al.id).length >= 30) throw new BackendError(tr('l2.soc.shareMax'));
       if (T('album_shares').some((s) => s.album_id === al.id && s.user_id === v.user_id)) return null;
       T('album_shares').push({ album_id: al.id, user_id: v.user_id, created_at: c.nowIso() });
-      notifyKind(v.user_id, 'group_invite', { category: 'community_group', title: `${prof(me)?.pseudonym} partage un album avec vous : « ${al.title} »`, body: null, deep_link: `/community/album/${al.id}`, payload: { album_id: al.id } });
+      notifyKind(v.user_id, 'group_invite', { category: 'community_group', title: tr('l2.soc.albumShare', { name: String(prof(me)?.pseudonym), title: al.title }), body: null, deep_link: `/community/album/${al.id}`, payload: { album_id: al.id } });
       return null;
     },
     my_albums: () => {

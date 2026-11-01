@@ -12,6 +12,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { AppState } from 'react-native';
 import { create } from 'zustand';
 import { backend, BackendError } from './backend';
+import { t as tr } from '@/i18n';
 
 export interface PendingOp {
   id: string;
@@ -156,7 +157,7 @@ export async function flushQueue(): Promise<number> {
       sent++;
     } catch (e) {
       if (e instanceof BackendError && e.isNetwork) remaining.push(op);
-      else conflicts.push({ ...op, error: e instanceof Error ? e.message : 'Erreur inconnue' });
+      else conflicts.push({ ...op, error: e instanceof Error ? e.message : tr('l6.offline.unknownError') });
     }
   }
   useOfflineStore.setState({ pending: remaining, conflicts, syncing: false });

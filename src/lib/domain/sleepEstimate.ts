@@ -5,6 +5,7 @@
  * Aucune estimation sans au moins 3 temps d'éveil notés.
  */
 import type { SleepLog } from './daily';
+import { localeTag, t as tr } from '@/i18n';
 
 const MIN = 60_000;
 export const ESTIMATE_DAYS = 7;
@@ -111,13 +112,13 @@ export function habitChanges(sleeps: SleepLog[], now = new Date()): HabitChange[
   const m = (xs: SleepDay[], f: (x: SleepDay) => number) => xs.reduce((t, x) => t + f(x), 0) / xs.length;
   const out: HabitChange[] = [];
   const night = m(recentDays, (x) => x.nightMinutes) - m(beforeDays, (x) => x.nightMinutes);
-  if (night <= -45) out.push({ kind: 'night_shorter', text: `Les nuits notées ces 3 derniers jours sont plus courtes d’environ ${Math.round(-night)} min que les jours précédents.` });
-  if (night >= 45) out.push({ kind: 'night_longer', text: `Les nuits notées ces 3 derniers jours sont plus longues d’environ ${Math.round(night)} min que les jours précédents.` });
+  if (night <= -45) out.push({ kind: 'night_shorter', text: tr('l2.sleep.nightShorter', { min: Math.round(-night) }) });
+  if (night >= 45) out.push({ kind: 'night_longer', text: tr('l2.sleep.nightLonger', { min: Math.round(night) }) });
   const wk = m(recentDays, (x) => x.nightWakeups) - m(beforeDays, (x) => x.nightWakeups);
-  if (wk >= 1) out.push({ kind: 'more_wakeups', text: `Environ ${Math.round(wk)} réveil(s) de plus par nuit ces derniers jours.` });
+  if (wk >= 1) out.push({ kind: 'more_wakeups', text: tr('l2.sleep.moreWakeups', { n: Math.round(wk) }) });
   const naps = m(recentDays, (x) => x.naps) - m(beforeDays, (x) => x.naps);
-  if (naps <= -1) out.push({ kind: 'fewer_naps', text: 'Une sieste de moins par jour environ ces derniers jours.' });
-  if (naps >= 1) out.push({ kind: 'more_naps', text: 'Une sieste de plus par jour environ ces derniers jours.' });
+  if (naps <= -1) out.push({ kind: 'fewer_naps', text: tr('l2.sleep.fewerNaps') });
+  if (naps >= 1) out.push({ kind: 'more_naps', text: tr('l2.sleep.moreNaps') });
   return out;
 }
 
@@ -126,10 +127,11 @@ export function weeklySleepRecap(sleeps: SleepLog[], now = new Date()): string[]
   const r = sleepRhythm(sleeps, now, 7);
   if (!r.days) return [];
   const h = (min: number) => `${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')}`;
+  const dec = (n: number) => (localeTag().startsWith('fr') ? String(n).replace('.', ',') : String(n));
   return [
-    `${r.days} jour(s) noté(s) sur les 7 derniers.`,
-    `En moyenne : ${String(r.naps).replace('.', ',')} sieste(s) par jour (${h(r.napMinutes)}), nuit de ${h(r.nightMinutes)}.`,
-    `Sommeil total moyen noté : ${h(r.totalMinutes)} par jour.`,
-    r.wakeups ? `Réveils notés la nuit : ${String(r.wakeups).replace('.', ',')} en moyenne.` : 'Aucun réveil noté la nuit.',
+    tr('l2.sleep.recapDays', { n: r.days }),
+    tr('l2.sleep.recapAvg', { naps: dec(r.naps), napTime: h(r.napMinutes), night: h(r.nightMinutes) }),
+    tr('l2.sleep.recapTotal', { total: h(r.totalMinutes) }),
+    r.wakeups ? tr('l2.sleep.recapWakeups', { n: dec(r.wakeups) }) : tr('l2.sleep.recapNoWakeups'),
   ];
 }

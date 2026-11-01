@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { backend } from '@/lib/backend';
+import { localized } from '@/i18n/localized';
 import { useAuth } from '@/lib/auth';
 import { useActivePregnancy, useChildren, useLogs, useMoods, usePeriods, useProfile } from '@/lib/data/hooks';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
@@ -79,7 +80,9 @@ export function useAssistantContext(): AssistantContext {
 }
 
 /** Questions suggérées selon le parcours (écran d'accueil de l'assistant). */
-export const SUGGESTIONS_BY_JOURNEY: Record<Journey, { label: string; questions: string[] }> = {
+type Suggestions = Record<Journey, { label: string; questions: string[] }>;
+
+const SUGGESTIONS_BY_JOURNEY_FR: Suggestions = {
   avoid: {
     label: 'Contraception',
     questions: [
@@ -144,6 +147,74 @@ export const SUGGESTIONS_BY_JOURNEY: Record<Journey, { label: string; questions:
     ],
   },
 };
+
+const SUGGESTIONS_BY_JOURNEY_EN: Suggestions = {
+  avoid: {
+    label: 'Contraception',
+    questions: [
+      'What are the different methods of contraception?',
+      'What should I do if I miss a pill?',
+      'How does emergency contraception work?',
+      'Which contraception is possible after giving birth?',
+    ],
+  },
+  cycle: {
+    label: 'My cycle',
+    questions: [
+      'How long is a usual cycle?',
+      'Are irregular periods common?',
+      'Which symptoms can come with periods?',
+      'When should I get painful periods checked?',
+    ],
+  },
+  ttc: {
+    label: 'Trying for a baby',
+    questions: [
+      'Which checks should I have before trying to conceive?',
+      'Why take folic acid before a pregnancy?',
+      'How long does it take on average to conceive?',
+      'When should I seek advice if I am not getting pregnant?',
+    ],
+  },
+  pregnant: {
+    label: 'Pregnancy',
+    questions: [
+      'What should I put in my hospital bag?',
+      'Which foods should I avoid during pregnancy?',
+      'Which signs should make me call the maternity unit?',
+      'How is a twin pregnancy followed?',
+    ],
+  },
+  newborn: {
+    label: 'Baby',
+    questions: [
+      'How can I tell if my baby is feeding enough?',
+      'How do I put my baby to sleep safely?',
+      'My baby brings up milk: what should I observe?',
+      'What are the first check-up appointments for a baby?',
+    ],
+  },
+  child: {
+    label: 'Child',
+    questions: [
+      'How do I start introducing solid foods?',
+      'How many hours of sleep does a 2-year-old need?',
+      'What should I note before the paediatrician appointment?',
+      'How can I limit screen time for young children?',
+    ],
+  },
+  family: {
+    label: 'Family',
+    questions: [
+      'How can I prepare my children for the baby’s arrival?',
+      'How can we organise nights with twins?',
+      'How can I spot parental exhaustion?',
+      'What is pelvic floor rehabilitation for?',
+    ],
+  },
+};
+
+export const SUGGESTIONS_BY_JOURNEY: Suggestions = localized(SUGGESTIONS_BY_JOURNEY_FR, SUGGESTIONS_BY_JOURNEY_EN);
 
 export const JOURNEY_ORDER: Journey[] = ['avoid', 'ttc', 'pregnant', 'newborn', 'child', 'family'];
 

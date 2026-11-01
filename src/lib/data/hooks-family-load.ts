@@ -1,4 +1,5 @@
 /** Charge familiale : tâches, demandes, créneaux, routines (domaine « lists », partagé dans le foyer). */
+import { t as tr } from '@/i18n';
 import { useMutation } from '@tanstack/react-query';
 import { backend, eq, gte } from '../backend';
 import { useUserId } from '../auth';
@@ -38,7 +39,7 @@ export function useSaveTask() {
   return useMutation({
     mutationFn: async ({ id, input }: { id?: string; input: Partial<TaskInput> & { status?: FamilyTask['status'] } }) => {
       if (id) return backend.update('family_tasks', input, [eq('id', id)]);
-      if (!hid) throw new Error('Créez d’abord votre foyer.');
+      if (!hid) throw new Error(tr('l3.familyload.need_household'));
       return insertOrQueue('family_tasks', { ...input, household_id: hid });
     },
     onSuccess: () => inv('family_tasks', 'family_task_events'),
@@ -52,7 +53,7 @@ export function useBatchTasks() {
   return useMutation({
     mutationFn: async (a: { create?: Partial<TaskInput>[]; postpone?: { id: string; to: string }[] }) => {
       if (a.create?.length) {
-        if (!hid) throw new Error('Créez d’abord votre foyer.');
+        if (!hid) throw new Error(tr('l3.familyload.need_household'));
         await backend.insert('family_tasks', a.create.map((t) => ({ ...t, household_id: hid })));
       }
       for (const p of a.postpone ?? []) await backend.update('family_tasks', { due_at: p.to }, [eq('id', p.id)]);
@@ -83,7 +84,7 @@ export function useCreateRequest() {
   const hid = useHouseholdId();
   return useMutation({
     mutationFn: async (r: { kind: RequestKind; message?: string | null; to_user?: string | null; task_id?: string | null; shift_id?: string | null; starts_at?: string | null; ends_at?: string | null }) => {
-      if (!hid) throw new Error('Créez d’abord votre foyer.');
+      if (!hid) throw new Error(tr('l3.familyload.need_household'));
       return backend.insert('care_requests', { ...r, household_id: hid });
     },
     onSuccess: () => inv('care_requests'),
@@ -111,7 +112,7 @@ export function useSaveShifts() {
   const hid = useHouseholdId();
   return useMutation({
     mutationFn: async (rows: { kind: CareShift['kind']; user_id: string; starts_at: string; ends_at: string; note?: string | null }[]) => {
-      if (!hid) throw new Error('Créez d’abord votre foyer.');
+      if (!hid) throw new Error(tr('l3.familyload.need_household'));
       return backend.insert('care_shifts', rows.map((r) => ({ ...r, household_id: hid })));
     },
     onSuccess: () => inv('care_shifts'),
@@ -143,7 +144,7 @@ export function useSaveRoutine() {
   return useMutation({
     mutationFn: async ({ id, input }: { id?: string; input: Pick<Routine, 'title' | 'kind' | 'items' | 'default_assignee'> & { active?: boolean } }) => {
       if (id) return backend.update('routines', input, [eq('id', id)]);
-      if (!hid) throw new Error('Créez d’abord votre foyer.');
+      if (!hid) throw new Error(tr('l3.familyload.need_household'));
       return backend.insert('routines', { ...input, household_id: hid });
     },
     onSuccess: () => inv('routines'),
@@ -170,7 +171,7 @@ export function useSaveEvent() {
     mutationFn: async ({ id, input }: { id?: string; input: Partial<EventInput> }) => {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris';
       if (id) return backend.update('family_events', input, [eq('id', id)]);
-      if (!hid) throw new Error('Créez d’abord votre foyer.');
+      if (!hid) throw new Error(tr('l3.familyload.need_household'));
       return insertOrQueue('family_events', { ...input, timezone, household_id: hid });
     },
     onSuccess: () => inv('family_events'),

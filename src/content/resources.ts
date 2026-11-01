@@ -4,6 +4,7 @@
  * n'est copié. Aucune photo n'est affichée pour ces ressources (pas d'autorisation de réutilisation).
  * Catégorie « recettes familiales » : vide tant qu'aucun site n'a été vérifié et validé par un éditeur.
  */
+import { localized } from '@/i18n/localized';
 export type ResourceKind = 'institution' | 'nutrition_org' | 'professional_blog' | 'family_recipes' | 'science';
 export const RESOURCE_KINDS: ResourceKind[] = ['institution', 'nutrition_org', 'professional_blog', 'family_recipes', 'science'];
 
@@ -26,7 +27,7 @@ const R = (slug: string, kind: ResourceKind, title: string, publisher: string, u
   ages: [number | null, number | null], topics: string[], consulted_on: string, published_on: string | null = null, references_note: string | null = null): ExternalResource =>
   ({ slug, kind, title, publisher, url, description, min_age_months: ages[0], max_age_months: ages[1], topics, consulted_on, published_on, references_note });
 
-export const EXTERNAL_RESOURCES: ExternalResource[] = [
+const EXTERNAL_RESOURCES_FR: ExternalResource[] = [
   // Institutions
   R('ameli-biberon', 'institution', 'Bien préparer un biberon', 'ameli.fr (Assurance Maladie)', 'https://www.ameli.fr/assure/sante/themes/alimentation/alimentation-0-3-ans/preparer-biberon',
     'Les gestes d’hygiène, le dosage de la poudre et la conservation du biberon, étape par étape.', [0, 12], ['alimentation', 'hygiène'], '2026-10-20', '2024-11-12'),
@@ -77,3 +78,55 @@ export const EXTERNAL_RESOURCES: ExternalResource[] = [
     'Données de composition des aliments (énergie, protéines, fibres, sel, fer, calcium…) utilisées pour calculer notre score éditorial.', [null, null], ['nutrition', 'données'], '2026-10-20', '2020-07-07',
     'Licence Ouverte Etalab ; fichier récupéré via le dépôt public Open Food Facts.'),
 ];
+const EXTERNAL_RESOURCES_EN: ExternalResource[] = [
+  // Institutions
+  R('ameli-biberon', 'institution', 'Bien préparer un biberon', 'ameli.fr (Assurance Maladie)', 'https://www.ameli.fr/assure/sante/themes/alimentation/alimentation-0-3-ans/preparer-biberon',
+    'Hygiene steps, measuring the powder and storing the bottle, step by step.', [0, 12], ['alimentation', 'hygiène'], '2026-10-20', '2024-11-12'),
+  R('anses-biberon', 'institution', 'Biberon : comment le préparer et le conserver ?', 'ANSES', 'https://www.anses.fr/fr/content/biberon-comment-le-preparer-et-le-conserver',
+    'Health agency recommendations on water, preparing bottles in advance and storing them.', [0, 12], ['alimentation', 'sécurité'], '2026-10-20', '2013-01-17'),
+  R('anses-miel', 'institution', 'Pas de miel pour les enfants de moins d’un an', 'ANSES', 'https://www.anses.fr/fr/content/pas-de-miel-les-enfants-de-moins-dun-an',
+    'Why honey is not recommended before 1 year old (risk of infant botulism).', [0, 12], ['alimentation', 'sécurité'], '2026-10-19', '2023-10-31'),
+  R('anses-references', 'institution', 'Les références nutritionnelles en vitamines et minéraux', 'ANSES', 'https://www.anses.fr/fr/content/les-references-nutritionnelles-en-vitamines-et-mineraux',
+    'Reference intakes by age (iron, calcium, salt…) used for our editorial recipe score.', [6, 120], ['nutrition'], '2026-10-20', '2025-02-21'),
+  R('santefr-3-6', 'institution', 'Enfant entre 3 et 6 ans, quels sont ses besoins nutritionnels ?', 'Santé.fr (contenu mpedia)', 'https://www.sante.fr/node/1247621',
+    'Guidance on portions, food groups and meal rhythm for 3–6 year olds.', [36, 72], ['alimentation'], '2026-10-19', '2023-07-27'),
+  R('ameli-dents', 'institution', 'Les conseils pour prendre soin des dents de votre enfant', 'ameli.fr (Assurance Maladie)', 'https://www.ameli.fr/assure/sante/enfants/depistages-scolaires-assurance-maladie/depistage-dentaire-en-grande-section-de-maternelle/les-conseils-pour-prendre-soin-des-dents-de-votre-enfant',
+    'Brushing, age-appropriate toothpaste and dental check-ups: guidance for children.', [12, 120], ['hygiène', 'dents'], '2026-10-20', '2025-09-02'),
+  R('ameli-fievre', 'institution', 'Votre enfant a de la fièvre : que faire et quand consulter ?', 'ameli.fr (Assurance Maladie)', 'https://www.ameli.fr/assure/sante/themes/fievre-enfant/bons-reflexes-cas-faut-consulter',
+    'What to do, and the signs that mean you should seek advice quickly.', [0, 120], ['santé'], '2026-10-20', '2024-09-03'),
+  R('ameli-coucher', 'institution', 'Comment bien coucher un bébé ?', 'ameli.fr (Assurance Maladie)', 'https://www.ameli.fr/assure/sante/bons-gestes/bebe/coucher-bebe',
+    'Sleeping on the back, a clear cot, room temperature: the safe sleep rules.', [0, 24], ['sommeil', 'sécurité'], '2026-10-20', '2024-10-10'),
+  R('ameli-sommeil-enfant', 'institution', 'Sommeil de l’enfant : ses étapes, sa durée et ses troubles', 'ameli.fr (Assurance Maladie)', 'https://www.ameli.fr/assure/sante/themes/troubles-sommeil-enfant/sommeil-enfant-importance-troubles-etapes',
+    'Sleep durations by age and advice when problems arise.', [12, 120], ['sommeil'], '2026-10-20', '2026-03-12'),
+  R('ameli-ecrans', 'institution', 'Comment adapter l’usage des écrans à l’âge de l’enfant ?', 'ameli.fr (Assurance Maladie)', 'https://www.ameli.fr/assure/sante/themes/ecrans-enfance-adolescence/usage-ecran-age',
+    'Age-based guidance to limit and support screen use.', [0, 120], ['écrans'], '2026-10-20', '2025-07-17'),
+  R('santefr-pleurs', 'institution', 'Pleurs de mon enfant, les comprendre et les calmer', 'Santé.fr', 'https://www.sante.fr/pleurs-de-mon-enfant-les-comprendre-et-les-calmer',
+    'Understanding infant crying and how to soothe, including when you are at the end of your tether.', [0, 24], ['bébé'], '2026-10-20', '2026-08-31'),
+  R('santefr-sommeil-normal', 'institution', 'Sommeil normal du bébé : de la naissance à 3 ans', 'Santé.fr', 'https://www.sante.fr/sommeil-normal-du-bebe-de-la-naissance-3-ans',
+    'How a baby’s sleep changes up to 3 years old.', [0, 36], ['sommeil'], '2026-10-20', '2019-07-01'),
+  R('eurlex-cosmetiques', 'institution', 'Règlement (CE) n° 1223/2009 relatif aux produits cosmétiques', 'EUR-Lex (Union européenne)', 'https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:32009R1223',
+    'The European text governing cosmetics, including the list of allergenic fragrance substances that must be declared.', [null, null], ['produits', 'cosmétiques'], '2026-10-20'),
+  // Nutrition et pédiatrie
+  R('spf-diversification', 'nutrition_org', 'Pas à pas, votre enfant mange comme un grand', 'Santé publique France (Manger Bouger)', 'https://www.mangerbouger.fr/content/show/1500/file/Brochure-SPF-Mangerbougerfr.pdf',
+    'The official guide to introducing solid foods: ages, textures, quantities.', [4, 36], ['alimentation', 'diversification'], '2026-10-19'),
+  R('mb-opposition', 'nutrition_org', 'Mon enfant ne veut pas manger : que faire face à son opposition ?', 'Manger Bouger (Santé publique France)', 'https://www.mangerbouger.fr/manger-mieux/a-tout-age-et-a-chaque-etape-de-la-vie/jeunes-enfants-de-0-a-3-ans-du-lait-a-la-diversification/mon-enfant-ne-veut-pas-manger-que-faire-face-a-son-opposition',
+    'Food neophobia and refusing to eat: how to respond without forcing.', [12, 72], ['alimentation'], '2026-10-20', '2025-10-27'),
+  R('inspq-etouffement', 'nutrition_org', 'Risques d’étouffement – à surveiller jusqu’à 4 ans', 'Institut national de santé publique du Québec (hors France)', 'https://www.inspq.qc.ca/mieux-vivre/enfant/alimentation/aliments/risques-etouffement',
+    'Foods that are a choking risk for young children and how to prepare them (supplementary guidance).', [6, 48], ['alimentation', 'sécurité'], '2026-10-19', '2026-02-17'),
+  // Professionnels qualifiés
+  R('mpedia-coucher', 'professional_blog', 'Coucher mon bébé', 'mpedia.fr (Association française de pédiatrie ambulatoire)', 'https://www.mpedia.fr/art-coucher-mon-bebe/',
+    'Paediatricians’ advice on putting a baby to bed and helping them fall asleep.', [0, 24], ['sommeil'], '2026-10-20', '2023-07-17'),
+  R('mpedia-fievre', 'professional_blog', 'Fièvre bébé et enfant : que faire et quand consulter ?', 'mpedia.fr (Association française de pédiatrie ambulatoire)', 'https://www.mpedia.fr/art-fievre-enfant/',
+    'Taking a temperature, comforting your child and recognising warning signs.', [0, 120], ['santé'], '2026-10-20', '2023-09-19'),
+  R('mpedia-sommeil', 'professional_blog', 'Endormissement difficile, réveils et troubles du sommeil', 'mpedia.fr (Association française de pédiatrie ambulatoire)', 'https://www.mpedia.fr/art-troubles-sommeil-mois-ans/',
+    'Night waking, bedtime fears, routines: paediatricians’ views by age.', [6, 120], ['sommeil'], '2026-10-20', '2023-01-13'),
+  R('mpedia-proprete', 'professional_blog', 'Comment mon enfant va-t-il devenir propre ?', 'mpedia.fr (Association française de pédiatrie ambulatoire)', 'https://www.mpedia.fr/art-acquisition-proprete/',
+    'The stages of toilet training, without pressure.', [18, 60], ['développement'], '2026-10-20', '2023-08-31'),
+  R('rdp-lait-cru', 'professional_blog', 'Pas de fromages au lait cru avant 5 ans', 'La Revue du Praticien', 'https://www.larevuedupraticien.fr/article/pas-de-fromages-au-lait-cru-avant-5-ans',
+    'Reminder from the health authorities about raw-milk cheeses for young children.', [0, 60], ['alimentation', 'sécurité'], '2026-10-19', '2023-07-31'),
+  // Publications scientifiques / données
+  R('calnut-2020', 'science', 'Table de composition nutritionnelle CALNUT 2020', 'ANSES (Ciqual)', 'https://ciqual.anses.fr/',
+    'Food composition data (energy, protein, fibre, salt, iron, calcium…) used to calculate our editorial score.', [null, null], ['nutrition', 'données'], '2026-10-20', '2020-07-07',
+    'Etalab Open Licence; file retrieved from the public Open Food Facts repository.'),
+];
+export const EXTERNAL_RESOURCES: ExternalResource[] = localized(EXTERNAL_RESOURCES_FR, EXTERNAL_RESOURCES_EN);

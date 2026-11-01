@@ -1,4 +1,6 @@
 /** Accès aux données de l'espace « Moi aussi » : symptômes du cycle, boîte de notifications, rappels de rendez-vous. */
+import { localeTag } from '@/i18n';
+import { t as tr } from '@/i18n';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { backend, eq, isNull } from '../backend';
 import { useUserId } from '../auth';
@@ -68,14 +70,14 @@ export async function setAppointmentReminder(appt: Pick<Appointment, 'id' | 'hou
   if (lead === 0) return;
   const at = reminderAt(appt.starts_at, lead);
   if (Date.parse(at) <= Date.now()) return; // trop tard pour prévenir
-  const when = new Date(appt.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+  const when = new Date(appt.starts_at).toLocaleString(localeTag(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
   await backend.insert('reminders', {
     household_id: appt.household_id,
     appointment_id: appt.id,
     category: appt.kind === 'ultrasound' ? 'ultrasound' : appt.kind === 'exam' || appt.kind === 'blood_test' ? 'exam' : appt.kind === 'postnatal' || appt.kind === 'perineal_rehab' ? 'postnatal' : 'appointment',
     // Rendez-vous privé : rien de son intitulé sur l'écran verrouillé
-    title: appt.private_to_creator ? 'Rendez-vous' : appt.title.slice(0, 80),
-    body: `Rendez-vous ${when}`.slice(0, 240),
+    title: appt.private_to_creator ? tr('l3.me.appt') : appt.title.slice(0, 80),
+    body: tr('l3.me.appt_when', { when }).slice(0, 240),
     schedule: { type: 'once', at },
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris',
     enabled: true,

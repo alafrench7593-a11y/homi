@@ -2,6 +2,7 @@
  * Accès Premium côté application : état de l'abonnement expliqué, quotas mensuels (lus et consommés CÔTÉ SERVEUR),
  * et ouverture de l'aperçu Premium au moment où l'utilisatrice essaie réellement une fonction.
  */
+import { localeTag } from '@/i18n';
 import type React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
@@ -87,5 +88,5 @@ export function useConsumeQuota(key: string) {
 /** Date de remise à zéro des quotas mensuels (1er du mois suivant). */
 export function quotaResetLabel(now = new Date()) {
   const d = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  return d.toLocaleDateString(localeTag(), { day: 'numeric', month: 'long' });
 }

@@ -14,6 +14,7 @@ import {
   type Certainty, type DataSourceInfo, type Finding, type RecallCheck, type RecallInfo, type ScanProfile,
 } from './scanCommon';
 import type { ScanSource } from './scanSources';
+import { t as tr } from '@/i18n';
 import { checkAllergies } from '../../../supabase/functions/_shared/allergens';
 
 export const FOOD_VERDICTS = [
@@ -24,6 +25,12 @@ export const FOOD_VERDICTS = [
   'Impossible à confirmer',
 ] as const;
 export type FoodVerdict = (typeof FOOD_VERDICTS)[number];
+
+/** Libellé affiché d'un verdict dans la langue en cours (la valeur enregistrée reste le texte français). */
+export function foodVerdictLabel(v: string): string {
+  const i = (FOOD_VERDICTS as readonly string[]).indexOf(v);
+  return i < 0 ? v : tr(`l4.sf.v.${i}` as 'l4.sf.v.0');
+}
 
 export interface FoodNutrition {
   salt_g_100g?: number | null;
@@ -144,7 +151,7 @@ export interface FoodQuestion {
   critical: boolean;
 }
 
-const TRI_UNKNOWN = { value: 'unknown', label: 'Je ne sais pas' };
+const TRI_UNKNOWN = { value: 'unknown', get label() { return tr('l4.sf.q.unknown'); } };
 
 export function foodQuestions(input: FoodInput, profile: ScanProfile): FoodQuestion[] {
   const f = detectFacets(input);
@@ -155,48 +162,48 @@ export function foodQuestions(input: FoodInput, profile: ScanProfile): FoodQuest
   const cookable = f.has('meat') || f.has('fish') || f.has('egg') || f.has('cooked_crustacean') || f.has('charcuterie_cook');
   if (cookable && !f.has('raw_meat') && !f.has('raw_fish') && !f.has('smoked_fish') && sensitive) {
     q.push({
-      key: 'cooking', label: 'Comment est-il préparé ?', why: 'La cuisson à cœur change les recommandations ; une photo ne permet pas de la vérifier.', critical: true,
-      options: [{ value: 'cooked', label: 'Bien cuit, à cœur' }, { value: 'undercooked', label: 'Peu cuit, rosé, saignant ou mollet' }, { value: 'raw', label: 'Cru' }, TRI_UNKNOWN],
+      key: 'cooking', label: tr('l4.sf.q.cooking.l'), why: tr('l4.sf.q.cooking.w'), critical: true,
+      options: [{ value: 'cooked', label: tr('l4.sf.q.cooking.o1') }, { value: 'undercooked', label: tr('l4.sf.q.cooking.o2') }, { value: 'raw', label: tr('l4.sf.q.cooking.o3') }, TRI_UNKNOWN],
     });
   }
   if ((f.has('cheese') || f.has('dairy')) && !f.has('raw_milk') && !f.has('cheese_hard_cooked') && !f.has('cheese_soft_or_uncooked') && (sensitive)) {
     q.push({
-      key: 'milk', label: 'Le lait est-il cru ou pasteurisé ?', why: 'Indiqué sur l’emballage (« au lait cru » ou « pasteurisé »).', critical: true,
-      options: [{ value: 'pasteurized', label: 'Pasteurisé' }, { value: 'raw', label: 'Lait cru' }, TRI_UNKNOWN],
+      key: 'milk', label: tr('l4.sf.q.milk.l'), why: tr('l4.sf.q.milk.w'), critical: true,
+      options: [{ value: 'pasteurized', label: tr('l4.sf.q.milk.o1') }, { value: 'raw', label: tr('l4.sf.q.milk.o2') }, TRI_UNKNOWN],
     });
   }
   if (f.has('raw_egg_dish') && sensitive) {
     q.push({
-      key: 'origin', label: 'Est-ce fait maison ou industriel ?', why: 'Les préparations maison aux œufs crus et les préparations industrielles ne sont pas traitées de la même façon.', critical: true,
-      options: [{ value: 'homemade', label: 'Fait maison' }, { value: 'industrial', label: 'Industriel (emballé)' }, TRI_UNKNOWN],
+      key: 'origin', label: tr('l4.sf.q.origin.l'), why: tr('l4.sf.q.origin.w'), critical: true,
+      options: [{ value: 'homemade', label: tr('l4.sf.q.origin.o1') }, { value: 'industrial', label: tr('l4.sf.q.origin.o2') }, TRI_UNKNOWN],
     });
   }
   if (child && age != null && age < 36 && !f.has('infant_formula')) {
     q.push({
-      key: 'texture', label: 'Quelle texture allez-vous proposer ?', why: 'La texture doit suivre l’âge et le stade de diversification.', critical: false,
-      options: [{ value: 'smooth', label: 'Lisse (purée mixée)' }, { value: 'mashed', label: 'Écrasée' }, { value: 'soft_pieces', label: 'Petits morceaux fondants' }, { value: 'pieces', label: 'Morceaux' }, { value: 'whole', label: 'Entier' }, TRI_UNKNOWN],
+      key: 'texture', label: tr('l4.sf.q.texture.l'), why: tr('l4.sf.q.texture.w'), critical: false,
+      options: [{ value: 'smooth', label: tr('l4.sf.q.texture.o1') }, { value: 'mashed', label: tr('l4.sf.q.texture.o2') }, { value: 'soft_pieces', label: tr('l4.sf.q.texture.o3') }, { value: 'pieces', label: tr('l4.sf.q.texture.o4') }, { value: 'whole', label: tr('l4.sf.q.texture.o5') }, TRI_UNKNOWN],
     });
   }
   if (child && age != null && age < 48 && ['whole_nuts', 'grapes', 'cherry_tomato', 'olives', 'sausage_round', 'hard_raw_veg'].some((x) => f.has(x as Facet))) {
     q.push({
-      key: 'cut', label: 'Sous quelle forme ?', why: 'Les aliments ronds, durs ou entiers peuvent provoquer un étouffement chez le jeune enfant.', critical: true,
-      options: [{ value: 'whole', label: 'Entier' }, { value: 'cut_small', label: 'Coupé finement (en quatre dans la longueur)' }, { value: 'crushed', label: 'Mixé, râpé ou en poudre' }, TRI_UNKNOWN],
+      key: 'cut', label: tr('l4.sf.q.cut.l'), why: tr('l4.sf.q.cut.w'), critical: true,
+      options: [{ value: 'whole', label: tr('l4.sf.q.texture.o5') }, { value: 'cut_small', label: tr('l4.sf.q.cut.o2') }, { value: 'crushed', label: tr('l4.sf.q.cut.o3') }, TRI_UNKNOWN],
     });
   }
   if (child && age != null && age >= 4 && age < 7) {
     q.push({
-      key: 'diversification', label: 'La diversification alimentaire a-t-elle commencé ?', why: 'Les premiers aliments sont introduits entre 4 et 6 mois révolus, en accord avec le médecin.', critical: false,
-      options: [{ value: 'started', label: 'Oui' }, { value: 'not_started', label: 'Pas encore' }, TRI_UNKNOWN],
+      key: 'diversification', label: tr('l4.sf.q.div.l'), why: tr('l4.sf.q.div.w'), critical: false,
+      options: [{ value: 'started', label: tr('l4.sf.q.div.o1') }, { value: 'not_started', label: tr('l4.sf.q.div.o2') }, TRI_UNKNOWN],
     });
   }
   if (f.has('perishable')) {
     q.push({
-      key: 'storage', label: 'Comment a-t-il été conservé ?', why: 'La chaîne du froid compte pour les produits frais.', critical: false,
-      options: [{ value: 'fridge', label: 'Au réfrigérateur' }, { value: 'room', label: 'À température ambiante' }, { value: 'frozen', label: 'Congelé' }, TRI_UNKNOWN],
+      key: 'storage', label: tr('l4.sf.q.stor.l'), why: tr('l4.sf.q.stor.w'), critical: false,
+      options: [{ value: 'fridge', label: tr('l4.sf.q.stor.o1') }, { value: 'room', label: tr('l4.sf.q.stor.o2') }, { value: 'frozen', label: tr('l4.sf.q.stor.o3') }, TRI_UNKNOWN],
     });
-    q.push({ key: 'openedDaysAgo', label: 'Ouvert depuis combien de jours ?', why: 'À comparer avec la mention « à consommer dans les … jours après ouverture ».', critical: false });
+    q.push({ key: 'openedDaysAgo', label: tr('l4.sf.q.open.l'), why: tr('l4.sf.q.open.w'), critical: false });
   }
-  q.push({ key: 'allergies', label: 'Allergies connues (facultatif)', why: 'Seules les allergies déjà identifiées par un professionnel sont prises en compte ; l’application ne diagnostique aucune allergie.', critical: false });
+  q.push({ key: 'allergies', label: tr('l4.sf.q.all.l'), why: tr('l4.sf.q.all.w'), critical: false });
   return q;
 }
 
@@ -259,32 +266,32 @@ export function analyzeFood(input: FoodInput, profile: ScanProfile, answers: Foo
 
   // -- Identification
   if (!input.identity.confirmed || !input.identity.name) {
-    impossible = 'L’aliment n’a pas été confirmé : l’application ne peut pas savoir de quoi il s’agit.';
-    lower('low', 'Aliment non confirmé.');
+    impossible = tr('l4.sf.imp.unconfirmed');
+    lower('low', tr('l4.sf.cr.unconfirmed'));
   }
   const ingredients = splitIngredients(input.ingredientsText);
   const meaningful = [...f].filter((x) => x !== 'perishable');
   if (!impossible && meaningful.length === 0 && ingredients.length === 0 && !input.catalogMatch) {
-    impossible = 'Cet aliment n’est pas reconnu par l’application et sa composition n’est pas connue.';
-    missing.push('Composition ou liste des ingrédients');
-    lower('low', 'Aliment non reconnu.');
+    impossible = tr('l4.sf.imp.unknown');
+    missing.push(tr('l4.sf.miss.composition'));
+    lower('low', tr('l4.sf.cr.unrecognised'));
   }
   if (child && age == null) {
-    impossible ??= 'L’âge exact de l’enfant (en mois) est nécessaire.';
-    missing.push('Âge exact de l’enfant');
+    impossible ??= tr('l4.sf.imp.age');
+    missing.push(tr('l4.sf.miss.age'));
   }
-  if (input.dataSource.is_demo) lower('low', `${DEMO_LABEL} : cet aliment n’est pas une donnée réelle.`);
-  else if (input.dataSource.collaborative) lower('medium', 'Base collaborative : comparez avec l’emballage.');
-  if (input.ingredientsOrigin === 'manual') lower('low', 'Ingrédients saisis à la main.');
-  if (input.ingredientsOrigin === 'ocr_reviewed') lower(input.ocrReadability != null && input.ocrReadability < 0.6 ? 'low' : 'medium', 'Ingrédients lus sur photo puis relus.');
+  if (input.dataSource.is_demo) lower('low', tr('l4.sf.cr.demo', { label: DEMO_LABEL }));
+  else if (input.dataSource.collaborative) lower('medium', tr('l4.sf.cr.collab'));
+  if (input.ingredientsOrigin === 'manual') lower('low', tr('l4.sf.cr.manual'));
+  if (input.ingredientsOrigin === 'ocr_reviewed') lower(input.ocrReadability != null && input.ocrReadability < 0.6 ? 'low' : 'medium', tr('l4.sf.cr.ocr'));
 
   // -- Rappels officiels
   for (const r of input.recalls) {
     if (r.match === 'gtin') {
-      push({ id: 'recall', level: 'avoid', title: `Rappel officiel en cours : ${r.title}`, explanation: `${r.reason ?? 'Motif non précisé.'}${r.recommended_action ? ` Conduite à tenir : ${r.recommended_action}` : ''} Vérifiez le numéro de lot.`, sourceIds: ['rappelconso'] });
+      push({ id: 'recall', level: 'avoid', title: tr('l4.sf.f.recall.t', { title: r.title }), explanation: `${r.reason ?? tr('l4.sf.recall.noReason')}${r.recommended_action ? ` ${tr('l4.sf.recall.action', { action: r.recommended_action })}` : ''} ${tr('l4.sf.recall.lot')}`, sourceIds: ['rappelconso'] });
     } else {
-      push({ id: 'recall_possible', level: 'precaution', title: `Un rappel officiel pourrait concerner ce produit : ${r.title}`, explanation: 'Correspondance sur la marque et le nom seulement : comparez la référence et le lot avec l’avis officiel.', sourceIds: ['rappelconso'] });
-      lower('medium', 'Rappel possible (marque et nom).');
+      push({ id: 'recall_possible', level: 'precaution', title: tr('l4.sf.f.recall_possible.t', { title: r.title }), explanation: tr('l4.sf.f.recall_possible.e'), sourceIds: ['rappelconso'] });
+      lower('medium', tr('l4.sf.cr.recall_possible'));
     }
   }
 
@@ -300,155 +307,155 @@ export function analyzeFood(input: FoodInput, profile: ScanProfile, answers: Foo
       nameText: input.identity.name ?? null,
     });
     for (const m of chk.identified) {
-      push({ id: `allergy_${norm(m.allergy)}`, level: 'avoid', title: `Contient « ${m.allergy} », allergie déclarée${m.allergen && norm(m.allergen) !== norm(m.allergy) ? ` (${m.allergen.toLowerCase()})` : ''}`,
-        explanation: `${m.via === 'declared' ? 'Allergène déclaré par le fabricant dans la base produit.' : 'Correspondance dans la liste des ingrédients étiquetés.'} L’application ne pose aucun diagnostic d’allergie.`, sourceIds: ['eu-inco-1169-2011'] });
+      push({ id: `allergy_${norm(m.allergy)}`, level: 'avoid', title: `${tr('l4.sf.f.allergy.t', { allergy: m.allergy })}${m.allergen && norm(m.allergen) !== norm(m.allergy) ? ` (${m.allergen.toLowerCase()})` : ''}`,
+        explanation: `${tr(m.via === 'declared' ? 'l4.sf.al.declared' : 'l4.sf.al.listed')} ${tr('l4.sf.al.nodiag')}`, sourceIds: ['eu-inco-1169-2011'] });
     }
     for (const m of chk.possible) {
-      push({ id: `allergy_trace_${norm(m.allergy)}`, level: 'precaution', title: `Peut contenir « ${m.allergy} » (traces)`,
-        explanation: 'Mention « peut contenir » : présence non intentionnelle possible. Selon la sévérité de l’allergie, suivez les consignes de votre allergologue.', sourceIds: ['eu-inco-1169-2011'] });
+      push({ id: `allergy_trace_${norm(m.allergy)}`, level: 'precaution', title: tr('l4.sf.f.allergy_trace.t', { allergy: m.allergy }),
+        explanation: tr('l4.sf.f.allergy_trace.e'), sourceIds: ['eu-inco-1169-2011'] });
     }
     if (chk.noMatchNote) {
-      push({ id: 'allergy_unchecked', level: chk.insufficient.length ? 'missing' : 'info', title: chk.insufficient.length ? 'Allergies : vérification impossible avec ces données' : 'Allergies : aucune correspondance trouvée', explanation: chk.noMatchNote, sourceIds: ['eu-inco-1169-2011'] });
-      if (chk.insufficient.length && !input.ingredientsText) lower('low', 'Composition inconnue : vos allergies ne peuvent pas être vérifiées.');
-      else if (chk.insufficient.length) lower('medium', `Données incomplètes pour vos allergies (${chk.insufficient.join(', ').toLowerCase()}).`);
+      push({ id: 'allergy_unchecked', level: chk.insufficient.length ? 'missing' : 'info', title: chk.insufficient.length ? tr('l4.sf.f.allergy_unchecked.t1') : tr('l4.sf.f.allergy_unchecked.t2'), explanation: chk.noMatchNote, sourceIds: ['eu-inco-1169-2011'] });
+      if (chk.insufficient.length && !input.ingredientsText) lower('low', tr('l4.sf.cr.allergy_unknown'));
+      else if (chk.insufficient.length) lower('medium', tr('l4.sf.cr.allergy_partial', { list: chk.insufficient.join(', ').toLowerCase() }));
     }
   }
 
   // ================================================================ grossesse
   if (pregnant) {
-    if (f.has('alcohol')) push({ id: 'p_alcohol', level: 'avoid', title: 'Contient de l’alcool', explanation: 'Aucune consommation d’alcool n’est recommandée pendant la grossesse (« zéro alcool »).', sourceIds: ['sante-alcool'] });
+    if (f.has('alcohol')) push({ id: 'p_alcohol', level: 'avoid', title: tr('l4.sf.f.alcohol.t'), explanation: tr('l4.sf.f.p_alcohol.e'), sourceIds: ['sante-alcool'] });
     if (f.has('cheese_hard_cooked') && !f.has('grated_cheese')) {
-      push({ id: 'p_hard_cheese', level: 'precaution', title: 'Fromage à pâte pressée cuite (type comté, parmesan)', explanation: 'Ce type de fromage est accepté pendant la grossesse ; retirez la croûte.', sourceIds: ['spf-grossesse-2025', 'anses-lait-cru-2022'] });
+      push({ id: 'p_hard_cheese', level: 'precaution', title: tr('l4.sf.f.p_hard_cheese.t'), explanation: tr('l4.sf.f.p_hard_cheese.e'), sourceIds: ['spf-grossesse-2025', 'anses-lait-cru-2022'] });
     } else if (f.has('cheese_soft_or_uncooked')) {
-      push({ id: 'p_soft_cheese', level: 'avoid', title: 'Fromage à pâte molle ou à pâte pressée non cuite', explanation: 'À éviter pendant toute la grossesse, qu’il soit au lait cru ou pasteurisé (risque de listériose).', sourceIds: ['spf-grossesse-2025'] });
+      push({ id: 'p_soft_cheese', level: 'avoid', title: tr('l4.sf.f.p_soft_cheese.t'), explanation: tr('l4.sf.f.p_soft_cheese.e'), sourceIds: ['spf-grossesse-2025'] });
     } else if (f.has('raw_milk') || answers.milk === 'raw') {
-      push({ id: 'p_raw_milk', level: 'avoid', title: 'Produit au lait cru', explanation: 'Les produits au lait cru sont à éviter pendant toute la grossesse (listériose).', sourceIds: ['spf-grossesse-2025', 'anses-lait-cru-2022'] });
+      push({ id: 'p_raw_milk', level: 'avoid', title: tr('l4.sf.f.raw_milk.t'), explanation: tr('l4.sf.f.p_raw_milk.e'), sourceIds: ['spf-grossesse-2025', 'anses-lait-cru-2022'] });
     } else if (f.has('cheese') || f.has('dairy')) {
-      if (unknown(answers.milk) && f.has('cheese')) need('milk', 'Lait cru ou pasteurisé');
+      if (unknown(answers.milk) && f.has('cheese')) need('milk', tr('l4.sf.miss.milk'));
       else if (answers.milk === 'pasteurized' && f.has('cheese')) {
-        push({ id: 'p_cheese_type', level: 'precaution', title: 'Fromage au lait pasteurisé : vérifiez le type de pâte', explanation: 'Même pasteurisés, les fromages à pâte molle (brie, camembert…) et à pâte pressée non cuite (reblochon…) sont à éviter pendant la grossesse. Retirez la croûte.', sourceIds: ['spf-grossesse-2025'] });
+        push({ id: 'p_cheese_type', level: 'precaution', title: tr('l4.sf.f.p_cheese_type.t'), explanation: tr('l4.sf.f.p_cheese_type.e'), sourceIds: ['spf-grossesse-2025'] });
       }
     }
-    if (f.has('grated_cheese')) push({ id: 'p_grated', level: 'avoid', title: 'Fromage râpé en sachet', explanation: 'Le fromage râpé vendu en sachet est à éviter pendant la grossesse.', sourceIds: ['spf-grossesse-2025'] });
-    if (f.has('charcuterie_cold') || f.has('charcuterie_dry')) push({ id: 'p_charcuterie', level: 'avoid', title: 'Charcuterie prête à consommer (jambon cuit, rillettes, pâté, foie gras, saucisson, jambon cru…)', explanation: 'À éviter pendant la grossesse (listériose, toxoplasmose).', sourceIds: ['spf-grossesse-2025', 'mpedia-listeriose-2025'] });
+    if (f.has('grated_cheese')) push({ id: 'p_grated', level: 'avoid', title: tr('l4.sf.f.p_grated.t'), explanation: tr('l4.sf.f.p_grated.e'), sourceIds: ['spf-grossesse-2025'] });
+    if (f.has('charcuterie_cold') || f.has('charcuterie_dry')) push({ id: 'p_charcuterie', level: 'avoid', title: tr('l4.sf.f.p_charcuterie.t'), explanation: tr('l4.sf.f.p_charcuterie.e'), sourceIds: ['spf-grossesse-2025', 'mpedia-listeriose-2025'] });
     else if (f.has('charcuterie_cook')) {
-      if (answers.cooking === 'cooked') push({ id: 'p_charcuterie_cook', level: 'precaution', title: 'Charcuterie à cuire, bien cuite', explanation: 'À consommer en quantité limitée, de préférence cuite par vos soins.', sourceIds: ['spf-grossesse-2025'] });
-      else push({ id: 'p_charcuterie_cook', level: 'prepare', title: 'Charcuterie à cuire (saucisses, boudin, lardons…)', explanation: 'Seulement bien cuite par vos soins, et en quantité limitée.', sourceIds: ['spf-grossesse-2025'] });
+      if (answers.cooking === 'cooked') push({ id: 'p_charcuterie_cook', level: 'precaution', title: tr('l4.sf.f.p_charcuterie_cook.t1'), explanation: tr('l4.sf.f.p_charcuterie_cook.e1'), sourceIds: ['spf-grossesse-2025'] });
+      else push({ id: 'p_charcuterie_cook', level: 'prepare', title: tr('l4.sf.f.p_charcuterie_cook.t2'), explanation: tr('l4.sf.f.p_charcuterie_cook.e2'), sourceIds: ['spf-grossesse-2025'] });
     }
-    if (f.has('raw_meat')) push({ id: 'p_raw_meat', level: 'avoid', title: 'Viande crue (tartare, carpaccio…)', explanation: 'La viande crue ou peu cuite est à éviter pendant la grossesse.', sourceIds: ['spf-grossesse-2025'] });
-    if (f.has('raw_fish')) push({ id: 'p_raw_fish', level: 'avoid', title: 'Poisson cru (sushi, sashimi, tarama…)', explanation: 'À éviter pendant la grossesse ; la congélation n’élimine pas Listeria.', sourceIds: ['spf-grossesse-2025'] });
-    if (f.has('smoked_fish')) push({ id: 'p_smoked_fish', level: 'avoid', title: 'Poisson fumé ou mariné', explanation: 'À éviter pendant la grossesse.', sourceIds: ['spf-grossesse-2025', 'mpedia-listeriose-2025'] });
-    if (f.has('raw_shellfish')) push({ id: 'p_raw_shellfish', level: 'avoid', title: 'Coquillages crus (huîtres…)', explanation: 'Les coquillages crus sont à éviter pendant la grossesse.', sourceIds: ['spf-grossesse-2025'] });
+    if (f.has('raw_meat')) push({ id: 'p_raw_meat', level: 'avoid', title: tr('l4.sf.f.p_raw_meat.t'), explanation: tr('l4.sf.f.p_raw_meat.e'), sourceIds: ['spf-grossesse-2025'] });
+    if (f.has('raw_fish')) push({ id: 'p_raw_fish', level: 'avoid', title: tr('l4.sf.f.p_raw_fish.t'), explanation: tr('l4.sf.f.p_raw_fish.e'), sourceIds: ['spf-grossesse-2025'] });
+    if (f.has('smoked_fish')) push({ id: 'p_smoked_fish', level: 'avoid', title: tr('l4.sf.f.p_smoked_fish.t'), explanation: tr('l4.sf.f.p_smoked_fish.e'), sourceIds: ['spf-grossesse-2025', 'mpedia-listeriose-2025'] });
+    if (f.has('raw_shellfish')) push({ id: 'p_raw_shellfish', level: 'avoid', title: tr('l4.sf.f.p_raw_shellfish.t'), explanation: tr('l4.sf.f.p_raw_shellfish.e'), sourceIds: ['spf-grossesse-2025'] });
     if (f.has('cooked_crustacean')) {
-      if (answers.origin === 'homemade' && answers.cooking === 'cooked') push({ id: 'p_crustacean', level: 'precaution', title: 'Crustacés achetés crus et cuits à la maison', explanation: 'Acceptés s’ils sont bien cuits ; évitez les crustacés vendus déjà cuits et décortiqués.', sourceIds: ['spf-grossesse-2025'] });
-      else push({ id: 'p_crustacean', level: 'prepare', title: 'Crustacés (crevettes…)', explanation: 'Évitez les crustacés décortiqués vendus cuits : achetez-les crus et cuisez-les vous-même.', sourceIds: ['spf-grossesse-2025'] });
+      if (answers.origin === 'homemade' && answers.cooking === 'cooked') push({ id: 'p_crustacean', level: 'precaution', title: tr('l4.sf.f.p_crustacean.t1'), explanation: tr('l4.sf.f.p_crustacean.e1'), sourceIds: ['spf-grossesse-2025'] });
+      else push({ id: 'p_crustacean', level: 'prepare', title: tr('l4.sf.f.p_crustacean.t2'), explanation: tr('l4.sf.f.p_crustacean.e2'), sourceIds: ['spf-grossesse-2025'] });
     }
     if (f.has('raw_egg_dish')) {
-      if (answers.origin === 'homemade') push({ id: 'p_raw_egg', level: 'avoid', title: 'Préparation maison à base d’œufs crus', explanation: 'Mayonnaise, mousse, tiramisu faits maison : à éviter pendant la grossesse (salmonelle).', sourceIds: ['spf-grossesse-2025'] });
-      else if (answers.origin === 'industrial') push({ id: 'p_raw_egg', level: 'precaution', title: 'Préparation industrielle à base d’œufs', explanation: 'Les préparations industrielles sont considérées à faible risque ; respectez la date limite et la conservation.', sourceIds: ['spf-grossesse-2025'] });
-      else need('origin', 'Fait maison ou industriel');
+      if (answers.origin === 'homemade') push({ id: 'p_raw_egg', level: 'avoid', title: tr('l4.sf.f.p_raw_egg.t1'), explanation: tr('l4.sf.f.p_raw_egg.e1'), sourceIds: ['spf-grossesse-2025'] });
+      else if (answers.origin === 'industrial') push({ id: 'p_raw_egg', level: 'precaution', title: tr('l4.sf.f.p_raw_egg.t2'), explanation: tr('l4.sf.f.p_raw_egg.e2'), sourceIds: ['spf-grossesse-2025'] });
+      else need('origin', tr('l4.sf.miss.origin'));
     }
-    if (f.has('fish_avoid_mercury')) push({ id: 'p_mercury', level: 'avoid', title: 'Grand poisson prédateur (espadon, marlin, siki, requin, lamproie)', explanation: 'À éviter pendant la grossesse en raison du méthylmercure.', sourceIds: ['anses-mercure-2024', 'spf-grossesse-2025'] });
-    else if (f.has('fish_limit_mercury')) push({ id: 'p_mercury_limit', level: 'precaution', title: 'Poisson prédateur sauvage (thon, dorade, bar, lotte…)', explanation: 'À limiter pendant la grossesse (méthylmercure) ; variez les espèces.', sourceIds: ['anses-mercure-2024'] });
-    if (f.has('sprouts')) push({ id: 'p_sprouts', level: 'avoid', title: 'Graines germées', explanation: 'Citées parmi les aliments à éviter pendant la grossesse (listériose).', sourceIds: ['mpedia-listeriose-2025'] });
-    if (f.has('soy')) push({ id: 'p_soy', level: 'avoid', title: 'Produit à base de soja', explanation: 'La source recommande de ne pas consommer de boissons et produits à base de soja pendant la grossesse (perturbateurs endocriniens).', sourceIds: ['spf-grossesse-2025'] });
-    if (f.has('liquorice')) push({ id: 'p_liquorice', level: 'avoid', title: 'Contient de la réglisse', explanation: 'L’Anses recommande de déconseiller la réglisse sous toutes ses formes aux femmes enceintes et allaitantes (acide glycyrrhizique).', sourceIds: ['anses-reglisse-2025'] });
+    if (f.has('fish_avoid_mercury')) push({ id: 'p_mercury', level: 'avoid', title: tr('l4.sf.f.mercury_avoid.t'), explanation: tr('l4.sf.f.p_mercury.e'), sourceIds: ['anses-mercure-2024', 'spf-grossesse-2025'] });
+    else if (f.has('fish_limit_mercury')) push({ id: 'p_mercury_limit', level: 'precaution', title: tr('l4.sf.f.p_mercury_limit.t'), explanation: tr('l4.sf.f.p_mercury_limit.e'), sourceIds: ['anses-mercure-2024'] });
+    if (f.has('sprouts')) push({ id: 'p_sprouts', level: 'avoid', title: tr('l4.sf.f.p_sprouts.t'), explanation: tr('l4.sf.f.p_sprouts.e'), sourceIds: ['mpedia-listeriose-2025'] });
+    if (f.has('soy')) push({ id: 'p_soy', level: 'avoid', title: tr('l4.sf.f.p_soy.t'), explanation: tr('l4.sf.f.p_soy.e'), sourceIds: ['spf-grossesse-2025'] });
+    if (f.has('liquorice')) push({ id: 'p_liquorice', level: 'avoid', title: tr('l4.sf.f.liquorice.t'), explanation: tr('l4.sf.f.p_liquorice.e'), sourceIds: ['anses-reglisse-2025'] });
     if (f.has('liver')) {
-      push({ id: 'p_liver', level: 'professional', title: 'Foie (très riche en vitamine A)', explanation: 'Demandez conseil à votre sage-femme ou votre médecin sur la consommation de foie pendant la grossesse.', sourceIds: ['lecrat'] });
-      askProfessional ??= 'Parlez de cet aliment à votre sage-femme ou à votre médecin.';
+      push({ id: 'p_liver', level: 'professional', title: tr('l4.sf.f.p_liver.t'), explanation: tr('l4.sf.f.p_liver.e'), sourceIds: ['lecrat'] });
+      askProfessional ??= tr('l4.sf.ask.liver');
     }
     if (f.has('caffeine')) {
-      push({ id: 'p_caffeine', level: 'professional', title: 'Contient de la caféine', explanation: 'Limitez la caféine pendant la grossesse ; demandez à votre sage-femme ou votre médecin la quantité adaptée.', sourceIds: ['lecrat'] });
+      push({ id: 'p_caffeine', level: 'professional', title: tr('l4.sf.f.caffeine.t'), explanation: tr('l4.sf.f.p_caffeine.e'), sourceIds: ['lecrat'] });
     }
-    if (f.has('raw_veg_herbs')) push({ id: 'p_wash', level: 'precaution', title: 'Crudités et herbes fraîches', explanation: 'Lavez soigneusement légumes et herbes pour retirer la terre (toxoplasmose).', sourceIds: ['spf-grossesse-2025'] });
+    if (f.has('raw_veg_herbs')) push({ id: 'p_wash', level: 'precaution', title: tr('l4.sf.f.p_wash.t'), explanation: tr('l4.sf.f.p_wash.e'), sourceIds: ['spf-grossesse-2025'] });
     if ((f.has('meat') || f.has('fish') || f.has('egg')) && !f.has('raw_meat') && !f.has('raw_fish') && !f.has('smoked_fish') && !f.has('raw_egg_dish')) {
-      if (answers.cooking === 'raw' || answers.cooking === 'undercooked') push({ id: 'p_cook', level: 'prepare', title: 'À cuire à cœur', explanation: 'Viande, volaille, poisson et œufs sont acceptés s’ils sont bien cuits ; évitez-les crus ou peu cuits.', sourceIds: ['spf-grossesse-2025'] });
-      else if (unknown(answers.cooking)) need('cooking', 'Cuisson (bien cuit, peu cuit ou cru)');
+      if (answers.cooking === 'raw' || answers.cooking === 'undercooked') push({ id: 'p_cook', level: 'prepare', title: tr('l4.sf.f.cook.t'), explanation: tr('l4.sf.f.p_cook.e'), sourceIds: ['spf-grossesse-2025'] });
+      else if (unknown(answers.cooking)) need('cooking', tr('l4.sf.miss.cooking'));
     }
   }
 
   // ================================================================ allaitement
   if (breastfeeding) {
-    if (f.has('alcohol')) push({ id: 'b_alcohol', level: 'avoid', title: 'Contient de l’alcool', explanation: 'L’alcool passe dans le lait maternel : il est recommandé de ne pas en consommer pendant l’allaitement.', sourceIds: ['sante-alcool'] });
-    if (f.has('liquorice')) push({ id: 'b_liquorice', level: 'avoid', title: 'Contient de la réglisse', explanation: 'L’Anses recommande de déconseiller la réglisse sous toutes ses formes aux femmes enceintes et allaitantes.', sourceIds: ['anses-reglisse-2025'] });
-    if (f.has('fish_avoid_mercury')) push({ id: 'b_mercury', level: 'avoid', title: 'Grand poisson prédateur (espadon, marlin, siki, requin, lamproie)', explanation: 'À éviter pendant l’allaitement (méthylmercure).', sourceIds: ['anses-mercure-2024'] });
-    else if (f.has('fish_limit_mercury')) push({ id: 'b_mercury_limit', level: 'precaution', title: 'Poisson prédateur sauvage', explanation: 'À limiter pendant l’allaitement (méthylmercure).', sourceIds: ['anses-mercure-2024'] });
-    if (f.has('caffeine')) push({ id: 'b_caffeine', level: 'professional', title: 'Contient de la caféine', explanation: 'La caféine passe dans le lait : demandez à votre sage-femme ou votre médecin la quantité adaptée.', sourceIds: ['lecrat'] });
+    if (f.has('alcohol')) push({ id: 'b_alcohol', level: 'avoid', title: tr('l4.sf.f.alcohol.t'), explanation: tr('l4.sf.f.b_alcohol.e'), sourceIds: ['sante-alcool'] });
+    if (f.has('liquorice')) push({ id: 'b_liquorice', level: 'avoid', title: tr('l4.sf.f.liquorice.t'), explanation: tr('l4.sf.f.b_liquorice.e'), sourceIds: ['anses-reglisse-2025'] });
+    if (f.has('fish_avoid_mercury')) push({ id: 'b_mercury', level: 'avoid', title: tr('l4.sf.f.mercury_avoid.t'), explanation: tr('l4.sf.f.b_mercury.e'), sourceIds: ['anses-mercure-2024'] });
+    else if (f.has('fish_limit_mercury')) push({ id: 'b_mercury_limit', level: 'precaution', title: tr('l4.sf.f.wild_predator.t'), explanation: tr('l4.sf.f.b_mercury_limit.e'), sourceIds: ['anses-mercure-2024'] });
+    if (f.has('caffeine')) push({ id: 'b_caffeine', level: 'professional', title: tr('l4.sf.f.caffeine.t'), explanation: tr('l4.sf.f.b_caffeine.e'), sourceIds: ['lecrat'] });
   }
 
   // ================================================================ bébé et enfant
   if (child && age != null) {
     if (f.has('infant_formula')) {
-      push({ id: 'c_formula', level: 'professional', title: 'Lait infantile', explanation: 'Le choix et la préparation du lait infantile se discutent avec le médecin ou la sage-femme ; respectez l’âge indiqué et les doses de l’emballage.', sourceIds: ['spf-pas-a-pas'] });
-      askProfessional ??= 'Demandez conseil au médecin ou à la sage-femme qui suit votre bébé.';
+      push({ id: 'c_formula', level: 'professional', title: tr('l4.sf.f.c_formula.t'), explanation: tr('l4.sf.f.c_formula.e'), sourceIds: ['spf-pas-a-pas'] });
+      askProfessional ??= tr('l4.sf.ask.formula');
     } else if (age < 4) {
-      push({ id: 'c_too_young', level: 'avoid', title: 'Avant 4 mois : lait uniquement', explanation: 'La diversification alimentaire ne commence pas avant 4 mois révolus ; parlez-en au médecin qui suit votre bébé.', sourceIds: ['spf-pas-a-pas'] });
+      push({ id: 'c_too_young', level: 'avoid', title: tr('l4.sf.f.c_too_young.t'), explanation: tr('l4.sf.f.c_too_young.e'), sourceIds: ['spf-pas-a-pas'] });
     } else if (age < 7 && answers.diversification === 'not_started') {
-      push({ id: 'c_div', level: 'professional', title: 'Diversification pas encore commencée', explanation: 'Les premiers aliments s’introduisent entre 4 et 6 mois révolus : demandez au médecin quand commencer.', sourceIds: ['spf-pas-a-pas'] });
-      askProfessional ??= 'Demandez au médecin qui suit votre bébé quand commencer la diversification.';
+      push({ id: 'c_div', level: 'professional', title: tr('l4.sf.f.c_div.t'), explanation: tr('l4.sf.f.c_div.e'), sourceIds: ['spf-pas-a-pas'] });
+      askProfessional ??= tr('l4.sf.ask.div');
     }
-    if (f.has('honey') && age < 12) push({ id: 'c_honey', level: 'avoid', title: 'Contient du miel', explanation: 'Pas de miel avant 1 an (risque de botulisme infantile), même en petite quantité.', sourceIds: ['anses-miel-2010'] });
+    if (f.has('honey') && age < 12) push({ id: 'c_honey', level: 'avoid', title: tr('l4.sf.f.c_honey.t'), explanation: tr('l4.sf.f.c_honey.e'), sourceIds: ['anses-miel-2010'] });
     const rawMilkCheese = (f.has('raw_milk') || answers.milk === 'raw') && !f.has('cheese_hard_cooked');
-    if (rawMilkCheese && age < 60) push({ id: 'c_raw_milk', level: 'avoid', title: 'Produit au lait cru', explanation: 'L’Anses recommande que les jeunes enfants évitent les fromages au lait cru (sauf pâtes pressées cuites comme le comté) ; l’application retient l’âge de 5 ans par prudence.', sourceIds: ['anses-lait-cru-2022'] });
-    else if ((f.has('cheese') && !f.has('cheese_hard_cooked') && !f.has('raw_milk')) && unknown(answers.milk) && age < 60) need('milk', 'Lait cru ou pasteurisé');
-    if (f.has('alcohol')) push({ id: 'c_alcohol', level: 'avoid', title: 'Contient de l’alcool', explanation: 'Aucun alcool pour les enfants, y compris dans les desserts ou sauces non cuits.', sourceIds: ['spf-pas-a-pas'] });
-    if (f.has('caffeine')) push({ id: 'c_caffeine', level: age < 36 ? 'avoid' : 'precaution', title: 'Contient de la caféine (café, thé, cola, boisson énergisante)', explanation: 'Ces boissons ne sont pas adaptées aux jeunes enfants.', sourceIds: ['spf-pas-a-pas'] });
-    if (f.has('fish_avoid_mercury') && age < 36) push({ id: 'c_mercury', level: 'avoid', title: 'Grand poisson prédateur (espadon, marlin, siki, requin, lamproie)', explanation: 'À éviter chez l’enfant de moins de 3 ans (méthylmercure).', sourceIds: ['anses-mercure-2024'] });
-    else if (f.has('fish_limit_mercury') && age < 36) push({ id: 'c_mercury_limit', level: 'precaution', title: 'Poisson prédateur sauvage', explanation: 'À limiter chez l’enfant de moins de 3 ans (méthylmercure) ; variez les espèces.', sourceIds: ['anses-mercure-2024'] });
-    if ((f.has('raw_fish') || f.has('raw_shellfish') || f.has('smoked_fish')) && age < 60) push({ id: 'c_raw_fish', level: 'avoid', title: 'Poisson ou coquillages crus ou fumés', explanation: 'Les produits de la mer crus ne sont pas adaptés aux jeunes enfants ; proposez du poisson bien cuit.', sourceIds: ['spf-pas-a-pas'] });
-    if (f.has('raw_meat') && age < 60) push({ id: 'c_raw_meat', level: 'prepare', title: 'Viande crue', explanation: 'Pour un jeune enfant, la viande doit être bien cuite à cœur.', sourceIds: ['spf-pas-a-pas'] });
+    if (rawMilkCheese && age < 60) push({ id: 'c_raw_milk', level: 'avoid', title: tr('l4.sf.f.raw_milk.t'), explanation: tr('l4.sf.f.c_raw_milk.e'), sourceIds: ['anses-lait-cru-2022'] });
+    else if ((f.has('cheese') && !f.has('cheese_hard_cooked') && !f.has('raw_milk')) && unknown(answers.milk) && age < 60) need('milk', tr('l4.sf.miss.milk'));
+    if (f.has('alcohol')) push({ id: 'c_alcohol', level: 'avoid', title: tr('l4.sf.f.alcohol.t'), explanation: tr('l4.sf.f.c_alcohol.e'), sourceIds: ['spf-pas-a-pas'] });
+    if (f.has('caffeine')) push({ id: 'c_caffeine', level: age < 36 ? 'avoid' : 'precaution', title: tr('l4.sf.f.c_caffeine.t'), explanation: tr('l4.sf.f.c_caffeine.e'), sourceIds: ['spf-pas-a-pas'] });
+    if (f.has('fish_avoid_mercury') && age < 36) push({ id: 'c_mercury', level: 'avoid', title: tr('l4.sf.f.mercury_avoid.t'), explanation: tr('l4.sf.f.c_mercury.e'), sourceIds: ['anses-mercure-2024'] });
+    else if (f.has('fish_limit_mercury') && age < 36) push({ id: 'c_mercury_limit', level: 'precaution', title: tr('l4.sf.f.wild_predator.t'), explanation: tr('l4.sf.f.c_mercury_limit.e'), sourceIds: ['anses-mercure-2024'] });
+    if ((f.has('raw_fish') || f.has('raw_shellfish') || f.has('smoked_fish')) && age < 60) push({ id: 'c_raw_fish', level: 'avoid', title: tr('l4.sf.f.c_raw_fish.t'), explanation: tr('l4.sf.f.c_raw_fish.e'), sourceIds: ['spf-pas-a-pas'] });
+    if (f.has('raw_meat') && age < 60) push({ id: 'c_raw_meat', level: 'prepare', title: tr('l4.sf.f.c_raw_meat.t'), explanation: tr('l4.sf.f.c_raw_meat.e'), sourceIds: ['spf-pas-a-pas'] });
     if ((f.has('meat') || f.has('fish') || f.has('egg') || f.has('charcuterie_cook')) && !f.has('raw_meat') && !f.has('raw_fish') && !f.has('smoked_fish')) {
-      if (answers.cooking === 'raw' || answers.cooking === 'undercooked') push({ id: 'c_cook', level: 'prepare', title: 'À cuire à cœur', explanation: 'Viande, poisson et œufs bien cuits pour les jeunes enfants.', sourceIds: ['spf-pas-a-pas'] });
-      else if (unknown(answers.cooking)) need('cooking', 'Cuisson (bien cuit, peu cuit ou cru)');
+      if (answers.cooking === 'raw' || answers.cooking === 'undercooked') push({ id: 'c_cook', level: 'prepare', title: tr('l4.sf.f.cook.t'), explanation: tr('l4.sf.f.c_cook.e'), sourceIds: ['spf-pas-a-pas'] });
+      else if (unknown(answers.cooking)) need('cooking', tr('l4.sf.miss.cooking'));
     }
     if (f.has('raw_egg_dish') && age < 60) {
-      if (answers.origin === 'homemade' || unknown(answers.origin)) push({ id: 'c_raw_egg', level: 'avoid', title: 'Préparation à base d’œufs crus', explanation: 'Les préparations à base d’œufs crus ou peu cuits ne sont pas adaptées aux jeunes enfants.', sourceIds: ['spf-pas-a-pas'] });
+      if (answers.origin === 'homemade' || unknown(answers.origin)) push({ id: 'c_raw_egg', level: 'avoid', title: tr('l4.sf.f.c_raw_egg.t'), explanation: tr('l4.sf.f.c_raw_egg.e'), sourceIds: ['spf-pas-a-pas'] });
     }
-    if ((f.has('charcuterie_dry') || f.has('charcuterie_cold')) && age < 36) push({ id: 'c_charcuterie', level: 'precaution', title: 'Charcuterie', explanation: 'Produit gras et salé : à éviter ou limiter chez le jeune enfant.', sourceIds: ['spf-pas-a-pas'] });
+    if ((f.has('charcuterie_dry') || f.has('charcuterie_cold')) && age < 36) push({ id: 'c_charcuterie', level: 'precaution', title: tr('l4.sf.f.c_charcuterie.t'), explanation: tr('l4.sf.f.c_charcuterie.e'), sourceIds: ['spf-pas-a-pas'] });
 
     // Étouffement
     if (age < 48) {
-      if (f.has('popcorn') || f.has('hard_candy')) push({ id: 'c_choke_avoid', level: 'avoid', title: f.has('popcorn') ? 'Pop-corn' : 'Bonbon dur', explanation: 'Risque d’étouffement chez le jeune enfant ; l’application retient l’âge de 4 ans par prudence.', sourceIds: ['spf-pas-a-pas'] });
+      if (f.has('popcorn') || f.has('hard_candy')) push({ id: 'c_choke_avoid', level: 'avoid', title: f.has('popcorn') ? tr('l4.sf.f.popcorn') : tr('l4.sf.f.hard_candy'), explanation: tr('l4.sf.f.c_choke_avoid.e'), sourceIds: ['spf-pas-a-pas'] });
       const roundOrHard = (['whole_nuts', 'grapes', 'cherry_tomato', 'olives', 'sausage_round', 'hard_raw_veg'] as Facet[]).filter((x) => f.has(x));
       if (roundOrHard.length) {
         if (answers.cut === 'whole' || (f.has('whole_nuts') && answers.cut !== 'crushed')) {
           push({
-            id: 'c_choke', level: f.has('whole_nuts') && answers.cut === 'whole' ? 'avoid' : 'prepare', title: f.has('whole_nuts') ? 'Fruits à coque entiers' : 'Aliment rond ou dur à couper',
+            id: 'c_choke', level: f.has('whole_nuts') && answers.cut === 'whole' ? 'avoid' : 'prepare', title: f.has('whole_nuts') ? tr('l4.sf.f.c_choke.t1') : tr('l4.sf.f.c_choke.t2'),
             explanation: f.has('whole_nuts')
-              ? 'Les fruits à coque entiers (cacahuètes, noix, noisettes…) présentent un risque d’étouffement chez le jeune enfant : proposez-les uniquement en poudre ou en purée lisse.'
-              : 'Raisins, tomates cerises, olives, saucisses : coupez-les en quatre dans la longueur ; râpez ou cuisez les légumes durs.',
+              ? tr('l4.sf.f.c_choke.e1')
+              : tr('l4.sf.f.c_choke.e2'),
             sourceIds: ['spf-pas-a-pas'],
           });
-        } else if (unknown(answers.cut)) need('cut', 'Forme proposée (entier, coupé, mixé)');
+        } else if (unknown(answers.cut)) need('cut', tr('l4.sf.miss.cut'));
       }
     }
     // Texture
-    if (age < 8 && (answers.texture === 'pieces' || answers.texture === 'whole')) push({ id: 'c_texture', level: 'prepare', title: 'Texture à adapter', explanation: 'Au début de la diversification, proposez des textures lisses puis écrasées ; les morceaux viennent progressivement.', sourceIds: ['spf-pas-a-pas'] });
+    if (age < 8 && (answers.texture === 'pieces' || answers.texture === 'whole')) push({ id: 'c_texture', level: 'prepare', title: tr('l4.sf.f.c_texture.t'), explanation: tr('l4.sf.f.c_texture.e'), sourceIds: ['spf-pas-a-pas'] });
     // Sel, sucre, édulcorants
     const salt = input.nutrition?.salt_g_100g ?? null;
-    if (age < 12 && (f.has('added_salt') || (salt != null && salt >= 0.25))) push({ id: 'c_salt', level: 'precaution', title: salt != null ? `Contient du sel (${salt} g pour 100 g)` : 'Contient du sel ajouté', explanation: 'Pas de sel ajouté avant 1 an ; ensuite, peu de sel.', sourceIds: ['spf-pas-a-pas'] });
-    if (age < 12 && f.has('added_sugar')) push({ id: 'c_sugar', level: 'precaution', title: 'Contient du sucre ajouté', explanation: 'Pas de sucre ajouté avant 1 an ; ensuite, à limiter.', sourceIds: ['spf-pas-a-pas'] });
-    if (f.has('sweeteners') && age < 36) push({ id: 'c_sweeteners', level: 'precaution', title: 'Contient des édulcorants', explanation: 'Les produits édulcorés ne sont pas destinés aux jeunes enfants.', sourceIds: ['spf-pas-a-pas'] });
+    if (age < 12 && (f.has('added_salt') || (salt != null && salt >= 0.25))) push({ id: 'c_salt', level: 'precaution', title: salt != null ? tr('l4.sf.f.c_salt.t1', { salt: String(salt) }) : tr('l4.sf.f.c_salt.t2'), explanation: tr('l4.sf.f.c_salt.e'), sourceIds: ['spf-pas-a-pas'] });
+    if (age < 12 && f.has('added_sugar')) push({ id: 'c_sugar', level: 'precaution', title: tr('l4.sf.f.c_sugar.t'), explanation: tr('l4.sf.f.c_sugar.e'), sourceIds: ['spf-pas-a-pas'] });
+    if (f.has('sweeteners') && age < 36) push({ id: 'c_sweeteners', level: 'precaution', title: tr('l4.sf.f.c_sweeteners.t'), explanation: tr('l4.sf.f.c_sweeteners.e'), sourceIds: ['spf-pas-a-pas'] });
   }
 
   // ================================================================ conservation (tous profils)
   if (f.has('perishable')) {
     if (answers.storage === 'room') {
-      push({ id: 'storage_room', level: 'precaution', title: 'Conservé à température ambiante', explanation: 'Les produits frais se conservent au réfrigérateur (4 °C) ; les restes se réchauffent et se consomment aussitôt. En cas de doute sur la durée hors du froid, ne le consommez pas.', sourceIds: ['mpedia-listeriose-2025'] });
-      if (pregnant || child) lower('medium', 'Chaîne du froid incertaine.');
+      push({ id: 'storage_room', level: 'precaution', title: tr('l4.sf.f.storage_room.t'), explanation: tr('l4.sf.f.storage_room.e'), sourceIds: ['mpedia-listeriose-2025'] });
+      if (pregnant || child) lower('medium', tr('l4.sf.cr.cold_chain'));
     }
     if (answers.openedDaysAgo != null && answers.openedDaysAgo > 3) {
-      push({ id: 'opened', level: 'precaution', title: `Ouvert depuis ${answers.openedDaysAgo} jours`, explanation: 'Respectez la date limite et la mention « à consommer dans les … jours après ouverture » de l’emballage.', sourceIds: ['mpedia-listeriose-2025'] });
+      push({ id: 'opened', level: 'precaution', title: tr('l4.sf.f.opened.t', { count: answers.openedDaysAgo }), explanation: tr('l4.sf.f.opened.e'), sourceIds: ['mpedia-listeriose-2025'] });
     }
-    if (unknown(answers.storage) && (pregnant || child)) missing.push('Conditions de conservation');
+    if (unknown(answers.storage) && (pregnant || child)) missing.push(tr('l4.sf.miss.storage'));
   }
 
   // -- Informations manquantes ⇒ impossible à confirmer (pour les questions décisives)
   if (unanswered.length) {
-    impossible ??= `Il manque une information décisive : ${missing.filter((m) => m).slice(0, 2).join(', ')}. Une photo seule ne permet pas de la vérifier.`;
-    lower('low', 'Question décisive sans réponse.');
+    impossible ??= tr('l4.sf.imp.missing', { list: missing.filter((m) => m).slice(0, 2).join(', ') });
+    lower('low', tr('l4.sf.cr.unanswered'));
   }
-  if (!input.ingredientsText && input.identity.barcode) missing.push('Liste des ingrédients');
+  if (!input.ingredientsText && input.identity.barcode) missing.push(tr('l4.sf.miss.ingredients'));
 
   // -- Verdict
   const sorted = sortFindings(findings);
@@ -458,7 +465,7 @@ export function analyzeFood(input: FoodInput, profile: ScanProfile, answers: Foo
   if (!input.identity.confirmed || !input.identity.name) {
     // Sans confirmation de l'aliment, aucune conclusion (les rappels éventuels restent affichés)
     verdict = 'Impossible à confirmer';
-    verdictReason = impossible ?? 'L’aliment n’a pas été confirmé.';
+    verdictReason = impossible ?? tr('l4.sf.vr.unconfirmed');
     certainty = 'low';
   } else if (avoid) {
     verdict = 'À éviter pour ce profil selon la source indiquée';
@@ -475,7 +482,7 @@ export function analyzeFood(input: FoodInput, profile: ScanProfile, answers: Foo
     verdictReason = sorted.filter((x) => x.level === 'precaution' || x.level === 'professional').map((x) => x.title).join(' · ');
   } else {
     verdict = 'Adapté selon les informations disponibles';
-    verdictReason = 'Aucune des règles suivies par l’application ne s’applique à cet aliment pour ce profil, d’après les informations disponibles.';
+    verdictReason = tr('l4.sf.vr.ok');
   }
 
   return {

@@ -4,6 +4,7 @@
  * recettes qui utilisent les aliments déjà goûtés, sécurité après une réaction (jamais de diagnostic), étapes par
  * tranche d'âge (repères généraux) et résumé factuel pour un rendez-vous.
  */
+import { t as tr } from '@/i18n';
 import { FOODS, FOOD_BY_KEY, FOOD_CATEGORIES, type FoodCategory, type FoodDef } from '@/content/discoveries/foods';
 import { AGE_BANDS, STEPS, STEP_BY_KEY, type StepCategory, type StepDef, type StepStatus } from '@/content/discoveries/steps';
 import type { Recipe } from '@/lib/recipes/types';
@@ -170,12 +171,12 @@ export const FORBIDDEN_GROW = [/en retard/i, /retard/i, /échec/i, /\d+\s*(sur|\
  * Les étapes « je ne souhaite pas la suivre » ne figurent pas.
  */
 export function factualSummary(name: string, ageMonths: number, rows: ChildStep[], questions: string[]): string[] {
-  const lines = [`${name}, ${ageMonths} mois — notes du parent (repères généraux, sans interprétation).`];
-  const label: Record<StepStatus, string> = { observed: 'observée', in_progress: 'en cours d’acquisition', not_yet: 'pas encore observée', not_tracked: '' };
+  const lines = [tr('l3.disc.head', { name, age: ageMonths })];
+  const label: Record<StepStatus, string> = { observed: tr('l3.disc.observed'), in_progress: tr('l3.disc.in_progress'), not_yet: tr('l3.disc.not_yet'), not_tracked: '' };
   for (const r of [...rows].filter((x) => x.status !== 'not_tracked').sort((a, b) => a.step_key.localeCompare(b.step_key))) {
     const s = STEP_BY_KEY[r.step_key];
     if (!s) continue;
-    lines.push(`• ${s.title} : ${label[r.status]}${r.observed_on ? ` (le ${r.observed_on.split('-').reverse().join('/')})` : ''}${r.note ? ` — « ${r.note} »` : ''}`);
+    lines.push(`${tr('l3.disc.line', { title: s.title, status: label[r.status] })}${r.observed_on ? tr('l3.disc.on_date', { date: r.observed_on.split('-').reverse().join('/') }) : ''}${r.note ? tr('l3.disc.note', { note: r.note }) : ''}`);
   }
   for (const q of questions) lines.push(`? ${q}`);
   return lines;

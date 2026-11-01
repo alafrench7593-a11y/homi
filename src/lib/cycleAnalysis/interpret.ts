@@ -3,6 +3,8 @@
  * Le résultat est toujours soumis à la confirmation de l'utilisatrice et accompagné d'un niveau de confiance.
  * L'application n'annonce jamais « Vous êtes enceinte » ni une ovulation certaine.
  */
+import { onLocaleChange, t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 import { findRule, type TestFormat, type TestKind, type TestRule } from './brands';
 import { scanLines, type LineScan } from './lines';
 import { assessQuality, QUALITY_MESSAGES, type QualityReport } from './quality';
@@ -14,7 +16,7 @@ export type TestOutcome = OvulationOutcome | PregnancyOutcome;
 export type AnalysisMethod = 'on_device_lines' | 'on_device_ocr' | 'manual';
 export type ReadWindowAnswer = 'yes' | 'no' | 'unknown';
 
-export const OUTCOME_LABEL: Record<TestOutcome, string> = {
+const OUTCOME_LABEL_FR: Record<TestOutcome, string> = {
   lh_peak_possible: 'Pic de LH possible',
   lh_peak_not_detected: 'Pic de LH non détecté',
   possibly_positive: 'Résultat possiblement positif',
@@ -23,17 +25,30 @@ export const OUTCOME_LABEL: Record<TestOutcome, string> = {
   uncertain: 'Résultat incertain',
   unusable: 'Photo inexploitable',
 };
+const OUTCOME_LABEL_EN: Record<TestOutcome, string> = {
+  lh_peak_possible: 'Possible LH surge',
+  lh_peak_not_detected: 'LH surge not detected',
+  possibly_positive: 'Possibly positive result',
+  possibly_negative: 'Possibly negative result',
+  invalid: 'Invalid test',
+  uncertain: 'Uncertain result',
+  unusable: 'Photo can’t be used',
+};
+export const OUTCOME_LABEL: Record<TestOutcome, string> = localized(OUTCOME_LABEL_FR, OUTCOME_LABEL_EN);
 
-export const OVULATION_REMINDER =
-  'Un test d’ovulation détecte une variation hormonale (la hausse de LH). Il ne prouve pas à lui seul que l’ovulation a réellement eu lieu.';
-export const PREGNANCY_POSITIVE_MESSAGE =
-  'Le test semble positif d’après cette photo. Vérifiez le résultat avec la notice du fabricant. En cas de doute, refaites un test au moment recommandé ou demandez conseil à un professionnel.';
-export const LATE_MESSAGE =
-  'La photo a été prise après le délai de lecture indiqué par le fabricant : le résultat n’est pas fiable, une ligne d’évaporation peut apparaître. Refaites un test si besoin.';
-export const EARLY_MESSAGE =
-  'La photo a été prise avant le délai de lecture indiqué par le fabricant : le résultat peut encore évoluer. Attendez le délai de la notice, puis reprenez une photo.';
-export const UNKNOWN_TEST_MESSAGE =
-  'Ce test ne fait pas partie de la liste des tests compatibles : l’application ne connaît pas les règles de son fabricant et ne propose donc pas de résultat. Lisez-le selon sa notice.';
+// Messages affichés tels quels par les écrans : relus à chaque changement de langue.
+export let OVULATION_REMINDER = tr('l8.int.reminder');
+export let PREGNANCY_POSITIVE_MESSAGE = tr('l8.int.pregPositive');
+export let LATE_MESSAGE = tr('l8.int.late');
+export let EARLY_MESSAGE = tr('l8.int.early');
+export let UNKNOWN_TEST_MESSAGE = tr('l8.int.unknownTest');
+onLocaleChange(() => {
+  OVULATION_REMINDER = tr('l8.int.reminder');
+  PREGNANCY_POSITIVE_MESSAGE = tr('l8.int.pregPositive');
+  LATE_MESSAGE = tr('l8.int.late');
+  EARLY_MESSAGE = tr('l8.int.early');
+  UNKNOWN_TEST_MESSAGE = tr('l8.int.unknownTest');
+});
 
 export interface TestContext {
   kind: TestKind;
@@ -55,7 +70,7 @@ export interface TestAnalysis {
   scan: LineScan | null;
   /** Codes techniques (pour les tests et l'affichage du détail). */
   reasons: string[];
-  /** Messages en français à afficher. */
+  /** Messages à afficher (dans la langue en cours). */
   messages: string[];
   /** Toujours vrai : le résultat doit être confirmé par l'utilisatrice. */
   needsConfirmation: true;
@@ -67,8 +82,8 @@ export interface TestAnalysis {
  */
 export const MAX_CONFIDENCE_UNTIL_VALIDATED = 0.74;
 
-export function confidenceLabel(c: number): 'faible' | 'moyen' | 'élevé' {
-  return c >= 0.75 ? 'élevé' : c >= 0.5 ? 'moyen' : 'faible';
+export function confidenceLabel(c: number): string {
+  return c >= 0.75 ? tr('l8.int.conf.high') : c >= 0.5 ? tr('l8.int.conf.mid') : tr('l8.int.conf.low');
 }
 
 /** Contrôle du délai de lecture : null si le délai est respecté. */
@@ -103,7 +118,7 @@ export function analyseLineTest(img: RGBAImage, c: Px, t: Px, ctx: TestContext, 
   // Cadrage incohérent (points absents, hors image ou trop proches) : aucune interprétation possible.
   const inside = (p: Px) => Number.isFinite(p.x) && Number.isFinite(p.y) && p.x >= 0 && p.y >= 0 && p.x <= img.width && p.y <= img.height;
   if (!inside(c) || !inside(t) || Math.hypot(t.x - c.x, t.y - c.y) < Math.max(12, 0.08 * Math.min(img.width, img.height))) {
-    return finish(ctx.kind, { method: 'on_device_lines', rule, quality: null, scan: null, outcome: 'unusable', confidence: 0, reasons: ['bad_crop'], messages: ['Le cadrage n’est pas exploitable : touchez les deux extrémités de la fenêtre de résultat, côté C puis côté T.'] });
+    return finish(ctx.kind, { method: 'on_device_lines', rule, quality: null, scan: null, outcome: 'unusable', confidence: 0, reasons: ['bad_crop'], messages: [tr('l8.int.badCrop')] });
   }
   const scan = scanLines(img, c, t, bandRatio);
   const quality = assessQuality(img, scan.bandBrightness);
@@ -113,7 +128,7 @@ export function analyseLineTest(img: RGBAImage, c: Px, t: Px, ctx: TestContext, 
 
   // 1. Qualité de la photo
   if (!quality.ok) {
-    return finish(ctx.kind, { ...base, outcome: 'unusable', confidence: 0, reasons: quality.issues.map((i) => `quality:${i}`), messages: [...quality.issues.map((i) => QUALITY_MESSAGES[i]), 'L’application ne propose pas de résultat à partir de cette photo.'] });
+    return finish(ctx.kind, { ...base, outcome: 'unusable', confidence: 0, reasons: quality.issues.map((i) => `quality:${i}`), messages: [...quality.issues.map((i) => QUALITY_MESSAGES[i]), tr('l8.int.noPhotoResult')] });
   }
   // 2. Test non répertorié : pas de règle de fabricant → pas d'interprétation
   if (!rule || rule.mode !== 'lines_auto') {
@@ -128,32 +143,32 @@ export function analyseLineTest(img: RGBAImage, c: Px, t: Px, ctx: TestContext, 
   if (!scan.control) {
     return finish(ctx.kind, {
       ...base, outcome: 'invalid', confidence: Math.min(0.7, 0.4 + 0.3 * quality.score), reasons: ['no_control_line'],
-      messages: ['Aucune ligne de contrôle n’a été détectée : selon la notice, le test est invalide et doit être refait avec un nouveau test. Vérifiez aussi le cadrage (extrémité C au bon endroit).'],
+      messages: [tr('l8.int.noControl')],
     });
   }
   const timingFactor = ctx.withinReadWindow === 'unknown' && ctx.minutesElapsed == null ? 0.75 : 1;
   const controlFactor = Math.min(1, scan.control.snr / 12);
   const baseConf = quality.score * (0.5 + 0.5 * controlFactor) * timingFactor;
   const extra: string[] = [];
-  if (timingFactor < 1) extra.push('Le délai entre le test et la photo n’est pas connu : la confiance est réduite.');
+  if (timingFactor < 1) extra.push(tr('l8.int.timingUnknown'));
 
   const tLine = scan.test;
   const ratio = scan.ratio ?? 0;
 
   // 5a. Ovulation : la ligne de test doit être aussi foncée ou plus foncée que le contrôle
   if (rule.positiveRule === 'test_ge_control') {
-    if (!tLine) return finish(ctx.kind, { ...base, outcome: neg, confidence: baseConf * 0.95, reasons: ['no_test_line'], messages: ['Seule la ligne de contrôle a été détectée.', ...extra] });
-    if (ratio >= 1.05) return finish(ctx.kind, { ...base, outcome: pos, confidence: baseConf * Math.min(1, 0.6 + (ratio - 1.05) * 2), reasons: ['test_ge_control'], messages: ['La ligne de test semble aussi foncée ou plus foncée que la ligne de contrôle.', ...extra] });
-    if (ratio >= 0.85) return finish(ctx.kind, { ...base, outcome: 'uncertain', confidence: 0.35, reasons: ['test_close_to_control'], messages: ['La ligne de test a une intensité proche de celle du contrôle : la photo ne permet pas de trancher. Comparez les deux lignes à l’œil selon la notice.', ...extra] });
-    return finish(ctx.kind, { ...base, outcome: neg, confidence: baseConf * Math.min(1, 0.6 + (0.85 - ratio)), reasons: ['test_lighter_than_control'], messages: ['La ligne de test semble plus claire que la ligne de contrôle.', ...extra] });
+    if (!tLine) return finish(ctx.kind, { ...base, outcome: neg, confidence: baseConf * 0.95, reasons: ['no_test_line'], messages: [tr('l8.int.onlyControl'), ...extra] });
+    if (ratio >= 1.05) return finish(ctx.kind, { ...base, outcome: pos, confidence: baseConf * Math.min(1, 0.6 + (ratio - 1.05) * 2), reasons: ['test_ge_control'], messages: [tr('l8.int.testGeControl'), ...extra] });
+    if (ratio >= 0.85) return finish(ctx.kind, { ...base, outcome: 'uncertain', confidence: 0.35, reasons: ['test_close_to_control'], messages: [tr('l8.int.testCloseControl'), ...extra] });
+    return finish(ctx.kind, { ...base, outcome: neg, confidence: baseConf * Math.min(1, 0.6 + (0.85 - ratio)), reasons: ['test_lighter_than_control'], messages: [tr('l8.int.testLighter'), ...extra] });
   }
 
   // 5b. Grossesse : toute ligne de test visible compte, mais une ligne très pâle sur photo reste incertaine
   if (!tLine || ratio < 0.08) {
-    return finish(ctx.kind, { ...base, outcome: neg, confidence: baseConf * 0.9, reasons: ['no_test_line'], messages: ['Aucune ligne de test n’a été détectée sur la photo. Un test fait trop tôt peut être négatif : si vos règles n’arrivent pas, refaites un test quelques jours plus tard.', ...extra] });
+    return finish(ctx.kind, { ...base, outcome: neg, confidence: baseConf * 0.9, reasons: ['no_test_line'], messages: [tr('l8.int.noTestLine'), ...extra] });
   }
   if (tLine.snr < 8 || ratio < 0.2) {
-    return finish(ctx.kind, { ...base, outcome: 'uncertain', confidence: 0.3, reasons: ['faint_test_line'], messages: ['Une ligne de test très pâle semble visible. Sur une photo, une ligne aussi pâle ne peut pas être interprétée de façon fiable : regardez le test lui-même dans le délai de la notice, ou refaites un test dans quelques jours.', ...extra] });
+    return finish(ctx.kind, { ...base, outcome: 'uncertain', confidence: 0.3, reasons: ['faint_test_line'], messages: [tr('l8.int.faintLine'), ...extra] });
   }
   return finish(ctx.kind, { ...base, outcome: pos, confidence: baseConf * Math.min(1, 0.55 + tLine.snr / 40), reasons: ['test_line_visible'], messages: [...extra] });
 }
@@ -171,7 +186,7 @@ export function analyseDigitalText(text: string | null, ctx: TestContext): TestA
   const norm = (text ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
   const has = (list: string[]) => list.some((s) => norm.includes(s.normalize('NFD').replace(/[̀-ͯ]/g, '')));
   if (!norm || norm.length < 3) {
-    return finish(ctx.kind, { ...base, outcome: 'unusable', confidence: 0, reasons: ['ocr_empty'], messages: ['Le texte de l’écran n’a pas pu être lu (photo floue, reflet ou écran éteint). L’application ne devine pas le résultat : lisez l’écran vous-même ou reprenez une photo.'] });
+    return finish(ctx.kind, { ...base, outcome: 'unusable', confidence: 0, reasons: ['ocr_empty'], messages: [tr('l8.int.ocrEmpty')] });
   }
   const neg = rule.screenTexts.negative.some((s) => norm.includes(s));
   const err = has(rule.screenTexts.error.filter((s) => s !== '!')) || /(^|\s)!(\s|$)/.test(norm);
@@ -180,10 +195,10 @@ export function analyseDigitalText(text: string | null, ctx: TestContext): TestA
   if (timing === 'early') {
     return finish(ctx.kind, { ...base, outcome: 'uncertain', confidence: 0.2, reasons: ['read_too_early'], messages: [EARLY_MESSAGE] });
   }
-  if (err) return finish(ctx.kind, { ...base, outcome: 'invalid', confidence: 0.7, reasons: ['screen_error'], messages: ['L’écran semble afficher une erreur : selon la notice, le test n’a pas fonctionné.'] });
-  if (neg) return finish(ctx.kind, { ...base, outcome: ctx.kind === 'ovulation' ? 'lh_peak_not_detected' : 'possibly_negative', confidence: 0.8, reasons: ['screen_negative'], messages: ['Texte lu à l’écran : « Pas Enceinte ».'] });
-  if (pos) return finish(ctx.kind, { ...base, outcome: ctx.kind === 'ovulation' ? 'lh_peak_possible' : 'possibly_positive', confidence: 0.8, reasons: ['screen_positive'], messages: ['Texte lu à l’écran : « Enceinte ».'] });
-  return finish(ctx.kind, { ...base, outcome: 'unusable', confidence: 0, reasons: ['ocr_unrecognised'], messages: ['Le texte lu ne correspond à aucun message connu de ce test. L’application ne devine pas le résultat : lisez l’écran vous-même.'] });
+  if (err) return finish(ctx.kind, { ...base, outcome: 'invalid', confidence: 0.7, reasons: ['screen_error'], messages: [tr('l8.int.screenError')] });
+  if (neg) return finish(ctx.kind, { ...base, outcome: ctx.kind === 'ovulation' ? 'lh_peak_not_detected' : 'possibly_negative', confidence: 0.8, reasons: ['screen_negative'], messages: [tr('l8.int.screenNeg')] });
+  if (pos) return finish(ctx.kind, { ...base, outcome: ctx.kind === 'ovulation' ? 'lh_peak_possible' : 'possibly_positive', confidence: 0.8, reasons: ['screen_positive'], messages: [tr('l8.int.screenPos')] });
+  return finish(ctx.kind, { ...base, outcome: 'unusable', confidence: 0, reasons: ['ocr_unrecognised'], messages: [tr('l8.int.ocrUnrecognised')] });
 }
 
 /** Lecture faite par l'utilisatrice (croix, smiley, ou analyse automatique impossible). */
@@ -193,7 +208,7 @@ export function manualReading(outcome: TestOutcome, ctx: TestContext): TestAnaly
   if (timing && outcome !== 'invalid') {
     return finish(ctx.kind, { method: 'manual', rule, quality: null, scan: null, outcome: 'uncertain', confidence: 0.2, reasons: [`read_too_${timing}`], messages: [timing === 'late' ? LATE_MESSAGE : EARLY_MESSAGE] });
   }
-  return finish(ctx.kind, { method: 'manual', rule, quality: null, scan: null, outcome, confidence: outcome === 'uncertain' ? 0.2 : 0.6, reasons: ['manual_reading'], messages: ['Résultat noté d’après votre lecture du test.'] });
+  return finish(ctx.kind, { method: 'manual', rule, quality: null, scan: null, outcome, confidence: outcome === 'uncertain' ? 0.2 : 0.6, reasons: ['manual_reading'], messages: [tr('l8.int.manual')] });
 }
 
 /** Correspondance avec la colonne « result » historique (résultat confirmé par l'utilisatrice). */

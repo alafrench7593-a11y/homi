@@ -14,17 +14,26 @@ import {
   type Certainty, type DataSourceInfo, type Finding, type RecallCheck, type RecallInfo, type ScanProfile,
 } from './scanCommon';
 import type { ScanSource } from './scanSources';
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 
 export type ProductType =
   | 'cream' | 'oil' | 'wash_gel' | 'shampoo' | 'sunscreen' | 'makeup' | 'stretch_marks' | 'wipes' | 'diapers'
   | 'laundry' | 'household' | 'perfume' | 'baby_care' | 'medicine' | 'essential_oil' | 'supplement' | 'treatment' | 'other';
 
-export const PRODUCT_TYPE_LABEL: Record<ProductType, string> = {
+const PRODUCT_TYPE_LABEL_FR: Record<ProductType, string> = {
   cream: 'Crème', oil: 'Huile de soin', wash_gel: 'Gel lavant', shampoo: 'Shampooing', sunscreen: 'Protection solaire', makeup: 'Maquillage',
   stretch_marks: 'Soin anti-vergetures', wipes: 'Lingettes', diapers: 'Couches', laundry: 'Lessive', household: 'Produit ménager', perfume: 'Parfum',
   baby_care: 'Soin bébé / enfant', medicine: 'Médicament', essential_oil: 'Huile essentielle', supplement: 'Complément alimentaire',
   treatment: 'Produit de traitement (poux, verrues…)', other: 'Autre',
 };
+const PRODUCT_TYPE_LABEL_EN: Record<ProductType, string> = {
+  cream: 'Cream', oil: 'Care oil', wash_gel: 'Wash gel', shampoo: 'Shampoo', sunscreen: 'Sun protection', makeup: 'Make-up',
+  stretch_marks: 'Stretch mark care', wipes: 'Wipes', diapers: 'Nappies', laundry: 'Laundry detergent', household: 'Household product', perfume: 'Perfume',
+  baby_care: 'Baby / child care', medicine: 'Medicine', essential_oil: 'Essential oil', supplement: 'Food supplement',
+  treatment: 'Treatment product (lice, warts…)', other: 'Other',
+};
+export const PRODUCT_TYPE_LABEL: Record<ProductType, string> = localized(PRODUCT_TYPE_LABEL_FR, PRODUCT_TYPE_LABEL_EN);
 
 /** Types pour lesquels l'application ne se prononce pas : avis d'un professionnel. */
 export const PROFESSIONAL_TYPES: ProductType[] = ['medicine', 'essential_oil', 'supplement', 'treatment'];
@@ -32,21 +41,39 @@ export const PROFESSIONAL_TYPES: ProductType[] = ['medicine', 'essential_oil', '
 export type Exposure = 'rinse_off' | 'leave_on' | 'inhaled' | 'indirect' | 'unknown';
 export type Zone = 'face' | 'body' | 'diaper_area' | 'scalp' | 'lips' | 'hands' | 'air' | 'textiles' | 'surfaces' | 'unknown';
 
-export const EXPOSURE_LABEL: Record<Exposure, string> = {
+const EXPOSURE_LABEL_FR: Record<Exposure, string> = {
   rinse_off: 'Produit rincé', leave_on: 'Produit non rincé (reste sur la peau)', inhaled: 'Exposition par inhalation possible',
   indirect: 'Contact indirect (textiles, surfaces)', unknown: 'Type d’exposition inconnu',
 };
-const EXPOSURE_EXPLANATION: Record<Exposure, string> = {
+const EXPOSURE_EXPLANATION_FR: Record<Exposure, string> = {
   rinse_off: 'Le produit est rincé après application : il reste peu de temps au contact de la peau.',
   leave_on: 'Le produit reste sur la peau : l’exposition est plus longue qu’avec un produit rincé.',
   inhaled: 'Une partie du produit peut être respirée (spray, parfum, diffusion) : aérez et évitez l’usage à proximité du visage d’un enfant.',
   indirect: 'Le contact se fait surtout par les textiles lavés ou les surfaces ; le risque principal vient du produit pur (ingestion accidentelle, projection).',
   unknown: 'L’application ne sait pas si ce produit est rincé, laissé sur la peau ou inhalé : précisez-le pour affiner l’analyse.',
 };
-export const ZONE_LABEL: Record<Zone, string> = {
+const EXPOSURE_LABEL_EN: Record<Exposure, string> = {
+  rinse_off: 'Rinse-off product', leave_on: 'Leave-on product (stays on the skin)', inhaled: 'Possible exposure by inhalation',
+  indirect: 'Indirect contact (textiles, surfaces)', unknown: 'Type of exposure unknown',
+};
+const EXPOSURE_EXPLANATION_EN: Record<Exposure, string> = {
+  rinse_off: 'The product is rinsed off after application: it stays in contact with the skin only briefly.',
+  leave_on: 'The product stays on the skin: exposure is longer than with a rinse-off product.',
+  inhaled: 'Some of the product may be breathed in (spray, perfume, diffusion): ventilate the room and avoid using it near a child’s face.',
+  indirect: 'Contact is mainly through washed textiles or surfaces; the main risk comes from the undiluted product (accidental swallowing, splashing).',
+  unknown: 'The app does not know whether this product is rinsed off, left on the skin or inhaled: specify it to refine the analysis.',
+};
+export const EXPOSURE_LABEL: Record<Exposure, string> = localized(EXPOSURE_LABEL_FR, EXPOSURE_LABEL_EN);
+const EXPOSURE_EXPLANATION: Record<Exposure, string> = localized(EXPOSURE_EXPLANATION_FR, EXPOSURE_EXPLANATION_EN);
+const ZONE_LABEL_FR: Record<Zone, string> = {
   face: 'Visage', body: 'Corps', diaper_area: 'Siège (zone du change)', scalp: 'Cuir chevelu', lips: 'Lèvres', hands: 'Mains',
   air: 'Air ambiant', textiles: 'Textiles', surfaces: 'Surfaces', unknown: 'Zone non précisée',
 };
+const ZONE_LABEL_EN: Record<Zone, string> = {
+  face: 'Face', body: 'Body', diaper_area: 'Nappy area (change zone)', scalp: 'Scalp', lips: 'Lips', hands: 'Hands',
+  air: 'Room air', textiles: 'Textiles', surfaces: 'Surfaces', unknown: 'Area not specified',
+};
+export const ZONE_LABEL: Record<Zone, string> = localized(ZONE_LABEL_FR, ZONE_LABEL_EN);
 
 export function defaultExposure(type: ProductType | null): Exposure {
   switch (type) {
@@ -106,6 +133,12 @@ export const PRODUCT_VERDICTS = [
   'Informations insuffisantes',
 ] as const;
 export type ProductVerdict = (typeof PRODUCT_VERDICTS)[number];
+
+/** Libellé affiché d'un verdict dans la langue en cours (la valeur enregistrée reste le texte français). */
+export function productVerdictLabel(v: string): string {
+  const i = (PRODUCT_VERDICTS as readonly string[]).indexOf(v);
+  return i < 0 ? v : tr(`l4.sp.v.${i}` as 'l4.sp.v.0');
+}
 
 export type IngredientFlag = 'fragrance_allergen' | 'perfume' | 'essential_oil' | 'phenoxyethanol' | 'declared_allergy';
 
@@ -235,34 +268,34 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
 
   // -- Identité
   if (!input.identity.confirmed) {
-    insufficient = 'Le produit n’a pas été confirmé : l’application ne peut pas savoir à quoi s’applique l’analyse.';
-    lower('low', 'Produit non confirmé.');
+    insufficient = tr('l4.sp.imp.unconfirmed');
+    lower('low', tr('l4.sp.cr.unconfirmed'));
   }
-  if (!input.identity.name) missing.push('Nom du produit');
+  if (!input.identity.name) missing.push(tr('l4.sp.miss.name'));
   if (!type) {
-    missing.push('Type de produit (crème, gel lavant, lingettes, lessive…)');
-    lower('medium', 'Type de produit non précisé.');
+    missing.push(tr('l4.sp.miss.type'));
+    lower('medium', tr('l4.sp.cr.type'));
   }
   if (child && age == null) {
-    insufficient ??= 'L’âge exact de l’enfant est nécessaire pour appliquer les règles liées à l’âge.';
-    missing.push('Âge de l’enfant');
-    lower('low', 'Âge inconnu.');
+    insufficient ??= tr('l4.sp.imp.age');
+    missing.push(tr('l4.sp.miss.age'));
+    lower('low', tr('l4.sp.cr.age'));
   }
 
   // -- Données
-  if (input.dataSource.is_demo) lower('low', `${DEMO_LABEL} : ce produit n’est pas une donnée réelle.`);
-  else if (input.dataSource.collaborative) lower('medium', 'Base collaborative : les informations peuvent être incomplètes ou anciennes ; comparez avec l’emballage.');
+  if (input.dataSource.is_demo) lower('low', tr('l4.sp.cr.demo', { label: DEMO_LABEL }));
+  else if (input.dataSource.collaborative) lower('medium', tr('l4.sp.cr.collab'));
 
   // -- Composition
   const parts = splitIngredients(input.ingredientsText);
   if (parts.length === 0) {
-    missing.push('Liste des ingrédients / composition');
+    missing.push(tr('l4.sp.miss.ingredients'));
   } else if (input.ingredientsOrigin === 'manual') {
-    lower('low', 'Liste des ingrédients saisie à la main : une erreur de recopie est possible.');
+    lower('low', tr('l4.sp.cr.manual'));
   } else if (input.ingredientsOrigin === 'ocr_reviewed') {
     const r = input.ocrReadability;
-    if (r != null && r < 0.6) lower('low', 'Liste lue sur photo avec une faible lisibilité, même après relecture.');
-    else lower('medium', 'Liste lue sur photo puis relue : vérifiez-la sur l’emballage.');
+    if (r != null && r < 0.6) lower('low', tr('l4.sp.cr.ocr_low'));
+    else lower('medium', tr('l4.sp.cr.ocr'));
   }
 
   const cosing = input.cosing ?? [];
@@ -284,7 +317,7 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
     };
   });
   const unknownFunctions = ingredients.filter((i) => i.functions == null).length;
-  if (parts.length && unknownFunctions) missing.push(`Fonction de ${unknownFunctions} ingrédient${unknownFunctions > 1 ? 's' : ''} : information non disponible (base CosIng)`);
+  if (parts.length && unknownFunctions) missing.push(tr('l4.sp.miss.cosing', { count: unknownFunctions }));
 
   const fragranceAllergens = [...new Set(parts.map(fragranceAllergensIn).filter((x): x is string => !!x))];
   const perfume: ProductAnalysis['perfume'] = parts.length === 0 ? 'unknown' : ingredients.some((i) => i.flags.includes('perfume')) ? 'present' : 'absent';
@@ -295,47 +328,47 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
   for (const r of input.recalls) {
     if (r.match === 'gtin') {
       findings.push({
-        id: 'recall', level: 'avoid', title: `Rappel officiel en cours : ${r.title}`,
-        explanation: `${r.reason ?? 'Motif non précisé.'}${r.recommended_action ? ` Conduite à tenir : ${r.recommended_action}` : ''} Vérifiez le numéro de lot sur l’emballage.`,
+        id: 'recall', level: 'avoid', title: tr('l4.sp.f.recall.t', { title: r.title }),
+        explanation: `${r.reason ?? tr('l4.sp.recall.noReason')}${r.recommended_action ? ` ${tr('l4.sp.recall.action', { action: r.recommended_action })}` : ''} ${tr('l4.sp.recall.lot')}`,
         sourceIds: ['rappelconso'],
       });
     } else {
       findings.push({
-        id: 'recall_possible', level: 'precaution', title: `Un rappel officiel pourrait concerner ce produit : ${r.title}`,
-        explanation: 'La correspondance repose sur la marque et le nom, pas sur le code-barres : comparez la référence et le lot avec l’avis officiel.',
+        id: 'recall_possible', level: 'precaution', title: tr('l4.sp.f.recall_possible.t', { title: r.title }),
+        explanation: tr('l4.sp.f.recall_possible.e'),
         sourceIds: ['rappelconso'],
       });
-      lower('medium', 'Rappel possible identifié par la marque et le nom uniquement.');
+      lower('medium', tr('l4.sp.cr.recall_possible'));
     }
   }
 
   // -- Médicaments, huiles essentielles, compléments, traitements
   if (type && PROFESSIONAL_TYPES.includes(type)) {
-    askProfessional = 'Pour un médicament, une huile essentielle, un complément alimentaire ou un produit de traitement, demandez conseil à votre pharmacien, à votre sage-femme ou à votre médecin avant utilisation.';
+    askProfessional = tr('l4.sp.ask.professional');
     if (type === 'essential_oil' && (profile.kind === 'pregnant' || child)) {
       findings.push({
-        id: 'eo_product', level: 'avoid', title: 'Huile essentielle : déconseillée aux femmes enceintes et aux enfants selon l’Anses',
-        explanation: 'L’Anses indique que les huiles essentielles sont déconseillées aux femmes enceintes et aux enfants, notamment en raison de substances neurotoxiques ou toxiques pour l’embryon et le fœtus. Elles doivent rester hors de portée des enfants et ne jamais être rangées avec les produits de soin des bébés (risque de confusion).',
+        id: 'eo_product', level: 'avoid', title: tr('l4.sp.f.eo_product.t'),
+        explanation: tr('l4.sp.f.eo_product.e'),
         sourceIds: ['anses-he-2024'],
       });
     } else {
       findings.push({
-        id: 'professional_type', level: 'professional', title: `${PRODUCT_TYPE_LABEL[type]} : avis d’un professionnel nécessaire`,
-        explanation: 'L’application n’évalue pas ce type de produit : la dose, la durée et la situation de santé comptent. Montrez le produit à votre pharmacien, votre sage-femme ou votre médecin.',
+        id: 'professional_type', level: 'professional', title: tr('l4.sp.f.professional_type.t', { type: PRODUCT_TYPE_LABEL[type] }),
+        explanation: tr('l4.sp.f.professional_type.e'),
         sourceIds: profile.kind === 'pregnant' || profile.kind === 'breastfeeding' ? ['lecrat'] : type === 'essential_oil' ? ['anses-he-2024'] : ['lecrat'],
       });
-      insufficient ??= 'Ce type de produit doit être évalué par un professionnel de santé.';
+      insufficient ??= tr('l4.sp.imp.professional');
     }
   } else if (parts.length === 0 && !(type === 'laundry' || type === 'household') ) {
-    insufficient ??= 'La composition de ce produit n’est pas disponible : photographiez ou saisissez la liste des ingrédients.';
+    insufficient ??= tr('l4.sp.imp.nocomposition');
   }
 
   // -- Allergies déclarées
   for (const ing of ingredients.filter((i) => i.flags.includes('declared_allergy'))) {
     const a = allergyMatches(ing.name, allergies) ?? '';
     findings.push({
-      id: `allergy_${norm(a)}`, level: 'avoid', title: `Contient « ${ing.name} », en lien avec l’allergie déclarée « ${a} »`,
-      explanation: 'Correspondance entre la liste des ingrédients (étiquetage obligatoire) et les allergies saisies dans le profil. L’application ne pose aucun diagnostic d’allergie.',
+      id: `allergy_${norm(a)}`, level: 'avoid', title: tr('l4.sp.f.allergy.t', { name: ing.name, allergy: a }),
+      explanation: tr('l4.sp.f.allergy.e'),
       sourceIds: ['eu-1223-2009'],
     });
   }
@@ -344,18 +377,18 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
   if (hasPhenoxy && exposure === 'leave_on' && child && age != null && age <= 36) {
     if (zone === 'diaper_area') {
       findings.push({
-        id: 'phenoxy_diaper', level: 'avoid', title: 'Phénoxyéthanol dans un produit non rincé utilisé sur le siège',
-        explanation: 'L’ANSM a décidé que les produits cosmétiques non rincés contenant du phénoxyéthanol doivent indiquer qu’ils ne peuvent pas être utilisés sur le siège des enfants de 3 ans ou moins (exposition : non rincé, zone du change).',
+        id: 'phenoxy_diaper', level: 'avoid', title: tr('l4.sp.f.phenoxy_diaper.t'),
+        explanation: tr('l4.sp.f.phenoxy_diaper.e'),
         sourceIds: ['ansm-phenoxy-2019'],
       });
-      childInfo.push('Produit non rincé contenant du phénoxyéthanol : ne pas l’utiliser sur le siège (ANSM, 2019).');
+      childInfo.push(tr('l4.sp.child.phenoxy'));
     } else {
       findings.push({
-        id: 'phenoxy_zone', level: 'precaution', title: 'Phénoxyéthanol : ne pas appliquer sur le siège',
-        explanation: `Ce produit non rincé contient du phénoxyéthanol. Selon l’ANSM, ce type de produit ne doit pas être utilisé sur le siège des enfants de 3 ans ou moins. Zone indiquée : ${ZONE_LABEL[zone].toLowerCase()}.`,
+        id: 'phenoxy_zone', level: 'precaution', title: tr('l4.sp.f.phenoxy_zone.t'),
+        explanation: tr('l4.sp.f.phenoxy_zone.e', { zone: ZONE_LABEL[zone].toLowerCase() }),
         sourceIds: ['ansm-phenoxy-2019'],
       });
-      if (zone === 'unknown') missing.push('Zone d’application');
+      if (zone === 'unknown') missing.push(tr('l4.sp.miss.zone'));
     }
   }
 
@@ -363,26 +396,26 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
   if (essentialOils.length && type !== 'essential_oil') {
     if (profile.kind === 'pregnant' || child) {
       findings.push({
-        id: 'eo_ingredient', level: 'precaution', title: `Contient des huiles essentielles (${essentialOils.slice(0, 3).join(', ')}${essentialOils.length > 3 ? '…' : ''})`,
-        explanation: 'L’Anses indique que les huiles essentielles sont déconseillées aux femmes enceintes et aux enfants. Leur concentration dans ce produit n’est pas indiquée : demandez conseil à votre pharmacien, votre sage-femme ou votre médecin avant utilisation.',
+        id: 'eo_ingredient', level: 'precaution', title: tr('l4.sp.f.eo_ingredient.t', { list: essentialOils.slice(0, 3).join(', '), more: essentialOils.length > 3 ? '…' : '' }),
+        explanation: tr('l4.sp.f.eo_ingredient.e'),
         sourceIds: ['anses-he-2024'],
       });
-      askProfessional ??= 'Ce produit contient des huiles essentielles : demandez conseil à votre pharmacien, votre sage-femme ou votre médecin.';
-      missing.push('Concentration des huiles essentielles');
+      askProfessional ??= tr('l4.sp.ask.eo');
+      missing.push(tr('l4.sp.miss.eo'));
     } else if (profile.kind === 'breastfeeding') {
       findings.push({
-        id: 'eo_breastfeeding', level: 'professional', title: 'Contient des huiles essentielles',
-        explanation: 'La source consultée ne traite pas spécifiquement l’allaitement : demandez conseil à votre pharmacien, sage-femme ou médecin, et évitez l’application sur la poitrine.',
+        id: 'eo_breastfeeding', level: 'professional', title: tr('l4.sp.f.eo.t'),
+        explanation: tr('l4.sp.f.eo_breastfeeding.e'),
         sourceIds: ['anses-he-2024'],
       });
-      askProfessional ??= 'Ce produit contient des huiles essentielles : demandez conseil à votre pharmacien, votre sage-femme ou votre médecin.';
+      askProfessional ??= tr('l4.sp.ask.eo');
     } else {
-      findings.push({ id: 'eo_info', level: 'info', title: 'Contient des huiles essentielles', explanation: 'Respectez les conditions d’utilisation indiquées et tenez le produit hors de portée des enfants.', sourceIds: ['anses-he-2024'] });
+      findings.push({ id: 'eo_info', level: 'info', title: tr('l4.sp.f.eo.t'), explanation: tr('l4.sp.f.eo_info.e'), sourceIds: ['anses-he-2024'] });
     }
     if (exposure === 'inhaled') {
       findings.push({
-        id: 'eo_inhaled', level: 'precaution', title: 'Huiles essentielles diffusées ou vaporisées',
-        explanation: 'L’Anses appelle à la vigilance sur les sprays et diffuseurs à base d’huiles essentielles : aérez la pièce et évitez l’exposition des jeunes enfants et des femmes enceintes.',
+        id: 'eo_inhaled', level: 'precaution', title: tr('l4.sp.f.eo_inhaled.t'),
+        explanation: tr('l4.sp.f.eo_inhaled.e'),
         sourceIds: ['anses-diffuseurs'],
       });
     }
@@ -392,17 +425,17 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
   if (perfume === 'present') {
     const leaveOnBaby = child && age != null && age < 36 && exposure === 'leave_on';
     findings.push({
-      id: 'perfume', level: leaveOnBaby ? 'precaution' : 'info', title: 'Contient du parfum',
+      id: 'perfume', level: leaveOnBaby ? 'precaution' : 'info', title: tr('l4.sp.f.perfume.t'),
       explanation: leaveOnBaby
-        ? 'Produit parfumé non rincé appliqué sur la peau d’un jeune enfant : les parfums peuvent contenir des substances allergisantes. En cas de rougeurs ou de peau réactive, arrêtez et demandez conseil.'
-        : 'Le parfum peut contenir des substances allergisantes ; le règlement impose de les signaler au-delà de certains seuils.',
+        ? tr('l4.sp.f.perfume.e1')
+        : tr('l4.sp.f.perfume.e2'),
       sourceIds: ['eu-1223-2009'],
     });
   }
   if (fragranceAllergens.length) {
     findings.push({
-      id: 'fragrance_allergens', level: 'info', title: `Allergènes de parfum déclarés : ${fragranceAllergens.join(', ')}`,
-      explanation: `Substances parfumantes allergisantes listées par la réglementation européenne et signalées sur l’étiquette. Exposition : ${EXPOSURE_LABEL[exposure].toLowerCase()}.`,
+      id: 'fragrance_allergens', level: 'info', title: tr('l4.sp.f.fragrance_allergens.t', { list: fragranceAllergens.join(', ') }),
+      explanation: tr('l4.sp.f.fragrance_allergens.e', { exposure: EXPOSURE_LABEL[exposure].toLowerCase() }),
       sourceIds: ['eu-1223-2009', 'eu-2023-1545'],
     });
   }
@@ -410,7 +443,7 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
   // -- Restrictions réglementaires connues (CosIng importé)
   for (const ing of ingredients.filter((i) => i.restrictions)) {
     findings.push({
-      id: `restriction_${norm(ing.name)}`, level: 'info', title: `${ing.name} : ingrédient encadré par la réglementation`,
+      id: `restriction_${norm(ing.name)}`, level: 'info', title: tr('l4.sp.f.restriction.t', { name: ing.name }),
       explanation: `${ing.restrictions}${ing.functionSource === 'cosing_demo' ? ` (${DEMO_LABEL})` : ''}`,
       sourceIds: ['cosing', 'eu-1223-2009'],
     });
@@ -419,36 +452,36 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
   // -- Lessives et produits ménagers
   if (type === 'laundry' || type === 'household') {
     findings.push({
-      id: 'household', level: 'precaution', title: 'Respectez l’étiquette et rangez hors de portée des enfants',
-      explanation: `Les mélanges classés selon le règlement CLP portent des pictogrammes et des mentions de danger obligatoires : lisez-les avant usage, gardez l’emballage d’origine et rangez le produit hors de portée des enfants.${child ? ' Pour un jeune enfant, le risque principal est l’ingestion ou la projection du produit pur.' : ''}`,
+      id: 'household', level: 'precaution', title: tr('l4.sp.f.household.t'),
+      explanation: `${tr('l4.sp.f.household.e')}${child ? tr('l4.sp.f.household.child') : ''}`,
       sourceIds: ['eu-clp-1272-2008'],
     });
     if (!input.precautionsText) {
-      missing.push('Précautions et pictogrammes de l’emballage');
-      if (parts.length === 0) insufficient ??= 'Ni la composition ni les précautions d’emballage ne sont disponibles.';
+      missing.push(tr('l4.sp.miss.precautions_pack'));
+      if (parts.length === 0) insufficient ??= tr('l4.sp.imp.noprecautions');
     }
   }
 
   // -- Zone et exposition
-  if (exposure === 'unknown') missing.push('Type d’exposition (rincé, non rincé, inhalé)');
+  if (exposure === 'unknown') missing.push(tr('l4.sp.miss.exposure'));
   if (zone === 'unknown' && exposure === 'leave_on') {
-    missing.push('Zone d’application');
-    lower('medium', 'Zone d’application non précisée.');
+    missing.push(tr('l4.sp.miss.zone'));
+    lower('medium', tr('l4.sp.cr.zone'));
   }
-  if (!input.precautionsText && type !== 'laundry' && type !== 'household') missing.push('Précautions d’emploi de l’emballage');
+  if (!input.precautionsText && type !== 'laundry' && type !== 'household') missing.push(tr('l4.sp.miss.precautions'));
 
   // -- Informations grossesse / âge
   if (profile.kind === 'pregnant' || profile.kind === 'breastfeeding') {
     for (const f of findings) if (['eo_product', 'eo_ingredient', 'eo_breastfeeding', 'professional_type', 'eo_inhaled'].includes(f.id)) pregnancyInfo.push(f.title);
     if (!pregnancyInfo.length) {
       pregnancyInfo.push(profile.kind === 'pregnant'
-        ? 'Aucune des règles suivies par l’application ne concerne spécifiquement la grossesse pour cette composition. Cela ne remplace pas l’avis de votre sage-femme ou de votre médecin.'
-        : 'Aucune des règles suivies par l’application ne concerne spécifiquement l’allaitement pour cette composition. En cas de doute, demandez conseil à votre sage-femme ou votre pharmacien.');
+        ? tr('l4.sp.preg.none')
+        : tr('l4.sp.bf.none'));
     }
   }
   if (child) {
     for (const f of findings) if (['eo_product', 'eo_ingredient', 'perfume', 'household', 'eo_inhaled'].includes(f.id) && f.level !== 'info') childInfo.push(f.title);
-    if (!childInfo.length) childInfo.push(`Aucune règle liée à l’âge (${profileLabel(profile)}) ne s’applique d’après les informations disponibles.`);
+    if (!childInfo.length) childInfo.push(tr('l4.sp.child.none', { profile: profileLabel(profile) }));
   }
 
   // -- Verdict
@@ -459,7 +492,7 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
   if (!input.identity.confirmed) {
     // Sans confirmation du produit, aucune conclusion (les rappels éventuels restent affichés)
     verdict = 'Informations insuffisantes';
-    verdictReason = insufficient ?? 'Le produit n’a pas été confirmé.';
+    verdictReason = insufficient ?? tr('l4.sp.vr.unconfirmed');
   } else if (avoid) {
     verdict = 'Déconseillé pour ce profil selon la source indiquée';
     verdictReason = avoid.title;
@@ -471,7 +504,7 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
     verdictReason = sorted.filter((f) => f.level === 'precaution' || f.level === 'professional').map((f) => f.title).join(' · ');
   } else {
     verdict = 'Adapté selon les informations disponibles';
-    verdictReason = 'Aucune des règles suivies par l’application ne s’applique à ce produit pour ce profil, d’après la composition disponible. Les informations manquantes sont listées ci-dessous.';
+    verdictReason = tr('l4.sp.vr.ok');
   }
   if (verdict === 'Informations insuffisantes') certainty = 'low';
 
@@ -485,7 +518,7 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
     profileLabel: profileLabel(profile),
     product: {
       name: input.identity.name, brand: input.identity.brand, barcode: input.identity.barcode ?? null, imageUrl: input.identity.imageUrl ?? null,
-      type, typeLabel: type ? PRODUCT_TYPE_LABEL[type] : 'Type non précisé',
+      type, typeLabel: type ? PRODUCT_TYPE_LABEL[type] : tr('l4.sp.typeNone'),
     },
     exposure: { type: exposure, label: EXPOSURE_LABEL[exposure], explanation: EXPOSURE_EXPLANATION[exposure] },
     zone: { type: zone, label: ZONE_LABEL[zone] },

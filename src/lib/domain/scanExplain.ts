@@ -3,6 +3,7 @@
  * Aucune donnée nominative n'est transmise (pas de prénom, pas de photo) : seulement le profil
  * générique, le produit, les constats et les sources numérotées.
  */
+import { t as tr } from '@/i18n';
 import type { ExplainPayload } from '../../../supabase/functions/_shared/scan-explain';
 import { CERTAINTY_LABEL } from './scanCommon';
 import { frDate } from './scanSources';
@@ -30,9 +31,9 @@ export function buildExplainPayload(a: ScanAnalysis): ExplainPayload {
 
 /** Explication « règles » affichée quand l'IA n'est pas configurée ou indisponible (jamais présentée comme IA). */
 export function ruleExplanation(a: ScanAnalysis): { summary: string; points: string[] } {
-  const points = a.findings.filter((f) => f.level !== 'info').map((f) => `${f.title} : ${f.explanation}`);
+  const points = a.findings.filter((f) => f.level !== 'info').map((f) => tr('l3.scanexp.point', { title: f.title, explanation: f.explanation }));
   return {
     summary: `${a.verdict}. ${a.verdictReason}`,
-    points: points.length ? points : a.findings.map((f) => `${f.title} : ${f.explanation}`),
+    points: points.length ? points : a.findings.map((f) => tr('l3.scanexp.point', { title: f.title, explanation: f.explanation })),
   };
 }

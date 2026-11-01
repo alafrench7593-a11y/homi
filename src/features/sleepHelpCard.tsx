@@ -16,7 +16,7 @@ import { clock } from '@/lib/domain/sleepPlanner';
 import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
-import { t as tr } from '@/i18n';
+import { t as tr, formatNumber } from '@/i18n';
 
 export function NightsHelpCard({ child }: { child: Child }) {
   const t = useTheme();
@@ -25,7 +25,7 @@ export function NightsHelpCard({ child }: { child: Child }) {
   const review = useMemo(() => sleepReview(sleeps, child.id), [sleeps, child.id]);
   const name = child.first_name;
   const recent = review.enough
-    ? tr('u3.sleep.recent', { naps: String(review.napsPerDay ?? 0).replace('.', ','), night: review.nightMinutes ? tr('u3.sleep.nights', { d: duration(review.nightMinutes) }) : '', wake: review.nightWakeups != null ? tr('u3.sleep.wakes', { n: String(review.nightWakeups).replace('.', ',') }) : '' })
+    ? tr('u3.sleep.recent', { naps: formatNumber(review.napsPerDay ?? 0), night: review.nightMinutes ? tr('u3.sleep.nights', { d: duration(review.nightMinutes) }) : '', wake: review.nightWakeups != null ? tr('u3.sleep.wakes', { n: formatNumber(review.nightWakeups) }) : '' })
     : review.daysNoted ? tr('u3.sleep.days', { count: review.daysNoted }) : tr('u3.sleep.note', { name });
   const next = premium && plan?.state === 'awake'
     ? plan.nextNap && !plan.nextNap.overdue ? tr('u3.sleep.nextNap', { time: clock(plan.nextNap.at) })

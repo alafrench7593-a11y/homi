@@ -4,6 +4,7 @@
  * Toutes les lectures passent par les vues forum_feed / comment_feed et les fonctions serveur (anonymat et visibilité
  * du profil garantis côté base), avec les mêmes règles dans le moteur local de démonstration.
  */
+import { t as tr } from '@/i18n';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { backend, eq, inList } from '../backend';
@@ -40,11 +41,11 @@ export const PSEUDONYM_RE = /^[A-Za-zÀ-ÿ0-9_.\- ]{3,24}$/;
 /** Message d'erreur si le pseudonyme est invalide ou identifiant (prénom, adresse e-mail). */
 export function pseudonymError(pseudo: string, ctx: { displayName?: string | null; email?: string | null }): string | null {
   const p = pseudo.trim();
-  if (!PSEUDONYM_RE.test(p)) return '3 à 24 caractères : lettres, chiffres, espace, point, tiret.';
+  if (!PSEUDONYM_RE.test(p)) return tr('l3.community.pseudo_format');
   const lower = p.toLowerCase();
   const name = ctx.displayName?.trim().toLowerCase();
   const local = ctx.email?.split('@')[0]?.toLowerCase();
-  if ((name && lower === name) || (local && lower === local)) return 'Choisissez un pseudonyme différent de votre prénom et de votre adresse e-mail.';
+  if ((name && lower === name) || (local && lower === local)) return tr('l3.community.pseudo_identity');
   return null;
 }
 

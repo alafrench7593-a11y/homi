@@ -3,6 +3,7 @@
  * Les rapports, températures, glaire et méthodes de contraception sont STRICTEMENT
  * personnels : la RLS (owner only) empêche tout partage avec le foyer.
  */
+import { t as tr } from '@/i18n';
 import { useMutation } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { backend, eq } from '../backend';
@@ -111,7 +112,7 @@ export function useShareQuestion() {
   const householdId = useHouseholdId();
   return useMutation({
     mutationFn: (a: { id: string; shared: boolean }) => {
-      if (a.shared && !householdId) throw new Error('Créez ou rejoignez un foyer pour partager une question.');
+      if (a.shared && !householdId) throw new Error(tr('l3.fertility.share_needs_household'));
       return backend.update('consultation_questions', a.shared ? { shared: true, household_id: householdId } : { shared: false }, [eq('id', a.id)]);
     },
     onSuccess: () => inv('consultation_questions'),

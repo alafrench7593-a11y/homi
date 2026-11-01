@@ -3,6 +3,7 @@
  * « maintenant » marqué par une perle qui pulse. Vraies saisies uniquement ; lisible d'un coup d'œil.
  */
 import React, { useEffect, useRef } from 'react';
+import { t as tr } from '@/i18n';
 import { Animated, Easing, View } from 'react-native';
 import { GlassSurface } from '@/components/Glass';
 import { Text } from '@/components/ui';
@@ -53,8 +54,8 @@ export function DayStrip({ title, events, now, legend, testID, empty }: {
   const thread = tint(t.isDark ? '#E7C08F' : '#B8865A', t.isDark ? 0.45 : 0.4);
   const colorOf = (k: DayEvent['kind']) => (k === 'sleep' ? tint(gold, t.isDark ? 0.75 : 0.55) : k === 'feed' ? accent : k === 'bottle' ? accent : gold);
   const label = events.length
-    ? `${title} : ${events.length} saisie${events.length > 1 ? 's' : ''} aujourd’hui`
-    : `${title} : rien de noté aujourd’hui`;
+    ? tr('l5.daystrip.entries', { title, count: events.length })
+    : tr('l5.daystrip.none', { title });
   return (
     <GlassSurface fill={t.colors.surface} depth={1} radius={22}>
       <View style={{ padding: spacing.md, gap: spacing.sm }} testID={testID} accessibilityRole="image" accessibilityLabel={label}>
@@ -78,7 +79,7 @@ export function DayStrip({ title, events, now, legend, testID, empty }: {
           {now != null ? <View style={{ position: 'absolute', left: pct(now), marginLeft: -6 }}><NowPearl color={accent} /></View> : null}
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          {['0 h', '6 h', '12 h', '18 h', '24 h'].map((h) => <Text key={h} variant="caption" muted style={{ fontSize: 11 }}>{h}</Text>)}
+          {[0, 6, 12, 18, 24].map((n) => tr('l5.daystrip.hour', { n })).map((h) => <Text key={h} variant="caption" muted style={{ fontSize: 11 }}>{h}</Text>)}
         </View>
         {!events.length && empty ? <Text variant="caption" muted>{empty}</Text> : null}
         {legend?.length ? (

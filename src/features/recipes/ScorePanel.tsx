@@ -7,12 +7,12 @@ import { Linking, View } from 'react-native';
 import { Card, Chip, Row, Text } from '@/components/ui';
 import { AGE_BANDS, scoreRecipe, SCORE_SOURCES, type AgeBand } from '@/lib/recipes/score';
 import type { Recipe } from '@/lib/recipes/types';
-import { formatDate, t as tr, type TKey } from '@/i18n';
+import { formatDate, localeTag, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 
-const fmt = (v: number, d = 1) => (Math.round(v * 10 ** d) / 10 ** d).toLocaleString('fr-FR');
+const fmt = (v: number, d = 1) => (Math.round(v * 10 ** d) / 10 ** d).toLocaleString(localeTag());
 
 export function ScorePanel({ recipe, band: initial }: { recipe: Recipe; band: AgeBand }) {
   const t = useTheme();

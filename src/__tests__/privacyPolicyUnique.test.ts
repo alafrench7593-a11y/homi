@@ -5,7 +5,9 @@ const fs = require('fs') as { readFileSync(p: string, enc: 'utf8'): string; exis
 
 describe('politique de confidentialité', () => {
   it('une seule source de texte (inscription et Réglages)', () => {
-    expect(PRIVACY_POLICY).toBe(PRIVACY.sections);
+    // Même contenu que la politique de l'inscription, dans la langue en cours (lecture à chaque accès)
+    expect([...PRIVACY_POLICY]).toEqual(PRIVACY.sections);
+    expect(PRIVACY_POLICY[0]).toBe(PRIVACY.sections[0]);
     // même version que celle enregistrée à l'inscription (LEGAL_VERSIONS.privacy)
     const authFlow = fs.readFileSync('src/lib/authFlow.ts', 'utf8');
     expect(authFlow).toContain(`privacy: '${PRIVACY_POLICY_VERSION}'`);

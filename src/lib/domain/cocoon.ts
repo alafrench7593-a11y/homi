@@ -263,7 +263,7 @@ export function infoValue(key: InfoKey, i: InfoInput): InfoValue {
     case 'sleep': {
       const total = sleepMinutesToday(i.sleeps ?? [], now);
       const naps = (i.sleeps ?? []).filter((s) => s.kind === 'nap' && at(s.started_at) >= dayBounds(now).from).length;
-      return { key, label: tr('coc.info.sleep'), value: total ? spanLabel(total) : '0 min', sub: naps ? tr('coc.info.naps', { count: naps }) : undefined };
+      return { key, label: tr('coc.info.sleep'), value: spanLabel(total || 0), sub: naps ? tr('coc.info.naps', { count: naps }) : undefined };
     }
     case 'next':
       return i.next

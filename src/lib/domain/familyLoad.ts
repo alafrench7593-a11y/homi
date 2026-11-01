@@ -5,6 +5,8 @@
  * elle-même) et ne disent jamais ce que quelqu'un « a ».
  */
 import type { IconName } from '@/components/ui';
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 
 export type TaskCategory = 'feeding' | 'diapers' | 'sleep' | 'shopping' | 'packing' | 'appointments' | 'housework' | 'admin' | 'organization' | 'parent_rest' | 'other';
 export type Recurrence = { type: 'daily' | 'weekly' | 'monthly'; every?: number } | null;
@@ -33,7 +35,8 @@ export interface Routine {
   items: string[]; default_assignee: string | null; active: boolean; created_by: string | null; created_at: string;
 }
 
-export const CATEGORIES: { value: TaskCategory; label: string; icon: IconName }[] = [
+type CategoryDef = { value: TaskCategory; label: string; icon: IconName };
+const CATEGORIES_FR: CategoryDef[] = [
   { value: 'feeding', label: 'Biberons et repas', icon: 'coffee' },
   { value: 'diapers', label: 'Changes', icon: 'wind' },
   { value: 'sleep', label: 'Sommeil', icon: 'moon' },
@@ -46,10 +49,25 @@ export const CATEGORIES: { value: TaskCategory; label: string; icon: IconName }[
   { value: 'parent_rest', label: 'Repos parental', icon: 'sun' },
   { value: 'other', label: 'Autre', icon: 'circle' },
 ];
+const CATEGORIES_EN: CategoryDef[] = [
+  { value: 'feeding', label: 'Bottles and meals', icon: 'coffee' },
+  { value: 'diapers', label: 'Nappy changes', icon: 'wind' },
+  { value: 'sleep', label: 'Sleep', icon: 'moon' },
+  { value: 'shopping', label: 'Shopping', icon: 'shopping-cart' },
+  { value: 'packing', label: 'Packing bags', icon: 'briefcase' },
+  { value: 'appointments', label: 'Appointments', icon: 'calendar' },
+  { value: 'housework', label: 'Housework', icon: 'home' },
+  { value: 'admin', label: 'Paperwork', icon: 'file-text' },
+  { value: 'organization', label: 'Family organisation', icon: 'grid' },
+  { value: 'parent_rest', label: 'Parental rest', icon: 'sun' },
+  { value: 'other', label: 'Other', icon: 'circle' },
+];
+export const CATEGORIES: CategoryDef[] = localized(CATEGORIES_FR, CATEGORIES_EN);
 export const categoryOf = (c: TaskCategory) => CATEGORIES.find((x) => x.value === c) ?? CATEGORIES[CATEGORIES.length - 1];
 
 /** Actions rapides (§ 20). `needsTask` / `needsShift` : il faut choisir l'élément concerné. */
-export const QUICK_ACTIONS: { kind: RequestKind; label: string; icon: IconName; detail: string; needsTask?: boolean; needsShift?: boolean }[] = [
+type QuickAction = { kind: RequestKind; label: string; icon: IconName; detail: string; needsTask?: boolean; needsShift?: boolean };
+const QUICK_ACTIONS_FR: QuickAction[] = [
   { kind: 'taking_over', label: 'Je prends le relais', icon: 'repeat', detail: 'Prévient le foyer que vous prenez la suite.' },
   { kind: 'rest', label: 'J’ai besoin de repos', icon: 'moon', detail: 'Demande à être relayé·e pour souffler.' },
   { kind: 'take_task', label: 'Peux-tu prendre cette tâche ?', icon: 'share', detail: 'Proposer une tâche à quelqu’un d’autre.', needsTask: true },
@@ -58,7 +76,18 @@ export const QUICK_ACTIONS: { kind: RequestKind; label: string; icon: IconName; 
   { kind: 'help_today', label: 'J’ai besoin d’aide aujourd’hui', icon: 'life-buoy', detail: 'Demande d’aide générale pour la journée.' },
   { kind: 'relay', label: 'Demander un relais', icon: 'users', detail: 'Pour qu’on prenne le bébé un moment.' },
 ];
-export const REQUEST_LABEL: Record<RequestKind, string> = Object.fromEntries(QUICK_ACTIONS.map((a) => [a.kind, a.label])) as Record<RequestKind, string>;
+const QUICK_ACTIONS_EN: QuickAction[] = [
+  { kind: 'taking_over', label: 'I’m taking over', icon: 'repeat', detail: 'Lets the household know you are taking over.' },
+  { kind: 'rest', label: 'I need a rest', icon: 'moon', detail: 'Ask for someone to take over so you can catch your breath.' },
+  { kind: 'take_task', label: 'Can you take this task?', icon: 'share', detail: 'Suggest a task to someone else.', needsTask: true },
+  { kind: 'available', label: 'I’m available', icon: 'check-circle', detail: 'Let others know you can help.' },
+  { kind: 'swap_slot', label: 'Swap my slot', icon: 'shuffle', detail: 'Suggest swapping a night shift.', needsShift: true },
+  { kind: 'help_today', label: 'I need help today', icon: 'life-buoy', detail: 'A general request for help for the day.' },
+  { kind: 'relay', label: 'Ask for a relay', icon: 'users', detail: 'So that someone takes the baby for a while.' },
+];
+export const QUICK_ACTIONS: QuickAction[] = localized(QUICK_ACTIONS_FR, QUICK_ACTIONS_EN);
+const labelsOf = (list: QuickAction[]) => Object.fromEntries(list.map((a) => [a.kind, a.label])) as Record<RequestKind, string>;
+export const REQUEST_LABEL: Record<RequestKind, string> = localized(labelsOf(QUICK_ACTIONS_FR), labelsOf(QUICK_ACTIONS_EN));
 
 // ------------------------------------------------------------------ dates (heure locale)
 const dayKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -149,29 +178,29 @@ export function overloadSignals(o: {
   const out: OverloadSignal[] = [];
   const overdue = todo.filter((t) => t.due_at && Date.parse(t.due_at) < now.getTime() - 3600000);
   if (overdue.length >= 3) {
-    out.push({ key: 'overdue', title: 'Plusieurs tâches ont pris du retard', why: `${overdue.length} tâches notées sont passées. Ça arrive, surtout avec un bébé.`, suggestions: [{ label: 'Alléger la journée', to: '/family/difficult' }, { label: 'Reporter ce qui peut attendre', to: '/family/difficult' }] });
+    out.push({ key: 'overdue', title: tr('l8.fl.overdue.title'), why: tr('l8.fl.overdue.why', { count: overdue.length }), suggestions: [{ label: tr('l8.fl.lighten'), to: '/family/difficult' }, { label: tr('l8.fl.postpone'), to: '/family/difficult' }] });
   }
   const todays = todo.filter((t) => t.due_at && sameLocalDay(t.due_at, o.day));
   if (todays.length >= 8) {
-    out.push({ key: 'heavy_day', title: 'Journée très chargée', why: `${todays.length} tâches sont prévues aujourd’hui.`, suggestions: [{ label: 'Simplifier la journée', to: '/family/difficult' }, { label: 'Déléguer une tâche', to: '/family' }] });
+    out.push({ key: 'heavy_day', title: tr('l8.fl.heavy.title'), why: tr('l8.fl.heavy.why', { count: todays.length }), suggestions: [{ label: tr('l8.fl.simplify'), to: '/family/difficult' }, { label: tr('l8.fl.delegate'), to: '/family' }] });
   }
   const soon = todo.filter((t) => !t.assignee_id && t.due_at && Date.parse(t.due_at) < now.getTime() + 2 * 86400000);
   if (soon.length >= 3) {
-    out.push({ key: 'unassigned', title: 'Des tâches sans responsable', why: `${soon.length} tâches des deux prochains jours n’ont personne d’attribué.`, suggestions: [{ label: 'Les répartir ensemble', to: '/family' }] });
+    out.push({ key: 'unassigned', title: tr('l8.fl.unassigned.title'), why: tr('l8.fl.unassigned.why', { count: soon.length }), suggestions: [{ label: tr('l8.fl.shareTogether'), to: '/family' }] });
   }
   // Répartition : uniquement sur ce qui a été noté ; pas de nom, pas de chiffre par personne
   const week = o.tasks.filter((t) => t.status === 'done' && t.done_at && Date.parse(t.done_at) > now.getTime() - 7 * 86400000 && t.done_by);
   if (week.length >= 8) {
     const mine = week.filter((t) => t.done_by === o.me).length;
     if (mine / week.length >= 0.75) {
-      out.push({ key: 'imbalance', title: 'Une grande part repose sur vous cette semaine', why: 'D’après les tâches notées comme faites ces 7 derniers jours. Ce qui n’est pas noté n’apparaît pas ici.', suggestions: [{ label: 'Proposer une tâche à quelqu’un', to: '/family' }, { label: 'En parler ensemble au bilan de la semaine', to: '/family/review' }] });
+      out.push({ key: 'imbalance', title: tr('l8.fl.imb.title'), why: tr('l8.fl.imb.why'), suggestions: [{ label: tr('l8.fl.proposeTask'), to: '/family' }, { label: tr('l8.fl.talkReview'), to: '/family/review' }] });
     }
   }
   const restedRecently = o.shifts.some((s) => s.kind === 'me_time' && s.user_id === o.me && s.status !== 'cancelled' && Date.parse(s.ends_at) > now.getTime() - 7 * 86400000);
   const askedRest = o.requests.some((r) => r.from_user === o.me && (r.kind === 'rest' || r.kind === 'help_today') && Date.parse(r.created_at) > now.getTime() - 3 * 86400000);
   if ((o.myDeclaredFatigue ?? 0) >= 4 || askedRest) {
     if (!restedRecently) {
-      out.push({ key: 'rest', title: 'Un moment de repos vous ferait du bien', why: askedRest ? 'Vous avez demandé du repos ou de l’aide récemment.' : 'Vous avez noté une fatigue élevée.', suggestions: [{ label: 'Réserver du temps pour soi', to: '/family/me-time' }, { label: 'Demander un relais', to: '/family' }, { label: 'Contacter une personne de confiance', to: '/postpartum/support' }] });
+      out.push({ key: 'rest', title: tr('l8.fl.rest.title'), why: askedRest ? tr('l8.fl.rest.whyAsked') : tr('l8.fl.rest.whyFatigue'), suggestions: [{ label: tr('l8.fl.rest.book'), to: '/family/me-time' }, { label: tr('l8.fl.rest.relay'), to: '/family' }, { label: tr('l8.fl.rest.trusted'), to: '/postpartum/support' }] });
     }
   }
   return out;
@@ -192,10 +221,10 @@ export function weeklyReview(o: { tasks: FamilyTask[]; requests: CareRequest[]; 
   const rest = o.shifts.filter((s) => s.kind === 'me_time' && s.status !== 'cancelled' && Date.parse(s.starts_at) >= since && Date.parse(s.starts_at) <= until);
   const nights = o.shifts.filter((s) => s.kind === 'night' && s.status !== 'cancelled' && Date.parse(s.starts_at) >= since && Date.parse(s.starts_at) <= until);
   const points: string[] = [];
-  if (unassigned.length) points.push(`${unassigned.length} tâche${unassigned.length > 1 ? 's' : ''} à venir sans responsable : à répartir ensemble ?`);
-  if (requests.some((r) => r.status === 'open')) points.push('Des demandes attendent encore une réponse.');
-  if (!rest.length) points.push('Aucun temps pour soi pris ou prévu : en réserver un pour chacun ?');
-  if (!points.length) points.push('Rien de particulier à ajuster d’après ce qui est noté.');
+  if (unassigned.length) points.push(tr('l8.fl.pt.unassigned', { count: unassigned.length }));
+  if (requests.some((r) => r.status === 'open')) points.push(tr('l8.fl.pt.openRequests'));
+  if (!rest.length) points.push(tr('l8.fl.pt.noRest'));
+  if (!points.length) points.push(tr('l8.fl.pt.nothing'));
   return {
     doneCount: done.length, byCategory, upcoming: upcoming.slice(0, 8), unassignedCount: unassigned.length,
     requests: { total: requests.length, accepted: requests.filter((r) => r.status === 'accepted').length, open: requests.filter((r) => r.status === 'open').length },
@@ -204,7 +233,8 @@ export function weeklyReview(o: { tasks: FamilyTask[]; requests: CareRequest[]; 
 }
 
 // ------------------------------------------------------------------ routines
-export const ROUTINE_TEMPLATES: { kind: Routine['kind']; title: string; items: string[] }[] = [
+type RoutineTemplate = { kind: Routine['kind']; title: string; items: string[] };
+const ROUTINE_TEMPLATES_FR: RoutineTemplate[] = [
   { kind: 'bag', title: 'Sac de l’enfant', items: ['Couches et lingettes', 'Tenue de rechange', 'Biberon ou collation', 'Doudou', 'Carnet de santé si rendez-vous'] },
   { kind: 'bedtime', title: 'Préparer le coucher', items: ['Bain ou toilette', 'Pyjama', 'Histoire', 'Veilleuse', 'Préparer le biberon de nuit'] },
   { kind: 'tomorrow', title: 'Préparer le lendemain', items: ['Vêtements', 'Sac', 'Repas', 'Vérifier l’agenda'] },
@@ -214,6 +244,18 @@ export const ROUTINE_TEMPLATES: { kind: Routine['kind']; title: string; items: s
   { kind: 'appointment', title: 'Préparer un rendez-vous', items: ['Carnet de santé', 'Questions à poser', 'Ordonnances', 'Trajet'] },
   { kind: 'rest', title: 'Réserver du repos', items: ['Choisir un créneau', 'Prévoir le relais', 'Couper les notifications'] },
 ];
+
+const ROUTINE_TEMPLATES_EN: RoutineTemplate[] = [
+  { kind: 'bag', title: 'Child’s bag', items: ['Nappies and wipes', 'Change of clothes', 'Bottle or snack', 'Comforter', 'Health record book if there is an appointment'] },
+  { kind: 'bedtime', title: 'Getting ready for bed', items: ['Bath or wash', 'Pyjamas', 'Story', 'Night light', 'Prepare the night bottle'] },
+  { kind: 'tomorrow', title: 'Getting ready for tomorrow', items: ['Clothes', 'Bag', 'Meals', 'Check the diary'] },
+  { kind: 'shopping', title: 'Weekly shopping', items: ['Nappies', 'Milk or baby food', 'Fruit and vegetables', 'Cleaning products'] },
+  { kind: 'meals', title: 'Planning meals', items: ['Choose the week’s meals', 'Shopping list', 'Prepare ahead'] },
+  { kind: 'weekly', title: 'Tasks for the week', items: ['Laundry', 'Cleaning', 'Paperwork', 'Weekly review together'] },
+  { kind: 'appointment', title: 'Getting ready for an appointment', items: ['Health record book', 'Questions to ask', 'Prescriptions', 'Journey'] },
+  { kind: 'rest', title: 'Booking some rest', items: ['Choose a slot', 'Arrange the relay', 'Turn off notifications'] },
+];
+export const ROUTINE_TEMPLATES: RoutineTemplate[] = localized(ROUTINE_TEMPLATES_FR, ROUTINE_TEMPLATES_EN);
 
 /** Tâches qu'une routine créerait (aperçu à valider : aucune création automatique). */
 export function routinePreview(r: Pick<Routine, 'items' | 'default_assignee' | 'kind'>, dueAt: string | null) {

@@ -3,6 +3,7 @@
  * Les droits sont TOUJOURS vérifiés côté serveur (RLS / fonctions security definer) :
  * ce qui suit ne fait que refléter l'état dans l'interface.
  */
+import { t as tr } from '@/i18n';
 import { friendlyErrorMessage } from '../errors';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -17,7 +18,7 @@ import { useHouseholdId, useInvalidate, useRows } from './hooks';
 
 // ---------------------------------------------------------------- erreurs lisibles
 /** Message d'erreur en français, sans jargon technique. */
-export function friendlyError(e: unknown, fallback = 'Une erreur est survenue. Réessayez dans un instant.'): string {
+export function friendlyError(e: unknown, fallback = tr('l3.settings.generic_error')): string {
   return friendlyErrorMessage(e, fallback);
 }
 
@@ -196,7 +197,7 @@ export function useDeleteAccount() {
   return useMutation({
     mutationFn: async () => {
       const out = await backend.invoke<{ ok?: boolean; error?: string }>('delete-account', { confirm: 'SUPPRIMER' });
-      if (out && out.ok === false) throw new Error('La suppression n’a pas pu aboutir.');
+      if (out && out.ok === false) throw new Error(tr('l3.settings.delete_failed'));
       // Sur Supabase, l'utilisateur n'existe plus : on ferme la session locale
       if (!isDemo) await backend.auth.signOut().catch(() => undefined);
       return true;

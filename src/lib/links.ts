@@ -5,18 +5,19 @@
  */
 import { Linking } from 'react-native';
 import { router, type Href } from 'expo-router';
+import { t as tr } from '@/i18n';
 
 type Toast = (msg: string, tone?: 'success' | 'info' | 'error') => void;
 
 /** Lance un appel ; en cas d'impossibilité, affiche « Composez le … ». */
 export function callNumber(number: string, toast: Toast): void {
   const digits = number.replace(/[^\d+]/g, '');
-  Linking.openURL(`tel:${digits}`).catch(() => toast(`Impossible de lancer l’appel ici : composez le ${number} depuis un téléphone.`, 'error'));
+  Linking.openURL(`tel:${digits}`).catch(() => toast(tr('l4.links.callFail', { number }), 'error'));
 }
 
 /** Ouvre un lien (source, site officiel) ; en cas d'échec, un message plutôt que rien. */
 export function openLink(url: string, toast: Toast): void {
-  Linking.openURL(url).catch(() => toast('Impossible d’ouvrir ce lien sur cet appareil.', 'error'));
+  Linking.openURL(url).catch(() => toast(tr('l4.links.openFail'), 'error'));
 }
 
 /** Retour en arrière, ou vers l'accueil si l'écran a été ouvert directement (notification, lien). */

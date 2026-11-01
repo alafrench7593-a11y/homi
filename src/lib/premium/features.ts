@@ -3,6 +3,9 @@
  * Règle d'or : le Premium AJOUTE de l'analyse, de l'automatisation et du partage ; il ne retire jamais l'accès aux
  * données déjà créées ni à la sécurité. Les droits sont vérifiés côté serveur (has_premium, quotas, déclencheurs).
  */
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
+
 export type PremiumFeature =
   | 'sleep_insights' | 'bedtime_routine' | 'assistant_more' | 'assistant_saved' | 'assistant_suggestions'
   | 'scanner_more' | 'scanner_compare' | 'coparent_invite' | 'voice_entry' | 'summaries' | 'summary_export'
@@ -26,7 +29,7 @@ export const QUOTA_OF: Partial<Record<PremiumFeature, string>> = {
 export interface FeatureInfo { title: string; benefit: string; free: string; premium: string; icon: string }
 
 /** {name} = prénom du profil affiché (Lina, Noé…), {profile} = « votre grossesse », etc. */
-export const FEATURES: Record<PremiumFeature, FeatureInfo> = {
+const FEATURES_FR: Record<PremiumFeature, FeatureInfo> = {
   sleep_insights: { icon: 'moon', title: 'Découvrez le rythme personnalisé de {name}', benefit: 'Après chaque réveil : prochaine sieste, routine et coucher estimés d’après son âge puis ses propres relevés, recalculés en temps réel, avec des notifications douces et des tendances sur 7 jours.', free: 'Noter siestes, nuits, réveils et repas de nuit ; modifier les horaires ; totaux du jour ; aide pour la nuit ; couchage en sécurité', premium: 'Estimations personnalisées, recalcul, notifications, retours « juste / trop tôt / trop tard », moyennes et évolution' },
   bedtime_routine: { icon: 'star', title: 'Une routine du coucher pour {name}', benefit: 'Les étapes de votre soirée, dans votre ordre, avec un rappel facultatif à l’heure choisie.', free: '—', premium: 'Routine personnalisable et rappel' },
   assistant_more: { icon: 'message-circle', title: 'Poser toutes vos questions à l’assistant', benefit: 'Beaucoup plus de questions chaque mois, adaptées à votre parcours et au profil affiché.', free: 'Quelques questions par mois', premium: 'Questions beaucoup plus nombreuses' },
@@ -64,8 +67,48 @@ export const FEATURES: Record<PremiumFeature, FeatureInfo> = {
   community_events: { icon: 'video', title: 'Ateliers et rencontres', benefit: 'Des ateliers et rencontres en visio réservés aux abonné·es, quand l’équipe en programme.', free: 'Toute la communauté et les informations de sécurité', premium: 'Inscription aux ateliers' },
 };
 
+
+const FEATURES_EN: Record<PremiumFeature, FeatureInfo> = {
+  sleep_insights: { icon: 'moon', title: 'Discover {name}’s personalised rhythm', benefit: 'After each waking: next nap, routine and bedtime estimated from their age, then from their own records, recalculated in real time, with gentle notifications and 7-day trends.', free: 'Log naps, nights, wakings and night feeds; edit times; today’s totals; night-time help; sleep safety information', premium: 'Personalised estimates, recalculation, notifications, “just right / too early / too late” feedback, averages and trends' },
+  bedtime_routine: { icon: 'star', title: 'A bedtime routine for {name}', benefit: 'The steps of your evening, in your order, with an optional reminder at the time you choose.', free: '—', premium: 'Customisable routine and reminder' },
+  assistant_more: { icon: 'message-circle', title: 'Ask the assistant all your questions', benefit: 'Many more questions each month, tailored to your journey and the profile shown.', free: 'A few questions per month', premium: 'Many more questions' },
+  assistant_saved: { icon: 'bookmark', title: 'Keep the useful answers', benefit: 'Save an answer to find it again in an instant.', free: 'Re-read answers you have already saved', premium: 'Save new answers' },
+  assistant_suggestions: { icon: 'compass', title: 'Suggested questions for {name}', benefit: 'Question ideas based on the exact week of pregnancy or the child’s exact age.', free: 'General suggestions', premium: 'Personalised suggestions' },
+  scanner_more: { icon: 'maximize', title: 'Analyse all your products', benefit: 'Extended analyses each month, tailored to the chosen profile.', free: 'A few analyses per month; official recall alerts always unlimited', premium: 'Extended analyses' },
+  scanner_compare: { icon: 'columns', title: 'Compare these products', benefit: 'Ingredients, allergens and precautions side by side, with no opaque score.', free: '—', premium: 'Comparison and filters by profile' },
+  coparent_invite: { icon: 'users', title: 'Share information with your co-parent', benefit: 'Secure invitation, choice of shared profiles, read or edit access, duplicate-free syncing, immediate revocation.', free: 'Remove a member and leave a household at any time', premium: 'Invite and share by profile' },
+  voice_entry: { icon: 'mic', title: 'Log simply with your voice', benefit: '“Lina drank 150 ml at 1:10 pm”: the sentence becomes an entry, which you confirm.', free: 'A few tries per month', premium: 'Voice entry, unlimited in practice' },
+  summaries: { icon: 'file-text', title: 'Generate {name}’s full summary', benefit: 'Meals, sleep, nappies, symptoms logged, prescribed treatments, measurements: the recorded facts, without interpretation.', free: 'Today’s summary', premium: 'Weekly summaries and pre-appointment summaries' },
+  summary_export: { icon: 'share', title: 'Export or share the summary', benefit: 'A clear PDF to show your health professional.', free: '1 export per month', premium: 'Frequent exports' },
+  weekly_menu: { icon: 'calendar', title: 'Plan menus for the whole week', benefit: 'A menu suited to each profile, with the shopping list made automatically.', free: 'Recipe library, favourites, filters, shopping list for one recipe', premium: 'Weekly menus and automatic shopping lists' },
+  cycle_insights: { icon: 'bar-chart-2', title: 'Understand your cycles', benefit: 'Readable statistics and trends across your whole history (always estimates).', free: 'Calendar, entries, basic estimates', premium: 'Statistics and trends' },
+  cycle_trends: { icon: 'trending-up', title: 'Spot what comes back in your cycle', benefit: 'Trends seen in your own data (after several comparable cycles) and, if you wish, a message before a period when you often log a symptom. Never a certainty.', free: 'Calendar, periods, simple estimate, essential symptoms, general and safety information', premium: 'Personal trends and anticipation' },
+  cycle_custom: { icon: 'tag', title: 'Customise your cycle tracking', benefit: 'Your own items to track and as many labels as you like.', free: '3 different labels', premium: 'Custom items and unlimited labels' },
+  cycle_share: { icon: 'users', title: 'Share your cycle with your partner', benefit: 'You choose what to share (periods, estimated fertile window, mood, symptoms) with a member of your household, read-only; never sex, contraception or your notes. Can be revoked at any time.', free: 'Nothing is shared', premium: 'Chosen, revocable sharing' },
+  cycle_monthly: { icon: 'file-text', title: 'Your month at a glance', benefit: 'Periods, cycle length, and the symptoms and moods you logged most this month, as a PDF to keep or show your professional. Recorded facts, never a diagnosis.', free: 'Calendar and a page for each day', premium: 'Monthly summary and PDF' },
+  cycle_export: { icon: 'download', title: 'Export your cycle tracking', benefit: 'A PDF to share with your health professional.', free: '—', premium: 'PDF export' },
+  family_summary: { icon: 'home', title: 'Today’s family summary', benefit: 'Each child, their meals, sleep and appointments, with nothing mixed up.', free: 'Overview of the profiles', premium: 'Daily family summary' },
+  more_children: { icon: 'user-plus', title: 'Track more children', benefit: 'More profiles, each with its own data.', free: 'Up to 3 children', premium: 'Extended profiles' },
+  more_reminders: { icon: 'bell', title: 'Personal reminders without counting', benefit: 'Fully configurable reminders: edit, postpone, switch off.', free: '5 personal reminders; prescribed medicines, bottles and vaccines always unlimited', premium: 'Extended personal reminders' },
+  more_documents: { icon: 'folder', title: 'An extended document vault', benefit: 'Scans, prescriptions, reports: everything in one place.', free: 'Limited vault', premium: 'Extended vault' },
+  more_lists: { icon: 'check-square', title: 'Unlimited preparation lists', benefit: 'Hospital bag, paperwork, nursery…', free: 'A few lists', premium: 'Extended lists' },
+  premium_content: { icon: 'book-open', title: 'In-depth guides', benefit: 'Series and guides tailored to the exact age or week of pregnancy.', free: 'All the safety information', premium: 'In-depth guides' },
+  growth_export: { icon: 'download', title: 'Export measurements', benefit: 'A file of growth measurements to share.', free: '—', premium: 'Measurement export' },
+  diversification: { icon: 'coffee', title: 'All of {name}’s discoveries', benefit: 'The full food catalogue, recipes that use what they have already tasted, age-appropriate ideas, advanced filters and the whole history.', free: 'Up to 15 foods tracked per child, the essential foods in each category, allergens, safety information and the last 30 days of history', premium: 'Full catalogue, matching recipes, personalised ideas, advanced filters, full history' },
+  development_full: { icon: 'trending-up', title: 'Follow all of {name}’s milestones', benefit: 'All the milestones for each age range, with a suitable activity for each, and a PDF summary to show your professional.', free: 'The main milestones, safety tips, sources and the on-screen summary', premium: 'Full tracking, age-appropriate activities, PDF summary' },
+  community_profile: { icon: 'feather', title: 'Personalise your community profile', benefit: 'A colour, a banner, a longer introduction, and a discreet Premium badge if you like.', free: 'Nickname, handle, avatar or photo, short introduction, journey', premium: 'Colour, banner, richer introduction, optional badge' },
+  community_groups: { icon: 'lock', title: 'Create your private parents’ group', benefit: 'A space just for you, by invitation: posts stay hidden from the rest of the community.', free: 'Join the themed groups, the monthly groups and the private groups you are invited to', premium: 'Create private groups and invite members' },
+  community_albums: { icon: 'image', title: 'Photo albums to share', benefit: 'Private albums, or shared only with the members you choose. Photos have their GPS location removed.', free: 'See the albums shared with you; up to 4 photos per post', premium: 'Create albums and share them' },
+  community_search: { icon: 'sliders', title: 'Advanced filters and search', benefit: 'Several categories at once, polls, posts with photos, unanswered, from one member, from a given period.', free: 'Search by keyword and by category, “For you”, “Following” and “Recent” feeds', premium: 'Combined filters and advanced search' },
+  community_history: { icon: 'clock', title: 'Your activity log', benefit: 'The timeline of your posts, replies, reactions and saved items.', free: 'Your posts, replies, liked posts and saved posts all remain viewable', premium: 'Full, filterable timeline' },
+  saved_folders: { icon: 'folder', title: 'Organise what you save', benefit: 'Folders to find useful discussions in an instant (“Sleep”, “Hospital bag”…).', free: 'Save without limit', premium: 'Folders' },
+  community_ai: { icon: 'align-left', title: 'Summarise a long discussion', benefit: 'The gist of a discussion with more than 6 replies, presented as personal accounts. Translation of a message if needed.', free: 'Read all the replies', premium: 'Summary and translation (AI service to be configured server-side)' },
+  community_events: { icon: 'video', title: 'Workshops and meet-ups', benefit: 'Online workshops and meet-ups reserved for subscribers, when the team schedules them.', free: 'The whole community and the safety information', premium: 'Workshop registration' },
+};
+export const FEATURES: Record<PremiumFeature, FeatureInfo> = localized(FEATURES_FR, FEATURES_EN);
+
 /** Toujours gratuit, quel que soit l'abonnement (affiché sur l'écran d'abonnement et vérifié par les tests). */
-export const ALWAYS_FREE = [
+const ALWAYS_FREE_FR = [
   'Informations et numéros d’urgence',
   'Ressources sur la dépression du post-partum',
   'Alertes officielles de rappel de produits',
@@ -77,7 +120,20 @@ export const ALWAYS_FREE = [
   'Rappels de médicaments prescrits, de biberon et de vaccins',
 ];
 
-export const featureTitle = (f: PremiumFeature, name?: string | null) => FEATURES[f].title.replace('{name}', name || 'votre enfant');
+const ALWAYS_FREE_EN = [
+  'Emergency information and numbers',
+  'Resources on postnatal depression',
+  'Official product recall alerts',
+  'Account deletion and legal export of your data',
+  'Consent management',
+  'Reporting and blocking in the community',
+  'Community profile, posts with photos, comments, reactions, following members and categories',
+  'Access to all the data you have already created, even after a subscription ends',
+  'Reminders for prescribed medicines, bottles and vaccines',
+];
+export const ALWAYS_FREE = localized(ALWAYS_FREE_FR, ALWAYS_FREE_EN);
+
+export const featureTitle = (f: PremiumFeature, name?: string | null) => FEATURES[f].title.replace('{name}', name || tr('l6.prem.yourChild'));
 
 /** Erreur serveur « fonction Premium » ou « limite gratuite atteinte ». */
 export const isPremiumRequired = (e: unknown) => {

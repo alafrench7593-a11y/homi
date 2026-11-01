@@ -4,6 +4,8 @@
  * aucune durée qui ferait attendre quelqu'un qui souffre beaucoup.
  */
 
+import { localized } from '@/i18n/localized';
+
 export interface Source { title: string; publisher: string; url: string }
 
 export const SOURCES: Record<string, Source> = {
@@ -15,7 +17,7 @@ export const SOURCES: Record<string, Source> = {
 
 export interface Section { id: string; title: string; body: string[]; sources: (keyof typeof SOURCES)[] }
 
-export const UNDERSTAND: Section[] = [
+const UNDERSTAND_FR: Section[] = [
   {
     id: 'blues',
     title: 'Le baby blues',
@@ -57,7 +59,7 @@ export const UNDERSTAND: Section[] = [
   },
 ];
 
-export const PARTNER: Section[] = [
+const PARTNER_FR: Section[] = [
   {
     id: 'changes',
     title: 'Ce qui change après une naissance',
@@ -114,7 +116,7 @@ export const PARTNER: Section[] = [
 ];
 
 /** Phrases utiles proposées au conjoint (tutoiement : ce sont ses mots à lui). */
-export const USEFUL_PHRASES = [
+const USEFUL_PHRASES_FR = [
   'Comment te sens-tu vraiment aujourd’hui ?',
   'Qu’est-ce que je peux prendre en charge pour te laisser souffler ?',
   'Veux-tu que je m’occupe du bébé pendant que tu te reposes ?',
@@ -129,7 +131,7 @@ export const PHRASES_TO_AVOID = ['C’est normal, ça va passer', 'Tu as tout po
  * Signes physiques qui justifient d'agir vite après l'accouchement (liste POST-BIRTH de l'AWHONN,
  * adaptée aux numéros français). L'application ne juge jamais si un symptôme est « normal ».
  */
-export const RECOVERY_WARNINGS = {
+const RECOVERY_WARNINGS_FR = {
   call15: ['Douleur dans la poitrine', 'Difficulté à respirer ou essoufflement', 'Convulsions', 'Pensées de vous faire du mal ou de faire du mal à quelqu’un'],
   callPro: [
     'Saignement qui remplit une serviette en une heure, ou caillots de la taille d’un œuf ou plus',
@@ -140,3 +142,126 @@ export const RECOVERY_WARNINGS = {
   ],
   source: 'awhonn' as const,
 };
+
+const UNDERSTAND_EN: Section[] = [
+  {
+    id: 'blues',
+    title: 'The baby blues',
+    body: [
+      'In the days after birth, many mothers feel very raw: tears, irritability, worries. This is common and linked to the big physical, hormonal and psychological changes.',
+      'It generally lasts from a few hours to a few days, and passes by itself.',
+    ],
+    sources: ['mpj'],
+  },
+  {
+    id: 'signs',
+    title: 'When it is worth talking about',
+    body: [
+      'Some signs can justify a consultation: sadness that sets in, loss of interest or pleasure, marked anxiety, a feeling of hopelessness, excessive guilt, difficulty sleeping even when there is a chance to rest, emotional exhaustion, difficulty coping with daily life, a feeling of detachment or difficulty bonding with the baby, feeling overwhelmed.',
+      'These feelings can have several causes. Only a professional can assess them — this app does not.',
+      'Official guidance suggests talking about it if it lasts more than two weeks, and in any case at the slightest doubt. If it is intense or getting worse, do not wait: you can talk about it today.',
+      'Postnatal depression is common — it affects 15 to 20% of women who have given birth, according to the 2021 French national perinatal survey — and it can be treated. It can also affect fathers.',
+    ],
+    sources: ['mpj', 'ministere'],
+  },
+  {
+    id: 'who',
+    title: 'Who to talk to',
+    body: [
+      'Your midwife, your GP, a PMI (maternal and child health) centre, a psychologist (the “Mon soutien psy” scheme is covered by the French health insurance) or a perinatal psychiatry clinic at the hospital.',
+      'The early postnatal interview, planned between the 4th and 8th week after the birth, is a time set aside to talk about you. You can also ask to have it sooner.',
+      'Parent-and-child drop-in places and parent groups can help break isolation.',
+    ],
+    sources: ['mpj'],
+  },
+  {
+    id: 'urgent',
+    title: 'If you are in danger',
+    body: [
+      'If you have thoughts of harming yourself, of not being here any more, or of harming your baby, or if you feel very confused: call 3114 now (free, confidential, 24 hours a day), or 15 or 112 if the danger is immediate.',
+      'These are not thoughts to be ashamed of. They are a sign that you need help, right now.',
+    ],
+    sources: ['crise'],
+  },
+];
+
+const PARTNER_EN: Section[] = [
+  {
+    id: 'changes',
+    title: 'What changes after a birth',
+    body: [
+      'The body recovers over weeks, sometimes months. Sleep is broken up, hormones shift a great deal, and the baby’s care is constant.',
+      'Tears and fragility in the first days are common (baby blues) and generally pass within a few days.',
+    ],
+    sources: ['mpj'],
+  },
+  {
+    id: 'difference',
+    title: 'Tiredness, baby blues, or more than that?',
+    body: [
+      'If sadness, anxiety or exhaustion set in, grow stronger, or stop her coping with daily life, it deserves a professional’s opinion. You do not have to decide: your role is to listen and make it easier to get help.',
+      'Fathers and co-parents can also go through depression after a birth. Look after yourself too.',
+    ],
+    sources: ['mpj', 'ministere'],
+  },
+  {
+    id: 'listen',
+    title: 'Listen without minimising',
+    body: [
+      'Avoid “it’s fine, it will pass” or “you have everything to be happy about”. Welcome what she says, without trying to correct her emotions.',
+      'Do not read in secret what is not meant for you: what she shares in the app, she has chosen to share.',
+    ],
+    sources: [],
+  },
+  {
+    id: 'help',
+    title: 'Helping in practical ways',
+    body: [
+      'Share the nights (bottles, wakings), take on meals, shopping, laundry and visitors without her having to ask.',
+      'Protect her rest time: you handle the baby, the phone and the door.',
+    ],
+    sources: [],
+  },
+  {
+    id: 'consult',
+    title: 'Encouraging a consultation, without guilt',
+    body: [
+      'Offer rather than impose: “If you’d like, I can help you book an appointment.” Offer to look after the baby during the appointment, or to go with her.',
+      'A midwife, GP, PMI centre or psychologist can see her.',
+    ],
+    sources: ['mpj'],
+  },
+  {
+    id: 'urgent',
+    title: 'When to ask for urgent help',
+    body: [
+      'If she talks about harming herself, about not being here any more, about harming the baby, or if she seems very confused: do not leave her alone, make sure the baby is somewhere secure and call 3114, or 15 / 112 if the danger is immediate.',
+    ],
+    sources: ['crise'],
+  },
+];
+
+const USEFUL_PHRASES_EN = [
+  'How are you really feeling today?',
+  'What can I take on to give you a breather?',
+  'Would you like me to look after the baby while you rest?',
+  'If you’d like, I can help you book an appointment.',
+  'You don’t have to handle everything alone.',
+];
+
+const RECOVERY_WARNINGS_EN = {
+  call15: ['Chest pain', 'Difficulty breathing or shortness of breath', 'Seizures', 'Thoughts of harming yourself or of harming someone'],
+  callPro: [
+    'Bleeding that soaks a pad in an hour, or clots the size of an egg or larger',
+    'A wound (episiotomy, caesarean) that is not healing, is red or is oozing',
+    'A red, swollen, painful or warm leg',
+    'A temperature of 38 °C or above',
+    'Headaches that persist despite a painkiller, or come with vision problems',
+  ],
+  source: 'awhonn' as const,
+};
+
+export const UNDERSTAND: Section[] = localized(UNDERSTAND_FR, UNDERSTAND_EN);
+export const PARTNER: Section[] = localized(PARTNER_FR, PARTNER_EN);
+export const USEFUL_PHRASES = localized(USEFUL_PHRASES_FR, USEFUL_PHRASES_EN);
+export const RECOVERY_WARNINGS = localized(RECOVERY_WARNINGS_FR, RECOVERY_WARNINGS_EN);

@@ -10,6 +10,8 @@
  *
  * Repère : boîte 240 × 200, sol à y = 190, une unité ≈ 1,05 cm (la femme mesure 165 cm).
  */
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 import { childAge } from './child';
 import { pregnancyProgress } from './pregnancy';
 import type { Child, Pregnancy } from '../types';
@@ -73,7 +75,7 @@ export function sceneFor({ scope, pregnancy, child, children, today }: SceneInpu
 /** Chapitres de la présentation (dans l'ordre du défilement). */
 export interface StoryChapter { key: string; title: string; text: string; scene: StoryScene }
 const one = (age: number): StoryKid[] => [{ id: 'k', ageYears: age }];
-export const STORY_CHAPTERS: StoryChapter[] = [
+const STORY_CHAPTERS_FR: StoryChapter[] = [
   { key: 'before', title: 'Avant', text: 'Une femme, son rythme, ses envies. L’histoire commence par elle.', scene: WOMAN_ALONE },
   { key: 'early', title: 'Les premières semaines', text: 'Rien ne se voit encore, et pourtant tout change déjà.', scene: { belly: bellyForWeek(16), multiple: false, kids: [] } },
   { key: 'round', title: 'Un ventre qui s’arrondit', text: 'Semaine après semaine, la vie prend sa place.', scene: { belly: bellyForWeek(28), multiple: false, kids: [] } },
@@ -85,6 +87,20 @@ export const STORY_CHAPTERS: StoryChapter[] = [
   { key: 'growing', title: 'Grandir', text: 'L’école, les amis, les grandes questions.', scene: { belly: 0, multiple: false, kids: one(6) } },
   { key: 'ten', title: 'Dix ans, main dans la main', text: 'Votre enfant a grandi, et votre main est toujours là.', scene: { belly: 0, multiple: false, kids: one(10) } },
 ];
+const STORY_CHAPTERS_TEXT_EN: Record<string, { title: string; text: string }> = {
+  before: { title: 'Before', text: 'A woman, her rhythm, her wishes. The story starts with her.' },
+  early: { title: 'The first weeks', text: 'Nothing shows yet, and yet everything is already changing.' },
+  round: { title: 'A growing bump', text: 'Week after week, life makes its place.' },
+  term: { title: 'Soon', text: 'The last days of waiting, with a round bump.' },
+  birth: { title: 'Meeting', text: 'Your baby in your arms, close against you.' },
+  sitting: { title: 'Sitting up', text: 'Your baby discovers the world from play-mat level.' },
+  steps: { title: 'First steps', text: 'Standing, one hand in yours: the first leap.' },
+  little: { title: 'By your side', text: 'A little child walking beside their mother.' },
+  growing: { title: 'Growing up', text: 'School, friends, big questions.' },
+  ten: { title: 'Ten years old, hand in hand', text: 'Your child has grown, and your hand is still there.' },
+};
+const STORY_CHAPTERS_EN: StoryChapter[] = STORY_CHAPTERS_FR.map((c) => ({ ...c, ...STORY_CHAPTERS_TEXT_EN[c.key] }));
+export const STORY_CHAPTERS: StoryChapter[] = localized(STORY_CHAPTERS_FR, STORY_CHAPTERS_EN);
 
 /**
  * Étape illustrée (image générée, ElevenLabs, 26/10/2026) correspondant à une scène : 0 à 9 dans l'ordre de
@@ -497,20 +513,22 @@ export function poseSvg(p: Pose, pal: StoryPalette, w = 240, h = 200): string {
 /** Légende courte de l'étape (accueil). */
 export function storyCaption(input: SceneInput & { childName?: string | null; twinNames?: string[]; childAgeLabel?: string | null; weeksLabel?: string | null }): string {
   const { scope } = input;
-  if (scope === 'pregnancy') return input.weeksLabel ? `Le ventre s’arrondit · ${input.weeksLabel}` : 'Le ventre s’arrondit';
+  if (scope === 'pregnancy') return input.weeksLabel ? tr('l2.fs.cap.bellyWeeks', { weeks: input.weeksLabel }) : tr('l2.fs.cap.belly');
   if ((scope === 'baby' || scope === 'child' || scope === 'postpartum') && input.childName) {
     const twins = (input.twinNames ?? []).slice(0, MAX_KIDS - 1);
-    return `${[input.childName, ...twins].join(' et ')}${input.childAgeLabel ? `, ${input.childAgeLabel}` : ''}`;
+    const all = [input.childName, ...twins];
+    const names = all.length > 1 ? tr('l2.fs.cap.and', { a: all.slice(0, -1).join(', '), b: all[all.length - 1] }) : all[0];
+    return input.childAgeLabel ? tr('l2.fs.cap.withAge', { names, age: input.childAgeLabel }) : names;
   }
-  if (scope === 'family') return (input.children?.length ?? 0) > 1 ? 'Toute la famille' : 'Votre famille';
-  return 'Votre histoire, à votre rythme';
+  if (scope === 'family') return (input.children?.length ?? 0) > 1 ? tr('l2.fs.cap.allFamily') : tr('l2.fs.cap.family');
+  return tr('l2.fs.cap.default');
 }
 
 /** Description pour les lecteurs d'écran. */
 export function storyA11y(scene: StoryScene): string {
-  if (!scene.kids.length) return scene.belly > 0.05 ? 'Illustration : une femme enceinte, la main sur son ventre.' : 'Illustration : une femme seule, sereine.';
+  if (!scene.kids.length) return scene.belly > 0.05 ? tr('l2.fs.a11y.pregnant') : tr('l2.fs.a11y.alone');
   const babies = scene.kids.filter((k) => k.ageYears < 0.33).length;
-  if (babies && babies === scene.kids.length) return babies > 1 ? 'Illustration : une mère tenant ses deux nouveau-nés dans ses bras.' : 'Illustration : une mère tenant son nouveau-né dans ses bras.';
-  if (scene.kids.every((k) => k.ageYears < 0.95)) return 'Illustration : une mère auprès de son bébé assis.';
-  return scene.kids.length > 1 ? 'Illustration : une mère et ses enfants, main dans la main.' : 'Illustration : une mère et son enfant, main dans la main.';
+  if (babies && babies === scene.kids.length) return babies > 1 ? tr('l2.fs.a11y.newbornTwins') : tr('l2.fs.a11y.newborn');
+  if (scene.kids.every((k) => k.ageYears < 0.95)) return tr('l2.fs.a11y.sitting');
+  return scene.kids.length > 1 ? tr('l2.fs.a11y.children') : tr('l2.fs.a11y.child');
 }

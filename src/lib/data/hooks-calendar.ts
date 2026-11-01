@@ -2,6 +2,7 @@
  * Abonnement d'agenda (iCalendar) : liens secrets propres à la personne, révocables.
  * Le jeton n'est connu qu'au moment de la création (la base n'en garde que l'empreinte).
  */
+import { t as tr } from '@/i18n';
 import { useMutation } from '@tanstack/react-query';
 import { backend, backendUrl, eq } from '@/lib/backend';
 import { useInvalidate, useRows } from './hooks';
@@ -29,7 +30,7 @@ export function useCreateCalendarFeed() {
     mutationFn: async (a: { householdId: string; includeHealthTitles: boolean }) => {
       const rows = await backend.rpc<{ id: string; token: string }[] | { id: string; token: string }>('create_calendar_feed', { p_household: a.householdId, p_include_health_titles: a.includeHealthTitles });
       const row = Array.isArray(rows) ? rows[0] : rows;
-      if (!row?.token) throw new Error('Le lien n’a pas pu être créé.');
+      if (!row?.token) throw new Error(tr('l3.calendar.link_failed'));
       return row;
     },
     onSuccess: () => inv('calendar_feeds'),

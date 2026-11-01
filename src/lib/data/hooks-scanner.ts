@@ -2,6 +2,8 @@
  * Hooks du scanner (produits et aliments). Les droits et le quota sont vérifiés côté serveur
  * (RLS, déclencheur de quota) ; ici on ne fait que refléter l'état.
  */
+import { localized } from '@/i18n/localized';
+import { t as tr } from '@/i18n';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef } from 'react';
 import { backend, BackendError, eq, isDemo } from '../backend';
@@ -29,7 +31,7 @@ export function useScanProfileOptions(): ProfileOption[] {
       const months = childAge(c.birth_date).months;
       const kind = months < 1 ? 'newborn' : months < 36 ? 'baby' : 'child';
       out.push({
-        key: `child:${c.id}`, label: c.first_name, sub: kind === 'newborn' ? 'Nouveau-né' : kind === 'baby' ? `Bébé, ${months} mois` : `Enfant, ${Math.floor(months / 12)} ans`,
+        key: `child:${c.id}`, label: c.first_name, sub: kind === 'newborn' ? tr('l3.scanner.newborn') : kind === 'baby' ? tr('l3.scanner.baby_months', { months }) : tr('l3.scanner.child_years', { years: Math.floor(months / 12) }),
         profile: { kind, ageMonths: months, allergies: c.allergies_declared ?? [] },
       });
     }
@@ -38,7 +40,7 @@ export function useScanProfileOptions(): ProfileOption[] {
 }
 
 /** Profils génériques (sans lien avec un membre du foyer). L'âge exact est demandé pour bébé et enfant. */
-export const GENERIC_PROFILES: { key: string; label: string; kind: ScanProfile['kind']; needsAge: boolean }[] = [
+const GENERIC_PROFILES_FR: { key: string; label: string; kind: ScanProfile['kind']; needsAge: boolean }[] = [
   { key: 'g:pregnant', label: 'Personne enceinte', kind: 'pregnant', needsAge: false },
   { key: 'g:breastfeeding', label: 'Personne qui allaite', kind: 'breastfeeding', needsAge: false },
   { key: 'g:newborn', label: 'Nouveau-né (moins d’un mois)', kind: 'newborn', needsAge: false },
@@ -46,6 +48,15 @@ export const GENERIC_PROFILES: { key: string; label: string; kind: ScanProfile['
   { key: 'g:child', label: 'Enfant (3 ans et plus)', kind: 'child', needsAge: true },
   { key: 'g:adult', label: 'Adulte', kind: 'adult', needsAge: false },
 ];
+const GENERIC_PROFILES_EN: { key: string; label: string; kind: ScanProfile['kind']; needsAge: boolean }[] = [
+  { key: 'g:pregnant', label: 'Pregnant person', kind: 'pregnant', needsAge: false },
+  { key: 'g:breastfeeding', label: 'Breastfeeding person', kind: 'breastfeeding', needsAge: false },
+  { key: 'g:newborn', label: 'Newborn (under 1 month)', kind: 'newborn', needsAge: false },
+  { key: 'g:baby', label: 'Baby (under 3 years)', kind: 'baby', needsAge: true },
+  { key: 'g:child', label: 'Child (3 years and over)', kind: 'child', needsAge: true },
+  { key: 'g:adult', label: 'Adult', kind: 'adult', needsAge: false },
+];
+export const GENERIC_PROFILES: { key: string; label: string; kind: ScanProfile['kind']; needsAge: boolean }[] = localized(GENERIC_PROFILES_FR, GENERIC_PROFILES_EN);
 
 // ---------------------------------------------------------------- historique
 export function useScanHistory(kind?: ScanKind) {
@@ -175,7 +186,7 @@ export interface SaveAnalysisInput {
 }
 
 export class QuotaReachedError extends Error {
-  constructor() { super('Vous avez utilisé vos analyses gratuites de ce mois. Les rappels officiels restent toujours affichés.'); }
+  constructor() { super(tr('l3.scanner.quota')); }
 }
 
 export function useSaveAnalysis() {
@@ -212,7 +223,7 @@ export function useExplainScan() {
       try {
         return await backend.invoke<ExplainResponse>('scan-explain', { ...buildExplainPayload(a.analysis), scan_id: a.scanId ?? null });
       } catch {
-        return { ai: 'unavailable', message: 'L’explication IA est momentanément indisponible. L’explication des règles reste affichée.' };
+        return { ai: 'unavailable', message: tr('l3.scanner.ai_unavailable') };
       }
     },
     onSuccess: () => inv('scan_results'),

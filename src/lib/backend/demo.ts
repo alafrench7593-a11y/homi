@@ -7,8 +7,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import content from '@/content/demo-content.json';
 import { EXTRA_CATEGORIES, libraryArticleRows } from '@/content/articles/rows';
+import { ARTICLES_EN, CATEGORIES_EN } from '@/content/articles/en';
 import { EXTERNAL_RESOURCES } from '@/content/resources';
 import { legacyJourneys, type JourneyRow } from '../journeys/model';
+import { getLocale, t as tr } from '@/i18n';
+import { lib2 as frDict } from '@/i18n/fr/lib2';
+import { lib2 as enDict } from '@/i18n/en/lib2';
 import { uuid } from '../uuid';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
 import { STEP_BY_KEY } from '@/content/discoveries/steps';
@@ -75,18 +79,18 @@ function recipeSeedRows() {
 const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_resources', 'foods', 'baby_names', 'products', 'product_recalls', 'plan_limits', 'scan_sources', 'cosing_ingredients', 'ciqual_foods'] as const;
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
-const DEMO_RECALL_CHECK = 'Mode démonstration : la base officielle RappelConso n’est pas interrogée ; seuls des rappels fictifs de démonstration peuvent apparaître.';
+const demoRecallMessage = () => tr('l2.dm.recallCheck');
 const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements', 'food_tastings', 'child_steps'];
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
 function checkBottleTimer(all: Row[], r: Row) {
-  if (!Number.isInteger(r.interval_minutes) || r.interval_minutes < 10 || r.interval_minutes > 720) throw new BackendError('Le délai doit être compris entre 10 minutes et 12 heures.');
-  if (!r.last_bottle_at || !r.due_at || r.due_at <= r.last_bottle_at) throw new BackendError('Le rappel doit être prévu après le dernier biberon.');
-  if (Date.parse(r.due_at) - Date.parse(r.last_bottle_at) > 2 * 86400_000) throw new BackendError('Rappel trop éloigné du dernier biberon.');
-  if (r.planned_ml != null && (!Number.isInteger(r.planned_ml) || r.planned_ml < 0 || r.planned_ml > 500)) throw new BackendError('Quantité attendue entre 0 et 500 ml.');
-  if (!['active', 'cancelled', 'done'].includes(r.status)) throw new BackendError('Statut de minuteur invalide.');
+  if (!Number.isInteger(r.interval_minutes) || r.interval_minutes < 10 || r.interval_minutes > 720) throw new BackendError(tr('l2.dm.timerRange'));
+  if (!r.last_bottle_at || !r.due_at || r.due_at <= r.last_bottle_at) throw new BackendError(tr('l2.dm.timerAfter'));
+  if (Date.parse(r.due_at) - Date.parse(r.last_bottle_at) > 2 * 86400_000) throw new BackendError(tr('l2.dm.timerFar'));
+  if (r.planned_ml != null && (!Number.isInteger(r.planned_ml) || r.planned_ml < 0 || r.planned_ml > 500)) throw new BackendError(tr('l2.dm.timerMl'));
+  if (!['active', 'cancelled', 'done'].includes(r.status)) throw new BackendError(tr('l2.dm.timerStatus'));
   if (r.status === 'active' && all.some((x) => x !== r && x.id !== r.id && x.child_id === r.child_id && x.status === 'active')) {
-    throw new BackendError('Un minuteur est déjà actif pour cet enfant.', '23505');
+    throw new BackendError(tr('l2.dm.timerActive'), '23505');
   }
 }
 const OWNER_TABLES: Record<string, string> = {
@@ -118,7 +122,7 @@ const OWNER_TABLES: Record<string, string> = {
 /** Même filtre que le déclencheur serveur postpartum_filter_shared. */
 function filterPostpartumShared(settings: Row | undefined, r: Row) {
   if (!settings || !settings.share_household_id || settings.share_household_id !== r.household_id) {
-    throw new BackendError('Partage non autorisé : choisissez d’abord ce que vous voulez partager, et avec quel foyer.', '42501');
+    throw new BackendError(tr('l2.dm.shareDenied'), '42501');
   }
   if (!settings.share_rest_need) r.rest_need = null;
   if (!settings.share_availability) r.availability = null;
@@ -196,6 +200,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         for (const x of state.tables.articles) x.editorial_status ??= 'to_review';
         const seenArticles = new Set(state.tables.articles.map((x) => x.slug));
         for (const r of libraryArticleRows(state.tables.content_categories as never)) if (!seenArticles.has(r.slug)) state.tables.articles.push(r as unknown as Row);
+        // Versions anglaises (articles et thèmes), comme les colonnes *_en du serveur
+        for (const x of state.tables.articles) { const en = ARTICLES_EN[String(x.slug)]; if (en) { x.title_en = en.title; x.summary_en = en.summary; x.body_md_en = en.body_md; } }
+        for (const c of state.tables.content_categories) { const l = CATEGORIES_EN[String(c.slug)]; if (l) c.label_en = l; }
         // Scanner : données de démonstration (fictives, is_demo = true), mêmes que la section « Scanner » de supabase/seed.sql
         for (const p of DEMO_SCANNER_PRODUCTS) if (!state.tables.products.some((x) => x.barcode === p.barcode)) state.tables.products.push(JSON.parse(JSON.stringify(p)));
         for (const r of DEMO_SCANNER_RECALLS) if (!state.tables.product_recalls.some((x) => x.id === r.id)) state.tables.product_recalls.push(JSON.parse(JSON.stringify(r)));
@@ -237,7 +244,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
 
   const T = (name: string) => (state.tables[name] ??= []);
   const uid = () => {
-    if (!state.session) throw new BackendError('Connexion requise.', '42501');
+    if (!state.session) throw new BackendError(tr('l2.dm.signinDot'), '42501');
     return state.session.userId;
   };
   const isPremium = () => {
@@ -251,8 +258,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   /** « Je grandis » : étapes du catalogue, statuts sans jugement, suivi complet Premium (« ne pas suivre » toujours possible). */
   function checkChildStep(r: Row) {
     const step = STEP_BY_KEY[r.step_key as string];
-    if (!step) throw new BackendError('Étape inconnue.');
-    if (!['observed', 'in_progress', 'not_yet', 'not_tracked'].includes(r.status as string)) throw new BackendError('Statut d’étape invalide.');
+    if (!step) throw new BackendError(tr('l2.dm.stepUnknown'));
+    if (!['observed', 'in_progress', 'not_yet', 'not_tracked'].includes(r.status as string)) throw new BackendError(tr('l2.dm.stepStatus'));
     if (r.status !== 'not_tracked' && !step.main && !isPremium()) throw new BackendError('Fonction Premium (development_full)', 'P0001', 'premium_required');
     r.updated_at = nowIso();
   }
@@ -261,9 +268,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   const CYCLE_HABITS = ['sport', 'walk', 'hydration', 'alcohol', 'tobacco', 'stress_day', 'travel', 'night_work', 'illness', 'event'];
   function checkSymptomRow(r: Row) {
     const tags = (r.tags as string[] | undefined) ?? [];
-    if (tags.length > 10 || tags.some((t) => typeof t !== 'string' || t.trim().length < 1 || t.length > 30 || /[<>]/.test(t))) throw new BackendError('Étiquettes invalides (10 au plus, 1 à 30 caractères).', '23514');
-    if (((r.moods as string[] | undefined) ?? []).some((m) => !CYCLE_MOODS.includes(m))) throw new BackendError('Humeur inconnue.', '23514');
-    if (((r.habits as string[] | undefined) ?? []).some((m) => !CYCLE_HABITS.includes(m))) throw new BackendError('Habitude inconnue.', '23514');
+    if (tags.length > 10 || tags.some((t) => typeof t !== 'string' || t.trim().length < 1 || t.length > 30 || /[<>]/.test(t))) throw new BackendError(tr('l2.dm.tagsInvalid'), '23514');
+    if (((r.moods as string[] | undefined) ?? []).some((m) => !CYCLE_MOODS.includes(m))) throw new BackendError(tr('l2.dm.moodUnknown'), '23514');
+    if (((r.habits as string[] | undefined) ?? []).some((m) => !CYCLE_HABITS.includes(m))) throw new BackendError(tr('l2.dm.habitUnknown'), '23514');
     if (tags.length && !isPremium()) {
       const others = new Set(T('symptom_logs').filter((x) => x.user_id === r.user_id && x.id !== r.id).flatMap((x) => (x.tags as string[] | undefined) ?? []));
       const all = new Set([...others, ...tags]);
@@ -271,8 +278,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
   }
   function checkCyclePrefs(next: Row, prev?: Row) {
-    if (next.favorites && (next.favorites as unknown[]).length > 5) throw new BackendError('Cinq raccourcis au maximum.', '23514');
-    if (next.lock_mode && !['off', 'intimate', 'cycle'].includes(next.lock_mode as string)) throw new BackendError('Verrouillage inconnu.', '23514');
+    if (next.favorites && (next.favorites as unknown[]).length > 5) throw new BackendError(tr('l2.dm.shortcutsMax'), '23514');
+    if (next.lock_mode && !['off', 'intimate', 'cycle'].includes(next.lock_mode as string)) throw new BackendError(tr('l2.dm.lockUnknown'), '23514');
     if (next.anticipation && !prev?.anticipation && !isPremium()) throw new BackendError('Fonction Premium (cycle_anticipation)', 'P0001', 'premium_required');
   }
   const sameHousehold = (a: string, b: string) => T('household_members').some((x) => x.user_id === a && T('household_members').some((y) => y.user_id === b && y.household_id === x.household_id));
@@ -285,14 +292,14 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   function checkPseudonym(r: Row, creating: boolean) {
     if (r.pseudonym == null) return;
     r.pseudonym = String(r.pseudonym).trim();
-    if (!PSEUDONYM.test(r.pseudonym)) throw new BackendError('Pseudonyme invalide : 3 à 24 caractères (lettres, chiffres, espace, point, tiret).');
+    if (!PSEUDONYM.test(r.pseudonym)) throw new BackendError(tr('l2.dm.pseudoInvalid'));
     const owner = r.user_id ?? state.session?.userId;
-    if (T('community_profiles').some((p) => p.pseudonym === r.pseudonym && (creating || p.user_id !== owner))) throw new BackendError('Ce pseudonyme existe déjà.', '23505');
+    if (T('community_profiles').some((p) => p.pseudonym === r.pseudonym && (creating || p.user_id !== owner))) throw new BackendError(tr('l2.dm.pseudoTaken'), '23505');
     const name = T('profiles').find((p) => p.id === owner)?.display_name;
     const email = state.users.find((u) => u.id === owner)?.email.split('@')[0];
     const lower = r.pseudonym.toLowerCase();
     if ((name && lower === String(name).trim().toLowerCase()) || (email && lower === email.toLowerCase())) {
-      throw new BackendError('Choisissez un pseudonyme différent de votre prénom et de votre adresse e-mail.', 'P0001', 'pseudonym_identifying');
+      throw new BackendError(tr('l2.dm.pseudoPersonal'), 'P0001', 'pseudonym_identifying');
     }
   }
   const notify = (userId: string, n: Row) => T('notifications').push({ id: uuid(), user_id: userId, payload: {}, read_at: null, created_at: nowIso(), ...n });
@@ -307,8 +314,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   /** Jamais l'identité de l'auteur d'une publication anonyme. */
   const actorLabel = (userId: string, postId: string) => {
     const post = T('posts').find((x) => x.id === postId);
-    if (post?.anonymous && post.author_id === userId) return 'L’auteur·rice de la publication';
-    return T('community_profiles').find((x) => x.user_id === userId)?.pseudonym ?? 'Quelqu’un';
+    if (post?.anonymous && post.author_id === userId) return tr('l2.dm.authorAnon');
+    return T('community_profiles').find((x) => x.user_id === userId)?.pseudonym ?? tr('l2.soc.someone');
   };
   function uniqueHandle(base: string, owner: string) {
     let h = base; let n = 0;
@@ -325,11 +332,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       const err = handleError(String(r.handle));
       if (err) throw new BackendError(err, 'P0001', 'handle_invalid');
       r.handle = normalizeHandle(String(r.handle));
-      if (T('community_profiles').some((x) => x.handle === r.handle && x.user_id !== owner)) throw new BackendError('Cet identifiant est déjà pris.', '23505');
+      if (T('community_profiles').some((x) => x.handle === r.handle && x.user_id !== owner)) throw new BackendError(tr('l2.dm.handleTaken'), '23505');
     }
-    if (r.avatar_path && String(r.avatar_path).split('/')[0] !== owner) throw new BackendError('Photo de profil invalide.', '42501');
-    if (r.bio != null) { r.bio = String(r.bio).trim() || null; if (r.bio && r.bio.length > 280) throw new BackendError('Présentation : 280 caractères au plus.'); }
-    if (r.visibility != null && !['members', 'minimal'].includes(r.visibility)) throw new BackendError('Visibilité invalide.');
+    if (r.avatar_path && String(r.avatar_path).split('/')[0] !== owner) throw new BackendError(tr('l2.dm.avatarInvalid'), '42501');
+    if (r.bio != null) { r.bio = String(r.bio).trim() || null; if (r.bio && r.bio.length > 280) throw new BackendError(tr('l2.dm.bioMax')); }
+    if (r.visibility != null && !['members', 'minimal'].includes(r.visibility)) throw new BackendError(tr('l2.dm.visibilityInvalid'));
     r.updated_at = nowIso();
   }
   /** Masquage ou rétablissement par la modération : l'autrice est informée (on_moderated). */
@@ -337,11 +344,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     if (target.status === before) return;
     const postId = kind === 'post' ? target.id : target.post_id;
     const link = kind === 'post' ? `/community/post/${postId}` : `/community/post/${postId}?comment=${target.id}`;
-    const what = kind === 'post' ? 'Votre publication' : 'Votre commentaire';
+    const what = kind === 'post' ? tr('l2.dm.whatPost') : tr('l2.dm.whatComment');
     if (['hidden', 'removed'].includes(target.status) && ['visible', 'pending_review'].includes(before)) {
-      communityNotify(target.author_id, { category: 'community_moderation', title: `${what} ${target.status === 'removed' ? 'a été retiré par la modération' : 'a été masqué en attendant la modération'}`, body: 'Il ne respecte peut-être pas les règles de la communauté. Vous pouvez le retrouver dans « Moi ».', deep_link: link, payload: { post_id: postId, status: target.status } });
+      communityNotify(target.author_id, { category: 'community_moderation', title: tr(target.status === 'removed' ? 'l2.dm.modRemoved' : 'l2.dm.modHidden', { what }), body: tr('l2.dm.modBody'), deep_link: link, payload: { post_id: postId, status: target.status } });
     } else if (target.status === 'visible' && ['pending_review', 'hidden'].includes(before)) {
-      communityNotify(target.author_id, { category: 'community_moderation', title: `${what} est maintenant visible`, body: null, deep_link: link, payload: { post_id: postId, status: target.status } });
+      communityNotify(target.author_id, { category: 'community_moderation', title: tr('l2.dm.modVisible', { what }), body: null, deep_link: link, payload: { post_id: postId, status: target.status } });
     }
   }
 
@@ -376,8 +383,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   function seedCommunity() {
     const forum = (slug: string) => T('forums').find((f) => f.slug === slug)?.id;
     const others = [
-      { user_id: 'demo-voisine-1', pseudonym: 'Maïa_et_Sohan', handle: 'maia_et_sohan', area_label: 'Lyon', bio: 'Maman de Sohan, 8 mois. Toujours partante pour échanger sur le sommeil.', avatar_preset: 'flower', journey_label: 'bebe', visibility: 'members' },
-      { user_id: 'demo-voisin-2', pseudonym: 'PapaDeNour', handle: 'papadenour', area_label: 'Lille', bio: 'Papa de jumeaux et d’une grande sœur. On s’organise comme on peut !', avatar_preset: 'whale', journey_label: 'jumeaux', visibility: 'members' },
+      { user_id: 'demo-voisine-1', pseudonym: 'Maïa_et_Sohan', handle: 'maia_et_sohan', area_label: 'Lyon', bio: tr('l2.dm.bioMaia'), avatar_preset: 'flower', journey_label: 'bebe', visibility: 'members' },
+      { user_id: 'demo-voisin-2', pseudonym: 'PapaDeNour', handle: 'papadenour', area_label: 'Lille', bio: tr('l2.dm.bioPapa'), avatar_preset: 'whale', journey_label: 'jumeaux', visibility: 'members' },
       { user_id: 'demo-voisine-3', pseudonym: 'Clem.2026', handle: 'clem_2026', area_label: 'Nantes', bio: null, avatar_preset: 'moon', journey_label: null, visibility: 'minimal' },
     ];
     // Amorçage additif : un appareil qui avait déjà la démo reçoit les nouveaux exemples sans perdre ses données
@@ -391,22 +398,25 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       like_count: likes, comment_count: 0, created_at: new Date(Date.now() - hoursAgo * 3600_000).toISOString(), edited_at: null,
     });
     const samples = [
-      p('post-partum', 'demo-voisine-1', 'Trois semaines après : on en parle ?', 'Je pensais être plus en forme. Les nuits sont longues et je pleure facilement. Vous avez vécu ça aussi ?', 5, 12),
-      p('jumeaux-triples', 'demo-voisin-2', 'Tableau de relais pour les nuits', 'Avec ma compagne on a fait un tableau : 22h-2h pour moi, 2h-6h pour elle. Ça nous a sauvés. Et vous ?', 20, 31),
-      p('grossesse', 'demo-voisine-3', 'Valise : vous l’avez préparée quand ?', 'Je suis à 30 SA et je n’ai encore rien fait. Pas de panique ?', 30, 7),
-      p('plusieurs-enfants', 'demo-voisin-2', 'Préparer un aîné à l’arrivée du bébé', 'Notre fille de 4 ans pose plein de questions. Des livres à conseiller ?', 52, 18),
-      p('sommeil', 'demo-voisine-1', 'Réveils à 5 h du matin', 'Notre fils de 15 mois se réveille tous les jours à 5 h. Des idées pour décaler un peu le réveil ?', 8, 9),
-      p('diversification', 'demo-voisine-3', 'Premières purées : par quoi commencer ?', 'On démarre la diversification la semaine prochaine. Carotte, courgette… vous avez commencé par quoi ?', 26, 14),
-      p('projet-bebe', 'demo-voisine-1', 'Un an d’essais, comment tenir le moral ?', 'Chaque mois l’attente puis la déception. Comment faites-vous pour garder le moral à deux ?', 40, 22),
-      p('projet-bebe', 'demo-voisine-3', 'Premier rendez-vous en centre de PMA', 'Rendez-vous dans deux semaines. Quelles questions avez-vous posées la première fois ?', 70, 6),
-      p('biberon', 'demo-voisin-2', 'Biberons la nuit : vos astuces ?', 'Eau prête à température, doses de lait préparées… comment vous organisez-vous la nuit ?', 12, 5),
-      { ...p('questions-generales', 'demo-voisine-1', 'Balade poussette au parc de la Tête d’Or', 'Une balade samedi matin, entre parents de bébés ? Rendez-vous devant l’entrée principale.', 16, 3), area_label: 'Lyon' },
-      { ...p('nouveau-ne', 'demo-voisin-2', null, 'Témoignage : les deux premières semaines avec les jumeaux, je dormais par tranches de deux heures. Ce qui nous a aidés : accepter l’aide de la famille et préparer les biberons à l’avance. Courage à celles et ceux qui commencent !', 3, 25), kind: 'testimony' },
-      { ...p('post-partum', 'demo-voisine-3', null, 'Je me sens loin de mon bébé certains jours et ça me fait peur. J’en ai parlé à ma sage-femme hier. Est-ce que d’autres ont ressenti ça ?', 10, 16), kind: 'testimony', anonymous: true },
+      p('post-partum', 'demo-voisine-1', tr('l2.dm.sp0t'), tr('l2.dm.sp0b'), 5, 12),
+      p('jumeaux-triples', 'demo-voisin-2', tr('l2.dm.sp1t'), tr('l2.dm.sp1b'), 20, 31),
+      p('grossesse', 'demo-voisine-3', tr('l2.dm.sp2t'), tr('l2.dm.sp2b'), 30, 7),
+      p('plusieurs-enfants', 'demo-voisin-2', tr('l2.dm.sp3t'), tr('l2.dm.sp3b'), 52, 18),
+      p('sommeil', 'demo-voisine-1', tr('l2.dm.sp4t'), tr('l2.dm.sp4b'), 8, 9),
+      p('diversification', 'demo-voisine-3', tr('l2.dm.sp5t'), tr('l2.dm.sp5b'), 26, 14),
+      p('projet-bebe', 'demo-voisine-1', tr('l2.dm.sp6t'), tr('l2.dm.sp6b'), 40, 22),
+      p('projet-bebe', 'demo-voisine-3', tr('l2.dm.sp7t'), tr('l2.dm.sp7b'), 70, 6),
+      p('biberon', 'demo-voisin-2', tr('l2.dm.sp8t'), tr('l2.dm.sp8b'), 12, 5),
+      { ...p('questions-generales', 'demo-voisine-1', tr('l2.dm.sp9t'), tr('l2.dm.sp9b'), 16, 3), area_label: 'Lyon' },
+      { ...p('nouveau-ne', 'demo-voisin-2', null, tr('l2.dm.sp10b'), 3, 25), kind: 'testimony' },
+      { ...p('post-partum', 'demo-voisine-3', null, tr('l2.dm.sp11b'), 10, 16), kind: 'testimony', anonymous: true },
     ];
     const added = new Set<number>();
     samples.forEach((s, i) => {
-      if (!s.forum_id || T('posts').some((x) => (s.title ? x.title === s.title : x.body === s.body))) return;
+      const alt = (getLocale() === 'en' ? frDict : enDict) as Record<string, string>; // la même publication dans l'autre langue : jamais de doublon
+      const altTitle = s.title ? alt[`l2.dm.sp${i}t`] : null;
+      const altBody = alt[`l2.dm.sp${i}b`];
+      if (!s.forum_id || T('posts').some((x) => (s.title ? x.title === s.title || x.title === altTitle : x.body === s.body || x.body === altBody))) return;
       T('posts').push(s);
       added.add(i);
     });
@@ -418,12 +428,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       T('comments').push(row);
       return row;
     };
-    const first = c(0, 'demo-voisine-3', 'Oui. Ça m’a fait du bien d’en parler à ma sage-femme. Tu n’es pas seule.');
-    if (first) c(0, 'demo-voisine-1', 'Merci, je vais lui en parler au prochain rendez-vous.', first.id);
-    c(1, 'demo-voisine-1', 'Excellente idée, on va essayer !');
-    c(4, 'demo-voisin-2', 'On a décalé le coucher de 20 minutes, ça a aidé au bout d’une semaine.');
-    const anonReply = c(12, 'demo-voisine-1', 'Oui, les premières semaines surtout. En parler m’a beaucoup aidée, tu as bien fait.');
-    if (anonReply) c(12, 'demo-voisine-3', 'Merci, ça me rassure de lire ça.', anonReply.id);
+    const first = c(0, 'demo-voisine-3', tr('l2.dm.sc0'));
+    if (first) c(0, 'demo-voisine-1', tr('l2.dm.sc1'), first.id);
+    c(1, 'demo-voisine-1', tr('l2.dm.sc2'));
+    c(4, 'demo-voisin-2', tr('l2.dm.sc3'));
+    const anonReply = c(12, 'demo-voisine-1', tr('l2.dm.sc4'));
+    if (anonReply) c(12, 'demo-voisine-3', tr('l2.dm.sc5'), anonReply.id);
     state.tables._community_seed = [{ version: COMMUNITY_SEED_VERSION }];
   }
 
@@ -441,11 +451,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     r.is_demo ??= false;
     r.verdict ??= null;
     r.analysed_at ??= null;
-    if (!['product', 'food'].includes(r.kind)) throw new BackendError('Type de scan invalide.');
-    if (!SCAN_METHODS.includes(r.method)) throw new BackendError('Méthode de scan invalide.');
+    if (!['product', 'food'].includes(r.kind)) throw new BackendError(tr('l2.dm.scanType'));
+    if (!SCAN_METHODS.includes(r.method)) throw new BackendError(tr('l2.dm.scanMethod'));
     const allowed: readonly string[] = r.kind === 'product' ? PRODUCT_VERDICTS : FOOD_VERDICTS;
-    if (r.verdict != null && !allowed.includes(r.verdict)) throw new BackendError('Verdict non prévu pour ce type de scan.');
-    if ((r.verdict == null) !== (r.analysed_at == null)) throw new BackendError('Un verdict exige une date d’analyse.');
+    if (r.verdict != null && !allowed.includes(r.verdict)) throw new BackendError(tr('l2.dm.scanVerdict'));
+    if ((r.verdict == null) !== (r.analysed_at == null)) throw new BackendError(tr('l2.dm.scanDate'));
     if (r.analysed_at) {
       // Quota mensuel des analyses : compteur non remboursé par la suppression de l'historique
       const used = scanUsed(r.user_id);
@@ -464,7 +474,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     if (!scan) return 0;
     T('scan_recall_alerts').push({ user_id: userId, recall_id: rc.id, created_at: nowIso() });
     notify(userId, {
-      category: 'product_recall', title: `${rc.is_demo ? 'Rappel (démonstration) : ' : 'Rappel officiel : '}${rc.title}`, body: String(rc.reason ?? '').slice(0, 240),
+      category: 'product_recall', title: tr(rc.is_demo ? 'l2.dm.recallDemo' : 'l2.dm.recallOfficial', { title: String(rc.title) }), body: String(rc.reason ?? '').slice(0, 240),
       deep_link: `/scanner/result/${scan.id}`, payload: { recall_id: rc.id, scan_id: scan.id, is_demo: !!rc.is_demo },
     });
     return 1;
@@ -484,7 +494,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
     return [...out.values()];
   }
-  const demoRecallCheck = () => ({ checked: false, source: 'RappelConso', error: DEMO_RECALL_CHECK, checkedOn: new Date().toISOString().slice(0, 10) });
+  const demoRecallCheck = () => ({ checked: false, source: 'RappelConso', error: demoRecallMessage(), checkedOn: new Date().toISOString().slice(0, 10) });
 
   // ---------------------------------------------------------------- charge familiale (mêmes règles que les déclencheurs SQL)
   function taskEvent(t: Row, kind: string, detail: Row = {}) {
@@ -515,26 +525,26 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     r.created_at ??= nowIso();
     // Catalogue de produits : mêmes règles que la base (code-barres unique, prix datés et sourcés, jamais dans le futur)
     if (table === 'kid_products') {
-      if (!/^[0-9]{8,14}$/.test(String(r.barcode ?? ''))) throw new BackendError('Code-barres invalide.');
-      if (T('kid_products').some((p) => p.barcode === r.barcode)) throw new BackendError('Ce produit est déjà dans le catalogue.', '23505');
+      if (!/^[0-9]{8,14}$/.test(String(r.barcode ?? ''))) throw new BackendError(tr('l2.dm.barcodeInvalid'));
+      if (T('kid_products').some((p) => p.barcode === r.barcode)) throw new BackendError(tr('l2.dm.productExists'), '23505');
       r.status ??= 'draft'; r.benefits ??= []; r.precautions ??= []; r.updated_at ??= nowIso();
     }
     if (table === 'external_resources') {
-      if (!/^https:\/\//.test(String(r.url ?? ''))) throw new BackendError('Lien https obligatoire.');
-      if (String(r.description ?? '').length > 400) throw new BackendError('Résumé trop long (400 caractères maximum).');
-      if (T('external_resources').some((x) => x.slug === r.slug)) throw new BackendError('Cet identifiant existe déjà.', '23505');
+      if (!/^https:\/\//.test(String(r.url ?? ''))) throw new BackendError(tr('l2.dm.httpsRequired'));
+      if (String(r.description ?? '').length > 400) throw new BackendError(tr('l2.dm.summaryLong'));
+      if (T('external_resources').some((x) => x.slug === r.slug)) throw new BackendError(tr('l2.dm.idExists'), '23505');
       r.status ??= 'draft'; r.topics ??= [];
     }
     if (table === 'product_prices' || table === 'ingredient_prices') {
       const day = String(r.observed_on ?? r.checked_on ?? '');
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || day > nowIso().slice(0, 10)) throw new BackendError('Date du prix invalide (jamais dans le futur).');
-      if (r.source === 'open_prices' && !r.source_url) throw new BackendError('Lien de la source obligatoire pour un prix Open Prices.');
-      if (table === 'product_prices' && !(Number(r.price) > 0)) throw new BackendError('Prix invalide.');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || day > nowIso().slice(0, 10)) throw new BackendError(tr('l2.dm.priceDate'));
+      if (r.source === 'open_prices' && !r.source_url) throw new BackendError(tr('l2.dm.priceSource'));
+      if (table === 'product_prices' && !(Number(r.price) > 0)) throw new BackendError(tr('l2.dm.priceInvalid'));
     }
 
     if (CHILD_TABLES.includes(table)) {
       const child = T('children').find((c) => c.id === r.child_id);
-      if (!child) throw new BackendError('Enfant introuvable.');
+      if (!child) throw new BackendError(tr('l2.dm.childNotFound'));
       r.household_id = child.household_id;
       if (r.created_by == null) r.created_by = me;
     }
@@ -556,31 +566,31 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
 
     if (table === 'assistant_feedback') {
       const m = T('assistant_messages').find((x) => x.id === r.message_id);
-      if (!m || m.user_id !== me || m.role !== 'assistant') throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
-      if (![1, -1].includes(r.value)) throw new BackendError('Valeur invalide.');
+      if (!m || m.user_id !== me || m.role !== 'assistant') throw new BackendError(tr('l2.dm.forbidden'), '42501');
+      if (![1, -1].includes(r.value)) throw new BackendError(tr('l2.dm.valueInvalid'));
       r.updated_at = nowIso();
     }
     // Planificateur de sommeil : un profil par enfant, un avis par estimation (mêmes contraintes qu'en SQL)
     if (table === 'sleep_profiles') {
-      if (T('sleep_profiles').some((x) => x.child_id === r.child_id)) throw new BackendError('Un profil de sommeil existe déjà pour cet enfant.', '23505');
+      if (T('sleep_profiles').some((x) => x.child_id === r.child_id)) throw new BackendError(tr('l2.dm.sleepProfile'), '23505');
       r.use_corrected ??= false; r.routine_minutes ??= 20; r.difficulties ??= []; r.notify ??= { enabled: false }; r.updated_at = nowIso();
     }
     if (table === 'sleep_feedback') {
-      if (!['nap', 'bedtime'].includes(r.target) || !['right', 'early', 'late'].includes(r.verdict)) throw new BackendError('Avis invalide.');
-      if (T('sleep_feedback').some((x) => x.child_id === r.child_id && x.target === r.target && x.estimated_for === r.estimated_for)) throw new BackendError('Avis déjà enregistré pour cette estimation.', '23505');
+      if (!['nap', 'bedtime'].includes(r.target) || !['right', 'early', 'late'].includes(r.verdict)) throw new BackendError(tr('l2.dm.opinionInvalid'));
+      if (T('sleep_feedback').some((x) => x.child_id === r.child_id && x.target === r.target && x.estimated_for === r.estimated_for)) throw new BackendError(tr('l2.dm.opinionExists'), '23505');
       r.created_at ??= nowIso();
     }
     if (table === 'sleeps' && !r.ended_at && T('sleeps').some((s) => s.child_id === r.child_id && !s.ended_at)) {
-      throw new BackendError('Un sommeil est déjà en cours pour cet enfant.');
+      throw new BackendError(tr('l2.dm.sleepOngoing'));
     }
     if (table === 'bottles' && r.in_progress && T('bottles').some((b) => b.child_id === r.child_id && b.in_progress)) {
-      throw new BackendError('Un biberon est déjà en cours pour cet enfant.', '23505');
+      throw new BackendError(tr('l2.dm.bottleOngoing'), '23505');
     }
     if (table === 'child_health_trackers' && (r.low_threshold != null || r.high_threshold != null) && !(r.thresholds_from_plan && r.plan_by)) {
-      throw new BackendError('Un seuil ne peut venir que du plan écrit par le professionnel de votre enfant.');
+      throw new BackendError(tr('l2.dm.thresholdPlan'));
     }
     if (table === 'bottles' && r.prepared_ml != null && r.consumed_ml != null && r.consumed_ml > r.prepared_ml) {
-      throw new BackendError('La quantité bue ne peut pas dépasser la quantité préparée.');
+      throw new BackendError(tr('l2.dm.bottleDrunk'));
     }
     const quota: Record<string, string> = { documents: 'documents_count', checklists: 'checklists_count', children: 'children_count' };
     if (quota[table]) {
@@ -594,13 +604,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     // « Ses découvertes » : quelques aliments gratuits par enfant (20261027000100_discoveries_grow_nearby.sql)
     if (table === 'food_introductions') {
       r.status ??= 'tasted'; r.reaction ??= false; r.favorite ??= false; r.created_at ??= nowIso(); r.updated_at = nowIso();
-      if (!['not_yet', 'tasted', 'liked', 'refused'].includes(r.status as string)) throw new BackendError('Statut d’aliment invalide.');
-      if (r.status !== 'not_yet' && !r.first_tried_on) throw new BackendError('Indiquez la date de découverte.');
-      if (r.food_key && T('food_introductions').some((x) => x.child_id === r.child_id && x.food_key === r.food_key)) throw new BackendError('Cet aliment a déjà sa fiche.', '23505');
+      if (!['not_yet', 'tasted', 'liked', 'refused'].includes(r.status as string)) throw new BackendError(tr('l2.dm.foodStatus'));
+      if (r.status !== 'not_yet' && !r.first_tried_on) throw new BackendError(tr('l2.dm.foodDate'));
+      if (r.food_key && T('food_introductions').some((x) => x.child_id === r.child_id && x.food_key === r.food_key)) throw new BackendError(tr('l2.dm.foodExists'), '23505');
       const n = T('food_introductions').filter((x) => x.child_id === r.child_id).length;
       if (n >= limit('food_discoveries_per_child')) throw new BackendError('Limite de la version gratuite atteinte (food_discoveries_per_child)', 'P0001', 'premium_required');
     }
-    if (table === 'food_tastings' && !['tasted', 'liked', 'refused'].includes(r.status as string)) throw new BackendError('Statut invalide.');
+    if (table === 'food_tastings' && !['tasted', 'liked', 'refused'].includes(r.status as string)) throw new BackendError(tr('l2.dm.statusInvalid'));
     if (table === 'child_steps') checkChildStep(r);
     if (table === 'reminders' && r.category === 'custom' && !r.treatment_id) {
       const active = T('reminders').filter((x) => x.user_id === (r.user_id ?? me) && x.category === 'custom' && !x.treatment_id && x.enabled !== false).length;
@@ -611,24 +621,24 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (r.status === 'done') { r.done_at ??= nowIso(); r.done_by ??= me; }
     }
     if (table === 'care_requests') {
-      if (r.kind === 'take_task' && !r.task_id) throw new BackendError('Choisissez la tâche concernée.');
+      if (r.kind === 'take_task' && !r.task_id) throw new BackendError(tr('l2.dm.taskChoose'));
       r.from_user = me; r.status = 'open'; r.responded_by = null; r.responded_at = null;
     }
     if (table === 'care_shifts') {
-      if (Date.parse(r.ends_at) <= Date.parse(r.starts_at) || Date.parse(r.ends_at) - Date.parse(r.starts_at) > 86400000) throw new BackendError('Un créneau dure au plus 24 heures.');
-      if (r.kind === 'me_time' && r.user_id !== me) throw new BackendError('Chacun réserve son propre temps pour soi.', '42501');
+      if (Date.parse(r.ends_at) <= Date.parse(r.starts_at) || Date.parse(r.ends_at) - Date.parse(r.starts_at) > 86400000) throw new BackendError(tr('l2.dm.slotMax'));
+      if (r.kind === 'me_time' && r.user_id !== me) throw new BackendError(tr('l2.dm.ownTime'), '42501');
       r.status ??= 'planned'; r.created_by ??= me;
     }
-    if (table === 'routines' && (!Array.isArray(r.items) || r.items.length === 0)) throw new BackendError('Ajoutez au moins une étape.');
+    if (table === 'routines' && (!Array.isArray(r.items) || r.items.length === 0)) throw new BackendError(tr('l2.dm.stepAtLeast'));
     if (table === 'postpartum_shared_status') filterPostpartumShared(T('postpartum_settings').find((x) => x.user_id === r.user_id), r);
     if (table === 'postpartum_checkins' && T(table).some((x) => x.user_id === r.user_id && x.checkin_date === r.checkin_date)) {
-      throw new BackendError('Un point est déjà enregistré pour ce jour : modifiez-le plutôt.', '23505');
+      throw new BackendError(tr('l2.dm.pointExists'), '23505');
     }
     if (table === 'scan_results' || table === 'scan_favorites') {
       const scan = T('product_scans').find((x) => x.id === r.scan_id);
-      if (!scan || scan.user_id !== me) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
-      if (table === 'scan_results' && T('scan_results').some((x) => x.scan_id === r.scan_id)) throw new BackendError('Résultat déjà enregistré.', '23505');
-      if (table === 'scan_favorites' && T('scan_favorites').some((x) => x.scan_id === r.scan_id && x.user_id === me)) throw new BackendError('Déjà dans vos favoris.', '23505');
+      if (!scan || scan.user_id !== me) throw new BackendError(tr('l2.dm.forbidden'), '42501');
+      if (table === 'scan_results' && T('scan_results').some((x) => x.scan_id === r.scan_id)) throw new BackendError(tr('l2.dm.resultExists'), '23505');
+      if (table === 'scan_favorites' && T('scan_favorites').some((x) => x.scan_id === r.scan_id && x.user_id === me)) throw new BackendError(tr('l2.dm.alreadyFav'), '23505');
       if (table === 'scan_results') r.explanation ??= null;
     }
     if (table === 'community_profiles') {
@@ -638,27 +648,27 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
     if (table === 'post_photos') {
       const post = T('posts').find((x) => x.id === r.post_id);
-      if (!post || post.author_id !== me || String(r.path ?? '').split('/')[0] !== me) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
-      if (T('post_photos').filter((x) => x.post_id === r.post_id).length >= 4) throw new BackendError('4 photos au maximum par publication.');
+      if (!post || post.author_id !== me || String(r.path ?? '').split('/')[0] !== me) throw new BackendError(tr('l2.dm.forbidden'), '42501');
+      if (T('post_photos').filter((x) => x.post_id === r.post_id).length >= 4) throw new BackendError(tr('l2.dm.photosMax'));
       r.position ??= 0; r.created_at = nowIso();
     }
     if (table === 'community_notification_prefs') {
       delete r.id;
-      if (T(table).some((x) => x.user_id === r.user_id)) throw new BackendError('Préférences déjà enregistrées.', '23505');
+      if (T(table).some((x) => x.user_id === r.user_id)) throw new BackendError(tr('l2.dm.prefsExist'), '23505');
       for (const k of ['post_comment', 'comment_reply', 'reaction', 'saved_reply', 'moderation']) r[k] ??= true;
     }
     if (table === 'posts' || table === 'comments') {
       const profile = T('community_profiles').find((p) => p.user_id === me);
-      if (!profile) throw new BackendError('Choisissez un pseudonyme avant de publier.', 'P0001', 'pseudonym_required');
-      if (profile.suspended_until && profile.suspended_until > nowIso()) throw new BackendError('Votre compte communauté est suspendu.', '42501');
-      if (table === 'posts' && !T('forums').some((f) => f.id === r.forum_id && !f.archived)) throw new BackendError('Choisissez une catégorie.');
-      if (table === 'posts' && T('posts').some((x) => x.author_id === me && x.body === r.body && Date.now() - Date.parse(x.created_at) < 86_400_000)) throw new BackendError('Vous avez déjà publié ce message.', 'P0001', 'duplicate');
-      if (table === 'comments' && T('comments').some((x) => x.author_id === me && x.post_id === r.post_id && x.body === r.body && Date.now() - Date.parse(x.created_at) < 600_000)) throw new BackendError('Vous avez déjà envoyé ce commentaire.', 'P0001', 'duplicate');
+      if (!profile) throw new BackendError(tr('l2.dm.pseudoFirst'), 'P0001', 'pseudonym_required');
+      if (profile.suspended_until && profile.suspended_until > nowIso()) throw new BackendError(tr('l2.dm.suspended'), '42501');
+      if (table === 'posts' && !T('forums').some((f) => f.id === r.forum_id && !f.archived)) throw new BackendError(tr('l2.dm.chooseCategory'));
+      if (table === 'posts' && T('posts').some((x) => x.author_id === me && x.body === r.body && Date.now() - Date.parse(x.created_at) < 86_400_000)) throw new BackendError(tr('l2.dm.postDup'), 'P0001', 'duplicate');
+      if (table === 'comments' && T('comments').some((x) => x.author_id === me && x.post_id === r.post_id && x.body === r.body && Date.now() - Date.parse(x.created_at) < 600_000)) throw new BackendError(tr('l2.dm.commentDup'), 'P0001', 'duplicate');
       const text = `${r.title ?? ''} ${r.body ?? ''}`;
       let status = PERSONAL_DATA.test(text) || textNeedsReview(text) ? 'pending_review' : 'visible';
       for (const term of DEMO_TERMS) {
         if (!term.pattern.test(text)) continue;
-        if (term.action === 'block') throw new BackendError(`Ce contenu ne respecte pas les règles de la communauté (${term.reason}).`);
+        if (term.action === 'block') throw new BackendError(tr('l2.dm.reasonSpam', { reason: term.reason }));
         status = 'pending_review';
       }
       r.status = status;
@@ -667,14 +677,14 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (table === 'comments') r.edited_at = null;
       if (table === 'comments') {
         const post = T('posts').find((p) => p.id === r.post_id);
-        if (!post || post.status !== 'visible') throw new BackendError('Cette publication n’accepte plus de commentaires.', '42501');
-        if (blockedBetween(post.author_id, r.author_id)) throw new BackendError('Impossible de répondre à cette publication.', '42501');
+        if (!post || post.status !== 'visible') throw new BackendError(tr('l2.dm.commentsClosed'), '42501');
+        if (blockedBetween(post.author_id, r.author_id)) throw new BackendError(tr('l2.dm.cannotReplyPost'), '42501');
         r.parent_id ??= null;
         replyTarget = null;
         if (r.parent_id) {
           const parent = T('comments').find((x) => x.id === r.parent_id);
-          if (!parent || parent.post_id !== r.post_id) throw new BackendError('Le commentaire auquel vous répondez est introuvable.');
-          if (parent.status !== 'visible' || blockedBetween(parent.author_id, r.author_id)) throw new BackendError('Impossible de répondre à ce commentaire.', '42501');
+          if (!parent || parent.post_id !== r.post_id) throw new BackendError(tr('l2.dm.parentGone'));
+          if (parent.status !== 'visible' || blockedBetween(parent.author_id, r.author_id)) throw new BackendError(tr('l2.dm.cannotReplyComment'), '42501');
           replyTarget = parent.author_id;
           // Un seul niveau : une réponse à une réponse est rattachée au commentaire racine
           if (parent.parent_id) r.parent_id = parent.parent_id;
@@ -683,20 +693,20 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
     if (table === 'reports') {
       const dup = T('reports').some((x) => x.reporter_id === me && ((r.post_id && x.post_id === r.post_id) || (r.comment_id && x.comment_id === r.comment_id)));
-      if (dup) throw new BackendError('Vous avez déjà signalé ce contenu.');
+      if (dup) throw new BackendError(tr('l2.dm.reportedContent'));
       r.status = 'open';
     }
     if (table === 'reminders') r.updated_at = nowIso();
     if (table === 'user_journeys') {
       // Mêmes règles que la base : un seul parcours « corps » actif, un post-partum, un parcours par enfant
       r.status ??= 'active'; r.started_on ??= todayIso(); r.ended_on ??= null; r.end_reason ??= null; r.pregnancy_id ??= null; r.child_id ??= null; r.household_id ??= null;
-      if (r.type === 'pregnancy' && !r.pregnancy_id) throw new BackendError('Une grossesse doit être associée à ce parcours.');
+      if (r.type === 'pregnancy' && !r.pregnancy_id) throw new BackendError(tr('l2.dm.pregnancyNeeded'));
       if (r.status === 'active') checkJourney(r);
     }
     if (table === 'cycle_preferences') {
       // Comme la base : clé primaire = user_id (une seule ligne par personne)
       delete r.id;
-      if (T(table).some((x) => x.user_id === r.user_id)) throw new BackendError('Préférences déjà enregistrées : modifiez-les plutôt.', '23505');
+      if (T(table).some((x) => x.user_id === r.user_id)) throw new BackendError(tr('l2.dm.prefsExistEdit'), '23505');
       r.track_intercourse ??= false;
       r.hide_on_home ??= false;
       r.advice_enabled ??= true;
@@ -713,35 +723,35 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     if (table === 'intercourse_logs') {
       // Suivi intime : uniquement après activation volontaire (consentement) dans la confidentialité du cycle
       const prefs = T('cycle_preferences').find((x) => x.user_id === (r.user_id ?? me));
-      if (!prefs?.track_intercourse) throw new BackendError('Activez d’abord le suivi de la vie sexuelle (facultatif) dans la confidentialité du cycle', 'P0001', 'intimate_optin_required');
+      if (!prefs?.track_intercourse) throw new BackendError(tr('l2.dm.sexTracking'), 'P0001', 'intimate_optin_required');
     }
     if (table === 'contraception_logs') {
       r.logged_on ??= todayIso(); r.label ??= null; r.note ??= null;
       const KINDS = ['pill_taken', 'pill_missed', 'patch_changed', 'ring_inserted', 'ring_removed', 'condom', 'device_declared', 'emergency_taken', 'treatment'];
-      if (!KINDS.includes(r.kind as string)) throw new BackendError('Type de saisie inconnu.', '23514');
-      if (r.kind !== 'treatment' && T(table).some((x) => x.user_id === (r.user_id ?? me) && x.logged_on === r.logged_on && x.kind === r.kind)) throw new BackendError('Déjà noté pour ce jour.', '23505');
+      if (!KINDS.includes(r.kind as string)) throw new BackendError(tr('l2.dm.entryUnknown'), '23514');
+      if (r.kind !== 'treatment' && T(table).some((x) => x.user_id === (r.user_id ?? me) && x.logged_on === r.logged_on && x.kind === r.kind)) throw new BackendError(tr('l2.dm.alreadyNoted'), '23505');
     }
     if (table === 'cycle_custom_items') {
       if (!isPremium()) throw new BackendError('Fonction Premium (cycle_custom)', 'P0001', 'premium_required');
       const label = String(r.label ?? '').trim();
-      if (label.length < 1 || label.length > 30) throw new BackendError('Un nom de 1 à 30 caractères.', '23514');
-      if (T(table).filter((x) => x.user_id === (r.user_id ?? me)).length >= 30) throw new BackendError('30 catégories personnalisées au plus', 'P0001');
+      if (label.length < 1 || label.length > 30) throw new BackendError(tr('l2.dm.nameLen'), '23514');
+      if (T(table).filter((x) => x.user_id === (r.user_id ?? me)).length >= 30) throw new BackendError(tr('l2.dm.customMax'), 'P0001');
       r.icon ??= null;
     }
     if (table === 'cycle_shares') {
       // Miroir de cycle_share_check : même foyer, création Premium ; une ligne par partenaire
       delete r.id;
       r.owner_id ??= me;
-      if (r.owner_id === r.partner_id) throw new BackendError('Partage impossible avec soi-même.', '23514');
-      if (!sameHousehold(r.owner_id as string, r.partner_id as string)) throw new BackendError('Partage possible seulement avec un membre de votre foyer', 'P0001');
+      if (r.owner_id === r.partner_id) throw new BackendError(tr('l2.dm.shareSelf'), '23514');
+      if (!sameHousehold(r.owner_id as string, r.partner_id as string)) throw new BackendError(tr('l2.dm.shareHousehold'), 'P0001');
       if (!isPremium()) throw new BackendError('Fonction Premium (cycle_share)', 'P0001', 'premium_required');
-      if (T(table).some((x) => x.owner_id === r.owner_id && x.partner_id === r.partner_id)) throw new BackendError('Déjà partagé avec cette personne.', '23505');
+      if (T(table).some((x) => x.owner_id === r.owner_id && x.partner_id === r.partner_id)) throw new BackendError(tr('l2.dm.alreadyShared'), '23505');
       r.share_period ??= true; r.share_fertile ??= false; r.share_mood ??= false; r.share_symptoms ??= false; r.updated_at = nowIso();
     }
     if (table === 'cycle_insight_feedback') {
       delete r.id;
       const prev = T(table).find((x) => x.user_id === (r.user_id ?? me) && x.insight_key === r.insight_key);
-      if (prev) throw new BackendError('Retour déjà enregistré.', '23505');
+      if (prev) throw new BackendError(tr('l2.dm.feedbackExists'), '23505');
     }
     if (table === 'discharge_logs') { r.textures ??= []; r.symptoms ??= []; }
     if (table === 'bottle_timers') {
@@ -754,8 +764,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     if (table === 'bottles') r.planned_next_ml ??= null;
     if (table === 'parent_sleep_logs') {
       // Même règles que la base : une entrée par jour, réveil après le coucher
-      if (T(table).some((x) => x.user_id === r.user_id && x.log_date === r.log_date)) throw new BackendError('Une nuit est déjà enregistrée pour ce jour : modifiez-la plutôt.');
-      if (r.bedtime && r.wake_time && r.wake_time <= r.bedtime) throw new BackendError('Le réveil doit être après le coucher.');
+      if (T(table).some((x) => x.user_id === r.user_id && x.log_date === r.log_date)) throw new BackendError(tr('l2.dm.nightExists'));
+      if (r.bedtime && r.wake_time && r.wake_time <= r.bedtime) throw new BackendError(tr('l2.dm.wakeAfterBed'));
       r.updated_at = nowIso();
     }
     if (table === 'documents') {
@@ -763,13 +773,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       r.private_to_uploader ??= true;
       r.favorite ??= false; r.archived ??= false; r.page_count ??= 1; r.review_status ??= 'none';
       r.ocr_text ??= null; r.ocr_source ??= null; r.custom_category ??= null; r.updated_at = nowIso();
-      if (r.category === 'custom' && !r.custom_category) throw new BackendError('Donnez un nom à la catégorie personnalisée.');
+      if (r.category === 'custom' && !r.custom_category) throw new BackendError(tr('l2.dm.nameCustom'));
     }
     if (table === 'document_extractions') {
       r.household_id ??= T('documents').find((d) => d.id === r.document_id)?.household_id ?? null;
       r.kind ??= 'fields'; r.level ??= null; r.source ??= null; r.status ??= 'to_verify'; r.professional_note ??= null;
       r.verified_by = r.status === 'verified' || r.status === 'professional' ? state.session?.userId ?? null : null; r.verified_at = r.verified_by ? nowIso() : null;
-      if (r.status === 'professional' && !r.professional_note) throw new BackendError('Indiquez où cette confirmation est documentée.');
+      if (r.status === 'professional' && !r.professional_note) throw new BackendError(tr('l2.dm.sourceDoc'));
     }
     return r;
   }
@@ -780,7 +790,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     const clash = T('user_journeys').some((x) => x.id !== r.id && x.user_id === r.user_id && x.status === 'active' && (
       (body.includes(r.type) && body.includes(x.type)) || (r.type === 'postpartum' && x.type === 'postpartum')
       || (['baby', 'child'].includes(r.type) && ['baby', 'child'].includes(x.type) && r.child_id && x.child_id === r.child_id)));
-    if (clash) throw new BackendError('Un parcours de ce type est déjà actif : terminez-le d’abord.', '23505');
+    if (clash) throw new BackendError(tr('l2.dm.journeyActive'), '23505');
   }
   /** Déclencheur user_journeys_after : profiles.journeys recalculé ; rappels de l'ancien parcours désactivés. */
   function afterJourney(before: Row | null, after: Row | null) {
@@ -820,13 +830,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
           const done = new Set<string>([r.author_id]);
           const rootAuthor = r.parent_id ? T('comments').find((x) => x.id === r.parent_id)?.author_id : null;
           for (const target of [replyTarget, rootAuthor]) {
-            if (target && !done.has(target) && !blockedBetween(target, r.author_id)) communityNotify(target, { category: 'community_reply', title: `${who} a répondu à votre commentaire`, body, deep_link: link, payload });
+            if (target && !done.has(target) && !blockedBetween(target, r.author_id)) communityNotify(target, { category: 'community_reply', title: tr('l2.dm.replied', { who }), body, deep_link: link, payload });
             if (target) done.add(target);
           }
-          if (!done.has(post.author_id) && !blockedBetween(post.author_id, r.author_id)) communityNotify(post.author_id, { category: 'community_comment', title: `${who} a commenté votre publication`, body, deep_link: link, payload });
+          if (!done.has(post.author_id) && !blockedBetween(post.author_id, r.author_id)) communityNotify(post.author_id, { category: 'community_comment', title: tr('l2.dm.commented', { who }), body, deep_link: link, payload });
           done.add(post.author_id);
           for (const s2 of T('saved_posts').filter((x) => x.post_id === post.id)) {
-            if (!done.has(s2.user_id) && !blockedBetween(s2.user_id, r.author_id)) communityNotify(s2.user_id, { category: 'community_saved', title: 'Nouvelle réponse dans une publication enregistrée', body, deep_link: link, payload });
+            if (!done.has(s2.user_id) && !blockedBetween(s2.user_id, r.author_id)) communityNotify(s2.user_id, { category: 'community_saved', title: tr('l2.dm.savedReply'), body, deep_link: link, payload });
             done.add(s2.user_id);
           }
         }
@@ -839,8 +849,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         post.like_count += 1;
         const recent = T('notifications').some((n) => n.user_id === post.author_id && n.category === 'community_like' && n.payload?.post_id === post.id && Date.now() - Date.parse(n.created_at) < 86_400_000);
         if (post.author_id !== r.user_id && !blockedBetween(post.author_id, r.user_id) && !recent) {
-          const who = T('community_profiles').find((x) => x.user_id === r.user_id)?.pseudonym ?? 'Quelqu’un';
-          communityNotify(post.author_id, { category: 'community_like', title: `${who} a aimé votre publication`, body: null, deep_link: `/community/post/${post.id}`, payload: { post_id: post.id } });
+          const who = T('community_profiles').find((x) => x.user_id === r.user_id)?.pseudonym ?? tr('l2.soc.someone');
+          communityNotify(post.author_id, { category: 'community_like', title: tr('l2.dm.liked', { who }), body: null, deep_link: `/community/post/${post.id}`, payload: { post_id: post.id } });
         }
       }
     }
@@ -944,7 +954,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   function assistantCore(b: Row): { result: Row; raw: string | null } {
     const message = String(b.message ?? '').trim();
     if (message.length < 2 || message.length > MAX_QUESTION_LENGTH) {
-      throw new BackendError(`La question doit contenir entre 2 et ${MAX_QUESTION_LENGTH} caractères.`, 'bad_request', undefined, 400);
+      throw new BackendError(tr('l2.dm.questionLen', { max: String(MAX_QUESTION_LENGTH) }), 'bad_request', undefined, 400);
     }
     const me = uid();
     const useContext = b.use_context === true;
@@ -956,7 +966,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     const consented = consent?.granted === true;
     let convId = (b.conversation_id as string | null) ?? null;
     if (convId && !T('assistant_conversations').some((c) => c.id === convId && c.user_id === me)) {
-      throw new BackendError('Conversation introuvable.', 'not_found', undefined, 404);
+      throw new BackendError(tr('l2.dm.convNotFound'), 'not_found', undefined, 404);
     }
 
     const store = (answer: string, extra: Row): string | null => {
@@ -990,7 +1000,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         },
       };
     }
-    if (!consented) throw new BackendError('Pour utiliser l’assistant, acceptez d’abord ses conditions d’utilisation.', 'consent_required', undefined, 403);
+    if (!consented) throw new BackendError(tr('l2.dm.assistantTerms'), 'consent_required', undefined, 403);
 
     // 2) Tentative de détournement : refus poli, sans quota
     if (looksLikePromptInjection(message)) {
@@ -1000,7 +1010,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
 
     // 3) Pas d'IA sans serveur : on le dit clairement, sans réponse simulée ni question décomptée.
     // Pas d'IA sans serveur : erreur discrète (l'état détaillé est dans Réglages › État des services)
-    throw new BackendError('L’assistant n’est pas disponible pour le moment. Réessayez plus tard.', 'ai_not_configured', undefined, 503);
+    throw new BackendError(tr('l2.dm.assistantDown'), 'ai_not_configured', undefined, 503);
   }
 
   // ---------------------------------------------------------------- fonctions backend simulées
@@ -1018,7 +1028,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     cycle_shared_with_me: () => {
       const me = uid();
       return T('cycle_shares').filter((x) => x.partner_id === me).map((x) => ({
-        owner_id: x.owner_id, display_name: (T('profiles').find((p) => p.id === x.owner_id)?.display_name as string) || 'Votre partenaire',
+        owner_id: x.owner_id, display_name: (T('profiles').find((p) => p.id === x.owner_id)?.display_name as string) || tr('l2.dm.partner'),
         share_period: x.share_period, share_fertile: x.share_fertile, share_mood: x.share_mood, share_symptoms: x.share_symptoms,
         paused: !premiumOf(x.owner_id as string) || !sameHousehold(x.owner_id as string, me),
       }));
@@ -1026,7 +1036,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     partner_cycle: (a) => {
       const me = uid();
       const sh = T('cycle_shares').find((x) => x.owner_id === a?.p_owner && x.partner_id === me);
-      if (!sh) throw new BackendError('Aucun partage', 'P0002');
+      if (!sh) throw new BackendError(tr('l2.dm.noShare'), 'P0002');
       const owner = sh.owner_id as string;
       if (!premiumOf(owner) || !sameHousehold(owner, me)) return { paused: true };
       const since = new Date(Date.now() - 13 * 86400000).toISOString().slice(0, 10);
@@ -1052,12 +1062,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     // Statut éditorial d'une recette (miroir de set_recipe_status : rôle « editor » ou « admin », journalisé)
     set_recipe_status: (a) => {
       const me = uid();
-      if (!T('user_roles').some((x) => x.user_id === me && ['editor', 'admin'].includes(x.role as string))) throw new BackendError('Réservé à l’équipe éditoriale', '42501');
+      if (!T('user_roles').some((x) => x.user_id === me && ['editor', 'admin'].includes(x.role as string))) throw new BackendError(tr('l2.dm.editorsOnly'), '42501');
       const r = T('recipes').find((x) => x.slug === a?.p_slug && !x.owner_id);
-      if (!r) throw new BackendError('Recette introuvable', 'P0002');
+      if (!r) throw new BackendError(tr('l2.dm.recipeGone'), 'P0002');
       r.status = a?.p_status;
       if (['reviewed', 'validated'].includes(a?.p_status as string)) r.verified_on = new Date().toISOString().slice(0, 10);
-      T('recipe_reviews').push({ id: uuid(), recipe_id: r.id, status: a?.p_status, by_user: me, by_label: 'Équipe éditoriale', note: a?.p_note ?? null, created_at: new Date().toISOString() });
+      T('recipe_reviews').push({ id: uuid(), recipe_id: r.id, status: a?.p_status, by_user: me, by_label: tr('l2.dm.editorial'), note: a?.p_note ?? null, created_at: new Date().toISOString() });
       markLib('recipes', [r]);
       persist();
       return null;
@@ -1074,7 +1084,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     delete_journey: (a) => {
       const me = uid();
       const j = T('user_journeys').find((r) => r.id === a?.p_id && r.user_id === me);
-      if (!j) throw new BackendError('Parcours introuvable', 'P0002');
+      if (!j) throw new BackendError(tr('l2.dm.journeyGone'), 'P0002');
       const today = new Date().toISOString().slice(0, 10);
       const from = j.started_on as string; const to = (j.ended_on as string | null) ?? today;
       const cycleTypes = ['avoid', 'ttc', 'cycle'];
@@ -1109,7 +1119,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     },
     create_household: (a) => {
       const id = uuid();
-      T('households').push({ id, name: a.p_name || 'Ma famille', created_by: uid(), created_at: nowIso() });
+      T('households').push({ id, name: a.p_name || tr('l2.dm.family'), created_by: uid(), created_at: nowIso() });
       T('household_members').push({
         household_id: id, user_id: uid(), role: 'owner', joined_at: nowIso(),
         can_view: ['daily', 'health', 'documents', 'pregnancy', 'lists', 'names', 'profile'],
@@ -1124,7 +1134,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       return token;
     },
     accept_household_invitation: () => {
-      throw new BackendError('En mode démonstration, un seul compte existe sur cet appareil : connectez Supabase pour partager avec un coparent.');
+      throw new BackendError(tr('l2.dm.coparentDemo'));
     },
     has_premium: () => isPremium(),
     scan_quota_status: () => {
@@ -1154,7 +1164,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       return [{ used, quota, remaining: Math.max(0, quota - used) }];
     },
     consume_feature_quota: (a) => {
-      if (!['voice_entries_per_month', 'summary_exports_per_month'].includes(String(a.p_key))) throw new BackendError('Quota inconnu', '22023');
+      if (!['voice_entries_per_month', 'summary_exports_per_month'].includes(String(a.p_key))) throw new BackendError(tr('l2.dm.quotaUnknown'), '22023');
       const month = new Date().toISOString().slice(0, 7);
       let row = T('feature_usage').find((x) => x.user_id === uid() && x.feature === a.p_key && x.month === month);
       if (!row) { row = { user_id: uid(), feature: a.p_key, month, used: 0 }; T('feature_usage').push(row); }
@@ -1205,7 +1215,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     block_member: (a) => {
       const me = uid();
       const v = T('community_profiles').find((p) => p.handle === normalizeHandle(String(a.p_handle ?? '')));
-      if (!v || v.user_id === me) throw new BackendError('Membre introuvable.');
+      if (!v || v.user_id === me) throw new BackendError(tr('l2.dm.memberGone'));
       if (!T('user_blocks').some((b) => b.blocker_id === me && b.blocked_id === v.user_id)) {
         const row = { blocker_id: me, blocked_id: v.user_id, created_at: nowIso() };
         T('user_blocks').push(row);
@@ -1216,8 +1226,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     report_member: (a) => {
       const me = uid();
       const v = T('community_profiles').find((p) => p.handle === normalizeHandle(String(a.p_handle ?? '')));
-      if (!v || v.user_id === me) throw new BackendError('Membre introuvable.');
-      if (T('reports').some((r) => r.reporter_id === me && r.reported_user === v.user_id && r.status === 'open')) throw new BackendError('Vous avez déjà signalé ce membre.');
+      if (!v || v.user_id === me) throw new BackendError(tr('l2.dm.memberGone'));
+      if (T('reports').some((r) => r.reporter_id === me && r.reported_user === v.user_id && r.status === 'open')) throw new BackendError(tr('l2.dm.memberReported'));
       T('reports').push({ id: uuid(), reporter_id: me, post_id: null, comment_id: null, reported_user: v.user_id, reason: a.p_reason, details: a.p_details ?? null, status: 'open', created_at: nowIso() });
       return null;
     },
@@ -1294,7 +1304,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       const households = T('household_members').filter((m) => m.user_id === me).map((m) => m.household_id);
       const byHousehold = (t: string) => T(t).filter((r) => households.includes(r.household_id));
       return {
-        exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: 'démonstration locale',
+        exported_at: nowIso(), format: 'toi-et-moi-export-v1', mode: tr('l2.dm.exportMode'),
         profile: T('profiles').find((p) => p.id === me) ?? null,
         consents: view('consents'),
         personal: Object.fromEntries(['period_entries', 'symptom_logs', 'ovulation_tests', 'pregnancy_tests', 'maternal_weights', 'mood_checkins', 'reminders', 'assistant_conversations', 'assistant_messages', 'assistant_feedback', 'favorites', 'intercourse_logs', 'fertility_observations', 'contraception_methods', 'consultation_questions', 'parent_sleep_logs', 'product_scans', 'scan_results', 'scan_favorites', 'cycle_preferences', 'contraception_logs', 'cycle_custom_items', 'cycle_insight_feedback', 'cycle_shares', 'postpartum_settings', 'postpartum_checkins', 'trusted_contacts', 'postpartum_actions', 'postpartum_shared_status', 'pregnancy_symptom_logs', 'place_favorites', 'place_reports'].map((t) => [t, view(t)])),
@@ -1314,12 +1324,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       };
     },
     ensure_my_account: () => {
-      if (!state.session) throw new BackendError('Connexion requise', '42501');
+      if (!state.session) throw new BackendError(tr('l2.dm.signinNoDot'), '42501');
       return ensureAccount(uid());
     },
     record_signup_consents: (a) => {
-      if (!state.session) throw new BackendError('Connexion requise', '42501');
-      if (a.p_is_adult !== true) throw new BackendError('Vous devez avoir 18 ans ou plus', '22023');
+      if (!state.session) throw new BackendError(tr('l2.dm.signinNoDot'), '42501');
+      if (a.p_is_adult !== true) throw new BackendError(tr('l2.dm.age18'), '22023');
       const at = nowIso();
       for (const [purpose, version] of [['terms', a.p_terms_version], ['privacy_policy', a.p_privacy_version], ['adult_confirmation', a.p_terms_version]] as const) {
         T('consents').push({ id: uuid(), user_id: uid(), purpose, granted: true, version: String(version), created_at: at });
@@ -1357,11 +1367,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     'community-ai': (b) => {
       if (!isPremium()) throw new BackendError('Fonction Premium (community_ai)', 'P0001', 'premium_required');
       const post = view('forum_feed').find((p) => p.id === b.post_id && p.status === 'visible');
-      if (!post) throw new BackendError('Publication introuvable.');
-      if (b.action === 'translate') return { ai: 'not_configured', message: 'La traduction automatique utilise le serveur (Gemini) : elle n’est pas disponible en démonstration.' };
+      if (!post) throw new BackendError(tr('l2.dm.postGone'));
+      if (b.action === 'translate') return { ai: 'not_configured', message: tr('l2.dm.translateDemo') };
       const comments = view('comment_feed').filter((c) => c.post_id === post.id && c.status === 'visible').sort((x, y) => (x.created_at < y.created_at ? -1 : 1));
-      if (comments.length < MIN_COMMENTS_FOR_SUMMARY) throw new BackendError('Le résumé est proposé à partir de 6 réponses.');
-      return { ai: 'demo', kind: 'summary', points: extractiveSummary(comments as { body: string }[]), caution: null, message: 'Mode démonstration : extraits des réponses, sans IA.' };
+      if (comments.length < MIN_COMMENTS_FOR_SUMMARY) throw new BackendError(tr('l2.dm.summaryMin'));
+      return { ai: 'demo', kind: 'summary', points: extractiveSummary(comments as { body: string }[]), caution: null, message: tr('l2.dm.summaryDemo') };
     },
     // Démonstration : aucun service serveur n'est branché
     'service-status': () => ({ status: 'demo', services: { gemini: false, resend: false, auth_email_hook: false, push: false, revenuecat_webhook: false, open_food_facts: false, google_places: false }, checked_at: nowIso() }),
@@ -1371,14 +1381,14 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       const action = typeof b.action === 'string' ? b.action : 'lookup';
       if (action === 'search') {
         const query = String(b.query ?? '').trim();
-        if (query.length < 2) throw new BackendError('Saisissez au moins 2 caractères.');
+        if (query.length < 2) throw new BackendError(tr('l2.dm.typeTwo'));
         const code = query.replace(/\D/g, '');
         const q = fold(query);
         const rows = T('products').filter((p) => (/^\d{8,14}$/.test(code) ? p.barcode === code : fold(String(p.name ?? '')).includes(q)))
           .filter((p) => (b.kind === 'food' ? ['food', 'drink'].includes(p.category) : b.kind === 'product' ? !['food', 'drink'].includes(p.category) : true));
         return {
           candidates: rows.slice(0, 12).map((p) => fromProductRow(p)), database: 'demo',
-          message: 'Mode démonstration : seule une base fictive est consultée (Open Food Facts, Open Beauty Facts et Open Products Facts nécessitent le serveur).',
+          message: tr('l2.dm.searchDemo'),
         };
       }
       if (action === 'recalls') {
@@ -1386,20 +1396,20 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         return { recalls: recallsFor({ barcode, brand: b.brand ?? null, name: b.name ?? null }), recall_check: demoRecallCheck() };
       }
       if (action === 'prices') {
-        return { prices: [], source: 'Open Prices (Open Food Facts)', status: 'demo', message: 'Mode démonstration : Open Prices n’est consulté que par le serveur. Aucun prix n’est affiché ni inventé.' };
+        return { prices: [], source: 'Open Prices (Open Food Facts)', status: 'demo', message: tr('l2.dm.pricesDemo') };
       }
       if (action === 'recall_watch') {
         const me = uid();
         return { checked: T('product_scans').filter((s) => s.user_id === me && s.barcode).length, notified: T('product_recalls').reduce((n, rc) => n + notifyRecall(rc, me), 0) };
       }
       const barcode = String(b.barcode ?? '').replace(/\D/g, '');
-      if (barcode.length < 8 || barcode.length > 14) throw new BackendError('Code-barres non reconnu. Vous pouvez le saisir à la main.');
+      if (barcode.length < 8 || barcode.length > 14) throw new BackendError(tr('l2.dm.barcodeUnknown'));
       const product = T('products').find((p) => p.barcode === barcode) as (ProductData & { id: string; barcode: string }) | undefined;
       const recalls = recallsFor({ barcode, brand: product?.brand ?? null, name: product?.name ?? null });
       if (!product) {
         return {
           found: false, barcode, recalls, recall_check: demoRecallCheck(), database: 'demo',
-          message: 'Produit introuvable dans la base de démonstration. Essayez un code proposé ou saisissez le nom et les ingrédients.',
+          message: tr('l2.dm.productDemo'),
         };
       }
       if (b.confirm) T('product_scans').push({ id: uuid(), user_id: uid(), kind: 'product', product_id: product.id, barcode, method: 'barcode', confirmed: true, product_snapshot: { name: product.name, brand: product.brand }, answers: {}, sources: [], verdict: null, analysed_at: null, is_demo: true, created_at: nowIso() });
@@ -1413,17 +1423,17 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     },
     // Pas d'IA sans serveur : on le dit, l'application affiche l'explication des règles (jamais un faux texte IA)
     'scan-explain': (b) => {
-      if (!sanitizePayload(b)) throw new BackendError('Résultat d’analyse invalide.');
-      return { ai: 'not_configured', message: 'Explication IA non configurée (mode démonstration : aucune clé Gemini côté serveur).' };
+      if (!sanitizePayload(b)) throw new BackendError(tr('l2.dm.analysisInvalid'));
+      return { ai: 'not_configured', message: tr('l2.dm.aiExplain') };
     },
     // Analyse de photo de glaire : aucune image ne quitte l'appareil en démonstration
     'cycle-photo': (b) => {
-      if (b.consent !== true) throw new BackendError('Votre accord explicite est nécessaire pour envoyer la photo à l’analyse.', 'consent_required', undefined, 400);
-      throw new BackendError('Analyse de photo non disponible en mode démonstration : aucune donnée n’est envoyée.', 'ai_not_configured', undefined, 503);
+      if (b.consent !== true) throw new BackendError(tr('l2.dm.photoConsent'), 'consent_required', undefined, 400);
+      throw new BackendError(tr('l2.dm.photoDemo'), 'ai_not_configured', undefined, 503);
     },
     // Démonstration : aucun document n'est envoyé à un service de lecture
     'document-read': () => ({ status: 'demo' }),
-    'document-extract': () => ({ fields: null, status: 'unavailable', message: 'La lecture automatique nécessite un service connecté (indisponible en mode démonstration).' }),
+    'document-extract': () => ({ fields: null, status: 'unavailable', message: tr('l2.dm.ocrDemo') }),
     'delete-account': async () => {
       const me = uid();
       state.users = state.users.filter((u) => u.id !== me);
@@ -1451,7 +1461,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     const member = T('household_members').find((m) => m.user_id === userId);
     if (member) return { profile_created: profileCreated, household_created: false, household_id: String(member.household_id) };
     const id = uuid();
-    T('households').push({ id, name: 'Ma famille', created_by: userId, created_at: nowIso(), auto_created: true });
+    T('households').push({ id, name: tr('l2.dm.family'), created_by: userId, created_at: nowIso(), auto_created: true });
     T('household_members').push({
       household_id: id, user_id: userId, role: 'owner', joined_at: nowIso(),
       can_view: ['daily', 'health', 'documents', 'pregnancy', 'lists', 'names', 'profile'],
@@ -1481,12 +1491,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         // Aucun e-mail en mode démonstration : le compte est actif tout de suite
       },
       async signInWithProvider(provider) {
-        throw new BackendError(`La connexion avec ${provider === 'apple' ? 'Apple' : 'Google'} n’est pas disponible en mode démonstration : aucune donnée ne quitte cet appareil.`);
+        throw new BackendError(tr(provider === 'apple' ? 'l2.dm.signinApple' : 'l2.dm.signinGoogle'));
       },
       async signUp(email, password) {
         await load();
         const e = email.trim().toLowerCase();
-        if (state.users.some((u) => u.email === e)) throw new BackendError('Un compte existe déjà avec cette adresse sur cet appareil.');
+        if (state.users.some((u) => u.email === e)) throw new BackendError(tr('l2.dm.accountExists'));
         const id = uuid();
         state.users.push({ id, email: e, pw: fnv(password) });
         ensureProfile(id);
@@ -1496,7 +1506,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       async signIn(email, password) {
         await load();
         const u = state.users.find((x) => x.email === email.trim().toLowerCase());
-        if (!u || u.pw !== fnv(password)) throw new BackendError('Adresse e-mail ou mot de passe incorrect.');
+        if (!u || u.pw !== fnv(password)) throw new BackendError(tr('l2.dm.badLogin'));
         ensureProfile(u.id);
         setSession({ userId: u.id, email: u.email });
       },
@@ -1594,8 +1604,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (table === 'food_introductions') {
         for (const r of rows) {
           const next = { ...r, ...patch };
-          if (!['not_yet', 'tasted', 'liked', 'refused'].includes(next.status as string)) throw new BackendError('Statut d’aliment invalide.');
-          if (next.status !== 'not_yet' && !next.first_tried_on) throw new BackendError('Indiquez la date de découverte.');
+          if (!['not_yet', 'tasted', 'liked', 'refused'].includes(next.status as string)) throw new BackendError(tr('l2.dm.foodStatus'));
+          if (next.status !== 'not_yet' && !next.first_tried_on) throw new BackendError(tr('l2.dm.foodDate'));
         }
         patch = { ...patch, updated_at: nowIso() };
       }
@@ -1604,7 +1614,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         const me = state.session?.userId;
         rows = rows.filter((r) => (table === 'community_profiles' ? r.user_id : r.author_id) === me);
         if (table === 'posts' || table === 'comments') {
-          if (patch.status != null && rows.some((r) => patch.status !== r.status && patch.status !== 'removed')) throw new BackendError('Modification du statut interdite', '42501');
+          if (patch.status != null && rows.some((r) => patch.status !== r.status && patch.status !== 'removed')) throw new BackendError(tr('l2.dm.statusLocked'), '42501');
           for (const r of rows) {
             const before = { ...r };
             for (const k of ['title', 'body', 'kind', 'forum_id', 'status']) if (k in patch && (table === 'posts' || ['body', 'status'].includes(k))) r[k] = k === 'title' ? (String(patch.title ?? '').trim() || null) : patch[k];
@@ -1613,7 +1623,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
               r.edited_at = nowIso();
               const text = `${r.title ?? ''} ${r.body}`;
               if (r.status === 'visible' && (PERSONAL_DATA.test(text) || textNeedsReview(text) || DEMO_TERMS.some((x) => x.pattern.test(text)))) r.status = 'pending_review';
-              if (DEMO_TERMS.some((x) => x.action === 'block' && x.pattern.test(text))) { Object.assign(r, before); throw new BackendError('Ce contenu ne respecte pas les règles de la communauté.'); }
+              if (DEMO_TERMS.some((x) => x.action === 'block' && x.pattern.test(text))) { Object.assign(r, before); throw new BackendError(tr('l2.dm.contentRules')); }
             }
           }
           persist();
@@ -1634,27 +1644,27 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       }
       rows = rows.filter((r) => social.beforeUpdate(table, r, patch) && outings.beforeUpdate(table, r, patch));
       markLib(table, rows);
-      if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
+      if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError(tr('l2.dm.forbidden'), '42501');
       if (table === 'assistant_messages' && patch.saved === true && rows.some((r) => !r.saved) && !isPremium()) throw new BackendError('Fonction Premium (assistant_saved)', 'P0001', 'premium_required');
       // Un scan analysé ne se réécrit pas ; seul le champ « explication IA » d'un résultat est modifiable
-      if (table === 'product_scans' || (table === 'scan_results' && Object.keys(patch).some((k) => k !== 'explanation'))) throw new BackendError('Vous n’avez pas l’autorisation de faire cette action.', '42501');
+      if (table === 'product_scans' || (table === 'scan_results' && Object.keys(patch).some((k) => k !== 'explanation'))) throw new BackendError(tr('l2.dm.forbidden'), '42501');
       for (const r of rows) {
         if (table === 'community_profiles' && patch.pseudonym != null) checkPseudonym({ ...patch, user_id: r.user_id }, false);
-        if (table === 'sleeps' && patch.ended_at && Date.parse(patch.ended_at) < Date.parse(patch.started_at ?? r.started_at)) throw new BackendError('La fin du sommeil ne peut pas précéder son début.');
+        if (table === 'sleeps' && patch.ended_at && Date.parse(patch.ended_at) < Date.parse(patch.started_at ?? r.started_at)) throw new BackendError(tr('l2.dm.sleepEnd'));
         if (table === 'bottle_timers') checkBottleTimer(T(table), { ...r, ...patch, id: r.id });
         if (table === 'bottles') {
           const next = { ...r, ...patch };
-          if (next.prepared_ml != null && next.consumed_ml != null && next.consumed_ml > next.prepared_ml) throw new BackendError('La quantité bue ne peut pas dépasser la quantité préparée.');
+          if (next.prepared_ml != null && next.consumed_ml != null && next.consumed_ml > next.prepared_ml) throw new BackendError(tr('l2.dm.bottleDrunk'));
         }
         if (table === 'documents') {
           const next = { ...r, ...patch };
-          if (next.category === 'custom' && !next.custom_category) throw new BackendError('Donnez un nom à la catégorie personnalisée.');
+          if (next.category === 'custom' && !next.custom_category) throw new BackendError(tr('l2.dm.nameCustom'));
           Object.assign(r, patch, { updated_at: nowIso() });
           continue;
         }
         if (table === 'document_extractions') {
           const next = { ...r, ...patch };
-          if (next.status === 'professional' && !next.professional_note) throw new BackendError('Indiquez où cette confirmation est documentée.');
+          if (next.status === 'professional' && !next.professional_note) throw new BackendError(tr('l2.dm.sourceDoc'));
           const stamp = (next.status === 'verified' || next.status === 'professional') && next.status !== r.status;
           Object.assign(r, patch);
           if (stamp) { r.verified_by = state.session?.userId ?? null; r.verified_at = nowIso(); }
@@ -1673,7 +1683,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         }
         if (table === 'care_requests') {
           const me = state.session?.userId;
-          if (r.from_user === me && patch.status && !['open', 'cancelled', 'done'].includes(String(patch.status))) throw new BackendError('Vous ne pouvez pas répondre à votre propre demande.', '42501');
+          if (r.from_user === me && patch.status && !['open', 'cancelled', 'done'].includes(String(patch.status))) throw new BackendError(tr('l2.dm.ownRequest'), '42501');
           Object.assign(r, patch);
           continue;
         }
@@ -1707,7 +1717,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         if (table === 'cycle_preferences') checkCyclePrefs({ ...r, ...patch }, r);
         if (table === 'parent_sleep_logs') {
           if (r.user_id !== state.session?.userId) continue;
-          if (patch.log_date && T(table).some((x) => x.id !== r.id && x.user_id === r.user_id && x.log_date === patch.log_date)) throw new BackendError('Une nuit est déjà enregistrée pour ce jour : modifiez-la plutôt.');
+          if (patch.log_date && T(table).some((x) => x.id !== r.id && x.user_id === r.user_id && x.log_date === patch.log_date)) throw new BackendError(tr('l2.dm.nightExists'));
         }
         Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'parent_sleep_logs', 'contraception_methods', 'consultation_questions', 'bottle_timers', 'cycle_preferences', 'postpartum_checkins'].includes(table) ? { updated_at: nowIso() } : {});
       }
@@ -1781,7 +1791,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     async rpc<R>(fn: string, args?: Row) {
       await load();
       const impl = rpcs[fn];
-      if (!impl) throw new BackendError(`Fonction indisponible en mode démonstration : ${fn}`);
+      if (!impl) throw new BackendError(tr('l2.dm.fnUnavailable', { fn }));
       const out = impl(args ?? {});
       persist();
       return out as R;
@@ -1795,7 +1805,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         // Diffusion simulée : le texte arrive par petits morceaux, comme avec le vrai service
         onEvent('meta', { conversation_id: result.conversation_id, quota: result.quota, demo: true });
         for (const piece of raw.match(/[\s\S]{1,22}/g) ?? []) {
-          if (opts?.signal?.aborted) throw new BackendError('Réponse arrêtée.', 'aborted');
+          if (opts?.signal?.aborted) throw new BackendError(tr('l2.sb.stopped'), 'aborted');
           onEvent('delta', { text: piece });
           if (streamDelayMs > 0) await new Promise((r) => setTimeout(r, streamDelayMs));
         }
@@ -1805,7 +1815,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     async invoke<R>(fn: string, body: unknown) {
       await load();
       const impl = functions[fn];
-      if (!impl) throw new BackendError('Service indisponible en mode démonstration.');
+      if (!impl) throw new BackendError(tr('l2.dm.serviceDemo'));
       const out = await impl((body ?? {}) as Row);
       persist();
       return out as R;

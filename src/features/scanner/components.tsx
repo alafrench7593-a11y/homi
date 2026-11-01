@@ -10,8 +10,8 @@ import { router } from 'expo-router';
 import { Banner, Button, Card, Divider, Icon, Row, SectionTitle, Text, type IconName } from '@/components/ui';
 import { CERTAINTY_LABEL, DEMO_LABEL, RECALL_DISCLAIMER, type Finding, type FindingLevel, type RecallInfo } from '@/lib/domain/scanCommon';
 import { ruleExplanation, type ScanAnalysis } from '@/lib/domain/scanExplain';
-import type { FoodAnalysis } from '@/lib/domain/scanFood';
-import type { IngredientLine, ProductAnalysis } from '@/lib/domain/scanProduct';
+import { foodVerdictLabel, type FoodAnalysis } from '@/lib/domain/scanFood';
+import { productVerdictLabel, type IngredientLine, type ProductAnalysis } from '@/lib/domain/scanProduct';
 import { frDate, type ScanSource } from '@/lib/domain/scanSources';
 import { cosingFunctionLabel, type ExplainResponse, type ScanRow } from '@/lib/types-scanner';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -55,7 +55,7 @@ export function VerdictBadge({ verdict, small }: { verdict: string; small?: bool
   return (
     <Row gap={6} style={{ alignItems: 'center' }}>
       <Icon name={TONE_ICON[tone]} size={small ? 16 : 22} color={color} />
-      <Text variant={small ? 'small' : 'heading'} weight="bold" color={color} style={{ flex: 1 }}>{verdict}</Text>
+      <Text variant={small ? 'small' : 'heading'} weight="bold" color={color} style={{ flex: 1 }}>{foodVerdictLabel(productVerdictLabel(verdict))}</Text>
     </Row>
   );
 }

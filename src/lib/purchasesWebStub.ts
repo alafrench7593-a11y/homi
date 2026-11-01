@@ -3,7 +3,9 @@
  * Google Play). Sur le web, aucune clé n'est configurée et ces fonctions ne sont jamais appelées en mode boutique ;
  * ce module évite d'embarquer ~1 Mo de code de paiement dans la version web.
  */
-const unavailable = async (): Promise<never> => { throw new Error('Achats intégrés indisponibles sur le web'); };
+import { t as tr } from '@/i18n';
+
+const unavailable = async (): Promise<never> => { throw new Error(tr('l2.stub.iap')); };
 const Purchases = {
   configure: () => undefined,
   logIn: unavailable, logOut: unavailable, getOfferings: unavailable, purchasePackage: unavailable,

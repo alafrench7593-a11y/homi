@@ -1,4 +1,5 @@
 /** Minuteur biberon : accès aux données (TanStack Query) + synchronisation des notifications locales. */
+import { t as tr } from '@/i18n';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { backend, eq, gte } from '../backend';
@@ -28,7 +29,7 @@ export function useBottleTimer(childId: string | null | undefined) {
 
 export class TimerExistsError extends Error {
   constructor(public active: BottleTimer) {
-    super('Un minuteur est déjà en cours pour cet enfant.');
+    super(tr('l3.bottle.timer_exists'));
   }
 }
 
@@ -91,10 +92,10 @@ export function useRecorderLabel() {
   const { data: members } = useHouseholdMembers();
   return useCallback((userId: string | null | undefined): string | null => {
     if (!userId) return null;
-    if (userId === me) return 'vous';
+    if (userId === me) return tr('l3.bottle.rec_you');
     const m = members?.find((x) => x.user_id === userId);
-    if (!m) return 'un membre du foyer';
-    return m.role === 'owner' ? 'le parent principal' : m.role === 'coparent' ? 'le coparent' : 'un proche';
+    if (!m) return tr('l3.bottle.rec_member');
+    return m.role === 'owner' ? tr('l3.bottle.rec_owner') : m.role === 'coparent' ? tr('l3.bottle.rec_coparent') : tr('l3.bottle.rec_relative');
   }, [me, members]);
 }
 
@@ -129,7 +130,7 @@ export function useBottleNotificationSettings() {
     await setBottleShowQuantity(v);
   }, []);
   const request = useCallback(async () => {
-    const p = await askNotificationPermission('Pour être prévenu·e à l’heure du prochain biberon, même quand l’application est fermée.');
+    const p = await askNotificationPermission(tr('l3.bottle.notif_reason'));
     setPermission(p);
     if (p === 'granted') await syncBottleTimers().catch(() => undefined);
     return p;

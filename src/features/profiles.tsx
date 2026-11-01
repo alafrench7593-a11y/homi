@@ -10,6 +10,7 @@ import { CHECKLIST_TEMPLATES } from '@/content/checklists';
 import { spacing } from '@/theme/tokens';
 import { toFrDate } from '@/lib/validation';
 import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 
 export interface PregnancyDraft {
   /** due : terme indiqué ; lmp : dernières règles ; conception : date de début de grossesse (terme = + 39 semaines, soit 41 SA) */
@@ -138,10 +139,15 @@ export async function createPregnancy(householdId: string, userId: string, d: Pr
 export interface ChildDraft { first_name: string; birth_date: string; sex: 'female' | 'male' | 'unspecified' | null; tracking: string[]; allergies: string }
 export const emptyChild = (): ChildDraft => ({ first_name: '', birth_date: '', sex: null, tracking: ['breastfeed', 'bottle', 'diaper', 'sleep', 'growth'], allergies: '' });
 
-export const TRACKING_OPTIONS: { key: string; label: string }[] = [
+const TRACKING_OPTIONS_FR: { key: string; label: string }[] = [
   { key: 'breastfeed', label: 'Allaitement' }, { key: 'bottle', label: 'Biberons' }, { key: 'diaper', label: 'Couches' },
   { key: 'sleep', label: 'Sommeil' }, { key: 'meal', label: 'Repas' }, { key: 'growth', label: 'Taille & poids' },
 ];
+const TRACKING_OPTIONS_EN: { key: string; label: string }[] = [
+  { key: 'breastfeed', label: 'Breastfeeding' }, { key: 'bottle', label: 'Bottles' }, { key: 'diaper', label: 'Nappies' },
+  { key: 'sleep', label: 'Sleep' }, { key: 'meal', label: 'Meals' }, { key: 'growth', label: 'Height & weight' },
+];
+export const TRACKING_OPTIONS: { key: string; label: string }[] = localized(TRACKING_OPTIONS_FR, TRACKING_OPTIONS_EN);
 
 export function validateChild(d: ChildDraft): { errors: Record<string, string>; birth?: string } {
   const errors: Record<string, string> = {};

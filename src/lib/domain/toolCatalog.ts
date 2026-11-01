@@ -5,7 +5,8 @@
  * par thème. Les thèmes donnent à chaque outil sa propre identité visuelle et animée.
  */
 import type { IconName } from '@/components/ui';
-import { t as tr, tMaybe } from '@/i18n';
+import { localeTag, t as tr, tMaybe } from '@/i18n';
+import { localized } from '@/i18n/localized';
 import { toolLabelKey, toolsFor, toolSubKey, type ScopeCtx } from '@/lib/journeys/tools';
 
 export type ToolTheme =
@@ -13,7 +14,7 @@ export type ToolTheme =
   | 'scanner' | 'calendar' | 'tasks' | 'relay' | 'metime' | 'prevention' | 'memories' | 'reminders' | 'resources';
 
 /** Ordre d'affichage et titres des catégories. */
-export const THEMES: { key: ToolTheme; title: string; short: string }[] = [
+const THEMES_FR: { key: ToolTheme; title: string; short: string }[] = [
   { key: 'feeding', title: 'Alimentation et biberons', short: 'Repas' },
   { key: 'sleep', title: 'Sommeil et réveils', short: 'Sommeil' },
   { key: 'diapers', title: 'Changes et digestion', short: 'Changes' },
@@ -33,7 +34,29 @@ export const THEMES: { key: ToolTheme; title: string; short: string }[] = [
   { key: 'reminders', title: 'Notifications, rappels et réglages', short: 'Rappels' },
   { key: 'resources', title: 'Questions, lectures et communauté', short: 'Ressources' },
 ];
-export const THEME_TITLE = Object.fromEntries(THEMES.map((x) => [x.key, x.title])) as Record<ToolTheme, string>;
+const THEMES_EN: { key: ToolTheme; title: string; short: string }[] = [
+  { key: 'feeding', title: 'Feeding and bottles', short: 'Meals' },
+  { key: 'sleep', title: 'Sleep and wakings', short: 'Sleep' },
+  { key: 'diapers', title: 'Nappies and digestion', short: 'Nappies' },
+  { key: 'teeth', title: 'Teeth and hygiene', short: 'Teeth' },
+  { key: 'growth', title: 'Growth and development', short: 'Growth' },
+  { key: 'health', title: 'Health and appointments', short: 'Health' },
+  { key: 'mood', title: 'Mood and well-being', short: 'Mood' },
+  { key: 'pregnancy', title: 'Pregnancy', short: 'Pregnancy' },
+  { key: 'cycle', title: 'Cycle and postpartum', short: 'Cycle' },
+  { key: 'scanner', title: 'Scanner and allergens', short: 'Scanner' },
+  { key: 'calendar', title: 'Family calendar', short: 'Calendar' },
+  { key: 'tasks', title: 'Tasks and sharing', short: 'Tasks' },
+  { key: 'relay', title: 'Night shifts', short: 'Shifts' },
+  { key: 'metime', title: 'Time for you', short: 'Me time' },
+  { key: 'prevention', title: 'Preventing overload', short: 'Overload' },
+  { key: 'memories', title: 'Memories and milestones', short: 'Memories' },
+  { key: 'reminders', title: 'Notifications, reminders and settings', short: 'Reminders' },
+  { key: 'resources', title: 'Questions, reading and community', short: 'Resources' },
+];
+export const THEMES: { key: ToolTheme; title: string; short: string }[] = localized(THEMES_FR, THEMES_EN);
+const themeTitles = (l: typeof THEMES_FR) => Object.fromEntries(l.map((x) => [x.key, x.title])) as Record<ToolTheme, string>;
+export const THEME_TITLE = localized(themeTitles(THEMES_FR), themeTitles(THEMES_EN));
 
 export interface CatalogTool {
   /** Identifiant stable (favoris) : dérivé de l'adresse sans l'identifiant d'enfant. */
@@ -137,45 +160,46 @@ export function statusKeyFor(tool: Pick<CatalogTool, 'href' | 'theme'>): StatusK
   return null;
 }
 
-const ago = (iso: string, now: Date) => {
+const ago = (iso: string, now: Date, since = false) => {
   const min = (now.getTime() - Date.parse(iso)) / 60000;
-  if (min < 1) return 'à l’instant';
+  if (min < 1) return tr('l2.ago.now');
   const m = Math.round(min);
-  if (m < 60) return `il y a ${m} min`;
+  const k = since ? 'l2.since' : 'l2.ago';
+  if (m < 60) return tr(`${k}.min` as const, { m });
   const h = Math.floor(m / 60);
-  if (h < 24) return `il y a ${h} h${m % 60 ? ` ${String(m % 60).padStart(2, '0')}` : ''}`;
+  if (h < 24) return m % 60 ? tr(`${k}.hm` as const, { h, r: String(m % 60).padStart(2, '0') }) : tr(`${k}.h` as const, { h });
   const d = Math.floor(h / 24);
-  return d === 1 ? 'hier' : `il y a ${d} jours`;
+  return d === 1 ? tr('l2.ago.yesterday') : tr(`${k}.days` as const, { count: d });
 };
 const sameDay = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 const when = (iso: string, now: Date) => {
   const d = new Date(iso);
-  const hm = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-  if (sameDay(d, now)) return `à ${hm}`;
+  const hm = d.toLocaleTimeString(localeTag(), { hour: '2-digit', minute: '2-digit' });
+  if (sameDay(d, now)) return tr('l2.tc.at', { hm });
   const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
-  if (sameDay(d, tomorrow)) return `demain ${hm}`;
-  return d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+  if (sameDay(d, tomorrow)) return tr('l2.tc.tomorrow', { hm });
+  return d.toLocaleDateString(localeTag(), { weekday: 'short', day: 'numeric', month: 'short' });
 };
 
 export function toolStatuses(i: StatusInput): Partial<Record<StatusKey, ToolStatus>> {
   const { now } = i;
   const out: Partial<Record<StatusKey, ToolStatus>> = {};
-  if (i.bottleRunningSince) out.bottleTimer = { text: `En cours ${ago(i.bottleRunningSince, now).replace('il y a ', 'depuis ')}`, active: true, tone: 'accent' };
-  else if (i.reminderDueAt) out.bottleTimer = { text: Date.parse(i.reminderDueAt) <= now.getTime() ? 'C’est l’heure prévue' : `Rappel ${when(i.reminderDueAt, now)}`, active: true, tone: 'accent' };
-  else if (i.lastBottleAt) out.bottleTimer = { text: `Dernier ${ago(i.lastBottleAt, now)}` };
-  if (i.lastBottleAt) out.feeding = { text: `Dernier ${ago(i.lastBottleAt, now)}` };
-  if (i.openSleepSince) out.sleep = { text: `Endormi ${ago(i.openSleepSince, now).replace('il y a ', 'depuis ')}`, active: true, tone: 'accent' };
-  if (i.lastDiaperAt) out.diapers = { text: `Change ${ago(i.lastDiaperAt, now)}` };
-  if (i.tasksTodayLeft != null) out.family = { text: i.tasksTodayLeft ? `${i.tasksTodayLeft} tâche${i.tasksTodayLeft > 1 ? 's' : ''} aujourd’hui` : 'Rien d’autre aujourd’hui' };
+  if (i.bottleRunningSince) out.bottleTimer = { text: tr('l2.tc.running', { t: ago(i.bottleRunningSince, now, true) }), active: true, tone: 'accent' };
+  else if (i.reminderDueAt) out.bottleTimer = { text: Date.parse(i.reminderDueAt) <= now.getTime() ? tr('l2.tc.dueNow') : tr('l2.tc.reminder', { when: when(i.reminderDueAt, now) }), active: true, tone: 'accent' };
+  else if (i.lastBottleAt) out.bottleTimer = { text: tr('l2.tc.last', { t: ago(i.lastBottleAt, now) }) };
+  if (i.lastBottleAt) out.feeding = { text: tr('l2.tc.last', { t: ago(i.lastBottleAt, now) }) };
+  if (i.openSleepSince) out.sleep = { text: tr('l2.tc.asleep', { t: ago(i.openSleepSince, now, true) }), active: true, tone: 'accent' };
+  if (i.lastDiaperAt) out.diapers = { text: tr('l2.tc.change', { t: ago(i.lastDiaperAt, now) }) };
+  if (i.tasksTodayLeft != null) out.family = { text: i.tasksTodayLeft ? tr('l2.tc.tasks', { count: i.tasksTodayLeft }) : tr('l2.tc.tasksNone') };
   if (i.nextNight) {
     const tonight = Date.parse(i.nextNight.starts_at) <= now.getTime() || sameDay(new Date(i.nextNight.starts_at), now);
     out.nights = { text: `${i.nextNight.who} · ${when(i.nextNight.starts_at, now)}`, active: tonight };
   }
-  if (i.nextMeTime) out.metime = { text: `Réservé ${when(i.nextMeTime, now)}` };
-  if (i.nextAppointment) out.appointments = { text: `Prochain ${when(i.nextAppointment, now)}` };
+  if (i.nextMeTime) out.metime = { text: tr('l2.tc.reserved', { when: when(i.nextMeTime, now) }) };
+  if (i.nextAppointment) out.appointments = { text: tr('l2.tc.next', { when: when(i.nextAppointment, now) }) };
   const cal = [i.nextAppointment, i.nextNight?.starts_at, i.nextMeTime].filter((x): x is string => !!x).sort()[0];
-  if (cal) out.calendar = { text: `Prochain ${when(cal, now)}` };
-  if (i.unreadNotifications) out.notifications = { text: `${i.unreadNotifications} non lue${i.unreadNotifications > 1 ? 's' : ''}`, tone: 'accent' };
-  if (i.activeReminders != null) out.reminders = { text: i.activeReminders ? `${i.activeReminders} actif${i.activeReminders > 1 ? 's' : ''}` : 'Aucun rappel actif' };
+  if (cal) out.calendar = { text: tr('l2.tc.next', { when: when(cal, now) }) };
+  if (i.unreadNotifications) out.notifications = { text: tr('l2.tc.unread', { count: i.unreadNotifications }), tone: 'accent' };
+  if (i.activeReminders != null) out.reminders = { text: i.activeReminders ? tr('l2.tc.active', { count: i.activeReminders }) : tr('l2.tc.noReminders') };
   return out;
 }

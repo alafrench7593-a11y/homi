@@ -2,6 +2,7 @@
  * Notifications LOCALES (rappels personnels, programmés sur le téléphone, sans réseau)
  * et PUSH (réponses du forum, abonnement, rappels officiels de produits).
  */
+import { t as tr } from '@/i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DIGEST_NOTIFICATION, parseTime } from './domain/dailyDigest';
 import Constants from 'expo-constants';
@@ -50,7 +51,7 @@ export async function handleTreatmentResponse(response: Notifications.Notificati
   const existing = await backend.select<{ id: string }>({ table: 'treatment_logs', filters: [eq('treatment_id', data.treatmentId), eq('scheduled_for', scheduled_for)], limit: 1 });
   if (existing[0]) await backend.update('treatment_logs', { status }, [eq('id', existing[0].id)]);
   else await backend.insert('treatment_logs', { treatment_id: data.treatmentId, household_id: data.householdId, scheduled_for, status });
-  if (status === 'snoozed') await snoozeLocally(c.title ?? 'Traitement', c.body ?? undefined, data.url);
+  if (status === 'snoozed') await snoozeLocally(c.title ?? tr('l3.notif.treatment_default'), c.body ?? undefined, data.url);
   return true;
 }
 
@@ -66,32 +67,32 @@ export function configureNotifications() {
   });
   if (Platform.OS === 'android') {
     // Écran verrouillé : contenu masqué (PRIVATE) par défaut ; le système affiche « contenu masqué » si l'utilisatrice l'a choisi
-    Notifications.setNotificationChannelAsync('reminders', { name: 'Rappels', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200], lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
-    Notifications.setNotificationChannelAsync('community', { name: 'Communauté', importance: Notifications.AndroidImportance.DEFAULT, lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
-    Notifications.setNotificationChannelAsync('alerts', { name: 'Alertes officielles', importance: Notifications.AndroidImportance.HIGH }).catch(() => undefined);
+    Notifications.setNotificationChannelAsync('reminders', { name: tr('l3.notif.ch_reminders'), importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200], lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
+    Notifications.setNotificationChannelAsync('community', { name: tr('l3.notif.ch_community'), importance: Notifications.AndroidImportance.DEFAULT, lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
+    Notifications.setNotificationChannelAsync('alerts', { name: tr('l3.notif.ch_alerts'), importance: Notifications.AndroidImportance.HIGH }).catch(() => undefined);
     // Sommeil : estimations choisies par le parent, contenu masqué sur l'écran verrouillé, importance normale
-    Notifications.setNotificationChannelAsync(SLEEP_CHANNEL, { name: 'Sommeil (estimations)', importance: Notifications.AndroidImportance.DEFAULT, lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
-    Notifications.setNotificationChannelAsync(BOTTLE_CHANNEL, { name: 'Biberons', importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200], lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
+    Notifications.setNotificationChannelAsync(SLEEP_CHANNEL, { name: tr('l3.notif.ch_sleep'), importance: Notifications.AndroidImportance.DEFAULT, lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
+    Notifications.setNotificationChannelAsync(BOTTLE_CHANNEL, { name: tr('l3.notif.ch_bottle'), importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200], lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
   }
   Notifications.setNotificationCategoryAsync('reminder', [
-    { identifier: 'snooze', buttonTitle: 'Reporter de 30 min', options: { opensAppToForeground: false } },
-    { identifier: 'done', buttonTitle: 'C’est fait', options: { opensAppToForeground: false } },
+    { identifier: 'snooze', buttonTitle: tr('l3.notif.a_snooze30'), options: { opensAppToForeground: false } },
+    { identifier: 'done', buttonTitle: tr('l3.notif.a_done'), options: { opensAppToForeground: false } },
   ]).catch(() => undefined);
   // Minuteur biberon : « Noter le biberon » (ouvre la saisie), « Reporter 15 min », « Annuler » (sans ouvrir l'application),
   // « Modifier l'intervalle » (ouvre le minuteur). Android n'affiche que les 3 premiers boutons : un appui sur la
   // notification ouvre aussi le minuteur, où l'intervalle se modifie.
   Notifications.setNotificationCategoryAsync(BOTTLE_CATEGORY, [
-    { identifier: BOTTLE_ACTION_RECORD, buttonTitle: 'Noter le biberon', options: { opensAppToForeground: true } },
-    { identifier: BOTTLE_ACTION_SNOOZE, buttonTitle: 'Reporter 15 min', options: { opensAppToForeground: false } },
-    { identifier: BOTTLE_ACTION_CANCEL, buttonTitle: 'Annuler', options: { opensAppToForeground: false, isDestructive: true } },
-    { identifier: BOTTLE_ACTION_EDIT, buttonTitle: 'Modifier l’intervalle', options: { opensAppToForeground: true } },
+    { identifier: BOTTLE_ACTION_RECORD, buttonTitle: tr('l3.notif.a_bottle_record'), options: { opensAppToForeground: true } },
+    { identifier: BOTTLE_ACTION_SNOOZE, buttonTitle: tr('l3.notif.a_bottle_snooze'), options: { opensAppToForeground: false } },
+    { identifier: BOTTLE_ACTION_CANCEL, buttonTitle: tr('l3.notif.a_cancel'), options: { opensAppToForeground: false, isDestructive: true } },
+    { identifier: BOTTLE_ACTION_EDIT, buttonTitle: tr('l3.notif.a_edit_interval'), options: { opensAppToForeground: true } },
   ]).catch(() => undefined);
   // Traitement prescrit d'un enfant : « Pris », « Reporter », « Ignorer », « Ajouter une note »
   Notifications.setNotificationCategoryAsync(TREATMENT_CATEGORY, [
-    { identifier: TREAT_TAKEN, buttonTitle: 'Pris', options: { opensAppToForeground: false } },
-    { identifier: TREAT_SNOOZE, buttonTitle: 'Reporter', options: { opensAppToForeground: false } },
-    { identifier: TREAT_SKIP, buttonTitle: 'Ignorer', options: { opensAppToForeground: false } },
-    { identifier: TREAT_NOTE, buttonTitle: 'Ajouter une note', options: { opensAppToForeground: true } },
+    { identifier: TREAT_TAKEN, buttonTitle: tr('l3.notif.a_taken'), options: { opensAppToForeground: false } },
+    { identifier: TREAT_SNOOZE, buttonTitle: tr('l3.notif.a_snooze'), options: { opensAppToForeground: false } },
+    { identifier: TREAT_SKIP, buttonTitle: tr('l3.notif.a_skip'), options: { opensAppToForeground: false } },
+    { identifier: TREAT_NOTE, buttonTitle: tr('l3.notif.a_note'), options: { opensAppToForeground: true } },
   ]).catch(() => undefined);
   if (!bottleResponseSub) {
     bottleResponseSub = Notifications.addNotificationResponseReceivedListener((r) => {
@@ -154,7 +155,7 @@ const signature = (r: Reminder) => JSON.stringify([r.title, r.body, r.schedule, 
  * (iOS affiche le contenu complet sans réglage particulier). Le détail s'affiche dans l'appli.
  */
 export function lockScreenText(r: Pick<Reminder, 'title' | 'body' | 'category' | 'treatment_id'>): { title: string; body?: string } {
-  if (r.treatment_id || r.category === 'medication') return { title: 'Rappel de traitement', body: 'Ouvrez Au fil de nous pour voir le détail.' };
+  if (r.treatment_id || r.category === 'medication') return { title: tr('l3.notif.lock_title'), body: tr('l3.notif.lock_body') };
   return { title: r.title, body: r.body ?? undefined };
 }
 
@@ -230,7 +231,7 @@ export async function cancelAllLocal() {
 export async function sendTestNotification() {
   if (!notificationsSupported) return false;
   await Notifications.scheduleNotificationAsync({
-    content: { title: 'Les rappels fonctionnent', body: 'Vous recevrez vos rappels ici, même application fermée.', data: { url: '/notifications' } },
+    content: { title: tr('l3.notif.test_title'), body: tr('l3.notif.test_body'), data: { url: '/notifications' } },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 3, channelId: 'reminders' },
   });
   return true;
@@ -398,7 +399,7 @@ async function doSyncBottleTimers(): Promise<BottleSyncResult> {
   let scheduled = 0;
   for (const t of wanted.values()) {
     if (map[t.id]) continue;
-    const { title, body } = notificationContent(names.get(t.child_id) ?? 'votre enfant', t.planned_ml, showQty);
+    const { title, body } = notificationContent(names.get(t.child_id) ?? tr('l3.notif.your_child'), t.planned_ml, showQty);
     try {
       const nid = await Notifications.scheduleNotificationAsync({
         content: {
@@ -455,7 +456,7 @@ async function applyBottleAction(response: Notifications.NotificationResponse): 
     if (action !== BOTTLE_ACTION_CANCEL) {
       await Notifications.scheduleNotificationAsync({
         // Sans kind 'bottle' : ce report ponctuel hors connexion n'est pas annulé par la synchronisation suivante
-        content: { title: request.content.title ?? 'Biberon', body: request.content.body ?? undefined, categoryIdentifier: BOTTLE_CATEGORY, data: { ...data, kind: 'bottle-offline-snooze' } },
+        content: { title: request.content.title ?? tr('l3.notif.bottle_default'), body: request.content.body ?? undefined, categoryIdentifier: BOTTLE_CATEGORY, data: { ...data, kind: 'bottle-offline-snooze' } },
         trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(Date.now() + snoozeMin * 60_000), channelId: BOTTLE_CHANNEL },
       }).catch(() => undefined);
     }

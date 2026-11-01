@@ -6,6 +6,7 @@
  * toujours en attente jusqu'à validation par la modération.
  */
 import { BackendError } from './types';
+import { t as tr } from '@/i18n';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -29,20 +30,20 @@ export function createOutings(c: OutingsCtx) {
   const approvedSugg = (ref: string) => T('place_suggestions').some((s) => `sugg:${s.id}` === ref && s.status === 'approved');
 
   function checkSuggestion(r: Row) {
-    if (len(r.name) < 2 || len(r.name) > 120) throw fail('Indiquez le nom du lieu (2 à 120 caractères).');
-    if (!/^[a-z_]{2,40}$/.test(String(r.category ?? ''))) throw fail('Choisissez une catégorie.');
-    if (len(r.address_public) < 5 || len(r.address_public) > 240) throw fail('Indiquez l’adresse publique du lieu.');
-    if (!(Number.isFinite(r.lat) && Number.isFinite(r.lon))) throw fail('Position du lieu manquante.');
+    if (len(r.name) < 2 || len(r.name) > 120) throw fail(tr('l2.do.name'));
+    if (!/^[a-z_]{2,40}$/.test(String(r.category ?? ''))) throw fail(tr('l2.do.category'));
+    if (len(r.address_public) < 5 || len(r.address_public) > 240) throw fail(tr('l2.do.address'));
+    if (!(Number.isFinite(r.lat) && Number.isFinite(r.lon))) throw fail(tr('l2.do.position'));
     const eq = (r.equipment ?? []) as string[];
-    if (!eq.every((e) => (SUGGESTION_EQUIPMENT as readonly string[]).includes(e))) throw fail('Équipement inconnu.');
-    if (r.website && !/^https:\/\//.test(String(r.website))) throw fail('Le site doit commencer par https://');
-    if (r.min_age != null && r.max_age != null && r.max_age < r.min_age) throw fail('Tranche d’âge invalide');
-    if (len(r.activities) > 500 || len(r.hours_text) > 200) throw fail('Texte trop long.');
+    if (!eq.every((e) => (SUGGESTION_EQUIPMENT as readonly string[]).includes(e))) throw fail(tr('l2.do.equipment'));
+    if (r.website && !/^https:\/\//.test(String(r.website))) throw fail(tr('l2.do.website'));
+    if (r.min_age != null && r.max_age != null && r.max_age < r.min_age) throw fail(tr('l2.do.ageRange'));
+    if (len(r.activities) > 500 || len(r.hours_text) > 200) throw fail(tr('l2.do.textLong'));
   }
 
   function beforeInsert(table: string, r: Row) {
     // 20261029000100 : « Sorties près de chez moi » sert seulement à découvrir des lieux publics
-    if (table === 'community_meetups' || table === 'meetup_participants') throw fail('Les rencontres entre membres ne sont pas proposées dans Au fil de nous.');
+    if (table === 'community_meetups' || table === 'meetup_participants') throw fail(tr('l2.do.noMeetups'));
     const me = c.me();
     if (table === 'place_suggestions') {
       r.user_id = me; r.status = 'pending'; r.moderated_at = null; r.equipment ??= [];
@@ -50,42 +51,42 @@ export function createOutings(c: OutingsCtx) {
       checkSuggestion(r);
     }
     if (table === 'community_meetups') {
-      if (r.organizer_id && r.organizer_id !== me) throw fail('Action non autorisée.', '42501');
+      if (r.organizer_id && r.organizer_id !== me) throw fail(tr('l2.do.notAllowed'), '42501');
       r.organizer_id = me;
       const profile = T('community_profiles').find((p) => p.user_id === me);
-      if (!profile) throw new BackendError('Créez d’abord votre profil communautaire', 'P0001', 'pseudonym_required');
-      if (profile.suspended_until && profile.suspended_until > c.nowIso()) throw fail('Compte suspendu');
-      if (len(r.title) < 3 || len(r.title) > 80) throw fail('Titre : 3 à 80 caractères.');
-      if (len(r.activity) < 3 || len(r.activity) > 500) throw fail('Activité : 3 à 500 caractères.');
-      if (!PLACE_REF.test(String(r.place_ref ?? ''))) throw fail('Choisissez un lieu public dans les résultats.');
-      if (String(r.place_ref).startsWith('sugg:') && !approvedSugg(String(r.place_ref))) throw fail('Choisissez un lieu public validé');
+      if (!profile) throw new BackendError(tr('l2.do.profileFirst'), 'P0001', 'pseudonym_required');
+      if (profile.suspended_until && profile.suspended_until > c.nowIso()) throw fail(tr('l2.do.suspended'));
+      if (len(r.title) < 3 || len(r.title) > 80) throw fail(tr('l2.do.titleLen'));
+      if (len(r.activity) < 3 || len(r.activity) > 500) throw fail(tr('l2.do.activityLen'));
+      if (!PLACE_REF.test(String(r.place_ref ?? ''))) throw fail(tr('l2.do.publicPlace'));
+      if (String(r.place_ref).startsWith('sugg:') && !approvedSugg(String(r.place_ref))) throw fail(tr('l2.do.validatedPlace'));
       const at = new Date(String(r.starts_at)).getTime();
       const now = Date.now();
-      if (!(at >= now + 3_600_000 && at <= now + 60 * 86_400_000)) throw fail('La rencontre doit avoir lieu entre 1 heure et 60 jours à partir de maintenant');
+      if (!(at >= now + 3_600_000 && at <= now + 60 * 86_400_000)) throw fail(tr('l2.do.timeRange'));
       r.capacity = Number(r.capacity);
-      if (!Number.isInteger(r.capacity) || r.capacity < 3 || r.capacity > 20) throw fail('Une rencontre se fait en groupe : de 3 à 20 places.');
+      if (!Number.isInteger(r.capacity) || r.capacity < 3 || r.capacity > 20) throw fail(tr('l2.do.capacity'));
       r.duration_min ??= 90; r.child_age_min ??= 0; r.child_age_max ??= 10; r.for_pregnant ??= false;
       r.place_address ??= null; r.city_label ??= null;
-      if (r.child_age_max < r.child_age_min) throw fail('Tranche d’âge invalide');
+      if (r.child_age_max < r.child_age_min) throw fail(tr('l2.do.ageRange'));
       r.participants_count = 0;
       r.status = c.needsReview(`${r.title} ${r.activity}`) ? 'pending_review' : 'visible';
     }
     if (table === 'meetup_participants') {
-      if (r.user_id && r.user_id !== me) throw fail('Action non autorisée.', '42501');
+      if (r.user_id && r.user_id !== me) throw fail(tr('l2.do.notAllowed'), '42501');
       r.user_id = me;
       delete r.id;
       const m = meetup(r.meetup_id);
       const own = m && m.organizer_id === me;
-      if (!m || new Date(m.starts_at).getTime() < Date.now() || !(m.status === 'visible' || (own && m.status === 'pending_review'))) throw fail('Inscription impossible');
-      if (c.blockedBetween(m.organizer_id, me!)) throw fail('Inscription impossible');
-      if (T('meetup_participants').some((p) => p.meetup_id === m.id && p.user_id === me)) throw new BackendError('Vous participez déjà à cette rencontre.', '23505');
-      if (m.participants_count >= m.capacity) throw fail('Cette rencontre est complète');
+      if (!m || new Date(m.starts_at).getTime() < Date.now() || !(m.status === 'visible' || (own && m.status === 'pending_review'))) throw fail(tr('l2.do.cannotJoin'));
+      if (c.blockedBetween(m.organizer_id, me!)) throw fail(tr('l2.do.cannotJoin'));
+      if (T('meetup_participants').some((p) => p.meetup_id === m.id && p.user_id === me)) throw new BackendError(tr('l2.do.alreadyJoined'), '23505');
+      if (m.participants_count >= m.capacity) throw fail(tr('l2.do.full'));
     }
     if (table === 'reports' && (r.meetup_id || r.place_suggestion_id)) {
       const targets = ['post_id', 'comment_id', 'reported_user', 'meetup_id', 'place_suggestion_id'].filter((k) => r[k] != null);
-      if (targets.length !== 1) throw fail('Une seule cible par signalement.');
+      if (targets.length !== 1) throw fail(tr('l2.do.oneTarget'));
       const dup = T('reports').some((x) => x.reporter_id === me && x.status === 'open' && ((r.meetup_id && x.meetup_id === r.meetup_id) || (r.place_suggestion_id && x.place_suggestion_id === r.place_suggestion_id)));
-      if (dup) throw new BackendError('Vous avez déjà fait ce signalement.', '23505');
+      if (dup) throw new BackendError(tr('l2.do.alreadyReported'), '23505');
       r.post_id ??= null; r.comment_id ??= null; r.reported_user ??= null; r.meetup_id ??= null; r.place_suggestion_id ??= null;
     }
   }
@@ -128,11 +129,11 @@ export function createOutings(c: OutingsCtx) {
     if (table === 'community_meetups') {
       if (mod) return true;
       if (r.organizer_id !== me) return false;
-      if (r.status === 'removed') throw fail('Annonce retirée par la modération');
-      if (patch.status != null && !['visible', 'cancelled', 'pending_review'].includes(patch.status)) throw fail('Statut non autorisé', '42501');
+      if (r.status === 'removed') throw fail(tr('l2.do.removed'));
+      if (patch.status != null && !['visible', 'cancelled', 'pending_review'].includes(patch.status)) throw fail(tr('l2.do.statusNotAllowed'), '42501');
       if (patch.status === 'visible' && r.status === 'pending_review') delete patch.status; // seule la modération republie
-      if ((patch.place_ref != null && patch.place_ref !== r.place_ref) || (patch.capacity != null && patch.capacity < r.participants_count)) throw fail('Modification impossible');
-      if (patch.capacity != null && (patch.capacity < 3 || patch.capacity > 20)) throw fail('Une rencontre se fait en groupe : de 3 à 20 places.');
+      if ((patch.place_ref != null && patch.place_ref !== r.place_ref) || (patch.capacity != null && patch.capacity < r.participants_count)) throw fail(tr('l2.do.cannotEdit'));
+      if (patch.capacity != null && (patch.capacity < 3 || patch.capacity > 20)) throw fail(tr('l2.do.capacity'));
       delete patch.participants_count; delete patch.organizer_id;
       const title = patch.title ?? r.title; const activity = patch.activity ?? r.activity;
       if ((title !== r.title || activity !== r.activity) && (patch.status ?? r.status) === 'visible' && c.needsReview(`${title} ${activity}`)) patch.status = 'pending_review';

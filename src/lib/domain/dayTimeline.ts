@@ -2,6 +2,7 @@
  * Frise d'une journée (00 h → 24 h) pour les outils du quotidien : couches, sommeils, tétées, biberons.
  * Logique pure : positionne les saisies RÉELLES du jour, rien n'est estimé ni recommandé.
  */
+import { t as tr } from '@/i18n';
 
 export type DayEventKind = 'diaper' | 'sleep' | 'feed' | 'bottle';
 
@@ -75,11 +76,11 @@ export function quickDiaperRow(kind: QuickDiaper, at: Date = new Date()) {
 /** « il y a 2 h 10 », « il y a 25 min » (à partir de maintenant). */
 export function agoLabel(iso: string, now: Date = new Date()): string {
   const m = Math.max(0, Math.round((now.getTime() - Date.parse(iso)) / 60000));
-  if (m < 1) return 'à l’instant';
-  if (m < 60) return `il y a ${m} min`;
+  if (m < 1) return tr('l2.day.justNow');
+  if (m < 60) return tr('l2.day.minAgo', { m });
   const h = Math.floor(m / 60);
   const r = m % 60;
-  return `il y a ${h} h${r ? ` ${String(r).padStart(2, '0')}` : ''}`;
+  return r ? tr('l2.day.hmAgo', { h, r: String(r).padStart(2, '0') }) : tr('l2.day.hAgo', { h });
 }
 
 /** Aliments proposés récemment (repas des N derniers jours), du plus récent au plus ancien, sans doublon. */

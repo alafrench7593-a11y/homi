@@ -12,11 +12,13 @@
  * (AFPA–CRESS/Inserm), qui peuvent différer légèrement de celles de l'OMS.
  */
 import { WHO_GROWTH, type WhoRow } from '@/content/whoGrowth';
+import { t as tr, getLocale } from '@/i18n';
+import { inLang } from '@/i18n/localized';
 
 export type GrowthIndicator = 'weight' | 'length' | 'head' | 'bmi';
 export type Sex = 'male' | 'female';
 export const WHO_MAX_MONTHS = 60;
-export const WHO_SOURCE = { label: 'OMS — Standards de croissance de l’enfant (2006)', url: 'https://www.who.int/tools/child-growth-standards' };
+export const WHO_SOURCE = { get label() { return inLang({ fr: 'OMS — Standards de croissance de l’enfant (2006)', en: 'WHO — Child Growth Standards (2006)' }); }, url: 'https://www.who.int/tools/child-growth-standards' };
 
 const DAYS_PER_MONTH = 365.25 / 12;
 
@@ -101,15 +103,21 @@ export interface GrowthPosition { z: number; centile: number; band: 'below' | 'w
  * Phrase neutre sur la position d'une mesure. Jamais de jugement (« trop », « insuffisant ») :
  * en dehors du 3e–97e centile, on invite à en parler au professionnel qui suit l'enfant.
  */
+function ordinal(n: number): string {
+  if (getLocale() !== 'en') return `${n}${n === 1 ? 'er' : 'e'}`;
+  const r = n % 100;
+  return `${n}${r >= 11 && r <= 13 ? 'th' : n % 10 === 1 ? 'st' : n % 10 === 2 ? 'nd' : n % 10 === 3 ? 'rd' : 'th'}`;
+}
+
 export function describePosition(ind: GrowthIndicator, sex: Sex, months: number, x: number): GrowthPosition | null {
   const z = zScore(ind, sex, months, x);
   if (z == null) return null;
   const c = normalCdf(z) * 100;
   const centile = c < 1 ? 1 : c > 99 ? 99 : Math.round(c);
   if (z < CENTILE_Z[0].z || z > CENTILE_Z[4].z) {
-    return { z, centile, band: z < 0 ? 'below' : 'above', text: `En dehors de l’intervalle habituel des repères OMS (${z < 0 ? 'sous le 3e' : 'au-dessus du 97e'} centile). Une mesure isolée ne suffit pas à conclure : montrez la courbe au professionnel qui suit l’enfant.` };
+    return { z, centile, band: z < 0 ? 'below' : 'above', text: tr(z < 0 ? 'l4.gs.below' : 'l4.gs.above') };
   }
-  return { z, centile, band: 'within', text: `Autour du ${centile}${centile === 1 ? 'er' : 'e'} centile des repères OMS : dans l’intervalle habituel. C’est l’évolution dans le temps qui compte.` };
+  return { z, centile, band: 'within', text: tr('l4.gs.within', { ord: ordinal(centile) }) };
 }
 
 export function sexForStandards(sex: string | null | undefined): Sex | null {

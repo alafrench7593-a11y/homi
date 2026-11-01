@@ -168,7 +168,7 @@ export function TaskSheet({ task, open, onClose, defaults }: { task: FamilyTask 
           <Row wrap>{CATEGORIES.map((c) => <Chip key={c.value} label={c.label} icon={c.icon} selected={d.category === c.value} onPress={() => setD({ ...d, category: c.value })} />)}</Row>
           <Row>
             <View style={{ flex: 3 }}><Field label={tr('u6.fl.date')} optional value={d.date} onChangeText={(v) => setD({ ...d, date: v })} error={errors.date} placeholder={tr('u6.fl.date_ph')} keyboardType="numbers-and-punctuation" /></View>
-            <View style={{ flex: 2 }}><Field label={tr('u6.fl.time')} optional value={d.time} onChangeText={(v) => setD({ ...d, time: v })} placeholder="14h30" keyboardType="numbers-and-punctuation" /></View>
+            <View style={{ flex: 2 }}><Field label={tr('u6.fl.time')} optional value={d.time} onChangeText={(v) => setD({ ...d, time: v })} placeholder={tr('l7.fl.time_ph')} keyboardType="numbers-and-punctuation" /></View>
           </Row>
           <Text variant="label">{tr('u6.fl.who')}</Text>
           <Row wrap>

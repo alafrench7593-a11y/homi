@@ -3,6 +3,7 @@
  * Aucune appréciation (« suffisant », « trop peu »…), aucune norme, aucun diagnostic :
  * uniquement ce qui a été saisi, regroupé par jour.
  */
+import { t as tr, formatDate, formatNumber } from '@/i18n';
 import { dayKey, formatClock, formatHM, zonedParts } from './bottleTimer';
 
 export interface BottleLike {
@@ -28,14 +29,10 @@ export function withIntervals<T extends BottleLike>(bottles: T[]): WithInterval<
   return out.reverse();
 }
 
-const WEEKDAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
-const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-
 /** « jeudi 15 octobre » à partir d'une clé AAAA-MM-JJ. */
 export function dayLabel(key: string): string {
   const [y, m, d] = key.split('-').map(Number);
-  const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-  return `${WEEKDAYS[wd]} ${d} ${MONTHS[m - 1]}`;
+  return formatDate(new Date(Date.UTC(y, m - 1, d)), { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).replace(/,/g, '');
 }
 
 /** Clés des N derniers jours (le plus récent en premier). */
@@ -75,18 +72,19 @@ export function dailySummaries(bottles: BottleLike[], days = 7, now: Date = new 
 /** Description d'une prise, sans jugement. */
 export function describeBottle(b: WithInterval<BottleLike>, opts: { recordedBy?: string | null; timeZone?: string } = {}): string {
   const parts = [
-    b.prepared_ml != null ? `préparé ${b.prepared_ml} ml` : null,
-    b.consumed_ml != null ? `bu ${b.consumed_ml} ml` : null,
+    b.prepared_ml != null ? tr('l6.bottle.prepared', { ml: String(b.prepared_ml) }) : null,
+    b.consumed_ml != null ? tr('l6.bottle.drunk', { ml: String(b.consumed_ml) }) : null,
     b.milk_type ? b.milk_type : null,
-    b.interval_minutes != null ? `${formatHM(b.interval_minutes)} après le précédent` : null,
-    b.planned_next_ml != null ? `prévu ensuite : ${b.planned_next_ml} ml` : null,
-    opts.recordedBy ? `noté par ${opts.recordedBy}` : null,
+    b.interval_minutes != null ? tr('l6.bottle.afterPrevious', { duration: formatHM(b.interval_minutes) }) : null,
+    b.planned_next_ml != null ? tr('l6.bottle.plannedNext', { ml: String(b.planned_next_ml) }) : null,
+    opts.recordedBy ? tr('l6.bottle.notedBy', { name: opts.recordedBy }) : null,
   ].filter(Boolean);
-  const note = b.note?.trim() ? ` — « ${b.note.trim()} »` : '';
-  return `${formatClock(b.at, opts.timeZone)} : ${parts.join(' · ') || 'biberon'}${note}`;
+  const note = b.note?.trim() ? tr('l6.bottle.noteQuoted', { note: b.note.trim() }) : '';
+  return `${formatClock(b.at, opts.timeZone)} : ${parts.join(' · ') || tr('l6.bottle.bottle')}${note}`;
 }
 
-const fmtMl = (n: number) => `${n.toLocaleString('fr-FR').replace(/ | /g, ' ')} ml`;
+const cap = (x: string) => `${x[0].toUpperCase()}${x.slice(1)}`;
+const fmtMl = (n: number) => tr('l6.bottle.ml', { ml: formatNumber(n).replace(/[\u202f\u00a0]/g, ' ') });
 
 /**
  * Résumé en texte brut des N derniers jours, à partager avec un professionnel.
@@ -111,23 +109,23 @@ export function consultationSummary(opts: {
   const p = zonedParts(now, opts.timeZone);
   const fr = (k: string) => `${k.slice(8, 10)}/${k.slice(5, 7)}`;
   const lines: string[] = [
-    `Biberons de ${opts.childName} — ${days} derniers jours (du ${fr(oldest)} au ${fr(keys[0])})`,
-    'Relevé des saisies de la famille, sans interprétation. Ne remplace pas l’avis d’un professionnel de santé.',
+    tr('l6.bottle.summaryTitle', { name: opts.childName, days: String(days), from: fr(oldest), to: fr(keys[0]) }),
+    tr('l6.bottle.summaryDisclaimer'),
     '',
   ];
   for (const s of dailySummaries(inRange, days, now, opts.timeZone)) {
     const list = groups.get(s.key) ?? [];
     const head = s.count
-      ? `${s.label[0].toUpperCase()}${s.label.slice(1)} : ${s.count} biberon${s.count > 1 ? 's' : ''}`
-        + (s.consumedCount ? ` · bu : ${fmtMl(s.consumedTotal)}${s.consumedCount < s.count ? ` (renseigné pour ${s.consumedCount})` : ''}` : '')
-        + (s.preparedCount ? ` · préparé : ${fmtMl(s.preparedTotal)}` : '')
-      : `${s.label[0].toUpperCase()}${s.label.slice(1)} : aucun biberon enregistré`;
+      ? tr('l6.bottle.dayHead', { day: cap(s.label), count: s.count })
+        + (s.consumedCount ? tr('l6.bottle.dayDrunk', { total: fmtMl(s.consumedTotal) }) + (s.consumedCount < s.count ? tr('l6.bottle.dayFilledFor', { n: String(s.consumedCount) }) : '') : '')
+        + (s.preparedCount ? tr('l6.bottle.dayPrepared', { total: fmtMl(s.preparedTotal) }) : '')
+      : tr('l6.bottle.dayNone', { day: cap(s.label) });
     lines.push(head);
     for (const b of list) lines.push(`  ${describeBottle(b, { recordedBy: opts.recordedBy?.(b.created_by) ?? null, timeZone: opts.timeZone })}`);
   }
   const consumed = inRange.filter((b) => b.consumed_ml != null);
   lines.push('');
-  lines.push(`Sur la période : ${inRange.length} biberon${inRange.length > 1 ? 's' : ''} enregistré${inRange.length > 1 ? 's' : ''}` + (consumed.length ? ` ; quantité bue renseignée : ${fmtMl(consumed.reduce((s, b) => s + (b.consumed_ml ?? 0), 0))}.` : '.'));
-  lines.push(`Généré par Au fil de nous le ${String(p.day).padStart(2, '0')}/${String(p.month).padStart(2, '0')}/${p.year} à ${formatClock(now, opts.timeZone)}.`);
+  lines.push(tr('l6.bottle.period', { count: inRange.length }) + (consumed.length ? tr('l6.bottle.periodDrunk', { total: fmtMl(consumed.reduce((s, b) => s + (b.consumed_ml ?? 0), 0)) }) : '.'));
+  lines.push(tr('l6.bottle.generated', { date: `${String(p.day).padStart(2, '0')}/${String(p.month).padStart(2, '0')}/${p.year}`, time: formatClock(now, opts.timeZone) }));
   return lines.join('\n');
 }

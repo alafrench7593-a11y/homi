@@ -10,6 +10,7 @@
  *   (30 ; 15 si ≤ 1,5) · sans édulcorant 20. Valeurs de la fiche Open Food Facts (base collaborative) quand elles existent.
  * Accessoires : pas de note (critères non applicables).
  */
+import { localized } from '@/i18n/localized';
 import { fragranceAllergensIn, isEssentialOil, isPerfume, isPhenoxyethanol } from './scanProduct';
 
 export type ProductCategory = 'food' | 'wash' | 'cream' | 'sensitive' | 'hair' | 'teeth' | 'sun' | 'accessory';
@@ -23,11 +24,18 @@ export interface ProductForCriteria {
 export interface Criterion { key: string; ok: boolean | null; points: number; max: number }
 export interface CriteriaResult { score: number | null; criteria: Criterion[]; flags: { perfume: boolean; essentialOils: string[]; allergens: string[]; phenoxyethanol: boolean } }
 
-export const PRODUCT_CRITERIA_SOURCES = [
+const PRODUCT_CRITERIA_SOURCES_FR = [
   { label: 'Règlement (CE) n° 1223/2009 relatif aux produits cosmétiques — annexe III (substances parfumantes allergisantes)', url: 'https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:32009R1223' },
   { label: 'ANSM — Décision du 13/03/2019 : produits cosmétiques non rincés contenant du phénoxyéthanol, « ne pas utiliser sur le siège des enfants de 3 ans ou moins »', url: 'https://ansm.sante.fr/actualites/decision-du-13-03-2019-fixant-des-conditions-particulieres-dutilisation-des-produits-cosmetiques-non-rinces-contenant-du-phenoxyethanol-en-precisant-sur-leur-etiquetage-quils-ne-peuvent-pas-etre-utilises-sur-le-siege-des-enfants-de-3-ans-ou-moins' },
   { label: 'Open Food Facts / Open Beauty Facts — bases collaboratives (ODbL)', url: 'https://world.openfoodfacts.org' },
 ];
+
+const PRODUCT_CRITERIA_SOURCES_EN = [
+  { ...PRODUCT_CRITERIA_SOURCES_FR[0], label: 'Regulation (EC) No 1223/2009 on cosmetic products — Annex III (allergenic fragrance substances)' },
+  { ...PRODUCT_CRITERIA_SOURCES_FR[1], label: 'ANSM (French medicines agency) — Decision of 13/03/2019: leave-on cosmetic products containing phenoxyethanol, “not to be used on the bottom of children aged 3 or under”' },
+  { ...PRODUCT_CRITERIA_SOURCES_FR[2], label: 'Open Food Facts / Open Beauty Facts — collaborative databases (ODbL)' },
+];
+export const PRODUCT_CRITERIA_SOURCES: { label: string; url: string }[] = localized(PRODUCT_CRITERIA_SOURCES_FR, PRODUCT_CRITERIA_SOURCES_EN);
 
 /** Liste d'ingrédients séparée par virgules (INCI ou alimentaire). */
 export const splitIngredients = (text: string) => text.split(/[,;]|\s-\s/).map((x) => x.trim()).filter(Boolean);

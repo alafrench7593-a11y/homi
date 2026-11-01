@@ -1,4 +1,5 @@
 /** Types du scanner (alignés sur supabase/migrations/20261016000600_scanner.sql et la fonction product-lookup). */
+import { getLocale } from '@/i18n';
 import type { Certainty, RecallInfo, ScanProfileKind } from './domain/scanCommon';
 import type { FoodAnalysis, FoodAnswers } from './domain/scanFood';
 import type { ProductAnalysis } from './domain/scanProduct';
@@ -158,5 +159,9 @@ export const COSING_FUNCTION_FR: Record<string, string> = {
 };
 
 export function cosingFunctionLabel(f: string): string {
+  if (getLocale() === 'en') {
+    const w = f.trim().replace(/_/g, ' ').toLowerCase();
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  }
   return COSING_FUNCTION_FR[f.trim().toUpperCase()] ?? f;
 }

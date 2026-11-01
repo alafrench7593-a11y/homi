@@ -6,6 +6,8 @@
  * n'est interprétée : l'application ne pose aucun diagnostic.
  * `main` : étape principale (version gratuite) ; les autres font partie du suivi complet (Premium).
  */
+import { localized } from '@/i18n/localized';
+
 export type StepCategory = 'gross_motor' | 'fine_motor' | 'communication' | 'language' | 'social' | 'emotions' | 'awakening' | 'autonomy' | 'eating' | 'sleep';
 export const STEP_CATEGORIES: StepCategory[] = ['gross_motor', 'fine_motor', 'communication', 'language', 'social', 'emotions', 'awakening', 'autonomy', 'eating', 'sleep'];
 
@@ -19,7 +21,8 @@ export const AGE_BANDS: { key: string; from: number; to: number }[] = [
 ];
 
 export type StepSource = 'sf_etapes' | 'sf_lang_2_12' | 'sf_lang_1_3' | 'mp_3_6' | 'mp_9_12' | 'sf_proprete' | 'sf_nuits' | 'sf_sieste' | 'sf_diversification' | 'spf_diversification';
-export const STEP_SOURCES: Record<StepSource, { label: string; url: string; published?: string; consulted: string }> = {
+type StepSourceDef = { label: string; url: string; published?: string; consulted: string };
+const STEP_SOURCES_FR: Record<StepSource, StepSourceDef> = {
   sf_etapes: { label: 'Santé.fr (Santé publique France – 1000 premiers jours) — Les étapes du développement de bébé', url: 'https://www.sante.fr/les-etapes-du-developpement-de-bebe', published: '2025-06-17', consulted: '2026-10-22' },
   sf_lang_2_12: { label: 'Santé.fr (mpedia) — Progrès du langage de 2 à 12 mois', url: 'https://www.sante.fr/progres-du-langage-de-2-12-mois', consulted: '2026-10-22' },
   sf_lang_1_3: { label: 'Santé.fr (mpedia) — Progrès du langage de 1 à 3 ans', url: 'https://www.sante.fr/progres-du-langage-de-1-3-ans', consulted: '2026-10-22' },
@@ -57,7 +60,7 @@ const FLOOR = 'Jouez au sol, sur un tapis, jamais sur un lit, un canapé ou une 
 const SMALL = 'Gardez hors de portée les petits objets qui tiennent dans la bouche (piles bouton, aimants, billes).';
 const CALM = 'Rien à forcer : on propose, on observe, on recommence un autre jour.';
 
-export const STEPS: StepDef[] = [
+const STEPS_FR: StepDef[] = [
   // ---------------------------------------------------------------- motricité globale
   S('lifts_head', 'gross_motor', 'Soulève la tête sur le ventre', [1, 3], 'sf_etapes', 'Allongé sur le ventre, éveillé, il relève la tête puis les épaules pour regarder autour de lui.', 'Quelques minutes sur le ventre quand il est bien réveillé, face à votre visage ou à un jouet coloré.', `${FLOOR} Pour dormir : toujours sur le dos.`, 'Combien de temps sur le ventre, éveillé, conseillez-vous à son âge ?', true),
   S('holds_head', 'gross_motor', 'Tient sa tête', [3, 4], 'mp_3_6', 'Porté contre vous ou assis avec un appui, sa tête reste droite sans balancer.', 'Portez-le face au monde quelques instants pour qu’il découvre la pièce.', 'Soutenez encore sa nuque lors des changements de position rapides.', 'Comment le porter pour qu’il soit bien installé ?', true),
@@ -115,5 +118,86 @@ export const STEPS: StepDef[] = [
   S('one_nap', 'sleep', 'Fait une seule sieste', [18, 36], 'sf_sieste', 'Vers 18 mois, la sieste du matin disparaît au profit d’une sieste plus longue en début d’après-midi.', 'Un temps calme après le déjeuner.', 'Une sieste très longue peut retarder le coucher : demandez conseil si besoin.', 'Comment gérer le passage à une sieste ?', true),
 ];
 
-export const STEP_BY_KEY: Record<string, StepDef> = Object.fromEntries(STEPS.map((s) => [s.key, s]));
-export const MAIN_STEP_KEYS = STEPS.filter((s) => s.main).map((s) => s.key);
+const STEP_SOURCE_LABELS_EN: Record<StepSource, string> = {
+  sf_etapes: 'Santé.fr (Santé publique France – First 1,000 days) — The stages of baby’s development',
+  sf_lang_2_12: 'Santé.fr (mpedia) — Language progress from 2 to 12 months',
+  sf_lang_1_3: 'Santé.fr (mpedia) — Language progress from 1 to 3 years',
+  mp_3_6: 'mpedia (Dr Jacques Langue) — Psychomotor development between 3 and 6 months',
+  mp_9_12: 'mpedia (Dr Jacques Langue) — Psychomotor development between 9 and 12 months',
+  sf_proprete: 'Santé.fr (mpedia, AFPA) — How will my child become clean and dry?',
+  sf_nuits: 'Santé.fr (mpedia, AFPA) — Sleep-wake rhythm: when will they “sleep through the night”?',
+  sf_sieste: 'Santé.fr (mpedia, AFPA) — The nap, a child’s daytime sleep',
+  sf_diversification: 'Santé.fr (Manger Bouger) — Between 4 and 6 months: introducing foods gently',
+  spf_diversification: 'Santé publique France — Pas à pas, votre enfant mange comme un grand (leaflet)',
+};
+const STEP_SOURCES_EN = Object.fromEntries(
+  (Object.keys(STEP_SOURCES_FR) as StepSource[]).map((k) => [k, { ...STEP_SOURCES_FR[k], label: STEP_SOURCE_LABELS_EN[k] }]),
+) as Record<StepSource, StepSourceDef>;
+export const STEP_SOURCES = localized(STEP_SOURCES_FR, STEP_SOURCES_EN);
+
+const FLOOR_EN = 'Play on the floor, on a mat, never on a bed, a sofa or a changing table without your hand on them.';
+const SMALL_EN = 'Keep small objects that fit in the mouth out of reach (button batteries, magnets, marbles).';
+const CALM_EN = 'Nothing to force: offer, observe, and try again another day.';
+
+type StepText = { title: string; what: string; play: string; safety: string; ask: string };
+const T = (title: string, what: string, play: string, safety: string, ask: string): StepText => ({ title, what, play, safety, ask });
+
+/** Textes affichés en anglais, par clé d'étape (même forme que STEPS_FR). */
+const STEP_TEXT_EN: Record<string, StepText> = {
+  lifts_head: T('Lifts their head on their tummy', 'Lying on their tummy and awake, they lift their head then their shoulders to look around.', 'A few minutes on their tummy when they are wide awake, facing your face or a colourful toy.', `${FLOOR_EN} For sleep: always on the back.`, 'How much awake tummy time do you advise at their age?'),
+  holds_head: T('Holds their head up', 'Carried against you or sitting with support, their head stays upright without wobbling.', 'Carry them facing outwards for a few moments so they can discover the room.', 'Still support their neck during quick changes of position.', 'How should I carry them so they are well supported?'),
+  rolls_over: T('Rolls over', 'They roll from their back onto their side, then from back to tummy.', 'Place a toy a little to one side to invite them to turn.', 'Once they roll, they can fall: never leave them alone at height.', 'What should I do if they roll onto their tummy at night?'),
+  sits_supported: T('Sits with support', 'Propped up at the back by a cushion or by you, they stay sitting and look at their hands and toys.', 'Sit them between your legs with a toy in front of them.', 'Surround them with cushions: they still tip over easily.', 'When can I sit them up to play?'),
+  sits_alone: T('Sits without support', 'They sit well alone and use their hands to play.', 'Toys to reach for around them, so they lean over and catch themselves.', FLOOR_EN, 'How can I help them improve their balance?'),
+  moves_around: T('Gets around', 'They get around in their own way: crawling, on all fours, bottom-shuffling…', 'A cushion obstacle course on the floor, a rolling ball to go and fetch.', 'Stair gates, covered sockets, cleaning products out of reach. Baby walkers are not recommended (falls, burns).', 'What safety changes should I make at home?'),
+  stands_up: T('Pulls up to standing', 'They haul themselves up by holding on to furniture, then learn to stand.', 'A low, stable piece of furniture with toys placed on it.', 'Fix to the wall any furniture that could tip over.', 'Do they need shoes at this age?'),
+  walks: T('Walks alone', 'They take their first steps alone, then walk further and further. Ages vary a great deal from one child to another.', 'Barefoot at home on a non-slip floor; a ride-on or a push-along trolley.', 'Secure stairs, windows and any pool.', 'How can I support their first steps?'),
+  climbs_stairs: T('Climbs stairs', 'They climb the steps, often on all fours at first, holding on.', 'One or two steps with you beside them.', 'Always an adult on the stairs; a gate at the top and bottom.', 'From when can I let them try alone?'),
+  kicks_ball: T('Kicks a ball', 'They kick a ball without falling over.', 'A light ball at the park, little goals made with two shoes.', 'Choose an open space, away from the road.', 'What physical activities suit their age?'),
+  grasps: T('Grasps an object', 'They deliberately grab what is within reach and keep hold of it.', 'A light rattle or a fabric ring held out in front of them.', SMALL_EN, 'Which toys are suitable for their age?'),
+  hand_to_hand: T('Passes an object from one hand to the other', 'They pass a block or a toy from one hand to the other.', 'Two fabric blocks, one in each hand; swap them in turn.', SMALL_EN, 'How can I encourage them to use both hands?'),
+  empties_fills: T('Empties and fills', 'They take objects out of a bag or a box, then start to put them back.', 'A basket of safe everyday objects (cups, scarves, wooden spoons).', SMALL_EN, 'Which everyday objects can they handle safely?'),
+  smiles: T('Smiles and looks at you', 'They look you in the eyes and smile.', 'Face to face, 20–30 cm away, talk to them softly while smiling.', CALM_EN, 'What do you advise for interacting with them?'),
+  reacts_voice: T('Responds to voices', 'They coo and respond when spoken to.', 'Answer their sounds, then pause to give them a turn to “speak”.', CALM_EN, 'How can I tell whether they hear well?'),
+  makes_sounds: T('Makes sounds', 'They vocalise, coo, then babble with syllables like “ba-ba”.', 'The “take turns” game: copy their sound, add one, wait for their reply.', 'Avoid screens: they do not replace real interaction.', 'How can I help them babble?'),
+  name: T('Responds to their name', 'They turn their head or stop what they are doing when called by name.', 'Call them softly from one side of the room, then from the other.', CALM_EN, 'What should I do if I have doubts about their hearing?'),
+  waves_bye: T('Waves goodbye', 'They clap and wave goodbye with their hand.', 'Action rhymes such as “Ainsi font font font”.', CALM_EN, 'Which action rhymes can I share with them?'),
+  points: T('Points', 'They reach out a hand or finger towards an object to show it or ask its name.', 'Name what they point to; look at picture books together.', CALM_EN, 'How can I encourage them to communicate?'),
+  first_words: T('Says their first words', 'First words appear, often “dada”, “mama”, sometimes altered.', 'Read picture books naming each picture; sing.', CALM_EN, 'How can I help build their vocabulary?'),
+  understands_simple: T('Understands simple sentences', 'They understand some simple everyday sentences (“give”, “come”).', 'Describe what you are doing during bath time or meals.', CALM_EN, 'How can I tell what they understand?'),
+  says_words: T('Says some words', 'They say several words and use little expressions; they understand far more words than they say.', 'Rephrase what they say with the right word, without correcting them; read short stories.', CALM_EN, 'What should I do if they talk very little?'),
+  two_words: T('Puts two words together', 'They start to put two words together (“me eat”) and say “me” or their own name.', 'Ask choice questions (“apple or banana?”).', CALM_EN, 'How can I support their language day to day?'),
+  sentences: T('Makes sentences', 'Their sentences get longer, they say “I” and ask lots of questions.', 'Tell each other about your day in turns; role play (toy kitchen, garage).', CALM_EN, 'How can I help them make themselves understood?'),
+  familiar_people: T('Recognises familiar people', 'They react differently to people they know.', 'Look at family photos together, naming everyone.', CALM_EN, 'How can I prepare for a new childcare arrangement?'),
+  strangers: T('Notices unfamiliar people', 'They notice people they do not know and may cling to you.', 'Give them time to observe before anyone picks them up.', CALM_EN, 'How can I help them with new people?'),
+  imitates: T('Imitates adults', 'They like to do as you do: phoning, sweeping, cooking.', 'Give them a wooden spoon and a mixing bowl while you cook.', 'In the kitchen: keep them away from hobs and hot pans.', 'Which pretend-play games can I offer them?'),
+  plays_with_adult: T('Invites you to play', 'They imitate daily life and come to find you to play.', 'Toy kitchen, doll, garage: follow their story.', CALM_EN, 'How can I help them play with other children?'),
+  shows_emotions: T('Shows their emotions', 'They express joy, anger or fear through their face and crying.', 'Put words to what they seem to be feeling.', CALM_EN, 'How can I soothe them when they cry a lot?'),
+  laughs: T('Laughs out loud', 'They laugh openly when you play with them.', 'Peekaboo, gentle tickles, funny faces.', CALM_EN, 'Which games can I play with them at this age?'),
+  soothed_voice: T('Calms to your voice', 'They may stop crying when they hear your voice.', 'The same song every time for calm moments.', 'If the crying wears you out, put them down safely in their cot and call someone: a baby must never be shaken.', 'What should I do when the crying becomes hard to bear?'),
+  says_no: T('Says “no”', 'They use “no” more and more: they assert their wishes.', 'Offer two acceptable choices rather than an open question.', CALM_EN, 'How should I respond to their tantrums?'),
+  mirror: T('Smiles at their reflection', 'They smile at their image in an unbreakable mirror.', 'A safety mirror on the floor, next to the play mat.', 'Unbreakable mirror only.', 'Which stimulating games suit their age?'),
+  throws_toys: T('Throws toys for you to pick up', 'They drop their toys and watch where they go… and whether you pick them up.', 'A “drop – pick up” game with a soft object.', SMALL_EN, 'How can I keep them occupied during meals?'),
+  explores: T('Explores their surroundings', 'They become more independent and set off to discover the room.', 'A “treasure” box to rummage through: boxes, fabrics, spoons.', 'Store medicines, cleaning products and sharp objects up high.', 'How can I make the home safe for them to explore?'),
+  stories: T('Likes being told stories', 'They like being told stories and draw your attention.', 'A book every evening, often the same one: they love repetition.', CALM_EN, 'Which books should I choose at their age?'),
+  says_me: T('Says “me” or their own name', 'They talk about themselves, saying “me” or their own name.', 'Let them choose between two outfits.', CALM_EN, 'How can I help them become more independent?'),
+  spoon_alone: T('Uses their spoon alone', 'They eat alone with their spoon, even if not everything reaches their mouth.', 'A spoon their size and foods that stay put (thick purée).', 'Always seated and in your sight during the meal.', 'How can I encourage them to feed themselves?'),
+  potty_interest: T('Shows interest in the potty', 'Toilet learning often begins between 18 and 24 months, sometimes later. It can take anything from a few days to several months.', 'Offer the potty after a meal or before a nap, for a few minutes, without insisting.', 'Never force it: pressure can lead to constipation.', 'How can I tell whether they are ready?'),
+  food_interest: T('Shows interest in your food', 'They hold their head up and watch with interest what you eat: signs that can herald the start of food diversification.', 'Sit them at the table with you during your meals.', 'No food before 4 months; ask for advice for a baby born prematurely.', 'When and how should I start diversification?'),
+  soft_pieces: T('Eats small soft pieces', 'They accept very soft pieces that mash between the tongue and the palate.', 'Only one new texture per meal, alongside a dish they know.', 'Always seated, in your sight; round foods cut into quarters.', 'How should I progress the textures?'),
+  crunchy_pieces: T('Bites small pieces', 'They start to bite pieces with their teeth.', 'Sticks of soft cooked vegetables to hold in the hand.', 'No small, hard, round food (whole peanut, nut) before age 5.', 'Which foods should I avoid to limit choking?'),
+  longer_nights: T('Sleeps for longer at night', 'Between 4 and 6 months on average, many babies sleep for longer at night. Before 3–4 months, follow their rhythm.', 'During the day: normal light and noise; at night: low light, soft voice.', 'Put them to sleep on their back, in a cot, with no duvet, pillow or bumper.', 'How can I help them tell day from night?'),
+  two_naps: T('Has two naps', 'Around 12 months, they often have one nap in the morning and one in the afternoon.', 'A little pre-nap ritual (song, comforter).', 'The same safe sleeping set-up for naps as for the night.', 'How long should naps be at their age?'),
+  one_nap: T('Has a single nap', 'Around 18 months, the morning nap drops away in favour of a longer nap in the early afternoon.', 'A quiet time after lunch.', 'A very long nap can delay bedtime: ask for advice if needed.', 'How should I manage the switch to one nap?'),
+};
+
+const STEPS_EN: StepDef[] = STEPS_FR.map((st) => {
+  const t = STEP_TEXT_EN[st.key];
+  return t ? { ...st, ...t } : st;
+});
+
+export const STEPS: StepDef[] = localized(STEPS_FR, STEPS_EN);
+
+const mapByKey = (list: StepDef[]): Record<string, StepDef> => Object.fromEntries(list.map((x) => [x.key, x]));
+export const STEP_BY_KEY: Record<string, StepDef> = localized(mapByKey(STEPS_FR), mapByKey(STEPS_EN));
+export const MAIN_STEP_KEYS = STEPS_FR.filter((s) => s.main).map((s) => s.key);

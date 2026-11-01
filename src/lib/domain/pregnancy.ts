@@ -6,6 +6,7 @@
  * outils utilisent 40 SA (DDR + 280 j). La date retenue est celle donnée
  * par le professionnel : l'application ne fait que l'afficher.
  */
+import { t as tr } from '@/i18n';
 import { addDays, daysBetween, type ISODate, todayISO } from './dates';
 
 export const DAYS_LMP_TO_DUE_FR = 287; // 41 SA
@@ -53,12 +54,14 @@ export function countdownLabel(daysToDue: number): string {
   if (daysToDue > 1) {
     const w = Math.floor(daysToDue / 7);
     const d = daysToDue % 7;
-    if (w === 0) return `encore ${d} jours`;
-    return `encore ${w} semaine${w > 1 ? 's' : ''}${d ? ` et ${d} jour${d > 1 ? 's' : ''}` : ''}`;
+    const dPart = tr('l2.preg.dayPart', { count: d });
+    if (w === 0) return tr('l2.preg.cdDays', { d: dPart });
+    const wPart = tr('l2.preg.weekPart', { count: w });
+    return d ? tr('l2.preg.cdWeeksDays', { w: wPart, d: dPart }) : tr('l2.preg.cdWeeks', { w: wPart });
   }
-  if (daysToDue === 1) return 'c’est demain';
-  if (daysToDue === 0) return 'c’est le jour du terme';
-  return `${-daysToDue} jour${daysToDue < -1 ? 's' : ''} après le terme`;
+  if (daysToDue === 1) return tr('l2.preg.tomorrow');
+  if (daysToDue === 0) return tr('l2.preg.dueDay');
+  return tr('l2.preg.pastDue', { count: -daysToDue });
 }
 
 export type Multiplicity = 'single' | 'twins' | 'triplets' | 'more' | 'unknown';
@@ -68,13 +71,13 @@ export function babiesCount(m: Multiplicity): number {
 }
 
 export function multiplicityLabel(m: Multiplicity): string {
-  return { single: 'Un bébé', twins: 'Des jumeaux', triplets: 'Des triplés', more: 'Plus de trois bébés', unknown: 'Pas encore connu' }[m];
+  return tr(`l2.preg.multi.${m}` as const);
 }
 
 /** Validation de cohérence d'une date de terme saisie. */
 export function validateDueDate(due: ISODate, today: ISODate = todayISO()): string | null {
   const d = daysBetween(today, due);
-  if (d > DAYS_LMP_TO_DUE_FR) return 'Cette date semble trop lointaine pour une grossesse en cours.';
-  if (d < -42) return 'Cette date est passée depuis plus de 6 semaines.';
+  if (d > DAYS_LMP_TO_DUE_FR) return tr('l2.preg.dueTooFar');
+  if (d < -42) return tr('l2.preg.duePast');
   return null;
 }

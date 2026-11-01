@@ -3,6 +3,7 @@
  * des mots du titre et des étiquettes) et des catégories proches. Un test vérifie que chaque outil en trouve au moins 3.
  */
 import type { Article, Category } from '@/lib/types';
+import { localized } from '@/i18n/localized';
 
 export interface ToolTopic {
   /** Début de mots cherchés dans le titre et les étiquettes (sans accents, en minuscules). */
@@ -22,7 +23,7 @@ const KID = ['newborn', 'child', 'parents_sleep'];
 const PREG = ['pregnant'];
 const CYCLE = ['avoid', 'ttc'];
 
-export const TOOL_TOPICS: Record<string, ToolTopic> = {
+const TOOL_TOPICS_FR: Record<string, ToolTopic> = {
   // Scanner et produits
   scan_product: { words: ['etiquet', 'nutri-score', 'nutriscore', 'additif', 'ultra-transform', 'rappel', 'label', 'cosmet', 'perturbateur', 'bien choisir'], cats: ['materiel', 'alimentation'], ask: 'Comment lire une étiquette ?' },
   scan_food: { words: ['etiquet', 'nutri-score', 'nutriscore', 'additif', 'ultra-transform', 'petits pots', 'plats prepar', 'sucre', 'sel'], cats: ['alimentation'], ask: 'Comment lire le Nutri-Score ?' },
@@ -119,6 +120,97 @@ export const TOOL_TOPICS: Record<string, ToolTopic> = {
   pp_support: { words: ['aide', 'soutien', 'pmi', 'sage-femme', 'entretien postnatal', 'solitude', 'association', 'tisf', 'aide a domicile'], cats: ['sante-mentale', 'droits-demarches'], journeys: BABY, ask: 'Qui peut m’aider après la naissance ?' },
   pp_partner: { not: ['deuil'], words: ['second parent', 'pere', 'conge de paternite', 'couple', 'conge de naissance', 'partenaire'], cats: ['sante-mentale', 'droits-demarches'], journeys: BABY, ask: 'Comment le second parent peut-il aider ?' },
 };
+
+/** Questions proposées à l'assistant, en anglais (les mots-clés de recherche, eux, cherchent dans les titres des articles et restent tels quels). */
+const ASK_EN: Record<string, string> = {
+  'scan_product': 'How do I read a label?',
+  'scan_food': 'How do I read the Nutri-Score?',
+  'scan_history': 'What should I do with a recalled product?',
+  'scan_compare': 'How do I compare two products?',
+  'scan_avoid': 'Which foods should I avoid in case of allergy?',
+  'kid_products': 'How do I choose a car seat?',
+  'nearby': 'What outings are there with a young child?',
+  'emergency': 'My child is choking, what should I do?',
+  'appointments': 'Which check-ups are compulsory?',
+  'documents': 'What paperwork is needed after the birth?',
+  'mood': 'I feel exhausted, what can I do?',
+  'kid_mood': 'How can I help my child manage their anger?',
+  'sleep': 'How can I sleep better with a baby?',
+  'kid_sleep': 'My baby wakes up at night',
+  'kid_sleep_rhythm': 'How many naps at what age?',
+  'baby_night_help': 'How do I soothe a baby who cries at night?',
+  'family_nights': 'How can we share the nights between two of us?',
+  'meals': 'How do I balance meals?',
+  'meal_rankings': 'My child refuses vegetables',
+  'baby_foods': 'When should I start introducing solids?',
+  'preg_eat': 'Which foods should I avoid when pregnant?',
+  'pp_feeding': 'How can I tell if my baby is drinking enough?',
+  'baby_breastfeed': 'It hurts when I breastfeed',
+  'pp_bottle': 'How do I prepare a bottle?',
+  'baby_bottle_timer': 'How do I prepare a bottle?',
+  'baby_bottle': 'How long can a bottle be kept?',
+  'baby_bottle_history': 'My baby is drinking less than usual',
+  'baby_diaper': 'Which stool colours should be a concern?',
+  'baby_daily': 'How do I bathe a baby?',
+  'kid_profile': 'What can a child do at this age?',
+  'kid_growth': 'How do I read the growth chart?',
+  'kid_grow': 'Which activities suit their age?',
+  'kid_milestones': 'At what age does a child walk?',
+  'kid_vaccines': 'Which vaccines are compulsory?',
+  'kid_teeth': 'How can I ease teething?',
+  'kid_health': 'My child has a fever',
+  'kid_needs': 'How do I get a school aide (AESH)?',
+  'kid_treatments': 'How do I set up an individual health plan at school (PAI)?',
+  'family_tasks': 'How can we share tasks better?',
+  'family_routines': 'How do I set up an evening routine?',
+  'family_history': 'How can we share the mental load?',
+  'family_calendar': 'How do we organise ourselves for the new school year?',
+  'family_metime': 'How can I find time for myself?',
+  'family_difficult': 'I am at the end of my tether with my child',
+  'family_urgent': 'What should I do in an emergency?',
+  'family_review': 'How can we take stock together?',
+  'avoid_cycle': 'Why do I have tummy pain during my period?',
+  'avoid_contraception': 'How do I choose my contraception?',
+  'avoid_methods': 'Which contraception is the most effective?',
+  'avoid_emergency': 'I forgot my pill',
+  'avoid_fertile': 'When does ovulation happen?',
+  'cycle_symptoms': 'How can I ease premenstrual syndrome?',
+  'avoid_consult': 'What happens at a gynaecological appointment?',
+  'cycle_home': 'My period is late',
+  'cycle_calendar': 'My cycles are irregular',
+  'cycle_journal': 'What should I note to track my cycle?',
+  'cycle_stats': 'What cycle length should lead me to seek advice?',
+  'cycle_guides': 'My discharge has changed',
+  'ttc_start_pregnancy': 'When should I take a pregnancy test?',
+  'ttc_cycle': 'When am I most likely to conceive?',
+  'ttc_calendar': 'When is my fertile window?',
+  'ttc_periods': 'My cycles are irregular',
+  'ttc_tests': 'How do I use an ovulation test?',
+  'ttc_mucus': 'What does fertile mucus look like?',
+  'ttc_temperature': 'How do I read a temperature chart?',
+  'ttc_intimacy': 'How often should we have sex to conceive?',
+  'ttc_exams': 'Which fertility tests are there?',
+  'ttc_understand': 'How does the cycle work?',
+  'ttc_consult': 'When should I seek advice if pregnancy is taking a while?',
+  'preg_evolution': 'How is my baby developing this month?',
+  'preg_weight': 'How much weight should I gain during pregnancy?',
+  'preg_feel': 'I have nausea in pregnancy',
+  'preg_calendar': 'When are the scans?',
+  'preg_intimacy': 'Is it fine to have sex when pregnant?',
+  'preg_names': 'How do I choose and register a first name?',
+  'preg_lists': 'What should I pack in my maternity bag?',
+  'preg_end': 'Where can I find help after a pregnancy loss?',
+  'pp_recovery': 'How long does postpartum recovery last?',
+  'pp_checkin': 'I have felt sad since the birth',
+  'pp_body': 'When can I start exercising again after giving birth?',
+  'pp_mental': 'Baby blues or depression?',
+  'pp_support': 'Who can help me after the birth?',
+  'pp_partner': 'How can the other parent help?'
+};
+const TOOL_TOPICS_EN: Record<string, ToolTopic> = Object.fromEntries(
+  Object.entries(TOOL_TOPICS_FR).map(([k, v]) => [k, { ...v, ask: ASK_EN[k] ?? v.ask }]),
+);
+export const TOOL_TOPICS: Record<string, ToolTopic> = localized(TOOL_TOPICS_FR, TOOL_TOPICS_EN);
 
 const norm = (s: string) => ` ${s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'`]/g, ' ').replace(/[^a-z0-9œ\- ]+/g, ' ').replace(/\s+/g, ' ')} `;
 

@@ -3,6 +3,8 @@
  * plusieurs jours (remplacer, déplacer), liste de courses, « Que puis-je cuisiner avec ce que j'ai ? »,
  * recettes et précautions à partir d'un produit scanné.
  */
+import { localized } from '@/i18n/localized';
+import { t as tr } from '@/i18n';
 import { INGREDIENTS } from './ingredients';
 import { fold, hasPork, isVegetarian } from './validate';
 import { STAGE_MONTHS, TEXTURES, type Aisle, type Allergen, type Meal, type Recipe, type Season, type Stage, type Tag, type Texture, type Unit } from './types';
@@ -42,44 +44,48 @@ export const textureForStage = (s: Stage): Texture => (s === 'start' ? 'smooth' 
 const allergenFoods = (r: Recipe) => r.ingredients.filter((x) => (INGREDIENTS[x.key].allergens ?? []).length).map((x) => x.key);
 
 /** Pourquoi une recette n'est pas proposée à ce profil (vide = compatible). */
-export function incompatibility(r: Recipe, p: FoodProfile): string[] {
-  const why: string[] = [];
-  if (r.status === 'retired') why.push('retirée');
+type WhyKind = 'audience' | 'stage' | 'texture' | 'age' | 'other';
+interface Why { kind: WhyKind; text: string }
+const W = (kind: WhyKind, text: string): Why => ({ kind, text });
+export const incompatibility = (r: Recipe, p: FoodProfile): string[] => incompatibilityWhy(r, p).map((w) => w.text);
+function incompatibilityWhy(r: Recipe, p: FoodProfile): Why[] {
+  const why: Why[] = [];
+  if (r.status === 'retired') why.push(W('other', tr('l3.rcp.why_retired')));
   const age = p.ageMonths ?? null;
   switch (p.audience) {
-    case 'pregnancy': if (!r.audiences.includes('pregnancy')) why.push('pas une recette de grossesse'); break;
+    case 'pregnancy': if (!r.audiences.includes('pregnancy')) why.push(W('audience', tr('l3.rcp.why_not_pregnancy'))); break;
     case 'baby': {
-      if (!r.audiences.includes('baby')) { why.push('pas une recette pour bébé'); break; }
+      if (!r.audiences.includes('baby')) { why.push(W('audience', tr('l3.rcp.why_not_baby'))); break; }
       if (age != null) {
-        if (r.minMonths != null && age < r.minMonths) why.push('étape suivante');
-        if (r.maxMonths != null && age >= r.maxMonths && !(r.stages ?? []).includes(stageFor(age))) why.push('étape passée');
+        if (r.minMonths != null && age < r.minMonths) why.push(W('stage', tr('l3.rcp.why_next_stage')));
+        if (r.maxMonths != null && age >= r.maxMonths && !(r.stages ?? []).includes(stageFor(age))) why.push(W('stage', tr('l3.rcp.why_past_stage')));
       }
       const tex = p.texture ?? (age != null ? textureForStage(stageFor(age)) : null);
-      if (tex && !r.textures.some((t) => TEX_RANK[t] <= TEX_RANK[tex])) why.push('texture pas encore proposée');
+      if (tex && !r.textures.some((t) => TEX_RANK[t] <= TEX_RANK[tex])) why.push(W('texture', tr('l3.rcp.why_texture')));
       break;
     }
     case 'child':
-      if (!r.audiences.includes('child')) why.push('pas une recette pour enfant');
-      else if (age != null && ((r.minMonths != null && age < r.minMonths) || (r.maxMonths != null && age > r.maxMonths))) why.push('âge');
+      if (!r.audiences.includes('child')) why.push(W('audience', tr('l3.rcp.why_not_child')));
+      else if (age != null && ((r.minMonths != null && age < r.minMonths) || (r.maxMonths != null && age > r.maxMonths))) why.push(W('age', tr('l3.rcp.why_age')));
       break;
     case 'family': case 'adult':
-      if (!r.audiences.includes('family')) why.push('pas une recette familiale');
+      if (!r.audiences.includes('family')) why.push(W('audience', tr('l3.rcp.why_not_family')));
       break;
   }
   const al = p.allergies ?? [];
   const hit = r.allergens.filter((a) => al.includes(a));
-  if (hit.length) why.push(`allergène déclaré : ${hit.join(', ')}`);
-  if (p.vegetarian && !isVegetarian(r)) why.push('non végétarienne');
-  if (p.noPork && hasPork(r) && !r.adaptations.some((a) => /sans porc/i.test(a))) why.push('contient du porc');
+  if (hit.length) why.push(W('other', tr('l3.rcp.why_allergen', { list: hit.join(', ') })));
+  if (p.vegetarian && !isVegetarian(r)) why.push(W('other', tr('l3.rcp.why_not_veg')));
+  if (p.noPork && hasPork(r) && !r.adaptations.some((a) => /sans porc/i.test(a))) why.push(W('other', tr('l3.rcp.why_pork')));
   const refused = (p.refused ?? []).filter((k) => r.ingredients.some((x) => x.key === k && !x.optional));
-  if (refused.length) why.push(`aliment refusé : ${refused.map((k) => INGREDIENTS[k]?.name ?? k).join(', ')}`);
+  if (refused.length) why.push(W('other', tr('l3.rcp.why_refused', { list: refused.map((k) => INGREDIENTS[k]?.name ?? k).join(', ') })));
   if (p.audience === 'baby' && p.introduced && p.allergenAdviceNeeded) {
     const fresh = allergenFoods(r).filter((k) => !p.introduced!.includes(k));
-    if (fresh.length) why.push(`nouvel allergène sans avis : ${fresh.map((k) => INGREDIENTS[k].name).join(', ')}`);
+    if (fresh.length) why.push(W('other', tr('l3.rcp.why_new_allergen', { list: fresh.map((k) => INGREDIENTS[k].name).join(', ') })));
   }
   return why;
 }
-export const compatible = (r: Recipe, p: FoodProfile) => incompatibility(r, p).length === 0;
+export const compatible = (r: Recipe, p: FoodProfile) => incompatibilityWhy(r, p).length === 0;
 
 /** Ingrédients d'une recette jamais introduits chez le bébé (affichés comme « nouveaux » sur la fiche). */
 export const newFoods = (r: Recipe, p: FoodProfile) => (p.introduced ? r.ingredients.filter((x) => !p.introduced!.includes(x.key)).map((x) => x.key) : []);
@@ -140,9 +146,9 @@ export function formatQty(qty: number | null, unit: Unit | null): string {
   switch (unit) {
     case 'g': return `${n} g`;
     case 'ml': return qty >= 1000 ? `${String(qty / 1000).replace('.', ',')} l` : `${n} ml`;
-    case 'cs': return `${n} c. à soupe`;
-    case 'cc': return `${n} c. à café`;
-    case 'pincee': return qty > 1 ? `${n} pincées` : '1 pincée';
+    case 'cs': return tr('l3.rcp.q_tbsp', { n });
+    case 'cc': return tr('l3.rcp.q_tsp', { n });
+    case 'pincee': return qty > 1 ? tr('l3.rcp.q_pinches', { n }) : tr('l3.rcp.q_pinch');
     default: return n;
   }
 }
@@ -174,7 +180,7 @@ export function ingredientsInText(text: string): string[] {
 // ---------------------------------------------------------------- produit scanné
 interface Risk { re: RegExp; audiences: Audience[]; maxMonths?: number; text: string; alternative: string }
 /** Mots d'un produit qui demandent une précaution (repères officiels cités dans les sources des recettes). */
-const RISKS: Risk[] = [
+const RISKS_FR: Risk[] = [
   { re: /lait cru/, audiences: ['pregnancy', 'baby', 'child'], maxMonths: 60, text: 'Produit au lait cru : déconseillé pendant la grossesse et avant 5 ans (sauf fromages à pâte pressée cuite).', alternative: 'Choisissez un produit au lait pasteurisé, ou un fromage à pâte pressée cuite (emmental, comté).' },
   { re: /(fume|saumon fume|truite fumee|sushi|tarama|carpaccio|tartare)/, audiences: ['pregnancy'], text: 'Poisson fumé ou cru : à éviter pendant la grossesse (listériose).', alternative: 'Préférez un poisson cuit à cœur, par exemple au four.' },
   { re: /(rillette|pate de campagne|foie gras|terrine|en gelee)/, audiences: ['pregnancy'], text: 'Charcuterie de ce type : à éviter pendant la grossesse (listériose).', alternative: 'Jambon cuit préemballé ou volaille cuite à cœur.' },
@@ -186,6 +192,19 @@ const RISKS: Risk[] = [
   { re: /(sel |sale|sucre|sirop|bonbon|confiserie|soda)/, audiences: ['baby'], maxMonths: 12, text: 'Produit salé ou sucré : sans sel ni sucre ajoutés pour les bébés.', alternative: 'Fruits ou légumes cuits sans assaisonnement.' },
   { re: /(raisin|tomate cerise|olive)/, audiences: ['baby', 'child'], maxMonths: 48, text: 'Petit aliment rond : à couper en quatre dans la longueur avant 4 ans (risque d’étouffement).', alternative: 'Coupé en quatre ou écrasé.' },
 ];
+const RISKS_EN: Risk[] = [
+  { re: /lait cru/, audiences: ['pregnancy', 'baby', 'child'], maxMonths: 60, text: 'Raw-milk product: not recommended during pregnancy and before the age of 5 (except hard cooked cheeses).', alternative: 'Choose a pasteurised product, or a hard cooked cheese (Emmental, Comté).' },
+  { re: /(fume|saumon fume|truite fumee|sushi|tarama|carpaccio|tartare)/, audiences: ['pregnancy'], text: 'Smoked or raw fish: avoid during pregnancy (listeriosis).', alternative: 'Choose fish cooked right through, for example baked.' },
+  { re: /(rillette|pate de campagne|foie gras|terrine|en gelee)/, audiences: ['pregnancy'], text: 'Cured meats of this kind: avoid during pregnancy (listeriosis).', alternative: 'Pre-packed cooked ham or poultry cooked right through.' },
+  { re: /(foie|pate de foie)/, audiences: ['pregnancy'], text: 'Liver and liver products: limit during pregnancy (vitamin A).', alternative: 'Another source of iron: cooked red meat, lentils.' },
+  { re: /(soja|tofu)/, audiences: ['pregnancy'], text: 'Soya products: not recommended during pregnancy (phytoestrogens).', alternative: 'Cow’s milk yoghurt, pulses (lentils, chickpeas).' },
+  { re: /(alcool|vin |biere|cidre|rhum)/, audiences: ['pregnancy', 'baby', 'child'], text: 'Contains alcohol: no alcohol during pregnancy or for children.', alternative: 'An alcohol-free recipe.' },
+  { re: /miel/, audiences: ['baby'], maxMonths: 12, text: 'Honey: never before 1 year old (infant botulism, ANSES).', alternative: 'A fruit compote with no added sugar.' },
+  { re: /(cacahuete|arachide|noisette|amande|noix|pistache)/, audiences: ['baby', 'child'], maxMonths: 48, text: 'Whole tree nuts and peanuts: choking risk before 4 years old; offer as a powder or smooth purée. If an allergy is known or suspected, ask for medical advice first.', alternative: 'Almond powder or smooth purée, in small amounts.' },
+  { re: /(sel |sale|sucre|sirop|bonbon|confiserie|soda)/, audiences: ['baby'], maxMonths: 12, text: 'Salty or sweet product: no added salt or sugar for babies.', alternative: 'Cooked fruit or vegetables with no seasoning.' },
+  { re: /(raisin|tomate cerise|olive)/, audiences: ['baby', 'child'], maxMonths: 48, text: 'Small round food: cut into quarters lengthways before 4 years old (choking risk).', alternative: 'Cut into quarters or mashed.' },
+];
+const RISKS: Risk[] = localized(RISKS_FR, RISKS_EN);
 
 export function scannedProductAdvice(productName: string, p: FoodProfile, all: Recipe[]) {
   const t = ` ${fold(productName)} `;
@@ -236,8 +255,8 @@ export function candidates(all: Recipe[], p: FoodProfile, meal: Meal, o: MenuOpt
 /** Adaptation d'un repas familial pour un membre (bébé, enfant), ou null si impossible. */
 export function adaptationFor(r: Recipe, m: FoodProfile): string | null {
   if (compatible(r, m)) return m.audience === 'baby' ? (r.familyAdaptations?.baby ?? null) : (r.familyAdaptations?.child ?? '');
-  const why = incompatibility(r, m);
-  const onlyAudience = why.every((w) => /^pas une recette|^âge|^étape|^texture/.test(w));
+  const why = incompatibilityWhy(r, m);
+  const onlyAudience = why.every((w) => w.kind !== 'other');
   if (!onlyAudience) return null; // allergène, refus, végétarien : pas d'adaptation automatique
   if (m.audience === 'baby' && r.familyAdaptations?.baby && (m.ageMonths ?? 0) >= 6) return r.familyAdaptations.baby;
   if (m.audience === 'child' && r.familyAdaptations?.child) return r.familyAdaptations.child;
@@ -246,7 +265,7 @@ export function adaptationFor(r: Recipe, m: FoodProfile): string | null {
 
 /** Adaptations d'un repas familial pour chaque enfant (« Lina : … · Noé : … »). */
 function notesFor(r: Recipe, o: MenuOptions): string | null {
-  const notes = (o.members ?? []).map((m) => { const a = adaptationFor(r, m); return a == null ? null : `${m.name ?? ''} : ${a || 'même repas que les adultes'}`; }).filter(Boolean);
+  const notes = (o.members ?? []).map((m) => { const a = adaptationFor(r, m); return a == null ? null : tr('l3.rcp.note_line', { name: m.name ?? '', text: a || tr('l3.rcp.same_meal') }); }).filter(Boolean);
   return notes.length ? notes.join(' · ') : null;
 }
 

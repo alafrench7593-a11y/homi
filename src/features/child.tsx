@@ -16,7 +16,7 @@ import { GrowthChart } from '@/components/GrowthChart';
 import { ageInMonths, describePosition, sexForStandards, WHO_MAX_MONTHS, type GrowthIndicator } from '@/lib/domain/growthStandards';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
-import { t as tr, formatDate, type TKey } from '@/i18n';
+import { t as tr, formatDate, formatNumber, type TKey } from '@/i18n';
 
 /** Date lisible dans la langue courante, à partir d'une date ISO (jour civil, sans décalage de fuseau). */
 const fd = (iso: string, withYear = true) => formatDate(`${iso.slice(0, 10)}T00:00:00Z`, { day: 'numeric', month: 'long', ...(withYear ? { year: 'numeric' as const } : {}), timeZone: 'UTC' });
@@ -94,7 +94,7 @@ function useSafeWrite() {
 }
 
 const num = (s: string) => Number(s.replace(',', '.').trim());
-const fmt = (n: number | null | undefined, digits = 1) => (n == null ? '—' : String(Number(n.toFixed(digits))).replace('.', ','));
+const fmt = (n: number | null | undefined, digits = 1) => (n == null ? '—' : formatNumber(Number(n.toFixed(digits)), { maximumFractionDigits: 6 }));
 
 // ---------------------------------------------------------------- Aperçu
 export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTab) => void }) {
@@ -259,7 +259,7 @@ export function GrowthTab({ child }: { child: Child }) {
       const raw = values[x.key].trim();
       if (!raw) { row[x.key] = null; continue; }
       const v = num(raw);
-      if (!Number.isFinite(v) || v < x.min || v > x.max) e[x.key] = tr('u7.child.err.range', { min: String(x.min).replace('.', ','), max: x.max, unit: x.unit });
+      if (!Number.isFinite(v) || v < x.min || v > x.max) e[x.key] = tr('u7.child.err.range', { min: formatNumber(x.min, { maximumFractionDigits: 6 }), max: x.max, unit: x.unit });
       else row[x.key] = v;
     }
     if (!e.weight_kg && !e.height_cm && !e.head_cm && METRICS.every((x) => row[x.key] == null)) e.form = tr('u7.child.err.atLeastOne');

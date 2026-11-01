@@ -10,6 +10,7 @@
  */
 import { type CycleEstimate, type PeriodEntry } from './cycle';
 import { addDays, daysBetween } from './dates';
+import { formatNumber } from '@/i18n';
 
 export type Goal = 'cycle' | 'ttc' | 'avoid';
 export type CategoryKey = 'period' | 'pain' | 'mood' | 'body' | 'sleep' | 'fertility' | 'intimacy' | 'contraception' | 'habits' | 'notes';
@@ -320,7 +321,7 @@ export function daySummaryItems(d: DayState, label: (pill: string) => string, wi
     const base = label(p);
     items.push(PILLS.pain.includes(p) && d.painIntensity != null ? withIntensity(p, base, d.painIntensity) : base);
   }
-  if (d.temperature != null) items.push(`${label('temperature')} ${d.temperature.toFixed(2).replace('.', ',')} °C`);
+  if (d.temperature != null) items.push(`${label('temperature')} ${formatNumber(d.temperature, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} °C`);
   if (d.note.trim()) items.push(label('note'));
   return items;
 }

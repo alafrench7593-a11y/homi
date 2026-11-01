@@ -10,6 +10,9 @@
  *    le changement d'heure. Seul l'AFFICHAGE de l'heure dépend du fuseau.
  */
 
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
+
 export type BottleTimerStatus = 'active' | 'cancelled' | 'done';
 
 export interface TimerCore {
@@ -29,13 +32,21 @@ export const MAX_INTERVAL_MINUTES = 12 * 60;
 export const MAX_ML = 500;
 
 /** Délais proposés au choix (aucun n'est présélectionné : c'est le parent qui choisit). */
-export const DELAY_PRESETS: { minutes: number; label: string }[] = [
+const DELAY_PRESETS_FR: { minutes: number; label: string }[] = [
   { minutes: 120, label: '2 h' },
   { minutes: 150, label: '2 h 30' },
   { minutes: 180, label: '3 h' },
   { minutes: 210, label: '3 h 30' },
   { minutes: 240, label: '4 h' },
 ];
+const DELAY_PRESETS_EN: { minutes: number; label: string }[] = [
+  { minutes: 120, label: '2h' },
+  { minutes: 150, label: '2h 30' },
+  { minutes: 180, label: '3h' },
+  { minutes: 210, label: '3h 30' },
+  { minutes: 240, label: '4h' },
+];
+export const DELAY_PRESETS: { minutes: number; label: string }[] = localized(DELAY_PRESETS_FR, DELAY_PRESETS_EN);
 /** Reports proposés depuis l'écran de l'enfant (ouvert par la notification). */
 export const SNOOZE_PRESETS = [10, 15, 30, 60];
 
@@ -81,12 +92,12 @@ export interface NewTimerInput {
 
 /** Nouveau minuteur actif. Lève une erreur (en français) si la saisie est incohérente. */
 export function newTimer(input: NewTimerInput, now: Date = new Date()): TimerCore {
-  if (!input.childId) throw new Error('Choisissez un enfant.');
-  if (!isValidInterval(input.intervalMinutes)) throw new Error('Le délai doit être compris entre 10 minutes et 12 heures.');
-  if (!isValidMl(input.plannedMl)) throw new Error('Quantité attendue entre 0 et 500 ml.');
+  if (!input.childId) throw new Error(tr('l5.bt.err.needChild'));
+  if (!isValidInterval(input.intervalMinutes)) throw new Error(tr('l5.bt.err.intervalRange'));
+  if (!isValidMl(input.plannedMl)) throw new Error(tr('l5.bt.err.mlRange'));
   const last = toDate(input.lastBottleAt);
-  if (Number.isNaN(last.getTime())) throw new Error('Heure du dernier biberon invalide.');
-  if (last.getTime() > now.getTime() + MS) throw new Error('L’heure du dernier biberon est dans le futur.');
+  if (Number.isNaN(last.getTime())) throw new Error(tr('l5.bt.err.lastInvalid'));
+  if (last.getTime() > now.getTime() + MS) throw new Error(tr('l5.bt.err.lastFuture'));
   return {
     child_id: input.childId,
     last_bottle_at: last.toISOString(),
@@ -100,14 +111,14 @@ export function newTimer(input: NewTimerInput, now: Date = new Date()): TimerCor
 /** « Mettre à jour l'heure » du dernier biberon : l'échéance suit, avec le même délai. */
 export function updateLastBottleTime(timer: TimerCore, at: Date | string, now: Date = new Date()): Pick<TimerCore, 'last_bottle_at' | 'due_at'> {
   const d = toDate(at);
-  if (Number.isNaN(d.getTime())) throw new Error('Heure invalide.');
-  if (d.getTime() > now.getTime() + MS) throw new Error('Cette heure est dans le futur.');
+  if (Number.isNaN(d.getTime())) throw new Error(tr('l5.bt.err.timeInvalid'));
+  if (d.getTime() > now.getTime() + MS) throw new Error(tr('l5.bt.err.timeFuture'));
   return { last_bottle_at: d.toISOString(), due_at: computeDueAt(d, timer.interval_minutes).toISOString() };
 }
 
 /** « Modifier le délai » : nouvelle échéance = dernier biberon + nouveau délai (les reports précédents sont remplacés). */
 export function modifyInterval(timer: TimerCore, minutes: number): Pick<TimerCore, 'interval_minutes' | 'due_at'> {
-  if (!isValidInterval(minutes)) throw new Error('Le délai doit être compris entre 10 minutes et 12 heures.');
+  if (!isValidInterval(minutes)) throw new Error(tr('l5.bt.err.intervalRange'));
   return { interval_minutes: minutes, due_at: computeDueAt(timer.last_bottle_at, minutes).toISOString() };
 }
 
@@ -116,7 +127,7 @@ export function modifyInterval(timer: TimerCore, minutes: number): Pick<TimerCor
  * (reporter de 15 min un rappel dépassé = rappel dans 15 min).
  */
 export function snoozeTimer(timer: TimerCore, minutes: number, now: Date = new Date()): Pick<TimerCore, 'due_at'> {
-  if (!Number.isInteger(minutes) || minutes < 1 || minutes > 6 * 60) throw new Error('Report attendu entre 1 minute et 6 heures.');
+  if (!Number.isInteger(minutes) || minutes < 1 || minutes > 6 * 60) throw new Error(tr('l5.bt.err.snoozeRange'));
   const base = Math.max(toDate(timer.due_at).getTime(), now.getTime());
   return { due_at: new Date(base + minutes * MS).toISOString() };
 }
@@ -127,11 +138,11 @@ export function snoozeTimer(timer: TimerCore, minutes: number, now: Date = new D
  */
 export function setReminderAt(timer: Pick<TimerCore, 'last_bottle_at'>, at: Date | string, now: Date = new Date()): Pick<TimerCore, 'due_at'> {
   const d = toDate(at);
-  if (Number.isNaN(d.getTime())) throw new Error('Heure invalide.');
-  if (d.getTime() <= now.getTime()) throw new Error('Choisissez une heure à venir.');
+  if (Number.isNaN(d.getTime())) throw new Error(tr('l5.bt.err.timeInvalid'));
+  if (d.getTime() <= now.getTime()) throw new Error(tr('l5.bt.err.pickFuture'));
   const last = toDate(timer.last_bottle_at).getTime();
-  if (d.getTime() <= last) throw new Error('Le rappel doit être après le dernier biberon.');
-  if (d.getTime() > last + 2 * 86_400_000) throw new Error('Le rappel doit être au plus 2 jours après le dernier biberon.');
+  if (d.getTime() <= last) throw new Error(tr('l5.bt.err.afterLast'));
+  if (d.getTime() > last + 2 * 86_400_000) throw new Error(tr('l5.bt.err.max2days'));
   return { due_at: d.toISOString() };
 }
 
@@ -148,7 +159,7 @@ export function planReplacement(
   next: TimerCore,
   reason: 'new_bottle' | 'restart' = 'new_bottle',
 ): { close: { id: string; patch: Pick<TimerCore, 'status'> } | null; create: TimerCore } {
-  if (active && active.child_id !== next.child_id) throw new Error('Ce minuteur appartient à un autre enfant.');
+  if (active && active.child_id !== next.child_id) throw new Error(tr('l5.bt.err.otherChild'));
   const close = active && active.status === 'active' && active.id ? { id: active.id, patch: { status: reason === 'new_bottle' ? 'done' as const : 'cancelled' as const } } : null;
   return { close, create: { ...next, status: 'active' } };
 }
@@ -180,10 +191,10 @@ export function timerProgress(timer: Pick<TimerCore, 'last_bottle_at' | 'due_at'
 /** « 3 h 30 », « 3 h 05 », « 2 h », « 45 min ». Arrondi à la minute ; une durée négative est lue en valeur absolue. */
 export function formatHM(minutes: number): string {
   const m = Math.round(Math.abs(minutes));
-  if (m < 60) return `${m} min`;
+  if (m < 60) return tr('l5.bt.min', { m });
   const h = Math.floor(m / 60);
   const r = m % 60;
-  return r ? `${h} h ${String(r).padStart(2, '0')}` : `${h} h`;
+  return r ? tr('l5.bt.hm', { h, m: String(r).padStart(2, '0') }) : tr('l5.bt.h', { h });
 }
 
 /** Minutes restantes affichées : arrondi au-dessus, pour ne jamais annoncer « 0 min » avant l'échéance. */
@@ -206,7 +217,7 @@ export function zonedParts(date: Date | string, timeZone?: string): ZonedParts {
 /** Heure murale en français : « 14 h 45 », « 4 h 00 ». */
 export function formatClock(date: Date | string, timeZone?: string): string {
   const p = zonedParts(date, timeZone);
-  return `${p.hour} h ${String(p.minute).padStart(2, '0')}`;
+  return tr('l5.bt.clock', { h: p.hour, m: String(p.minute).padStart(2, '0') });
 }
 
 /** Clé de jour AAAA-MM-JJ dans le fuseau donné. */
@@ -221,11 +232,11 @@ const dayDiff = (a: string, b: string) => Math.round((Date.UTC(+b.slice(0, 4), +
 export function atClock(date: Date | string, now: Date = new Date(), timeZone?: string): string {
   const diff = dayDiff(dayKey(now, timeZone), dayKey(date, timeZone));
   const clock = formatClock(date, timeZone);
-  if (diff === 0) return `à ${clock}`;
-  if (diff === 1) return `demain à ${clock}`;
-  if (diff === -1) return `hier à ${clock}`;
+  if (diff === 0) return tr('l5.bt.at', { clock });
+  if (diff === 1) return tr('l5.bt.atTomorrow', { clock });
+  if (diff === -1) return tr('l5.bt.atYesterday', { clock });
   const p = zonedParts(date, timeZone);
-  return `le ${String(p.day).padStart(2, '0')}/${String(p.month).padStart(2, '0')} à ${clock}`;
+  return tr('l5.bt.atDate', { day: String(p.day).padStart(2, '0'), month: String(p.month).padStart(2, '0'), clock });
 }
 
 /**
@@ -235,12 +246,12 @@ export function atClock(date: Date | string, now: Date = new Date(), timeZone?: 
 export function timerSentence(opts: { childName: string; timer: Pick<TimerCore, 'due_at' | 'planned_ml' | 'status'>; now?: Date; timeZone?: string }): string {
   const now = opts.now ?? new Date();
   const { childName, timer, timeZone } = opts;
-  const qty = timer.planned_ml != null ? ` Quantité enregistrée : ${timer.planned_ml} ml.` : '';
-  if (timer.status === 'cancelled') return `Le rappel pour ${childName} a été annulé.`;
-  if (timer.status === 'done') return `Le biberon de ${childName} a été noté comme donné.`;
+  const qty = timer.planned_ml != null ? tr('l5.bt.qtySaved', { ml: timer.planned_ml }) : '';
+  if (timer.status === 'cancelled') return tr('l5.bt.cancelled', { name: childName });
+  if (timer.status === 'done') return tr('l5.bt.done', { name: childName });
   const rem = remainingMinutes(timer, now);
-  if (rem > 0) return `Prochain rappel pour ${childName} dans ${formatRemaining(rem)}, ${atClock(timer.due_at, now, timeZone)}.${qty}`;
-  return `Le rappel pour ${childName} était prévu ${atClock(timer.due_at, now, timeZone)} (il y a ${formatHM(rem)}).${qty}`;
+  if (rem > 0) return `${tr('l5.bt.nextIn', { name: childName, delay: formatRemaining(rem), at: atClock(timer.due_at, now, timeZone) })}${qty}`;
+  return `${tr('l5.bt.wasDue', { name: childName, at: atClock(timer.due_at, now, timeZone), ago: formatHM(rem) })}${qty}`;
 }
 
 /**
@@ -248,7 +259,7 @@ export function timerSentence(opts: { childName: string; timer: Pick<TimerCore, 
  * (« demain à 1 h 15 » si le rappel tombe le lendemain).
  */
 export function nextReminderSentence(childName: string, dueAt: Date | string, now: Date = new Date(), timeZone?: string): string {
-  return `Prochain rappel de biberon de ${childName} ${atClock(dueAt, now, timeZone)}.`;
+  return tr('l5.bt.nextBottle', { name: childName, at: atClock(dueAt, now, timeZone) });
 }
 
 /**
@@ -257,8 +268,8 @@ export function nextReminderSentence(childName: string, dueAt: Date | string, no
  */
 export function notificationContent(childName: string, plannedMl: number | null | undefined, showQuantity = false): { title: string; body: string } {
   return {
-    title: `Biberon de ${childName}`,
-    body: `Rappel choisi pour ${childName} : le prochain biberon était prévu maintenant.${showQuantity && plannedMl != null ? ` Quantité notée : ${plannedMl} ml.` : ''}`,
+    title: tr('l5.bt.notifTitle', { name: childName }),
+    body: `${tr('l5.bt.notifBody', { name: childName })}${showQuantity && plannedMl != null ? tr('l5.bt.notifQty', { ml: plannedMl }) : ''}`,
   };
 }
 

@@ -4,6 +4,8 @@
  * catégories proposées selon le parcours, fil « Pour vous ».
  */
 import type { Journey } from '../types';
+import { t as tr, formatDate } from '@/i18n';
+import { localized } from '@/i18n/localized';
 
 // ─── Identifiant « @ » ─────────────────────────────────────────────────────────────────────────────
 
@@ -23,8 +25,8 @@ export const normalizeHandle = (h: string) => h.trim().replace(/^@+/, '').toLowe
 
 export function handleError(raw: string): string | null {
   const h = normalizeHandle(raw);
-  if (!HANDLE_RE.test(h)) return '3 à 20 caractères : lettres minuscules sans accent, chiffres ou « _ ».';
-  if (RESERVED_HANDLES.includes(h)) return 'Cet identifiant est réservé.';
+  if (!HANDLE_RE.test(h)) return tr('l4.cr.handleFormat');
+  if (RESERVED_HANDLES.includes(h)) return tr('l4.cr.handleReserved');
   return null;
 }
 
@@ -50,14 +52,14 @@ export interface SensitiveHint { key: 'phone' | 'email' | 'address' | 'birthdate
 /** Avertissements affichés AVANT de publier (rien n'est envoyé tant que la personne n'a pas choisi). */
 export function sensitiveHints(text: string): SensitiveHint[] {
   const out: SensitiveHint[] = [];
-  if (PHONE.test(text)) out.push({ key: 'phone', text: 'Un numéro de téléphone : retirez-le, il serait visible par tous les membres.', blocking: true });
-  if (EMAIL.test(text)) out.push({ key: 'email', text: 'Une adresse e-mail : retirez-la, elle serait visible par tous les membres.', blocking: true });
-  if (ADDRESS.test(text)) out.push({ key: 'address', text: 'Une adresse : n’indiquez jamais où vous habitez.', blocking: true });
-  if (BIRTHDATE.test(text)) out.push({ key: 'birthdate', text: 'Une date de naissance complète : indiquez plutôt un âge (« 6 mois »).', blocking: true });
-  if (GPS.test(text)) out.push({ key: 'gps', text: 'Une position précise : retirez-la.', blocking: true });
-  if (SSN.test(text)) out.push({ key: 'ssn', text: 'Un numéro qui ressemble à un numéro de sécurité sociale : ne le publiez jamais.', blocking: true });
-  if (linkCount(text) >= 3) out.push({ key: 'links', text: 'Plusieurs liens : la publication sera relue avant d’être visible.', blocking: false });
-  if (MEDICAL.test(text)) out.push({ key: 'medical', text: 'Un sujet médical : il sera présenté comme un témoignage personnel, pas comme un conseil. Pour une décision de santé, demandez à un professionnel.', blocking: false });
+  if (PHONE.test(text)) out.push({ key: 'phone', text: tr('l4.cr.hint.phone'), blocking: true });
+  if (EMAIL.test(text)) out.push({ key: 'email', text: tr('l4.cr.hint.email'), blocking: true });
+  if (ADDRESS.test(text)) out.push({ key: 'address', text: tr('l4.cr.hint.address'), blocking: true });
+  if (BIRTHDATE.test(text)) out.push({ key: 'birthdate', text: tr('l4.cr.hint.birthdate'), blocking: true });
+  if (GPS.test(text)) out.push({ key: 'gps', text: tr('l4.cr.hint.gps'), blocking: true });
+  if (SSN.test(text)) out.push({ key: 'ssn', text: tr('l4.cr.hint.ssn'), blocking: true });
+  if (linkCount(text) >= 3) out.push({ key: 'links', text: tr('l4.cr.hint.links'), blocking: false });
+  if (MEDICAL.test(text)) out.push({ key: 'medical', text: tr('l4.cr.hint.medical'), blocking: false });
   return out;
 }
 
@@ -98,15 +100,20 @@ export function forYouOrder<T extends RankablePost>(posts: readonly T[], myForum
 export const AVATAR_PRESETS = ['moon', 'sun', 'leaf', 'cloud', 'star', 'heart', 'wave', 'flower', 'bird', 'whale', 'bear', 'rainbow'] as const;
 export type AvatarPreset = (typeof AVATAR_PRESETS)[number];
 
-export const JOURNEY_LABELS: Record<string, string> = {
+const JOURNEY_LABELS_FR: Record<string, string> = {
   cycle: 'Suit son cycle', projet: 'En projet bébé', grossesse: 'Enceinte', jumeaux: 'Parent de jumeaux ou triplés',
   bebe: 'Parent d’un bébé', enfant: 'Parent d’enfant', famille: 'Parent de plusieurs enfants', postpartum: 'En post-partum',
 };
+const JOURNEY_LABELS_EN: Record<string, string> = {
+  cycle: 'Tracking their cycle', projet: 'Trying for a baby', grossesse: 'Pregnant', jumeaux: 'Parent of twins or triplets',
+  bebe: 'Parent of a baby', enfant: 'Parent of a child', famille: 'Parent of several children', postpartum: 'Postpartum',
+};
+export const JOURNEY_LABELS: Record<string, string> = localized(JOURNEY_LABELS_FR, JOURNEY_LABELS_EN);
 
 /** « Membre depuis octobre 2026 » (mois seulement, jamais la date exacte). */
 export function joinedLabel(month: string | null | undefined): string | null {
   if (!month) return null;
   const [y, m] = month.split('-').map(Number);
   if (!y || !m) return null;
-  return `Membre depuis ${new Date(y, m - 1, 15).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`;
+  return tr('l4.cr.joined', { date: formatDate(new Date(y, m - 1, 15), { month: 'long', year: 'numeric' }) });
 }

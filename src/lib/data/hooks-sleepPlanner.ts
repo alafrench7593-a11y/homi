@@ -3,6 +3,8 @@
  * chaque minute), actions d'enregistrement (endormissement, réveil, réveil de nuit, rendormissement, modification
  * d'horaire, suppression), profil de sommeil et avis sur les estimations. Rien n'est mélangé entre enfants.
  */
+import { localeTag } from '@/i18n';
+import { t as tr } from '@/i18n';
 import { useEffect, useMemo, useState } from 'react';
 import { backend, eq, gte } from '../backend';
 import { useInvalidate, useLogs, usePremium, useRows } from './hooks';
@@ -83,19 +85,19 @@ export function useSleepActions(child: Child | null | undefined) {
   const childId = child?.id;
 
   async function current(): Promise<{ open: Sleep | null; last: Sleep | null }> {
-    if (!childId) throw new SleepError('Enfant introuvable.');
+    if (!childId) throw new SleepError(tr('l3.sleepplan.child_missing'));
     const rows = await backend.select<Sleep>({ table: 'sleeps', filters: [eq('child_id', childId)], order: [{ col: 'started_at', asc: false }], limit: 5 });
     return { open: rows.find((r) => !r.ended_at) ?? null, last: rows.find((r) => !!r.ended_at) ?? null };
   }
-  const checkPast = (at: Date) => { if (at.getTime() > Date.now() + MIN) throw new SleepError('L’heure choisie est dans le futur.'); };
+  const checkPast = (at: Date) => { if (at.getTime() > Date.now() + MIN) throw new SleepError(tr('l3.sleepplan.future')); };
 
   return {
     /** « Mon enfant s'endort » (heure modifiable) ; sieste ou nuit selon le planning ou le choix du parent. */
     async asleep(at: Date, kind: 'nap' | 'night') {
       checkPast(at);
       const { open, last } = await current();
-      if (open) throw new SleepError('Un sommeil est déjà en cours : notez d’abord le réveil.');
-      if (last?.ended_at && Date.parse(last.ended_at) > at.getTime()) throw new SleepError(`Cette heure est avant la fin du dernier sommeil noté (${new Date(last.ended_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}).`);
+      if (open) throw new SleepError(tr('l3.sleepplan.already'));
+      if (last?.ended_at && Date.parse(last.ended_at) > at.getTime()) throw new SleepError(tr('l3.sleepplan.before_end', { time: new Date(last.ended_at).toLocaleTimeString(localeTag(), { hour: '2-digit', minute: '2-digit' }) }));
       await backend.insert('sleeps', { child_id: childId, household_id: child!.household_id, started_at: at.toISOString(), kind, wakeups: 0, wake_events: [] });
       done();
     },
@@ -103,11 +105,11 @@ export function useSleepActions(child: Child | null | undefined) {
     async awake(at: Date) {
       checkPast(at);
       const { open } = await current();
-      if (!open) throw new SleepError('Aucun sommeil en cours.');
+      if (!open) throw new SleepError(tr('l3.sleepplan.none_open'));
       const waking = openNightWaking(open);
       // Réveil du matin pendant un réveil nocturne en cours : la nuit s'arrête au début de ce réveil
       const end = waking ? new Date(Math.min(at.getTime(), Date.parse(waking.at))) : at;
-      if (end.getTime() < Date.parse(open.started_at)) throw new SleepError('Le réveil ne peut pas précéder l’endormissement.');
+      if (end.getTime() < Date.parse(open.started_at)) throw new SleepError(tr('l3.sleepplan.wake_before_sleep'));
       const patch: Record<string, unknown> = { ended_at: end.toISOString() };
       if (waking) { patch.wake_events = (open.wake_events ?? []).slice(0, -1); patch.wakeups = Math.max(0, (open.wakeups ?? 1) - 1); }
       await backend.update('sleeps', patch, [eq('id', open.id)]);
@@ -117,9 +119,9 @@ export function useSleepActions(child: Child | null | undefined) {
     async nightWaking(at: Date) {
       checkPast(at);
       const { open } = await current();
-      if (!open || sleepKind(open) !== 'night') throw new SleepError('Aucune nuit en cours.');
-      if (openNightWaking(open)) throw new SleepError('Un réveil de nuit est déjà en cours.');
-      if (at.getTime() < Date.parse(open.started_at)) throw new SleepError('Ce réveil est avant le coucher noté.');
+      if (!open || sleepKind(open) !== 'night') throw new SleepError(tr('l3.sleepplan.no_night'));
+      if (openNightWaking(open)) throw new SleepError(tr('l3.sleepplan.waking_open'));
+      if (at.getTime() < Date.parse(open.started_at)) throw new SleepError(tr('l3.sleepplan.waking_before_bed'));
       await backend.update('sleeps', { wakeups: (open.wakeups ?? 0) + 1, wake_events: [...(open.wake_events ?? []), { at: at.toISOString(), open: true }].slice(-50) }, [eq('id', open.id)]);
       done();
     },
@@ -128,8 +130,8 @@ export function useSleepActions(child: Child | null | undefined) {
       checkPast(at);
       const { open } = await current();
       const waking = open ? openNightWaking(open) : null;
-      if (!open || !waking) throw new SleepError('Aucun réveil de nuit en cours.');
-      if (at.getTime() < Date.parse(waking.at)) throw new SleepError('L’heure choisie est avant le réveil.');
+      if (!open || !waking) throw new SleepError(tr('l3.sleepplan.no_waking'));
+      if (at.getTime() < Date.parse(waking.at)) throw new SleepError(tr('l3.sleepplan.time_before_waking'));
       const events = [...(open.wake_events ?? [])];
       events[events.length - 1] = { at: waking.at, back_at: at.toISOString(), minutes: Math.round((at.getTime() - Date.parse(waking.at)) / MIN) };
       await backend.update('sleeps', { wake_events: events }, [eq('id', open.id)]);
@@ -138,11 +140,11 @@ export function useSleepActions(child: Child | null | undefined) {
     /** Modifier les horaires d'un sommeil (le planning est recalculé aussitôt). */
     async edit(sleep: Sleep, patch: { started_at: Date; ended_at: Date | null; kind: 'nap' | 'night' }, all: Sleep[]) {
       checkPast(patch.started_at);
-      if (patch.ended_at) { checkPast(patch.ended_at); if (patch.ended_at <= patch.started_at) throw new SleepError('La fin doit être après le début.'); }
-      if (patch.ended_at && patch.ended_at.getTime() - patch.started_at.getTime() > 16 * 60 * MIN) throw new SleepError('Durée supérieure à 16 h : vérifiez les heures.');
+      if (patch.ended_at) { checkPast(patch.ended_at); if (patch.ended_at <= patch.started_at) throw new SleepError(tr('l3.sleepplan.end_after_start')); }
+      if (patch.ended_at && patch.ended_at.getTime() - patch.started_at.getTime() > 16 * 60 * MIN) throw new SleepError(tr('l3.sleepplan.too_long'));
       const a = patch.started_at.getTime(); const b = patch.ended_at?.getTime() ?? Date.now();
       const overlap = all.find((s) => s.id !== sleep.id && Date.parse(s.started_at) < b && (s.ended_at ? Date.parse(s.ended_at) : Date.now()) > a);
-      if (overlap) throw new SleepError('Ces horaires chevauchent un autre sommeil noté.');
+      if (overlap) throw new SleepError(tr('l3.sleepplan.overlap'));
       await backend.update('sleeps', { started_at: patch.started_at.toISOString(), ended_at: patch.ended_at?.toISOString() ?? null, kind: patch.kind }, [eq('id', sleep.id)]);
       done();
     },

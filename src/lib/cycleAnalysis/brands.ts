@@ -6,6 +6,9 @@
  * Statut : règles reprises des notices ; analyse photo NON validée sur de vraies photos de ces tests.
  */
 
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
+
 export type TestKind = 'ovulation' | 'pregnancy';
 export type TestFormat = 'lines' | 'cross' | 'digital';
 /** Comment l'application lit ce test. */
@@ -42,7 +45,7 @@ export interface TestRule {
 
 const CONSULTED = '2026-10-17';
 
-export const TEST_RULES: TestRule[] = [
+const TEST_RULES_FR: TestRule[] = [
   // ------------------------------------------------------------- grossesse
   {
     id: 'clearblue-detection-precoce',
@@ -171,6 +174,104 @@ export const TEST_RULES: TestRule[] = [
   },
 ];
 
+/** Textes anglais des règles : mêmes identifiants et même ordre ; seuls les libellés affichés changent. */
+const EN_TEXTS: Record<string, {
+  model: string;
+  readingRules: string[];
+  options?: Record<string, string>;
+  source: { title: string; note?: string };
+}> = {
+  'clearblue-detection-precoce': {
+    model: 'Détection Précoce (lines)',
+    readingRules: [
+      'Wait the full 3 minutes and read no later than 10 minutes after the test.',
+      'A line in the control window + a line in the result window: positive, whatever the intensity.',
+      'Control line only: negative.',
+      'No line in the control window: invalid test, repeat it.',
+    ],
+    source: { title: 'Clearblue Détection Précoce leaflet (French)' },
+  },
+  'first-response-early-result': {
+    model: 'Early Result (lines)',
+    readingRules: [
+      'Wait 3 minutes; do not read a negative result after 10 minutes.',
+      'Two pink lines: positive (one line may be fainter than the other).',
+      'One pink line only: negative.',
+      'No pink line at 3 minutes: invalid test.',
+    ],
+    source: { title: 'First Response Early Result leaflet', note: 'North American leaflet: check the leaflet in the box you bought in France.' },
+  },
+  'clearblue-detection-rapide': {
+    model: 'Détection Rapide (+ / − sign)',
+    readingRules: [
+      'Wait 3 minutes (an “Enceinte” may appear from 1 minute) and read no later than 10 minutes after the test.',
+      'Blue line in the control window + a “+” sign: positive, even if one arm of the “+” is fainter.',
+      'Blue line in the control window + a “−” sign: negative.',
+      'No blue line in the control window: invalid test.',
+    ],
+    options: {
+      plus: 'Control line + “+” sign',
+      minus: 'Control line + “−” sign',
+      no_control: 'No line in the control window',
+      unsure: 'I’m not sure',
+    },
+    source: { title: 'Clearblue Détection Rapide leaflet (French)', note: 'The sign is read by you: automatic analysis of crosses is not supported.' },
+  },
+  'clearblue-ultra-precoce-digital': {
+    model: 'Détection Ultra Précoce Digital',
+    readingRules: [
+      'The result appears after the progress indicator (1 to 5 minutes).',
+      '“Enceinte”: positive. “Pas Enceinte”: negative.',
+      'A “!” symbol or an error message: the test did not work.',
+    ],
+    options: {
+      pregnant: 'The screen shows “Enceinte”',
+      not_pregnant: 'The screen shows “Pas Enceinte”',
+      error: '“!” symbol or error message',
+      unsure: 'I can’t read the screen',
+    },
+    source: { title: 'Clearblue Détection Ultra Précoce Digital leaflet (French)' },
+  },
+  'one-step-lh-strip': {
+    model: 'LH strip (Co-Innovation Biotech)',
+    readingRules: [
+      'Read the result at 5 minutes; do not read it after that.',
+      'Two lines, with the test line as dark as or darker than the control line: LH surge.',
+      'Control line only, or a lighter test line: no LH surge.',
+      'No line, or test line only: invalid test.',
+    ],
+    source: { title: 'One Step LH Test Strip leaflet (EU)' },
+  },
+  'clearblue-ovulation-digital': {
+    model: 'Digital ovulation test (smiley)',
+    readingRules: [
+      'A smiley appears when the LH surge is detected.',
+      'See the leaflet in the box for the display time and the other symbols.',
+    ],
+    options: {
+      smiley: 'A smiley is displayed',
+      no_smiley: 'No smiley',
+      error: 'Symbol or error message',
+      unsure: 'I’m not sure',
+    },
+    source: { title: 'Clearblue Digital ovulation test product sheet', note: 'Only the smiley is confirmed by the source consulted: the symbol can’t be read by text recognition, so you read it yourself.' },
+  },
+};
+
+const TEST_RULES_EN: TestRule[] = TEST_RULES_FR.map((r) => {
+  const x = EN_TEXTS[r.id];
+  if (!x) return r;
+  return {
+    ...r,
+    model: x.model,
+    readingRules: x.readingRules,
+    manualOptions: r.manualOptions?.map((o) => ({ ...o, label: x.options?.[o.value] ?? o.label })),
+    source: { ...r.source, title: x.source.title, note: x.source.note ?? r.source.note },
+  };
+});
+
+export const TEST_RULES: TestRule[] = localized(TEST_RULES_FR, TEST_RULES_EN);
+
 export const UNKNOWN_TEST_ID = 'unknown';
 
 export function rulesFor(kind: TestKind): TestRule[] {
@@ -185,16 +286,16 @@ export function findRule(id: string | null | undefined): TestRule | null {
 export function genericManualOptions(kind: TestKind, format: TestFormat): ManualOption[] {
   if (kind === 'ovulation') {
     return [
-      { value: 'peak', label: format === 'digital' ? 'L’écran indique un pic de LH' : 'Ligne de test aussi foncée ou plus foncée que le contrôle', outcome: 'lh_peak_possible' },
-      { value: 'no_peak', label: format === 'digital' ? 'L’écran n’indique pas de pic' : 'Ligne de test plus claire ou absente', outcome: 'lh_peak_not_detected' },
-      { value: 'invalid', label: 'Pas de ligne de contrôle / erreur', outcome: 'invalid' },
-      { value: 'unsure', label: 'Je ne suis pas sûre', outcome: 'uncertain' },
+      { value: 'peak', label: format === 'digital' ? tr('l8.br.peakDigital') : tr('l8.br.peakLines'), outcome: 'lh_peak_possible' },
+      { value: 'no_peak', label: format === 'digital' ? tr('l8.br.noPeakDigital') : tr('l8.br.noPeakLines'), outcome: 'lh_peak_not_detected' },
+      { value: 'invalid', label: tr('l8.br.noControl'), outcome: 'invalid' },
+      { value: 'unsure', label: tr('l8.br.unsure'), outcome: 'uncertain' },
     ];
   }
   return [
-    { value: 'positive', label: format === 'digital' ? 'L’écran indique « enceinte »' : format === 'cross' ? 'Signe « + » visible' : 'Ligne de test visible', outcome: 'possibly_positive' },
-    { value: 'negative', label: format === 'digital' ? 'L’écran indique « pas enceinte »' : format === 'cross' ? 'Signe « − »' : 'Ligne de contrôle seule', outcome: 'possibly_negative' },
-    { value: 'invalid', label: 'Pas de ligne de contrôle / erreur', outcome: 'invalid' },
-    { value: 'unsure', label: 'Je ne suis pas sûre', outcome: 'uncertain' },
+    { value: 'positive', label: format === 'digital' ? tr('l8.br.digitalPregnant') : format === 'cross' ? tr('l8.br.plusVisible') : tr('l8.br.testLineVisible'), outcome: 'possibly_positive' },
+    { value: 'negative', label: format === 'digital' ? tr('l8.br.digitalNotPregnant') : format === 'cross' ? tr('l8.br.minusSign') : tr('l8.br.controlOnly'), outcome: 'possibly_negative' },
+    { value: 'invalid', label: tr('l8.br.noControl'), outcome: 'invalid' },
+    { value: 'unsure', label: tr('l8.br.unsure'), outcome: 'uncertain' },
   ];
 }

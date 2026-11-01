@@ -19,6 +19,7 @@
  *   − acides gras saturés : jusqu'à 10 points (0 si ≤ 12 % de l'énergie, 10 si ≥ 24 %)
  *   borné entre 0 et 100. Un plat n'est jamais présenté comme « bon » ou « mauvais » : on montre ses atouts et ses pistes.
  */
+import { t as tr } from '@/i18n';
 import { INGREDIENTS } from './ingredients';
 import { CALNUT_SOURCE, NUTRITION } from './nutrition-data';
 import type { Recipe } from './types';
@@ -73,7 +74,7 @@ export function recipeNutrients(r: Pick<Recipe, 'ingredients' | 'servings'>): { 
   for (const x of r.ingredients) {
     if (x.optional) continue;
     const n = NUTRITION[x.key];
-    if (!n) { approx.add(`${INGREDIENTS[x.key]?.name ?? x.key} : valeurs indisponibles`); continue; }
+    if (!n) { approx.add(tr('l3.rcp.no_values', { name: INGREDIENTS[x.key]?.name ?? x.key })); continue; }
     if (n.approx) approx.add(n.approx);
     const g = gramsOf(x.key, x.qty, x.unit) * n.factor;
     const k = g / 100;

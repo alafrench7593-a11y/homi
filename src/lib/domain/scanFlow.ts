@@ -4,6 +4,7 @@
  * apparaît dans « Informations manquantes ».
  * Testé par Jest (src/__tests__/scanner.test.ts).
  */
+import { t as tr } from '@/i18n';
 import type { CiqualFood, CosingIngredient, ProductCandidate, ProductSnapshot, RecallRow } from '../types-scanner';
 import { toRecallInfo } from '../types-scanner';
 import { DEMO_LABEL, splitIngredients, todayIso, type DataSourceInfo, type RecallCheck } from './scanCommon';
@@ -43,14 +44,14 @@ export function subjectDataSource(s: ConfirmedSubject, demoMode: boolean): DataS
   }
   if (s.ciqual) {
     return {
-      label: s.ciqual.is_demo || demoMode ? `Table Ciqual — ${DEMO_LABEL}` : `Table Ciqual (Anses), ${s.ciqual.source_version}`,
+      label: s.ciqual.is_demo || demoMode ? `${tr('l1.scan.ciqualTable')} — ${DEMO_LABEL}` : tr('l1.scan.ciqualVersion', { version: s.ciqual.source_version }),
       url: 'https://ciqual.anses.fr/',
       retrieved_on: s.ciqual.source_date,
       is_demo: s.ciqual.is_demo || demoMode,
     };
   }
   return {
-    label: demoMode ? `Saisie par vous — ${DEMO_LABEL}` : 'Saisie par vous (non vérifiée par une base de produits)',
+    label: demoMode ? `${tr('l1.scan.enteredByYou')} — ${DEMO_LABEL}` : tr('l1.scan.enteredByYouUnverified'),
     url: null,
     retrieved_on: null,
     is_demo: demoMode,
@@ -120,7 +121,7 @@ export function nutritionFromCiqual(row: CiqualFood, demoMode = false): FoodNutr
     sugars_g_100g: n.sucres_g ?? null,
     energy_kcal_100g: n.energie_kcal ?? null,
     source: demo ? 'ciqual_demo' : 'ciqual',
-    sourceLabel: demo ? `Table Ciqual — ${DEMO_LABEL}` : `Table Ciqual (Anses), ${row.source_version}, ${row.source_date}`,
+    sourceLabel: demo ? `${tr('l1.scan.ciqualTable')} — ${DEMO_LABEL}` : tr('l1.scan.ciqualVersionDate', { version: row.source_version, date: row.source_date }),
   };
 }
 

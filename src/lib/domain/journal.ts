@@ -3,10 +3,12 @@
  * Statistiques DESCRIPTIVES (des comptes), sans interprétation : une tendance ne prouve aucune cause.
  */
 import { csvCell } from '../csv';
+import { localeTag, t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 
 export type JournalCategory = 'feeding' | 'sleep' | 'diaper' | 'health' | 'medication' | 'teeth' | 'memory' | 'appointment' | 'task';
 
-export const JOURNAL_CATEGORIES: { value: JournalCategory; label: string }[] = [
+const JOURNAL_CATEGORIES_FR: { value: JournalCategory; label: string }[] = [
   { value: 'feeding', label: 'Biberons et repas' },
   { value: 'sleep', label: 'Sommeil' },
   { value: 'diaper', label: 'Changes' },
@@ -17,6 +19,18 @@ export const JOURNAL_CATEGORIES: { value: JournalCategory; label: string }[] = [
   { value: 'appointment', label: 'Rendez-vous' },
   { value: 'task', label: 'Tâches faites' },
 ];
+const JOURNAL_CATEGORIES_EN: { value: JournalCategory; label: string }[] = [
+  { value: 'feeding', label: 'Bottles and meals' },
+  { value: 'sleep', label: 'Sleep' },
+  { value: 'diaper', label: 'Nappy changes' },
+  { value: 'health', label: 'Observations' },
+  { value: 'medication', label: 'Medicines logged' },
+  { value: 'teeth', label: 'Teeth' },
+  { value: 'memory', label: 'Memories and milestones' },
+  { value: 'appointment', label: 'Appointments' },
+  { value: 'task', label: 'Tasks done' },
+];
+export const JOURNAL_CATEGORIES: { value: JournalCategory; label: string }[] = localized(JOURNAL_CATEGORIES_FR, JOURNAL_CATEGORIES_EN);
 
 export interface JournalEntry { key: string; at: string; category: JournalCategory; title: string; detail: string; note?: string | null; route?: string }
 
@@ -39,10 +53,10 @@ export function journalStats(entries: JournalEntry[]) {
 export function journalCsv(entries: JournalEntry[], childName: string) {
   const cell = csvCell;
   const label = (c: JournalCategory) => JOURNAL_CATEGORIES.find((x) => x.value === c)?.label ?? c;
-  const rows = [['Date', 'Heure', 'Catégorie', 'Entrée', 'Détail', 'Note'].map(cell).join(';')];
+  const rows = [[tr('l2.journal.csvDate'), tr('l2.journal.csvTime'), tr('l2.journal.csvCategory'), tr('l2.journal.csvEntry'), tr('l2.journal.csvDetail'), tr('l2.journal.csvNote')].map(cell).join(';')];
   for (const e of [...entries].sort((a, b) => (a.at < b.at ? -1 : 1))) {
     const d = new Date(e.at);
-    rows.push([d.toLocaleDateString('fr-FR'), d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }), label(e.category), e.title, e.detail, e.note ?? ''].map(cell).join(';'));
+    rows.push([d.toLocaleDateString(localeTag()), d.toLocaleTimeString(localeTag(), { hour: '2-digit', minute: '2-digit' }), label(e.category), e.title, e.detail, e.note ?? ''].map(cell).join(';'));
   }
-  return `﻿# Journal de ${childName} — saisies enregistrées dans l’application, à vérifier avant toute décision\r\n${rows.join('\r\n')}\r\n`;
+  return `﻿${tr('l2.journal.csvTitle', { name: childName })}\r\n${rows.join('\r\n')}\r\n`;
 }

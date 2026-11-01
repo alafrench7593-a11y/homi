@@ -5,6 +5,8 @@
  * Jamais de conclusion à partir d'une seule journée : il faut au moins 3 jours notés pour parler de moyennes et de
  * tendances. Ce sont des constats et des repères, jamais une norme, un diagnostic ou une méthode imposée.
  */
+import { localeTag, t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 import { habitChanges, sleepRhythm, wakeWindows, type HabitChange } from './sleepEstimate';
 import { clock, median, ownSleeps, referenceFor, sleepKind, type SleepPlan, type SleepProfile, type SleepRecord } from './sleepPlanner';
 import type { SleepLog } from './daily';
@@ -62,13 +64,14 @@ export const duration = (minutes: number) => (minutes >= 60 ? `${Math.floor(minu
 
 /** Phrases du bilan (constats). */
 export function reviewLines(r: SleepReview): string[] {
-  if (!r.enough) return [`${r.daysNoted} jour${r.daysNoted > 1 ? 's' : ''} noté${r.daysNoted > 1 ? 's' : ''} sur les 7 derniers : il en faut au moins ${MIN_DAYS_FOR_REVIEW} pour un bilan. Une seule journée ne dit rien du rythme habituel.`];
-  const out = [`${r.daysNoted} jours notés sur les 7 derniers.`];
-  if (r.napsPerDay != null) out.push(`Siestes : ${String(r.napsPerDay).replace('.', ',')} par jour en moyenne${r.napMinutes ? `, ${duration(r.napMinutes)} au total` : ''}.`);
-  if (r.wakeWindow != null) out.push(`Temps d’éveil habituel : environ ${duration(r.wakeWindow)} entre deux sommeils.`);
-  if (r.usualBedtime != null) out.push(`Coucher habituel : vers ${hm(r.usualBedtime).replace(':', ' h ')}.`);
-  if (r.nightMinutes) out.push(`Nuit notée : ${duration(r.nightMinutes)} en moyenne.`);
-  if (r.nightWakeups != null) out.push(r.nightWakeups ? `Réveils nocturnes notés : ${String(r.nightWakeups).replace('.', ',')} par nuit en moyenne.` : 'Aucun réveil nocturne noté.');
+  const dec = (n: number) => (localeTag().startsWith('fr') ? String(n).replace('.', ',') : String(n));
+  if (!r.enough) return [tr('l2.nh.notEnough', { count: r.daysNoted, min: MIN_DAYS_FOR_REVIEW })];
+  const out = [tr('l2.nh.daysNoted', { n: r.daysNoted })];
+  if (r.napsPerDay != null) out.push(tr('l2.nh.naps', { naps: dec(r.napsPerDay), total: r.napMinutes ? tr('l2.nh.napsTotal', { d: duration(r.napMinutes) }) : '' }));
+  if (r.wakeWindow != null) out.push(tr('l2.nh.wakeWindow', { d: duration(r.wakeWindow) }));
+  if (r.usualBedtime != null) out.push(tr('l2.nh.bedtime', { t: localeTag().startsWith('fr') ? hm(r.usualBedtime).replace(':', ' h ') : hm(r.usualBedtime) }));
+  if (r.nightMinutes) out.push(tr('l2.nh.night', { d: duration(r.nightMinutes) }));
+  if (r.nightWakeups != null) out.push(r.nightWakeups ? tr('l2.nh.wakeups', { n: dec(r.nightWakeups) }) : tr('l2.nh.noWakeups'));
   return out;
 }
 
@@ -76,12 +79,12 @@ export function reviewLines(r: SleepReview): string[] {
 export function gentleTips(ageMonths: number, r: SleepReview, plan: SleepPlan | null): string[] {
   const ref = referenceFor(ageMonths);
   const tips: string[] = [];
-  if (ageMonths < 3) tips.push('À cet âge, les réveils de nuit sont habituels : suivre son rythme et répondre à ses pleurs est conseillé.');
-  if (plan?.nextNap && !plan.nextNap.overdue) tips.push('Observez ses signes de fatigue (bâillements, regard dans le vague, frottement des yeux) : ils priment toujours sur l’heure estimée.');
-  if (r.enough && r.nightWakeups != null && r.nightWakeups >= 2) tips.push('La nuit, gardez une lumière très douce, une voix basse et des gestes calmes, puis recouchez-le rapidement.');
-  if (r.enough && r.napsPerDay != null && ref.naps && r.napsPerDay < ref.naps - 0.5) tips.push(`Les siestes notées sont moins nombreuses que les repères courants pour son âge (${ref.label}) : un moment calme en journée peut l’aider, sans obligation.`);
-  if (r.enough && r.changes.some((c) => c.kind === 'night_shorter' || c.kind === 'more_wakeups')) tips.push('Les nuits ont changé ces derniers jours : poussée dentaire, rhume, étape de développement ou changement de rythme sont fréquents. Si cela dure ou vous inquiète, parlez-en à son médecin ou à la PMI.');
-  tips.push('Un même ordre chaque soir (bain ou toilette, pyjama, histoire, câlin) aide à repérer le moment du coucher.');
+  if (ageMonths < 3) tips.push(tr('l2.nh.tip.young'));
+  if (plan?.nextNap && !plan.nextNap.overdue) tips.push(tr('l2.nh.tip.tired'));
+  if (r.enough && r.nightWakeups != null && r.nightWakeups >= 2) tips.push(tr('l2.nh.tip.dim'));
+  if (r.enough && r.napsPerDay != null && ref.naps && r.napsPerDay < ref.naps - 0.5) tips.push(tr('l2.nh.tip.fewNaps', { label: ref.label }));
+  if (r.enough && r.changes.some((c) => c.kind === 'night_shorter' || c.kind === 'more_wakeups')) tips.push(tr('l2.nh.tip.changed'));
+  tips.push(tr('l2.nh.tip.routine'));
   return tips.slice(0, 4);
 }
 
@@ -102,7 +105,7 @@ export function sleepContextFor(ageMonths: number, correctedMonths: number | nul
 // ─── « La nuit est difficile » ────────────────────────────────────────────────────────────────────
 
 export type NightObservation = 'many_wakings' | 'cannot_settle' | 'crying' | 'hungry' | 'early_waking' | 'unwell' | 'parent_exhausted';
-export const NIGHT_OBSERVATIONS: { key: NightObservation; label: string }[] = [
+const OBS_FR: { key: NightObservation; label: string }[] = [
   { key: 'many_wakings', label: 'Il se réveille souvent' },
   { key: 'cannot_settle', label: 'Il n’arrive pas à se rendormir' },
   { key: 'crying', label: 'Il pleure beaucoup' },
@@ -111,9 +114,19 @@ export const NIGHT_OBSERVATIONS: { key: NightObservation; label: string }[] = [
   { key: 'unwell', label: 'Il me semble malade ou inconfortable' },
   { key: 'parent_exhausted', label: 'Je suis à bout' },
 ];
+const OBS_EN: { key: NightObservation; label: string }[] = [
+  { key: 'many_wakings', label: 'Wakes up often' },
+  { key: 'cannot_settle', label: 'Cannot get back to sleep' },
+  { key: 'crying', label: 'Cries a lot' },
+  { key: 'hungry', label: 'Seems hungry' },
+  { key: 'early_waking', label: 'Wakes very early' },
+  { key: 'unwell', label: 'Seems unwell or uncomfortable' },
+  { key: 'parent_exhausted', label: 'I am exhausted' },
+];
+export const NIGHT_OBSERVATIONS: { key: NightObservation; label: string }[] = localized(OBS_FR, OBS_EN);
 
 /** Signes qui demandent de l'aide sans attendre (le module ne tente pas de les gérer). */
-export const WORRYING_SIGNS: { key: string; label: string }[] = [
+const WORRYING_FR: { key: string; label: string }[] = [
   { key: 'fever_young', label: 'Fièvre (38 °C ou plus) chez un bébé de moins de 3 mois' },
   { key: 'breathing', label: 'Respiration difficile, rapide ou avec des pauses, lèvres bleues' },
   { key: 'floppy', label: 'Bébé mou, très somnolent, difficile à réveiller' },
@@ -122,35 +135,31 @@ export const WORRYING_SIGNS: { key: string; label: string }[] = [
   { key: 'unusual_cry', label: 'Pleurs inhabituels, geignements, convulsions' },
   { key: 'harm', label: 'J’ai peur de m’énerver contre bébé ou de lui faire du mal' },
 ];
+const WORRYING_EN: { key: string; label: string }[] = [
+  { key: 'fever_young', label: 'Fever (38 °C or above) in a baby under 3 months' },
+  { key: 'breathing', label: 'Breathing that is difficult, fast or with pauses, blue lips' },
+  { key: 'floppy', label: 'Floppy baby, very drowsy, hard to wake' },
+  { key: 'no_feeding', label: 'Refuses to feed, or very few wet nappies' },
+  { key: 'rash', label: 'Red spots that do not fade under pressure' },
+  { key: 'unusual_cry', label: 'Unusual crying, whimpering, convulsions' },
+  { key: 'harm', label: 'I am afraid of losing my temper with baby or of hurting them' },
+];
+export const WORRYING_SIGNS: { key: string; label: string }[] = localized(WORRYING_FR, WORRYING_EN);
 
 export interface NightStep { title: string; points: string[] }
 /** Pistes générales et douces selon ce que le parent observe. Jamais « laisser pleurer », jamais de culpabilité. */
 export function nightPistes(obs: NightObservation[], ageMonths: number): NightStep[] {
   const out: NightStep[] = [];
   const has = (k: NightObservation) => obs.includes(k);
-  if (has('parent_exhausted')) out.push({ title: 'D’abord vous', points: [
-    'Ce que vous ressentez est fréquent et ne fait pas de vous un mauvais parent.',
-    'Si la tension monte, posez bébé sur le dos dans son lit, en sécurité, et sortez quelques minutes respirer. Ne le secouez jamais.',
-    'Si un autre adulte est là, passez-lui le relais, même pour un court moment.',
+  if (has('parent_exhausted')) out.push({ title: tr('l2.nh.p.you.title'), points: [tr('l2.nh.p.you.1'), tr('l2.nh.p.you.2'), tr('l2.nh.p.you.3')] });
+  if (has('hungry') || (ageMonths < 6 && (has('many_wakings') || has('crying')))) out.push({ title: tr('l2.nh.p.food.title'), points: [
+    ageMonths < 6 ? tr('l2.nh.p.food.young') : tr('l2.nh.p.food.older'),
+    tr('l2.nh.p.food.check'),
   ] });
-  if (has('hungry') || (ageMonths < 6 && (has('many_wakings') || has('crying')))) out.push({ title: 'Faim et confort', points: [
-    ageMonths < 6 ? 'À cet âge, les repas de nuit sont souvent encore utiles : proposez le sein ou le biberon s’il montre des signes de faim.' : 'S’il semble avoir faim, un repas de nuit peut encore arriver ; notez-le pour en parler au besoin avec son médecin.',
-    'Vérifiez la couche, la température (chambre à 18–20 °C, nuque ni moite ni froide) et la turbulette.',
-  ] });
-  if (has('many_wakings') || has('cannot_settle') || has('early_waking')) out.push({ title: 'L’aider à se rendormir, en douceur', points: [
-    'Lumière très faible, voix basse, peu de mots et de gestes : la nuit reste calme et ennuyeuse.',
-    'Restez près de lui, posez une main sur lui, bercez-le ou prenez-le dans les bras si cela l’apaise : il n’y a pas de mauvaise façon de le rassurer.',
-    'Attendre quelques instants avant d’intervenir peut lui laisser le temps de se rendormir seul, mais vous n’êtes jamais obligé·e de le laisser pleurer.',
-  ] });
-  if (has('crying')) out.push({ title: 'Quand il pleure beaucoup', points: [
-    'Les pleurs sont sa façon de communiquer : tenez-le contre vous, marchez doucement, parlez-lui ou chantez à voix basse.',
-    'Si rien ne l’apaise et que les pleurs vous semblent inhabituels, n’attendez pas : appelez son médecin ou le 15.',
-  ] });
-  if (has('unwell')) out.push({ title: 'S’il semble malade ou inconfortable', points: [
-    'Prenez sa température si vous avez un doute ; un bébé malade dort souvent moins bien.',
-    'Ce module ne peut pas évaluer un problème de santé : en cas de doute, appelez son médecin, la permanence de soins (116 117) ou le 15 si c’est urgent.',
-  ] });
-  if (!out.length) out.push({ title: 'Quelques repères', points: ['Gardez la nuit calme et sombre, répondez à ses besoins, et notez ce qui se passe pour en parler plus tard si cela dure.'] });
+  if (has('many_wakings') || has('cannot_settle') || has('early_waking')) out.push({ title: tr('l2.nh.p.settle.title'), points: [tr('l2.nh.p.settle.1'), tr('l2.nh.p.settle.2'), tr('l2.nh.p.settle.3')] });
+  if (has('crying')) out.push({ title: tr('l2.nh.p.cry.title'), points: [tr('l2.nh.p.cry.1'), tr('l2.nh.p.cry.2')] });
+  if (has('unwell')) out.push({ title: tr('l2.nh.p.unwell.title'), points: [tr('l2.nh.p.unwell.1'), tr('l2.nh.p.unwell.2')] });
+  if (!out.length) out.push({ title: tr('l2.nh.p.refs.title'), points: [tr('l2.nh.p.refs.1')] });
   return out;
 }
 
@@ -161,15 +170,15 @@ export function lastEvents(own: SleepRecord[], feedsAt: string[], now = new Date
   const recent = own.filter((s) => Date.parse(s.started_at) <= N && N - Date.parse(s.started_at) < 20 * 60 * MIN);
   const night = [...recent].reverse().find((s) => sleepKind(s) === 'night');
   if (night) {
-    out.push(`Nuit commencée à ${clock(Date.parse(night.started_at))}${night.ended_at ? `, terminée à ${clock(Date.parse(night.ended_at))}` : ''}.`);
+    out.push(tr('l2.nh.ev.night', { start: clock(Date.parse(night.started_at)), end: night.ended_at ? tr('l2.nh.ev.nightEnd', { t: clock(Date.parse(night.ended_at)) }) : '' }));
     const w = Math.max(night.wake_events?.length ?? 0, night.wakeups ?? 0);
-    out.push(w ? `${w} réveil${w > 1 ? 's' : ''} noté${w > 1 ? 's' : ''} cette nuit.` : 'Aucun réveil noté cette nuit.');
+    out.push(w ? tr('l2.nh.ev.wakings', { count: w }) : tr('l2.nh.ev.noWakings'));
   } else if (recent.length) {
     const last = recent[recent.length - 1];
-    out.push(`Dernier sommeil noté : ${clock(Date.parse(last.started_at))}${last.ended_at ? ` – ${clock(Date.parse(last.ended_at))}` : ' (en cours)'}.`);
+    out.push(tr('l2.nh.ev.lastSleep', { start: clock(Date.parse(last.started_at)), end: last.ended_at ? tr('l2.nh.ev.lastSleepEnd', { t: clock(Date.parse(last.ended_at)) }) : tr('l2.nh.ev.ongoing') }));
   }
   const lastFeed = feedsAt.filter((f) => Date.parse(f) <= N && N - Date.parse(f) < 12 * 60 * MIN).sort().pop();
-  if (lastFeed) out.push(`Dernier repas noté : ${clock(Date.parse(lastFeed))}.`);
-  if (!out.length) out.push('Rien n’a été noté ces dernières heures.');
+  if (lastFeed) out.push(tr('l2.nh.ev.lastFeed', { t: clock(Date.parse(lastFeed)) }));
+  if (!out.length) out.push(tr('l2.nh.ev.nothing'));
   return out;
 }

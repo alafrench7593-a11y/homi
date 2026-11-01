@@ -6,8 +6,10 @@
  * d'Expo Go et du web. Dans ce cas, l'application le dit et propose la saisie manuelle.
  */
 import { NativeModules, Platform } from 'react-native';
+import { t as tr } from '@/i18n';
 import { estimateReadability, extractIngredientSection, extractPrecautions, extractPrintedBarcode } from '../domain/scanOcr';
 
+/** Constante française (API inchangée) ; le message de l'exception, lui, suit la langue en cours. */
 export const LOCAL_RECOGNITION_UNAVAILABLE = 'Lecture locale indisponible ici : utilisez la saisie manuelle';
 
 export function localTextRecognitionAvailable(): boolean {
@@ -28,7 +30,7 @@ export interface TextReading {
 }
 
 export class LocalRecognitionUnavailable extends Error {
-  constructor() { super(LOCAL_RECOGNITION_UNAVAILABLE); }
+  constructor() { super(tr('l7.recog.unavailable')); }
 }
 
 export async function readTextFromImage(uri: string): Promise<TextReading> {

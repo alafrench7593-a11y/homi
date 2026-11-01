@@ -3,6 +3,7 @@
  * pour que chaque outil de l'application soit visible depuis la page Outils.
  * Toucher un de ces outils sélectionne d'abord le bon profil : les données ne sont jamais mélangées.
  */
+import { t as tr } from '@/i18n';
 import { useMemo } from 'react';
 import type { ActiveSubject } from '../store';
 import type { Scope, ScopeCtx } from '../journeys/tools';
@@ -27,11 +28,11 @@ export function useOtherProfileTools(shown: CatalogTool[]): ProfileTools[] {
     const profiles: { key: string; title: string; subject: ActiveSubject; ctx: ScopeCtx }[] = [];
     for (const c of children ?? []) {
       const type = js.childType(c.id);
-      if (type) profiles.push({ key: `child-${c.id}`, title: `Pour ${c.first_name}`, subject: { type: 'child', id: c.id }, ctx: { ...base, scope: type, childId: c.id } });
+      if (type) profiles.push({ key: `child-${c.id}`, title: tr('l3.alltools.for_child', { name: c.first_name }), subject: { type: 'child', id: c.id }, ctx: { ...base, scope: type, childId: c.id } });
     }
-    if (pregnancy) profiles.push({ key: 'pregnancy', title: 'Pour ma grossesse', subject: { type: 'pregnancy', id: pregnancy.id }, ctx: { ...base, scope: 'pregnancy' } });
-    profiles.push({ key: 'me', title: 'Pour moi', subject: { type: 'me' }, ctx: { ...base, scope: meScope } });
-    if ((children?.length ?? 0) + (pregnancy ? 1 : 0) > 1) profiles.push({ key: 'family', title: 'Pour toute la famille', subject: { type: 'family' }, ctx: { ...base, scope: 'family' } });
+    if (pregnancy) profiles.push({ key: 'pregnancy', title: tr('l3.alltools.for_pregnancy'), subject: { type: 'pregnancy', id: pregnancy.id }, ctx: { ...base, scope: 'pregnancy' } });
+    profiles.push({ key: 'me', title: tr('l3.alltools.for_me'), subject: { type: 'me' }, ctx: { ...base, scope: meScope } });
+    if ((children?.length ?? 0) + (pregnancy ? 1 : 0) > 1) profiles.push({ key: 'family', title: tr('l3.alltools.for_family'), subject: { type: 'family' }, ctx: { ...base, scope: 'family' } });
     return profiles
       .filter((p) => !sameSubject(p.subject, subject))
       .map((p) => {

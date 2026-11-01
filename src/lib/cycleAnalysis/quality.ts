@@ -6,6 +6,7 @@
  * Les seuils ont été réglés sur des images de synthèse (voir les tests) :
  * ils doivent être recalibrés sur un jeu de vraies photos avant publication.
  */
+import { localized } from '@/i18n/localized';
 import { luminance, percentile, type RGBAImage } from './image';
 
 export type QualityIssue = 'too_dark' | 'too_bright' | 'blurry' | 'too_small';
@@ -34,12 +35,20 @@ export const QUALITY_THRESHOLDS = {
   sharpGood: 0.35,
 };
 
-export const QUALITY_MESSAGES: Record<QualityIssue, string> = {
+const QUALITY_MESSAGES_FR: Record<QualityIssue, string> = {
   too_dark: 'Photo trop sombre : placez-vous près d’une fenêtre ou sous une lumière blanche, sans flash.',
   too_bright: 'Photo surexposée : évitez le flash et les reflets directs sur la fenêtre de résultat.',
   blurry: 'Photo floue : tenez le téléphone immobile, à 10–15 cm, et touchez l’écran pour faire la mise au point.',
   too_small: 'Image trop petite : rapprochez-vous pour que la fenêtre de résultat occupe une bonne partie de la photo.',
 };
+
+const QUALITY_MESSAGES_EN: Record<QualityIssue, string> = {
+  too_dark: 'Photo too dark: stand near a window or under a white light, without flash.',
+  too_bright: 'Photo overexposed: avoid flash and direct glare on the result window.',
+  blurry: 'Photo blurry: hold the phone still, 10–15 cm away, and tap the screen to focus.',
+  too_small: 'Image too small: move closer so that the result window fills a good part of the photo.',
+};
+export const QUALITY_MESSAGES: Record<QualityIssue, string> = localized(QUALITY_MESSAGES_FR, QUALITY_MESSAGES_EN);
 
 export function assessQuality(img: RGBAImage, windowBrightness: number | null = null): QualityReport {
   const { width: w, height: h, data } = img;

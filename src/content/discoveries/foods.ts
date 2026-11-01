@@ -8,12 +8,14 @@
  * `ing` relie l'aliment au dictionnaire des recettes (recettes qui utilisent les aliments déjà goûtés).
  */
 import type { Allergen } from '@/lib/recipes/types';
+import { localized } from '@/i18n/localized';
 
 export type FoodCategory = 'veg' | 'fruit' | 'starch' | 'cereal' | 'legume' | 'meat' | 'fish' | 'egg' | 'dairy' | 'fat' | 'herb' | 'allergen' | 'other';
 export const FOOD_CATEGORIES: FoodCategory[] = ['veg', 'fruit', 'starch', 'cereal', 'legume', 'meat', 'fish', 'egg', 'dairy', 'fat', 'herb', 'allergen', 'other'];
 
 export type SourceKey = 'spf' | 'anses_miel' | 'lait_cru' | 'ameli_quincke';
-export const DISCOVERY_SOURCES: Record<SourceKey, { label: string; url: string; published?: string; consulted: string }> = {
+type DiscoverySource = { label: string; url: string; published?: string; consulted: string };
+const DISCOVERY_SOURCES_FR: Record<SourceKey, DiscoverySource> = {
   spf: { label: 'Santé publique France — Pas à pas, votre enfant mange comme un grand', url: 'https://www.santepubliquefrance.fr/determinants-de-sante/nutrition-et-activite-physique/documents/brochure/pas-a-pas-votre-enfant-mange-comme-un-grand', published: '2022-05-24', consulted: '2026-10-22' },
   anses_miel: { label: 'ANSES — Pas de miel pour les enfants de moins d’un an', url: 'https://www.anses.fr/fr/content/pas-de-miel-les-enfants-de-moins-dun-an', published: '2023-10-31', consulted: '2026-10-19' },
   lait_cru: { label: 'Pas de fromages au lait cru avant 5 ans (rappel des autorités sanitaires)', url: 'https://www.larevuedupraticien.fr/article/pas-de-fromages-au-lait-cru-avant-5-ans', published: '2023-07-31', consulted: '2026-10-19' },
@@ -43,7 +45,7 @@ const ROUND = 'Petit, dur ou rond : à couper en quatre dans la longueur, ou à 
 
 const F = (key: string, name: string, category: FoodCategory, tint: string, prep: string, o: Partial<FoodDef> = {}): FoodDef => ({ key, name, category, tint, prep, ...o });
 
-export const FOODS: FoodDef[] = [
+const FOODS_FR: FoodDef[] = [
   // ---------------------------------------------------------------- légumes
   F('carrot', 'Carotte', 'veg', '#F08A2B', SMOOTH, { ing: 'carrot', care: 'Crue, elle se râpe très finement.' }),
   F('zucchini', 'Courgette', 'veg', '#7DA548', `${SMOOTH} La peau se retire au début si elle gêne.`, { ing: 'zucchini' }),
@@ -176,4 +178,149 @@ export const FOODS: FoodDef[] = [
   F('olive', 'Olives', 'other', '#3F3A2E', 'Dénoyautées et finement hachées, plus tard (elles sont salées).', { ing: 'olives', care: 'Entières : à couper en quatre jusqu’à 5 ans.' }),
 ];
 
-export const FOOD_BY_KEY: Record<string, FoodDef> = Object.fromEntries(FOODS.map((f) => [f.key, f]));
+const DISCOVERY_SOURCE_LABELS_EN: Record<SourceKey, string> = {
+  spf: 'Santé publique France — Pas à pas, votre enfant mange comme un grand (French public health agency leaflet)',
+  anses_miel: 'ANSES — No honey for children under one year (French food safety agency)',
+  lait_cru: 'No raw-milk cheese before age 5 (reminder from the French health authorities)',
+  ameli_quincke: 'ameli.fr — Angioedema: the right reflexes (French national health insurance)',
+};
+const DISCOVERY_SOURCES_EN = Object.fromEntries(
+  (Object.keys(DISCOVERY_SOURCES_FR) as SourceKey[]).map((k) => [k, { ...DISCOVERY_SOURCES_FR[k], label: DISCOVERY_SOURCE_LABELS_EN[k] }]),
+) as Record<SourceKey, DiscoverySource>;
+export const DISCOVERY_SOURCES = localized(DISCOVERY_SOURCES_FR, DISCOVERY_SOURCES_EN);
+
+const SMOOTH_EN = 'To begin with: cooked in water or steamed, puréed very smooth, with no added salt or sugar.';
+const ROUND_EN = 'Small, hard or round: cut into quarters lengthways, or mash, until age 5.';
+
+/** Textes affichés en anglais, par clé d'aliment (même forme que FOODS_FR : seuls name / prep / care changent). */
+const FOOD_TEXT_EN: Record<string, { name: string; prep: string; care?: string }> = {
+  carrot: { name: 'Carrot', prep: SMOOTH_EN, care: 'Raw, grate it very finely.' },
+  zucchini: { name: 'Courgette', prep: `${SMOOTH_EN} Peel it at first if the skin is a problem.` },
+  green_beans: { name: 'Green beans', prep: 'Well cooked then puréed: choose extra-fine beans, which are less stringy.' },
+  pumpkin: { name: 'Pumpkin', prep: 'Steamed, the flesh becomes very soft and easy to mash.' },
+  butternut: { name: 'Butternut squash', prep: 'Roasted or steamed, it mashes with a fork.' },
+  sweet_potato: { name: 'Sweet potato', prep: 'Steamed or baked, then mashed: a melting texture.' },
+  broccoli: { name: 'Broccoli', prep: 'Well-cooked florets mash easily; later, small soft florets can be held in the hand.' },
+  cauliflower: { name: 'Cauliflower', prep: 'Cooked until very soft and puréed, mixed with a potato to mellow it.' },
+  spinach: { name: 'Spinach', prep: 'Chopped and cooked, mixed into a potato purée.', care: 'Cooked spinach should be eaten quickly: do not keep it from one meal to the next at room temperature.' },
+  leek: { name: 'Leek', prep: 'The white part, well cooked and puréed, is milder than the green.' },
+  peas: { name: 'Peas', prep: 'Puréed then sieved to remove the skins at first.', care: ROUND_EN },
+  beetroot: { name: 'Beetroot', prep: 'Cooked, puréed with a potato: the pink colour often amuses little ones.' },
+  tomato: { name: 'Tomato', prep: 'Peeled and deseeded, cooked into a coulis at first.', care: 'Cherry tomatoes: always cut into quarters until age 5.' },
+  eggplant: { name: 'Aubergine', prep: 'Cooked for a long time (oven or steamed), the flesh becomes meltingly soft.' },
+  fennel: { name: 'Fennel', prep: 'Braised or steamed, puréed: a mild aniseed taste.' },
+  celeriac: { name: 'Celeriac', prep: 'Mashed with potato.' },
+  parsnip: { name: 'Parsnip', prep: 'Steamed then mashed: a slightly sweet flavour.' },
+  turnip: { name: 'Turnip', prep: 'Choose young turnips, which are milder, and cook them well.' },
+  cucumber: { name: 'Cucumber', prep: 'Peeled, deseeded, finely grated or, later, as soft sticks.' },
+  bell_pepper: { name: 'Pepper', prep: 'Cooked and peeled, it becomes soft and melting.' },
+  avocado: { name: 'Avocado', prep: 'Fully ripe, simply mashed: no cooking needed.' },
+  mushroom: { name: 'Mushrooms', prep: 'Well cooked, puréed into a mash or a sauce.' },
+  asparagus: { name: 'Asparagus', prep: 'The tips, cooked until very soft, mash easily.' },
+  cabbage: { name: 'Cabbage', prep: 'Well cooked, in a small quantity in a purée.' },
+  artichoke: { name: 'Artichoke', prep: 'The hearts, cooked and puréed.' },
+  apple: { name: 'Apple', prep: 'Cooked as a compote with no added sugar at first.', care: 'Raw: finely grated until they chew well.' },
+  pear: { name: 'Pear', prep: 'Very ripe, raw and mashed or cooked as a compote.' },
+  banana: { name: 'Banana', prep: 'Very ripe, simply mashed with a fork.' },
+  peach: { name: 'Peach', prep: 'Peeled, very ripe, mashed.' },
+  apricot: { name: 'Apricot', prep: 'Cooked as a compote, or very ripe, peeled and mashed.' },
+  plum: { name: 'Plum', prep: 'Cooked and sieved to remove the skin.' },
+  mango: { name: 'Mango', prep: 'Very ripe, puréed or, later, in soft strips.' },
+  melon: { name: 'Melon', prep: 'Very ripe, puréed or, later, in thin slices.' },
+  watermelon: { name: 'Watermelon', prep: 'Deseeded, puréed or, later, in soft sticks.' },
+  strawberry: { name: 'Strawberry', prep: 'Mashed or puréed.' },
+  raspberry: { name: 'Raspberry', prep: 'Puréed then sieved to remove the small seeds.' },
+  blueberry: { name: 'Blueberry', prep: 'Mashed or cooked as a compote.', care: ROUND_EN },
+  grape: { name: 'Grape', prep: 'Deseeded, peeled and mashed.', care: 'Whole grapes: always cut into quarters and deseeded until age 5.' },
+  kiwi: { name: 'Kiwi', prep: 'Very ripe, mashed; its acidity can redden the skin around the mouth.' },
+  clementine: { name: 'Clementine', prep: 'Segments with the pith and membrane removed, then cut up.' },
+  orange: { name: 'Orange', prep: 'Peeled right back to the flesh, in small pieces later.' },
+  cherry: { name: 'Cherry', prep: 'Stoned, mashed.', care: 'Always stoned and cut up until age 5.' },
+  pineapple: { name: 'Pineapple', prep: 'Very ripe, puréed; soft pieces later.' },
+  rhubarb: { name: 'Rhubarb', prep: 'Cooked as a compote with an apple to mellow it.' },
+  date: { name: 'Date', prep: 'Stoned, soaked then puréed.', care: 'Whole dried fruit is sticky and hard: purée it until age 5.' },
+  potato: { name: 'Potato', prep: 'Steamed, mashed with a little milk or oil.' },
+  pasta: { name: 'Pasta', prep: 'Small pasta, well cooked, then larger shapes that are easy to pick up.' },
+  rice: { name: 'Rice', prep: 'Well cooked, optionally puréed with a vegetable.' },
+  semolina: { name: 'Semolina', prep: 'Fine semolina, cooked in milk or in an unsalted vegetable stock.' },
+  quinoa: { name: 'Quinoa', prep: 'Rinsed, well cooked, mixed into a purée.' },
+  polenta: { name: 'Polenta', prep: 'Cooked until creamy, then as soft sticks later.' },
+  bulgur: { name: 'Bulgur wheat', prep: 'Well cooked, mixed with vegetables.' },
+  gnocchi: { name: 'Gnocchi', prep: 'Cut into soft pieces.' },
+  infant_cereal: { name: 'Infant cereals', prep: 'With no added sugar, mixed into their usual milk.' },
+  bread: { name: 'Bread', prep: 'Later, a crust or a finger of bread to hold.', care: 'Bread soaked in saliva can come away in a large lump: watch them and offer small pieces.' },
+  oats: { name: 'Rolled oats', prep: 'Cooked as porridge in milk.' },
+  buckwheat: { name: 'Buckwheat', prep: 'As a thin pancake or as flour in a porridge.' },
+  corn: { name: 'Sweetcorn', prep: 'As polenta or puréed.', care: 'Whole kernels: mash before age 5.' },
+  rice_cake: { name: 'Rice cake', prep: 'Plain, with no added salt, later for chewing on.' },
+  red_lentils: { name: 'Red lentils', prep: 'Very well cooked and puréed smooth (Santé publique France: from 4 to 6 months if well tolerated).' },
+  green_lentils: { name: 'Green lentils', prep: 'Well cooked and puréed.' },
+  chickpeas: { name: 'Chickpeas', prep: 'As a smooth purée like hummus, with no salt.', care: 'Whole: mash until age 5.' },
+  white_beans: { name: 'White beans', prep: 'Well cooked, puréed with a vegetable.' },
+  kidney_beans: { name: 'Kidney beans', prep: 'Well cooked, rinsed, puréed.' },
+  split_peas: { name: 'Split peas', prep: 'As a very smooth soup.' },
+  chicken: { name: 'Chicken', prep: 'Cooked right through, puréed with the vegetable; quantities suited to their age.', care: 'Always cooked right through.' },
+  turkey: { name: 'Turkey', prep: 'Cooked right through, puréed or shredded.', care: 'Always cooked right through.' },
+  beef: { name: 'Beef', prep: 'Cooked right through (mince: well done), puréed.', care: 'Minced meat: always cooked right through.' },
+  veal: { name: 'Veal', prep: 'Simmered until tender, puréed.' },
+  pork: { name: 'Pork', prep: 'Lean fillet cooked right through, puréed.', care: 'Always cooked right through.' },
+  lamb: { name: 'Lamb', prep: 'Simmered for a long time, trimmed of fat, puréed.' },
+  ham: { name: 'Cooked ham', prep: 'Rind-free cooked ham, puréed, in a small quantity (it is salty).' },
+  white_fish: { name: 'Cod', prep: 'Steamed, flaked with no bones, puréed.', care: 'Check carefully that there are no bones.' },
+  salmon: { name: 'Salmon', prep: 'Cooked right through, flaked with no bones.', care: 'Vary the fish, as Santé publique France recommends.' },
+  hake: { name: 'Hake', prep: 'Steamed, flaked with no bones.' },
+  trout: { name: 'Trout', prep: 'Cooked right through, flaked with no bones.' },
+  sardine: { name: 'Sardine', prep: 'Tinned, drained, mashed with its soft bones.' },
+  mackerel: { name: 'Mackerel', prep: 'Fresh, cooked right through, flaked with no bones.' },
+  egg: { name: 'Egg', prep: 'Always hard-boiled (yolk and white), mashed into a purée.', care: 'No raw egg and no preparation made with lightly cooked egg.' },
+  yogurt: { name: 'Plain yoghurt', prep: 'Plain, with no added sugar; a mashed fruit can go with it.' },
+  fromage_blanc: { name: 'Fromage blanc', prep: 'Plain, made with pasteurised milk.' },
+  petit_suisse: { name: 'Petit-suisse', prep: 'Plain.' },
+  emmental: { name: 'Emmental', prep: 'Grated and melted into a purée.' },
+  comte: { name: 'Comté', prep: 'Grated and melted into a purée.' },
+  mozzarella: { name: 'Mozzarella', prep: 'Made with pasteurised milk, in small melted cubes.' },
+  ricotta: { name: 'Ricotta', prep: 'Made with pasteurised milk, mixed with a vegetable.' },
+  raw_milk_cheese: { name: 'Raw-milk cheese', prep: 'Best avoided in young children: prefer cheeses made with pasteurised milk and cooked pressed cheeses.' },
+  rapeseed_oil: { name: 'Rapeseed oil', prep: 'One teaspoon in the purée (Santé publique France).' },
+  olive_oil: { name: 'Olive oil', prep: 'One teaspoon in the purée, alternating with other oils.' },
+  walnut_oil: { name: 'Walnut oil', prep: 'One teaspoon, alternating with rapeseed oil.' },
+  butter: { name: 'Butter', prep: 'A small knob in the purée.' },
+  cream: { name: 'Crème fraîche', prep: 'Pasteurised, one small spoonful.' },
+  parsley: { name: 'Parsley', prep: 'Finely chopped and cooked in the purée.' },
+  basil: { name: 'Basil', prep: 'A few leaves, puréed.' },
+  chives: { name: 'Chives', prep: 'Finely snipped.' },
+  mint: { name: 'Mint', prep: 'One leaf puréed with a fruit.' },
+  cumin: { name: 'Cumin', prep: 'A pinch, to add flavour without salt.' },
+  cinnamon: { name: 'Cinnamon', prep: 'A pinch in a compote.' },
+  vanilla: { name: 'Vanilla', prep: 'A pod infused in the milk.' },
+  turmeric: { name: 'Turmeric', prep: 'A pinch in a purée.' },
+  thyme: { name: 'Thyme', prep: 'Infused during cooking, then removed.' },
+  garlic: { name: 'Garlic', prep: 'One small clove cooked with the vegetables.' },
+  onion: { name: 'Onion', prep: 'Well cooked, melted in with the vegetables.' },
+  peanut: { name: 'Peanut', prep: 'As a powder or a smooth purée diluted in a preparation, with no added salt.', care: 'Never whole or in pieces before age 5 (small, hard, round food).' },
+  almond: { name: 'Almond', prep: 'As a powder, half a teaspoon in a purée or a dairy product (Santé publique France).', care: 'Never whole almonds before age 5.' },
+  hazelnut: { name: 'Hazelnut', prep: 'As a powder, half a teaspoon.', care: 'Never whole hazelnuts before age 5.' },
+  walnut: { name: 'Walnut', prep: 'As a fine powder.', care: 'Never whole or in pieces before age 5.' },
+  sesame: { name: 'Sesame', prep: 'As a paste (tahini) diluted in a preparation.' },
+  shrimp: { name: 'Prawn', prep: 'Cooked, finely chopped or puréed.' },
+  mussel: { name: 'Mussels', prep: 'Well cooked, finely chopped.' },
+  soy: { name: 'Soya', prep: 'Tofu, soya drink and soya desserts: Santé publique France advises against soya milk and soya-based products before age 3.' },
+  mustard: { name: 'Mustard', prep: 'A touch in a sauce, later.' },
+  honey: { name: 'Honey', prep: 'Never before 1 year (risk of infant botulism, ANSES). After that, like any sweet product, as late as possible.' },
+  cocoa: { name: 'Cocoa', prep: 'Unsweetened, a pinch later; sweetened products as late as possible.' },
+  plant_drink: { name: 'Plant-based drink', prep: 'Does not replace milk and is not suitable before 1 year (Santé publique France).' },
+  cow_milk: { name: 'Cow’s milk', prep: 'In a small quantity in a preparation (purée, dairy product); breast milk or infant formula remains their main milk drink. Ask the professional who follows them for advice.' },
+  olive: { name: 'Olives', prep: 'Stoned and finely chopped, later (they are salty).', care: 'Whole: cut into quarters until age 5.' },
+};
+
+const FOODS_EN: FoodDef[] = FOODS_FR.map((f) => {
+  const t = FOOD_TEXT_EN[f.key];
+  if (!t) return f;
+  const { care: _c, ...rest } = f;
+  return { ...rest, name: t.name, prep: t.prep, ...(t.care ? { care: t.care } : f.care ? { care: f.care } : {}) };
+});
+
+export const FOODS: FoodDef[] = localized(FOODS_FR, FOODS_EN);
+
+const mapByKey = (list: FoodDef[]): Record<string, FoodDef> => Object.fromEntries(list.map((f) => [f.key, f]));
+export const FOOD_BY_KEY: Record<string, FoodDef> = localized(mapByKey(FOODS_FR), mapByKey(FOODS_EN));

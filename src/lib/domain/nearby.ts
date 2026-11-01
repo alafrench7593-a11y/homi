@@ -13,11 +13,14 @@
  * Les adresses des services sont réglables (NEARBY_CONFIG) : en production, utiliser un fournisseur de tuiles et un
  * serveur Overpass adaptés au trafic (politiques d'usage d'OpenStreetMap).
  */
+import { t as tr, formatNumber } from '@/i18n';
+import { localized } from '@/i18n/localized';
+
 export const NEARBY_CONFIG = {
   geocodeUrl: 'https://data.geopf.fr/geocodage/search',
   overpassUrl: 'https://overpass-api.de/api/interpreter',
   tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-  attribution: '© contributeurs OpenStreetMap',
+  get attribution() { return tr('l6.nearby.attribution'); },
   attributionUrl: 'https://www.openstreetmap.org/copyright',
   appId: 'ToiEtMoi/1.0 (application familiale)',
 };
@@ -134,9 +137,9 @@ export function distanceM(a: { lat: number; lon: number }, b: { lat: number; lon
 }
 /** Distance approximative : arrondie (100 m près, puis 0,5 km), jamais au mètre. */
 export function approxDistance(m: number): string {
-  if (m < 950) return `environ ${Math.max(100, Math.round(m / 100) * 100)} m`;
+  if (m < 950) return tr('l6.nearby.aboutM', { m: String(Math.max(100, Math.round(m / 100) * 100)) });
   const km = Math.round(m / 500) / 2;
-  return `environ ${String(km).replace('.', ',')} km`;
+  return tr('l6.nearby.aboutKm', { km: formatNumber(km, { maximumFractionDigits: 1 }) });
 }
 
 /** Centre de recherche tiré d'une position : arrondi à ~1 km (0,01°) pour ne jamais envoyer une position précise. */
@@ -192,7 +195,7 @@ export interface Directory { kind: PlaceKind; title: string; body: string; url: 
 /** Annuaire de l'administration (Service-public.fr), avec la commune saisie (jamais une adresse personnelle). */
 export const annuaireUrl = (what: string, town?: string | null) => `https://lannuaire.service-public.fr/recherche?whoWhat=${encodeURIComponent(what).replace(/%20/g, '+')}&where=${encodeURIComponent(town ?? '').replace(/%20/g, '+')}`;
 export const directoryUrl = (d: Directory, town?: string | null) => (d.annuaire ? annuaireUrl(d.annuaire, town) : d.url);
-export const DIRECTORIES: Directory[] = [
+const DIRECTORIES_FR: Directory[] = [
   { kind: 'parent_child', title: 'Lieux d’accueil enfants-parents (LAEP)', body: 'Des lieux gratuits, sans inscription, pour partager un moment avec votre enfant et rencontrer d’autres parents. Recherche par commune sur le site de la Caf.', url: 'https://www.monenfant.fr/que-recherchez-vous/lieu-d-accompagnement-et-information-des-familles', source: 'monenfant.fr (Caf), cité par 1000 premiers jours', checkedOn: '2026-10-22' },
   { kind: 'parents_assoc', title: 'Accompagnement et information des familles', body: 'Relais petite enfance, lieux d’information et actions de soutien à la parentalité près de chez vous, recensés par la Caf.', url: 'https://www.monenfant.fr/que-recherchez-vous/lieu-d-accompagnement-et-information-des-familles', source: 'monenfant.fr (Caf)', checkedOn: '2026-10-22' },
   { kind: 'breastfeeding', title: 'Réunions de soutien à l’allaitement', body: 'Animatrices bénévoles et réunions (en présentiel ou à distance) de La Leche League France, par département.', url: 'https://www.lllfrance.org/reunions/trouver-une-reunion', source: 'La Leche League France', checkedOn: '2026-10-22' },
@@ -201,3 +204,13 @@ export const DIRECTORIES: Directory[] = [
   { kind: 'social_centre', title: 'Centres de PMI de votre commune', body: 'Consultations pour les enfants de moins de 6 ans et soutien aux parents, gérés par le département : l’annuaire officiel de l’administration les liste par commune.', url: null, annuaire: 'Centre de protection maternelle et infantile PMI', source: 'Annuaire de l’administration (Service-public.fr), conseillé par 1000 premiers jours', checkedOn: '2026-10-22' },
   { kind: 'public_service', title: 'Caisse d’allocations familiales (Caf)', body: 'Accueils et points de contact de la Caf : l’annuaire officiel de l’administration, par commune.', url: null, annuaire: 'Caisse d\'allocations familiales', source: 'Annuaire de l’administration (Service-public.fr)', checkedOn: '2026-10-22' },
 ];
+const DIRECTORIES_EN: Directory[] = [
+  { kind: 'parent_child', title: 'Parent-and-child drop-in centres (LAEP)', body: 'Free places, with no registration, where you can share a moment with your child and meet other parents. Search by town on the Caf website.', url: 'https://www.monenfant.fr/que-recherchez-vous/lieu-d-accompagnement-et-information-des-familles', source: 'monenfant.fr (Caf), cited by 1000 premiers jours', checkedOn: '2026-10-22' },
+  { kind: 'parents_assoc', title: 'Family support and information', body: 'Early-years networks, information points and parenting support activities near you, listed by the Caf.', url: 'https://www.monenfant.fr/que-recherchez-vous/lieu-d-accompagnement-et-information-des-familles', source: 'monenfant.fr (Caf)', checkedOn: '2026-10-22' },
+  { kind: 'breastfeeding', title: 'Breastfeeding support meetings', body: 'Volunteer leaders and meetings (in person or remote) run by La Leche League France, by département.', url: 'https://www.lllfrance.org/reunions/trouver-une-reunion', source: 'La Leche League France', checkedOn: '2026-10-22' },
+  { kind: 'isolated_support', title: 'Allô Parents Bébé', body: 'Free listening service for parents of young children (0–3 years), run by early-years professionals.', url: null, phone: '0800003456', hours: 'Monday to Friday, 10 am–1 pm and 2 pm–6 pm', source: 'City of Paris — family support', checkedOn: '2026-10-22' },
+  { kind: 'isolated_support', title: 'Home help and support near you', body: 'PMI, midwife, family social intervention worker: who can come and help you at home, and how to ask for it.', url: 'https://www.sante.fr/laccompagnement-domicile-pour-les-parents', source: 'Santé.fr (1000 premiers jours)', checkedOn: '2026-10-22' },
+  { kind: 'social_centre', title: 'PMI centres in your town', body: 'Consultations for children under 6 and support for parents, run by the département: the official government directory lists them by town.', url: null, annuaire: 'Centre de protection maternelle et infantile PMI', source: 'Government directory (Service-public.fr), recommended by 1000 premiers jours', checkedOn: '2026-10-22' },
+  { kind: 'public_service', title: 'Family allowance office (Caf)', body: 'Caf reception desks and contact points: the official government directory, by town.', url: null, annuaire: 'Caisse d\'allocations familiales', source: 'Government directory (Service-public.fr)', checkedOn: '2026-10-22' },
+];
+export const DIRECTORIES: Directory[] = localized(DIRECTORIES_FR, DIRECTORIES_EN);

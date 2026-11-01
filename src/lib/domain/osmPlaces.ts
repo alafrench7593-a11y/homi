@@ -8,13 +8,16 @@
  * accueillant les enfants (espace enfants, table à langer, chaise haute) ; les salons de thé sont retenus.
  */
 import type { FamilyCategory } from '../../../supabase/functions/_shared/google-places';
+import { getLocale, t as tr, type TKey } from '@/i18n';
+import { localized } from '@/i18n/localized';
 
-export const OSM_CONFIG = {
+const OSM_CONFIG_FR = {
   overpassUrls: ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter'],
   tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
   attribution: '© contributeurs OpenStreetMap',
   attributionUrl: 'https://www.openstreetmap.org/copyright',
 };
+export const OSM_CONFIG = localized(OSM_CONFIG_FR, { ...OSM_CONFIG_FR, attribution: '© OpenStreetMap contributors' });
 
 const KIDS = ['["kids_area"="yes"]', '["changing_table"="yes"]', '["highchair"="yes"]'];
 const NOT_PRIVATE = '["access"!~"^(private|no)$"]';
@@ -52,29 +55,33 @@ export function osmCategory(t: Tags, searched: FamilyCategory | 'all'): FamilyCa
 
 /** Libellé du type de lieu, en français. */
 export function osmTypeLabel(t: Tags): string | null {
-  if (t.leisure === 'playground') return t.indoor === 'yes' ? 'Aire de jeux couverte' : 'Aire de jeux';
-  if (t.leisure === 'park') return 'Parc';
-  if (t.leisure === 'garden') return 'Jardin';
-  if (t.leisure === 'picnic_site' || t.tourism === 'picnic_site') return 'Aire de pique-nique';
-  if (t.leisure === 'water_park') return 'Parc aquatique';
-  if (t.leisure === 'indoor_play') return 'Parc de jeux couvert';
-  if (t.amenity === 'cafe') return /tea/.test(t.cuisine ?? '') || t.shop === 'tea' ? 'Salon de thé' : 'Café';
-  if (t.amenity === 'restaurant') return 'Restaurant';
-  if (t.amenity === 'library') return 'Bibliothèque';
-  if (t.amenity === 'toy_library') return 'Ludothèque';
-  if (t.amenity === 'arts_centre') return 'Centre culturel';
-  if (t.amenity === 'social_facility') return 'Accompagnement des familles';
-  const tour: Record<string, string> = { museum: 'Musée', zoo: 'Zoo', aquarium: 'Aquarium', theme_park: 'Parc de loisirs' };
-  return tour[t.tourism] ?? null;
+  const L = (k: string) => tr(`l7.osm.type_${k}` as TKey);
+  if (t.leisure === 'playground') return t.indoor === 'yes' ? L('playground_indoor') : L('playground');
+  if (t.leisure === 'park') return L('park');
+  if (t.leisure === 'garden') return L('garden');
+  if (t.leisure === 'picnic_site' || t.tourism === 'picnic_site') return L('picnic');
+  if (t.leisure === 'water_park') return L('water_park');
+  if (t.leisure === 'indoor_play') return L('indoor_play');
+  if (t.amenity === 'cafe') return /tea/.test(t.cuisine ?? '') || t.shop === 'tea' ? L('tea_room') : L('cafe');
+  if (t.amenity === 'restaurant') return L('restaurant');
+  if (t.amenity === 'library') return L('library');
+  if (t.amenity === 'toy_library') return L('toy_library');
+  if (t.amenity === 'arts_centre') return L('arts_centre');
+  if (t.amenity === 'social_facility') return L('social');
+  const tour: Record<string, string> = { museum: 'museum', zoo: 'zoo', aquarium: 'aquarium', theme_park: 'theme_park' };
+  return tour[t.tourism] ? L(tour[t.tourism]) : null;
 }
 
 /** Horaires OpenStreetMap (« Mo-Fr 09:00-18:00; Sa 10:00-12:00 ») rendus lisibles, une ligne par règle. */
 export function osmHours(v?: string): string[] {
   if (!v || v.length > 300) return [];
-  if (v.trim() === '24/7') return ['Ouvert 24 h/24'];
-  const days: Record<string, string> = { Mo: 'lun.', Tu: 'mar.', We: 'mer.', Th: 'jeu.', Fr: 'ven.', Sa: 'sam.', Su: 'dim.', PH: 'jours fériés' };
-  return v.split(';').map((s) => s.trim()).filter(Boolean).slice(0, 8).map((s) =>
-    s.replace(/\b(Mo|Tu|We|Th|Fr|Sa|Su|PH)\b/g, (d) => days[d]).replace(/-(?=[a-zé])/g, ' – ').replace(/\boff\b|\bclosed\b/gi, 'fermé').replace(/(\d\d):(\d\d)/g, '$1 h $2').replace(/ h 00/g, ' h'));
+  if (v.trim() === '24/7') return [tr('l7.osm.open_24h')];
+  const fr = getLocale() !== 'en';
+  return v.split(';').map((s) => s.trim()).filter(Boolean).slice(0, 8).map((s) => {
+    let r = s.replace(/\b(Mo|Tu|We|Th|Fr|Sa|Su|PH)\b/g, (d) => tr(`l7.osm.day_${d}` as TKey)).replace(/-(?=[a-zé])/g, ' – ').replace(/\boff\b|\bclosed\b/gi, tr('l7.osm.closed'));
+    if (fr) r = r.replace(/(\d\d):(\d\d)/g, '$1 h $2').replace(/ h 00/g, ' h');
+    return r;
+  });
 }
 
 /** Fichier Commons d'une balise « wikimedia_commons » ou « image » (File:… seulement, jamais une catégorie). */
@@ -101,7 +108,7 @@ export function parseCommons(json: any): CommonsImage | null {
   const m = ii.extmetadata ?? {};
   const license = stripHtml(m.LicenseShortName?.value);
   if (!license) return null; // sans licence lisible, pas de photo
-  return { url, author: stripHtml(m.Artist?.value).slice(0, 80) || 'Auteur sur Wikimedia Commons', license, pageUrl: ii.descriptionurl ?? 'https://commons.wikimedia.org' };
+  return { url, author: stripHtml(m.Artist?.value).slice(0, 80) || tr('l7.osm.author_fallback'), license, pageUrl: ii.descriptionurl ?? 'https://commons.wikimedia.org' };
 }
 
 const safeUrl = (u?: string) => (u && /^https?:\/\/[^\s]+$/i.test(u) ? u.replace(/^http:/i, 'https:').slice(0, 300) : null);

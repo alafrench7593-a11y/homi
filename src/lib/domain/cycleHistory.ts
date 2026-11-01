@@ -3,6 +3,8 @@
  * les symptômes, les notes et (seulement si l'option est activée) les rapports.
  * Les estimations croisées restent des ESTIMATIONS : jamais d'ovulation ni de grossesse « confirmée ».
  */
+import { formatNumber, t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 import { addDays, type ISODate } from './dates';
 import type { FertileWindowEstimate } from './cycle';
 import { fertilitySign, mucusLabel } from '../cycleAnalysis/mucus';
@@ -21,8 +23,12 @@ export interface HistoryInput {
   intercourse: { id: string; occurred_on: string }[] | null;
 }
 
-const OVU_LABEL: Record<string, string> = { positive: 'pic de LH possible', peak: 'pic de LH possible', negative: 'pic de LH non détecté', invalid: 'test invalide', uncertain: 'résultat incertain' };
-const PREG_LABEL: Record<string, string> = { positive: 'possiblement positif', faint: 'ligne pâle', negative: 'possiblement négatif', invalid: 'test invalide', uncertain: 'résultat incertain' };
+const OVU_LABEL_FR: Record<string, string> = { positive: 'pic de LH possible', peak: 'pic de LH possible', negative: 'pic de LH non détecté', invalid: 'test invalide', uncertain: 'résultat incertain' };
+const PREG_LABEL_FR: Record<string, string> = { positive: 'possiblement positif', faint: 'ligne pâle', negative: 'possiblement négatif', invalid: 'test invalide', uncertain: 'résultat incertain' };
+const OVU_LABEL_EN: Record<string, string> = { positive: 'possible LH surge', peak: 'possible LH surge', negative: 'LH surge not detected', invalid: 'invalid test', uncertain: 'uncertain result' };
+const PREG_LABEL_EN: Record<string, string> = { positive: 'possibly positive', faint: 'faint line', negative: 'possibly negative', invalid: 'invalid test', uncertain: 'uncertain result' };
+const OVU_LABEL: Record<string, string> = localized(OVU_LABEL_FR, OVU_LABEL_EN);
+const PREG_LABEL: Record<string, string> = localized(PREG_LABEL_FR, PREG_LABEL_EN);
 
 /** Date locale (AAAA-MM-JJ) d'un horodatage. */
 export function localDay(ts: string): ISODate {
@@ -40,17 +46,17 @@ export function buildDayEvents(input: HistoryInput): Map<ISODate, DayEvent[]> {
   };
   for (const p of input.periods) {
     const end = p.end_date && p.end_date >= p.start_date ? p.end_date : p.start_date;
-    for (let d = p.start_date, i = 0; d <= end && i < 15; d = addDays(d, 1), i++) add(d, { kind: 'period', label: i === 0 ? 'Début des règles' : 'Règles', sourceId: p.id });
+    for (let d = p.start_date, i = 0; d <= end && i < 15; d = addDays(d, 1), i++) add(d, { kind: 'period', label: i === 0 ? tr('l8.ch.periodStart') : tr('l8.ch.period'), sourceId: p.id });
   }
   for (const o of input.observations) {
-    if (o.cervical_mucus) add(o.observed_on, { kind: 'mucus', label: `Glaire : ${(mucusLabel(o.cervical_mucus) ?? o.cervical_mucus).toLowerCase()}`, detail: o.photo_path ? 'Photo gardée (chiffrée)' : null, sourceId: o.id });
-    if (o.bbt_celsius != null) add(o.observed_on, { kind: 'temperature', label: `Température : ${String(o.bbt_celsius).replace('.', ',')} °C`, sourceId: o.id });
-    if (o.note) add(o.observed_on, { kind: 'note', label: 'Note', detail: o.note, sourceId: o.id });
+    if (o.cervical_mucus) add(o.observed_on, { kind: 'mucus', label: tr('l8.ch.mucus', { what: (mucusLabel(o.cervical_mucus) ?? o.cervical_mucus).toLowerCase() }), detail: o.photo_path ? tr('l8.ch.photoKept') : null, sourceId: o.id });
+    if (o.bbt_celsius != null) add(o.observed_on, { kind: 'temperature', label: tr('l8.ch.temp', { value: formatNumber(o.bbt_celsius, { maximumFractionDigits: 2 }) }), sourceId: o.id });
+    if (o.note) add(o.observed_on, { kind: 'note', label: tr('l8.ch.note'), detail: o.note, sourceId: o.id });
   }
-  for (const t of input.ovulationTests) add(localDay(t.tested_at), { kind: 'ovulation_test', label: `Test d’ovulation : ${OVU_LABEL[t.result] ?? t.result}`, detail: [t.brand_label, t.note].filter(Boolean).join(' · ') || null, sourceId: t.id });
-  for (const t of input.pregnancyTests) add(localDay(t.tested_at), { kind: 'pregnancy_test', label: `Test de grossesse : ${PREG_LABEL[t.result] ?? t.result}`, detail: [t.brand_label, t.note].filter(Boolean).join(' · ') || null, sourceId: t.id });
-  for (const s of input.symptoms) add(s.logged_on, { kind: 'symptom', label: s.symptoms.length ? `Symptômes : ${s.symptoms.join(', ')}` : 'Symptômes', detail: s.note, sourceId: s.id });
-  if (input.intercourse) for (const r of input.intercourse) add(r.occurred_on, { kind: 'intercourse', label: 'Rapport', sourceId: r.id });
+  for (const t of input.ovulationTests) add(localDay(t.tested_at), { kind: 'ovulation_test', label: tr('l8.ch.ovuTest', { result: OVU_LABEL[t.result] ?? t.result }), detail: [t.brand_label, t.note].filter(Boolean).join(' · ') || null, sourceId: t.id });
+  for (const t of input.pregnancyTests) add(localDay(t.tested_at), { kind: 'pregnancy_test', label: tr('l8.ch.pregTest', { result: PREG_LABEL[t.result] ?? t.result }), detail: [t.brand_label, t.note].filter(Boolean).join(' · ') || null, sourceId: t.id });
+  for (const s of input.symptoms) add(s.logged_on, { kind: 'symptom', label: s.symptoms.length ? tr('l8.ch.symptomsList', { list: s.symptoms.join(', ') }) : tr('l8.ch.symptoms'), detail: s.note, sourceId: s.id });
+  if (input.intercourse) for (const r of input.intercourse) add(r.occurred_on, { kind: 'intercourse', label: tr('l8.ch.intercourse'), sourceId: r.id });
   return map;
 }
 
@@ -84,12 +90,12 @@ export function crossedOvulationEstimate(
     return {
       ovulation,
       basis: fertileMucus ? 'lh_test_and_mucus' : 'lh_test',
-      text: `Ovulation estimée vers le ${fmt(ovulation)}, d’après votre test d’ovulation positif du ${fmt(lh)}${fertileMucus ? ' et vos observations de glaire' : ''}. C’est une estimation : un test d’ovulation ne prouve pas que l’ovulation a eu lieu.`,
+      text: tr('l8.ch.estLh', { ovulation: fmt(ovulation), lh: fmt(lh), mucus: fertileMucus ? tr('l8.ch.estMucusPart') : '' }),
     };
   }
   const w = windows.find((x) => x.nextPeriod >= today) ?? windows[0];
   if (!w) return null;
-  return { ovulation: w.ovulation, basis: 'calendar', text: `Ovulation estimée vers le ${fmt(w.ovulation)}, d’après la durée de vos cycles. C’est une estimation, pas une certitude.` };
+  return { ovulation: w.ovulation, basis: 'calendar', text: tr('l8.ch.estCalendar', { ovulation: fmt(w.ovulation) }) };
 }
 
 export const EVENT_COLOURS: Record<DayEventKind, string> = {
@@ -103,7 +109,12 @@ export const EVENT_COLOURS: Record<DayEventKind, string> = {
   note: '#8C8C99',
 };
 
-export const EVENT_LABEL: Record<DayEventKind, string> = {
+const EVENT_LABEL_FR: Record<DayEventKind, string> = {
   period: 'Règles', mucus: 'Glaire', temperature: 'Température', ovulation_test: 'Test d’ovulation',
   pregnancy_test: 'Test de grossesse', symptom: 'Symptômes', intercourse: 'Rapport', note: 'Note',
 };
+const EVENT_LABEL_EN: Record<DayEventKind, string> = {
+  period: 'Period', mucus: 'Mucus', temperature: 'Temperature', ovulation_test: 'Ovulation test',
+  pregnancy_test: 'Pregnancy test', symptom: 'Symptoms', intercourse: 'Intercourse', note: 'Note',
+};
+export const EVENT_LABEL: Record<DayEventKind, string> = localized(EVENT_LABEL_FR, EVENT_LABEL_EN);

@@ -11,6 +11,7 @@
 import { Platform } from 'react-native';
 import Purchases, { type PurchasesPackage } from 'react-native-purchases';
 import { backend } from './backend';
+import { t as tr } from '@/i18n';
 
 const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_APPLE_KEY;
 const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY;
@@ -34,9 +35,9 @@ export interface Plan {
 }
 
 // Prix affichés en mode test uniquement ; en production ils viennent de la boutique
-const TEST_PLANS: Plan[] = [
-  { id: 'toietmoi_premium_monthly', period: 'monthly', title: 'Mensuel', price: '5,99 €', detail: 'par mois, sans engagement', trialLabel: '3 jours offerts', trialDays: 3, billed: '5,99 € facturés chaque mois' },
-  { id: 'toietmoi_premium_annual', period: 'annual', title: 'Annuel', price: '39,99 €', detail: 'par an — soit environ 3,33 € par mois', trialLabel: '7 jours offerts', trialDays: 7, billed: '39,99 € facturés une fois par an' },
+const testPlans = (): Plan[] => [
+  { id: 'toietmoi_premium_monthly', period: 'monthly', title: tr('l1.pur.monthly'), price: tr('l1.pur.testMonthlyPrice'), detail: tr('l1.pur.perMonthNoCommitment'), trialLabel: tr('l1.pur.trialDays', { count: 3 }), trialDays: 3, billed: tr('l1.pur.testBilledMonthly') },
+  { id: 'toietmoi_premium_annual', period: 'annual', title: tr('l1.pur.annual'), price: tr('l1.pur.testAnnualPrice'), detail: tr('l1.pur.testAnnualDetail'), trialLabel: tr('l1.pur.trialDays', { count: 7 }), trialDays: 7, billed: tr('l1.pur.testBilledAnnual') },
 ];
 
 let configuredFor: string | null = null;
@@ -60,7 +61,7 @@ export async function resetPurchasesUser() {
 }
 
 export async function getPlans(): Promise<Plan[]> {
-  if (purchaseMode !== 'store') return TEST_PLANS;
+  if (purchaseMode !== 'store') return testPlans();
   const offerings = await Purchases.getOfferings();
   const pkgs = offerings.current?.availablePackages ?? [];
   const plans: Plan[] = pkgs
@@ -68,12 +69,12 @@ export async function getPlans(): Promise<Plan[]> {
     .map((p) => ({
       id: p.product.identifier,
       period: p.packageType === 'ANNUAL' ? 'annual' : 'monthly',
-      title: p.packageType === 'ANNUAL' ? 'Annuel' : 'Mensuel',
+      title: p.packageType === 'ANNUAL' ? tr('l1.pur.annual') : tr('l1.pur.monthly'),
       price: p.product.priceString,
-      detail: p.packageType === 'ANNUAL' ? 'par an' : 'par mois, sans engagement',
-      trialLabel: p.product.introPrice?.price === 0 ? `${p.product.introPrice.periodNumberOfUnits} ${p.product.introPrice.periodUnit === 'DAY' ? 'jours' : p.product.introPrice.periodUnit === 'WEEK' ? 'semaines' : 'mois'} offerts` : undefined,
+      detail: p.packageType === 'ANNUAL' ? tr('l1.pur.perYear') : tr('l1.pur.perMonthNoCommitment'),
+      trialLabel: p.product.introPrice?.price === 0 ? tr(p.product.introPrice.periodUnit === 'DAY' ? 'l1.pur.trialDays' : p.product.introPrice.periodUnit === 'WEEK' ? 'l1.pur.trialWeeks' : 'l1.pur.trialMonths', { count: p.product.introPrice.periodNumberOfUnits }) : undefined,
       trialDays: p.product.introPrice?.price === 0 ? p.product.introPrice.periodNumberOfUnits * (p.product.introPrice.periodUnit === 'WEEK' ? 7 : p.product.introPrice.periodUnit === 'MONTH' ? 30 : 1) : 0,
-      billed: p.packageType === 'ANNUAL' ? `${p.product.priceString} facturés une fois par an` : `${p.product.priceString} facturés chaque mois`,
+      billed: p.packageType === 'ANNUAL' ? tr('l1.pur.billedAnnual', { price: p.product.priceString }) : tr('l1.pur.billedMonthly', { price: p.product.priceString }),
       pkg: p,
     }));
   return applyTrialEligibility(plans);
@@ -106,14 +107,14 @@ export async function purchase(plan: Plan): Promise<boolean> {
     await backend.rpc('set_demo_subscription', { active: true, period: plan.period, product_id: plan.id, trial: !!plan.trialLabel });
     return true;
   }
-  if (purchaseMode !== 'store' || !plan.pkg) throw new Error('Les achats ne sont pas encore configurés pour cette version.');
+  if (purchaseMode !== 'store' || !plan.pkg) throw new Error(tr('l1.pur.notConfigured'));
   await Purchases.purchasePackage(plan.pkg);
   return waitForServerEntitlement();
 }
 
 export async function restore(): Promise<boolean> {
   if (purchaseMode === 'test') return backend.rpc<boolean>('has_premium');
-  if (purchaseMode !== 'store') throw new Error('Les achats ne sont pas encore configurés pour cette version.');
+  if (purchaseMode !== 'store') throw new Error(tr('l1.pur.notConfigured'));
   await Purchases.restorePurchases();
   return waitForServerEntitlement();
 }

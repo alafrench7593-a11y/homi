@@ -24,7 +24,7 @@ import {
   type CategoryKey, type Goal, type Shortcut,
 } from '@/lib/domain/cycleDaily';
 import { todayInsight } from '@/lib/domain/cycleInsights';
-import { formatDate, t as tr, type TKey } from '@/i18n';
+import { formatDate, localeTag, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { AddDaySheet, shortcutIcon, summaryText } from './AddDaySheet';
@@ -179,7 +179,7 @@ export function CycleHome({ goal }: { goal: Goal }) {
       <Tappable accessibilityRole="button" testID="c3-next-reminder" onPress={() => router.push((nextReminder ? '/settings/reminders' : '/contraception/reminders') as never)}
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH }}>
         <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: t.colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}><Icon name="bell" size={17} /></View>
-        <Text style={{ flex: 1 }}>{nextReminder ? tr('c3.home.nextReminder', { title: nextReminder.r.title, when: nextReminder.at!.toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' }) }) : tr('c3.home.noReminder')}</Text>
+        <Text style={{ flex: 1 }}>{nextReminder ? tr('c3.home.nextReminder', { title: nextReminder.r.title, when: nextReminder.at!.toLocaleString(localeTag(), { weekday: 'long', hour: '2-digit', minute: '2-digit' }) }) : tr('c3.home.noReminder')}</Text>
         <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
       </Tappable>
 

@@ -3,6 +3,7 @@
  * privé « child-photos »), modification de la légende, de la date ou de la visibilité, suppression.
  * Les droits sont vérifiés par la base (RLS) : l'interface ne fait que refléter ce que le serveur autorise.
  */
+import { t as tr } from '@/i18n';
 import { Platform } from 'react-native';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { File } from 'expo-file-system';
@@ -103,7 +104,7 @@ export function useUpdateChildPhoto() {
   return useMutation({
     mutationFn: async (v: { id: string; takenOn: string; caption: string | null; visibility: PhotoVisibility }) => {
       const rows = await backend.update<ChildPhoto>('child_photos', { taken_on: v.takenOn, caption: v.caption, visibility: v.visibility }, [eq('id', v.id)]);
-      if (Array.isArray(rows) && rows.length === 0 && backend.mode !== 'demo') throw new Error('Modification non autorisée.');
+      if (Array.isArray(rows) && rows.length === 0 && backend.mode !== 'demo') throw new Error(tr('l3.photos.edit_forbidden'));
     },
     onSuccess: () => inv('child_photos'),
   });

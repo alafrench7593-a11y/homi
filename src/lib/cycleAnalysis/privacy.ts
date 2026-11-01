@@ -10,6 +10,7 @@
  * Ce fichier n'importe volontairement ni la galerie (expo-media-library), ni le forum, ni de module de statistiques.
  */
 import { Platform } from 'react-native';
+import { t as tr } from '@/i18n';
 import * as SecureStore from 'expo-secure-store';
 import { gcm } from '@noble/ciphers/aes.js';
 import * as ExpoCrypto from 'expo-crypto';
@@ -47,7 +48,7 @@ export function encryptBytes(key: Uint8Array, plain: Uint8Array): Uint8Array {
 }
 
 export function decryptBytes(key: Uint8Array, blob: Uint8Array): Uint8Array {
-  if (blob.length <= NONCE_BYTES + 16) throw new Error('Fichier chiffré invalide');
+  if (blob.length <= NONCE_BYTES + 16) throw new Error(tr('l8.pv.badFile'));
   return gcm(key, blob.subarray(0, NONCE_BYTES)).decrypt(blob.subarray(NONCE_BYTES));
 }
 
@@ -56,7 +57,7 @@ const fromHex = (s: string) => new Uint8Array((s.match(/../g) ?? []).map((h) => 
 
 /** Clé propre à cet appareil (créée au premier usage). Perdre l'appareil = perdre l'accès aux photos gardées. */
 async function deviceKey(): Promise<Uint8Array> {
-  if (!canKeepPhotos()) throw new Error('Conservation des photos indisponible sur cette plateforme');
+  if (!canKeepPhotos()) throw new Error(tr('l8.pv.noKeep'));
   const existing = await SecureStore.getItemAsync(KEY_NAME);
   if (existing && existing.length === 64) return fromHex(existing);
   const key = randomBytes(32);
@@ -108,7 +109,7 @@ export async function loadEncryptedPhoto(path: string): Promise<string> {
   const key = await deviceKey();
   const url = await backend.storage.signedUrl(CYCLE_BUCKET, path, 60);
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Photo introuvable');
+  if (!res.ok) throw new Error(tr('l8.pv.notFound'));
   const plain = decryptBytes(key, new Uint8Array(await res.arrayBuffer()));
   let bin = '';
   for (let i = 0; i < plain.length; i += 0x8000) bin += String.fromCharCode(...plain.subarray(i, i + 0x8000));

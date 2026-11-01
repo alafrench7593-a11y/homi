@@ -11,6 +11,7 @@ import * as Linking from 'expo-linking';
 import * as ExpoCrypto from 'expo-crypto';
 import { friendlyAuthError, parseAuthCallback } from '../authFlow';
 import { BackendError } from './types';
+import { t as tr } from '@/i18n';
 
 /** Adresse de retour des liens : schéma de l'app (toietmoi://…) sur téléphone, URL du site sur le web. */
 export function authRedirect(path: '/auth/callback' | '/auth/reset'): string {
@@ -28,7 +29,7 @@ function fail(err: { message?: string; code?: string; status?: number } | null):
 async function appleNative(client: SupabaseClient) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const Apple = require('expo-apple-authentication') as typeof import('expo-apple-authentication');
-  if (!(await Apple.isAvailableAsync())) throw new BackendError('La connexion avec Apple n’est pas disponible sur cet appareil.');
+  if (!(await Apple.isAvailableAsync())) throw new BackendError(tr('l2.auth.appleUnavailable'));
   const rawNonce = Array.from(ExpoCrypto.getRandomBytes(16), (b) => b.toString(16).padStart(2, '0')).join('');
   const hashed = await ExpoCrypto.digestStringAsync(ExpoCrypto.CryptoDigestAlgorithm.SHA256, rawNonce);
   let cred: import('expo-apple-authentication').AppleAuthenticationCredential;
@@ -36,9 +37,9 @@ async function appleNative(client: SupabaseClient) {
     cred = await Apple.signInAsync({ requestedScopes: [Apple.AppleAuthenticationScope.FULL_NAME, Apple.AppleAuthenticationScope.EMAIL], nonce: hashed });
   } catch (e) {
     if ((e as { code?: string }).code === 'ERR_REQUEST_CANCELED') throw new BackendError('', CANCELLED);
-    throw new BackendError('La connexion avec Apple a échoué. Réessayez.');
+    throw new BackendError(tr('l2.auth.appleFailed'));
   }
-  if (!cred.identityToken) throw new BackendError('Apple n’a pas renvoyé d’identité. Réessayez.');
+  if (!cred.identityToken) throw new BackendError(tr('l2.auth.appleNoId'));
   const { error } = await client.auth.signInWithIdToken({ provider: 'apple', token: cred.identityToken, nonce: rawNonce });
   fail(error);
 }
@@ -54,7 +55,7 @@ async function browserOAuth(client: SupabaseClient, provider: 'apple' | 'google'
   const WebBrowser = require('expo-web-browser') as typeof import('expo-web-browser');
   const { data, error } = await client.auth.signInWithOAuth({ provider, options: { redirectTo, skipBrowserRedirect: true } });
   fail(error);
-  if (!data?.url) throw new BackendError('Connexion impossible pour le moment. Réessayez.');
+  if (!data?.url) throw new BackendError(tr('l2.auth.unavailable'));
   const res = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
   if (res.type !== 'success') throw new BackendError('', CANCELLED);
   const url = new URL(res.url.replace(/^[a-z]+:\/\//i, 'https://x/'));
@@ -64,7 +65,7 @@ async function browserOAuth(client: SupabaseClient, provider: 'apple' | 'google'
     fail(e2);
     return;
   }
-  throw new BackendError(parsed.kind === 'error' ? parsed.message : parsed.kind === 'expired' ? friendlyAuthError({ code: 'otp_expired' }) : 'Connexion interrompue. Réessayez.');
+  throw new BackendError(parsed.kind === 'error' ? parsed.message : parsed.kind === 'expired' ? friendlyAuthError({ code: 'otp_expired' }) : tr('l2.auth.interrupted'));
 }
 
 export async function socialSignIn(client: SupabaseClient, provider: 'apple' | 'google'): Promise<void> {

@@ -1,3 +1,4 @@
+import { t as tr } from '@/i18n';
 import { daysBetween, type ISODate, parseISODate, todayISO } from './dates';
 
 export interface ChildAge {
@@ -16,15 +17,17 @@ export function childAge(birth: ISODate, today: ISODate = todayISO()): ChildAge 
   months = Math.max(0, months);
   const years = Math.floor(months / 12);
   let label: string;
-  if (days < 14) label = days <= 1 ? (days === 0 ? 'né aujourd’hui' : '1 jour') : `${days} jours`;
-  else if (months < 1) label = `${Math.floor(days / 7)} semaines`;
+  if (days < 14) label = days === 0 ? tr('l8.child.today') : tr('l8.child.day', { count: days });
+  else if (months < 1) label = tr('l8.child.week', { count: Math.floor(days / 7) });
   else if (months < 24) {
     const anchor = new Date(Date.UTC(b.getUTCFullYear(), b.getUTCMonth() + months, b.getUTCDate()));
     const rest = Math.max(0, Math.round((t.getTime() - anchor.getTime()) / 86_400_000));
-    label = `${months} mois${rest ? ` et ${rest} jour${rest > 1 ? 's' : ''}` : ''}`;
+    const mLabel = tr('l8.child.month', { count: months });
+    label = rest ? tr('l8.child.and', { a: mLabel, b: tr('l8.child.day', { count: rest }) }) : mLabel;
   } else {
     const m = months % 12;
-    label = `${years} an${years > 1 ? 's' : ''}${m ? ` et ${m} mois` : ''}`;
+    const yLabel = tr('l8.child.year', { count: years });
+    label = m ? tr('l8.child.and', { a: yLabel, b: tr('l8.child.month', { count: m }) }) : yLabel;
   }
   return { days, months, years, label };
 }

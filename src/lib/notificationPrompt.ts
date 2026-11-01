@@ -3,6 +3,7 @@
  * dans l'app, puis seulement le téléphone affiche sa demande système.
  */
 import { Linking } from 'react-native';
+import { t as tr } from '@/i18n';
 import { confirm } from '@/components/Overlays';
 import { getPermission, notificationsSupported, requestPermission, type PermissionState } from './notifications';
 
@@ -12,18 +13,18 @@ export async function askNotificationPermission(reason: string): Promise<Permiss
   if (current === 'granted') return current;
   if (current === 'denied') {
     const open = await confirm(
-      'Notifications désactivées',
-      `${reason}\n\nLes notifications sont refusées pour Au fil de nous. Vous pouvez les réactiver dans les réglages du téléphone.`,
-      'Ouvrir les réglages',
+      tr('l8.np.deniedTitle'),
+      tr('l8.np.deniedBody', { reason }),
+      tr('l8.np.openSettings'),
       false,
     );
     if (open) await Linking.openSettings().catch(() => undefined);
     return 'denied';
   }
   const ok = await confirm(
-    'Recevoir ce rappel ?',
-    `${reason}\n\nLe téléphone va vous demander l’autorisation d’envoyer des notifications. Vous pourrez la retirer à tout moment.`,
-    'Continuer',
+    tr('l8.np.askTitle'),
+    tr('l8.np.askBody', { reason }),
+    tr('l8.np.continue'),
     false,
   );
   if (!ok) return 'undetermined';

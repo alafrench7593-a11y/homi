@@ -9,6 +9,8 @@
  *  - une identification non confirmée par la personne ⇒ « Informations insuffisantes » / « Impossible à confirmer ».
  */
 import { collectSources, type ScanSource } from './scanSources';
+import { t as tr, onLocaleChange } from '@/i18n';
+import { inLang, localized } from '@/i18n/localized';
 
 export type ScanProfileKind = 'pregnant' | 'breastfeeding' | 'newborn' | 'baby' | 'child' | 'adult';
 
@@ -20,7 +22,7 @@ export interface ScanProfile {
   allergies?: string[];
 }
 
-export const PROFILE_LABEL: Record<ScanProfileKind, string> = {
+const PROFILE_LABEL_FR: Record<ScanProfileKind, string> = {
   pregnant: 'Personne enceinte',
   breastfeeding: 'Personne qui allaite',
   newborn: 'Nouveau-né',
@@ -28,6 +30,15 @@ export const PROFILE_LABEL: Record<ScanProfileKind, string> = {
   child: 'Enfant',
   adult: 'Adulte',
 };
+const PROFILE_LABEL_EN: Record<ScanProfileKind, string> = {
+  pregnant: 'Pregnant person',
+  breastfeeding: 'Breastfeeding person',
+  newborn: 'Newborn',
+  baby: 'Baby',
+  child: 'Child',
+  adult: 'Adult',
+};
+export const PROFILE_LABEL: Record<ScanProfileKind, string> = localized(PROFILE_LABEL_FR, PROFILE_LABEL_EN);
 
 export function profileLabel(p: ScanProfile): string {
   const base = PROFILE_LABEL[p.kind];
@@ -36,10 +47,10 @@ export function profileLabel(p: ScanProfile): string {
 }
 
 export function ageLabel(months: number): string {
-  if (months < 24) return `${months} mois`;
+  if (months < 24) return tr('l5.scan.ageMonths', { count: months });
   const y = Math.floor(months / 12);
   const m = months % 12;
-  return m ? `${y} ans et ${m} mois` : `${y} ans`;
+  return m ? tr('l5.scan.ageYM', { years: tr('l5.scan.ageYears', { count: y }), months: tr('l5.scan.ageMonths', { count: m }) }) : tr('l5.scan.ageYears', { count: y });
 }
 
 /** Âge en mois retenu pour les règles (null si inconnu). */
@@ -52,7 +63,9 @@ export function profileAgeMonths(p: ScanProfile): number | null {
 export const isChildProfile = (p: ScanProfile) => p.kind === 'newborn' || p.kind === 'baby' || p.kind === 'child';
 
 export type Certainty = 'high' | 'medium' | 'low';
-export const CERTAINTY_LABEL: Record<Certainty, string> = { high: 'Élevé', medium: 'Moyen', low: 'Faible' };
+const CERTAINTY_LABEL_FR: Record<Certainty, string> = { high: 'Élevé', medium: 'Moyen', low: 'Faible' };
+const CERTAINTY_LABEL_EN: Record<Certainty, string> = { high: 'High', medium: 'Medium', low: 'Low' };
+export const CERTAINTY_LABEL: Record<Certainty, string> = localized(CERTAINTY_LABEL_FR, CERTAINTY_LABEL_EN);
 
 /** Niveau d'un constat. « professional » : la règle renvoie vers un professionnel de santé. */
 /** « prepare » : l'aliment peut convenir s'il est préparé autrement (cuisson, découpe, texture). */
@@ -99,9 +112,11 @@ export interface DataSourceInfo {
 }
 
 export { RECALL_DISCLAIMER, FORBIDDEN_PATTERNS, containsForbiddenPhrase } from '../../../supabase/functions/_shared/scan-explain';
-export const DEMO_LABEL = 'Données de démonstration';
-export const GENERAL_DISCLAIMER =
-  'Cette analyse s’appuie uniquement sur les informations disponibles et les sources citées, à leur date. Elle ne remplace pas l’avis d’un professionnel de santé et ne pose aucun diagnostic.';
+export let DEMO_LABEL = inLang({ fr: 'Données de démonstration', en: 'Demo data' });
+export let GENERAL_DISCLAIMER = inLang({
+  fr: 'Cette analyse s’appuie uniquement sur les informations disponibles et les sources citées, à leur date. Elle ne remplace pas l’avis d’un professionnel de santé et ne pose aucun diagnostic.',
+  en: 'This analysis relies only on the information available and the sources cited, as at their date. It does not replace the advice of a health professional and does not make any diagnosis.',
+});
 
 export const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
 
@@ -148,3 +163,12 @@ export const ENGINE_VERSION = 'scanner-rules-2026-10-16';
 export function todayIso(now = new Date()): string {
   return now.toISOString().slice(0, 10);
 }
+
+// Textes fixes recalculés à chaque changement de langue (les écrans lisent toujours la valeur à jour)
+onLocaleChange(() => {
+  DEMO_LABEL = inLang({ fr: 'Données de démonstration', en: 'Demo data' });
+  GENERAL_DISCLAIMER = inLang({
+  fr: 'Cette analyse s’appuie uniquement sur les informations disponibles et les sources citées, à leur date. Elle ne remplace pas l’avis d’un professionnel de santé et ne pose aucun diagnostic.',
+  en: 'This analysis relies only on the information available and the sources cited, as at their date. It does not replace the advice of a health professional and does not make any diagnosis.',
+});
+});

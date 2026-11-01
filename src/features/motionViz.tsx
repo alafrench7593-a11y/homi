@@ -124,7 +124,7 @@ export function DayRibbon({ events, now = new Date() }: { events: RibbonEvent[];
         ) : null}
       </View>
       <Row style={{ justifyContent: 'space-between' }}>
-        {['0 h', '6 h', '12 h', '18 h', '24 h'].map((h) => <Text key={h} variant="caption" muted>{h}</Text>)}
+        {[0, 6, 12, 18, 24].map((n) => tr('l7.mv.hour', { h: String(n) })).map((h) => <Text key={h} variant="caption" muted>{h}</Text>)}
       </Row>
       <Row wrap gap={spacing.sm}>
         <Legend shape="drop" label={tr('u4.mv.lgMeals', { n: counts.feed })} />
@@ -184,7 +184,7 @@ export function SleepNights({ sleeps, days = 7 }: { sleeps: { started_at: string
         </Row>
       ))}
       <Row style={{ paddingLeft: 38, paddingRight: 62, justifyContent: 'space-between' }}>
-        {['0 h', '12 h', '24 h'].map((h) => <Text key={h} variant="caption" muted>{h}</Text>)}
+        {[0, 12, 24].map((n) => tr('l7.mv.hour', { h: String(n) })).map((h) => <Text key={h} variant="caption" muted>{h}</Text>)}
       </Row>
       <Row gap={spacing.sm}>
         <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 8, borderRadius: 4, backgroundColor: t.colors.lavender }} /><Text variant="caption" muted>{tr('u4.mv.nightOrNA')}</Text></Row>
@@ -301,7 +301,7 @@ export function DayAvailability({ day, busy, free, reserved, onPick }: {
           </>
         ) : null}
       </View>
-      <Row style={{ justifyContent: 'space-between' }}>{['8 h', '12 h', '16 h', '21 h'].map((h) => <Text key={h} variant="caption" muted>{h}</Text>)}</Row>
+      <Row style={{ justifyContent: 'space-between' }}>{[8, 12, 16, 21].map((n) => tr('l7.mv.hour', { h: String(n) })).map((h) => <Text key={h} variant="caption" muted>{h}</Text>)}</Row>
       <Row wrap gap={spacing.sm}>
         <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 10, borderRadius: 3, backgroundColor: t.colors.border, borderWidth: 1, borderColor: t.colors.textMuted }} /><Text variant="caption" muted>{tr('u4.mv.busy')}</Text></Row>
         <Row gap={6} style={{ alignItems: 'center' }}><View style={{ width: 16, height: 10, borderRadius: 3, borderWidth: 2, borderStyle: 'dashed', borderColor: t.colors.primary }} /><Text variant="caption" muted>{tr('u4.mv.free')}</Text></Row>

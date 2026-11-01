@@ -2,6 +2,8 @@
  * « Mon sommeil » — calculs purs pour le carnet de sommeil du parent.
  * Descriptif uniquement : aucune cible, aucune « norme », aucun diagnostic.
  */
+import { t as tr, getLocale } from '@/i18n';
+import { localized } from '@/i18n/localized';
 import { addDays, daysBetween, type ISODate, parseISODate } from './dates';
 import type { Nap, NightWaking, ParentSleepLog } from '../types-sleep';
 
@@ -65,15 +67,18 @@ export function durationInput(minutes: number | null | undefined): string {
   return `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}`;
 }
 
-const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const MONTHS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
 /** « Nuit du 14 au 15 octobre », « Nuit du 31 octobre au 1er novembre ». */
 export function nightLabel(logDate: ISODate): string {
   const end = parseISODate(logDate);
   const start = parseISODate(addDays(logDate, -1));
-  const day = (d: Date) => (d.getUTCDate() === 1 ? '1er' : String(d.getUTCDate()));
+  const en = getLocale() === 'en';
+  const MONTHS = en ? MONTHS_EN : MONTHS_FR;
+  const day = (d: Date) => (!en && d.getUTCDate() === 1 ? '1er' : String(d.getUTCDate()));
   const sameMonth = start.getUTCMonth() === end.getUTCMonth();
-  return `Nuit du ${day(start)}${sameMonth ? '' : ` ${MONTHS[start.getUTCMonth()]}`} au ${day(end)} ${MONTHS[end.getUTCMonth()]}`;
+  return tr('l1.sleep.nightLabel', { from: `${day(start)}${sameMonth ? '' : ` ${MONTHS[start.getUTCMonth()]}`}`, to: `${day(end)} ${MONTHS[end.getUTCMonth()]}` });
 }
 
 /**
@@ -143,26 +148,28 @@ export interface SleepForm {
 /** Vérifie la saisie ; renvoie les erreurs (clé du champ -> message). */
 export function validateSleepForm(f: SleepForm, today: ISODate): Record<string, string> {
   const e: Record<string, string> = {};
-  if (f.logDate > today) e.logDate = 'La date ne peut pas être dans le futur.';
-  if (f.bed && parseHHMM(f.bed) == null) e.bed = 'Heure attendue au format 22:30.';
-  if (f.wake && parseHHMM(f.wake) == null) e.wake = 'Heure attendue au format 07:00.';
-  if (f.bed && f.wake && !e.bed && !e.wake && !resolveNight(f.logDate, f.bed, f.wake)) e.wake = 'Le réveil doit être différent du coucher.';
+  if (f.logDate > today) e.logDate = tr('l1.sleep.err.futureDate');
+  if (f.bed && parseHHMM(f.bed) == null) e.bed = tr('l1.sleep.err.bed');
+  if (f.wake && parseHHMM(f.wake) == null) e.wake = tr('l1.sleep.err.wake');
+  if (f.bed && f.wake && !e.bed && !e.wake && !resolveNight(f.logDate, f.bed, f.wake)) e.wake = tr('l1.sleep.err.wakeSame');
   const n = f.wakings.trim() === '' ? 0 : Number(f.wakings);
-  if (!Number.isInteger(n) || n < 0 || n > 30) e.wakings = 'Un nombre entre 0 et 30.';
+  if (!Number.isInteger(n) || n < 0 || n > 30) e.wakings = tr('l1.sleep.err.wakings');
   f.details.forEach((d, i) => {
-    if (d.at && parseHHMM(d.at) == null) e[`detail${i}`] = 'Heure attendue au format 03:15.';
-    else if (d.minutes && (!/^\d{1,3}$/.test(d.minutes.trim()) || Number(d.minutes) > 600)) e[`detail${i}`] = 'Durée en minutes (0 à 600).';
+    if (d.at && parseHHMM(d.at) == null) e[`detail${i}`] = tr('l1.sleep.err.detailTime');
+    else if (d.minutes && (!/^\d{1,3}$/.test(d.minutes.trim()) || Number(d.minutes) > 600)) e[`detail${i}`] = tr('l1.sleep.err.detailMinutes');
   });
-  if (f.duration && parseDuration(f.duration) == null) e.duration = 'Durée attendue au format 7h30.';
+  if (f.duration && parseDuration(f.duration) == null) e.duration = tr('l1.sleep.err.duration');
   f.naps.forEach((nap, i) => {
-    if (parseHHMM(nap.start) == null || parseHHMM(nap.end) == null) e[`nap${i}`] = 'Début et fin au format 14:00.';
-    else if (napMinutes(nap) === 0) e[`nap${i}`] = 'La fin doit être après le début.';
+    if (parseHHMM(nap.start) == null || parseHHMM(nap.end) == null) e[`nap${i}`] = tr('l1.sleep.err.nap');
+    else if (napMinutes(nap) === 0) e[`nap${i}`] = tr('l1.sleep.err.napOrder');
   });
   return e;
 }
 
 // ---------------------------------------------------------------- résumé des 7 derniers jours
-const WEEKDAYS = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
+const WEEKDAYS_FR = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
+const WEEKDAYS_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WEEKDAYS = localized(WEEKDAYS_FR, WEEKDAYS_EN);
 
 export interface WeekDay { date: ISODate; label: string; minutes: number | null }
 export interface WeekSummary {
@@ -255,27 +262,39 @@ export function sleepContext(input: { journeys: string[]; activePregnancyWeeksSA
 
 export interface SleepTip { key: string; icon: string; title: string; text: string }
 
-const POSTPARTUM_TIPS: SleepTip[] = [
+const POSTPARTUM_TIPS_FR: SleepTip[] = [
   { key: 'sieste-bebe', icon: 'moon', title: 'Dormir quand bébé dort, quand c’est possible', text: 'S’allonger pendant une sieste de bébé compte, même 20 minutes. Le linge et la vaisselle peuvent attendre.' },
   { key: 'relais', icon: 'users', title: 'Demander un relais la nuit', text: 'Partager les nuits avec l’autre parent ou un proche (change, bercement, biberon) permet à chacun d’avoir un bloc de sommeil plus long.' },
   { key: 'aide', icon: 'gift', title: 'Accepter l’aide proposée', text: 'Un repas apporté, une course, une heure de garde : accepter, c’est aussi prendre soin de votre famille.' },
 ];
+const POSTPARTUM_TIPS_EN: SleepTip[] = [
+  { key: 'sieste-bebe', icon: 'moon', title: 'Sleep when baby sleeps, when you can', text: 'Lying down during one of baby’s naps counts, even for 20 minutes. The laundry and the washing-up can wait.' },
+  { key: 'relais', icon: 'users', title: 'Ask for a night-time handover', text: 'Sharing the nights with the other parent or a relative (changing, rocking, bottle) lets each of you have a longer block of sleep.' },
+  { key: 'aide', icon: 'gift', title: 'Accept the help you are offered', text: 'A meal brought round, an errand, an hour of childcare: accepting is also a way of looking after your family.' },
+];
+const POSTPARTUM_TIPS = localized(POSTPARTUM_TIPS_FR, POSTPARTUM_TIPS_EN);
 
 function pregnancyTips(late: boolean): SleepTip[] {
   return [
     late
-      ? { key: 'cote', icon: 'rotate-cw', title: 'Dormir sur le côté', text: 'En fin de grossesse, dormir sur le côté (gauche ou droit) est généralement conseillé. Si vous vous réveillez sur le dos, pas d’inquiétude : il suffit de vous retourner. Un coussin entre les genoux ou sous le ventre peut aider.' }
-      : { key: 'cote', icon: 'rotate-cw', title: 'Trouver une position confortable', text: 'Au fil des semaines, la position sur le côté devient souvent la plus agréable ; elle est conseillée en fin de grossesse. Un coussin entre les genoux peut soulager.' },
-    { key: 'hydratation', icon: 'droplet', title: 'Boire plutôt en journée', text: 'Bien boire pendant la journée et un peu moins en soirée peut limiter les levers la nuit.' },
-    { key: 'repos', icon: 'sun', title: 'Se reposer sans culpabiliser', text: 'La fatigue de grossesse est bien réelle. Une pause allongée dans la journée, même courte, est permise.' },
+      ? { key: 'cote', icon: 'rotate-cw', title: tr('l1.sleep.tip.sideLate.title'), text: tr('l1.sleep.tip.sideLate.text') }
+      : { key: 'cote', icon: 'rotate-cw', title: tr('l1.sleep.tip.sideEarly.title'), text: tr('l1.sleep.tip.sideEarly.text') },
+    { key: 'hydratation', icon: 'droplet', title: tr('l1.sleep.tip.hydration.title'), text: tr('l1.sleep.tip.hydration.text') },
+    { key: 'repos', icon: 'sun', title: tr('l1.sleep.tip.rest.title'), text: tr('l1.sleep.tip.rest.text') },
   ];
 }
 
-const GENERAL_TIPS: SleepTip[] = [
+const GENERAL_TIPS_FR: SleepTip[] = [
   { key: 'ecrans', icon: 'smartphone', title: 'Limiter les écrans le soir', text: 'Si vous le pouvez, posez le téléphone un moment avant de dormir et baissez la luminosité. Le mode nuit de l’application est pensé pour les réveils.' },
   { key: 'rituel', icon: 'feather', title: 'Un petit rituel du soir', text: 'Lumière douce, boisson chaude sans caféine, quelques respirations lentes : un repère simple aide parfois à lâcher prise.' },
   { key: 'cafeine', icon: 'coffee', title: 'La caféine plutôt le matin', text: 'Café, thé, sodas : les garder pour le début de journée peut faciliter l’endormissement.' },
 ];
+const GENERAL_TIPS_EN: SleepTip[] = [
+  { key: 'ecrans', icon: 'smartphone', title: 'Cut back on screens in the evening', text: 'If you can, put the phone down a little while before sleeping and turn the brightness down. The app’s night mode is designed for night wakings.' },
+  { key: 'rituel', icon: 'feather', title: 'A little evening ritual', text: 'Soft light, a warm caffeine-free drink, a few slow breaths: a simple cue can sometimes help you let go.' },
+  { key: 'cafeine', icon: 'coffee', title: 'Caffeine in the morning rather than later', text: 'Coffee, tea, fizzy drinks: keeping them for the start of the day may make it easier to fall asleep.' },
+];
+const GENERAL_TIPS = localized(GENERAL_TIPS_FR, GENERAL_TIPS_EN);
 
 /** Repères généraux et doux adaptés au contexte. Jamais d'objectif chiffré. */
 export function sleepTips(ctx: SleepContext): SleepTip[] {

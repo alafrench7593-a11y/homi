@@ -14,6 +14,9 @@
  * Ce sont des ESTIMATIONS : jamais une consigne, jamais une promesse. Les signes de fatigue de l'enfant priment.
  */
 
+import { formatDate, formatNumber, getLocale, t as tx, type TKey } from '@/i18n';
+import { localized } from '@/i18n/localized';
+
 const MIN = 60_000;
 const DAY = 86_400_000;
 export const LEARN_DAYS = 14;
@@ -82,6 +85,7 @@ const atMinutes = (ref: Date, minutes: number) => new Date(ref.getFullYear(), re
 export function clock(d: Date | number): string {
   const x = new Date(d);
   const m = x.getMinutes();
+  if (getLocale() === 'en') return `${String(x.getHours()).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   return m ? `${x.getHours()} h ${String(m).padStart(2, '0')}` : `${x.getHours()} h`;
 }
 /** « 1 h 35 », « 45 min », « 2 h » */
@@ -89,6 +93,7 @@ export function span(minutes: number): string {
   const m = Math.max(0, Math.round(minutes));
   if (m < 60) return `${m} min`;
   const h = Math.floor(m / 60); const r = m % 60;
+  if (getLocale() === 'en') return r ? `${h}h ${String(r).padStart(2, '0')}` : `${h}h`;
   return r ? `${h} h ${String(r).padStart(2, '0')}` : `${h} h`;
 }
 
@@ -127,7 +132,7 @@ export interface AgeReference {
  * Repères GÉNÉRAUX de l'application, volontairement approximatifs et larges. Ce ne sont pas des recommandations
  * officielles : ils servent de point de départ, puis s'effacent au profit du rythme réellement noté pour l'enfant.
  */
-export const AGE_REFERENCES: AgeReference[] = [
+const AGE_REFERENCES_FR: AgeReference[] = [
   { key: '0-1', label: 'moins d’un mois', fromMonths: 0, toMonths: 1, naps: 4, windows: [50, 50, 55, 55, 60], napMinutes: 60, bedtime: 21 * 60 },
   { key: '1-3', label: '1 à 3 mois', fromMonths: 1, toMonths: 3, naps: 4, windows: [60, 70, 75, 80, 90], napMinutes: 55, bedtime: 20 * 60 + 30 },
   { key: '3-5', label: '3 à 5 mois', fromMonths: 3, toMonths: 5, naps: 3, windows: [90, 105, 110, 120], napMinutes: 60, bedtime: 20 * 60 },
@@ -139,6 +144,12 @@ export const AGE_REFERENCES: AgeReference[] = [
   { key: '18-36', label: '18 mois à 3 ans', fromMonths: 18, toMonths: 36, naps: 1, windows: [300, 330], napMinutes: 100, bedtime: 20 * 60 },
   { key: '36+', label: 'plus de 3 ans', fromMonths: 36, toMonths: 1200, naps: 0, windows: [720], napMinutes: 0, bedtime: 20 * 60 + 15 },
 ];
+
+const AGE_LABEL_EN: Record<string, string> = {
+  '0-1': 'under 1 month', '1-3': '1 to 3 months', '3-5': '3 to 5 months', '5-7': '5 to 7 months', '7-9': '7 to 9 months', '9-12': '9 to 12 months',
+  '12-15': '12 to 15 months', '15-18': '15 to 18 months', '18-36': '18 months to 3 years', '36+': 'over 3 years',
+};
+export const AGE_REFERENCES: AgeReference[] = localized(AGE_REFERENCES_FR, AGE_REFERENCES_FR.map((r) => ({ ...r, label: AGE_LABEL_EN[r.key] ?? r.label })));
 
 export const referenceFor = (months: number): AgeReference =>
   AGE_REFERENCES.find((r) => months >= r.fromMonths && months < r.toMonths) ?? AGE_REFERENCES[AGE_REFERENCES.length - 1];
@@ -457,41 +468,43 @@ export type Sex = 'female' | 'male' | 'unspecified' | null | undefined;
 export const agree = (sex: Sex, masc: string, fem: string, neutral: string) => (sex === 'female' ? fem : sex === 'male' ? masc : neutral);
 
 export function planLines(plan: SleepPlan, name: string, sex?: Sex, now = new Date()) {
-  const awakeWord = agree(sex, 'Éveillé', 'Éveillée', 'Éveillé·e');
-  const asleepWord = agree(sex, 'Endormi', 'Endormie', 'Endormi·e');
+  // Accord en genre en français ; l'anglais n'accorde pas
+  const en = getLocale() === 'en';
+  const awakeWord = en ? 'Awake' : agree(sex, 'Éveillé', 'Éveillée', 'Éveillé·e');
+  const asleepWord = en ? 'Asleep' : agree(sex, 'Endormi', 'Endormie', 'Endormi·e');
   const N = now.getTime();
   const lines: { key: string; text: string }[] = [];
   switch (plan.state) {
-    case 'awake': lines.push({ key: 'state', text: `${awakeWord} depuis ${span(plan.awakeMinutes ?? 0)}` }); break;
-    case 'asleep_nap': lines.push({ key: 'state', text: `${asleepWord} depuis ${span((N - (plan.since ?? N)) / MIN)} (sieste)` }); break;
-    case 'asleep_night': lines.push({ key: 'state', text: `${asleepWord} depuis ${clock(plan.since ?? N)} (nuit)` }); break;
-    case 'night_waking': lines.push({ key: 'state', text: `Réveil de nuit depuis ${span(plan.awakeMinutes ?? 0)}` }); break;
-    case 'stale': lines.push({ key: 'state', text: `Aucun sommeil noté depuis ${span(plan.awakeMinutes ?? 0)}` }); break;
-    default: lines.push({ key: 'state', text: `Notez un réveil ou un endormissement de ${name} pour commencer` });
+    case 'awake': lines.push({ key: 'state', text: tx('l7.sp.awake_for', { word: awakeWord, span: span(plan.awakeMinutes ?? 0) }) }); break;
+    case 'asleep_nap': lines.push({ key: 'state', text: tx('l7.sp.asleep_nap', { word: asleepWord, span: span((N - (plan.since ?? N)) / MIN) }) }); break;
+    case 'asleep_night': lines.push({ key: 'state', text: tx('l7.sp.asleep_night', { word: asleepWord, time: clock(plan.since ?? N) }) }); break;
+    case 'night_waking': lines.push({ key: 'state', text: tx('l7.sp.night_waking', { span: span(plan.awakeMinutes ?? 0) }) }); break;
+    case 'stale': lines.push({ key: 'state', text: tx('l7.sp.stale', { span: span(plan.awakeMinutes ?? 0) }) }); break;
+    default: lines.push({ key: 'state', text: tx('l7.sp.start', { name }) });
   }
   if (plan.nextNap) {
-    if (plan.nextNap.overdue) lines.push({ key: 'nap', text: `L’heure estimée (${clock(plan.nextNap.initial)}) est passée : proposez la sieste quand vous verrez des signes de fatigue` });
+    if (plan.nextNap.overdue) lines.push({ key: 'nap', text: tx('l7.sp.nap_overdue', { time: clock(plan.nextNap.initial) }) });
     else {
-      if (plan.state === 'awake') lines.push({ key: 'routine', text: `Commencez tranquillement la routine vers ${clock(plan.nextNap.routineAt)}` });
-      lines.push({ key: 'nap', text: `Prochaine sieste estimée autour de ${clock(plan.nextNap.at)}` });
+      if (plan.state === 'awake') lines.push({ key: 'routine', text: tx('l7.sp.routine_nap', { time: clock(plan.nextNap.routineAt) }) });
+      lines.push({ key: 'nap', text: tx('l7.sp.nap_next', { time: clock(plan.nextNap.at) }) });
     }
   }
   if (plan.bedtime) {
-    if (plan.bedtime.overdue) lines.push({ key: 'bedtime', text: `L’heure de coucher estimée est passée : suivez les signes de fatigue de ${name}` });
+    if (plan.bedtime.overdue) lines.push({ key: 'bedtime', text: tx('l7.sp.bed_overdue', { name }) });
     else {
-      if (!plan.nextNap && plan.state === 'awake') lines.push({ key: 'routine', text: `Commencez tranquillement la routine du soir vers ${clock(plan.bedtime.routineAt)}` });
-      lines.push({ key: 'bedtime', text: `Coucher du soir estimé entre ${clock(plan.bedtime.from)} et ${clock(plan.bedtime.to)}` });
+      if (!plan.nextNap && plan.state === 'awake') lines.push({ key: 'routine', text: tx('l7.sp.routine_evening', { time: clock(plan.bedtime.routineAt) }) });
+      lines.push({ key: 'bedtime', text: tx('l7.sp.bed_between', { from: clock(plan.bedtime.from), to: clock(plan.bedtime.to) }) });
     }
   }
-  if (plan.state === 'asleep_nap' && plan.expectedWake) lines.push({ key: 'wake', text: `Réveil de sieste estimé vers ${clock(plan.expectedWake)}` });
+  if (plan.state === 'asleep_nap' && plan.expectedWake) lines.push({ key: 'wake', text: tx('l7.sp.nap_wake', { time: clock(plan.expectedWake) }) });
   return lines;
 }
 
 export function basisText(plan: SleepPlan, name: string): string {
-  const ageTxt = plan.age.corrected ? `${plan.reference.label}, en âge corrigé` : plan.reference.label;
-  if (plan.basis === 'reference') return `Repères généraux de l’application pour ${ageTxt}, approximatifs. Ils s’ajusteront au rythme de ${name} au fil de vos relevés.`;
-  if (plan.basis === 'learning') return `Repères pour ${ageTxt}, déjà ajustés avec ${plan.samples} temps d’éveil noté${plan.samples > 1 ? 's' : ''} pour ${name}.`;
-  return `Estimation personnalisée d’après ${plan.samples} temps d’éveil notés pour ${name} ces 14 derniers jours.`;
+  const ageTxt = plan.age.corrected ? tx('l7.sp.age_corrected', { label: plan.reference.label }) : plan.reference.label;
+  if (plan.basis === 'reference') return tx('l7.sp.basis_reference', { age: ageTxt, name });
+  if (plan.basis === 'learning') return tx('l7.sp.basis_learning', { age: ageTxt, count: plan.samples, samples: String(plan.samples), name });
+  return tx('l7.sp.basis_personal', { samples: String(plan.samples), name });
 }
 
 // ─── Notifications ─────────────────────────────────────────────────────────────────────────────────
@@ -515,19 +528,19 @@ export function planSleepNotifications(plan: SleepPlan, prefs: NotifyPrefs, name
   if (!prefs.enabled || plan.state !== 'awake') return [];
   const N = now.getTime();
   const lead = clamp(Math.round(prefs.lead), 0, 90) * MIN;
-  const title = `Sommeil de ${name}`;
+  const title = tx('l7.sp.notif_title', { name });
   const out: PlannedNotification[] = [];
-  const awake = agree(sex, 'éveillé', 'éveillée', 'éveillé·e');
+  const awake = getLocale() === 'en' ? 'awake' : agree(sex, 'éveillé', 'éveillée', 'éveillé·e');
   if (plan.nextNap && !plan.nextNap.overdue) {
     if (prefs.signs && plan.since !== null) {
       const at = plan.nextNap.routineAt - lead;
-      out.push({ id: `sleep-${plan.childId}-signs`, at, kind: 'signs', title, body: `${name} est ${awake} depuis ${span((at - plan.since) / MIN)}. Vous pouvez commencer à observer ses signes de fatigue.` });
+      out.push({ id: `sleep-${plan.childId}-signs`, at, kind: 'signs', title, body: tx('l7.sp.notif_signs', { name, awake, span: span((at - plan.since) / MIN) }) });
     }
-    if (prefs.nap) out.push({ id: `sleep-${plan.childId}-nap`, at: plan.nextNap.at - lead, kind: 'nap', title, body: `La prochaine sieste de ${name} est estimée autour de ${clock(plan.nextNap.at)}.` });
+    if (prefs.nap) out.push({ id: `sleep-${plan.childId}-nap`, at: plan.nextNap.at - lead, kind: 'nap', title, body: tx('l7.sp.notif_nap', { name, time: clock(plan.nextNap.at) }) });
   }
   if (plan.bedtime && !plan.bedtime.overdue && prefs.routine) {
     const minutes = Math.round(lead / MIN);
-    out.push({ id: `sleep-${plan.childId}-routine`, at: plan.bedtime.routineAt - lead, kind: 'routine', title, body: minutes ? `La routine du soir peut commencer dans ${minutes} minutes.` : 'La routine du soir peut commencer quand vous le souhaitez.' });
+    out.push({ id: `sleep-${plan.childId}-routine`, at: plan.bedtime.routineAt - lead, kind: 'routine', title, body: minutes ? tx('l7.sp.notif_routine_in', { minutes: String(minutes) }) : tx('l7.sp.notif_routine_now') });
   }
   return out.filter((n) => n.at > N + MIN && prefs.days.includes(new Date(n.at).getDay()) && !inQuiet(n.at, prefs.quiet_from, prefs.quiet_to));
 }
@@ -610,45 +623,46 @@ export function sleepTrends(sleeps: SleepRecord[], childId: string, now = new Da
   if (recent.length >= 2 && before.length >= 2) {
     const diff = (f: (d: DayStat) => number | null, xs: DayStat[]) => avg(xs.map(f).filter((v): v is number => v !== null));
     const b1 = diff((d) => (d.bedtime === null ? null : bedMinutes(d.bedtime)), recent); const b0 = diff((d) => (d.bedtime === null ? null : bedMinutes(d.bedtime)), before);
-    if (b1 !== null && b0 !== null && Math.abs(b1 - b0) >= 20) tr.changes.push(`Le coucher noté ces derniers jours est environ ${span(Math.abs(b1 - b0))} plus ${b1 > b0 ? 'tard' : 'tôt'} que les jours précédents.`);
+    if (b1 !== null && b0 !== null && Math.abs(b1 - b0) >= 20) tr.changes.push(tx(b1 > b0 ? 'l7.sp.chg_bed_later' : 'l7.sp.chg_bed_earlier', { span: span(Math.abs(b1 - b0)) }));
     const w1 = diff((d) => (d.wake === null ? null : minutesOfDay(new Date(d.wake))), recent); const w0 = diff((d) => (d.wake === null ? null : minutesOfDay(new Date(d.wake))), before);
-    if (w1 !== null && w0 !== null && Math.abs(w1 - w0) >= 20) tr.changes.push(`Le réveil du matin noté est environ ${span(Math.abs(w1 - w0))} plus ${w1 > w0 ? 'tard' : 'tôt'} que les jours précédents.`);
+    if (w1 !== null && w0 !== null && Math.abs(w1 - w0) >= 20) tr.changes.push(tx(w1 > w0 ? 'l7.sp.chg_wake_later' : 'l7.sp.chg_wake_earlier', { span: span(Math.abs(w1 - w0)) }));
     const n1 = diff((d) => d.naps, recent)!; const n0 = diff((d) => d.naps, before)!;
-    if (Math.abs(n1 - n0) >= 0.9) tr.changes.push(n1 > n0 ? 'Environ une sieste de plus par jour ces derniers jours.' : 'Environ une sieste de moins par jour ces derniers jours : le rythme évolue peut-être.');
+    if (Math.abs(n1 - n0) >= 0.9) tr.changes.push(tx(n1 > n0 ? 'l7.sp.chg_nap_more' : 'l7.sp.chg_nap_less'));
     const k1 = diff((d) => (d.nightMinutes ? d.wakings : null), recent); const k0 = diff((d) => (d.nightMinutes ? d.wakings : null), before);
-    if (k1 !== null && k0 !== null && Math.abs(k1 - k0) >= 1) tr.changes.push(`Environ ${Math.round(Math.abs(k1 - k0))} réveil(s) de ${k1 > k0 ? 'plus' : 'moins'} par nuit ces derniers jours.`);
+    if (k1 !== null && k0 !== null && Math.abs(k1 - k0) >= 1) tr.changes.push(tx(k1 > k0 ? 'l7.sp.chg_wakings_more' : 'l7.sp.chg_wakings_less', { n: String(Math.round(Math.abs(k1 - k0))) }));
     const d1 = diff((d) => d.napMinutes, recent)!; const d0 = diff((d) => d.napMinutes, before)!;
-    if (Math.abs(d1 - d0) >= 40) tr.changes.push(`Environ ${span(Math.abs(d1 - d0))} de sieste en ${d1 > d0 ? 'plus' : 'moins'} par jour ces derniers jours.`);
+    if (Math.abs(d1 - d0) >= 40) tr.changes.push(tx(d1 > d0 ? 'l7.sp.chg_napmin_more' : 'l7.sp.chg_napmin_less', { span: span(Math.abs(d1 - d0)) }));
   }
   return tr;
 }
 
 // ─── Fiche pour un professionnel (gratuite, rien n'est envoyé automatiquement) ─────────────────────
 
-export const DIFFICULTY_LABEL: Record<Difficulty, string> = {
-  falling_asleep: 'Endormissement difficile', night_wakings: 'Réveils fréquents', short_naps: 'Siestes courtes',
-  early_waking: 'Réveil matinal', irregular: 'Rythme irrégulier',
-};
+export const DIFFICULTY_LABEL: Record<Difficulty, string> = localized(
+  { falling_asleep: 'Endormissement difficile', night_wakings: 'Réveils fréquents', short_naps: 'Siestes courtes', early_waking: 'Réveil matinal', irregular: 'Rythme irrégulier' } as Record<Difficulty, string>,
+  { falling_asleep: 'Trouble falling asleep', night_wakings: 'Frequent night wakings', short_naps: 'Short naps', early_waking: 'Early waking', irregular: 'Irregular rhythm' } as Record<Difficulty, string>,
+);
 
 /** Texte à montrer ou partager avec un médecin, une sage-femme ou la PMI. Uniquement ce qui a été noté. */
 export function proSheet(name: string, ageLabel: string, profile: SleepProfile | null | undefined, sleeps: SleepRecord[], childId: string, now = new Date(), note = ''): string {
   const tr = sleepTrends(sleeps, childId, now);
-  const lines = [`Sommeil de ${name} (${ageLabel}) — relevés notés dans Au fil de nous`, `Préparé le ${now.toLocaleDateString('fr-FR')}`, ''];
+  const dec1 = (n: number) => formatNumber(Math.round(n * 10) / 10);
+  const lines = [tx('l7.sp.pro_title', { name, age: ageLabel }), tx('l7.sp.pro_prepared', { date: formatDate(now, { day: 'numeric', month: 'numeric', year: 'numeric' }) }), ''];
   const diffs = (profile?.difficulties ?? []).map((d) => DIFFICULTY_LABEL[d]);
-  lines.push(diffs.length ? `Difficultés signalées par le parent : ${diffs.join(', ')}.` : 'Aucune difficulté cochée dans le profil.');
+  lines.push(diffs.length ? tx('l7.sp.pro_diffs', { list: diffs.join(', ') }) : tx('l7.sp.pro_no_diffs'));
   if (tr.days) {
-    lines.push(`Sur ${tr.days} jour(s) noté(s) parmi les 7 derniers :`);
-    if (tr.avgBedtime !== null) lines.push(`• coucher moyen vers ${minutesToClock(tr.avgBedtime)}`);
-    if (tr.avgWake !== null) lines.push(`• réveil du matin moyen vers ${minutesToClock(tr.avgWake)}`);
-    if (tr.avgNaps !== null) lines.push(`• ${String(Math.round(tr.avgNaps * 10) / 10).replace('.', ',')} sieste(s) par jour${tr.avgNapMinutes !== null ? `, de ${span(tr.avgNapMinutes)} en moyenne` : ''}`);
-    if (tr.avgNight !== null) lines.push(`• nuit notée : ${span(tr.avgNight)} en moyenne`);
-    if (tr.avgWakings !== null) lines.push(`• réveils notés la nuit : ${String(Math.round(tr.avgWakings * 10) / 10).replace('.', ',')} en moyenne`);
+    lines.push(tx('l7.sp.pro_days', { days: String(tr.days) }));
+    if (tr.avgBedtime !== null) lines.push(tx('l7.sp.pro_bed', { time: minutesToClock(tr.avgBedtime) }));
+    if (tr.avgWake !== null) lines.push(tx('l7.sp.pro_wake', { time: minutesToClock(tr.avgWake) }));
+    if (tr.avgNaps !== null) lines.push(tx('l7.sp.pro_naps', { n: dec1(tr.avgNaps) }) + (tr.avgNapMinutes !== null ? tx('l7.sp.pro_naps_avg', { span: span(tr.avgNapMinutes) }) : ''));
+    if (tr.avgNight !== null) lines.push(tx('l7.sp.pro_night', { span: span(tr.avgNight) }));
+    if (tr.avgWakings !== null) lines.push(tx('l7.sp.pro_wakings', { n: dec1(tr.avgWakings) }));
     for (const c of tr.changes) lines.push(`• ${c}`);
-  } else lines.push('Pas encore assez de relevés sur les 7 derniers jours.');
-  if (profile?.feeding) lines.push(`Alimentation : ${({ breast: 'allaitement', bottle: 'biberons', mixed: 'mixte', solids: 'repas diversifiés' } as const)[profile.feeding]}.`);
-  if (profile?.routine_note) lines.push(`Routine habituelle : ${profile.routine_note}`);
-  if (note.trim()) lines.push('', `Ce que j’aimerais aborder : ${note.trim()}`);
-  lines.push('', 'Ces informations décrivent seulement ce qui a été noté ; elles ne constituent pas un diagnostic.');
+  } else lines.push(tx('l7.sp.pro_not_enough'));
+  if (profile?.feeding) lines.push(tx('l7.sp.pro_feeding', { kind: tx(`l7.sp.feeding_${profile.feeding}` as TKey) }));
+  if (profile?.routine_note) lines.push(tx('l7.sp.pro_routine', { note: profile.routine_note }));
+  if (note.trim()) lines.push('', tx('l7.sp.pro_note', { note: note.trim() }));
+  lines.push('', tx('l7.sp.pro_footer'));
   return lines.join('\n');
 }
 

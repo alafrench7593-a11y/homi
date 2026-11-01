@@ -4,6 +4,7 @@
  * L'image réduite n'existe qu'en mémoire ; le fichier intermédiaire du redimensionnement est supprimé.
  */
 import { Platform } from 'react-native';
+import { t as tr } from '@/i18n';
 import type { RGBAImage } from './image';
 import { discardLocalImage } from './privacy';
 
@@ -14,7 +15,7 @@ async function decodeWeb(uri: string): Promise<RGBAImage> {
   img.crossOrigin = 'anonymous';
   await new Promise<void>((resolve, reject) => {
     img.onload = () => resolve();
-    img.onerror = () => reject(new Error('Image illisible'));
+    img.onerror = () => reject(new Error(tr('l8.dec.unreadable')));
     img.src = uri;
   });
   const scale = Math.min(1, ANALYSIS_MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
@@ -24,7 +25,7 @@ async function decodeWeb(uri: string): Promise<RGBAImage> {
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
-  if (!ctx) throw new Error('Analyse indisponible dans ce navigateur');
+  if (!ctx) throw new Error(tr('l8.dec.noCanvas'));
   ctx.drawImage(img, 0, 0, w, h);
   const data = ctx.getImageData(0, 0, w, h).data;
   canvas.width = 0; // libère la mémoire
@@ -38,7 +39,7 @@ async function decodeNative(uri: string): Promise<RGBAImage> {
   const jpeg = require('jpeg-js') as typeof import('jpeg-js');
   const resized = await manipulateAsync(uri, [{ resize: { width: ANALYSIS_MAX_SIDE } }], { base64: true, compress: 0.95, format: SaveFormat.JPEG });
   try {
-    if (!resized.base64) throw new Error('Image illisible');
+    if (!resized.base64) throw new Error(tr('l8.dec.unreadable'));
     const bin = globalThis.atob(resized.base64);
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -70,6 +71,6 @@ export async function jpegBase64ForUpload(uri: string): Promise<string> {
   const { manipulateAsync, SaveFormat } = require('expo-image-manipulator') as typeof import('expo-image-manipulator');
   const r = await manipulateAsync(uri, [{ resize: { width: 1024 } }], { base64: true, compress: 0.85, format: SaveFormat.JPEG });
   await discardLocalImage(r.uri);
-  if (!r.base64) throw new Error('Image illisible');
+  if (!r.base64) throw new Error(tr('l8.dec.unreadable'));
   return r.base64;
 }

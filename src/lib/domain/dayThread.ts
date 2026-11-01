@@ -3,6 +3,9 @@
  * et le relais de nuit. Classe chaque élément de la journée : fait, en cours, en retard, le suivant, à venir.
  * Rien n'est inventé : seuls les éléments réellement notés (tâches, événements, rendez-vous, relais) sont placés.
  */
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
+
 export type ThreadState = 'done' | 'now' | 'late' | 'past' | 'next' | 'todo' | 'anytime';
 
 export interface ThreadInput {
@@ -40,20 +43,24 @@ export function threadStates<T extends ThreadInput>(items: T[], now: Date = new 
 }
 
 /** Libellé court de l'état, pour la frise. */
-export const THREAD_LABEL: Record<ThreadState, string> = {
+const THREAD_LABEL_FR: Record<ThreadState, string> = {
   done: 'Fait', now: 'En cours', late: 'En retard', past: 'Passé', next: 'Ensuite', todo: 'Prévu', anytime: 'Dans la journée',
 };
+const THREAD_LABEL_EN: Record<ThreadState, string> = {
+  done: 'Done', now: 'In progress', late: 'Late', past: 'Past', next: 'Next', todo: 'Planned', anytime: 'Sometime today',
+};
+export const THREAD_LABEL: Record<ThreadState, string> = localized(THREAD_LABEL_FR, THREAD_LABEL_EN);
 
 /** Compte à rebours lisible : « dans 2 h 15 », « dans 3 jours », « aujourd’hui à 14 h 30 ». */
 export function countdown(iso: string, now: Date = new Date()): string {
   const ms = Date.parse(iso) - now.getTime();
-  if (ms <= 0) return 'maintenant';
+  if (ms <= 0) return tr('l6.thread.now');
   const min = Math.round(ms / 60_000);
-  if (min < 60) return `dans ${min} min`;
+  if (min < 60) return tr('l6.thread.inMin', { min: String(min) });
   const d0 = new Date(now); d0.setHours(0, 0, 0, 0);
   const d1 = new Date(iso); d1.setHours(0, 0, 0, 0);
   const days = Math.round((d1.getTime() - d0.getTime()) / 86_400_000);
-  if (days === 0) { const h = Math.floor(min / 60); const m = min % 60; return `dans ${h} h${m ? ` ${String(m).padStart(2, '0')}` : ''}`; }
-  if (days === 1) return 'demain';
-  return `dans ${days} jours`;
+  if (days === 0) { const h = Math.floor(min / 60); const m = min % 60; return m ? tr('l6.thread.inHM', { h: String(h), m: String(m).padStart(2, '0') }) : tr('l6.thread.inH', { h: String(h) }); }
+  if (days === 1) return tr('l6.thread.tomorrow');
+  return tr('l6.thread.inDays', { days: String(days) });
 }

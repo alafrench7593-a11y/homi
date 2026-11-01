@@ -14,7 +14,7 @@ import type { Bottle, Breastfeed, Diaper, Meal, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius, spacing, type SkyPhase } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
-import { t as tr, formatUnit } from '@/i18n';
+import { t as tr, formatUnit, getLocale } from '@/i18n';
 
 export interface SkyMoment {
   id: string;
@@ -112,7 +112,7 @@ export function SkyArc({ phase, moments, greeting, subtitle, now = new Date() }:
         <Line x1={0} x2={w} y1={h - 22} y2={h - 22} stroke={ink} strokeOpacity={0.18} />
         {(mode === 'day' ? [6, 12, 18, 22] : [20, 24, 28, 32]).map((hh) => {
           const q = pos(hh);
-          return <SvgText key={hh} x={q.x} y={h - 6} fontSize={10.5} fill={ink} fillOpacity={0.45} textAnchor="middle" fontFamily={fonts.body}>{`${hh % 24}h`}</SvgText>;
+          return <SvgText key={hh} x={q.x} y={h - 6} fontSize={10.5} fill={ink} fillOpacity={0.45} textAnchor="middle" fontFamily={fonts.body}>{getLocale() === 'en' ? `${String(hh % 24).padStart(2, '0')}:00` : `${hh % 24}h`}</SvgText>;
         })}
         {visible.map((m) => {
           const q = pos(hourOf(m.at));

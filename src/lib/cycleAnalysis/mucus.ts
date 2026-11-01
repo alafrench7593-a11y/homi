@@ -2,13 +2,15 @@
  * Observation de la glaire cervicale : catégories éducatives et messages.
  * Une observation (ou une photo) ne permet JAMAIS d'affirmer qu'une ovulation a lieu.
  */
+import { onLocaleChange, t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 
 export type MucusCategory = 'dry' | 'sticky' | 'creamy' | 'egg_white' | 'watery' | 'unusual' | 'unknown';
 export type MucusTexture = 'stretchy' | 'sticky' | 'creamy' | 'liquid' | 'lumpy' | 'unknown';
 export type MucusSensation = 'dry' | 'damp' | 'wet' | 'slippery' | 'unknown';
 export type PhotoSuggestion = Exclude<MucusCategory, 'unknown'> | 'unanalyzable';
 
-export const MUCUS_CATEGORIES: { value: MucusCategory; label: string; hint: string }[] = [
+const MUCUS_CATEGORIES_FR: { value: MucusCategory; label: string; hint: string }[] = [
   { value: 'dry', label: 'Sèche ou absente', hint: 'Rien de visible, sensation sèche.' },
   { value: 'sticky', label: 'Épaisse ou collante', hint: 'Pâteuse, se casse quand on l’étire.' },
   { value: 'creamy', label: 'Crémeuse', hint: 'Blanchâtre, aspect de lotion.' },
@@ -18,7 +20,7 @@ export const MUCUS_CATEGORIES: { value: MucusCategory; label: string; hint: stri
   { value: 'unknown', label: 'Je ne sais pas', hint: 'Difficile à décrire aujourd’hui.' },
 ];
 
-export const MUCUS_TEXTURES: { value: MucusTexture; label: string }[] = [
+const MUCUS_TEXTURES_FR: { value: MucusTexture; label: string }[] = [
   { value: 'stretchy', label: 'Étirable' },
   { value: 'sticky', label: 'Collante' },
   { value: 'creamy', label: 'Crémeuse' },
@@ -27,13 +29,44 @@ export const MUCUS_TEXTURES: { value: MucusTexture; label: string }[] = [
   { value: 'unknown', label: 'Je ne sais pas' },
 ];
 
-export const MUCUS_SENSATIONS: { value: MucusSensation; label: string }[] = [
+const MUCUS_SENSATIONS_FR: { value: MucusSensation; label: string }[] = [
   { value: 'dry', label: 'Sèche' },
   { value: 'damp', label: 'Humide' },
   { value: 'wet', label: 'Mouillée' },
   { value: 'slippery', label: 'Glissante' },
   { value: 'unknown', label: 'Je ne sais pas' },
 ];
+
+const MUCUS_CATEGORIES_EN: { value: MucusCategory; label: string; hint: string }[] = [
+  { value: 'dry', label: 'Dry or absent', hint: 'Nothing visible, dry feeling.' },
+  { value: 'sticky', label: 'Thick or sticky', hint: 'Pasty, breaks when stretched.' },
+  { value: 'creamy', label: 'Creamy', hint: 'Whitish, like a lotion.' },
+  { value: 'egg_white', label: 'Clear and stretchy', hint: 'Like raw egg white, stretches between two fingers.' },
+  { value: 'watery', label: 'Watery', hint: 'Very runny, clear.' },
+  { value: 'unusual', label: 'Unusual', hint: 'A colour, smell or look that seems different to you.' },
+  { value: 'unknown', label: 'I don’t know', hint: 'Hard to describe today.' },
+];
+
+const MUCUS_TEXTURES_EN: { value: MucusTexture; label: string }[] = [
+  { value: 'stretchy', label: 'Stretchy' },
+  { value: 'sticky', label: 'Sticky' },
+  { value: 'creamy', label: 'Creamy' },
+  { value: 'liquid', label: 'Runny' },
+  { value: 'lumpy', label: 'Lumpy' },
+  { value: 'unknown', label: 'I don’t know' },
+];
+
+const MUCUS_SENSATIONS_EN: { value: MucusSensation; label: string }[] = [
+  { value: 'dry', label: 'Dry' },
+  { value: 'damp', label: 'Damp' },
+  { value: 'wet', label: 'Wet' },
+  { value: 'slippery', label: 'Slippery' },
+  { value: 'unknown', label: 'I don’t know' },
+];
+
+export const MUCUS_CATEGORIES: { value: MucusCategory; label: string; hint: string }[] = localized(MUCUS_CATEGORIES_FR, MUCUS_CATEGORIES_EN);
+export const MUCUS_TEXTURES: { value: MucusTexture; label: string }[] = localized(MUCUS_TEXTURES_FR, MUCUS_TEXTURES_EN);
+export const MUCUS_SENSATIONS: { value: MucusSensation; label: string }[] = localized(MUCUS_SENSATIONS_FR, MUCUS_SENSATIONS_EN);
 
 export const mucusLabel = (v: string | null | undefined) => MUCUS_CATEGORIES.find((m) => m.value === v)?.label ?? null;
 
@@ -50,16 +83,20 @@ export function fertilitySign(c: MucusCategory | PhotoSuggestion | null | undefi
   }
 }
 
-export const NO_OVULATION_PROOF = 'Une observation de glaire cervicale ne permet pas de confirmer une ovulation.';
-export const UNUSUAL_ADVICE =
-  'L’application ne pose pas de diagnostic. Si cet aspect vous inquiète (couleur, odeur, démangeaisons, douleur, saignement inhabituel), demandez l’avis d’un professionnel de santé : sage-femme, médecin ou gynécologue.';
+export let NO_OVULATION_PROOF = tr('l8.mu.noProof');
+export let UNUSUAL_ADVICE = tr('l8.mu.unusualAdvice');
+onLocaleChange(() => {
+  NO_OVULATION_PROOF = tr('l8.mu.noProof');
+  UNUSUAL_ADVICE = tr('l8.mu.unusualAdvice');
+});
 
 /** Message éducatif pour une observation saisie par l'utilisatrice. */
 export function observationMessage(c: MucusCategory | null): string | null {
+  const proof = NO_OVULATION_PROOF;
   switch (fertilitySign(c)) {
-    case 'less_fertile': return `Ce type de glaire est souvent observé en dehors de la période la plus fertile. ${NO_OVULATION_PROOF}`;
-    case 'intermediate': return `Une glaire crémeuse est souvent observée lorsque la période fertile approche ou se termine. ${NO_OVULATION_PROOF}`;
-    case 'potentially_fertile': return `Une glaire transparente, étirable ou aqueuse est souvent associée à une période potentiellement fertile. ${NO_OVULATION_PROOF}`;
+    case 'less_fertile': return tr('l8.mu.lessFertile', { proof });
+    case 'intermediate': return tr('l8.mu.intermediate', { proof });
+    case 'potentially_fertile': return tr('l8.mu.potential', { proof });
     case 'see_professional': return UNUSUAL_ADVICE;
     default: return null;
   }
@@ -74,19 +111,17 @@ export interface PhotoSuggestionResult {
 
 /** Message affiché après la suggestion faite à partir d'une photo. */
 export function photoSuggestionMessage(s: PhotoSuggestionResult): string {
-  if (!s.analyzable || s.category === 'unanalyzable') {
-    return `La photo n’a pas pu être analysée. ${UNUSUAL_ADVICE} Vous pouvez choisir vous-même la description qui correspond le mieux.`;
-  }
-  if (s.category === 'unusual') return `L’aspect semble inhabituel sur cette photo. ${UNUSUAL_ADVICE}`;
+  const proof = NO_OVULATION_PROOF;
+  const advice = UNUSUAL_ADVICE;
+  if (!s.analyzable || s.category === 'unanalyzable') return tr('l8.mu.photoFail', { advice });
+  if (s.category === 'unusual') return tr('l8.mu.photoUnusual', { advice });
   const sign = fertilitySign(s.category);
-  if (sign === 'potentially_fertile') {
-    return 'L’aspect semble compatible avec une période potentiellement fertile, mais une photo de glaire cervicale ne permet pas de confirmer une ovulation.';
-  }
-  if (sign === 'intermediate') return `L’aspect semble crémeux. ${NO_OVULATION_PROOF}`;
-  return `L’aspect semble plutôt sec ou épais. ${NO_OVULATION_PROOF}`;
+  if (sign === 'potentially_fertile') return tr('l8.mu.photoPotential');
+  if (sign === 'intermediate') return tr('l8.mu.photoCreamy', { proof });
+  return tr('l8.mu.photoDry', { proof });
 }
 
 /** Niveau de confiance affiché pour une suggestion photo. */
 export function suggestionConfidenceLabel(c: number): string {
-  return c >= 0.65 ? 'moyen' : 'faible';
+  return c >= 0.65 ? tr('l8.mu.confMid') : tr('l8.mu.confLow');
 }

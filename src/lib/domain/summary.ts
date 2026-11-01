@@ -13,8 +13,13 @@ export interface ChildData {
   treatments: Treatment[]; treatmentLogs: TreatmentLog[]; appointments: Appointment[]; measurements: Measurement[];
 }
 
-const clock = (iso: string, tz?: string) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: tz }).replace(':', ' h ');
-const dayLabel = (iso: string, tz?: string) => new Date(iso).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', timeZone: tz });
+import { formatDate, formatTime, localeTag, t as tr, type TKey } from '@/i18n';
+
+const clock = (iso: string, tz?: string) => {
+  const v = formatTime(iso, { hour: '2-digit', minute: '2-digit', timeZone: tz });
+  return localeTag().startsWith('fr') ? v.replace(':', ' h ') : v;
+};
+const dayLabel = (iso: string, tz?: string) => formatDate(iso, { weekday: 'short', day: 'numeric', month: 'short', timeZone: tz });
 const inRange = (iso: string | null | undefined, from: Date, to: Date) => !!iso && Date.parse(iso) >= from.getTime() && Date.parse(iso) < to.getTime();
 
 /** Début de la période : aujourd'hui 0 h, 7 jours, ou depuis le dernier rendez-vous passé (30 jours au plus). */
@@ -26,10 +31,13 @@ export function periodStart(period: SummaryPeriod, now: Date, lastAppointment?: 
   return lastAppointment && Date.parse(lastAppointment) > max.getTime() ? new Date(lastAppointment) : max;
 }
 
-const OBS: Record<Observation['kind'], string> = {
-  temperature: 'Température', medication: 'Médicament noté', symptom: 'Symptôme', note: 'Note', vomit: 'Vomissement', regurgitation: 'Régurgitation',
-  diarrhea: 'Diarrhée', abdominal_pain: 'Douleur au ventre', bloating: 'Ballonnements', crying: 'Pleurs',
+const OBS_KEY: Record<Observation['kind'], string> = {
+  temperature: 'temperature', medication: 'medication', symptom: 'symptom', note: 'note', vomit: 'vomit', regurgitation: 'regurgitation',
+  diarrhea: 'diarrhea', abdominal_pain: 'abdominal_pain', bloating: 'bloating', crying: 'crying',
 };
+const obsLabel = (k: Observation['kind']) => tr(`l7.sum.obs_${OBS_KEY[k]}` as TKey);
+/** Nombre décimal à virgule en français, à point en anglais. */
+const dec = (n: number) => { const v = String(n); return localeTag().startsWith('fr') ? v.replace('.', ',') : v; };
 
 export function childSummary(d: ChildData, from: Date, to: Date, tz?: string): SummarySection[] {
   const out: SummarySection[] = [];
@@ -41,42 +49,42 @@ export function childSummary(d: ChildData, from: Date, to: Date, tz?: string): S
   if (bottles.length || feeds.length) {
     const ml = bottles.reduce((t, b) => t + (b.consumed_ml ?? 0), 0);
     const lines = [
-      ...(bottles.length ? [`${bottles.length} biberon(s)${ml ? ` · ${ml} ml bus au total (quantités notées)` : ''}`] : []),
-      ...(feeds.length ? [`${feeds.length} tétée(s)`] : []),
-      ...bottles.slice(0, 5).map((b) => `Biberon ${when(b.at)}${b.consumed_ml != null ? ` · ${b.consumed_ml} ml bus` : ''}${b.prepared_ml != null ? ` (préparés : ${b.prepared_ml} ml)` : ''}`),
-      ...feeds.slice(0, 5).map((f) => `Tétée ${when(f.started_at)}${f.ended_at ? ` · ${formatDuration((Date.parse(f.ended_at) - Date.parse(f.started_at)) / 60000)}` : ''} · ${f.side === 'left' ? 'gauche' : f.side === 'right' ? 'droit' : 'les deux'}`),
+      ...(bottles.length ? [`${tr('l7.sum.bottles_n', { n: String(bottles.length) })}${ml ? ` · ${tr('l7.sum.ml_total', { ml: String(ml) })}` : ''}`] : []),
+      ...(feeds.length ? [tr('l7.sum.feeds_n', { n: String(feeds.length) })] : []),
+      ...bottles.slice(0, 5).map((b) => `${tr('l7.sum.bottle_at', { when: when(b.at) })}${b.consumed_ml != null ? ` · ${tr('l7.sum.ml_drunk', { ml: String(b.consumed_ml) })}` : ''}${b.prepared_ml != null ? ` (${tr('l7.sum.ml_prepared', { ml: String(b.prepared_ml) })})` : ''}`),
+      ...feeds.slice(0, 5).map((f) => `${tr('l7.sum.feed_at', { when: when(f.started_at) })}${f.ended_at ? ` · ${formatDuration((Date.parse(f.ended_at) - Date.parse(f.started_at)) / 60000)}` : ''} · ${f.side === 'left' ? tr('l7.sum.side_left') : f.side === 'right' ? tr('l7.sum.side_right') : tr('l7.sum.side_both')}`),
     ];
-    out.push({ heading: 'Repas lactés', lines });
+    out.push({ heading: tr('l7.sum.h_milk'), lines });
   }
   const sleeps = d.sleeps.filter((s) => inRange(s.started_at, from, to));
   if (sleeps.length) {
     const total = sleeps.reduce((t, s) => t + (s.ended_at ? (Date.parse(s.ended_at) - Date.parse(s.started_at)) / 60000 : 0), 0);
     const wake = sleeps.reduce((t, s) => t + (s.wakeups ?? 0), 0);
-    out.push({ heading: 'Sommeil', lines: [`${sleeps.length} période(s) de sommeil notée(s) · ${formatDuration(total)} au total`, ...(wake ? [`${wake} réveil(s) noté(s)`] : []), ...(sleeps.some((s) => !s.ended_at) ? ['Un sommeil est en cours.'] : [])] });
+    out.push({ heading: tr('l7.sum.h_sleep'), lines: [tr('l7.sum.sleep_periods', { n: String(sleeps.length), total: formatDuration(total) }), ...(wake ? [tr('l7.sum.wakeups', { n: String(wake) })] : []), ...(sleeps.some((s) => !s.ended_at) ? [tr('l7.sum.sleep_ongoing')] : [])] });
   }
   const diapers = d.diapers.filter((x) => inRange(x.at, from, to));
-  if (diapers.length) out.push({ heading: 'Couches', lines: [`${diapers.length} change(s) · ${diapers.filter((x) => x.wet).length} mouillée(s) · ${diapers.filter((x) => x.stool).length} selle(s)`, ...(diapers.some((x) => x.blood_seen) ? ['Sang noté dans une selle (à signaler au professionnel).'] : [])] });
+  if (diapers.length) out.push({ heading: tr('l7.sum.h_diapers'), lines: [tr('l7.sum.diapers_line', { n: String(diapers.length), wet: String(diapers.filter((x) => x.wet).length), stool: String(diapers.filter((x) => x.stool).length) }), ...(diapers.some((x) => x.blood_seen) ? [tr('l7.sum.blood_seen')] : [])] });
   const meals = d.meals.filter((x) => inRange(x.at, from, to));
-  if (meals.length) out.push({ heading: 'Repas', lines: meals.slice(0, 8).map((m) => `${when(m.at)} · ${m.description || m.foods.join(', ') || 'repas'}${m.reaction_note ? ` · réaction notée : ${m.reaction_note}` : ''}`) });
+  if (meals.length) out.push({ heading: tr('l7.sum.h_meals'), lines: meals.slice(0, 8).map((m) => `${when(m.at)} · ${m.description || m.foods.join(', ') || tr('l7.sum.meal_word')}${m.reaction_note ? ` · ${tr('l7.sum.reaction_noted', { note: m.reaction_note })}` : ''}`) });
   const obs = d.observations.filter((x) => inRange(x.at, from, to));
-  if (obs.length) out.push({ heading: 'Symptômes et observations notés', lines: obs.slice(0, 12).map((o) => `${when(o.at)} · ${OBS[o.kind]}${o.kind === 'temperature' && o.value_num != null ? ` ${String(o.value_num).replace('.', ',')} °C` : ''}${o.label ? ` · ${o.label}` : ''}`) });
+  if (obs.length) out.push({ heading: tr('l7.sum.h_obs'), lines: obs.slice(0, 12).map((o) => `${when(o.at)} · ${obsLabel(o.kind)}${o.kind === 'temperature' && o.value_num != null ? ` ${dec(o.value_num)} °C` : ''}${o.label ? ` · ${o.label}` : ''}`) });
   const meds = d.treatments.filter((t) => t.active || (t.end_date && Date.parse(t.end_date) >= from.getTime()));
   if (meds.length) {
     const logs = d.treatmentLogs.filter((l) => inRange(l.scheduled_for, from, to));
-    out.push({ heading: 'Médicaments prescrits (saisis par le parent)', lines: meds.map((t) => {
+    out.push({ heading: tr('l7.sum.h_meds'), lines: meds.map((t) => {
       const mine = logs.filter((l) => l.treatment_id === t.id);
-      return `${t.name} · ${t.dose_text}${t.times.length ? ` · ${t.times.join(', ')}` : ''}${mine.length ? ` · pris ${mine.filter((l) => l.status === 'taken').length}, reportés ${mine.filter((l) => l.status === 'snoozed').length}, ignorés ${mine.filter((l) => l.status === 'skipped').length}` : ''}`;
+      return `${t.name} · ${t.dose_text}${t.times.length ? ` · ${t.times.join(', ')}` : ''}${mine.length ? ` · ${tr('l7.sum.med_logs', { taken: String(mine.filter((l) => l.status === 'taken').length), snoozed: String(mine.filter((l) => l.status === 'snoozed').length), skipped: String(mine.filter((l) => l.status === 'skipped').length) })}` : ''}`;
     }) });
   }
   const meas = d.measurements.filter((m) => Date.parse(m.measured_on) >= from.getTime() - 86_400_000 * 60).sort((a, b) => b.measured_on.localeCompare(a.measured_on)).slice(0, 3);
-  if (meas.length) out.push({ heading: 'Mesures de croissance (dernières)', lines: meas.map((m) => `${new Date(m.measured_on).toLocaleDateString('fr-FR', { timeZone: tz })} · ${[m.weight_kg != null ? `${String(m.weight_kg).replace('.', ',')} kg` : null, m.height_cm != null ? `${String(m.height_cm).replace('.', ',')} cm` : null, m.head_cm != null ? `PC ${String(m.head_cm).replace('.', ',')} cm` : null].filter(Boolean).join(' · ')}${m.source === 'professional' ? ' (professionnel)' : ''}`) });
+  if (meas.length) out.push({ heading: tr('l7.sum.h_growth'), lines: meas.map((m) => `${formatDate(m.measured_on, { timeZone: tz })} · ${[m.weight_kg != null ? `${dec(m.weight_kg)} kg` : null, m.height_cm != null ? `${dec(m.height_cm)} cm` : null, m.head_cm != null ? tr('l7.sum.head_cm', { v: dec(m.head_cm) }) : null].filter(Boolean).join(' · ')}${m.source === 'professional' ? ` (${tr('l7.sum.professional')})` : ''}`) });
   const appts = d.appointments.filter((a) => Date.parse(a.starts_at) >= from.getTime()).sort((a, b) => a.starts_at.localeCompare(b.starts_at)).slice(0, 4);
-  if (appts.length) out.push({ heading: 'Rendez-vous', lines: appts.map((a) => `${new Date(a.starts_at).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz })} · ${a.title}${a.questions?.length ? ` · ${a.questions.length} question(s) préparée(s)` : ''}`) });
+  if (appts.length) out.push({ heading: tr('l7.sum.h_appts'), lines: appts.map((a) => `${new Date(a.starts_at).toLocaleString(localeTag(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz })} · ${a.title}${a.questions?.length ? ` · ${tr('l7.sum.questions_prepared', { n: String(a.questions.length) })}` : ''}`) });
   return out;
 }
 
 /** Texte à partager (message) : mêmes faits, sans mise en forme. */
 export function summaryText(title: string, subtitle: string, sections: SummarySection[]): string {
   return [title, subtitle, '', ...sections.flatMap((s) => [s.heading.toUpperCase(), ...s.lines.map((l) => `- ${l}`), '']),
-    'Faits enregistrés dans Au fil de nous par la famille. Ce résumé ne contient ni diagnostic ni interprétation médicale.'].join('\n');
+    tr('l7.sum.footer')].join('\n');
 }

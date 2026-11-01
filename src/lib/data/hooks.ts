@@ -8,7 +8,7 @@ import { isBody, visiblePregnancy, type JourneyRow } from '../journeys/model';
 import { insertOrQueue } from '../offline';
 import { syncLocalReminders } from '../notifications';
 import { uuid } from '../uuid';
-import { getLocale } from '@/i18n';
+import { getLocale, t as tr } from '@/i18n';
 import {
   LOG_TABLE, LOG_TIME_COL,
   type AppNotification, type Appointment, type Article, type AssistantMessage, type BabyName, type Category, type Checklist, type ChecklistItem,
@@ -90,7 +90,7 @@ export function useHouseholdMembers() {
  */
 export async function ensureHousehold(name?: string): Promise<string> {
   const session = await backend.auth.getSession();
-  if (!session) throw new Error('Connexion requise');
+  if (!session) throw new Error(tr('l3.hooks.login_required'));
   const existing = await backend.select<HouseholdMember>({ table: 'household_members', filters: [eq('user_id', session.userId)], order: [{ col: 'joined_at' }] });
   let hid = existing[0]?.household_id;
   if (!hid) hid = (await backend.rpc<{ household_id: string }>('ensure_my_account')).household_id;

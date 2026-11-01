@@ -7,6 +7,8 @@
  * sujets consultés servent à ordonner ce que la personne voit ; ils ne sont jamais publiés ni envoyés aux autres membres.
  * Pas de concours de popularité : la participation compte peu (logarithme), aucune autrice n'est « mise en avant ».
  */
+import { localized } from '@/i18n/localized';
+import { t as tr } from '@/i18n';
 
 // ─── Mentions ──────────────────────────────────────────────────────────────────────────────────────
 
@@ -77,12 +79,12 @@ export function cohortSuggestions(input: { childBirthDates: string[]; dueDate?: 
   if (input.dueDate) {
     const m = monthOf(input.dueDate);
     const d = monthsBetween(current, m);
-    if (d >= -2 && d <= 10) out.push({ type: 'due', month: m, label: cohortName('due', m), reason: 'D’après votre terme prévu' });
+    if (d >= -2 && d <= 10) out.push({ type: 'due', month: m, label: cohortName('due', m), reason: tr('l3.social.reason_due') });
   }
   for (const b of input.childBirthDates) {
     const m = monthOf(b);
     const d = monthsBetween(m, current);
-    if (d >= 0 && d <= 72 && !out.some((x) => x.type === 'birth' && x.month === m)) out.push({ type: 'birth', month: m, label: cohortName('birth', m), reason: 'D’après le mois de naissance' });
+    if (d >= 0 && d <= 72 && !out.some((x) => x.type === 'birth' && x.month === m)) out.push({ type: 'birth', month: m, label: cohortName('birth', m), reason: tr('l3.social.reason_birth') });
   }
   return out;
 }
@@ -129,11 +131,11 @@ export function hintCategories(childAgesMonths: number[] = [], weekSA: number | 
 
 /** Explication courte de la présence d'une publication dans « Pour vous » (transparence). */
 export function forYouReason(p: FeedPostLike, s: FeedSignals, hints: string[]): string | null {
-  if (p.following_author && !p.anonymous) return 'Vous suivez ce membre';
-  if (p.group_id && s.groupIds?.includes(p.group_id)) return 'Dans un groupe que vous avez rejoint';
-  if (s.subscribedForumIds.includes(p.forum_id)) return 'Catégorie suivie';
-  if (p.forum_slug && hints.includes(p.forum_slug)) return 'Selon l’âge de votre enfant ou votre grossesse';
-  if (s.journeyForumIds.includes(p.forum_id)) return 'Selon votre parcours';
+  if (p.following_author && !p.anonymous) return tr('l3.social.why_following');
+  if (p.group_id && s.groupIds?.includes(p.group_id)) return tr('l3.social.why_group');
+  if (s.subscribedForumIds.includes(p.forum_id)) return tr('l3.social.why_category');
+  if (p.forum_slug && hints.includes(p.forum_slug)) return tr('l3.social.why_age');
+  if (s.journeyForumIds.includes(p.forum_id)) return tr('l3.social.why_journey');
   return null;
 }
 
@@ -192,10 +194,10 @@ export function pinnedFirst<T extends { pinned_at?: string | null }>(posts: read
 
 export function pollOptionsError(options: string[]): string | null {
   const clean = options.map((o) => o.trim()).filter(Boolean);
-  if (clean.length < 2) return 'Ajoutez au moins deux choix.';
-  if (clean.length > 6) return '6 choix au plus.';
-  if (clean.some((o) => o.length > 80)) return 'Chaque choix : 80 caractères au plus.';
-  if (new Set(clean.map((o) => o.toLowerCase())).size !== clean.length) return 'Deux choix sont identiques.';
+  if (clean.length < 2) return tr('l3.social.poll_min');
+  if (clean.length > 6) return tr('l3.social.poll_max');
+  if (clean.some((o) => o.length > 80)) return tr('l3.social.poll_len');
+  if (new Set(clean.map((o) => o.toLowerCase())).size !== clean.length) return tr('l3.social.poll_dup');
   return null;
 }
 
@@ -208,13 +210,17 @@ export const PROFILE_ACCENTS = ['rose', 'lavande', 'menthe', 'peche', 'ciel', 's
 export const PROFILE_BANNERS = ['aube', 'nuit', 'prairie', 'ocean', 'nacre'] as const;
 export type ProfileAccent = (typeof PROFILE_ACCENTS)[number];
 export type ProfileBanner = (typeof PROFILE_BANNERS)[number];
-export const ACCENT_LABEL: Record<ProfileAccent, string> = { rose: 'Rose', lavande: 'Lavande', menthe: 'Menthe', peche: 'Pêche', ciel: 'Ciel', sable: 'Sable' };
-export const BANNER_LABEL: Record<ProfileBanner, string> = { aube: 'Aube', nuit: 'Nuit étoilée', prairie: 'Prairie', ocean: 'Océan', nacre: 'Nacre' };
+const ACCENT_LABEL_FR: Record<ProfileAccent, string> = { rose: 'Rose', lavande: 'Lavande', menthe: 'Menthe', peche: 'Pêche', ciel: 'Ciel', sable: 'Sable' };
+const ACCENT_LABEL_EN: Record<ProfileAccent, string> = { rose: 'Rose', lavande: 'Lavender', menthe: 'Mint', peche: 'Peach', ciel: 'Sky', sable: 'Sand' };
+export const ACCENT_LABEL: Record<ProfileAccent, string> = localized(ACCENT_LABEL_FR, ACCENT_LABEL_EN);
+const BANNER_LABEL_FR: Record<ProfileBanner, string> = { aube: 'Aube', nuit: 'Nuit étoilée', prairie: 'Prairie', ocean: 'Océan', nacre: 'Nacre' };
+const BANNER_LABEL_EN: Record<ProfileBanner, string> = { aube: 'Dawn', nuit: 'Starry night', prairie: 'Meadow', ocean: 'Ocean', nacre: 'Mother-of-pearl' };
+export const BANNER_LABEL: Record<ProfileBanner, string> = localized(BANNER_LABEL_FR, BANNER_LABEL_EN);
 
 // ─── Gratuit / Premium ─────────────────────────────────────────────────────────────────────────────
 
 /** La communauté de base reste gratuite pour pouvoir grandir (vérifié par les tests). */
-export const COMMUNITY_FREE = [
+const COMMUNITY_FREE_FR = [
   'Créer son profil communautaire',
   'Publier du texte et jusqu’à 4 photos',
   'Commenter, répondre, aimer',
@@ -225,8 +231,20 @@ export const COMMUNITY_FREE = [
   'Signaler et bloquer',
   'Règles et informations de sécurité',
 ];
+const COMMUNITY_FREE_EN: typeof COMMUNITY_FREE_FR = [
+  'Create your community profile',
+  'Post text and up to 4 photos',
+  'Comment, reply, like',
+  'Follow members and categories',
+  'Join categories, topic groups and monthly groups',
+  'Create and answer polls',
+  'Receive notifications for replies and mentions',
+  'Report and block',
+  'Rules and safety information',
+];
+export const COMMUNITY_FREE = localized(COMMUNITY_FREE_FR, COMMUNITY_FREE_EN);
 
-export const COMMUNITY_PREMIUM = [
+const COMMUNITY_PREMIUM_FR = [
   'Profil personnalisé : couleur, bannière, présentation enrichie',
   'Badge Premium discret et facultatif',
   'Groupes privés et invitations',
@@ -237,3 +255,15 @@ export const COMMUNITY_PREMIUM = [
   'Résumé des longues discussions et traduction (service d’IA à configurer côté serveur)',
   'Ateliers et rencontres réservés aux abonné·es',
 ];
+const COMMUNITY_PREMIUM_EN: typeof COMMUNITY_PREMIUM_FR = [
+  'Custom profile: colour, banner, rich introduction',
+  'Discreet, optional Premium badge',
+  'Private groups and invitations',
+  'Photo albums, private or shared with chosen members',
+  'Advanced feed filters and advanced search',
+  'Full activity log',
+  'Folders to organise your saved items',
+  'Summaries of long discussions and translation (AI service to be configured on the server)',
+  'Workshops and meet-ups for subscribers',
+];
+export const COMMUNITY_PREMIUM = localized(COMMUNITY_PREMIUM_FR, COMMUNITY_PREMIUM_EN);

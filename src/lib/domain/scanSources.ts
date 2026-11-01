@@ -7,7 +7,7 @@
  *  - 'verified'  : titre, date et contenu pertinent relus le 16/10/2026 ;
  *  - 'to_review' : référence réelle mais le passage précis n'a pas pu être relu automatiquement
  *                  (document PDF non accessible) — à faire relire par l'équipe éditoriale.
- * Module pur (aucune dépendance), partagé avec la migration 20261016000600_scanner.sql.
+ * Module pur (seule dépendance : l'internationalisation), partagé avec la migration 20261016000600_scanner.sql.
  */
 
 export interface ScanSource {
@@ -22,9 +22,12 @@ export interface ScanSource {
   review: 'verified' | 'to_review';
 }
 
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
+
 const C = '2026-10-16';
 
-export const SCAN_SOURCES: Record<string, ScanSource> = {
+const SCAN_SOURCES_FR: Record<string, ScanSource> = {
   'eu-1223-2009': {
     id: 'eu-1223-2009', label: 'Règlement (CE) n° 1223/2009 relatif aux produits cosmétiques', publisher: 'Union européenne (EUR-Lex)',
     url: 'https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:32009R1223', published_on: '2009-11-30', consulted_on: C, review: 'verified',
@@ -107,6 +110,33 @@ export const SCAN_SOURCES: Record<string, ScanSource> = {
   },
 };
 
+/** Textes affichés en anglais (mêmes identifiants, mêmes liens et dates ; les noms d'organismes sont conservés). */
+const EN_TEXT: Record<string, { label: string; publisher?: string }> = {
+  'eu-1223-2009': { label: 'Regulation (EC) No 1223/2009 on cosmetic products', publisher: 'European Union (EUR-Lex)' },
+  'eu-2023-1545': { label: 'Regulation (EU) 2023/1545: labelling of allergenic fragrance substances', publisher: 'European Commission (EUR-Lex)' },
+  'eu-clp-1272-2008': { label: 'Regulation (EC) No 1272/2008 (CLP): classification, labelling and packaging of mixtures', publisher: 'European Union (EUR-Lex)' },
+  'eu-inco-1169-2011': { label: 'Regulation (EU) No 1169/2011 (FIC): food information to consumers, including allergens', publisher: 'European Union (EUR-Lex)' },
+  'ansm-phenoxy-2019': { label: 'Decision of 13/03/2019: leave-on cosmetic products containing phenoxyethanol must not be used on the nappy area of children aged 3 or under' },
+  'anses-he-2024': { label: 'Essential oils: risks and precautions' },
+  'anses-diffuseurs': { label: 'Essential-oil sprays and diffusers: Anses calls for vigilance' },
+  'anses-lait-cru-2022': { label: 'Raw-milk cheeses: what are the health risks and how can they be better prevented?' },
+  'anses-mercure-2024': { label: 'Methylmercury: a health risk when eating large amounts of fish' },
+  'anses-reglisse-2025': { label: 'Risk assessment of dietary liquorice consumption (referral 2022-AUTO-0077)' },
+  'anses-miel-2010': { label: 'Opinion on honey labelling: do not give it to infants under one year (infant botulism)' },
+  'spf-grossesse-2025': { label: 'Which foods to avoid and which precautions to take when pregnant?', publisher: 'Santé publique France – Manger Bouger (Santé.fr)' },
+  'mpedia-listeriose-2025': { label: 'Listeriosis in pregnancy: which foods to avoid?', publisher: 'mpedia (AFPA) on Santé.fr' },
+  'sante-alcool': { label: 'Alcohol during pregnancy and breastfeeding' },
+  'spf-pas-a-pas': { label: 'Step by step, your child eats like a grown-up (introducing solids up to age 3)' },
+  lecrat: { label: 'Medicines, vaccines, pregnancy and breastfeeding', publisher: 'CRAT – Reference centre on teratogenic agents (AP-HP)' },
+  rappelconso: { label: 'RappelConso, the official product recall website', publisher: 'French government (DGCCRF, DGAL, DGS)' },
+  cosing: { label: 'CosIng database of cosmetic ingredients', publisher: 'European Commission' },
+  ciqual: { label: 'Ciqual food composition table' },
+};
+const SCAN_SOURCES_EN: Record<string, ScanSource> = Object.fromEntries(
+  Object.entries(SCAN_SOURCES_FR).map(([k, v]) => [k, { ...v, ...EN_TEXT[k] }]),
+);
+export const SCAN_SOURCES: Record<string, ScanSource> = localized(SCAN_SOURCES_FR, SCAN_SOURCES_EN);
+
 export function sourceById(id: string): ScanSource | null {
   return SCAN_SOURCES[id] ?? null;
 }
@@ -127,7 +157,7 @@ export function collectSources(ids: Iterable<string>): ScanSource[] {
 
 /** Libellé court « Éditeur — titre (date) » pour l'affichage et l'explication IA. */
 export function sourceLine(s: ScanSource): string {
-  const d = s.published_on ? `publié le ${frDate(s.published_on)}` : `consulté le ${frDate(s.consulted_on)}`;
+  const d = s.published_on ? tr('l7.scansrc.published', { date: frDate(s.published_on) }) : tr('l7.scansrc.consulted', { date: frDate(s.consulted_on) });
   return `${s.publisher} — ${s.label} (${d})`;
 }
 

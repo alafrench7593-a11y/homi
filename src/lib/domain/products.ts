@@ -5,18 +5,32 @@
  */
 export { assessProduct, type Assessment, type Finding, type FindingLevel, type ProductData, type ScanContext } from '../../../supabase/functions/_shared/product-rules';
 import type { FindingLevel } from '../../../supabase/functions/_shared/product-rules';
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
 
 /** Formulation neutre : jamais « dangereux », toujours un constat sourcé. */
-export const LEVEL_LABEL: Record<FindingLevel, string> = {
+const LEVEL_LABEL_FR: Record<FindingLevel, string> = {
   avoid_advised: 'Généralement déconseillé selon la source citée',
   attention: 'Point d’attention',
   info: 'Information',
 };
 
-export const CATEGORY_LABEL: Record<string, string> = {
+const LEVEL_LABEL_EN: Record<FindingLevel, string> = {
+  avoid_advised: 'Generally not recommended according to the cited source',
+  attention: 'Point to watch',
+  info: 'Information',
+};
+export const LEVEL_LABEL = localized(LEVEL_LABEL_FR, LEVEL_LABEL_EN);
+
+const CATEGORY_LABEL_FR: Record<string, string> = {
   cream: 'Crème', shampoo: 'Shampooing', wash_gel: 'Gel lavant', wipes: 'Lingettes', diapers: 'Couches', laundry: 'Lessive',
   household: 'Entretien', sunscreen: 'Protection solaire', food: 'Alimentation', drink: 'Boisson', baby_equipment: 'Équipement', other: 'Autre',
 };
+const CATEGORY_LABEL_EN: Record<string, string> = {
+  cream: 'Cream', shampoo: 'Shampoo', wash_gel: 'Wash gel', wipes: 'Wipes', diapers: 'Nappies', laundry: 'Laundry detergent',
+  household: 'Household cleaning', sunscreen: 'Sun protection', food: 'Food', drink: 'Drink', baby_equipment: 'Equipment', other: 'Other',
+};
+export const CATEGORY_LABEL = localized(CATEGORY_LABEL_FR, CATEGORY_LABEL_EN);
 
 export function cleanBarcode(input: string): string {
   return input.replace(/\D/g, '');
@@ -35,8 +49,8 @@ export type BarcodeCheck = { ok: true; code: string; warning?: string } | { ok: 
 
 export function checkBarcode(input: string): BarcodeCheck {
   const code = cleanBarcode(input);
-  if (code.length < 8 || code.length > 14) return { ok: false, error: 'Un code-barres compte de 8 à 14 chiffres.' };
-  if (!hasValidCheckDigit(code)) return { ok: true, code, warning: 'La clé de contrôle ne correspond pas : vérifiez les chiffres saisis.' };
+  if (code.length < 8 || code.length > 14) return { ok: false, error: tr('l7.products.barcode_len') };
+  if (!hasValidCheckDigit(code)) return { ok: true, code, warning: tr('l7.products.barcode_check') };
   return { ok: true, code };
 }
 

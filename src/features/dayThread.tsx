@@ -12,6 +12,7 @@ import { tint } from '@/components/ToolGlyph';
 import { THREAD_LABEL, type ThreadState } from '@/lib/domain/dayThread';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 const NODE = 22;
 
@@ -125,4 +126,4 @@ export function DayThread({ title, caption, rows, empty, right, testID }: {
 }
 
 /** Heure courte « 14 h 30 ». */
-export const clockFr = (iso: string) => { const d = new Date(iso); return `${d.getHours()} h ${String(d.getMinutes()).padStart(2, '0')}`; };
+export const clockFr = (iso: string) => { const d = new Date(iso); return tr('dom.time.hm', { h: String(d.getHours()), m: String(d.getMinutes()).padStart(2, '0') }); };

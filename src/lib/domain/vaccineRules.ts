@@ -7,6 +7,7 @@
  *    garde l'écart prévu par le calendrier après la dose précédente notée.
  *  · Jamais « en retard », jamais « vacciné » sans saisie du parent.
  */
+import { t as tr } from '@/i18n';
 import { addDays, daysBetween, type ISODate } from './dates';
 
 export interface VaccineSource { key: string; label: string; url: string; published: string; consulted: string }
@@ -143,6 +144,6 @@ export function nextDoses(list: ScheduledDose[], n = 3): ScheduledDose[] {
 
 /** Texte de la notification « à vérifier prochainement » (jamais de détail médical sur l'écran verrouillé). */
 export function vaccineNotice(cal: Pick<VaccineCalendar, 'version' | 'country'>, name: string): string {
-  const which = cal.country === 'FR' ? `calendrier vaccinal français ${cal.version}` : `calendrier vaccinal ${cal.version}`;
-  return `Selon le ${which}, une vaccination est à vérifier prochainement pour ${name}. Consultez son carnet de santé ou demandez conseil à un professionnel.`;
+  const which = cal.country === 'FR' ? tr('l3.vaccine.cal_fr', { version: cal.version }) : tr('l3.vaccine.cal', { version: cal.version });
+  return tr('l3.vaccine.notice', { which, name });
 }

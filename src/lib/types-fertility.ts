@@ -1,4 +1,5 @@
 /** Types des parcours fertilité (alignés sur supabase/migrations/20261016000100_fertility.sql). */
+import { localized } from '@/i18n/localized';
 
 export type FertilityJourney = 'ttc' | 'avoid' | 'postpartum';
 
@@ -16,7 +17,7 @@ export interface IntercourseLog {
 
 export type CervicalMucus = 'dry' | 'sticky' | 'creamy' | 'egg_white' | 'watery' | 'unusual' | 'unknown';
 /** Libellés alignés sur « Comprendre mon cycle et mes tests » (src/lib/cycleAnalysis/mucus.ts). */
-export const CERVICAL_MUCUS: { value: CervicalMucus; label: string }[] = [
+const CERVICAL_MUCUS_FR: { value: CervicalMucus; label: string }[] = [
   { value: 'dry', label: 'Sèche ou absente' },
   { value: 'sticky', label: 'Épaisse ou collante' },
   { value: 'creamy', label: 'Crémeuse' },
@@ -25,6 +26,16 @@ export const CERVICAL_MUCUS: { value: CervicalMucus; label: string }[] = [
   { value: 'unusual', label: 'Inhabituelle' },
   { value: 'unknown', label: 'Je ne sais pas' },
 ];
+const CERVICAL_MUCUS_EN: { value: CervicalMucus; label: string }[] = [
+  { value: 'dry', label: 'Dry or absent' },
+  { value: 'sticky', label: 'Thick or sticky' },
+  { value: 'creamy', label: 'Creamy' },
+  { value: 'egg_white', label: 'Clear and stretchy' },
+  { value: 'watery', label: 'Watery' },
+  { value: 'unusual', label: 'Unusual' },
+  { value: 'unknown', label: 'I don’t know' },
+];
+export const CERVICAL_MUCUS: { value: CervicalMucus; label: string }[] = localized(CERVICAL_MUCUS_FR, CERVICAL_MUCUS_EN);
 
 export interface FertilityObservation {
   id: string; user_id: string; observed_on: string;

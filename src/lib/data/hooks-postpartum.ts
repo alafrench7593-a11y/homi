@@ -2,6 +2,7 @@
  * Suivi post-partum : accès aux données. Tout est réservé à la mère (RLS propriétaire),
  * sauf `postpartum_shared_status`, lisible par son foyer et filtré par le serveur.
  */
+import { t as tr } from '@/i18n';
 import { useMutation } from '@tanstack/react-query';
 import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
@@ -118,7 +119,7 @@ export function useUpdateShared() {
   const userId = useUserId();
   return useMutation({
     mutationFn: async ({ settings, exists, value }: { settings: PostpartumSettings; exists: boolean; value: Partial<SharedStatus> }) => {
-      if (!settings.share_household_id || !anySharing(settings)) throw new Error('Choisissez d’abord ce que vous voulez partager.');
+      if (!settings.share_household_id || !anySharing(settings)) throw new Error(tr('l3.postpartum.choose_share'));
       const row = { ...filterShared(settings, value), household_id: settings.share_household_id };
       if (exists) return backend.update('postpartum_shared_status', row, [eq('user_id', userId)]);
       return backend.insert('postpartum_shared_status', { ...row, user_id: userId });

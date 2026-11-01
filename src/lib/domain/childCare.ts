@@ -6,6 +6,9 @@
  * L'application ne calcule jamais une quantité, une dose ni une fréquence.
  */
 
+import { t as tr } from '@/i18n';
+import { localized } from '@/i18n/localized';
+
 // ------------------------------------------------------------------ chronomètre de biberon
 export interface BottleChrono { started_at: string | null; paused_at: string | null; paused_seconds: number; ended_at: string | null }
 
@@ -27,23 +30,32 @@ export const formatChrono = (s: number) => `${Math.floor(s / 60)}:${String(s % 6
 
 // ------------------------------------------------------------------ selles et digestion
 export type StoolColor = 'yellow' | 'green' | 'brown' | 'black' | 'red' | 'pale' | 'other';
-export const STOOL_COLORS: { value: StoolColor; label: string }[] = [
+const STOOL_COLORS_FR: { value: StoolColor; label: string }[] = [
   { value: 'yellow', label: 'Jaune' }, { value: 'green', label: 'Verte' }, { value: 'brown', label: 'Marron' },
   { value: 'pale', label: 'Blanche, mastic, très pâle' }, { value: 'black', label: 'Noire' }, { value: 'red', label: 'Rouge' }, { value: 'other', label: 'Autre' },
 ];
-export const STOOL_CONSISTENCY: { value: 'liquid' | 'soft' | 'formed' | 'hard'; label: string }[] = [
+const STOOL_COLORS_EN: { value: StoolColor; label: string }[] = [
+  { value: 'yellow', label: 'Yellow' }, { value: 'green', label: 'Green' }, { value: 'brown', label: 'Brown' },
+  { value: 'pale', label: 'White, putty-coloured, very pale' }, { value: 'black', label: 'Black' }, { value: 'red', label: 'Red' }, { value: 'other', label: 'Other' },
+];
+export const STOOL_COLORS = localized(STOOL_COLORS_FR, STOOL_COLORS_EN);
+const STOOL_CONSISTENCY_FR: { value: 'liquid' | 'soft' | 'formed' | 'hard'; label: string }[] = [
   { value: 'liquid', label: 'Liquide' }, { value: 'soft', label: 'Molle' }, { value: 'formed', label: 'Moulée' }, { value: 'hard', label: 'Dure' },
 ];
+const STOOL_CONSISTENCY_EN: { value: 'liquid' | 'soft' | 'formed' | 'hard'; label: string }[] = [
+  { value: 'liquid', label: 'Liquid' }, { value: 'soft', label: 'Soft' }, { value: 'formed', label: 'Formed' }, { value: 'hard', label: 'Hard' },
+];
+export const STOOL_CONSISTENCY = localized(STOOL_CONSISTENCY_FR, STOOL_CONSISTENCY_EN);
 
 export interface SafetyNotice { level: 'urgent' | 'soon' | 'watch'; title: string; body: string; source: 'stools' | 'dehydration' | 'fever' }
 
 /** Repère après un change. Jamais d'hypothèse sur la cause : seulement quand demander un avis. */
 export function stoolNotice(d: { stool_color?: StoolColor | null; blood_seen?: boolean | null }): SafetyNotice | null {
   if (d.stool_color === 'pale') {
-    return { level: 'urgent', title: 'Selles blanches, mastic ou très pâles : à montrer à un médecin en urgence', body: 'Contactez votre médecin ou le 15 aujourd’hui. Si possible, gardez la couche ou prenez-la en photo pour la montrer.', source: 'stools' };
+    return { level: 'urgent', title: tr('l6.care.paleTitle'), body: tr('l6.care.paleBody'), source: 'stools' };
   }
   if (d.stool_color === 'black' || d.stool_color === 'red' || d.blood_seen) {
-    return { level: 'soon', title: 'Selles noires, rouges ou avec du sang : consultez sans attendre', body: 'Montrez-les à votre médecin, à votre pédiatre ou appelez le 15 si votre enfant semble mal. Gardez la couche ou prenez une photo.', source: 'stools' };
+    return { level: 'soon', title: tr('l6.care.bloodTitle'), body: tr('l6.care.bloodBody'), source: 'stools' };
   }
   return null;
 }
@@ -62,12 +74,12 @@ export function digestionNotices(o: {
   const out: SafetyNotice[] = [];
   const fever = o.observations.find((x) => x.kind === 'temperature' && day(x.at) && (x.value_num ?? 0) >= 38);
   if (fever && o.ageMonths < 3) {
-    out.push({ level: 'urgent', title: 'Fièvre chez un bébé de moins de 3 mois', body: 'À cet âge, une température de 38 °C ou plus peut être une urgence : consultez un médecin ou appelez le 15.', source: 'fever' });
+    out.push({ level: 'urgent', title: tr('l6.care.feverTitle'), body: tr('l6.care.feverBody'), source: 'fever' });
   }
   const vomits = o.observations.filter((x) => x.kind === 'vomit' && day(x.at)).length;
   const diarrhea = o.observations.filter((x) => x.kind === 'diarrhea' && day(x.at)).length + o.diapers.filter((d) => d.stool_consistency === 'liquid' && day(d.at)).length;
   if (vomits >= 3 || diarrhea >= 3) {
-    out.push({ level: 'watch', title: vomits >= 3 ? 'Plusieurs vomissements notés en 24 h' : 'Plusieurs selles liquides notées en 24 h', body: 'Surveillez l’hydratation. Au moindre signe de déshydratation, ou si votre enfant vous inquiète, consultez rapidement.', source: 'dehydration' });
+    out.push({ level: 'watch', title: vomits >= 3 ? tr('l6.care.vomitTitle') : tr('l6.care.looseTitle'), body: tr('l6.care.hydrationBody'), source: 'dehydration' });
   }
   // Couches mouillées : comparaison avec la moyenne des 3 jours précédents, seulement si assez de données
   const wet = (fromH: number, toH: number) => o.diapers.filter((d) => d.wet && now - Date.parse(d.at) >= fromH * 3600000 && now - Date.parse(d.at) < toH * 3600000).length;
@@ -75,7 +87,7 @@ export function digestionNotices(o: {
   const before = [wet(24, 48), wet(48, 72), wet(72, 96)];
   if (before.every((n) => n >= 3)) {
     const avg = before.reduce((a, b) => a + b, 0) / 3;
-    if (today <= avg / 2) out.push({ level: 'watch', title: 'Moins de couches mouillées que les jours précédents', body: 'D’après ce qui a été noté. Si c’est bien le cas, cela peut être un signe de déshydratation : demandez un avis médical.', source: 'dehydration' });
+    if (today <= avg / 2) out.push({ level: 'watch', title: tr('l6.care.wetTitle'), body: tr('l6.care.wetBody'), source: 'dehydration' });
   }
   return out;
 }
@@ -87,17 +99,17 @@ export interface Tracker { kind: 'measure' | 'observation'; low_threshold: numbe
  * Situe une mesure par rapport aux repères du PLAN écrit par le professionnel de l'enfant.
  * Sans plan : aucune interprétation. Jamais de conseil de dose ou de traitement.
  */
-export function planCheck(tr: Tracker, value: number | null): { status: 'no_plan' | 'within' | 'below' | 'above'; message: string } {
-  if (value == null || tr.kind !== 'measure' || !tr.thresholds_from_plan || (tr.low_threshold == null && tr.high_threshold == null)) {
-    return { status: 'no_plan', message: 'Mesure notée. L’application ne l’interprète pas sans les repères de votre plan.' };
+export function planCheck(tracker: Tracker, value: number | null): { status: 'no_plan' | 'within' | 'below' | 'above'; message: string } {
+  if (value == null || tracker.kind !== 'measure' || !tracker.thresholds_from_plan || (tracker.low_threshold == null && tracker.high_threshold == null)) {
+    return { status: 'no_plan', message: tr('l6.care.noPlan') };
   }
-  if (tr.low_threshold != null && value < tr.low_threshold) return { status: 'below', message: `En dessous du repère de votre plan (${tr.plan_by}). Suivez la conduite à tenir écrite dans ce plan, ou contactez l’équipe qui suit votre enfant.` };
-  if (tr.high_threshold != null && value > tr.high_threshold) return { status: 'above', message: `Au-dessus du repère de votre plan (${tr.plan_by}). Suivez la conduite à tenir écrite dans ce plan, ou contactez l’équipe qui suit votre enfant.` };
-  return { status: 'within', message: 'Dans les repères de votre plan.' };
+  if (tracker.low_threshold != null && value < tracker.low_threshold) return { status: 'below', message: tr('l6.care.below', { by: tracker.plan_by ?? '' }) };
+  if (tracker.high_threshold != null && value > tracker.high_threshold) return { status: 'above', message: tr('l6.care.above', { by: tracker.plan_by ?? '' }) };
+  return { status: 'within', message: tr('l6.care.within') };
 }
 
 // ------------------------------------------------------------------ bien-être de l'enfant
-export const WELLBEING_SCALES: { key: 'crying' | 'irritability' | 'energy' | 'appetite' | 'sleep' | 'digestive_comfort'; label: string; levels: [string, string, string] }[] = [
+const WELLBEING_SCALES_FR: { key: 'crying' | 'irritability' | 'energy' | 'appetite' | 'sleep' | 'digestive_comfort'; label: string; levels: [string, string, string] }[] = [
   { key: 'crying', label: 'Pleurs', levels: ['Peu', 'Comme d’habitude', 'Beaucoup'] },
   { key: 'irritability', label: 'Irritabilité', levels: ['Calme', 'Comme d’habitude', 'Très grognon'] },
   { key: 'energy', label: 'Énergie', levels: ['Fatigué', 'Comme d’habitude', 'Très actif'] },
@@ -105,18 +117,47 @@ export const WELLBEING_SCALES: { key: 'crying' | 'irritability' | 'energy' | 'ap
   { key: 'sleep', label: 'Sommeil', levels: ['Agité', 'Comme d’habitude', 'Très bon'] },
   { key: 'digestive_comfort', label: 'Confort digestif', levels: ['Inconfort', 'Comme d’habitude', 'Très bien'] },
 ];
+const WELLBEING_SCALES_EN: typeof WELLBEING_SCALES_FR = [
+  { key: 'crying', label: 'Crying', levels: ['Little', 'As usual', 'A lot'] },
+  { key: 'irritability', label: 'Irritability', levels: ['Calm', 'As usual', 'Very grumpy'] },
+  { key: 'energy', label: 'Energy', levels: ['Tired', 'As usual', 'Very active'] },
+  { key: 'appetite', label: 'Appetite', levels: ['Small appetite', 'As usual', 'Big appetite'] },
+  { key: 'sleep', label: 'Sleep', levels: ['Restless', 'As usual', 'Very good'] },
+  { key: 'digestive_comfort', label: 'Digestive comfort', levels: ['Discomfort', 'As usual', 'Very good'] },
+];
+export const WELLBEING_SCALES: typeof WELLBEING_SCALES_FR = localized(WELLBEING_SCALES_FR, WELLBEING_SCALES_EN);
 
-export const DEV_DOMAINS: { value: 'motor' | 'language' | 'communication' | 'social' | 'autonomy' | 'learning' | 'eating' | 'sleep' | 'other'; label: string }[] = [
+const DEV_DOMAINS_FR: { value: 'motor' | 'language' | 'communication' | 'social' | 'autonomy' | 'learning' | 'eating' | 'sleep' | 'other'; label: string }[] = [
   { value: 'motor', label: 'Motricité' }, { value: 'language', label: 'Langage' }, { value: 'communication', label: 'Communication' },
   { value: 'social', label: 'Relations' }, { value: 'autonomy', label: 'Autonomie' }, { value: 'learning', label: 'Apprentissages' },
   { value: 'eating', label: 'Alimentation' }, { value: 'sleep', label: 'Sommeil' }, { value: 'other', label: 'Autre' },
 ];
+const DEV_DOMAINS_EN: typeof DEV_DOMAINS_FR = [
+  { value: 'motor', label: 'Motor skills' }, { value: 'language', label: 'Language' }, { value: 'communication', label: 'Communication' },
+  { value: 'social', label: 'Relationships' }, { value: 'autonomy', label: 'Independence' }, { value: 'learning', label: 'Learning' },
+  { value: 'eating', label: 'Eating' }, { value: 'sleep', label: 'Sleep' }, { value: 'other', label: 'Other' },
+];
+export const DEV_DOMAINS: typeof DEV_DOMAINS_FR = localized(DEV_DOMAINS_FR, DEV_DOMAINS_EN);
 
 // ------------------------------------------------------------------ dents de lait (schéma)
 /** 20 dents de lait, dans l'ordre des arcades (haut droite → haut gauche, bas gauche → bas droite, vu de face). */
-export const PRIMARY_TEETH: { id: string; label: string; arch: 'top' | 'bottom'; index: number }[] = [
-  ...['Deuxième molaire', 'Première molaire', 'Canine', 'Incisive latérale', 'Incisive centrale'].map((n, i) => ({ id: `t-r-${i}`, label: `${n} en haut, droite`, arch: 'top' as const, index: i })),
-  ...['Incisive centrale', 'Incisive latérale', 'Canine', 'Première molaire', 'Deuxième molaire'].map((n, i) => ({ id: `t-l-${i}`, label: `${n} en haut, gauche`, arch: 'top' as const, index: i + 5 })),
-  ...['Deuxième molaire', 'Première molaire', 'Canine', 'Incisive latérale', 'Incisive centrale'].map((n, i) => ({ id: `b-r-${i}`, label: `${n} en bas, droite`, arch: 'bottom' as const, index: i })),
-  ...['Incisive centrale', 'Incisive latérale', 'Canine', 'Première molaire', 'Deuxième molaire'].map((n, i) => ({ id: `b-l-${i}`, label: `${n} en bas, gauche`, arch: 'bottom' as const, index: i + 5 })),
-];
+type Tooth = { id: string; label: string; arch: 'top' | 'bottom'; index: number };
+function buildTeeth(n: { second: string; first: string; canine: string; lateral: string; central: string }, place: (name: string, arch: 'top' | 'bottom', side: 'right' | 'left') => string): Tooth[] {
+  const right = [n.second, n.first, n.canine, n.lateral, n.central];
+  const left = [n.central, n.lateral, n.canine, n.first, n.second];
+  return [
+    ...right.map((x, i) => ({ id: `t-r-${i}`, label: place(x, 'top', 'right'), arch: 'top' as const, index: i })),
+    ...left.map((x, i) => ({ id: `t-l-${i}`, label: place(x, 'top', 'left'), arch: 'top' as const, index: i + 5 })),
+    ...right.map((x, i) => ({ id: `b-r-${i}`, label: place(x, 'bottom', 'right'), arch: 'bottom' as const, index: i })),
+    ...left.map((x, i) => ({ id: `b-l-${i}`, label: place(x, 'bottom', 'left'), arch: 'bottom' as const, index: i + 5 })),
+  ];
+}
+const PRIMARY_TEETH_FR: Tooth[] = buildTeeth(
+  { second: 'Deuxième molaire', first: 'Première molaire', canine: 'Canine', lateral: 'Incisive latérale', central: 'Incisive centrale' },
+  (name, arch, side) => `${name} en ${arch === 'top' ? 'haut' : 'bas'}, ${side === 'right' ? 'droite' : 'gauche'}`,
+);
+const PRIMARY_TEETH_EN: Tooth[] = buildTeeth(
+  { second: 'Second molar', first: 'First molar', canine: 'Canine', lateral: 'Lateral incisor', central: 'Central incisor' },
+  (name, arch, side) => `${name}, ${arch === 'top' ? 'upper' : 'lower'} ${side}`,
+);
+export const PRIMARY_TEETH: Tooth[] = localized(PRIMARY_TEETH_FR, PRIMARY_TEETH_EN);

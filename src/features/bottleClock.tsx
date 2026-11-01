@@ -145,7 +145,7 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
         {[0, 3, 6, 9, 12, 15, 18, 21].map((h) => {
           const main = h % 6 === 0;
           const p = pt(c, R - (main ? 50 : 46), (h / 24) * 360);
-          return <SvgText key={h} x={p.x} y={p.y + (main ? 4 : 3)} fontSize={main ? 12 : 9} fontWeight={main ? '700' : '500'} fill={goldB} fillOpacity={main ? 1 : 0.7} textAnchor="middle" letterSpacing={0.5}>{main ? `${h} h` : String(h)}</SvgText>;
+          return <SvgText key={h} x={p.x} y={p.y + (main ? 4 : 3)} fontSize={main ? 12 : 9} fontWeight={main ? '700' : '500'} fill={goldB} fillOpacity={main ? 1 : 0.7} textAnchor="middle" letterSpacing={0.5}>{main ? tr('dom.time.h', { h: String(h) }) : String(h)}</SvgText>;
         })}
         {/* piste des perles */}
         <Circle cx={c} cy={c} r={rTrack} fill="none" stroke={goldA} strokeOpacity={0.18} strokeWidth={6} />

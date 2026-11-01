@@ -1,3 +1,4 @@
+import { onLocaleChange } from '@/i18n';
 /**
  * Contenus de grossesse : « Comment je me sens aujourd'hui ? » et « Bien manger enceinte ».
  * Rédigés à partir de pages officielles françaises réellement consultées (dates affichées ci-dessous).
@@ -8,11 +9,12 @@
  *  · statut éditorial : « À vérifier » tant qu'un professionnel n'a pas relu (voir docs/RELECTURE_CONTENUS.md).
  */
 import { LIBRARY_SOURCES as L, type ArticleSource } from './articles/library';
+import { inLang, localized } from '@/i18n/localized';
 
 const C = '2026-10-22';
 
 /** Pages consultées le 22 octobre 2026 (en plus de celles de la bibliothèque, consultées le 20 octobre). */
-export const CARE_SOURCES = {
+const CARE_SOURCES_FR = {
   ameliProgramme1: { label: 'ameli.fr — Grossesse : le programme de suivi et la première consultation', url: 'https://www.ameli.fr/assure/sante/devenir-parent/grossesse/grossesse-en-bonne-sante/grossesse/grossesse-soins-dentaires-dentiste-consultation', consulted_on: C, published: '2026-07-14' },
   ameliMensuel: { label: 'ameli.fr — Suivi mensuel de la grossesse à partir du 4e mois', url: 'https://www.ameli.fr/assure/sante/devenir-parent/grossesse/grossesse-en-bonne-sante/grossesse/consultation-suivi-mensuel', consulted_on: C, published: '2026-06-02' },
   santeCalendrier: { label: 'Santé.fr — Le calendrier de grossesse', url: 'https://www.sante.fr/le-calendrier-de-grossesse', consulted_on: C, published: '2026-06-02' },
@@ -28,7 +30,7 @@ export const CARE_SOURCES = {
   listeriose: { label: 'Santé.fr — Listériose pendant la grossesse, quels aliments éviter ?', url: 'https://www.sante.fr/listeriose-pendant-la-grossesse-quels-aliments-eviter', consulted_on: C },
   toxoplasmose: { label: 'Santé.fr — La toxoplasmose enceinte, comment l’éviter ?', url: 'https://www.sante.fr/la-toxoplasmose-enceinte-comment-leviter', consulted_on: C },
 } satisfies Record<string, ArticleSource>;
-const S = CARE_SOURCES;
+const S = CARE_SOURCES_FR;
 
 // ─── « Comment je me sens aujourd'hui ? » ───────────────────────────────────────────────────────
 
@@ -53,9 +55,9 @@ export interface SymptomCare {
   sources: ArticleSource[];
 }
 
-const DOUBT = 'En cas de doute, appelez votre sage-femme, votre médecin ou votre maternité : vous ne dérangez pas.';
+const DOUBT_FR = 'En cas de doute, appelez votre sage-femme, votre médecin ou votre maternité : vous ne dérangez pas.';
 
-export const SYMPTOM_CARE: Record<SymptomKey, SymptomCare> = {
+const SYMPTOM_CARE_FR: Record<SymptomKey, SymptomCare> = {
   nausea: {
     frequentSA: [4, 16],
     help: ['Manger souvent, en petites quantités, sans rester longtemps à jeun.', 'Choisir ce qui vous fait envie, en évitant les plats gras, frits ou épicés.', 'Boire régulièrement, par petites gorgées.', 'Se lever doucement, aérer, éviter les odeurs qui déclenchent les nausées.', 'Se reposer : la fatigue peut les aggraver.'],
@@ -185,13 +187,13 @@ export const SYMPTOM_CARE: Record<SymptomKey, SymptomCare> = {
   other: {
     frequentSA: null,
     help: ['Notez quand cela a commencé, à quelle fréquence et ce qui soulage ou aggrave : ces notes aident lors du rendez-vous.'],
-    ask: [DOUBT],
+    ask: [DOUBT_FR],
     sources: [L.ameliMensuel],
   },
 };
 
 /** Signes de sécurité affichés quand le symptôme est intense, inhabituel ou inquiétant. */
-export const SAFETY_CONTACTS = [
+const SAFETY_CONTACTS_FR = [
   { key: 'samu', label: 'SAMU', phone: '15' },
   { key: 'eu', label: 'Urgences (numéro européen)', phone: '112' },
   { key: 'sms', label: 'Urgences pour les personnes sourdes ou malentendantes (SMS)', phone: '114' },
@@ -201,7 +203,7 @@ export const SAFETY_CONTACTS = [
 
 export interface FoodSection { key: string; title: string; items: { title: string; text: string }[]; sources: ArticleSource[] }
 
-export const EAT_INTERESTING: FoodSection = {
+const EAT_INTERESTING_FR: FoodSection = {
   key: 'interesting',
   title: 'Les repères du quotidien',
   items: [
@@ -215,7 +217,7 @@ export const EAT_INTERESTING: FoodSection = {
   sources: [S.ameliAlimentation],
 };
 
-export const EAT_AVOID: FoodSection = {
+const EAT_AVOID_FR: FoodSection = {
   key: 'avoid',
   title: 'À éviter ou à préparer avec précaution',
   items: [
@@ -231,7 +233,7 @@ export const EAT_AVOID: FoodSection = {
   sources: [S.ameliAliments, S.ameliAlimentation, S.listeriose],
 };
 
-export const EAT_HYGIENE: FoodSection = {
+const EAT_HYGIENE_FR: FoodSection = {
   key: 'hygiene',
   title: 'Hygiène et cuisson',
   items: [
@@ -247,7 +249,7 @@ export const EAT_HYGIENE: FoodSection = {
 
 export interface Nutrient { key: 'iron' | 'calcium' | 'protein' | 'fiber' | 'b9'; title: string; why: string; where: string; professional: string }
 /** Repères généraux : jamais une quantité à atteindre, jamais un complément conseillé par l'application. */
-export const NUTRIENTS: Nutrient[] = [
+const NUTRIENTS_FR: Nutrient[] = [
   { key: 'iron', title: 'Fer', why: 'Les besoins augmentent, surtout en fin de grossesse.', where: 'Légumes secs, poisson, viande.', professional: 'Votre médecin ou votre sage-femme peut prescrire du fer si besoin : suivez ses conseils.' },
   { key: 'calcium', title: 'Calcium', why: 'Utile au squelette du bébé, surtout au 3e trimestre.', where: 'Produits laitiers pasteurisés, certaines eaux minérales riches en calcium.', professional: 'Parlez de vos habitudes (sans produits laitiers par exemple) avec votre professionnel.' },
   { key: 'protein', title: 'Protéines', why: 'Elles accompagnent la croissance du bébé.', where: 'Viande, poisson, œufs bien cuits, légumineuses, produits laitiers.', professional: 'En cas d’alimentation végétarienne ou végétalienne, demandez conseil à votre professionnel.' },
@@ -256,6 +258,243 @@ export const NUTRIENTS: Nutrient[] = [
 ];
 
 /** Ne jamais prendre de complément de soi-même : texte affiché sur chaque écran d'alimentation de grossesse. */
-export const SUPPLEMENT_NOTICE = 'L’application ne recommande aucun complément alimentaire. Certains contiennent des vitamines ou des minéraux nocifs à forte dose : suivez les conseils du professionnel qui accompagne votre grossesse.';
-export const NOT_ADVICE = 'Informations générales issues de sources officielles françaises, pas un avis médical personnalisé.';
-export const NUTRITION_SOURCES: ArticleSource[] = [S.ameliAlimentation, S.ameliAliments, S.listeriose, S.toxoplasmose, L.santeB9];
+const SUPPLEMENT_NOTICE_FR = 'L’application ne recommande aucun complément alimentaire. Certains contiennent des vitamines ou des minéraux nocifs à forte dose : suivez les conseils du professionnel qui accompagne votre grossesse.';
+const NOT_ADVICE_FR = 'Informations générales issues de sources officielles françaises, pas un avis médical personnalisé.';
+const NUTRITION_SOURCES_FR: ArticleSource[] = [S.ameliAlimentation, S.ameliAliments, S.listeriose, S.toxoplasmose, L.santeB9];
+
+// ─── English version (same shape, same keys, same order) ─────────────────────────────────────────
+
+const CARE_SOURCES_EN: typeof CARE_SOURCES_FR = {
+  ameliProgramme1: { ...CARE_SOURCES_FR.ameliProgramme1, label: 'ameli.fr — Pregnancy: the follow-up programme and the first appointment' },
+  ameliMensuel: { ...CARE_SOURCES_FR.ameliMensuel, label: 'ameli.fr — Monthly pregnancy follow-up from the 4th month' },
+  santeCalendrier: { ...CARE_SOURCES_FR.santeCalendrier, label: 'Santé.fr — The pregnancy calendar' },
+  petitsMaux: { ...CARE_SOURCES_FR.petitsMaux, label: '1000 premiers jours (Santé publique France) — Common pregnancy complaints' },
+  preeclampsie: { ...CARE_SOURCES_FR.preeclampsie, label: 'ameli.fr — Pre-eclampsia: symptoms, diagnosis and course' },
+  consult8: { ...CARE_SOURCES_FR.consult8, label: 'Santé.fr — Pregnancy: the 8th-month appointment' },
+  mois9: { ...CARE_SOURCES_FR.mois9, label: 'Santé.fr — 9th month, pregnancy follow-up week by week' },
+  rgo: { ...CARE_SOURCES_FR.rgo, label: 'Santé.fr — Heartburn and reflux' },
+  jambesLourdes: { ...CARE_SOURCES_FR.jambesLourdes, label: 'ameli.fr — Heavy legs: symptoms, causes and contributing factors' },
+  cholestase: { ...CARE_SOURCES_FR.cholestase, label: 'CNGOF — Intrahepatic cholestasis of pregnancy, clinical practice guidelines (2023)' },
+  ameliAliments: { ...CARE_SOURCES_FR.ameliAliments, label: 'ameli.fr — Foods to avoid and hygiene precautions during pregnancy' },
+  ameliAlimentation: { ...CARE_SOURCES_FR.ameliAlimentation, label: 'ameli.fr — Adapting your diet during pregnancy' },
+  listeriose: { ...CARE_SOURCES_FR.listeriose, label: 'Santé.fr — Listeriosis in pregnancy: which foods to avoid?' },
+  toxoplasmose: { ...CARE_SOURCES_FR.toxoplasmose, label: 'Santé.fr — Toxoplasmosis in pregnancy: how to avoid it' },
+};
+const SE = CARE_SOURCES_EN;
+
+const DOUBT_EN = 'If in doubt, call your midwife, your doctor or your maternity unit: you are not disturbing them.';
+
+const SYMPTOM_CARE_EN: Record<SymptomKey, SymptomCare> = {
+  nausea: {
+    frequentSA: [4, 16],
+    help: ['Eat often, in small amounts, without going long on an empty stomach.', 'Choose what appeals to you, avoiding greasy, fried or spicy dishes.', 'Drink regularly, in small sips.', 'Get up slowly, air the room, avoid smells that trigger nausea.', 'Rest: tiredness can make it worse.'],
+    ask: ['If the nausea affects daily life: there are solutions, so talk to your doctor or midwife.', 'No medicine or “natural” product without a professional’s advice.'],
+    sources: [L.ameliNausees, L.ameliNauseesConsult],
+  },
+  vomiting: {
+    frequentSA: [4, 16],
+    help: ['Drink often, in small amounts, to avoid dehydration.', 'Split meals into smaller ones and favour whatever stays down best.'],
+    ask: ['Promptly if you can no longer keep liquids down, are losing weight, are very thirsty, have a dry mouth, dark urine, a fever or unusual tiredness.', 'Very heavy, persistent vomiting (hyperemesis gravidarum) needs prompt treatment.'],
+    sources: [L.ameliNausees, L.ameliNauseesConsult],
+  },
+  fatigue: {
+    frequentSA: [4, 14],
+    help: ['Rest whenever you can and accept the help you are offered.', 'Keep regular sleep times.', 'Gentle activity (walking, swimming, gentle exercise) if your situation allows.'],
+    ask: ['If the tiredness is intense, persists or comes with breathlessness, paleness or faintness: talk to your healthcare professional.'],
+    sources: [SE.petitsMaux, L.ameliActive],
+  },
+  dizziness: {
+    frequentSA: null,
+    help: ['Get up slowly, sit or lie on your side as soon as your head spins.', 'Drink regularly and avoid going long on an empty stomach.'],
+    ask: ['Promptly if you faint or lose consciousness, or if dizziness keeps coming back or comes with headaches, vision problems or breathlessness.'],
+    sources: [SE.ameliMensuel],
+  },
+  headache: {
+    frequentSA: null,
+    help: ['Rest somewhere quiet, drink regularly.', 'No medicine without advice: aspirin and anti-inflammatories are to be avoided, particularly in the last months.'],
+    ask: ['Urgently after 20 weeks of amenorrhoea if headaches come with vision problems (spots, flashes, blurred vision), ringing in the ears, a band-like pain in the upper belly or sudden swelling of the face or hands.'],
+    sources: [SE.preeclampsie, SE.consult8, SE.petitsMaux],
+  },
+  reflux: {
+    frequentSA: [20, 41],
+    help: ['Have smaller, more frequent meals.', 'Avoid lying down straight after eating; raising the head of the bed may help.', 'Spot the foods that make the burning worse.'],
+    ask: ['If the burning is frequent or disturbs your sleep: talk to your healthcare professional or pharmacist before taking any medicine.'],
+    sources: [SE.rgo, L.ameliPremiersSignes],
+  },
+  constipation: {
+    frequentSA: null,
+    help: ['Drink regularly through the day.', 'Favour foods rich in fibre: vegetables, fruit, pulses, wholegrain starchy foods.', 'Move a little every day if possible.'],
+    ask: ['If the constipation lasts, is painful or comes with bleeding: talk to your healthcare professional. No laxative without advice.'],
+    sources: [SE.ameliAlimentation, SE.petitsMaux],
+  },
+  bloating: {
+    frequentSA: null,
+    help: ['Eat slowly, split meals into smaller ones.', 'Spot the foods that cause more bloating.', 'A walk after meals may help.'],
+    ask: ['Promptly if the belly becomes hard and painful, or if pain sets in.'],
+    sources: [L.ameliPremiersSignes],
+  },
+  breasts: {
+    frequentSA: [4, 14],
+    help: ['A comfortable bra, suited to your changing size.'],
+    ask: ['If redness, a lump or a localised pain appears: talk to your healthcare professional.'],
+    sources: [L.ameliPremiersSignes],
+  },
+  back_pain: {
+    frequentSA: [20, 41],
+    help: ['Gentle activity: walking, swimming, gentle exercise, prenatal yoga.', 'Back and leg massages may bring relief.', 'Avoid heavy lifting and bend with your knees.'],
+    ask: ['If the pain is intense, comes in regular waves (like contractions) or comes with a fever or burning when passing urine: seek advice promptly.'],
+    sources: [SE.petitsMaux, L.ameliActive],
+  },
+  pelvic_pain: {
+    frequentSA: [14, 41],
+    help: ['Rest, vary your positions, avoid standing for long periods.'],
+    ask: ['Promptly if the pain is strong, on one side only, with bleeding or a fever, or if it comes back at regular intervals.'],
+    sources: [L.ameliSaign1, L.ameliMensuel],
+  },
+  contractions: {
+    frequentSA: [20, 41],
+    help: ['Rest and note how often they come and how long they last.'],
+    ask: ['Contractions that are barely painful, irregular and few (fewer than 10 a day) are described during pregnancy.', 'Contact your maternity unit without delay if they become painful, get closer together over the hours, or come with bleeding or a loss of fluid.'],
+    sources: [SE.ameliMensuel, SE.consult8],
+  },
+  discharge: {
+    frequentSA: null,
+    help: ['Whitish discharge with no smell or itching is often described during pregnancy.'],
+    ask: ['Promptly if there is a strong smell, itching, burning or an unusual colour.', 'Go to the maternity unit if fluid is leaking continuously: this may suggest that the waters have broken.'],
+    sources: [SE.consult8, SE.mois9],
+  },
+  bleeding: {
+    frequentSA: null,
+    help: ['Note the time, the amount and the colour, and what comes with it (pain, contractions).'],
+    ask: ['In the 2nd or 3rd trimester, any bleeding should be seen urgently at the maternity unit, even if painless.', 'In the 1st trimester: seek advice promptly; urgently (call 15 or 112) if the bleeding is heavy, or comes with faintness, lower abdominal pain or a fever.'],
+    sources: [L.ameliSaign1, L.ameliSaign23, SE.consult8],
+  },
+  itching: {
+    frequentSA: null,
+    help: ['Well-moisturised skin and loose clothing may help with mild itching.'],
+    ask: ['Seek advice promptly if the itching is intense, especially on the palms of the hands and soles of the feet, or at night, in particular in the 3rd trimester: tests may be needed.'],
+    sources: [SE.cholestase],
+  },
+  breathless: {
+    frequentSA: [28, 41],
+    help: ['Slow down, take breaks, hold yourself upright to leave room for your lungs.'],
+    ask: ['Promptly if breathlessness appears at rest, gets worse or comes with chest pain, palpitations or faintness (call 15 for chest pain).'],
+    sources: [SE.ameliMensuel],
+  },
+  swollen_legs: {
+    frequentSA: [28, 41],
+    help: ['Walk, swim, do gentle exercise.', 'Raise your legs when resting, avoid standing or sitting for long periods.'],
+    ask: ['Promptly if a calf becomes swollen, hard and painful, or if the face and hands swell suddenly with rapid weight gain.'],
+    sources: [SE.petitsMaux, SE.jambesLourdes, SE.preeclampsie],
+  },
+  sleep: {
+    frequentSA: null,
+    help: ['A calm moment before bed, limit caffeine in the evening.', 'Sleep on your side, with a cushion under your belly or between your knees.'],
+    ask: ['If lack of sleep is weighing on you or comes with sadness or loss of interest: talk to your healthcare professional.'],
+    sources: [SE.petitsMaux, L.nhsFatigueGrossesse],
+  },
+  mood: {
+    frequentSA: null,
+    help: ['Share how you feel with your partner or someone you trust.', 'Look after yourself: rest, regular meals, gentle activity.'],
+    ask: ['If sadness, tears or irritability last more than two weeks: talk to your midwife or your doctor.', 'If you have thoughts of harming yourself: call 3114 (free, 24 hours a day).'],
+    sources: [L.ameliPsy, L.ameliAidePsy, SE.petitsMaux],
+  },
+  anxiety: {
+    frequentSA: null,
+    help: ['Talk about it: partner, family and friends, antenatal classes.', 'Slow breathing, moments of calm.'],
+    ask: ['If the anxiety is constant, stops you sleeping or doing everyday things: talk to your midwife or your doctor. The early prenatal interview is a time set aside for this.', 'If you have thoughts of harming yourself: call 3114 (free, 24 hours a day).'],
+    sources: [L.ameliPsy, L.ameliAidePsy],
+  },
+  movements: {
+    frequentSA: null,
+    help: ['The sensations change over the weeks; late in pregnancy, the baby, with less room, may move differently.'],
+    ask: ['If you feel your baby moving less than usual, or not at all: contact your maternity unit without waiting, day or night.'],
+    sources: [SE.mois9],
+  },
+  other: {
+    frequentSA: null,
+    help: ['Note when it started, how often it happens and what relieves or worsens it: these notes help at your appointment.'],
+    ask: [DOUBT_EN],
+    sources: [SE.ameliMensuel],
+  },
+};
+
+const SAFETY_CONTACTS_EN = [
+  { key: 'samu', label: 'SAMU (emergency medical service)', phone: '15' },
+  { key: 'eu', label: 'Emergencies (European number)', phone: '112' },
+  { key: 'sms', label: 'Emergencies for deaf or hard-of-hearing people (text message)', phone: '114' },
+] as const;
+
+const EAT_INTERESTING_EN: FoodSection = {
+  key: 'interesting',
+  title: 'Everyday guidelines',
+  items: [
+    { title: 'Fruit and vegetables', text: 'At least five portions a day, raw (well washed) or cooked.' },
+    { title: 'Starchy foods and pulses', text: 'At every meal, favouring wholegrain cereals and dried pulses (lentils, chickpeas, beans).' },
+    { title: 'Dairy products', text: 'Three a day, pasteurised (no raw milk).' },
+    { title: 'Meat, fish or eggs', text: 'Once or twice a day, always well cooked.' },
+    { title: 'Water', text: 'As much as you like, throughout the day.' },
+    { title: 'Rhythm', text: 'Three meals without skipping any and, from the 2nd trimester, a snack if needed.' },
+  ],
+  sources: [SE.ameliAlimentation],
+};
+
+const EAT_AVOID_EN: FoodSection = {
+  key: 'avoid',
+  title: 'To avoid or to prepare with care',
+  items: [
+    { title: 'Alcohol', text: 'Not recommended at all throughout pregnancy, whatever the amount.' },
+    { title: 'Raw-milk cheeses', text: 'To avoid, especially soft cheeses, as well as cheese rinds and grated cheese sold in bags.' },
+    { title: 'Cooked cold meats and deli-counter products', text: 'Rillettes, pâtés, foie gras, jellied products and foods served from the deli counter: to avoid.' },
+    { title: 'Raw or undercooked fish and meat', text: 'Sushi, tartare, ceviche, smoked or marinated fish, raw shellfish, surimi, taramasalata: to avoid. Cook meat and fish right through.' },
+    { title: 'Raw sprouted seeds', text: 'To avoid.' },
+    { title: 'Certain fish', text: 'Swordfish, marlin, shark, lamprey: to avoid. Tuna, sea bream, pike and other wild predators: to limit. Freshwater fish (eel, carp…): at most once every two months.' },
+    { title: 'Soya and liquorice', text: 'Soya foods are not recommended as a precaution (soy sauce is still fine from time to time). Liquorice is to be avoided in all its forms.' },
+    { title: 'Caffeine', text: 'To limit: the guideline quoted by the French health insurance service (Assurance Maladie) is 300 mg a day at most. Energy drinks are to be avoided.' },
+  ],
+  sources: [SE.ameliAliments, SE.ameliAlimentation, SE.listeriose],
+};
+
+const EAT_HYGIENE_EN: FoodSection = {
+  key: 'hygiene',
+  title: 'Hygiene and cooking',
+  items: [
+    { title: 'Fridge', text: 'Set to 4 °C at most, cleaned regularly. Respect use-by dates and eat quickly once opened.' },
+    { title: 'Leftovers', text: 'No more than 3 days, reheated until piping hot all the way through.' },
+    { title: 'Raw and cooked kept apart', text: 'Do not let raw meat, unwashed vegetables and ready-to-eat foods touch.' },
+    { title: 'Washing', text: 'Wash fruit, vegetables and herbs and utensils thoroughly, and wash your hands before cooking and after handling raw meat.' },
+    { title: 'Defrosting', text: 'In the fridge, never on the worktop.' },
+    { title: 'Garden and pets', text: 'If you are not immune to toxoplasmosis: wear gloves for gardening and avoid the cat litter.' },
+  ],
+  sources: [SE.ameliAliments, SE.toxoplasmose],
+};
+
+const NUTRIENTS_EN: Nutrient[] = [
+  { key: 'iron', title: 'Iron', why: 'Needs increase, especially late in pregnancy.', where: 'Pulses, fish, meat.', professional: 'Your doctor or midwife can prescribe iron if needed: follow their advice.' },
+  { key: 'calcium', title: 'Calcium', why: 'Useful for the baby’s skeleton, especially in the 3rd trimester.', where: 'Pasteurised dairy products, some calcium-rich mineral waters.', professional: 'Talk about your habits (for example, no dairy) with your healthcare professional.' },
+  { key: 'protein', title: 'Protein', why: 'It supports the baby’s growth.', where: 'Meat, fish, well-cooked eggs, pulses, dairy products.', professional: 'If you eat a vegetarian or vegan diet, ask your healthcare professional for advice.' },
+  { key: 'fiber', title: 'Fibre', why: 'It helps digestion, which is often slower during pregnancy.', where: 'Vegetables, fruit, pulses, wholegrain starchy foods.', professional: 'If the constipation lasts, talk about it before taking a laxative.' },
+  { key: 'b9', title: 'Vitamin B9 (folate)', why: 'Important in very early pregnancy for the development of the nervous system.', where: 'Leafy green vegetables, pulses.', professional: 'Diet alone is not enough in early pregnancy: it is your doctor or midwife who may prescribe a supplement and say how long to take it. The app never recommends one.' },
+];
+
+const SUPPLEMENT_NOTICE_EN = 'The app does not recommend any food supplement. Some contain vitamins or minerals that are harmful in high doses: follow the advice of the professional who is looking after your pregnancy.';
+const NOT_ADVICE_EN = 'General information from official French sources, not personalised medical advice.';
+const NUTRITION_SOURCES_EN: ArticleSource[] = [SE.ameliAlimentation, SE.ameliAliments, SE.listeriose, SE.toxoplasmose, L.santeB9];
+
+export const CARE_SOURCES = localized(CARE_SOURCES_FR, CARE_SOURCES_EN);
+export const SYMPTOM_CARE = localized(SYMPTOM_CARE_FR, SYMPTOM_CARE_EN);
+export const SAFETY_CONTACTS = localized(SAFETY_CONTACTS_FR, SAFETY_CONTACTS_EN as unknown as typeof SAFETY_CONTACTS_FR);
+export const EAT_INTERESTING = localized(EAT_INTERESTING_FR, EAT_INTERESTING_EN);
+export const EAT_AVOID = localized(EAT_AVOID_FR, EAT_AVOID_EN);
+export const EAT_HYGIENE = localized(EAT_HYGIENE_FR, EAT_HYGIENE_EN);
+export const NUTRIENTS = localized(NUTRIENTS_FR, NUTRIENTS_EN);
+export const NUTRITION_SOURCES = localized(NUTRITION_SOURCES_FR, NUTRITION_SOURCES_EN);
+/** Textes simples : constantes françaises (API inchangée) + versions suivant la langue en cours (supplementNotice(), notAdvice()). */
+export let SUPPLEMENT_NOTICE = inLang({ fr: SUPPLEMENT_NOTICE_FR, en: SUPPLEMENT_NOTICE_EN });
+export let NOT_ADVICE = inLang({ fr: NOT_ADVICE_FR, en: NOT_ADVICE_EN });
+onLocaleChange(() => {
+  SUPPLEMENT_NOTICE = inLang({ fr: SUPPLEMENT_NOTICE_FR, en: SUPPLEMENT_NOTICE_EN });
+  NOT_ADVICE = inLang({ fr: NOT_ADVICE_FR, en: NOT_ADVICE_EN });
+});
+export const supplementNotice = () => inLang({ fr: SUPPLEMENT_NOTICE_FR, en: SUPPLEMENT_NOTICE_EN });
+export const notAdvice = () => inLang({ fr: NOT_ADVICE_FR, en: NOT_ADVICE_EN });

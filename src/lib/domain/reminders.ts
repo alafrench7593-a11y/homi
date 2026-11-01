@@ -6,6 +6,9 @@
  *   contrairement à un intervalle en secondes qui dériverait).
  */
 
+import { t as tr, formatDate, getLocale } from '@/i18n';
+import { localized } from '@/i18n/localized';
+
 export type Weekday = 1 | 2 | 3 | 4 | 5 | 6 | 7; // 1 = lundi … 7 = dimanche
 
 export type ReminderSchedule =
@@ -95,23 +98,25 @@ export function toExpoWeekday(d: Weekday): number {
   return (d % 7) + 1;
 }
 
-const WEEKDAY_SHORT = ['', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'];
-const hm = (h: number, m: number) => `${String(h).padStart(2, '0')}h${String(m).padStart(2, '0')}`;
+const WEEKDAY_SHORT_FR = ['', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'];
+const WEEKDAY_SHORT_EN = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const WEEKDAY_SHORT = localized(WEEKDAY_SHORT_FR, WEEKDAY_SHORT_EN);
+const hm = (h: number, m: number) => (getLocale() === 'en' ? `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}` : `${String(h).padStart(2, '0')}h${String(m).padStart(2, '0')}`);
 
 export function describeSchedule(s: ReminderSchedule): string {
   switch (s.type) {
     case 'once': {
       const d = new Date(s.at);
-      return `le ${d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} à ${hm(d.getHours(), d.getMinutes())}`;
+      return tr('l6.rem.onceAt', { date: formatDate(d, { day: 'numeric', month: 'long' }), time: hm(d.getHours(), d.getMinutes()) });
     }
-    case 'daily': return `chaque jour à ${hm(s.hour, s.minute)}`;
+    case 'daily': return tr('l6.rem.dailyAt', { time: hm(s.hour, s.minute) });
     case 'weekly':
-      return s.weekdays.length === 7 ? `chaque jour à ${hm(s.hour, s.minute)}` : `${[...s.weekdays].sort().map((d) => WEEKDAY_SHORT[d]).join(' ')} à ${hm(s.hour, s.minute)}`;
+      return s.weekdays.length === 7 ? tr('l6.rem.dailyAt', { time: hm(s.hour, s.minute) }) : tr('l6.rem.weeklyAt', { days: [...s.weekdays].sort().map((d) => WEEKDAY_SHORT[d]).join(' '), time: hm(s.hour, s.minute) });
     case 'interval': {
       const h = Math.floor(s.minutes / 60);
       const m = s.minutes % 60;
-      const every = h ? `${h} h${m ? ' ' + String(m).padStart(2, '0') : ''}` : `${m} min`;
-      return `toutes les ${every}, de ${hm(s.from_hour, 0)} à ${hm(s.to_hour % 24, 0)}`;
+      const every = h ? (m ? tr('l6.rem.hM', { h: String(h), m: String(m).padStart(2, '0') }) : tr('l6.rem.h', { h: String(h) })) : tr('l6.rem.min', { m: String(m) });
+      return tr('l6.rem.interval', { every, from: hm(s.from_hour, 0), to: hm(s.to_hour % 24, 0) });
     }
   }
 }

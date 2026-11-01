@@ -1,14 +1,16 @@
+import { onLocaleChange } from '@/i18n';
 /**
  * Documents juridiques — BROUILLONS à faire valider par un juriste avant publication.
  * Version acceptée à l'inscription : LEGAL_VERSIONS (src/lib/authFlow.ts).
  */
 import { BRAND } from '@/config/brand';
+import { inLang, localized } from '@/i18n/localized';
 
-export const LEGAL_DRAFT_NOTICE = 'Brouillon — à valider par un juriste avant la mise en ligne.';
+const LEGAL_DRAFT_NOTICE_FR = 'Brouillon — à valider par un juriste avant la mise en ligne.';
 
 export interface LegalDoc { title: string; updated: string; sections: { title: string; body: string }[] }
 
-export const TERMS: LegalDoc = {
+const TERMS_FR: LegalDoc = {
   title: 'Conditions générales d’utilisation',
   updated: 'Octobre 2026',
   sections: [
@@ -26,7 +28,7 @@ export const TERMS: LegalDoc = {
   ],
 };
 
-export const PRIVACY: LegalDoc = {
+const PRIVACY_FR: LegalDoc = {
   title: 'Politique de confidentialité',
   updated: 'Octobre 2026',
   sections: [
@@ -46,3 +48,54 @@ export const PRIVACY: LegalDoc = {
     { title: 'Vos droits', body: 'Accès, rectification, effacement, portabilité (export JSON et PDF dans l’application), opposition et retrait du consentement à tout moment. Vous pouvez saisir la CNIL (cnil.fr).' },
   ],
 };
+
+// ---------------------------------------------------------------- English version (same sections, same order)
+const LEGAL_DRAFT_NOTICE_EN = 'Draft — to be reviewed by a lawyer before going live.';
+
+const TERMS_EN: LegalDoc = {
+  title: 'Terms of use',
+  updated: 'October 2026',
+  sections: [
+    { title: 'Purpose', body: 'Au fil de nous is an app that supports parents, from the wish for a child through to family life. It helps you record, organise and find information. It never replaces the advice of a health professional.' },
+    { title: 'Minimum age', body: 'The app is for people aged 18 or over.' },
+    { title: 'Account', body: 'You are responsible for keeping your login details confidential. You can delete your account at any time from Profile › My account: your data and photos are then erased.' },
+    { title: 'Health information', body: 'The content and the assistant provide general, sourced and cautious information. They do not make diagnoses, prescribe or calculate doses. In an emergency, call 15 or 112.' },
+    { title: 'Community', body: 'Exchanges must remain kind and respectful. Messages that are against the law or these rules may be removed and their authors suspended.' },
+    { title: 'Subscription', body: 'Some features are reserved for the Premium subscription, managed by the App Store or Google Play. You cancel from your store’s settings. Safety information always remains available free of charge.' },
+    { title: 'Price, trial and renewal', body: 'Monthly Premium: €5.99 per month; annual Premium: €39.99 per year (prices shown in the app as supplied by your store, which prevail). A free trial (3 days for monthly, 7 days for annual) is offered only if your store indicates that you are eligible; otherwise payment starts as soon as you subscribe. The subscription renews automatically for the same period, unless cancelled at least 24 hours before the end of the current period, from your Apple or Google account settings. Any refund is handled by the store under its own rules.' },
+    { title: 'Deleting your account ≠ cancelling', body: 'Deleting your Au fil de nous account erases your data but does not stop payment: cancellation is always done in your store’s settings. The “Manage my subscriptions” button (Profile › Subscription) takes you there directly.' },
+    { title: 'Children’s data', body: 'Children do not have accounts. Information and photos about them are entered by a parent or an authorised person in the household, who remains responsible for it towards the other holders of parental authority.' },
+    { title: 'Liability', body: 'The publisher does its best to provide reliable and up-to-date information, but cannot guarantee that it is free of errors. Always check the instructions on packaging, leaflets and from your health professional.' },
+    { title: 'Governing law', body: 'French law applies. In the event of a dispute, an amicable solution will be sought before any legal action.' },
+  ],
+};
+
+const PRIVACY_EN: LegalDoc = {
+  title: 'Privacy policy',
+  updated: 'October 2026',
+  sections: [
+    { title: 'Data controller', body: `The publisher of ${BRAND.name} (contact details to be completed). For any question or to exercise your rights: ${BRAND.supportEmail}.` },
+    { title: 'Legal basis', body: 'Health data (cycle, pregnancy, children’s health, mood, intercourse) is processed only with your explicit consent, recorded and dated, which you can withdraw at any time in Profile › Privacy. The account, the subscription and the security of the service rely on performance of the contract; the keeping of invoices (by Apple or Google) relies on a legal obligation.' },
+    { title: 'Data collected', body: 'Account (email), profile, information you enter (pregnancy, children, tracking, cycle), time-stamped consents. Health data is processed only with your explicit consent.' },
+    { title: 'Purposes', body: 'To provide the app’s features, your reminders, sharing with the members of your household according to the rights you choose, and the security of the service. Never targeted advertising, never resale of your data.' },
+    { title: 'Who can see your data', body: 'You, and the members of your household according to the rights you give them, area by area. Your personal data (mood, cycle, weight) is shared only if you choose. In the community, only your pseudonym is visible. In demo mode, everything stays on your device.' },
+    { title: 'Hosting', body: 'Database hosted by Supabase in the European Union (to be confirmed when the project is created). Secret keys stay on the server.' },
+    { title: 'Artificial intelligence', body: 'Some features use Google Gemini artificial intelligence (paid API tier), only if you turn them on or run them: the assistant (your questions, without name or email), analysis of photos you choose to send, automatic reading of a document you choose, explanation of a scanned product, and, in the community, the summary or translation of a discussion (the public messages of the discussion are then sent). The data is sent from our servers for that single response only. Neither Au fil de nous nor Google uses it to train an AI; however, Google may keep it for up to 55 days to detect abuse, with possible human review if it is flagged.' },
+    { title: 'Sensitive photos', body: 'Test photos are analysed on your phone and deleted by default. If you choose to keep them, they are encrypted on the phone before being saved.' },
+    { title: 'Children’s photo album', body: 'Photos added to a child’s album are reduced in size on your phone and saved without their metadata (including GPS location), in a private space that is never public. They can be seen only by the members of the household who have access to that child’s profile, or by you alone if you choose “only me”. They are displayed through temporary links (1 hour). They are not sent to any artificial intelligence service.' },
+    { title: 'Services used (processors)', body: 'Supabase: hosting of the database, files and accounts. Google (Gemini API): assistant replies and photo analyses that you request. Google (Places): searching for places around you, only when you run it (location sent for that search). Apple and Google: payment for the subscription. RevenueCat: subscription tracking (account identifier and purchases, no health data). Expo: delivery of notifications (neutral text, no health detail). Resend: sign-in emails. Sentry: crash reports, only if you accept them, without personal data. Open Food Facts and RappelConso: only the scanned barcode is sent. OpenStreetMap (Overpass servers, including a third-party mirror, maps and Wikimedia Commons photos): when you search for places near you without Google, your phone contacts these services directly, and they receive your IP address and an approximate location. Hosting locations and safeguards for transfers outside the European Union: to be specified by the publisher for each service.' },
+    { title: 'Notifications and lock screen', body: 'Notifications show no medicine name, no dose, no cycle or health detail, and no community pseudonym: the detail is shown only once the app is open.' },
+    { title: 'Security', body: 'Row-by-row access control on the server (each person sees only their own data and the household data that has been opened to them), secret keys only on the server side, intimate data never kept in the phone’s cache, encrypted test photos, anonymous posts that are genuinely anonymous, optional Face ID or passcode lock.' },
+    { title: 'Retention period', body: 'For as long as your account exists. You can delete each entry at any time and set a preferred retention period in Profile › Privacy. Deleting the account permanently erases your data and files, except what the law requires us to keep (billing, handled by Apple or Google).' },
+    { title: 'Your rights', body: 'Access, rectification, erasure, portability (JSON and PDF export in the app), objection and withdrawal of consent at any time. You can complain to the CNIL (cnil.fr), the French data protection authority.' },
+  ],
+};
+
+export let LEGAL_DRAFT_NOTICE = inLang({ fr: LEGAL_DRAFT_NOTICE_FR, en: LEGAL_DRAFT_NOTICE_EN });
+export const TERMS: LegalDoc = localized(TERMS_FR, TERMS_EN);
+export const PRIVACY: LegalDoc = localized(PRIVACY_FR, PRIVACY_EN);
+
+// Textes fixes recalculés à chaque changement de langue (les écrans lisent toujours la valeur à jour)
+onLocaleChange(() => {
+  LEGAL_DRAFT_NOTICE = inLang({ fr: LEGAL_DRAFT_NOTICE_FR, en: LEGAL_DRAFT_NOTICE_EN });
+});

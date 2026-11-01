@@ -27,7 +27,10 @@ import {
 } from '@/lib/domain/cycleDaily';
 import { intercourseInfo, todayInsight } from '@/lib/domain/cycleInsights';
 import { parseCycleVoice } from '@/lib/domain/cycleVoice';
-import { formatDate, t as tr, type TKey } from '@/i18n';
+import { formatDate, getLocale, localeTag, t as tr, type TKey } from '@/i18n';
+
+/** Séparateur décimal affiché selon la langue (virgule en français, point en anglais). */
+const decSep = (n: number | string) => (getLocale() === 'en' ? String(n) : String(n).replace('.', ','));
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { InsightView, IntercourseView } from './InsightCard';
@@ -287,10 +290,10 @@ function TimeField({ label, value, onChange }: { label: string; value: string | 
 }
 
 function TempField({ value, onChange }: { value: number | null; onChange: (v: number | null) => void }) {
-  const [text, setText] = useState(value != null ? String(value).replace('.', ',') : '');
+  const [text, setText] = useState(value != null ? decSep(value) : '');
   const [err, setErr] = useState<string | undefined>();
   return (
-    <Field label={tr('c3.f.temperature')} value={text} keyboardType="decimal-pad" placeholder="36,5" error={err} suffix="°C"
+    <Field label={tr('c3.f.temperature')} value={text} keyboardType="decimal-pad" placeholder={decSep('36.5')} error={err} suffix="°C"
       onChangeText={(v) => {
         setText(v);
         const n = Number(v.replace(',', '.'));
@@ -384,7 +387,7 @@ function VoiceEntry({ onApply }: { onApply: (pills: string[], pain: number | nul
   function dictate() {
     if (!Rec) return;
     const r = new Rec();
-    r.lang = 'fr-FR'; r.interimResults = false;
+    r.lang = localeTag(); r.interimResults = false;
     r.onresult = (e) => setText(e.results[0]?.[0]?.transcript ?? '');
     r.onerror = () => setListening(false); r.onend = () => setListening(false);
     setListening(true); r.start();
@@ -407,7 +410,7 @@ function VoiceEntry({ onApply }: { onApply: (pills: string[], pain: number | nul
       {parsed ? (
         parsed.pills.length ? (
           <Banner tone="info" title={tr('c3.f.voiceConfirm')}>
-            {parsed.pills.map((p) => pillLabel(p)).join(', ') + (parsed.painIntensity != null ? ` · ${tr('c3.f.intensity', { value: parsed.painIntensity })}` : '') + (parsed.temperature != null ? ` · ${String(parsed.temperature).replace('.', ',')} °C` : '')}
+            {parsed.pills.map((p) => pillLabel(p)).join(', ') + (parsed.painIntensity != null ? ` · ${tr('c3.f.intensity', { value: parsed.painIntensity })}` : '') + (parsed.temperature != null ? ` · ${decSep(parsed.temperature)} °C` : '')}
           </Banner>
         ) : <Text variant="small" muted>{tr('c3.f.voiceNothing')}</Text>
       ) : null}
