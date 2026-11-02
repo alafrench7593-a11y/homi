@@ -17,7 +17,7 @@ import { useEntitlement } from '@/lib/data/hooks-premium';
 import { LegalLink } from '@/features/auth';
 import { friendlyError, usePlanLimits } from '@/lib/data/hooks-settings';
 import { ALWAYS_FREE, FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
-import { billingDates, getPlans, MANAGE_URLS, manageSubscription, purchase, purchaseMode, restore, type Plan } from '@/lib/purchases';
+import { billingDates, getPlans, getPurchaseMode, MANAGE_URLS, manageSubscription, purchase, restore, type Plan } from '@/lib/purchases';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr, formatDate } from '@/i18n';
@@ -46,6 +46,8 @@ export default function SubscriptionScreen() {
   const premium = ent.premium;
   const sub = ent.sub;
   const { data: limits } = usePlanLimits();
+  // Relu à chaque rendu : la démonstration peut avoir été activée après le chargement de l'application
+  const purchaseMode = getPurchaseMode();
   const plans = useQuery({ queryKey: ['plans', purchaseMode], queryFn: getPlans, staleTime: 600_000, retry: false, enabled: purchaseMode !== 'unavailable' });
   const [busy, setBusy] = useState<string | null>(null);
   const tried = params.feature && params.feature in FEATURES ? (params.feature as PremiumFeature) : null;

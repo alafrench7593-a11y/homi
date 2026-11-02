@@ -18,7 +18,18 @@ const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY;
 const apiKey = Platform.OS === 'ios' ? IOS_KEY : Platform.OS === 'android' ? ANDROID_KEY : undefined;
 
 export type PurchaseMode = 'store' | 'test' | 'unavailable';
-export const purchaseMode: PurchaseMode = backend.mode === 'demo' ? 'test' : apiKey ? 'store' : 'unavailable';
+/** Mode d'achat pour un mode de backend et une clé RevenueCat donnés. */
+export function purchaseModeFor(backendMode: string, key: string | undefined): PurchaseMode {
+  return backendMode === 'demo' ? 'test' : key ? 'store' : 'unavailable';
+}
+/**
+ * Mode d'achat COURANT, relu à chaque appel : la démonstration peut être activée après le chargement de ce module
+ * (reprise de la démo à l'ouverture, « Découvrir sans compte »). Calculé une seule fois au chargement, il restait
+ * « store » ou « unavailable » pendant toute la démonstration d'une version configurée avec Supabase.
+ */
+export function getPurchaseMode(): PurchaseMode {
+  return purchaseModeFor(backend.mode, apiKey);
+}
 
 export interface Plan {
   id: string;
@@ -43,7 +54,7 @@ const testPlans = (): Plan[] => [
 let configuredFor: string | null = null;
 
 export async function configurePurchases(userId: string) {
-  if (purchaseMode !== 'store' || !apiKey) return;
+  if (getPurchaseMode() !== 'store' || !apiKey) return;
   if (configuredFor === userId) return;
   if (!configuredFor) Purchases.configure({ apiKey, appUserID: userId });
   else await Purchases.logIn(userId);
@@ -51,7 +62,8 @@ export async function configurePurchases(userId: string) {
 }
 
 export async function resetPurchasesUser() {
-  if (purchaseMode !== 'store' || !configuredFor) return;
+  // Déconnexion de RevenueCat dès qu'un utilisateur y a été connecté, même si la démonstration a pris le relais entre-temps
+  if (!configuredFor) return;
   try {
     await Purchases.logOut();
   } catch {
@@ -61,7 +73,7 @@ export async function resetPurchasesUser() {
 }
 
 export async function getPlans(): Promise<Plan[]> {
-  if (purchaseMode !== 'store') return testPlans();
+  if (getPurchaseMode() !== 'store') return testPlans();
   const offerings = await Purchases.getOfferings();
   const pkgs = offerings.current?.availablePackages ?? [];
   const plans: Plan[] = pkgs
@@ -103,6 +115,7 @@ export async function applyTrialEligibility(plans: Plan[], os: string = Platform
 
 /** Achat. Retourne true si les droits sont confirmés PAR LE SERVEUR. */
 export async function purchase(plan: Plan): Promise<boolean> {
+  const purchaseMode = getPurchaseMode();
   if (purchaseMode === 'test') {
     await backend.rpc('set_demo_subscription', { active: true, period: plan.period, product_id: plan.id, trial: !!plan.trialLabel });
     return true;
@@ -113,6 +126,7 @@ export async function purchase(plan: Plan): Promise<boolean> {
 }
 
 export async function restore(): Promise<boolean> {
+  const purchaseMode = getPurchaseMode();
   if (purchaseMode === 'test') return backend.rpc<boolean>('has_premium');
   if (purchaseMode !== 'store') throw new Error(tr('l1.pur.notConfigured'));
   await Purchases.restorePurchases();
@@ -131,6 +145,7 @@ export function billingDates(plan: Pick<Plan, 'period' | 'trialDays'>, from: Dat
 }
 
 export async function manageSubscription() {
+  const purchaseMode = getPurchaseMode();
   if (purchaseMode === 'test') {
     await backend.rpc('set_demo_subscription', { active: false });
     return;
