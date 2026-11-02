@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { backend, eq, gte } from '../backend';
 import { useUserId } from '../auth';
+import { useOfflineStore } from '../offline';
 import { askNotificationPermission } from '../notificationPrompt';
 import { activeTimerFor, isBottleChild, lastIntervalFor, newTimer, planReplacement, type NewTimerInput, type TimerCore } from '../domain/bottleTimer';
 import {
@@ -81,9 +82,22 @@ export function useBottleHistory(childId: string | null | undefined, days = 8) {
 }
 
 /** Dernier biberon enregistré pour un enfant (point de départ proposé pour un minuteur démarré à la main). */
-export function useLastBottle(childId: string | null | undefined) {
+/**
+ * Dernier biberon de l'enfant. F-04 : un biberon noté hors ligne, encore en file, compte aussi
+ * (marqué _pending : son identifiant n'existe pas encore sur le serveur).
+ */
+export function useLastBottle(childId: string | null | undefined): (BottleRecord & { _pending?: boolean }) | null {
   const q = useRows<BottleRecord>(['bottles', childId ?? '', 'last'], childId ? { table: 'bottles', filters: [eq('child_id', childId)], order: [{ col: 'at', asc: false }], limit: 1 } : null);
-  return q.data?.[0] ?? null;
+  const pending = useOfflineStore((s) => s.pending);
+  return useMemo(() => {
+    const server = q.data?.[0] ?? null;
+    const queued = pending
+      .filter((op) => op.table === 'bottles' && op.row.child_id === childId && typeof op.row.at === 'string')
+      .map((op) => ({ ...(op.row as unknown as BottleRecord), _pending: true }))
+      .sort((a, b) => b.at.localeCompare(a.at))[0];
+    if (!queued) return server;
+    return !server || Date.parse(queued.at) > Date.parse(server.at) ? queued : server;
+  }, [q.data, pending, childId]);
 }
 
 /** « Enregistré par » : vous, le coparent, un proche. */

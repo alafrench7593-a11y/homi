@@ -121,7 +121,7 @@ export default function BottleReminderScreen() {
     const ml = parseMl(planned);
     if (ml.error) return toast(ml.error, 'error');
     try {
-      const timer = await start.mutateAsync({ childId, lastBottleAt: startAt, intervalMinutes: minutes, plannedMl: ml.value, bottleId: lastBottle && Date.parse(lastBottle.at) === startAt.getTime() ? lastBottle.id : null, replace: active ? 'restart' : false });
+      const timer = await start.mutateAsync({ childId, lastBottleAt: startAt, intervalMinutes: minutes, plannedMl: ml.value, bottleId: lastBottle && !lastBottle._pending && Date.parse(lastBottle.at) === startAt.getTime() ? lastBottle.id : null, replace: active ? 'restart' : false });
       haptic('success');
       toast(nextReminderSentence(name, timer.due_at));
       setSheet(null);
