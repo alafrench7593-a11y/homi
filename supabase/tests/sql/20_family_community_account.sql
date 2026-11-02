@@ -115,7 +115,7 @@ set role service_role;
 select tests.ok((select bool_and(allowed) from (select (public.consume_assistant_quota(:'ZOE')).allowed from generate_series(1,5)) s), 'abonnement : 5 questions gratuites accordées');
 select tests.ok(not (select allowed from public.consume_assistant_quota(:'ZOE')), 'abonnement : 6e question refusée en version gratuite');
 insert into public.subscriptions (user_id, status, product_id, store, period_type, expires_at)
-values (:'CAMILLE', 'active', 'toietmoi_premium_annual', 'test', 'annual', now() + interval '1 year');
+values (:'CAMILLE', 'active', 'aufildenous_premium_annual', 'test', 'annual', now() + interval '1 year');
 reset role;
 set role authenticated; set request.jwt.claim.sub = :'CAMILLE';
 select tests.ok(public.has_premium(), 'abonnement : droits premium actifs après validation serveur');

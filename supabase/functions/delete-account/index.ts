@@ -4,9 +4,13 @@
 // 2) supprime les données (transfert d'un foyer partagé au coparent) ;
 // 3) efface les fichiers privés correspondants du stockage « documents » (3 tentatives ; un échec
 //    persistant est journalisé, jamais ignoré).
+// 4) si REVENUECAT_SECRET_API_KEY est définie, supprime aussi le client RevenueCat (DELETE /v1/subscribers/{id}) ;
+//    un échec est journalisé et n'empêche pas la suppression (l'abonnement boutique, lui, se résilie dans l'App Store
+//    ou Google Play : supprimer le compte ne l'arrête pas).
 // Aucun nom de fichier n'est journalisé.
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
+import { deleteRevenueCatCustomer, revenueCatApi } from '../_shared/subscription-run.ts';
 
 const PAGE = 100;
 
@@ -102,5 +106,9 @@ Deno.serve(withCors(async (req) => {
     if (!(await removeWithRetry(admin, 'avatars', avatars.slice(i, i + PAGE)))) pending += avatars.slice(i, i + PAGE).length;
   }
   if (pending > 0) console.error('delete_account_documents_pending', pending);
-  return json({ ok: true, files_removed: files.length + avatars.length - pending + photos.length + cycle.count + community.count, files_pending: pending });
+  // Client RevenueCat (données d'achat chez RevenueCat) : jamais bloquant
+  const rcKey = Deno.env.get('REVENUECAT_SECRET_API_KEY');
+  const revenuecat = await deleteRevenueCatCustomer(rcKey ? revenueCatApi(rcKey) : null, auth.user.id);
+  if (revenuecat === 'failed') console.error('delete_account_revenuecat_pending');
+  return json({ ok: true, files_removed: files.length + avatars.length - pending + photos.length + cycle.count + community.count, files_pending: pending, revenuecat });
 }));

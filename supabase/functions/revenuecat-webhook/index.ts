@@ -1,80 +1,20 @@
-// Webhook RevenueCat -> table `subscriptions` (seule source de vérité des droits premium).
-// Configuration RevenueCat : URL = <projet>/functions/v1/revenuecat-webhook,
+// Webhook RevenueCat -> table `subscriptions` (écrite uniquement par le serveur).
+// Configuration RevenueCat (Integrations › Webhooks) : URL = <projet>/functions/v1/revenuecat-webhook,
 // en-tête Authorization = « Bearer <REVENUECAT_WEBHOOK_SECRET> ».
-// L'identifiant RevenueCat (appUserID) est l'identifiant Supabase de l'utilisateur.
-import { adminClient, env, json } from '../_shared/http.ts';
-import { isDuplicate, isStale, subscriptionFromEvent, type RcEvent } from '../_shared/revenuecat.ts';
+// L'identifiant RevenueCat (appUserID) est l'identifiant Supabase de l'utilisatrice.
+// Si REVENUECAT_SECRET_API_KEY est définie, la fiche abonné est relue dans l'API REST après chaque événement
+// (recommandation RevenueCat) ; sinon le contenu de l'événement est utilisé.
+// Droit attendu : REVENUECAT_ENTITLEMENT (défaut AU_FIL_DE_NOUS_PREMIUM) ; les événements d'un autre droit sont ignorés.
+// Logique et tests : ../_shared/subscription-run.ts, ../_shared/subscription-run_test.ts
+import { adminClient } from '../_shared/http.ts';
+import { entitlementId, handleWebhook, revenueCatApi, supabaseDb } from '../_shared/subscription-run.ts';
 
-const ENTITLEMENT = Deno.env.get('REVENUECAT_ENTITLEMENT') ?? 'premium';
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-function timingSafeEqual(a: string, b: string): boolean {
-  // Pas de retour anticipé sur la longueur : le temps ne dépend que de la plus longue chaîne
-  const n = Math.max(a.length, b.length);
-  let r = a.length ^ b.length;
-  for (let i = 0; i < n; i++) r |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
-  return r === 0;
-}
-
-Deno.serve(async (req) => {
-  if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
-  const secret = env('REVENUECAT_WEBHOOK_SECRET');
-  const header = req.headers.get('Authorization') ?? '';
-  if (!timingSafeEqual(header, `Bearer ${secret}`)) return json({ error: 'unauthorized' }, 401);
-
-  let event: RcEvent;
-  try {
-    event = (await req.json()).event;
-  } catch {
-    return json({ error: 'bad_request' }, 400);
-  }
-  if (!event?.type) return json({ error: 'bad_request' }, 400);
-  if (event.type === 'TEST') return json({ ok: true, test: true });
-
-  const userId = [event.app_user_id, event.original_app_user_id].find((id) => id && UUID.test(id));
-  if (!userId) return json({ ok: true, ignored: 'anonymous_user' }); // achat avant connexion : rattaché lors du logIn
-
-  // Source de vérité : l'API RevenueCat si une clé secrète est configurée
-  let expiresAt = event.expiration_at_ms ?? null;
-  let productId = event.product_id ?? null;
-  const rcKey = Deno.env.get('REVENUECAT_SECRET_API_KEY');
-  if (rcKey) {
-    const res = await fetch(`https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(userId)}`, {
-      headers: { Authorization: `Bearer ${rcKey}` },
-      signal: AbortSignal.timeout(8000),
-    }).catch(() => null);
-    if (res?.ok) {
-      const ent = (await res.json())?.subscriber?.entitlements?.[ENTITLEMENT];
-      if (ent) {
-        expiresAt = ent.expires_date ? Date.parse(ent.expires_date) : null;
-        productId = ent.product_identifier ?? productId;
-      }
-    }
-  }
-
-  const admin = adminClient();
-  const { data: current } = await admin.from('subscriptions').select('last_event, last_event_at').eq('user_id', userId).maybeSingle();
-  if (isStale(event, current?.last_event_at)) return json({ ok: true, ignored: 'stale_event' });
-  if (isDuplicate(event, current)) return json({ ok: true, ignored: 'duplicate_event' });
-  const { error } = await admin.from('subscriptions').upsert({
-    user_id: userId,
-    ...subscriptionFromEvent(event, expiresAt, productId, ENTITLEMENT),
-    updated_at: new Date().toISOString(),
+Deno.serve((req) => {
+  const key = Deno.env.get('REVENUECAT_SECRET_API_KEY');
+  return handleWebhook(req, {
+    secret: Deno.env.get('REVENUECAT_WEBHOOK_SECRET') ?? '',
+    entitlement: entitlementId(),
+    api: key ? revenueCatApi(key) : null,
+    db: supabaseDb(adminClient()),
   });
-  if (error) {
-    console.error('subscription_upsert_error', error.code);
-    return json({ error: 'server_error' }, 500); // RevenueCat réessaiera
-  }
-
-  const notice: Record<string, [string, string]> = {
-    BILLING_ISSUE: ['Problème de paiement', 'Votre abonnement n’a pas pu être renouvelé. Vérifiez votre moyen de paiement dans la boutique.'],
-    EXPIRATION: ['Abonnement terminé', 'Votre abonnement a pris fin. Vos données et les fonctions essentielles restent disponibles.'],
-    CANCELLATION: ['Renouvellement désactivé', 'Votre abonnement reste actif jusqu’à sa date d’échéance.'],
-  };
-  if (notice[event.type]) {
-    await admin.from('notifications').insert({
-      user_id: userId, category: 'subscription', title: notice[event.type][0], body: notice[event.type][1], deep_link: '/settings/subscription',
-    });
-  }
-  return json({ ok: true });
 });
