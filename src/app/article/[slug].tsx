@@ -15,7 +15,8 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { useUserId } from '@/lib/auth';
 import { isLocked } from '@/lib/domain/content';
 import { formatDateFr } from '@/lib/domain/dates';
-import { t as tr, type TKey } from '@/i18n';
+import { getLocale, t as tr, type TKey } from '@/i18n';
+import { AI_AUTHOR_EN, AI_AUTHOR_FR } from '@/content/articles/authors';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
@@ -92,7 +93,7 @@ export default function ArticleScreen() {
           </Tappable>
         )) : <Text variant="small" muted>{tr('u3.art.noSrc')}</Text>}
         <View style={{ marginTop: spacing.sm, gap: 2 }}>
-          {a.author_name && <Text variant="caption" muted>{tr('u3.art.author', { name: a.author_name })}</Text>}
+          {a.author_name && <Text variant="caption" muted>{tr('u3.art.author', { name: getLocale() === 'en' && a.author_name === AI_AUTHOR_FR ? AI_AUTHOR_EN : a.author_name })}</Text>}
           <Text variant="caption" muted>{tr('u3.art.review', { who: a.reviewer_name ? `${a.reviewer_name}${a.reviewer_qualification ? `, ${a.reviewer_qualification}` : ''}${a.validated_at ? ` — ${formatDateFr(a.validated_at)}` : ''}` : tr('u3.art.notReviewed') })}</Text>
           <Text variant="caption" muted>{tr('u3.art.updated', { date: formatDateFr(a.updated_on) })}</Text>
         </View>

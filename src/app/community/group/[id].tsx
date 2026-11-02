@@ -16,7 +16,7 @@ import { useCommunityProfile, useForums } from '@/lib/data/hooks';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { useGroup, useGroupAction, useGroupFeed } from '@/lib/data/hooks-social';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { pinnedFirst } from '@/lib/domain/communitySocial';
+import { localizeGroupName, pinnedFirst } from '@/lib/domain/communitySocial';
 import { isPremiumRequired } from '@/lib/premium/features';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -59,10 +59,10 @@ export default function GroupScreen() {
   const forumOf = (fid: string) => forums.find((f) => f.id === fid) ?? null;
 
   return (
-    <Screen back title={g.name} subtitle={tr('cm3.group.subtitle', { kind: tr(KIND[g.kind]), count: g.member_count })}
+    <Screen back title={localizeGroupName(g.name)} subtitle={tr('cm3.group.subtitle', { kind: tr(KIND[g.kind]), count: g.member_count })}
       right={g.is_member ? <IconButton icon="edit-3" label={tr('cm3.group.publish')} onPress={() => router.push({ pathname: '/community/new', params: { group: g.id } })} /> : undefined}>
       <Card testID="group-header">
-        <Row><Icon name={(g.icon as IconName) ?? 'users'} size={20} color={g.kind === 'private' ? t.colors.lavender : t.colors.primary} /><Text weight="bold" style={{ flex: 1 }}>{g.name}</Text></Row>
+        <Row><Icon name={(g.icon as IconName) ?? 'users'} size={20} color={g.kind === 'private' ? t.colors.lavender : t.colors.primary} /><Text weight="bold" style={{ flex: 1 }}>{localizeGroupName(g.name)}</Text></Row>
         {g.description ? <Text variant="small" muted style={{ marginTop: 4 }}>{g.description}</Text> : null}
         {invitation && !g.is_member ? (
           <View style={{ gap: spacing.xs, marginTop: spacing.sm }} testID="group-invitation">

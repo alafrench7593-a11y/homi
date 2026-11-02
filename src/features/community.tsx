@@ -15,6 +15,7 @@ import { useBlockAuthor, useBlockMember, useCommunityImage, useDeletePost, useRe
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { timeAgo } from '@/lib/domain/dates';
 import { sensitiveHints } from '@/lib/domain/communityRules';
+import { localizeGroupName } from '@/lib/domain/communitySocial';
 import type { FeedPhoto, FeedPost, Forum, ReportReason } from '@/lib/types';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
@@ -319,7 +320,7 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
       </Row>
       <Row wrap gap={6} style={{ marginTop: 6 }}>
         {post.pinned_at ? <Tag icon="bookmark" label={tr('cm1.post.pinnedTag')} color={t.colors.primary} /> : null}
-        {post.group_name ? <Tag icon={post.group_kind === 'private' ? 'lock' : 'users'} label={post.group_name} color={t.colors.lavender} /> : null}
+        {post.group_name ? <Tag icon={post.group_kind === 'private' ? 'lock' : 'users'} label={localizeGroupName(post.group_name)} color={t.colors.lavender} /> : null}
         {post.poll ? <Tag icon="bar-chart-2" label={tr('cm1.post.pollTag')} /> : null}
         {forum ? <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, backgroundColor: t.colors.primary + '14' }}><Icon name={spaceIcon(forum)} size={12} color={t.colors.primary} /><Text variant="caption" color={t.colors.primary}>{forum.title}</Text></View> : null}
         {post.kind === 'testimony' ? <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, backgroundColor: t.colors.lavender + '33' }}><Text variant="caption">{tr('cm1.post.testimonyTag')}</Text></View> : null}

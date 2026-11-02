@@ -5,6 +5,7 @@
  * - `HistoryHeader` : titre d'historique avec compteur.
  * Les valeurs viennent toujours des vraies données de l'écran ; « — » quand rien n'est encore noté.
  */
+import { t as tr } from '@/i18n';
 import React from 'react';
 import { View } from 'react-native';
 import { usePathname } from 'expo-router';
@@ -25,7 +26,7 @@ export function useToolAccent() {
   return tool ? glyphColor(t, tool.theme, tool.urgent) : t.colors.primary;
 }
 
-export function TodaySummary({ title = "Aujourd'hui", items, testID }: { title?: string; items: SummaryItem[]; testID?: string }) {
+export function TodaySummary({ title = tr('u7.today'), items, testID }: { title?: string; items: SummaryItem[]; testID?: string }) {
   const t = useTheme();
   const accent = useToolAccent();
   return (

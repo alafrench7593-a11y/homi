@@ -30,7 +30,7 @@ import { analyzeFood, foodQuestions, type FoodAnswers } from '@/lib/domain/scanF
 import { frontTextToQuery } from '@/lib/domain/scanOcr';
 import { analyzeProduct, EXPOSURE_LABEL, PRODUCT_TYPE_LABEL, ZONE_LABEL, type Exposure, type ProductType, type Zone } from '@/lib/domain/scanProduct';
 import {
-  LOCAL_RECOGNITION_UNAVAILABLE, LocalRecognitionUnavailable, localBarcodeRecognitionAvailable, localTextRecognitionAvailable, readBarcodesFromImage,
+  LocalRecognitionUnavailable, localBarcodeRecognitionAvailable, localTextRecognitionAvailable, readBarcodesFromImage,
   readTextFromImage, type TextReading,
 } from '@/lib/scanner/localRecognition';
 import type { CiqualFood, DatabaseStatus, LookupResponse, ProductCandidate, RecallRow, ScanKind, ScanMethod } from '@/lib/types-scanner';
@@ -194,7 +194,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
   }
 
   async function fromPhoto(source: 'camera' | 'library', purpose: 'product' | 'ingredients') {
-    if (!localText && !localBarcode) { setNotice(LOCAL_RECOGNITION_UNAVAILABLE); return; }
+    if (!localText && !localBarcode) { setNotice(tr('l7.recog.unavailable')); return; }
     let res: ImagePicker.ImagePickerResult;
     try {
       const perm = source === 'camera' ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -370,7 +370,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
               </Row>
             </>
           ) : (
-            <Banner tone="info">{tr('u6.sf.photo_needs_app', { reason: LOCAL_RECOGNITION_UNAVAILABLE })}</Banner>
+            <Banner tone="info">{tr('u6.sf.photo_needs_app', { reason: tr('l7.recog.unavailable') })}</Banner>
           )}
         </Card>
 
@@ -508,7 +508,7 @@ export function ScanFlow({ kind }: { kind: ScanKind }) {
         ) : null}
         {localText ? (
           <Button label={tr('u6.sf.photo_list')} icon="camera" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => fromPhoto('camera', 'ingredients')} />
-        ) : <Text variant="caption" muted>{LOCAL_RECOGNITION_UNAVAILABLE}.</Text>}
+        ) : <Text variant="caption" muted>{tr('l7.recog.unavailable')}.</Text>}
         {kind === 'product' ? (
           <>
             <Field label={tr('u6.sf.precautions')} optional multiline value={precautions} onChangeText={setPrecautions} />

@@ -367,5 +367,11 @@ const ACTION_KINDS_EN: ActionKindDef[] = [
 export const ACTION_KINDS: ActionKindDef[] = localized(ACTION_KINDS_FR, ACTION_KINDS_EN);
 
 /** Idées de besoins de repos et de tâches à déléguer pour préparer le plan de soutien (avant ou après la naissance). */
-export const PLAN_REST_IDEAS = ['Une sieste protégée chaque jour', 'Une nuit complète par semaine', 'Une douche tranquille', 'Sortir marcher seule', 'Limiter les visites'];
-export const PLAN_TASK_IDEAS = ['Courses', 'Repas', 'Linge', 'Ménage', 'Rendez-vous administratifs', 'Aînés : école et activités', 'Accueillir les visites', 'Biberons de nuit'];
+export const PLAN_REST_IDEAS: string[] = localized(
+  ['Une sieste protégée chaque jour', 'Une nuit complète par semaine', 'Une douche tranquille', 'Sortir marcher seule', 'Limiter les visites'],
+  ['A protected nap every day', 'A full night once a week', 'A quiet shower', 'Going out for a walk alone', 'Limiting visits'],
+);
+export const PLAN_TASK_IDEAS: string[] = localized(
+  ['Courses', 'Repas', 'Linge', 'Ménage', 'Rendez-vous administratifs', 'Aînés : école et activités', 'Accueillir les visites', 'Biberons de nuit'],
+  ['Grocery shopping', 'Meals', 'Laundry', 'Cleaning', 'Paperwork appointments', 'Older children: school and activities', 'Hosting visitors', 'Night bottles'],
+);

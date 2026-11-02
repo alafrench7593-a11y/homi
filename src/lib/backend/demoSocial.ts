@@ -464,7 +464,7 @@ export function createSocial(c: SocialCtx) {
       requireProfile(tr('l2.soc.needProfileJoin'));
       let g = T('community_groups').find((x) => x.kind === 'cohort' && x.cohort_type === type && x.cohort_month === `${month}-01`);
       if (!g) {
-        g = { id: c.uuid(), slug: `${type === 'birth' ? 'naissance' : 'terme'}-${month}`, name: cohortName(type as 'birth' | 'due', month),
+        g = { id: c.uuid(), slug: `${type === 'birth' ? 'naissance' : 'terme'}-${month}`, name: cohortName(type as 'birth' | 'due', month, 'fr'),
           description: type === 'birth' ? tr('l2.soc.cohortBirth') : tr('l2.soc.cohortDue'),
           kind: 'cohort', cohort_type: type, cohort_month: `${month}-01`, icon: type === 'birth' ? 'gift' : 'moon', owner_id: null, member_count: 0, archived: false, created_at: c.nowIso() };
         T('community_groups').push(g);

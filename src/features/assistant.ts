@@ -13,7 +13,7 @@ import type { AssistantContext, CyclePhase } from '../../supabase/functions/_sha
 import type { StructuredAnswer } from '../../supabase/functions/_shared/assistant-format';
 import type { UrgentContact } from '../../supabase/functions/_shared/safety';
 
-export { ASSISTANT_INTRO, MAX_QUESTION_LENGTH, DEV_MODE_LABEL, parseStructuredAnswer, SECTION_TITLES } from '../../supabase/functions/_shared/assistant-format';
+export { ASSISTANT_INTRO, ASSISTANT_INTRO_EN, MAX_QUESTION_LENGTH, DEV_MODE_LABEL, parseStructuredAnswer, SECTION_TITLES } from '../../supabase/functions/_shared/assistant-format';
 export type { StructuredAnswer, OfficialSource } from '../../supabase/functions/_shared/assistant-format';
 export { describeContext } from '../../supabase/functions/_shared/assistant-prompt';
 export { urgentContacts } from '../../supabase/functions/_shared/safety';

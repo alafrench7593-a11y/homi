@@ -8,7 +8,7 @@
  * Pas de concours de popularité : la participation compte peu (logarithme), aucune autrice n'est « mise en avant ».
  */
 import { localized } from '@/i18n/localized';
-import { t as tr } from '@/i18n';
+import { getLocale, t as tr } from '@/i18n';
 
 // ─── Mentions ──────────────────────────────────────────────────────────────────────────────────────
 
@@ -57,9 +57,25 @@ export type CohortType = 'birth' | 'due';
 export interface CohortSuggestion { type: CohortType; month: string; label: string; reason: string }
 
 /** Même nom que cohort_name côté serveur. */
-export function cohortName(type: CohortType, month: string): string {
+export function cohortName(type: CohortType, month: string, lang: string = getLocale()): string {
   const [y, m] = month.split('-').map(Number);
+  if (lang === 'en') return `${type === 'birth' ? 'Babies born in' : 'Due in'} ${MONTHS_EN[m - 1]} ${y}`;
   return `${type === 'birth' ? 'Bébés nés en' : 'Terme prévu en'} ${MONTHS[m - 1]} ${y}`;
+}
+
+const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/**
+ * D-09 (QA 02/11/2026) : le serveur nomme les groupes par mois en français (« Terme prévu en février 2027 »).
+ * Affichage dans la langue en cours ; les autres noms sont rendus tels quels.
+ */
+export function localizeGroupName(name: string | null | undefined, lang: string = getLocale()): string {
+  if (!name) return '';
+  const m = /^(Bébés nés en|Terme prévu en) (\S+) (\d{4})$/.exec(name);
+  if (!m || lang === 'fr') return name;
+  const month = MONTHS.indexOf(m[2]);
+  if (month < 0) return name;
+  return cohortName(m[1] === 'Bébés nés en' ? 'birth' : 'due', `${m[3]}-${String(month + 1).padStart(2, '0')}`, lang);
 }
 
 const monthOf = (iso: string) => iso.slice(0, 7);

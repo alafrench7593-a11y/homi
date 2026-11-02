@@ -11,6 +11,10 @@
 export const ASSISTANT_INTRO =
   'Vous échangez avec un assistant d’intelligence artificielle spécialisé dans l’information en santé et parentalité. Il ne remplace pas un médecin, une sage-femme, un pédiatre ou les services d’urgence.';
 
+/** Même texte en anglais (version anglaise de l'application ; D-02, QA 02/11/2026). */
+export const ASSISTANT_INTRO_EN =
+  'You are talking with an artificial intelligence assistant specialised in health and parenting information. It does not replace a doctor, a midwife, a paediatrician or emergency services.';
+
 /** Longueur maximale d'une question (contrôlée dans l'app ET par le serveur). */
 /**
  * Échanges récents envoyés par l'application quand l'historique n'est pas conservé (sans accord de la personne) :

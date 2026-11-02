@@ -17,7 +17,7 @@ import { Avatar, CategorySheet, CommunityImage, spaceIcon } from '@/features/com
 import { useCommunityProfile, usePost } from '@/lib/data/hooks';
 import { useCreatePost, useSpaces, useUpdatePost, type DraftPhoto } from '@/lib/data/hooks-community';
 import { useGroup, useSearchMembers } from '@/lib/data/hooks-social';
-import { completeMention, mentionQuery, pollOptionsError } from '@/lib/domain/communitySocial';
+import { completeMention, localizeGroupName, mentionQuery, pollOptionsError } from '@/lib/domain/communitySocial';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { sensitiveHints } from '@/lib/domain/communityRules';
@@ -142,7 +142,7 @@ export default function Composer() {
     <Screen back title={editId ? tr('cm2.new.editTitle') : tr('cm2.new.newTitle')}>
       {errors._ ? <Banner tone="danger">{errors._}</Banner> : null}
       {groupId && groupQ.data ? (
-        <Banner tone="info" title={tr('cm2.new.inGroup', { name: groupQ.data.name })}>{groupQ.data.kind === 'private' ? tr('cm2.new.groupPrivate') : tr('cm2.new.groupPublic')}</Banner>
+        <Banner tone="info" title={tr('cm2.new.inGroup', { name: localizeGroupName(groupQ.data.name) })}>{groupQ.data.kind === 'private' ? tr('cm2.new.groupPrivate') : tr('cm2.new.groupPublic')}</Banner>
       ) : null}
       <Segmented label={tr('cm2.new.mode')} value={preview ? 'preview' : 'write'} onChange={(v) => setPreview(v === 'preview')} options={[{ value: 'write', label: tr('cm2.new.write') }, { value: 'preview', label: tr('cm2.new.preview') }]} />
 

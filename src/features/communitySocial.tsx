@@ -19,7 +19,7 @@ import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { type AdvancedFilters, useCommunityAi, useFolderAction, useFollowMember, useForumSubscriptions, useSavedFolders, useVotePoll } from '@/lib/data/hooks-social';
-import { personalizedOrder, pollPercent, splitMentions, type ProfileAccent, type ProfileBanner } from '@/lib/domain/communitySocial';
+import { localizeGroupName, personalizedOrder, pollPercent, splitMentions, type ProfileAccent, type ProfileBanner } from '@/lib/domain/communitySocial';
 import { isPremiumRequired } from '@/lib/premium/features';
 import type { CommunityGroup, FeedPost, Forum, MemberCard } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -155,13 +155,13 @@ const GROUP_KIND: Record<CommunityGroup['kind'], 'cm1.group.theme' | 'cm1.group.
 export function GroupCard({ g, compact }: { g: CommunityGroup; compact?: boolean }) {
   const t = useTheme();
   return (
-    <Card onPress={() => router.push(`/community/group/${g.id}` as never)} accessibilityLabel={`${g.name}, ${tr(GROUP_KIND[g.kind])}`} testID={`group-${g.slug ?? g.id}`}>
+    <Card onPress={() => router.push(`/community/group/${g.id}` as never)} accessibilityLabel={`${localizeGroupName(g.name)}, ${tr(GROUP_KIND[g.kind])}`} testID={`group-${g.slug ?? g.id}`}>
       <Row>
         <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: (g.kind === 'private' ? t.colors.lavender : t.colors.primary) + '22' }}>
           <Icon name={(g.icon as IconName) ?? 'users'} size={18} color={g.kind === 'private' ? t.colors.lavender : t.colors.primary} />
         </View>
         <View style={{ flex: 1, minWidth: 0 }}>
-          <Text weight="bold">{g.name}</Text>
+          <Text weight="bold">{localizeGroupName(g.name)}</Text>
           <Text variant="caption" muted>{[tr(GROUP_KIND[g.kind]), tr('cm1.group.members', { count: g.member_count }), g.is_member ? tr('cm1.group.isMember') : null].filter(Boolean).join(' · ')}</Text>
         </View>
         {g.pending_invitation ? <Tag icon="mail" label={tr('cm1.group.invitation')} color={t.colors.primary} /> : <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}

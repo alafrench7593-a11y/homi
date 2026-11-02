@@ -8,11 +8,11 @@ import { Markdown } from './Markdown';
 import { useToast } from './Overlays';
 import { Icon, Text, type IconName } from './ui';
 import {
-  ASSISTANT_INTRO, SECTION_TITLES, urgentContacts,
+  ASSISTANT_INTRO, ASSISTANT_INTRO_EN, SECTION_TITLES, urgentContacts,
   type ArticleSourceRef, type StructuredAnswer, type UrgentContact,
 } from '@/features/assistant';
 import { isAllowedSourceUrl } from '../../supabase/functions/_shared/assistant-format';
-import { formatDate as fmtDate, t as tr } from '@/i18n';
+import { formatDate as fmtDate, getLocale, t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
 
 /** Avertissement affiché en tête de chaque conversation (texte imposé). */
@@ -21,7 +21,7 @@ export function AssistantIntro() {
   return (
     <View accessibilityRole="summary" style={[styles.intro, { backgroundColor: t.colors.surfaceAlt, borderColor: t.colors.border }]}>
       <Icon name="cpu" size={18} color={t.colors.lavender} />
-      <Text variant="small" style={{ flex: 1 }}>{ASSISTANT_INTRO}</Text>
+      <Text variant="small" style={{ flex: 1 }}>{getLocale() === 'en' ? ASSISTANT_INTRO_EN : ASSISTANT_INTRO}</Text>
     </View>
   );
 }

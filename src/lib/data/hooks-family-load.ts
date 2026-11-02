@@ -11,7 +11,8 @@ import type { HouseholdMember } from '../types';
 
 export interface TaskEvent { id: string; task_id: string; household_id: string; actor_id: string | null; kind: string; detail: Record<string, unknown>; created_at: string }
 
-const ROLE: Record<HouseholdMember['role'], string> = { owner: 'Parent', coparent: 'Coparent', caregiver: 'Proche' };
+const ROLE_KEY = { owner: 'u7.role.owner', coparent: 'u7.role.coparent', caregiver: 'u7.role.caregiver' } as const satisfies Record<HouseholdMember['role'], string>;
+const roleLabel = (r: HouseholdMember['role']) => tr(ROLE_KEY[r]);
 
 /** Membres du foyer, nommés par leur rôle (les profils ne sont pas exposés entre membres). */
 export function usePeople() {
@@ -19,10 +20,10 @@ export function usePeople() {
   const { data } = useHouseholdMembers();
   const list = (data ?? []).map((m, i, all) => {
     const sameRole = all.filter((x) => x.role === m.role);
-    const label = m.user_id === me ? 'Vous' : sameRole.length > 1 ? `${ROLE[m.role]} ${sameRole.indexOf(m) + 1}` : ROLE[m.role];
+    const label = m.user_id === me ? tr('u7.people.you') : sameRole.length > 1 ? `${roleLabel(m.role)} ${sameRole.indexOf(m) + 1}` : roleLabel(m.role);
     return { id: m.user_id, label, role: m.role };
   });
-  const labelOf = (id: string | null | undefined) => (id ? list.find((p) => p.id === id)?.label ?? 'Ancien membre' : 'Personne');
+  const labelOf = (id: string | null | undefined) => (id ? list.find((p) => p.id === id)?.label ?? tr('u7.people.former') : tr('u7.people.nobody'));
   return { people: list, labelOf, me };
 }
 
