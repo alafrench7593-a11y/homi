@@ -28,8 +28,19 @@ function applyFilters(b: AnyBuilder, filters: Filter[] = []): AnyBuilder {
   return b;
 }
 
+/** A-12 : réaction au jeton refusé par le serveur (installée par createSupabaseBackend). */
+let onTokenRejected: (() => void) | null = null;
+export const isTokenRejected = (error: { message: string; code?: string }, status?: number) =>
+  status === 401 || error.code === 'PGRST301' || error.code === 'PGRST303' || /JWT expired|invalid JWT|JWSError/i.test(error.message);
+
 function wrap(error: { message: string; code?: string; hint?: string } | null, status?: number): never | void {
   if (!error) return;
+  // A-12 : jeton refusé (horloge décalée, session révoquée) → rafraîchissement, sinon déconnexion locale ;
+  // jamais un compte « vide » affiché comme si de rien n'était.
+  if (isTokenRejected(error, status)) {
+    onTokenRejected?.();
+    throw new BackendError(tr('auth.err.session'), 'jwt_rejected', error.hint, 401);
+  }
   const network = /network|fetch failed|Failed to fetch/i.test(error.message);
   throw new BackendError(friendly(error.message, error.code), network ? 'network' : error.code, error.hint, status);
 }
@@ -49,7 +60,8 @@ export function friendly(msg: string, code?: string): string {
 function wrapAuth(error: { message: string; code?: string; status?: number; name?: string } | null): void {
   if (!error) return;
   const network = error.name === 'AuthRetryableFetchError' || /fetch/i.test(error.message);
-  throw new BackendError(friendlyAuthError(error), network ? 'network' : error.code, undefined, error.status);
+  const code = error.code ?? (error.name === 'AuthPKCECodeVerifierMissingError' ? 'pkce_verifier_missing' : undefined);
+  throw new BackendError(friendlyAuthError(error), network ? 'network' : code, undefined, error.status);
 }
 
 
@@ -63,6 +75,19 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
       flowType: 'pkce',
     },
   });
+
+  let recovering = false;
+  onTokenRejected = () => {
+    if (recovering) return;
+    recovering = true;
+    void (async () => {
+      try {
+        const { error } = await client.auth.refreshSession();
+        if (error && !/fetch|network/i.test(error.message)) await client.auth.signOut({ scope: 'local' });
+      } catch { /* hors ligne : nouvel essai au prochain refus */ }
+      finally { setTimeout(() => { recovering = false; }, 5000); }
+    })();
+  };
 
   // Rafraîchit le jeton seulement quand l'application est au premier plan
   if (Platform.OS !== 'web') {

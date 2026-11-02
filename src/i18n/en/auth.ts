@@ -65,6 +65,7 @@ export const auth: Messages<typeof fr> = {
   'auth.err.network': 'You’re not connected to the internet right now. Check your connection and try again.',
   'auth.err.rateSeconds': 'Too many attempts. Please wait {seconds} seconds before trying again.',
   'auth.err.rate': 'Too many attempts. Please wait a few minutes before trying again.',
+  'auth.err.linkUsed': 'This link has already been used or was opened in another browser. Your address may already be confirmed: sign in, or request a new link.',
   'auth.err.expired': 'This link has expired or has already been used. Request a new one.',
   'auth.err.exists': 'An account already exists with this email. Sign in, or use “Forgotten password”.',
   'auth.err.samePassword': 'Your new password must be different from the old one.',

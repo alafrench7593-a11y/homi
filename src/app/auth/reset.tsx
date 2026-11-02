@@ -7,7 +7,9 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, Loading } from '@/components/ui';
 import { PasswordRules } from '@/features/auth';
+import { Platform } from 'react-native';
 import { backend } from '@/lib/backend';
+import { waitForSession } from '@/lib/authSession';
 import { issueText, passwordSchema } from '@/lib/validation';
 import { useToast } from '@/components/Overlays';
 import { t as tr } from '@/i18n';
@@ -33,6 +35,10 @@ export default function ResetPassword() {
 
   useEffect(() => {
     (async () => {
+      if (code && Platform.OS === 'web') {
+        // A-09 : sur le web, le client a déjà échangé le code au chargement
+        return setState((await waitForSession()) ? 'ready' : 'invalid');
+      }
       if (code) {
         try {
           await backend.auth.exchangeCode(code);

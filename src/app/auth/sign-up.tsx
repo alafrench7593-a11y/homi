@@ -19,7 +19,16 @@ export default function SignUp() {
   const inFlight = useRef(false);
   const [sent, setSent] = useState(false);
   const [invited, setInvited] = useState(false);
-  const set = (k: keyof typeof form) => (v: string | boolean) => setForm((f) => ({ ...f, [k]: v }));
+  // A-11 : l'erreur du dernier envoi disparaît dès que le champ concerné est modifié
+  const set = (k: keyof typeof form) => (v: string | boolean) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    setErrors((e) => {
+      if (!(k in e) && !(k === 'password' && 'confirm' in e)) return e;
+      const { [k]: _gone, ...rest } = e;
+      if (k === 'password') delete rest.confirm;
+      return rest;
+    });
+  };
   const touch = (k: string) => () => setTouched((t) => ({ ...t, [k]: true }));
 
   useEffect(() => { peekPendingInvite().then((c) => setInvited(!!c)); }, []);

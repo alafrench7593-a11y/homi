@@ -64,6 +64,7 @@ export const auth = {
   'auth.err.network': 'Pas de connexion internet pour le moment. Vérifiez votre réseau puis réessayez.',
   'auth.err.rateSeconds': 'Trop de tentatives. Patientez {seconds} secondes avant de réessayer.',
   'auth.err.rate': 'Trop de tentatives. Patientez quelques minutes avant de réessayer.',
+  'auth.err.linkUsed': 'Ce lien a déjà servi ou a été ouvert dans un autre navigateur. Votre adresse est peut-être déjà confirmée : connectez-vous, ou demandez un nouveau lien.',
   'auth.err.expired': 'Ce lien a expiré ou a déjà été utilisé. Demandez-en un nouveau.',
   'auth.err.exists': 'Un compte existe déjà avec cette adresse. Connectez-vous ou utilisez « Mot de passe oublié ».',
   'auth.err.samePassword': 'Le nouveau mot de passe doit être différent de l’ancien.',

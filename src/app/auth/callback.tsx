@@ -9,17 +9,9 @@ import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, Loading, Text } from '@/components/ui';
 import { ResendButton } from '@/features/auth';
 import { backend } from '@/lib/backend';
-import { parseAuthCallback } from '@/lib/authFlow';
+import { isExpiredLinkError, parseAuthCallback } from '@/lib/authFlow';
+import { hasSession, waitForSession } from '@/lib/authSession';
 import { t as tr } from '@/i18n';
-
-/** Session présente ? Une erreur de lecture compte comme « pas de session » : l'écran passe alors à l'état d'erreur au lieu de rester sur « Activation… ». */
-async function hasSession(): Promise<boolean> {
-  try {
-    return !!(await backend.auth.getSession());
-  } catch {
-    return false;
-  }
-}
 
 export default function AuthCallback() {
   const params = useLocalSearchParams<Record<string, string>>();
@@ -33,14 +25,21 @@ export default function AuthCallback() {
     let cancelled = false;
     (async () => {
       if (r.kind === 'code') {
-        try {
-          await backend.auth.exchangeCode(r.code);
-        } catch (e) {
-          // Sur le web, le code a pu être échangé automatiquement : une session suffit
-          if (!(await hasSession())) {
-            if (cancelled) return;
-            setMessage(e instanceof Error ? e.message : '');
-            return setState(/expiré/.test(e instanceof Error ? e.message : '') ? 'expired' : 'error');
+        if (Platform.OS === 'web') {
+          // Échange déjà fait (ou tenté) par le client : session présente, sinon lien plus valable
+          if (!(await waitForSession())) {
+            if (!cancelled) setState('expired');
+            return;
+          }
+        } else {
+          try {
+            await backend.auth.exchangeCode(r.code);
+          } catch (e) {
+            if (!(await hasSession())) {
+              if (cancelled) return;
+              setMessage(e instanceof Error ? e.message : '');
+              return setState(isExpiredLinkError(e) ? 'expired' : 'error');
+            }
           }
         }
         if (!cancelled) router.replace('/');

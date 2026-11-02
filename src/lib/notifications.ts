@@ -258,7 +258,14 @@ export async function snoozeLocally(title: string, body: string | undefined, url
   });
 }
 
-export async function cancelAllLocal() {
+export function cancelAllLocal(): Promise<void> {
+  // Dans la même file que la synchronisation : une annulation ne passe jamais APRÈS la programmation du compte suivant
+  const run = syncChain.catch(() => undefined).then(cancelAllLocalNow);
+  syncChain = run;
+  return run;
+}
+
+async function cancelAllLocalNow() {
   if (!notificationsSupported) return;
   await Notifications.cancelAllScheduledNotificationsAsync();
   // A-08 : la table du résumé est aussi effacée, sinon il n'est jamais reprogrammé après reconnexion

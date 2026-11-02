@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
 import { backend, initBackendMode, onBackendSwitch, type Session } from './backend';
+import { cancelAllLocal } from './notifications';
 import { setQueueOwner } from './offline';
 import { useUiStore } from './store';
 
@@ -54,12 +55,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const apply = (s: Session | null) => {
       const uid = s?.userId ?? null;
       const first = currentUser.current === undefined;
+      const currentUserBefore = currentUser.current;
       const changed = currentUser.current !== uid;
       currentUser.current = uid;
       if (changed) {
         // Au démarrage, même compte qu'à la dernière ouverture : on GARDE le cache restauré (consultation
         // hors connexion). Sinon, aucune donnée d'un compte ne doit rester visible pour un autre.
-        if (!(first && uid && lastUser.current === uid)) qc.clear();
+        const sameAsLastTime = first && uid && lastUser.current === uid;
+        if (!sameAsLastTime) qc.clear();
+        // A-13 : session expirée ou autre compte → les rappels, le résumé et le planning de sommeil du compte
+        // précédent ne doivent plus sonner (la déconnexion volontaire le faisait déjà, pas l'expiration).
+        const previous = first ? lastUser.current : currentUserBefore;
+        if (!sameAsLastTime && previous) void cancelAllLocal().catch(() => undefined);
         writeLastUser(uid);
         void setQueueOwner(uid); // saisies hors ligne d'un autre compte effacées de ce téléphone
         if (!s) useUiStore.getState().reset();

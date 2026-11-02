@@ -31,6 +31,8 @@ export function friendlyAuthError(err: unknown): string {
     const s = msg.match(/after (\d+) seconds?/i)?.[1];
     return s ? tr('auth.err.rateSeconds', { seconds: s }) : tr('auth.err.rate');
   }
+  // A-09 : lien ouvert dans un autre navigateur ou déjà utilisé (vérificateur PKCE absent)
+  if (name === 'AuthPKCECodeVerifierMissingError' || code === 'pkce_verifier_missing' || has(/code verifier/i)) return tr('auth.err.linkUsed');
   if (code === 'otp_expired' || code === 'flow_state_expired' || has(/expired|has expired|invalid or has expired/i)) return tr('auth.err.expired');
   if (code === 'user_already_exists' || code === 'email_exists' || has(/already registered|already exists/i)) return tr('auth.err.exists');
   if (code === 'same_password' || has(/should be different/i)) return tr('auth.err.samePassword');
@@ -43,6 +45,15 @@ export function friendlyAuthError(err: unknown): string {
   if (code === 'user_banned') return tr('auth.err.banned');
   if (code === 'provider_disabled' || has(/provider is not enabled/i)) return tr('auth.err.provider');
   return tr('auth.err.generic');
+}
+
+/**
+ * A-10 : le lien est-il expiré ou déjà utilisé ? Décidé d'après le CODE de l'erreur, jamais d'après
+ * le message traduit (en anglais, le test sur « expiré » échouait).
+ */
+export function isExpiredLinkError(err: unknown): boolean {
+  const code = String((err as { code?: string } | null)?.code ?? '');
+  return ['otp_expired', 'flow_state_expired', 'flow_state_not_found', 'pkce_verifier_missing', 'bad_code_verifier'].includes(code);
 }
 
 export type CallbackResult = { kind: 'code'; code: string } | { kind: 'expired' } | { kind: 'error'; message: string } | { kind: 'missing' };

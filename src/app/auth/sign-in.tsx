@@ -34,8 +34,8 @@ export default function SignIn() {
   return (
     <Screen back title={tr('auth.signIn.title')}>
       {errors._ ? <Banner tone="danger">{errors._}</Banner> : null}
-      <Field label={tr('auth.email')} value={form.email} onChangeText={(email) => setForm((f) => ({ ...f, email }))} autoCapitalize="none" keyboardType="email-address" autoComplete="email" textContentType="username" error={errors.email} returnKeyType="next" />
-      <Field label={tr('auth.password')} value={form.password} onChangeText={(password) => setForm((f) => ({ ...f, password }))} secureTextEntry revealable autoComplete="current-password" textContentType="password" error={errors.password} onSubmitEditing={submit} returnKeyType="go" />
+      <Field label={tr('auth.email')} value={form.email} onChangeText={(email) => { setForm((f) => ({ ...f, email })); setErrors(({ email: _e, ...r }) => r); }} autoCapitalize="none" keyboardType="email-address" autoComplete="email" textContentType="username" error={errors.email} returnKeyType="next" />
+      <Field label={tr('auth.password')} value={form.password} onChangeText={(password) => { setForm((f) => ({ ...f, password })); setErrors(({ password: _p, ...r }) => r); }} secureTextEntry revealable autoComplete="current-password" textContentType="password" error={errors.password} onSubmitEditing={submit} returnKeyType="go" />
       <Button label={tr('auth.signIn')} size="lg" loading={loading} disabled={loading} onPress={submit} />
       <Button label={tr('auth.forgot')} variant="ghost" onPress={() => router.push('/auth/forgot')} />
       <SocialButtons onError={(m) => setErrors({ _: m })} disabled={loading} />

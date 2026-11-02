@@ -9,7 +9,8 @@ import { useActivePregnancy, useActiveSubject, useEmergencyResources, useExpecte
 import { childAge, initials } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { isDemo } from '@/lib/backend';
-import { t as tr, type TKey } from '@/i18n';
+import { getLocale, t as tr, type TKey } from '@/i18n';
+import { emergencyItems, useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 import { Banner, Button, Card, haptic, Icon, type IconName, Row, Text } from './ui';
 import { initialsColor } from './Illustrations';
 import { Sheet, useToast } from './Overlays';
@@ -196,10 +197,12 @@ export function EmergencyList({ compact }: { compact?: boolean }) {
   const t = useTheme();
   const toast = useToast();
   const { data } = useEmergencyResources();
-  const list = compact ? data?.filter((r) => ['15', '112', '3114'].includes(r.phone)) : data;
+  const region = useEmergencyRegion();
+  const all = emergencyItems(region, data, getLocale());
+  const list = compact ? (region === 'FR' ? all.filter((r) => ['15', '112', '3114'].includes(r.phone)) : all.slice(0, 3)) : all;
   return (
     <View style={{ gap: spacing.xs }}>
-      {(list ?? fallbackResources()).map((r) => (
+      {list.map((r) => (
         <Tappable
           key={r.phone}
           accessibilityRole="button"
@@ -222,12 +225,6 @@ export function EmergencyList({ compact }: { compact?: boolean }) {
   );
 }
 
-// Toujours disponible, même sans réseau ni base
-const fallbackResources = () => [
-  { phone: '15', label: 'SAMU', description: tr('u7.family.samu.desc'), available: tr('u7.family.samu.avail') },
-  { phone: '112', label: tr('u7.family.eu.label'), description: tr('u7.family.eu.desc'), available: tr('u7.family.samu.avail') },
-  { phone: '3114', label: tr('u7.family.suicide.label'), description: tr('u7.family.suicide.desc'), available: tr('u7.family.samu.avail') },
-];
 
 export function DemoBanner() {
   if (!isDemo) return null;
