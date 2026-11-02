@@ -60,7 +60,7 @@ Aperçu web : `npx expo start --web`.
 4. Déployez les fonctions et leurs secrets :
    ```bash
    supabase secrets set GEMINI_API_KEY=... GEMINI_MODEL=... OPENFOODFACTS_USER_AGENT=... REVENUECAT_WEBHOOK_SECRET=... EXPO_ACCESS_TOKEN=... RESEND_API_KEY=... RESEND_FROM_EMAIL=...
-   supabase functions deploy assistant revenuecat-webhook delete-account send-push product-lookup scan-explain document-extract
+   supabase functions deploy assistant revenuecat-webhook subscription-sync delete-account send-push product-lookup scan-explain document-extract
    ```
 5. Auth › URL configuration : ajoutez `toietmoi://auth/callback` aux URL de redirection.
 
@@ -83,10 +83,12 @@ En local : `supabase start` puis utilisez l'URL/clé affichées.
 
 ## 5. Abonnements (RevenueCat)
 
-1. Créez les produits dans App Store Connect / Google Play : `toietmoi_premium_monthly` (5,99 €) et `toietmoi_premium_annual` (39,99 €, 7 jours d'essai).
-2. Dans RevenueCat : entitlement `premium`, offering par défaut avec ces deux produits.
-3. Renseignez les clés publiques `EXPO_PUBLIC_REVENUECAT_APPLE_KEY` / `EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY`.
-4. Webhook RevenueCat → `https://<ref>.supabase.co/functions/v1/revenuecat-webhook`, en-tête `Authorization: Bearer <REVENUECAT_WEBHOOK_SECRET>`.
+Guide pas à pas (App Store Connect, Google Play Console, RevenueCat, secrets, tests sur appareil) : **[ABONNEMENT.md](ABONNEMENT.md)**.
+
+1. Produits (même groupe d'abonnements Apple) : `aufildenous_premium_monthly` (10,99 € / mois, essai gratuit 3 jours), `aufildenous_premium_6months` (54,99 € / 6 mois), `aufildenous_premium_annual` (99,99 € / an). L'application affiche toujours les prix **de la boutique**.
+2. Dans RevenueCat : entitlement `AU_FIL_DE_NOUS_PREMIUM`, offering courante avec les packages Monthly, 6 Month et Annual.
+3. Renseignez les clés publiques `EXPO_PUBLIC_REVENUECAT_APPLE_KEY` / `EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY` ; côté serveur : `REVENUECAT_WEBHOOK_SECRET`, `REVENUECAT_SECRET_API_KEY`, `REVENUECAT_ENTITLEMENT`.
+4. Webhook RevenueCat → `https://<ref>.supabase.co/functions/v1/revenuecat-webhook`, en-tête `Authorization: Bearer <REVENUECAT_WEBHOOK_SECRET>` ; fonction `subscription-sync` déployée (resynchronisation après achat / restauration).
 
 Sans clés, l'achat est indisponible (Expo Go) ou simulé en mode démo. **Ce qui reste toujours gratuit** : urgences (15, 112, 3114, 119, 3919, 114), réponses de sécurité de l'assistant, suivi quotidien de base, bilan d'humeur.
 

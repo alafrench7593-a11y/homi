@@ -28,10 +28,12 @@ Il applique les migrations, enregistre les secrets serveur sans les afficher, d�
 3. **Authentication › Providers** : Apple et Google (voir `.env.example`).
 4. **Database › Webhooks** : `INSERT` sur `public.notifications` → fonction `send-push`, en-tête secret `PUSH_WEBHOOK_SECRET`.
 5. **Database › Replication** : vérifier la publication `supabase_realtime`.
-6. **RevenueCat** : entitlement `premium`, produits `toietmoi_premium_monthly` et `toietmoi_premium_annual`, webhook vers `https://<ref>.supabase.co/functions/v1/revenuecat-webhook` avec l'en-tête `Authorization: Bearer <REVENUECAT_WEBHOOK_SECRET>`.
-   - **App Store Connect** (Abonnements) : un groupe d'abonnements « Au fil de nous Premium » ; produit `toietmoi_premium_monthly` à **5,99 €** (niveau de prix le plus proche proposé par Apple), durée 1 mois ; **offre de lancement « Essai gratuit » de 3 jours** sur ce produit. Le produit annuel `toietmoi_premium_annual` existe aussi dans le code (39,99 €, essai 7 jours) : à créer ou à retirer de l'offering si tu ne le veux pas.
-   - **RevenueCat** : offering par défaut contenant les packages Monthly (et Annual si gardé), rattachés à l'entitlement `premium`. L'appli lit le prix et l'essai **depuis la boutique** et n'affiche l'essai que si Apple confirme l'éligibilité.
-   - Test : compte Sandbox Apple sur un iPhone avec un build de développement ou TestFlight (jamais dans Expo Go).
+6. **Abonnement Premium** : suivre **[ABONNEMENT.md](../ABONNEMENT.md)** (pas à pas). En résumé :
+   - **App Store Connect** : un groupe d'abonnements « Au fil de nous Premium » avec 3 produits — `aufildenous_premium_monthly` (1 mois, **10,99 €**, offre de lancement « Essai gratuit » de **3 jours**), `aufildenous_premium_6months` (6 mois, **54,99 €**), `aufildenous_premium_annual` (1 an, **99,99 €**) ; aucun essai sur 6 et 12 mois.
+   - **Google Play Console** : mêmes formules (1 abonnement à 3 offres de base, ou 3 abonnements), offre « essai gratuit 3 jours » réservée aux nouveaux clients sur le mensuel.
+   - **RevenueCat** : entitlement `AU_FIL_DE_NOUS_PREMIUM`, offering courante avec les packages Monthly, 6 Month et Annual ; webhook vers `https://<ref>.supabase.co/functions/v1/revenuecat-webhook` avec l'en-tête `Authorization: Bearer <REVENUECAT_WEBHOOK_SECRET>`. L'appli lit les prix et l'essai **depuis la boutique** et n'affiche l'essai que si la boutique confirme l'éligibilité.
+   - Secrets serveur : `REVENUECAT_WEBHOOK_SECRET`, `REVENUECAT_SECRET_API_KEY`, `REVENUECAT_ENTITLEMENT` ; fonctions `revenuecat-webhook` et `subscription-sync` déployées.
+   - Test : compte Sandbox Apple / testeur de licence Google sur un build de développement ou TestFlight (jamais dans Expo Go).
 7. **EAS** : `eas credentials` pour les clés APNs (iOS) et FCM (Android).
 
 ## 5. Vérifications à faire une fois en ligne
