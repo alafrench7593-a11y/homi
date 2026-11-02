@@ -137,7 +137,7 @@ def run(p):
     tid(pg, 'outcome-born').click(); pg.wait_for_timeout(800)
     # Offre gratuite (3 enfants) : 2 enfants + jumeaux → annoncé AVANT l'enregistrement, la grossesse n'est pas touchée
     R['5_limite_offre_annoncee'] = tid(pg, 'birth-limit').is_visible()
-    mutate(pg, f"s => {{ s.tables.subscriptions = [{{ id: 'sub-e2e', user_id: '{me}', status: 'active', plan: 'premium', expires_at: null, created_at: new Date().toISOString() }}]; }}")
+    mutate(pg, f"s => {{ s.tables.subscriptions = [{{ id: 'sub-e2e', user_id: '{me}', status: 'active', plan: 'premium', store: 'app_store', product_id: 'aufildenous_premium_monthly', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), created_at: new Date().toISOString() }}]; }}")
     go(pg, '/pregnancy/end')
     tid(pg, 'outcome-born').click(); pg.wait_for_timeout(600)
     tid(pg, 'birth-name-0').fill('Jade'); tid(pg, 'birth-weight-0').fill('2650'); tid(pg, 'birth-time-0').fill('08:42'); tid(pg, 'birth-term-0').fill('37')
