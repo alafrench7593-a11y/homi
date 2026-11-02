@@ -309,7 +309,13 @@ function TrackEntry() {
     const minutes = resolveReminderChoice(reminder);
     const active = bottleTimer.active;
     const name = child?.first_name ?? tr('u7.track.theChild');
+    // F-08 : biberon noté après coup dont le rappel serait déjà passé → pas de rappel échu
+    const past = minutes != null && computeDueAt(time, minutes).getTime() <= Date.now();
     try {
+      if (past) {
+        if (active) await updateTimer.mutateAsync({ id: active.id, patch: markBottleGiven() });
+        return tr('u7.track.reminderPastSkipped');
+      }
       if (minutes == null) {
         // Nouveau biberon sans rappel : l'ancien rappel (encore actif) est clos, jamais laissé en double
         if (!active) return null;
@@ -437,7 +443,9 @@ function TrackEntry() {
               <Text variant="label">{tr('u7.track.nextReminder', { name: child?.first_name ?? '' })}</Text>
               <ReminderChoicePicker value={reminder} onChange={(c) => { reminderTouched.current = true; setReminder(c); }} lastInterval={bottleTimer.lastInterval} />
               {resolveReminderChoice(reminder) != null
-                ? <Banner tone="info" icon="bell">{nextReminderSentence(child?.first_name ?? '', computeDueAt(time, resolveReminderChoice(reminder)!))}</Banner>
+                ? (computeDueAt(time, resolveReminderChoice(reminder)!).getTime() <= Date.now()
+                  ? <Banner tone="warning" icon="bell">{tr('u7.track.reminderPast', { time: atClock(computeDueAt(time, resolveReminderChoice(reminder)!)) })}</Banner>
+                  : <Banner tone="info" icon="bell">{nextReminderSentence(child?.first_name ?? '', computeDueAt(time, resolveReminderChoice(reminder)!))}</Banner>)
                 : <Text variant="small" muted>{tr('u7.track.noReminder')}</Text>}
               {bottleTimer.active ? <Text variant="small" muted>{tr('u7.track.replaced', { time: atClock(bottleTimer.active.due_at) })}</Text> : null}
               <Text variant="caption" muted>{noRecommendationNote()}</Text>

@@ -134,6 +134,12 @@ export default function AppointmentsScreen() {
     const m = draft.time.trim().match(/^(\d{1,2})[h:.]?(\d{2})?$/);
     if (!draft.title.trim()) e.title = tr('u1.appt.errTitle');
     if (!iso) e.date = tr('u1.appt.errDate');
+    // F-07 : bornes raisonnables (deux ans en arrière, trois ans en avant)
+    else {
+      const year = Number(iso.slice(0, 4));
+      const now = new Date().getFullYear();
+      if (year < now - 2 || year > now + 3) e.date = tr('u1.appt.errRange');
+    }
     if (!m || Number(m[1]) > 23 || Number(m[2] ?? 0) > 59) e.time = tr('u1.appt.errTime');
     setErrors(e);
     if (Object.keys(e).length || !iso || !m) return;
