@@ -40,11 +40,15 @@ import { OfflinePill } from '@/components/OfflinePill';
 import { AppErrorBoundary } from '@/components/AppErrorBoundary';
 import { initCrashReporting, setCrashReportingAllowed } from '@/lib/crashReporting';
 import { backend, eq } from '@/lib/backend';
+import { LaunchIntro } from '@/components/LaunchIntro';
+import { duration as motionDuration, intro } from '@/theme/motion';
 
 /** Écran d'erreur global (expo-router) : jamais d'écran blanc. */
 export const ErrorBoundary = AppErrorBoundary;
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
+// L'écran de lancement natif s'efface en fondu sur l'introduction d'ouverture (même couleur de fond)
+try { SplashScreen.setOptions({ fade: true, duration: intro.splashFadeMs }); } catch { /* web, anciennes versions */ }
 configureNotifications();
 initCrashReporting();
 
@@ -144,7 +148,7 @@ function Navigator() {
   const navTheme = { ...base, colors: { ...base.colors, background: 'transparent', card: 'transparent', text: t.colors.text, primary: t.colors.primary, border: 'transparent' } };
   return (
     <NavThemeProvider value={navTheme}>
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' }, animation: 'fade' }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' }, animation: 'fade', animationDuration: motionDuration.screen }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="track/[kind]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="night" options={{ animation: 'fade', gestureEnabled: false }} />
@@ -191,6 +195,8 @@ export default function RootLayout() {
                   <OfflinePill />
                   <PremiumPreviewHost />
                   <SleepNotificationsHost />
+                  {/* Introduction d'ouverture : au-dessus de tout, sans capter les touchers, une fois par lancement */}
+                  <LaunchIntro />
                 </WebFrame>
               </ToastProvider>
             </I18nProvider>
