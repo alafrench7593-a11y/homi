@@ -8,7 +8,7 @@ import { TodaySummary } from '@/components/MiniApp';
 import { Card, Chip, Field, Icon, ListRow, SectionTitle, Text } from '@/components/ui';
 import { EmptyStateCard } from '@/components/ui-extra';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
-import { useActivePregnancy, useArticles, useCategories, useChildren, usePremium, useProfile, useRows } from '@/lib/data/hooks';
+import { useActivePregnancy, useArticles, useCategories, useChildren, useFullArticles, usePremium, useProfile, useRows } from '@/lib/data/hooks';
 import { isLocked, suggestArticles } from '@/lib/domain/content';
 import { CATEGORY_GROUPS } from '@/content/articles/rows';
 import { Tappable } from '@/components/Tappable';
@@ -50,13 +50,16 @@ export default function Library() {
     multiple: !!pregnancy && pregnancy.multiplicity !== 'single',
   }, 3), [articles, profile, pregnancy, children]);
 
-  // Recherche dans tout le texte des articles (pour trouver la réponse à une question), titres d'abord
+  // Recherche dans tout le texte des articles (pour trouver la réponse à une question), titres d'abord.
+  // La liste ne contient pas le texte : il n'est téléchargé que lorsqu'une recherche est saisie.
   const nq = norm(q.trim());
+  const fullQ = useFullArticles(!!nq);
+  const bodies = useMemo(() => new Map((fullQ.data ?? []).map((a) => [a.id, a.body_md])), [fullQ.data]);
   const words = nq.split(/\s+/).filter((w) => w.length > 2);
-  const score = (a: { title: string; summary: string; tags: string[]; body_md: string }) => {
+  const score = (a: { id: string; title: string; summary: string; tags: string[] }) => {
     if (!nq) return 1;
     const head = norm(`${a.title} ${a.summary} ${a.tags.join(' ')}`);
-    const body = norm(a.body_md);
+    const body = norm(bodies.get(a.id) ?? '');
     if (head.includes(nq)) return 100;
     if (body.includes(nq)) return 50;
     const hits = words.filter((w) => head.includes(w)).length * 3 + words.filter((w) => body.includes(w)).length;
@@ -78,8 +81,10 @@ export default function Library() {
   }).filter(Boolean) as { c: { id: string; slug: string; label: string; icon: string | null }; n: number }[];
   const showGuide = !q && !activeCat;
 
-  const loading = articlesQ.isLoading && !articles;
-  const failed = articlesQ.isError && !articles;
+  const bodiesPending = !!nq && !fullQ.data;
+  const loading = (articlesQ.isLoading && !articles) || (bodiesPending && fullQ.isLoading);
+  const failedQ = articlesQ.isError && !articles ? articlesQ : bodiesPending && fullQ.isError ? fullQ : null;
+  const failed = !!failedQ;
 
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xs }}>
@@ -164,7 +169,7 @@ export default function Library() {
         {(categories ?? []).map((c) => <Chip key={c.id} label={c.label} selected={activeCat === c.id} onPress={() => { if (activeCat === c.id) { setCat(null); router.setParams({ cat: undefined } as never); } else setCat(c.id); }} />)}
       </ScrollView>
       {loading ? <Skeleton rows={5} /> : null}
-      {failed ? <ErrorView error={articlesQ.error} onRetry={() => void articlesQ.refetch()} title={tr('u1.lib.loadError')} /> : null}
+      {failedQ ? <ErrorView error={failedQ.error} onRetry={() => void failedQ.refetch()} title={tr('u1.lib.loadError')} /> : null}
     </View>
   );
 

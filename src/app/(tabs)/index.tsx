@@ -19,7 +19,7 @@ import { StoryHomeStrip } from '@/features/story/StoryHomeStrip';
 import { OutingsHomeCard } from '@/features/outings/OutingsHomeCard';
 import { DailyActions } from '@/features/dailyActions/DailyActions';
 import { FamilyOverview, NoJourneyCard } from '@/features/journeys';
-import { useActivePregnancy, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useArticle, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { HomeCommunityCard } from '@/features/communitySocial';
@@ -85,7 +85,7 @@ export default function Home() {
         : scope.scope === 'family' ? tr('pj.home.sub.family')
           : cycleMode === 'ttc' ? tr('home.sub.ttc') : cycleMode ? tr('home.sub.cycle') : undefined;
 
-  const article = useMemo(() => {
+  const picked = useMemo(() => {
     const list = suggestArticles(articles ?? [], {
       journeys: LEGACY_FOR[scope.scope],
       weekSA: scope.scope === 'pregnancy' && pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null,
@@ -95,6 +95,8 @@ export default function Home() {
     }, 6);
     return articleOfDay(list);
   }, [articles, scope.scope, pregnancy, child, children]);
+  // La liste ne contient pas le texte : la carte (temps de lecture) reçoit l'article choisi, lu en entier (une requête)
+  const article = useArticle(picked?.slug).data ?? null;
 
   // Raccourcis : ceux choisis par la personne, mais seulement s'ils sont autorisés pour le profil affiché
   const allowed = quickFor(scope);

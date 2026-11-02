@@ -15,7 +15,7 @@ import { Banner, Chip, haptic, Icon, IconButton, Text } from '@/components/ui';
 import { Skeleton } from '@/components/States';
 import { Tappable } from '@/components/Tappable';
 import { tint } from '@/components/ToolGlyph';
-import { useActivePregnancy, useArticles, useChildren, useProfile } from '@/lib/data/hooks';
+import { useActivePregnancy, useChildren, useFullArticles, useProfile } from '@/lib/data/hooks';
 import { childAge } from '@/lib/domain/child';
 import { answer, buildIndex, type KbIndex, type LocalAnswer } from '@/lib/localAI/engine';
 
@@ -125,7 +125,8 @@ export default function LocalAssistant() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ q?: string; journey?: string }>();
-  const articlesQ = useArticles();
+  // L'index local a besoin du texte complet de chaque article (seul écran, avec la recherche de la bibliothèque)
+  const articlesQ = useFullArticles();
   const { data: profile } = useProfile();
   const pregnancy = useActivePregnancy();
   const { data: children } = useChildren();

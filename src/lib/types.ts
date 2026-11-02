@@ -156,6 +156,9 @@ export interface Article {
   /** Version anglaise (traduction à relire) ; absente : l'article s'affiche en français. */
   title_en?: string | null; summary_en?: string | null; body_md_en?: string | null;
 }
+/** Article dans les listes (accueil, bibliothèque, outils…) : sans le texte ni les sources, lus à l'ouverture (useArticle).
+ *  english_ready : titre ET texte anglais disponibles (champ calculé serveur, même règle que localizeArticle). */
+export type ArticleSummary = Omit<Article, 'body_md' | 'body_md_en' | 'sources'> & { english_ready?: boolean };
 export interface Category { id: string; slug: string; label: string; label_en?: string | null; icon: string | null; position: number }
 export interface EmergencyResource { id: string; country: string; label: string; phone: string; description: string; kind: string; available: string | null; position: number; active: boolean }
 

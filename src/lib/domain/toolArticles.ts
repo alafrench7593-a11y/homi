@@ -2,7 +2,7 @@
  * « Pour aller plus loin » : chaque outil de l'app a ses articles. Pour chaque outil, des mots-clés (cherchés au début
  * des mots du titre et des étiquettes) et des catégories proches. Un test vérifie que chaque outil en trouve au moins 3.
  */
-import type { Article, Category } from '@/lib/types';
+import type { ArticleSummary, Category } from '@/lib/types';
 import { localized } from '@/i18n/localized';
 
 export interface ToolTopic {
@@ -237,7 +237,7 @@ export function toolArticleScore(topic: ToolTopic, a: { title: string; tags?: st
 }
 
 /** Les meilleurs articles pour un outil. */
-export function articlesForTool(toolId: string, articles: Article[], categories: Category[] | undefined, n = 3): Article[] {
+export function articlesForTool<T extends ArticleSummary>(toolId: string, articles: T[], categories: Category[] | undefined, n = 3): T[] {
   const topic = TOOL_TOPICS[toolId];
   if (!topic) return [];
   const slugOf = new Map((categories ?? []).map((c) => [c.id, c.slug]));

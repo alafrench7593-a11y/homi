@@ -59,9 +59,17 @@ export function useSpaces() {
   return { ...forums, all: forums.data ?? [], ...split, primary };
 }
 
-/** Fil « Pour vous » (catégories du parcours, discussions actives, récence) ou « Récent » (chronologique). */
+/** Fil « Pour vous » (catégories du parcours, discussions actives, récence) ou « Récent » (chronologique).
+ *  Serveur : community_feed = les 100 publications visibles les plus récentes de forum_feed (même vue, mêmes
+ *  règles), lues par index au lieu de calculer tout le fil avant de trier (migration 20261104001000). */
 export function useCommunityFeed(mode: 'foryou' | 'recent', forumId: string | null, myForumIds: readonly string[]) {
-  const q = useRows<FeedPost>(['forum_feed', 'feed', forumId ?? 'all'], { table: 'forum_feed', filters: forumId ? [eq('forum_id', forumId)] : [], order: [{ col: 'created_at', asc: false }], limit: 100 }, { staleTime: 15_000 });
+  const { session } = useAuth();
+  const q = useQuery({
+    queryKey: [session?.userId, 'forum_feed', 'feed', forumId ?? 'all'],
+    queryFn: () => backend.rpc<FeedPost[]>('community_feed', { p_forum: forumId ?? null, p_limit: 100 }),
+    enabled: !!session,
+    staleTime: 15_000,
+  });
   const data = useMemo(() => (q.data ? (mode === 'foryou' ? forYouOrder(q.data, myForumIds) : q.data) : undefined), [q.data, mode, myForumIds]);
   return { ...q, data };
 }
@@ -105,11 +113,25 @@ export function useCommunityMember(handle: string | null | undefined) {
     staleTime: 30_000,
   });
 }
+/** Publications / commentaires d'un membre : = forum_feed / comment_feed filtrés sur author_handle (100 plus récents),
+ *  via member_posts / member_comments qui lisent d'abord les lignes du membre par index (anonymat inchangé). */
 export function useMemberPosts(handle: string | null | undefined) {
-  return useRows<FeedPost>(['forum_feed', 'member', handle ?? ''], handle ? { table: 'forum_feed', filters: [eq('author_handle', handle)], order: [{ col: 'created_at', asc: false }], limit: 100 } : null);
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: [session?.userId, 'forum_feed', 'member', handle ?? ''],
+    queryFn: () => backend.rpc<FeedPost[]>('member_posts', { p_handle: handle, p_limit: 100 }),
+    enabled: !!session && !!handle,
+    staleTime: 30_000,
+  });
 }
 export function useMemberComments(handle: string | null | undefined) {
-  return useRows<FeedComment>(['comment_feed', 'member', handle ?? ''], handle ? { table: 'comment_feed', filters: [eq('author_handle', handle)], order: [{ col: 'created_at', asc: false }], limit: 100 } : null);
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: [session?.userId, 'comment_feed', 'member', handle ?? ''],
+    queryFn: () => backend.rpc<FeedComment[]>('member_comments', { p_handle: handle, p_limit: 100 }),
+    enabled: !!session && !!handle,
+    staleTime: 30_000,
+  });
 }
 
 export function useCommentThreads(postId: string | null | undefined) {

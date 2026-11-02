@@ -11,7 +11,7 @@ import { uuid } from '../uuid';
 import { getLocale, t as tr } from '@/i18n';
 import {
   LOG_TABLE, LOG_TIME_COL,
-  type AppNotification, type Appointment, type Article, type AssistantMessage, type BabyName, type Category, type Checklist, type ChecklistItem,
+  type AppNotification, type Appointment, type Article, type ArticleSummary, type AssistantMessage, type BabyName, type Category, type Checklist, type ChecklistItem,
   type Child, type CommunityProfile, type Consent, type ConsentPurpose, type Conversation, type DocumentRow, type EmergencyResource, type ExpectedBaby,
   type FeedComment, type FeedPost, type Forum, type Household, type HouseholdMember, type LogKind, type MaternalWeight, type Measurement, type MoodCheckin,
   type NameFavorite, type NameVote, type PeriodEntry, type Pregnancy, type PrivacySettings, type Profile, type Reminder, type Subscription, type TestResult,
@@ -331,17 +331,39 @@ export function useNameVotes() {
 }
 
 // ---------------------------------------------------------------- contenus
-/** Version anglaise d'un article quand elle existe (colonnes *_en) ; sinon le texte français d'origine. */
-export function localizeArticle<T extends Article>(a: T, lang: string = getLocale()): T {
-  if (lang !== 'en' || !a.title_en || !a.body_md_en) return a;
-  return { ...a, title: a.title_en, summary: a.summary_en ?? a.summary, body_md: a.body_md_en };
+/** Version anglaise d'un article quand elle existe (titre ET texte anglais) ; sinon le texte français d'origine.
+ *  Ligne de liste (sans texte) : english_ready, calculé par le serveur, dit si le texte anglais existe. */
+export function localizeArticle<T extends ArticleSummary & { body_md?: string; body_md_en?: string | null }>(a: T, lang: string = getLocale()): T {
+  if (lang !== 'en' || !a.title_en || !(a.english_ready ?? !!a.body_md_en)) return a;
+  return { ...a, title: a.title_en, summary: a.summary_en ?? a.summary, ...(a.body_md_en ? { body_md: a.body_md_en } : {}) };
 }
-export function useArticles() {
-  const q = useRows<Article>(['articles'], { table: 'articles', filters: [eq('status', 'published')], order: [{ col: 'updated_on', asc: false }] }, { staleTime: 600_000 });
+/** Champs de liste : tout sauf body_md, body_md_en et sources (≈ 0,8 Mo au lieu de 11 Mo pour 1 122 articles). */
+export const ARTICLE_LIST_COLUMNS = 'id,slug,category_id,title,summary,journeys,min_week,max_week,min_age_months,max_age_months,postpartum,tags,'
+  + 'author_name,reviewer_name,reviewer_qualification,validated_at,updated_on,status,is_premium,is_safety_critical,editorial_status,title_en,summary_en,english_ready';
+const PUBLISHED_ARTICLES: Query = { table: 'articles', filters: [eq('status', 'published')], order: [{ col: 'updated_on', asc: false }] };
+function useLocalized<T extends ArticleSummary>(rows: T[] | undefined) {
   // L'arbre est remonté à chaque changement de langue : getLocale() suffit ici
   const lang = getLocale();
-  const data = useMemo(() => (q.data && lang === 'en' ? q.data.map((a) => localizeArticle(a, lang)) : q.data), [q.data, lang]);
+  return useMemo(() => (rows && lang === 'en' ? rows.map((a) => localizeArticle(a, lang)) : rows), [rows, lang]);
+}
+/** Articles publiés pour les listes (accueil, bibliothèque, outils…), sans le texte : voir useArticle pour la lecture. */
+export function useArticles() {
+  const q = useRows<ArticleSummary>(['articles', 'list'], { ...PUBLISHED_ARTICLES, columns: ARTICLE_LIST_COLUMNS }, { staleTime: 600_000 });
+  const data = useLocalized(q.data);
   return { ...q, data } as typeof q;
+}
+/** Articles publiés avec leur texte complet (11 Mo) : seulement à la demande (recherche dans le texte, assistant hors ligne). */
+export function useFullArticles(enabled = true) {
+  const q = useRows<Article>(['articles', 'full'], PUBLISHED_ARTICLES, { staleTime: 600_000, enabled });
+  const data = useLocalized(q.data);
+  return { ...q, data } as typeof q;
+}
+/** Un article publié, texte et sources compris (écran de lecture). data : null si introuvable ou non accessible. */
+export function useArticle(slug: string | null | undefined) {
+  const q = useRows<Article>(['articles', 'one', slug ?? ''], slug ? { table: 'articles', filters: [eq('status', 'published'), eq('slug', slug)], limit: 1 } : null, { staleTime: 600_000 });
+  const lang = getLocale();
+  const data = useMemo(() => (q.data ? (q.data[0] ? localizeArticle(q.data[0], lang) : null) : undefined), [q.data, lang]);
+  return { ...q, data };
 }
 export function useCategories() {
   const q = useRows<Category>(['content_categories'], { table: 'content_categories', order: [{ col: 'position' }] }, { staleTime: 3600_000 });

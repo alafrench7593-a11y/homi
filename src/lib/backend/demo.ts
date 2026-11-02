@@ -870,6 +870,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     }
   }
 
+  /** Plus récents d'abord (dates égales : identifiant décroissant, comme le serveur), limite 1 à 100, copie indépendante. */
+  function newestFirst(rows: Row[], limit: unknown): Row[] {
+    const n = Math.min(Math.max(Number(limit) || 100, 1), 100);
+    const sorted = [...rows].sort((x, y) => (x.created_at < y.created_at ? 1 : x.created_at > y.created_at ? -1 : x.id < y.id ? 1 : x.id > y.id ? -1 : 0));
+    return JSON.parse(JSON.stringify(sorted.slice(0, n))) as Row[];
+  }
+
   // ---------------------------------------------------------------- vues
   function view(table: string): Row[] {
     const me = state.session?.userId;
@@ -1260,6 +1267,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
         .sort((x, y) => (x.created_at < y.created_at ? 1 : -1))
         .slice(0, Math.min(Math.max(Number(a.p_limit) || 50, 1), 100));
     },
+    // Fil et profil d'un membre (comme 20261104001000) : vues forum_feed / comment_feed, 100 plus récents
+    community_feed: (a) => newestFirst(view('forum_feed').filter((p) => !a.p_forum || p.forum_id === a.p_forum), a.p_limit),
+    member_posts: (a) => (a.p_handle ? newestFirst(view('forum_feed').filter((p) => p.author_handle === a.p_handle), a.p_limit) : []),
+    member_comments: (a) => (a.p_handle ? newestFirst(view('comment_feed').filter((c) => c.author_handle === a.p_handle), a.p_limit) : []),
     // Recherche avancée (Premium) : catégories, type, photos, période, sans réponse, membre, groupe
     search_posts_advanced: (a) => {
       if (!isPremium()) throw new BackendError('Fonction Premium (community_search)', 'P0001', 'premium_required');

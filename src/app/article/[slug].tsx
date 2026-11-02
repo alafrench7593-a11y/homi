@@ -10,7 +10,7 @@ import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Divider, FavoriteButton, Icon, IconButton, Row, Text } from '@/components/ui';
 import { backend } from '@/lib/backend';
-import { useArticles, useInvalidate, usePremium, useRows } from '@/lib/data/hooks';
+import { useArticle, useInvalidate, usePremium, useRows } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useUserId } from '@/lib/auth';
 import { isLocked } from '@/lib/domain/content';
@@ -26,11 +26,12 @@ export default function ArticleScreen() {
   const inv = useInvalidate();
   const userId = useUserId();
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const articlesQ = useArticles();
-  const { data: articles, isLoading } = articlesQ;
+  // L'article seul, texte et sources compris (la liste des articles ne contient plus le texte)
+  const articleQ = useArticle(slug);
+  const { data: article, isLoading } = articleQ;
   const [saving, setSaving] = useState(false);
   const premium = usePremium();
-  const a = articles?.find((x) => x.slug === slug);
+  const a = article ?? undefined;
   const { data: fav } = useRows<{ item_id: string }>(['favorites', a?.id ?? ''], a ? { table: 'favorites', filters: [{ col: 'item_id', op: 'eq', value: a.id }] } : null);
   const saved = !!fav?.length;
 
@@ -49,8 +50,8 @@ export default function ArticleScreen() {
     }
   }
 
-  if (isLoading && !articles) return <Screen back><Skeleton kind="detail" rows={8} /></Screen>;
-  if (articlesQ.isError && !articles) return <Screen back title={tr('u3.art.article')}><ErrorView error={articlesQ.error} onRetry={() => void articlesQ.refetch()} title={tr('u3.art.errShow')} /></Screen>;
+  if (isLoading && article === undefined) return <Screen back><Skeleton kind="detail" rows={8} /></Screen>;
+  if (articleQ.isError && article === undefined) return <Screen back title={tr('u3.art.article')}><ErrorView error={articleQ.error} onRetry={() => void articleQ.refetch()} title={tr('u3.art.errShow')} /></Screen>;
   if (!a) {
     return (
       <Screen back title={tr('u3.art.notFound')}>

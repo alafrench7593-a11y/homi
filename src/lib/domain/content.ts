@@ -1,5 +1,5 @@
 /** Sélection des contenus adaptés au parcours, à la semaine de grossesse et à l'âge. */
-import type { Article, Journey } from '../types';
+import type { ArticleSummary, Journey } from '../types';
 
 export interface ContentContext {
   journeys: Journey[];
@@ -10,7 +10,7 @@ export interface ContentContext {
   premium?: boolean;
 }
 
-export function articleScore(a: Article, ctx: ContentContext): number {
+export function articleScore(a: ArticleSummary, ctx: ContentContext): number {
   let s = 0;
   if (a.journeys.length && !a.journeys.some((j) => ctx.journeys.includes(j))) return -1;
   if (a.journeys.some((j) => ctx.journeys.includes(j))) s += 2;
@@ -27,7 +27,7 @@ export function articleScore(a: Article, ctx: ContentContext): number {
   return s;
 }
 
-export function suggestArticles(all: Article[], ctx: ContentContext, n = 3): Article[] {
+export function suggestArticles<T extends ArticleSummary>(all: T[], ctx: ContentContext, n = 3): T[] {
   return all
     .map((a) => ({ a, s: articleScore(a, ctx) }))
     .filter((x) => x.s >= 0)
@@ -37,6 +37,6 @@ export function suggestArticles(all: Article[], ctx: ContentContext, n = 3): Art
 }
 
 /** Un contenu de sécurité n'est jamais verrouillé, même s'il est marqué premium par erreur. */
-export function isLocked(a: Article, premium: boolean): boolean {
+export function isLocked(a: Pick<ArticleSummary, 'is_premium' | 'is_safety_critical'>, premium: boolean): boolean {
   return a.is_premium && !a.is_safety_critical && !premium;
 }
