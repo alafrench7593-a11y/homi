@@ -20,7 +20,7 @@ import { friendlyError, usePlanLimits } from '@/lib/data/hooks-settings';
 import { ALWAYS_FREE, FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
 import { periodOfProduct, type Plan, type PlanPeriod } from '@/lib/premium/plans';
 import { purchase } from '@/lib/purchases';
-import { BenefitCards, MySubscriptionCard, PlanCards, PlanTerms, planTitle, PremiumHero, usePlans, WebPurchaseNotice, webWithoutPurchase } from '@/features/subscription';
+import { BenefitCards, MySubscriptionCard, PremiumActivated, PlanCards, PlanTerms, planTitle, PremiumHero, usePlans, WebPurchaseNotice, webWithoutPurchase } from '@/features/subscription';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -144,6 +144,9 @@ export default function SubscriptionScreen() {
           </View>
         </Card>
       ) : null}
+
+      {/* Activation confirmée par le serveur pendant que la page est ouverte (achat, restauration, essai) */}
+      <PremiumActivated premium={premium} />
 
       {/* État actuel : formule, statut, dates, prix, gestion, restauration */}
       <View testID="sub-status"><MySubscriptionCard showDiscover={false} /></View>

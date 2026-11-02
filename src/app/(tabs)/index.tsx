@@ -4,8 +4,9 @@
  * une publication de la communauté choisie pour vous (+ « Voir la communauté »), une recommandation (article ou repas).
  * La communauté complète reste dans son onglet ; les autres cartes se réactivent dans Réglages › Mon accueil.
  */
+import { BadgeDot } from '@/components/Motion';
 import React, { useMemo } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
@@ -122,7 +123,7 @@ export default function Home() {
     recipe: <HomeRecipeCard />,
     recommendation: null as React.ReactNode,
     assistant: (
-      <Pressable accessibilityRole="button" accessibilityLabel={tr('home.askA11y')} onPress={() => router.push('/assistant/chat')} style={({ pressed }) => ({ borderRadius: 24, overflow: 'hidden', transform: [{ scale: pressed ? 0.98 : 1 }] })}>
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('home.askA11y')} onPress={() => router.push('/assistant/chat')} style={{ borderRadius: 24, overflow: 'hidden' }}>
         <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, minHeight: MIN_TOUCH + 16 }}>
           <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.35)', alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="message-circle" color="#FFFFFF" />
@@ -133,7 +134,7 @@ export default function Home() {
           </View>
           <Icon name="arrow-right" color="#FFFFFF" />
         </LinearGradient>
-      </Pressable>
+      </Tappable>
     ),
   };
   // « Suivre mon cycle » : l'accueil ne montre que le calendrier, les 5 raccourcis, une carte intelligente et le prochain rappel
@@ -157,7 +158,7 @@ export default function Home() {
               <IconButton icon="life-buoy" label={tr('home.helpA11y')} color={t.colors.heart} onPress={() => router.push('/emergency')} />
               <View>
                 <IconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} onPress={() => router.push('/notifications')} />
-                {unread > 0 && <View style={{ position: 'absolute', top: 11, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />}
+                <BadgeDot count={unread} style={{ position: 'absolute', top: 11, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
               </View>
               <AccountActions />
             </Row>

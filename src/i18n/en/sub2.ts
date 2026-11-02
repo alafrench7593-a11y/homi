@@ -109,4 +109,6 @@ export const sub2: Messages<typeof fr> = {
   'sub2.sheet.plans': 'The 3 Premium plans',
   'sub2.sheet.continue': 'Continue with the {plan} plan',
   'sub2.sheet.web': 'Subscription available in the iPhone and Android app.',
+  'sub2.activated.title': 'Premium is active',
+  'sub2.activated.body': 'Your subscription is confirmed: every Premium feature is now unlocked.',
 };

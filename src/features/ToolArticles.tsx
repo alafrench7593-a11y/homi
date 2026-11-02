@@ -2,8 +2,9 @@
  * « Pour aller plus loin » : en bas de chaque outil, les 3 articles qui vont avec, et une question toute prête
  * pour l'assistant local. Repliable, pour que l'outil reste simple.
  */
+import { Tappable } from '@/components/Tappable';
 import React, { useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Chip, Icon, ListRow, Text } from '@/components/ui';
 import { useArticles, useCategories } from '@/lib/data/hooks';
@@ -30,13 +31,13 @@ function Inner({ toolId, ask }: { toolId: string; ask: string }) {
       testID={`tool-articles-${toolId}`}
       style={{ marginTop: spacing.md, borderRadius: 18, borderWidth: 1, borderColor: t.isDark ? 'rgba(231,192,143,0.28)' : 'rgba(176,132,84,0.22)', padding: spacing.md, gap: spacing.sm }}
     >
-      <Pressable onPress={() => setOpen((v) => !v)} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={tr('u1.ta.a11y')}
+      <Tappable onPress={() => setOpen((v) => !v)} pressScale={0.99} hoverLift={0} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={tr('u1.ta.a11y')}
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }} hitSlop={6} testID="tool-articles-toggle">
         <Icon name="book-open" size={18} color={t.colors.gold} />
         <Text weight="bold" style={{ flex: 1 }}>{tr('u1.ta.title')}</Text>
         <Text variant="caption" muted>{open ? tr('u1.ta.collapse') : tr('u1.ta.count', { count: picks.length })}</Text>
         <Icon name={open ? 'chevron-up' : 'chevron-down'} size={18} color={t.colors.textMuted} />
-      </Pressable>
+      </Tappable>
       {open ? (
         <>
           {picks.map((a) => (

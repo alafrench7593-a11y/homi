@@ -3,8 +3,9 @@
  * carte de publication (réactions, commentaires, enregistrer, partager, menu modifier / supprimer / signaler / bloquer),
  * feuilles de signalement et de catégories. Identité graphique propre à Au fil de nous.
  */
+import { useBounceOn } from '@/components/Motion';
 import React, { useState } from 'react';
-import { Image, Modal, Pressable, ScrollView, Share, useWindowDimensions, View } from 'react-native';
+import { Animated, Image, Modal, Pressable, ScrollView, Share, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import * as Linking from 'expo-linking';
 import Svg, { Circle, Defs, LinearGradient as SvgGradient, Path, Stop } from 'react-native-svg';
@@ -219,10 +220,12 @@ export async function sharePost(post: Pick<FeedPost, 'id' | 'title' | 'body'>) {
 
 function ActionButton({ icon, label, count, active, onPress, testID, activeColor }: { icon: IconName; label: string; count?: number; active?: boolean; onPress: () => void; testID?: string; activeColor?: string }) {
   const t = useTheme();
+  // « J'aime », « Enregistrer » : petit rebond de l'icône quand l'état réel passe à actif
+  const bounce = useBounceOn(!!active);
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: !!active }} hitSlop={4} onPress={onPress} testID={testID}
       style={({ pressed }) => ({ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, paddingHorizontal: 10, borderRadius: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: active ? (activeColor ?? t.colors.primary) + '1F' : pressed ? t.colors.surfaceAlt : 'transparent' })}>
-      <Icon name={icon} size={18} color={active ? (activeColor ?? t.colors.primary) : t.colors.textMuted} />
+      <Animated.View style={bounce}><Icon name={icon} size={18} color={active ? (activeColor ?? t.colors.primary) : t.colors.textMuted} /></Animated.View>
       {count != null ? <Text variant="small" weight="medium" color={active ? (activeColor ?? t.colors.primary) : t.colors.textMuted}>{String(count)}</Text> : null}
     </Tappable>
   );

@@ -22,6 +22,9 @@ import { getPurchaseMode, loadPlans, purchasesSdk } from '@/lib/purchaseMode';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NACRE, radius, spacing } from '@/theme/tokens';
 import { springTo } from '@/theme/motion';
+import { DrawCheck } from '@/components/MotionKit';
+import { Appear } from '@/components/Appear';
+import { StaggerItem } from '@/components/Motion';
 import { formatDate, localeTag, t as tr, type TKey } from '@/i18n';
 
 export const planTitle = (p: PlanPeriod) => tr(`sub2.plan.${p}.title` as TKey);
@@ -53,6 +56,38 @@ export function PremiumHero() {
         <Text variant="small" color="#FFFFFF" style={{ marginTop: spacing.xs, opacity: 0.92 }}>{tr('sub2.page.oneAccess')}</Text>
       </View>
     </LinearGradient>
+  );
+}
+
+// ---------------------------------------------------------------- activation confirmée
+/**
+ * Confirmation « Premium activé » : affichée UNIQUEMENT quand le droit Premium confirmé par le serveur (has_premium)
+ * passe de faux à vrai pendant que l'écran est ouvert — jamais sur la seule réponse de la boutique. Coche dessinée,
+ * carte qui apparaît en douceur ; « Réduire les animations » : carte affichée directement.
+ */
+export function PremiumActivated({ premium }: { premium: boolean }) {
+  const t = useTheme();
+  const prev = useRef(premium);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    if (premium && !prev.current) setShown(true);
+    prev.current = premium;
+  }, [premium]);
+  if (!shown || !premium) return null;
+  return (
+    <Appear kind="pop" delay={0} duration={0.6}>
+      <Card tone="gold">
+        <View accessibilityLiveRegion="polite">
+          <Row testID="premium-activated">
+            <DrawCheck size={44} color={t.colors.success} />
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text weight="bold" accessibilityRole="header">{tr('sub2.activated.title')}</Text>
+              <Text variant="small" muted>{tr('sub2.activated.body')}</Text>
+            </View>
+          </Row>
+        </View>
+      </Card>
+    </Appear>
   );
 }
 
@@ -135,7 +170,8 @@ function PlanCard({ plan, selected, current, onSelect, compact }: { plan: Plan; 
 export function PlanCards({ plans, selected, onSelect, currentPeriod, compact }: { plans: Plan[]; selected: PlanPeriod | null; onSelect: (p: PlanPeriod) => void; currentPeriod?: PlanPeriod | null; compact?: boolean }) {
   return (
     <View style={{ gap: spacing.sm }} accessibilityRole="radiogroup" testID="premium-plans">
-      {plans.map((p) => <PlanCard key={p.period} plan={p} selected={selected === p.period} current={currentPeriod === p.period} onSelect={() => onSelect(p.period)} compact={compact} />)}
+      {/* Les offres arrivent en cascade courte (45 ms d'écart) ; la formule choisie est mise en avant par un ressort */}
+      {plans.map((p, i) => <StaggerItem key={p.period} index={i}><PlanCard plan={p} selected={selected === p.period} current={currentPeriod === p.period} onSelect={() => onSelect(p.period)} compact={compact} /></StaggerItem>)}
       {plans.some((p) => p.demo) ? <Text variant="caption" muted testID="plans-demo-note">{tr('sub2.plan.demo')}</Text> : null}
     </View>
   );

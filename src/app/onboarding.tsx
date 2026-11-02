@@ -27,6 +27,8 @@ import { LEGAL_VERSIONS } from '@/lib/authFlow';
 import { CheckRow, LegalLink } from '@/features/auth';
 import { clearDraftLocally, loadDraftLocally, restoreDraft, saveDraftLocally, type BottleFeeding, type OnboardingDraft } from '@/lib/onboardingDraft';
 import { Tappable } from '@/components/Tappable';
+import { StaggerItem, StepProgress, StepSwap } from '@/components/Motion';
+import { Appear } from '@/components/Appear';
 
 type Step = 'intro' | 'journeys' | 'pregnancy' | 'children' | 'reminders' | 'consents';
 
@@ -108,6 +110,10 @@ export default function Onboarding() {
   const needsChildren = journeys.some((j) => j === 'newborn' || j === 'child' || j === 'family');
   const steps = useMemo<Step[]>(() => ['intro', 'journeys', ...(needsPregnancy ? ['pregnancy' as Step] : []), ...(needsChildren ? ['children' as Step] : []), 'reminders', 'consents'], [needsPregnancy, needsChildren]);
   const idx = steps.indexOf(step);
+  // Sens du dernier changement d'étape (glissement depuis la droite en avançant, depuis la gauche en revenant)
+  const lastIdx = useRef(idx);
+  const dir = idx >= lastIdx.current ? 1 : -1;
+  useEffect(() => { lastIdx.current = idx; }, [idx]);
   const next = () => setStep(steps[Math.min(idx + 1, steps.length - 1)]);
   const prev = () => setStep(steps[Math.max(idx - 1, 0)]);
 
@@ -211,11 +217,7 @@ export default function Onboarding() {
   }
 
   const progress = (
-    <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={tr('onb.progress', { step: idx + 1, total: steps.length })}>
-      {steps.map((s, i) => (
-        <View key={s} style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: i <= idx ? t.colors.primary : t.colors.border }} />
-      ))}
-    </View>
+    <StepProgress count={steps.length} index={idx} color={t.colors.primary} track={t.colors.border} accessibilityLabel={tr('onb.progress', { step: idx + 1, total: steps.length })} />
   );
 
   const footer = ready ? (
@@ -246,19 +248,24 @@ export default function Onboarding() {
     return (
       <Screen stars footer={footer}>
         <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: spacing.lg }}>
-          <View style={{ width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
-            <Icon name="check" size={44} color={t.colors.primaryText} />
-          </View>
+          {/* Compte prêt : la pastille de confirmation apparaît en « pop », puis le résumé en cascade */}
+          <Appear kind="pop" delay={0.05} duration={0.7}>
+            <View style={{ width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
+              <Icon name="check" size={44} color={t.colors.primaryText} />
+            </View>
+          </Appear>
           <Text variant="title" center accessibilityRole="header">{name.trim() ? tr('onb.ready.titleNamed', { name: name.trim() }) : tr('onb.ready.title')}</Text>
           <Text center muted style={{ maxWidth: 340 }}>{tr('onb.ready.body')}</Text>
         </View>
         <Card>
           <View style={{ gap: spacing.sm }} accessibilityRole="list">
-            {lines.map((l) => (
-              <Row key={l.text} style={{ alignItems: 'flex-start' }}>
-                <Icon name={l.icon} color={t.colors.primary} />
-                <Text style={{ flex: 1 }}>{l.text}</Text>
-              </Row>
+            {lines.map((l, i) => (
+              <StaggerItem key={l.text} index={i + 3}>
+                <Row style={{ alignItems: 'flex-start' }}>
+                  <Icon name={l.icon} color={t.colors.primary} />
+                  <Text style={{ flex: 1 }}>{l.text}</Text>
+                </Row>
+              </StaggerItem>
             ))}
           </View>
         </Card>
@@ -271,6 +278,7 @@ export default function Onboarding() {
       {step !== 'intro' && progress}
       {error ? <Banner tone="warning">{error}</Banner> : null}
 
+      <StepSwap key={step} dir={dir}>
       {step === 'intro' && (
         <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: spacing.xl }}>
           <View style={{ width: 250, height: 250, borderRadius: 125, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
@@ -411,6 +419,7 @@ export default function Onboarding() {
           <Text variant="caption" muted>{tr('onb.consents.footnote')}</Text>
         </View>
       )}
+      </StepSwap>
     </Screen>
   );
 }

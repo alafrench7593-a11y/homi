@@ -110,4 +110,6 @@ export const sub2 = {
   'sub2.sheet.plans': 'Les 3 formules Premium',
   'sub2.sheet.continue': 'Continuer avec la formule {plan}',
   'sub2.sheet.web': 'Abonnement disponible dans l’application iPhone et Android.',
+  'sub2.activated.title': 'Premium activé',
+  'sub2.activated.body': 'Votre abonnement est confirmé : toutes les fonctionnalités Premium sont ouvertes.',
 };

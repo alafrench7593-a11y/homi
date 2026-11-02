@@ -288,20 +288,20 @@ function Capsule({ m }: { m: ActionModel }) {
   const ink = dark ? INK_DARK : INK[m.key];
   return (
     <View testID={`track-card-${m.key}`} style={{ width: 128 }}>
-      <Pressable accessibilityRole="button" accessibilityLabel={`${actionLabel(m.key)}. ${m.info}`} accessibilityHint={tr('trk.cards.openHint')}
-        onPress={() => { haptic('selection'); m.onOpen(); }}
-        style={({ pressed }) => ({ minHeight: 132, borderRadius: 22, padding: 10, gap: 6, backgroundColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.72)', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.95)', transform: [{ scale: pressed && !reduce ? 0.97 : 1 }] })}>
+      <Tappable accessibilityRole="button" accessibilityLabel={`${actionLabel(m.key)}. ${m.info}`} accessibilityHint={tr('trk.cards.openHint')}
+        onPress={() => { haptic('selection'); m.onOpen(); }} pressScale={reduce ? 1 : 0.97}
+        style={{ minHeight: 132, borderRadius: 22, padding: 10, gap: 6, backgroundColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.72)', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.95)' }}>
         <View style={{ width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', backgroundColor: dark ? 'rgba(201,184,255,0.14)' : `${INK[m.key]}1A` }}>
           <ActionGlyph k={m.key} color={ink} size={24} />
         </View>
         <Text variant="small" weight="bold" numberOfLines={2}>{actionLabel(m.key)}</Text>
         <Text variant="caption" muted numberOfLines={3} testID={`track-info-${m.key}`}>{m.info}</Text>
-      </Pressable>
-      <Pressable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={10} testID={`track-add-${m.key}`}
-        onPress={() => { haptic('light'); m.onAdd(); }}
+      </Tappable>
+      <Tappable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={10} testID={`track-add-${m.key}`}
+        onPress={() => { haptic('light'); m.onAdd(); }} pressScale={0.9} hoverLift={0}
         style={({ pressed }) => ({ position: 'absolute', top: 8, right: 8, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, opacity: pressed ? 0.85 : 1, shadowColor: dark ? '#000000' : '#6B3F2E', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } })}>
         <Icon name={m.active ? 'sun' : 'plus'} size={16} color={t.colors.primaryText} />
-      </Pressable>
+      </Tappable>
     </View>
   );
 }
@@ -311,13 +311,13 @@ function Row({ m }: { m: ActionModel }) {
   const ink = t.isDark ? INK_DARK : INK[m.key];
   return (
     <View testID={`track-card-${m.key}`} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56 }}>
-      <Pressable accessibilityRole="button" accessibilityLabel={`${actionLabel(m.key)}. ${m.info}`} onPress={m.onOpen} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+      <Tappable accessibilityRole="button" accessibilityLabel={`${actionLabel(m.key)}. ${m.info}`} onPress={m.onOpen} pressScale={0.99} hoverLift={0} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
         <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.isDark ? 'rgba(201,184,255,0.14)' : `${INK[m.key]}1A` }}><ActionGlyph k={m.key} color={ink} size={22} /></View>
         <View style={{ flex: 1 }}>
           <Text weight="bold">{actionLabel(m.key)}</Text>
           <Text variant="caption" muted numberOfLines={2}>{m.info}</Text>
         </View>
-      </Pressable>
+      </Tappable>
       <Pressable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={8} onPress={m.onAdd}
         style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
         <Icon name={m.active ? 'sun' : 'plus'} size={18} color={t.colors.primaryText} />

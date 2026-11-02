@@ -13,8 +13,9 @@
  * Toutes les actions existent aussi en boutons accessibles. « Réduire les animations » : rien ne bouge
  * hors des changements d'état, et l'état actif reste lisible sans la couleur (texte + motif).
  */
+import { Tappable } from '@/components/Tappable';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, View } from 'react-native';
+import { Animated, Easing, View } from 'react-native';
 import Svg, { Circle, Defs, G, LinearGradient as SvgGradient, Path, Stop } from 'react-native-svg';
 import { GlassSurface } from '@/components/Glass';
 import { DrawCheck, MotionNumber, PulseRing } from '@/components/MotionKit';
@@ -223,8 +224,8 @@ export function BottleInstrument({ child }: { child: Child }) {
         <PulseRing trigger={pulse} size={SIZE - 20} color={t.colors.primary} />
 
         {/* Centre : compteur et commande intégrée */}
-        <Pressable accessibilityRole="button" accessibilityLabel={a11y} onPress={busy ? undefined : onCenter} onLongPress={state === 'idle' || busy ? undefined : openSummary} delayLongPress={550}
-          style={({ pressed }) => ({ width: 168, height: 168, borderRadius: 84, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pressed ? 0.96 : 1 }] })}>
+        <Tappable accessibilityRole="button" accessibilityLabel={a11y} pressScale={0.96} hoverLift={0} onPress={busy ? undefined : onCenter} onLongPress={state === 'idle' || busy ? undefined : openSummary} delayLongPress={550}
+          style={{ width: 168, height: 168, borderRadius: 84, alignItems: 'center', justifyContent: 'center' }}>
           {state === 'idle' && !done ? (
             <View style={{ alignItems: 'center', gap: 6 }}>
               <View style={{ width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
@@ -249,7 +250,7 @@ export function BottleInstrument({ child }: { child: Child }) {
               <Text variant="caption" muted>{state === 'paused' ? tr('u4.bi.tapResume') : tr('u4.bi.longFinish')}</Text>
             </View>
           )}
-        </Pressable>
+        </Tappable>
       </Animated.View>
 
       {/* Informations qui se déploient au démarrage */}
