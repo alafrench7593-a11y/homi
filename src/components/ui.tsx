@@ -14,7 +14,9 @@ import { useUiStore } from '@/lib/store';
 import { GlassSurface } from './Glass';
 import { linkFrame } from './linkFrame';
 import { usePop, usePressMotion, useShake, useTilt } from './Motion';
-import { duration, interaction, springTo, timeTo } from '@/theme/motion';
+import { duration, feedback, hapticsSupported, interaction, shakeX, springTo, successPulse, timeTo } from '@/theme/motion';
+import { Tappable } from './Tappable';
+import { Appear } from './Appear';
 import { t as tr } from '@/i18n';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { useToast } from './Overlays';
@@ -22,6 +24,8 @@ import { useToast } from './Overlays';
 export type IconName = React.ComponentProps<typeof Feather>['name'];
 
 export function haptic(kind: 'light' | 'success' | 'warning' | 'selection' = 'light') {
+  // Jamais sur le web ; sur téléphone, seulement si le réglage « Vibrations » est actif (et pas la nuit sans accord)
+  if (!hapticsSupported) return;
   if (!useUiStore.getState().hapticsEnabled || useUiStore.getState().nightMode && !useUiStore.getState().nightVibrations) return;
   try {
     if (kind === 'success') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -185,7 +189,8 @@ function useButtonMotion() {
     press, hover,
     handlers: {
       onPressIn: () => timeTo(press, 1, BUTTON.pressInMs, reduce, easingStd).start(),
-      onPressOut: () => timeTo(press, 0, BUTTON.pressOutMs, reduce, easingStd).start(),
+      // Relâchement : ressort à léger rebond (retour élastique subtil, quelques millièmes d'échelle)
+      onPressOut: () => springTo(press, 0, 'release', reduce).start(),
       onHoverIn: () => timeTo(hover, 1, BUTTON.hoverMs, reduce, easingStd).start(),
       onHoverOut: () => timeTo(hover, 0, BUTTON.hoverMs, reduce, easingStd).start(),
     },
@@ -207,6 +212,12 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
   const busy = React.useRef(new Animated.Value(isBusy ? 1 : 0)).current;
   React.useEffect(() => { timeTo(busy, isBusy ? 1 : 0, duration.fast, reduce).start(); }, [busy, isBusy, reduce]);
   const off = !!disabled;
+  // Désactivation animée (fondu), réussite (respiration) et échec (tremblement) : l'action part toujours tout de suite,
+  // ces retours l'accompagnent seulement, après le résultat réel de la promesse.
+  const offV = React.useRef(new Animated.Value(off ? 1 : 0)).current;
+  React.useEffect(() => { timeTo(offV, off ? 1 : 0, feedback.disabledMs, reduce).start(); }, [offV, off, reduce]);
+  const pulse = React.useRef(new Animated.Value(1)).current;
+  const shake = React.useRef(new Animated.Value(0)).current;
   const solid = variant === 'primary' || variant === 'danger' || variant === 'night';
 
   const bg = { primary: t.colors.primary, secondary: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.72)', outline: 'transparent', ghost: t.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,250,246,0.5)', danger: t.colors.danger, night: '#D9B48A' }[variant];
@@ -235,13 +246,16 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
       running.current = true;
       setPending(true);
       // Une action qui échoue sans gérer son erreur affiche au moins un message (jamais d'échec muet)
-      (r as Promise<unknown>).catch((err) => { if (mounted.current) toast(friendlyErrorMessage(err), 'error'); }).finally(() => { running.current = false; if (mounted.current) setPending(false); });
+      (r as Promise<unknown>)
+        .then(() => { if (mounted.current) successPulse(pulse, reduce).start(); })
+        .catch((err) => { if (!mounted.current) return; haptic('warning'); shakeX(shake, reduce).start(); toast(friendlyErrorMessage(err), 'error'); })
+        .finally(() => { running.current = false; if (mounted.current) setPending(false); });
     }
   };
   const radiusPx = BUTTON.radius[size];
   return (
-    <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', maxWidth: '100%', minWidth: 0, opacity: off ? 0.48 : 1, borderRadius: radiusPx }, style,
-      { transform: [{ scale: m.press.interpolate({ inputRange: [0, 1], outputRange: [1, BUTTON.pressScale] }) }] }]}>
+    <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', maxWidth: '100%', minWidth: 0, opacity: offV.interpolate({ inputRange: [0, 1], outputRange: [1, feedback.disabledOpacity] }), borderRadius: radiusPx }, style,
+      { transform: [{ translateX: shake }, { scale: m.press.interpolate({ inputRange: [0, 1], outputRange: [1, BUTTON.pressScale] }) }, { scale: pulse }] }]}>
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
@@ -268,7 +282,7 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
       {solid || variant === 'secondary' ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: radiusPx * 0.7, right: radiusPx * 0.7, height: 1, backgroundColor: solid ? 'rgba(255,236,214,0.38)' : 'rgba(255,255,255,0.9)' }} /> : null}
       {/* Survol puis appui : voile d'état (sans décalage de mise en page) */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veil, opacity: m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, veilHover] }) }]} />
-      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veilPress < 0 ? '#000000' : veil, opacity: m.press.interpolate({ inputRange: [0, 1], outputRange: [0, veilPress < 0 ? 0.1 : veilPress] }) }]} />
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veilPress < 0 ? '#000000' : veil, opacity: m.press.interpolate({ inputRange: [0, 1], outputRange: [0, veilPress < 0 ? 0.1 : veilPress], extrapolate: 'clamp' }) }]} />
       {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur, à taille constante */}
       <Animated.View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
         {icon && <Animated.View style={nudge(icon)}><Icon name={icon} size={iconSize} color={fg} /></Animated.View>}
@@ -318,7 +332,7 @@ export function IconButton({ icon, label, onPress, color, size = 20, style, tone
         transform: [{ scale: m.press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.94] }) }] }}>
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: D / 2, backgroundColor: veil, opacity: Animated.add(
           m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, tone === 'primary' ? 0.12 : 0.07] }),
-          m.press.interpolate({ inputRange: [0, 1], outputRange: [0, 0.06] })) }]} />
+          m.press.interpolate({ inputRange: [0, 1], outputRange: [0, 0.06], extrapolate: 'clamp' })) }]} />
         <Icon name={icon} size={size} color={color ?? (tone === 'primary' ? t.colors.primaryText : t.colors.text)} />
       </Animated.View>
     </Pressable>
@@ -486,22 +500,27 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
         />
         {suffix ? <Text muted>{suffix}</Text> : null}
         {revealable ? (
-          <Pressable
+          <Tappable
             accessibilityRole="button"
             accessibilityLabel={shown ? tr('common.hidePassword') : tr('common.showPassword')}
             onPress={() => setShown((v) => !v)}
             hitSlop={8}
+            pressScale={0.9}
+            hoverLift={0}
             style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}
           >
             <Icon name={shown ? 'eye-off' : 'eye'} size={20} color={t.colors.textMuted} />
-          </Pressable>
+          </Tappable>
         ) : null}
       </View>
       {error ? (
-        <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }} accessibilityLiveRegion="polite">
-          <Icon name="alert-circle" size={14} color={t.colors.danger} />
-          <Text variant="small" color={t.colors.danger} style={{ flex: 1 }}>{error}</Text>
-        </View>
+        // Le message d'erreur glisse en place (en plus du tremblement du champ) ; nouvelle clé = nouvelle apparition
+        <Appear key={error} kind="soft" delay={0} duration={duration.base / 1000}>
+          <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }} accessibilityLiveRegion="polite">
+            <Icon name="alert-circle" size={14} color={t.colors.danger} />
+            <Text variant="small" color={t.colors.danger} style={{ flex: 1 }}>{error}</Text>
+          </View>
+        </Appear>
       ) : hint ? (
         <Text variant="small" muted>{hint}</Text>
       ) : null}
@@ -544,9 +563,9 @@ function BannerText({ text, fold, accent }: { text: string; fold: boolean; accen
     <>
       <Text variant="small" color={t.colors.text} numberOfLines={long && !open ? 2 : undefined} accessibilityLabel={text}>{text}</Text>
       {long ? (
-        <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')} hitSlop={10} style={{ alignSelf: 'flex-start', paddingVertical: 2 }}>
+        <Tappable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')} hitSlop={10} hoverLift={0} style={{ alignSelf: 'flex-start', paddingVertical: 2 }}>
           <Text variant="caption" weight="bold" color={accent}>{open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')}</Text>
-        </Pressable>
+        </Tappable>
       ) : null}
     </>
   );
@@ -558,10 +577,10 @@ export function SectionTitle({ title, action, onAction }: { title: string; actio
     <View style={styles.sectionTitle}>
       <Text variant="heading" accessibilityRole="header">{title}</Text>
       {action && onAction ? (
-        <Pressable onPress={onAction} accessibilityRole="button" hitSlop={6} style={({ pressed }) => [linkFrame(t.isDark), { alignSelf: 'center', opacity: pressed ? 0.8 : 1 }]}>
+        <Tappable onPress={onAction} accessibilityRole="button" hitSlop={6} style={({ pressed }) => [linkFrame(t.isDark), { alignSelf: 'center', opacity: pressed ? 0.8 : 1 }]}>
           <Text variant="small" weight="bold" color={t.colors.primary}>{action}</Text>
           <Icon name="chevron-right" size={14} color={t.colors.primary} />
-        </Pressable>
+        </Tappable>
       ) : null}
     </View>
   );
@@ -570,10 +589,12 @@ export function SectionTitle({ title, action, onAction }: { title: string; actio
 export function Loading({ label = 'Chargement…' }: { label?: string }) {
   const t = useTheme();
   return (
-    <View style={{ padding: spacing.xl, alignItems: 'center', gap: spacing.sm }} accessibilityLabel={label}>
-      <ActivityIndicator color={t.colors.primary} />
-      <Text variant="small" muted>{label}</Text>
-    </View>
+    <Appear kind="soft" delay={0.12} duration={duration.base / 1000} style={{ padding: spacing.xl, alignItems: 'center', gap: spacing.sm }}>
+      <View accessibilityLabel={label} style={{ alignItems: 'center', gap: spacing.sm }}>
+        <ActivityIndicator color={t.colors.primary} />
+        <Text variant="small" muted>{label}</Text>
+      </View>
+    </Appear>
   );
 }
 
