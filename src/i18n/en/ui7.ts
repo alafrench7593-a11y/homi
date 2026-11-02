@@ -46,6 +46,7 @@ export const ui7: Messages<typeof fr> = {
   'u7.track.reminderPast': 'This reminder would already be past ({time}): no reminder will be created. Choose “No reminder” or set the time of the next bottle.',
   'u7.track.reminderPastSkipped': 'No reminder created: that time had already passed.',
   'u1.appt.errRange': 'Unlikely date: check the year.',
+  'u7.track.changedMeanwhile': 'This entry was changed in the meantime (on another phone?). Nothing was overwritten: go back and reopen it to see the latest version.',
   'u7.family.callA11y': 'Call {phone}, {label}',
   'u7.family.samu.desc': 'Medical emergency',
   'u7.family.samu.avail': '24/7',

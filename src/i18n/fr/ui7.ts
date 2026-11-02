@@ -43,6 +43,7 @@ export const ui7 = {
   'u7.track.reminderPast': 'Ce rappel serait déjà passé ({time}) : aucun rappel ne sera créé. Choisissez « Aucun rappel » ou notez l’heure du prochain biberon.',
   'u7.track.reminderPastSkipped': 'Aucun rappel créé : l’heure était déjà passée.',
   'u1.appt.errRange': 'Date improbable : vérifiez l’année.',
+  'u7.track.changedMeanwhile': 'Cette saisie a été modifiée entre-temps (sur un autre téléphone ?). Rien n’a été écrasé : revenez en arrière et rouvrez-la pour voir la version à jour.',
   'u7.family.callA11y': 'Appeler le {phone}, {label}',
   'u7.family.samu.desc': 'Urgence médicale',
   'u7.family.samu.avail': '24 h/24',

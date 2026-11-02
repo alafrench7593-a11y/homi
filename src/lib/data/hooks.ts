@@ -5,7 +5,7 @@ import { backend, eq, gte, inList, type Filter, type Query } from '../backend';
 import { useAuth, useUserId } from '../auth';
 import { useUiStore, type ActiveSubject } from '../store';
 import { isBody, visiblePregnancy, type JourneyRow } from '../journeys/model';
-import { insertOrQueue } from '../offline';
+import { insertOrQueue, useOfflineStore } from '../offline';
 import { syncLocalReminders } from '../notifications';
 import { uuid } from '../uuid';
 import { getLocale, t as tr } from '@/i18n';
@@ -194,12 +194,32 @@ export function useMeasurements(childId: string | null | undefined) {
 }
 
 // ---------------------------------------------------------------- suivi quotidien
-export function useLogs<T>(kind: LogKind, childId: string | null | undefined, sinceDays = 7) {
+/**
+ * opts.includePending : ajoute les saisies hors ligne encore en file (marquées _pending). Réservé aux écrans
+ * qui COMPTENT ou RÉSUMENT (jamais là où une ligne peut être modifiée ou supprimée par son identifiant).
+ */
+export function useLogs<T>(kind: LogKind, childId: string | null | undefined, sinceDays = 7, opts?: { includePending?: boolean }) {
   const since = useMemo(() => new Date(Date.now() - sinceDays * 86400_000).toISOString(), [sinceDays]);
   const table = LOG_TABLE[kind];
-  return useRows<T>([table, childId ?? '', String(sinceDays)], childId ? {
+  const q = useRows<T>([table, childId ?? '', String(sinceDays)], childId ? {
     table, filters: [eq('child_id', childId), gte(LOG_TIME_COL[kind], since)], order: [{ col: LOG_TIME_COL[kind], asc: false }], limit: 300,
   } : null);
+  // F-04 (QA 02/11/2026) : saisies faites hors ligne, encore dans la file, affichées tout de suite (marquées _pending)
+  // dans les listes et les compteurs, pour qu'un parent ne les saisisse pas une seconde fois.
+  const pending = useOfflineStore((s) => s.pending);
+  const data = useMemo(() => {
+    if (!childId || !opts?.includePending) return q.data;
+    const col = LOG_TIME_COL[kind];
+    const server = q.data ?? [];
+    const known = new Set(server.flatMap((r) => [(r as Record<string, unknown>).id, (r as Record<string, unknown>).client_id]).filter(Boolean));
+    const extra = pending
+      .filter((op) => op.table === table && op.row.child_id === childId && String(op.row[col] ?? '') >= since)
+      .filter((op) => !known.has(op.row.id) && !known.has(op.row.client_id))
+      .map((op) => ({ ...op.row, _pending: true }) as unknown as T);
+    if (!extra.length) return q.data;
+    return [...extra, ...server].sort((a, b) => String((b as Record<string, unknown>)[col]).localeCompare(String((a as Record<string, unknown>)[col])));
+  }, [q.data, pending, childId, table, kind, since, opts?.includePending]);
+  return { ...q, data } as typeof q;
 }
 
 export function useOpenSleep(childId: string | null | undefined) {

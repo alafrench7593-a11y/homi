@@ -52,7 +52,8 @@ export default function BottleReminderScreen() {
   const start = useStartBottleTimer();
   const scheduledHere = useTimerScheduledHere(active);
   // Résumé : biberons notés aujourd'hui et sur 7 jours (vraies saisies uniquement)
-  const weekQ = useLogs<Bottle>('bottle', childId || null, 7);
+  // F-04 : un biberon noté hors ligne compte tout de suite (écran de résumé, aucune modification par identifiant)
+  const weekQ = useLogs<Bottle>('bottle', childId || null, 7, { includePending: true });
 
   const [sheet, setSheet] = useState<SheetKind>(null);
   const [startAt, setStartAt] = useState(new Date());

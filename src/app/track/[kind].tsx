@@ -162,6 +162,8 @@ function TrackEntry() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const loadedRef = useRef(false);
+  /** F-05 : l'entrée telle qu'elle a été ouverte (pour repérer une modification faite entre-temps sur un autre appareil). */
+  const originalRef = useRef<Record<string, unknown> | null>(null);
   // Modification : le formulaire n'est montré (et enregistrable) qu'une fois l'entrée chargée, jamais avec l'heure actuelle et des champs vides
   const [formReady, setFormReady] = useState(false);
 
@@ -172,6 +174,7 @@ function TrackEntry() {
     if (editing && !r) return;
     if (!editing && kind === 'bottle' && lastBottle === undefined) return;
     loadedRef.current = true;
+    originalRef.current = r ? { ...r } : null;
     setFormReady(true);
     if (!r) {
       if (lastBottle?.[0]) setMilkType(lastBottle[0].milk_type ?? '');
@@ -264,7 +267,16 @@ function TrackEntry() {
         if (backend.mode !== 'demo' && !useOfflineStore.getState().online) return setError(offlineEdit());
         // L'enfant et le foyer de l'entrée ne changent jamais lors d'une modification
         const { household_id: _h, child_id: _c, ...patch } = row; // eslint-disable-line @typescript-eslint/no-unused-vars
-        await backend.update(LOG_TABLE[kind], patch, [eq('id', params.id)]);
+        // F-05 : la mise à jour ne passe que si l'entrée n'a pas changé depuis son ouverture
+        const orig = originalRef.current ?? {};
+        const guards = Object.keys(patch)
+          .filter((k) => k in orig && (orig[k] === null || ['string', 'number', 'boolean'].includes(typeof orig[k])))
+          .map((k) => (orig[k] === null ? { col: k, op: 'is' as const, value: null } : eq(k, orig[k] as string | number | boolean)));
+        const updated = await backend.update(LOG_TABLE[kind], patch, [eq('id', params.id), ...guards]);
+        if (Array.isArray(updated) && updated.length === 0) {
+          inv(LOG_TABLE[kind]);
+          return setError(tr('u7.track.changedMeanwhile'));
+        }
         inv(LOG_TABLE[kind]);
         toast(tr('u7.track.edited'));
       } else if (kind === 'bottle') {
