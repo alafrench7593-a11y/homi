@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Platform, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useReduceMotion } from '@/theme/ThemeProvider';
-import { duration, easing, interaction, spring, springTo, stagger, timeTo } from '@/theme/motion';
+import { duration, easing, interaction, shakeX, spring, springTo, stagger, timeTo } from '@/theme/motion';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 
 const IS_WEB = Platform.OS === 'web';
@@ -22,7 +22,7 @@ export function usePressMotion(opts: { pressed?: number; hoverLift?: number } = 
   const hover = useRef(new Animated.Value(0)).current;
   const pressedScale = opts.pressed ?? interaction.pressScale;
   const lift = opts.hoverLift ?? interaction.hoverLift;
-  const scale = press.interpolate({ inputRange: [0, 1], outputRange: [1, pressedScale] });
+  const scale = press.interpolate({ inputRange: [-0.5, 1], outputRange: [1 + (1 - pressedScale) * 0.5, pressedScale] });
   const translateY = hover.interpolate({ inputRange: [0, 1], outputRange: [0, lift] });
   return {
     style: { transform: [{ translateY }, { scale }] },
@@ -30,7 +30,8 @@ export function usePressMotion(opts: { pressed?: number; hoverLift?: number } = 
     press,
     handlers: {
       onPressIn: () => timeTo(press, 1, interaction.pressInMs, reduce, easing.standard).start(),
-      onPressOut: () => timeTo(press, 0, interaction.pressOutMs, reduce, easing.decelerate).start(),
+      // relâchement élastique subtil (ressort « release ») : la surface revient avec un très léger rebond
+      onPressOut: () => springTo(press, 0, 'release', reduce).start(),
       onHoverIn: IS_WEB ? () => timeTo(hover, 1, interaction.hoverMs, reduce, easing.standard).start() : undefined,
       onHoverOut: IS_WEB ? () => timeTo(hover, 0, interaction.hoverMs, reduce, easing.standard).start() : undefined,
     },
@@ -73,16 +74,22 @@ export function useTilt(maxDeg = 3) {
 }
 
 // ------------------------------------------------------------------ apparition en cascade (listes)
-export function StaggerItem({ index, children, style }: { index: number; children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
+/**
+ * `fresh` : élément arrivé après l'affichage de la liste (commentaire envoyé ou reçu en temps réel, nouvel ajout) :
+ * il entre aussitôt (sans attente de cascade), quelle que soit sa position. Décidé au montage, une fois pour toutes.
+ */
+export function StaggerItem({ index, children, style, fresh }: { index: number; children: React.ReactNode; style?: StyleProp<ViewStyle>; fresh?: boolean }) {
   const reduce = useReduceMotion();
-  const animate = !reduce && index < 14; // au-delà, le contenu arrive déjà visible (défilement rapide)
+  // au-delà de 14, le contenu arrive déjà visible (défilement rapide)
+  const [animate] = React.useState(() => !reduce && (index < 14 || !!fresh));
+  const [delay] = React.useState(() => (fresh ? 0 : stagger(index)));
   const v = useRef(new Animated.Value(animate ? 0 : 1)).current;
   useEffect(() => {
     if (!animate) return;
-    const a = Animated.timing(v, { toValue: 1, duration: duration.entrance, delay: stagger(index), easing: easing.decelerate, useNativeDriver: NATIVE_DRIVER });
+    const a = Animated.timing(v, { toValue: 1, duration: fresh ? duration.slow : duration.entrance, delay, easing: easing.decelerate, useNativeDriver: NATIVE_DRIVER });
     a.start();
     return () => a.stop();
-  }, [v, animate, index]);
+  }, [v, animate, delay]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <Animated.View style={[{ opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }, style]}>
       {children}
@@ -99,8 +106,7 @@ export function useShake(trigger: unknown) {
   useEffect(() => {
     if (first.current) { first.current = false; return; }
     if (!trigger || reduce) return;
-    x.setValue(0);
-    Animated.sequence([6, -5, 4, -2, 0].map((toValue) => Animated.timing(x, { toValue, duration: 55, useNativeDriver: NATIVE_DRIVER }))).start();
+    shakeX(x, reduce).start();
   }, [trigger, reduce, x]);
   return { transform: [{ translateX: x }] };
 }
@@ -192,3 +198,82 @@ export function useFocusEntrance(focused: boolean) {
 }
 
 export { spring as motionSpring };
+
+// ------------------------------------------------------------------ rebond à l'activation (j'aime, favori)
+/**
+ * Petit rebond (1,25 → 1 en ressort « pop ») seulement quand `on` passe de faux à vrai : aimer, enregistrer,
+ * participer. Retirer son « j'aime » ne rebondit pas (pas de récompense pour une annulation).
+ */
+export function useBounceOn(on: boolean, amount = 1.25) {
+  const reduce = useReduceMotion();
+  const v = useRef(new Animated.Value(1)).current;
+  const prev = useRef(on);
+  useEffect(() => {
+    if (on && !prev.current && !reduce) {
+      v.setValue(amount);
+      springTo(v, 1, 'pop', reduce).start();
+    }
+    prev.current = on;
+  }, [on, reduce, v, amount]);
+  return { transform: [{ scale: v }] };
+}
+
+// ------------------------------------------------------------------ pastille de compteur (notifications)
+/**
+ * Pastille de notification : apparaît en « pop » et rebondit à chaque nouvelle arrivée (le compteur augmente).
+ * Le style (taille, couleur, position) est celui de l'écran appelant ; seul le mouvement est ajouté.
+ */
+export function BadgeDot({ count, style }: { count: number; style: StyleProp<ViewStyle> }) {
+  const reduce = useReduceMotion();
+  const v = useRef(new Animated.Value(count > 0 ? 1 : 0)).current;
+  const prev = useRef(count);
+  useEffect(() => {
+    const before = prev.current;
+    prev.current = count;
+    if (count <= 0) { timeTo(v, 0, duration.fast, reduce, easing.accelerate).start(); return; }
+    if (count > before) {
+      if (reduce) { v.setValue(1); return; }
+      v.setValue(before > 0 ? 1.45 : 0);
+      springTo(v, 1, 'pop', reduce).start();
+    }
+  }, [count, reduce, v]);
+  return <Animated.View pointerEvents="none" style={[style, { opacity: v.interpolate({ inputRange: [0, 0.4, 1], outputRange: [0, 1, 1], extrapolate: 'clamp' }), transform: [{ scale: v }] }]} />;
+}
+
+// ------------------------------------------------------------------ progression par étapes (inscription, parcours)
+/**
+ * Segments d'étapes : le segment atteint se remplit de gauche à droite (ressort doux) quand on avance, se vide quand
+ * on revient. Même dessin qu'un trait plein : piste `track`, remplissage `color` (couleurs du thème appelant).
+ */
+export function StepProgress({ count, index, color, track, accessibilityLabel }: { count: number; index: number; color: string; track: string; accessibilityLabel?: string }) {
+  const reduce = useReduceMotion();
+  const pos = useRef(new Animated.Value(index + 1)).current;
+  useEffect(() => { springTo(pos, index + 1, 'gentle', reduce).start(); }, [pos, index, reduce]);
+  return (
+    <View style={{ flexDirection: 'row', gap: 6 }} accessible accessibilityRole="progressbar" accessibilityLabel={accessibilityLabel}
+      accessibilityValue={{ min: 0, max: count, now: index + 1 }}>
+      {Array.from({ length: count }, (_, i) => (
+        <View key={i} style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: track, overflow: 'hidden' }}>
+          <Animated.View style={{
+            position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, borderRadius: 2, backgroundColor: color, transformOrigin: 'left',
+            transform: [{ scaleX: pos.interpolate({ inputRange: [i, i + 1], outputRange: [0, 1], extrapolate: 'clamp' }) }],
+          }} />
+        </View>
+      ))}
+    </View>
+  );
+}
+
+// ------------------------------------------------------------------ changement d'étape (formulaires en plusieurs temps)
+/** Contenu d'une étape : glisse depuis la droite (suivante) ou la gauche (précédente). Monter avec `key` = étape. */
+export function StepSwap({ dir, children }: { dir: number; children: React.ReactNode }) {
+  const reduce = useReduceMotion();
+  const v = useRef(new Animated.Value(reduce ? 1 : 0)).current;
+  useEffect(() => {
+    if (reduce) return;
+    const a = Animated.timing(v, { toValue: 1, duration: duration.slow, easing: easing.decelerate, useNativeDriver: NATIVE_DRIVER });
+    a.start();
+    return () => a.stop();
+  }, [v, reduce]);
+  return <Animated.View style={{ opacity: v, transform: [{ translateX: v.interpolate({ inputRange: [0, 1], outputRange: [24 * Math.sign(dir || 1), 0] }) }] }}>{children}</Animated.View>;
+}

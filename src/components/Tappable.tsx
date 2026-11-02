@@ -1,7 +1,8 @@
 /**
  * Zone tactile animée de l'application : remplace `Pressable` partout où un élément se touche
  * (cartes, lignes, cases de calendrier, liens, pastilles maison).
- *  - pression : réduction à 0,97 en 120 ms, relâchement en 200 ms (jetons `interaction` de src/theme/motion.ts) ;
+ *  - pression : réduction à 0,98 en 120 ms, relâchement par un ressort à léger rebond (jetons `interaction` et
+ *    `spring.release` de src/theme/motion.ts) ;
  *  - survol (web) : soulèvement de 2 px ;
  *  - `style` accepte un objet ou une fonction ({ pressed, hovered }) comme Pressable ;
  *  - une transformation déjà présente dans le style est conservée ;
@@ -12,7 +13,7 @@ import React, { useRef, useState } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, type GestureResponderEvent, type PressableProps, type StyleProp, View, type ViewStyle } from 'react-native';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { linkFrame } from './linkFrame';
-import { easing, interaction, timeTo } from '@/theme/motion';
+import { easing, interaction, springTo, timeTo } from '@/theme/motion';
 
 const APressable = Animated.createAnimatedComponent(Pressable);
 const IS_WEB = Platform.OS === 'web';
@@ -54,7 +55,7 @@ export const Tappable = React.forwardRef<View, TappableProps>(function Tappable(
       disabled={disabled}
       style={[userStyle as object, { transform } as object]}
       onPressIn={(e: GestureResponderEvent) => { set('pressed', true); timeTo(press, 1, interaction.pressInMs, reduce, easing.standard).start(); onPressIn?.(e); }}
-      onPressOut={(e: GestureResponderEvent) => { set('pressed', false); timeTo(press, 0, interaction.pressOutMs, reduce, easing.decelerate).start(); onPressOut?.(e); }}
+      onPressOut={(e: GestureResponderEvent) => { set('pressed', false); springTo(press, 0, 'release', reduce).start(); onPressOut?.(e); }}
       onHoverIn={(e) => { set('hovered', true); if (IS_WEB && !disabled) timeTo(hover, 1, interaction.hoverMs, reduce, easing.standard).start(); onHoverIn?.(e); }}
       onHoverOut={(e) => { set('hovered', false); if (IS_WEB) timeTo(hover, 0, interaction.hoverMs, reduce, easing.standard).start(); onHoverOut?.(e); }}
     >

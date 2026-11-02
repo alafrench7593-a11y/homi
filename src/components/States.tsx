@@ -11,6 +11,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, FlatList, type FlatListProps, type ListRenderItem, View } from 'react-native';
 import { Shimmer, StaggerItem, useShake } from '@/components/Motion';
+import { Appear } from '@/components/Appear';
 import { ambientDelay, springTo } from '@/theme/motion';
 import { Button, Card, Icon, type IconName, Text } from '@/components/ui';
 import { friendlyErrorMessage } from '@/lib/errors';
@@ -82,6 +83,7 @@ export function EmptyState({ icon = 'inbox', title, body, action }: EmptyProps) 
     return () => loop.stop();
   }, [float, reduce]);
   return (
+    <Appear kind="pop" delay={0.05} duration={0.5}>
     <Card tone="soft">
       <View style={{ alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.md }}>
         <Animated.View style={{ width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surface, transform: [{ translateY: float.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) }] }}>
@@ -92,6 +94,7 @@ export function EmptyState({ icon = 'inbox', title, body, action }: EmptyProps) 
         {action ? <Button label={action.label} icon={action.icon ?? 'plus'} size="sm" style={{ marginTop: spacing.xs }} onPress={action.onPress} /> : null}
       </View>
     </Card>
+    </Appear>
   );
 }
 
@@ -154,9 +157,19 @@ function VirtualListInner<T>({ renderItem, ListFooterComponent, ...props }: Flat
       <ToolArticles toolId={toolId} />
     </View>
   ) : Orig;
-  // Les premières lignes apparaissent en cascade ; les suivantes arrivent déjà visibles
+  // Les premières lignes apparaissent en cascade ; les suivantes arrivent déjà visibles. Un élément ajouté APRÈS
+  // l'affichage (commentaire envoyé ou reçu, nouvel ajout) entre aussitôt, même loin dans la liste.
+  const seen = useRef<Set<string> | null>(null);
+  const keyOf = (item: T, i: number) => (props.keyExtractor ? props.keyExtractor(item, i) : String((item as { id?: unknown; key?: unknown })?.key ?? (item as { id?: unknown })?.id ?? i));
+  const rows = (props.data ?? []) as ArrayLike<T>;
+  useEffect(() => {
+    if (!rows.length) return;
+    const keys = Array.from({ length: rows.length }, (_, i) => keyOf(rows[i], i));
+    if (seen.current === null) seen.current = new Set(keys);
+    else keys.forEach((k) => seen.current!.add(k));
+  }, [rows]); // eslint-disable-line react-hooks/exhaustive-deps
   const staggered: ListRenderItem<T> | null | undefined = renderItem
-    ? (info) => <StaggerItem index={info.index}>{renderItem(info)}</StaggerItem>
+    ? (info) => <StaggerItem index={info.index} fresh={seen.current !== null && !seen.current.has(keyOf(info.item, info.index))}>{renderItem(info)}</StaggerItem>
     : renderItem;
   return (
     <FlatList
