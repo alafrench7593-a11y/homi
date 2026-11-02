@@ -361,4 +361,9 @@ export const recettes = {
   'rc.familyAdapt.child': 'Pour l’enfant',
   'rc.addMenu': 'Ajouter au menu',
   'rc.fishNote': 'Poisson : recommandations françaises appliquées (espèces, cuisson à cœur, âge et grossesse). Variez les espèces ; les grands poissons prédateurs comme le thon ne sont pas proposés pendant la grossesse ni avant 3 ans.',
+  // Historique éditorial des recettes de la bibliothèque (mêmes textes que les données)
+  'rc.hist.ai': 'Rédaction par une IA (Claude, Anthropic)',
+  'rc.hist.checks': 'Contrôles automatiques de l’application',
+  'rc.hist.noteV2': 'Nouveau catalogue de recettes familiales classiques ; contrôles automatiques réussis, relecture humaine à faire.',
+  'rc.hist.notePhoto': 'Quantités, ingrédients cités, allergènes, précautions et doublons vérifiés par programme ; relecture humaine à faire.',
 };

@@ -97,7 +97,38 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Cod balls with carrot purée",
+      "summary": "Small, soft fish balls to pick up, with a gentle carrot purée.",
+      "steps": [
+        "Peel the potato and carrots; cut them into pieces and steam them for 20 minutes, adding the cod for the last 8 minutes.",
+        "Flake the fish, removing all the bones, then mash it with the potato, the half beaten egg and the parsley.",
+        "Shape into small oval balls and cook them in a non-stick frying pan for 8 minutes over a medium heat, turning them, until the egg is well set.",
+        "Mash the carrots with the knob of butter and serve with the lukewarm fish balls."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Hake or pollock can replace the cod."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Can be frozen for up to 2 months if the fish had not already been frozen raw. Thaw in the fridge the day before, reheat thoroughly all the way through and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain.",
+        "Egg always well cooked: white and yolk firm.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Fish provides protein and iodine, carrot beta-carotene: about 20 g of fish per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years).",
+      "notes": [
+        "skin and bones removed",
+        null,
+        "beaten",
+        "finely chopped",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "mo-mini-parmentier-merlu",
@@ -189,7 +220,36 @@
       "anses_poisson",
       "santefr_mercure",
       "lait_cru"
-    ]
+    ],
+    "en": {
+      "title": "Mini hake parmentier",
+      "summary": "A golden-topped fish parmentier that melts under the fork, for little food lovers.",
+      "steps": [
+        "Peel the potatoes, cut them into pieces and steam them for 20 minutes; add the hake for the last 8 minutes.",
+        "Flake the hake, checking that no bones remain, and share it between two small dishes.",
+        "Mash the potatoes with the butter, the nutmeg and a little cooking water, then spread the mash over the fish.",
+        "Sprinkle with Emmental and brown in the oven at 200 °C for 10 minutes; let it cool to lukewarm before serving."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Slip a layer of chopped spinach between the fish and the mash."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Can be frozen for up to 2 months if the fish had not already been frozen raw. Thaw in the fridge the day before, reheat thoroughly all the way through and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain.",
+        "Hard cooked cheese, melted into the dish (no raw-milk cheese before 5 years)."
+      ],
+      "nutrition": "A complete dish: potato for energy and hake for protein, about 30 g of hake per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years).",
+      "notes": [
+        "skin and bones removed",
+        null,
+        null,
+        null,
+        "grated"
+      ]
+    }
   },
   {
     "slug": "mo-gratin-coquillettes-brocoli",
@@ -301,7 +361,42 @@
       "anses_miel",
       "inspq_etouffement",
       "lait_cru"
-    ]
+    ],
+    "en": {
+      "title": "Macaroni and broccoli bake",
+      "summary": "The family pasta bake, with melting broccoli hidden in the béchamel.",
+      "steps": [
+        "Cook the macaroni in boiling water for 10 minutes; add the broccoli in small florets for the last 6 minutes, then drain.",
+        "For the béchamel, melt the butter, add the flour and stir for 1 minute, then gradually pour in the milk while whisking until the sauce thickens; add the nutmeg.",
+        "Mix the pasta, broccoli and béchamel in a dish, sprinkle with Emmental and brown in the oven at 200 °C for 15 minutes.",
+        "For the child, lightly mash the broccoli florets and let it cool well."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Add diced ham or cooked chicken to the older ones’ portion."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezes well: up to 2 months in individual portions. Thaw in the fridge the day before and reheat thoroughly all the way through; do not refreeze.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Hard cooked cheese, melted into the dish (no raw-milk cheese before 5 years).",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Pasta provides energy, béchamel calcium and broccoli vitamin C; add a small portion of protein at the day’s other meal.",
+      "familyAdaptations": {
+        "baby": "Serve the child’s portion before adding salt, with well-cooked macaroni and mashed broccoli.",
+        "child": "Let them sprinkle the cheese themselves before it goes in the oven."
+      },
+      "notes": [
+        "macaroni",
+        null,
+        null,
+        null,
+        null,
+        null,
+        "grated"
+      ]
+    }
   },
   {
     "slug": "mo-omelette-courgette-lanieres",
@@ -386,7 +481,35 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Courgette omelette strips",
+      "summary": "A well-cooked omelette, cut into strips that are easy to pick up with the fingers.",
+      "steps": [
+        "Finely grate the courgette and squeeze it between your hands to remove the water.",
+        "Beat the egg with the courgette and, if you like, a little chopped chives.",
+        "Heat the rapeseed oil in a small frying pan, pour in the mixture and cook over a low heat, covered, for 6 minutes, then turn the omelette over and cook for another 2 minutes: it must be well set, with no runny parts.",
+        "Let it cool to lukewarm and cut it into strips the size of an adult’s finger."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Replace the courgette with well-drained chopped spinach."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freezing not recommended: cooked egg turns rubbery. Make it at mealtime.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Egg always well cooked: white and yolk firm.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Egg is a complete protein: about half an egg per portion, an amount that replaces the meat or fish of the meal, depending on what your child accepts.",
+      "notes": [
+        null,
+        "finely grated",
+        "finely chopped",
+        null
+      ]
+    }
   },
   {
     "slug": "mo-poulet-legumes-des-fondants",
@@ -470,7 +593,29 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Chicken and small vegetables in soft cubes",
+      "summary": "A colourful plate of small, tender cubes to pick at by hand or with a spoon.",
+      "steps": [
+        "Peel the carrot and potato, wash the courgette and cut all the vegetables into cubes of about 1 cm; cut the chicken into small dice.",
+        "Steam the carrot and potato for 10 minutes, then add the courgette and chicken and cook for another 10 minutes.",
+        "Check that the chicken is well cooked right through and that each vegetable cube squashes easily between two fingers.",
+        "Drizzle with olive oil and let it cool to lukewarm before serving."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Shred the chicken rather than dicing it if your child does not chew much yet."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freezes well: up to 2 months in individual portions. Thaw in the fridge the day before and reheat thoroughly all the way through; do not refreeze.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Meat well cooked right through, with no trace of pink.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "A complete, colourful and simple meal: about 25 g of chicken per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years)."
+    }
   },
   {
     "slug": "mo-risotto-petits-legumes",
@@ -574,7 +719,41 @@
       "anses_miel",
       "inspq_etouffement",
       "lait_cru"
-    ]
+    ],
+    "en": {
+      "title": "Creamy risotto with small vegetables",
+      "summary": "A creamy risotto with courgettes and peas, to share as a family.",
+      "steps": [
+        "Peel and finely chop the onion; wash the courgette and cut it into small dice. Heat a litre of water in a pan.",
+        "Soften the onion in the olive oil for 3 minutes, add the rice and stir until it becomes translucent.",
+        "Pour in the hot water ladle by ladle, stirring, waiting until it has been absorbed before adding more; after 10 minutes, add the courgette and peas.",
+        "Keep cooking for 10 minutes, until the rice is very tender and creamy, then add the Parmesan off the heat."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "The peas can be lightly mashed in the child’s portion."
+      ],
+      "storage": "24 hours in the fridge, to be reheated only once with a little water.",
+      "freezing": "Freezing not recommended: the rice becomes floury. Leftovers keep for 24 hours in the fridge and are reheated with a little water.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Hard cooked cheese, melted into the dish (no raw-milk cheese before 5 years).",
+        "Peas well cooked and mashed for the youngest children."
+      ],
+      "nutrition": "Rice provides energy, peas plant protein and fibre, Parmesan calcium; complete with a small portion of protein.",
+      "familyAdaptations": {
+        "baby": "Take out the child’s portion before adding salt; lightly mash the peas.",
+        "child": "Let them add the Parmesan and stir their own plate."
+      },
+      "notes": [
+        "short-grain risotto rice",
+        null,
+        null,
+        null,
+        null,
+        "grated"
+      ]
+    }
   },
   {
     "slug": "mo-galettes-legumes-moelleuses",
@@ -678,7 +857,39 @@
       "anses_miel",
       "inspq_etouffement",
       "lait_cru"
-    ]
+    ],
+    "en": {
+      "title": "Soft vegetable fritters",
+      "summary": "Small golden courgette and carrot fritters, to eat with the fingers.",
+      "servingLabel": "10 small fritters",
+      "steps": [
+        "Finely grate the courgette and carrot, then squeeze the courgette in a tea towel to remove the water.",
+        "Mix the grated vegetables with the egg, flour and Emmental.",
+        "Heat the olive oil in a frying pan, drop in small spoonfuls of the mixture, flattening them, and cook for 5 minutes on each side over a medium heat, until they are well cooked in the centre.",
+        "Let them cool to lukewarm on kitchen paper before serving."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Replace the carrot with grated sweet potato."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freeze well: up to 2 months, separated by baking paper. Thaw in the fridge and reheat in a frying pan or in the oven.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Egg always well cooked: white and yolk firm.",
+        "Hard cooked cheese, melted into the dish (no raw-milk cheese before 5 years).",
+        "Carrot finely grated and cooked until tender. Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "A fun way to eat vegetables; the egg and cheese provide a little protein and calcium.",
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        "grated",
+        null
+      ]
+    }
   },
   {
     "slug": "mo-petits-flans-carotte",
@@ -760,7 +971,28 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Little carrot and soft cheese flans",
+      "summary": "Soft orange flans, to eat with a spoon or in small cubes.",
+      "steps": [
+        "Peel the carrots, cut them into rounds and steam them for 15 minutes, then blend them finely.",
+        "Mix the purée with the beaten eggs, the soft cheese and the nutmeg.",
+        "Share out into four ramekins and cook in a bain-marie in the oven at 180 °C for 25 minutes, until a knife inserted in the centre comes out dry.",
+        "Let them cool to lukewarm before turning out or serving in the ramekin."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Pumpkin or broccoli can replace the carrot."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezing not recommended: the flans release water when thawed. They keep for 48 hours in the fridge.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Egg always well cooked: white and yolk firm."
+      ],
+      "nutrition": "Carrot provides beta-carotene and egg protein: about half an egg per flan, a suitable amount from around 1 year."
+    }
   },
   {
     "slug": "mo-crepes-compote",
@@ -851,7 +1083,37 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Soft crêpes with apple compote",
+      "summary": "Sugar-free crêpes rolled around a compote, for a simple party snack.",
+      "servingLabel": "8 crêpes",
+      "steps": [
+        "Put the flour in a mixing bowl, make a well, add the egg and then the milk little by little while whisking, then the melted butter.",
+        "Leave the batter to rest for 30 minutes if you have time.",
+        "Cook the crêpes in a hot non-stick frying pan for 1 minute on each side, until they are golden and cooked.",
+        "Spread each crêpe with compote, roll it up and cut it into pieces for the child."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Replace the compote with a mashed banana."
+      ],
+      "storage": "48 hours in the fridge, covered with cling film; fill them when serving.",
+      "freezing": "Plain crêpes freeze for up to 2 months, separated by baking paper; thaw in the fridge and fill when serving.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Egg always well cooked: white and yolk firm.",
+        "Sit the child up straight and stay next to them throughout the meal."
+      ],
+      "nutrition": "A snack combining a starchy food, a dairy product and fruit, with no added sugar: the compote is sweet enough.",
+      "notes": [
+        null,
+        null,
+        null,
+        "melted",
+        null
+      ]
+    }
   },
   {
     "slug": "mo-biscuits-banane-avoine",
@@ -939,7 +1201,35 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Banana and oat biscuits with no added sugar",
+      "summary": "Soft biscuits with two main ingredients, sweetened only by the banana.",
+      "servingLabel": "12 biscuits",
+      "steps": [
+        "Preheat the oven to 180 °C. Mash the banana to a purée with a fork.",
+        "Add the oats, the rapeseed oil and the cinnamon if you like, then leave to swell for 5 minutes.",
+        "Shape into small thick biscuits on a tray lined with baking paper.",
+        "Bake for 15 minutes: they stay soft. Leave to cool on a rack."
+      ],
+      "adaptations": [
+        "Add a spoonful of compote if the mixture is too dry.",
+        "Cut more or less finely depending on what your child accepts and how they chew."
+      ],
+      "storage": "3 days in an airtight box in the fridge.",
+      "freezing": "Freeze well: up to 2 months in a box. Thaw at room temperature in an hour.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Soft biscuits that melt in the mouth; soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Oats provide fibre and banana energy: a snack with no added sugar, suitable as soon as your child chews soft pieces.",
+      "notes": [
+        "very ripe",
+        "fine oat flakes",
+        null,
+        "optional"
+      ]
+    }
   },
   {
     "slug": "mo-mini-pancakes-banane",
@@ -1024,7 +1314,36 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Mini banana pancakes",
+      "summary": "Small, soft pancakes, easy to hold in the hand.",
+      "servingLabel": "10 mini pancakes",
+      "steps": [
+        "Mash the banana to a purée, then add the egg and flour while whisking to get a thick batter.",
+        "Lightly oil a non-stick frying pan with the rapeseed oil and heat it over a medium heat.",
+        "Pour in small spoonfuls of batter and cook for 2 minutes on each side, until the pancakes are well cooked in the centre.",
+        "Let them cool to lukewarm before serving, whole or cut in half."
+      ],
+      "adaptations": [
+        "Oat flour (blended oats) can replace the wheat flour.",
+        "Cut more or less finely depending on what your child accepts and how they chew."
+      ],
+      "storage": "24 hours in the fridge.",
+      "freezing": "Freeze well: up to 2 months. Reheat for a few seconds in a frying pan after thawing in the fridge.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Egg always well cooked: white and yolk firm.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Banana replaces sugar and egg provides protein: a complete breakfast or snack with a dairy product.",
+      "notes": [
+        "very ripe",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "mo-pates-saumon-courgette",
@@ -1135,7 +1454,41 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Pasta with salmon and courgette",
+      "summary": "A creamy family pasta dish, with well-cooked salmon in small pieces.",
+      "steps": [
+        "Wash the courgette and cut it into small dice; cut the salmon into cubes, checking that no bones remain.",
+        "Cook the pasta in boiling water for 11 minutes, leaving it really tender for the child’s portion.",
+        "Meanwhile, cook the courgette covered with a little water for 6 minutes, add the salmon and cook for another 6 minutes over a low heat, until it is opaque and flakes apart.",
+        "Off the heat, add the cream and the lemon zest, mix with the drained pasta and sprinkle with chives."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Trout instead of salmon."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Can be frozen for up to 2 months if the fish had not already been frozen raw. Thaw in the fridge the day before, reheat thoroughly all the way through and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Salmon provides omega-3 and protein: about 30 g of salmon per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years), the rest for the older ones.",
+      "familyAdaptations": {
+        "baby": "Flake the salmon into small pieces and cut the pasta in half; do not salt their portion.",
+        "child": "Serve the sauce separately if they prefer plain pasta."
+      },
+      "notes": [
+        "penne or macaroni",
+        "skin and bones removed",
+        null,
+        null,
+        "zest",
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "mo-hachis-parmentier-carottes",
@@ -1249,7 +1602,43 @@
       "anses_miel",
       "inspq_etouffement",
       "lait_cru"
-    ]
+    ],
+    "en": {
+      "title": "Hachis parmentier with melting carrots",
+      "summary": "The classic French cottage pie, with carrots slipped into the meat for everyone.",
+      "steps": [
+        "Peel the potatoes and boil them for 20 minutes; meanwhile, peel the onion and carrots and chop them finely.",
+        "Cook the onion and carrots in a frying pan with a little water for 8 minutes, then add the minced beef and cook for 8 minutes, breaking it up, until no trace of pink remains.",
+        "Mash the potatoes with the hot milk, butter and nutmeg.",
+        "Spread the meat in a dish, cover with the mash, sprinkle with Emmental and brown in the oven at 200 °C for 15 minutes."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Some of the mash can be made with sweet potato."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freezes well: up to 2 months in individual portions. Thaw in the fridge the day before and reheat thoroughly all the way through; do not refreeze.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Meat well cooked right through, with no trace of pink.",
+        "Hard cooked cheese, melted into the dish (no raw-milk cheese before 5 years)."
+      ],
+      "nutrition": "Beef provides well-absorbed iron and the mash energy: about 25 g of beef per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years).",
+      "familyAdaptations": {
+        "baby": "Take out their portion before adding salt and mash the meat well into the purée.",
+        "child": "Serve it in a small individual ramekin, like a “real” parmentier."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "grated"
+      ]
+    }
   },
   {
     "slug": "mo-dinde-semoule-legumes",
@@ -1342,7 +1731,37 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Turkey, semolina and melting vegetables",
+      "summary": "A mild couscous-style plate, with small, tender pieces.",
+      "steps": [
+        "Peel the carrot, wash the courgette and cut them into small dice; cut the turkey into small pieces.",
+        "Cook the carrot in a pan of water for 10 minutes, add the courgette, the turkey and a pinch of cumin if you like, then cook for another 10 minutes.",
+        "Pour a little of the piping hot cooking stock over the semolina, cover and leave to swell for 5 minutes, then fluff it up with the olive oil.",
+        "Serve the semolina with the turkey, well cooked right through, and the melting vegetables."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Chicken instead of turkey."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "The turkey and vegetables freeze for up to 2 months (thaw in the fridge, reheat right through); make the semolina fresh.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Meat well cooked right through, with no trace of pink.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "A complete, mild meal: about 25 g of turkey per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years).",
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        "optional",
+        null
+      ]
+    }
   },
   {
     "slug": "mo-boeuf-carottes-fondant",
@@ -1443,7 +1862,41 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Melting family beef and carrots",
+      "summary": "The Sunday stew, so tender it shreds for the little ones.",
+      "steps": [
+        "Peel the carrots and cut them into rounds; peel and slice the onion.",
+        "Brown the beef cubes in the olive oil in a casserole dish, add the onion and fry for 3 minutes.",
+        "Add the carrots, thyme, bay leaf and enough water to cover, put the lid on and simmer over a low heat for 120 minutes, until the meat shreds with a fork.",
+        "Remove the bay leaf; for the child, shred the meat and lightly mash the carrots."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Serve with steamed potatoes or pasta."
+      ],
+      "storage": "48 hours in the fridge; it is even better reheated.",
+      "freezing": "Freezes well: up to 2 months in individual portions. Thaw in the fridge the day before and reheat thoroughly all the way through; do not refreeze.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Meat well cooked right through, with no trace of pink.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Beef provides well-absorbed iron: about 25 g of beef per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years).",
+      "familyAdaptations": {
+        "baby": "Shred the meat very finely and mash the carrots; do not salt their portion.",
+        "child": "Cut the meat into small pieces and serve with pasta."
+      },
+      "notes": [
+        "in cubes",
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "mo-frites-polenta-four",
@@ -1522,7 +1975,34 @@
       "anses_miel",
       "inspq_etouffement",
       "lait_cru"
-    ]
+    ],
+    "en": {
+      "title": "Oven-baked polenta chips",
+      "summary": "Sticks that are golden outside and soft inside, perfect for picking up.",
+      "steps": [
+        "Sprinkle the polenta into 400 ml of simmering water and cook for 5 minutes, stirring, then add the Parmesan.",
+        "Spread the polenta 1.5 cm thick in a dish lined with baking paper and leave it to set in the fridge (rest for at least 60 minutes).",
+        "Preheat the oven to 200 °C, cut the polenta into sticks the size of an adult’s finger and brush them with olive oil.",
+        "Bake for 20 minutes, turning them halfway through, then let them cool to lukewarm."
+      ],
+      "adaptations": [
+        "Serve with a homemade tomato sauce or mashed vegetables.",
+        "Cut more or less finely depending on what your child accepts and how they chew."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "The cooked sticks freeze for up to 2 months; reheat them directly in the oven after thawing in the fridge.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Hard cooked cheese, melted into the dish (no raw-milk cheese before 5 years).",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Polenta, gluten-free, provides energy from cereals; serve it with vegetables and a small portion of protein.",
+      "notes": [
+        null,
+        "grated",
+        null
+      ]
+    }
   },
   {
     "slug": "mo-poisson-pane-maison",
@@ -1628,7 +2108,42 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Homemade oven-baked breaded fish",
+      "summary": "Crunchy homemade fish fingers, baked in the oven, for the whole family.",
+      "steps": [
+        "Preheat the oven to 200 °C. Cut the fish into thick fingers, checking with your fingertips that no bones remain.",
+        "Dip each finger in the flour, then in the beaten egg, then in the breadcrumbs.",
+        "Place them on a tray lined with baking paper, drizzle with a little rapeseed oil and bake for 15 minutes, until the fish is opaque all the way through.",
+        "Serve with a lemon wedge for the older ones; for the child, cut into small pieces."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Serve with homemade mash or steamed vegetables."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freeze the raw breaded fingers (if the fish was fresh) for up to 2 months and bake them straight from frozen, 5 minutes longer; once cooked, they keep for 24 hours in the fridge.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain.",
+        "Egg always well cooked: white and yolk firm.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "White fish provides protein and iodine: about 30 g of fish per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years).",
+      "familyAdaptations": {
+        "baby": "Remove the coating if it is too crunchy for them and flake the fish.",
+        "child": "Let them coat a few fingers themselves."
+      },
+      "notes": [
+        "cod or pollock, boneless",
+        null,
+        null,
+        null,
+        null,
+        "optional"
+      ]
+    }
   },
   {
     "slug": "mo-truite-riz-haricots-verts",
@@ -1713,7 +2228,35 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Trout, rice and green beans in small pieces",
+      "summary": "A simple plate to pick at: tender rice, melting beans and flaked trout.",
+      "steps": [
+        "Cook the rice in boiling water for 15 minutes, leaving it really tender, then drain.",
+        "Top and tail the green beans, cut them into 1 cm pieces and steam them for 15 minutes; add the trout for the last 8 minutes.",
+        "Flake the trout, removing all the bones.",
+        "Mix the rice with the knob of butter and serve with the melting green beans and the trout."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Salmon or cod can replace the trout."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Can be frozen for up to 2 months if the fish had not already been frozen raw. Thaw in the fridge the day before, reheat thoroughly all the way through and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Trout provides omega-3 and rice energy: about 25 g of trout per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years).",
+      "notes": [
+        "skin and bones removed",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "mo-gratin-chou-fleur-pommes-de-terre",
@@ -1823,7 +2366,42 @@
       "anses_miel",
       "inspq_etouffement",
       "lait_cru"
-    ]
+    ],
+    "en": {
+      "title": "Cauliflower and potato gratin",
+      "summary": "A creamy, mild gratin, where the cauliflower keeps a low profile.",
+      "steps": [
+        "Break the cauliflower into small florets, peel the potatoes and cut them into rounds, then steam them for 15 minutes.",
+        "For the béchamel, melt the butter, add the flour, then the milk little by little while whisking until it thickens; add the nutmeg.",
+        "Arrange the vegetables in a dish, cover with béchamel and sprinkle with Emmental.",
+        "Brown in the oven at 200 °C for 20 minutes and let it cool to lukewarm before serving."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Add diced ham to the older ones’ portion."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezes well: up to 2 months in individual portions. Thaw in the fridge the day before and reheat thoroughly all the way through; do not refreeze.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Hard cooked cheese, melted into the dish (no raw-milk cheese before 5 years).",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Cauliflower provides vitamin C and béchamel calcium; add a small portion of protein to the meal.",
+      "familyAdaptations": {
+        "baby": "Lightly mash their portion with a fork, before salting the older ones’ portion.",
+        "child": "Serve it with a hard-boiled egg or a slice of ham for a complete meal."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "grated"
+      ]
+    }
   },
   {
     "slug": "mo-dahl-lentilles-corail-coco",
@@ -1932,7 +2510,42 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Mild red lentil dahl with coconut milk",
+      "summary": "A golden, melting vegetarian dish, served with rice, that little ones love.",
+      "steps": [
+        "Finely slice the onion and grate the carrot; cook them in a pan with a little water for 5 minutes.",
+        "Add the lentils, chopped tomatoes, coconut milk, turmeric, cumin and 400 ml of water, then simmer for 20 minutes, stirring, until the lentils fall apart.",
+        "Meanwhile, cook the rice in boiling water for 15 minutes and drain it.",
+        "Serve the dahl with the rice; for the child, mix the two together for a soft texture."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "The older ones add a little chilli or coriander to their plate."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "The dahl freezes for up to 3 months (thaw in the fridge, reheat with a little water); cook the rice fresh.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Carrot grated and well cooked in the sauce."
+      ],
+      "nutrition": "Red lentils combined with rice provide complete plant protein, iron and fibre; about 25 g of dry lentils per portion for the child.",
+      "familyAdaptations": {
+        "baby": "Mix the dahl and rice and mash lightly; do not salt their portion.",
+        "child": "Serve with a pitta bread for dipping."
+      },
+      "notes": [
+        "rinsed",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "mo-muffins-pomme-avoine",
@@ -2041,7 +2654,29 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Apple and oat muffins with no added sugar",
+      "summary": "Soft, fruity muffins for snack time, sweetened only by the apple.",
+      "servingLabel": "18 mini muffins",
+      "steps": [
+        "Preheat the oven to 180 °C. Peel the apples and grate them finely.",
+        "Mix the egg, yoghurt and rapeseed oil, then add the grated apples.",
+        "Add the oats, flour, baking powder and cinnamon, and mix without overworking the batter.",
+        "Share out into mini-muffin tins and bake for 20 minutes, until a knife blade comes out dry."
+      ],
+      "adaptations": [
+        "Replace one apple with a very ripe pear.",
+        "Cut more or less finely depending on what your child accepts and how they chew."
+      ],
+      "storage": "3 days in an airtight box.",
+      "freezing": "Freeze very well: up to 3 months. Thaw at room temperature in an hour or for a few seconds in the oven.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Apple finely grated and cooked in the batter. Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "A snack combining cereals, a dairy product and fruit, with no added sugar."
+    }
   },
   {
     "slug": "mo-clafoutis-abricots",
@@ -2140,7 +2775,40 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Apricot clafoutis with no added sugar",
+      "summary": "A soft summer dessert where very ripe apricots provide all the sweetness.",
+      "steps": [
+        "Preheat the oven to 180 °C. Butter a dish; wash the apricots, open them, remove the stones and cut them into quarters.",
+        "Whisk the eggs with the flour, then add the milk little by little to get a smooth batter.",
+        "Arrange the apricots in the dish, pour over the batter and bake for 35 minutes, until the centre is well set.",
+        "Let it cool to lukewarm and cut it into small soft squares for the child."
+      ],
+      "adaptations": [
+        "Peaches or plums can replace the apricots.",
+        "Cut more or less finely depending on what your child accepts and how they chew."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezing not recommended: the clafoutis releases water. It keeps for 48 hours in the fridge.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Egg always well cooked: white and yolk firm.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Apricots provide beta-carotene, egg and milk protein and calcium.",
+      "familyAdaptations": {
+        "baby": "Choose very ripe apricots and cut their portion into small squares.",
+        "child": "The older ones can add a little sugar to their portion when serving."
+      },
+      "notes": [
+        "very ripe",
+        null,
+        null,
+        null,
+        "for the dish"
+      ]
+    }
   },
   {
     "slug": "mo-batonnets-poire-pomme-vapeur",
@@ -2218,7 +2886,32 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Soft pear and apple sticks",
+      "summary": "Fruit cooked just enough to be tender, to pick up with the fingers.",
+      "steps": [
+        "Peel the pear and apple, remove the core and cut them into thick sticks the size of an adult’s finger.",
+        "Steam them for 10 minutes, until they squash easily between thumb and forefinger.",
+        "Sprinkle with a pinch of cinnamon if you like and let them cool to lukewarm."
+      ],
+      "adaptations": [
+        "A very ripe pear can be served raw, peeled, in sticks.",
+        "Cut more or less finely depending on what your child accepts and how they chew."
+      ],
+      "storage": "24 hours in the fridge in a closed box.",
+      "freezing": "Freezing not recommended: the sticks become mushy. They keep for 24 hours in the fridge.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Apple always cooked until tender: raw and hard, it is a choking risk before 4 years. Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Fruit for fibre and vitamin C, and good practice for learning to bring food to the mouth.",
+      "notes": [
+        null,
+        null,
+        "optional"
+      ]
+    }
   },
   {
     "slug": "mo-poulet-basquaise-doux",
@@ -2329,7 +3022,43 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Gentle Basque-style chicken",
+      "summary": "Chicken with peppers and tomatoes, without chilli, simmered until melting.",
+      "steps": [
+        "Peel the onion and garlic clove; slice the onion, deseed the peppers and cut them into strips, then cut the tomatoes into pieces.",
+        "Brown the chicken in the olive oil in a casserole dish, add the onion, the crushed garlic and the peppers, and fry for 5 minutes.",
+        "Add the tomatoes and thyme, cover and simmer for 40 minutes, until the chicken is well cooked and comes away from the bone; meanwhile, cook the rice for 15 minutes in boiling water.",
+        "For the child, remove the bones, shred the chicken, remove the pepper skins if they come away and serve with the rice."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Out of season, replace the fresh tomatoes with tinned chopped tomatoes."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezes well: up to 2 months in individual portions. Thaw in the fridge the day before and reheat thoroughly all the way through; do not refreeze.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Meat well cooked right through, with no trace of pink.",
+        "Check that no bone or piece of skin remains in the child’s portion. Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Peppers provide vitamin C and chicken protein: about 25 g of chicken per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years).",
+      "familyAdaptations": {
+        "baby": "Shred the chicken, mash the vegetables and mix with the rice; do not salt their portion.",
+        "child": "Serve the sauce next to the rice if they prefer."
+      },
+      "notes": [
+        "skinless",
+        null,
+        null,
+        null,
+        "clove",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "mo-boulettes-boeuf-tomate-coquillettes",
@@ -2443,6 +3172,43 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Beef meatballs in tomato sauce with macaroni",
+      "summary": "Tender meatballs simmered in a tomato sauce, with macaroni: the meal everyone agrees on.",
+      "steps": [
+        "Peel and very finely chop the onion. Mix half of it with the minced beef, breadcrumbs and egg, then shape into small meatballs.",
+        "Soften the rest of the onion in the olive oil for 3 minutes, add the chopped tomatoes and basil, then place the meatballs in the sauce.",
+        "Cover and simmer for 20 minutes over a low heat, until the meatballs are well cooked right through, with no trace of pink; meanwhile, cook the pasta (macaroni) for 10 minutes in boiling water.",
+        "For the child, cut the meatballs into quarters and mix them with the macaroni and the sauce."
+      ],
+      "adaptations": [
+        "Cut more or less finely depending on what your child accepts and how they chew.",
+        "Minced turkey can replace the beef."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "The meatballs in sauce freeze for up to 2 months (thaw in the fridge, reheat right through); cook the macaroni fresh.",
+      "precautions": [
+        "No salt or sugar in the child’s portion: adults add salt on their own plate.",
+        "Meat well cooked right through, with no trace of pink.",
+        "Egg always well cooked: white and yolk firm.",
+        "Soft pieces that squash easily between thumb and forefinger; always stay next to the child during the meal (choking risk to watch for until 4 years)."
+      ],
+      "nutrition": "Beef provides well-absorbed iron and pasta energy: about 25 g of beef per portion for the child, a guide to adjust according to age (around twenty grams at 1 year, around thirty at 2 years).",
+      "familyAdaptations": {
+        "baby": "Mash the cut-up meatballs in the sauce and serve with well-cooked macaroni; do not salt their portion.",
+        "child": "Let them spear the meatballs with a child-sized fork."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "leaves",
+        "macaroni"
+      ]
+    }
   }
 ]

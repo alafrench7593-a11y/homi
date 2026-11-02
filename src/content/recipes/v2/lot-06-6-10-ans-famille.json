@@ -93,7 +93,40 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Sunday roast chicken with melting potatoes",
+      "summary": "Golden chicken thighs and potatoes slow-roasted in the juices: the ultimate family meal.",
+      "steps": [
+        "Preheat the oven to 200 °C. Wash the potatoes and cut the larger ones in half.",
+        "Arrange the chicken thighs and potatoes in a large dish, add the garlic cloves, thyme and oil, then mix.",
+        "Roast for 50 minutes, basting with the juices halfway through: the skin should be golden, and the juices running from the meat should be clear, with no trace of pink near the bone.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste."
+      ],
+      "adaptations": [
+        "Add carrot chunks to the dish.",
+        "A whole 1.5 kg chicken needs about 1 hour 15 minutes of cooking."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "The boned meat freezes for 3 months; the potatoes do not freeze well. Thaw in the fridge and reheat until piping hot.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Remove the skin, bones and cartilage from the children’s portions.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Poultry and potatoes, to complete with a green vegetable.",
+      "familyAdaptations": {
+        "baby": "Before adding any salt, take out a little skinless chicken and potato: blend finely from around 8 months, mash with a fork from around 10 months, then offer small soft pieces after 1 year.",
+        "child": "Meat taken off the bone and cut into pieces; potatoes served with a little of the juices."
+      },
+      "notes": [
+        null,
+        "baby potatoes or a waxy variety",
+        "unpeeled cloves",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-boeuf-carottes-mijote",
@@ -210,7 +243,43 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Old-fashioned slow-cooked beef and carrots",
+      "summary": "Melting beef gently simmered with sweet carrots, even better reheated the next day.",
+      "steps": [
+        "Cut the beef into large cubes, slice the onions and garlic, and peel the carrots and cut them into thick rounds.",
+        "Brown the meat for 10 minutes in the oil in a casserole dish, then add the onions and garlic. Sprinkle with the flour and stir.",
+        "Add the carrots, thyme and bay leaf, then cover with water. Simmer with the lid on for 2 hours 15 minutes over a very low heat, until the meat falls apart with a fork.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste."
+      ],
+      "adaptations": [
+        "Serve with steamed potatoes, fresh pasta or mash.",
+        "In a pressure cooker, allow about 50 minutes."
+      ],
+      "storage": "3 days in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes very well, for up to 3 months, with its sauce. Thaw overnight in the fridge, then reheat over a low heat until piping hot all the way through.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Remove the bay leaf before serving.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Red meat rich in iron and plenty of carrots.",
+      "familyAdaptations": {
+        "baby": "Before adding salt, take out some very tender meat and carrots: blend with a little cooking juice from around 8 months, then shred finely and mash the carrots as your baby grows.",
+        "child": "Meat shredded into small pieces and melting carrots, with sauce."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        "cloves",
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-blanquette-de-veau",
@@ -342,7 +411,47 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Traditional veal blanquette",
+      "summary": "A creamy white sauce, tender veal and mushrooms: the blanquette that brings the whole table together.",
+      "steps": [
+        "Put the veal in a casserole dish, cover with cold water, bring to the boil and skim. Add the sliced carrots, the onion, the bay leaf and the thyme, then cook at a gentle simmer for 1 hour 15 minutes.",
+        "Fry the sliced mushrooms for 5 minutes in a knob of butter. Peel the potatoes and steam them for 25 minutes.",
+        "Drain the meat and carrots, keeping the stock. Melt the rest of the butter, add the flour, then pour in 600 ml of stock while whisking and leave to thicken for 10 minutes.",
+        "Put the meat, carrots and mushrooms back in the sauce, add the cream and a few drops of lemon, then reheat for 5 minutes.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste."
+      ],
+      "adaptations": [
+        "Add small pearl onions at the end of cooking.",
+        "Replace the veal with chicken (45 minutes of cooking) or serve with rice."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 3 months without the potatoes. Thaw overnight in the fridge, then reheat over a low heat, stirring: the sauce becomes smooth again.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Remove the bay leaf before serving.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Tender meat, vegetables and potatoes for a complete meal.",
+      "familyAdaptations": {
+        "baby": "Take out the meat and carrots before adding salt and before adding the lemon: blend with a little potato and stock from around 8 months, then chop finely as your baby grows.",
+        "child": "Meat cut into small pieces, potatoes mashed into the sauce."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "waxy"
+      ]
+    }
   },
   {
     "slug": "fa-gratin-dauphinois",
@@ -452,7 +561,42 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Creamy gratin dauphinois",
+      "summary": "Melting potatoes slowly cooked in milk and cream, with a golden crust.",
+      "steps": [
+        "Preheat the oven to 160 °C. Rub a gratin dish with the halved garlic clove, then butter it.",
+        "Peel the potatoes and cut them into thin slices, without rinsing them.",
+        "Heat the milk with the cream, the nutmeg and the bay leaf, add the potatoes and cook for 10 minutes, stirring gently.",
+        "Remove the bay leaf, pour everything into the dish and bake for 1 hour 5 minutes: the top should be golden and the tip of a knife should go through the potatoes without resistance.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste."
+      ],
+      "adaptations": [
+        "Serve with grilled meat or a green salad.",
+        "Add a layer of melted leeks for a more vegetable-based version."
+      ],
+      "storage": "48 hours in the fridge, covered with cling film; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 2 months in portions, with a slightly less melting texture. Thaw in the fridge and reheat in the oven at 170 °C.",
+      "precautions": [
+        "Cow’s milk in large amounts, cooked in a dish, can be offered from 1 year.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A creamy starchy food that provides calcium, to serve with a vegetable.",
+      "familyAdaptations": {
+        "baby": "From 1 year, take out a portion before adding salt and mash it with a fork; offer it with a mashed green vegetable.",
+        "child": "A portion with meat or an egg and green beans."
+      },
+      "notes": [
+        "waxy",
+        null,
+        null,
+        "clove",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-pates-bolognaise-maison",
@@ -568,7 +712,43 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Homemade pasta bolognese",
+      "summary": "A slow-simmered sauce with hidden vegetables, for spaghetti just like in Italy.",
+      "steps": [
+        "Finely chop the onion and garlic, and grate the carrots.",
+        "Fry the vegetables for 5 minutes in the oil, then add the beef and cook it, breaking it up, until it is no longer pink.",
+        "Add the chopped tomatoes and herbs, then simmer for 35 minutes over a low heat, stirring from time to time.",
+        "Cook the pasta for the time shown on the packet.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste. Serve the sauce over the pasta."
+      ],
+      "adaptations": [
+        "Add a grated courgette to the sauce.",
+        "Serve with a little grated Emmental."
+      ],
+      "storage": "3 days in the fridge for the sauce; reheat only once, until piping hot all the way through.",
+      "freezing": "The sauce freezes very well, 3 months, in portions. Thaw overnight in the fridge and reheat over a low heat until boiling.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Meat rich in iron, vegetables and pasta: a complete dish.",
+      "familyAdaptations": {
+        "baby": "Before adding salt, take out some sauce and blend it with a few small well-cooked pasta shapes from around 8 months; after 1 year, offer short pasta coated in sauce.",
+        "child": "Short pasta, easier to spear than spaghetti, with the sauce well mixed in."
+      },
+      "notes": [
+        "spaghetti or penne",
+        null,
+        null,
+        null,
+        null,
+        "clove",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-chili-doux-familial",
@@ -697,7 +877,46 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Mild family chilli",
+      "summary": "A really mild chilli, with no chilli pepper, with kidney beans and fragrant spices.",
+      "steps": [
+        "Slice the onion and cut the pepper into small dice. Fry them for 5 minutes in the oil.",
+        "Add the beef and cook it, breaking it up, until it is no longer pink, then add the cumin and paprika.",
+        "Pour in the chopped tomatoes, the rinsed kidney beans and the sweetcorn, then simmer for 30 minutes with the lid on.",
+        "Cook the rice for the time shown on the packet.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste. The older ones can add chilli on their plate."
+      ],
+      "adaptations": [
+        "Vegetarian version: replace the beef with cooked green lentils.",
+        "Serve in wheat tortillas for a change."
+      ],
+      "storage": "3 days in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 3 months without the rice. Thaw overnight in the fridge and reheat over a low heat until piping hot all the way through.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Before 4 years, mash the sweetcorn kernels and kidney beans (risk of choking).",
+        "No chilli in the pot: everyone adds their own on the plate."
+      ],
+      "nutrition": "Pulses rich in fibre, meat rich in iron, and rice.",
+      "familyAdaptations": {
+        "baby": "Take out a portion before adding salt, without sweetcorn, and blend it with a little rice from around 8 months; as your baby grows, mash the beans and sweetcorn well with a fork.",
+        "child": "Served with the rice and a little fromage frais to soften it."
+      },
+      "notes": [
+        null,
+        "drained",
+        null,
+        null,
+        null,
+        "drained",
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-couscous-poulet-legumes",
@@ -826,7 +1045,46 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Chicken and vegetable couscous",
+      "summary": "A generous couscous, mild and fragrant, with melting vegetables and a broth to pour over the semolina.",
+      "steps": [
+        "Brown the chicken thighs for 10 minutes in the oil in a large stockpot, with the sliced onion and the ras el hanout.",
+        "Add the carrots and turnips cut into chunks, the chopped tomatoes and 1.5 litres of water. Simmer for 25 minutes.",
+        "Add the courgettes cut into chunks and the chickpeas, then cook for another 15 minutes: the chicken should come away from the bone, with no trace of pink.",
+        "Prepare the semolina: pour the same volume of boiling water over it, cover for 5 minutes, then fluff it up with a fork and a drizzle of oil.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste. Serve the semolina moistened with broth, with the meat and vegetables."
+      ],
+      "adaptations": [
+        "Add raisins plumped up in the broth for the older ones.",
+        "Vegetarian version: double the chickpeas and leave out the chicken."
+      ],
+      "storage": "48 hours in the fridge, semolina and broth kept separately; reheat only once, until piping hot all the way through.",
+      "freezing": "The broth with the meat and vegetables freezes for 3 months; make the semolina fresh. Thaw in the fridge and bring to the boil.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Remove the skin and bones from the children’s portions.",
+        "Before 4 years, mash the chickpeas (risk of choking)."
+      ],
+      "nutrition": "Poultry, five vegetables and pulses: a very complete dish.",
+      "familyAdaptations": {
+        "baby": "Before adding salt, take out some vegetables, chickpeas and skinless chicken: blend with a little broth and semolina from around 8 months, then mash with a fork as your baby grows.",
+        "child": "Semolina well moistened with broth, vegetables and meat cut into pieces."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        "drained",
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-minestrone-legumes",
@@ -963,7 +1221,46 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Minestrone soup with small pasta",
+      "summary": "A big Italian soup full of vegetables, beans and small pasta, almost a complete meal.",
+      "servingLabel": "bowls",
+      "steps": [
+        "Cut the carrot, courgette and potatoes into small dice, and the green beans into short lengths. Slice the onion and garlic.",
+        "Soften the onion and garlic for 3 minutes in the oil, add the vegetables and chopped tomatoes, then 1.5 litres of water. Cook for 20 minutes.",
+        "Add the haricot beans and small pasta, then cook for another 10 minutes, until the pasta is tender.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste. Sprinkle with shredded basil when serving."
+      ],
+      "adaptations": [
+        "Add a little grated Emmental to the older ones’ bowls.",
+        "Any season works: use the vegetables of the moment."
+      ],
+      "storage": "3 days in the fridge in a closed container; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 3 months, preferably without the pasta, which you add when reheating. Thaw in the fridge and bring to the boil.",
+      "precautions": [
+        "Before 4 years, mash the haricot beans and check that the vegetables are really tender (risk of choking).",
+        "Check the temperature before serving."
+      ],
+      "nutrition": "Mixed vegetables, pulses and pasta for a meal rich in fibre.",
+      "familyAdaptations": {
+        "baby": "Before adding salt, take out a ladleful and blend it finely from around 8 months; from 10 months, simply mash with a fork.",
+        "child": "A big bowl with bread, then some cheese and a piece of fruit."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        "drained",
+        null,
+        null,
+        null,
+        "clove",
+        null,
+        "leaves"
+      ]
+    }
   },
   {
     "slug": "fa-poulet-basquaise",
@@ -1088,7 +1385,46 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Basque-style chicken with peppers",
+      "summary": "Chicken simmered in a sunny tomato and pepper sauce, served with rice.",
+      "steps": [
+        "Brown the chicken thighs for 10 minutes in the oil in a casserole dish, then set them aside.",
+        "In the same casserole dish, fry the sliced onions, garlic and pepper strips for 10 minutes.",
+        "Add the diced tomatoes, paprika, thyme and bay leaf, put the chicken back in, cover and simmer for 30 minutes: the meat should come away from the bone, with no trace of pink.",
+        "Cook the rice for the time shown on the packet.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste."
+      ],
+      "adaptations": [
+        "Out of season, use 800 g of tinned chopped tomatoes.",
+        "The older ones can spice up their plate with Espelette pepper."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 3 months without the rice. Thaw overnight in the fridge and reheat over a low heat until piping hot all the way through.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Remove the skin, bones and bay leaf before serving the children.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Poultry and plenty of Mediterranean vegetables, with rice.",
+      "familyAdaptations": {
+        "baby": "Before adding salt, take out some skinless chicken and well-cooked vegetables, remove the pepper skins and blend with a little rice from around 8 months; mash with a fork as your baby grows.",
+        "child": "Boned chicken in small pieces, sauce over the rice."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        "cloves",
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-saumon-papillote-fondue-poireaux",
@@ -1203,7 +1539,42 @@
       "santefr_3_6",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Salmon en papillote with melted leeks",
+      "summary": "Really moist salmon cooked in a parcel on a bed of melting leeks, with rice.",
+      "steps": [
+        "Finely slice the leeks and soften them for 15 minutes in the butter, with the lid on and over a low heat, then add the cream.",
+        "Preheat the oven to 200 °C. Cook the rice for the time shown on the packet.",
+        "Share the melted leeks between 4 sheets of baking paper, place a salmon fillet on each, add the chives and close into parcels.",
+        "Bake for 15 minutes: the flesh should be opaque all the way through and flake easily. Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste. Adults add a squeeze of lemon juice."
+      ],
+      "adaptations": [
+        "Trout or cod also work.",
+        "Replace the rice with steamed potatoes."
+      ],
+      "storage": "24 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "The cooked salmon and leeks can be frozen for 1 month, but the texture becomes drier. Thaw in the fridge and reheat gently.",
+      "precautions": [
+        "Fish cooked right through (opaque flesh that flakes); carefully remove all the bones.",
+        "Vary the species of fish from week to week and alternate oily and white fish, twice a week.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "An oily fish rich in omega-3, a mild vegetable and rice.",
+      "familyAdaptations": {
+        "baby": "Take out a portion of boneless salmon and leeks before adding salt and without lemon: blend with rice from around 8 months, then flake finely as your baby grows.",
+        "child": "Boneless flaked salmon, leeks and rice mixed together."
+      },
+      "notes": [
+        "skinless fillets",
+        null,
+        null,
+        null,
+        null,
+        "finely chopped",
+        null
+      ]
+    }
   },
   {
     "slug": "fa-navarin-agneau-printanier",
@@ -1334,7 +1705,34 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Spring lamb navarin",
+      "summary": "A tender lamb stew with new vegetables, to celebrate the arrival of spring as a family.",
+      "steps": [
+        "Cut the lamb into pieces, removing any excess fat. Brown it for 10 minutes in the oil in a casserole dish, with the sliced onion.",
+        "Sprinkle with the flour, add the tomato purée, thyme and bay leaf, then cover with water. Simmer with the lid on for 50 minutes.",
+        "Add the carrots, turnips and potatoes cut into pieces, then cook for another 30 minutes.",
+        "Add the peas 10 minutes before the end: the meat should be melting and the vegetables tender.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste."
+      ],
+      "adaptations": [
+        "Replace the lamb with veal for a milder taste.",
+        "Add green beans with the peas."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 3 months. Thaw overnight in the fridge and reheat over a low heat until piping hot all the way through.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Remove the bay leaf and any small bones.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Meat rich in iron and four vegetables in the same casserole dish.",
+      "familyAdaptations": {
+        "baby": "Before adding salt, take out some very tender meat and vegetables: blend with a little juice from around 8 months, then shred and mash as your baby grows.",
+        "child": "Meat cut into small pieces, vegetables with the sauce."
+      }
+    }
   },
   {
     "slug": "fa-ratatouille-mijotee",
@@ -1455,7 +1853,42 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Slow-cooked ratatouille",
+      "summary": "Mediterranean vegetables cooked slowly until melting: a dish to share hot or cold.",
+      "steps": [
+        "Cut the aubergine, courgettes and peppers into dice and the tomatoes into pieces. Slice the onions and garlic.",
+        "Fry the onions and peppers for 10 minutes in the oil in a casserole dish.",
+        "Add the aubergine, courgettes, garlic, tomatoes and thyme. Cover and simmer for 40 minutes over a low heat, stirring from time to time, until everything is melting.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste. Add the shredded basil when serving."
+      ],
+      "adaptations": [
+        "Serve with rice, semolina, pasta or a well-cooked fried egg.",
+        "Even better the next day, cold or reheated."
+      ],
+      "storage": "3 days in the fridge in a closed container; eat cold or reheated only once.",
+      "freezing": "Freezes very well, 3 months, in portions. Thaw in the fridge and reheat over a low heat.",
+      "precautions": [
+        "Remove the pepper and tomato skins for the youngest children; vegetables really melting before 4 years (risk of choking)."
+      ],
+      "nutrition": "Five summer vegetables rich in fibre and vitamins.",
+      "familyAdaptations": {
+        "baby": "Before adding salt, take out a portion and blend it finely from around 8 months (remove the pepper skins); from 10 months, mash with a fork and add rice.",
+        "child": "With pasta or rice, and a little grated cheese."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        "cloves",
+        null,
+        null,
+        "leaves"
+      ]
+    }
   },
   {
     "slug": "fa-filet-mignon-pommes-fondantes",
@@ -1557,7 +1990,32 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Pork tenderloin with apples",
+      "summary": "Tender pork tenderloin and caramelised apples, the gentle sweet-and-savoury dish children love.",
+      "steps": [
+        "Peel the potatoes and steam them for 20 minutes.",
+        "Brown the pork tenderloin on all sides for 8 minutes in the butter in a casserole dish, with the sliced onion.",
+        "Add the peeled apples cut into quarters, the thyme and half a glass of water. Cover and cook for 25 minutes over a low heat: the meat must be cooked right through, with no pink parts.",
+        "Slice the meat and serve it with the apples, potatoes and juices. Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste."
+      ],
+      "adaptations": [
+        "Replace the potatoes with a celeriac or sweet potato mash.",
+        "Add a spoonful of cream to the juices for the older ones."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "The sliced meat freezes for 2 months with its juices; the apples freeze too. Thaw in the fridge and reheat gently.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A lean meat, cooked fruit and potatoes.",
+      "familyAdaptations": {
+        "baby": "Before adding salt, take out some meat, cooked apples and potatoes: blend from around 8 months, then chop the meat finely and mash the rest as your baby grows.",
+        "child": "Meat cut into small pieces, melting apples on the side."
+      }
+    }
   },
   {
     "slug": "fa-cabillaud-four-tomates-pommes-de-terre",
@@ -1668,7 +2126,42 @@
       "santefr_3_6",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Oven-baked cod with tomatoes and potatoes",
+      "summary": "An all-in-one fish dish with the scent of Provence, ready as soon as the oven has done its job.",
+      "steps": [
+        "Preheat the oven to 200 °C. Cut the potatoes into thin rounds, mix them with 2 spoonfuls of oil, the crushed garlic and the herbs, then spread them in a dish.",
+        "Bake for 25 minutes, until the potatoes are almost tender.",
+        "Place the cod on the potatoes, surround it with sliced tomatoes, drizzle with the rest of the oil and bake for 15 minutes: the flesh should be opaque and flake apart.",
+        "Take out the baby’s portion before adding salt, then lightly salt the rest of the dish to taste. Adults add a squeeze of lemon juice."
+      ],
+      "adaptations": [
+        "Hake or pollock also work.",
+        "Add olives to the adults’ portion."
+      ],
+      "storage": "24 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezing not recommended once cooked: the fish becomes dry and the potatoes floury.",
+      "precautions": [
+        "Fish cooked right through (opaque flesh that flakes); carefully remove all the bones.",
+        "Vary the species of fish from week to week and alternate oily and white fish, twice a week.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A white fish, vegetables and potatoes in the same dish.",
+      "familyAdaptations": {
+        "baby": "Before adding salt and without lemon, take out some boneless fish, potatoes and skinless tomatoes: blend from around 8 months, then mash with a fork as your baby grows.",
+        "child": "Boneless flaked fish, with the potatoes and a little of the juices."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        "clove",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-tarte-aux-pommes-normande",
@@ -1773,7 +2266,41 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Apple tart with compote",
+      "summary": "Crisp pastry, a layer of compote and apples in a rosette: the tart for family snack time.",
+      "servingLabel": "portions",
+      "steps": [
+        "Preheat the oven to 190 °C. Unroll the shortcrust pastry into a tin and prick the base with a fork.",
+        "Spread the compote over the pastry base.",
+        "Peel the apples, cut them into thin slices and arrange them in a rosette. Brush with melted butter, then sprinkle with sugar and cinnamon.",
+        "Bake for 40 minutes, until the pastry is golden and the apples tender."
+      ],
+      "adaptations": [
+        "Replace half the apples with pears.",
+        "For the youngest children, serve a slice without the hardest crust."
+      ],
+      "storage": "3 days at room temperature, under a cake cover, or in the fridge.",
+      "freezing": "Freezes for 2 months once baked, in slices. Thaw at room temperature, then put back in the oven for 10 minutes to crisp it up.",
+      "precautions": [
+        "Added sugar is not offered before 1 year; after that, a small amount from time to time.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A fruit-based dessert, not very sweet thanks to the compote.",
+      "familyAdaptations": {
+        "baby": "Before 1 year, offer only cooked apples and compote with no sugar; from 1 year, a small portion of mashed filling, without the hard crust.",
+        "child": "A slice at snack time with a glass of milk."
+      },
+      "notes": [
+        "roll",
+        null,
+        null,
+        null,
+        "melted",
+        null
+      ]
+    }
   },
   {
     "slug": "fa-crumble-pommes-poires",
@@ -1882,7 +2409,41 @@
       "anses_miel",
       "inspq_etouffement",
       "santefr_3_6"
-    ]
+    ],
+    "en": {
+      "title": "Apple and pear crumble",
+      "summary": "Melting fruit under a crunchy crumble topping: the comforting autumn dessert.",
+      "steps": [
+        "Preheat the oven to 180 °C. Peel the apples and pears, dice them and spread them in a dish with the cinnamon.",
+        "Rub the flour, oats, sugar and cold diced butter together with your fingertips until it looks like sand.",
+        "Sprinkle this topping over the fruit.",
+        "Bake for 35 minutes, until the top is golden and the fruit melting."
+      ],
+      "adaptations": [
+        "Change the fruit with the seasons: plums, rhubarb, red berries.",
+        "Reduce the sugar to 30 g with very ripe fruit."
+      ],
+      "storage": "3 days in the fridge, covered with cling film; reheat in the oven to make it crisp again.",
+      "freezing": "Freezes for 3 months, cooked or raw. Bake the raw crumble without thawing, adding 10 minutes; thaw the cooked crumble in the fridge before reheating it.",
+      "precautions": [
+        "Added sugar is not offered before 1 year; after that, a small amount from time to time.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A dessert rich in fruit, with oats for fibre.",
+      "familyAdaptations": {
+        "baby": "Before 1 year, take out some cooked fruit without topping and mash it; after 1 year, a small portion with a little softened topping.",
+        "child": "A lukewarm portion, with a plain yoghurt."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        "cold",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-quiche-poireaux-courgettes",
@@ -1991,7 +2552,40 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Leek and courgette quiche",
+      "summary": "A golden, generous quiche filled with melting vegetables: serve hot with a salad.",
+      "steps": [
+        "Slice the leeks and cut the courgette into small dice. Soften them for 15 minutes in the butter.",
+        "Preheat the oven to 180 °C. Unroll the shortcrust pastry into a tin and prick the base.",
+        "Beat the eggs with the milk and cream, then add the vegetables and Emmental.",
+        "Pour onto the pastry and bake for 35 minutes: the filling should be well set in the centre and golden."
+      ],
+      "adaptations": [
+        "Add diced ham or salmon.",
+        "Replace the vegetables with spinach and goat’s cheese made with pasteurised milk."
+      ],
+      "storage": "48 hours in the fridge; eat cold or reheated only once.",
+      "freezing": "Freezes for 2 months in slices. Thaw in the fridge and reheat for 15 minutes in the oven at 180 °C.",
+      "precautions": [
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts."
+      ],
+      "nutrition": "Vegetables, eggs and cheese, to complete with a green salad.",
+      "familyAdaptations": {
+        "child": "A slice with a tomato or grated carrot salad, then a piece of fruit."
+      },
+      "notes": [
+        "roll",
+        null,
+        null,
+        null,
+        null,
+        null,
+        "grated",
+        null
+      ]
+    }
   },
   {
     "slug": "fa-poisson-pane-maison-potatoes",
@@ -2096,7 +2690,32 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Homemade breaded fish with oven-baked potato wedges",
+      "summary": "Crunchy homemade fish fingers, much better than shop-bought ones.",
+      "steps": [
+        "Preheat the oven to 210 °C. Cut the potatoes into wedges, mix them with 2 spoonfuls of oil and the paprika, then bake for 30 minutes, turning them halfway through.",
+        "Cut the cod into fingers, removing the bones. Dip them in the flour, then in the beaten egg, then in the breadcrumbs.",
+        "Brown the fish fingers for 3 to 4 minutes on each side in the rest of the oil: the fish should be opaque and flake in the centre.",
+        "Serve with the potato wedges and lemon wedges."
+      ],
+      "adaptations": [
+        "Add a little grated Emmental to the breadcrumbs.",
+        "Serve with a fromage frais and chive sauce."
+      ],
+      "storage": "24 hours in the fridge; reheat in the oven to keep it crisp.",
+      "freezing": "The raw breaded fingers freeze for 2 months laid flat; cook them without thawing, 2 minutes longer on each side. The potato wedges do not freeze well.",
+      "precautions": [
+        "Fish cooked right through (opaque flesh that flakes); carefully remove all the bones.",
+        "Vary the species of fish from week to week and alternate oily and white fish, twice a week.",
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts."
+      ],
+      "nutrition": "A white fish, potatoes and pan-frying with little fat.",
+      "familyAdaptations": {
+        "child": "With a grated carrot salad or green beans to complete it."
+      }
+    }
   },
   {
     "slug": "fa-gaufres-maison",
@@ -2196,7 +2815,41 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Crisp homemade waffles",
+      "summary": "Golden, light waffles for a party snack or a rainy Sunday.",
+      "servingLabel": "waffles",
+      "steps": [
+        "Mix the flour, baking powder and sugar in a mixing bowl. Add the eggs, then the milk little by little while whisking.",
+        "Stir in the melted butter and vanilla. Leave the batter to rest for 30 minutes if possible.",
+        "Heat the waffle iron and lightly grease it. Pour in a ladleful of batter and cook for 3 to 4 minutes, until the waffle is golden.",
+        "Serve straight away with fresh fruit, a compote or a little icing sugar."
+      ],
+      "adaptations": [
+        "Replace 50 g of flour with buckwheat flour.",
+        "Top with red berries and fromage frais rather than chocolate spread."
+      ],
+      "storage": "48 hours in an airtight box; reheat in the toaster.",
+      "freezing": "Freeze for 2 months, separated by baking paper. Reheat from frozen in the toaster or oven.",
+      "precautions": [
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts.",
+        "Keep children away from the hot waffle iron."
+      ],
+      "nutrition": "A festive snack, to serve with fruit rather than very sweet toppings.",
+      "familyAdaptations": {
+        "child": "Children can pour the batter with an adult’s help and choose their fruit."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        "melted",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-salade-pates-thon-crudites",
@@ -2308,7 +2961,42 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Pasta salad with tuna and raw vegetables",
+      "summary": "A fresh, colourful salad, perfect for picnics and summer evenings.",
+      "steps": [
+        "Cook the pasta for the time shown on the packet, rinse it in cold water and drain it.",
+        "Cut the cherry tomatoes in half and the cucumber into small dice.",
+        "Flake the tuna and mix it with the pasta, raw vegetables and sweetcorn.",
+        "Dress with the oil, lemon juice and shredded basil. Keep in the fridge until the meal."
+      ],
+      "adaptations": [
+        "Replace the tuna with sardines, mackerel or hard-boiled eggs for variety.",
+        "Add diced cheese or olives for the older ones."
+      ],
+      "storage": "24 hours in the fridge in a closed box; for a picnic, carry it in a cool bag.",
+      "freezing": "Cannot be frozen: the raw vegetables and pasta become soft and watery.",
+      "precautions": [
+        "Tuna is a predatory fish: offer it only from time to time and vary the species of fish from one week to the next.",
+        "Vary the species of fish from week to week and alternate oily and white fish, twice a week.",
+        "Do not leave the salad out of the fridge for more than 2 hours."
+      ],
+      "nutrition": "A complete cold dish: starchy food, fish and raw vegetables.",
+      "familyAdaptations": {
+        "child": "Children can choose and cut the raw vegetables with a child-safe knife."
+      },
+      "notes": [
+        "fusilli",
+        "drained",
+        null,
+        null,
+        "drained",
+        null,
+        null,
+        "leaves"
+      ]
+    }
   },
   {
     "slug": "fa-wraps-poulet-crudites",
@@ -2414,7 +3102,41 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Chicken and raw vegetable wraps",
+      "summary": "Rolled tortillas filled with golden chicken, raw vegetables and a soft cheese sauce.",
+      "steps": [
+        "Cut the chicken into strips, sprinkle with paprika and brown them for 8 minutes in the oil: no trace of pink should remain.",
+        "Grate the carrots, cut the cucumber into sticks and wash the lettuce leaves.",
+        "Spread each tortilla with soft cheese, then fill with lettuce, raw vegetables and chicken.",
+        "Roll up tightly and cut in half diagonally."
+      ],
+      "adaptations": [
+        "Replace the chicken with leftover roast chicken or mashed chickpeas.",
+        "Add sliced avocado."
+      ],
+      "storage": "12 hours in the fridge, covered with cling film; carry them chilled.",
+      "freezing": "Freezing not recommended once filled; the cooked chicken on its own freezes for 3 months and is thawed in the fridge.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Wash the raw vegetables thoroughly."
+      ],
+      "nutrition": "Poultry, raw vegetables and a starchy food in a meal to eat with your hands.",
+      "familyAdaptations": {
+        "child": "Everyone makes their own wrap: put the fillings in the middle of the table."
+      },
+      "notes": [
+        null,
+        null,
+        "leaves",
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-tomates-farcies-riz",
@@ -2526,7 +3248,42 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Stuffed tomatoes with their rice",
+      "summary": "Sun-ripened tomatoes stuffed with meat, with rice that cooks in their juices.",
+      "steps": [
+        "Preheat the oven to 180 °C. Cut a lid off each tomato and hollow them out with a spoon, keeping the pulp.",
+        "Mix the beef, chopped onion and garlic, parsley, breadcrumbs and egg. Fill the tomatoes with the stuffing and put the lids back on.",
+        "Pour the uncooked rice and the chopped pulp into the bottom of a dish, add 300 ml of water and the oil, then place the tomatoes on top.",
+        "Bake for 50 minutes: the stuffing must be well cooked right through, with no trace of pink, and the rice tender."
+      ],
+      "adaptations": [
+        "Use half beef, half sausage meat for the traditional version.",
+        "Also stuff round courgettes or peppers."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freeze for 2 months once cooked, with their rice. Thaw overnight in the fridge and reheat in the oven until piping hot all the way through.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts."
+      ],
+      "nutrition": "Meat rich in iron, tomatoes and rice in the same dish.",
+      "familyAdaptations": {
+        "child": "One tomato per child, cut in half, with plenty of rice."
+      },
+      "notes": [
+        "large",
+        null,
+        null,
+        "clove",
+        "finely chopped",
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "fa-gnocchis-gratines-tomate-mozzarella",
@@ -2625,7 +3382,39 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Baked gnocchi with tomato and mozzarella",
+      "summary": "Soft gnocchi in a tomato and basil sauce, browned under melting mozzarella.",
+      "steps": [
+        "Preheat the oven to 200 °C. Fry the sliced onion and garlic for 3 minutes in the oil.",
+        "Add the chopped tomatoes and shredded basil, then simmer for 10 minutes.",
+        "Mix the uncooked gnocchi with the sauce in a dish and cover with sliced mozzarella.",
+        "Bake for 12 minutes, until the mozzarella has melted and turned golden."
+      ],
+      "adaptations": [
+        "Add diced courgette or aubergine to the sauce.",
+        "Replace the gnocchi with cooked short pasta."
+      ],
+      "storage": "24 hours in the fridge; reheat only once, until piping hot all the way through.",
+      "freezing": "Can be frozen for 1 month, but the gnocchi become softer. Thaw in the fridge and reheat in the oven.",
+      "precautions": [
+        "Let it cool to lukewarm: melted mozzarella stays scalding hot."
+      ],
+      "nutrition": "A vegetarian dish to complete with a green salad and a piece of fruit.",
+      "familyAdaptations": {
+        "child": "Cut the gnocchi in half and serve with a cucumber salad."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        "clove",
+        null,
+        "leaves",
+        null
+      ]
+    }
   },
   {
     "slug": "fa-gateau-chocolat-fondant",
@@ -2714,7 +3503,32 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Gooey chocolate cake",
+      "summary": "Children’s favourite birthday cake, gooey in the middle and easy to get right.",
+      "servingLabel": "portions",
+      "steps": [
+        "Preheat the oven to 180 °C and butter a tin.",
+        "Melt the chocolate and butter in a bain-marie or for a few seconds in the microwave, then stir.",
+        "Whisk the eggs with the sugar, add the melted chocolate and then the flour.",
+        "Pour into the tin and bake for 25 minutes: the top should be cracked and a knife blade should come out with a few moist crumbs, but no runny batter."
+      ],
+      "adaptations": [
+        "Add 50 g of ground almonds for an even softer cake.",
+        "Reduce the sugar to 70 g with 52% chocolate."
+      ],
+      "storage": "4 days under a cake cover at room temperature.",
+      "freezing": "Freezes for 3 months, whole or in slices. Thaw for 2 hours at room temperature.",
+      "precautions": [
+        "Eggs well cooked: bake for a few more minutes if the centre is still runny.",
+        "Very sweet cake: a slice for special occasions."
+      ],
+      "nutrition": "A treat dessert to keep for birthdays and party snacks.",
+      "familyAdaptations": {
+        "child": "Children can break up the chocolate and mix the batter."
+      }
+    }
   },
   {
     "slug": "fa-clafoutis-cerises",
@@ -2813,6 +3627,30 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Cherry clafoutis",
+      "summary": "The early-summer dessert: juicy cherries set in a golden vanilla custard.",
+      "steps": [
+        "Preheat the oven to 180 °C and butter a dish. Wash the cherries, remove the stalks and pit them.",
+        "Whisk the eggs with the sugar, add the flour, then the milk and vanilla to get a smooth batter.",
+        "Spread the cherries in the dish and pour the batter over them.",
+        "Bake for 40 minutes: the clafoutis should be golden and well set in the centre. Serve lukewarm or cold."
+      ],
+      "adaptations": [
+        "Out of season, use apples, pears or apricots.",
+        "Reduce the sugar to 50 g with very ripe cherries."
+      ],
+      "storage": "48 hours in the fridge, covered with cling film.",
+      "freezing": "Freezing not recommended: the custard becomes spongy and the fruit releases its juice.",
+      "precautions": [
+        "Pit all the cherries and check that no stones remain in the children’s portions.",
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts."
+      ],
+      "nutrition": "A dessert with seasonal fruit, eggs and milk.",
+      "familyAdaptations": {
+        "child": "Children can pit the cherries with a cherry pitter, under supervision."
+      }
+    }
   }
 ]

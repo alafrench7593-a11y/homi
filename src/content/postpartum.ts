@@ -8,12 +8,18 @@ import { localized } from '@/i18n/localized';
 
 export interface Source { title: string; publisher: string; url: string }
 
-export const SOURCES: Record<string, Source> = {
+const SOURCES_FR: Record<string, Source> = {
   mpj: { title: 'Le baby blues et la dépression post-partum', publisher: '1000 premiers jours (Santé publique France)', url: 'https://www.1000-premiers-jours.fr/fr/le-baby-blues-et-la-depression-post-partum' },
   ministere: { title: 'Dépression post-partum : un accompagnement possible', publisher: 'Ministère de la Santé', url: 'https://sante.gouv.fr/prevention-en-sante/sante-des-populations/sante-des-femmes/article/depression-post-partum-un-accompagnement-possible' },
   awhonn: { title: 'Sauvez votre vie : signaux d’alerte post-accouchement (version française)', publisher: 'AWHONN — association américaine des infirmières en santé des femmes et périnatalité', url: 'https://www.stelizabeth.com/care/wp-content/uploads/2025/10/AWOHNN-save-YourLife-Heandout-French.pdf' },
   crise: { title: 'Que faire et à qui s’adresser face à une crise suicidaire ?', publisher: 'Ministère de la Santé', url: 'https://sante.gouv.fr/prevention-en-sante/sante-mentale/la-prevention-du-suicide/article/que-faire-et-a-qui-s-adresser-face-a-une-crise-suicidaire' },
 };
+/** Anglais : seule la présentation de l'éditeur change ; les titres des sources restent dans leur langue d'origine. */
+const SOURCES_EN: Record<string, Source> = {
+  ...SOURCES_FR,
+  awhonn: { ...SOURCES_FR.awhonn, publisher: 'AWHONN — Association of Women’s Health, Obstetric and Neonatal Nurses (United States)' },
+};
+export const SOURCES: Record<string, Source> = localized(SOURCES_FR, SOURCES_EN);
 
 export interface Section { id: string; title: string; body: string[]; sources: (keyof typeof SOURCES)[] }
 

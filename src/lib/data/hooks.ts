@@ -389,8 +389,17 @@ export function useSavedAnswers() {
 }
 
 // ---------------------------------------------------------------- communauté
+/** Espace affiché dans la langue de l'application : anglais quand il existe (colonnes *_en), sinon français. */
+export function localizeForum<T extends Pick<Forum, 'title' | 'description' | 'title_en' | 'description_en'>>(f: T, lang: string = getLocale()): T {
+  if (lang !== 'en' || !f.title_en) return f;
+  return { ...f, title: f.title_en, description: f.description_en || f.description };
+}
 export function useForums() {
-  return useRows<Forum>(['forums'], { table: 'forums', order: [{ col: 'position' }] }, { staleTime: 3600_000 });
+  const q = useRows<Forum>(['forums'], { table: 'forums', order: [{ col: 'position' }] }, { staleTime: 3600_000 });
+  // L'arbre est remonté à chaque changement de langue : getLocale() suffit ici
+  const lang = getLocale();
+  const data = useMemo(() => (q.data && lang === 'en' ? q.data.map((f) => localizeForum(f, lang)) : q.data), [q.data, lang]);
+  return { ...q, data } as typeof q;
 }
 export function useFeed(forumId?: string | null) {
   const filters: Filter[] = forumId ? [eq('forum_id', forumId)] : [];

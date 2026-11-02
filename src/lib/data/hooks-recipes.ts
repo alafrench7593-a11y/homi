@@ -2,13 +2,14 @@
  * Recettes : lecture de la bibliothèque (base de données, avec la copie embarquée en secours), profil alimentaire
  * du profil affiché, favoris, menus et listes de courses du foyer (partagés avec le coparent), réglages de l'enfant.
  */
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { getLocale } from '@/i18n';
 import { useMutation } from '@tanstack/react-query';
 import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
 import { ensureHousehold, useActivePregnancy, useHouseholdId, useInvalidate, useRows, useTrackedChildren, useJourneyState } from './hooks';
 import { useScope } from './hooks-scope';
-import { ALL_RECIPES } from '@/content/recipes';
+import { localizeRecipes } from '../recipes/english';
 import { recipeToRows, rowsToRecipes, type IngredientRow, type LinkRow, type PhotoRow, type RecipeRow, type ReviewRow, type StepRow } from '../recipes/db';
 import { ingredientsInText, stageFor, type FoodProfile, type MenuSlot, type ShoppingLine } from '../recipes/engine';
 import type { Allergen, Recipe, Texture } from '../recipes/types';
@@ -18,29 +19,63 @@ import { childAge } from '../domain/child';
 import { uuid } from '../uuid';
 import type { Child } from '../types';
 import { toISODate } from '../domain/dates';
+import { loadEmbeddedRecipesModule, type EmbeddedRecipesModule } from '../lazyContent';
 
 /** Recettes visibles : une recette retirée n'est plus proposée ; un brouillon IA de la bibliothèque reste invisible des parents. */
 export function visibleRecipes<R extends Pick<Recipe, 'status'> & { personal?: boolean }>(list: R[], opts: { includeRetired?: boolean; includeDrafts?: boolean } = {}): R[] {
   return list.filter((r) => (opts.includeRetired || r.status !== 'retired') && (opts.includeDrafts || r.personal || r.status !== 'ai_draft'));
 }
 
-export function useRecipes(opts: { includeRetired?: boolean; includeDrafts?: boolean } = {}) {
+/**
+ * Copie embarquée de la bibliothèque (secours tant que la base n'a pas les recettes) : chargée à la première utilisation
+ * seulement (QA E-06). Sur le web, elle n'est plus dans le fichier de démarrage ; sur iOS et Android, elle reste dans
+ * l'application (disponible hors ligne), le chargement est immédiat.
+ */
+type EmbeddedRecipes = EmbeddedRecipesModule['ALL_RECIPES'];
+let embeddedRecipes: EmbeddedRecipes | null = null;
+let embeddedLoad: Promise<EmbeddedRecipes> | null = null;
+export function loadEmbeddedRecipes(): Promise<EmbeddedRecipes> {
+  embeddedLoad ??= loadEmbeddedRecipesModule().then((m) => (embeddedRecipes = m.ALL_RECIPES), (err: unknown) => { embeddedLoad = null; throw err; });
+  return embeddedLoad;
+}
+function useEmbeddedRecipes(needed: boolean): EmbeddedRecipes | null {
+  const [list, setList] = useState<EmbeddedRecipes | null>(embeddedRecipes);
+  useEffect(() => {
+    if (!needed || list) return;
+    let alive = true;
+    loadEmbeddedRecipes().then((l) => { if (alive) setList(l); }, () => undefined);
+    return () => { alive = false; };
+  }, [needed, list]);
+  return list;
+}
+
+/** `original` : textes de la base tels quels (administration : on corrige le français, jamais la traduction affichée). */
+export function useRecipes(opts: { includeRetired?: boolean; includeDrafts?: boolean; original?: boolean } = {}) {
   const recipes = useRows<RecipeRow>(['recipes'], { table: 'recipes', order: [{ col: 'title' }] }, { staleTime: 600_000 });
   const ing = useRows<IngredientRow>(['recipe_ingredients'], { table: 'recipe_ingredients' }, { staleTime: 600_000 });
   const steps = useRows<StepRow>(['recipe_steps'], { table: 'recipe_steps' }, { staleTime: 600_000 });
   const photos = useRows<PhotoRow>(['recipe_photos'], { table: 'recipe_photos' }, { staleTime: 600_000 });
   const links = useRows<LinkRow>(['recipe_source_links'], { table: 'recipe_source_links' }, { staleTime: 600_000 });
   const reviews = useRows<ReviewRow>(['recipe_reviews'], { table: 'recipe_reviews' }, { staleTime: 600_000 });
-  const loading = [recipes, ing, steps, photos, links].some((q) => q.isLoading);
+  const list = useMemo(() => (recipes.data ? rowsToRecipes(recipes.data, ing.data ?? [], steps.data ?? [], photos.data ?? [], links.data ?? [], reviews.data ?? []) : null),
+    [recipes.data, ing.data, steps.data, photos.data, links.data, reviews.data]);
+  // Base pas encore installée (migration non appliquée) : bibliothèque embarquée, mêmes recettes et mêmes statuts
+  const needEmbedded = !!list && !list.some((r) => !r.personal);
+  // Anglais (QA D-10) : les textes anglais sont rangés dans la bibliothèque embarquée (champ `en`) ; même chargement
+  // L'arbre est remonté à chaque changement de langue : getLocale() suffit ici
+  const lang = getLocale();
+  const needEnglish = lang === 'en' && !opts.original && !!list;
+  const embedded = useEmbeddedRecipes(needEmbedded || needEnglish);
+  const waitingEmbedded = (needEmbedded || needEnglish) && !embedded;
+  const loading = [recipes, ing, steps, photos, links].some((q) => q.isLoading) || waitingEmbedded;
   const data = useMemo(() => {
-    if (!recipes.data) return null;
-    const list = rowsToRecipes(recipes.data, ing.data ?? [], steps.data ?? [], photos.data ?? [], links.data ?? [], reviews.data ?? []);
-    // Base pas encore installée (migration non appliquée) : bibliothèque embarquée, mêmes recettes et mêmes statuts
-    const full = list.some((r) => !r.personal) ? list : [...ALL_RECIPES, ...list];
+    if (!list || waitingEmbedded) return null;
+    const full = needEmbedded ? [...embedded!, ...list] : list;
     // Recette retirée : plus jamais proposée (seule l'administration la voit encore)
     // Brouillon généré par IA (bibliothèque) : invisible des parents tant qu'une personne de l'équipe ne l'a pas relu
-    return visibleRecipes(full, opts);
-  }, [recipes.data, ing.data, steps.data, photos.data, links.data, reviews.data, opts.includeRetired, opts.includeDrafts]);
+    // Anglais : seulement là où le français de la base est resté celui de la bibliothèque (voir recipes/english.ts)
+    return opts.original ? visibleRecipes(full, opts) : localizeRecipes(visibleRecipes(full, opts), embedded ?? [], lang);
+  }, [list, needEmbedded, waitingEmbedded, embedded, opts.includeRetired, opts.includeDrafts, opts.original, lang]);
   return { data, loading, error: recipes.error, rows: recipes.data ?? [], refetch: () => { void recipes.refetch(); void ing.refetch(); void steps.refetch(); } };
 }
 

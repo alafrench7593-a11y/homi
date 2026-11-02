@@ -53,6 +53,7 @@ import { en_library_projet_bebe } from './library-projet-bebe';
 import { en_library_sexualite_grossesse } from './library-sexualite-grossesse';
 import { en_library_sommeil_parents } from './library-sommeil-parents';
 import { en_neuro } from './neuro';
+import { en_reference } from './reference';
 export type { ArticleEn } from './types';
 import type { ArticleEn } from './types';
 
@@ -106,5 +107,6 @@ export const ARTICLES_EN: Record<string, ArticleEn> = Object.assign({},
   en_library_projet_bebe,
   en_library_sexualite_grossesse,
   en_library_sommeil_parents,
-  en_neuro);
+  en_neuro,
+  en_reference);
 export { CATEGORIES_EN } from './categories';

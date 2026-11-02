@@ -363,4 +363,9 @@ export const recettes: Messages<typeof fr> = {
   'rc.familyAdapt.child': 'For the child',
   'rc.addMenu': 'Add to menu',
   'rc.fishNote': 'Fish: French recommendations applied (species, thorough cooking, age and pregnancy). Vary species; large predatory fish such as tuna are not suggested during pregnancy or before age 3.',
+  // Historique éditorial des recettes de la bibliothèque (mêmes textes que les données)
+  'rc.hist.ai': 'Written by an AI (Claude, Anthropic)',
+  'rc.hist.checks': 'The app’s automatic checks',
+  'rc.hist.noteV2': 'New catalogue of classic family recipes; automatic checks passed, human review still to be done.',
+  'rc.hist.notePhoto': 'Amounts, listed ingredients, allergens, precautions and duplicates checked by software; human review still to be done.',
 };

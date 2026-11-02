@@ -28,7 +28,10 @@ export type Tag = (typeof TAGS)[number];
 export type RecipeStatus = 'ai_draft' | 'to_review' | 'reviewed' | 'validated' | 'retired';
 
 export interface IngredientDef {
+  /** Nom affiché : français, ou anglais (`en`) quand l'application est en anglais. */
   name: string;
+  /** Nom anglais (anglais britannique) ; absent = le français s'affiche. */
+  en?: string;
   /** Mot(s) cherché(s) dans les étapes (vérification « chaque ingrédient est utilisé »), sans accents. */
   stem: string;
   aisle: Aisle;
@@ -63,6 +66,25 @@ export interface PhotoInfo {
   rights: string;
   generated: boolean;
   alt: string;
+}
+
+/**
+ * Version anglaise (anglais britannique) des textes d'une recette de la bibliothèque, rangée dans la recette
+ * elle-même. Mêmes listes que le français (même ordre, même longueur) ; `notes` suit l'ordre des ingrédients
+ * (null = pas de précision). Les contrôles automatiques portent toujours sur le français.
+ */
+export interface RecipeEnglish {
+  title: string;
+  summary: string;
+  servingLabel?: string;
+  notes?: (string | null)[];
+  steps: string[];
+  adaptations: string[];
+  storage: string;
+  freezing?: string;
+  precautions: string[];
+  nutrition: string;
+  familyAdaptations?: { baby?: string; child?: string };
 }
 
 export interface Recipe {
@@ -107,6 +129,8 @@ export interface Recipe {
   personal?: boolean;
   /** Identifiant de la ligne en base (absent pour la copie embarquée). */
   dbId?: string;
+  /** Textes en anglais (bibliothèque embarquée) ; affichés quand l'application est en anglais. */
+  en?: RecipeEnglish;
 }
 
-export interface RecipeSource { id: string; title: string; publisher: string; url: string; consulted: string; date?: string }
+export interface RecipeSource { id: string; title: string; publisher: string; /** Éditeur en anglais (précisions traduites). */ publisherEn?: string; url: string; consulted: string; date?: string }

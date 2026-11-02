@@ -22,6 +22,8 @@ export interface RecipeDraft {
   adaptations: string[]; storage: string; freezing?: string; precautions: string[]; nutrition: string;
   budget: 1 | 2 | 3; seasons: Recipe['seasons']; temperature: 'hot' | 'cold';
   familyAdaptations?: Recipe['familyAdaptations']; sources: string[];
+  /** Version anglaise des textes (facultative), voir RecipeEnglish. */
+  en?: Recipe['en'];
 }
 export interface DraftOrigin { by: string; on: string; note?: string; status?: Recipe['status'] }
 

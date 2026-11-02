@@ -73,7 +73,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Gentle courgette purée",
+      "summary": "A first green purée, soft and delicate, ideal for discovering vegetables.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash the courgette, peel it (the skin can be bitter at first) and cut it into rounds.",
+        "Steam it for 12 minutes, until very tender.",
+        "Blend very finely to get a really smooth purée, depending on what your baby accepts; courgette releases a lot of water, so there is no need to add any.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "Later on, leave the skin on a well-washed courgette: it provides fibre."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Courgette, mild and full of water, is an easy vegetable for discovering first flavours.",
+      "notes": [
+        "about 1 large courgette",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-haricots-verts",
@@ -145,7 +172,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Smooth green bean purée",
+      "summary": "The great classic among first green purées, finely blended and sieved for a really soft texture.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Top and tail the green beans and wash them (no need if you are using frozen ones).",
+        "Steam them for 15 minutes, until they mash very easily.",
+        "Blend for a long time with a little cooking water, then push through a sieve to remove the fibres and get a really smooth purée.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "If the purée seems too stringy, add a small potato cooked with the beans."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Green beans provide fibre and a mild flavour that babies readily accept.",
+      "notes": [
+        "fresh or frozen, extra-fine",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-potiron",
@@ -220,7 +274,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Gentle pumpkin purée",
+      "summary": "An orange purée, naturally sweet and velvety, that goes down well from the very first spoonfuls.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash the pumpkin, remove the skin and seeds, then cut the flesh into cubes.",
+        "Steam for 15 minutes, until the flesh is very tender.",
+        "Blend very finely to get a really smooth purée, depending on what your baby accepts.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "Red kuri squash or butternut squash are prepared in exactly the same way."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Pumpkin, mild and slightly sweet, provides fibre and beta-carotene.",
+      "notes": [
+        "flesh without skin or seeds",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-panais",
@@ -295,7 +376,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Velvety parsnip purée",
+      "summary": "A winter vegetable with a mild, slightly sweet flavour, to vary the discoveries.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash and peel the parsnips, remove the core if it is hard, then cut them into rounds.",
+        "Steam for 15 minutes, until they mash very easily.",
+        "Blend very finely with a little cooking water to get a really smooth purée.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "Mix it with carrot or potato for an even milder flavour."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Parsnip is a mild root vegetable and a source of fibre that introduces a new taste.",
+      "notes": [
+        "about 2 parsnips",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-carotte",
@@ -368,7 +476,35 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Melting carrot purée",
+      "summary": "A bright orange purée, mild and sweet, that almost all babies love.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash and peel the carrots, then cut them into rounds.",
+        "Steam them for 20 minutes, until they mash very easily.",
+        "Blend very finely with a little cooking water to get a really smooth purée, depending on what your baby accepts.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "Later on, a little cumin will introduce a new flavour."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding.",
+        "Raw carrots: never in pieces before 4 years; here they are cooked and blended."
+      ],
+      "nutrition": "Carrot, mild and sweet, provides fibre and beta-carotene.",
+      "notes": [
+        "about 3 carrots",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-patate-douce",
@@ -440,7 +576,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Creamy sweet potato purée",
+      "summary": "A naturally sweet, creamy purée that blends in an instant.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash and peel the sweet potato, then cut it into cubes.",
+        "Steam it for 15 minutes, until very tender.",
+        "Blend finely, adding a little cooking water if needed, to get a really smooth purée.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "Mix it with carrot or pumpkin to vary the tastes."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Sweet potato provides energy, fibre and beta-carotene.",
+      "notes": [
+        "about 1 sweet potato",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-courgette-pomme-de-terre",
@@ -520,7 +683,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Courgette and potato purée",
+      "summary": "A gentle, creamy mix, perfect for moving from single-vegetable purées to first combinations.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash and peel the courgette and potato, then cut them into dice.",
+        "Steam the vegetables for 15 minutes, until they mash very easily.",
+        "Blend finely to get a really smooth purée, depending on what your baby accepts.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "The potato brings creaminess and energy, the courgette its mildness.",
+      "notes": [
+        null,
+        "1 medium potato",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-brocoli-pomme-de-terre",
@@ -597,7 +787,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Broccoli and potato purée",
+      "summary": "A bright green purée, softened by potato, to get used to broccoli gently.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash the broccoli and break it into small florets; peel the potato and cut it into dice.",
+        "Steam the potato for 8 minutes, add the broccoli and cook for another 10 minutes.",
+        "Blend very finely to get a really smooth purée, depending on what your baby accepts.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Broccoli provides fibre and vitamin C; the potato softens its taste.",
+      "notes": [
+        "in small florets",
+        "1 medium potato",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-petits-pois-pomme-de-terre",
@@ -674,7 +891,35 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Pea and potato purée",
+      "summary": "A soft green purée with a slightly sweet taste, sieved for a perfectly smooth texture.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Peel the potato and cut it into dice.",
+        "Steam the potato and peas for 15 minutes, until everything is very tender.",
+        "Blend for a long time with a little cooking water, then push through a sieve to remove the pea skins.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding.",
+        "Whole peas: never as they are at this age; here they are blended and sieved."
+      ],
+      "nutrition": "Peas provide fibre and a little plant protein, with a mild flavour.",
+      "notes": [
+        null,
+        "1 medium potato",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-poireau-pomme-de-terre",
@@ -754,7 +999,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Leek and potato purée",
+      "summary": "A purée as gentle as Grandma’s soup, with the white of the leek melting and soft.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Split the white of the leek in half, rinse it carefully between the leaves and slice it; peel the potato and cut it into dice.",
+        "Steam the vegetables for 15 minutes, until very tender.",
+        "Blend very finely to get a really smooth purée, depending on what your baby accepts.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Leek provides fibre and a mild flavour, potato the creaminess.",
+      "notes": [
+        "the white part only",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-chou-fleur-pomme-de-terre",
@@ -838,7 +1110,35 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Cauliflower and potato purée with butter",
+      "summary": "A white, creamy purée, softened with a knob of butter.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash the cauliflower and break it into small florets; peel the potato and cut it into dice.",
+        "Steam the vegetables for 15 minutes, until they mash very easily.",
+        "Blend very finely to get a really smooth purée, depending on what your baby accepts.",
+        "When serving, add a small knob of butter per portion and stir."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "Dairy-free: replace the butter with half a teaspoon of rapeseed oil per portion."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Cauliflower provides fibre and vitamin C; butter is a fat that is useful for little ones.",
+      "notes": [
+        "in small florets",
+        "1 medium potato",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-puree-butternut-carotte",
@@ -918,7 +1218,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Butternut squash and carrot purée",
+      "summary": "An orange purée, mild and slightly sweet, with the scent of autumn.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Peel the butternut squash, remove the seeds and cut the flesh into cubes; wash, peel and slice the carrot into rounds.",
+        "Steam the vegetables for 18 minutes, until they mash very easily.",
+        "Blend very finely to get a really smooth purée, depending on what your baby accepts.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before or directly over a low heat, stirring; never refreeze a thawed purée.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Squash and carrot provide fibre and beta-carotene, with a mild flavour that babies enjoy.",
+      "notes": [
+        "flesh without skin or seeds",
+        "1 carrot",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-avocat-ecrase",
@@ -981,7 +1308,32 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Gentle mashed avocado",
+      "summary": "A creamy purée ready in two minutes, with no cooking, using a very ripe avocado.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash the avocado, cut it in half, remove the stone and scoop out the flesh with a spoon.",
+        "Mash it finely with a fork or blend it for a perfectly smooth texture, depending on what your baby accepts.",
+        "Serve straight away: avocado quickly turns brown in the air."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "Mix it with a spoonful of courgette purée or mashed banana for variety."
+      ],
+      "storage": "Prepare at the last minute; do not keep leftovers from a portion that has been started. The unused half, with its stone and covered with cling film, keeps for 24 hours in the fridge.",
+      "freezing": "Does not freeze: avocado turns brown and watery. Prepare it just before the meal.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Your baby eats sitting up straight, always supervised by an adult."
+      ],
+      "nutrition": "Avocado provides good-quality fats, in a naturally creamy texture.",
+      "notes": [
+        "very ripe"
+      ]
+    }
   },
   {
     "slug": "dd-compote-pomme",
@@ -1048,7 +1400,33 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Smooth apple compote",
+      "summary": "The first compote, mild and fragrant, with no added sugar at all.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash, peel and core the apples, then cut them into pieces.",
+        "Steam them for 15 minutes, or cook covered with 2 tablespoons of water, until they are very tender.",
+        "Blend finely to get a really smooth compote, without adding sugar.",
+        "Let it cool to lukewarm before serving, or keep it in the fridge."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "Choose sweet varieties: tart apples sometimes make babies pull a face."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before and eat within 24 hours; never refreeze a thawed compote.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "No honey before 1 year, even to sweeten.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor."
+      ],
+      "nutrition": "Cooked apple is mild and easy to digest; a first discovery of fruit.",
+      "notes": [
+        "about 3 sweet apples (Golden Delicious, Gala)"
+      ]
+    }
   },
   {
     "slug": "dd-compote-poire",
@@ -1118,7 +1496,32 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Melting pear compote",
+      "summary": "A very mild, fragrant compote made with very ripe pears.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash, peel and core the pears, then cut them into pieces.",
+        "Steam them for 10 minutes, or cook covered with 1 tablespoon of water, until very tender.",
+        "Blend finely to get a really smooth compote.",
+        "Let it cool to lukewarm before serving, or keep it in the fridge."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before and eat within 24 hours; never refreeze a thawed compote.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "No honey before 1 year, even to sweeten.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor."
+      ],
+      "nutrition": "Pear, melting and naturally sweet, provides fibre.",
+      "notes": [
+        "about 3 very ripe pears"
+      ]
+    }
   },
   {
     "slug": "dd-compote-pomme-banane",
@@ -1191,7 +1594,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Apple and banana compote",
+      "summary": "A creamy, naturally sweet compote, where ripe banana softens the cooked apple.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash, peel and core the apples, then cut them into pieces.",
+        "Steam them for 15 minutes, or cook covered with 2 tablespoons of water, until they are very tender.",
+        "Peel the banana, cut it into rounds and blend it finely with the still-warm apple compote.",
+        "Serve straight away, or keep in the fridge in a closed pot."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "Later on, simply mash the banana with a fork into the apple compote."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before and eat within 24 hours; never refreeze a thawed compote.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "No honey before 1 year, even to sweeten.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor."
+      ],
+      "nutrition": "Banana provides a creamy texture and energy; cooked apple its mildness.",
+      "notes": [
+        "about 2 sweet apples",
+        "very ripe"
+      ]
+    }
   },
   {
     "slug": "dd-compote-peche",
@@ -1260,7 +1690,33 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Summer peach compote",
+      "summary": "A compote as fragrant as summer in the orchard, made with very ripe peaches.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Plunge the peaches into boiling water for 30 seconds, then into cold water: the skin comes off by itself. Cut them into pieces, removing the stone.",
+        "Cook the pieces for 10 minutes with the lid on, over a low heat, until very tender.",
+        "Blend finely to get a really smooth compote.",
+        "Let it cool to lukewarm before serving, or keep it in the fridge."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "Mix it with apple compote if your baby finds it too strongly flavoured."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before and eat within 24 hours; never refreeze a thawed compote.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "No honey before 1 year, even to sweeten.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor."
+      ],
+      "nutrition": "Peach is a juicy, fragrant summer fruit and a source of vitamin C.",
+      "notes": [
+        "3 to 4 very ripe peaches"
+      ]
+    }
   },
   {
     "slug": "dd-compote-abricot",
@@ -1329,7 +1785,33 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Gentle apricot compote",
+      "summary": "An orange, fragrant compote, made milder by choosing very ripe apricots.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash the apricots, cut them in half and remove the stones.",
+        "Cook them for 10 minutes with the lid on, with 1 tablespoon of water, over a low heat, until very tender.",
+        "Blend finely, then push through a sieve to remove the bits of skin and get a really smooth compote.",
+        "Let it cool to lukewarm before serving, or keep it in the fridge."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts.",
+        "If your baby pulls a face, mix half apricot, half apple compote."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before and eat within 24 hours; never refreeze a thawed compote.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "No honey before 1 year, even to sweeten.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor."
+      ],
+      "nutrition": "Apricot provides beta-carotene and fibre; its tangy taste introduces a new flavour.",
+      "notes": [
+        "about 8 very ripe apricots"
+      ]
+    }
   },
   {
     "slug": "dd-compote-pomme-prune",
@@ -1404,7 +1886,33 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Apple and plum compote",
+      "summary": "A late-summer compote with a pretty pink colour, made mild by the apple.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash the fruit. Peel and core the apples; cut the plums in half and remove the stones.",
+        "Cook everything for 12 minutes with the lid on, with 2 tablespoons of water, over a low heat, until the fruit is very tender.",
+        "Blend finely, then push through a sieve to remove the plum skins.",
+        "Let it cool to lukewarm before serving, or keep it in the fridge."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 48 hours at most in a small closed pot; reheat only the portion for the meal, only once, and throw away any leftovers from the plate.",
+      "freezing": "Freezes very well in ice-cube trays or small pots: up to 1 month. Thaw in the fridge the day before and eat within 24 hours; never refreeze a thawed compote.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "No honey before 1 year, even to sweeten.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor."
+      ],
+      "nutrition": "Plum provides fibre and a new flavour, softened by the apple.",
+      "notes": [
+        "about 2 sweet apples",
+        "about 4 very ripe plums"
+      ]
+    }
   },
   {
     "slug": "dd-patate-douce-courgette-poulet",
@@ -1485,7 +1993,37 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Gentle sweet potato, courgette and chicken",
+      "summary": "A first complete meal, mild and sweet, with a very small amount of well-cooked chicken.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Peel the sweet potato and courgette and cut them into dice; cut the chicken breast into small pieces.",
+        "Steam the sweet potato, courgette and chicken for 15 minutes: the chicken must be cooked right through, white all the way to the centre, with no pink parts.",
+        "Blend everything very finely with a little cooking water, until you get a really smooth purée, depending on what your baby accepts.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 24 hours at most in a small closed pot; reheat only the portion for the meal, only once, until piping hot, then let it cool to lukewarm. Throw away any leftovers from the plate.",
+      "freezing": "Freeze in small pots as soon as it has cooled: up to 1 month. Thaw in the fridge the day before, reheat until piping hot, then let it cool to lukewarm; never refreeze.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Meat cooked right through, with no pink parts, then blended very finely.",
+        "Wash the chopping board and knife after cutting the raw chicken.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "A small amount of poultry provides protein and iron; the sweet potato, energy.",
+      "notes": [
+        null,
+        null,
+        "about 15 g per portion",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-cabillaud-courgette-riz",
@@ -1575,7 +2113,37 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Blended cod, courgette and rice",
+      "summary": "A gentle first fish, with courgette and a little rice for creaminess.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Cook the rice for 15 minutes in a pan of unsalted water, until very tender; drain it.",
+        "Meanwhile, wash and peel the courgette, dice it and steam it for 10 minutes with the cod.",
+        "Check that the fish flesh is opaque all the way to the centre, then flake it, removing even the smallest bone.",
+        "Blend the fish, courgette and rice finely with a little cooking water, depending on what your baby accepts. When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 24 hours at most in a small closed pot; reheat only the portion for the meal, only once, until piping hot, then let it cool to lukewarm. Throw away any leftovers from the plate.",
+      "freezing": "Freeze in small pots as soon as it has cooled: up to 1 month. Thaw in the fridge the day before, reheat until piping hot, then let it cool to lukewarm; never refreeze.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Fish cooked right through: opaque flesh all the way to the centre, which flakes easily.",
+        "Fish: run your fingers over all the flesh, before and after cooking, and remove even the smallest bone.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Cod is a white fish, a source of protein and iodine; a small amount is enough at this age.",
+      "notes": [
+        "boneless cod, about 15 g per portion",
+        null,
+        "raw weight",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-saumon-carotte-pomme-de-terre",
@@ -1657,7 +2225,37 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Blended salmon, carrot and potato",
+      "summary": "A mild orange purée with a little well-cooked salmon, to discover an oily fish.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash and peel the carrot and potato, then cut them into dice.",
+        "Steam the vegetables for 15 minutes, add the salmon and cook for another 8 to 10 minutes, until its flesh is opaque all the way to the centre.",
+        "Flake the salmon, checking carefully that no bones remain.",
+        "Blend everything finely with a little cooking water, depending on what your baby accepts."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 24 hours at most in a small closed pot; reheat only the portion for the meal, only once, until piping hot, then let it cool to lukewarm. Throw away any leftovers from the plate.",
+      "freezing": "Freeze in small pots as soon as it has cooled: up to 1 month. Thaw in the fridge the day before, reheat until piping hot, then let it cool to lukewarm; never refreeze.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Fish cooked right through: opaque flesh all the way to the centre, which flakes easily.",
+        "Fish: run your fingers over all the flesh, before and after cooking, and remove even the smallest bone.",
+        "Fresh salmon only, never smoked or raw.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Salmon is an oily fish and a source of omega-3; here it replaces the added oil.",
+      "notes": [
+        "skin and bones removed, about 15 g per portion",
+        null,
+        "1 medium potato"
+      ]
+    }
   },
   {
     "slug": "dd-boeuf-haricots-verts-pomme-de-terre",
@@ -1741,7 +2339,37 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Beef, green beans and potato",
+      "summary": "A small, mild, complete meal, with a very small amount of well-cooked, blended beef.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Top and tail and wash the green beans; peel the potato and cut it into dice.",
+        "Steam the vegetables for 15 minutes.",
+        "Meanwhile, cook the minced beef for 10 minutes, steamed or in a small pan with a little water, breaking it up: it must be cooked right through, with no pink parts.",
+        "Blend the beef and vegetables very finely with a little cooking water, depending on what your baby accepts. When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 24 hours at most in a small closed pot; reheat only the portion for the meal, only once, until piping hot, then let it cool to lukewarm. Throw away any leftovers from the plate.",
+      "freezing": "Freeze in small pots as soon as it has cooled: up to 1 month. Thaw in the fridge the day before, reheat until piping hot, then let it cool to lukewarm; never refreeze.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Meat cooked right through, with no pink parts, then blended very finely.",
+        "Wash the chopping board and utensils after handling the raw meat.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Beef provides iron and protein in a small amount; the vegetables complete the plate.",
+      "notes": [
+        "about 15 g per portion",
+        "extra-fine",
+        "1 medium potato",
+        null
+      ]
+    }
   },
   {
     "slug": "dd-merlu-potiron-pomme-de-terre",
@@ -1830,7 +2458,37 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Hake, pumpkin and potato",
+      "summary": "A velvety orange purée with a little hake, a very tender white fish.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash the pumpkin, remove the skin and seeds and cut the flesh into cubes; peel the potato and cut it into dice.",
+        "Steam the vegetables for 10 minutes, add the hake and cook for another 8 minutes, until its flesh is opaque all the way to the centre.",
+        "Flake the fish, removing even the smallest bone.",
+        "Blend everything finely with a little cooking water, depending on what your baby accepts. When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 24 hours at most in a small closed pot; reheat only the portion for the meal, only once, until piping hot, then let it cool to lukewarm. Throw away any leftovers from the plate.",
+      "freezing": "Freeze in small pots as soon as it has cooled: up to 1 month. Thaw in the fridge the day before, reheat until piping hot, then let it cool to lukewarm; never refreeze.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Fish cooked right through: opaque flesh all the way to the centre, which flakes easily.",
+        "Fish: run your fingers over all the flesh, before and after cooking, and remove even the smallest bone.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Hake, a white fish, provides protein; pumpkin its mildness and beta-carotene.",
+      "notes": [
+        "boneless, about 15 g per portion",
+        "flesh without skin or seeds",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "dd-dinde-brocoli-pomme-de-terre",
@@ -1913,6 +2571,36 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Turkey, broccoli and potato",
+      "summary": "A mild green purée, with a small amount of well-cooked turkey for a complete meal.",
+      "servingLabel": "baby portions",
+      "steps": [
+        "Wash the broccoli and break it into small florets; peel the potato and cut it into dice; cut the turkey escalope into small pieces.",
+        "Steam the potato and turkey for 8 minutes, add the broccoli and cook for another 10 minutes: the turkey must be cooked right through, with no pink parts.",
+        "Blend everything very finely with a little cooking water, depending on what your baby accepts.",
+        "When serving, add half a teaspoon of rapeseed oil per portion."
+      ],
+      "adaptations": [
+        "As your baby grows, blend less finely and then mash with a fork, depending on what your baby accepts."
+      ],
+      "storage": "Fridge: 24 hours at most in a small closed pot; reheat only the portion for the meal, only once, until piping hot, then let it cool to lukewarm. Throw away any leftovers from the plate.",
+      "freezing": "Freeze in small pots as soon as it has cooled: up to 1 month. Thaw in the fridge the day before, reheat until piping hot, then let it cool to lukewarm; never refreeze.",
+      "precautions": [
+        "No added salt or sugar before 1 year: the natural taste of the food is enough.",
+        "Meat cooked right through, with no pink parts, then blended very finely.",
+        "Wash the chopping board and knife after cutting the raw meat.",
+        "Offer a few spoonfuls at first, then increase depending on what your baby accepts; if you have any questions, talk to their doctor.",
+        "Check the temperature before serving: the purée should be lukewarm, never scalding."
+      ],
+      "nutrition": "Turkey, a lean meat, provides protein in a small amount; broccoli, fibre and vitamin C.",
+      "notes": [
+        "about 15 g per portion",
+        "in small florets",
+        "1 medium potato",
+        null
+      ]
+    }
   }
 ]

@@ -135,6 +135,8 @@
             "icon": "cycle",
             "slug": "suivi-cycle",
             "title": "Suivi du cycle",
+            "title_en": "Cycle tracking",
+            "description_en": "Cycle, periods, contraception, symptoms: share your experience.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -149,6 +151,8 @@
             "icon": "sparkles",
             "slug": "projet-bebe",
             "title": "Projet bébé",
+            "title_en": "Trying for a baby",
+            "description_en": "Trying to have a child, fertility treatment (ART), waiting, hoping, supporting each other.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -162,6 +166,8 @@
             "icon": "moon",
             "slug": "grossesse",
             "title": "Grossesse",
+            "title_en": "Pregnancy",
+            "description_en": "Questions and personal stories during pregnancy, up to the birth.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -175,6 +181,8 @@
             "icon": "twins",
             "slug": "jumeaux-triples",
             "title": "Jumeaux et triplés",
+            "title_en": "Twins and triplets",
+            "description_en": "Multiple pregnancies and families with twins or triplets.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -190,6 +198,8 @@
             "icon": "baby",
             "slug": "nouveau-ne",
             "title": "Nouveau-né",
+            "title_en": "Newborn",
+            "description_en": "The first weeks and months with your baby.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -203,6 +213,8 @@
             "icon": "drop",
             "slug": "allaitement",
             "title": "Allaitement",
+            "title_en": "Breastfeeding",
+            "description_en": "Breastfeeding, breast pumps, weaning, combination feeding.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -216,6 +228,8 @@
             "icon": "bottle",
             "slug": "biberon",
             "title": "Biberon",
+            "title_en": "Bottle feeding",
+            "description_en": "Preparation, amounts, choosing a milk, moving to the bottle.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -229,6 +243,8 @@
             "icon": "sleep",
             "slug": "sommeil",
             "title": "Sommeil",
+            "title_en": "Sleep",
+            "description_en": "Nights, naps, bedtime routines, parents' tiredness.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -243,6 +259,8 @@
             "icon": "food",
             "slug": "diversification",
             "title": "Diversification et repas",
+            "title_en": "Starting solids and meals",
+            "description_en": "First meals, textures, menu ideas, family meals.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -257,6 +275,8 @@
             "icon": "health",
             "slug": "sante-developpement",
             "title": "Santé et développement",
+            "title_en": "Health and development",
+            "description_en": "Growth, milestones, everyday little worries: personal stories, not diagnoses.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -271,6 +291,8 @@
             "icon": "brain",
             "slug": "neurodeveloppement",
             "title": "Troubles neurodéveloppementaux",
+            "title_en": "Neurodevelopmental conditions",
+            "description_en": "ADHD, autism (ASD), “dys” learning disorders, language… care pathways, paperwork and support between parents.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -284,6 +306,8 @@
             "icon": "heart",
             "slug": "post-partum",
             "title": "Post-partum et bien-être de la mère",
+            "title_en": "Postpartum and mothers' wellbeing",
+            "description_en": "After the birth: recovery, emotions, tiredness, getting help.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -297,6 +321,8 @@
             "icon": "users",
             "slug": "plusieurs-enfants",
             "title": "Parents de plusieurs enfants",
+            "title_en": "Parents of several children",
+            "description_en": "Organising life with several children, siblings, jealousy.",
             "archived": false,
             "is_local": false,
             "journeys": [
@@ -310,6 +336,8 @@
             "icon": "chat",
             "slug": "questions-generales",
             "title": "Questions générales",
+            "title_en": "General questions",
+            "description_en": "Everything else: organisation, school, childcare, family life.",
             "archived": false,
             "is_local": false,
             "journeys": [],

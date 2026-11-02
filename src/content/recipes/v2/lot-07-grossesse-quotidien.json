@@ -70,7 +70,25 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Banana and cinnamon porridge",
+   "summary": "A warm, gentle breakfast, ready in a few minutes.",
+   "steps": [
+    "Put the oats and milk in a small pan.",
+    "Cook for 5 minutes over a low heat, stirring, until the mixture thickens.",
+    "Add the sliced banana and the cinnamon, then serve lukewarm."
+   ],
+   "adaptations": [
+    "Replace the banana with an apple or pear cooked with the oats."
+   ],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Pregnancy: dairy products made with pasteurised milk only, kept in the fridge (listeriosis)."
+   ],
+   "nutrition": "Oats for fibre and a dairy product for calcium, with a piece of fruit."
+  }
  },
  {
   "slug": "gr-yaourt-avoine-fruits-rouges-chauds",
@@ -138,7 +156,24 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Yoghurt, oats and warmed red berries",
+   "summary": "A fresh, crunchy bowl, with red berries heated for extra safety.",
+   "steps": [
+    "Heat the red berries in a small pan for 5 minutes until simmering, then let them cool to lukewarm.",
+    "Pour the yoghurt into two bowls and sprinkle with oats.",
+    "Add the lukewarm red berries when serving."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Pregnancy: dairy products made with pasteurised milk only, kept in the fridge (listeriosis).",
+    "Frozen red berries are heated until simmering before being eaten."
+   ],
+   "nutrition": "A dairy product for calcium and fibre from the oats and fruit."
+  }
  },
  {
   "slug": "gr-tartines-fromage-frais-concombre",
@@ -213,7 +248,30 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Wholemeal bread with soft cheese and cucumber",
+   "summary": "Fresh open sandwiches for the morning or afternoon snack.",
+   "steps": [
+    "Wash the cucumber and chives, then cut the cucumber into thin rounds.",
+    "Spread the bread with soft cheese.",
+    "Arrange the cucumber on top, sprinkle with chives and serve straight away."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Pregnancy: dairy products made with pasteurised milk only, kept in the fridge (listeriosis).",
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "A wholegrain starchy food, a dairy product and a vegetable, with no cooking.",
+   "notes": [
+    "slices",
+    null,
+    null,
+    "finely chopped"
+   ]
+  }
  },
  {
   "slug": "gr-oeufs-brouilles-bien-cuits-pain-complet",
@@ -288,7 +346,30 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Well-cooked scrambled eggs on wholemeal bread",
+   "summary": "A savoury breakfast, with eggs cooked until well set.",
+   "steps": [
+    "Beat the eggs in a bowl.",
+    "Melt the butter in a frying pan, pour in the eggs and cook for 5 minutes over a medium heat, stirring, until they are well set, with no liquid parts.",
+    "Serve on the toasted bread, sprinkled with washed chives."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Pregnancy: the eggs must be well cooked, with yolk and white firm (salmonellosis).",
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "Eggs provide protein; wholemeal bread a starchy food rich in fibre.",
+   "notes": [
+    null,
+    null,
+    "slices",
+    "finely chopped"
+   ]
+  }
  },
  {
   "slug": "gr-semoule-au-lait-vanille",
@@ -359,7 +440,23 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Vanilla semolina pudding",
+   "summary": "A gentle dessert, easy to eat when you have little appetite.",
+   "steps": [
+    "Heat the milk with the vanilla and sugar until simmering.",
+    "Sprinkle in the semolina while stirring and cook for 8 minutes over a low heat.",
+    "Share out into ramekins and serve lukewarm or cold."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 2 days, covered.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Pregnancy: dairy products made with pasteurised milk only, kept in the fridge (listeriosis)."
+   ],
+   "nutrition": "A dairy product for calcium, in a gentle preparation with little smell."
+  }
  },
  {
   "slug": "gr-bouillon-vermicelles-carottes-gingembre",
@@ -433,7 +530,31 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Vermicelli broth with carrots and ginger",
+   "summary": "A light, fragrant broth, to drink and eat in small amounts.",
+   "steps": [
+    "Peel and wash the carrots, then cut them into thin rounds.",
+    "Bring the stock to the boil with the carrots and the grated ginger, then cook for 10 minutes.",
+    "Add the vermicelli and cook for another 4 minutes before serving."
+   ],
+   "adaptations": [
+    "Leave out the ginger if you find its taste unpleasant."
+   ],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "A light dish that provides vegetables and a starchy food; split into small portions if needed.",
+   "notes": [
+    null,
+    null,
+    "grated",
+    null
+   ]
+  }
  },
  {
   "slug": "gr-poisson-blanc-vapeur-riz-courgettes",
@@ -511,7 +632,32 @@
    "santefr_equilibre",
    "anses_poisson"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Steamed white fish, rice and courgettes",
+   "summary": "A simple meal, with little smell and gentle in the mouth.",
+   "steps": [
+    "Cook the rice for 12 minutes in a large pan of boiling water, then drain.",
+    "Wash the courgette, dice it and steam it for 8 minutes.",
+    "Steam the fish for 10 minutes: the flesh should be opaque and come apart easily.",
+    "Serve with a drizzle of olive oil and a few drops of lemon."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Pregnancy: the fish must be cooked right through, with opaque flesh (listeriosis, parasites).",
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "A white fish for protein, a starchy food and a vegetable, on a light plate.",
+   "notes": [
+    null,
+    null,
+    "fillets",
+    null,
+    null
+   ]
+  }
  },
  {
   "slug": "gr-dahl-lentilles-corail-coco",
@@ -600,7 +746,33 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Le dahl se congèle jusqu’à 3 mois ; réchauffez-le jusqu’à ce qu’il soit bien chaud partout."
+  "freezing": "Le dahl se congèle jusqu’à 3 mois ; réchauffez-le jusqu’à ce qu’il soit bien chaud partout.",
+  "en": {
+   "title": "Red lentil dahl with coconut milk",
+   "summary": "A comforting vegetarian dish, rich in pulses.",
+   "steps": [
+    "Peel and slice the onion and garlic, then soften them for 3 minutes in a pan.",
+    "Add the rinsed lentils, chopped tomatoes, coconut milk, curry powder and 400 ml of water.",
+    "Simmer for 20 minutes over a low heat, stirring from time to time, until the lentils are melting.",
+    "Meanwhile, cook the rice for 12 minutes, then serve with the dahl."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 2 days in a closed box; reheat only once.",
+   "freezing": "The dahl freezes for up to 3 months; reheat it until piping hot throughout.",
+   "precautions": [
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "Lentils provide iron and fibre; with rice, a complete dish.",
+   "notes": [
+    null,
+    "clove",
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  }
  },
  {
   "slug": "gr-salade-tiede-lentilles-carottes-persil",
@@ -675,7 +847,30 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Warm salad of green lentils, carrots and parsley",
+   "summary": "A complete salad to prepare ahead.",
+   "steps": [
+    "Cook the lentils for 25 minutes in a large pan of water, then drain.",
+    "Peel, wash and grate the carrots; wash and chop the parsley.",
+    "Mix the warm lentils with the carrots, parsley, olive oil and lemon juice."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 2 days in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "Lentils are a pulse rich in fibre; green leaves such as parsley contain folate.",
+   "notes": [
+    null,
+    null,
+    "finely chopped",
+    null,
+    null
+   ]
+  }
  },
  {
   "slug": "gr-houmous-maison-batonnets-legumes",
@@ -761,7 +956,33 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Homemade hummus with vegetable sticks",
+   "summary": "A savoury snack to share.",
+   "steps": [
+    "Rinse the chickpeas and blend them with the tahini, lemon juice, peeled garlic, olive oil and 3 tablespoons of water.",
+    "Wash the carrots and cucumber, peel the carrots, then cut the vegetables into sticks.",
+    "Serve the hummus with the vegetable sticks."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 2 days in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis).",
+    "Keep homemade hummus in the fridge and eat it within 2 days."
+   ],
+   "nutrition": "Chickpeas provide fibre and plant protein; well-washed raw vegetables complete it.",
+   "notes": [
+    null,
+    null,
+    null,
+    "small clove",
+    null,
+    null,
+    null
+   ]
+  }
  },
  {
   "slug": "gr-compote-pomme-poire-amande",
@@ -831,7 +1052,23 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Apple and pear compote with cinnamon and ground almonds",
+   "summary": "A gentle snack, with no added sugar.",
+   "steps": [
+    "Peel, wash and cut the apples and pears into pieces.",
+    "Cook them for 15 minutes over a low heat with 3 tablespoons of water and the cinnamon.",
+    "Mash with a fork and serve lukewarm, sprinkled with ground almonds."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 3 days, covered.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "Cooked fruit, gentle on digestion, with a little ground almond."
+  }
  },
  {
   "slug": "gr-petits-suisses-kiwi-noix",
@@ -898,6 +1135,24 @@
   "freezing": "Ne se congèle pas : préparez la quantité du moment.",
   "familyAdaptations": {
    "child": "Avant 4 ans, remplacez les noix par un peu de poudre d’amande (risque d’étouffement)."
+  },
+  "en": {
+   "title": "Petits-suisses with kiwi and walnuts",
+   "summary": "A fresh snack in two minutes.",
+   "steps": [
+    "Peel the kiwis and cut them into dice.",
+    "Share the petits-suisses between two bowls, then add the kiwi and the crushed walnut halves."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Pregnancy: dairy products made with pasteurised milk only, kept in the fridge (listeriosis)."
+   ],
+   "nutrition": "A dairy product for calcium, a fruit and a few nuts.",
+   "familyAdaptations": {
+    "child": "Before 4 years, replace the walnuts with a little ground almond (risk of choking)."
+   }
   }
  },
  {
@@ -977,7 +1232,30 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Wholewheat pasta with broccoli and Emmental",
+   "summary": "A quick dish for tired evenings.",
+   "steps": [
+    "Wash the broccoli and break it into small florets.",
+    "Cook the pasta for 10 minutes in a large pan of boiling water, adding the broccoli for the last 5 minutes, then drain.",
+    "Fry the sliced garlic for 1 minute in the olive oil, add the pasta and broccoli, then the grated Emmental, and serve hot."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "A wholegrain starchy food, a green vegetable and a hard cooked cheese for calcium.",
+   "notes": [
+    null,
+    null,
+    "clove",
+    null,
+    null
+   ]
+  }
  },
  {
   "slug": "gr-tartines-sardines-tomate",
@@ -1052,7 +1330,30 @@
    "santefr_equilibre",
    "anses_poisson"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Sardine, tomato and lemon on toast",
+   "summary": "A quick meal with a small tinned oily fish.",
+   "steps": [
+    "Wash the tomatoes and cut them into thin slices.",
+    "Drain the sardines and mash them with a fork with a little lemon juice.",
+    "Spread on the bread, add the tomatoes and serve straight away."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Pregnancy: tinned sardines are already cooked; however, avoid raw or smoked fish (listeriosis).",
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "A small oily fish, whose mashed bones provide calcium, with a wholegrain starchy food and a vegetable.",
+   "notes": [
+    "slices",
+    "tin",
+    null,
+    null
+   ]
+  }
  },
  {
   "slug": "gr-quinoa-saumon-cuit-epinards",
@@ -1137,7 +1438,33 @@
    "santefr_equilibre",
    "anses_poisson"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment."
+  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "en": {
+   "title": "Quinoa, well-cooked salmon and spinach",
+   "summary": "A colourful plate, simple to prepare.",
+   "steps": [
+    "Rinse the quinoa and cook it for 12 minutes in twice its volume of water.",
+    "Bake the salmon for 12 minutes in the oven at 180 °C: the flesh should be opaque all the way through and come apart easily.",
+    "Fry the sliced garlic in the olive oil, add the spinach and cook for 4 minutes.",
+    "Serve the quinoa with the spinach and salmon, drizzled with lemon juice."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Pregnancy: fresh salmon must be cooked right through; smoked salmon should be avoided (listeriosis).",
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "An oily fish for protein, spinach that contains folate, and a seed rich in fibre.",
+   "notes": [
+    null,
+    "fillets",
+    null,
+    "clove",
+    null,
+    null
+   ]
+  }
  },
  {
   "slug": "gr-tartine-comte-pomme",
@@ -1206,6 +1533,30 @@
   "freezing": "Ne se congèle pas : préparez la quantité du moment.",
   "familyAdaptations": {
    "child": "Avant 4 ans, râpez la pomme (risque d’étouffement)."
+  },
+  "en": {
+   "title": "Wholemeal bread with Comté and apple",
+   "summary": "A very simple sweet-and-savoury snack.",
+   "steps": [
+    "Wash the apple and cut it into thin slices.",
+    "Cut the Comté into thin slices and arrange them on the bread with the apple."
+   ],
+   "adaptations": [],
+   "storage": "Fridge: 24 hours in a closed box.",
+   "freezing": "Does not freeze: make only the amount you need.",
+   "precautions": [
+    "Pregnancy: hard cooked cheeses such as Comté are possible; remove the rind (listeriosis).",
+    "Wash fruit, vegetables and herbs thoroughly, then wash your hands (toxoplasmosis)."
+   ],
+   "nutrition": "A hard cooked cheese for calcium, a fruit and a wholegrain starchy food.",
+   "familyAdaptations": {
+    "child": "Before 4 years, grate the apple (risk of choking)."
+   },
+   "notes": [
+    "slices",
+    null,
+    null
+   ]
   }
  }
 ]

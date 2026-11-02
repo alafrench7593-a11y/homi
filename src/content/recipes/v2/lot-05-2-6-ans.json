@@ -93,7 +93,38 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Golden-topped cod parmentier",
+      "summary": "Gentle fish hidden under a golden homemade mash, to win little ones back to fish.",
+      "steps": [
+        "Peel the potatoes, cut them into pieces and cook them for 20 minutes in a large pan of simmering water, until very tender.",
+        "Meanwhile, place the cod in a sauté pan, cover with cold water and bring to a gentle simmer for 8 minutes: the flesh should be opaque and flake easily. Drain, then flake the fish, checking that no bones remain.",
+        "Mash the potatoes with the hot milk and butter to get a soft mash.",
+        "Preheat the oven to 200 °C. Mix the flaked fish with the parsley, spread it in a gratin dish, cover with the mash and sprinkle with Emmental.",
+        "Brown for 15 minutes, until the top is golden."
+      ],
+      "adaptations": [
+        "Replace the cod with hake or pollock, depending on what is available.",
+        "Add a mashed cooked carrot to the mash for more colour."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes very well in portions, for up to 2 months. Thaw overnight in the fridge, then reheat in the oven or microwave until piping hot all the way through.",
+      "precautions": [
+        "Fish cooked right through (opaque flesh that flakes); carefully remove all the bones.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking).",
+        "Choose cheeses made with pasteurised milk: no raw-milk cheese before 5 years."
+      ],
+      "nutrition": "A white fish rich in protein, a potato mash and a little cheese for calcium.",
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        "grated",
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "en-boulettes-merlu-puree-carottes",
@@ -198,7 +229,39 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Hake balls with carrot purée",
+      "summary": "Small, soft fish balls to pick up by hand, served on a gentle orange purée.",
+      "steps": [
+        "Peel the potatoes and carrots, cut them into pieces and boil them for 20 minutes, until very tender.",
+        "Check that no bones remain in the hake, then chop it finely with a knife or in a blender. Add the egg, breadcrumbs and parsley, mix and shape into about twenty small balls.",
+        "Heat the oil in a frying pan and brown the fish balls for 10 minutes over a medium heat, turning them often: they should be firm and well cooked in the centre.",
+        "Mash the vegetables with the hot milk and serve the fish balls on the purée."
+      ],
+      "adaptations": [
+        "For even softer fish balls, add 1 tablespoon of soft cheese to the mixture.",
+        "Cod or pollock also work."
+      ],
+      "storage": "24 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "The cooked fish balls freeze for 2 months, and so does the purée. Thaw in the fridge, then reheat in a frying pan or microwave until piping hot.",
+      "precautions": [
+        "Fish cooked right through (opaque flesh that flakes); carefully remove all the bones.",
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Fish, vegetables and potatoes on one plate.",
+      "notes": [
+        null,
+        null,
+        null,
+        "finely chopped",
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "en-pates-saumon-courgette-petits-pois",
@@ -303,7 +366,38 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Creamy pasta with salmon, courgette and peas",
+      "summary": "A pink and green pasta dish, as creamy as you like, ready in half an hour.",
+      "steps": [
+        "Cook the pasta in a large pan of boiling water for the time shown on the packet, adding the peas 5 minutes before the end.",
+        "Meanwhile, cut the courgette into small dice and fry it for 5 minutes in the oil.",
+        "Remove the skin and bones from the salmon, cut it into dice and add it to the pan. Cook for 6 minutes over a low heat: the flesh should be opaque and flake apart.",
+        "Add the cream, mix with the drained pasta and peas, then sprinkle with chives."
+      ],
+      "adaptations": [
+        "For the youngest children, lightly mash the peas with a fork.",
+        "Trout works very well instead of salmon."
+      ],
+      "storage": "24 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezing not recommended: the pasta goes soft and the sauce separates. Make just the amount you need.",
+      "precautions": [
+        "Fish cooked right through (opaque flesh that flakes); carefully remove all the bones.",
+        "Vary the species of fish from week to week and alternate oily and white fish, twice a week.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "An oily fish rich in omega-3, vegetables and starchy food together.",
+      "notes": [
+        "macaroni or farfalle",
+        null,
+        null,
+        null,
+        null,
+        null,
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "en-poulet-haricots-verts-riz",
@@ -395,7 +489,37 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Sliced chicken, green beans and rice",
+      "summary": "Tender chicken in small pieces, melting beans and rice: the simple plate that is sure to please.",
+      "steps": [
+        "Cook the rice in a pan of boiling water for the time shown on the packet, then drain it.",
+        "Top and tail the green beans, cut them into pieces and boil or steam them for 12 minutes, until really tender.",
+        "Cut the chicken into small strips. Brown them for 8 minutes in the oil with the crushed garlic clove: no trace of pink should remain in the centre.",
+        "Add the beans and butter to the pan, stir for a minute and serve with the rice."
+      ],
+      "adaptations": [
+        "Replace the green beans with peas or broccoli.",
+        "A squeeze of lemon juice livens up the dish for the older ones."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 2 months in portions (the rice becomes a little firmer). Thaw in the fridge and reheat with a spoonful of water until piping hot.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking).",
+        "Cut the green beans into small, well-cooked pieces for the youngest children."
+      ],
+      "nutrition": "Lean poultry, a green vegetable and a starchy food for a balanced meal.",
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        "clove"
+      ]
+    }
   },
   {
     "slug": "en-gratin-courgettes-fondant",
@@ -495,7 +619,38 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Melting courgette gratin",
+      "summary": "Soft courgettes set in a golden cheesy cream, just like Grandma’s.",
+      "steps": [
+        "Preheat the oven to 190 °C. Wash the courgettes and cut them into thin rounds.",
+        "Fry the courgettes for 10 minutes in the oil with the crushed garlic so they release their water, then drain them.",
+        "Beat the eggs with the cream, nutmeg and half the Emmental.",
+        "Arrange the courgettes in a dish, pour over the egg and cream mixture and sprinkle with the rest of the cheese. Bake for 25 minutes: the centre should be well set and the top golden."
+      ],
+      "adaptations": [
+        "Add 100 g of cooked rice to make it a complete dish.",
+        "Serve as a side dish with meat or fish."
+      ],
+      "storage": "48 hours in the fridge, covered with cling film; reheat only once, until piping hot all the way through.",
+      "freezing": "Can be frozen for 1 month, but the texture becomes more watery. Thaw in the fridge and reheat in the oven.",
+      "precautions": [
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts.",
+        "Choose cheeses made with pasteurised milk: no raw-milk cheese before 5 years.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A mild summer vegetable, with eggs and cheese for protein and calcium.",
+      "notes": [
+        null,
+        null,
+        null,
+        "grated",
+        "clove",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "en-gratin-chou-fleur-bechamel",
@@ -588,7 +743,36 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Golden cauliflower cheese",
+      "summary": "Cauliflower covered in a creamy béchamel and browned, the recipe that wins over the most suspicious.",
+      "steps": [
+        "Break the cauliflower into small florets and boil or steam them for 12 minutes, until tender. Drain thoroughly.",
+        "Make the béchamel: melt the butter, add the flour and stir for 1 minute, then gradually pour in the milk while whisking. Leave to thicken for 8 minutes over a low heat, then add the nutmeg.",
+        "Preheat the oven to 200 °C. Arrange the cauliflower in a dish, cover with béchamel and sprinkle with Emmental.",
+        "Brown for 20 minutes, until the top is golden."
+      ],
+      "adaptations": [
+        "Use half cauliflower, half broccoli to vary the colours.",
+        "Add diced ham for a one-dish meal."
+      ],
+      "storage": "48 hours in the fridge, covered with cling film; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 2 months in portions. Thaw overnight in the fridge, then reheat in the oven at 180 °C.",
+      "precautions": [
+        "Choose cheeses made with pasteurised milk: no raw-milk cheese before 5 years.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A vegetable from the cabbage family, with milk and cheese for calcium.",
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        "grated",
+        null
+      ]
+    }
   },
   {
     "slug": "en-omelette-pommes-de-terre",
@@ -681,7 +865,36 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Soft potato omelette",
+      "summary": "A big golden omelette filled with melting potatoes, to cut into slices like a cake.",
+      "steps": [
+        "Peel the potatoes and cut them into small dice. Finely slice the onion.",
+        "Heat the oil in a frying pan and cook the potatoes and onion for 15 minutes over a medium heat, stirring, until tender and golden.",
+        "Beat the eggs with the milk and chives and pour them over the potatoes.",
+        "Cover and cook for 10 minutes over a low heat, then flip the omelette using a plate: it must be completely set, with no runny parts."
+      ],
+      "adaptations": [
+        "Add diced courgette or spinach with the potatoes.",
+        "Serve cold in slices, for a picnic."
+      ],
+      "storage": "24 hours in the fridge, covered with cling film; eat cold or reheated only once.",
+      "freezing": "Freezing not recommended: the eggs become rubbery and the potatoes floury.",
+      "precautions": [
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Eggs for protein and potatoes for energy.",
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "en-soupe-legumes-du-marche",
@@ -782,7 +995,29 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Market vegetable soup",
+      "summary": "A velvety, comforting soup, to drink from a bowl on winter evenings.",
+      "servingLabel": "bowls",
+      "steps": [
+        "Peel and wash all the vegetables. Cut the carrots, potatoes, leek, courgette and onion into pieces.",
+        "Soften the onion and leek for 5 minutes in the oil, in a large pan.",
+        "Add the other vegetables, cover with water and simmer for 25 minutes.",
+        "Blend finely and, if you like, add the cream when serving."
+      ],
+      "adaptations": [
+        "Add a handful of vermicelli for a more filling soup.",
+        "Serve with a piece of cheese and bread for a complete dinner."
+      ],
+      "storage": "48 hours in the fridge in a closed container; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes very well, for up to 3 months, in portions. Thaw in the fridge or directly over a low heat in a pan.",
+      "precautions": [
+        "Check the temperature before serving: soup that is too hot easily burns little ones’ mouths.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A bowl of mixed vegetables, rich in fibre and water."
+    }
   },
   {
     "slug": "en-veloute-potiron-doux",
@@ -875,7 +1110,29 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Gentle pumpkin soup",
+      "summary": "A creamy orange soup, naturally sweet, with the scent of autumn.",
+      "servingLabel": "bowls",
+      "steps": [
+        "Peel the pumpkin, remove the seeds and cut the flesh into cubes. Peel the potato and onion and cut them into pieces.",
+        "Melt the butter in a pan and soften the onion for 3 minutes without letting it brown.",
+        "Add the pumpkin and potato, cover with water and cook for 20 minutes.",
+        "Add the milk and nutmeg, then blend until really smooth."
+      ],
+      "adaptations": [
+        "Red kuri squash can be cooked with its skin on: just wash it well.",
+        "Add a square of soft cheese when blending for extra creaminess."
+      ],
+      "storage": "48 hours in the fridge in a closed container; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 3 months. Thaw in the fridge, reheat gently while stirring and blend again if needed.",
+      "precautions": [
+        "Check the temperature before serving.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "An orange vegetable rich in beta-carotene, with a little milk for calcium."
+    }
   },
   {
     "slug": "en-croque-monsieur-maison",
@@ -966,7 +1223,36 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Homemade oven-baked croque-monsieur",
+      "summary": "The golden, gooey toasted ham and cheese sandwich, made at home in a few minutes.",
+      "steps": [
+        "Preheat the oven to 200 °C. Lightly butter the slices of sandwich bread on one side.",
+        "Place 4 slices on a baking tray, buttered side down. Top each with a slice of ham and half the Emmental, then close with the other slices, buttered side up.",
+        "Sprinkle with the rest of the cheese and bake for 10 minutes, until the croque-monsieurs are golden and the cheese has melted.",
+        "Cut them into small triangles and serve with a little salad."
+      ],
+      "adaptations": [
+        "Vegetarian version: replace the ham with thin slices of tomato.",
+        "Choose a good-quality cooked ham, rindless and reduced-salt."
+      ],
+      "storage": "Best eaten straight away; leftovers keep for 24 hours in the fridge and can be reheated in the oven.",
+      "freezing": "Freezes uncooked, before baking, for up to 1 month. Bake it from frozen, adding 5 minutes in the oven.",
+      "precautions": [
+        "Choose cheeses made with pasteurised milk: no raw-milk cheese before 5 years.",
+        "Let it cool to lukewarm: melted cheese stays very hot.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A treat dish to complete with a raw vegetable or a soup and a piece of fruit.",
+      "notes": [
+        "slices",
+        "slices",
+        "grated",
+        "soft",
+        "to serve alongside"
+      ]
+    }
   },
   {
     "slug": "en-hachis-parmentier-familial",
@@ -1073,7 +1359,39 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Family hachis parmentier",
+      "summary": "The great Sunday classic: slow-cooked meat and a golden homemade mash.",
+      "steps": [
+        "Peel the potatoes, cut them into pieces and cook them for 20 minutes in simmering water. Mash them with the hot milk and butter.",
+        "Meanwhile, chop the onion and finely grate the carrots. Fry them for 5 minutes in a frying pan, add the beef and thyme and cook for 10 minutes, breaking up the meat: it should no longer be pink.",
+        "Preheat the oven to 200 °C. Spread the meat in a dish, cover with the mash and sprinkle with Emmental.",
+        "Bake for 20 minutes, until the top is nicely browned."
+      ],
+      "adaptations": [
+        "Replace half the potatoes with sweet potato.",
+        "A vegetarian version can be made with cooked lentils instead of the meat."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes very well, for up to 3 months, in portions. Thaw overnight in the fridge, then reheat in the oven until piping hot all the way through.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Choose cheeses made with pasteurised milk: no raw-milk cheese before 5 years.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Meat rich in iron, vegetables hidden in the sauce and a mash for energy.",
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "grated",
+        null
+      ]
+    }
   },
   {
     "slug": "en-lasagnes-legumes-ricotta",
@@ -1191,7 +1509,41 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Vegetable and ricotta lasagne",
+      "summary": "Melting layers of Mediterranean vegetables, tomato sauce and ricotta, for a generous vegetarian dish.",
+      "steps": [
+        "Cut the courgette and aubergine into small dice, and slice the onion and garlic.",
+        "Soften the onion and garlic in the oil, add the vegetables and cook for 10 minutes. Pour in the chopped tomatoes and the shredded basil, then simmer for 15 minutes.",
+        "Preheat the oven to 180 °C. In a dish, alternate vegetable sauce, lasagne sheets and spoonfuls of ricotta, finishing with sauce.",
+        "Cover with sliced mozzarella and bake for 35 minutes: the lasagne should be tender when pierced with the tip of a knife."
+      ],
+      "adaptations": [
+        "Slip in a layer of chopped spinach for even more green.",
+        "Blend the sauce if your child picks out the vegetables."
+      ],
+      "storage": "48 hours in the fridge, covered with cling film; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 3 months, cooked and in portions. Thaw in the fridge and reheat in the oven at 180 °C covered with foil.",
+      "precautions": [
+        "Choose cheeses made with pasteurised milk: no raw-milk cheese before 5 years.",
+        "Let it cool to lukewarm before serving: the sauce and cheese hold the heat.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Mixed vegetables, pasta and fresh cheeses for a complete meat-free dish.",
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        "clove",
+        null,
+        null,
+        null,
+        "leaves"
+      ]
+    }
   },
   {
     "slug": "en-riz-au-lait-vanille",
@@ -1269,7 +1621,29 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Grandma’s creamy rice pudding",
+      "summary": "Grandma’s dessert, creamy and fragrant, that fills the whole kitchen with its aroma.",
+      "servingLabel": "ramekins",
+      "steps": [
+        "Rinse the short-grain rice in cold water.",
+        "Bring the milk to a simmer with the vanilla in a heavy-based pan.",
+        "Sprinkle in the rice and cook for 35 minutes over a very low heat, stirring often so it does not stick, until very soft.",
+        "Add the sugar off the heat, stir, then share out into ramekins. Serve lukewarm or cold."
+      ],
+      "adaptations": [
+        "Add a little lemon zest or cinnamon.",
+        "Reduce the sugar to 30 g: the vanilla already brings sweetness."
+      ],
+      "storage": "3 days in the fridge, ramekins covered with cling film.",
+      "freezing": "Freezing not recommended: the rice hardens and the milk separates when thawed.",
+      "precautions": [
+        "Sweet dessert: to offer from time to time, at the end of a meal.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A milky dessert that provides calcium and energy."
+    }
   },
   {
     "slug": "en-compote-pommes-poires-cannelle",
@@ -1344,7 +1718,27 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Homemade apple and pear compote with cinnamon",
+      "summary": "A compote with no added sugar, mild and fragrant, to make in large batches.",
+      "servingLabel": "pots",
+      "steps": [
+        "Peel the apples and pears, remove the core and pips, then cut them into pieces.",
+        "Put the fruit in a pan with a little water and the cinnamon. Cover and cook for 20 minutes over a low heat, until very tender.",
+        "Mash with a fork for a rustic compote or blend for a smooth texture. Leave to cool."
+      ],
+      "adaptations": [
+        "Replace the pears with quinces, plums or rhubarb, depending on the season.",
+        "Choose sweet apples (Golden Delicious, Gala): no sugar is needed."
+      ],
+      "storage": "4 days in the fridge in a closed jar.",
+      "freezing": "Freezes very well, for up to 3 months, in small pots. Thaw overnight in the fridge.",
+      "precautions": [
+        "Raw fruit before 4 years: prefer it cooked as a compote or finely grated (risk of choking)."
+      ],
+      "nutrition": "Cooked fruit, rich in fibre, with no added sugar."
+    }
   },
   {
     "slug": "en-crepes-du-gouter",
@@ -1438,7 +1832,38 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Thin crêpes for afternoon snack",
+      "summary": "Light, golden crêpes, to roll up with compote or a little jam.",
+      "servingLabel": "crêpes",
+      "steps": [
+        "Put the flour and sugar in a mixing bowl, make a well and crack the eggs into it.",
+        "Add the milk little by little while whisking to avoid lumps, then the melted butter and the vanilla. Leave the batter to rest for 30 minutes if you have time.",
+        "Heat a lightly greased frying pan, pour in a small ladleful of batter and spread it out. Cook for about 1 minute on each side: the crêpe should be golden and the batter well cooked.",
+        "Keep the crêpes warm under a tea towel until snack time."
+      ],
+      "adaptations": [
+        "Fill with compote with no added sugar, mashed banana or a little fromage frais.",
+        "Replace a quarter of the flour with buckwheat flour."
+      ],
+      "storage": "48 hours in the fridge, covered with cling film; reheat in a frying pan.",
+      "freezing": "Freeze for 2 months, separated by baking paper. Thaw at room temperature for 30 minutes or directly in a frying pan.",
+      "precautions": [
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts.",
+        "Let it cool to lukewarm before filling for the child.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A snack made with flour, eggs and milk, to fill with fruit.",
+      "notes": [
+        null,
+        null,
+        null,
+        "melted",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "en-quatre-quarts-citron",
@@ -1531,7 +1956,37 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Lemon pound cake",
+      "summary": "The very simple cake with a lovely buttery taste, scented with lemon zest.",
+      "servingLabel": "portions",
+      "steps": [
+        "Preheat the oven to 170 °C and butter a loaf tin.",
+        "Whisk the softened butter with the sugar until the mixture turns pale, then add the eggs one at a time and the lemon zest.",
+        "Fold in the flour and baking powder, mixing just enough to get a smooth batter.",
+        "Pour into the tin and bake for 40 minutes: a knife blade should come out dry."
+      ],
+      "adaptations": [
+        "Less sweet version: the cake stays soft with 100 g of sugar.",
+        "Add chocolate chips for the older ones."
+      ],
+      "storage": "4 days at room temperature, wrapped in a tea towel or in a box.",
+      "freezing": "Freezes for 2 months, in wrapped slices. Thaw for 1 hour at room temperature.",
+      "precautions": [
+        "Sweet cake: one slice at snack time, with a piece of fruit and a dairy product.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A simple homemade cake, with no additives, to serve in a reasonable slice.",
+      "notes": [
+        null,
+        null,
+        "soft",
+        null,
+        null,
+        "zest"
+      ]
+    }
   },
   {
     "slug": "en-muffins-banane-cannelle",
@@ -1634,7 +2089,38 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Soft banana muffins",
+      "summary": "Very soft muffins sweetened mostly by banana, perfect for snack time or the lunch box.",
+      "servingLabel": "muffins",
+      "steps": [
+        "Preheat the oven to 180 °C and line a muffin tin with paper cases.",
+        "Mash the bananas with a fork, then add the eggs, melted butter, milk and sugar.",
+        "Fold in the flour, baking powder and cinnamon without overworking the batter.",
+        "Fill the cases two-thirds full and bake for 20 minutes: a cocktail stick inserted in the centre should come out dry."
+      ],
+      "adaptations": [
+        "Add a handful of blueberries or some oats.",
+        "The riper the bananas, the less sugar you need."
+      ],
+      "storage": "3 days in an airtight box at room temperature.",
+      "freezing": "Freeze for 2 months. Thaw for 1 hour at room temperature or for a few seconds in the microwave.",
+      "precautions": [
+        "For the youngest children, cut the muffin into pieces and stay close to the child (risk of choking)."
+      ],
+      "nutrition": "A snack made with fruit, flour and eggs, less sweet than a classic cake.",
+      "notes": [
+        "very ripe",
+        null,
+        null,
+        "melted",
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "en-pain-perdu-cannelle",
@@ -1725,7 +2211,36 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Golden cinnamon French toast",
+      "summary": "The anti-waste recipe that turns stale bread into a golden, melting snack.",
+      "steps": [
+        "Cut the baguette into thick slices of about 2 cm.",
+        "Beat the eggs with the milk, sugar and cinnamon in a shallow dish. Dip the slices of bread in it for a few seconds on each side.",
+        "Melt the butter in a frying pan and brown the slices for 3 to 4 minutes on each side, over a medium heat: the inside should be set, with no runny egg.",
+        "Serve lukewarm, with a compote or fresh fruit."
+      ],
+      "adaptations": [
+        "Stale sandwich bread or brioche also works.",
+        "Serve with no added sugar, with a mashed banana."
+      ],
+      "storage": "Best eaten straight away; keeps for 24 hours in the fridge and can be reheated in a frying pan.",
+      "freezing": "Freezes for 1 month once cooked. Reheat from frozen in the toaster or in a frying pan.",
+      "precautions": [
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A filling snack made with bread, milk and eggs.",
+      "notes": [
+        "stale",
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "en-gateau-au-yaourt",
@@ -1825,7 +2340,38 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "The yoghurt cake of my childhood",
+      "summary": "The cake you measure with the yoghurt pot: ideal for cooking with children.",
+      "servingLabel": "portions",
+      "steps": [
+        "Preheat the oven to 180 °C and oil a round tin.",
+        "Empty the yoghurt into a mixing bowl and keep the pot for measuring. Add the sugar, eggs, oil and vanilla, then mix.",
+        "Fold in the flour and baking powder until you have a smooth batter.",
+        "Pour into the tin and bake for 35 minutes: the cake should be golden and a knife blade should come out dry."
+      ],
+      "adaptations": [
+        "Add diced apple or pear to the batter.",
+        "Replace the vanilla with orange zest."
+      ],
+      "storage": "4 days in a box at room temperature.",
+      "freezing": "Freezes for 2 months, in wrapped slices. Thaw for 1 hour at room temperature.",
+      "precautions": [
+        "One slice at snack time, with a piece of fruit.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A simple family cake, with a dairy product in the batter.",
+      "notes": [
+        "125 g pot",
+        "3 pots",
+        "1½ pots",
+        null,
+        "½ pot",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "en-sables-vanille",
@@ -1910,7 +2456,36 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Little vanilla shortbread biscuits",
+      "summary": "Crunchy biscuits to cut out with a cookie cutter, for a homemade snack.",
+      "servingLabel": "biscuits",
+      "steps": [
+        "Rub the flour and softened butter together with your fingertips until it looks like coarse sand.",
+        "Add the sugar, egg and vanilla, then bring the dough together into a ball without overworking it. Leave it to rest in the fridge for 30 minutes.",
+        "Preheat the oven to 180 °C. Roll out the dough 5 mm thick and cut out shapes with a cookie cutter.",
+        "Place the biscuits on a tray lined with baking paper and bake for 12 minutes, until the edges are just golden."
+      ],
+      "adaptations": [
+        "Replace 30 g of flour with unsweetened cocoa.",
+        "Let the children cut out and decorate the biscuits."
+      ],
+      "storage": "1 week in a metal tin, away from moisture.",
+      "freezing": "The raw dough freezes for 2 months as a ball wrapped in cling film; thaw it overnight in the fridge before rolling it out. The baked biscuits also freeze for 2 months.",
+      "precautions": [
+        "Do not let them taste the raw dough (raw egg, raw flour).",
+        "Watch the child while they eat: a dry, crumbly biscuit before 4 years."
+      ],
+      "nutrition": "A homemade biscuit to offer with a piece of fruit and a glass of milk.",
+      "notes": [
+        null,
+        "soft",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "en-boulettes-boeuf-tomate-coquillettes",
@@ -2014,7 +2589,39 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Little beef meatballs in tomato sauce with macaroni",
+      "summary": "Tender meatballs simmered in a mild tomato sauce, with macaroni to mop it up.",
+      "steps": [
+        "Mix the beef, egg, breadcrumbs and parsley, then shape into about twenty small meatballs.",
+        "Brown the meatballs for 5 minutes in the oil. Add the sliced onion, then the chopped tomatoes.",
+        "Cover and simmer for 20 minutes over a low heat: the meatballs must be cooked right through, with no trace of pink.",
+        "Meanwhile, cook the pasta for the time shown on the packet and serve it with the meatballs and sauce."
+      ],
+      "adaptations": [
+        "Blend the sauce if your child does not like pieces of onion.",
+        "The meatballs can be made with half beef, half veal."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "The meatballs in sauce freeze for 3 months. Thaw overnight in the fridge and reheat over a low heat until piping hot all the way through.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Meat rich in iron, a tomato sauce and pasta for a complete meal.",
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        "macaroni",
+        "finely chopped",
+        null
+      ]
+    }
   },
   {
     "slug": "en-petits-flans-carottes",
@@ -2105,7 +2712,37 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Little carrot and cheese flans",
+      "summary": "Gentle orange flans, served in ramekins, to help children love carrots.",
+      "servingLabel": "ramekins",
+      "steps": [
+        "Peel the carrots, cut them into rounds and boil or steam them for 15 minutes, until very tender.",
+        "Preheat the oven to 170 °C. Blend the carrots with the eggs, milk, Emmental and the cumin, if using.",
+        "Share out into buttered ramekins, placed in a dish half-filled with hot water.",
+        "Cook in the bain-marie for 25 minutes: the flans should be firm in the centre."
+      ],
+      "adaptations": [
+        "Serve with rice or a mash for a complete meal.",
+        "Replace the carrots with pumpkin or broccoli."
+      ],
+      "storage": "48 hours in the fridge, covered with cling film; serve lukewarm or reheated only once.",
+      "freezing": "Freezing not recommended: the flans become grainy and release water.",
+      "precautions": [
+        "Eggs well cooked: the yolk and the white must be firm, with no runny parts.",
+        "Choose cheeses made with pasteurised milk: no raw-milk cheese before 5 years.",
+        "Carrots well cooked and blended: no risk of a hard piece (choking)."
+      ],
+      "nutrition": "An orange vegetable, eggs and cheese in a soft texture.",
+      "notes": [
+        null,
+        null,
+        null,
+        "grated",
+        null
+      ]
+    }
   },
   {
     "slug": "en-truite-puree-patate-douce",
@@ -2200,7 +2837,29 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Oven-baked trout with sweet potato mash",
+      "summary": "Delicate trout and a slightly sweet orange mash, for a fish meal that makes a change.",
+      "steps": [
+        "Peel the sweet potatoes, cut them into cubes and steam or boil them for 20 minutes, until melting.",
+        "Preheat the oven to 190 °C. Place the trout on a baking tray, drizzle with oil and a few drops of lemon, then bake for 15 minutes: the flesh should be opaque and flake apart.",
+        "Mash the sweet potatoes with the butter and hot milk.",
+        "Flake the trout, removing the skin and all the bones, then serve it on the mash."
+      ],
+      "adaptations": [
+        "Salmon or hake can replace the trout.",
+        "Use half sweet potato, half potato if the sweet taste is not liked."
+      ],
+      "storage": "24 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "The mash freezes for 3 months; the cooked fish freezes for 1 month. Thaw in the fridge and reheat until piping hot.",
+      "precautions": [
+        "Fish cooked right through (opaque flesh that flakes); carefully remove all the bones.",
+        "Vary the species of fish from week to week and alternate oily and white fish, twice a week.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "An oily fish rich in omega-3 and a mash rich in beta-carotene."
+    }
   },
   {
     "slug": "en-mini-pizzas-jambon-mozzarella",
@@ -2291,7 +2950,37 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Mini ham and mozzarella pizzas",
+      "summary": "Small pizzas to top yourself: the Saturday night meal children love to make.",
+      "steps": [
+        "Preheat the oven to 220 °C. Unroll the pizza dough and cut out 8 rounds using a bowl.",
+        "Drain the chopped tomatoes and mix them with the herbs and oil. Spread a spoonful on each round.",
+        "Top with the ham cut into small squares and the diced mozzarella.",
+        "Bake for 12 to 15 minutes, until the dough is golden and the cheese has melted."
+      ],
+      "adaptations": [
+        "Add diced courgette, pepper or mushrooms.",
+        "Vegetarian version: replace the ham with vegetables."
+      ],
+      "storage": "24 hours in the fridge; reheat in the oven to keep it crisp.",
+      "freezing": "Freeze for 2 months once cooked. Reheat from frozen for 10 minutes in the oven at 200 °C.",
+      "precautions": [
+        "Choose cheeses made with pasteurised milk: no raw-milk cheese before 5 years.",
+        "Let them cool to lukewarm: melted cheese stays scalding hot.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "A treat meal to complete with a raw vegetable and a piece of fruit.",
+      "notes": [
+        "roll",
+        null,
+        "slices",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "en-dinde-petits-pois-carottes",
@@ -2388,6 +3077,27 @@
       "santefr_3_6",
       "lait_cru",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Turkey with peas and carrots",
+      "summary": "A tender escalope simmered with peas and carrots, like an old-fashioned jardinière.",
+      "steps": [
+        "Peel the carrots and potatoes and cut them into small dice. Slice the onion.",
+        "Cut the turkey into small pieces and brown them for 5 minutes in the butter with the onion.",
+        "Add the carrots, potatoes, peas and thyme, then a large glass of water. Cover and simmer for 20 minutes, until the vegetables are tender.",
+        "Check that the meat is well cooked right through before serving."
+      ],
+      "adaptations": [
+        "Replace the turkey with chicken.",
+        "Lightly mash the peas for the youngest children."
+      ],
+      "storage": "48 hours in the fridge in a closed box; reheat only once, until piping hot all the way through.",
+      "freezing": "Freezes for 3 months in portions. Thaw in the fridge and reheat over a low heat with a little water.",
+      "precautions": [
+        "Meat cooked right through: no trace of pink, juices running clear.",
+        "Before 4 years: cut food into small, soft pieces, make sure the child is sitting down and stay close to them during the meal (risk of choking)."
+      ],
+      "nutrition": "Lean poultry and three vegetables in one casserole dish."
+    }
   }
 ]

@@ -71,7 +71,33 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Mashed sweet potato with chicken",
+      "summary": "A gentle orange plate, where the chicken hides in the melting sweet potato.",
+      "steps": [
+        "Peel the sweet potato and cut it into cubes; cut the chicken breast into small dice.",
+        "Steam the sweet potato for 15 minutes, adding the chicken for the last 10 minutes: it must be white and well cooked right through.",
+        "Blend the chicken finely, then mash the sweet potato with a fork and mix everything with a little cooking water.",
+        "Add the rapeseed oil when serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Turkey works very well instead of chicken."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freezes very well: up to 2 months in small portions (ice-cube trays or airtight pots). Thaw in the fridge the day before, reheat thoroughly and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Meat well cooked right through, with no trace of pink."
+      ],
+      "nutrition": "Sweet potato provides beta-carotene and chicken provides protein: about 15 g of chicken per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months).",
+      "notes": [
+        "peeled",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "me-cabillaud-riz-courgette",
@@ -153,7 +179,34 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Milled cod, rice and courgette",
+      "summary": "A gentle little fish dish, with a milled (food-mill) texture that prepares for the first grains.",
+      "steps": [
+        "Cook the rice for 15 minutes in a large pan of water, leaving it a little softer than usual, then drain.",
+        "Meanwhile, wash the courgette, cut it into rounds and steam it for 10 minutes; add the cod for the last 8 minutes.",
+        "Flake the fish, checking that no bones remain, then pass the fish, courgette and rice through a food mill (or pulse-blend) to keep a milled texture.",
+        "Add the olive oil when serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Pollock or hake can replace the cod."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Can be frozen for up to 2 months if the fish had not already been frozen raw. Thaw in the fridge the day before, reheat thoroughly all the way through and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain."
+      ],
+      "nutrition": "White fish provides light protein and courgette plenty of water and mildness: about 15 g of fish per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months).",
+      "notes": [
+        "skin and bones removed",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "me-saumon-carotte-pomme-de-terre",
@@ -236,7 +289,34 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Melting salmon, carrot and potato",
+      "summary": "A familiar, comforting trio, with well-cooked salmon that melts into the purée.",
+      "steps": [
+        "Peel the carrot and potato and cut them into small pieces.",
+        "Steam them for 20 minutes, until very tender; add the salmon for the last 10 minutes.",
+        "Flake the salmon, carefully removing the bones: it must be opaque all the way to the centre.",
+        "Mash the carrot, potato and salmon with a fork with a little cooking water, then add the rapeseed oil."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Trout instead of salmon."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Can be frozen for up to 2 months if the fish had not already been frozen raw. Thaw in the fridge the day before, reheat thoroughly all the way through and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain."
+      ],
+      "nutrition": "Salmon, an oily fish, provides omega-3; carrot and potato make a mild base: about 15 g of salmon per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months).",
+      "notes": [
+        "skin and bones removed",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "me-merlu-brocoli",
@@ -323,7 +403,34 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Hake with mashed broccoli and potato",
+      "summary": "A soft green mash where hake, a very mild fish, goes with broccoli.",
+      "steps": [
+        "Peel the potato and cut it into cubes; break the broccoli into small florets.",
+        "Steam the potato for 20 minutes, adding the broccoli and hake for the last 10 minutes.",
+        "Flake the hake, checking there are no bones, then mash everything with a fork with a little cooking water.",
+        "Add the olive oil just before serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Cauliflower can replace the broccoli for a milder taste."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Can be frozen for up to 2 months if the fish had not already been frozen raw. Thaw in the fridge the day before, reheat thoroughly all the way through and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain."
+      ],
+      "nutrition": "Broccoli provides vitamin C and fibre, hake lean protein: about 15 g of hake per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months).",
+      "notes": [
+        "skin and bones removed",
+        "in small florets",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "me-poulet-haricots-verts",
@@ -401,7 +508,28 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Milled chicken and green beans",
+      "summary": "A great baby-jar classic, homemade in a few minutes.",
+      "steps": [
+        "Top and tail the green beans, peel the potato and cut it into cubes; cut the chicken into dice.",
+        "Steam the vegetables for 18 minutes, adding the chicken for the last 10 minutes: it must be well cooked right through.",
+        "Pass everything through a food mill to hold back the bean strings, adding a little cooking water.",
+        "Add the rapeseed oil when serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Out of season, frozen green beans work very well."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freezes very well: up to 2 months in small portions (ice-cube trays or airtight pots). Thaw in the fridge the day before, reheat thoroughly and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Meat well cooked right through, with no trace of pink."
+      ],
+      "nutrition": "Green beans provide gentle fibre and chicken provides protein: about 15 g of chicken per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months)."
+    }
   },
   {
     "slug": "me-boeuf-carottes-mijote",
@@ -495,7 +623,36 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Slow-cooked beef and carrots, blended",
+      "summary": "Sunday beef and carrots, slowly simmered then milled for little ones.",
+      "steps": [
+        "Cut the beef into small cubes, removing the fat and sinew; peel the carrots, potato and onion, then cut them into pieces.",
+        "Put the beef, carrots, onion, thyme and bay leaf in a casserole dish, cover with water and simmer with the lid on for 75 minutes over a low heat.",
+        "Add the potato for the last 20 minutes and keep cooking until the meat shreds with a fork.",
+        "Remove the bay leaf, then pulse-blend one part meat with one part vegetables and a little juice to get a milled texture."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "The rest of the casserole makes a dish for the older ones: they add salt on their plate."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freezes very well: up to 2 months in small portions (ice-cube trays or airtight pots). Thaw in the fridge the day before, reheat thoroughly and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Meat well cooked right through, with no trace of pink."
+      ],
+      "nutrition": "Beef provides well-absorbed iron and carrots their mildness: about 20 g of beef per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months), keeping the rest of the meat for another meal.",
+      "notes": [
+        "in small cubes",
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "me-dinde-petits-pois-carotte",
@@ -574,7 +731,28 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Turkey with peas and carrot",
+      "summary": "Gentle peas and carrots with a little turkey, just like at home.",
+      "steps": [
+        "Peel the carrot and cut it into rounds; cut the turkey into small dice.",
+        "Steam the carrot and peas for 15 minutes, adding the turkey for the last 10 minutes: it must be well cooked right through.",
+        "Pass everything through a food mill to hold back the pea skins, with a little cooking water.",
+        "Add the knob of butter when serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Chicken instead of turkey."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freezes very well: up to 2 months in small portions (ice-cube trays or airtight pots). Thaw in the fridge the day before, reheat thoroughly and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Meat well cooked right through, with no trace of pink."
+      ],
+      "nutrition": "Peas provide fibre and a little plant protein, turkey lean protein: about 15 g of turkey per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months)."
+    }
   },
   {
     "slug": "me-lentilles-corail-butternut",
@@ -661,7 +839,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Red lentils and butternut squash",
+      "summary": "A velvety orange mash, vegetarian and full of mildness.",
+      "steps": [
+        "Rinse the red lentils; peel the butternut squash, remove the seeds and cut it into cubes.",
+        "Put the squash and lentils in a pan, just cover with water and cook over a low heat for 18 minutes, until the lentils fall apart.",
+        "Mash with a fork, adding a tiny pinch of cumin if you like.",
+        "Add the olive oil when serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Pumpkin or sweet potato can replace the butternut squash."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezes very well: up to 2 months in small portions (ice-cube trays or airtight pots). Thaw in the fridge the day before, reheat thoroughly and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Introduce pulses in small amounts at first, depending on what your child accepts."
+      ],
+      "nutrition": "Red lentils provide plant protein, iron and fibre; the squash, beta-carotene. With about 15 g of dry lentils per portion, this meal can replace meat or fish.",
+      "notes": [
+        "rinsed",
+        "peeled",
+        "optional",
+        null
+      ]
+    }
   },
   {
     "slug": "me-oeuf-epinards-pomme-de-terre",
@@ -741,7 +946,28 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Mashed hard-boiled egg with spinach",
+      "summary": "A gentle green purée with a well-cooked egg, to vary the proteins.",
+      "steps": [
+        "Cook the egg for 10 minutes in boiling water so it is hard-boiled, then cool it and peel it.",
+        "Peel the potato, cut it into cubes and steam it for 18 minutes with the spinach.",
+        "Mash the potato and spinach with a fork with a little cooking water and the rapeseed oil.",
+        "Finely mash the hard-boiled egg (white and yolk) and mix it into the purée: about half an egg per portion."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Fresh spinach also works, well washed and with the stalks removed."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freezing not recommended: cooked egg turns rubbery. Make it at mealtime.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Egg always well cooked: white and yolk firm."
+      ],
+      "nutrition": "Egg is a complete, practical protein: about half an egg per portion, which replaces the meat or fish of the meal. Spinach provides vitamin B9."
+    }
   },
   {
     "slug": "me-petites-pates-legumes",
@@ -829,7 +1055,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Little star pasta with small vegetables",
+      "summary": "Soft little stars in a sauce of Mediterranean vegetables.",
+      "steps": [
+        "Peel the carrot, wash the courgette, peel and deseed the tomato, then cut everything into small pieces.",
+        "Cook the vegetables covered with a little water for 15 minutes, until very tender, then mash them with a fork.",
+        "Cook the small pasta in boiling water for 2 minutes longer than the time shown on the packet so it is really soft, then drain.",
+        "Mix the pasta with the mashed vegetables and add the olive oil."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Add 15 g of cooked, blended chicken or fish for a complete meal."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezes very well: up to 2 months in small portions (ice-cube trays or airtight pots). Thaw in the fridge the day before, reheat thoroughly and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year."
+      ],
+      "nutrition": "The small pasta provides starchy energy and the vegetables vitamins; add a small portion of protein at the same meal or at the day’s other meal.",
+      "notes": [
+        null,
+        null,
+        null,
+        "peeled and deseeded",
+        null
+      ]
+    }
   },
   {
     "slug": "me-semoule-legumes-couscous",
@@ -920,7 +1173,35 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Fine semolina with couscous vegetables",
+      "summary": "The vegetables from a couscous, melting and fragrant, with very fine semolina.",
+      "steps": [
+        "Peel the carrot and turnip, wash the courgette and cut everything into small cubes.",
+        "Cook the vegetables in a small pan of water for 20 minutes, with a tiny pinch of ras el hanout if you like.",
+        "Take a little of the piping hot cooking stock, pour it over the semolina and leave it to swell for 5 minutes, covered.",
+        "Mash the vegetables with a fork, mix them into the semolina and add the olive oil."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Add a few well-cooked chickpeas, skinned and mashed, from around 10 months."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezes very well: up to 2 months in small portions (ice-cube trays or airtight pots). Thaw in the fridge the day before, reheat thoroughly and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year."
+      ],
+      "nutrition": "Semolina provides energy from cereals and the vegetables gentle fibre; complete with a small portion of protein during the day.",
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        "optional",
+        null
+      ]
+    }
   },
   {
     "slug": "me-compote-pomme-poire",
@@ -992,7 +1273,31 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Mashed apple and pear compote",
+      "summary": "The compote for every snack time, mashed with a fork to keep a little texture.",
+      "steps": [
+        "Peel the apple and pear, remove the core and pips, then cut them into pieces.",
+        "Cook them covered with a little water for 12 minutes, until very tender.",
+        "Mash with a fork, more or less finely, and let it cool to lukewarm before serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "A pinch of cinnamon nicely flavours the compote."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezes very well: up to 3 months in small portions. Thaw in the fridge and eat within 48 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Fruit cooked until really tender: raw apple is a food with a choking risk before 4 years."
+      ],
+      "nutrition": "Cooked fruit provides its natural sugar and gentle fibre, with no added sugar.",
+      "notes": [
+        null,
+        "very ripe"
+      ]
+    }
   },
   {
     "slug": "me-ecrase-abricot-banane",
@@ -1061,7 +1366,30 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Mashed apricots and banana",
+      "summary": "A mild, tangy summer dessert, where banana softens the apricot.",
+      "steps": [
+        "Wash the apricots, open them and remove the stones, then cook them covered with a little water for 8 minutes.",
+        "Remove the skin if it comes away, then mash the apricots with a fork.",
+        "Mash the half banana and mix it into the apricots just before serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Peach can replace the apricot."
+      ],
+      "storage": "24 hours in the fridge without the banana, which you mash when serving.",
+      "freezing": "The stewed apricots freeze for up to 3 months; banana turns brown when frozen: add it when serving, after thawing in the fridge.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year."
+      ],
+      "nutrition": "Apricot provides beta-carotene and banana energy, with no added sugar.",
+      "notes": [
+        "very ripe",
+        "very ripe"
+      ]
+    }
   },
   {
     "slug": "me-yaourt-banane",
@@ -1131,7 +1459,30 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Plain yoghurt with mashed banana",
+      "summary": "The instant dessert of the first months: a plain yoghurt sweetened by banana.",
+      "steps": [
+        "Finely mash the half banana with a fork.",
+        "Mix it into the plain yoghurt and serve straight away."
+      ],
+      "adaptations": [
+        "Replace the banana with a very ripe mashed pear.",
+        "For a child who is discovering dairy products, start with a few spoonfuls."
+      ],
+      "storage": "Serve straight away; does not keep once made.",
+      "freezing": "Does not freeze: the dairy separates and the fruit turns brown. Make it when serving.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "A plain yoghurt made with pasteurised milk, with no added sugar."
+      ],
+      "nutrition": "Yoghurt provides calcium and protein, banana a natural sweetness with no added sugar.",
+      "notes": [
+        null,
+        "very ripe"
+      ]
+    }
   },
   {
     "slug": "me-fromage-blanc-poire",
@@ -1201,7 +1552,26 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Fromage frais and melting pear",
+      "summary": "A creamy dessert with a lightly stewed, mashed pear.",
+      "steps": [
+        "Peel the pear, remove the core and cut it into pieces.",
+        "Cook it covered with a little water for 8 minutes, then mash it with a fork and let it cool.",
+        "Mix the mashed pear into the fromage frais just before serving."
+      ],
+      "adaptations": [
+        "A very ripe pear can simply be mashed raw.",
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable."
+      ],
+      "storage": "The mashed pear keeps for 48 hours in the fridge; mix when serving.",
+      "freezing": "Only the stewed pear freezes (up to 3 months); mix it into the fromage frais after thawing in the fridge.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year."
+      ],
+      "nutrition": "Fromage frais provides calcium and protein; pear, fibre and a natural sweetness."
+    }
   },
   {
     "slug": "me-petits-suisses-fraises",
@@ -1271,7 +1641,29 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Petits-suisses with mashed strawberries",
+      "summary": "A fresh, pink spring dessert, with no added sugar.",
+      "steps": [
+        "Wash and hull the strawberries and mash them very finely with a fork.",
+        "Mix them into the petits-suisses and serve straight away."
+      ],
+      "adaptations": [
+        "Out of season, use frozen red berries stewed for a few minutes and then cooled.",
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable."
+      ],
+      "storage": "Serve straight away; does not keep once made.",
+      "freezing": "Does not freeze: the dairy separates and the fruit turns brown. Make it when serving.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year."
+      ],
+      "nutrition": "Petits-suisses provide calcium; strawberries vitamin C and their natural sweet taste.",
+      "notes": [
+        null,
+        "very ripe"
+      ]
+    }
   },
   {
     "slug": "me-veau-panais-carotte",
@@ -1353,7 +1745,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Slow-cooked veal, parsnip and carrot",
+      "summary": "Tender meat and root vegetables with a slightly sweet taste.",
+      "steps": [
+        "Cut the veal into small cubes, removing the fat; peel the parsnip and carrots and cut them into rounds.",
+        "Put everything in a pan, cover with water and simmer with the lid on for 45 minutes, until the meat is very tender and well cooked right through.",
+        "Drain, keeping the juice, then pulse-blend the meat with the vegetables and a little juice for a milled texture.",
+        "Add the rapeseed oil when serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "The parsnip can be replaced with potato."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freezes very well: up to 2 months in small portions (ice-cube trays or airtight pots). Thaw in the fridge the day before, reheat thoroughly and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Meat well cooked right through, with no trace of pink."
+      ],
+      "nutrition": "Veal provides iron and protein; parsnip and carrot, gentle fibre: about 20 g of veal per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months); the rest freezes in portions.",
+      "notes": [
+        "in small cubes",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "me-truite-poireau-pomme-de-terre",
@@ -1441,7 +1860,34 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Mashed trout, leek and potato",
+      "summary": "Gently melted leek with well-cooked trout.",
+      "steps": [
+        "Carefully wash the white of the leek and slice it finely; peel the potato and cut it into cubes.",
+        "Steam the leek and potato for 20 minutes, adding the trout for the last 8 minutes.",
+        "Flake the trout, removing all the bones, then mash everything with a fork with a little cooking water.",
+        "Add the knob of butter when serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Salmon can replace the trout."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Can be frozen for up to 2 months if the fish had not already been frozen raw. Thaw in the fridge the day before, reheat thoroughly all the way through and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain."
+      ],
+      "nutrition": "Trout provides omega-3 and protein, leek gentle fibre: about 15 g of trout per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months).",
+      "notes": [
+        "skin and bones removed",
+        "the white part",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "me-poulet-potiron-riz",
@@ -1522,7 +1968,34 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Chicken with pumpkin and short-grain rice",
+      "summary": "An orange, creamy autumn plate, thanks to well-cooked short-grain rice.",
+      "steps": [
+        "Rinse the short-grain rice; peel the pumpkin, remove the seeds and cut it into cubes; cut the chicken into small dice.",
+        "Cook the rice and pumpkin together in a pan of water for 20 minutes, until the rice is very tender; add the chicken for the last 10 minutes.",
+        "Drain, keeping a little cooking water, then pulse-blend for a milled texture.",
+        "Add the rapeseed oil when serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Butternut squash can replace the pumpkin."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Freezes very well: up to 2 months in small portions (ice-cube trays or airtight pots). Thaw in the fridge the day before, reheat thoroughly and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Meat well cooked right through, with no trace of pink."
+      ],
+      "nutrition": "A complete meal: rice for energy, pumpkin for beta-carotene and chicken for protein, about 15 g of chicken per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months).",
+      "notes": [
+        null,
+        "peeled",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "me-colin-fenouil",
@@ -1604,7 +2077,34 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Pollock with fennel and potato",
+      "summary": "Cooked fennel becomes very mild and delicately flavours the fish.",
+      "steps": [
+        "Slice the fennel finely; peel the potato and cut it into cubes.",
+        "Steam the fennel and potato for 20 minutes, adding the pollock for the last 8 minutes.",
+        "Flake the fish, checking that no bones remain, then pulse-blend with the vegetables and a little cooking water.",
+        "Add the olive oil when serving."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Cod or hake can replace the pollock."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Can be frozen for up to 2 months if the fish had not already been frozen raw. Thaw in the fridge the day before, reheat thoroughly all the way through and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain."
+      ],
+      "nutrition": "Pollock provides lean protein and fennel fibre and a very mild aniseed taste: about 15 g of fish per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months).",
+      "notes": [
+        "pollock, skin and bones removed",
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "me-saumon-petits-pois-riz",
@@ -1680,7 +2180,32 @@
       "inspq_etouffement",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Milled salmon, peas and rice",
+      "summary": "A spring plate where salmon and peas go together quite naturally.",
+      "steps": [
+        "Cook the rice in a pan of water for 15 minutes, leaving it really tender, then drain.",
+        "Steam the peas for 12 minutes, adding the salmon for the last 8 minutes.",
+        "Flake the salmon, removing the bones, then pass the salmon, peas and rice through a food mill with a little cooking water."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "As salmon is naturally oily, there is no need to add oil."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "Can be frozen for up to 2 months if the fish had not already been frozen raw. Thaw in the fridge the day before, reheat thoroughly all the way through and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Fish well cooked, opaque and flaking apart; check with your fingertips that no bones remain."
+      ],
+      "nutrition": "Salmon provides omega-3, peas fibre and rice energy: about 15 g of salmon per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months).",
+      "notes": [
+        "skin and bones removed",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "me-boeuf-courgette-polenta",
@@ -1761,7 +2286,28 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Minced beef, courgette and creamy polenta",
+      "summary": "Polenta as soft as a purée, with melting courgette and a little beef.",
+      "steps": [
+        "Wash the courgette and cut it into dice; cook it covered with a little water for 10 minutes.",
+        "Add the minced beef, breaking it up, and cook for another 6 minutes, until it is well cooked, with no trace of pink.",
+        "Meanwhile, sprinkle the polenta into 100 ml of simmering water and cook for 5 minutes, stirring.",
+        "Mash the courgette and beef with a fork, serve on the polenta and add the olive oil."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Blend the meat separately if your child prefers a smoother texture."
+      ],
+      "storage": "24 hours in the fridge in a closed container, to be reheated only once.",
+      "freezing": "The beef and courgette mixture freezes for up to 2 months (thaw in the fridge, reheat right through); make the polenta fresh.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Meat well cooked right through, with no trace of pink."
+      ],
+      "nutrition": "Beef provides well-absorbed iron, polenta (gluten-free) energy: about 15 g of beef per portion, a guide to adjust according to age (around ten grams at 7–8 months, around twenty at 12 months)."
+    }
   },
   {
     "slug": "me-pois-chiches-carotte-cumin",
@@ -1841,7 +2387,33 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Mashed chickpeas and carrots with cumin",
+      "summary": "A golden purée, vegetarian and mild, barely scented with cumin.",
+      "steps": [
+        "Peel the carrots and cut them into rounds; rinse the chickpeas and remove their skins by pinching them between two fingers.",
+        "Steam the carrots for 15 minutes, adding the chickpeas for the last 5 minutes.",
+        "Finely mash everything with a fork with a little cooking water, a tiny pinch of cumin if you like and the olive oil."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Choose tinned chickpeas with no added salt, or cook them yourself."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezes very well: up to 2 months in small portions (ice-cube trays or airtight pots). Thaw in the fridge the day before, reheat thoroughly and eat within 24 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Chickpeas skinned and well mashed: whole, they are a choking risk before 4 years."
+      ],
+      "nutrition": "Chickpeas provide plant protein, iron and fibre; about 25 g of cooked chickpeas per portion to start with, depending on what your child accepts.",
+      "notes": [
+        "cooked, rinsed",
+        null,
+        "optional",
+        null
+      ]
+    }
   },
   {
     "slug": "me-pomme-myrtilles-compotees",
@@ -1910,7 +2482,27 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Stewed apples and blueberries",
+      "summary": "A surprising purple compote, mild and fruity.",
+      "steps": [
+        "Peel the apples, remove the core and cut them into pieces.",
+        "Cook the apples and blueberries covered with a little water for 12 minutes, until the blueberries burst.",
+        "Pulse-blend or mash finely: no blueberry should stay whole in the compote."
+      ],
+      "adaptations": [
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable.",
+        "Frozen blueberries work all year round."
+      ],
+      "storage": "48 hours in the fridge in a closed container.",
+      "freezing": "Freezes very well: up to 3 months in small portions. Thaw in the fridge and eat within 48 hours, without refreezing.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Blueberries always mashed: whole, they are a choking risk before 4 years."
+      ],
+      "nutrition": "Blueberries provide antioxidants and vitamin C, apple fibre, all with no added sugar."
+    }
   },
   {
     "slug": "me-porridge-avoine-pomme",
@@ -1989,6 +2581,31 @@
       "spf_diversification",
       "anses_miel",
       "inspq_etouffement"
-    ]
+    ],
+    "en": {
+      "title": "Oat porridge with cooked apple",
+      "summary": "A warm, comforting breakfast, sweetened by apple.",
+      "steps": [
+        "Peel the half apple and grate it finely.",
+        "Put the oats, grated apple and 120 ml of water in a small pan and cook over a low heat for 6 minutes, stirring, until you have a thick porridge.",
+        "Mash with a fork, add a pinch of cinnamon if you like, and let it cool to lukewarm."
+      ],
+      "adaptations": [
+        "Make it with your child’s usual milk instead of water.",
+        "Adjust the texture to what your child accepts: finer at first, lumpier once they are comfortable."
+      ],
+      "storage": "Make it fresh; 24 hours in the fridge at most, to be reheated with a little water.",
+      "freezing": "Freezing not recommended: the porridge becomes pasty. It takes only a few minutes to make.",
+      "precautions": [
+        "No added salt, sugar or honey before 1 year.",
+        "Apple grated and then cooked until tender."
+      ],
+      "nutrition": "Oats provide fibre and long-lasting energy; apple its natural sweetness with no added sugar.",
+      "notes": [
+        null,
+        null,
+        "optional"
+      ]
+    }
   }
 ]

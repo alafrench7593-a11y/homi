@@ -89,7 +89,41 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Roast chicken, potatoes and green beans",
+      "summary": "The ultimate Sunday lunch: golden chicken, melting potatoes and crunchy green beans.",
+      "steps": [
+        "Preheat the oven to 200 °C. Peel the potatoes, cut them into wedges and put them in a large dish with the unpeeled garlic cloves, 2 tablespoons of olive oil and the thyme.",
+        "Lay the chicken thighs on top, brush them with the rest of the oil and roast for 45 minutes, basting the meat halfway through with the juices from the dish.",
+        "Meanwhile, top and tail the green beans, wash them, then steam them for 10 to 12 minutes: they should stay slightly crunchy.",
+        "Check the chicken is cooked by piercing the thickest part, near the bone: the juices should run clear and the flesh should no longer be pink. If not, cook for another 5 to 10 minutes.",
+        "Serve the golden chicken with the roast potatoes and green beans."
+      ],
+      "adaptations": [
+        "With a whole chicken of about 1.5 kg, allow 1 hour 15 minutes at 200 °C and check the juices at the thigh joint.",
+        "Swap the green beans for carrots, roasted with the potatoes."
+      ],
+      "storage": "Fridge: 2 days in a closed box, with the meat taken off the bone; reheat only once, until piping hot in the centre.",
+      "freezing": "Cooked chicken, taken off the bone, freezes for up to 3 months; thaw it overnight in the fridge and reheat it thoroughly all the way through. Roast potatoes and green beans do not freeze well.",
+      "precautions": [
+        "Pregnancy: the chicken must be cooked right through, with no trace of pink near the bone.",
+        "Use a chopping board and knife kept for raw meat, then wash them in hot soapy water before touching the vegetables.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "A complete, classic meal: the chicken provides protein, the potatoes a starchy food and the green beans fibre.",
+      "familyAdaptations": {
+        "child": "Remove the skin, cut the meat into small pieces and mash the potatoes for the youngest children."
+      },
+      "notes": [
+        "about 1 kg",
+        "waxy",
+        "fresh or frozen",
+        "cloves",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "gr-hachis-parmentier",
@@ -201,7 +235,45 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Golden-topped cottage pie (hachis parmentier)",
+      "summary": "Creamy homemade mash over well-cooked minced beef: the comforting dish everyone agrees on.",
+      "steps": [
+        "Peel the potatoes, cut them into pieces and cook them for 20 minutes in a large pan of boiling water, until they are very tender.",
+        "Meanwhile, peel and finely chop the onions and carrots, then soften them for 5 minutes in a sauté pan with half the butter.",
+        "Add the minced beef and cook it for 10 minutes over a medium heat, breaking it up, until it is completely cooked, with no pink parts at all. Add the washed, chopped parsley.",
+        "Preheat the oven to 200 °C. Drain the potatoes and mash them with the hot milk, the rest of the butter and the nutmeg.",
+        "Spread the meat in a dish, cover with the mash, sprinkle with Emmental and bake for 25 minutes, until the top is golden and the centre piping hot."
+      ],
+      "adaptations": [
+        "For a change, replace some of the potatoes with sweet potato or pumpkin.",
+        "Leftover pot-au-feu or boiled beef: chop it finely and use it instead of the raw meat."
+      ],
+      "storage": "Fridge: 2 days, covered; reheat only once in the oven, until the centre is piping hot.",
+      "freezing": "Freezes very well, as a whole dish or in portions, for up to 3 months; thaw overnight in the fridge, then reheat in the oven at 180 °C until the centre is piping hot.",
+      "precautions": [
+        "Pregnancy: the minced meat must be cooked right through, with no trace of pink at all, before it goes in the oven.",
+        "Use a chopping board and knife kept for raw meat, then wash them in hot soapy water before touching the vegetables.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis).",
+        "Milk, cream and cheeses made with pasteurised milk only."
+      ],
+      "nutrition": "Meat, starchy food and vegetables together in one family dish: the beef provides protein and iron, the potatoes the meal’s energy.",
+      "familyAdaptations": {
+        "child": "Serve a lukewarm portion; it is often children’s favourite dish, just as it is."
+      },
+      "notes": [
+        null,
+        "floury",
+        null,
+        null,
+        null,
+        null,
+        "grated",
+        null,
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "gr-saumon-pommes-de-terre-vapeur",
@@ -298,7 +370,43 @@
       "santefr_equilibre",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Well-cooked salmon, steamed potatoes and chive sauce",
+      "summary": "Oven-baked salmon fillet, steamed potatoes and a fresh fromage frais sauce: simple and full of flavour.",
+      "steps": [
+        "Wash the potatoes, cut them in half and steam them for 20 to 25 minutes, until the tip of a knife goes in without resistance.",
+        "Preheat the oven to 180 °C. Place the salmon fillets in a dish, drizzle them with olive oil and a squeeze of lemon juice, then bake for 15 to 18 minutes.",
+        "Check they are cooked: the salmon flesh should be opaque all the way to the centre and flake apart with a fork. If not, cook for a few more minutes.",
+        "Mix the fromage frais with the washed, chopped chives and the rest of the lemon juice.",
+        "Serve the salmon with the steamed potatoes and the chilled sauce."
+      ],
+      "adaptations": [
+        "Swap the salmon for trout, cooked the same way.",
+        "Add steamed green beans or courgettes for a greener plate."
+      ],
+      "storage": "Fridge: 24 hours for the cooked salmon, in a closed box; reheat it only once, piping hot. Make the sauce at the last minute.",
+      "freezing": "Cooked salmon freezes for up to 2 months; thaw it in the fridge and reheat it until piping hot. The fromage frais sauce and the steamed potatoes do not freeze.",
+      "precautions": [
+        "Pregnancy: fresh fish only, never raw, marinated or smoked; it must be cooked right through, with opaque flesh all the way to the centre.",
+        "Run your fingers over the flesh before serving and remove even the smallest bone.",
+        "Fromage frais made with pasteurised milk, kept in the fridge until serving.",
+        "Fish guidelines: twice a week, including one oily fish, varying the species from week to week.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "Salmon is an oily fish and a source of omega-3; with the potatoes and the fromage frais sauce, the meal is complete.",
+      "familyAdaptations": {
+        "child": "Flake the salmon, checking there are no bones, and mash the potatoes with a little sauce."
+      },
+      "notes": [
+        "4 skinless fillets of about 120 g",
+        "waxy",
+        null,
+        "finely chopped",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "gr-gratin-dauphinois",
@@ -390,7 +498,41 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Melting gratin dauphinois",
+      "summary": "Potatoes cooked gently in milk and cream, then browned in the oven: the side dish the whole table loves.",
+      "steps": [
+        "Preheat the oven to 160 °C. Wash and peel the potatoes, then cut them into thin slices about 3 mm thick, without rinsing them afterwards so they keep their starch.",
+        "Rub a gratin dish with the halved garlic clove, then grease it generously with the butter.",
+        "In a large pan, bring the milk, cream and nutmeg to a simmer. Add the potato slices and cook for 10 minutes over a low heat, stirring gently.",
+        "Pour everything into the dish and bake for 1 hour, until the top is golden and a knife blade goes through the potatoes without resistance.",
+        "Leave to rest for 10 minutes before serving."
+      ],
+      "adaptations": [
+        "Serve it with a roast, poultry or white fish, and a well-washed green salad.",
+        "Lighter version: replace the cream with the same amount of milk."
+      ],
+      "storage": "Fridge: 2 days, covered; reheat only once in the oven, until piping hot in the centre.",
+      "freezing": "Freezes, but the potatoes become a little floury: up to 2 months, in portions; thaw in the fridge and reheat in the oven until piping hot.",
+      "precautions": [
+        "Milk, cream and cheeses made with pasteurised milk only. Serve the gratin piping hot.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis).",
+        "Leftovers: cooled quickly, covered in the fridge, then reheated only once until piping hot all the way through (listeriosis)."
+      ],
+      "nutrition": "A classic, comforting side dish; the milk and cream provide calcium. Serve with meat or fish and vegetables.",
+      "familyAdaptations": {
+        "child": "Let it cool to lukewarm and cut it into small pieces."
+      },
+      "notes": [
+        "waxy",
+        null,
+        null,
+        "clove",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "gr-soupe-legumes-maison",
@@ -481,7 +623,32 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Homemade vegetable soup",
+      "summary": "The good old-fashioned vegetable soup, mild and velvety, to warm up weekday evenings.",
+      "steps": [
+        "Wash all the vegetables thoroughly. Peel the carrots, potatoes and onion; split the leek in half and rinse it between the leaves to remove any soil.",
+        "Cut the carrots, leek, potatoes, courgette and onion into pieces.",
+        "In a large pan, soften the onion and leek for 5 minutes in the olive oil, without letting them brown.",
+        "Add the rest of the vegetables, cover with water (about 1.5 litres) and simmer for 25 minutes, until everything is very tender.",
+        "Blend finely and adjust the thickness with a little hot water if needed. Add a little salt when serving."
+      ],
+      "adaptations": [
+        "Change the vegetables with the seasons: pumpkin, turnip or celeriac in winter, green beans in summer.",
+        "For a complete meal, serve with wholemeal bread and a piece of hard cheese made with pasteurised milk."
+      ],
+      "storage": "Fridge: 3 days in a closed bottle or box; reheat only the amount you need, until boiling.",
+      "freezing": "Freezes very well in portions, for up to 3 months; thaw overnight in the fridge or directly over a low heat, then bring to the boil.",
+      "precautions": [
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis).",
+        "Leftovers: cooled quickly, covered in the fridge, then reheated only once until piping hot all the way through (listeriosis)."
+      ],
+      "nutrition": "A simple soup packed with vegetables and fibre, to complete with bread and a dairy product.",
+      "familyAdaptations": {
+        "baby": "From the start of solid foods: take out a ladleful before adding salt and blend very finely."
+      }
+    }
   },
   {
     "slug": "gr-lentilles-carottes",
@@ -579,7 +746,41 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Slow-cooked green lentils with carrots",
+      "summary": "A simple home-style dish, melting and fragrant with thyme, that is filling and costs next to nothing.",
+      "steps": [
+        "Rinse the green lentils in cold water. Wash and peel the carrots and onion, then cut the carrots into rounds and the onion into small dice.",
+        "In a casserole dish, soften the onion for 3 minutes in 1 tablespoon of olive oil.",
+        "Add the lentils, carrots, bay leaf and thyme, then cover with three times their volume of cold water.",
+        "Bring to the boil and simmer for 25 to 30 minutes, until the lentils are tender but still whole.",
+        "Drain if needed, remove the bay leaf, drizzle with the rest of the olive oil and sprinkle with the washed, chopped parsley."
+      ],
+      "adaptations": [
+        "Serve with rice or wholemeal bread for a complete vegetarian meal.",
+        "Non-vegetarian version: serve with a poultry sausage or a piece of chicken cooked right through."
+      ],
+      "storage": "Fridge: 3 days in a closed box; reheat only once with a little water, until piping hot.",
+      "freezing": "Freezes very well for up to 3 months; thaw overnight in the fridge and reheat over a low heat with a little water.",
+      "precautions": [
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis).",
+        "Leftovers: cooled quickly, covered in the fridge, then reheated only once until piping hot all the way through (listeriosis)."
+      ],
+      "nutrition": "Lentils are pulses, a source of plant protein, fibre and folate (vitamin B9).",
+      "familyAdaptations": {
+        "baby": "From around 8 months: blend a few spoonfuls of lentils and carrots before adding the oil and salt."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "gr-omelette-courgette-poivron",
@@ -671,7 +872,40 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Well-cooked courgette and pepper omelette",
+      "summary": "A golden, generous omelette filled with melting vegetables, ready in under thirty minutes.",
+      "steps": [
+        "Wash the courgette, pepper and chives. Cut the courgette and pepper into small dice and slice the onion.",
+        "Fry the vegetables for 8 minutes in the olive oil over a medium heat, until tender.",
+        "Beat the eggs with the chopped chives and pour them over the vegetables.",
+        "Cook for 5 minutes over a low heat with the lid on, then flip the omelette using a plate and cook for another 2 minutes: it must be completely set, with no runny parts at all."
+      ],
+      "adaptations": [
+        "Add a few mushrooms or some spinach, depending on what you have.",
+        "Serve with a well-washed salad and wholemeal bread."
+      ],
+      "storage": "Fridge: 24 hours in a closed box; eat it cold or reheated until piping hot.",
+      "freezing": "Does not freeze: the omelette becomes rubbery and watery. Make it at mealtime.",
+      "precautions": [
+        "Pregnancy: the omelette must be well cooked and completely set, with no runny parts.",
+        "Wash your hands after cracking the eggs.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "Eggs provide good-quality protein; the vegetables add colour, fibre and vitamins.",
+      "familyAdaptations": {
+        "child": "Cut the omelette into small squares that are easy to pick up."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "gr-pates-saumon-creme",
@@ -769,7 +1003,42 @@
       "santefr_equilibre",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Pasta with well-cooked salmon and peas",
+      "summary": "Creamy pasta with salmon and peas, a quick evening dish that children love too.",
+      "steps": [
+        "Cook the pasta in a large pan of boiling water for the time shown on the packet, adding the peas 5 minutes before the end.",
+        "Meanwhile, cut the salmon into 2 cm cubes and cook it for 6 to 8 minutes in a non-stick frying pan over a medium heat, turning it: it should be opaque all the way to the centre.",
+        "Add the cream and the lemon juice, then simmer for 2 minutes.",
+        "Drain the pasta and peas, mix them into the salmon sauce and sprinkle with the washed, chopped chives."
+      ],
+      "adaptations": [
+        "Swap the salmon for trout or cod, cooked the same way.",
+        "Add a handful of spinach at the end of cooking."
+      ],
+      "storage": "Fridge: 24 hours in a closed box; reheat only once, until piping hot.",
+      "freezing": "The salmon sauce, without the pasta, freezes for up to 1 month; thaw it in the fridge and reheat it until simmering. Cook the pasta fresh.",
+      "precautions": [
+        "Pregnancy: fresh fish only, never raw, marinated or smoked; it must be cooked right through, with opaque flesh all the way to the centre.",
+        "Never smoked salmon during pregnancy: use only fresh salmon, well cooked.",
+        "Milk, cream and cheeses made with pasteurised milk only.",
+        "Fish guidelines: twice a week, including one oily fish, varying the species from week to week.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "Pasta, oily fish and vegetables on one plate: a complete dish, to serve with a piece of fruit.",
+      "familyAdaptations": {
+        "child": "Cut up the pasta and flake the salmon for the youngest children."
+      },
+      "notes": [
+        "tagliatelle or penne",
+        "2 skinless fillets of about 130 g",
+        null,
+        null,
+        null,
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "gr-quiche-poireaux",
@@ -873,7 +1142,43 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Well-cooked leek quiche",
+      "summary": "A golden quiche with melting leeks, as good hot as lukewarm with a salad.",
+      "steps": [
+        "Preheat the oven to 180 °C. Split the leeks in half, wash them carefully between the leaves, then slice them finely.",
+        "Soften the leeks for 10 minutes in the butter, over a low heat with the lid on, until tender.",
+        "Line a tin with the shortcrust pastry, prick the base with a fork and spread the leeks over it.",
+        "Beat the eggs with the cream, milk and nutmeg, pour over the leeks and sprinkle with Emmental.",
+        "Bake for 35 minutes: the quiche should be golden and the filling completely set in the centre (a knife blade comes out dry). If not, bake for another 5 minutes."
+      ],
+      "adaptations": [
+        "Vary the filling: courgettes, broccoli or well-fried mushrooms.",
+        "Serve with a large, well-washed green salad."
+      ],
+      "storage": "Fridge: 2 days, covered; reheat only once until piping hot in the centre.",
+      "freezing": "Freezes once cooked, whole or in slices, for up to 2 months; thaw in the fridge and reheat in the oven at 180 °C until the centre is piping hot.",
+      "precautions": [
+        "Pregnancy: the quiche must be well cooked, with the egg filling completely set all the way to the centre.",
+        "Milk, cream and cheeses made with pasteurised milk only.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "The eggs, milk and cheese provide protein and calcium; the leeks provide fibre.",
+      "familyAdaptations": {
+        "child": "Cut a slice into lukewarm fingers that are easy to pick up."
+      },
+      "notes": [
+        "roll",
+        null,
+        null,
+        null,
+        null,
+        "grated",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "gr-blanquette-veau",
@@ -993,7 +1298,47 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Traditional veal blanquette with white rice",
+      "summary": "The great slow-cooked classic, with its creamy white sauce, carrots and mushrooms.",
+      "steps": [
+        "Put the pieces of veal in a casserole dish, cover with cold water, bring to the boil and skim off the froth.",
+        "Add the peeled carrots cut into chunks, the peeled onion, the bay leaf and the thyme. Simmer for 1 hour 30 minutes with the lid on, over a low heat, until the meat is very tender and cooked right through.",
+        "Meanwhile, clean the mushrooms, cut them into quarters and cook them for 10 minutes in a small pan with a ladleful of the meat’s cooking liquid. Cook the rice for the time shown on the packet.",
+        "Drain the meat and carrots, keeping 600 ml of the cooking liquid. In the casserole dish, melt the butter, add the flour and stir for 2 minutes, then pour in the liquid while whisking and leave to thicken for 5 minutes.",
+        "Off the heat, add the cream and the lemon juice, then put the meat, carrots and mushrooms back in. Reheat gently for 5 minutes without boiling and serve with the rice."
+      ],
+      "adaptations": [
+        "Replace the veal with chicken thighs: 45 minutes of simmering is enough.",
+        "Serve with steamed potatoes instead of rice."
+      ],
+      "storage": "Fridge: 2 days for the blanquette, in a closed box; reheat only once, until piping hot.",
+      "freezing": "The blanquette, without the rice, freezes for up to 3 months; thaw it overnight in the fridge and reheat it gently, whisking the sauce if it has split.",
+      "precautions": [
+        "Pregnancy: the meat must be cooked right through; after 1 hour 30 minutes of simmering, it is very tender with no pink parts.",
+        "Milk, cream and cheeses made with pasteurised milk only.",
+        "Cooked rice: cooled in under 2 hours, kept for 24 hours in the fridge and reheated only once, piping hot.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "The veal provides protein, the rice the meal’s energy and the carrots and mushrooms vegetables: a complete dish.",
+      "familyAdaptations": {
+        "child": "Shred the meat and mix it into the rice covered with sauce."
+      },
+      "notes": [
+        "shoulder or breast, in pieces",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "raw weight"
+      ]
+    }
   },
   {
     "slug": "gr-chili-con-carne",
@@ -1107,7 +1452,46 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Mild chilli con carne with white rice",
+      "summary": "A generous family chilli, mild on spices, that simmers on its own and reheats even better the next day.",
+      "steps": [
+        "Peel and chop the onions and garlic; wash the pepper and cut it into small dice.",
+        "In a casserole dish, soften the onions, garlic and pepper for 5 minutes in the olive oil.",
+        "Add the minced beef and cook it for 8 minutes, breaking it up, until no pink parts remain. Add the cumin and paprika.",
+        "Pour in the chopped tomatoes and the rinsed kidney beans, stir and simmer for 30 minutes with the lid on, stirring from time to time.",
+        "Meanwhile, cook the rice for the time shown on the packet. Serve the chilli piping hot with the rice."
+      ],
+      "adaptations": [
+        "Vegetarian version: replace the beef with 200 g of cooked green lentils and double the pepper.",
+        "For keen spice lovers, add chilli at the table, on the plate."
+      ],
+      "storage": "Fridge: 3 days for the chilli, in a closed box; reheat only once, until piping hot.",
+      "freezing": "The chilli, without the rice, freezes very well for up to 3 months; thaw it overnight in the fridge and reheat it over a low heat until simmering.",
+      "precautions": [
+        "Pregnancy: minced meat must be cooked right through, with no trace of pink at all.",
+        "Use a chopping board and knife kept for raw meat, then wash them in hot soapy water before touching the vegetables.",
+        "Cooked rice: cooled in under 2 hours, kept for 24 hours in the fridge and reheated only once, piping hot.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "Meat, pulses and vegetables in one dish: a meal rich in protein and fibre, mild on spices for the whole family.",
+      "familyAdaptations": {
+        "child": "Lightly mash the kidney beans with a fork for the youngest children."
+      },
+      "notes": [
+        null,
+        "drained and rinsed",
+        null,
+        null,
+        null,
+        "cloves",
+        null,
+        null,
+        null,
+        "raw weight"
+      ]
+    }
   },
   {
     "slug": "gr-curry-pois-chiches-epinards",
@@ -1217,7 +1601,43 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Mild chickpea and spinach curry",
+      "summary": "A creamy vegetarian curry with coconut milk, mild and fragrant, ready in just over half an hour.",
+      "steps": [
+        "Peel and slice the onion and garlic, then soften them for 5 minutes in the rapeseed oil in a sauté pan.",
+        "Add the curry powder and stir for 1 minute, then pour in the chopped tomatoes, coconut milk and rinsed chickpeas.",
+        "Add the spinach still frozen and simmer for 15 minutes over a low heat, stirring from time to time.",
+        "Meanwhile, cook the rice for the time shown on the packet, then serve with the piping hot curry."
+      ],
+      "adaptations": [
+        "Add diced sweet potato with the tomatoes for a heartier curry (cook for 10 minutes longer).",
+        "Serve with naan bread or wheat tortillas instead of rice."
+      ],
+      "storage": "Fridge: 3 days for the curry, in a closed box; reheat only once, until piping hot.",
+      "freezing": "The curry, without the rice, freezes for up to 3 months; thaw it in the fridge and reheat it over a low heat until simmering.",
+      "precautions": [
+        "Cooked rice: cooled in under 2 hours, kept for 24 hours in the fridge and reheated only once, piping hot.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis).",
+        "Mild curry powder may contain mustard and celery: check the label."
+      ],
+      "nutrition": "Chickpeas provide plant protein and fibre, spinach provides folate (vitamin B9); the rice completes the plate.",
+      "familyAdaptations": {
+        "child": "Mash a few chickpeas into the sauce and serve with plenty of rice."
+      },
+      "notes": [
+        "drained and rinsed",
+        null,
+        null,
+        null,
+        "clove",
+        null,
+        null,
+        null,
+        "raw weight"
+      ]
+    }
   },
   {
     "slug": "gr-riz-cantonais-poulet",
@@ -1313,7 +1733,43 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Homemade egg-fried rice with chicken",
+      "summary": "Children’s favourite fried rice, homemade with chicken, well-cooked scrambled eggs and small vegetables.",
+      "steps": [
+        "Cook the rice for the time shown on the packet, drain it and spread it out on a dish so it cools quickly (or use rice cooked the day before and kept in the fridge).",
+        "Cut the chicken into small dice; peel the carrot and onion and cut them into small dice.",
+        "Beat the eggs and cook them for 3 minutes in a large frying pan with a drizzle of oil, stirring, until you have well-set, dry scrambled eggs. Set aside.",
+        "In the same pan, stir-fry the chicken, carrot and onion for 8 minutes with the rest of the oil, until the chicken is cooked right through, with no pink parts. Add the peas and cook for another 3 minutes.",
+        "Add the rice and eggs, then stir-fry everything for 5 minutes over a high heat, stirring, until the rice is piping hot."
+      ],
+      "adaptations": [
+        "Replace the chicken with diced turkey breast cooked right through.",
+        "Add a few drops of reduced-salt soy sauce at the table, for adults."
+      ],
+      "storage": "Fridge: 24 hours in a closed box, cooled in under 2 hours; reheat only once, until piping hot.",
+      "freezing": "Freezes for up to 1 month, in portions; thaw in the fridge and reheat in a frying pan until piping hot. Do not refreeze.",
+      "precautions": [
+        "Pregnancy: scrambled eggs well set and dry, chicken cooked right through with no trace of pink.",
+        "Cooked rice: cooled in under 2 hours, kept for 24 hours in the fridge and reheated only once, piping hot.",
+        "Use a chopping board and knife kept for raw meat, then wash them in hot soapy water before touching the vegetables.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "Starchy food, poultry, eggs and vegetables in one pan: a complete, quick dish.",
+      "familyAdaptations": {
+        "child": "Serve in a bowl with a spoon; it is a dish children easily eat by themselves."
+      },
+      "notes": [
+        "raw weight",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "gr-compote-pommes-cannelle",
@@ -1384,7 +1840,33 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_limiter"
-    ]
+    ],
+    "en": {
+      "title": "Homemade apple compote with cinnamon",
+      "summary": "A rustic compote, lightly scented with cinnamon, with no added sugar: the sweetness comes from the apples.",
+      "steps": [
+        "Wash, peel and core the apples, then cut them into pieces.",
+        "Put them in a pan with 100 ml of water and the cinnamon, cover and cook for 15 to 20 minutes over a low heat, stirring from time to time.",
+        "Mash with a fork for a rustic compote, or blend for a smooth texture. Serve lukewarm or cold."
+      ],
+      "adaptations": [
+        "Use half apples, half pears, or add a handful of red berries at the end of cooking.",
+        "Serve with a plain yoghurt for a complete afternoon snack."
+      ],
+      "storage": "Fridge: 4 days in a clean, closed jar.",
+      "freezing": "Freezes very well in pots, for up to 3 months; thaw in the fridge and eat within 48 hours.",
+      "precautions": [
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "A fruity dessert with no added sugar, a source of fibre; a good way to end the meal.",
+      "familyAdaptations": {
+        "baby": "From the start of solid foods: without cinnamon, blended very finely."
+      },
+      "notes": [
+        "about 6 sweet apples (Golden Delicious, Gala)",
+        null
+      ]
+    }
   },
   {
     "slug": "gr-crumble-pommes",
@@ -1470,7 +1952,38 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_limiter"
-    ]
+    ],
+    "en": {
+      "title": "Golden apple crumble",
+      "summary": "Melting apples under a crunchy crumble topping: the family dessert that fills the kitchen with its aroma.",
+      "steps": [
+        "Preheat the oven to 180 °C. Wash, peel and core the apples, dice them and spread them in a dish with the cinnamon.",
+        "In a mixing bowl, mix the flour and sugar, add the cold diced butter and rub it in with your fingertips until it looks like coarse sand.",
+        "Sprinkle this mixture over the apples, without pressing it down.",
+        "Bake for 35 minutes, until the top is golden and the apples are melting. Serve lukewarm."
+      ],
+      "adaptations": [
+        "Replace half the apples with pears, plums or red berries, depending on the season.",
+        "Add 30 g of rolled oats to the topping for more crunch."
+      ],
+      "storage": "Fridge: 2 days, covered; reheat for a few minutes in the oven before serving.",
+      "freezing": "Freezes raw or cooked, for up to 3 months; bake the raw crumble without thawing it (10 minutes longer), or reheat the cooked crumble in the oven at 160 °C.",
+      "precautions": [
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis).",
+        "Sweet dessert: keep it for special occasions or share it in small portions."
+      ],
+      "nutrition": "An indulgent dessert: the apples provide fibre, the topping butter and sugar; a small portion is enough.",
+      "familyAdaptations": {
+        "child": "A small lukewarm portion, without adding sugar at the table."
+      },
+      "notes": [
+        "about 6 apples",
+        null,
+        "cold",
+        null,
+        null
+      ]
+    }
   },
   {
     "slug": "gr-cabillaud-four-puree",
@@ -1572,7 +2085,44 @@
       "santefr_equilibre",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Oven-baked cod loin with homemade mash",
+      "summary": "Pearly white fish and creamy buttery mash: the gentle meal you love coming back to.",
+      "steps": [
+        "Peel the potatoes, cut them into pieces and cook them for 20 minutes in a pan of boiling water.",
+        "Preheat the oven to 200 °C. Place the cod loins in a dish, drizzle them with olive oil and the lemon juice, then bake for 12 to 15 minutes.",
+        "Check they are cooked: the flesh should be opaque all the way to the centre and flake easily. Remove any bones.",
+        "Drain the potatoes and mash them with the hot milk and the butter to get a really smooth mash.",
+        "Serve the fish sprinkled with the washed, chopped parsley, with the mash."
+      ],
+      "adaptations": [
+        "The cod can be replaced with pollock or hake.",
+        "Add steamed carrots or creamed spinach to complete the plate."
+      ],
+      "storage": "Fridge: 24 hours in a closed box; reheat only once, until piping hot in the centre.",
+      "freezing": "Cooked fish freezes for up to 2 months and the mash for up to 1 month; thaw in the fridge and reheat until piping hot.",
+      "precautions": [
+        "Pregnancy: fresh fish only, never raw, marinated or smoked; it must be cooked right through, with opaque flesh all the way to the centre.",
+        "Run your fingers over the flesh before serving and remove even the smallest bone.",
+        "Milk, cream and cheeses made with pasteurised milk only.",
+        "Fish guidelines: twice a week, including one oily fish, varying the species from week to week.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "Cod is a white fish, a source of protein and iodine; the mash provides the meal’s starchy food.",
+      "familyAdaptations": {
+        "baby": "From around 6 to 8 months: blend 10 to 20 g of boneless cod with a little mash, before adding salt."
+      },
+      "notes": [
+        "4 cod loins of about 130 g",
+        "floury",
+        null,
+        null,
+        null,
+        null,
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "gr-merlu-papillote-carottes",
@@ -1667,7 +2217,43 @@
       "santefr_equilibre",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Hake en papillote with melting carrots and rice",
+      "summary": "Tender fish cooked in its own little parcel, on a bed of carrots, for a light dinner with no cooking smells.",
+      "steps": [
+        "Preheat the oven to 200 °C. Peel the carrots, cut them into thin rounds and steam them for 10 minutes.",
+        "Cook the rice for the time shown on the packet.",
+        "On 4 sheets of baking paper, share out the carrots, then add a hake fillet, a slice of lemon, a drizzle of olive oil and a little thyme. Seal the parcels well.",
+        "Bake for 15 to 18 minutes. Open one parcel to check: the hake flesh should be opaque all the way to the centre and come apart easily. If not, bake for a few more minutes.",
+        "Serve the parcels with the rice, removing the lemon slice."
+      ],
+      "adaptations": [
+        "Replace the carrots with sliced courgettes or leeks.",
+        "The hake can be replaced with cod or pollock."
+      ],
+      "storage": "Fridge: 24 hours in a closed box; reheat only once, until piping hot.",
+      "freezing": "The cooked fish and carrots freeze for up to 2 months, without the rice; thaw in the fridge and reheat until piping hot.",
+      "precautions": [
+        "Pregnancy: fresh fish only, never raw, marinated or smoked; it must be cooked right through, with opaque flesh all the way to the centre.",
+        "Run your fingers over the flesh before serving and remove even the smallest bone.",
+        "Cooked rice: cooled in under 2 hours, kept for 24 hours in the fridge and reheated only once, piping hot.",
+        "Fish guidelines: twice a week, including one oily fish, varying the species from week to week.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "Hake, a white fish, provides protein; the carrots provide vegetables and the rice the meal’s energy.",
+      "familyAdaptations": {
+        "child": "Let the child open their parcel (once it has cooled to lukewarm) and flake the fish."
+      },
+      "notes": [
+        "4 fillets of about 130 g",
+        null,
+        null,
+        null,
+        null,
+        "raw weight"
+      ]
+    }
   },
   {
     "slug": "gr-truite-fondue-poireaux",
@@ -1762,7 +2348,42 @@
       "santefr_equilibre",
       "anses_poisson",
       "santefr_mercure"
-    ]
+    ],
+    "en": {
+      "title": "Trout on melted leeks with steamed potatoes",
+      "summary": "Trout fillets cooked gently on creamy melted leeks: a simple, refined fish dish.",
+      "steps": [
+        "Wash the leeks carefully between the leaves and slice them. Soften them for 15 minutes in the butter, with the lid on, over a low heat.",
+        "Meanwhile, peel the potatoes and steam them for 20 minutes.",
+        "Add the cream to the leeks. Lay the trout fillets skin side down on the leeks, cover and cook for 8 to 10 minutes over a low heat.",
+        "Check they are cooked: the trout flesh should be opaque all the way to the centre and flake easily. If not, cook for a few more minutes.",
+        "Serve with the steamed potatoes."
+      ],
+      "adaptations": [
+        "Replace the trout with fresh salmon, cooked the same way.",
+        "Serve with rice instead of potatoes."
+      ],
+      "storage": "Fridge: 24 hours in a closed box; reheat only once, until piping hot.",
+      "freezing": "The melted leeks freeze for up to 3 months; the cooked fish for up to 2 months. Thaw in the fridge and reheat until piping hot; steamed potatoes do not freeze.",
+      "precautions": [
+        "Pregnancy: fresh fish only, never raw, marinated or smoked; it must be cooked right through, with opaque flesh all the way to the centre.",
+        "Run your fingers over the flesh before serving and remove even the smallest bone.",
+        "Milk, cream and cheeses made with pasteurised milk only.",
+        "Fish guidelines: twice a week, including one oily fish, varying the species from week to week.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "Trout provides protein and omega-3, the leeks fibre and the potatoes the meal’s starchy food.",
+      "familyAdaptations": {
+        "child": "Remove the skin, flake the trout and mash it with the potatoes and a little of the leeks."
+      },
+      "notes": [
+        "4 fillets of about 120 g",
+        null,
+        null,
+        null,
+        "waxy"
+      ]
+    }
   },
   {
     "slug": "gr-boeuf-carottes",
@@ -1880,7 +2501,45 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Slow-cooked beef and carrots, just like Grandma’s",
+      "summary": "Melt-in-the-mouth meat slowly simmered with sweet carrots: the ultimate family dish.",
+      "steps": [
+        "Cut the beef into large cubes. Peel and slice the onions and garlic; peel the carrots and cut them into thick rounds.",
+        "In a casserole dish, brown the meat on all sides for 10 minutes in the olive oil, then add the onions and garlic and fry for 3 minutes.",
+        "Sprinkle with the flour, stir, then add the tomato purée, bay leaf, thyme and 1 litre of water.",
+        "Cover and simmer for 1 hour 30 minutes over a low heat. Add the carrots and cook for another hour, until the meat is melting and cooked right through.",
+        "Remove the bay leaf, sprinkle with the washed, chopped parsley and serve piping hot, with steamed potatoes or pasta."
+      ],
+      "adaptations": [
+        "In a pressure cooker: allow about 45 minutes once the valve starts to turn.",
+        "Add a few button mushrooms at the end of cooking."
+      ],
+      "storage": "Fridge: 3 days, in a closed box; reheat only once, until piping hot in the centre.",
+      "freezing": "Freezes very well for up to 3 months; thaw overnight in the fridge and reheat gently with the lid on, until simmering.",
+      "precautions": [
+        "Pregnancy: after 2 hours 30 minutes of simmering, the meat is cooked right through and melting; no part should remain pink.",
+        "Use a chopping board and knife kept for raw meat, then wash them in hot soapy water before touching the vegetables.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "The beef provides protein and iron, the carrots fibre; serve with a starchy food for a complete meal.",
+      "familyAdaptations": {
+        "child": "Shred the meat and mash the carrots with a little sauce."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        "cloves",
+        null,
+        null,
+        null,
+        null,
+        null,
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "gr-poulet-basquaise",
@@ -1986,7 +2645,44 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Basque-style chicken with rice",
+      "summary": "Chicken thighs simmered with peppers and tomatoes: a sunny, colourful and very fragrant dish.",
+      "steps": [
+        "Wash the peppers and tomatoes. Deseed the peppers and cut them into strips, cut the tomatoes into pieces, and slice the onions and garlic.",
+        "In a casserole dish, brown the chicken thighs on all sides for 10 minutes in the olive oil, then set them aside.",
+        "Soften the onions, garlic and peppers for 10 minutes in the same casserole dish, then add the tomatoes and paprika.",
+        "Put the chicken back in, cover and simmer for 30 minutes over a low heat. Check that the flesh near the bone is cooked right through, with no trace of pink.",
+        "Meanwhile, cook the rice for the time shown on the packet and serve it with the chicken and its sauce."
+      ],
+      "adaptations": [
+        "Out of season, replace the fresh tomatoes with 400 g of tinned chopped tomatoes.",
+        "Serve with steamed potatoes instead of rice."
+      ],
+      "storage": "Fridge: 2 days, in a closed box; reheat only once, until piping hot in the centre.",
+      "freezing": "The chicken and its sauce, without the rice, freeze for up to 3 months; thaw overnight in the fridge and reheat with the lid on until simmering.",
+      "precautions": [
+        "Pregnancy: the chicken must be cooked right through, with no trace of pink near the bone.",
+        "Use a chopping board and knife kept for raw meat, then wash them in hot soapy water before touching the vegetables.",
+        "Cooked rice: cooled in under 2 hours, kept for 24 hours in the fridge and reheated only once, piping hot.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "Poultry, Mediterranean vegetables and rice: a complete dish, rich in vegetables.",
+      "familyAdaptations": {
+        "child": "Remove the skin, shred the meat and mix it into the rice with the sauce."
+      },
+      "notes": [
+        "about 1 kg",
+        null,
+        null,
+        null,
+        "cloves",
+        null,
+        null,
+        "raw weight"
+      ]
+    }
   },
   {
     "slug": "gr-lasagnes-bolognaise",
@@ -2107,7 +2803,47 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Homemade lasagne bolognese",
+      "summary": "Layers of meat and tomato sauce and béchamel, browned in the oven: the dish to share as a family.",
+      "steps": [
+        "Peel and finely chop the onion and carrot, then soften them for 5 minutes in the olive oil in a sauté pan.",
+        "Add the minced beef and cook it for 8 minutes, breaking it up, until no pink parts remain. Pour in the chopped tomatoes and simmer for 20 minutes over a low heat.",
+        "Make the béchamel: melt the butter in a pan, add the flour and stir for 1 minute, then gradually pour in the milk while whisking. Leave to thicken for 5 minutes over a low heat and add the nutmeg.",
+        "Preheat the oven to 180 °C. In a dish, alternate bolognese sauce, lasagne sheets and béchamel, finishing with béchamel. Sprinkle with Emmental.",
+        "Bake for 35 minutes, until the top is golden and the lasagne is tender when pierced with the tip of a knife."
+      ],
+      "adaptations": [
+        "Vegetarian version: replace the meat with cooked green lentils and diced courgette.",
+        "Make the sauce the day before: the lasagne then takes 10 minutes to assemble."
+      ],
+      "storage": "Fridge: 3 days, covered; reheat only once in the oven, until the centre is piping hot.",
+      "freezing": "Freezes very well once cooked, as a whole dish or in portions, for up to 3 months; thaw overnight in the fridge and reheat in the oven at 180 °C until the centre is piping hot.",
+      "precautions": [
+        "Pregnancy: minced meat must be cooked right through, with no trace of pink at all.",
+        "Milk, cream and cheeses made with pasteurised milk only.",
+        "Use a chopping board and knife kept for raw meat, then wash them in hot soapy water before touching the vegetables.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis)."
+      ],
+      "nutrition": "A complete dish: pasta, meat, vegetables from the sauce and dairy from the béchamel.",
+      "familyAdaptations": {
+        "child": "Cut a portion into small pieces and let it cool well."
+      },
+      "notes": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "grated"
+      ]
+    }
   },
   {
     "slug": "gr-veloute-potiron",
@@ -2204,7 +2940,32 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Pumpkin soup with nutmeg",
+      "summary": "A gentle, creamy orange soup with a hint of nutmeg, for autumn evenings.",
+      "steps": [
+        "Wash the pumpkin, remove the seeds and skin, then cut the flesh into cubes. Peel the potato and onion and cut them into pieces.",
+        "Soften the onion for 3 minutes in the olive oil in a large pan.",
+        "Add the pumpkin and potato, cover with water and cook for 20 minutes, until everything is very tender.",
+        "Blend finely with the nutmeg and cream, adding a little hot water if the soup is too thick."
+      ],
+      "adaptations": [
+        "The pumpkin can be replaced with red kuri squash (no need to peel it) or butternut squash.",
+        "Serve with croutons and a little grated Emmental."
+      ],
+      "storage": "Fridge: 3 days in a closed box; reheat only the amount you need, until boiling.",
+      "freezing": "Freezes very well for up to 3 months, preferably without the cream; thaw in the fridge and bring to the boil, then add the cream.",
+      "precautions": [
+        "Milk, cream and cheeses made with pasteurised milk only.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis).",
+        "Leftovers: cooled quickly, covered in the fridge, then reheated only once until piping hot all the way through (listeriosis)."
+      ],
+      "nutrition": "Pumpkin provides fibre and beta-carotene; complete with bread and a dairy product.",
+      "familyAdaptations": {
+        "baby": "Take out a portion before adding the cream and nutmeg, blended very finely and without salt."
+      }
+    }
   },
   {
     "slug": "gr-gratin-chou-fleur",
@@ -2301,7 +3062,40 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Cauliflower cheese with béchamel",
+      "summary": "Cauliflower florets covered in a creamy béchamel and browned: even the least keen vegetable eaters come back for more.",
+      "steps": [
+        "Wash the cauliflower, break it into florets and steam it for 10 minutes: it should stay slightly firm.",
+        "Make the béchamel: melt the butter, add the flour and stir for 1 minute, then pour in the milk while whisking and leave to thicken for 5 minutes over a low heat. Add the nutmeg.",
+        "Preheat the oven to 200 °C. Spread the cauliflower in a dish, cover with béchamel and sprinkle with Emmental.",
+        "Bake for 20 minutes, until the gratin is golden and bubbling."
+      ],
+      "adaptations": [
+        "Mix cauliflower and broccoli for a two-colour gratin.",
+        "Serve with a slice of ham or a well-cooked hard-boiled egg for a complete meal."
+      ],
+      "storage": "Fridge: 2 days, covered; reheat only once in the oven, until piping hot.",
+      "freezing": "Freezes fairly well (the cauliflower releases a little water): up to 2 months; thaw in the fridge and reheat in the oven until piping hot.",
+      "precautions": [
+        "Milk, cream and cheeses made with pasteurised milk only.",
+        "Wash vegetables, fruit and fresh herbs thoroughly, then wash your hands after peeling them (toxoplasmosis).",
+        "Leftovers: cooled quickly, covered in the fridge, then reheated only once until piping hot all the way through (listeriosis)."
+      ],
+      "nutrition": "Cauliflower provides fibre and vitamin C, the béchamel and cheese calcium.",
+      "familyAdaptations": {
+        "child": "Mash the florets with the sauce for the youngest children."
+      },
+      "notes": [
+        "about 1 kg",
+        null,
+        null,
+        null,
+        null,
+        "grated"
+      ]
+    }
   },
   {
     "slug": "gr-dinde-creme-champignons",
@@ -2401,7 +3195,43 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_equilibre"
-    ]
+    ],
+    "en": {
+      "title": "Turkey escalopes with cream and mushrooms",
+      "summary": "Golden escalopes in a creamy mushroom sauce, served with rice: a quick weekday classic.",
+      "steps": [
+        "Cook the rice for the time shown on the packet.",
+        "Clean and slice the mushrooms; peel and chop the shallot.",
+        "Brown the turkey escalopes in the butter for 4 to 5 minutes on each side, until they are cooked right through, with no pink in the centre. Keep them warm.",
+        "In the same pan, fry the shallot and mushrooms for 8 minutes, then add the cream and simmer for 2 minutes.",
+        "Put the escalopes back in the sauce for 1 minute to reheat them, sprinkle with the washed, chopped parsley and serve with the rice."
+      ],
+      "adaptations": [
+        "Replace the turkey with chicken or veal escalopes.",
+        "Serve with fresh pasta or green beans."
+      ],
+      "storage": "Fridge: 24 hours in a closed box; reheat only once, until piping hot.",
+      "freezing": "The turkey in sauce, without the rice, freezes for up to 2 months; thaw overnight in the fridge and reheat over a low heat until simmering.",
+      "precautions": [
+        "Pregnancy: the escalopes must be cooked right through, with no pink in the centre.",
+        "Milk, cream and cheeses made with pasteurised milk only.",
+        "Use a chopping board and knife kept for raw meat, then wash them in hot soapy water before touching the vegetables.",
+        "Cooked rice: cooled in under 2 hours, kept for 24 hours in the fridge and reheated only once, piping hot."
+      ],
+      "nutrition": "Turkey is a lean meat rich in protein; with the rice and mushrooms, the meal is complete.",
+      "familyAdaptations": {
+        "child": "Cut the turkey into thin strips and mix it into the rice with the sauce."
+      },
+      "notes": [
+        "4 escalopes of about 120 g",
+        null,
+        null,
+        null,
+        null,
+        "raw weight",
+        "finely chopped"
+      ]
+    }
   },
   {
     "slug": "gr-riz-au-lait-vanille",
@@ -2479,6 +3309,29 @@
       "santefr_listeria",
       "santefr_toxo",
       "santefr_limiter"
-    ]
+    ],
+    "en": {
+      "title": "Vanilla rice pudding",
+      "summary": "Grandma’s dessert, creamy and vanilla-scented, best enjoyed well chilled.",
+      "steps": [
+        "Rinse the short-grain rice, then blanch it for 2 minutes in a pan of boiling water. Drain.",
+        "Bring the milk to a simmer with the vanilla, add the rice and cook for 35 minutes over a very low heat, stirring often, until the rice is soft and creamy.",
+        "Add the sugar off the heat, stir, then share out into ramekins. Let it cool before putting it in the fridge."
+      ],
+      "adaptations": [
+        "Serve with a fruit compote or a few red berries.",
+        "Reduce the sugar to 50 g: the vanilla already brings plenty of sweetness."
+      ],
+      "storage": "Fridge: 2 days, in covered ramekins.",
+      "freezing": "Does not freeze: the rice hardens and the texture becomes grainy. Keep it in the fridge.",
+      "precautions": [
+        "Pregnancy: pasteurised or UHT milk only; cool quickly before putting it in the fridge.",
+        "Sweet dessert: a small portion is enough."
+      ],
+      "nutrition": "A milky dessert that provides calcium, to serve in small portions as it is sweet.",
+      "familyAdaptations": {
+        "child": "A small portion, possibly with less sugar."
+      }
+    }
   }
 ]

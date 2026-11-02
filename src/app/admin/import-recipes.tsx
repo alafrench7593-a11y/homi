@@ -26,7 +26,7 @@ export default function ImportRecipes() {
   const t = useTheme();
   const toast = useToast();
   const { isEditor, isLoading } = useMyRoles();
-  const all = useRecipes({ includeDrafts: true, includeRetired: true });
+  const all = useRecipes({ includeDrafts: true, includeRetired: true, original: true });
   const save = useSavePersonalRecipe();
   const [format, setFormat] = useState<'json' | 'csv'>('json');
   const [text, setText] = useState('');

@@ -24,5 +24,20 @@ export const PHOTO_RECIPES = [
     adaptations: ['Pour la famille : la même purée, salée à part après avoir servi le bébé.', 'Plus tard, ajoutez 10 g de poulet ou de poisson blanc cuit à cœur, mixé.'],
     storage: FREEZE, freezing: 'Se congèle très bien : 1 mois en portions (bacs à glaçons) ; décongeler au réfrigérateur, réchauffer une seule fois.', precautions: [NO_SALT, PORTION], nutrition: 'Carotte et pomme de terre : un mélange doux et nourrissant pour découvrir les légumes ; le lait reste l’aliment principal la première année.',
     budget: 1, seasons: 'all', temperature: 'hot', sources: S,
+    en: {
+      title: 'Carrot and potato purée', summary: 'The great classic among first purées: mild, orange and reassuring.', servingLabel: 'baby portions',
+      notes: ['about 2 carrots', '1 medium potato', null],
+      steps: [
+        'Wash and peel the carrots and the potato, then cut them into even pieces.',
+        'Steam the vegetables for 20 minutes, until they mash easily with a fork.',
+        'Blend finely for a smooth purée, or mash with a fork for a mashed texture, depending on what your baby accepts.',
+        'Add half a teaspoon of rapeseed oil per portion when serving.',
+      ],
+      adaptations: ['For the family: the same purée, salted separately after serving the baby.', 'Later on, add 10 g of chicken or white fish cooked right through, blended.'],
+      storage: 'Fridge: 48 hours in a closed pot. Freezer: 1 month in portions (ice-cube trays); thaw in the fridge, reheat only once and check the temperature.',
+      freezing: 'Freezes very well: 1 month in portions (ice-cube trays); thaw in the fridge, reheat only once.',
+      precautions: ['No added salt or sugar.', 'The amounts are a guide: follow your child’s appetite and their doctor’s advice.'],
+      nutrition: 'Carrot and potato: a mild, nourishing mix for discovering vegetables; milk remains the main food in the first year.',
+    },
   }),
 ];

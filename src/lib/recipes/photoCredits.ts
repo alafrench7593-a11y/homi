@@ -18,3 +18,14 @@ export const AI_PHOTOS: Record<string, PhotoInfo> = {
     alt: 'Purée carotte et pomme de terre : purée orange dans un petit pot crème, cuillère en métal, nappe en lin',
   },
 };
+
+/** Mêmes mentions en anglais (affichées quand l'application est en anglais). */
+export const AI_PHOTOS_EN: Record<string, Pick<PhotoInfo, 'source' | 'author' | 'license' | 'rights' | 'alt'>> = {
+  'puree-carotte-pomme-de-terre': {
+    source: 'ElevenLabs (ByteDance’s Seedream 5 Lite model), generated on 20/10/2026 for Au fil de nous',
+    author: 'ElevenLabs (Seedream 5 Lite)',
+    license: 'ElevenLabs terms of use',
+    rights: 'use within the app',
+    alt: 'Carrot and potato purée: orange purée in a small cream-coloured pot, metal spoon, linen tablecloth',
+  },
+};

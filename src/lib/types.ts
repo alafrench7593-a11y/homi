@@ -172,7 +172,7 @@ export interface AssistantMessage {
 }
 export interface AssistantFeedback { id: string; message_id: string; user_id: string; value: -1 | 1; reason: string | null; created_at: string; updated_at: string }
 
-export interface Forum { id: string; slug: string; title: string; description: string; journeys: Journey[]; icon: string | null; is_local: boolean; position: number }
+export interface Forum { id: string; slug: string; title: string; description: string; title_en?: string | null; description_en?: string | null; journeys: Journey[]; icon: string | null; is_local: boolean; position: number }
 export interface FeedPhoto { path: string; width: number | null; height: number | null }
 export interface FeedPost {
   id: string; forum_id: string; forum_slug?: string | null; title: string | null; body: string; kind?: 'question' | 'testimony'; anonymous?: boolean;
