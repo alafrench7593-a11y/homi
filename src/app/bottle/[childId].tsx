@@ -22,6 +22,7 @@ import { useBottleChildren, useBottleTimer, useLastBottle, useNow, useStartBottl
 import {
   atClock, cancelTimer, computeDueAt, formatClock, formatHM, modifyInterval, nextReminderSentence, parseDelay, remainingMinutes, resolveReminderChoice,
   setReminderAt, snoozeTimer, SNOOZE_PRESETS, type ReminderChoice,
+  isStaleTimer,
 } from '@/lib/domain/bottleTimer';
 import { formatDate, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
@@ -183,10 +184,10 @@ export default function BottleReminderScreen() {
         <Card>
           <View style={{ gap: spacing.sm }}>
             <Row style={{ alignItems: 'flex-start' }}>
-              <Icon name={active ? 'bell' : 'bell-off'} size={18} color={th.colors.primary} />
+              <Icon name={active && !isStaleTimer(active, now) ? 'bell' : 'bell-off'} size={18} color={th.colors.primary} />
               <View style={{ flex: 1, gap: 2 }} testID="bottle-next" accessibilityLiveRegion="polite">
                 <Text weight="bold">
-                  {active ? (passed ? tr('u6.bottle.was_due', { name, when: atClock(active.due_at, now) }) : nextReminderSentence(name, active.due_at, now)) : tr('u6.bchild.none_for', { name })}
+                  {active && !isStaleTimer(active, now) ? (passed ? tr('u6.bottle.was_due', { name, when: atClock(active.due_at, now) }) : nextReminderSentence(name, active.due_at, now)) : tr('u6.bchild.none_for', { name })}
                 </Text>
                 {active ? <Text variant="caption" muted>{tr('u6.bchild.chosen_delay', { delay: formatHM(active.interval_minutes), time: formatClock(active.last_bottle_at) })}</Text> : null}
               </View>

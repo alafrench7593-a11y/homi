@@ -310,3 +310,12 @@ export function isBottleChild(birthDate: string, journeyType: string | null | un
   const months = (today.getUTCFullYear() - b.getUTCFullYear()) * 12 + (today.getUTCMonth() - b.getUTCMonth()) - (today.getUTCDate() < b.getUTCDate() ? 1 : 0);
   return months < BOTTLE_MAX_MONTHS;
 }
+
+/**
+ * F-09 (QA 02/11/2026) : un rappel échu depuis plus de 12 h n'est plus affiché comme « prévu à… »
+ * (il le restait des semaines). Il reste actif en base et sera clos au prochain biberon noté.
+ */
+export const STALE_TIMER_MS = 12 * 3600_000;
+export function isStaleTimer(t: Pick<TimerCore, 'due_at'> | null | undefined, now: Date = new Date()): boolean {
+  return !!t && now.getTime() - Date.parse(t.due_at) > STALE_TIMER_MS;
+}

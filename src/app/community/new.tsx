@@ -51,6 +51,8 @@ export default function Composer() {
   const [pollMultiple, setPollMultiple] = useState(false);
   const [pollDays, setPollDays] = useState<number | null>(null);
   const [body, setBody] = useState('');
+  // B-12 : texte collé trop long → coupé à 8 000 caractères, en le disant
+  const [bodyCut, setBodyCut] = useState(false);
   const [anonymous, setAnonymous] = useState(false);
   const [kept, setKept] = useState<FeedPhoto[]>([]);
   const [removed, setRemoved] = useState<string[]>([]);
@@ -188,8 +190,8 @@ export default function Composer() {
           {errors.forum ? <Text variant="small" color={t.colors.danger}>{errors.forum}</Text> : forum ? <Text variant="small" muted>{forum.description}</Text> : null}
           <Segmented label={tr('cm2.new.postType')} value={kind} onChange={setKind} options={[{ value: 'question', label: tr('cm2.new.question') }, { value: 'testimony', label: tr('cm2.new.testimony') }]} />
           <Field label={tr('cm2.new.titleField')} optional value={title} onChangeText={setTitle} maxLength={140} error={errors.title} testID="composer-title" />
-          <Field label={kind === 'testimony' ? tr('cm2.new.yourTestimony') : tr('cm2.new.yourQuestion')} value={body} onChangeText={setBody} multiline maxLength={8000} error={errors.body} style={{ minHeight: 140, textAlignVertical: 'top' }} testID="composer-body"
-            hint={`${body.length} / 8000`} />
+          <Field label={kind === 'testimony' ? tr('cm2.new.yourTestimony') : tr('cm2.new.yourQuestion')} value={body} onChangeText={(v) => { setBodyCut(v.length > 8000); setBody(v.slice(0, 8000)); }} multiline error={errors.body} style={{ minHeight: 140, textAlignVertical: 'top' }} testID="composer-body"
+            hint={bodyCut ? tr('cm2.new.bodyCut') : `${body.length} / 8000`} />
           {mq && mentionResults.data?.length ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }} testID="composer-mentions">
               {mentionResults.data.slice(0, 6).map((m) => <Chip key={m.handle} label={`@${m.handle}`} icon="at-sign" onPress={() => setBody((b) => completeMention(b, m.handle))} />)}

@@ -11,6 +11,7 @@ import { Banner, Button, Card, Chip, Field, Icon, Row, Text, Toggle } from '@/co
 import { useBottleNotificationSettings, useBottleTimer, useNow } from '@/lib/data/hooks-bottle';
 import {
   atClock, DELAY_PRESETS, formatHM, nextReminderSentence, parseDelay, remainingMinutes, type ReminderChoice,
+  isStaleTimer,
 } from '@/lib/domain/bottleTimer';
 import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -74,7 +75,8 @@ export function ReminderChoicePicker({ value, onChange, lastInterval, allowNone 
 export function BottleTimerCard({ child }: { child: Child }) {
   const t = useTheme();
   const now = useNow(30_000);
-  const { active, isLoading } = useBottleTimer(child.id);
+  const { active: current, isLoading } = useBottleTimer(child.id);
+  const active = isStaleTimer(current, now) ? null : current;
   const open = () => router.push({ pathname: '/bottle/[childId]', params: { childId: child.id } });
   if (isLoading) return <Skeleton kind="list" rows={1} />;
   const passed = !!active && remainingMinutes(active, now) <= 0;

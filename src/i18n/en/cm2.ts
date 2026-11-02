@@ -99,6 +99,7 @@ export const cm2: Messages<typeof fr> = {
   'cm2.new.postType': 'Post type',
   'cm2.new.titleField': 'Title',
   'cm2.new.yourTestimony': 'Your story',
+  'cm2.new.bodyCut': 'Text too long: only the first 8,000 characters are kept. Check the end before posting.',
   'cm2.new.yourQuestion': 'Your question',
   'cm2.new.addPoll': 'Add a poll',
   'cm2.new.addPollHint': '2 to 6 options; votes are anonymous, only the totals are shown.',

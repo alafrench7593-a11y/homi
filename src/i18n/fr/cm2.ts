@@ -97,6 +97,7 @@ export const cm2 = {
   'cm2.new.postType': 'Type de publication',
   'cm2.new.titleField': 'Titre',
   'cm2.new.yourTestimony': 'Votre témoignage',
+  'cm2.new.bodyCut': 'Texte trop long : seuls les 8 000 premiers caractères sont gardés. Relisez la fin avant de publier.',
   'cm2.new.yourQuestion': 'Votre question',
   'cm2.new.addPoll': 'Ajouter un sondage',
   'cm2.new.addPollHint': '2 à 6 choix ; les votes sont anonymes, seuls les totaux sont visibles.',
