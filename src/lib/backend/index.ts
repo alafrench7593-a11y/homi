@@ -25,7 +25,7 @@ export const hasRealBackend = !!real;
 export const backendUrl: string | null = url ? url.replace(/\/$/, '') : null;
 
 const DEMO_FLAG = 'toietmoi.demo-without-account.v1';
-const switchListeners = new Set<() => void>();
+const switchListeners = new Set<(reason: BackendSwitchReason) => void>();
 
 /**
  * Instance unique de la couche de données. C'est un relais vers le backend actif :
@@ -38,17 +38,24 @@ export const backend: Backend = new Proxy({} as Backend, {
   },
 });
 
-function setActive(b: Backend) {
+/**
+ * `resume` : reprise, à l'ouverture, de la démonstration choisie lors d'une visite précédente.
+ * Ce n'est pas un changement de compte : le profil affiché (choisi dans la démonstration) est conservé.
+ * `switch` : l'utilisatrice entre dans la démonstration ou la quitte.
+ */
+export type BackendSwitchReason = 'resume' | 'switch';
+
+function setActive(b: Backend, reason: BackendSwitchReason = 'switch') {
   active = b;
   isDemo = b.mode === 'demo';
-  switchListeners.forEach((l) => l());
+  switchListeners.forEach((l) => l(reason));
 }
 
 /** À l'ouverture : reprend la démonstration si elle avait été choisie. */
 export async function initBackendMode(): Promise<void> {
   if (!real) return;
   try {
-    if ((await AsyncStorage.getItem(DEMO_FLAG)) === '1' && active !== getDemo()) setActive(getDemo());
+    if ((await AsyncStorage.getItem(DEMO_FLAG)) === '1' && active !== getDemo()) setActive(getDemo(), 'resume');
   } catch { /* rien : on reste sur le vrai backend */ }
 }
 
@@ -63,7 +70,7 @@ export async function exitDemoMode(): Promise<void> {
   setActive(real);
 }
 
-export function onBackendSwitch(cb: () => void): () => void {
+export function onBackendSwitch(cb: (reason: BackendSwitchReason) => void): () => void {
   switchListeners.add(cb);
   return () => switchListeners.delete(cb);
 }

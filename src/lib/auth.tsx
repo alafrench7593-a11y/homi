@@ -41,11 +41,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const currentUser = useRef<string | null | undefined>(undefined);
   const lastUser = useRef<string | null | undefined>(undefined);
 
-  useEffect(() => onBackendSwitch(() => {
+  useEffect(() => onBackendSwitch((reason) => {
     qc.clear();
-    useUiStore.getState().reset();
+    // Reprise de la démonstration à l'ouverture : même « compte » qu'avant, le profil affiché est conservé
+    // (QA E2E cocon : il était effacé à chaque rechargement de la démonstration publique).
+    if (reason !== 'resume') {
+      useUiStore.getState().reset();
+      writeLastUser(null); // passage démo ↔ vrai compte : le cache vient d'être vidé
+    }
     currentUser.current = undefined;
-    writeLastUser(null); // passage démo ↔ vrai compte : le cache vient d'être vidé
     setState({ session: null, ready: false });
     setGeneration((g) => g + 1);
   }), [qc]);
