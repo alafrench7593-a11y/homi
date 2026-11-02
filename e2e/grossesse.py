@@ -91,7 +91,10 @@ def run(p):
     # ===================================== « Comment je me sens aujourd'hui ? »
     go(pg, '/pregnancy/feel', 3000)
     R['feel_pas_de_mouvements_a_10_SA'] = not has(pg, 'feel-sym-movements')
-    tid(pg, 'feel-sym-nausea').click(); tid(pg, 'feel-intensity-2').click(); tid(pg, 'feel-freq-several').click()
+    tid(pg, 'feel-sym-nausea').click(); tid(pg, 'feel-intensity-2').click()
+    # Depuis 35f7675, début, fréquence et note sont repliés derrière « feel-more »
+    if not has(pg, 'feel-freq-several'): tid(pg, 'feel-more').click(); pg.wait_for_timeout(400)
+    tid(pg, 'feel-freq-several').click()
     tid(pg, 'feel-note').fill('Surtout le matin')
     tid(pg, 'feel-save').click(); pg.wait_for_timeout(1500)
     t = T(pg)
