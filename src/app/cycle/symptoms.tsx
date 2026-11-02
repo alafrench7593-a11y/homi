@@ -79,7 +79,7 @@ export default function SymptomsScreen() {
 
   return (
     <Screen back title={tr('cy.sym.title')} subtitle={tr('cy.sym.subtitle')}
-      action={{ label: tr('common.save'), icon: 'check', onPress: () => void save(), disabled: busy, testID: 'sym-save' }}>
+      action={{ label: tr('common.save'), icon: 'check', onPress: () => save(), disabled: busy, testID: 'sym-save' }}>
       {/* La fiche du jour, en un coup d'œil (se met à jour pendant la saisie) */}
       <TodaySummary title={iso ? fmtDay(iso) : tr('cy.sym.date')} items={[
         { icon: 'activity', value: String(keys.length), label: tr('cy.sym.list') },

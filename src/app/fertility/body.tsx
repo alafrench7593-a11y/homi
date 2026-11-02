@@ -76,7 +76,7 @@ export default function BodyScreen() {
 
   return (
     <Screen back title={tr('u3.fertBody.title')} subtitle={tr('u3.fertBody.subtitle')}
-      action={{ label: tr('u3.fertBody.save'), icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'body-save' }}>
+      action={{ label: tr('u3.fertBody.save'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'body-save' }}>
       <TodaySummary title={tr('u3.fertBody.lastObs')} items={[
         { icon: 'thermometer', value: lastTemp ? `${String(lastTemp.bbt_celsius).replace('.', ',')} °C` : '—', label: lastTemp ? formatDateFr(lastTemp.observed_on, false) : tr('u3.fertBody.temperature') },
         { icon: 'droplet', value: lastMucus ? mucusLabel(lastMucus.cervical_mucus) ?? '—' : '—', label: tr('u3.fertBody.mucusShort') },

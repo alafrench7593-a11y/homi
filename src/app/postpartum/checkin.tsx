@@ -84,7 +84,7 @@ export default function PostpartumCheckin() {
 
   return (
     <Screen back title={tr('u5.pp_checkin.title')} subtitle={tr('u5.pp_checkin.subtitle')}
-      action={{ label: existing ? tr('u5.pp_checkin.update') : tr('u5.pp_checkin.save'), icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'pp-checkin-save' }}>
+      action={{ label: existing ? tr('u5.pp_checkin.update') : tr('u5.pp_checkin.save'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'pp-checkin-save' }}>
       {!scales ? (
         <>
           <PostpartumExpress value={v} onAnswer={(k, n) => set(k, n as never)} />

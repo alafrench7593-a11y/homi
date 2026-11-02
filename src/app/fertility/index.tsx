@@ -67,7 +67,7 @@ export default function FertilityScreen() {
 
   return (
     <Screen back account title={tr('u3.fertIdx.title')} subtitle={tr('u3.fertIdx.subtitle')}
-      action={{ label: tr('u3.fertIdx.action'), icon: 'droplet', onPress: () => void periodToday(), disabled: saving, testID: 'ttc-period-today' }}>
+      action={{ label: tr('u3.fertIdx.action'), icon: 'droplet', onPress: () => periodToday(), disabled: saving, testID: 'ttc-period-today' }}>
       <TodaySummary items={[
         { icon: 'sun', value: day != null ? String(day) : '—', label: tr('u3.fertIdx.day') },
         { icon: 'heart', value: w ? `${fmt(w.start)} – ${fmt(w.end)}` : '—', label: tr('u3.fertIdx.win') },

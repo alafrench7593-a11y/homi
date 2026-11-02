@@ -73,7 +73,7 @@ export default function BleedingScreen() {
 
   return (
     <Screen back title={tr('cy.bl.title')} subtitle={tr('cy.bl.subtitle')}
-      action={{ label: editing ? tr('cy.period.update') : tr('common.save'), icon: 'check', onPress: () => void save(), disabled: busy, testID: 'bleeding-save' }}>
+      action={{ label: editing ? tr('cy.period.update') : tr('common.save'), icon: 'check', onPress: () => save(), disabled: busy, testID: 'bleeding-save' }}>
       {/* Accès immédiat à l'aide, sans rien remplir */}
       <Banner tone="danger" title={tr('cy.bl.redFlagsTitle')} action={<Button label={tr('cy.orient.call')} variant="danger" size="sm" onPress={() => router.push('/emergency')} />}>
         {tr('cy.bl.redFlags', { numbers: emergency })}

@@ -137,7 +137,7 @@ export default function MoodScreen() {
 
   return (
     <Screen back title={tr('u8.mood.title')} subtitle={tr('u8.mood.subtitle')} scroll={false} padded={false}
-      action={{ label: mood ? tr('u8.mood.saveNamed', { mood: moodLabel(mood) }) : tr('u8.mood.saveMain'), icon: 'check', onPress: () => void save(), disabled: saving, testID: 'mood-main-action' }}>
+      action={{ label: mood ? tr('u8.mood.saveNamed', { mood: moodLabel(mood) }) : tr('u8.mood.saveMain'), icon: 'check', onPress: () => save(), disabled: saving, testID: 'mood-main-action' }}>
       <VirtualList
         data={loading || failed ? [] : moods ?? []}
         keyExtractor={(m) => m.id}

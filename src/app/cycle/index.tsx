@@ -191,8 +191,8 @@ function CycleHub() {
   return (
     <Screen back account title={tr('cy.title')} subtitle={tr('cy.subtitle')}
       action={open
-        ? { label: tr('cy.quick.ended'), icon: 'check', onPress: () => void periodEnded(), disabled: busy === 'quick', testID: 'cycle-quick-end' }
-        : { label: tr('cy.quick.started'), icon: 'droplet', onPress: () => void periodStarted(), disabled: busy === 'quick', testID: 'cycle-quick-start' }}>
+        ? { label: tr('cy.quick.ended'), icon: 'check', onPress: () => periodEnded(), disabled: busy === 'quick', testID: 'cycle-quick-end' }
+        : { label: tr('cy.quick.started'), icon: 'droplet', onPress: () => periodStarted(), disabled: busy === 'quick', testID: 'cycle-quick-start' }}>
       {/* Situations pressantes récentes : visibles sans chercher (jamais retardées par une animation) */}
       {urgentAdvice.slice(0, 1).map((a) => <AdviceCard key={a.signature} advice={a} compact />)}
 

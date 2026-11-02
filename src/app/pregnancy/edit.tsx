@@ -106,7 +106,7 @@ export default function EditPregnancy() {
 
   return (
     <Screen back title={tr('u2.pedit.title')} subtitle={tr('u2.pedit.subtitle', { mult: multLabel(pregnancy.multiplicity), date: formatDate(pregnancy.due_date, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) })}
-      action={{ label: tr('u2.pedit.save'), icon: 'check', onPress: () => void save(), disabled: saving, testID: 'preg-edit-save' }}>
+      action={{ label: tr('u2.pedit.save'), icon: 'check', onPress: () => save(), disabled: saving, testID: 'preg-edit-save' }}>
       {error ? <Banner tone="danger">{error}</Banner> : null}
       <PregnancyForm value={draft} onChange={setDraft} errors={errors} />
       <Text variant="caption" muted>{tr('u2.pedit.date_note')}</Text>

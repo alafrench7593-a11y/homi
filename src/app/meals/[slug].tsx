@@ -69,7 +69,7 @@ export default function RecipeDetail() {
 
   return (
     <Screen back title={r.title} right={<FavoriteButton icon="star" active={isFav} activeColor={t.colors.gold} labelOn={tr('rc.unfavorite')} labelOff={tr('rc.favorite')} onPress={() => fav.toggle.mutate(r.slug)} />}
-      action={{ label: tr('rc.addToShopping'), icon: 'shopping-cart', onPress: () => void addToShopping(), testID: 'add-shopping' }}>
+      action={{ label: tr('rc.addToShopping'), icon: 'shopping-cart', onPress: () => addToShopping(), testID: 'add-shopping' }}>
       <RecipeArt recipe={r} height={190} />
       <TodaySummary title={tr('mb.rc.recipeTitle')} items={[
         { icon: 'clock', value: tr('mb.rc.minutes', { m: r.prepMin }), label: tr('mb.rc.prep') },

@@ -99,7 +99,7 @@ export default function Feel() {
     <Screen back title={tr('care.feel.title')} subtitle={pregnancy ? tr('care.feel.subtitle', { w: week }) : undefined}
       action={cards
         ? { label: tr('care.feel.another'), icon: 'plus', onPress: () => setCards(null), testID: 'feel-another' }
-        : { label: tr(d.id ? 'common.save' : 'care.feel.save'), icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'feel-save' }}>
+        : { label: tr(d.id ? 'common.save' : 'care.feel.save'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'feel-save' }}>
       <TodaySummary items={[
         { icon: 'feather', value: String(todayCount), label: L('Noté aujourd’hui', 'Logged today') },
         { icon: 'clock', value: logs[0] ? symLabel(logs[0].symptom) : '—', label: L('Dernier noté', 'Last logged') },

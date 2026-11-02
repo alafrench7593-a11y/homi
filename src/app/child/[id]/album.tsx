@@ -222,7 +222,7 @@ function PhotoForm({ draft, childName, birthDate, busy, onClose, onSave }: {
         <Text variant="caption" muted>{visibility === 'household' ? tr('alb.vis.householdHint', { name: childName }) : tr('alb.vis.privateHint')}</Text>
         {error ? <Banner tone="danger">{error}</Banner> : null}
         {busy && draft.mode === 'add' ? <Text variant="small" muted>{tr('alb.saving')}</Text> : null}
-        <Button label={tr('alb.save')} icon="check" loading={busy} onPress={() => void submit()} testID="album-save" />
+        <Button label={tr('alb.save')} icon="check" loading={busy} onPress={() => submit()} testID="album-save" />
       </View>
     </Sheet>
   );

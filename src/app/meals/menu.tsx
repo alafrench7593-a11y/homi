@@ -109,7 +109,7 @@ export default function MenuScreen() {
   return (
     <Screen back title={aud === 'pregnancy' ? tr('rc.menu.pregnancy') : tr('rc.menu.open')} subtitle={profile.name ? tr('rc.for', { name: profile.name }) : undefined}
       action={slots
-        ? { label: tr('rc.menu.toShopping'), icon: 'shopping-cart', onPress: () => void makeList(), disabled: createList.isPending, testID: 'menu-to-shopping' }
+        ? { label: tr('rc.menu.toShopping'), icon: 'shopping-cart', onPress: () => makeList(), disabled: createList.isPending, testID: 'menu-to-shopping' }
         : { label: tr('rc.menu.generate'), icon: 'refresh-cw', onPress: generate, testID: 'menu-generate' }}>
       <TodaySummary title={tr('rc.menu.title')} items={[
         { icon: 'calendar', value: String(days), label: tr('mb.rc.days') },

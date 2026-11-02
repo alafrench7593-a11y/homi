@@ -126,7 +126,7 @@ export default function IntimacyScreen() {
 
   return (
     <Screen back title={editing ? tr('cy.sex.editTitle') : tr('cy.sex.title')} subtitle={tr('cy.sex.subtitle')}
-      action={{ label: editing ? tr('cy.period.update') : tr('common.save'), icon: 'lock', onPress: () => void save(), disabled: busy, testID: 'intimacy-save' }}>
+      action={{ label: editing ? tr('cy.period.update') : tr('common.save'), icon: 'lock', onPress: () => save(), disabled: busy, testID: 'intimacy-save' }}>
       <Rise>
         <Glass>
           <Field label={tr('cy.sex.date')} value={day} onChangeText={setDay} keyboardType="numbers-and-punctuation" placeholder={tr('cy.datePh')} />

@@ -32,7 +32,7 @@ export default function ChildSchool() {
   const last = entries?.[0];
   return (
     <Screen back title={tr('tool.child_school')} subtitle={child?.first_name}
-      action={{ label: tr('common.save'), icon: 'check', onPress: () => void save(), testID: 'school-save', disabled: add.isPending }}>
+      action={{ label: tr('common.save'), icon: 'check', onPress: () => save(), testID: 'school-save', disabled: add.isPending }}>
       <TodaySummary title={tr('mb.sc.title')} items={[
         { icon: 'book', value: loadFailed ? '—' : String(entries?.length ?? 0), label: tr('mb.sc.count') },
         { icon: 'clock', value: last ? formatDateFr(last.occurred_on) : '—', label: tr('mb.sc.last') },

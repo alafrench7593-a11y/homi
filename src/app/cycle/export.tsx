@@ -75,7 +75,7 @@ export default function CycleExport() {
 
   return (
     <Screen back title={tr('cy.ex.title')} subtitle={tr('cy.ex.subtitle')}
-      action={{ label: Platform.OS === 'web' ? tr('cy.ex.download') : tr('cy.ex.share'), icon: Platform.OS === 'web' ? 'download' : 'share', onPress: () => void make(), disabled: busy || loading, testID: 'export-make' }}>
+      action={{ label: Platform.OS === 'web' ? tr('cy.ex.download') : tr('cy.ex.share'), icon: Platform.OS === 'web' ? 'download' : 'share', onPress: () => make(), disabled: busy || loading, testID: 'export-make' }}>
       <Rise>
         <Glass>
           <Choices label={tr('cy.ex.rangeQ')} options={RANGES} value={range} allowNone={false} onChange={(v) => v && setRange(v as Range)} labelOf={(r) => tr(`cy.ex.range.${r}` as TKey)} />

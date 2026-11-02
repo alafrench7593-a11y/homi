@@ -82,7 +82,7 @@ export default function ChildWellbeing() {
 
   return (
     <Screen back title={tr('u4.wb.title')} subtitle={child ? tr('u4.wb.subtitle', { name: child.first_name }) : undefined}
-      action={details ? { label: tr('u4.wb.saveDetails'), icon: 'check', onPress: () => void save(), disabled: saving || empty, testID: 'wellbeing-save' } : undefined}>
+      action={details ? { label: tr('u4.wb.saveDetails'), icon: 'check', onPress: () => save(), disabled: saving || empty, testID: 'wellbeing-save' } : undefined}>
       <TodaySummary items={[
         { icon: 'smile', value: lastMood ? MOODS[lastMood - 1] : '—', label: tr('u4.wb.sumMood') },
         { icon: 'edit-3', value: String(todayEntries.length), label: tr('u4.wb.sumToday') },

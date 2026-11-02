@@ -69,7 +69,7 @@ export default function NewRecipe() {
   }
 
   return (
-    <Screen back title={tr('rc.new.open')} action={{ label: tr('common.save'), icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'new-save' }}>
+    <Screen back title={tr('rc.new.open')} action={{ label: tr('common.save'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'new-save' }}>
       <Banner tone="info">{tr('rc.new.intro')}</Banner>
       {isEditor ? <ToggleRow label={tr('rc.new.library')} value={library} onChange={setLibrary} /> : null}
       <Field label={tr('rc.new.title')} value={title} onChangeText={setTitle} maxLength={120} testID="new-title" />

@@ -59,7 +59,7 @@ export default function JournalScreen() {
 
   return (
     <Screen back title={tr('cy.jr.title')} subtitle={tr('cy.jr.subtitle')}
-      action={{ label: editing ? tr('cy.period.update') : tr('common.save'), icon: 'check', onPress: () => void save(), disabled: busy, testID: 'journal-save' }}>
+      action={{ label: editing ? tr('cy.period.update') : tr('common.save'), icon: 'check', onPress: () => save(), disabled: busy, testID: 'journal-save' }}>
       <Glass>
         <Ink variant="heading">{editing ? tr('cy.jr.editTitle') : tr('cy.jr.newTitle')}</Ink>
         <Field label={tr('cy.jr.date')} value={day} onChangeText={setDay} keyboardType="numbers-and-punctuation" placeholder={tr('cy.datePh')} />

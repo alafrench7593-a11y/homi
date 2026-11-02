@@ -172,7 +172,7 @@ export default function MucusScreen() {
 
   return (
     <Screen back title={tr('u3.fertMucus.title')} subtitle={tr('u3.fertMucus.subtitle')}
-      action={{ label: tr('u3.fertMucus.saveObs'), icon: 'check', onPress: () => void submit(), disabled: save.isPending, testID: 'mucus-save' }}>
+      action={{ label: tr('u3.fertMucus.saveObs'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'mucus-save' }}>
       <TodaySummary title={tr('u3.fertBody.lastObs')} items={[
         { icon: 'droplet', value: lastObs ? mucusLabel(lastObs.cervical_mucus as MucusCategory) ?? '—' : '—', label: lastObs ? formatDateFr(lastObs.observed_on, false) : tr('u3.fertMucus.aspect') },
         { icon: 'calendar', value: String(cycles[0]?.days.length ?? 0), label: tr('u3.fertMucus.daysCycle') },

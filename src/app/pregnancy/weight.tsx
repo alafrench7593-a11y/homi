@@ -127,7 +127,7 @@ export default function WeightScreen() {
 
   return (
     <Screen back title={tr('u2.weight.title')} subtitle={tr('u2.weight.subtitle')} scroll={false} padded={false}
-      action={{ label: tr('u2.weight.save'), icon: 'check', onPress: () => void add(), disabled: busy === 'add', testID: 'weight-main-action' }}>
+      action={{ label: tr('u2.weight.save'), icon: 'check', onPress: () => add(), disabled: busy === 'add', testID: 'weight-main-action' }}>
       <VirtualList
         data={loading || failed ? [] : history}
         keyExtractor={(w) => w.id}
