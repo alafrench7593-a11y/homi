@@ -1,5 +1,7 @@
 # Fiches App Store et Google Play (brouillon)
 
+> **Remplacé par `APP_STORE_SOUMISSION.md`** (nom, confidentialité et captures à jour).
+
 ## Nom et sous-titre
 - **Nom** : Toi & Moi
 - **Sous-titre (30 caractères max)** : Cycle, grossesse et famille
