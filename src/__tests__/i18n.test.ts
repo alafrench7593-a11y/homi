@@ -32,6 +32,7 @@ export const MIGRATED = [
   'src/app/(tabs)/track.tsx', 'src/features/trackCards.tsx', 'src/app/today.tsx', 'src/app/(tabs)/community.tsx', 'src/features/community.tsx', 'src/features/communitySocial.tsx', 'src/features/communityProfile.tsx',
   'src/app/community/new.tsx', 'src/app/community/post/[id].tsx', 'src/app/community/u/[handle].tsx', 'src/app/community/profile.tsx', 'src/app/community/notifications.tsx', 'src/app/community/groups.tsx',
   'src/app/community/group/[id].tsx', 'src/app/community/albums.tsx', 'src/app/community/album/[id].tsx', 'src/app/community/events.tsx', 'src/app/community/activity.tsx', 'src/app/community/following.tsx', 'src/app/(tabs)/moi.tsx',
+  'src/app/settings/subscription.tsx', 'src/features/subscription.tsx', 'src/components/Premium.tsx',
 ];
 
 const forms = (m: Msg) => (typeof m === 'string' ? [m] : Object.values(m).filter((x): x is string => typeof x === 'string'));

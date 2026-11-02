@@ -22,6 +22,7 @@ import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { cancelAllLocal, unregisterPushToken } from '@/lib/notifications';
 import { BRAND } from '@/config/brand';
+import { MySubscriptionSection } from '@/features/subscription';
 import { localeTag, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
@@ -116,6 +117,8 @@ function PrivateAccount() {
         <ListRow icon="compass" title={tr('cm3.moi.journeys')} subtitle={tr('cm3.moi.journeysSub')} onPress={() => router.push('/journeys')} />
         <ListRow icon="heart" title={tr('cm3.moi.me')} subtitle={tr('cm3.moi.meSub')} onPress={() => router.push('/me')} />
       </Card>
+
+      <MySubscriptionSection />
 
       <SectionTitle title={tr('cm3.moi.settings')} />
       <Card>

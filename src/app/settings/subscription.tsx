@@ -1,30 +1,29 @@
 /**
- * Abonnement Premium : bénéfices, comparaison claire Gratuit / Premium, formules mensuelle et annuelle (annuelle mise en
- * valeur), essai éventuel, prix total réellement facturé, date de renouvellement, conditions d'annulation, restauration
- * des achats, lien de gestion. Aucun compte à rebours, aucun prix barré, aucun bouton caché.
+ * Page « AU FIL DE NOUS PREMIUM » (URL inchangée : /settings/subscription, paramètres ?feature= et ?plan=).
+ * Avantages en cartes, 3 formules (12 mois « MEILLEURE OFFRE », 6 mois « ÉCONOMISEZ », mensuel « SANS ENGAGEMENT
+ * LONGUE DURÉE ») aux prix de la boutique, conditions d'essai / de renouvellement / de résiliation, bouton
+ * d'abonnement, « Mon abonnement », comparaison Gratuit / Premium, ce qui reste toujours gratuit, CGU et confidentialité.
+ * Sur le web : pas d'achat (l'abonnement se prend dans l'application iPhone / Android).
  * Les droits sont confirmés par le serveur (has_premium), jamais par l'application seule.
  */
-import React, { useState } from 'react';
-import { Linking, Platform, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
 import { Screen } from '@/components/Screen';
+import { Appear } from '@/components/Appear';
 import { Banner, Button, Card, Divider, Icon, Loading, Row, SectionTitle, Text } from '@/components/ui';
-import { confirm, useToast } from '@/components/Overlays';
-import { BRAND } from '@/config/brand';
+import { useToast } from '@/components/Overlays';
+import { LegalLink } from '@/features/auth';
 import { useInvalidate } from '@/lib/data/hooks';
 import { useEntitlement } from '@/lib/data/hooks-premium';
-import { LegalLink } from '@/features/auth';
 import { friendlyError, usePlanLimits } from '@/lib/data/hooks-settings';
 import { ALWAYS_FREE, FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
-import { billingDates, getPlans, getPurchaseMode, MANAGE_URLS, manageSubscription, purchase, restore, type Plan } from '@/lib/purchases';
+import { periodOfProduct, type Plan, type PlanPeriod } from '@/lib/premium/plans';
+import { purchase } from '@/lib/purchases';
+import { BenefitCards, MySubscriptionCard, PlanCards, PlanTerms, planTitle, PremiumHero, usePlans, WebPurchaseNotice, webWithoutPurchase } from '@/features/subscription';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
-import { t as tr, formatDate } from '@/i18n';
-
-const PREMIUM = `${BRAND.shortName} Premium`;
-const storeLabel = (store: string) => (store === 'test' ? tr('u1.sub.storeTest') : store === 'promotional' ? tr('u1.sub.storePromo') : store === 'app_store' ? 'App Store' : store === 'play_store' ? 'Google Play' : store);
-const day = (d: Date | string) => formatDate(d, { day: 'numeric', month: 'long', year: 'numeric' });
+import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 interface Row3 { label: string; free: string | boolean; plus: string | boolean }
 
@@ -35,22 +34,34 @@ function Cell({ v }: { v: string | boolean }) {
   return <Text variant="small" center style={{ flex: 1 }}>{v}</Text>;
 }
 
-const BENEFITS: PremiumFeature[] = ['sleep_insights', 'coparent_invite', 'summaries', 'weekly_menu', 'community_groups', 'voice_entry', 'assistant_more', 'scanner_compare', 'cycle_insights'];
+const PERIODS: PlanPeriod[] = ['monthly', 'six_months', 'annual'];
 
 export default function SubscriptionScreen() {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
-  const params = useLocalSearchParams<{ feature?: string }>();
+  const params = useLocalSearchParams<{ feature?: string; plan?: string }>();
   const ent = useEntitlement();
   const premium = ent.premium;
   const sub = ent.sub;
   const { data: limits } = usePlanLimits();
-  // Relu à chaque rendu : la démonstration peut avoir été activée après le chargement de l'application
-  const purchaseMode = getPurchaseMode();
-  const plans = useQuery({ queryKey: ['plans', purchaseMode], queryFn: getPlans, staleTime: 600_000, retry: false, enabled: purchaseMode !== 'unavailable' });
-  const [busy, setBusy] = useState<string | null>(null);
+  const plans = usePlans();
+  const mode = plans.mode;
+  const [busy, setBusy] = useState(false);
   const tried = params.feature && params.feature in FEATURES ? (params.feature as PremiumFeature) : null;
+  const wanted = PERIODS.includes(params.plan as PlanPeriod) ? (params.plan as PlanPeriod) : null;
+
+  // Abonnement personnel en cours (pour proposer un changement de formule plutôt qu'un second abonnement)
+  const ownActive = !!sub && ent.premium && ['trial', 'active', 'grace', 'cancelled'].includes(sub.status);
+  const currentPeriod = ownActive ? ((sub.period_type && ['monthly', 'six_months', 'annual'].includes(sub.period_type) ? sub.period_type : periodOfProduct(sub.product_id)) as PlanPeriod | null) : null;
+  const sharedOnly = premium && !ownActive;
+  const [selected, setSelected] = useState<PlanPeriod | null>(wanted);
+  const list = useMemo(() => plans.data ?? [], [plans.data]);
+  useEffect(() => {
+    if (selected || !list.length) return;
+    setSelected(list.find((p) => p.period !== currentPeriod)?.period ?? list[0].period);
+  }, [list, selected, currentPeriod]);
+  const chosen: Plan | undefined = list.find((p) => p.period === selected);
 
   const lim = (key: string, unit: string) => {
     const l = limits?.find((x) => x.key === key);
@@ -100,53 +111,31 @@ export default function SubscriptionScreen() {
     { label: tr('u1.sub.r32'), free: false, plus: true },
   ];
 
-  async function buy(plan: Plan) {
-    setBusy(plan.id);
+  async function buy() {
+    if (!chosen) return;
+    setBusy(true);
     try {
-      const ok = await purchase(plan);
+      const out = await purchase(chosen, { currentProductId: ownActive ? sub?.product_id ?? null : null });
       inv('subscriptions');
-      toast(ok ? tr('u1.sub.welcome', { name: PREMIUM }) : tr('u1.sub.purchaseSaved'), ok ? 'success' : 'info');
+      if (out === 'confirmed') toast(currentPeriod ? tr('sub2.page.changed') : tr('u1.sub.welcome', { name: tr('sub2.my.premium') }), 'success');
+      else if (out === 'pending') toast(tr('sub2.page.pending'), 'info');
     } catch (e) {
       const msg = friendlyError(e);
       if (!/cancel|annul/i.test(msg)) toast(msg, 'error');
     } finally {
-      setBusy(null);
+      setBusy(false);
     }
   }
 
-  async function doRestore() {
-    setBusy('restore');
-    try {
-      const ok = await restore();
-      inv('subscriptions');
-      toast(ok ? tr('u1.sub.restored') : tr('u1.sub.noneFound'), ok ? 'success' : 'info');
-    } catch (e) {
-      toast(friendlyError(e), 'error');
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function manage() {
-    if (purchaseMode === 'test') {
-      if (!(await confirm(tr('u1.sub.stopDemoTitle'), tr('u1.sub.stopDemoBody'), tr('u1.sub.stop')))) return;
-    }
-    setBusy('manage');
-    try {
-      await manageSubscription();
-      inv('subscriptions');
-      if (purchaseMode === 'test') toast(tr('u1.sub.backToFree'));
-    } catch (e) {
-      toast(friendlyError(e), 'error');
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  const sorted = [...(plans.data ?? [])].sort((a, b) => (a.period === 'annual' ? -1 : b.period === 'annual' ? 1 : 0));
+  const ctaLabel = !chosen ? '' : chosen.period === currentPeriod ? tr('sub2.cta.isCurrent')
+    : currentPeriod ? tr('sub2.cta.change', { plan: planTitle(chosen.period) })
+    : chosen.trialDays ? tr('sub2.cta.trial', { count: chosen.trialDays })
+    : tr('sub2.cta.subscribe', { price: chosen.price });
 
   return (
-    <Screen back title={tr('u1.sub.title')} subtitle={tr('u1.sub.subtitle', { name: PREMIUM })}>
+    <Screen back title={tr('sub2.page.screen')}>
+      <Appear kind="soft" delay={0.04}><PremiumHero /></Appear>
+
       {tried && !premium ? (
         <Card tone="gold">
           <View testID="sub-tried">
@@ -156,74 +145,48 @@ export default function SubscriptionScreen() {
         </Card>
       ) : null}
 
-      {/* État actuel, expliqué : essai, renouvellement, fin, grâce, paiement refusé, expiré */}
-      <View testID="sub-status">
-        <Card tone={premium ? 'gold' : 'soft'}>
-          <Row>
-            <Icon name={premium ? 'star' : 'heart'} size={20} />
-            <Text weight="bold" style={{ flex: 1 }}>{premium ? tr('u1.sub.active', { name: PREMIUM }) : tr('u1.sub.freeVersion')}</Text>
-          </Row>
-          <Text variant="small" style={{ marginTop: 6 }} testID="sub-message">{premium && (!sub || sub.status === 'none') ? tr('u1.sub.sharedAccess') : ent.message}</Text>
-          {sub && sub.status !== 'none' ? (
-            <View style={{ marginTop: 4, gap: 2 }}>
-              {sub.period_type ? <Text variant="small" muted>{tr('u1.sub.planLine', { kind: sub.period_type === 'annual' ? tr('u1.sub.annual') : sub.period_type === 'monthly' ? tr('u1.sub.monthly') : sub.period_type === 'trial' ? tr('u1.sub.trial') : sub.period_type })}</Text> : null}
-              {sub.store ? <Text variant="small" muted>{tr('u1.sub.storeLine', { store: storeLabel(sub.store) })}</Text> : null}
-            </View>
-          ) : null}
-          {ent.state === 'billing_issue' || ent.state === 'grace' ? <Banner tone="warning">{tr('u1.sub.updatePayment')}</Banner> : null}
-        </Card>
-      </View>
+      {/* État actuel : formule, statut, dates, prix, gestion, restauration */}
+      <View testID="sub-status"><MySubscriptionCard showDiscover={false} /></View>
 
       {!premium ? (
         <>
-          <SectionTitle title={tr('u1.sub.benefitsTitle')} />
-          <Card>
-            {BENEFITS.map((f, i) => (
-              <Row key={f} style={{ alignItems: 'flex-start', paddingVertical: 6, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
-                <Icon name={FEATURES[f].icon as never} size={18} color={t.colors.primary} />
-                <View style={{ flex: 1 }}>
-                  <Text weight="bold">{featureTitle(f)}</Text>
-                  <Text variant="small" muted>{FEATURES[f].benefit}</Text>
-                </View>
-              </Row>
-            ))}
-          </Card>
+          <SectionTitle title={tr('sub2.ben.title')} />
+          <Appear kind="soft" delay={0.1}><BenefitCards /></Appear>
+        </>
+      ) : null}
 
-          <SectionTitle title={tr('u1.sub.choose', { name: PREMIUM })} />
-          {purchaseMode === 'unavailable' ? (
+      {!sharedOnly ? (
+        <>
+          <SectionTitle title={currentPeriod ? tr('sub2.page.change') : tr('sub2.page.choose')} />
+          {webWithoutPurchase(mode) ? <WebPurchaseNotice /> : mode === 'unavailable' ? (
             <Banner tone="info" title={tr('u1.sub.soonTitle')}>{tr('u1.sub.soonBody')}</Banner>
           ) : plans.isLoading ? <Loading label={tr('u1.sub.loadingOffers')} /> : plans.isError ? (
             <>
               <Banner tone="warning" title={tr('u1.sub.offersDown')}>{friendlyError(plans.error, tr('u1.sub.storeUnreachable'))}</Banner>
               <Button label={tr('u1.sub.retry')} icon="refresh-cw" variant="secondary" onPress={() => void plans.refetch()} testID="plans-retry" />
             </>
+          ) : list.length ? (
+            <>
+              <PlanCards plans={list} selected={selected} onSelect={setSelected} currentPeriod={currentPeriod} />
+              {currentPeriod ? <Text variant="caption" muted>{tr('sub2.page.changeNote')}</Text> : null}
+              {chosen ? (
+                <Card tone="soft"><PlanTerms plan={chosen} /></Card>
+              ) : null}
+              {chosen ? (
+                <Appear kind="btn" delay={0.12}>
+                  <Button label={ctaLabel} icon="star" loading={busy} disabled={busy || chosen.period === currentPeriod} onPress={buy} testID="plan-buy" full />
+                </Appear>
+              ) : null}
+              {/* Liens exigés par l'App Store (règle 3.1.2) à côté du bouton d'achat */}
+              <Row wrap testID="plan-legal-links">
+                <LegalLink doc="terms">{tr('sub2.my.terms')}</LegalLink>
+                <LegalLink doc="privacy">{tr('sub2.my.privacy')}</LegalLink>
+              </Row>
+              {mode === 'test' ? <Banner tone="demo" title={tr('u1.sub.demoTitle')}>{tr('u1.sub.demoBody')}</Banner> : null}
+            </>
           ) : (
-            sorted.map((p) => {
-              const dates = billingDates(p);
-              const annual = p.period === 'annual';
-              return (
-                <View key={p.id} testID={`plan-${p.period}`}>
-                  <Card tone={annual ? 'lavender' : 'surface'} style={annual ? { borderWidth: 2, borderColor: t.colors.primary } : undefined}>
-                    {annual ? <View style={{ alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: t.colors.primary, marginBottom: 6 }}><Text variant="caption" weight="bold" color="#FFFFFF">{tr('u1.sub.bestValue')}</Text></View> : null}
-                    <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <View style={{ flex: 1 }}>
-                        <Text weight="bold">{p.title}</Text>
-                        <Text variant="small" muted>{p.detail}</Text>
-                      </View>
-                      <Text variant="heading">{p.price}</Text>
-                    </Row>
-                    <View style={{ marginTop: 6, gap: 2 }} testID={`plan-terms-${p.period}`}>
-                      <Text variant="small" weight="bold">{p.billed}</Text>
-                      {p.trialDays ? <Text variant="small">{tr('u1.sub.trialThenCharge', { days: p.trialDays, date: day(dates.firstCharge) })}</Text> : <Text variant="small">{tr('u1.sub.chargeToday')}</Text>}
-                      <Text variant="small" muted>{tr('u1.sub.autoRenew', { date: day(dates.renewal) })}</Text>
-                    </View>
-                    <Button label={p.trialDays ? tr('u1.sub.startTrial', { days: p.trialDays }) : tr('u1.sub.choosePlan', { plan: p.title.toLowerCase() })} style={{ marginTop: spacing.sm }} loading={busy === p.id} disabled={!!busy && busy !== p.id} onPress={() => buy(p)} testID={`plan-buy-${p.period}`} />
-                  </Card>
-                </View>
-              );
-            })
+            <Banner tone="warning" title={tr('u1.sub.offersDown')}>{tr('u1.sub.storeUnreachable')}</Banner>
           )}
-          {purchaseMode === 'test' ? <Banner tone="demo" title={tr('u1.sub.demoTitle')}>{tr('u1.sub.demoBody')}</Banner> : null}
         </>
       ) : null}
 
@@ -261,22 +224,9 @@ export default function SubscriptionScreen() {
         </Text>
       </View>
 
-      <View style={{ gap: spacing.xs }}>
-        {purchaseMode !== 'unavailable' ? <Button label={tr('u1.sub.restore')} variant="secondary" icon="refresh-cw" loading={busy === 'restore'} onPress={doRestore} testID="sub-restore" /> : null}
-        {premium && sub && sub.status !== 'none' && purchaseMode !== 'unavailable' ? (
-          <Button label={purchaseMode === 'test' ? tr('u1.sub.stopDemoTitle') : tr('u1.sub.manage')} variant="ghost" loading={busy === 'manage'} onPress={manage} testID="sub-manage" />
-        ) : null}
-        <Button label={Platform.OS === 'android' ? tr('u1.sub.manageAndroid') : tr('u1.sub.manageIos')} variant="ghost" icon="external-link" size="sm"
-          onPress={() => void Linking.openURL(Platform.OS === 'android' ? MANAGE_URLS.android : MANAGE_URLS.ios)} testID="sub-manage-link" />
-      </View>
       <Text variant="caption" muted testID="sub-terms">
         {tr('u1.sub.terms')}
       </Text>
-      {/* Liens exigés par l'App Store (règle 3.1.2) : conditions d'utilisation et confidentialité */}
-      <Row wrap testID="sub-legal-links">
-        <LegalLink doc="terms">{tr('u1.sub.termsLink')}</LegalLink>
-        <LegalLink doc="privacy">{tr('u1.sub.privacyLink')}</LegalLink>
-      </Row>
     </Screen>
   );
 }

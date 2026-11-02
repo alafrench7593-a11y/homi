@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
+import { MySubscriptionSection } from '@/features/subscription';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Button, Card, Chip, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
@@ -82,6 +83,8 @@ export default function Profile() {
           {sharedCycles.data?.length ? <ListRow icon="users" title={tr('c3.partner.open')} subtitle={tr('c3.partner.openSub')} onPress={() => router.push('/partner/cycle' as never)} testID="profile-partner-cycle" /> : null}
           <ListRow icon="grid" title={tr('profile.tools')} onPress={() => router.push('/tools')} />
         </Card>
+
+        <MySubscriptionSection />
 
         <SectionTitle title={tr('profile.settings')} />
         <Card>
