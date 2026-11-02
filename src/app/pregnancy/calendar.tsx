@@ -60,8 +60,8 @@ export default function PregnancyCalendar() {
           { icon: 'sun', label: tr('care.cal.sg.label'), value: tr('care.cal.sg', { w: s.weeksSG }) },
           { icon: 'layers', label: tr('care.cal.trimester.label'), value: tr('care.cal.trimester', { count: s.trimester }) },
         ]} />
-        <Row style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text variant="caption" muted style={{ flex: 1 }}>{tr(`care.cal.source.${pregnancy.due_date_source}` as TKey)}</Text>
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <Text variant="caption" muted style={{ flexGrow: 1, flexShrink: 1, flexBasis: 160 }}>{tr(`care.cal.source.${pregnancy.due_date_source}` as TKey)}</Text>
           <Button label={tr('care.cal.fixDate')} size="sm" variant="ghost" icon="edit-3" onPress={() => router.push('/pregnancy/edit')} testID="preg-cal-fix" />
         </Row>
       </View>

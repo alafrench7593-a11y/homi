@@ -1,0 +1,19 @@
+/** D-14 (QA 02/11/2026) : « Retour » depuis un lien direct remonte à l'écran parent. */
+const { execFileSync } = require('child_process') as { execFileSync(cmd: string, args: string[], o: object): unknown };
+import { parentRoute } from '@/lib/parentRoute';
+
+it('la liste des routes est à jour', () => {
+  expect(() => execFileSync('node', ['scripts/gen-routes.js', '--check'], { stdio: 'pipe' })).not.toThrow();
+});
+
+it('remonte à l’écran parent existant', () => {
+  expect(parentRoute('/child/abc/discoveries')).toBe('/child/abc');
+  expect(parentRoute('/community/post/123')).toBe('/community');
+  expect(parentRoute('/pregnancy/calendar')).toBe('/pregnancy');
+  expect(parentRoute('/settings/language?x=1')).toBe('/settings');
+  expect(parentRoute('/article/reflux')).toBe('/library');
+  expect(parentRoute('/assistant/chat')).toBe('/ask');
+  expect(parentRoute('/sleep/abc')).toBe('/');
+  expect(parentRoute('/today')).toBe('/');
+  expect(parentRoute('/')).toBe('/');
+});

@@ -26,6 +26,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { preparePhotoUpload } from '@/lib/data/hooks-photos';
 
 interface Draft { first_name: string; date: string; time: string; weight: string; length: string; term: string; sex: 'female' | 'male' | 'unspecified' | null; photo: string | null }
 const empty = (name = ''): Draft => ({ first_name: name, date: toFrDate(todayISO()), time: '', weight: '', length: '', term: '', sex: null, photo: null });
@@ -120,7 +121,11 @@ export default function EndPregnancy() {
         if (!uri) continue;
         try {
           const path = `${h}/children/${ids[i]}.jpg`;
-          await backend.storage.upload('avatars', path, { uri, mimeType: 'image/jpeg', size: 1 });
+          // A-14 : ré-encodée (sans EXIF), redimensionnée, 5 Mo au plus (limite du stockage « avatars »)
+          const img = await preparePhotoUpload(uri, 5 * 1024 * 1024);
+          try {
+            await backend.storage.upload('avatars', path, { uri: img.uri, mimeType: 'image/jpeg', size: img.size });
+          } finally { await img.dispose(); }
           await backend.update('children', { photo_path: path }, [eq('id', ids[i])]);
         } catch { toast(tr('pj.birth.photoFailed'), 'info'); }
       }

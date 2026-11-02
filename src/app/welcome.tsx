@@ -1,6 +1,6 @@
 /** Accueil avant connexion : aurore liquide, verre, titre qui se dévoile ligne par ligne. */
 import React from 'react';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -34,6 +34,7 @@ const STATS: { icon: IconName; key: 'welcome.stat1' | 'welcome.stat2' | 'welcome
 
 export default function Welcome() {
   const insets = useSafeAreaInsets();
+  const narrow = useWindowDimensions().width < 360;
   const t = useTheme();
   const ink = t.colors.text;
   const muted = t.colors.textMuted;
@@ -42,23 +43,24 @@ export default function Welcome() {
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       <View style={{ flex: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg }}>
         {/* En-tête : logo + aide */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Appear kind="scale" delay={0.08}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
+          <Appear kind="scale" delay={0.08} style={{ flexShrink: 1, minWidth: 0 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 9 }} accessibilityRole="header" accessibilityLabel={BRAND.name}>
               <BrandLogo size={28} />
-              <Text weight="bold" style={{ fontSize: 16, letterSpacing: -0.4 }}>{BRAND.name}</Text>
+              {/* D-12 : à 320 px, le nom se raccourcit au lieu de pousser « Aide » hors de l'écran */}
+              <Text weight="bold" numberOfLines={1} style={{ fontSize: 16, letterSpacing: -0.4, flexShrink: 1 }}>{BRAND.name}</Text>
             </View>
           </Appear>
           <Appear kind="scale" delay={0.3}>
-            <Tappable accessibilityRole="button" accessibilityLabel={tr('welcome.language', { language: localeInfo(getLocale()).native })} onPress={() => router.push('/intro')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 12, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.7 : 1 })}>
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('welcome.language', { language: localeInfo(getLocale()).native })} onPress={() => router.push('/intro')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: narrow ? 8 : 12, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.7 : 1 })}>
               <Icon name="globe" size={16} color={t.colors.text} />
-              <Text variant="small" weight="medium">{localeInfo(getLocale()).native}</Text>
+              <Text variant="small" weight="medium" numberOfLines={1}>{narrow ? getLocale().toUpperCase() : localeInfo(getLocale()).native}</Text>
             </Tappable>
           </Appear>
           <Appear kind="scale" delay={0.34}>
-            <Tappable accessibilityRole="button" accessibilityLabel={tr('welcome.helpA11y')} onPress={() => router.push('/emergency')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: 16, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.95)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.6)', opacity: pressed ? 0.8 : 1 })}>
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('welcome.helpA11y')} onPress={() => router.push('/emergency')} style={({ pressed }) => ({ minHeight: 40, paddingHorizontal: narrow ? 10 : 16, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.95)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.6)', opacity: pressed ? 0.8 : 1 })}>
               <Icon name="life-buoy" size={16} color={t.colors.heart} />
-              <Text variant="small" weight="medium">{tr('welcome.help')}</Text>
+              <Text variant="small" weight="medium" numberOfLines={1}>{tr('welcome.help')}</Text>
             </Tappable>
           </Appear>
         </View>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { parentRoute } from '@/lib/parentRoute';
 import { Animated, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useIsFocused, usePathname } from 'expo-router';
@@ -76,7 +77,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       ) : null}
       <View style={styles.headerRow}>
         {back ? (
-          <IconButton icon="arrow-left" label={tr('common.back')} onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
+          <IconButton icon="arrow-left" label={tr('common.back')} onPress={() => (router.canGoBack() ? router.back() : router.replace(parentRoute(pathname) as never))} />
         ) : (
           <View style={{ width: 4 }} />
         )}

@@ -69,6 +69,17 @@ function fileSize(uri: string): number {
   try { return new File(uri).size ?? 0; } catch { return 0; }
 }
 
+/**
+ * A-14 (QA 02/11/2026) : photo prête à l'envoi — ré-encodée en JPEG (sans métadonnées EXIF, dont la position),
+ * redimensionnée, refusée au-delà de maxBytes. À appeler avant tout envoi d'une photo d'enfant.
+ */
+export async function preparePhotoUpload(uri: string, maxBytes = CHILD_PHOTO_MAX_BYTES): Promise<{ uri: string; size: number; dispose: () => Promise<void> }> {
+  const img = await compress(uri);
+  const size = fileSize(img.uri);
+  if (size > maxBytes) { await discardLocalImage(img.uri); throw new PhotoError('too_large'); }
+  return { uri: img.uri, size: size || 1, dispose: async () => { await discardLocalImage(img.uri); } };
+}
+
 export function useAddChildPhoto() {
   const inv = useInvalidate();
   return useMutation({

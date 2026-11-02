@@ -27,12 +27,12 @@ function BigTile({ icon, label, sub, onPress, testID, busy, strong }: { icon: Ic
   const accent = t.colors.primary;
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={sub ? `${label}, ${sub}` : label} onPress={onPress} disabled={busy} testID={testID}
-      style={{ flex: 1, minWidth: 92, minHeight: 92, borderRadius: 22, padding: spacing.sm, alignItems: 'center', justifyContent: 'center', gap: 6,
+      style={{ flex: 1, minWidth: 0, minHeight: 92, borderRadius: 22, padding: spacing.sm, alignItems: 'center', justifyContent: 'center', gap: 6,
         backgroundColor: strong ? accent : tint(accent, t.isDark ? 0.18 : 0.1), borderWidth: 1, borderColor: tint(accent, 0.35), opacity: busy ? 0.6 : 1 }}>
       <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: strong ? 'rgba(255,255,255,0.22)' : tint(accent, t.isDark ? 0.25 : 0.15) }}>
         <Icon name={icon} size={20} color={strong ? t.colors.primaryText : accent} />
       </View>
-      <Text weight="bold" center color={strong ? t.colors.primaryText : t.colors.text}>{label}</Text>
+      <Text weight="bold" center numberOfLines={2} color={strong ? t.colors.primaryText : t.colors.text}>{label}</Text>
       {sub ? <Text variant="caption" center color={strong ? t.colors.primaryText : t.colors.textMuted}>{sub}</Text> : null}
     </Tappable>
   );
