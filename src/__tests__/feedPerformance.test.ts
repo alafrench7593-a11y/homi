@@ -17,7 +17,7 @@ describe('fils de la communauté : fonctions serveur = anciennes requêtes sur l
   const as = async (email: string) => { await db.auth.signOut(); await db.auth.signIn(email, PW); };
   const ids = (rows: { id: string }[]) => rows.map((r) => r.id);
   // Requêtes exactes des hooks avant la correction (vue + filtre + tri date décroissante + limit 100)
-  const viewQuery = (table: string, filters: Query['filters']): Query => ({ table, filters, order: [{ col: 'created_at', asc: false }], limit: 100 });
+  const viewQuery = (table: string, filters: Query['filters']): Query => ({ table, filters, order: [{ col: 'created_at', asc: false }, { col: 'id', asc: false }], limit: 100 });
 
   it('prépare : trois membres, publication anonyme, commentaires, blocage', async () => {
     const forums = await db.select<Forum>({ table: 'forums' });
