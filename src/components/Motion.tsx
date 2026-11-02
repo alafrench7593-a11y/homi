@@ -126,7 +126,7 @@ export function Shimmer({ radius = 10 }: { radius?: number }) {
   const [w, setW] = React.useState(0);
   useEffect(() => {
     if (reduce || !w) return;
-    const loop = Animated.loop(Animated.timing(v, { toValue: 1, duration: 1300, easing: easing.standard, useNativeDriver: NATIVE_DRIVER }));
+    const loop = Animated.loop(Animated.timing(v, { isInteraction: false, toValue: 1, duration: 1300, easing: easing.standard, useNativeDriver: NATIVE_DRIVER }));
     loop.start();
     return () => loop.stop();
   }, [v, reduce, w]);

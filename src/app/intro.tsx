@@ -60,8 +60,8 @@ function AnimatedMark({ size = 84 }: { size?: number }) {
     if (reduce) return;
     Animated.spring(enter, { toValue: 1, tension: 60, friction: 9, useNativeDriver: NATIVE_DRIVER }).start();
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(glow, { toValue: 1, duration: 2600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(glow, { toValue: 0, duration: 2600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(glow, { isInteraction: false, toValue: 1, duration: 2600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(glow, { isInteraction: false, toValue: 0, duration: 2600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();

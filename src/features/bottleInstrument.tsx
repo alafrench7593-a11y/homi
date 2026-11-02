@@ -102,7 +102,7 @@ export function BottleInstrument({ child }: { child: Child }) {
     if (reduce) return;
     if (state === 'idle') {
       comet.setValue(0); cometAt.current = -1;
-      const loop = Animated.loop(Animated.timing(comet, { toValue: 1, duration: 14000, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
+      const loop = Animated.loop(Animated.timing(comet, { isInteraction: false, toValue: 1, duration: 14000, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
       loop.start();
       return () => loop.stop();
     }
@@ -115,8 +115,8 @@ export function BottleInstrument({ child }: { child: Child }) {
     if (reduce) { glow.setValue(0.5); return; }
     const ms = state === 'running' ? 1000 : state === 'paused' ? 2600 : 3200;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(glow, { toValue: 1, duration: ms, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(glow, { toValue: 0, duration: ms, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(glow, { isInteraction: false, toValue: 1, duration: ms, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(glow, { isInteraction: false, toValue: 0, duration: ms, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
@@ -315,8 +315,8 @@ export function ReminderRibbon({ lastAt, dueAt, now, remainingLabel, overdue }: 
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(pulse, { toValue: 1, duration: 1400, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(pulse, { toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 1, duration: 1400, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();

@@ -77,10 +77,10 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
   const pulse = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (reduce) return;
-    const a = Animated.loop(Animated.timing(gleam, { toValue: 1, duration: 7000, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
+    const a = Animated.loop(Animated.timing(gleam, { isInteraction: false, toValue: 1, duration: 7000, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
     const b = Animated.loop(Animated.sequence([
-      Animated.timing(pulse, { toValue: 1, duration: 1100, easing: Easing.out(Easing.quad), useNativeDriver: false }),
-      Animated.timing(pulse, { toValue: 0, duration: 0, useNativeDriver: false }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 1, duration: 1100, easing: Easing.out(Easing.quad), useNativeDriver: false }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: false }),
     ]));
     a.start(); b.start();
     return () => { a.stop(); b.stop(); };

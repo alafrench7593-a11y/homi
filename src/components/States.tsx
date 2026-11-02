@@ -11,7 +11,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, FlatList, type FlatListProps, type ListRenderItem, View } from 'react-native';
 import { Shimmer, StaggerItem, useShake } from '@/components/Motion';
-import { springTo } from '@/theme/motion';
+import { ambientDelay, springTo } from '@/theme/motion';
 import { Button, Card, Icon, type IconName, Text } from '@/components/ui';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
@@ -73,10 +73,10 @@ export function EmptyState({ icon = 'inbox', title, body, action }: EmptyProps) 
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      springTo(float, 1, 'gentle', false),
-      Animated.delay(900),
-      springTo(float, 0, 'gentle', false),
-      Animated.delay(900),
+      springTo(float, 1, 'gentle', false, true),
+      ambientDelay(900),
+      springTo(float, 0, 'gentle', false, true),
+      ambientDelay(900),
     ]));
     loop.start();
     return () => loop.stop();

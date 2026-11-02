@@ -16,8 +16,8 @@ export function GuideArt({ tone, size = 120 }: { tone: Guide['tone']; size?: num
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(v, { toValue: 1, duration: 2600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      Animated.timing(v, { toValue: 0, duration: 2600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      Animated.timing(v, { isInteraction: false, toValue: 1, duration: 2600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      Animated.timing(v, { isInteraction: false, toValue: 0, duration: 2600, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
     ]));
     loop.start();
     return () => loop.stop();

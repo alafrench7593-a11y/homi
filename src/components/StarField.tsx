@@ -19,7 +19,7 @@ export function StarField({ density = 36, color = '#F4E6C8' }: { density?: numbe
   const pulse = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (reduce) return;
-    const loop = Animated.loop(Animated.timing(pulse, { toValue: 1, duration: 6000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }));
+    const loop = Animated.loop(Animated.timing(pulse, { isInteraction: false, toValue: 1, duration: 6000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }));
     loop.start();
     return () => loop.stop();
   }, [reduce, pulse]);

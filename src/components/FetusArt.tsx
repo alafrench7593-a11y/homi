@@ -53,8 +53,8 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(float, { toValue: 1, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(float, { toValue: 0, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(float, { isInteraction: false, toValue: 1, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(float, { isInteraction: false, toValue: 0, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
@@ -64,10 +64,10 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(beat, { toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(beat, { toValue: 0.35, duration: 160, useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(beat, { toValue: 0.85, duration: 160, useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(beat, { toValue: 0, duration: 500, easing: Easing.in(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(beat, { isInteraction: false, toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(beat, { isInteraction: false, toValue: 0.35, duration: 160, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(beat, { isInteraction: false, toValue: 0.85, duration: 160, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(beat, { isInteraction: false, toValue: 0, duration: 500, easing: Easing.in(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
@@ -114,8 +114,8 @@ function GoldRim({ size, still }: { size: number; still: boolean }) {
   const spin2 = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (still) return;
-    const a = Animated.loop(Animated.timing(spin, { toValue: 1, duration: 6000, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
-    const b = Animated.loop(Animated.timing(spin2, { toValue: 1, duration: 9500, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
+    const a = Animated.loop(Animated.timing(spin, { isInteraction: false, toValue: 1, duration: 6000, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
+    const b = Animated.loop(Animated.timing(spin2, { isInteraction: false, toValue: 1, duration: 9500, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
     a.start(); b.start();
     return () => { a.stop(); b.stop(); };
   }, [still, spin, spin2]);

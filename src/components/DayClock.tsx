@@ -10,6 +10,7 @@ import { palette, fonts } from '@/theme/tokens';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { Text } from './ui';
 import { t as tr } from '@/i18n';
+import { ambientDelay } from '@/theme/motion';
 
 export interface ClockEvent {
   kind: 'sleep' | 'feed' | 'diaper';
@@ -136,13 +137,13 @@ export function WeeksRing({ week, total = 41, size, children }: { week: number; 
   React.useEffect(() => {
     if (reduce) return;
     const a = Animated.loop(Animated.sequence([
-      Animated.timing(wave, { toValue: 1, duration: 2600, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
-      Animated.delay(700),
-      Animated.timing(wave, { toValue: 0, duration: 0, useNativeDriver: false }),
+      Animated.timing(wave, { isInteraction: false, toValue: 1, duration: 2600, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
+      ambientDelay(700),
+      Animated.timing(wave, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: false }),
     ]));
     const b = Animated.loop(Animated.sequence([
-      Animated.timing(pulse, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
-      Animated.timing(pulse, { toValue: 0, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 1, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 0, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
     ]));
     a.start(); b.start();
     return () => { a.stop(); b.stop(); };

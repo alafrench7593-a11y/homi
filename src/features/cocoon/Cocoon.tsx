@@ -161,7 +161,7 @@ function Motes({ dark, count = 7 }: { dark: boolean; count?: number }) {
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (reduce) return;
-    const loop = Animated.loop(Animated.timing(v, { toValue: 1, duration: 9000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }));
+    const loop = Animated.loop(Animated.timing(v, { isInteraction: false, toValue: 1, duration: 9000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }));
     loop.start();
     return () => loop.stop();
   }, [reduce, v]);
@@ -187,8 +187,8 @@ function BreathingHalo({ size, dark, moment }: { size: number; dark: boolean; mo
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(v, { toValue: 1, duration: 3200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(v, { toValue: 0, duration: 3200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(v, { isInteraction: false, toValue: 1, duration: 3200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(v, { isInteraction: false, toValue: 0, duration: 3200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();

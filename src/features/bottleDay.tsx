@@ -37,8 +37,8 @@ function PulseNode({ color }: { color: string }) {
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(v, { toValue: 1, duration: 1100, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(v, { toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(v, { isInteraction: false, toValue: 1, duration: 1100, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(v, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();

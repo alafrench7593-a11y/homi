@@ -11,7 +11,7 @@ import { Animated, View } from 'react-native';
 import { MotionNumber } from '@/components/MotionKit';
 import { Row, Text } from '@/components/ui';
 import { formatDuration } from '@/lib/domain/dates';
-import { easing } from '@/theme/motion';
+import { ambientDelay, easing } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
@@ -68,8 +68,8 @@ export function DayRibbon({ events, now = new Date() }: { events: RibbonEvent[];
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(pulse, { toValue: 1, duration: 1600, useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(pulse, { toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 1, duration: 1600, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
@@ -210,9 +210,9 @@ export function RelayStrip({ nights, labelOf }: { nights: { id: string; user_id:
   useEffect(() => {
     if (reduce || list.length < 2) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(baton, { toValue: 1, duration: 1800, easing: easing.standard, useNativeDriver: NATIVE_DRIVER }),
-      Animated.delay(600),
-      Animated.timing(baton, { toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(baton, { isInteraction: false, toValue: 1, duration: 1800, easing: easing.standard, useNativeDriver: NATIVE_DRIVER }),
+      ambientDelay(600),
+      Animated.timing(baton, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
@@ -263,8 +263,8 @@ export function DayAvailability({ day, busy, free, reserved, onPick }: {
   useEffect(() => {
     if (reduce) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(breathe, { toValue: 1, duration: 1800, useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(breathe, { toValue: 0, duration: 1800, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(breathe, { isInteraction: false, toValue: 1, duration: 1800, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(breathe, { isInteraction: false, toValue: 0, duration: 1800, useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
@@ -323,8 +323,8 @@ export function ScanFrame({ reading }: { reading: boolean }) {
   useEffect(() => {
     if (reduce || reading) return;
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(sweep, { toValue: 1, duration: 1600, easing: easing.standard, useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(sweep, { toValue: 0, duration: 1600, easing: easing.standard, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(sweep, { isInteraction: false, toValue: 1, duration: 1600, easing: easing.standard, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(sweep, { isInteraction: false, toValue: 0, duration: 1600, easing: easing.standard, useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();

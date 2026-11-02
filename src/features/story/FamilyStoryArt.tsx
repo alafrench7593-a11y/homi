@@ -14,6 +14,7 @@ import { Image as MotionImage } from 'expo-image';
 import { STORY_ANIMS, STORY_IMAGES } from './storyImages';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
+import { ambientDelay } from '@/theme/motion';
 
 const TRANSITION_MS = 1400;
 
@@ -63,8 +64,8 @@ function GoldThreadImage({ idx, opacity, still, night }: { idx: number; opacity:
     if (still || !h) return;
     sweep.setValue(0);
     const loop = Animated.loop(Animated.sequence([
-      Animated.delay(900),
-      Animated.timing(sweep, { toValue: 1, duration: 3400, easing: Easing.inOut(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
+      ambientDelay(900),
+      Animated.timing(sweep, { isInteraction: false, toValue: 1, duration: 3400, easing: Easing.inOut(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
@@ -118,8 +119,8 @@ function useLoop(ms: number, still: boolean) {
     if (still) { v.setValue(0.5); return; }
     const ease = Easing.inOut(Easing.sin);
     const anim = Animated.loop(Animated.sequence([
-      Animated.timing(v, { toValue: 1, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(v, { toValue: 0, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(v, { isInteraction: false, toValue: 1, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(v, { isInteraction: false, toValue: 0, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
     ]));
     anim.start();
     return () => anim.stop();

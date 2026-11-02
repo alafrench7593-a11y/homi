@@ -15,6 +15,7 @@ import { spacing } from '@/theme/tokens';
 import type { RingData } from './CycleRing';
 import { Ink, useCyclePalette } from './kit';
 import { fmtDay } from './format';
+import { ambientDelay } from '@/theme/motion';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const DAY = 86_400_000;
@@ -32,13 +33,13 @@ export function GoldCycleRing({ data, size = 260 }: { data: RingData; size?: num
   useEffect(() => {
     if (reduce) return;
     const a = Animated.loop(Animated.sequence([
-      Animated.timing(wave, { toValue: 1, duration: 2400, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
-      Animated.delay(900),
-      Animated.timing(wave, { toValue: 0, duration: 0, useNativeDriver: false }),
+      Animated.timing(wave, { isInteraction: false, toValue: 1, duration: 2400, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
+      ambientDelay(900),
+      Animated.timing(wave, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: false }),
     ]));
     const b = Animated.loop(Animated.sequence([
-      Animated.timing(pulse, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
-      Animated.timing(pulse, { toValue: 0, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 1, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 0, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
     ]));
     a.start(); b.start();
     return () => { a.stop(); b.stop(); };

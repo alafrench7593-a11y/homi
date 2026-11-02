@@ -49,12 +49,22 @@ export const spring = {
 /** Décalage en cascade : 45 ms par élément, plafonné pour ne jamais faire attendre. */
 export const stagger = (index: number, step = 45, max = 360) => Math.min(index * step, max);
 
-export function springTo(v: Animated.Value, toValue: number, kind: keyof typeof spring, reduce: boolean) {
+/**
+ * Pause dans une boucle décorative. Animated.delay compte comme une interaction en cours :
+ * dans une boucle infinie, InteractionManager ne se libère jamais et les longues listes
+ * (rendu par lots) restent bloquées à leur premier lot sur le web (QA E2E, bibliothèque).
+ */
+export function ambientDelay(ms: number): Animated.CompositeAnimation {
+  return Animated.timing(new Animated.Value(0), { toValue: 0, duration: 0, delay: ms, useNativeDriver: false, isInteraction: false });
+}
+
+/** `ambient` : animation décorative (boucle) qui ne doit pas retarder les tâches après interaction. */
+export function springTo(v: Animated.Value, toValue: number, kind: keyof typeof spring, reduce: boolean, ambient = false) {
   if (reduce) {
     v.setValue(toValue);
     return { start: (cb?: Animated.EndCallback) => cb?.({ finished: true }), stop: () => undefined, reset: () => undefined } as unknown as Animated.CompositeAnimation;
   }
-  return Animated.spring(v, { toValue, ...spring[kind], useNativeDriver: NATIVE_DRIVER });
+  return Animated.spring(v, { toValue, ...spring[kind], useNativeDriver: NATIVE_DRIVER, isInteraction: !ambient });
 }
 
 export function timeTo(v: Animated.Value, toValue: number, ms: number, reduce: boolean, ease = easing.decelerate, native = NATIVE_DRIVER) {

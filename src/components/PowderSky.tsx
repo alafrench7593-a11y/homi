@@ -21,8 +21,8 @@ function useLoop(ms: number, still: boolean) {
     if (still) { v.setValue(0.5); return; }
     const ease = Easing.inOut(Easing.sin);
     const anim = Animated.loop(Animated.sequence([
-      Animated.timing(v, { toValue: 1, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(v, { toValue: 0, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(v, { isInteraction: false, toValue: 1, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(v, { isInteraction: false, toValue: 0, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
     ]));
     anim.start();
     return () => anim.stop();

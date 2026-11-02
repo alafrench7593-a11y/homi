@@ -42,8 +42,8 @@ export function BottleStopwatch({ child }: { child: Child }) {
   useEffect(() => {
     if (!running || paused || reduce) { pulse.setValue(0); return; }
     const loop = Animated.loop(Animated.sequence([
-      Animated.timing(pulse, { toValue: 1, duration: 1000, useNativeDriver: NATIVE_DRIVER }),
-      Animated.timing(pulse, { toValue: 0, duration: 1000, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 1, duration: 1000, useNativeDriver: NATIVE_DRIVER }),
+      Animated.timing(pulse, { isInteraction: false, toValue: 0, duration: 1000, useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
