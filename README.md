@@ -101,6 +101,17 @@ eas submit --platform ios|android
 ```
 Builds locaux : `npm run ios` / `npm run android` (génèrent les dossiers natifs).
 
+### Version web (export et hébergement)
+
+```bash
+npx expo export --platform web --clear --output-dir dist   # dossier statique (SPA)
+python3 e2e/spa_server.py dist 8822 --gzip                 # essai local, servi compressé comme en production
+```
+
+- **Chargement à la demande (QA E-06).** Les contenus lourds ne sont plus dans le fichier JavaScript de démarrage : catalogues et articles FR/EN de la démonstration (`src/lib/backend/demoCatalog.ts`), copie embarquée des recettes et `pdf-lib` sont chargés par `import()` à leur première utilisation (`src/lib/lazyContent.web.ts`). Sur iOS et Android, `src/lib/lazyContent.ts` fait un simple `require` : tout reste embarqué dans l'application et disponible hors ligne.
+- **Routes asynchrones d'Expo Router : non activées.** Essayées (`asyncRoutes: { web: 'production' }`, SDK 57) : avec le processeur ralenti (×6), certains écrans ouverts directement par leur adresse restaient vides (`/names`, `/meals`). Ne pas les activer sans refaire ce test (voir AUDIT.md, QA E-06).
+- **L'hébergement web DOIT servir les fichiers compressés** (brotli ou gzip) : le fichier de démarrage passe d'environ 8,9 Mo à 2,4 Mo en gzip. Les fichiers de `_expo/static/` ont un nom haché : les servir avec un cache long (`Cache-Control: public, max-age=31536000, immutable`), et `index.html` sans cache. Sans compression, le premier affichage reste lent sur mobile.
+
 ## 7. Illustrations du bébé (grossesse)
 
 Les illustrations artistiques semaine par semaine (4 à 41 SA) se placent dans `src/assets/foetus/` :

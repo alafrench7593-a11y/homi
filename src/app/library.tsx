@@ -10,7 +10,7 @@ import { EmptyStateCard } from '@/components/ui-extra';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { useActivePregnancy, useArticles, useCategories, useChildren, useFullArticles, usePremium, useProfile, useRows } from '@/lib/data/hooks';
 import { isLocked, suggestArticles } from '@/lib/domain/content';
-import { CATEGORY_GROUPS } from '@/content/articles/rows';
+import { CATEGORY_GROUPS } from '@/content/articles/groups';
 import { Tappable } from '@/components/Tappable';
 import { GlassSurface } from '@/components/Glass';
 import { tint } from '@/components/ToolGlyph';

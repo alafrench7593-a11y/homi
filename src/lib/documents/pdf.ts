@@ -3,7 +3,9 @@
  *  - un document multipage à partir des pages numérisées (JPEG) ;
  *  - un dossier d'export : page d'index + documents choisis (PDF fusionnés, images insérées) + résumés éventuels.
  */
-import { PDFDocument, StandardFonts, rgb, type PDFFont } from 'pdf-lib';
+import type { PDFFont } from 'pdf-lib';
+// pdf-lib chargé à la première création de PDF (QA E-06 : hors du démarrage web ; embarqué sur iOS et Android)
+import { loadPdfLib } from '../lazyContent';
 
 export interface JpegPage { bytes: Uint8Array; width: number; height: number }
 
@@ -12,6 +14,7 @@ const A4 = { w: 595.28, h: 841.89 };
 /** Une page PDF par image, à la taille A4, image centrée sans déformation. */
 export async function pdfFromJpegs(pages: JpegPage[], title?: string): Promise<Uint8Array> {
   if (!pages.length) throw new Error('no_pages');
+  const { PDFDocument } = await loadPdfLib();
   const doc = await PDFDocument.create();
   if (title) doc.setTitle(title);
   doc.setProducer('Au fil de nous');
@@ -29,6 +32,7 @@ export async function pdfFromJpegs(pages: JpegPage[], title?: string): Promise<U
 }
 
 export async function pdfPageCount(bytes: Uint8Array): Promise<number> {
+  const { PDFDocument } = await loadPdfLib();
   return (await PDFDocument.load(bytes, { ignoreEncryption: true })).getPageCount();
 }
 
@@ -63,6 +67,7 @@ export interface ExportLabels { heading: string; generated: string; notice: stri
 
 /** Dossier PDF : index, puis chaque document (et son résumé si demandé). */
 export async function buildExportPdf(items: ExportItem[], labels: ExportLabels): Promise<Uint8Array> {
+  const { PDFDocument, StandardFonts, rgb } = await loadPdfLib();
   const out = await PDFDocument.create();
   out.setTitle(labels.heading);
   out.setProducer('Au fil de nous');
@@ -120,6 +125,7 @@ export async function buildExportPdf(items: ExportItem[], labels: ExportLabels):
 export interface TextSection { heading: string; lines: string[] }
 /** PDF texte simple (rapport) : titre, sous-titre, sections ; pagination automatique, texte toujours renvoyé à la ligne. */
 export async function buildTextPdf(title: string, subtitle: string[], sections: TextSection[]): Promise<Uint8Array> {
+  const { PDFDocument, StandardFonts, rgb } = await loadPdfLib();
   const out = await PDFDocument.create();
   out.setTitle(winAnsiSafe(title));
   out.setProducer('Au fil de nous');

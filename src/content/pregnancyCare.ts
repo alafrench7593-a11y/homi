@@ -8,7 +8,9 @@ import { onLocaleChange } from '@/i18n';
  *  · ce sont des informations générales, pas un avis médical personnalisé ;
  *  · statut éditorial : « À vérifier » tant qu'un professionnel n'a pas relu (voir docs/RELECTURE_CONTENUS.md).
  */
-import { LIBRARY_SOURCES as L, type ArticleSource } from './articles/library';
+// Sources seules (pas le texte des articles de la bibliothèque) : QA E-06
+import { S as L } from './articles/library/sources';
+import type { ArticleSource } from './articles/library/types';
 import { inLang, localized } from '@/i18n/localized';
 
 const C = '2026-10-22';

@@ -5,10 +5,9 @@
  * (RLS) n'a pas de sens ici puisqu'un seul compte local existe par appareil.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import content from '@/content/demo-content.json';
-import { EXTRA_CATEGORIES, libraryArticleRows } from '@/content/articles/rows';
-import { ARTICLES_EN, CATEGORIES_EN } from '@/content/articles/en';
 import { EXTERNAL_RESOURCES } from '@/content/resources';
+// Contenus lourds (catalogues, articles FR et EN, recettes) : chargés à l'ouverture de la démonstration (QA E-06)
+import { loadDemoCatalog, loadEmbeddedRecipesModule, type DemoCatalog, type EmbeddedRecipesModule } from '../lazyContent';
 import { legacyJourneys, type JourneyRow } from '../journeys/model';
 import { getLocale, t as tr } from '@/i18n';
 import { lib2 as frDict } from '@/i18n/fr/lib2';
@@ -28,9 +27,6 @@ import { createSocial } from './demoSocial';
 import { createOutings } from './demoOutings';
 import { extractiveSummary, MIN_COMMENTS_FOR_SUMMARY } from '../../../supabase/functions/_shared/community-ai';
 import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
-import { ALL_RECIPES } from '@/content/recipes';
-import { recipeToRows } from '../recipes/db';
-import { RECIPE_SOURCES } from '../recipes/sources';
 import { fromProductRow } from '../../../supabase/functions/_shared/open-facts';
 import { matchRecalls, type RecallRecord } from '../../../supabase/functions/_shared/rappelconso';
 import { sanitizePayload } from '../../../supabase/functions/_shared/scan-explain';
@@ -52,7 +48,6 @@ const MERGED_FORUMS: Record<string, string> = {
   '0b593782-4d84-4e18-bbbc-56a498fec134': '8b3e4c6a-0d5f-4a71-9c32-4d5e6f708192', // parents d'enfants → questions générales
   '9f5651f6-fc01-49a0-aadf-831a5f2b2520': '8b3e4c6a-0d5f-4a71-9c32-4d5e6f708192', // rencontres locales → questions générales
 };
-/** Bibliothèque de recettes : mêmes lignes que supabase/migrations/20261020000200_recipes_seed.sql. */
 /**
  * Bibliothèque de recettes de la démonstration : reconstruite à chaque ouverture depuis l'application (identifiants
  * stables « lib-<slug> »), sans l'enregistrer dans le stockage de l'appareil (environ 150 recettes). Seules les
@@ -60,21 +55,6 @@ const MERGED_FORUMS: Record<string, string> = {
  */
 const LIB_TABLES = ['recipes', 'recipe_ingredients', 'recipe_steps', 'recipe_photos', 'recipe_source_links'];
 const isLibRow = (table: string, r: Row) => (table === 'recipes' ? !r.owner_id && String(r.id).startsWith('lib-') : String(r.recipe_id ?? '').startsWith('lib-'));
-function recipeSeedRows() {
-  const tables: Record<string, Row[]> = { recipes: [], recipe_ingredients: [], recipe_steps: [], recipe_photos: [], recipe_source_links: [], recipe_reviews: [], recipe_sources: [] };
-  for (const s of Object.values(RECIPE_SOURCES)) tables.recipe_sources.push({ id: s.id, title: s.title, publisher: s.publisher, url: s.url, consulted_on: s.consulted, published_on: s.date ?? null });
-  for (const r of ALL_RECIPES) {
-    const id = `lib-${r.slug}`;
-    const x = recipeToRows(r, id, { created_at: '2026-10-20T00:00:00.000Z' });
-    tables.recipes.push(x.recipe as unknown as Row);
-    tables.recipe_ingredients.push(...(x.ingredients as unknown as Row[]));
-    tables.recipe_steps.push(...(x.steps as unknown as Row[]));
-    tables.recipe_photos.push(x.photo as unknown as Row);
-    tables.recipe_source_links.push(...(x.links as unknown as Row[]));
-    tables.recipe_reviews.push(...x.reviews.map((v, i) => ({ ...v, id: `seed-${r.slug}-${i}` }) as unknown as Row));
-  }
-  return tables;
-}
 
 const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_resources', 'foods', 'baby_names', 'products', 'product_recalls', 'plan_limits', 'scan_sources', 'cosing_ingredients', 'ciqual_foods'] as const;
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
@@ -183,11 +163,18 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   const listeners = new Set<(s: Session | null) => void>();
   let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
-  const catalogs = content as unknown as Record<string, Row[]>;
+  let catalog: DemoCatalog | null = null;
+  let recipeLibrary: EmbeddedRecipesModule['ALL_RECIPES'] = [];
 
   async function load() {
     if (!loaded) {
       loaded = (async () => {
+        // Web : morceau séparé, téléchargé ici seulement ; iOS et Android : déjà embarqué dans l'application.
+        // Téléchargement échoué (réseau coupé sur le web) : on pourra réessayer au prochain appel.
+        const [cat, recipesModule] = await Promise.all([loadDemoCatalog(), loadEmbeddedRecipesModule()]).catch((err: unknown) => { loaded = null; throw err; });
+        catalog = cat;
+        recipeLibrary = recipesModule.ALL_RECIPES;
+        const { catalogs, EXTRA_CATEGORIES, libraryArticleRows, ARTICLES_EN, CATEGORIES_EN } = cat;
         try {
           const raw = await AsyncStorage.getItem(KEY);
           if (raw) state = JSON.parse(raw);
@@ -360,7 +347,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     needsReview: (text) => PERSONAL_DATA.test(text) || textNeedsReview(text) || DEMO_TERMS.some((x) => x.pattern.test(text)) });
 
   function seedRecipes() {
-    const rows = recipeSeedRows();
+    const rows = catalog!.recipeSeedRows(recipeLibrary);
     // Conservées : recettes personnelles et recettes importées par l'équipe (identifiant hors « lib- »)
     const libSlugs = new Set(rows.recipes.map((r) => r.slug));
     const personalIds = new Set(T('recipes').filter((r) => !isLibRow('recipes', r) && (r.owner_id || !libSlugs.has(r.slug))).map((r) => r.id));

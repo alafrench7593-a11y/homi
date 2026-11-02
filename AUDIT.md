@@ -132,3 +132,35 @@ Dettes notées lors des étapes précédentes :
 - taille de texte dynamique au maximum ;
 - mode économie d'énergie ;
 - temps de démarrage sur un appareil d'entrée de gamme.
+
+### QA E-06 — version web : chargement à la demande (02/11/2026)
+
+**Ce qui a changé.** Les contenus lourds ne sont plus dans le fichier JavaScript de démarrage de la version web. Ils sont chargés par `import()` à leur première utilisation (`src/lib/lazyContent.web.ts`) :
+- catalogues et articles FR et EN de la démonstration (`src/lib/backend/demoCatalog.ts`) : à l'ouverture de la démonstration ;
+- copie embarquée des recettes : à l'ouverture de la démonstration, ou si la base n'a pas encore les recettes ;
+- `pdf-lib` : à la première création de PDF.
+
+Sur iOS et Android, `src/lib/lazyContent.ts` fait un simple `require`. Vérifié par un export iOS et Android : un seul bundle (22,4 Mo), avec les articles FR et EN, les recettes, les prénoms et pdf-lib. Tout reste embarqué et disponible hors ligne.
+
+Les routes asynchrones d'Expo Router (`asyncRoutes`) ont été essayées puis **laissées désactivées** : avec le processeur ralenti (×6), des écrans ouverts directement par leur adresse (`/names`, `/meals`) restaient vides. Avec les routes asynchrones seules, sans le chargement à la demande, l'entrée dans la démo ne se terminait même pas. Cet essai a été fait alors que le disque de la machine était plein : il faut le refaire avant de les réactiver.
+
+**Mesures** (export démo, `web_firstload.py`, cache vide, médiane de 3 essais, CPU ×4) :
+
+| | Avant | Après |
+|---|---|---|
+| JS de démarrage (octets) | 20 396 210 | 8 936 974 |
+| JS de démarrage, gzip -9 | 5 723 326 | 2 445 281 |
+| 4G 9 Mbit/s, brut : bouton d'accueil visible | 23,9 s | 12,4 s |
+| 4G, gzip : bouton d'accueil visible | 10,3 s | 6,0 s |
+| Slow 4G 1,6 Mbit/s, brut : bouton visible | 109,8 s | 51,5 s |
+| Slow 4G, gzip : bouton visible | 34,7 s | 17,3 s |
+| 4G, gzip : clic « Découvrir sans compte » → accueil | 3,3 s | 6,8 s |
+| Slow 4G, gzip : clic → accueil | 2,1 s | 23,0 s |
+
+**Limite.** Avec la démonstration, les 11,2 Mo de contenus (3,2 Mo en gzip) sont toujours téléchargés : ils le sont après le premier écran au lieu d'avant. Le temps total jusqu'à l'accueil de la démo change donc peu. Mesures :
+- 4G gzip : 13,6 s avant, 12,8 s après ;
+- slow 4G gzip : 36,9 s avant, 40,3 s après.
+
+Avec le vrai backend Supabase, hors démonstration, le catalogue de démo n'est pas téléchargé. Je l'ai déduit du code, sans le mesurer : il n'y a pas de serveur Supabase ici. La copie des recettes (0,6 Mo) est en revanche chargée en anglais, ou si la base n'a pas encore les recettes.
+
+**Hébergement.** Il doit servir les fichiers en brotli ou gzip, avec un cache long sur `_expo/static/` (voir README, « Version web »). Pour un essai local : `python3 e2e/spa_server.py dist 8822 --gzip`.
