@@ -59,7 +59,12 @@ def checked(pg, t):
 
 
 def home(pg, wait=2600):
+    """Accueil du profil « moi » (cycle). Le profil est choisi par le sélecteur, comme le ferait l'utilisatrice : sur une
+    version configurée avec Supabase, la reprise de la démo au chargement efface le profil enregistré (bug documenté
+    dans cocon.py, profil_affiche_conserve_au_rechargement)."""
     pg.goto(B + '/'); pg.wait_for_timeout(wait)
+    if has(pg, 'profile-switcher') and not has(pg, 'cycle-calendar'):
+        tap(pg, 'profile-switcher', 700); tap(pg, 'subject-me', wait)
 
 
 def seed_regular(pg):
@@ -116,18 +121,19 @@ def run(p):
     R['02_cinq_raccourcis_accueil'] = has(pg, 'c3-home-favorites') and tid(pg, 'c3-home-favorites').locator('[data-testid^="c3-home-fav-"]').count() == 5
 
     # ================================================================ 3. Mois suivant / précédent
+    # Un appui pendant l'animation du mois (sortie 120 ms + ressort) est ignoré par le calendrier : on attend qu'elle finisse
     m0 = tid(pg, 'c3-month').inner_text()
-    tap(pg, 'c3-next', 500); m1 = tid(pg, 'c3-month').inner_text()
-    tap(pg, 'c3-prev', 500); m2 = tid(pg, 'c3-month').inner_text()
+    tap(pg, 'c3-next', 1200); m1 = tid(pg, 'c3-month').inner_text()
+    tap(pg, 'c3-prev', 1200); m2 = tid(pg, 'c3-month').inner_text()
     # glissement horizontal (souris)
     box = tid(pg, 'cycle-calendar').bounding_box()
     pg.mouse.move(box['x'] + box['width'] * 0.8, box['y'] + box['height'] * 0.5); pg.mouse.down()
-    pg.mouse.move(box['x'] + box['width'] * 0.2, box['y'] + box['height'] * 0.5, steps=8); pg.mouse.up(); pg.wait_for_timeout(600)
+    pg.mouse.move(box['x'] + box['width'] * 0.2, box['y'] + box['height'] * 0.5, steps=8); pg.mouse.up(); pg.wait_for_timeout(1200)
     m3 = tid(pg, 'c3-month').inner_text()
     R['03_mois_suivant_precedent'] = m0 != m1 and m2 == m0
     R['03_glisser_change_de_mois'] = m3 != m0
     if m3 != m0:
-        tap(pg, 'c3-prev', 500)
+        tap(pg, 'c3-prev', 1200)
 
     # ================================================================ 4. « Ajouter aujourd'hui » → résumé du jour
     tap(pg, 'c3-add-today', 900)

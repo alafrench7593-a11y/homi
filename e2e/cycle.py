@@ -89,7 +89,10 @@ def run(p):
 
     # 2. Calendrier : enregistré et estimé distincts, détail du jour
     pg.goto(B + '/cycle/calendar'); pg.wait_for_timeout(2000)
-    click(pg, 'Mois précédent'); pg.wait_for_timeout(900)
+    # Les saisies sont datées de septembre 2026 : on recule jusqu'à ce mois quel que soit le mois en cours
+    for _ in range(24):
+        if 'Septembre 2026' in T(pg): break
+        click(pg, 'Mois précédent'); pg.wait_for_timeout(900)
     t = T(pg)
     R['2_legende'] = 'Règles enregistrées' in t and 'Règles estimées' in t
     day = pg.locator('[aria-label*="18 septembre"]').filter(visible=True).first
@@ -174,6 +177,10 @@ def run(p):
     pg.goto(B + '/cycle/privacy'); pg.wait_for_timeout(1500)
     pg.get_by_role('switch', name='Masquer mon cycle sur l’accueil').filter(visible=True).first.click(); pg.wait_for_timeout(1200)
     pg.goto(B + '/'); pg.wait_for_timeout(2500)
+    # Accueil du profil « moi », choisi par le sélecteur : la reprise de la démo au chargement efface le profil
+    # enregistré sur une version configurée avec Supabase (bug documenté dans cocon.py)
+    pg.locator('[data-testid="profile-switcher"]').filter(visible=True).first.click(); pg.wait_for_timeout(700)
+    pg.locator('[data-testid="subject-me"]').filter(visible=True).first.click(); pg.wait_for_timeout(2000)
     t = T(pg)
     R['10_masquage'] = 'Données masquées' in t and 'Dernières règles (enregistrées)' not in t
     pg.screenshot(path=f'{SHOTS}/cycle-home-hidden.png')
@@ -258,6 +265,8 @@ def run(p):
     t = T(pg)
     R['14_mes_conseils'] = 'Mes conseils' in t and 'Risque de grossesse possible' in t and 'Rien n’est envoyé à un service externe' in t
     pg.goto(B + '/cycle?all=1'); pg.wait_for_timeout(2500)
+    # Depuis e9ea31a, la roue détaillée (phases, ovulation estimée) s'ouvre à la demande sous l'anneau doré
+    pg.locator('[data-testid="cycle-ring-detail"]').filter(visible=True).first.click(); pg.wait_for_timeout(800)
     t = T(pg)
     R['14_roue_du_cycle'] = pg.locator('[aria-label*="Jour 14 d’un cycle"]').count() > 0 and 'Fenêtre fertile (estimée)' in t
     vis = lambda name: pg.get_by_role('button', name=name).filter(visible=True)
@@ -291,6 +300,9 @@ def run(p):
 
 
 with sync_playwright() as p:
-    run(p)
+    try:
+        run(p)
+    except Exception as e:  # noqa: BLE001 — le rapport JSON est toujours imprimé, l'exception compte comme erreur
+        errs.append(f'exception: {str(e)[:300]}')
 print(json.dumps({'resultats': R, 'ok': all(R.values()), 'erreurs': errs}, ensure_ascii=False, indent=1))
 sys.exit(0 if all(R.values()) and not errs else 1)

@@ -31,7 +31,9 @@ def run(p):
     pg.evaluate("p => sessionStorage.setItem('__patch', JSON.stringify(p))", {'themePreference': 'light'})
     pg.goto(B + '/'); pg.wait_for_timeout(4000)
     R['fond_rose_poudre'] = rgb(pg, 'bg-powder') == 'rgb(242, 221, 216)'
-    R['nom_au_fil_de_nous'] = 'Au fil de nous' in pg.inner_text('body')
+    # Le titre du bandeau est en petites capitales (CSS text-transform) : inner_text() renvoie « AU FIL DE NOUS ».
+    # On lit donc le texte source du bandeau de l'accueil (textContent), et le titre de la page.
+    R['nom_au_fil_de_nous'] = 'Au fil de nous' in (pg.locator('[data-testid="home-story"]').first.text_content() or '') and pg.title() == 'Au fil de nous'
     kids = pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); return s.tables.children.map(c => [c.id, c.first_name]); }")
     seen = {}
     for key in ['me'] + [k[0] for k in kids] + ['family', 'preg']:

@@ -26,7 +26,8 @@ def demo(pg, js):
 
 
 def mutate(pg, js):
-    pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); (" + js + ")(s); localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }")
+    # Une table encore jamais écrite n'existe pas dans l'état de la démo : comme dans demo(), elle se lit comme une liste vide
+    pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); s.tables = new Proxy(s.tables, { get: (o, k) => o[k] || [] }); (" + js + ")(s); localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }")
 
 
 def T(pg):
@@ -45,6 +46,13 @@ def subject(pg, key):
     go(pg, '/')
     tid(pg, 'profile-switcher').click(); pg.wait_for_timeout(700)
     tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(1000)
+
+
+def nav(pg, path, wait=2400):
+    """Navigation interne (comme un lien de l'appli), sans recharger la page : le profil choisi reste affiché. Un rechargement
+    l'effacerait sur une version configurée avec Supabase (bug documenté dans cocon.py, profil_affiche_conserve_au_rechargement)."""
+    pg.evaluate("p => { history.pushState(null, '', p); dispatchEvent(new PopStateEvent('popstate', { state: null })); }", path)
+    pg.wait_for_timeout(wait)
 
 
 def daylabel(d):
@@ -108,8 +116,10 @@ def run(p):
     R['grossesse_animation_coeur'] = pg.locator('[data-testid="fetus-heart"]').count() > 0
     R['grossesse_rubriques_voir_plus'] = tid(pg, 'preg-rubric-week').is_visible() and pg.locator('[data-testid="preg-rubric-community"]').count() == 0
     tid(pg, 'preg-rubrics-more').click(); pg.wait_for_timeout(500)
-    R['grossesse_15_rubriques'] = all(pg.locator(f'[data-testid="preg-rubric-{k}"]').count() for k in
-                                      ['week', 'body', 'weight', 'sleep', 'mood', 'meals', 'appointments', 'exams', 'docs', 'birth', 'lists', 'names', 'articles', 'assistant', 'community'])
+    # Depuis 877b21e, « Mes examens » est remplacé par « Mon calendrier de grossesse » (échographies, vrais rendez-vous,
+    # rappels) et « Comment je me sens » et « Complément prescrit » ont rejoint les rubriques
+    R['grossesse_toutes_les_rubriques'] = all(pg.locator(f'[data-testid="preg-rubric-{k}"]').count() for k in
+                                              ['week', 'body', 'weight', 'sleep', 'mood', 'feel', 'meals', 'appointments', 'calendar', 'docs', 'birth', 'lists', 'names', 'articles', 'assistant', 'community', 'supplement'])
     R['grossesse_prochain_rdv'] = tid(pg, 'preg-next-appt').is_visible()
     pg.screenshot(path=f'{SHOTS}/ess_pregnancy.png', full_page=True)
     go(pg, '/settings/reminders?new=supplement', 2600)
@@ -153,13 +163,17 @@ def run(p):
     R['article_neuro_ouvert_statut_references'] = 'À vérifier' in tid(pg, 'article-status').inner_text() and 'Références' in t and 'diagnostic' in t
     # Un parent sans aucun besoin coché trouve aussi les 17 articles
     subject(pg, lina)
-    go(pg, '/library?cat=neurodeveloppement', 3000)
-    pg.mouse.wheel(0, 8000); pg.wait_for_timeout(500)
-    R['bibliotheque_neuro_pour_tous'] = T(pg).count('À vérifier') >= 10 and 'Le TDAH' in T(pg)
+    nav(pg, '/library?cat=neurodeveloppement', 3000)
+    # La liste est virtualisée (32 articles aujourd'hui) : les lignes défilées sont démontées, on les relève au fil du défilement
+    seen = set(T(pg).split('\n'))
+    pg.mouse.move(195, 600)
+    for _ in range(30):
+        pg.mouse.wheel(0, 600); pg.wait_for_timeout(150); seen |= set(T(pg).split('\n'))
+    R['bibliotheque_neuro_pour_tous'] = sum(1 for x in seen if x.endswith('· À vérifier')) >= 10 and any(x.startswith('Le TDAH') for x in seen)
 
     # ================================================================ Recettes appétissantes, par âge, photo cohérente
     subject(pg, lina)
-    go(pg, '/meals', 3000)
+    nav(pg, '/meals', 3000)
     t = T(pg)
     n0 = int(re.search(r'(\d+)\s+recette', tid(pg, 'recipes-count').inner_text()).group(1))
     R['recettes_bebe_7_mois'] = n0 >= 10 and 'Purée' in t and 'Lasagnes' not in t and 'Croque-monsieur' not in t
@@ -176,11 +190,12 @@ def run(p):
     R['fiche_congelation_statut_menu_courses'] = tid(pg, 'rc-freezing').is_visible() and 'À vérifier' in tid(pg, 'recipe-status').inner_text() and 'Ajouter au menu' in t and tid(pg, 'add-shopping').is_visible()
     tid(pg, 'rc-dislike').click(); pg.wait_for_timeout(1200)
     R['je_n_aime_pas_cette_idee'] = demo(pg, "s => s.tables.recipe_dislikes.some(d => d.recipe_slug === 'puree-carotte-pomme-de-terre')") and tid(pg, 'rc-disliked').is_visible()
-    go(pg, '/meals', 3000)
+    subject(pg, lina)
+    nav(pg, '/meals', 3000)
     n2 = int(re.search(r'(\d+)\s+recette', tid(pg, 'recipes-count').inner_text()).group(1))
     R['idee_masquee_de_la_liste'] = n2 == n0 - 1 and tid(pg, 'recipes-hidden-toggle').is_visible()
     subject(pg, noe)
-    go(pg, '/meals', 3000)
+    nav(pg, '/meals', 3000)
     t = T(pg)
     R['recettes_enfant_5_ans'] = 'Purée de courgette toute douce' not in t and int(re.search(r'(\d+)\s+recette', tid(pg, 'recipes-count').inner_text()).group(1)) >= 10
 
@@ -213,7 +228,7 @@ def run(p):
 
     # ================================================================ Saisie rapide « Lina a bu 150 ml à 14 h »
     subject(pg, lina)
-    go(pg, '/track', 2600)
+    nav(pg, '/track', 2600)
     tid(pg, 'quick-text').fill('Lina a bu 150 ml à 14 h')
     tid(pg, 'quick-parse').click(); pg.wait_for_timeout(500)
     res = tid(pg, 'quick-result').inner_text()
@@ -233,7 +248,7 @@ def run(p):
     pg.evaluate(SET_BODY, ['avoid', False])
     mutate(pg, "s => { s.tables.period_entries = []; s.tables.pregnancies.forEach(p => { if (p.status === 'active') { p.status = 'ended'; p.end_reason = 'unspecified'; } }); }")
     subject(pg, 'me')
-    go(pg, '/cycle/calendar', 2800)
+    nav(pg, '/cycle/calendar', 2800)
     today = date.today()
     base = today.replace(day=1) if today.day >= 20 else (today.replace(day=1) - timedelta(days=1)).replace(day=1)
     if base.month != today.month:

@@ -135,9 +135,7 @@ def run(p):
     R['gr_noe_separe'] = demo(pg, f"s => !s.tables.child_steps.some(x => x.child_id === '{noe}')")
 
     # ===================================== Accueil de l'enfant : deux raccourcis résumés
-    mutate_ui = "() => { const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{\"state\":{},\"version\":0}'); ui.state.subject = { type: 'child', id: 'LINA' }; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }"
-    pg.evaluate(mutate_ui.replace('LINA', lina))
-    go(pg, '/', 3800)
+    home_of(pg, lina)
     R['accueil_raccourcis'] = has(pg, 'cs-discoveries') and has(pg, 'cs-grow')
     R['accueil_resume'] = 'Dernière découverte : Carotte' in text_of(pg, 'cs-discoveries') and 'Tient assis sans appui' in text_of(pg, 'cs-grow')
     tid(pg, 'cs-grow').click(); pg.wait_for_timeout(2000)
@@ -170,8 +168,7 @@ def run(p):
     tid(pg, 'out-cat-support').click(); pg.wait_for_timeout(800)
     R['out_filtre_secondaire_pmi'] = has(pg, 'out-directories') and 'monenfant.fr' in T(pg)
     # accueil : la carte est sur la page d'accueil, avec la même honnêteté
-    pg.evaluate("() => { const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{\"state\":{},\"version\":0}'); ui.state.subject = { type: 'me' }; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }")
-    go(pg, '/', 3500)
+    home_of(pg, 'me')
     R['out_carte_sur_accueil'] = has(pg, 'home-outings') and 'Sorties près de chez moi' in T(pg)
     R['out_accueil_carte_osm'] = has(pg, 'out-map') and has(pg, 'home-outings-list')
     pg.screenshot(path=f'{SHOTS}/accueil_sorties.png', full_page=True)
@@ -179,9 +176,7 @@ def run(p):
     R['out_communaute'] = has(pg, 'community-outings') and 'Sorties près de chez moi' in T(pg)
 
     # ===================================== M'aider pour les nuits (accueil du bébé, page, nuit difficile)
-    mutate_ui = "() => { const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{\"state\":{},\"version\":0}'); ui.state.subject = { type: 'child', id: 'LINA' }; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }"
-    pg.evaluate(mutate_ui.replace('LINA', lina))
-    go(pg, '/', 4000)
+    home_of(pg, lina)
     R['nuits_carte_accueil_bebe'] = has(pg, 'nights-help-card') and 'M’aider pour les nuits' in T(pg)
     pg.screenshot(path=f'{SHOTS}/accueil_nuits.png', full_page=True)
     go(pg, f'/sleep/help/{lina}', 3500)
@@ -212,6 +207,14 @@ def run(p):
     else:
         R['sommeil_rappel_propose_pendant_sieste'] = False
     b.close()
+
+
+def home_of(pg, key):
+    """Accueil du profil choisi avec le sélecteur, après le chargement : sur une version configurée avec Supabase, la reprise
+    de la démo au chargement efface le profil enregistré (bug documenté dans cocon.py, profil_affiche_conserve_au_rechargement)."""
+    go(pg, '/', 3000)
+    tid(pg, 'profile-switcher').click(); pg.wait_for_timeout(700)
+    tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(2500)
 
 
 def text_of(pg, t):

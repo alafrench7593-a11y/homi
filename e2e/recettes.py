@@ -45,6 +45,32 @@ def subject(pg, key):
     tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(900)
 
 
+def has(pg, t):
+    return pg.locator(f'[data-testid="{t}"]').filter(visible=True).count() > 0
+
+
+def nav(pg, path, wait=2200):
+    """Navigation interne (comme un lien de l'appli), sans recharger la page."""
+    pg.evaluate("p => { history.pushState(null, '', p); dispatchEvent(new PopStateEvent('popstate', { state: null })); }", path)
+    pg.wait_for_timeout(wait)
+
+
+def at(pg, path, key, wait=2200):
+    """Ouvre `path` (rechargement : la démo relit les données modifiées), puis choisit le profil avec le sélecteur de l'écran,
+    sinon depuis l'accueil puis par navigation interne. Le profil est choisi APRÈS le chargement : sur une version configurée
+    avec Supabase, la reprise de la démo au chargement efface le profil enregistré (bug documenté dans cocon.py,
+    profil_affiche_conserve_au_rechargement)."""
+    go(pg, path, wait)
+    if has(pg, 'profile-switcher'):
+        tid(pg, 'profile-switcher').click(); pg.wait_for_timeout(700)
+        if has(pg, f'subject-{key}'):
+            tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(wait)
+            return
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
+    subject(pg, key)
+    nav(pg, path, wait)
+
+
 def listed(pg):
     """Slugs des recettes affichées dans la liste (attributs data-testid « recipe-<slug> »)."""
     pg.mouse.wheel(0, 20000); pg.wait_for_timeout(300)
@@ -68,7 +94,7 @@ def run(p):
     noe = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Noé').id")
     go(pg, '/meals', 3000)  # premier passage : la bibliothèque est installée dans la base de démonstration
     # La bibliothèque n'est plus copiée dans le stockage local (reconstruite à chaque ouverture) : mêmes lignes, lues depuis le code
-    lib = json.loads(subprocess.run(['npx', '-y', 'tsx', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dump_recipes.ts')], capture_output=True, text=True, check=True).stdout)
+    lib = json.loads(subprocess.run(['npx', '-y', 'tsx', '--tsconfig', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tsconfig.scripts.json'), os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dump_recipes.ts')], capture_output=True, text=True, check=True).stdout)
     R['bibliotheque_64_recettes_en_base'] = len(lib) >= 64
     R['statuts_jamais_relu_par_defaut'] = all(v['status'] in ('ai_draft', 'to_review') for v in lib.values())
     title2slug = {v['title']: k for k, v in lib.items()}
@@ -126,8 +152,7 @@ def run(p):
 
     # ---- 3. Purée pour un bébé d'environ 6 mois
     mutate(pg, f"s => {{ s.tables.children.find(c => c.id === '{lina}').birth_date = '{months_ago(6.3)}'; }}")
-    subject(pg, lina)
-    go(pg, '/meals')
+    at(pg, '/meals', lina)
     t = T(pg)
     R['3_titre_bebe'] = 'Les repas de Lina' in t
     baby6 = listed(pg)
@@ -140,21 +165,20 @@ def run(p):
 
     # ---- 4. Changement de texture selon l'étape (âge) et selon le réglage du parent
     mutate(pg, f"s => {{ s.tables.children.find(c => c.id === '{lina}').birth_date = '{months_ago(10.2)}'; }}")
-    go(pg, '/meals')
+    at(pg, '/meals', lina)
     baby10 = listed(pg)
     R['4_moulinee_vers_10_mois'] = any('ground' in lib[s]['tex'] and s not in baby6 for s in baby10)
-    go(pg, '/meals/settings')
+    at(pg, '/meals/settings', lina)
     pg.get_by_text('Lisse', exact=True).first.click()
     tid(pg, 'food-settings-save').click(); pg.wait_for_timeout(1200)
     R['4_reglage_texture_enregistre'] = demo(pg, f"s => s.tables.child_food_settings.some(x => x.child_id === '{lina}' && x.texture === 'smooth')")
-    go(pg, '/meals')
+    at(pg, '/meals', lina)
     smooth = listed(pg)
     R['4_texture_du_parent_prime_sur_age'] = bool(smooth) and all('smooth' in lib[s]['tex'] for s in smooth) and len(smooth) < len(baby10)
 
     # ---- 5. Repas pour un enfant de 5 ans
     mutate(pg, f"s => {{ s.tables.children.find(c => c.id === '{noe}').birth_date = '{months_ago(62)}'; }}")
-    subject(pg, noe)
-    go(pg, '/meals')
+    at(pg, '/meals', noe)
     kid = listed(pg)
     R['5_titre_enfant'] = 'Les repas de Noé' in T(pg)
     R['5_que_des_recettes_enfant'] = bool(kid) and all('child' in lib[s]['aud'] for s in kid)
@@ -162,17 +186,17 @@ def run(p):
 
     # ---- 6. Allergène déclaré
     mutate(pg, f"s => {{ s.tables.children.find(c => c.id === '{noe}').allergies_declared = ['Lait de vache']; }}")
-    go(pg, '/meals')
+    at(pg, '/meals', noe)
     noMilk = listed(pg)
     R['6_allergie_affichee'] = 'Recettes sans : Lait' in tid(pg, 'meals-allergies').inner_text()
     R['6_aucune_recette_avec_lait'] = bool(noMilk) and not any('milk' in lib[s]['al'] for s in noMilk) and len(noMilk) < len(kid)
     milk_slug = next(s for s in kid if 'milk' in lib[s]['al'])
-    go(pg, f'/meals/{milk_slug}')
+    at(pg, f'/meals/{milk_slug}', noe)
     R['6_fiche_avertit_pas_adaptee'] = 'Pas adaptée au profil affiché' in T(pg)
     mutate(pg, f"s => {{ s.tables.children.find(c => c.id === '{noe}').allergies_declared = []; }}")
 
     # ---- 7. Menu végétarien (filtre)
-    go(pg, '/meals')
+    at(pg, '/meals', noe)
     tid(pg, 'more-filters').click(); pg.wait_for_timeout(400)
     pg.get_by_text('Végétarien', exact=True).last.click(); pg.wait_for_timeout(500)
     veg = listed(pg)
@@ -180,8 +204,7 @@ def run(p):
     R['7_filtre_vegetarien'] = bool(veg) and not any(set(lib[s]['ings']) & meat_keys for s in veg)
 
     # ---- 9. Famille avec plusieurs enfants
-    subject(pg, 'family')
-    go(pg, '/meals/menu')
+    at(pg, '/meals/menu', 'family')
     tid(pg, 'menu-generate').click(); pg.wait_for_timeout(900)
     t = T(pg)
     titles = pg.evaluate("() => [...document.querySelectorAll('[data-testid^=\"menu-slot-\"]')].map(e => e.innerText)")
@@ -261,6 +284,9 @@ def run(p):
 
 
 with sync_playwright() as p:
-    run(p)
+    try:
+        run(p)
+    except Exception as e:  # noqa: BLE001 — le rapport JSON est toujours imprimé, l'exception compte comme erreur
+        errs.append(f'exception: {str(e)[:300]}')
 print(json.dumps({**R, 'erreurs': errs[:10]}, ensure_ascii=False, indent=1))
 print('OK' if all(R.values()) and not errs else 'ÉCHEC', sum(R.values()), '/', len(R))

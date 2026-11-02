@@ -43,6 +43,12 @@ def go(pg, path, wait=2600):
     pg.goto(B + path); pg.wait_for_timeout(wait)
 
 
+def subject(pg, key):
+    go(pg, '/')
+    tid(pg, 'profile-switcher').click(); pg.wait_for_timeout(700)
+    tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(1200)
+
+
 def today_at(h, m=0):
     d = datetime.now().replace(hour=h, minute=m, second=0, microsecond=0)
     return d.astimezone().isoformat()
@@ -65,8 +71,9 @@ def run(p):
       s.tables.meals.push({{ id: 'e2e-meal', child_id: '{lina}', household_id: '{hid}', at: '{today_at(0, 30)}', description: 'Compote', foods: [], texture: 'smooth', reaction_note: null }});
       s.tables.diapers.push({{ id: 'e2e-diaper', child_id: '{lina}', household_id: '{hid}', at: '{today_at(0, 40)}', wet: true, stool: false }});
       s.tables.meals.push({{ id: 'e2e-noe-meal', child_id: '{noe}', household_id: '{hid}', at: '{today_at(0, 20)}', description: 'Pâtes', foods: [], texture: 'family', reaction_note: null }}); }}""")
-    pg.evaluate(f"() => {{ const ui = JSON.parse(localStorage.getItem('toietmoi.ui') || '{{\"state\":{{}},\"version\":0}}'); ui.state.subject = {{ type: 'child', id: '{lina}' }}; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }}")
-    go(pg, '/', 3800)
+    # Profil affiché choisi par le sélecteur de profil, comme le ferait un parent : sur une version web configurée avec
+    # Supabase, la reprise de la démo au chargement remet le profil enregistré dans toietmoi.ui à zéro (voir rapport).
+    subject(pg, lina); pg.wait_for_timeout(2600)
     pg.screenshot(path=f'{SHOTS}/cocon_lina.png')
 
     # 1. Premier écran : profils, cocon, frise, 3 infos, « + Ajouter », un conseil — pas de grille de 4 cases
@@ -122,7 +129,7 @@ def run(p):
     tid(pg, 'cocoon-add-note').click(); pg.wait_for_timeout(300)
     tid(pg, 'cocoon-add-customize').click(); pg.wait_for_timeout(400)
     pg.keyboard.press('Escape'); pg.wait_for_timeout(500)
-    go(pg, '/', 3500)
+    subject(pg, lina); pg.wait_for_timeout(2300)
     tid(pg, 'cocoon-add').click(); pg.wait_for_timeout(800)
     favs = pg.evaluate("() => [...document.querySelectorAll('[data-testid=\"cocoon-add-sheet\"] [data-testid^=\"cocoon-add-\"]')].map(e => e.getAttribute('data-testid'))")
     R['5_favoris_personnalises'] = 'cocoon-add-note' in favs[:4] and 'cocoon-add-diaper' not in favs[:4]
@@ -160,7 +167,7 @@ def run(p):
 
     # 4. Suivis désactivés : jamais de couche ni de biberon
     mutate(pg, f"s => {{ const c = s.tables.children.find(c => c.id === '{lina}'); c.enabled_tracking = c.enabled_tracking.filter(k => k !== 'diaper' && k !== 'bottle'); }}")
-    go(pg, '/', 3500)
+    subject(pg, lina); pg.wait_for_timeout(2300)
     inf = ids(pg, 'cocoon-info-')
     R['4_suivis_desactives_masques'] = 'cocoon-info-bottle' not in inf and 'cocoon-info-diaper' not in inf and len(inf) == 3 and not any(r.startswith('ribbon-bottle') or r.startswith('ribbon-diaper') for r in ids(pg, 'ribbon-'))
     tid(pg, 'cocoon-add').click(); pg.wait_for_timeout(800)
@@ -177,11 +184,16 @@ def run(p):
     R['profils_autres_accessibles'] = not has(pg, 'cocoon') and has(pg, 'home-card-main')
 
     # 8. Nuit : lisible (texte clair sur fond sombre)
-    pg.evaluate(f"() => {{ const ui = JSON.parse(localStorage.getItem('toietmoi.ui')); ui.state.subject = {{ type: 'child', id: '{lina}' }}; ui.state.themePreference = 'night'; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }}")
-    go(pg, '/', 3500)
+    pg.evaluate("() => { const ui = JSON.parse(localStorage.getItem('toietmoi.ui')); ui.state.themePreference = 'night'; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }")
+    subject(pg, lina); pg.wait_for_timeout(2300)
     col = pg.evaluate("() => { const el = document.querySelector('[data-testid=\"cocoon-name\"]'); return el ? getComputedStyle(el).color : null; }")
     R['8_nuit_lisible'] = bool(col) and all(int(v) > 200 for v in col[col.index('(') + 1:col.index(')')].split(',')[:3])
     pg.screenshot(path=f'{SHOTS}/cocon_nuit.png')
+    # Profil affiché (Lina) conservé quand la page est rechargée, comme il l'est à la réouverture d'un vrai compte.
+    # BUG connu (02/11/2026) : sur une version configurée avec Supabase, la reprise de la démo au chargement
+    # (initBackendMode → onBackendSwitch → useUiStore.reset() dans src/lib/auth.tsx) remet le profil à zéro.
+    go(pg, '/', 3800)
+    R['profil_affiche_conserve_au_rechargement'] = has(pg, 'cocoon-card') and text(pg, 'cocoon-name') == 'Lina'
     b.close()
 
 

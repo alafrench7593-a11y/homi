@@ -46,6 +46,28 @@ def subject(pg, key):
     tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(1000)
 
 
+def nav(pg, path, wait=2500):
+    """Navigation interne (comme un lien de l'appli), sans recharger la page."""
+    pg.evaluate("p => { history.pushState(null, '', p); dispatchEvent(new PopStateEvent('popstate', { state: null })); }", path)
+    pg.wait_for_timeout(wait)
+
+
+def at(pg, path, key, wait=2500):
+    """Ouvre `path` (rechargement : la démo relit les données modifiées), puis choisit le profil avec le sélecteur de l'écran,
+    sinon depuis l'accueil puis par navigation interne. Le profil est choisi APRÈS le chargement : sur une version configurée
+    avec Supabase, la reprise de la démo au chargement efface le profil enregistré (bug documenté dans cocon.py,
+    profil_affiche_conserve_au_rechargement)."""
+    go(pg, path, wait)
+    if has(pg, 'profile-switcher'):
+        tid(pg, 'profile-switcher').click(); pg.wait_for_timeout(700)
+        if has(pg, f'subject-{key}'):
+            tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(wait)
+            return
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
+    subject(pg, key)
+    nav(pg, path, wait)
+
+
 def set_sub(pg, status, days):
     mutate(pg, f"""s => {{ const me = s.session.userId; s.tables.subscriptions = (s.tables.subscriptions || []).filter(x => x.user_id !== me);
       s.tables.subscriptions.push({{ user_id: me, status: '{status}', product_id: 'toietmoi_premium_annual', store: 'test', period_type: '{'trial' if status == 'trial' else 'annual'}',
@@ -99,14 +121,14 @@ def run(p):
     pg.screenshot(path=f'{SHOTS}/premium_abonnement.png', full_page=True)
 
     # ================================================================ Saisie vocale : 3 essais gratuits comptés côté serveur
-    go(pg, '/track', 2600)
+    at(pg, '/track', lina, 2600)
     left0 = tid(pg, 'quick-left').inner_text()
     tid(pg, 'quick-text').fill('Lina s’est endormie à 13 h'); tid(pg, 'quick-parse').click(); pg.wait_for_timeout(400)
     R['vocal_comprend_sommeil'] = 'Lina s’endort' in tid(pg, 'quick-result').inner_text()
     tid(pg, 'quick-open').click(); pg.wait_for_timeout(1500)
     R['vocal_quota_compte'] = '3 essai' in left0 and demo(pg, "s => (s.tables.feature_usage[0] || {}).used") == 1
     mutate(pg, "s => { s.tables.feature_usage[0].used = 3; s.tables.sleeps = s.tables.sleeps.filter(x => x.ended_at); }")
-    go(pg, '/track', 2600)
+    at(pg, '/track', lina, 2600)
     tid(pg, 'quick-text').fill('Lina a bu 150 ml à 13 h 10'); tid(pg, 'quick-parse').click(); pg.wait_for_timeout(400)
     tid(pg, 'quick-open').click(); pg.wait_for_timeout(1200)
     R['vocal_limite_message_clair'] = has(pg, 'premium-limit') and 'saisies vocales gratuites de ce mois' in T(pg) and 'reviennent le' in T(pg)
@@ -135,7 +157,7 @@ def run(p):
     tid(pg, 'menu-save').click(); pg.wait_for_timeout(1500)
     R['menu_enregistre_cote_serveur'] = demo(pg, "s => s.tables.meal_plans.length") >= 1
     subject(pg, lina)
-    go(pg, '/summary?period=week', 3000)
+    nav(pg, '/summary?period=week', 3000)
     R['resume_semaine_premium'] = has(pg, 'summary-sections') and 'Sommeil' in tid(pg, 'summary-sections').inner_text()
 
     # ================================================================ Fin d'essai : retour gratuit, données toujours lisibles
@@ -171,7 +193,10 @@ def run(p):
 
 
 with sync_playwright() as p:
-    run(p)
+    try:
+        run(p)
+    except Exception as e:  # noqa: BLE001 — le rapport JSON est toujours imprimé, l'exception compte comme erreur
+        errs.append(f'exception: {str(e)[:300]}')
 R['erreurs'] = errs
 print(json.dumps(R, ensure_ascii=False, indent=1))
 ok = sum(1 for k, v in R.items() if k != 'erreurs' and v is True)

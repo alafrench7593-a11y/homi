@@ -1,0 +1,12 @@
+// Scripts Node des tests (npx tsx --tsconfig e2e/tsconfig.scripts.json …) : expo-localization est remplacé
+// par un shim sans react-native (esbuild ne sait pas transformer react-native hors de Metro).
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "..",
+    "paths": {
+      "@/*": ["./src/*"],
+      "expo-localization": ["./e2e/shims/expo-localization.ts"]
+    }
+  }
+}

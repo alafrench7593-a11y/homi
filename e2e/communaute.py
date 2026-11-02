@@ -255,8 +255,15 @@ def run(p):
         go(pg, '/', 2500)
         tid(pg, 'profile-switcher').click(); pg.wait_for_timeout(700)
         tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(1200)
-    subject(lina)
-    go(pg, '/track', 3200)
+
+    def track_of(key):
+        """Écran Suivi, puis profil choisi avec le sélecteur de cet écran. Le profil est choisi APRÈS le chargement : sur une
+        version configurée avec Supabase, la reprise de la démo au chargement efface le profil enregistré (bug documenté
+        dans cocon.py, profil_affiche_conserve_au_rechargement)."""
+        go(pg, '/track', 3200)
+        tid(pg, 'profile-switcher').click(); pg.wait_for_timeout(700)
+        tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(2000)
+    track_of(lina)
     cards = [k for k in ['bottle', 'breastfeed', 'diaper', 'sleep', 'meal', 'medication', 'appointment', 'mother_sleep', 'mood'] if has(pg, f'track-card-{k}')]
     R['cartes_bebe_diversification'] = set(cards) == {'meal', 'sleep', 'bottle', 'diaper'}
     R['carte_derniere_info_biberon'] = bool(re.match(r'Dernier biberon (à|hier à) \d+ h( \d\d)? – \d+ ml', text(pg, 'track-info-bottle')))
@@ -266,19 +273,17 @@ def run(p):
     tid(pg, 'track-see-all').click(); pg.wait_for_timeout(800)
     R['voir_tous_les_suivis'] = has(pg, 'track-all') and has(pg, 'track-card-observation') and 'Retour haptique' in T(pg)
     pg.keyboard.press('Escape'); pg.wait_for_timeout(500)
-    go(pg, '/track', 3000)
+    track_of(lina)
     tid(pg, 'track-add-diaper').click(); pg.wait_for_timeout(1800)
     R['ajout_rapide_ouvre_saisie'] = '/track/diaper' in pg.url
-    go(pg, '/track', 3000)
+    track_of(lina)
     open_before = demo(pg, f"s => s.tables.sleeps.filter(x => x.child_id === '{lina}' && !x.ended_at).length")
     tid(pg, 'track-add-sleep').click(); pg.wait_for_timeout(1500)
     open_after = demo(pg, f"s => s.tables.sleeps.filter(x => x.child_id === '{lina}' && !x.ended_at).length")
     R['sommeil_ajout_rapide'] = open_before != open_after
-    subject(noe)
-    go(pg, '/track', 3200)
+    track_of(noe)
     R['cartes_enfant_plus_grand'] = set(k for k in ['bottle', 'breastfeed', 'diaper', 'sleep', 'meal', 'medication', 'appointment'] if has(pg, f'track-card-{k}')) == {'meal', 'sleep', 'medication', 'appointment'}
-    subject('preg')
-    go(pg, '/track', 3200)
+    track_of('preg')
     shown = [k for k in ['bottle', 'breastfeed', 'diaper', 'pumping', 'feel', 'mother_sleep', 'mood', 'eat', 'meal', 'appointment'] if has(pg, f'track-card-{k}')]
     R['cartes_grossesse'] = set(shown) == {'feel', 'mother_sleep', 'mood', 'eat'}
     tid(pg, 'track-see-all').click(); pg.wait_for_timeout(800)
@@ -300,7 +305,7 @@ with sync_playwright() as p:
     except Exception as e:  # noqa: BLE001
         errs.append('SCRIPT après ' + (list(R)[-1] if R else '-') + ' : ' + str(e).splitlines()[0][:300])
 ok = sum(1 for v in R.values() if v)
-print(json.dumps(R, ensure_ascii=False, indent=1))
+print(json.dumps({**R, 'erreurs': errs}, ensure_ascii=False, indent=1))
 print('erreurs:', errs[:8])
 print(f'communaute: OK {ok} / {len(R)} false={len(R) - ok} err={len(errs)}')
 sys.exit(0 if ok == len(R) and not errs else 1)

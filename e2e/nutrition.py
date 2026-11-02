@@ -18,7 +18,7 @@ DRAFTS = [d for f in sorted(glob.glob(os.path.join(HERE, '..', 'src', 'content',
 CATALOG = {d['slug'] for d in DRAFTS} | {'puree-carotte-pomme-de-terre'}
 DRAFT = 'e2e-brouillon-ia'
 # Brouillon IA de bibliothèque (copie d'une recette, statut « brouillon ») pour vérifier qui le voit
-DRAFT_ROWS = json.loads(subprocess.run(['npx', '-y', 'tsx', os.path.join(HERE, 'draft_rows.ts'), DRAFT], capture_output=True, text=True, check=True).stdout)
+DRAFT_ROWS = json.loads(subprocess.run(['npx', '-y', 'tsx', '--tsconfig', os.path.join(HERE, 'tsconfig.scripts.json'), os.path.join(HERE, 'draft_rows.ts'), DRAFT], capture_output=True, text=True, check=True).stdout)
 INJECT_DRAFT = "s => { const rows = " + json.dumps(DRAFT_ROWS) + "; for (const t of Object.keys(rows)) s.tables[t] = [...(s.tables[t] || []).filter(x => (x.id || x.recipe_id) !== 'e2e-draft-row'), ...rows[t]]; }"
 
 
@@ -48,6 +48,13 @@ def subject(pg, key):
     tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(900)
 
 
+def nav(pg, path, wait=2200):
+    """Navigation interne (comme un lien de l'appli), sans recharger la page : le profil choisi reste affiché. Un rechargement
+    l'effacerait sur une version configurée avec Supabase (bug documenté dans cocon.py, profil_affiche_conserve_au_rechargement)."""
+    pg.evaluate("p => { history.pushState(null, '', p); dispatchEvent(new PopStateEvent('popstate', { state: null })); }", path)
+    pg.wait_for_timeout(wait)
+
+
 def listed(pg):
     pg.mouse.wheel(0, 20000); pg.wait_for_timeout(300)
     return pg.evaluate("() => [...document.querySelectorAll('[data-testid^=\"recipe-\"]')].map(e => e.getAttribute('data-testid').slice(7))")
@@ -61,18 +68,19 @@ def run(p):
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
-    R['ancien_catalogue_supprime'] = not os.path.isdir(os.path.join(HERE, '..', 'src', 'content', 'recipes', 'drafts')) and len(DRAFTS) == 150
+    # 150 recettes du nouveau catalogue + 16 de « Bien manger enceinte » (lot-07, ajoutées par 877b21e)
+    R['ancien_catalogue_supprime'] = not os.path.isdir(os.path.join(HERE, '..', 'src', 'content', 'recipes', 'drafts')) and len(DRAFTS) == 166
     pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); (" + INJECT_DRAFT + ")(s); localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }")
 
     # ---- Liste des recettes (profil de Noé, ~6 ans) : score visible, aucun brouillon IA pour un parent
     noe = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Noé').id")
     subject(pg, noe)
-    go(pg, '/meals', 3000)
+    nav(pg, '/meals', 3000)
     slugs = listed(pg)
     R['liste_score_visible'] = pg.locator('[data-testid^="score-"]').count() > 0
     R['liste_sans_brouillon_ia'] = bool(slugs) and DRAFT not in slugs and set(s for s in slugs if not s.startswith('score')) - {'status', 'sources', 'allergens', 'precautions', 'cost'} <= CATALOG
     first = next(s for s in slugs if s not in ('status', 'sources', 'allergens', 'precautions', 'score', 'cost') and not s.startswith('score'))
-    go(pg, f'/meals/{first}')
+    nav(pg, f'/meals/{first}')
     R['fiche_score_sur_100'] = has(pg, 'recipe-score') and '/100' in tid(pg, 'recipe-score').inner_text()
     R['fiche_cout_non_invente'] = has(pg, 'recipe-cost') and 'prix non disponible' in tid(pg, 'recipe-cost').inner_text()
     R['fiche_score_pas_nutriscore'] = 'Nutri-Score' in T(pg)  # la mention « pas le Nutri-Score officiel » est affichée
@@ -171,6 +179,9 @@ def run(p):
 
 
 with sync_playwright() as p:
-    run(p)
+    try:
+        run(p)
+    except Exception as e:  # noqa: BLE001 — le rapport JSON est toujours imprimé, l'exception compte comme erreur
+        errs.append(f'exception: {str(e)[:300]}')
 print(json.dumps({**R, 'erreurs': errs[:10]}, ensure_ascii=False, indent=1))
 print('OK' if all(R.values()) and not errs else 'ÉCHEC', sum(R.values()), '/', len(R))

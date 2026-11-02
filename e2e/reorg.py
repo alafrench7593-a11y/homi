@@ -6,7 +6,7 @@ Démo de départ : Camille enceinte, Lina (bébé) et Noé (enfant).
   python3 e2e/reorg.py
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
 """
-import json, os, re, sys
+import glob, json, os, re, sys
 from datetime import date, datetime, timedelta
 from playwright.sync_api import sync_playwright
 
@@ -46,6 +46,13 @@ def subject(pg, key):
     tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(900)
 
 
+def nav(pg, path, wait=2300):
+    """Navigation interne (comme un lien de l'appli), sans recharger la page : le profil choisi reste affiché. Un rechargement
+    l'effacerait sur une version configurée avec Supabase (bug documenté dans cocon.py, profil_affiche_conserve_au_rechargement)."""
+    pg.evaluate("p => { history.pushState(null, '', p); dispatchEvent(new PopStateEvent('popstate', { state: null })); }", path)
+    pg.wait_for_timeout(wait)
+
+
 JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
 MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 
@@ -55,8 +62,11 @@ def daylabel(d):
 
 
 def sexuality_articles():
-    """(slug, titre) des articles « sexualité » de la bibliothèque (source : src/content/articles/library.ts)."""
-    src = open(os.path.join(os.path.dirname(__file__), '..', 'src', 'content', 'articles', 'library.ts'), encoding='utf-8').read()
+    """(slug, titre) des articles « sexualité » de la bibliothèque. Source : src/content/articles/library.ts, découpé par
+    thème depuis 835d07c dans src/content/articles/library/*.ts (contenu identique)."""
+    base = os.path.join(os.path.dirname(__file__), '..', 'src', 'content', 'articles')
+    files = [os.path.join(base, 'library.ts')] + sorted(glob.glob(os.path.join(base, 'library', '*.ts')))
+    src = '\n'.join(open(f, encoding='utf-8').read() for f in files)
     out = []
     for block in re.split(r'\n  \{\n', src)[1:]:
         if re.search(r"category: 'sexualite'", block):
@@ -108,7 +118,8 @@ def run(p):
     pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
     go(pg, '/notifications')
     R['1_ancienne_notification_masquee'] = 'Test d’ovulation du jour' not in T(pg)
-    go(pg, '/tools', 2600)
+    subject(pg, lina)
+    nav(pg, '/tools', 2600)
     pg.mouse.wheel(0, 8000); pg.wait_for_timeout(500)
     t = T(pg)
     R['1_outils_essentiels_nouveau_ne'] = all(x in t for x in ['Aide pour la nuit', 'Vaccins'])
@@ -147,7 +158,7 @@ def run(p):
     R['3_eviter_calendrier_depuis_accueil'] = pg.locator('[data-testid="cycle-calendar"]').count() > 0
     R['3_eviter_pas_de_SA'] = not SA.search(t)
     mutate(pg, "s => { s.tables.period_entries = []; }")
-    go(pg, '/cycle/calendar', 2600)
+    subject(pg, 'me'); nav(pg, '/cycle/calendar', 2600)
     d1 = date.today() - timedelta(days=4)
     lab = pg.locator(f'[aria-label^="{daylabel(d1)}"]').first
     lab.click(); pg.wait_for_timeout(700)
@@ -163,7 +174,7 @@ def run(p):
     mutate(pg, f"""s => {{ const me = s.tables.profiles[0].id;
       s.tables.period_entries.push({{ id: 'e2e-p1', user_id: me, start_date: '{iso(d1 - timedelta(days=29))}', end_date: '{iso(d1 - timedelta(days=25))}', flow: null, note: null, created_at: new Date().toISOString() }});
       s.tables.period_entries.push({{ id: 'e2e-p2', user_id: me, start_date: '{iso(d1 - timedelta(days=57))}', end_date: '{iso(d1 - timedelta(days=53))}', flow: null, note: null, created_at: new Date().toISOString() }}); }}""")
-    go(pg, '/cycle/calendar', 2600)
+    subject(pg, 'me'); nav(pg, '/cycle/calendar', 2600)
     pg.mouse.wheel(0, 3000); pg.wait_for_timeout(500)
     hist = tid(pg, 'cal-history').inner_text()
     R['3_cycles_precedents_avec_duree'] = '29 jours' in hist and '28 jours' in hist
@@ -181,7 +192,7 @@ def run(p):
     subject(pg, 'me')
     t = T(pg)
     R['3_projet_bebe_calendrier_accueil'] = pg.locator('[data-testid="cycle-calendar"]').count() > 0 and not SA.search(t)
-    go(pg, '/tools', 2600)
+    nav(pg, '/tools', 2600)
     pg.mouse.wheel(0, 8000); pg.wait_for_timeout(500)
     t = T(pg)
     R['3_projet_bebe_outils'] = all(x in t for x in ['Calendrier du cycle', 'Glaire']) and 'Évolution' not in t
@@ -234,6 +245,9 @@ def run(p):
 
 
 with sync_playwright() as p:
-    run(p)
+    try:
+        run(p)
+    except Exception as e:  # noqa: BLE001 — le rapport JSON est toujours imprimé, l'exception compte comme erreur
+        errs.append(f'exception: {str(e)[:300]}')
 print(json.dumps({**R, 'erreurs': errs[:10]}, ensure_ascii=False, indent=1))
 print('OK' if all(R.values()) and not errs else 'ÉCHEC', sum(R.values()), '/', len(R))

@@ -47,9 +47,16 @@ def subject(pg, key):
     tid(pg, f'subject-{key}').click(); pg.wait_for_timeout(900)
 
 
+def nav(pg, path, wait=2200):
+    """Navigation interne (comme un lien de l'appli), sans recharger la page : le profil choisi reste affiché. Un rechargement
+    l'effacerait sur une version configurée avec Supabase (bug documenté dans cocon.py, profil_affiche_conserve_au_rechargement)."""
+    pg.evaluate("p => { history.pushState(null, '', p); dispatchEvent(new PopStateEvent('popstate', { state: null })); }", path)
+    pg.wait_for_timeout(wait)
+
+
 def tools_text(pg):
     """Outils du profil affiché (les outils des autres profils sont listés à part, en bas de la page)."""
-    go(pg, '/tools', 2600)
+    nav(pg, '/tools', 2600)
     pg.mouse.wheel(0, 6000); pg.wait_for_timeout(400)
     return T(pg).split('Outils des autres profils')[0]
 
@@ -103,7 +110,7 @@ def run(p):
     go(pg, '/'); subject(pg, noe)
     t = tools_text(pg)
     R['8_changement_enfant_outils'] = 'Mon enfant a un besoin particulier' in t and 'Ma journée biberons' not in t and 'École ou mode de garde' not in t  # catégorie retirée le 20/10 (demande)
-    go(pg, '/')
+    go(pg, '/'); subject(pg, noe)
     # Les 4 actions du quotidien d'un enfant de 5 ans : repas, sommeil, médicaments prescrits, rendez-vous — jamais de biberon
     pg.locator('[data-testid="cocoon-add"]').first.click(); pg.wait_for_timeout(800)
     R['8_actions_rapides_enfant'] = pg.locator('[data-testid="cocoon-add-medication"]').count() > 0 and pg.locator('[data-testid="cocoon-add-bottle"]').count() == 0 and 'Biberon' not in T(pg)
@@ -161,7 +168,7 @@ def run(p):
 
     # ---- 1. Projet bébé : aucune SA, même avec une ancienne grossesse restée « active » sans parcours
     mutate(pg, "s => { const p = s.tables.pregnancies[0]; s.tables.pregnancies.push({ ...p, id: 'old-preg', status: 'active' }); }")
-    go(pg, '/', 2600)
+    go(pg, '/', 2600); subject(pg, 'me'); pg.wait_for_timeout(1200)
     t = T(pg)
     R['1_projet_bebe_sans_SA'] = not SA.search(t) and 'Parcours : Suivre mon cycle · essayer de concevoir' in t
     t = tools_text(pg)
@@ -233,5 +240,8 @@ def run(p):
 
 if __name__ == '__main__':
   with sync_playwright() as p:
-    run(p)
+    try:
+        run(p)
+    except Exception as e:  # noqa: BLE001 — le rapport JSON est toujours imprimé, l'exception compte comme erreur
+        errs.append(f'exception: {str(e)[:300]}')
   print(json.dumps({'resultats': R, 'tous_ok': all(R.values()), 'erreurs': errs}, ensure_ascii=False, indent=1))
