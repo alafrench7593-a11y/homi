@@ -23,6 +23,7 @@ import { SleepNotificationsHost } from '@/features/sleep';
 import { configureNotifications, notificationRoute, notificationsSupported, registerPushToken, snoozeLocally } from '@/lib/notifications';
 import { startOfflineSync } from '@/lib/offline';
 import { configurePurchases, resetPurchasesUser } from '@/lib/purchases';
+import { usePurchasesSync } from '@/lib/data/hooks-premium';
 import { SpaceGrotesk_500Medium } from '@expo-google-fonts/space-grotesk/500Medium';
 import { SpaceGrotesk_600SemiBold } from '@expo-google-fonts/space-grotesk/600SemiBold';
 import { SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk/700Bold';
@@ -82,6 +83,8 @@ function Bootstrap() {
   useRealtimeSync(session ? householdId : null, session?.userId ?? null);
 
   useEffect(() => startOfflineSync((n) => toast(tr('sync.done', { count: n }))), [toast]);
+  // Abonnement : relecture de has_premium après une resynchronisation avec RevenueCat (subscription-sync)
+  usePurchasesSync();
 
   useEffect(() => {
     if (session) {

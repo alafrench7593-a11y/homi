@@ -44,3 +44,4 @@ export { lib5 } from './lib5';
 export { lib6 } from './lib6';
 export { lib7 } from './lib7';
 export { lib8 } from './lib8';
+export { sub2 } from './sub2';

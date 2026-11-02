@@ -6,7 +6,7 @@
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 jest.mock('react-native-purchases', () => ({
   __esModule: true,
-  default: { configure: jest.fn(), logIn: jest.fn(), logOut: jest.fn(), getOfferings: jest.fn(), purchasePackage: jest.fn(), restorePurchases: jest.fn(), showManageSubscriptions: jest.fn() },
+  default: { configure: jest.fn(), logIn: jest.fn(), logOut: jest.fn(), getOfferings: jest.fn(), purchasePackage: jest.fn(), restorePurchases: jest.fn(), showManageSubscriptions: jest.fn(), addCustomerInfoUpdateListener: jest.fn(), getCustomerInfo: jest.fn() },
 }));
 const mockBackend: { mode: string; rpc: jest.Mock } = { mode: 'supabase', rpc: jest.fn() };
 // Getter : les jest.mock sont remontés au-dessus de la déclaration de mockBackend
@@ -28,18 +28,21 @@ test('la démonstration activée après le chargement passe en achats simulés',
   mockBackend.mode = 'demo'; // « Découvrir sans compte » ou reprise de la démo
   expect(getPurchaseMode()).toBe('test');
   const plans = await getPlans();
-  expect(plans.map((p) => p.period).sort()).toEqual(['annual', 'monthly']);
+  expect(plans.map((p) => p.period)).toEqual(['annual', 'six_months', 'monthly']);
+  expect(plans.every((p) => p.demo)).toBe(true);
   mockBackend.rpc.mockResolvedValue(null);
-  await expect(purchase(plans[0])).resolves.toBe(true);
+  await expect(purchase(plans[0])).resolves.toBe('confirmed');
   expect(mockBackend.rpc).toHaveBeenCalledWith('set_demo_subscription', expect.objectContaining({ active: true }));
 });
 
 test('retour au vrai serveur : plus d’achat simulé', async () => {
   mockBackend.mode = 'demo';
   expect(getPurchaseMode()).toBe('test');
+  const [plans0] = await getPlans();
   mockBackend.mode = 'supabase';
   expect(getPurchaseMode()).toBe('unavailable');
-  const [plan] = await getPlans();
-  await expect(purchase(plan)).rejects.toThrow();
+  // Hors démonstration et sans clé : aucune grille de prix (jamais de prix inventé), aucun achat
+  expect(await getPlans()).toEqual([]);
+  await expect(purchase(plans0)).rejects.toThrow();
   expect(mockBackend.rpc).not.toHaveBeenCalled();
 });

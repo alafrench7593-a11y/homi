@@ -39,7 +39,7 @@ describe('états de l’abonnement (même règle que has_premium)', () => {
     expect(e.message).toMatch(/Renouvellement automatique le 20 novembre 2026/);
   });
   it('annulé : Premium jusqu’à l’échéance, puis expiration', () => {
-    expect(entitlement({ status: 'cancelled', expires_at: inDays(3), will_renew: false }, NOW)).toMatchObject({ premium: true, state: 'ending', renews: false });
+    expect(entitlement({ status: 'cancelled', expires_at: inDays(3), will_renew: false }, NOW)).toMatchObject({ premium: true, state: 'cancelled', renews: false });
     expect(entitlement({ status: 'cancelled', expires_at: inDays(-1), will_renew: false }, NOW)).toMatchObject({ premium: false, state: 'expired' });
   });
   it('période de grâce puis paiement refusé', () => {
@@ -56,13 +56,13 @@ describe('webhook RevenueCat → abonnement', () => {
   const ev = (type: string, extra: Record<string, unknown> = {}) => ({ type, app_user_id: 'u', event_timestamp_ms: NOW.getTime(), ...extra });
   const now = NOW.getTime();
   it('achat avec essai, puis conversion (renouvellement) en abonnement payant', () => {
-    expect(subscriptionFromEvent(ev('INITIAL_PURCHASE', { period_type: 'TRIAL', store: 'APP_STORE' }), now + 7 * 864e5, 'toietmoi_premium_annual', 'premium', now))
-      .toMatchObject({ status: 'trial', period_type: 'trial', store: 'app_store', will_renew: true });
-    expect(subscriptionFromEvent(ev('RENEWAL', { period_type: 'NORMAL' }), now + 365 * 864e5, 'toietmoi_premium_annual', 'premium', now))
-      .toMatchObject({ status: 'active', period_type: 'annual', will_renew: true });
+    expect(subscriptionFromEvent(ev('INITIAL_PURCHASE', { period_type: 'TRIAL', store: 'APP_STORE' }), now + 3 * 864e5, 'aufildenous_premium_monthly', 'AU_FIL_DE_NOUS_PREMIUM', now))
+      .toMatchObject({ status: 'trial', period_type: 'monthly', store: 'app_store', will_renew: true, trial_ends_at: new Date(now + 3 * 864e5).toISOString() });
+    expect(subscriptionFromEvent(ev('RENEWAL', { period_type: 'NORMAL' }), now + 33 * 864e5, 'aufildenous_premium_monthly', 'AU_FIL_DE_NOUS_PREMIUM', now))
+      .toMatchObject({ status: 'active', period_type: 'monthly', will_renew: true });
   });
   it('annulation : droits jusqu’à l’échéance ; expiration ensuite', () => {
-    expect(subscriptionFromEvent(ev('CANCELLATION'), now + 3 * 864e5, 'toietmoi_premium_monthly', 'premium', now)).toMatchObject({ status: 'cancelled', will_renew: false });
+    expect(subscriptionFromEvent(ev('CANCELLATION'), now + 3 * 864e5, 'aufildenous_premium_monthly', 'AU_FIL_DE_NOUS_PREMIUM', now)).toMatchObject({ status: 'cancelled', will_renew: false });
     expect(mapStatus('CANCELLATION', now - 1, now)).toBe('expired');
     expect(subscriptionFromEvent(ev('EXPIRATION'), now - 1, 'x', 'premium', now)).toMatchObject({ status: 'expired', will_renew: false });
   });
@@ -78,10 +78,11 @@ describe('webhook RevenueCat → abonnement', () => {
 });
 
 describe('écran d’abonnement : dates et prix affichés honnêtement', () => {
-  it('essai de 7 jours : premier prélèvement et renouvellement annuel', () => {
-    const d = billingDates({ period: 'annual', trialDays: 7 }, NOW);
-    expect(d.firstCharge.toISOString().slice(0, 10)).toBe('2026-10-28');
-    expect(d.renewal.toISOString().slice(0, 10)).toBe('2027-10-28');
+  it('essai de 3 jours (mensuel) : premier prélèvement et renouvellement ; annuel sans essai', () => {
+    const d = billingDates({ period: 'monthly', trialDays: 3 }, NOW);
+    expect(d.firstCharge.toISOString().slice(0, 10)).toBe('2026-10-24');
+    expect(d.renewal.toISOString().slice(0, 10)).toBe('2026-11-24');
+    expect(billingDates({ period: 'annual', trialDays: 0 }, NOW).renewal.toISOString().slice(0, 10)).toBe('2027-10-21');
     expect(billingDates({ period: 'monthly', trialDays: 0 }, NOW).renewal.toISOString().slice(0, 10)).toBe('2026-11-21');
   });
   it('fonctions toujours gratuites', () => {

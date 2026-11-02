@@ -13,6 +13,8 @@ import { getLocale, t as tr } from '@/i18n';
 import { lib2 as frDict } from '@/i18n/fr/lib2';
 import { lib2 as enDict } from '@/i18n/en/lib2';
 import { uuid } from '../uuid';
+import { grants } from '../premium/entitlement';
+import { DEMO_CURRENCY, DEMO_GRID, PLAN_MONTHS, PREMIUM_ENTITLEMENT, PRODUCT_IDS, type PlanPeriod } from '../premium/plans';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
 import { STEP_BY_KEY } from '@/content/discoveries/steps';
 import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../../../supabase/functions/_shared/safety';
@@ -236,7 +238,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   };
   const isPremium = () => {
     const s = T('subscriptions').find((r) => r.user_id === state.session?.userId);
-    return !!s && ['trial', 'active', 'grace', 'cancelled'].includes(s.status) && (!s.expires_at || s.expires_at > nowIso());
+    // Même règle que le serveur (_subscription_grants) : remboursé → rien ; échéance nulle → seulement promotionnel / à vie
+    return grants(s as never);
   };
   const limit = (key: string) => {
     const l = T('plan_limits').find((p) => p.key === key);
@@ -271,7 +274,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
   }
   const sameHousehold = (a: string, b: string) => T('household_members').some((x) => x.user_id === a && T('household_members').some((y) => y.user_id === b && y.household_id === x.household_id));
   /** Abonnement d'une autre personne (pause du partage du cycle) ; en démonstration, l'abonnement est celui de la ligne. */
-  const premiumOf = (id: string) => T('subscriptions').some((s2) => s2.user_id === id && ['trial', 'active', 'grace', 'cancelled'].includes(s2.status) && (!s2.expires_at || s2.expires_at > nowIso()));
+  const premiumOf = (id: string) => T('subscriptions').some((s2) => s2.user_id === id && grants(s2 as never));
   let replyTarget: string | null = null;
   const isModerator = () => T('user_roles').some((x) => x.user_id === state.session?.userId && ['moderator', 'admin'].includes(x.role as string));
   const blockedBetween = (a: string, b: string) => T('user_blocks').some((x) => (x.blocker_id === a && x.blocked_id === b) || (x.blocker_id === b && x.blocked_id === a));
@@ -1341,24 +1344,37 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       return null;
     },
     set_demo_subscription: (a) => {
+      // Démonstration uniquement (données locales fictives, aucun paiement) : grille 1 mois / 6 mois / 12 mois,
+      // essai de 3 jours sur le mensuel ; un changement de formule remplace la ligne (jamais deux abonnements).
       const subs = T('subscriptions');
       const idx = subs.findIndex((s) => s.user_id === uid());
-      // Simulation des états (démonstration et tests) : essai, actif, annulé, grâce, problème de paiement, expiré
+      const period: PlanPeriod = a.period === 'annual' || a.period === 'six_months' ? a.period : 'monthly';
+      const plus = (months: number) => { const d = new Date(); d.setMonth(d.getMonth() + months); return d.toISOString(); };
+      const base = { user_id: uid(), entitlement: PREMIUM_ENTITLEMENT, product_id: a.product_id ?? PRODUCT_IDS[period], store: 'test', period_type: period,
+        price: DEMO_GRID[period].amount, currency: DEMO_CURRENCY, environment: null, refunded_at: null, billing_issue_at: null, resumes_at: null, cancel_reason: null };
+      // Simulation des états (démonstration et tests) : essai, actif, annulé, grâce, problème de paiement, remboursé, en pause, expiré
       if (typeof a.state === 'string') {
         const days = Number(a.expires_in_days ?? 30);
         const st = String(a.state);
-        const row = { user_id: uid(), status: st, product_id: a.product_id ?? (a.period === 'annual' ? 'toietmoi_premium_annual' : 'toietmoi_premium_monthly'), store: 'test',
-          period_type: st === 'trial' ? 'trial' : a.period ?? 'monthly', expires_at: new Date(Date.now() + days * 86400_000).toISOString(), will_renew: st === 'trial' || st === 'active' || st === 'grace' };
+        const expires = new Date(Date.now() + days * 86400_000).toISOString();
+        const row = { ...base, status: st, expires_at: expires, will_renew: st === 'trial' || st === 'active' || st === 'grace',
+          started_at: new Date(Date.now() - 86400_000).toISOString(), trial_ends_at: st === 'trial' ? expires : null,
+          refunded_at: st === 'refunded' ? nowIso() : null, billing_issue_at: st === 'grace' || st === 'billing_issue' ? nowIso() : null,
+          resumes_at: st === 'paused' ? new Date(Date.now() + (days + 30) * 86400_000).toISOString() : null };
         if (idx >= 0) subs[idx] = row; else subs.push(row);
         return row;
       }
+      const trialDays = a.trial ? Number(a.trial_days ?? DEMO_GRID[period].trialDays) : 0;
+      const trialEnd = trialDays > 0 ? new Date(Date.now() + trialDays * 86400_000).toISOString() : null;
       const row = a.active
-        ? { user_id: uid(), status: a.trial ? 'trial' : 'active', product_id: a.product_id ?? 'toietmoi_premium_monthly', store: 'test', period_type: a.trial ? 'trial' : a.period ?? 'monthly', expires_at: new Date(Date.now() + (a.period === 'annual' ? 365 : 30) * 86400_000).toISOString(), will_renew: true }
-        : { user_id: uid(), status: 'expired', product_id: null, store: 'test', period_type: null, expires_at: nowIso(), will_renew: false };
+        ? { ...base, status: trialEnd ? 'trial' : 'active', expires_at: trialEnd ?? plus(PLAN_MONTHS[period]), will_renew: true,
+          started_at: idx >= 0 && subs[idx].status !== 'expired' && subs[idx].started_at ? subs[idx].started_at : nowIso(), trial_ends_at: trialEnd }
+        : { ...(idx >= 0 ? subs[idx] : base), user_id: uid(), status: 'expired', expires_at: nowIso(), will_renew: false };
       if (idx >= 0) subs[idx] = row;
       else subs.push(row);
       return row;
     },
+    my_premium_share: () => ({ shared_with: null, shared_by: null }),
   };
 
   const functions: Record<string, (b: Row) => unknown> = {
@@ -1434,6 +1450,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     // Démonstration : aucun document n'est envoyé à un service de lecture
     'document-read': () => ({ status: 'demo' }),
     'document-extract': () => ({ fields: null, status: 'unavailable', message: tr('l2.dm.ocrDemo') }),
+    // Démonstration : aucune boutique, rien à relire chez RevenueCat
+    'subscription-sync': () => ({ synced: false, reason: 'demo', premium: isPremium() }),
     'delete-account': async () => {
       const me = uid();
       state.users = state.users.filter((u) => u.id !== me);

@@ -225,7 +225,15 @@ export interface DigestPrefs { user_id?: string; morning: boolean; morning_time:
 export type ReportReason = 'harassment' | 'medical_misinformation' | 'spam' | 'personal_data' | 'danger' | 'inappropriate' | 'other';
 export interface ReportRow { id: string; reporter_id: string; post_id: string | null; comment_id: string | null; reason: ReportReason; details: string | null; status: string; created_at: string }
 
-export interface Subscription { user_id: string; status: 'none' | 'trial' | 'active' | 'grace' | 'cancelled' | 'expired' | 'billing_issue'; product_id: string | null; store: string | null; period_type: string | null; expires_at: string | null; will_renew: boolean | null }
+export interface Subscription {
+  user_id: string;
+  status: 'none' | 'trial' | 'active' | 'grace' | 'cancelled' | 'expired' | 'billing_issue' | 'refunded' | 'paused';
+  product_id: string | null; store: string | null; period_type: 'monthly' | 'six_months' | 'annual' | 'trial' | 'lifetime' | null;
+  expires_at: string | null; will_renew: boolean | null;
+  started_at?: string | null; trial_ends_at?: string | null; price?: number | string | null; currency?: string | null;
+  cancel_reason?: string | null; refunded_at?: string | null; billing_issue_at?: string | null; resumes_at?: string | null;
+  environment?: 'production' | 'sandbox' | null;
+}
 export interface PrivacySettings { user_id: string; analytics_enabled: boolean; crash_reports_enabled: boolean; ai_history_enabled: boolean; community_visible: boolean; retention_months: number }
 export type ConsentPurpose = 'terms' | 'health_data' | 'analytics' | 'crash_reports' | 'ai_assistant' | 'document_reading' | 'marketing';
 export interface Consent { id: string; user_id: string; purpose: ConsentPurpose; granted: boolean; version: string; created_at: string }

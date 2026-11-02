@@ -3,12 +3,13 @@
  * et ouverture de l'aperçu Premium au moment où l'utilisatrice essaie réellement une fonction.
  */
 import { localeTag } from '@/i18n';
-import type React from 'react';
+import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
 import { backend } from '../backend';
 import { useAuth } from '../auth';
-import { usePremium, useSubscription } from './hooks';
+import { useInvalidate, usePremium, useSubscription } from './hooks';
+import { onSubscriptionChanged } from '../premium/syncEvents';
 import { entitlement } from '../premium/entitlement';
 import type { PremiumFeature } from '../premium/features';
 import type { SubRow } from '../premium/entitlement';
@@ -33,6 +34,26 @@ export function useEntitlement() {
   const e = entitlement(sub as SubRow | null);
   // has_premium (serveur) fait foi : il couvre aussi le coparent d'un foyer abonné
   return { ...e, premium, sub };
+}
+
+/** Avec qui mon Premium est partagé (abonné·e + un seul co-parent adulte) ; réponse du serveur, pour soi seulement. */
+export interface PremiumShare { shared_with: { user_id: string; display_name: string | null } | null; shared_by: { user_id: string; display_name: string | null } | null }
+export function usePremiumShare() {
+  const { session } = useAuth();
+  return useQuery({
+    queryKey: [session?.userId, 'subscriptions', 'share'],
+    queryFn: async () => (await backend.rpc<PremiumShare | null>('my_premium_share')) ?? { shared_with: null, shared_by: null },
+    enabled: !!session,
+    staleTime: 60_000,
+  });
+}
+
+/** Relit has_premium et la ligne d'abonnement quand le serveur a été resynchronisé avec RevenueCat. */
+export function usePurchasesSync() {
+  const inv = useInvalidate();
+  const ref = React.useRef(inv);
+  ref.current = inv;
+  React.useEffect(() => onSubscriptionChanged(() => { void ref.current('subscriptions'); }), []);
 }
 
 /**
