@@ -12,6 +12,7 @@ import { todayISO } from '../domain/dates';
 import type { ChildStep, FoodEntry, FoodStatus, Tasting, Texture } from '../domain/discoveries';
 import { NEARBY_CONFIG, geocodeUrl, overpassQuery, parseGeocode, parseOverpass, type Place, type PlaceKind, type Town } from '../domain/nearby';
 import type { StepStatus } from '@/content/discoveries/steps';
+import { FOOD_BY_KEY, foodNameKey, matchFoodKey } from '@/content/discoveries/foods';
 
 // ─── Aliments ───────────────────────────────────────────────────────────────────────────────────
 
@@ -50,7 +51,8 @@ export function useSaveFood() {
         reaction: v.reaction || !!v.existing?.reaction, reaction_note: v.reactionNote ?? v.existing?.reaction_note ?? null,
         ...(v.favorite != null ? { favorite: v.favorite } : {}),
       };
-      if (v.existing) await backend.update('food_introductions', row, [eq('id', v.existing.id)]);
+      // F-02 : une fiche venue d'un repas (sans clé) est reliée au catalogue au lieu d'être recréée en double
+      if (v.existing) await backend.update('food_introductions', { ...row, food_key: v.food.key }, [eq('id', v.existing.id)]);
       else await backend.insert('food_introductions', { child_id: v.child.id, household_id: v.child.household_id, food_key: v.food.key, food_name: v.food.name, favorite: v.favorite ?? false, ...row });
       if (v.log && v.status !== 'not_yet' && v.date) {
         await backend.insert('food_tastings', {
@@ -174,4 +176,30 @@ export function useReportPlace() {
       backend.insert('place_reports', { place_id: v.placeId, place_name: v.placeName, reason: v.reason, comment: v.comment }),
     onSuccess: () => inv('place_reports'),
   });
+}
+
+/**
+ * Premiers aliments notés dans un repas (QA 02/11/2026, F-02) : reliés au catalogue quand c'est possible,
+ * jamais en double (même aliment déjà présent par sa clé OU par son nom), un aliment refusé n'empêche pas les autres.
+ */
+export async function recordMealFoods(child: { id: string; household_id: string }, names: string[], date: string, reactionNote: string | null): Promise<number> {
+  const existing = await backend.select<{ food_key: string | null; food_name: string }>({ table: 'food_introductions', columns: 'food_key,food_name', filters: [eq('child_id', child.id)] });
+  const keys = new Set(existing.map((e) => e.food_key ?? matchFoodKey(e.food_name)).filter(Boolean) as string[]);
+  const nameKeys = new Set(existing.map((e) => foodNameKey(e.food_name)));
+  let added = 0;
+  for (const raw of names) {
+    const name = raw.trim();
+    if (!name) continue;
+    const key = matchFoodKey(name);
+    const def = key ? FOOD_BY_KEY[key] : null;
+    const label = def?.name ?? name;
+    if ((key && keys.has(key)) || nameKeys.has(foodNameKey(label)) || nameKeys.has(foodNameKey(name))) continue;
+    try {
+      await backend.insert('food_introductions', { child_id: child.id, household_id: child.household_id, food_name: label, food_key: key, first_tried_on: date, reaction_note: reactionNote });
+      added++;
+      if (key) keys.add(key);
+      nameKeys.add(foodNameKey(label));
+    } catch { /* limite gratuite ou doublon : les autres aliments sont quand même enregistrés */ }
+  }
+  return added;
 }

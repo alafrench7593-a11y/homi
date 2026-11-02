@@ -25,7 +25,8 @@ import { askNotificationPermission } from '@/lib/notificationPrompt';
 import type { BottleRecord } from '@/lib/types-bottle';
 import { uuid } from '@/lib/uuid';
 import { LOG_TABLE, LOG_TIME_COL, type Bottle, type Breastfeed, type Diaper, type LogKind, type Meal, type Observation, type Pumping, type Sleep } from '@/lib/types';
-import { formatDuration, formatTime, todayISO } from '@/lib/domain/dates';
+import { formatDuration, formatTime, toISODate, todayISO } from '@/lib/domain/dates';
+import { recordMealFoods } from '@/lib/data/hooks-discoveries';
 import { useTheme } from '@/theme/ThemeProvider';
 import { DayStrip } from '@/features/dayStrip/DayStrip';
 import { LastSideCard, QuickDiaperCard } from '@/features/dayStrip/QuickLog';
@@ -279,9 +280,8 @@ function TrackEntry() {
         if (kind === 'meal' && res === 'sent') {
           const list = (row.foods as string[]) ?? [];
           if (list.length) {
-            await backend
-              .insert('food_introductions', list.map((food_name) => ({ child_id: childId, household_id: child?.household_id, food_name, first_tried_on: time.toISOString().slice(0, 10), reaction_note: reaction.trim() || null })), { onConflict: 'child_id,food_name', ignoreDuplicates: true })
-              .catch(() => undefined);
+            // F-02 : aliment relié au catalogue « Ses découvertes » ; F-03 : date LOCALE du repas
+            if (childId && child?.household_id) await recordMealFoods({ id: childId, household_id: child.household_id }, list, toISODate(time), reaction.trim() || null).catch(() => undefined);
             inv('food_introductions');
           }
         }

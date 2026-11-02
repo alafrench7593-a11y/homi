@@ -607,6 +607,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (!['not_yet', 'tasted', 'liked', 'refused'].includes(r.status as string)) throw new BackendError(tr('l2.dm.foodStatus'));
       if (r.status !== 'not_yet' && !r.first_tried_on) throw new BackendError(tr('l2.dm.foodDate'));
       if (r.food_key && T('food_introductions').some((x) => x.child_id === r.child_id && x.food_key === r.food_key)) throw new BackendError(tr('l2.dm.foodExists'), '23505');
+      // Comme la base (unique child_id, food_name) : F-02, la démo ne doit pas accepter ce que la base refuse
+      if (T('food_introductions').some((x) => x.child_id === r.child_id && x.food_name === r.food_name)) throw new BackendError(tr('l2.dm.foodExists'), '23505');
       const n = T('food_introductions').filter((x) => x.child_id === r.child_id).length;
       if (n >= limit('food_discoveries_per_child')) throw new BackendError('Limite de la version gratuite atteinte (food_discoveries_per_child)', 'P0001', 'premium_required');
     }

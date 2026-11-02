@@ -17,6 +17,7 @@ import { pregnancyProgress } from '../domain/pregnancy';
 import { childAge } from '../domain/child';
 import { uuid } from '../uuid';
 import type { Child } from '../types';
+import { toISODate } from '../domain/dates';
 
 /** Recettes visibles : une recette retirée n'est plus proposée ; un brouillon IA de la bibliothèque reste invisible des parents. */
 export function visibleRecipes<R extends Pick<Recipe, 'status'> & { personal?: boolean }>(list: R[], opts: { includeRetired?: boolean; includeDrafts?: boolean } = {}): R[] {
@@ -166,7 +167,7 @@ export function useSaveMealPlan() {
       const h = hid ?? (await ensureHousehold());
       if (v.replaceId) await backend.remove('meal_plans', [eq('id', v.replaceId)]);
       const id = uuid();
-      await backend.insert('meal_plans', { id, household_id: h, title: v.title, days: v.days, servings: v.servings, profile: v.profile, start_date: new Date().toISOString().slice(0, 10) });
+      await backend.insert('meal_plans', { id, household_id: h, title: v.title, days: v.days, servings: v.servings, profile: v.profile, start_date: toISODate(new Date()) });
       if (v.slots.length) await backend.insert('meal_plan_items', v.slots.map((s) => ({ plan_id: id, household_id: h, day: s.day, meal: s.meal, recipe_slug: slugOf(s.recipeId), servings: s.servings, note: s.note ?? null })));
       return id;
     },

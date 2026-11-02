@@ -29,7 +29,7 @@ import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { useRecipes } from '@/lib/data/hooks-recipes';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useDeleteFood, useFoodEntries, useSaveFood, useTastings, useToggleFoodFavorite } from '@/lib/data/hooks-discoveries';
-import { DISCOVERY_SOURCES, FOODS, FOOD_BY_KEY, FOOD_CATEGORIES, type FoodCategory, type FoodDef } from '@/content/discoveries/foods';
+import { DISCOVERY_SOURCES, FOODS, FOOD_BY_KEY, matchFoodKey, FOOD_CATEGORIES, type FoodCategory, type FoodDef } from '@/content/discoveries/foods';
 import {
   ageInMonths, discoveredThisWeek, displayState, freeFood, ideasForAge, PREPARATIONS, progressByCategory, reactionAdvice, recipesWithTasted,
   TEXTURES, topCategories, visibleHistory, type DisplayState, type FoodEntry, type FoodStatus, type ReactionSign, type Texture,
@@ -78,7 +78,8 @@ export default function Discoveries() {
 
   const today = todayISO();
   const age = child ? ageInMonths(child.birth_date, today) : 0;
-  const entries = entriesQ.data ?? [];
+  // F-02 : aliments notés dans un repas avant la correction (sans clé) : reliés au catalogue par leur nom
+  const entries = useMemo(() => (entriesQ.data ?? []).map((e) => (e.food_key ? e : { ...e, food_key: matchFoodKey(e.food_name) })), [entriesQ.data]);
   const tastings = tastingsQ.data ?? [];
   const byKey = useMemo(() => new Map(entries.filter((e) => e.food_key).map((e) => [e.food_key!, e])), [entries]);
   const progress = useMemo(() => progressByCategory(entries), [entries]);

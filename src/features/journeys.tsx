@@ -18,6 +18,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { toISODate } from '@/lib/domain/dates';
 
 export const JOURNEY_ICON: Record<JourneyType, IconName> = {
   avoid: 'shield', ttc: 'sunrise', cycle: 'calendar', pregnancy: 'moon', postpartum: 'heart', baby: 'smile', child: 'users',
@@ -93,7 +94,7 @@ export function ChangeSheet({ req, onClose, onConfirm, busy }: { req: ChangeRequ
 export function ChildHomeCard({ child }: { child: Child }) {
   const t = useTheme();
   const { data: treatments } = useTreatments(child.id);
-  const active = (treatments ?? []).filter((x) => x.active && (!x.end_date || x.end_date >= new Date().toISOString().slice(0, 10)));
+  const active = (treatments ?? []).filter((x) => x.active && (!x.end_date || x.end_date >= toISODate(new Date())));
   const link = (icon: IconName, label: string, href: string, testID?: string) => (
     <Tappable key={href} testID={testID} accessibilityRole="button" accessibilityLabel={label} onPress={() => router.push(href as never)}
       style={({ pressed }) => ({ flexGrow: 1, flexBasis: '45%', flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: spacing.sm, borderRadius: radius.md, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.background })}>

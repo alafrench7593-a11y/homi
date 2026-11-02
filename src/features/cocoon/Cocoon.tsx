@@ -48,6 +48,7 @@ import { DOCK_HEIGHT } from '@/components/Dock';
 import { fonts, NACRE, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { t as tr, type TKey } from '@/i18n';
+import { toISODate } from '@/lib/domain/dates';
 
 type Journey = 'baby' | 'child' | null | undefined;
 const BLUR_OK = Platform.OS === 'ios' || Platform.OS === 'web';
@@ -284,7 +285,7 @@ export function Cocoon({ child, journey, now: preview, article }: { child: Child
   const doses = useMemo(() => (treatmentLogs ?? []).filter((l) => l.status === 'taken').map((l) => ({ id: l.id, name: treatments?.find((x) => x.id === l.treatment_id)?.name ?? '', at: l.logged_at ?? l.scheduled_for })), [treatmentLogs, treatments]);
   const events = useMemo(() => buildRibbon({ now, enabled, bottles, feeds, diapers, sleeps, meals, observations, appointments: childAppts, doses }), [now, enabled, bottles, feeds, diapers, sleeps, meals, observations, childAppts, doses]);
 
-  const activeTreatment = (treatments ?? []).find((x) => x.active && (!x.end_date || x.end_date >= now.toISOString().slice(0, 10)));
+  const activeTreatment = (treatments ?? []).find((x) => x.active && (!x.end_date || x.end_date >= toISODate(now)));
   const nextCandidates = [
     ...childAppts.filter((a) => Date.parse(a.starts_at) > now.getTime()).map((a) => ({ title: a.title, at: a.starts_at })),
     ...(bottleReminder && Date.parse(bottleReminder.due_at) > now.getTime() ? [{ title: tr('coc.next.bottle'), at: bottleReminder.due_at }] : []),

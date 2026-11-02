@@ -324,3 +324,19 @@ export const FOODS: FoodDef[] = localized(FOODS_FR, FOODS_EN);
 
 const mapByKey = (list: FoodDef[]): Record<string, FoodDef> => Object.fromEntries(list.map((f) => [f.key, f]));
 export const FOOD_BY_KEY: Record<string, FoodDef> = localized(mapByKey(FOODS_FR), mapByKey(FOODS_EN));
+
+/** Nom comparable : minuscules, sans accents, espaces réduits, pluriel simple retiré. */
+export function foodNameKey(name: string): string {
+  return name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/œ/g, 'oe').replace(/\s+/g, ' ').trim().replace(/s$/, '');
+}
+const FOOD_KEY_BY_NAME = new Map<string, string>(
+  [...FOODS_FR, ...FOODS_EN].map((f) => [foodNameKey(f.name), f.key] as [string, string]),
+);
+/**
+ * F-02 (QA 02/11/2026) : aliment saisi librement (repas) → clé du catalogue « Ses découvertes »,
+ * en français ou en anglais. null si l'aliment n'est pas au catalogue.
+ */
+export function matchFoodKey(name: string | null | undefined): string | null {
+  if (!name) return null;
+  return FOOD_KEY_BY_NAME.get(foodNameKey(name)) ?? null;
+}
