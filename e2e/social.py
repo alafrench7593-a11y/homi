@@ -57,7 +57,7 @@ def confirm_modal(pg, label):
 def premium(pg, me, on):
     exp = (datetime.now(timezone.utc) + (timedelta(days=30) if on else timedelta(days=-1))).isoformat()
     mutate(pg, f"""s => {{ s.tables.subscriptions = (s.tables.subscriptions || []).filter(x => x.user_id !== '{me}');
-      s.tables.subscriptions.push({{ user_id: '{me}', status: '{'active' if on else 'expired'}', product_id: 'toietmoi_premium_monthly', store: 'test', period_type: 'monthly', expires_at: '{exp}', will_renew: {str(on).lower()} }}); }}""")
+      s.tables.subscriptions.push({{ user_id: '{me}', status: '{'active' if on else 'expired'}', product_id: 'aufildenous_premium_monthly', store: 'test', period_type: 'monthly', expires_at: '{exp}', will_renew: {str(on).lower()} }}); }}""")
 
 
 def run(p):

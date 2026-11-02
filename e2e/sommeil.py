@@ -93,7 +93,7 @@ def run(p):
     pg.screenshot(path=f'{SHOTS}/sommeil_gratuit.png', full_page=True)
 
     # ================================================================ Premium : estimations, textes exacts
-    mutate(pg, """s => { const me = s.session.userId; s.tables.subscriptions = [{ user_id: me, status: 'active', product_id: 'toietmoi_premium_annual', store: 'test', period_type: 'annual', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), will_renew: true }]; }""")
+    mutate(pg, """s => { const me = s.session.userId; s.tables.subscriptions = [{ user_id: me, status: 'active', product_id: 'aufildenous_premium_annual', store: 'test', period_type: 'annual', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), will_renew: true }]; }""")
     go(pg, f'/sleep/{lina}', 3200)
     nap0, routine0, bed0 = text(pg, 'sleep-line-nap'), text(pg, 'sleep-line-routine'), text(pg, 'sleep-line-bedtime')
     R['texte_prochaine_sieste'] = bool(re.fullmatch(r'Prochaine sieste estimée autour de \d{1,2} h( \d\d)?', nap0))

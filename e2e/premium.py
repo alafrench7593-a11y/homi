@@ -1,10 +1,11 @@
 """
-Offre Premium de bout en bout (version web de démonstration, sans compte, achat simulé) :
-aperçu réel avant l'abonnement, écran d'abonnement (formules, prix facturé, renouvellement, annulation, restauration),
-essai, fonctions débloquées, quota de saisie vocale, fin d'essai et expiration (données toujours lisibles),
-fonctions toujours gratuites.
-  npx expo export --platform web --clear && python3 e2e/spa_server.py dist 8822 &
-  python3 e2e/premium.py
+Offre Premium de bout en bout (version web de démonstration, sans compte, achat simulé sur des données fictives) :
+aperçu réel avant l'abonnement, feuille Premium avec les 3 formules, page « AU FIL DE NOUS PREMIUM » (avantages,
+formules 12 mois / 6 mois / mensuel, badges, économies calculées, essai de 3 jours sur le mensuel seulement, conditions,
+restauration, CGU et confidentialité), « Mon abonnement » (page et profil), changement de formule, fonctions débloquées,
+quota de saisie vocale, fin d'essai, remboursement et expiration (données toujours lisibles), fonctions toujours gratuites.
+  npx expo export --platform web --clear --output-dir /tmp/dist-sub && python3 e2e/spa_server.py /tmp/dist-sub 8833 &
+  NAV_URL=http://127.0.0.1:8833 python3 e2e/premium.py
 """
 import json, os, re, sys
 from datetime import date, timedelta
@@ -26,6 +27,11 @@ def mutate(pg, js):
 
 def T(pg):
     return pg.inner_text('body')
+
+
+def sp(text):
+    """Espaces insécables (formatage des montants par Intl : « 99,99 € ») → espaces ordinaires."""
+    return re.sub(r'[\u00a0\u202f]', ' ', text)
 
 
 def tid(pg, t):
@@ -70,8 +76,10 @@ def at(pg, path, key, wait=2500):
 
 def set_sub(pg, status, days):
     mutate(pg, f"""s => {{ const me = s.session.userId; s.tables.subscriptions = (s.tables.subscriptions || []).filter(x => x.user_id !== me);
-      s.tables.subscriptions.push({{ user_id: me, status: '{status}', product_id: 'toietmoi_premium_annual', store: 'test', period_type: '{'trial' if status == 'trial' else 'annual'}',
-        expires_at: new Date(Date.now() + {days} * 86400000).toISOString(), will_renew: {'true' if status in ('trial', 'active') else 'false'} }}); }}""")
+      s.tables.subscriptions.push({{ user_id: me, status: '{status}', product_id: 'aufildenous_premium_annual', store: 'test', period_type: 'annual',
+        expires_at: new Date(Date.now() + {days} * 86400000).toISOString(), will_renew: {'true' if status in ('trial', 'active') else 'false'},
+        started_at: new Date(Date.now() - 86400000).toISOString(), price: 99.99, currency: 'EUR',
+        refunded_at: {"new Date().toISOString()" if status == 'refunded' else 'null'} }}); }}""")
 
 
 def run(p):
@@ -104,17 +112,44 @@ def run(p):
     pg.screenshot(path=f'{SHOTS}/premium_apercu.png')
     tid(pg, 'premium-later').click(); pg.wait_for_timeout(600)
     R['plus_tard_ferme_sans_pression'] = not has(pg, 'premium-preview')
-    tid(pg, 'premium-sleep').click(); pg.wait_for_timeout(800)
-    tid(pg, 'premium-see-plans').click(); pg.wait_for_timeout(2500)
+    tid(pg, 'premium-sleep').click(); pg.wait_for_timeout(1200)
 
-    # ================================================================ Écran d'abonnement
+    # ================================================================ Feuille Premium : les 3 formules, accès direct
+    sheet = tid(pg, 'premium-sheet-plans').inner_text() if has(pg, 'premium-sheet-plans') else ''
+    R['feuille_3_formules'] = all(x in sheet for x in ['12 mois', '6 mois', 'Mensuel', '99,99', '54,99', '10,99'])
+    R['feuille_badges'] = all(x in sheet for x in ['MEILLEURE OFFRE', 'ÉCONOMISEZ', 'SANS ENGAGEMENT LONGUE DURÉE'])
+    R['feuille_mention_demo'] = 'Montants de démonstration' in sheet
+    tid(pg, 'premium-sheet-plans').locator('[data-testid="plan-six_months"]').first.click(); pg.wait_for_timeout(500)
+    R['feuille_bouton_formule_choisie'] = 'Continuer avec la formule 6 mois' in tid(pg, 'premium-see-plans').inner_text()
+    pg.screenshot(path=f'{SHOTS}/premium_feuille.png')
+    tid(pg, 'premium-see-plans').click(); pg.wait_for_timeout(2800)
+
+    # ================================================================ Page « AU FIL DE NOUS PREMIUM »
     t = T(pg)
     R['abonnement_fonction_essayee'] = has(pg, 'sub-tried') and 'rythme personnalisé' in tid(pg, 'sub-tried').inner_text()
-    R['abonnement_annuel_mis_en_valeur'] = has(pg, 'plan-annual') and 'Le plus avantageux' in tid(pg, 'plan-annual').inner_text() and tid(pg, 'plan-annual').bounding_box()['y'] < tid(pg, 'plan-monthly').bounding_box()['y']
-    terms = tid(pg, 'plan-terms-annual').inner_text()
-    R['abonnement_prix_total_essai_renouvellement'] = '39,99 € facturés une fois par an' in terms and '7 jours gratuits' in terms and 'Renouvellement automatique le' in terms
-    R['abonnement_mensuel'] = '5,99 € facturés chaque mois' in tid(pg, 'plan-terms-monthly').inner_text()
-    R['abonnement_annulation_restauration_gestion'] = has(pg, 'sub-restore') and has(pg, 'sub-manage-link') and 'Annulation : à tout moment' in tid(pg, 'sub-terms').inner_text()
+    hero = tid(pg, 'premium-hero').inner_text() if has(pg, 'premium-hero') else ''
+    R['abonnement_titre_sous_titre'] = 'AU FIL DE NOUS PREMIUM' in hero and 'créer des liens, partager, découvrir et profiter pleinement de la communauté' in hero
+    ben = tid(pg, 'premium-benefits').inner_text() if has(pg, 'premium-benefits') else ''
+    R['abonnement_avantages_cartes'] = all(x in ben for x in ['Créer des liens', 'Partager', 'Découvrir', 'Profiter de la communauté'])
+    ys = [tid(pg, f'plan-{k}').bounding_box()['y'] for k in ('annual', 'six_months', 'monthly')] if all(has(pg, f'plan-{k}') for k in ('annual', 'six_months', 'monthly')) else [0, 0, 0]
+    R['abonnement_3_formules_12_6_1'] = ys[0] < ys[1] < ys[2]
+    pa, ps, pm = (tid(pg, f'plan-{k}').inner_text() for k in ('annual', 'six_months', 'monthly'))
+    R['abonnement_badges'] = 'MEILLEURE OFFRE' in pa and 'ÉCONOMISEZ' in ps and 'SANS ENGAGEMENT LONGUE DURÉE' in pm
+    R['abonnement_prix_demo_grille'] = '99,99' in pa and '54,99' in ps and '10,99' in pm and has(pg, 'plans-demo-note')
+    R['abonnement_economies_calculees'] = re.search(r'Économisez 24\s%', pa) is not None and re.search(r'Économisez 16\s%', ps) is not None and 'Économisez' not in pm
+    R['abonnement_prix_par_mois'] = 'soit 8,33' in pa and 'soit 9,17' in ps
+    R['essai_3_jours_mensuel_seulement'] = '3 jours gratuits' in pm and not has(pg, 'plan-trial-annual') and not has(pg, 'plan-trial-six_months')
+    R['formule_preselectionnee_depuis_feuille'] = 'facturés tous les 6 mois' in tid(pg, 'plan-terms').inner_text()
+    tid(pg, 'plan-annual').click(); pg.wait_for_timeout(600)
+    terms = sp(tid(pg, 'plan-terms').inner_text())
+    R['conditions_annuel'] = '99,99 € facturés une fois par an' in terms and 'Premier prélèvement à la confirmation' in terms and 'Renouvellement automatique' in terms and 'Résiliation à tout moment' in terms and 'Démonstration' in terms
+    R['bouton_annuel'] = 'S’abonner — 99,99' in tid(pg, 'plan-buy').inner_text()
+    tid(pg, 'plan-monthly').click(); pg.wait_for_timeout(600)
+    terms = sp(tid(pg, 'plan-terms').inner_text())
+    R['conditions_essai_mensuel'] = 'Essai gratuit de 3 jours, puis premier prélèvement de 10,99' in terms and 'rien ne vous sera prélevé' in terms and '10,99 € facturés chaque mois' in terms
+    R['bouton_essai_mensuel'] = 'Commencer l’essai gratuit de 3 jours' in tid(pg, 'plan-buy').inner_text()
+    R['abonnement_restauration_cgu_confidentialite'] = has(pg, 'sub-restore') and has(pg, 'plan-legal-links') and 'Conditions générales' in tid(pg, 'plan-legal-links').inner_text() and 'Politique de confidentialité' in tid(pg, 'plan-legal-links').inner_text() and 'Annulation : à tout moment' in tid(pg, 'sub-terms').inner_text()
+    R['mon_abonnement_gratuit'] = has(pg, 'my-subscription') and 'Gratuit' in tid(pg, 'sub-status-pill').inner_text()
     R['abonnement_comparaison'] = 'Comparer Gratuit et Premium' in t and 'Partage avec le coparent, par profil' in t
     R['toujours_gratuit_liste'] = all(x in tid(pg, 'always-free').inner_text() for x in ['urgence', 'post-partum', 'rappel de produits', 'Suppression du compte', 'consentements', 'Signalement', 'déjà créées'])
     R['aucun_compte_a_rebours'] = not re.search(r'(offre expire|plus que \d|dernière chance|\d\d:\d\d:\d\d)', t, re.I)
@@ -140,10 +175,25 @@ def run(p):
     R['menu_apercu_vrais_plats'] = has(pg, 'premium-preview-real') and '•' in tid(pg, 'premium-preview-real').inner_text()
     tid(pg, 'premium-later').click(); pg.wait_for_timeout(400)
 
-    # ================================================================ Achat simulé (essai) : fonctions débloquées
+    # ================================================================ Achat simulé (essai de 3 jours, mensuel) : fonctions débloquées
     go(pg, '/settings/subscription', 2600)
-    tid(pg, 'plan-buy-annual').click(); pg.wait_for_timeout(2500)
+    tid(pg, 'plan-monthly').click(); pg.wait_for_timeout(500)
+    tid(pg, 'plan-buy').click(); pg.wait_for_timeout(2500)
     R['essai_actif_date_fin'] = 'Essai gratuit jusqu’au' in tid(pg, 'sub-message').inner_text()
+    R['essai_duree_3_jours'] = demo(pg, "s => { const r = s.tables.subscriptions.find(x => x.user_id === s.session.userId); return Math.round((Date.parse(r.expires_at) - Date.now()) / 86400000); }") == 3
+    my = tid(pg, 'my-subscription').inner_text()
+    R['mon_abonnement_essai'] = all(x in my for x in ['Formule', 'Mensuel', 'Statut', 'Essai', 'Date de début', 'Fin de l’essai', 'Premier prélèvement', '10,99', 'par mois', 'Démonstration'])
+    R['mon_abonnement_boutons'] = has(pg, 'sub-manage') and has(pg, 'sub-restore') and has(pg, 'sub-legal-links')
+    pg.screenshot(path=f'{SHOTS}/premium_mon_abonnement.png', full_page=True)
+    # Changement de formule (mensuel → 12 mois) : la ligne est remplacée, jamais deux abonnements
+    R['formule_actuelle_signalee'] = has(pg, 'plan-current-monthly')
+    tid(pg, 'plan-annual').click(); pg.wait_for_timeout(500)
+    R['bouton_changer_formule'] = 'Passer à la formule 12 mois' in tid(pg, 'plan-buy').inner_text()
+    tid(pg, 'plan-buy').click(); pg.wait_for_timeout(2500)
+    R['changement_formule_annuel'] = '12 mois' in tid(pg, 'my-sub-plan').inner_text() and demo(pg, "s => s.tables.subscriptions.filter(x => x.user_id === s.session.userId).length") == 1
+    # Rubrique « MON ABONNEMENT » dans le profil
+    go(pg, '/profile', 3000)
+    R['profil_mon_abonnement'] = has(pg, 'my-subscription-section') and 'MON ABONNEMENT' in tid(pg, 'my-subscription-section').inner_text() and '12 mois' in tid(pg, 'my-subscription-section').inner_text()
     go(pg, f'/sleep/{lina}?tab=trends', 3000)
     R['premium_sommeil_debloque'] = has(pg, 'sleep-rhythm') and has(pg, 'sleep-changes') and has(pg, 'sleep-weekly') and 'Nuit :' in tid(pg, 'sleep-rhythm').inner_text()
     go(pg, f'/sleep/{lina}?tab=profile', 3000)
@@ -179,6 +229,11 @@ def run(p):
     R['annule_actif_jusqu_echeance'] = 'sans renouvellement' in tid(pg, 'sub-message').inner_text()
     go(pg, f'/sleep/{lina}?tab=trends', 2800)
     R['annule_fonctions_encore_actives'] = has(pg, 'sleep-rhythm')
+    set_sub(pg, 'refunded', 20)
+    go(pg, '/settings/subscription', 2500)
+    R['rembourse_statut_affiche'] = 'Remboursé' in tid(pg, 'sub-status-pill').inner_text() and 'remboursé' in tid(pg, 'sub-message').inner_text()
+    go(pg, f'/sleep/{lina}?tab=trends', 2800)
+    R['rembourse_droits_retires'] = not has(pg, 'sleep-rhythm') and has(pg, 'premium-sleep_insights')
     set_sub(pg, 'expired', -1)
     go(pg, f'/sleep/{lina}?tab=trends', 2800)
     R['expire_fonctions_en_pause'] = not has(pg, 'sleep-rhythm') and has(pg, 'premium-sleep_insights')
