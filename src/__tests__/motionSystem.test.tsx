@@ -17,7 +17,7 @@ import { act, create, type ReactTestRenderer } from 'react-test-renderer';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 import { Button, haptic } from '@/components/ui';
 import { BadgeDot, StaggerItem, StepProgress } from '@/components/Motion';
-import { LaunchIntro, resetLaunchIntroForTests, shouldPlayLaunchIntro } from '@/components/LaunchIntro';
+import { isLateStart, LaunchIntro, resetLaunchIntroForTests, shouldPlayLaunchIntro } from '@/components/LaunchIntro';
 import { duration, feedback, hapticsSupported, intro, introTotalMs, shakeX, spring, successPulse } from '@/theme/motion';
 import { useUiStore } from '@/lib/store';
 
@@ -76,6 +76,11 @@ describe('réduire les animations', () => {
 });
 
 describe('introduction d’ouverture', () => {
+  it('lancement déjà lent : version abrégée (pas d’attente ajoutée), sinon version complète', () => {
+    expect(isLateStart(400)).toBe(false);
+    expect(isLateStart(intro.lateStartMs + 1)).toBe(true);
+    expect(intro.shortHoldMs + intro.shortExitMs).toBeLessThanOrEqual(600);
+  });
   it('ne capte aucun toucher, est masquée aux lecteurs d’écran et ne joue qu’une fois par lancement', async () => {
     resetLaunchIntroForTests();
     act(() => { useUiStore.setState({ cinematicSeen: true }); });

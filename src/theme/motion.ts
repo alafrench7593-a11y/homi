@@ -76,6 +76,10 @@ export const intro = {
   logoFromScale: 0.94,
   logoExitScale: 1.06,
   splashFadeMs: 220,   // fondu de l'écran de lancement natif vers l'introduction
+  /** Lancement déjà lent (appareil chargé) : au-delà de ce délai depuis le démarrage, version abrégée. */
+  lateStartMs: 2000,
+  shortHoldMs: 260,
+  shortExitMs: 320,
 };
 export const introTotalMs = intro.revealDelayMs + intro.revealMs + intro.holdMs + intro.exitMs;
 

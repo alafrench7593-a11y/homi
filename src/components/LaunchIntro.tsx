@@ -29,6 +29,11 @@ export function resetLaunchIntroForTests() { played = false; }
 
 type Phase = 'wait' | 'play' | 'done';
 
+/** Temps écoulé depuis le démarrage de l'application (performance.now part du lancement, web et natif). */
+export function isLateStart(now: number = typeof performance !== 'undefined' ? performance.now() : 0) {
+  return now > intro.lateStartMs;
+}
+
 /** Décision pure (testée) : faut-il jouer l'introduction ? */
 export function shouldPlayLaunchIntro(o: { alreadyPlayed: boolean; reduceMotion: boolean; cinematicSeen: boolean }) {
   return !o.alreadyPlayed && !o.reduceMotion && o.cinematicSeen;
@@ -61,6 +66,16 @@ export function LaunchIntro() {
 
   useEffect(() => {
     if (phase !== 'play') return;
+    // Lancement déjà lent (premier rendu tardif) : logo affiché d'emblée, courte pose, fondu — on n'ajoute pas d'attente
+    if (isLateStart()) {
+      reveal.setValue(1);
+      const short = Animated.parallel([
+        Animated.timing(veil, { toValue: 0, duration: intro.shortExitMs, delay: intro.shortHoldMs, easing: easing.standard, useNativeDriver: NATIVE_DRIVER, isInteraction: false }),
+        Animated.timing(depth, { toValue: 1, duration: intro.shortExitMs + intro.shortHoldMs, easing: easing.decelerate, useNativeDriver: NATIVE_DRIVER, isInteraction: false }),
+      ]);
+      short.start(() => setPhase('done'));
+      return () => short.stop();
+    }
     // isInteraction: false : l'introduction ne retarde jamais les tâches « après interaction » (listes, requêtes)
     const a = Animated.sequence([
       Animated.timing(reveal, { toValue: 1, duration: intro.revealMs, delay: intro.revealDelayMs, easing: easing.reveal, useNativeDriver: NATIVE_DRIVER, isInteraction: false }),
