@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { I18nManager, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useUiStore } from '@/lib/store';
-import { initialLocale, isRTL, getLocale, onLocaleChange, setLocale } from './index';
+import { initialLocale, isRTL, getLocale, onLocaleChange, setLocale, syncDocumentLang } from './index';
 
 let restorePath: string | null = null;
 /** À appeler juste avant de changer de langue : l'écran courant sera rouvert après le re-rendu. */
@@ -26,7 +26,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     restorePath = null;
     if (back) setTimeout(() => { try { router.replace(back as never); } catch { /* écran indisponible */ } }, 0);
   }), []);
-  useEffect(() => { setLocale(initialLocale(saved)); }, [saved]);
+  useEffect(() => { setLocale(initialLocale(saved)); syncDocumentLang(); }, [saved]);
   useEffect(() => {
     const rtl = isRTL();
     if (Platform.OS === 'web' && typeof document !== 'undefined') {

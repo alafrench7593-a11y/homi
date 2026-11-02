@@ -12,6 +12,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { formatNumber, t as tr } from '@/i18n';
+import { resolveTypedTime } from '@/lib/domain/typedTime';
 
 export const KIND_META: Record<LogKind, { label: string; icon: IconName; tracking: string }> = {
   bottle: { get label() { return tr('u5.trk.kind_bottle'); }, icon: 'coffee', tracking: 'bottle' },
@@ -32,6 +33,7 @@ export function TimePicker({ value, onChange, label = tr('u5.trk.time'), future 
   const [custom, setCustom] = useState('');
   const [yesterday, setYesterday] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dstNote, setDstNote] = useState<string | null>(null);
   const presets = [{ l: tr('u5.trk.now'), m: 0 }, { l: tr('u5.trk.m15'), m: 15 }, { l: tr('u5.trk.m30'), m: 30 }, { l: tr('u5.trk.h1'), m: 60 }, { l: tr('u5.trk.h2'), m: 120 }];
   const applyCustom = (text: string, y = yesterday) => {
     setCustom(text);
@@ -40,14 +42,15 @@ export function TimePicker({ value, onChange, label = tr('u5.trk.time'), future 
     const h = Number(m[1]);
     const min = Number(m[2] ?? 0);
     if (h > 23 || min > 59) return setError(tr('u5.trk.invalid'));
-    const d = new Date();
-    d.setHours(h, min, 0, 0);
+    const { date: d, dst } = resolveTypedTime(h, min, { future, yesterday: y });
+    const typed = `${h} h ${String(min).padStart(2, '0')}`;
+    setDstNote(dst === 'missing' ? tr('u5.trk.dstMissing', { time: typed, kept: formatTime(d) })
+      : dst === 'twiceFirst' ? tr('u5.trk.dstTwiceFirst', { time: typed })
+      : dst === 'twiceSecond' ? tr('u5.trk.dstTwiceSecond', { time: typed }) : null);
     if (future) {
-      if (d.getTime() <= Date.now()) d.setDate(d.getDate() + 1);
       setError(null);
       return onChange(d);
     }
-    if (y) d.setDate(d.getDate() - 1);
     if (d.getTime() > Date.now() + 60_000) return setError(tr('u5.trk.future'));
     setError(null);
     onChange(d);
@@ -62,7 +65,7 @@ export function TimePicker({ value, onChange, label = tr('u5.trk.time'), future 
       </Row>}
       <Row>
         <View style={{ flex: 1 }}>
-          <Field label={future ? tr('u5.trk.exact') : tr('u5.trk.or_exact')} placeholder={tr('u5.trk.ph')} value={custom} onChangeText={(v) => applyCustom(v)} error={error} keyboardType="numbers-and-punctuation" />
+          <Field label={future ? tr('u5.trk.exact') : tr('u5.trk.or_exact')} placeholder={tr('u5.trk.ph')} value={custom} onChangeText={(v) => applyCustom(v)} error={error} hint={dstNote ?? undefined} keyboardType="numbers-and-punctuation" />
         </View>
         {future ? null : (
           <View style={{ paddingTop: 26 }}>

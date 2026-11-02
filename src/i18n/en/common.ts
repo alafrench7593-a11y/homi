@@ -15,6 +15,7 @@ export const common: Messages<typeof fr> = {
   'error.screen.home': 'Back to home',
   'error.screen.detail': 'Detail for support: {detail}',
   'error.screen.emergency': 'In an emergency, call your local emergency number (112 in Europe).',
+  'demo.badgeShort': 'Demo',
   'demo.badge': 'Demo',
   'demo.badgeA11y': 'Demo: sample data, stored only on this device',
   'demo.leave': 'Exit',

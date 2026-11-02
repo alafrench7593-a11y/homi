@@ -7,7 +7,7 @@
  */
 import { t as tr } from '@/i18n';
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { usePathname } from 'expo-router';
 import { Icon, Text, type IconName } from './ui';
 import { GlassSurface } from './Glass';
@@ -42,7 +42,7 @@ export function TodaySummary({ title = tr('u7.today'), items, testID }: { title?
                 </View>
               ) : null}
               <Text weight="bold" style={valueStyle(it.value, items.length)} numberOfLines={2}>{it.value}</Text>
-              <Text variant="caption" muted numberOfLines={2}>{it.label}</Text>
+              <Text variant="caption" muted numberOfLines={2} style={Platform.OS === 'web' ? ({ hyphens: 'auto' } as object) : undefined}>{it.label}</Text>
             </View>
           </GlassSurface>
         ))}
@@ -55,7 +55,8 @@ export function TodaySummary({ title = tr('u7.today'), items, testID }: { title?
 export function valueStyle(value: string, count: number) {
   const n = value.length + (count > 2 ? 2 : 0);
   const size = n <= 5 ? 24 : n <= 7 ? 20 : n <= 10 ? 17 : 15;
-  return { fontSize: size, lineHeight: Math.round(size * 1.2) };
+  // D-16 : césure à la syllabe (selon <html lang>) plutôt qu'au milieu d'une lettre sur le web
+  return { fontSize: size, lineHeight: Math.round(size * 1.2), ...(Platform.OS === 'web' ? ({ hyphens: 'auto', wordBreak: 'normal', overflowWrap: 'anywhere' } as object) : {}) };
 }
 
 /** Petite tendance en barres : la dernière barre (aujourd'hui) est mise en avant. */

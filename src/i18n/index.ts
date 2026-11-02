@@ -38,7 +38,16 @@ export function isRTL() { return localeInfo(current).dir === 'rtl'; }
 export function setLocale(code: string) {
   if (!availableLocales().some((l) => l.code === code) || code === current) return;
   current = code;
+  syncDocumentLang();
   listeners.forEach((l) => l(code));
+}
+
+/**
+ * Web : la page déclare la langue affichée (<html lang>) — lecteurs d'écran, césure des mots (D-16, QA 02/11/2026).
+ * Sans effet sur iOS/Android.
+ */
+export function syncDocumentLang() {
+  if (typeof document !== 'undefined' && document.documentElement) document.documentElement.lang = localeTag();
 }
 export function onLocaleChange(cb: (code: string) => void) { listeners.add(cb); return () => { listeners.delete(cb); }; }
 /** Langue initiale : choix enregistré, sinon proposition d'après le téléphone. */

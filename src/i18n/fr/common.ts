@@ -13,6 +13,7 @@ export const common = {
   'error.screen.home': 'Revenir à l’accueil',
   'error.screen.detail': 'Détail pour le support : {detail}',
   'error.screen.emergency': 'En cas d’urgence, appelez le 15 ou le 112.',
+  'demo.badgeShort': 'Démo',
   'demo.badge': 'Démonstration',
   'demo.badgeA11y': 'Démonstration : données fictives, enregistrées uniquement sur cet appareil',
   'demo.leave': 'Quitter',
