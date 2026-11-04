@@ -18,6 +18,7 @@
  *  - globalThis.<ces noms>.xxx sans « ?. » : même raison ;
  *  - new Blob(...) et URL.createObjectURL : React Native ne sait pas fabriquer un fichier à partir de texte →
  *    réservé au web (Platform.OS === 'web') ;
+ *  - dateStyle / timeStyle hors try (pris en charge de façon incomplète selon les versions de Hermes) ;
  *  - Object.groupBy, Map.groupBy, Promise.withResolvers, Array.fromAsync, AbortSignal.timeout / any, méthodes
  *    d'ensembles (union, intersection…) : absents de Hermes.
  * Une garde reconnue : branche `if` / `?:` / `&&` / `||` testant Platform.OS (web) ou `typeof X`, sortie anticipée
@@ -167,6 +168,10 @@ export function scanSource(file: string, src: string): string[] {
         out.push(`${at(n)} ${n.getText(sf)} hors try (refusé par Intl sur iPhone)`);
       }
     }
+    // dateStyle / timeStyle : prise en charge incomplète par l'Intl de Hermes selon les versions → options explicites
+    if (ts.isPropertyAssignment(n) && ['dateStyle', 'timeStyle'].includes(n.name.getText(sf)) && !inType(n) && !guarded(n, [], sf, true)) {
+      out.push(`${at(n)} ${n.name.getText(sf)} (utiliser day / month / year… explicites)`);
+    }
     // Globals du navigateur utilisés directement
     if (ts.isIdentifier(n) && GLOBALS.includes(n.text) && !locals.has(n.text) && isReference(n) && !guarded(n, [n.text], sf, true)) {
       out.push(`${at(n)} ${n.text} sans garde (absent sur iPhone / Android)`);
@@ -219,6 +224,7 @@ describe('outils JavaScript absents sur iPhone / Android (Hermes)', () => {
       'export const i = () => new Intl.PluralRules("fr").select(1);',
       "export const j = () => (globalThis as any).localStorage.getItem('k');",
       'export function k(b: Uint8Array) { try { return new TextDecoder().decode(b); } finally { /* rien */ } }',
+      "export const m = (d: Date) => d.toLocaleDateString('fr-FR', { dateStyle: 'long' });",
       "export function l(p: { window: number }) { const { window: w } = p; return w + window.innerWidth; }",
     ];
     for (const s of bad) expect(scanSource('x.ts', s)).not.toEqual([]);

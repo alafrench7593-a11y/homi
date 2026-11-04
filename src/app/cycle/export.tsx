@@ -63,7 +63,7 @@ export default function CycleExport() {
       }, REPORT_PARTS.filter((p) => parts.includes(p)), from, today);
       const bytes = await buildTextPdf(tr('cy.ex.pdfTitle'), [
         from ? tr('cy.ex.pdfRange', { from: fmtDayYear(from), to: fmtDayYear(today) }) : tr('cy.ex.pdfAll'),
-        tr('cy.ex.pdfGenerated', { date: formatDate(new Date(), { dateStyle: 'long' }) }),
+        tr('cy.ex.pdfGenerated', { date: formatDate(new Date(), { day: 'numeric', month: 'long', year: 'numeric' }) }),
         tr('cy.ex.pdfNotice'),
       ], sections);
       await deliverFile(bytes, `cycle-${today}.pdf`, 'application/pdf', tr('cy.ex.pdfTitle'));
