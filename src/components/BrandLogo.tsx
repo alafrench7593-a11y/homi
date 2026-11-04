@@ -1,7 +1,7 @@
 /**
- * Logo « Au fil de nous » (validé le 26/10/2026) : utérus dessiné d'un fil doré, feuilles, pousse et silhouette
- * de femme enceinte, sur le ciel rose et pêche de la vidéo de fond.
- *  - BrandLogo : la tuile d'icône (ciel + fil doré), coins arrondis comme sur l'écran d'accueil du téléphone ;
+ * Logo « Au fil de nous » (nouveau logo du 04/11/2026, identique à YouTube et TikTok) : utérus dessiné d'un fil doré,
+ * feuilles, pousse et silhouette de femme enceinte, sur un fond rose clair uni.
+ *  - BrandLogo : le fil doré seul, sur fond transparent (aucune tuile ni fond de couleur dans l'appli) ;
  *  - BrandLine : le fil doré seul sur fond transparent, pour les grands visuels.
  */
 import { Image, type ImageStyle, type StyleProp } from 'react-native';
@@ -15,7 +15,8 @@ export function BrandLogo({ size = 28, style }: { size?: number; style?: StylePr
   return (
     <Image
       source={LOGO_MARK}
-      style={[{ width: size, height: size, borderRadius: size * 0.23 }, style]}
+      style={[{ width: size, height: size }, style]}
+      resizeMode="contain"
       accessibilityIgnoresInvertColors
       accessible={false}
     />
