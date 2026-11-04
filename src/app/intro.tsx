@@ -29,7 +29,7 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NACRE, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { BrandLogo } from '@/components/BrandLogo';
-import { GALETS_CLIP, STORY_3D_CLIP, VideoBackdrop } from '@/components/VideoBackdrop';
+import { PowderSky } from '@/components/PowderSky';
 
 type Universe = 'cycle' | 'pregnancy' | 'child' | 'health' | 'tools' | 'community';
 const UNIVERSES: { key: Universe; hero: ToolTheme; heroIcon: IconName; sats: [ToolTheme, IconName][]; icons: IconName[] }[] = [
@@ -170,9 +170,9 @@ export default function Intro() {
   const how = HOW.find((h) => h.key === slide);
   return (
     <View style={{ flex: 1 }}>
-      {/* Fond : la vidéo des galets puis l'histoire en 3D (de la grossesse aux 10 ans), sous un voile pour la lecture */}
+      {/* Fond : le ciel poudré de l'appli (sans vidéo), sous un voile pour la lecture */}
       <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} testID="intro-backdrop">
-        <VideoBackdrop only={[GALETS_CLIP, STORY_3D_CLIP]} />
+        <PowderSky hour={new Date().getHours()} night={t.isDark} />
         <LinearGradient colors={t.isDark ? ['rgba(31,35,68,0.55)', 'rgba(31,35,68,0.25)', 'rgba(31,35,68,0.7)'] : ['rgba(242,221,216,0.55)', 'rgba(242,221,216,0.15)', 'rgba(242,221,216,0.7)']}
           locations={[0, 0.45, 1]} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
       </View>
