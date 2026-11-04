@@ -73,6 +73,8 @@ export async function pickFiles(multiple: boolean) {
 
 // ---------------------------------------------------------------- pixels
 async function decodeWeb(uri: string, maxSide: number): Promise<RGBAImage> {
+  // Navigateur uniquement (canvas) : sur téléphone, decodeNative
+  if (Platform.OS !== 'web') throw new Error('unreadable_image');
   const img = new (globalThis as unknown as { Image: new () => HTMLImageElement }).Image();
   img.crossOrigin = 'anonymous';
   await new Promise<void>((resolve, reject) => { img.onload = () => resolve(); img.onerror = () => reject(new Error('unreadable_image')); img.src = uri; });

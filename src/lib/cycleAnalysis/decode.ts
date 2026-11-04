@@ -11,6 +11,8 @@ import { discardLocalImage } from './privacy';
 export const ANALYSIS_MAX_SIDE = 640;
 
 async function decodeWeb(uri: string): Promise<RGBAImage> {
+  // Navigateur uniquement (canvas) : sur téléphone, decodeNative
+  if (Platform.OS !== 'web') throw new Error(tr('l8.dec.unreadable'));
   const img = new (globalThis as unknown as { Image: new () => HTMLImageElement }).Image();
   img.crossOrigin = 'anonymous';
   await new Promise<void>((resolve, reject) => {
