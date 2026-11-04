@@ -1619,6 +1619,15 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (table === 'privacy_settings' && 'ai_history_enabled' in patch) patch = { ...patch, ai_history_consented_at: patch.ai_history_enabled === true ? nowIso() : null };
       // « Je grandis » / « Ses découvertes » : mêmes contrôles qu'à la création
       if (table === 'child_steps' && 'status' in patch) for (const r of rows) checkChildStep({ ...r, ...patch });
+      // Comme 20261106000100 : réactiver (ou rendre « personnel ») un rappel au-delà de la limite gratuite est refusé
+      if (table === 'reminders' && ('enabled' in patch || 'category' in patch || 'treatment_id' in patch)) {
+        const counted = (x: Row) => x.category === 'custom' && !x.treatment_id && x.enabled !== false;
+        for (const r of rows) {
+          if (counted(r) || !counted({ ...r, ...patch })) continue;
+          const others = T('reminders').filter((x) => x.user_id === r.user_id && x.id !== r.id && counted(x)).length;
+          if (others >= limit('custom_reminders_count')) throw new BackendError('Limite de la version gratuite atteinte (custom_reminders_count)', 'P0001', 'premium_required');
+        }
+      }
       if (table === 'food_introductions') {
         for (const r of rows) {
           const next = { ...r, ...patch };

@@ -198,6 +198,8 @@ export default function RemindersScreen() {
   const { data: reminders, isLoading, error, refetch } = useReminders();
   const toggle = useToggleReminder();
   const save = useSaveReminder();
+  const moreReminders = usePremiumAccess('more_reminders');
+  const remLimit = usePlanLimits().data?.find((l) => l.key === 'custom_reminders_count')?.free_value ?? 5;
   const { data: profile } = useProfile();
   const [permission, setPermission] = useState<PermissionState>(notificationsSupported ? 'undetermined' : 'unsupported');
   const [pendingCount, setPendingCount] = useState<number | null>(null);
@@ -227,6 +229,8 @@ export default function RemindersScreen() {
       setSkipped(res.skipped);
       refreshStatus();
     } catch (e) {
+      // Réactiver un rappel personnel au-delà de la limite gratuite (refusé par le serveur) : présentation Premium
+      if (isPremiumRequired(e)) { moreReminders.showPreview(undefined, { used: remLimit, quota: remLimit, unit: tr('u1.rem.activeUnit'), monthly: false }); return; }
       toast(friendlyError(e), 'error');
     }
   }
