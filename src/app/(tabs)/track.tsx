@@ -182,7 +182,7 @@ export default function Track() {
           <ErrorView error={failed.error} onRetry={() => { void childrenQ.refetch(); void pregnanciesQ.refetch(); void journeysQ.refetch(); }} />
         ) : null}
         {subject.type === 'family' && <QuickEntry activeChildId={scope.childId} />}
-        {scope.childId && <ChildTracking childId={scope.childId} journey={scope.scope === 'baby' ? 'baby' : scope.scope === 'child' ? 'child' : null} />}
+        {!!scope.childId && <ChildTracking childId={scope.childId} journey={scope.scope === 'baby' ? 'baby' : scope.scope === 'child' ? 'child' : null} />}
         {scope.scope === 'pregnancy' && <PregnancyTracking cards />}
         {scope.scope === 'postpartum' && (
           <Card>
@@ -214,7 +214,7 @@ export default function Track() {
         {!loading && !failed && !pregnancy && !children?.length && !cycle && scope.scope !== 'postpartum' && (
           <EmptyStateCard illustration="leaf" title={tr('trk.empty.title')} text={tr('pj.none.body')} action={<Button label={tr('pj.editJourney')} icon="compass" onPress={() => router.push('/journeys')} />} />
         )}
-        {scope.childId && <Banner tone="info">{tr('trk.healthBookNotice')}</Banner>}
+        {!!scope.childId && <Banner tone="info">{tr('trk.healthBookNotice')}</Banner>}
       </Screen>
     </View>
   );

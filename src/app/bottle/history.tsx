@@ -178,7 +178,7 @@ export default function BottleHistory() {
                   {b.milk_type ? <Text variant="small" muted>{b.milk_type}</Text> : null}
                   {b.planned_next_ml != null && <Text variant="small" muted>{tr('u6.bhist.planned_next', { n: b.planned_next_ml })}</Text>}
                   {b.note ? <Text variant="small" italic>{tr('u6.bhist.note', { note: b.note })}</Text> : null}
-                  {who && <Text variant="caption" muted>{tr('u6.bhist.by', { who })}</Text>}
+                  {!!who && <Text variant="caption" muted>{tr('u6.bhist.by', { who })}</Text>}
                 </View>
                 <View>
                   <IconButton icon="edit-2" label={tr('u6.clock.edit', { time: formatClock(b.at) })} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, id: b.id } })} />
