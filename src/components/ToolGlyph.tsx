@@ -10,7 +10,9 @@
  * - « Réduire les animations » : état final immédiat. Urgences : aucune animation.
  */
 import React, { useEffect, useRef } from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, Platform, View } from 'react-native';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { LinearGradient as NativeGradient } from 'expo-linear-gradient';
 import Svg, { Circle, ClipPath, Defs, Ellipse, G, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Icon, type IconName } from '@/components/ui';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -19,7 +21,7 @@ import { AnimatedPath } from '@/components/MotionKit';
 import type { ToolTheme } from '@/lib/domain/toolCatalog';
 import { easing } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { NATIVE_DRIVER } from '@/theme/tokens';
+import { NACRE, NATIVE_DRIVER } from '@/theme/tokens';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 let seq = 0;
@@ -145,11 +147,26 @@ export function ToolGlyph({ id, theme, icon, size = 56, play = 0, hovered, press
       {spec.icon === false ? null : (
         <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', transform: [{ translateY: spec.dy * s }] }}>
           {/* symbole plein propre à l'outil (biberon, dent, femme enceinte…) ; icône au trait si aucun n'est défini */}
-          {glyph ? <MaterialCommunityIcons name={glyph as never} size={Math.round(iconSize * 1.18)} color={c} /> : <Icon name={icon} size={iconSize} color={c} />}
+          {glyph ? <NacreGlyph name={glyph} size={Math.round(iconSize * 1.18)} color={c} dark={t.isDark} /> : <Icon name={icon} size={iconSize} color={c} />}
         </View>
       )}
       {active ? <View style={{ position: 'absolute', right: 2 * s, top: 2 * s, width: 10 * s, height: 10 * s, borderRadius: 5 * s, backgroundColor: c, borderWidth: 2, borderColor: t.colors.surface }} /> : null}
     </Animated.View>
+  );
+}
+
+/**
+ * Symbole plein en dégradé nacré (variante B choisie le 04/11/2026) : champagne → rose doré → vieux rose, le dégradé
+ * de la marque. Sur téléphone, le symbole sert de masque au dégradé ; sur le web (aperçus et tests), couleur unie.
+ */
+function NacreGlyph({ name, size, color, dark }: { name: string; size: number; color: string; dark: boolean }) {
+  const icon = <MaterialCommunityIcons name={name as never} size={size} color={color} />;
+  if (Platform.OS === 'web') return icon;
+  const colors = dark ? ['#F3D3A8', NACRE[0], NACRE[1]] as const : [NACRE[0], NACRE[1], NACRE[2]] as const;
+  return (
+    <MaskedView maskElement={<View style={{ alignItems: 'center', justifyContent: 'center' }}>{icon}</View>} style={{ width: size, height: size }}>
+      <NativeGradient colors={colors} start={{ x: 0.1, y: 0 }} end={{ x: 0.9, y: 1 }} style={{ width: size, height: size }} />
+    </MaskedView>
   );
 }
 
