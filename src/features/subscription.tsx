@@ -17,7 +17,7 @@ import { useInvalidate } from '@/lib/data/hooks';
 import { useEntitlement, usePremiumShare } from '@/lib/data/hooks-premium';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import type { EntitlementState } from '@/lib/premium/entitlement';
-import { billingDates, formatMoney, periodOfProduct, PLAN_BADGE, type Plan, type PlanPeriod } from '@/lib/premium/plans';
+import { billingDates, formatMoney, periodOfProduct, PLAN_BADGE, plansAvailability, type Plan, type PlanPeriod, type PlansAvailability } from '@/lib/premium/plans';
 import { getPurchaseMode, loadPlans, purchasesSdk } from '@/lib/purchaseMode';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NACRE, radius, spacing } from '@/theme/tokens';
@@ -34,8 +34,33 @@ const day = (d: Date | string) => formatDate(d, { day: 'numeric', month: 'long',
 /** Formules de l'offre courante (ou de la démonstration), partagées par la page et la feuille. */
 export function usePlans() {
   const mode = getPurchaseMode();
-  const q = useQuery({ queryKey: ['plans', mode, localeTag()], queryFn: loadPlans, staleTime: 600_000, retry: false, enabled: mode !== 'unavailable' });
-  return { mode, ...q };
+  // Liste vide (formules pas encore en ligne) : jamais gardée en cache, relue à la prochaine ouverture
+  const q = useQuery({ queryKey: ['plans', mode, localeTag()], queryFn: loadPlans, staleTime: (s) => (s.state.data?.length ? 600_000 : 0), retry: false, enabled: mode !== 'unavailable' });
+  const availability: PlansAvailability = plansAvailability({ mode, os: Platform.OS, isLoading: q.isLoading, isError: q.isError, error: q.error, count: q.data?.length ?? 0 });
+  return { mode, availability, ...q };
+}
+
+const AVAIL_TEXT: Partial<Record<PlansAvailability, { title: TKey; body: TKey; tone: 'info' | 'warning'; retry: boolean }>> = {
+  unconfigured: { title: 'sub2.avail.unconfigured.title', body: 'sub2.avail.unconfigured.body', tone: 'info', retry: false },
+  not_ready: { title: 'sub2.avail.notReady.title', body: 'sub2.avail.notReady.body', tone: 'info', retry: true },
+  offline: { title: 'sub2.avail.offline.title', body: 'sub2.avail.offline.body', tone: 'warning', retry: true },
+  store_error: { title: 'sub2.avail.storeError.title', body: 'sub2.avail.storeError.body', tone: 'warning', retry: true },
+};
+
+/**
+ * À la place des formules quand la boutique n'en propose pas (cas des produits pas encore créés, clé absente, réseau) :
+ * explication honnête, « Réessayer » quand c'est utile, rappel que le gratuit reste accessible. Aucun prix, aucun
+ * bouton d'achat, aucun droit accordé.
+ */
+export function PlansUnavailable({ availability, onRetry, retrying }: { availability: PlansAvailability; onRetry?: () => void; retrying?: boolean }) {
+  const txt = AVAIL_TEXT[availability];
+  if (!txt) return null;
+  return (
+    <View style={{ gap: spacing.sm }} testID={`plans-unavailable-${availability}`}>
+      <Banner tone={txt.tone} title={tr(txt.title)}>{`${tr(txt.body)} ${tr('sub2.avail.free')}`}</Banner>
+      {txt.retry && onRetry ? <Button label={tr('u1.sub.retry')} icon="refresh-cw" variant="secondary" loading={retrying} onPress={onRetry} testID="plans-retry" /> : null}
+    </View>
+  );
 }
 
 /** Sur le web, pas d'achat intégré (hors démonstration) : l'abonnement se prend dans l'application mobile. */
@@ -65,7 +90,7 @@ export function PremiumHero() {
  * passe de faux à vrai pendant que l'écran est ouvert — jamais sur la seule réponse de la boutique. Coche dessinée,
  * carte qui apparaît en douceur ; « Réduire les animations » : carte affichée directement.
  */
-export function PremiumActivated({ premium }: { premium: boolean }) {
+export function PremiumActivated({ premium, onBack }: { premium: boolean; onBack?: (() => void) | null }) {
   const t = useTheme();
   const prev = useRef(premium);
   const [shown, setShown] = useState(false);
@@ -85,6 +110,8 @@ export function PremiumActivated({ premium }: { premium: boolean }) {
               <Text variant="small" muted>{tr('sub2.activated.body')}</Text>
             </View>
           </Row>
+          {/* Ouverte depuis une fonction Premium : retour direct à cette fonction, désormais débloquée */}
+          {onBack ? <Button label={tr('sub2.activated.back')} icon="arrow-left" variant="secondary" size="sm" onPress={onBack} testID="premium-activated-back" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} /> : null}
         </View>
       </Card>
     </Appear>

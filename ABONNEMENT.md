@@ -29,6 +29,24 @@ l'application (`EXPO_PUBLIC_…`), tout le reste est un **secret Supabase**.
   Android : phase gratuite présente dans l'option appliquée à l'achat).
 - Partage : l'abonné·e + **un seul** co-parent adulte du foyer (2 comptes adultes maximum).
 
+### Quand l'abonnement est proposé (règle de l'application)
+- **Jamais** de paywall à l'ouverture, après l'inscription ni après l'onboarding : tout le gratuit s'utilise sans
+  interruption.
+- **Au premier usage réel d'une fonction Premium** (ou quand une limite gratuite est atteinte) : feuille Premium avec
+  un aperçu calculé sur les données de la personne, ce qui reste gratuit, les 3 formules et « Plus tard » (ferme sans
+  rien changer). « Continuer avec la formule … » ouvre la page Premium ; après confirmation **par le serveur**,
+  « Reprendre où j'en étais » ramène à la fonction.
+- Accès permanent et discret : Profil / Moi › **MON ABONNEMENT**, Réglages › Abonnement.
+
+### Si aucune formule ne s'affiche
+La page et la feuille Premium disent pourquoi, sans prix ni bouton d'achat, et rappellent que rien n'est facturé :
+- « Formules momentanément indisponibles » + **Réessayer** : la boutique ne renvoie aucune formule (produits pas encore
+  créés / validés dans App Store Connect, pas d'offering **Current** dans RevenueCat, produits non rattachés, contrat
+  Apps payantes non signé…) ;
+- « Formules momentanément indisponibles », sans « Réessayer » : l'application a été compilée **sans**
+  `EXPO_PUBLIC_REVENUECAT_APPLE_KEY` (ou `…_GOOGLE_KEY`) → renseigner la variable dans EAS puis recompiler ;
+- « Pas de connexion » / « Boutique injoignable » + **Réessayer** : réseau ou boutique.
+
 ---
 
 ## 1. App Store Connect (iPhone)

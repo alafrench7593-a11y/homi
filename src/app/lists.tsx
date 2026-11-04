@@ -235,7 +235,7 @@ export default function ListsScreen() {
       {atLimit ? (
         <View style={{ gap: spacing.sm }}>
           <Banner tone="warning" title={tr('u2.lists.limit_title')}>{tr('u2.lists.limit_body', { limit })}</Banner>
-          <PremiumGate feature={tr('u2.lists.unlimited')}><View /></PremiumGate>
+          <PremiumGate feature={tr('u2.lists.unlimited')} featureKey="more_lists"><View /></PremiumGate>
         </View>
       ) : null}
 
@@ -280,7 +280,7 @@ export default function ListsScreen() {
 
       <Sheet visible={creating} onClose={() => setCreating(false)} title={tr('u2.lists.new')}>
         {limitReached && !premium ? (
-          <PremiumGate feature={tr('u2.lists.unlimited')}><View /></PremiumGate>
+          <PremiumGate feature={tr('u2.lists.unlimited')} featureKey="more_lists"><View /></PremiumGate>
         ) : (
           <>
             <Text variant="label">{tr('u2.lists.from_template')}</Text>

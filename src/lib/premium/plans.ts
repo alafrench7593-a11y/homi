@@ -157,6 +157,42 @@ export function productChangeFor(os: string, activeProductId: string | null | un
   return { oldProductIdentifier: activeProductId.split(':')[0], replacementMode: (longer ? 'WITH_TIME_PRORATION' : 'DEFERRED') as 'WITH_TIME_PRORATION' | 'DEFERRED' };
 }
 
+/**
+ * Ce que la page Premium et la feuille Premium peuvent montrer à la place des formules — jamais d'écran vide, jamais
+ * de prix inventé, jamais de Premium accordé localement :
+ *  - « ready » : formules renvoyées par la boutique (ou grille de démonstration, signalée comme telle) ;
+ *  - « web » : version web, pas d'achat intégré (l'abonnement se prend dans l'application mobile) ;
+ *  - « unconfigured » : application mobile compilée sans clé publique RevenueCat (achats non ouverts dans cette version) ;
+ *  - « not_ready » : la boutique répond mais ne propose encore aucune formule (produits pas encore créés / validés dans
+ *    App Store Connect, Google Play ou RevenueCat : offre courante vide, erreur de configuration RevenueCat) ;
+ *  - « offline » : pas de connexion ; « store_error » : boutique injoignable pour une autre raison ; « loading ».
+ */
+export type PlansAvailability = 'ready' | 'loading' | 'web' | 'unconfigured' | 'not_ready' | 'offline' | 'store_error';
+
+/** Codes d'erreur RevenueCat (PURCHASES_ERROR_CODE) : configuration / produits indisponibles, réseau. */
+const RC_NOT_READY = new Set(['23', '5', 'CONFIGURATION_ERROR', 'PRODUCT_NOT_AVAILABLE_FOR_PURCHASE_ERROR', 'ConfigurationError', 'ProductNotAvailableForPurchaseError']);
+const RC_OFFLINE = new Set(['10', '35', 'NETWORK_ERROR', 'OFFLINE_CONNECTION_ERROR', 'NetworkError', 'OfflineConnectionError']);
+
+/** Nature d'une erreur de chargement des formules (SDK RevenueCat). */
+export function plansErrorKind(e: unknown): 'not_ready' | 'offline' | 'store_error' {
+  const x = (e ?? {}) as { code?: unknown; readableErrorCode?: unknown; userInfo?: { readableErrorCode?: unknown }; message?: unknown; underlyingErrorMessage?: unknown };
+  const codes = [x.code, x.readableErrorCode, x.userInfo?.readableErrorCode].filter((c) => c != null).map(String);
+  if (codes.some((c) => RC_NOT_READY.has(c))) return 'not_ready';
+  if (codes.some((c) => RC_OFFLINE.has(c))) return 'offline';
+  const text = `${String(x.message ?? '')} ${String(x.underlyingErrorMessage ?? '')}`;
+  if (/no products registered|could not be fetched|offerings.{0,40}empty|why-are-offerings-empty|configuration/i.test(text)) return 'not_ready';
+  if (/network|internet|offline|timed? ?out/i.test(text)) return 'offline';
+  return 'store_error';
+}
+
+export function plansAvailability(s: { mode: 'store' | 'test' | 'unavailable'; os: string; isLoading?: boolean; isError?: boolean; error?: unknown; count: number }): PlansAvailability {
+  if (s.os === 'web' && s.mode !== 'test') return 'web';
+  if (s.mode === 'unavailable') return 'unconfigured';
+  if (s.isError) return plansErrorKind(s.error);
+  if (s.isLoading) return 'loading';
+  return s.count > 0 ? 'ready' : 'not_ready';
+}
+
 /** Formule d'un identifiant de produit (même règle que le serveur). */
 export function periodOfProduct(productId: string | null | undefined): PlanPeriod | null {
   for (const part of (productId ?? '').toLowerCase().split(':').reverse()) {

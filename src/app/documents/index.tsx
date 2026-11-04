@@ -148,7 +148,7 @@ export default function DocumentsHome() {
       {atLimit ? (
         <>
           <Banner tone="warning" title={tr('docs.full.title')}>{tr('docs.full.body', { limit: limit ?? 0 })}</Banner>
-          <PremiumGate feature={tr('docs.full.premium')}><View /></PremiumGate>
+          <PremiumGate feature={tr('docs.full.premium')} featureKey="more_documents"><View /></PremiumGate>
         </>
       ) : null}
 

@@ -12,7 +12,7 @@ import { Button, Card, Icon, Row, Text } from './ui';
 import { usePremiumSheet, quotaResetLabel, usePremiumAccess } from '@/lib/data/hooks-premium';
 import { FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
 import type { PlanPeriod } from '@/lib/premium/plans';
-import { PlanCards, planTitle, usePlans, webWithoutPurchase } from '@/features/subscription';
+import { PlanCards, planTitle, usePlans } from '@/features/subscription';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -67,7 +67,9 @@ function SheetPlans({ feature, onGo }: { feature: PremiumFeature; onGo: () => vo
   const [selected, setSelected] = useState<PlanPeriod | null>(null);
   const list = plans.data ?? [];
   const pick = selected ?? list[0]?.period ?? null;
-  const showPlans = !webWithoutPurchase(plans.mode) && list.length > 0;
+  const showPlans = plans.availability === 'ready' && list.length > 0;
+  // Formules pas encore proposées par la boutique (ou clé absente, réseau) : on le dit, sans prix ni promesse d'achat
+  const unavailable = !showPlans && plans.availability !== 'web' && plans.availability !== 'loading';
   const go = () => { onGo(); router.push({ pathname: '/settings/subscription', params: pick && showPlans ? { feature, plan: pick } : { feature } }); };
   return (
     <View style={{ gap: spacing.sm }} testID="premium-sheet-plans">
@@ -76,8 +78,9 @@ function SheetPlans({ feature, onGo }: { feature: PremiumFeature; onGo: () => vo
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('sub2.sheet.plans')}</Text>
           <PlanCards plans={list} selected={pick} onSelect={setSelected} compact />
         </>
-      ) : webWithoutPurchase(plans.mode) ? <Text variant="small" muted>{tr('sub2.sheet.web')}</Text> : null}
-      <Button label={showPlans && pick ? tr('sub2.sheet.continue', { plan: planTitle(pick) }) : tr('u1.pr.seePlans')} icon="star" onPress={go} testID="premium-see-plans" full />
+      ) : plans.availability === 'web' ? <Text variant="small" muted>{tr('sub2.sheet.web')}</Text>
+        : unavailable ? <Text variant="small" muted testID="premium-sheet-unavailable">{tr('sub2.avail.sheet')}</Text> : null}
+      <Button label={showPlans && pick ? tr('sub2.sheet.continue', { plan: planTitle(pick) }) : unavailable ? tr('sub2.sheet.more') : tr('u1.pr.seePlans')} icon="star" onPress={go} testID="premium-see-plans" full />
     </View>
   );
 }

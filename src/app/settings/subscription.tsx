@@ -20,7 +20,7 @@ import { friendlyError, usePlanLimits } from '@/lib/data/hooks-settings';
 import { ALWAYS_FREE, FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
 import { periodOfProduct, type Plan, type PlanPeriod } from '@/lib/premium/plans';
 import { purchase } from '@/lib/purchases';
-import { BenefitCards, MySubscriptionCard, PremiumActivated, PlanCards, PlanTerms, planTitle, PremiumHero, usePlans, WebPurchaseNotice, webWithoutPurchase } from '@/features/subscription';
+import { BenefitCards, MySubscriptionCard, PremiumActivated, PlanCards, PlansUnavailable, PlanTerms, planTitle, PremiumHero, usePlans, WebPurchaseNotice } from '@/features/subscription';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -145,8 +145,9 @@ export default function SubscriptionScreen() {
         </Card>
       ) : null}
 
-      {/* Activation confirmée par le serveur pendant que la page est ouverte (achat, restauration, essai) */}
-      <PremiumActivated premium={premium} />
+      {/* Activation confirmée par le serveur pendant que la page est ouverte (achat, restauration, essai) ;
+          ouverte depuis une fonction Premium : retour à cette fonction */}
+      <PremiumActivated premium={premium} onBack={tried && router.canGoBack() ? () => router.back() : null} />
 
       {/* État actuel : formule, statut, dates, prix, gestion, restauration */}
       <View testID="sub-status"><MySubscriptionCard showDiscover={false} /></View>
@@ -161,13 +162,9 @@ export default function SubscriptionScreen() {
       {!sharedOnly ? (
         <>
           <SectionTitle title={currentPeriod ? tr('sub2.page.change') : tr('sub2.page.choose')} />
-          {webWithoutPurchase(mode) ? <WebPurchaseNotice /> : mode === 'unavailable' ? (
-            <Banner tone="info" title={tr('u1.sub.soonTitle')}>{tr('u1.sub.soonBody')}</Banner>
-          ) : plans.isLoading ? <Loading label={tr('u1.sub.loadingOffers')} /> : plans.isError ? (
-            <>
-              <Banner tone="warning" title={tr('u1.sub.offersDown')}>{friendlyError(plans.error, tr('u1.sub.storeUnreachable'))}</Banner>
-              <Button label={tr('u1.sub.retry')} icon="refresh-cw" variant="secondary" onPress={() => void plans.refetch()} testID="plans-retry" />
-            </>
+          {/* Jamais d'écran vide ni de prix inventé : sans formule de la boutique, on dit pourquoi (voir plansAvailability) */}
+          {plans.availability === 'web' ? <WebPurchaseNotice /> : plans.availability === 'loading' ? <Loading label={tr('u1.sub.loadingOffers')} /> : plans.availability !== 'ready' ? (
+            <PlansUnavailable availability={plans.availability} onRetry={() => void plans.refetch()} retrying={plans.isFetching} />
           ) : list.length ? (
             <>
               <PlanCards plans={list} selected={selected} onSelect={setSelected} currentPeriod={currentPeriod} />
@@ -187,9 +184,7 @@ export default function SubscriptionScreen() {
               </Row>
               {mode === 'test' ? <Banner tone="demo" title={tr('u1.sub.demoTitle')}>{tr('u1.sub.demoBody')}</Banner> : null}
             </>
-          ) : (
-            <Banner tone="warning" title={tr('u1.sub.offersDown')}>{tr('u1.sub.storeUnreachable')}</Banner>
-          )}
+          ) : null}
         </>
       ) : null}
 

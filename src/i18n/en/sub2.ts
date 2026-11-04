@@ -111,4 +111,18 @@ export const sub2: Messages<typeof fr> = {
   'sub2.sheet.web': 'Subscription available in the iPhone and Android app.',
   'sub2.activated.title': 'Premium is active',
   'sub2.activated.body': 'Your subscription is confirmed: every Premium feature is now unlocked.',
+
+  // Plans unavailable (products not live yet, missing key, network): honest message, never an invented price
+  'sub2.avail.unconfigured.title': 'Plans temporarily unavailable',
+  'sub2.avail.unconfigured.body': 'Subscriptions are not open yet in this version of the app. No purchase is possible for now and you will not be charged.',
+  'sub2.avail.notReady.title': 'Plans temporarily unavailable',
+  'sub2.avail.notReady.body': 'The store does not offer any plan yet: they are being put online. No purchase is possible until they appear, and you will not be charged. Please try again a little later.',
+  'sub2.avail.offline.title': 'No connection',
+  'sub2.avail.offline.body': 'Plans are shown when you are online. Check your connection, then try again.',
+  'sub2.avail.storeError.title': 'Store unreachable',
+  'sub2.avail.storeError.body': 'The App Store or Google Play is not responding at the moment. Try again in a few moments; you will not be charged.',
+  'sub2.avail.free': 'In the meantime, every free feature remains available.',
+  'sub2.avail.sheet': 'Plans are not available at the moment: you will not be charged and every free feature remains available.',
+  'sub2.sheet.more': 'Learn more about Premium',
+  'sub2.activated.back': 'Pick up where I left off',
 };

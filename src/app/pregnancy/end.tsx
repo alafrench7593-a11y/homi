@@ -195,7 +195,7 @@ export default function EndPregnancy() {
           {drafts.length > remaining ? (
             <View style={{ gap: spacing.sm }} testID="birth-limit">
               <Banner tone="warning" title={tr('pj.birth.limitTitle')}>{tr('pj.birth.limitBody', { count: remaining })}</Banner>
-              <PremiumGate feature={tr('pj.birth.limitFeature')}><View /></PremiumGate>
+              <PremiumGate feature={tr('pj.birth.limitFeature')} featureKey="more_children"><View /></PremiumGate>
             </View>
           ) : null}
           {drafts.length < 4 ? <Button label={tr('pj.birth.addBaby')} icon="plus" variant="ghost" onPress={() => setDrafts((ds) => [...ds, empty()])} testID="birth-add" /> : null}

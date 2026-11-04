@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { useActivePregnancy, useActiveSubject, useEmergencyResources, useExpectedBabies, useJourneyState, usePremium, useTrackedChildren } from '@/lib/data/hooks';
+import { usePremiumSheet } from '@/lib/data/hooks-premium';
+import type { PremiumFeature } from '@/lib/premium/features';
 import { childAge, initials } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { isDemo } from '@/lib/backend';
@@ -176,9 +178,14 @@ export function AskFab({ bottom = 0 }: { bottom?: number }) {
   );
 }
 
-/** Contenu réservé à l'abonnement. Les informations de sécurité ne passent JAMAIS par ce composant. */
-export function PremiumGate({ children, feature }: { children: React.ReactNode; feature: string }) {
+/**
+ * Contenu réservé à l'abonnement. Les informations de sécurité ne passent JAMAIS par ce composant.
+ * `featureKey` connu : « Découvrir l'abonnement » ouvre la présentation Premium de CETTE fonction (bénéfice, ce qui reste
+ * gratuit, formules, « Plus tard »), comme partout ailleurs ; sinon, la page Premium.
+ */
+export function PremiumGate({ children, feature, featureKey }: { children: React.ReactNode; feature: string; featureKey?: PremiumFeature }) {
   const premium = usePremium();
+  const show = usePremiumSheet((s) => s.show);
   if (premium) return <>{children}</>;
   return (
     <Card tone="gold">
@@ -187,7 +194,7 @@ export function PremiumGate({ children, feature }: { children: React.ReactNode; 
         <Text weight="bold" style={{ flex: 1 }}>{feature}</Text>
       </Row>
       <Text variant="small" muted style={{ marginTop: 6 }}>{tr('u7.family.premiumNote')}</Text>
-      <Button label={tr('u7.family.discover')} variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />
+      <Button label={tr('u7.family.discover')} variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => (featureKey ? show({ feature: featureKey }) : router.push('/settings/subscription'))} testID={featureKey ? `premium-gate-${featureKey}` : undefined} />
     </Card>
   );
 }

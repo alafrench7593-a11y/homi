@@ -179,7 +179,7 @@ export default function NewProfile() {
                   ? tr('u8.pnew.limitRemaining', { limit: childLimit, count: remaining })
                   : tr('u8.pnew.limitFull', { limit: childLimit })}
               </Banner>
-              <PremiumGate feature={tr('u8.pnew.moreKids')}><View /></PremiumGate>
+              <PremiumGate feature={tr('u8.pnew.moreKids')} featureKey="more_children"><View /></PremiumGate>
             </View>
           )}
           {drafts.map((d, i) => (

@@ -81,7 +81,7 @@ export default function ArticleScreen() {
             : `${tr(`art.statusBody.${status}` as TKey)} ${tr('art.notAdvice')}`}
         </Banner>
       </View>
-      {isLocked(a, premium) ? <PremiumGate feature={tr('u3.art.premiumFeat')}>{body}</PremiumGate> : body}
+      {isLocked(a, premium) ? <PremiumGate feature={tr('u3.art.premiumFeat')} featureKey="premium_content">{body}</PremiumGate> : body}
       <Divider />
       <Card tone="soft">
         <Text weight="bold">{tr('art.references')}</Text>

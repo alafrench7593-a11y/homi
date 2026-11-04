@@ -112,4 +112,18 @@ export const sub2 = {
   'sub2.sheet.web': 'Abonnement disponible dans l’application iPhone et Android.',
   'sub2.activated.title': 'Premium activé',
   'sub2.activated.body': 'Votre abonnement est confirmé : toutes les fonctionnalités Premium sont ouvertes.',
+
+  // Formules indisponibles (produits pas encore en ligne, clé absente, réseau) : message honnête, jamais de prix inventé
+  'sub2.avail.unconfigured.title': 'Formules momentanément indisponibles',
+  'sub2.avail.unconfigured.body': 'Les abonnements ne sont pas encore ouverts dans cette version de l’application. Aucun achat n’est possible pour le moment et rien ne vous est facturé.',
+  'sub2.avail.notReady.title': 'Formules momentanément indisponibles',
+  'sub2.avail.notReady.body': 'La boutique ne propose encore aucune formule : elles sont en cours de mise en ligne. Aucun achat n’est possible tant qu’elles ne s’affichent pas, et rien ne vous est facturé. Réessayez un peu plus tard.',
+  'sub2.avail.offline.title': 'Pas de connexion',
+  'sub2.avail.offline.body': 'Les formules s’affichent avec une connexion Internet. Vérifiez votre connexion, puis réessayez.',
+  'sub2.avail.storeError.title': 'Boutique injoignable',
+  'sub2.avail.storeError.body': 'L’App Store ou Google Play ne répond pas pour le moment. Réessayez dans quelques instants ; rien ne vous est facturé.',
+  'sub2.avail.free': 'En attendant, toutes les fonctions gratuites restent accessibles.',
+  'sub2.avail.sheet': 'Les formules ne sont pas disponibles pour le moment : rien ne vous est facturé et toutes les fonctions gratuites restent accessibles.',
+  'sub2.sheet.more': 'En savoir plus sur Premium',
+  'sub2.activated.back': 'Reprendre où j’en étais',
 };
