@@ -107,7 +107,7 @@ export default function Welcome() {
               <Button label={tr('welcome.haveAccount')} variant="secondary" onPress={() => router.push('/auth/sign-in')} full />
             </Appear>
           </View>
-          <Appear kind="soft" delay={1.2} style={{ alignSelf: 'stretch' }}>
+          <Appear kind="soft" delay={1.2} style={{ alignSelf: 'stretch', marginTop: 16 }}>
             <Button label={tr('welcome.demo')} variant="ghost" icon="eye" onPress={async () => { await startDemoWithoutAccount(); router.replace('/(tabs)'); }} full />
           </Appear>
         </View>
