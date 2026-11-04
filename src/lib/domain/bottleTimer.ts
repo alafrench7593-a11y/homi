@@ -208,7 +208,13 @@ interface ZonedParts { year: number; month: number; day: number; hour: number; m
 export function zonedParts(date: Date | string, timeZone?: string): ZonedParts {
   const d = toDate(date);
   if (!timeZone) return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(), hour: d.getHours(), minute: d.getMinutes(), weekday: d.getDay() };
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23', weekday: 'short' }).formatToParts(d);
+  let parts: { type: string; value: string }[];
+  try {
+    parts = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23', weekday: 'short' }).formatToParts(d);
+  } catch {
+    // iPhone (Hermes) : fuseau ou formatToParts indisponible → heure de l'appareil plutôt qu'un écran en erreur
+    return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(), hour: d.getHours(), minute: d.getMinutes(), weekday: d.getDay() };
+  }
   const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '0';
   const wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
   return { year: Number(get('year')), month: Number(get('month')), day: Number(get('day')), hour: Number(get('hour')) % 24, minute: Number(get('minute')), weekday: wd < 0 ? 0 : wd };

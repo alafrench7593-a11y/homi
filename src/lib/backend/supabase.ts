@@ -283,7 +283,7 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
         return parsed.rest;
       };
       const stream = res.body as ReadableStream<Uint8Array> | null;
-      if (stream && typeof stream.getReader === 'function') {
+      if (stream && typeof stream.getReader === 'function' && typeof TextDecoder === 'function') {
         const reader = stream.getReader();
         const decoder = new TextDecoder();
         let buffer = '';

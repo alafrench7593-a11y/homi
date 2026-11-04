@@ -11,6 +11,7 @@ import { getLocales } from 'expo-localization';
 import { DICTIONARIES, FR } from './dictionaries';
 import { availableLocales, localeInfo, proposeLocale, SOURCE_LOCALE } from './locales';
 import type { Msg, Plural } from './types';
+import { listFormat, numberFormat, pluralCategory, relativeFormat, unitFormat } from './intlSafe';
 import type * as FrModules from './fr';
 
 type Union<T> = T[keyof T];
@@ -55,13 +56,10 @@ export function initialLocale(saved: string | null | undefined) {
   return saved && availableLocales().some((l) => l.code === saved) ? saved : proposeLocale(deviceLanguages());
 }
 
-const pluralCache = new Map<string, Intl.PluralRules>();
 function pluralForm(m: Plural, count: number) {
-  const tag = localeTag();
-  let pr = pluralCache.get(tag);
-  if (!pr) { pr = new Intl.PluralRules(tag); pluralCache.set(tag, pr); }
   if (count === 0 && m.zero != null) return m.zero;
-  const cat = pr.select(count) as keyof Plural;
+  // Intl.PluralRules peut manquer sur iPhone (Hermes) : catégorie calculée par intlSafe
+  const cat = pluralCategory(localeTag(), count) as keyof Plural;
   return (m[cat] as string | undefined) ?? m.other;
 }
 
@@ -101,7 +99,7 @@ function humanize(key: string) {
 export function missingKeys() { return [...missing]; }
 
 // ------------------------------------------------------------------ formats (Intl, langue courante, fuseau de l'appareil)
-export function formatNumber(n: number, opts?: Intl.NumberFormatOptions) { return new Intl.NumberFormat(localeTag(), opts).format(n); }
+export function formatNumber(n: number, opts?: Intl.NumberFormatOptions) { return numberFormat(localeTag(), n, opts); }
 export function formatDate(d: Date | string | number, opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }) {
   return new Date(d).toLocaleDateString(localeTag(), opts);
 }
@@ -110,12 +108,12 @@ export function formatTime(d: Date | string | number, opts: Intl.DateTimeFormatO
 }
 /** Unité localisée (« 3,2 kg », « 120 mL ») via Intl. */
 export function formatUnit(n: number, unit: 'kilogram' | 'gram' | 'centimeter' | 'milliliter' | 'celsius' | 'minute' | 'hour' | 'day' | 'week', digits = 1) {
-  return new Intl.NumberFormat(localeTag(), { style: 'unit', unit, unitDisplay: 'short', maximumFractionDigits: digits }).format(n);
+  return unitFormat(localeTag(), n, unit, digits);
 }
 /** Durée relative (« il y a 3 heures », « in 2 days ») via Intl.RelativeTimeFormat. */
 export function formatRelative(value: number, unit: Intl.RelativeTimeFormatUnit) {
-  return new Intl.RelativeTimeFormat(localeTag(), { numeric: 'auto' }).format(value, unit);
+  return relativeFormat(localeTag(), value, unit);
 }
 export function formatList(items: string[]) {
-  return new Intl.ListFormat(localeTag(), { style: 'long', type: 'conjunction' }).format(items);
+  return listFormat(localeTag(), items);
 }
