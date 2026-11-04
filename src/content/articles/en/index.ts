@@ -38,6 +38,7 @@ import { en_guide_b32 } from './guide-b32';
 import { en_guide_b33 } from './guide-b33';
 import { en_guide_b34 } from './guide-b34';
 import { en_guide_b35 } from './guide-b35';
+import { en_guide_b36 } from './guide-b36';
 import { en_guide_bebe } from './guide-bebe';
 import { en_guide_conception } from './guide-conception';
 import { en_guide_enfant } from './guide-enfant';
@@ -93,6 +94,7 @@ export const ARTICLES_EN: Record<string, ArticleEn> = Object.assign({},
   en_guide_b33,
   en_guide_b34,
   en_guide_b35,
+  en_guide_b36,
   en_guide_bebe,
   en_guide_conception,
   en_guide_enfant,
