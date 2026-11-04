@@ -419,7 +419,7 @@ export default function Chat() {
               {!m.streaming && !m.error && !m.stopped && (
                 <Text variant="caption" muted>{tr('u8.chat.aiNote')}</Text>
               )}
-              {m.serverId && !m.streaming && (
+              {!!m.serverId && !m.streaming && (
                 <Row wrap>
                   <Chip label={tr('u8.chat.useful')} icon="thumbs-up" selected={m.feedback === 1} onPress={() => feedback(m, 1)} />
                   <Chip label={tr('u8.chat.notUseful')} icon="thumbs-down" selected={m.feedback === -1} onPress={() => feedback(m, -1)} />

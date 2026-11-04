@@ -288,7 +288,7 @@ function SleepFormSheet({ initial, logs, onClose }: { initial: FormState; logs: 
 
       {errors.form ? <Banner tone="warning">{errors.form}</Banner> : null}
       <Button label={f.id ? tr('u8.sleep.f.saveChanges') : tr('u8.sleep.f.saveNight')} onPress={submit} loading={save.isPending} full />
-      {f.id && <Button label={tr('u8.sleep.f.deleteNight')} variant="ghost" icon="trash-2" loading={del.isPending} onPress={remove} />}
+      {!!f.id && <Button label={tr('u8.sleep.f.deleteNight')} variant="ghost" icon="trash-2" loading={del.isPending} onPress={remove} />}
     </Sheet>
   );
 }

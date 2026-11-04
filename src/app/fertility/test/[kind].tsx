@@ -246,7 +246,7 @@ export default function TestPhotoScreen() {
         </Appear>
       )}
 
-      {step === 'crop' && uri && (
+      {step === 'crop' && !!uri && (
         <Appear kind="soft">
           <SectionTitle title={tr('u3.fertTest.s4')} />
           <Card><CropPicker uri={uri} value={crop} onChange={setCrop} /></Card>

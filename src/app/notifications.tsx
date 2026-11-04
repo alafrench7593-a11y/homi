@@ -112,7 +112,7 @@ export default function NotificationsScreen() {
             {n.body ? <Text variant="small" muted numberOfLines={3}>{n.body}</Text> : null}
             <Text variant="caption" muted>{catLabel(meta.label)} · {ago(n.created_at)}</Text>
           </View>
-          {to && <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
+          {!!to && <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
         </Tappable>
         {isUnread ? <IconButton icon="check" label={tr('u2.notif.mark_read', { title: n.title })} color={t.colors.primary} size={18} onPress={() => { haptic('selection'); markRead.mutate(n.id, { onError: (e) => toast(friendlyError(e), 'error') }); }} /> : null}
         <IconButton icon="x" label={tr('u2.notif.delete_a11y', { title: n.title })} color={t.colors.textMuted} size={18} onPress={() => { if (del.isPending && del.variables === n.id) return; del.mutate(n.id, { onError: (e) => toast(friendlyError(e, tr('u2.notif.delete_failed')), 'error') }); }} />
