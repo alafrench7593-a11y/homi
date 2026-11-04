@@ -17,13 +17,13 @@ echo "1/3 Lien avec le projet (connexion demandée si besoin)…"
 $SB link --project-ref "$REF" || { $SB login && $SB link --project-ref "$REF"; } || { read -r -p "Échec du lien. Entrée pour fermer…"; exit 1; }
 
 echo "2/3 Migrations manquantes (le détail s'affiche, réponds « Y » pour confirmer)…"
-$SB db push --include-all || { read -r -p "Échec des migrations (rien n'a été modifié pour celle qui a échoué). Entrée pour fermer…"; exit 1; }
+$SB db push --remote="$REF" --include-all || { read -r -p "Échec des migrations (rien n'a été modifié pour celle qui a échoué). Entrée pour fermer…"; exit 1; }
 
 echo "3/3 Fonctions serveur (TOUTES : le code commun _shared est embarqué dans chacune)…"
 for d in supabase/functions/*/; do
   f="$(basename "$d")"; [ "$f" = "_shared" ] && continue
   echo "  - $f"
-  $SB functions deploy "$f" --project-ref "$REF" || echo "    ⚠︎ échec pour $f"
+  $SB functions deploy "$f" --remote="$REF" --yes || echo "    ⚠︎ échec pour $f"
 done
 echo
 echo "Terminé. Reviens dans la conversation avec Claude : il vérifiera le résultat sur la base."
