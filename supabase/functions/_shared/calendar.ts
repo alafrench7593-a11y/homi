@@ -143,9 +143,21 @@ export function foldLine(line: string): string {
 
 /** « AAAAMMJJTHHMMSS » dans le fuseau donné (pour DTSTART;TZID=…). */
 export function localStamp(iso: string, timeZone: string) {
-  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' })
-    .formatToParts(new Date(iso)).map((p) => [p.type, p.value]));
-  return `${parts.year}${parts.month}${parts.day}T${parts.hour}${parts.minute}${parts.second}`;
+  const d = new Date(iso);
+  const fmt = new Intl.DateTimeFormat('en-GB', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
+  let parts: Record<string, string> = {};
+  try {
+    parts = Object.fromEntries(fmt.formatToParts(d).map((p) => [p.type, p.value]));
+  } catch { /* lecture du texte formaté ci-dessous */ }
+  if (!parts.year || !parts.month || !parts.day || !parts.hour) {
+    // iPhone (Hermes) : formatToParts ne renvoie qu'un seul bloc de texte (« 04/11/2026, 14:05:09 ») → lecture des chiffres
+    const [day = '', month = '', year = '', hour = '', minute = '', second = ''] = fmt.format(d).match(/\d+/g) ?? [];
+    parts = second && year.length === 4
+      ? { day, month, year, hour, minute, second }
+      : { year: String(d.getFullYear()), month: String(d.getMonth() + 1), day: String(d.getDate()), hour: String(d.getHours()), minute: String(d.getMinutes()), second: String(d.getSeconds()) };
+  }
+  const two = (s: string) => s.padStart(2, '0');
+  return `${parts.year}${two(parts.month)}${two(parts.day)}T${two(String(Number(parts.hour) % 24))}${two(parts.minute)}${two(parts.second)}`;
 }
 
 /** Fuseau de Paris (heure d'été : dernier dimanche de mars → dernier dimanche d'octobre). */

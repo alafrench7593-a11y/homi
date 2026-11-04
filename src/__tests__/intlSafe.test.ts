@@ -75,3 +75,35 @@ describe('formats avec Intl complet (web, Android)', () => {
     expect(relativeFormat('fr-FR', -3, 'hour')).toBe(new Intl.RelativeTimeFormat('fr-FR', { numeric: 'auto' }).format(-3, 'hour'));
   });
 });
+
+describe('heure dans un fuseau quand formatToParts ne renvoie qu’un bloc de texte (Hermes sur iPhone)', () => {
+  const proto = Intl.DateTimeFormat.prototype as unknown as { formatToParts: (d?: Date | number) => Intl.DateTimeFormatPart[] };
+  const real = proto.formatToParts;
+  const iso = '2026-07-14T16:05:09.000Z'; // 18:05:09 à Paris (heure d'été), un mardi
+  let expectedStamp = '';
+  let expectedParts: unknown = null;
+  beforeAll(() => {
+    // Valeurs de référence calculées avec le vrai formatToParts
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    expectedStamp = (require('../../supabase/functions/_shared/calendar') as typeof import('../../supabase/functions/_shared/calendar')).localStamp(iso, 'Europe/Paris');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    expectedParts = (require('@/lib/domain/bottleTimer') as typeof import('@/lib/domain/bottleTimer')).zonedParts(iso, 'America/New_York');
+    proto.formatToParts = function (this: Intl.DateTimeFormat, d?: Date | number) { return [{ type: 'literal', value: this.format(d) }]; };
+  });
+  afterAll(() => { proto.formatToParts = real; });
+
+  it('agenda .ics : horodatage local correct', () => {
+    expect(expectedStamp).toBe('20260714T180509');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { localStamp } = require('../../supabase/functions/_shared/calendar') as typeof import('../../supabase/functions/_shared/calendar');
+    expect(localStamp(iso, 'Europe/Paris')).toBe('20260714T180509');
+    expect(localStamp('2026-01-05T23:30:00.000Z', 'Europe/Paris')).toBe('20260106T003000');
+  });
+
+  it('minuteur biberon : composantes de l’heure dans le fuseau', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { zonedParts } = require('@/lib/domain/bottleTimer') as typeof import('@/lib/domain/bottleTimer');
+    expect(expectedParts).toEqual({ year: 2026, month: 7, day: 14, hour: 12, minute: 5, weekday: 2 });
+    expect(zonedParts(iso, 'America/New_York')).toEqual(expectedParts);
+  });
+});
