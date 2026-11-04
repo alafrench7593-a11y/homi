@@ -26,6 +26,8 @@ const KID: Scope[] = ['baby', 'child'];
 const ALL = SCOPES;
 /** Portées où l'organisation familiale a du sens (enfants, grossesse, post-partum, vue famille). */
 const HOME_LIFE: Scope[] = ['none', 'child', 'family'];
+/** « À deux » (04/11/2026) : la charge mentale ne commence pas avec un enfant — tâches, agenda et relais sont ouverts à tous. */
+const TOGETHER: Scope[] = [...ADULT, 'baby', 'child', 'family'];
 
 export interface ScopeCtx {
   scope: Scope;
@@ -173,15 +175,41 @@ export const TOOLS: ToolDef[] = [
   { id: 'kid_treatments', theme: 'health', icon: 'clipboard', scopes: KID, href: (c) => kid(c, '/needs?tab=treatments') },
 
   // ---------------------------------------------------------------- organisation familiale
-  { id: 'family_tasks', theme: 'tasks', icon: 'check-square', scopes: HOME_LIFE, href: () => '/family' },
-  { id: 'family_routines', theme: 'tasks', icon: 'list', scopes: HOME_LIFE, href: () => '/family/routines' },
+  { id: 'family_tasks', theme: 'tasks', icon: 'check-square', scopes: TOGETHER, href: () => '/family' },
+  { id: 'family_routines', theme: 'tasks', icon: 'list', scopes: TOGETHER, href: () => '/family/routines' },
   { id: 'family_history', theme: 'tasks', icon: 'clock', scopes: ['family'], href: () => '/family/history' },
-  { id: 'family_calendar', theme: 'calendar', icon: 'calendar', scopes: HOME_LIFE, href: () => '/calendar' },
-  { id: 'family_nights', theme: 'relay', icon: 'moon', scopes: ['baby', 'child', 'family'], href: () => '/family/nights' },
-  { id: 'family_metime', theme: 'metime', icon: 'sun', scopes: HOME_LIFE, href: () => '/family/me-time' },
-  { id: 'family_difficult', theme: 'prevention', icon: 'wind', scopes: HOME_LIFE, href: () => '/family/difficult' },
-  { id: 'family_urgent', theme: 'prevention', icon: 'zap', scopes: ['child', 'family'], href: () => '/family/urgent' },
+  { id: 'family_calendar', theme: 'calendar', icon: 'calendar', scopes: TOGETHER, href: () => '/calendar' },
+  { id: 'family_nights', theme: 'relay', icon: 'moon', scopes: ['baby', 'child', 'family', 'postpartum', 'pregnancy'], href: () => '/family/nights' },
+  { id: 'family_metime', theme: 'metime', icon: 'sun', scopes: TOGETHER, href: () => '/family/me-time' },
+  { id: 'family_difficult', theme: 'prevention', icon: 'wind', scopes: TOGETHER, href: () => '/family/difficult' },
+  { id: 'family_urgent', theme: 'prevention', icon: 'zap', scopes: ['baby', 'child', 'family', 'postpartum'], href: () => '/family/urgent' },
   { id: 'family_review', theme: 'prevention', icon: 'bar-chart-2', scopes: ['family'], href: () => '/family/review' },
+  { id: 'family_sos', theme: 'prevention', icon: 'life-buoy', scopes: ['baby', 'child', 'family', 'postpartum'], urgent: true, href: () => '/family/sos' },
+
+  // ---------------------------------------------------------------- guides thématiques (04/11/2026) : les fiches rangées par besoin
+  { id: 'guide_illnesses', theme: 'health', icon: 'thermometer', scopes: [...KID, 'family'], href: () => '/guide/illnesses' },
+  { id: 'guide_firstaid', theme: 'health', icon: 'life-buoy', scopes: [...KID, 'family', 'pregnancy', 'postpartum', 'none'], href: () => '/guide/firstaid' },
+  { id: 'guide_hygiene', theme: 'growth', icon: 'droplet', scopes: [...KID, 'family'], href: () => '/guide/hygiene' },
+  { id: 'guide_sport', theme: 'growth', icon: 'activity', scopes: ['child', 'family'], href: () => '/guide/sport' },
+  { id: 'guide_activities', theme: 'growth', icon: 'sun', scopes: [...KID, 'family'], href: () => '/guide/activities' },
+  { id: 'guide_kidsleep', theme: 'sleep', icon: 'moon', scopes: [...KID, 'family'], href: () => '/guide/kidsleep' },
+  { id: 'guide_kidfood', theme: 'feeding', icon: 'coffee', scopes: [...KID, 'family'], href: () => '/guide/kidfood' },
+  { id: 'guide_behaviour', theme: 'mood', icon: 'smile', scopes: ['child', 'family'], href: () => '/guide/behaviour' },
+  { id: 'guide_school', theme: 'tasks', icon: 'book', scopes: [...KID, 'family'], href: () => '/guide/school' },
+  { id: 'guide_toddler', theme: 'growth', icon: 'trending-up', scopes: KID, href: () => '/guide/toddler' },
+  { id: 'guide_work', theme: 'resources', icon: 'briefcase', scopes: ['pregnancy', 'postpartum', 'ttc', 'none', 'baby', 'family'], href: () => '/guide/work' },
+  { id: 'guide_loss', theme: 'mood', icon: 'heart', scopes: ['pregnancy', 'postpartum', 'ttc', 'cycle', 'avoid', 'none'], href: () => '/guide/loss' },
+  { id: 'guide_pma', theme: 'cycle', icon: 'clipboard', scopes: ['ttc'], href: () => '/guide/pma' },
+  { id: 'guide_couple', theme: 'relay', icon: 'users', scopes: TOGETHER, href: () => '/guide/couple' },
+  { id: 'guide_neonat', theme: 'health', icon: 'heart', scopes: ['baby', 'postpartum'], href: (c) => (c.childId || c.babyId ? `/guide/neonat?child=${c.childId ?? c.babyId}` : '/guide/neonat') },
+
+  // ---------------------------------------------------------------- nouveaux outils issus des scripts (04/11/2026)
+  { id: 'consult_questions', theme: 'health', icon: 'help-circle', scopes: ALL, universal: true, href: (c) => (c.childId ? `/consult/questions?child=${c.childId}` : c.scope === 'pregnancy' ? '/consult/questions?for=pregnancy' : '/consult/questions') },
+  { id: 'preg_moves', theme: 'pregnancy', icon: 'activity', scopes: ['pregnancy'], href: () => '/pregnancy/moves' },
+  { id: 'contraception_journal', theme: 'cycle', icon: 'edit-3', scopes: ['avoid'], href: () => '/contraception/journal' },
+  { id: 'cycle_kit', theme: 'reminders', icon: 'briefcase', scopes: ['avoid', 'ttc', 'cycle'], href: () => '/cycle/kit' },
+  { id: 'kid_card', theme: 'health', icon: 'file-text', scopes: KID, href: (c) => kid(c, '/card') },
+  { id: 'kid_steps', theme: 'health', icon: 'check-square', scopes: ['child'], href: (c) => kid(c, '/steps') },
 ];
 
 export const TOOL_BY_ID = Object.fromEntries(TOOLS.map((x) => [x.id, x])) as Record<string, ToolDef>;

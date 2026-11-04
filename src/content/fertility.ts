@@ -6,7 +6,7 @@
  *  - aucune grossesse « garantie » ;
  *  - aucun jour présenté comme exempt de risque de grossesse.
  */
-import type { ContraceptionMethodKind } from '@/lib/types-fertility';
+import type { ContraceptionMethodKind, FertilityJourney } from '@/lib/types-fertility';
 import { t as tr, onLocaleChange } from '@/i18n';
 import { inLang, localized } from '@/i18n/localized';
 
@@ -211,7 +211,7 @@ const EMERGENCY_CONTACTS_FR: { label: string; phone: string; description: string
 ];
 
 // ---------------------------------------------------------------- questions pour la consultation
-const QUESTION_SUGGESTIONS_FR: Record<'ttc' | 'avoid' | 'postpartum', string[]> = {
+const QUESTION_SUGGESTIONS_FR: Record<FertilityJourney, string[]> = {
   // Suivi post-partum : questions que la mère peut préparer pour sa sage-femme ou son médecin
   postpartum: [
     'Est-ce que ce que je ressens depuis la naissance mérite un suivi ?',
@@ -237,6 +237,28 @@ const QUESTION_SUGGESTIONS_FR: Record<'ttc' | 'avoid' | 'postpartum', string[]> 
     'Comment me procurer rapidement une contraception d’urgence ?',
     'Comment changer de méthode sans période non protégée ?',
     'Comment me protéger aussi des infections sexuellement transmissibles ?',
+  ],
+  // Grossesse, enfant, « moi » (04/11/2026) : questions que l'on oublie une fois dans le cabinet (script 80)
+  pregnancy: [
+    'Ce que je ressens en ce moment est-il attendu à ce stade ?',
+    'Quels sont les prochains examens, et à quelle date ?',
+    'Quels signes doivent me faire appeler la maternité sans attendre ?',
+    'Puis-je continuer mon activité physique et mon travail comme aujourd’hui ?',
+    'Quels aliments ou médicaments dois-je éviter ?',
+  ],
+  child: [
+    'Sa croissance et son développement vous paraissent-ils dans les repères ?',
+    'Quels vaccins sont prévus et à quelle date ?',
+    'Pour ce symptôme, quels signes doivent me faire reconsulter ou appeler le 15 ?',
+    'Son sommeil et son alimentation sont-ils adaptés à son âge ?',
+    'Y a-t-il un bilan ou un spécialiste à envisager ?',
+  ],
+  general: [
+    'Mes règles ou mon cycle vous semblent-ils habituels ?',
+    'Mes examens de dépistage sont-ils à jour ?',
+    'Mes vaccinations sont-elles à jour ?',
+    'Ce symptôme mérite-t-il un examen complémentaire ?',
+    'Vers qui me tourner pour parler de mon moral ou de ma fatigue ?',
   ],
 };
 
@@ -449,7 +471,7 @@ const EMERGENCY_CONTACTS_EN: { label: string; phone: string; description: string
   { label: 'Fil Santé Jeunes', phone: '0800235236', description: 'For 12-25 year olds, free and anonymous.' },
 ];
 
-const QUESTION_SUGGESTIONS_EN: Record<'ttc' | 'avoid' | 'postpartum', string[]> = {
+const QUESTION_SUGGESTIONS_EN: Record<FertilityJourney, string[]> = {
   postpartum: [
     'Is what I have been feeling since the birth worth following up?',
     'I sleep badly even when I could rest: what do you think?',
@@ -474,6 +496,27 @@ const QUESTION_SUGGESTIONS_EN: Record<'ttc' | 'avoid' | 'postpartum', string[]> 
     'How can I quickly get emergency contraception?',
     'How can I switch methods without a gap in protection?',
     'How can I also protect myself from sexually transmitted infections?',
+  ],
+  pregnancy: [
+    'Is what I am feeling right now expected at this stage?',
+    'What are the next tests, and when?',
+    'Which signs should make me call the maternity unit straight away?',
+    'Can I keep up my physical activity and my work as they are today?',
+    'Which foods or medicines should I avoid?',
+  ],
+  child: [
+    'Do their growth and development look within the usual range?',
+    'Which vaccines are due and when?',
+    'For this symptom, which signs should make me come back or call 15?',
+    'Are their sleep and food suited to their age?',
+    'Is there an assessment or a specialist to consider?',
+  ],
+  general: [
+    'Do my periods or my cycle seem usual to you?',
+    'Are my screening tests up to date?',
+    'Are my vaccinations up to date?',
+    'Does this symptom call for a further test?',
+    'Who can I turn to to talk about my mood or my tiredness?',
   ],
 };
 
@@ -512,7 +555,7 @@ export let EMERGENCY_INTRO = inLang({ fr: EMERGENCY_INTRO_FR, en: EMERGENCY_INTR
 export const EMERGENCY_OPTIONS: { title: string; delay: string; text: string }[] = localized(EMERGENCY_OPTIONS_FR, EMERGENCY_OPTIONS_EN);
 export const EMERGENCY_FACTS: string[] = localized(EMERGENCY_FACTS_FR, EMERGENCY_FACTS_EN);
 export const EMERGENCY_CONTACTS: { label: string; phone: string; description: string }[] = localized(EMERGENCY_CONTACTS_FR, EMERGENCY_CONTACTS_EN);
-export const QUESTION_SUGGESTIONS: Record<'ttc' | 'avoid' | 'postpartum', string[]> = localized(QUESTION_SUGGESTIONS_FR, QUESTION_SUGGESTIONS_EN);
+export const QUESTION_SUGGESTIONS: Record<FertilityJourney, string[]> = localized(QUESTION_SUGGESTIONS_FR, QUESTION_SUGGESTIONS_EN);
 export const TTC_REMINDER_PRESETS: ReminderPreset[] = localized(TTC_REMINDER_PRESETS_FR, TTC_REMINDER_PRESETS_EN);
 export const AVOID_REMINDER_PRESETS: ReminderPreset[] = localized(AVOID_REMINDER_PRESETS_FR, AVOID_REMINDER_PRESETS_EN);
 

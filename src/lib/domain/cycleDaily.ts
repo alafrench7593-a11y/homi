@@ -25,7 +25,7 @@ export const PILLS: Record<CategoryKey, string[]> = {
   sleep: ['restful', 'difficult', 'nap'],
   fertility: ['mucus_dry', 'mucus_creamy', 'mucus_watery', 'mucus_egg_white', 'ovu_positive', 'ovu_negative', 'ovu_uncertain', 'ovulation_pain', 'preg_positive', 'preg_negative', 'preg_uncertain'],
   intimacy: ['sex_logged', 'sex_protected', 'sex_unprotected', 'sex_condom', 'sex_contraception', 'sex_incident', 'sex_forgot', 'libido_up', 'libido_down', 'discomfort'],
-  contraception: ['pill_taken', 'pill_missed', 'patch_changed', 'ring_inserted', 'ring_removed', 'condom', 'device_declared', 'emergency_taken', 'treatment'],
+  contraception: ['pill_taken', 'pill_missed', 'patch_changed', 'ring_inserted', 'ring_removed', 'condom', 'device_declared', 'emergency_taken', 'treatment', 'effect'],
   habits: ['sport', 'walk', 'hydration', 'alcohol', 'tobacco', 'stress_day', 'travel', 'night_work', 'illness', 'event'],
   notes: [],
 };

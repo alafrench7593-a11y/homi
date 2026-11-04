@@ -31,10 +31,10 @@ export function useContraceptionMethods() {
 }
 
 /** Questions de la personne connectée pour un parcours (les questions partagées par d'autres ne sont pas mêlées). */
-export function useConsultationQuestions(journey: FertilityJourney) {
+export function useConsultationQuestions(journey: FertilityJourney, childId?: string | null) {
   const userId = useUserId();
-  return useRows<ConsultationQuestion>(['consultation_questions', journey], userId ? {
-    table: 'consultation_questions', filters: [eq('user_id', userId), eq('journey', journey)], order: [{ col: 'position' }, { col: 'created_at' }],
+  return useRows<ConsultationQuestion>(['consultation_questions', journey, childId ?? ''], userId ? {
+    table: 'consultation_questions', filters: [eq('user_id', userId), eq('journey', journey), ...(childId ? [eq('child_id', childId)] : [])], order: [{ col: 'position' }, { col: 'created_at' }],
   } : null);
 }
 
@@ -96,12 +96,12 @@ export function useSaveContraceptionMethod() {
   });
 }
 
-export function useAddQuestions(journey: FertilityJourney) {
+export function useAddQuestions(journey: FertilityJourney, childId?: string | null) {
   const inv = useInvalidate();
   const userId = useUserId();
   return useMutation({
     mutationFn: (a: { questions: string[]; startPosition: number }) =>
-      backend.insert('consultation_questions', a.questions.map((question, i) => ({ user_id: userId, journey, question: question.slice(0, 300), position: a.startPosition + i }))),
+      backend.insert('consultation_questions', a.questions.map((question, i) => ({ user_id: userId, journey, question: question.slice(0, 300), position: a.startPosition + i, ...(childId ? { child_id: childId } : {}) }))),
     onSuccess: () => inv('consultation_questions'),
   });
 }

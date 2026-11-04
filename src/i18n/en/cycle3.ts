@@ -108,6 +108,7 @@ export const cycle3: Messages<typeof fr> = {
   'c3.p.libido_down': 'Lower libido',
   'c3.p.discomfort': 'Discomfort',
   'c3.p.pill_taken': 'Pill taken',
+  'c3.p.effect': 'Side effect felt (contraception)',
   'c3.p.pill_missed': 'Pill missed',
   'c3.p.patch_changed': 'Patch changed',
   'c3.p.ring_inserted': 'Ring inserted',

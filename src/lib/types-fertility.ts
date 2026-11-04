@@ -1,7 +1,8 @@
 /** Types des parcours fertilité (alignés sur supabase/migrations/20261016000100_fertility.sql). */
 import { localized } from '@/i18n/localized';
 
-export type FertilityJourney = 'ttc' | 'avoid' | 'postpartum';
+/** Parcours des questions de consultation : fertilité, contraception, post-partum, puis (04/11/2026) grossesse, enfant et « moi » en général. */
+export type FertilityJourney = 'ttc' | 'avoid' | 'postpartum' | 'pregnancy' | 'child' | 'general';
 
 /** Rapport noté (parcours « concevoir ») : PRIVÉ, visible uniquement par la personne qui l'a saisi. */
 export type Answer = 'yes' | 'no' | 'unsure' | 'prefer_not';
@@ -68,7 +69,7 @@ export interface ContraceptionMethod {
 }
 
 export interface ConsultationQuestion {
-  id: string; user_id: string; household_id: string | null; journey: FertilityJourney;
+  id: string; user_id: string; household_id: string | null; journey: FertilityJourney; child_id?: string | null;
   question: string; answer: string | null; done: boolean; shared: boolean; position: number;
   created_at: string; updated_at: string;
 }

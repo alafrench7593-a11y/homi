@@ -717,11 +717,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       const prefs = T('cycle_preferences').find((x) => x.user_id === (r.user_id ?? me));
       if (!prefs?.track_intercourse) throw new BackendError(tr('l2.dm.sexTracking'), 'P0001', 'intimate_optin_required');
     }
+    if (table === 'pregnancy_symptom_logs') { r.logged_at ??= nowIso(); r.created_at ??= nowIso(); }
     if (table === 'contraception_logs') {
       r.logged_on ??= todayIso(); r.label ??= null; r.note ??= null;
-      const KINDS = ['pill_taken', 'pill_missed', 'patch_changed', 'ring_inserted', 'ring_removed', 'condom', 'device_declared', 'emergency_taken', 'treatment'];
+      const KINDS = ['pill_taken', 'pill_missed', 'patch_changed', 'ring_inserted', 'ring_removed', 'condom', 'device_declared', 'emergency_taken', 'treatment', 'effect'];
       if (!KINDS.includes(r.kind as string)) throw new BackendError(tr('l2.dm.entryUnknown'), '23514');
-      if (r.kind !== 'treatment' && T(table).some((x) => x.user_id === (r.user_id ?? me) && x.logged_on === r.logged_on && x.kind === r.kind)) throw new BackendError(tr('l2.dm.alreadyNoted'), '23505');
+      if (r.kind !== 'treatment' && r.kind !== 'effect' && T(table).some((x) => x.user_id === (r.user_id ?? me) && x.logged_on === r.logged_on && x.kind === r.kind)) throw new BackendError(tr('l2.dm.alreadyNoted'), '23505');
     }
     if (table === 'cycle_custom_items') {
       if (!isPremium()) throw new BackendError('Fonction Premium (cycle_custom)', 'P0001', 'premium_required');

@@ -45,3 +45,4 @@ export { lib6 } from './lib6';
 export { lib7 } from './lib7';
 export { lib8 } from './lib8';
 export { sub2 } from './sub2';
+export { guides } from './guides';

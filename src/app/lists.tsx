@@ -29,7 +29,7 @@ function ProgressBar({ done, total }: { done: number; total: number }) {
   return <AnimatedProgress value={total ? done / total : 0} color={t.colors.primary} track={t.colors.surfaceAlt} height={6} accessibilityLabel={tr('u2.lists.progress_a11y', { done, total })} />;
 }
 
-function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => void }) {
+export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: () => void }) {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();

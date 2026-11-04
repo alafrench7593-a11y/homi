@@ -11,7 +11,7 @@ import { useRows } from './hooks';
 export type MilestoneKind = 'milestone' | 'memory' | 'tooth' | 'learning' | 'habit';
 export interface Milestone { id: string; child_id: string; household_id: string; kind: MilestoneKind; title: string; happened_on: string | null; note: string | null; domain?: string | null; created_at: string }
 
-export type HealthItemKind = 'vaccine_to_check' | 'allergy' | 'treatment' | 'contact';
+export type HealthItemKind = 'vaccine_to_check' | 'allergy' | 'treatment' | 'contact' | 'soothe' | 'info';
 export interface HealthItem { id: string; child_id: string; household_id: string; kind: HealthItemKind; label: string; details: string | null; due_on: string | null; done_on: string | null; created_at: string }
 
 export interface FoodIntroduction { id: string; child_id: string; household_id: string; food_name: string; first_tried_on: string; reaction_note: string | null }

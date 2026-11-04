@@ -37,7 +37,9 @@ describe('accueil d’un nouveau-né : seulement ce qui concerne ce profil', () 
   it('les essentiels du nouveau-né, l’aide pour la nuit et les infos de la mère ; pas de catégorie post-partum indépendante', () => {
     const ids = toolsFor({ scope: 'baby', childId: 'lina', babyId: 'lina', postpartum: true }).map((x) => x.id);
     for (const id of ['baby_breastfeed', 'baby_bottle', 'baby_bottle_timer', 'baby_diaper', 'kid_sleep', 'kid_growth', 'kid_vaccines', 'baby_foods', 'meals', 'scan_food', 'appointments', 'baby_night_help', 'pp_recovery', 'pp_checkin', 'pp_mental']) expect(ids).toContain(id);
-    for (const id of ['kid_journal', 'child_school', 'preg_evolution', 'family_tasks', 'kid_needs']) expect(ids).not.toContain(id);
+    for (const id of ['kid_journal', 'child_school', 'preg_evolution', 'kid_needs']) expect(ids).not.toContain(id);
+    // « À deux » (04/11/2026) : l'organisation familiale est ouverte dès le bébé (charge mentale, relais)
+    expect(ids).toContain('family_tasks');
     // Sans post-partum en cours (coparent, adoption…), pas d'informations de récupération de la mère
     expect(toolsFor({ scope: 'baby', childId: 'lina', babyId: 'lina' }).map((x) => x.id)).not.toContain('pp_recovery');
     expect(TOOLS.some((x) => x.id === 'kid_journal' || x.id === 'child_school')).toBe(false);
@@ -57,7 +59,9 @@ describe('parcours grossesse : seulement les outils prévus', () => {
     for (const id of ['preg_evolution', 'appointments', 'documents', 'preg_weight', 'sleep', 'mood', 'preg_eat', 'preg_birth_prep', 'preg_names', 'preg_articles', 'preg_intimacy']) expect(ids).toContain(id);
   });
   it('rien d’un bébé né, ni organisation familiale, ni cycle', () => {
-    for (const id of ['baby_bottle', 'baby_diaper', 'kid_teeth', 'kid_vaccines', 'family_tasks', 'family_routines', 'avoid_cycle', 'ttc_tests', 'pp_recovery', 'baby_night_help']) expect(ids).not.toContain(id);
+    for (const id of ['baby_bottle', 'baby_diaper', 'kid_teeth', 'kid_vaccines', 'avoid_cycle', 'ttc_tests', 'pp_recovery', 'baby_night_help']) expect(ids).not.toContain(id);
+    // « À deux » (04/11/2026) : tâches et agenda partagés dès la grossesse
+    expect(ids).toContain('family_tasks');
   });
   it('rendez-vous de la grossesse visibles sur ce profil, pas ceux d’une ancienne grossesse', () => {
     const c: RelevanceCtx = { scope: 'pregnancy', pregnancyId: 'p1', activeScopes: ['none', 'pregnancy'], trackedChildIds: [] };

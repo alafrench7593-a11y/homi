@@ -110,6 +110,7 @@ export const cycle3 = {
   'c3.p.libido_down': 'Libido en baisse',
   'c3.p.discomfort': 'Inconfort',
   'c3.p.pill_taken': 'Pilule prise',
+  'c3.p.effect': 'Effet ressenti (contraception)',
   'c3.p.pill_missed': 'Pilule oubliée',
   'c3.p.patch_changed': 'Patch changé',
   'c3.p.ring_inserted': 'Anneau posé',

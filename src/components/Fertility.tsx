@@ -473,14 +473,14 @@ export function JourneyArticles({ journey }: { journey: FertilityJourney }) {
 }
 
 // ---------------------------------------------------------------- questions pour la consultation
-export function ConsultationChecklist({ journey }: { journey: FertilityJourney }) {
+export function ConsultationChecklist({ journey, childId }: { journey: FertilityJourney; childId?: string | null }) {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
   const householdId = useHouseholdId();
-  const questionsQ = useConsultationQuestions(journey);
+  const questionsQ = useConsultationQuestions(journey, childId);
   const { data } = questionsQ;
-  const add = useAddQuestions(journey);
+  const add = useAddQuestions(journey, childId);
   const [savingAnswer, setSavingAnswer] = useState(false);
   const share = useShareQuestion();
   const [text, setText] = useState('');
