@@ -5,12 +5,15 @@
  */
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import { ensureFreshInstallHandled } from './freshInstall';
 
 const CHUNK = 1800;
 
 export const secureSessionStorage = {
   async getItem(key: string): Promise<string | null> {
     if (Platform.OS === 'web') return globalThis.localStorage?.getItem(key) ?? null;
+    // Réinstallation : le trousseau survit à la suppression de l'appli → la session y est effacée au premier démarrage
+    await ensureFreshInstallHandled(() => removeChunks(key));
     const count = await SecureStore.getItemAsync(`${key}.n`);
     if (!count) return null;
     const parts: string[] = [];
@@ -40,8 +43,12 @@ export const secureSessionStorage = {
       globalThis.localStorage?.removeItem(key);
       return;
     }
-    const count = Number((await SecureStore.getItemAsync(`${key}.n`)) ?? 0);
-    for (let i = 0; i < count; i++) await SecureStore.deleteItemAsync(`${key}.${i}`);
-    await SecureStore.deleteItemAsync(`${key}.n`);
+    await removeChunks(key);
   },
 };
+
+async function removeChunks(key: string): Promise<void> {
+  const count = Number((await SecureStore.getItemAsync(`${key}.n`)) ?? 0);
+  for (let i = 0; i < count; i++) await SecureStore.deleteItemAsync(`${key}.${i}`);
+  await SecureStore.deleteItemAsync(`${key}.n`);
+}
