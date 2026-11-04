@@ -208,15 +208,28 @@ interface ZonedParts { year: number; month: number; day: number; hour: number; m
 export function zonedParts(date: Date | string, timeZone?: string): ZonedParts {
   const d = toDate(date);
   if (!timeZone) return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(), hour: d.getHours(), minute: d.getMinutes(), weekday: d.getDay() };
-  let parts: { type: string; value: string }[];
+  const device = { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(), hour: d.getHours(), minute: d.getMinutes(), weekday: d.getDay() };
+  const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  let fmt: Intl.DateTimeFormat;
+  let parts: { type: string; value: string }[] = [];
   try {
-    parts = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23', weekday: 'short' }).formatToParts(d);
+    fmt = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23', weekday: 'short' });
   } catch {
-    // iPhone (Hermes) : fuseau ou formatToParts indisponible → heure de l'appareil plutôt qu'un écran en erreur
-    return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(), hour: d.getHours(), minute: d.getMinutes(), weekday: d.getDay() };
+    // Fuseau inconnu de l'appareil → heure de l'appareil plutôt qu'un écran en erreur
+    return device;
   }
-  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '0';
-  const wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
+  try { parts = fmt.formatToParts(d); } catch { /* lecture du texte formaté ci-dessous */ }
+  const get = (t: string) => parts.find((p) => p.type === t)?.value;
+  if (!get('year') || !get('hour')) {
+    // iPhone (Hermes) : formatToParts ne renvoie qu'un seul bloc de texte (« Wed, 11/4/2026, 14:05 ») → lecture des chiffres
+    let text = '';
+    try { text = fmt.format(d); } catch { return device; }
+    const n = text.match(/\d+/g) ?? [];
+    if (n.length < 5 || n[2].length !== 4) return device;
+    const wd = DAYS.findIndex((w) => text.includes(w));
+    return { year: Number(n[2]), month: Number(n[0]), day: Number(n[1]), hour: Number(n[3]) % 24, minute: Number(n[4]), weekday: wd < 0 ? new Date(Date.UTC(Number(n[2]), Number(n[0]) - 1, Number(n[1]))).getUTCDay() : wd };
+  }
+  const wd = DAYS.indexOf(get('weekday') ?? '');
   return { year: Number(get('year')), month: Number(get('month')), day: Number(get('day')), hour: Number(get('hour')) % 24, minute: Number(get('minute')), weekday: wd < 0 ? 0 : wd };
 }
 
