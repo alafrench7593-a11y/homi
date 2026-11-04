@@ -257,3 +257,50 @@ Deno.test('suppression du compte : client RevenueCat supprimé, sans jamais bloq
   assertEquals(await deleteRevenueCatCustomer(revenueCatApi('k', (() => Promise.reject(new Error('réseau'))) as typeof fetch), U1), 'failed');
   assertEquals(await deleteRevenueCatCustomer(null, U1), 'not_configured');
 });
+
+// ---------------------------------------------------------------- Scénarios complémentaires (audit du 05/11/2026)
+Deno.test('webhook : essai résilié pendant les 3 jours → accès jusqu’à la fin de l’essai, puis plus rien (aucun prélèvement)', async () => {
+  const { db, rows } = memoryDb();
+  await hook(db)(req(ev('INITIAL_PURCHASE', { period_type: 'TRIAL', expiration_at_ms: NOW + 3 * DAY, purchased_at_ms: NOW, price_in_purchased_currency: 0, currency: 'EUR' })));
+  await hook(db)(req(ev('CANCELLATION', { period_type: 'TRIAL', cancel_reason: 'UNSUBSCRIBE', expiration_at_ms: NOW + 3 * DAY, event_timestamp_ms: NOW + DAY })));
+  const r = rows.get(U1)!;
+  assertEquals([r.status, r.will_renew, r.expires_at, await db.premium(U1)], ['cancelled', false, new Date(NOW + 3 * DAY).toISOString(), true], 'essai résilié');
+  assertEquals(r.price, undefined, 'essai résilié : aucun prix enregistré');
+  await hook(db)(req(ev('EXPIRATION', { period_type: 'TRIAL', expiration_reason: 'UNSUBSCRIBE', expiration_at_ms: NOW - 1, event_timestamp_ms: NOW + 3 * DAY })));
+  assertEquals([rows.get(U1)!.status, rows.get(U1)!.will_renew, await db.premium(U1)], ['expired', false, false], 'fin de l’essai');
+});
+
+Deno.test('webhook : 6 mois puis 12 mois sans essai, prix réel enregistré, renouvellement qui prolonge l’échéance', async () => {
+  const { db, rows } = memoryDb();
+  await hook(db)(req(ev('INITIAL_PURCHASE', { product_id: 'aufildenous_premium_6months', expiration_at_ms: NOW + 182 * DAY, purchased_at_ms: NOW, price_in_purchased_currency: 54.99, currency: 'EUR' })));
+  let r = rows.get(U1)!;
+  assertEquals([r.status, r.period_type, r.price, r.currency, r.trial_ends_at, r.will_renew], ['active', 'six_months', 54.99, 'EUR', undefined, true], '6 mois');
+  await hook(db)(req(ev('RENEWAL', { product_id: 'aufildenous_premium_6months', expiration_at_ms: NOW + 364 * DAY, event_timestamp_ms: NOW + 182 * DAY, price_in_purchased_currency: 54.99, currency: 'EUR' })));
+  r = rows.get(U1)!;
+  assertEquals([r.status, r.expires_at, r.last_event], ['active', new Date(NOW + 364 * DAY).toISOString(), 'RENEWAL'], 'renouvellement 6 mois');
+  const { db: db2, rows: rows2 } = memoryDb();
+  await hook(db2)(req(ev('INITIAL_PURCHASE', { product_id: 'aufildenous_premium_annual', expiration_at_ms: NOW + 365 * DAY, price_in_purchased_currency: 99.99, currency: 'EUR' })));
+  assertEquals([rows2.get(U1)!.status, rows2.get(U1)!.period_type, rows2.get(U1)!.price], ['active', 'annual', 99.99], '12 mois');
+});
+
+Deno.test('webhook : paiement refusé puis régularisé → grâce, puis actif (problème de paiement effacé)', async () => {
+  const { db, rows } = memoryDb();
+  await hook(db)(req(ev('INITIAL_PURCHASE')));
+  await hook(db)(req(ev('BILLING_ISSUE', { expiration_at_ms: NOW + 6 * DAY, event_timestamp_ms: NOW + 1000 })));
+  assertEquals([rows.get(U1)!.status, !!rows.get(U1)!.billing_issue_at, await db.premium(U1)], ['grace', true, true], 'grâce');
+  await hook(db)(req(ev('RENEWAL', { expiration_at_ms: NOW + 36 * DAY, event_timestamp_ms: NOW + 2 * DAY })));
+  const r = rows.get(U1)!;
+  assertEquals([r.status, r.billing_issue_at, r.will_renew, await db.premium(U1)], ['active', null, true, true], 'régularisé');
+  // Annulation par la boutique pour erreur de facturation avant l'échéance : grâce (pas de retrait brutal)
+  await hook(db)(req(ev('CANCELLATION', { cancel_reason: 'BILLING_ERROR', expiration_at_ms: NOW + 5 * DAY, event_timestamp_ms: NOW + 3 * DAY })));
+  assertEquals(rows.get(U1)!.status, 'grace', 'annulation BILLING_ERROR avant échéance');
+});
+
+Deno.test('webhook : remboursement signalé par EXPIRATION (CUSTOMER_SUPPORT) puis remboursement annulé (REFUND_REVERSED)', async () => {
+  const { db, rows } = memoryDb();
+  await hook(db)(req(ev('INITIAL_PURCHASE', { expiration_at_ms: NOW + 30 * DAY })));
+  await hook(db)(req(ev('EXPIRATION', { expiration_reason: 'CUSTOMER_SUPPORT', expiration_at_ms: NOW + 30 * DAY, event_timestamp_ms: NOW + 1000 })));
+  assertEquals([rows.get(U1)!.status, !!rows.get(U1)!.refunded_at, await db.premium(U1)], ['refunded', true, false], 'remboursé (EXPIRATION)');
+  await hook(db)(req(ev('REFUND_REVERSED', { expiration_at_ms: NOW + 30 * DAY, event_timestamp_ms: NOW + 2000 })));
+  assertEquals([rows.get(U1)!.status, rows.get(U1)!.refunded_at, await db.premium(U1)], ['active', null, true], 'remboursement annulé');
+});

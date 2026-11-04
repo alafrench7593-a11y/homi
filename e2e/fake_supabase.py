@@ -54,6 +54,45 @@ class FakeSupabase:
         self.t('household_members').append({'household_id': hid, 'user_id': uid, 'role': 'owner', 'can_view': dom, 'can_edit': dom, 'joined_at': now()})
         return hid
 
+    # ------------------------------------------------------------ abonnement (même règle que la base)
+    def sub_grants(self, s):
+        """public._subscription_grants : essai / actif / grâce / annulé / pause programmée ET échéance future ;
+        échéance nulle → seulement octroi promotionnel ou à vie ; remboursé, expiré, problème de paiement → rien."""
+        if not s or s.get('status') not in ('trial', 'active', 'grace', 'cancelled', 'paused'): return False
+        exp = s.get('expires_at')
+        if exp: return exp > now()
+        return s.get('status') == 'active' and (s.get('store') == 'promotional' or s.get('period_type') == 'lifetime')
+
+    def partner_of(self, subscriber):
+        """public._premium_partner_of : le premier co-parent arrivé dans un foyer dont l'abonné·e est propriétaire,
+        sinon la propriétaire du foyer où l'abonné·e est co-parent (un seul autre adulte)."""
+        M = self.t('household_members')
+        owned = [m['household_id'] for m in M if m['user_id'] == subscriber and m['role'] == 'owner']
+        cands = sorted([(m.get('joined_at') or '', m['user_id']) for m in M if m['household_id'] in owned and m['role'] == 'coparent' and m['user_id'] != subscriber])
+        if cands: return cands[0][1]
+        mine = [m for m in M if m['user_id'] == subscriber and m['role'] == 'coparent']
+        own = sorted([(me.get('joined_at') or '', o['user_id']) for me in mine for o in M if o['household_id'] == me['household_id'] and o['role'] == 'owner' and o['user_id'] != subscriber])
+        return own[0][1] if own else None
+
+    def premium_of(self, uid):
+        if not uid: return False
+        if uid in self.premium_users: return True
+        for s in self.t('subscriptions'):
+            if self.sub_grants(s) and (s.get('user_id') == uid or self.partner_of(s.get('user_id')) == uid): return True
+        return False
+
+    def premium_share(self, uid):
+        name = lambda u: next((p.get('display_name') for p in self.t('profiles') if p['id'] == u), None)
+        mine = next((s for s in self.t('subscriptions') if s.get('user_id') == uid and self.sub_grants(s)), None)
+        out = {'shared_with': None, 'shared_by': None}
+        if mine:
+            p = self.partner_of(uid)
+            if p: out['shared_with'] = {'user_id': p, 'display_name': name(p)}
+        else:
+            by = next((s['user_id'] for s in self.t('subscriptions') if self.sub_grants(s) and self.partner_of(s['user_id']) == uid), None)
+            if by: out['shared_by'] = {'user_id': by, 'display_name': name(by)}
+        return out
+
     def uid_from(self, headers):
         a = headers.get('authorization', '')
         return self.tokens.get(a.replace('Bearer ', '')) if a else None
@@ -134,10 +173,12 @@ class FakeSupabase:
         if fn == 'create_household':
             return 200, self.new_household(uid, body.get('p_name') or 'Ma famille', False)
         if fn == 'has_premium':
-            return 200, uid in self.premium_users
+            return 200, self.premium_of(uid)
+        if fn == 'my_premium_share':
+            return 200, self.premium_share(uid)
         if fn == 'create_household_invitation':
             # Même règle que la base : l'invitation d'un coparent est une fonction Premium
-            if uid not in self.premium_users: return 400, {'code': 'P0001', 'message': 'Fonction Premium (coparent_invite)', 'hint': 'premium_required'}
+            if not self.premium_of(uid): return 400, {'code': 'P0001', 'message': 'Fonction Premium (coparent_invite)', 'hint': 'premium_required'}
             tok = uuid.uuid4().hex + uuid.uuid4().hex[:8]
             self.t('household_invitations').append({'id': str(uuid.uuid4()), 'household_id': body['p_household'], 'token': tok, 'role': body.get('p_role', 'coparent'),
                 'can_view': body.get('p_can_view', []), 'can_edit': body.get('p_can_edit', []), 'created_at': now(), 'expires_at': '2099-01-01T00:00:00Z', 'accepted_at': None, 'revoked_at': None})

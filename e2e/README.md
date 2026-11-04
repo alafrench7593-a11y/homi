@@ -20,5 +20,6 @@ Autres parcours (même version web, même serveur) :
 
 ```bash
 python3 e2e/agenda_abonnement.py   # lien d'abonnement d'agenda : création, affichage unique, liste sans jeton, révocation
+python3 e2e/abonnement_serveur.py  # Premium selon l'état SERVEUR (gratuit, essai, actif, annulé, expiré, remboursé, grâce, pause, co-parent) ; IPHONE=1 : sans Intl.PluralRules…
 python3 e2e/temps_reel.py          # temps réel : une tâche ajoutée par le coparent apparaît sans action (faux Realtime, WebSocket)
 ```
