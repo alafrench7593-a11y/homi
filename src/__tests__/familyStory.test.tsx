@@ -8,7 +8,7 @@ jest.mock('expo-router', () => {
   const r = { push: jest.fn(), replace: jest.fn(), back: jest.fn(), canGoBack: () => true, setParams: jest.fn() };
   return { router: r, useRouter: () => r, useLocalSearchParams: () => ({}), useIsFocused: () => true, usePathname: () => '/story', useNavigation: () => ({ setOptions: jest.fn(), addListener: () => () => undefined }), Redirect: () => null };
 });
-jest.mock('@expo/vector-icons', () => ({ Feather: () => null }));
+jest.mock('@expo/vector-icons', () => ({ Feather: () => null, MaterialCommunityIcons: () => null }));
 
 import React from 'react';
 import { AccessibilityInfo } from 'react-native';

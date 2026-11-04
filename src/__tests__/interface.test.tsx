@@ -2,7 +2,7 @@
  * Interface : jetons d'interaction, bouton anti double envoi, zone tactile animée, feuille de style web (focus, mots longs).
  */
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
-jest.mock('@expo/vector-icons', () => ({ Feather: () => null }));
+jest.mock('@expo/vector-icons', () => ({ Feather: () => null, MaterialCommunityIcons: () => null }));
 
 import React from 'react';
 import { StyleSheet, Text as RNText } from 'react-native';

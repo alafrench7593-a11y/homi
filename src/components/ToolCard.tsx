@@ -25,7 +25,7 @@ export const TOOL_CARD_HEIGHT = 164;
 
 /** Ouvre l'outil : mémorise l'origine (glyphe → en-tête) et navigue sans attendre l'animation. */
 export function openTool(tool: CatalogTool, y?: number, reduce?: boolean) {
-  markToolOpen({ href: tool.href, theme: tool.theme, icon: tool.icon, urgent: tool.urgent, y });
+  markToolOpen({ href: tool.href, id: tool.id, theme: tool.theme, icon: tool.icon, urgent: tool.urgent, y });
   const go = () => router.push(tool.href as never);
   if (tool.urgent || reduce) go();
   else setTimeout(go, 110); // le temps que l'enfoncement soit perçu, pas plus
@@ -79,7 +79,7 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width, befo
           {/* voile de lisibilité en thème sombre (surfaces très transparentes) : couleur de fond existante */}
           {t.isDark ? <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: tint(t.colors.background, 0.38) }} /> : null}
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.sm, paddingTop: spacing.sm, paddingBottom: spacing.sm, gap: 8 }}>
-            <ToolGlyph theme={tool.theme} icon={tool.icon} play={play} hovered={hovered} pressed={pressed} active={status?.active} urgent={tool.urgent} />
+            <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} play={play} hovered={hovered} pressed={pressed} active={status?.active} urgent={tool.urgent} />
             {/* zone de titre d'au moins 2 lignes : la carte ne « saute » pas, et un libellé plus long agrandit la carte au lieu d'être coupé */}
             <View style={{ minHeight: 40, justifyContent: 'center', alignSelf: 'stretch' }}>
               <Text weight="bold" center style={{ fontSize: 14.5, lineHeight: 19 }}>{tool.label}</Text>
@@ -135,7 +135,7 @@ export function ToolShortcut({ tool, status }: { tool: CatalogTool; status?: Too
         onHoverOut={() => { setHovered(false); press.handlers.onHoverOut?.(); }}
         style={{ width: 84, alignItems: 'center', gap: 6, paddingVertical: 4 }}
       >
-        <ToolGlyph theme={tool.theme} icon={tool.icon} size={52} play={play} pressed={pressed} hovered={hovered} active={status?.active} />
+        <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} size={52} play={play} pressed={pressed} hovered={hovered} active={status?.active} />
         <Text variant="caption" weight="medium" center style={{ color: t.colors.text, minHeight: 34 }}>{tool.label}</Text>
       </Pressable>
     </Animated.View>

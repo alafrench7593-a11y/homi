@@ -3,7 +3,7 @@
  * rendez-vous confirmés jamais déplacés, rappels, calendrier vaccinal versionné, plusieurs enfants, séparation des
  * profils, « Mes actions du jour ».
  */
-jest.mock('@expo/vector-icons', () => ({ Feather: () => null }));
+jest.mock('@expo/vector-icons', () => ({ Feather: () => null, MaterialCommunityIcons: () => null }));
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 
 import { SYMPTOM_CARE, SYMPTOMS, EAT_AVOID, EAT_HYGIENE, EAT_INTERESTING, NUTRIENTS, SUPPLEMENT_NOTICE } from '@/content/pregnancyCare';

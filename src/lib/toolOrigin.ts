@@ -6,7 +6,7 @@
 import type { IconName } from '@/components/ui';
 import type { ToolTheme } from '@/lib/domain/toolCatalog';
 
-export interface ToolOrigin { path: string; theme: ToolTheme; icon: IconName; urgent?: boolean; at: number; y?: number }
+export interface ToolOrigin { path: string; id?: string; theme: ToolTheme; icon: IconName; urgent?: boolean; at: number; y?: number }
 let last: ToolOrigin | null = null;
 
 /** Chemin comparable à usePathname() : sans paramètres ni groupe de routes. */

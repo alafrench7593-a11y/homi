@@ -89,7 +89,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       </View>
       {title ? (
         <View style={{ paddingHorizontal: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.md }} testID={tool ? `miniapp-${tool.id}` : undefined}>
-          {origin ? <ArrivalGlyph origin={origin} /> : tool ? <ToolGlyph theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={52} play={1} /> : null}
+          {origin ? <ArrivalGlyph origin={origin} /> : tool ? <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={52} play={1} /> : null}
           <View style={{ flex: 1, gap: 4 }}>
             <Text variant="title" accessibilityRole="header">{title}</Text>
             {subtitle ? <Text muted>{subtitle}</Text> : null}
@@ -150,7 +150,7 @@ function ArrivalGlyph({ origin }: { origin: ToolOrigin }) {
   const fromY = Math.max(24, Math.min(220, (origin.y ?? 160) - 120));
   return (
     <Animated.View style={{ opacity: v.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, 1, 1] }), transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [fromY, 0] }) }, { scale: v.interpolate({ inputRange: [0, 1], outputRange: [1.45, 1] }) }] }}>
-      <ToolGlyph theme={origin.theme} icon={origin.icon} urgent={origin.urgent} size={44} play={play} />
+      <ToolGlyph id={origin.id} theme={origin.theme} icon={origin.icon} urgent={origin.urgent} size={44} play={play} />
     </Animated.View>
   );
 }

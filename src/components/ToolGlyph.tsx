@@ -13,6 +13,8 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, Ellipse, G, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { Icon, type IconName } from '@/components/ui';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { toolGlyphIcon } from './toolGlyphIcons';
 import { AnimatedPath } from '@/components/MotionKit';
 import type { ToolTheme } from '@/lib/domain/toolCatalog';
 import { easing } from '@/theme/motion';
@@ -58,6 +60,8 @@ export function glyphColor(t: ReturnType<typeof useTheme>, theme: ToolTheme, urg
 }
 
 export interface ToolGlyphProps {
+  /** Identifiant de l'outil (src/lib/journeys/tools.ts) : choisit le symbole propre à l'outil. */
+  id?: string;
   theme: ToolTheme;
   icon: IconName;
   size?: number;
@@ -72,7 +76,7 @@ export interface ToolGlyphProps {
   urgent?: boolean;
 }
 
-export function ToolGlyph({ theme, icon, size = 56, play = 0, hovered, pressed, active, disabled, urgent }: ToolGlyphProps) {
+export function ToolGlyph({ id, theme, icon, size = 56, play = 0, hovered, pressed, active, disabled, urgent }: ToolGlyphProps) {
   const t = useTheme();
   const reduce = useReduceMotion();
   const spec = SPEC[urgent ? 'urgent' : theme];
@@ -103,6 +107,7 @@ export function ToolGlyph({ theme, icon, size = 56, play = 0, hovered, pressed, 
   const iconSize = Math.round(22 * s);
   const fillA = t.isDark ? 0.2 : 0.14;
   const gid = useRef(`tg${++seq}`).current; // identifiants SVG uniques (plusieurs glyphes par page)
+  const glyph = toolGlyphIcon(urgent ? 'urgent' : theme, icon, id);
 
   return (
     <Animated.View
@@ -139,7 +144,8 @@ export function ToolGlyph({ theme, icon, size = 56, play = 0, hovered, pressed, 
       {theme !== 'memories' || urgent ? <Overlay theme={urgent ? 'urgent' : theme} k={k} c={c} size={size} /> : null}
       {spec.icon === false ? null : (
         <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', transform: [{ translateY: spec.dy * s }] }}>
-          <Icon name={icon} size={iconSize} color={c} />
+          {/* symbole plein propre à l'outil (biberon, dent, femme enceinte…) ; icône au trait si aucun n'est défini */}
+          {glyph ? <MaterialCommunityIcons name={glyph as never} size={Math.round(iconSize * 1.18)} color={c} /> : <Icon name={icon} size={iconSize} color={c} />}
         </View>
       )}
       {active ? <View style={{ position: 'absolute', right: 2 * s, top: 2 * s, width: 10 * s, height: 10 * s, borderRadius: 5 * s, backgroundColor: c, borderWidth: 2, borderColor: t.colors.surface }} /> : null}

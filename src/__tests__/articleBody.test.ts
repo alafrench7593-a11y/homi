@@ -1,6 +1,6 @@
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
-jest.mock('@expo/vector-icons', () => ({ Feather: () => null }));
+jest.mock('@expo/vector-icons', () => ({ Feather: () => null, MaterialCommunityIcons: () => null }));
 import { readingMinutes, splitFaq, splitSections } from '@/features/articleBody';
 
 describe('lecture d’article en sections', () => {

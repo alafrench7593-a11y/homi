@@ -26,7 +26,7 @@ jest.mock('expo-notifications', () => ({
   requestPermissionsAsync: jest.fn(async () => ({ granted: true })),
 }));
 jest.mock('expo-device', () => ({ isDevice: false, modelName: 'test' }));
-jest.mock('@expo/vector-icons', () => ({ Feather: () => null }));
+jest.mock('@expo/vector-icons', () => ({ Feather: () => null, MaterialCommunityIcons: () => null }));
 jest.mock('@/lib/backend', () => {
   const { createDemoBackend } = jest.requireActual('@/lib/backend/demo');
   const types = jest.requireActual('@/lib/backend/types');

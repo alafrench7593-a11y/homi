@@ -1,7 +1,7 @@
 /** Accueil « Au fil de nous » : les mini-vidéos défilent (début = étape du profil, jamais deux fois la même d'affilée). */
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
-jest.mock('@expo/vector-icons', () => ({ Feather: () => null }));
+jest.mock('@expo/vector-icons', () => ({ Feather: () => null, MaterialCommunityIcons: () => null }));
 
 import React from 'react';
 import { act, create } from 'react-test-renderer';
