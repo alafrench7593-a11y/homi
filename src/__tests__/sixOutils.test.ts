@@ -83,6 +83,6 @@ describe('offres : outils à vie et essai', () => {
 import { PAID_TOOLS } from '@/lib/premium/offers';
 it('offres : la liste des outils payants de l’application est celle de la migration', () => {
   const fs = require('fs') as { readFileSync(p: string, enc: 'utf8'): string }; // eslint-disable-line @typescript-eslint/no-require-imports
-  const sql = fs.readFileSync('supabase/migrations/20261107000200_offres_ia_outils.sql', 'utf8');
+  const sql = ['20261107000200_offres_ia_outils.sql', '20261107000300_charge_mentale.sql'].map((f) => fs.readFileSync(`supabase/migrations/${f}`, 'utf8')).join('\n');
   expect([...sql.matchAll(/\('([a-z_]+)', 'TOOL_/g)].map((m) => m[1])).toEqual([...PAID_TOOLS]);
 });

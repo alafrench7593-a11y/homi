@@ -16,7 +16,7 @@ import { Appear } from '@/components/Appear';
 import { Banner, Button, Card, Field, haptic, Icon, IconButton, Row, Segmented, Text, Toggle } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
-import { backend, BackendError } from '@/lib/backend';
+import { backend, BackendError, eq } from '@/lib/backend';
 import { ensureHousehold, useActivePregnancy, useChildren, useHouseholdId, useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { frToISO } from '@/lib/domain/dates';
@@ -72,7 +72,7 @@ export default function ScanScreen() {
   const hid = useHouseholdId();
   const { data: kids } = useChildren();
   const pregnancy = useActivePregnancy();
-  const { from } = useLocalSearchParams<{ from?: string }>();
+  const { from, paper, title: titleParam, cat: catParam, child: childParam } = useLocalSearchParams<{ from?: string; paper?: string; title?: string; cat?: string; child?: string }>();
   const [step, setStep] = useState<'pages' | 'details' | 'saving' | 'done'>('pages');
   const [pages, setPages] = useState<Page[]>([]);
   const [files, setFiles] = useState<PickedFile[]>([]);
@@ -80,11 +80,12 @@ export default function ScanScreen() {
   const [editing, setEditing] = useState<string | null>(null);
   const [previewing, setPreviewing] = useState(false);
   // Informations
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<DocCategory>('other');
+  // Ouvert depuis « Papiers de la famille » : titre, catégorie et enfant déjà remplis
+  const [title, setTitle] = useState(typeof titleParam === 'string' ? titleParam.slice(0, 120) : '');
+  const [category, setCategory] = useState<DocCategory>(catParam === 'admin' ? 'admin' : 'other');
   const [custom, setCustom] = useState('');
   const [suggested, setSuggested] = useState<DocCategory | null>(null);
-  const [subject, setSubject] = useState<Subject>({ kind: 'me' });
+  const [subject, setSubject] = useState<Subject>(typeof childParam === 'string' && childParam ? { kind: 'child', id: childParam } : { kind: 'me' });
   const [date, setDate] = useState('');
   const [notes, setNotes] = useState('');
   const [share, setShare] = useState(false);
@@ -226,6 +227,11 @@ export default function ScanScreen() {
         }
       }
       inv('documents');
+      // Papier de la famille : la photo est rattachée à sa fiche (livret de famille, carte d'identité…)
+      if (typeof paper === 'string' && /^[0-9a-f-]{36}$/i.test(paper) && lastId) {
+        await backend.update('family_papers', { document_id: lastId }, [eq('id', paper)]).catch(() => undefined);
+        inv('family_papers');
+      }
       haptic('success');
       setSavedId(files.length > 1 ? null : lastId);
       setStep('done');

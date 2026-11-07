@@ -14,6 +14,8 @@ export const AI_MONTHLY_QUESTIONS = 250;
 export const PAID_TOOLS = [
   'pma_tracker', 'custody', 'kid_routines', 'bottle_scoops', 'contraception_journal',
   'kid_steps', 'cycle_kit', 'cycle_stats', 'meal_rankings', 'family_review',
+  // charge mentale (migration 20261107000300)
+  'family_domains', 'family_prep',
 ] as const;
 export type PaidTool = (typeof PAID_TOOLS)[number];
 export const isPaidTool = (id: string | null | undefined): id is PaidTool => !!id && (PAID_TOOLS as readonly string[]).includes(id);

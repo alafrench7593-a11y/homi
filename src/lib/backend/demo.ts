@@ -97,6 +97,8 @@ const OWNER_TABLES: Record<string, string> = {
   contraception_logs: 'user_id', cycle_custom_items: 'user_id', cycle_insight_feedback: 'user_id', cycle_shares: 'owner_id',
   // Suivi PMA et préférence d'alerte des rappels produits (07/11/2026) : strictement personnels
   pma_protocols: 'user_id', pma_meds: 'user_id', pma_logs: 'user_id', recall_watch_prefs: 'user_id',
+  // « Je suis à bout » (07/11/2026) : strictement personnel
+  exhaustion_checkins: 'user_id',
   // Parcours : gérés par la personne (le foyer ne les modifie jamais)
   user_journeys: 'user_id',
   recipe_favorites: 'user_id', recipe_dislikes: 'user_id',

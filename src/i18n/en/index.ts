@@ -47,3 +47,4 @@ export { lib8 } from './lib8';
 export { sub2 } from './sub2';
 export { guides } from './guides';
 export { tools6 } from './tools6';
+export { mental } from './mental';

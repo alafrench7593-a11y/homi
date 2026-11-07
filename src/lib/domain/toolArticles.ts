@@ -147,6 +147,15 @@ const TOOL_TOPICS_FR: Record<string, ToolTopic> = {
   recall_alerts: { words: ['rappel', 'rappelconso', 'produit', 'retrait', 'lot', 'alerte', 'securite'], cats: ['materiel', 'alimentation'], ask: 'Que faire si un produit que j’ai acheté est rappelé ?' },
   kid_routines: { words: ['routine', 'rituel', 'matin', 'coucher', 'autonomie', 'pictogramme', 'organisation', 'ecran'], cats: ['education', 'vie-pratique'], journeys: KID, ask: 'Comment aider mon enfant à être autonome le matin ?' },
   custody: { words: ['garde alternee', 'separation', 'divorce', 'deux maisons', 'coparent', 'mediation', 'residence'], cats: ['vie-pratique', 'droits-demarches', 'education'], journeys: KID, ask: 'Comment organiser la garde alternée pour un jeune enfant ?' },
+  brain_dump: { words: ['charge mentale', 'organisation', 'partage', 'taches', 'couple', 'epuisement'], cats: ['vie-pratique', 'sante-mentale'], ask: 'Comment alléger ma charge mentale ?' },
+  family_domains: { words: ['charge mentale', 'partage', 'couple', 'organisation', 'taches'], cats: ['vie-pratique'], ask: 'Comment mieux partager les tâches à deux ?' },
+  mental_load: { words: ['charge mentale', 'partage', 'couple', 'equilibre'], cats: ['vie-pratique', 'sante-mentale'], ask: 'Comment parler de la charge mentale dans le couple ?' },
+  family_prep: { words: ['rentree', 'vacances', 'anniversaire', 'organisation', 'demarches'], cats: ['vie-pratique', 'droits-demarches'], ask: 'Comment préparer la rentrée sans stress ?' },
+  offduty: { words: ['repos', 'relais', 'epuisement', 'burn', 'temps pour soi'], cats: ['sante-mentale'], ask: 'Comment prendre du temps pour moi ?' },
+  house_notebook: { words: ['organisation', 'nounou', 'garde', 'grands-parents', 'urgence'], cats: ['vie-pratique', 'ecole-garde'], ask: 'Que noter pour la nounou ou les grands-parents ?' },
+  couple_week: { words: ['couple', 'dialogue', 'charge mentale', 'organisation'], cats: ['sante-mentale', 'vie-pratique'], ask: 'Comment organiser un point hebdomadaire à deux ?' },
+  exhaustion_check: { words: ['epuisement', 'burn', 'fatigue', 'depression', 'craquer', 'aide'], cats: ['sante-mentale'], ask: 'Je suis épuisée, que faire ?' },
+  family_papers: { words: ['demarches', 'caf', 'papiers', 'carte d identite', 'passeport', 'inscription', 'livret de famille'], cats: ['droits-demarches'], ask: 'Quels papiers pour inscrire mon enfant à l’école ?' },
 };
 
 
@@ -262,6 +271,15 @@ const ASK_EN: Record<string, string> = {
   'recall_alerts': 'What should I do if a product I bought is recalled?',
   'kid_routines': 'How can I help my child get ready on their own in the morning?',
   'custody': 'How do we organise shared custody for a young child?',
+  'brain_dump': 'How can I lighten my mental load?',
+  'family_domains': 'How can we share tasks better as a couple?',
+  'mental_load': 'How do we talk about the mental load as a couple?',
+  'family_prep': 'How do I prepare for back-to-school without stress?',
+  'offduty': 'How can I take time for myself?',
+  'house_notebook': 'What should I write down for the nanny or grandparents?',
+  'couple_week': 'How do we hold a weekly check-in as a couple?',
+  'exhaustion_check': 'I am exhausted, what can I do?',
+  'family_papers': 'Which papers do I need to enrol my child at school?',
 };
 const TOOL_TOPICS_EN: Record<string, ToolTopic> = Object.fromEntries(
   Object.entries(TOOL_TOPICS_FR).map(([k, v]) => [k, { ...v, ask: ASK_EN[k] ?? v.ask }]),

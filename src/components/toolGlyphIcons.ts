@@ -155,6 +155,15 @@ const BY_ID: Record<string, string> = {
   recall_alerts: 'alert-octagram',         // alertes produits rappelés
   kid_routines: 'gesture-tap-button',      // routines en pictogrammes
   custody: 'home-switch',                  // garde alternée : deux maisons
+  brain_dump: 'head-lightbulb',            // vider ma tête
+  family_domains: 'account-switch',        // confier un domaine
+  mental_load: 'scale-balance',            // qui y pense
+  family_prep: 'calendar-check',           // échéances préparées
+  offduty: 'power-sleep',                  // je décroche
+  house_notebook: 'notebook',              // carnet de la maison
+  couple_week: 'coffee',                   // point de couple
+  exhaustion_check: 'battery-low',         // je suis à bout
+  family_papers: 'folder-account',         // papiers de la famille
 };
 
 /** Repli par catégorie puis icône d'origine (glyphes sans identifiant d'outil). */

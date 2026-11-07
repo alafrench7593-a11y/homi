@@ -217,6 +217,17 @@ export const TOOLS: ToolDef[] = [
   { id: 'recall_alerts', theme: 'scanner', icon: 'alert-triangle', scopes: ALL, universal: true, href: () => '/scanner/recalls' },
   { id: 'kid_routines', theme: 'tasks', icon: 'sun', scopes: ['child', 'family'], href: () => '/family/kid-routines' },
   { id: 'custody', theme: 'calendar', icon: 'home', scopes: [...KID, 'family'], href: () => '/family/custody' },
+
+  // ---------------------------------------------------------------- charge mentale (07/11/2026)
+  { id: 'brain_dump', theme: 'tasks', icon: 'edit-3', scopes: TOGETHER, href: () => '/family/brain-dump' },
+  { id: 'family_domains', theme: 'tasks', icon: 'users', scopes: TOGETHER, href: () => '/family/domains' },
+  { id: 'mental_load', theme: 'relay', icon: 'pie-chart', scopes: TOGETHER, href: () => '/family/load' },
+  { id: 'family_prep', theme: 'calendar', icon: 'calendar', scopes: TOGETHER, href: () => '/family/prep' },
+  { id: 'offduty', theme: 'metime', icon: 'moon', scopes: TOGETHER, href: () => '/family/offduty' },
+  { id: 'house_notebook', theme: 'tasks', icon: 'book', scopes: TOGETHER, href: () => '/family/notebook' },
+  { id: 'couple_week', theme: 'relay', icon: 'coffee', scopes: TOGETHER, href: () => '/family/couple' },
+  { id: 'exhaustion_check', theme: 'mood', icon: 'battery', scopes: TOGETHER, href: () => '/family/exhausted' },
+  { id: 'family_papers', theme: 'resources', icon: 'folder', scopes: ALL, universal: true, href: () => '/family/papers' },
 ];
 
 export const TOOL_BY_ID = Object.fromEntries(TOOLS.map((x) => [x.id, x])) as Record<string, ToolDef>;
