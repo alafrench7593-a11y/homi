@@ -2,6 +2,7 @@
 export const APP_ROUTES: readonly string[] = [
   '/',
   '/admin',
+  '/admin/feedback',
   '/admin/import-recipes',
   '/admin/products',
   '/admin/recipes',
@@ -112,6 +113,7 @@ export const APP_ROUTES: readonly string[] = [
   '/family/solo',
   '/family/sos',
   '/family/urgent',
+  '/feedback',
   '/fertility',
   '/fertility/body',
   '/fertility/calendar',

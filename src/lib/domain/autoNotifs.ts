@@ -11,7 +11,9 @@
  *    « prise » ou « ignorée » 30 min après l'heure prévue, une seule relance. Jamais décalée par les heures calmes.
  *    Le texte reste neutre (aucun nom de médicament sur l'écran verrouillé).
  */
-export type AutoKind = 'appointment' | 'task' | 'prep' | 'paper' | 'dose';
+import { nextWeeklyMood } from './moodSupport';
+
+export type AutoKind = 'appointment' | 'task' | 'prep' | 'paper' | 'dose' | 'mood';
 
 export interface AutoPrefs {
   appointments: boolean;
@@ -20,12 +22,16 @@ export interface AutoPrefs {
   papers: boolean;
   /** relance si une prise n'est pas notée 30 min après l'heure prévue */
   doseFollowUp: boolean;
+  /** widget « Bébé » : heures du prochain biberon et de la prochaine prise (sinon discret) */
+  widgetDetails: boolean;
+  /** rappel du bilan d'humeur une fois par semaine (le dimanche à 18 h), choisi par la personne */
+  weeklyMood: boolean;
   quiet: boolean;
   /** heures calmes, en heures entières (début inclus, fin exclue), ex. 22 → 7 */
   quietFrom: number;
   quietTo: number;
 }
-export const DEFAULT_AUTO_PREFS: AutoPrefs = { appointments: true, tasks: true, prep: true, papers: true, doseFollowUp: true, quiet: true, quietFrom: 22, quietTo: 7 };
+export const DEFAULT_AUTO_PREFS: AutoPrefs = { appointments: true, tasks: true, prep: true, papers: true, doseFollowUp: true, widgetDetails: false, weeklyMood: false, quiet: true, quietFrom: 22, quietTo: 7 };
 
 export interface AutoPlan {
   /** identifiant stable : la même chose n'est programmée qu'une fois */
@@ -65,6 +71,7 @@ export interface AutoTexts {
   prep: (title: string) => { title: string; body: string };
   paper: (title: string, days: number) => { title: string; body: string };
   dose: (time: string) => { title: string; body: string };
+  mood?: () => { title: string; body: string };
 }
 
 const MAX_AUTO = 30; // iOS : 64 notifications en attente pour toute l'appli ; on en garde pour les rappels
@@ -122,6 +129,8 @@ export function planAutoNotifications(i: AutoInputs, prefs: AutoPrefs, tx: AutoT
       for (const days of [60, 15]) push({ id: `paper-${p.id}-${days}`, kind: 'paper', at: at(addDays(p.expires_on, -days), 10), ...tx.paper(p.title, days), url: '/family/papers' }, true);
     }
   }
+  // Bilan d'humeur hebdomadaire, seulement si la personne l'a demandé (le dimanche à 18 h)
+  if (prefs.weeklyMood && tx.mood) push({ id: 'mood-weekly', kind: 'mood', at: nextWeeklyMood(i.now), ...tx.mood(), url: '/me/mood' }, true);
   const doses: AutoPlan[] = [];
   if (prefs.doseFollowUp) {
     for (const d of i.doses ?? []) {

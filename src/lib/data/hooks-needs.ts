@@ -8,6 +8,7 @@ import { useMutation } from '@tanstack/react-query';
 import { backend, eq, gte, inList, type Filter } from '../backend';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
 import { cancelDoseFollowUp, syncLocalReminders } from '../notifications';
+import { insertOrQueue } from '../offline';
 import { loadDeviceReminders } from './deviceReminders';
 import { useUserId } from '../auth';
 import type { Reminder } from '../types';
@@ -120,10 +121,12 @@ export function useLogDose() {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: async (v: { treatment_id: string; scheduled_for: string; status: TreatmentLog['status']; note?: string | null; existingId?: string | null }) => {
-      const row = { status: v.status, note: v.note ?? null };
-      if (v.existingId) await backend.update('treatment_logs', row, [eq('id', v.existingId)]);
-      else await backend.insert('treatment_logs', { ...row, treatment_id: v.treatment_id, scheduled_for: v.scheduled_for, household_id: hid });
+      // Hors connexion (07/11/2026) : la réponse est gardée sur le téléphone et envoyée au retour du réseau.
+      // Une seule réponse par prise (treatment_id, scheduled_for) : la nouvelle remplace l'ancienne.
+      const res = await insertOrQueue('treatment_logs', { status: v.status, note: v.note ?? null, treatment_id: v.treatment_id, scheduled_for: v.scheduled_for, household_id: hid },
+        { conflict: 'treatment_id,scheduled_for', merge: true });
       if (v.status !== 'snoozed') await cancelDoseFollowUp(v.treatment_id, v.scheduled_for).catch(() => undefined);
+      return res;
     },
     onSuccess: () => inv('treatment_logs'),
   });

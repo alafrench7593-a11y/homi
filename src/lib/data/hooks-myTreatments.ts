@@ -9,6 +9,7 @@ import { useHouseholdId, useInvalidate, useRows } from './hooks';
 import { syncLocalReminders, cancelDoseFollowUp } from '../notifications';
 import { loadDeviceReminders } from './deviceReminders';
 import { useUserId } from '../auth';
+import { insertOrQueue } from '../offline';
 import type { Treatment, TreatmentLog } from './hooks-needs';
 
 export interface MyTreatment extends Omit<Treatment, 'household_id' | 'child_id'> { user_id: string }
@@ -86,10 +87,11 @@ export function useLogMyDose() {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: async (v: { treatment_id: string; scheduled_for: string; status: MyTreatmentLog['status']; note?: string | null; existingId?: string | null }) => {
-      const row = { status: v.status, note: v.note ?? null };
-      if (v.existingId) await backend.update('my_treatment_logs', row, [eq('id', v.existingId)]);
-      else await backend.insert('my_treatment_logs', { ...row, treatment_id: v.treatment_id, scheduled_for: v.scheduled_for, user_id: userId });
+      // Hors connexion : gardée sur le téléphone, envoyée au retour du réseau (une réponse par prise)
+      const res = await insertOrQueue('my_treatment_logs', { status: v.status, note: v.note ?? null, treatment_id: v.treatment_id, scheduled_for: v.scheduled_for, user_id: userId },
+        { conflict: 'treatment_id,scheduled_for', merge: true });
       if (v.status !== 'snoozed') await cancelDoseFollowUp(v.treatment_id, v.scheduled_for).catch(() => undefined);
+      return res;
     },
     onSuccess: () => inv('my_treatment_logs'),
   });

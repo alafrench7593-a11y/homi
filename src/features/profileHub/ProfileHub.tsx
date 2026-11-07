@@ -72,18 +72,20 @@ export function MyDayCard() {
   const doneCount = doable.filter(isDone).length;
   async function toggle(i: MyDayItem) {
     const done = !isDone(i);
+    let queued = false;
     try {
       const d = doseOf(i);
       if (d) {
         if (!done && d.log) await unlog.mutateAsync({ table: d.mine ? 'my_treatment_logs' : 'treatment_logs', id: d.log.id });
         else if (done) {
           const v = { treatment_id: d.treatmentId, scheduled_for: d.scheduledFor, status: 'taken' as const, existingId: d.log?.id };
-          if (d.mine) await logMine.mutateAsync(v); else await logChild.mutateAsync(v);
+          queued = (d.mine ? await logMine.mutateAsync(v) : await logChild.mutateAsync(v)) === 'queued';
         }
-      } else if (i.kind === 'reminder') await toggleRem.mutateAsync({ reminderId: i.refId, day, done, checkId: checks.find((c) => c.reminder_id === i.refId)?.id });
+      } else if (i.kind === 'reminder') queued = (await toggleRem.mutateAsync({ reminderId: i.refId, day, done, checkId: checks.find((c) => c.reminder_id === i.refId)?.id })) === 'queued';
       else await toggleTask.mutateAsync({ taskId: i.refId, done });
       haptic(done ? 'success' : 'light');
-      if (done) toast(tr('nt.doneToast'));
+      if (queued) toast(tr('u7.track.queued'), 'info');
+      else if (done) toast(tr('nt.doneToast'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   // ce qui reste à faire d'abord ; ce qui est fait reste visible, coché, en fin de liste

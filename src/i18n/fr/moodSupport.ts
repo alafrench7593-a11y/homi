@@ -1,0 +1,22 @@
+/** Soutien selon le bilan d'humeur, widget « Bébé » (07/11/2026). */
+export const moodSupport = {
+  'ms.section': 'Mon moral',
+  'cf.give': 'Confier à : {name}',
+  'cf.given': 'C’est confié à : {name}.',
+  'ms.lowTitle': 'Ces derniers jours ont l’air lourds',
+  'ms.lowBody': 'Vous avez noté plusieurs journées difficiles cette semaine. En parler aide souvent : votre sage-femme, votre médecin ou la PMI peuvent vous écouter. Le 3114 répond aussi, gratuitement, 24 h/24. Et vous pouvez demander un relais pour souffler.',
+  'ms.talk': 'Noter une question pour mon rendez-vous',
+  'ms.relay': 'Demander un relais',
+  'ms.hide': 'Masquer cette semaine',
+  'ms.weeklyT': 'Comment allez-vous cette semaine ?',
+  'ms.weeklyB': 'Prenez une minute pour votre bilan d’humeur. Il reste privé.',
+  'ms.weeklyPref': 'Rappel de mon bilan d’humeur',
+  'ms.weeklyPrefD': 'Une fois par semaine, le dimanche à 18 h. Le bilan reste visible par vous seule.',
+  'wb.title': 'Widget « Bébé » (iPhone)',
+  'wb.pref': 'Afficher les heures dans le widget',
+  'wb.prefD': 'Prochain biberon et prochaine prise de traitement. Jamais le nom d’un médicament. Désactivé : le widget affiche seulement « Ouvrir l’application ».',
+  'wb.howto': 'Pour l’ajouter : appui long sur l’écran d’accueil de l’iPhone, puis « + » et « Au fil de nous ».',
+  'wb.bottle': 'Biberon de {name} : {time}',
+  'wb.dose': 'Traitement ({who}) : {time}',
+  'wb.nothing': 'Rien de prévu pour l’instant',
+};

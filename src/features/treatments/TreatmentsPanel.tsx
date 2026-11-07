@@ -116,7 +116,8 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
   async function answer(d: Dose<AnyTreatment, AnyLog>, status: 'taken' | 'snoozed' | 'skipped', withNote?: string | null) {
     try {
       const v = { treatment_id: d.treatment.id, scheduled_for: d.scheduledFor, status, note: withNote ?? d.log?.note ?? null, existingId: d.log?.id };
-      if (isChild) await logChild.mutateAsync(v); else await logMine.mutateAsync(v);
+      const res = isChild ? await logChild.mutateAsync(v) : await logMine.mutateAsync(v);
+      if (res === 'queued') toast(tr('u7.track.queued'), 'info');
       if (status === 'snoozed') await snoozeLocally(label(d.treatment.name), d.treatment.dose_text, url).catch(() => undefined);
       haptic('success');
     } catch (e) { toast(friendlyError(e), 'error'); }

@@ -61,6 +61,17 @@ export default function NotificationSettings() {
         <ListRow icon="bell" title={tr('nt.reminders')} subtitle={tr('nt.remindersD')} onPress={() => router.push('/settings/reminders')} testID="nt-reminders" />
       </Card>
 
+      <SectionTitle title={tr('ms.section')} />
+      <Card testID="nt-mood">
+        <ToggleRow label={tr('ms.weeklyPref')} hint={tr('ms.weeklyPrefD')} value={prefs.weeklyMood} onChange={(v) => set({ weeklyMood: v })} />
+      </Card>
+
+      <SectionTitle title={tr('wb.title')} />
+      <Card testID="nt-widget">
+        <ToggleRow label={tr('wb.pref')} hint={tr('wb.prefD')} value={prefs.widgetDetails} onChange={(v) => set({ widgetDetails: v })} />
+        <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('wb.howto')}</Text>
+      </Card>
+
       <SectionTitle title={tr('nt.quietTitle')} />
       <Card testID="nt-quiet">
         <ToggleRow label={tr('nt.quiet')} hint={tr('nt.quietD')} value={prefs.quiet} onChange={(v) => set({ quiet: v })} />

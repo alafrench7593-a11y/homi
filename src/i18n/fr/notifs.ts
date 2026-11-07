@@ -53,6 +53,7 @@ export const notifs = {
   'nt.k.task': 'tâche',
   'nt.k.prep': 'échéance',
   'nt.k.dose': 'relance de prise',
+  'nt.k.mood': 'bilan d’humeur',
   'nt.k.paper': 'papier',
   'nt.validate': 'Sur chaque rappel et chaque tâche, « C’est fait » enregistre que c’est fini (avec l’heure) ; « Dans 15 min » vous le redemande plus tard. Vous pouvez aussi cocher dans « Ma journée ».',
   'nt.test': 'Envoyer une notification d’essai',

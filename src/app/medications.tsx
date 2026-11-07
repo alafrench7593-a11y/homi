@@ -62,7 +62,8 @@ export default function Medications() {
       if (r.log?.status === 'taken') await unlog.mutateAsync({ table: r.childId ? 'treatment_logs' : 'my_treatment_logs', id: r.log.id });
       else {
         const v = { treatment_id: r.treatmentId, scheduled_for: r.scheduledFor, status: 'taken' as const, existingId: r.log?.id };
-        if (r.childId) await logChild.mutateAsync(v); else await logMine.mutateAsync(v);
+        const res = r.childId ? await logChild.mutateAsync(v) : await logMine.mutateAsync(v);
+        if (res === 'queued') toast(tr('u7.track.queued'), 'info');
       }
     } catch (e) { toast(friendlyError(e), 'error'); }
   }

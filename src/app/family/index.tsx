@@ -33,7 +33,10 @@ export default function FamilyHome() {
   const requestsQ = useCareRequests();
   const { data: shifts } = useCareShifts();
   const { data: mySleep } = useParentSleepLogs(1);
-  const { me, labelOf } = usePeople();
+  const { me, labelOf, people } = usePeople();
+  // L'autre adulte à qui confier : le co-parent d'abord, sinon le premier autre membre
+  const others = people.filter((p) => p.id !== me);
+  const partner = (others.find((p) => p.role === 'coparent') ?? others.find((p) => p.role === 'owner') ?? others[0])?.id ?? null;
   const toast = useToast();
   const saveTask = useSaveTask();
   const [quick, setQuick] = useState('');
@@ -77,8 +80,12 @@ export default function FamilyHome() {
       action: x.status === 'done' ? undefined
         : !x.assignee_id && me ? { label: tr('u2.fam.take'), onPress: () => void quickSave(x.id, { assignee_id: me }, tr('u2.fam.taken')), testID: `family-take-${x.id}` }
           : { label: tr('u2.fam.done'), onPress: () => void quickSave(x.id, { status: 'done' }, tr('u2.fam.done_toast')), testID: `family-done-${x.id}` },
+      // Confier en un geste (07/11/2026) : une tâche qui m'est confiée passe à l'autre adulte du foyer
+      action2: x.status === 'todo' && me && x.assignee_id === me && partner
+        ? { label: tr('cf.give', { name: labelOf(partner) }), onPress: () => void quickSave(x.id, { assignee_id: partner }, tr('cf.given', { name: labelOf(partner) })), testID: `family-give-${x.id}` }
+        : undefined,
     }));
-  }, [tasks, day, me, labelOf]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tasks, day, me, labelOf, partner]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function quickSave(id: string, input: Parameters<typeof saveTask.mutateAsync>[0]['input'], message: string) {
     try { await saveTask.mutateAsync({ id, input }); haptic('success'); toast(message); } catch (e) { toast(friendlyError(e), 'error'); }

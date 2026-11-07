@@ -192,6 +192,7 @@ export default function AdminScreen() {
   const footer = (
     <View style={{ gap: spacing.md, marginTop: spacing.xxs }}>
 
+      {moderator ? <Button label={tr('fb.admin.open_btn')} icon="message-circle" variant="secondary" onPress={() => router.push('/admin/feedback')} testID="admin-open-feedback" /> : null}
       {editor ? <Button label={tr('u5.admin.b_recipes')} icon="book-open" variant="secondary" onPress={() => router.push('/admin/recipes')} testID="admin-open-recipes" /> : null}
       {editor ? <Button label={tr('u5.admin.b_import')} icon="upload" variant="secondary" onPress={() => router.push('/admin/import-recipes')} testID="admin-open-import" /> : null}
       {editor ? <Button label={tr('u5.admin.b_products')} icon="shopping-bag" variant="secondary" onPress={() => router.push('/admin/products')} testID="admin-open-products" /> : null}

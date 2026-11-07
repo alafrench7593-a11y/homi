@@ -25,6 +25,8 @@ export interface ThreadRow {
   icon?: IconName;
   onPress?: () => void;
   action?: { label: string; onPress: () => void; testID?: string; strong?: boolean };
+  /** Seconde action, plus discrète (ex. « Confier à … », 07/11/2026). */
+  action2?: { label: string; onPress: () => void; testID?: string };
   /** Libellé d'état personnalisé (sinon celui de la frise). */
   tag?: string;
   testID?: string;
@@ -107,11 +109,21 @@ export function DayThread({ title, caption, rows, empty, right, testID }: {
                         <Text weight={hot ? 'bold' : 'medium'} style={{ textDecorationLine: r.state === 'done' ? 'line-through' : 'none' }} numberOfLines={2}>{r.title}</Text>
                         {r.sub ? <Text variant="caption" muted numberOfLines={2}>{r.sub}</Text> : null}
                       </View>
-                      {r.action ? (
-                        <Tappable bare onPress={r.action.onPress} accessibilityRole="button" accessibilityLabel={`${r.action.label} : ${r.title}`} testID={r.action.testID} hitSlop={8}
-                          style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: r.action.strong || hot ? accent : tint(accent, t.isDark ? 0.2 : 0.12) }}>
-                          <Text variant="caption" weight="bold" color={r.action.strong || hot ? t.colors.primaryText : accent}>{r.action.label}</Text>
-                        </Tappable>
+                      {r.action || r.action2 ? (
+                        <View style={{ alignItems: 'flex-end', gap: 6 }}>
+                          {r.action ? (
+                            <Tappable bare onPress={r.action.onPress} accessibilityRole="button" accessibilityLabel={`${r.action.label} : ${r.title}`} testID={r.action.testID} hitSlop={8}
+                              style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: r.action.strong || hot ? accent : tint(accent, t.isDark ? 0.2 : 0.12) }}>
+                              <Text variant="caption" weight="bold" color={r.action.strong || hot ? t.colors.primaryText : accent}>{r.action.label}</Text>
+                            </Tappable>
+                          ) : null}
+                          {r.action2 ? (
+                            <Tappable bare onPress={r.action2.onPress} accessibilityRole="button" accessibilityLabel={`${r.action2.label} : ${r.title}`} testID={r.action2.testID} hitSlop={8}
+                              style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999, borderWidth: 1, borderColor: tint(accent, 0.4) }}>
+                              <Text variant="caption" weight="bold" color={accent}>{r.action2.label}</Text>
+                            </Tappable>
+                          ) : null}
+                        </View>
                       ) : null}
                     </View>
                   </Tappable>

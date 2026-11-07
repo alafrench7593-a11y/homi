@@ -61,6 +61,24 @@ describe('file hors ligne', () => {
     expect(mockSent[0].opts).toEqual({ onConflict: 'client_id', ignoreDuplicates: true });
   });
 
+  it('prise de médicament hors ligne (07/11/2026) : gardée, puis envoyée en remplacement de la réponse précédente', async () => {
+    useOfflineStore.setState({ online: false });
+    const row = { status: 'taken', note: null, treatment_id: 't1', scheduled_for: '2026-11-07T07:00:00.000Z', user_id: 'u' };
+    expect(await insertOrQueue('my_treatment_logs', row, { conflict: 'treatment_id,scheduled_for', merge: true })).toBe('queued');
+    expect(useOfflineStore.getState().pending[0].row).toEqual(row); // pas d'id inventé : l'unicité est (traitement, heure prévue)
+    useOfflineStore.setState({ online: true });
+    expect(await flushQueue()).toBe(1);
+    expect(mockSent[0]).toMatchObject({ table: 'my_treatment_logs', opts: { onConflict: 'treatment_id,scheduled_for', ignoreDuplicates: false } });
+  });
+
+  it('« C’est fait » hors ligne : une seule validation par rappel et par jour (doublon ignoré)', async () => {
+    useOfflineStore.setState({ online: false });
+    await insertOrQueue('daily_checks', { user_id: 'u', reminder_id: 'r1', on_date: '2026-11-07', source: 'app' }, { conflict: 'user_id,reminder_id,on_date' });
+    useOfflineStore.setState({ online: true });
+    expect(await flushQueue()).toBe(1);
+    expect(mockSent[0].opts).toEqual({ onConflict: 'user_id,reminder_id,on_date', ignoreDuplicates: true });
+  });
+
   it('une observation par jour : envoi en remplacement (merge)', async () => {
     await insertOrQueue('fertility_observations', { user_id: 'u', observed_on: '2026-10-18', bbt_celsius: 36.5 }, { conflict: 'user_id,observed_on', merge: true });
     expect(mockSent[0].opts).toEqual({ onConflict: 'user_id,observed_on', ignoreDuplicates: false });

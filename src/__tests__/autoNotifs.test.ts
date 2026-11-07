@@ -85,3 +85,13 @@ describe('notifications automatiques', () => {
     });
   });
 });
+
+describe('bilan d’humeur hebdomadaire', () => {
+  it('seulement si demandé : dimanche 18 h, vers le bilan d’humeur', () => {
+    const txm = { ...tx, mood: () => ({ title: 'Comment allez-vous ?', body: 'x' }) };
+    expect(planAutoNotifications(base(), DEFAULT_AUTO_PREFS, txm).some((p) => p.kind === 'mood')).toBe(false);
+    const p = planAutoNotifications(base(), { ...DEFAULT_AUTO_PREFS, weeklyMood: true }, txm).find((x) => x.kind === 'mood')!;
+    expect(p.at.toString()).toBe(new Date(2026, 10, 8, 18, 0).toString());
+    expect(p.url).toBe('/me/mood');
+  });
+});

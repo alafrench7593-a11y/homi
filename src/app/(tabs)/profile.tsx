@@ -8,6 +8,7 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { avatarInitial } from '@/components/AccountActions';
 import { ProfilePhotoSheet } from '@/features/profilePhoto/ProfilePhotoSheet';
 import { ChildAvatar } from '@/features/childAvatar';
+import { MoodSupportCard } from '@/features/mood/MoodSupportCard';
 import { ChildrenHealthSection, FamilyDocsSection, ForMeSection, MyDayCard, OrganizeSection } from '@/features/profileHub/ProfileHub';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Screen } from '@/components/Screen';
@@ -78,6 +79,7 @@ export default function Profile() {
         </Appear>
 
         {/* Espace de la maman (07/11/2026) : sa journée, son organisation, les documents, la santé des enfants, elle */}
+        <MoodSupportCard testID="profile-mood-support" />
         <Appear kind="soft" delay={0.18}><MyDayCard /></Appear>
         <OrganizeSection />
         <FamilyDocsSection />
@@ -122,6 +124,7 @@ export default function Profile() {
           <ListRow icon="star" title={tr('profile.subscription')} subtitle={premium ? tr('profile.premiumActive') : tr('profile.free')} onPress={() => router.push('/settings/subscription')} />
           <ListRow icon="lock" title={tr('profile.privacy')} onPress={() => router.push('/settings/privacy')} />
           <ListRow icon="settings" title={tr('profile.appearance')} onPress={() => router.push('/settings')} />
+          <ListRow icon="message-circle" title={tr('fb.row')} subtitle={tr('fb.rowD')} onPress={() => router.push({ pathname: '/feedback', params: { from: '/profile' } } as never)} testID="profile-feedback" />
           <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle="15 · 112 · 3114" danger onPress={() => router.push('/emergency')} />
         </Card>
       </Screen>

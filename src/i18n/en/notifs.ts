@@ -55,6 +55,7 @@ export const notifs: Messages<typeof fr> = {
   'nt.k.task': 'task',
   'nt.k.prep': 'deadline',
   'nt.k.dose': 'dose follow-up',
+  'nt.k.mood': 'mood check-in',
   'nt.k.paper': 'paper',
   'nt.validate': 'On every reminder and task, “Done” records that it’s finished (with the time); “In 15 min” asks you again later. You can also tick it in “My day”.',
   'nt.test': 'Send a test notification',

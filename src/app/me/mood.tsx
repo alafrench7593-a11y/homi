@@ -3,6 +3,7 @@
  * Si les réponses évoquent une détresse, on propose doucement les numéros d'aide.
  */
 import { insertOrQueue } from '@/lib/offline';
+import { MoodSupportCard } from '@/features/mood/MoodSupportCard';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import React, { useState } from 'react';
 import { View } from 'react-native';
@@ -154,7 +155,7 @@ export default function MoodScreen() {
             ]} />
 
             {trend.some((x) => x > 0) ? <MiniBars values={trend} labels={days7.map((d) => formatDate(d, { weekday: 'short' }).replace('.', '').slice(0, 2).toLowerCase())} testID="mood-week" /> : null}
-            {savedDistress && <SupportBanner urgent={savedDistress === 'urgent'} />}
+            {savedDistress ? <SupportBanner urgent={savedDistress === 'urgent'} /> : <MoodSupportCard />}
 
             <Card>
               <Text weight="bold">{tr('u8.mood.todayIs')}</Text>

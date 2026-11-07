@@ -54,3 +54,5 @@ export { profilePhoto } from './profilePhoto';
 export { hub } from './hub';
 export { notifs } from './notifs';
 export { meds } from './meds';
+export { feedback } from './feedback';
+export { moodSupport } from './moodSupport';
