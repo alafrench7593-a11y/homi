@@ -7,6 +7,7 @@ import { Tappable } from '@/components/Tappable';
 import { UserAvatar } from '@/components/UserAvatar';
 import { avatarInitial } from '@/components/AccountActions';
 import { ProfilePhotoSheet } from '@/features/profilePhoto/ProfilePhotoSheet';
+import { ChildAvatar } from '@/features/childAvatar';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
@@ -89,7 +90,7 @@ export default function Profile() {
         ) : null}
         <Card>
           {pregnancy && <ListRow icon="moon" title={tr('profile.pregnancy')} subtitle={pregnancyProgress(pregnancy.due_date).label} onPress={() => router.push('/pregnancy')} />}
-          {(children ?? []).map((c) => <ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}`)} />)}
+          {(children ?? []).map((c) => <ListRow key={c.id} icon="smile" leading={<ChildAvatar child={c} size={36} />} testID={`profile-child-${c.first_name}`} title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}`)} />)}
           <ListRow icon="plus" title={tr('profile.addChild')} onPress={() => router.push('/profiles/new')} />
           <ListRow icon="users" title={tr('profile.partner')} subtitle={tr('profile.partnerSub')} onPress={() => router.push('/settings/family')} />
         </Card>

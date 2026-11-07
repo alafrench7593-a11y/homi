@@ -32,3 +32,20 @@ describe('photo de profil', () => {
     expect(fr['pphoto.privacy']).toMatch(/GPS/);
   });
 });
+
+import { childAvatarPath, isChildAvatarPath } from '@/lib/domain/profilePhoto';
+const H = '44444444-4444-4444-8444-444444444444';
+const K = '55555555-5555-4555-8555-555555555555';
+describe('photo de profil d’un enfant', () => {
+  it('chemin <foyer>/children/<enfant>/<uuid>.jpg', () => {
+    expect(childAvatarPath(H, K, F)).toBe(`${H}/children/${K}/${F}.jpg`);
+    expect(() => childAvatarPath(H, '../x', F)).toThrow();
+  });
+  it('n’efface que les photos de cet enfant (nouveau et ancien format)', () => {
+    expect(isChildAvatarPath(H, K, `${H}/children/${K}/${F}.jpg`)).toBe(true);
+    expect(isChildAvatarPath(H, K, `${H}/children/${K}.jpg`)).toBe(true);
+    expect(isChildAvatarPath(H, K, `${H}/children/${ME}/${F}.jpg`)).toBe(false);
+    expect(isChildAvatarPath(H, K, `${OTHER}/children/${K}/${F}.jpg`)).toBe(false);
+    expect(isChildAvatarPath(H, K, null)).toBe(false);
+  });
+});

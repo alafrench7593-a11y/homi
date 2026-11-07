@@ -6,13 +6,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { useActivePregnancy, useActiveSubject, useEmergencyResources, useExpectedBabies, useJourneyState, usePremium, useTrackedChildren } from '@/lib/data/hooks';
-import { childAge, initials } from '@/lib/domain/child';
+import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { isDemo } from '@/lib/backend';
 import { getLocale, t as tr, type TKey } from '@/i18n';
 import { emergencyItems, useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 import { Banner, Button, Card, haptic, Icon, type IconName, Row, Text } from './ui';
-import { initialsColor } from './Illustrations';
 import { Sheet, useToast } from './Overlays';
 import { Tappable } from '@/components/Tappable';
 import { ChildAvatar } from '@/features/childAvatar';
@@ -68,7 +67,7 @@ export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubb
     const baby = js.childType(c.id) === 'baby';
     items.push({
       key: c.id, label: c.first_name, sub: `${tr(baby ? 'pj.kind.baby' : 'pj.kind.child')} · ${childAge(c.birth_date).label}`,
-      avatar: <Avatar label={initials(c.first_name)} color={initialsColor(c.id)} />, active: subject.type === 'child' && subject.id === c.id,
+      avatar: <ChildAvatar child={c} size={40} />, active: subject.type === 'child' && subject.id === c.id,
       onPress: () => setSubject({ type: 'child', id: c.id }),
     });
   }

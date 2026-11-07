@@ -24,3 +24,18 @@ export function centerSquare(width: number, height: number): { originX: number; 
   const side = Math.max(1, Math.min(width, height));
   return { originX: Math.floor((width - side) / 2), originY: Math.floor((height - side) / 2), width: side, height: side };
 }
+
+// ---------------------------------------------------------------- photo de profil d'un enfant (espace « avatars » du foyer)
+export const CHILD_AVATAR_BUCKET = 'avatars';
+
+/** Chemin dans l'espace « avatars » du foyer : <foyer>/children/<enfant>/<uuid>.jpg (nouveau fichier à chaque changement). */
+export function childAvatarPath(householdId: string, childId: string, fileId: string): string {
+  const U = /^[0-9a-f-]{36}$/;
+  if (!U.test(householdId) || !U.test(childId) || !U.test(fileId)) throw new Error('Identifiant invalide');
+  return `${householdId}/children/${childId}/${fileId}.jpg`;
+}
+/** Le fichier est-il bien une photo de CET enfant de CE foyer ? (ancien format <enfant>.jpg compris) */
+export function isChildAvatarPath(householdId: string, childId: string, path: string | null | undefined): boolean {
+  return !!path && (path === `${householdId}/children/${childId}.jpg` || new RegExp(`^${householdId}/children/${childId}/[0-9a-f-]{36}\\.jpg$`).test(path));
+}
+

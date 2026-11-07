@@ -616,11 +616,11 @@ export function Divider() {
   return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: t.colors.border, marginVertical: spacing.xs }} />;
 }
 
-export function ListRow({ icon, title, subtitle, onPress, right, danger, testID }: { icon?: IconName; title: string; subtitle?: string; onPress?: () => void; right?: React.ReactNode; danger?: boolean; testID?: string }) {
+export function ListRow({ icon, leading, title, subtitle, onPress, right, danger, testID }: { icon?: IconName; leading?: React.ReactNode; title: string; subtitle?: string; onPress?: () => void; right?: React.ReactNode; danger?: boolean; testID?: string }) {
   const t = useTheme();
   const inner = (
     <View style={[styles.listRow]}>
-      {icon && (
+      {leading ? leading : icon && (
         <View style={[styles.listIcon, { backgroundColor: danger ? t.colors.dangerSoft : t.colors.surfaceAlt }]}>
           <Icon name={icon} size={18} color={danger ? t.colors.danger : t.colors.text} />
         </View>

@@ -5,10 +5,15 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { initialsColor } from '@/components/Illustrations';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Button, IconButton, Row, Text } from '@/components/ui';
+import { Button, Icon, IconButton, Row, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { NeedsSummary } from '@/features/needs';
 import { ChildAvatar } from '@/features/childAvatar';
+import { ChildPhotoSheet } from '@/features/profilePhoto/ProfilePhotoSheet';
+import { Tappable } from '@/components/Tappable';
+import { useCanAddPhotos } from '@/lib/data/hooks-photos';
+import { palette } from '@/theme/tokens';
+import { useTheme } from '@/theme/ThemeProvider';
 import { ChildTabs, CHILD_TABS, EditChildSheet, FoodsTab, GrowthTab, HealthTab, MilestonesTab, OverviewTab, type ChildTab } from '@/features/child';
 import { backend, eq } from '@/lib/backend';
 import { useActiveSubject, useChild, useChildren, useInvalidate, useMemberships } from '@/lib/data/hooks';
@@ -27,6 +32,9 @@ export default function ChildProfile() {
   const child = useChild(params.id);
   const isLoading = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
   const loadError = membershipsQ.isError && !membershipsQ.data ? membershipsQ : childrenQ.isError && !childrenQ.data ? childrenQ : null;
+  const [photoOpen, setPhotoOpen] = useState(false);
+  const canPhoto = useCanAddPhotos();
+  const theme = useTheme();
   const [deleting, setDeleting] = useState(false);
   const { subject, setSubject } = useActiveSubject();
   const initial = CHILD_TABS.some((x) => x.value === params.tab) ? (params.tab as ChildTab) : 'apercu';
@@ -82,7 +90,15 @@ export default function ChildProfile() {
       right={<IconButton icon="edit-2" label={tr('u4.child.editA11y', { name: child.first_name })} onPress={() => setEditing(true)} />}
     >
       <Row style={{ gap: spacing.md }}>
-        <ChildAvatar child={child} size={64} />
+        {/* Photo de profil de l'enfant (07/11/2026) : un appui pour l'ajouter, la changer ou la supprimer */}
+        {canPhoto ? (
+          <Tappable accessibilityRole="button" accessibilityLabel={child.photo_path ? tr('pphoto.childChange', { name: child.first_name }) : tr('pphoto.childAdd', { name: child.first_name })} onPress={() => setPhotoOpen(true)} testID="child-photo">
+            <ChildAvatar child={child} size={72} />
+            <View style={{ position: 'absolute', right: -2, bottom: -2, width: 26, height: 26, borderRadius: 13, backgroundColor: palette.gold, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: theme.colors.background }}>
+              <Icon name="camera" size={13} color="#FFFFFF" />
+            </View>
+          </Tappable>
+        ) : <ChildAvatar child={child} size={64} />}
         <View style={{ flex: 1, gap: 2 }}>
           <Text variant="title" accessibilityRole="header">{child.first_name}</Text>
           <Text muted>{tr(child.sex === 'female' ? 'u4.child.bornF' : child.sex === 'male' ? 'u4.child.bornM' : 'u4.child.bornX', { age: age.label, date: formatDate(`${child.birth_date}T12:00:00`), time: child.birth_time ? tr('u4.child.atTime', { time: child.birth_time.slice(0, 5) }) : '' })}</Text>
@@ -109,6 +125,7 @@ export default function ChildProfile() {
       )}
 
       {editing && <EditChildSheet key={child.id} child={child} visible={editing} onClose={() => setEditing(false)} />}
+      {canPhoto ? <ChildPhotoSheet child={child} visible={photoOpen} onClose={() => setPhotoOpen(false)} /> : null}
     </Screen>
   );
 }

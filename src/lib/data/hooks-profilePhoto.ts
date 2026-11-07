@@ -12,7 +12,7 @@ import { useAuth, useUserId } from '../auth';
 import { uuid } from '../uuid';
 import { discardLocalImage } from '../cycleAnalysis/privacy';
 import { useInvalidate, useProfile } from './hooks';
-import { PROFILE_PHOTO_BUCKET, PROFILE_PHOTO_MAX_BYTES, PROFILE_PHOTO_QUALITY, PROFILE_PHOTO_SIDE, centerSquare, isOwnPhotoPath, profilePhotoPath } from '../domain/profilePhoto';
+import { CHILD_AVATAR_BUCKET, PROFILE_PHOTO_BUCKET, PROFILE_PHOTO_MAX_BYTES, PROFILE_PHOTO_QUALITY, PROFILE_PHOTO_SIDE, centerSquare, childAvatarPath, isChildAvatarPath, isOwnPhotoPath, profilePhotoPath } from '../domain/profilePhoto';
 import { t as tr } from '@/i18n';
 
 export class ProfilePhotoError extends Error {
@@ -30,7 +30,7 @@ export async function pickProfilePhoto(source: 'camera' | 'library'): Promise<st
 }
 
 /** Carré centré, 512 px, JPEG ré-encodé (les métadonnées EXIF, dont la position, ne sont pas recopiées). */
-async function toSquareJpeg(uri: string): Promise<{ uri: string }> {
+export async function toSquareJpeg(uri: string): Promise<{ uri: string }> {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { manipulateAsync, SaveFormat } = require('expo-image-manipulator') as typeof import('expo-image-manipulator');
   let probe: { uri: string; width: number; height: number };
@@ -45,7 +45,7 @@ async function toSquareJpeg(uri: string): Promise<{ uri: string }> {
   return out;
 }
 
-function fileSize(uri: string): number {
+export function fileSize(uri: string): number {
   if (Platform.OS === 'web') return 1;
   try { return new File(uri).size ?? 0; } catch { return 0; }
 }
@@ -119,5 +119,45 @@ export function useProfilePhotoUrl(path: string | null | undefined) {
     enabled: !!path,
     staleTime: 50 * 60_000,
     gcTime: 55 * 60_000,
+  });
+}
+
+// ---------------------------------------------------------------- photo de profil d'un enfant
+export function useSetChildPhoto() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: async (v: { child: { id: string; household_id: string; photo_path: string | null }; uri: string }) => {
+      const img = await toSquareJpeg(v.uri);
+      try {
+        const size = fileSize(img.uri);
+        if (size > PROFILE_PHOTO_MAX_BYTES) throw new ProfilePhotoError('too_large');
+        const path = childAvatarPath(v.child.household_id, v.child.id, uuid());
+        await backend.storage.upload(CHILD_AVATAR_BUCKET, path, { uri: img.uri, mimeType: 'image/jpeg', size: size || 1, name: path.split('/').pop() });
+        try {
+          await backend.update('children', { photo_path: path }, [eq('id', v.child.id)]);
+        } catch (e) {
+          await backend.storage.remove(CHILD_AVATAR_BUCKET, [path]).catch(() => undefined);
+          throw e;
+        }
+        const old = v.child.photo_path;
+        if (old && old !== path && isChildAvatarPath(v.child.household_id, v.child.id, old)) await backend.storage.remove(CHILD_AVATAR_BUCKET, [old]).catch(() => undefined);
+      } finally {
+        await discardLocalImage(img.uri);
+        if (img.uri !== v.uri) await discardLocalImage(v.uri);
+      }
+    },
+    onSuccess: () => inv('children', 'child'),
+  });
+}
+
+export function useRemoveChildPhoto() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: async (child: { id: string; household_id: string; photo_path: string | null }) => {
+      const old = child.photo_path;
+      await backend.update('children', { photo_path: null }, [eq('id', child.id)]);
+      if (old && isChildAvatarPath(child.household_id, child.id, old)) await backend.storage.remove(CHILD_AVATAR_BUCKET, [old]);
+    },
+    onSuccess: () => inv('children', 'child'),
   });
 }
