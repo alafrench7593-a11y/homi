@@ -19,6 +19,10 @@ import { useScope } from '@/lib/data/hooks-scope';
 import { Sheet } from './Overlays';
 import { haptic, Icon, type IconName, Text } from './ui';
 import { t as tr } from '@/i18n';
+import { useAuth } from '@/lib/auth';
+import { useProfile } from '@/lib/data/hooks';
+import { UserAvatar } from './UserAvatar';
+import { avatarInitial } from './AccountActions';
 import { Tappable } from '@/components/Tappable';
 
 const TAB_ICONS: Record<string, IconName> = { index: 'home', track: 'activity', ask: 'message-circle', community: 'users', profile: 'user', tools: 'grid', moi: 'user' };
@@ -29,8 +33,32 @@ export const DOCK_HEIGHT = 74;
 /** Mode jour : barre en verre dépoli clair (jamais blanche opaque), icônes foncées bien contrastées. */
 const DAY_INK = '#2A1A26';
 const DAY_MUTED = '#6B5560';
-/** Routes d'onglet accessibles par lien mais absentes de la barre : le Profil s'ouvre depuis l'avatar de l'en-tête. */
-const HIDDEN_FROM_BAR = new Set(['profile', 'moi']);
+/** Routes d'onglet accessibles par lien mais absentes de la barre (« Moi » communautaire : depuis Communauté). */
+const HIDDEN_FROM_BAR = new Set(['moi']);
+
+/** Onglet Profil : la photo de la personne (ou son initiale) à la place d'une icône, anneau quand l'onglet est actif. */
+function ProfileTabIcon({ focused }: { focused: boolean }) {
+  const reduce = useReduceMotion();
+  const day = !useTheme().isDark;
+  const { session } = useAuth();
+  const { data: profile } = useProfile();
+  const v = useRef(new Animated.Value(focused ? 1 : 0)).current;
+  useEffect(() => { springTo(v, focused ? 1 : 0, 'pop', reduce).start(); }, [v, focused, reduce]);
+  return (
+    <Animated.View style={{ transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 1.1] }) }, { translateY: v.interpolate({ inputRange: [0, 1], outputRange: [0, -1.5] }) }] }}>
+      <View style={{ width: 26, height: 26, borderRadius: 13, borderWidth: focused ? 2 : 0, borderColor: day ? '#E0607E' : '#FFD27A', alignItems: 'center', justifyContent: 'center' }}>
+        <UserAvatar path={profile?.avatar_path} initial={avatarInitial(profile?.display_name, session?.email)} size={focused ? 21 : 24} testID="tab-profile-avatar" />
+      </View>
+    </Animated.View>
+  );
+}
+
+/** Libellé de l'onglet Profil : le prénom choisi, sinon « Profil ». */
+function useProfileTabLabel(): string {
+  const { data: profile } = useProfile();
+  const first = profile?.display_name?.trim().split(/\s+/)[0];
+  return first ? first.slice(0, 12) : tr('tab.profile');
+}
 
 /** Icône d'onglet : petit rebond quand l'onglet devient actif. */
 function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
@@ -122,7 +150,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   const reduce = useReduceMotion();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
-  // Onglets visibles (le Profil reste une route, hors de la barre) ; « Outils » au centre exact
+  // Onglets visibles ; « Outils » entre les deux groupes, chaque onglet a la même largeur (libellés entiers)
   const visible = state.routes.filter((r) => {
     const o = descriptors[r.key].options as { href?: unknown; tabBarItemStyle?: { display?: string } };
     // expo-router traduit `href: null` en élément masqué : la route existe toujours (liens profonds), hors de la barre
@@ -158,9 +186,11 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
     }
   };
 
+  const profileLabel = useProfileTabLabel();
   const renderTab = (route: (typeof state.routes)[number]) => {
     const focused = focusedName === route.name;
-    const label = short(route.name) ?? descriptors[route.key].options.title ?? route.name;
+    const isProfile = route.name === 'profile';
+    const label = isProfile ? profileLabel : short(route.name) ?? descriptors[route.key].options.title ?? route.name;
     return (
       <Tappable
         key={route.key}
@@ -168,11 +198,12 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
         accessibilityRole="tab"
         accessibilityState={{ selected: focused }}
         aria-selected={focused}
-        accessibilityLabel={descriptors[route.key].options.title ?? label}
+        accessibilityLabel={isProfile && label !== tr('tab.profile') ? tr('header.profileNamed', { name: label }) : descriptors[route.key].options.title ?? label}
+        testID={`tab-${route.name}`}
         onPress={() => go(route)}
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3, minHeight: 56 }}
       >
-        <TabIcon name={TAB_ICONS[route.name] ?? 'circle'} focused={focused} />
+        {isProfile ? <ProfileTabIcon focused={focused} /> : <TabIcon name={TAB_ICONS[route.name] ?? 'circle'} focused={focused} />}
         <TabLabel label={label} focused={focused} />
       </Tappable>
     );
@@ -198,9 +229,9 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
             </>
           ) : null}
           {/* Deux moitiés de largeur égale : le bouton central est au centre géométrique, quelle que soit la longueur des libellés */}
-          <View onLayout={(e) => { const x = e.nativeEvent.layout.x; setGroupX((g) => (g.left === x ? g : { ...g, left: x })); }} style={{ flex: 1, flexDirection: 'row' }}>{left.map(renderTab)}</View>
+          <View onLayout={(e) => { const x = e.nativeEvent.layout.x; setGroupX((g) => (g.left === x ? g : { ...g, left: x })); }} style={{ flex: Math.max(1, left.length), flexDirection: 'row' }}>{left.map(renderTab)}</View>
           {center ? (
-            <View style={{ width: 76, alignItems: 'center', justifyContent: 'center', gap: 3, minHeight: 56 }}>
+            <View style={{ width: 64, alignItems: 'center', justifyContent: 'center', gap: 3, minHeight: 56 }}>
               {/* emplacement de la même hauteur qu'une icône d'onglet : l'orbe en déborde vers le haut, le libellé reste aligné */}
               <View style={{ width: 21, height: 21, alignItems: 'center' }}>
                 <View style={{ position: 'absolute', top: -34, alignItems: 'center', justifyContent: 'center' }}>
@@ -210,7 +241,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
               <TabLabel label={tr('dock.tools')} focused={toolsFocused} />
             </View>
           ) : null}
-          <View onLayout={(e) => { const x = e.nativeEvent.layout.x; setGroupX((g) => (g.right === x ? g : { ...g, right: x })); }} style={{ flex: 1, flexDirection: 'row' }}>{right.map(renderTab)}</View>
+          <View onLayout={(e) => { const x = e.nativeEvent.layout.x; setGroupX((g) => (g.right === x ? g : { ...g, right: x })); }} style={{ flex: Math.max(1, right.length), flexDirection: 'row' }}>{right.map(renderTab)}</View>
         </View>
       </View>
       <QuickAddSheet visible={open} onClose={() => setOpen(false)} />

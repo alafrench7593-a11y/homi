@@ -106,7 +106,7 @@ def run(p):
     # ================================================================ Barre de navigation
     go(pg, '/', 3000)
     dock = [pg.locator('[role="tab"]').nth(i).get_attribute('aria-label') for i in range(pg.locator('[role="tab"]').count())]
-    R['barre_5_onglets'] = all(x in dock for x in ['Accueil', 'Suivi', 'Communauté', 'Questions']) and 'Moi' not in dock
+    R['barre_onglets'] = all(x in dock for x in ['Accueil', 'Suivi', 'Communauté', 'Questions']) and 'Moi' not in dock and any((x or '').startswith('Mon profil') for x in dock)
 
     # ================================================================ Profil communautaire : identifiant, présentation, illustration
     go(pg, '/community/profile', 2800)

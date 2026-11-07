@@ -36,10 +36,9 @@ with sync_playwright() as p:
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
 
-    # 1. Barre : Communauté présente, Profil retiré, Outils au centre
+    # 1. Barre : Communauté présente, Outils au centre, profil de la personne à droite (07/11/2026)
     t = tabs(pg)
-    R['1_barre_onglets'] = t == ['Accueil', 'Suivi', 'Outils', 'Communauté', 'Questions']
-    R['1_pas_de_profil_dans_la_barre'] = 'Profil' not in t
+    R['1_barre_onglets'] = t[:5] == ['Accueil', 'Suivi', 'Outils', 'Communauté', 'Questions'] and len(t) == 6 and t[5].startswith('Mon profil')
     pg.get_by_role('tab', name='Communauté').click(); pg.wait_for_timeout(1800)
     R['1_communaute_ouvre_la_vraie_section'] = pg.url.endswith('/community') and 'forum des parents' in pg.inner_text('body')
     R['1_onglet_actif'] = pg.get_by_role('tab', name='Communauté').get_attribute('aria-selected') == 'true'
@@ -104,10 +103,11 @@ with sync_playwright() as p:
     ctx = b.new_context(viewport={'width': 320, 'height': 568}, locale='fr-FR'); pg = ctx.new_page()
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
-    boxes = [pg.get_by_role('tab', name=n).bounding_box() for n in ['Accueil', 'Suivi', 'Communauté', 'Questions']]
+    boxes = [pg.get_by_role('tab', name=n).bounding_box() for n in ['Accueil', 'Suivi', 'Communauté', 'Questions']] + [pg.locator('[data-testid="tab-profile"]').first.bounding_box()]
     R['8_onglets_dans_l_ecran'] = all(bb and bb['x'] >= 0 and bb['x'] + bb['width'] <= 320 and bb['width'] >= 44 for bb in boxes)
     orb = pg.get_by_role('tab', name='Outils').bounding_box()
-    R['8_outils_centre'] = bool(orb) and abs(orb['x'] + orb['width'] / 2 - 160) < 1.5
+    # 6 onglets (profil ajouté le 07/11/2026) : Outils entre Suivi et Communauté, onglets de même largeur
+    R['8_outils_entre_suivi_et_communaute'] = bool(orb) and boxes[1]['x'] < orb['x'] < boxes[2]['x']
     R['8_pas_de_debordement'] = not pg.evaluate('() => document.documentElement.scrollWidth > window.innerWidth + 1')
     R['8_entete_petit_ecran'] = header_ok(pg)
     pg.screenshot(path=f'{SHOTS}/nav-320.png')
@@ -116,7 +116,7 @@ with sync_playwright() as p:
     pg.goto(B + '/settings/language'); pg.wait_for_timeout(1800)
     pg.get_by_role('radio', name='English').click(); pg.wait_for_timeout(2000)
     pg.goto(B + '/'); pg.wait_for_timeout(2500)
-    R['9_barre_en_anglais'] = tabs(pg) == ['Home', 'Tracking', 'Tools', 'Community', 'Questions']
+    R['9_barre_en_anglais'] = tabs(pg)[:5] == ['Home', 'Tracking', 'Tools', 'Community', 'Questions'] and tabs(pg)[5].startswith('My profile')
     R['9_entete_en_anglais'] = header_ok(pg, re.compile('^My profile'))
     pg.goto(B + '/community'); pg.wait_for_timeout(1800)
     R['9_communaute_en_anglais'] = 'parents’ forum' in pg.inner_text('body')

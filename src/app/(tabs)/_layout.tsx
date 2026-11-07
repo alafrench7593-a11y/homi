@@ -27,8 +27,9 @@ export default function TabsLayout() {
       <Tabs.Screen name="ask" options={{ title: tr('tab.ask') }} />
       {/* « Moi » retiré de la barre (choix de la propriétaire) : profil communautaire depuis Communauté, compte privé depuis l'avatar ; la route reste (liens profonds) */}
       <Tabs.Screen name="moi" options={{ title: tr('tab.me'), href: null }} />
-      {/* Le Profil s'ouvre depuis l'avatar en haut à droite ; la route reste (liens profonds), hors de la barre */}
-      <Tabs.Screen name="profile" options={{ title: tr('tab.profile'), href: null }} />
+      {/* Profil de la personne (07/11/2026, demande de la propriétaire) : dans la barre, à droite, avec sa photo ;
+          toujours aussi accessible depuis l'avatar en haut à droite */}
+      <Tabs.Screen name="profile" options={{ title: tr('tab.profile') }} />
     </Tabs>
     </>
   );
