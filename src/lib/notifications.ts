@@ -14,6 +14,7 @@ import { bottleTimerUrl, cancelTimer, notificationContent, snoozeTimer } from '.
 import { IOS_PENDING_LIMIT, planReminder, toExpoWeekday, validateSchedule, type PlannedTrigger } from './domain/reminders';
 import type { Child, Reminder } from './types';
 import type { BottleTimer } from './types-bottle';
+import { DEFAULT_AUTO_PREFS, planSignature, type AutoPlan, type AutoPrefs } from './domain/autoNotifs';
 
 export const notificationsSupported = Platform.OS === 'ios' || Platform.OS === 'android';
 const MAP_KEY = 'toietmoi.scheduled.v1';
@@ -94,10 +95,16 @@ export function configureNotifications() {
     { identifier: TREAT_SKIP, buttonTitle: tr('l3.notif.a_skip'), options: { opensAppToForeground: false } },
     { identifier: TREAT_NOTE, buttonTitle: tr('l3.notif.a_note'), options: { opensAppToForeground: true } },
   ]).catch(() => undefined);
+  // Tâche du foyer (07/11/2026) : « C'est fait » (enregistrée sans ouvrir l'appli) ou « Dans 15 min »
+  Notifications.setNotificationCategoryAsync(TASK_CATEGORY, [
+    { identifier: TASK_DONE, buttonTitle: tr('nt.a_done'), options: { opensAppToForeground: false } },
+    { identifier: TASK_SNOOZE, buttonTitle: tr('nt.a_15'), options: { opensAppToForeground: false } },
+  ]).catch(() => undefined);
   if (!bottleResponseSub) {
     bottleResponseSub = Notifications.addNotificationResponseReceivedListener((r) => {
       handleBottleNotificationResponse(r).catch(() => undefined);
       handleTreatmentResponse(r).catch(() => undefined);
+      handleDoneResponse(r).catch(() => undefined);
     });
   }
 }
@@ -317,7 +324,7 @@ export const BOTTLE_ACTION_EDIT = 'bottle-edit';
 /** Écran à ouvrir pour une réponse à une notification ; null = action traitée sans ouvrir d'écran. */
 export function notificationRoute(actionIdentifier: string, data: { url?: string; source?: string; childId?: string } | undefined): string | null {
   const url = data?.url && data.url.startsWith('/') ? data.url : null;
-  if (actionIdentifier === 'snooze' || actionIdentifier === 'done') return null;
+  if (actionIdentifier === 'snooze' || actionIdentifier === 'done' || actionIdentifier === TASK_DONE || actionIdentifier === TASK_SNOOZE) return null;
   if (actionIdentifier.startsWith('treat-') && actionIdentifier !== 'treat-note') return null;
   if (actionIdentifier === BOTTLE_ACTION_RECORD && data?.childId) return `/track/bottle?child=${data.childId}`;
   if (actionIdentifier === BOTTLE_ACTION_EDIT && data?.childId) return `/bottle/${data.childId}?edit=1`;
@@ -606,4 +613,106 @@ export async function syncDigestNotifications(prefs: { morning: boolean; morning
   }
   await AsyncStorage.setItem(DIGEST_KEY, JSON.stringify({ signature, ids }));
   return ids.length;
+}
+
+
+// ===================================================================== « C'est fait » et notifications automatiques
+// (07/11/2026) Tâches du foyer, rendez-vous, échéances, papiers : programmés sur le téléphone, rien n'est envoyé ailleurs.
+export const TASK_CATEGORY = 'task';
+export const TASK_DONE = 'task-done';
+export const TASK_SNOOZE = 'task-snooze';
+export const AUTO_PREFS_KEY = 'toietmoi.auto-notifs-prefs.v1';
+const AUTO_MAP_KEY = 'toietmoi.auto-notifs.v1';
+type AutoMap = Record<string, { sig: string; nid: string }>;
+let autoChain: Promise<unknown> = Promise.resolve();
+
+const localISODate = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+export async function getAutoPrefs(): Promise<AutoPrefs> {
+  return { ...DEFAULT_AUTO_PREFS, ...(await readJson<Partial<AutoPrefs>>(AUTO_PREFS_KEY, {})) };
+}
+export async function setAutoPrefs(p: AutoPrefs): Promise<void> {
+  await AsyncStorage.setItem(AUTO_PREFS_KEY, JSON.stringify(p));
+}
+
+/**
+ * Action choisie sur une notification :
+ *  - tâche « C'est fait » → la tâche passe à « faite » (heure et personne notées) ;
+ *  - rappel « C'est fait » → validé pour aujourd'hui (daily_checks) ;
+ *  - « Dans 15 min » → une seule notification de report, la tâche ne change pas.
+ */
+export async function handleDoneResponse(response: Notifications.NotificationResponse): Promise<boolean> {
+  const content = response.notification.request.content;
+  const data = (content.data ?? {}) as { taskId?: string; reminderId?: string; source?: string; url?: string };
+  const action = response.actionIdentifier;
+  if (action === TASK_SNOOZE) {
+    await Notifications.scheduleNotificationAsync({
+      content: { title: content.title ?? '', body: content.body ?? undefined, categoryIdentifier: TASK_CATEGORY, data: { ...data, kind: 'auto-snooze' } },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 15 * 60, channelId: 'reminders' },
+    });
+    return true;
+  }
+  if (action === TASK_DONE && data.taskId) {
+    const session = await backend.auth.getSession().catch(() => null);
+    await backend.update('family_tasks', { status: 'done', done_at: new Date().toISOString(), done_by: session?.userId ?? null }, [eq('id', data.taskId)]);
+    return true;
+  }
+  if (action === 'done' && data.reminderId && data.source === 'reminder') {
+    const session = await backend.auth.getSession().catch(() => null);
+    if (!session?.userId) return false;
+    await backend.insert('daily_checks', { user_id: session.userId, reminder_id: data.reminderId, on_date: localISODate(), source: 'notification' }, { onConflict: 'user_id,reminder_id,on_date', ignoreDuplicates: true }).catch(() => undefined);
+    return true;
+  }
+  return false;
+}
+
+/** Programme les notifications automatiques voulues ; annule celles qui ne le sont plus (et seulement celles-là). */
+export function syncAutoNotifications(plans: AutoPlan[]): Promise<{ scheduled: number; cancelled: number }> {
+  const run = autoChain.catch(() => undefined).then(() => doSyncAuto(plans));
+  autoChain = run;
+  return run;
+}
+
+async function doSyncAuto(plans: AutoPlan[]): Promise<{ scheduled: number; cancelled: number }> {
+  if (!notificationsSupported) return { scheduled: 0, cancelled: 0 };
+  if ((await getPermission()) !== 'granted') return { scheduled: 0, cancelled: 0 };
+  const map = await readJson<AutoMap>(AUTO_MAP_KEY, {});
+  const wanted = new Map(plans.map((p) => [p.id, p]));
+  let cancelled = 0;
+  for (const [id, e] of Object.entries(map)) {
+    const p = wanted.get(id);
+    if (!p || planSignature(p) !== e.sig) {
+      await Notifications.cancelScheduledNotificationAsync(e.nid).catch(() => undefined);
+      delete map[id];
+      cancelled++;
+    }
+  }
+  // orphelines (carte perdue) : seules les notifications marquées « auto » sont concernées
+  try {
+    const owned = new Set(Object.values(map).map((e) => e.nid));
+    for (const n of await Notifications.getAllScheduledNotificationsAsync()) {
+      if ((n.content.data as { kind?: string } | undefined)?.kind === 'auto' && !owned.has(n.identifier)) {
+        await Notifications.cancelScheduledNotificationAsync(n.identifier).catch(() => undefined);
+        cancelled++;
+      }
+    }
+  } catch { /* liste indisponible */ }
+  let scheduled = 0;
+  for (const p of plans) {
+    if (map[p.id]) continue;
+    try {
+      const nid = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: p.title, body: p.body, sound: 'default',
+          categoryIdentifier: p.taskId ? TASK_CATEGORY : undefined,
+          data: { url: p.url, source: 'auto', kind: 'auto', autoKind: p.kind, ...(p.taskId ? { taskId: p.taskId } : {}) },
+        },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: p.at, channelId: 'reminders' },
+      });
+      map[p.id] = { sig: planSignature(p), nid };
+      scheduled++;
+    } catch { /* refusée par le système : réessayée à la prochaine synchronisation */ }
+  }
+  await AsyncStorage.setItem(AUTO_MAP_KEY, JSON.stringify(map));
+  return { scheduled, cancelled };
 }

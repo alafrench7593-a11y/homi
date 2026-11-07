@@ -8,6 +8,11 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Button, Card, Icon, type IconName, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { ChildAvatar } from '@/features/childAvatar';
+import { Tappable } from '@/components/Tappable';
+import { useToast } from '@/components/Overlays';
+import { useDailyChecks, useToggleReminderDone, useToggleTaskDone } from '@/lib/data/hooks-autoNotifs';
+import { friendlyError } from '@/lib/data/hooks-settings';
+import { haptic } from '@/components/ui';
 import { useAppointments, useDocuments, useJourneyState, useProfile, useReminders } from '@/lib/data/hooks';
 import { useCareShifts, useFamilyEvents, useFamilyTasks } from '@/lib/data/hooks-family-load';
 import { atLocal, addDays, itemsBetween, itemsOnDay } from '@/lib/domain/calendar';
@@ -35,8 +40,29 @@ export function MyDayCard() {
     const cal = itemsOnDay(itemsBetween({ events, appointments, tasks, shifts }, atLocal(day), atLocal(addDays(day, 1))), day);
     return sortDay([...agendaItems(cal, day), ...remindersOn(reminders as never, day)]);
   }, [day, reminders, events, appointments, tasks, shifts]);
+  // « C'est fait » : rappels validés aujourd'hui (daily_checks) et tâches faites
+  const toast = useToast();
+  const checks = useDailyChecks(day).data ?? [];
+  const toggleRem = useToggleReminderDone();
+  const toggleTask = useToggleTaskDone();
+  const isDone = (i: MyDayItem) => (i.kind === 'reminder' ? checks.some((c) => c.reminder_id === i.refId) : !!i.done);
+  const checkable = (i: MyDayItem) => i.kind === 'reminder' || i.kind === 'task';
+  const doable = items.filter(checkable);
+  const doneCount = doable.filter(isDone).length;
+  async function toggle(i: MyDayItem) {
+    const done = !isDone(i);
+    try {
+      if (i.kind === 'reminder') await toggleRem.mutateAsync({ reminderId: i.refId, day, done, checkId: checks.find((c) => c.reminder_id === i.refId)?.id });
+      else await toggleTask.mutateAsync({ taskId: i.refId, done });
+      haptic(done ? 'success' : 'light');
+      if (done) toast(tr('nt.doneToast'));
+    } catch (e) { toast(friendlyError(e), 'error'); }
+  }
+  // ce qui reste à faire d'abord ; ce qui est fait reste visible, coché, en fin de liste
   const next = upcoming(items, nowHHMM());
-  const shown = (next.length ? next : items).slice(0, 6);
+  const pending = (next.length ? next : items).filter((i) => !isDone(i));
+  const finished = items.filter(isDone);
+  const shown = [...pending, ...finished].slice(0, 7);
   const go = (i: MyDayItem) => {
     if (i.kind === 'reminder') return router.push(i.link ? (i.link as never) : '/settings/reminders');
     if (i.kind === 'appointment') return router.push('/appointments');
@@ -49,15 +75,25 @@ export function MyDayCard() {
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('hub.day.title').toUpperCase()}</Text>
           <Text weight="bold">{formatDate(atLocal(day, 12), { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase())}</Text>
         </View>
-        <Text variant="small" muted testID="hub-myday-count">{tr('hub.day.count', { count: items.length })}</Text>
+        <Text variant="small" muted testID="hub-myday-count">{doable.length ? tr('nt.doneCount', { done: doneCount, total: doable.length }) : tr('hub.day.count', { count: items.length })}</Text>
       </Row>
       {shown.length ? (
         <View style={{ marginTop: spacing.xs }}>
           {shown.map((i) => (
             <ListRow key={i.key} icon={KIND_ICON[i.kind]} testID={`hub-day-${i.kind}`}
-              title={i.done ? `✓ ${i.title}` : i.title}
-              subtitle={[i.every ? tr('hub.day.every', { from: i.every.fromHour, to: i.every.toHour, min: i.every.minutes }) : i.time ?? tr('hub.day.allDay'), tr(`hub.kind.${i.kind}` as TKey)].join(' · ')}
-              onPress={() => go(i)} />
+              title={isDone(i) ? `${i.title} ✓` : i.title}
+              subtitle={[i.every ? tr('hub.day.every', { from: i.every.fromHour, to: i.every.toHour, min: i.every.minutes }) : i.time ?? tr('hub.day.allDay'), isDone(i) ? tr('nt.done') : tr(`hub.kind.${i.kind}` as TKey)].join(' · ')}
+              onPress={() => go(i)}
+              right={checkable(i) ? (
+                <Tappable accessibilityRole="checkbox" accessibilityState={{ checked: isDone(i) }} aria-checked={isDone(i)}
+                  accessibilityLabel={isDone(i) ? tr('nt.undoA11y', { title: i.title }) : tr('nt.doneA11y', { title: i.title })}
+                  onPress={() => void toggle(i)} hitSlop={8} testID={`hub-check-${i.refId}`}
+                  style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: isDone(i) ? t.colors.success : t.colors.border, backgroundColor: isDone(i) ? t.colors.success : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+                    {isDone(i) ? <Icon name="check" size={16} color="#FFFFFF" /> : null}
+                  </View>
+                </Tappable>
+              ) : undefined} />
           ))}
           {items.length > shown.length ? <Text variant="small" muted style={{ marginTop: 4 }}>{tr('hub.day.more', { count: items.length - shown.length })}</Text> : null}
         </View>
@@ -82,6 +118,7 @@ export function OrganizeSection() {
       <SectionTitle title={tr('hub.org.title')} />
       <Card padded={false} testID="hub-organize">
         <ListRow icon="calendar" title={tr('hub.org.calendar')} subtitle={tr('hub.org.calendarD')} onPress={() => router.push('/agenda')} testID="hub-calendar" />
+        <ListRow icon="bell" title={tr('nt.settingsRow')} subtitle={tr('nt.settingsRowD')} onPress={() => router.push('/settings/notifications')} testID="hub-notifs" />
         <ListRow icon="bell" title={tr('hub.org.reminders')} subtitle={tr('hub.org.remindersD', { count: remindersN })} onPress={() => router.push('/settings/reminders')} testID="hub-reminders" />
         <ListRow icon="check-square" title={tr('hub.org.family')} subtitle={tr('hub.org.familyD')} onPress={() => router.push('/family')} testID="hub-family-org" />
         <ListRow icon="calendar" title={tr('tool.family_prep')} subtitle={tr('tool.family_prep.sub')} onPress={() => router.push('/family/prep')} />

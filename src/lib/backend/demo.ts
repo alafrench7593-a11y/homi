@@ -99,6 +99,7 @@ const OWNER_TABLES: Record<string, string> = {
   pma_protocols: 'user_id', pma_meds: 'user_id', pma_logs: 'user_id', recall_watch_prefs: 'user_id',
   // « Je suis à bout » (07/11/2026) : strictement personnel
   exhaustion_checkins: 'user_id',
+  daily_checks: 'user_id',
   support_circle: 'user_id',
   // Parcours : gérés par la personne (le foyer ne les modifie jamais)
   user_journeys: 'user_id',

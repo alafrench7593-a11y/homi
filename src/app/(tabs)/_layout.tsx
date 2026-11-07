@@ -5,10 +5,17 @@ import { useAuth } from '@/lib/auth';
 import { Dock } from '@/components/Dock';
 import { t as tr } from '@/i18n';
 import { useDigestSync } from '@/lib/data/hooks-social';
+import { useAutoNotificationsSync } from '@/lib/data/hooks-autoNotifs';
 
 /** Notifications du résumé quotidien : reprogrammées selon les réglages (nouvel appareil, réinstallation). */
 function DigestSync() {
   useDigestSync();
+  return null;
+}
+
+/** Notifications automatiques (rendez-vous, tâches, échéances, papiers) : reprogrammées dès que les données changent. */
+function AutoNotificationsSync() {
+  useAutoNotificationsSync();
   return null;
 }
 
@@ -18,6 +25,7 @@ export default function TabsLayout() {
   return (
     <>
     {session ? <DigestSync /> : null}
+    {session ? <AutoNotificationsSync /> : null}
     <Tabs detachInactiveScreens screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' }, freezeOnBlur: true }} tabBar={(props) => <Dock {...props} />}>
       <Tabs.Screen name="index" options={{ title: tr('tab.home') }} />
       {/* Agenda (07/11/2026, demande de la propriétaire) : 3 onglets de chaque côté, « Outils » au centre exact */}

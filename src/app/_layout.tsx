@@ -20,7 +20,7 @@ import { AuthProvider, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
 import { PremiumPreviewHost } from '@/components/Premium';
 import { SleepNotificationsHost } from '@/features/sleep';
-import { configureNotifications, notificationRoute, notificationsSupported, registerPushToken, snoozeLocally } from '@/lib/notifications';
+import { configureNotifications, notificationRoute, notificationsSupported, registerPushToken, snoozeLocally, handleDoneResponse } from '@/lib/notifications';
 import { startOfflineSync } from '@/lib/offline';
 import { configurePurchases, resetPurchasesUser } from '@/lib/purchases';
 import { usePurchasesSync } from '@/lib/data/hooks-premium';
@@ -120,7 +120,11 @@ function Bootstrap() {
       const route = notificationRoute(response.actionIdentifier, content.data as never);
       if (route) router.push(route as never);
     };
-    open(Notifications.getLastNotificationResponse());
+    // Appli fermée au moment du choix : « C'est fait » / « Dans 15 min » enregistrés à l'ouverture
+    // (appli ouverte : traités par l'écouteur de configureNotifications, sans doublon ici)
+    const last = Notifications.getLastNotificationResponse();
+    if (last) handleDoneResponse(last).catch(() => undefined);
+    open(last);
     const sub = Notifications.addNotificationResponseReceivedListener(open);
     return () => sub.remove();
   }, []);

@@ -190,6 +190,7 @@ export const APP_ROUTES: readonly string[] = [
   '/settings/family',
   '/settings/home',
   '/settings/language',
+  '/settings/notifications',
   '/settings/privacy',
   '/settings/reminders',
   '/settings/services',
