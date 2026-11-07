@@ -165,6 +165,7 @@ const BY_ID: Record<string, string> = {
   exhaustion_check: 'battery-low',         // je suis à bout
   family_papers: 'folder-account',         // papiers de la famille
   solo_parent: 'human-female-girl',        // maman solo
+  official_videos: 'play-box-multiple',    // vidéos & articles
 };
 
 /** Repli par catégorie puis icône d'origine (glyphes sans identifiant d'outil). */

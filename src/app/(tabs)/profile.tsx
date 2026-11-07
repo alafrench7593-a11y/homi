@@ -1,6 +1,7 @@
 /** Profil : mes parcours, ma famille, mon espace et mes réglages. */
 import React from 'react';
 import { View } from 'react-native';
+import { OFFICIAL_VIDEOS } from '@/lib/domain/officialVideos';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
@@ -65,6 +66,7 @@ export default function Profile() {
           <ListRow icon="message-circle" title={tr('ai.home.title')} subtitle={tr('ai.profile.sub')} onPress={() => router.push('/assistant/chat')} testID="profile-ai" />
           <ListRow icon="clock" title={tr('ai.profile.history')} onPress={() => router.push('/ask')} />
           <ListRow icon="book-open" title={tr('lib.home.title')} subtitle={tr('lib.profile.sub', { count: articleCount })} onPress={() => router.push('/library')} testID="profile-library" />
+          <ListRow icon="play-circle" title={tr('vid.title')} subtitle={tr('vid.profileSub', { count: OFFICIAL_VIDEOS.length })} onPress={() => router.push('/videos')} testID="profile-videos" />
         </Card>
 
         <SectionTitle title={tr('profile.family')} />

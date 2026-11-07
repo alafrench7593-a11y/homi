@@ -206,5 +206,6 @@ export const APP_ROUTES: readonly string[] = [
   '/tools',
   '/track',
   '/track/[kind]',
+  '/videos',
   '/welcome'
 ];

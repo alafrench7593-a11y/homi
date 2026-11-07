@@ -155,6 +155,7 @@ const TOOL_TOPICS_FR: Record<string, ToolTopic> = {
   house_notebook: { words: ['organisation', 'nounou', 'garde', 'grands-parents', 'urgence'], cats: ['vie-pratique', 'ecole-garde'], ask: 'Que noter pour la nounou ou les grands-parents ?' },
   couple_week: { words: ['couple', 'dialogue', 'charge mentale', 'organisation'], cats: ['sante-mentale', 'vie-pratique'], ask: 'Comment organiser un point hebdomadaire à deux ?' },
   exhaustion_check: { words: ['epuisement', 'burn', 'fatigue', 'depression', 'craquer', 'aide'], cats: ['sante-mentale'], ask: 'Je suis épuisée, que faire ?' },
+  official_videos: { words: ['video', 'gestes', 'bebe', 'sommeil', 'allaitement'], cats: ['bebe', 'sommeil'], ask: 'Quels gestes du quotidien avec bébé ?' },
   solo_parent: { words: ['parent solo', 'famille monoparentale', 'parent isole', 'asf', 'pension alimentaire', 'aides caf', 'solitude'], cats: ['droits-demarches', 'sante-mentale', 'vie-pratique'], ask: 'Je suis seule avec mon enfant : quelles aides existent ?' },
   family_papers: { words: ['demarches', 'caf', 'papiers', 'carte d identite', 'passeport', 'inscription', 'livret de famille'], cats: ['droits-demarches'], ask: 'Quels papiers pour inscrire mon enfant à l’école ?' },
 };
@@ -281,6 +282,7 @@ const ASK_EN: Record<string, string> = {
   'couple_week': 'How do we hold a weekly check-in as a couple?',
   'exhaustion_check': 'I am exhausted, what can I do?',
   'family_papers': 'Which papers do I need to enrol my child at school?',
+  'official_videos': 'What everyday gestures with baby?',
   'solo_parent': 'I am raising my child alone: what help is available?',
 };
 const TOOL_TOPICS_EN: Record<string, ToolTopic> = Object.fromEntries(

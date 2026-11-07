@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { Card, Chip, Field, Icon, ListRow, SectionTitle, Text } from '@/components/ui';
+import { VideoCard } from '@/components/video/VideoCard';
+import { OFFICIAL_VIDEOS } from '@/lib/domain/officialVideos';
 import { EmptyStateCard } from '@/components/ui-extra';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { useActivePregnancy, useArticles, useCategories, useChildren, useFullArticles, usePremium, useProfile, useRows } from '@/lib/data/hooks';
@@ -191,17 +193,14 @@ export default function Library() {
   const footer = (
     <View style={{ gap: spacing.md, marginTop: spacing.sm }}>
       <SectionTitle title={tr('art.videos')} />
-      {videos?.length ? (
-        <Card>{videos.map((v) => <ListRow key={v.id} icon="play-circle" title={v.title} />)}</Card>
-      ) : (
-        <View testID="videos-empty">
-          <EmptyStateCard illustration="leaf" title={tr('art.videosEmpty')} text={tr('art.videosBody')} />
-          <Card>
-            {(['massage', 'bath', 'carry', 'swaddle', 'bottle'] as const).map((k) => <Text key={k} variant="small" style={{ marginTop: 4 }}>• {tr(`art.videoTopic.${k}`)}</Text>)}
-            <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('art.videoNote')}</Text>
-          </Card>
+      {/* Vidéos officielles lues dans l'appli (07/11/2026) ; les vidéos maison publiées, s'il y en a, restent listées */}
+      <Card testID="library-videos">
+        <ListRow icon="play-circle" title={tr('vid.title')} subtitle={tr('vid.librarySub', { count: OFFICIAL_VIDEOS.length })} onPress={() => router.push('/videos')} testID="library-videos-open" />
+        <View style={{ paddingHorizontal: spacing.md, paddingBottom: spacing.md, gap: spacing.md }}>
+          {OFFICIAL_VIDEOS.slice(0, 2).map((v) => <VideoCard key={v.id} video={v} compact />)}
         </View>
-      )}
+      </Card>
+      {videos?.length ? <Card>{videos.map((v) => <ListRow key={v.id} icon="play-circle" title={v.title} />)}</Card> : null}
     </View>
   );
 

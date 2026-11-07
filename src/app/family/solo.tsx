@@ -23,7 +23,9 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { todayISO } from '@/lib/domain/dates';
 import { AIDS_CHECKED_ON, HELP_KINDS, ageYears, aidsFor, gesturesFor, helpersFor, smsLink, type Gesture } from '@/lib/domain/soloParent';
 import { callNumber, openLink } from '@/lib/links';
-import { OFFICIAL_VIDEOS, VIDEO_TOPICS, VIDEOS_CHECKED_ON, videoById, type VideoTopic } from '@/lib/domain/officialVideos';
+import { OFFICIAL_VIDEOS, VIDEOS_CHECKED_ON, videoById, type VideoTopic } from '@/lib/domain/officialVideos';
+
+const SOLO_TOPICS: VideoTopic[] = ['baby', 'sleep', 'feeding', 'meals', 'me'];
 import { VideoCard } from '@/components/video/VideoCard';
 import type { FamilySituation } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -199,13 +201,14 @@ export default function Solo() {
       <SectionTitle title={tr('sol.v.title')} />
       <Text variant="small" muted>{tr('sol.v.intro')}</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-        {VIDEO_TOPICS.map((k) => <Chip key={k} label={tr(`sol.v.topic.${k}` as TKey)} selected={topic === k} onPress={() => setTopic(k)} testID={`sol-v-topic-${k}`} />)}
+        {SOLO_TOPICS.map((k) => <Chip key={k} label={tr(`vid.topic.${k}` as TKey)} selected={topic === k} onPress={() => setTopic(k)} testID={`sol-v-topic-${k}`} />)}
       </View>
       <Card testID="sol-videos">
         <View style={{ gap: spacing.md }}>
           {OFFICIAL_VIDEOS.filter((v) => v.topic === topic).map((v) => <VideoCard key={v.id} video={v} />)}
         </View>
       </Card>
+      <Button label={tr('vid.seeAll', { count: OFFICIAL_VIDEOS.length })} icon="play-circle" variant="secondary" onPress={() => router.push({ pathname: '/videos', params: { topic } })} testID="sol-videos-all" />
       <Text variant="caption" muted>{tr('sol.v.checked', { date: formatDate(VIDEOS_CHECKED_ON, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Text>
 
       {/* Charge mentale */}

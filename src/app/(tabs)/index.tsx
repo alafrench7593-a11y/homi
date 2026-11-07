@@ -26,6 +26,7 @@ import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { HomeAssistantCard } from '@/features/aiHome/HomeAssistantCard';
 import { HomeLibraryCard } from '@/features/library/HomeLibraryCard';
 import { SoloHomeCard } from '@/features/solo/SoloHomeCard';
+import { HomeVideosCard } from '@/features/videos/HomeVideosCard';
 import { HomeCommunityCard } from '@/features/communitySocial';
 import { CycleHome } from '@/features/cycle3/CycleHome';
 import { ArticleCard, Cocoon, CocoonAdd } from '@/features/cocoon/Cocoon';
@@ -128,6 +129,7 @@ export default function Home() {
     assistant: <HomeAssistantCard />,
     library: <HomeLibraryCard />,
     solo: <SoloHomeCard />,
+    videos: <HomeVideosCard />,
   };
   // « Suivre mon cycle » : l'accueil ne montre que le calendrier, les 5 raccourcis, une carte intelligente et le prochain rappel
   // Profil enfant : le cocon remplace les cartes par défaut ; les cartes facultatives que le parent a lui-même
@@ -136,7 +138,7 @@ export default function Home() {
   const aiShown = !effectiveHidden(homeOrder, homeHidden).includes('assistant');
   const libShown = !effectiveHidden(homeOrder, homeHidden).includes('library');
   const homeCards = cycleMode && !mainLoading && !mainError ? ['main', ...(aiShown ? ['assistant'] : []), ...(libShown ? ['library'] : [])]
-    : childScope && !mainLoading && !mainError ? ['main', ...orderedHomeCards(homeOrder, homeHidden).filter((k) => k === 'recipe' || k === 'assistant' || k === 'solo' || k === 'library' || k === 'outings')]
+    : childScope && !mainLoading && !mainError ? ['main', ...orderedHomeCards(homeOrder, homeHidden).filter((k) => k === 'recipe' || k === 'assistant' || k === 'solo' || k === 'videos' || k === 'library' || k === 'outings')]
       : orderedHomeCards(homeOrder, homeHidden);
   // Recommandation du jour : l'article adapté s'il existe, sinon une idée de repas — sans doublon si ces cartes sont déjà affichées
   cards.recommendation = (!homeCards.includes('article') ? cards.article : null) ?? (!homeCards.includes('recipe') ? cards.recipe : null);
