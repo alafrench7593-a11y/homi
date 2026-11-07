@@ -222,7 +222,11 @@ export default function RemindersScreen() {
   const [skipped, setSkipped] = useState(0);
   const qp = useLocalSearchParams<{ new?: string }>();
   const [supplement, setSupplement] = useState(false);
-  useEffect(() => { if (qp.new === 'supplement') { setSupplement(true); setEditing(undefined); setOpen(true); } }, [qp.new]);
+  useEffect(() => {
+    if (qp.new === 'supplement') { setSupplement(true); setEditing(undefined); setOpen(true); }
+    // « Ajouter un rappel » depuis le Profil : un rappel vide
+    if (qp.new === 'custom') { setSupplement(false); setEditing(undefined); setOpen(true); }
+  }, [qp.new]);
 
   const refreshStatus = useCallback(() => {
     getPermission().then(setPermission).catch(() => undefined);

@@ -8,6 +8,7 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { avatarInitial } from '@/components/AccountActions';
 import { ProfilePhotoSheet } from '@/features/profilePhoto/ProfilePhotoSheet';
 import { ChildAvatar } from '@/features/childAvatar';
+import { ChildrenHealthSection, FamilyDocsSection, ForMeSection, MyDayCard, OrganizeSection } from '@/features/profileHub/ProfileHub';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
@@ -76,6 +77,14 @@ export default function Profile() {
           </Card>}
         </Appear>
 
+        {/* Espace de la maman (07/11/2026) : sa journée, son organisation, les documents, la santé des enfants, elle */}
+        <Appear kind="soft" delay={0.18}><MyDayCard /></Appear>
+        <OrganizeSection />
+        <FamilyDocsSection />
+        <ChildrenHealthSection children={children ?? []} />
+        <ForMeSection />
+
+        <SectionTitle title={tr('profile.learn')} />
         <Card>
           <ListRow icon="message-circle" title={tr('ai.home.title')} subtitle={tr('ai.profile.sub')} onPress={() => router.push('/assistant/chat')} testID="profile-ai" />
           <ListRow icon="clock" title={tr('ai.profile.history')} onPress={() => router.push('/ask')} />
@@ -95,12 +104,8 @@ export default function Profile() {
           <ListRow icon="users" title={tr('profile.partner')} subtitle={tr('profile.partnerSub')} onPress={() => router.push('/settings/family')} />
         </Card>
 
-        <SectionTitle title={tr('profile.forMe')} />
+        <SectionTitle title={tr('profile.accountCommunity')} />
         <Card>
-          <ListRow icon="heart" title={tr('profile.me')} subtitle={tr('profile.meSub')} onPress={() => router.push('/me')} />
-          <ListRow icon="cloud" title={tr('profile.sleep')} onPress={() => router.push('/me/sleep')} />
-          <ListRow icon="smile" title={tr('profile.mood')} onPress={() => router.push('/me/mood')} />
-          <ListRow icon="folder" title={tr('profile.documents')} onPress={() => router.push('/documents')} />
           <ListRow icon="message-square" title={tr('profile.posts')} subtitle={tr('profile.postsSub')} onPress={() => router.push('/community/profile')} />
           <ListRow icon="at-sign" title={tr('profile.community')} subtitle={tr('profile.communitySub')} onPress={() => router.push('/moi' as never)} testID="profile-community" />
           <ListRow icon="lock" title={tr('profile.account')} subtitle={tr('profile.accountSub')} onPress={() => router.push({ pathname: '/moi', params: { tab: 'account' } } as never)} testID="profile-account" />

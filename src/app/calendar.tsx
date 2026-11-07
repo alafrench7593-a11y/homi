@@ -3,7 +3,7 @@
  * Vues jour, semaine, mois et agenda. Créer, modifier, déplacer, supprimer. Export iCalendar (.ics)
  * importable dans Google Agenda, Apple Calendrier ou Outlook — sans données de santé par défaut.
  */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Linking, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -43,7 +43,7 @@ type Draft = { id?: string; title: string; kind: EventKind; date: string; from: 
 export default function FamilyCalendar() {
   const t = useTheme();
   const toast = useToast();
-  const params = useLocalSearchParams<{ view?: View_ }>();
+  const params = useLocalSearchParams<{ view?: View_; new?: string }>();
   const [view, setView] = useState<View_>(params.view ?? 'week');
   const [cursor, setCursor] = useState(todayISO());
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -88,6 +88,9 @@ export default function FamilyCalendar() {
     const h = day === todayISO() ? Math.min(22, new Date().getHours() + 1) : 10;
     setDraft({ title: '', kind: 'activity', date: toFrDate(day), from: `${h}h`, to: `${h + 1}h`, allDay: false, location: '', notes: '', recurrence: 'none', until: '', childId: null });
   }
+  // « Planifier » depuis le Profil (?new=1) : ouvre directement la création d'un événement
+  useEffect(() => { if (params.new === '1') openNew(); }, [params.new]); // eslint-disable-line react-hooks/exhaustive-deps
+
   function openItem(i: CalendarItem) {
     if (i.source === 'appointment') return router.push('/appointments');
     if (i.source === 'task') return router.push('/family');

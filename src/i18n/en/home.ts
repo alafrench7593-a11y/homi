@@ -63,6 +63,8 @@ export const home: Messages<typeof fr> = {
   'profile.partner': 'Sharing with my partner',
   'profile.partnerSub': 'Invite, permissions by section',
   'profile.forMe': 'For me',
+  'profile.learn': 'Learn, ask a question',
+  'profile.accountCommunity': 'My account and community',
   'profile.me': 'Me too',
   'profile.meSub': 'Body, postpartum, recovery',
   'profile.sleep': 'My sleep',

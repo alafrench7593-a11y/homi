@@ -61,6 +61,8 @@ export const home = {
   'profile.partner': 'Partage avec mon ou ma partenaire',
   'profile.partnerSub': 'Inviter, droits par rubrique',
   'profile.forMe': 'Pour moi',
+  'profile.learn': 'S’informer, poser une question',
+  'profile.accountCommunity': 'Mon compte et ma communauté',
   'profile.me': 'Moi aussi',
   'profile.meSub': 'Corps, post-partum, rééducation',
   'profile.sleep': 'Mon sommeil',

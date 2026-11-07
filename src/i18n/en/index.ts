@@ -51,3 +51,4 @@ export { mental } from './mental';
 export { solo } from './solo';
 export { videos } from './videos';
 export { profilePhoto } from './profilePhoto';
+export { hub } from './hub';
