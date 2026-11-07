@@ -48,8 +48,8 @@ export interface Gesture {
   /** Nombre d'étapes (clés sol.g.<key>.s1…sN). */
   steps: number;
   url?: string;
-  /** Vidéo officielle vérifiée (page de la HAS qui l'intègre). */
-  video?: string;
+  /** Vidéo officielle lue dans l'appli (identifiant YouTube vérifié, voir officialVideos.ts). */
+  videoId?: string;
   ages: ('baby' | 'child')[];
   /** Geste propre au fait d'être seule (pas de relais immédiat). */
   solo?: boolean;
@@ -58,8 +58,8 @@ export interface Gesture {
 }
 
 export const GESTURES: Gesture[] = [
-  { key: 'crying', steps: 5, url: 'https://www.has-sante.fr/jcms/c_1095926/fr/bebe-secoue-une-forme-mal-connue-de-maltraitance-aux-consequences-irreparables', video: 'https://www.youtube.com/embed/videoseries?list=PL8602856ED75D6285', ages: ['baby'], solo: true, care: true },
-  { key: 'sleep', steps: 4, url: 'https://www.ameli.fr/assure/sante/bons-gestes/bebe/coucher-bebe', ages: ['baby'] },
+  { key: 'crying', steps: 5, url: 'https://www.has-sante.fr/jcms/c_1095926/fr/bebe-secoue-une-forme-mal-connue-de-maltraitance-aux-consequences-irreparables', videoId: '-9O4Go_lidQ', ages: ['baby'], solo: true, care: true },
+  { key: 'sleep', steps: 4, url: 'https://www.ameli.fr/assure/sante/bons-gestes/bebe/coucher-bebe', videoId: 'qG88EmGtSPQ', ages: ['baby'] },
   { key: 'shower_alone', steps: 4, ages: ['baby', 'child'], solo: true },
   { key: 'bath', steps: 5, url: 'https://www.ameli.fr/assure/sante/bons-gestes/bebe/donner-bain-bebe', ages: ['baby'] },
   { key: 'change', steps: 4, url: 'https://www.ameli.fr/assure/sante/bons-gestes/bebe/changer-bebe-faire-toilette', ages: ['baby'] },

@@ -9,8 +9,8 @@ describe('profil maman solo', () => {
     expect(aidsFor({ separated: false, youngestAge: null }).map((a) => a.key)).toContain('cmg');
   });
   it('toutes les sources sont des sites officiels en https', () => {
-    const ok = /^https:\/\/(www\.)?(caf\.fr|pension-alimentaire\.caf\.fr|solidarites\.gouv\.fr|impots\.gouv\.fr|mes-aides\.gouv\.fr|monenfant\.fr|ameli\.fr|has-sante\.fr|youtube\.com\/embed\/videoseries\?list=PL8602856ED75D6285)/;
-    for (const u of [...AIDS.map((a) => a.url), ...GESTURES.flatMap((g) => [g.url, g.video]).filter(Boolean) as string[]]) expect(u).toMatch(ok);
+    const ok = /^https:\/\/(www\.)?(caf\.fr|pension-alimentaire\.caf\.fr|solidarites\.gouv\.fr|impots\.gouv\.fr|mes-aides\.gouv\.fr|monenfant\.fr|ameli\.fr|has-sante\.fr)/;
+    for (const u of [...AIDS.map((a) => a.url), ...GESTURES.map((g) => g.url).filter(Boolean) as string[]]) expect(u).toMatch(ok);
   });
   it('âge et gestes adaptés', () => {
     expect(ageYears('2024-11-08', '2026-11-07')).toBe(1);
@@ -44,5 +44,32 @@ describe('i18n maman solo', () => {
   it('aucune formule interdite, aucun montant d’allocation', () => {
     const all = JSON.stringify(fr).toLowerCase();
     for (const bad of ['sans risque', 'c’est normal', "c'est normal", 'aucun danger', 'pas besoin de consulter', 'validé par un professionnel', '€', ' mg', 'ml/kg']) expect(all).not.toContain(bad);
+  });
+});
+
+import { OFFICIAL_VIDEOS, embedUrl, watchUrl } from '@/lib/domain/officialVideos';
+
+describe('vidéos officielles', () => {
+  it('identifiants YouTube valides, uniques, sans doublon de clé', () => {
+    const ids = OFFICIAL_VIDEOS.map((v) => v.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) expect(id).toMatch(/^[A-Za-z0-9_-]{11}$/);
+    expect(new Set(OFFICIAL_VIDEOS.map((v) => v.key)).size).toBe(OFFICIAL_VIDEOS.length);
+  });
+  it('lecteur sans cookie, lecture dans la page, pas de vidéos d’autres chaînes à la fin', () => {
+    const u = embedUrl('-9O4Go_lidQ', { origin: 'https://fr.aufildenous.app' });
+    expect(u.startsWith('https://www.youtube-nocookie.com/embed/-9O4Go_lidQ?')).toBe(true);
+    expect(u).toContain('playsinline=1');
+    expect(u).toContain('rel=0');
+    expect(u).toContain('origin=https%3A%2F%2Ffr.aufildenous.app');
+    expect(() => embedUrl('"><script>')).toThrow();
+    expect(watchUrl('qG88EmGtSPQ')).toBe('https://www.youtube.com/watch?v=qG88EmGtSPQ');
+  });
+  it.each([['fr', fr], ['en', en]])('%s : titre et chaîne pour chaque vidéo', (_l, d) => {
+    const need = OFFICIAL_VIDEOS.flatMap((v) => [`sol.v.${v.key}`, `sol.v.by.${v.by}`]);
+    expect(need.filter((k) => !(k in d))).toEqual([]);
+  });
+  it('les gestes pointent vers des vidéos de la liste', () => {
+    for (const g of GESTURES) if (g.videoId) expect(OFFICIAL_VIDEOS.some((v) => v.id === g.videoId)).toBe(true);
   });
 });

@@ -23,6 +23,8 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { todayISO } from '@/lib/domain/dates';
 import { AIDS_CHECKED_ON, HELP_KINDS, ageYears, aidsFor, gesturesFor, helpersFor, smsLink, type Gesture } from '@/lib/domain/soloParent';
 import { callNumber, openLink } from '@/lib/links';
+import { OFFICIAL_VIDEOS, VIDEO_TOPICS, VIDEOS_CHECKED_ON, videoById, type VideoTopic } from '@/lib/domain/officialVideos';
+import { VideoCard } from '@/components/video/VideoCard';
 import type { FamilySituation } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
@@ -99,10 +101,8 @@ function GestureCard({ g }: { g: Gesture }) {
             </Row>
           ))}
           {g.care ? <Banner tone="info" icon="user-check">{tr(`sol.g.${g.key}.care` as TKey)}</Banner> : null}
-          <Row wrap style={{ gap: spacing.xs }}>
-            {g.video ? <Button label={tr('sol.g.video')} icon="play-circle" size="sm" variant="secondary" onPress={() => openLink(g.video!, toast)} testID={`sol-g-video-${g.key}`} /> : null}
-            {g.url ? <Button label={tr('sol.g.source')} icon="external-link" size="sm" variant="ghost" onPress={() => openLink(g.url!, toast)} /> : null}
-          </Row>
+          {g.videoId && videoById(g.videoId) ? <View testID={`sol-g-video-${g.key}`}><VideoCard video={videoById(g.videoId)!} compact /></View> : null}
+          {g.url ? <Button label={tr('sol.g.source')} icon="external-link" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => openLink(g.url!, toast)} /> : null}
         </View>
       ) : null}
     </Card>
@@ -118,6 +118,7 @@ export default function Solo() {
   const circle = useSupportCircle().data ?? [];
   const [sheet, setSheet] = useState<{ contact?: SupportContact } | null>(null);
   const [ask, setAsk] = useState<HelpKind | null>(null);
+  const [topic, setTopic] = useState<VideoTopic>('baby');
   const situation = profile?.family_situation ?? null;
   const ages = children.map((c) => ageYears(c.birth_date, today));
   const known = ages.filter((a): a is number => a != null);
@@ -193,6 +194,19 @@ export default function Solo() {
       <SectionTitle title={tr('sol.g.title')} />
       <Text variant="small" muted>{tr('sol.g.intro')}</Text>
       {gestures.map((g) => <GestureCard key={g.key} g={g} />)}
+
+      {/* Vidéos officielles, lues dans l'appli */}
+      <SectionTitle title={tr('sol.v.title')} />
+      <Text variant="small" muted>{tr('sol.v.intro')}</Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+        {VIDEO_TOPICS.map((k) => <Chip key={k} label={tr(`sol.v.topic.${k}` as TKey)} selected={topic === k} onPress={() => setTopic(k)} testID={`sol-v-topic-${k}`} />)}
+      </View>
+      <Card testID="sol-videos">
+        <View style={{ gap: spacing.md }}>
+          {OFFICIAL_VIDEOS.filter((v) => v.topic === topic).map((v) => <VideoCard key={v.id} video={v} />)}
+        </View>
+      </Card>
+      <Text variant="caption" muted>{tr('sol.v.checked', { date: formatDate(VIDEOS_CHECKED_ON, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Text>
 
       {/* Charge mentale */}
       <SectionTitle title={tr('sol.load.title')} />
