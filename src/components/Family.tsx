@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
-import { useActivePregnancy, useActiveSubject, useEmergencyResources, useExpectedBabies, useJourneyState, usePremium, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useActiveSubject, useEmergencyResources, useExpectedBabies, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { isDemo } from '@/lib/backend';
@@ -15,6 +15,9 @@ import { Banner, Button, Card, haptic, Icon, type IconName, Row, Text } from './
 import { Sheet, useToast } from './Overlays';
 import { Tappable } from '@/components/Tappable';
 import { ChildAvatar } from '@/features/childAvatar';
+import { UserAvatar } from './UserAvatar';
+import { avatarInitial } from './AccountActions';
+import { useAuth } from '@/lib/auth';
 
 function Avatar({ label, color, icon, size = 40 }: { label?: string; color: string; icon?: IconName; size?: number }) {
   return (
@@ -50,10 +53,15 @@ export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubb
   const { data: children } = useTrackedChildren();
   const js = useJourneyState();
   const { data: babies } = useExpectedBabies(pregnancy?.id);
+  // « Moi » : la photo de profil de la personne (07/11/2026), sinon son initiale
+  const { data: profile } = useProfile();
+  const { session } = useAuth();
+  const meInitial = avatarInitial(profile?.display_name, session?.email);
+  const meLabel = profile?.display_name?.trim() || tr('pj.subject.me');
 
   const items: { key: string; label: string; sub: string; avatar: React.ReactNode; active: boolean; onPress: () => void }[] = [];
   // Ordre : Moi, Ma grossesse, chaque enfant (prénom seul), la famille ; puis « Ajouter un profil »
-  items.push({ key: 'me', label: tr('pj.subject.me'), sub: js.body && js.body.type !== 'pregnancy' ? tr(`pj.type.${js.body.type}` as TKey) : tr('pj.subject.meSub'), avatar: <Avatar color="#F3D9D3" icon="heart" />, active: subject.type === 'me', onPress: () => setSubject({ type: 'me' }) });
+  items.push({ key: 'me', label: tr('pj.subject.me'), sub: js.body && js.body.type !== 'pregnancy' ? tr(`pj.type.${js.body.type}` as TKey) : tr('pj.subject.meSub'), avatar: <UserAvatar path={profile?.avatar_path} initial={meInitial} size={40} testID="subject-me-avatar" />, active: subject.type === 'me', onPress: () => setSubject({ type: 'me' }) });
   if (pregnancy) {
     const p = pregnancyProgress(pregnancy.due_date);
     const names = babies?.map((b) => b.nickname).filter(Boolean).join(' · ');
@@ -115,6 +123,10 @@ export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubb
     return (
       <>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingVertical: 2, paddingRight: spacing.md }} testID="profile-bubbles">
+          {/* « Moi » en premier : la maman, avec sa photo de profil */}
+          <Bubble testID="bubble-me" label={meLabel} active={subject.type === 'me'} a11y={tr('pj.bubble.meA11y', { name: meLabel })} onPress={() => setSubject({ type: 'me' })}>
+            <UserAvatar path={profile?.avatar_path} initial={meInitial} size={50} testID="bubble-me-avatar" />
+          </Bubble>
           {(children ?? []).map((c) => (
             <Bubble key={c.id} testID={`bubble-${c.id}`} label={c.first_name} active={subject.type === 'child' && subject.id === c.id} a11y={`${c.first_name}, ${childAge(c.birth_date).label}`} onPress={() => setSubject({ type: 'child', id: c.id })}>
               <ChildAvatar child={c} size={50} />

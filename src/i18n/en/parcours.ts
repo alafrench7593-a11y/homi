@@ -504,6 +504,7 @@ export const parcours: Messages<typeof fr> = {
   'pj.switcher.add': 'Add a profile',
   'pj.bubble.add': 'Add',
   'pj.bubble.all': 'Profiles',
+  'pj.bubble.meA11y': '{name}, my profile',
   'pj.simple.title': 'Simple mode',
   'pj.simple.body': 'On: just the essentials (short home, a few tools per category). Off: all advanced features are shown.',
   'pj.tools.more': 'See more ({count})',

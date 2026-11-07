@@ -502,6 +502,7 @@ export const parcours = {
   'pj.switcher.add': 'Ajouter un profil',
   'pj.bubble.add': 'Ajouter',
   'pj.bubble.all': 'Profils',
+  'pj.bubble.meA11y': '{name}, mon profil',
   'pj.simple.title': 'Mode simple',
   'pj.simple.body': 'Activé : l’essentiel seulement (accueil réduit, quelques outils par catégorie). Désactivé : toutes les fonctions avancées sont visibles.',
   'pj.tools.more': 'Voir plus ({count})',
