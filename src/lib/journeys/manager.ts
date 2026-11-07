@@ -8,6 +8,7 @@ import { useInvalidate } from '../data/hooks';
 import { useUserId } from '../auth';
 import type { Reminder } from '../types';
 import { syncLocalReminders } from '../notifications';
+import { loadDeviceReminders } from '../data/deviceReminders';
 import type { Op } from './model';
 
 export async function runOps(ops: Op[]): Promise<void> {
@@ -42,7 +43,7 @@ export function useRunJourneyOps() {
       await runOps(ops);
       await invalidate(...JOURNEY_KEYS);
       try {
-        const reminders = userId ? await backend.select<Reminder>({ table: 'reminders', filters: [eq('user_id', userId)] }) : [];
+        const reminders = userId ? await loadDeviceReminders(userId) : [];
         await syncLocalReminders(reminders);
       } catch { /* notifications locales indisponibles (web) : le serveur a déjà coupé les rappels */ }
     } finally { setBusy(false); }

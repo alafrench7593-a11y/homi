@@ -217,6 +217,7 @@ export default function BottleReminderScreen() {
       )}
 
       <BottleNotificationSettings />
+      <Button label={tr('tool.bottle_scoops')} icon="hash" variant="secondary" onPress={() => router.push('/bottle/scoops')} testID="bottle-scoops" />
       <Text variant="caption" muted>{noRecommendationNote()}</Text>
 
       {/* ------------------------------------------------ modifier le rappel */}

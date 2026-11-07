@@ -5,7 +5,9 @@ import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, Chip, Field, Loading, Row, Segmented, SectionTitle, Text, Toggle } from '@/components/ui';
 import { EmptyStateCard } from '@/components/ui-extra';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
-import { useActivePregnancy, useProfile, useReminders } from '@/lib/data/hooks';
+import { useActivePregnancy, useHouseholdMembers, useProfile, useReminders } from '@/lib/data/hooks';
+import { useHouseholdSharedReminders } from '@/lib/data/hooks-tools6';
+import { useUserId } from '@/lib/auth';
 import { useLocalSearchParams } from 'expo-router';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { isPremiumRequired } from '@/lib/premium/features';
@@ -48,15 +50,15 @@ function parseTime(s: string): { hour: number; minute: number } | null {
 }
 
 interface Form {
-  title: string; body: string; category: Reminder['category']; kind: Kind; forPregnancy: boolean;
+  title: string; body: string; category: Reminder['category']; kind: Kind; forPregnancy: boolean; shared: boolean;
   date: string; time: string; weekdays: Weekday[]; every: number; from: string; to: string;
 }
 
 function toForm(r?: Reminder): Form {
-  const base: Form = { forPregnancy: false, title: '', body: '', category: 'custom', kind: 'daily', date: toFrDate(todayISO()), time: '09:00', weekdays: [1, 2, 3, 4, 5], every: 180, from: '7', to: '21' };
+  const base: Form = { forPregnancy: false, shared: false, title: '', body: '', category: 'custom', kind: 'daily', date: toFrDate(todayISO()), time: '09:00', weekdays: [1, 2, 3, 4, 5], every: 180, from: '7', to: '21' };
   if (!r) return base;
   const s = r.schedule;
-  const f: Form = { ...base, title: r.title, body: r.body ?? '', category: r.category, kind: s.type, forPregnancy: !!r.pregnancy_id };
+  const f: Form = { ...base, title: r.title, body: r.body ?? '', category: r.category, kind: s.type, forPregnancy: !!r.pregnancy_id, shared: !!r.shared };
   if (s.type === 'once') {
     const d = new Date(s.at);
     f.date = toFrDate(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`);
@@ -106,6 +108,8 @@ function ReminderEditor({ reminder, visible, onClose, supplement }: { reminder?:
   const toast = useToast();
   const save = useSaveReminder();
   const del = useDeleteReminder();
+  const members = useHouseholdMembers().data ?? [];
+  const canShare = members.length > 1;
   const [f, setF] = useState<Form>(() => toForm(reminder));
   const [errors, setErrors] = useState<Record<string, string>>({});
   useEffect(() => {
@@ -124,6 +128,8 @@ function ReminderEditor({ reminder, visible, onClose, supplement }: { reminder?:
       title: f.title.trim().slice(0, 80), body: f.body.trim() || null, category: f.category, schedule, enabled: reminder?.enabled ?? true,
       // toujours rattaché au bon profil : la grossesse en cours, sinon la personne elle-même
       pregnancy_id: f.forPregnancy ? (reminder?.pregnancy_id ?? pregnancy?.id ?? null) : null,
+      // envoyé seulement s'il change quelque chose (compatibilité avant la migration du 07/11)
+      ...(f.shared || reminder?.shared ? { shared: f.shared } : {}),
     };
     try {
       const res = await save.mutateAsync({ id: reminder?.id, draft });
@@ -186,6 +192,16 @@ function ReminderEditor({ reminder, visible, onClose, supplement }: { reminder?:
         </View>
       )}
       {preview ? <Text variant="small" muted>{tr('u1.rem.preview', { schedule: describeSchedule(preview) })}</Text> : null}
+      {canShare ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }} testID="rem-share-row">
+          <View style={{ flex: 1 }}>
+            <Text weight="medium">{tr('rs.share')}</Text>
+            <Text variant="small" muted>{tr('rs.shareD')}</Text>
+          </View>
+          <Toggle label={tr('rs.share')} value={f.shared} onChange={(v) => set('shared', v)} />
+        </View>
+      ) : null}
+      {f.shared && (f.category === 'medication' || f.forPregnancy) ? <Banner tone="info" icon="eye">{tr('rs.privacy')}</Banner> : null}
       <Button label={reminder ? tr('u1.rem.save') : tr('u1.rem.create')} loading={save.isPending} onPress={submit} />
       {reminder ? <Button label={tr('u1.rem.deleteBtn')} variant="ghost" icon="trash-2" loading={del.isPending} onPress={remove} /> : null}
     </Sheet>
@@ -232,6 +248,8 @@ export default function RemindersScreen() {
   }
 
   const list = reminders ?? [];
+  const me = useUserId();
+  const fromOthers = (useHouseholdSharedReminders().data ?? []).filter((r) => r.user_id !== me);
   const suggestions = reminderSuggestions(profile?.journeys ?? []).filter((sg) => !list.some((r) => r.title === sg.title));
   return (
     <Screen back title={tr('u1.rem.title')} subtitle={tr('u1.rem.subtitle')} footer={<Button label={tr('u1.rem.new')} icon="plus" onPress={() => { setEditing(undefined); setSupplement(false); setOpen(true); }} testID="reminder-new" />}>
@@ -258,7 +276,7 @@ export default function RemindersScreen() {
             return (
               <View key={r.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
                 <Tappable accessibilityRole="button" accessibilityLabel={tr('u1.rem.editA11y', { title: r.title })} style={{ flex: 1, minHeight: 48, justifyContent: 'center', opacity: r.enabled ? 1 : 0.55 }} onPress={() => { setEditing(r); setOpen(true); }}>
-                  <Text weight="medium">{r.title}{r.pregnancy_id ? ` · ${tr('u1.rem.myPregnancy')}` : ''}</Text>
+                  <Text weight="medium">{r.title}{r.pregnancy_id ? ` · ${tr('u1.rem.myPregnancy')}` : ''}{r.shared ? ` · ${tr('rs.sharedTag')}` : ''}</Text>
                   <Text variant="small" muted>{validateSchedule(r.schedule) ? describeSchedule(r.schedule) : tr('u1.rem.fixSchedule')}</Text>
                   {next ? <Text variant="caption" muted>{tr('u1.rem.next', { date: formatDate(next, { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}</Text> : null}
                 </Tappable>
@@ -268,6 +286,21 @@ export default function RemindersScreen() {
           })}
         </Card>
       )}
+
+      {fromOthers.length > 0 ? (
+        <>
+          <SectionTitle title={tr('rs.fromOthers')} />
+          <Card testID="rem-shared-list">
+            {fromOthers.map((r, i) => (
+              <View key={r.id} style={{ paddingVertical: spacing.xs, minHeight: 48, justifyContent: 'center', borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border, opacity: r.enabled ? 1 : 0.55 }}>
+                <Text weight="medium">{r.title}</Text>
+                <Text variant="small" muted>{validateSchedule(r.schedule) ? describeSchedule(r.schedule) : tr('u1.rem.fixSchedule')}{r.enabled ? '' : ` · ${tr('rs.off')}`}</Text>
+              </View>
+            ))}
+            <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('rs.fromOthersD')}</Text>
+          </Card>
+        </>
+      ) : null}
 
       {suggestions.length > 0 && (
         <Card>

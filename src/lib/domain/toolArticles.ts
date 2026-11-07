@@ -142,6 +142,11 @@ const TOOL_TOPICS_FR: Record<string, ToolTopic> = {
   kid_steps: { words: ['tdah', 'autis', 'dys', 'mdph', 'aesh', 'bilan', 'diagnostic', 'orthophon', 'demarche', 'pai', 'pps'], cats: ['neurodeveloppement', 'maladies-chroniques', 'ecole-garde'], journeys: KID, ask: 'Quelles démarches pour un bilan TDAH ?' },
   cycle_kit: { words: ['regles', 'protection', 'serviette', 'tampon', 'cup', 'culotte', 'flux', 'abondant', 'douleur'], cats: ['regles'], journeys: CYCLE, ask: 'Quelle protection choisir pendant les règles ?' },
   family_sos: { words: ['pleur', 'secou', 'bout', 'epuisement', 'craquer', 'colere', 'relais', 'aide', 'calmer', 'burn'], cats: ['sante-mentale', 'sommeil', 'sante-bebe'], ask: 'Je n’en peux plus, mon bébé pleure sans arrêt' },
+  pma_tracker: { words: ['amp', 'pma', 'fiv', 'insemination', 'stimulation', 'injection', 'ponction', 'transfert', 'embryon', 'protocole'], cats: ['difficultes-conception', 'fertilite'], journeys: ['ttc'], ask: 'Comment s’organiser pendant une stimulation pour une FIV ?' },
+  bottle_scoops: { words: ['biberon', 'lait infantile', 'preparation', 'mesurette', 'poudre', 'eau', 'dosage'], cats: ['alimentation-bebe'], journeys: BABY, ask: 'Comment bien préparer un biberon de lait en poudre ?' },
+  recall_alerts: { words: ['rappel', 'rappelconso', 'produit', 'retrait', 'lot', 'alerte', 'securite'], cats: ['materiel', 'alimentation'], ask: 'Que faire si un produit que j’ai acheté est rappelé ?' },
+  kid_routines: { words: ['routine', 'rituel', 'matin', 'coucher', 'autonomie', 'pictogramme', 'organisation', 'ecran'], cats: ['education', 'vie-pratique'], journeys: KID, ask: 'Comment aider mon enfant à être autonome le matin ?' },
+  custody: { words: ['garde alternee', 'separation', 'divorce', 'deux maisons', 'coparent', 'mediation', 'residence'], cats: ['vie-pratique', 'droits-demarches', 'education'], journeys: KID, ask: 'Comment organiser la garde alternée pour un jeune enfant ?' },
 };
 
 
@@ -252,6 +257,11 @@ const ASK_EN: Record<string, string> = {
   'kid_steps': 'What steps for an ADHD assessment?',
   'family_sos': 'I can’t cope, my baby cries non-stop',
   'cycle_kit': 'Which period protection should I choose?',
+  'pma_tracker': 'How can I stay organised during IVF stimulation?',
+  'bottle_scoops': 'How do I prepare a formula bottle properly?',
+  'recall_alerts': 'What should I do if a product I bought is recalled?',
+  'kid_routines': 'How can I help my child get ready on their own in the morning?',
+  'custody': 'How do we organise shared custody for a young child?',
 };
 const TOOL_TOPICS_EN: Record<string, ToolTopic> = Object.fromEntries(
   Object.entries(TOOL_TOPICS_FR).map(([k, v]) => [k, { ...v, ask: ASK_EN[k] ?? v.ask }]),

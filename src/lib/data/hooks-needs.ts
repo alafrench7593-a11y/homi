@@ -8,6 +8,7 @@ import { useMutation } from '@tanstack/react-query';
 import { backend, eq, gte, inList, type Filter } from '../backend';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
 import { syncLocalReminders } from '../notifications';
+import { loadDeviceReminders } from './deviceReminders';
 import { useUserId } from '../auth';
 import type { Reminder } from '../types';
 
@@ -100,7 +101,7 @@ export function useSaveTreatment() {
       const rem = v.reminders && saved.active && userId ? treatmentReminderRows(saved, v.childName, userId) : [];
       if (rem.length) await backend.insert('reminders', rem);
       if (userId) {
-        const rows = await backend.select<Reminder>({ table: 'reminders', filters: [eq('user_id', userId)] });
+        const rows = await loadDeviceReminders(userId);
         await syncLocalReminders(rows).catch(() => undefined);
       }
       return saved;

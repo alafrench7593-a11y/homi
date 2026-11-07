@@ -10,6 +10,8 @@ import { useMemo } from 'react';
 import { backend, BackendError, eq, gte, inList, isDemo, type Filter } from '../backend';
 import { useAuth, useUserId } from '../auth';
 import { syncLocalReminders } from '../notifications';
+import { loadDeviceReminders } from './deviceReminders';
+export { loadDeviceReminders, mergeDeviceReminders } from './deviceReminders';
 import { useUiStore } from '../store';
 import type { Article, Domain, HouseholdMember, Reminder } from '../types';
 import type { ReminderSchedule } from '../domain/reminders';
@@ -130,11 +132,13 @@ export interface ReminderDraft {
   /** Profil concerné : la grossesse (complément prescrit) ou un enfant ; absent = la personne elle-même */
   pregnancy_id?: string | null;
   child_id?: string | null;
+  /** Partagé avec le foyer : sonne aussi sur le téléphone des autres membres (lecture seule pour eux) */
+  shared?: boolean;
 }
 
 /** Après chaque modification : relecture de la liste puis reprogrammation des notifications locales. */
 export async function resync(userId: string) {
-  const rows = await backend.select<Reminder>({ table: 'reminders', filters: [eq('user_id', userId)] });
+  const rows = await loadDeviceReminders(userId);
   return syncLocalReminders(rows).catch(() => ({ scheduled: 0, skipped: 0 }));
 }
 

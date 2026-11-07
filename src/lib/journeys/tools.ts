@@ -210,6 +210,13 @@ export const TOOLS: ToolDef[] = [
   { id: 'cycle_kit', theme: 'reminders', icon: 'briefcase', scopes: ['avoid', 'ttc', 'cycle'], href: () => '/cycle/kit' },
   { id: 'kid_card', theme: 'health', icon: 'file-text', scopes: KID, href: (c) => kid(c, '/card') },
   { id: 'kid_steps', theme: 'health', icon: 'check-square', scopes: ['child'], href: (c) => kid(c, '/steps') },
+
+  // ---------------------------------------------------------------- six outils (07/11/2026)
+  { id: 'pma_tracker', theme: 'cycle', icon: 'calendar', scopes: ['ttc'], href: () => '/fertility/pma' },
+  { id: 'bottle_scoops', theme: 'feeding', icon: 'hash', scopes: ['baby', 'postpartum'], when: (c) => c.scope !== 'postpartum' || !!c.babyId, href: () => '/bottle/scoops' },
+  { id: 'recall_alerts', theme: 'scanner', icon: 'alert-triangle', scopes: ALL, universal: true, href: () => '/scanner/recalls' },
+  { id: 'kid_routines', theme: 'tasks', icon: 'sun', scopes: ['child', 'family'], href: () => '/family/kid-routines' },
+  { id: 'custody', theme: 'calendar', icon: 'home', scopes: [...KID, 'family'], href: () => '/family/custody' },
 ];
 
 export const TOOL_BY_ID = Object.fromEntries(TOOLS.map((x) => [x.id, x])) as Record<string, ToolDef>;

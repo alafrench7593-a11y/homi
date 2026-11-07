@@ -7,6 +7,7 @@ import { useUiStore, type ActiveSubject } from '../store';
 import { isBody, visiblePregnancy, type JourneyRow } from '../journeys/model';
 import { insertOrQueue, useOfflineStore } from '../offline';
 import { syncLocalReminders } from '../notifications';
+import { mergeDeviceReminders } from './deviceReminders';
 import { uuid } from '../uuid';
 import { getLocale, t as tr } from '@/i18n';
 import {
@@ -290,10 +291,13 @@ export function useAppointments(opts: { upcomingOnly?: boolean } = {}) {
 export function useReminders() {
   const userId = useUserId();
   const q = useRows<Reminder>(['reminders'], userId ? { table: 'reminders', filters: [eq('user_id', userId)], order: [{ col: 'created_at' }] } : null);
+  // Rappels partagés par un autre membre du foyer : programmés aussi sur ce téléphone (jamais listés ici)
+  const shared = useRows<Reminder>(['reminders', 'device-shared'], userId ? { table: 'reminders', filters: [eq('shared', true)] } : null);
+  const sharedReady = !!shared.data || shared.isError;
   // Synchronisation automatique avec les notifications locales du téléphone
   useEffect(() => {
-    if (q.data) syncLocalReminders(q.data).catch(() => undefined);
-  }, [q.data]);
+    if (q.data && userId && sharedReady) syncLocalReminders(mergeDeviceReminders(userId, q.data, shared.data)).catch(() => undefined);
+  }, [q.data, shared.data, sharedReady, userId]);
   return q;
 }
 

@@ -150,6 +150,11 @@ const BY_ID: Record<string, string> = {
   kid_steps: 'clipboard-check',            // mes démarches
   family_sos: 'hand-heart',                // je craque
   cycle_kit: 'bag-personal',               // trousse règles : petit sac
+  pma_tracker: 'needle',                   // suivi PMA : traitements et injections
+  bottle_scoops: 'counter',                // compteur de mesurettes
+  recall_alerts: 'alert-octagram',         // alertes produits rappelés
+  kid_routines: 'gesture-tap-button',      // routines en pictogrammes
+  custody: 'home-switch',                  // garde alternée : deux maisons
 };
 
 /** Repli par catégorie puis icône d'origine (glyphes sans identifiant d'outil). */

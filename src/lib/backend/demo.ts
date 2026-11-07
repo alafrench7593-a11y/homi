@@ -94,6 +94,8 @@ const OWNER_TABLES: Record<string, string> = {
   intercourse_logs: 'user_id', fertility_observations: 'user_id', contraception_methods: 'user_id', consultation_questions: 'user_id',
   cycle_preferences: 'user_id', discharge_logs: 'user_id', bleeding_logs: 'user_id', cycle_journal: 'user_id',
   contraception_logs: 'user_id', cycle_custom_items: 'user_id', cycle_insight_feedback: 'user_id', cycle_shares: 'owner_id',
+  // Suivi PMA et préférence d'alerte des rappels produits (07/11/2026) : strictement personnels
+  pma_protocols: 'user_id', pma_meds: 'user_id', pma_logs: 'user_id', recall_watch_prefs: 'user_id',
   // Parcours : gérés par la personne (le foyer ne les modifie jamais)
   user_journeys: 'user_id',
   recipe_favorites: 'user_id', recipe_dislikes: 'user_id',
@@ -934,6 +936,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       if (table === 'notes') return rows.filter((n) => !n.private_to_author || n.author_id === me);
       if (table === 'name_votes') return rows;
       if (table === 'cycle_shares') return rows.filter((x) => x.owner_id === me || x.partner_id === me);
+      // Rappels : les miens + ceux qu'un membre de mon foyer a partagés (politique reminders_household_read)
+      if (table === 'reminders') {
+        const mine = new Set(T('household_members').filter((m) => m.user_id === me).map((m) => m.household_id));
+        return rows.filter((x) => x.user_id === me || (x.shared === true && x.household_id && mine.has(x.household_id)));
+      }
       return rows.filter((x) => x[ownerCol] === me);
     }
     // Rendez-vous privés : réservés à la personne qui les a créés
