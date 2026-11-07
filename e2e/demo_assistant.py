@@ -17,8 +17,9 @@ with sync_playwright() as p:
     pg.goto(B+'/welcome'); pg.wait_for_timeout(2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.reload(); pg.wait_for_timeout(3500)
+    # depuis l'accueil, le lien « Réponse plus détaillée avec l'IA en ligne » ouvre l'assistant en ligne
     pg.locator('[data-testid="home-ai-input"]').filter(visible=True).first.fill('Comment préparer un biberon ?')
-    pg.locator('[data-testid="home-ai-send"]').filter(visible=True).first.click(); pg.wait_for_timeout(4000)
+    pg.locator('[data-testid="home-ai-online"]').filter(visible=True).first.click(); pg.wait_for_timeout(4000)
     t=pg.inner_text('body')
     R['requete_envoyee']=len(seen)==1 and seen[0].get('message')=='Comment préparer un biberon ?' and len(seen[0].get('device_id',''))==36
     R['aucune_donnee_profil_envoyee']=set(seen[0].keys())<= {'message','device_id','recent_turns'} if seen else False

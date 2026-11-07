@@ -14,6 +14,7 @@ import { Appear } from '@/components/Appear';
 import { Banner, Button, Card, Divider, Icon, Loading, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { LegalLink } from '@/features/auth';
+import { AiOfferCard, ToolOffersCard } from '@/features/offers/ToolOffer';
 import { useInvalidate } from '@/lib/data/hooks';
 import { useEntitlement } from '@/lib/data/hooks-premium';
 import { friendlyError, usePlanLimits } from '@/lib/data/hooks-settings';
@@ -192,6 +193,12 @@ export default function SubscriptionScreen() {
           )}
         </>
       ) : null}
+
+      {/* Offres du 07/11/2026 : l'assistant IA seul, et les outils à vie */}
+      <SectionTitle title={tr('offer.aiSection')} />
+      <AiOfferCard />
+      <SectionTitle title={tr('offer.toolsSection')} />
+      <ToolOffersCard />
 
       <SectionTitle title={tr('u1.sub.compare')} />
       <Card>

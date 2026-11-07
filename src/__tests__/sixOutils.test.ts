@@ -56,3 +56,33 @@ describe('bibliothèque : sujets', () => {
     expect(countSubjects(arts)).toBe(4);
   });
 });
+
+import { isPaidTool, toolAccess, toolEntitlement, toolProductId, toolTrialUntil } from '@/lib/premium/offers';
+describe('offres : outils à vie et essai', () => {
+  const now = new Date('2026-11-10T12:00:00Z');
+  const base = { premium: false, ai: false, trial_until: '2026-12-07T00:00:00+01:00', tools: [{ key: 'custody', product_id: 'aufildenous_tool_custody', owned: false, allowed: true }] };
+  it('outil gratuit toujours ouvert, outil payant en essai avec jours restants', () => {
+    expect(toolAccess('emergency', base, now)).toMatchObject({ paid: false, allowed: true });
+    expect(toolAccess('custody', base, now)).toMatchObject({ paid: true, allowed: true, inTrial: true, trialDaysLeft: 27 });
+  });
+  it('après l’essai, fermé sauf achat ; inconnu → ouvert (le serveur tranche)', () => {
+    const after = { ...base, trial_until: '2026-11-01T00:00:00Z', tools: [{ ...base.tools[0], allowed: false }] };
+    expect(toolAccess('custody', after, now)).toMatchObject({ allowed: false, inTrial: false });
+    expect(toolAccess('custody', { ...after, tools: [{ ...after.tools[0], owned: true, allowed: true }] }, now)).toMatchObject({ allowed: true, owned: true, inTrial: false });
+    expect(toolAccess('custody', null, now)).toMatchObject({ paid: true, allowed: true });
+  });
+  it('identifiants alignés sur la migration et essai jamais avant le 07/12/2026', () => {
+    expect(isPaidTool('pma_tracker')).toBe(true);
+    expect(toolProductId('pma_tracker')).toBe('aufildenous_tool_pma_tracker');
+    expect(toolEntitlement('contraception_journal')).toBe('TOOL_CONTRACEPTION_JOURNAL');
+    expect(toolTrialUntil('2025-01-01T00:00:00Z')).toBe(new Date('2026-12-07T00:00:00+01:00').toISOString());
+    expect(toolTrialUntil('2026-12-01T00:00:00Z')).toBe('2026-12-31T00:00:00.000Z');
+  });
+});
+
+import { PAID_TOOLS } from '@/lib/premium/offers';
+it('offres : la liste des outils payants de l’application est celle de la migration', () => {
+  const fs = require('fs') as { readFileSync(p: string, enc: 'utf8'): string }; // eslint-disable-line @typescript-eslint/no-require-imports
+  const sql = fs.readFileSync('supabase/migrations/20261107000200_offres_ia_outils.sql', 'utf8');
+  expect([...sql.matchAll(/\('([a-z_]+)', 'TOOL_/g)].map((m) => m[1])).toEqual([...PAID_TOOLS]);
+});

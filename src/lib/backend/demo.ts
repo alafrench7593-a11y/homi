@@ -15,6 +15,7 @@ import { lib2 as enDict } from '@/i18n/en/lib2';
 import { uuid } from '../uuid';
 import { grants } from '../premium/entitlement';
 import { DEMO_CURRENCY, DEMO_GRID, PLAN_MONTHS, PREMIUM_ENTITLEMENT, PRODUCT_IDS, type PlanPeriod } from '../premium/plans';
+import { AI_ENTITLEMENT, PAID_TOOLS, toolEntitlement, toolProductId, toolTrialUntil, type AccessInfo } from '../premium/offers';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
 import { STEP_BY_KEY } from '@/content/discoveries/steps';
 import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../../../supabase/functions/_shared/safety';
@@ -282,6 +283,18 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     if (!state.session) throw new BackendError(tr('l2.dm.signinDot'), '42501');
     return state.session.userId;
   };
+  const grantActive = (ent: string) => T('entitlement_grants').some((g) => g.user_id === state.session?.userId && g.entitlement === ent && g.active && (!g.expires_at || Date.parse(g.expires_at) > Date.now()));
+  function demoAccess(): AccessInfo {
+    const me = state.session?.userId;
+    const premium = isPremium();
+    const created = (T('profiles').find((p) => p.id === me)?.created_at as string | undefined) ?? null;
+    const trialUntil = (state.tables._access?.[0]?.trial_until as string | undefined) ?? toolTrialUntil(created);
+    const inTrial = Date.parse(trialUntil) > Date.now();
+    return {
+      premium, ai: grantActive(AI_ENTITLEMENT), trial_until: trialUntil,
+      tools: PAID_TOOLS.map((k) => { const owned = grantActive(toolEntitlement(k)); return { key: k, product_id: toolProductId(k), owned, allowed: premium || inTrial || owned }; }),
+    };
+  }
   const isPremium = () => {
     const s = T('subscriptions').find((r) => r.user_id === state.session?.userId);
     // Même règle que le serveur (_subscription_grants) : remboursé → rien ; échéance nulle → seulement promotionnel / à vie
@@ -289,7 +302,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   };
   const limit = (key: string) => {
     const l = T('plan_limits').find((p) => p.key === key);
-    return l ? (isPremium() ? l.premium_value : l.free_value) : Infinity;
+    if (!l) return Infinity;
+    if (isPremium()) return l.premium_value;
+    // Offre Assistant IA : 250 questions par mois (miroir de _plan_limit_of)
+    if (key === 'assistant_questions_per_month' && grantActive(AI_ENTITLEMENT)) return Math.max(Number(l.free_value), 250);
+    return l.free_value;
   };
   /** « Je grandis » : étapes du catalogue, statuts sans jugement, suivi complet Premium (« ne pas suivre » toujours possible). */
   function checkChildStep(r: Row) {
@@ -1188,6 +1205,21 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       throw new BackendError(tr('l2.dm.coparentDemo'));
     },
     has_premium: () => isPremium(),
+    // Offres du 07/11/2026 (miroir de my_access / has_tool) : essai, achats simulés de la démonstration
+    my_access: () => demoAccess(),
+    has_tool: (a) => (demoAccess().tools.find((t) => t.key === a.p_tool)?.allowed ?? true),
+    set_demo_grant: (a) => {
+      // Démonstration uniquement (aucun paiement) : achat simulé d'un droit, ou fin d'essai simulée pour les tests
+      const g = T('entitlement_grants');
+      if (a.end_trial === true) { (state.tables._access ??= [{}])[0].trial_until = new Date(Date.now() - 86400_000).toISOString(); return null; }
+      const ent = String(a.entitlement ?? '');
+      if (!/^[A-Z0-9_]{3,64}$/.test(ent)) throw new BackendError(tr('l2.dm.forbidden'), '42501');
+      const row = { user_id: uid(), entitlement: ent, product_id: a.product_id ?? null, store: 'test', active: a.active !== false,
+        expires_at: ent === AI_ENTITLEMENT ? new Date(Date.now() + 30 * 86400_000).toISOString() : null, updated_at: nowIso() };
+      const i = g.findIndex((x) => x.user_id === uid() && x.entitlement === ent);
+      if (i >= 0) g[i] = row; else g.push(row);
+      return null;
+    },
     scan_quota_status: () => {
       const used = scanUsed(uid());
       const quota = limit('product_scans_per_month');

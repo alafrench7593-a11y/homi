@@ -304,3 +304,27 @@ export function noticeFor(event: RcEvent, status: SubStatus, locale: string | nu
   const [title, body] = NOTICES[lang][key];
   return { title, body };
 }
+
+/** Droit acheté autre que le Premium (Assistant IA, outils à vie) — copie de RevenueCat dans entitlement_grants. */
+export interface GrantRow { entitlement: string; product_id: string | null; store: string | null; active: boolean; expires_at: string | null }
+
+/**
+ * Tous les droits de la fiche RevenueCat SAUF le Premium (géré par `subscriptions`). Actif si sans échéance (achat à vie)
+ * ou échéance (période de grâce comprise) future, et jamais s'il a été remboursé. Noms de droits invalides ignorés.
+ */
+export function grantsFromSubscriber(body: RcSubscriberBody | null | undefined, premiumEntitlement: string, now: number = Date.now()): GrantRow[] | null {
+  const sub = body?.subscriber;
+  if (!sub || typeof sub !== 'object') return null;
+  const out: GrantRow[] = [];
+  for (const [name, ent] of Object.entries(sub.entitlements ?? {})) {
+    if (name === premiumEntitlement || !/^[A-Z0-9_]{3,64}$/.test(name) || !ent || typeof ent !== 'object') continue;
+    const pid = ent.product_identifier ?? null;
+    const s = (pid && ((sub.subscriptions ?? {})[pid] ?? (sub.subscriptions ?? {})[pid.split(':')[0]])) || {};
+    const exp = parse(ent.expires_date ?? null);
+    const grace = parse(ent.grace_period_expires_date ?? s.grace_period_expires_date ?? null);
+    const effective = exp == null ? null : Math.max(exp, grace ?? 0);
+    const active = !s.refunded_at && (effective == null || effective > now);
+    out.push({ entitlement: name, product_id: pid, store: storeOf(s.store ?? null), active, expires_at: effective == null ? null : new Date(effective).toISOString() });
+  }
+  return out;
+}

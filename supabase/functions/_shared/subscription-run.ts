@@ -11,8 +11,8 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import { json, safeEqual } from './http.ts';
 import {
-  concernsEntitlement, DEFAULT_ENTITLEMENT, eventUserId, isDuplicate, isRefund, isStale, noticeFor, subscriptionFromEvent,
-  subscriptionFromSubscriber, transferIds, type RcEvent, type RcSubscriberBody, type SubscriptionRow,
+  concernsEntitlement, DEFAULT_ENTITLEMENT, eventUserId, grantsFromSubscriber, isDuplicate, isRefund, isStale, noticeFor, subscriptionFromEvent,
+  subscriptionFromSubscriber, transferIds, type GrantRow, type RcEvent, type RcSubscriberBody, type SubscriptionRow,
 } from './revenuecat.ts';
 
 const RC_API = 'https://api.revenuecat.com/v1/subscribers/';
@@ -30,6 +30,8 @@ export interface SubscriptionDb {
   notify(userId: string, notice: { title: string; body: string }): Promise<void>;
   locale(userId: string): Promise<string | null>;
   premium(userId: string): Promise<boolean>;
+  /** Droits achetés hors Premium (Assistant IA, outils à vie) : remplace l'état connu de la personne. */
+  writeGrants?(userId: string, grants: GrantRow[]): Promise<boolean>;
 }
 
 export interface RevenueCatApi {
@@ -80,6 +82,20 @@ export function supabaseDb(admin: SupabaseClient): SubscriptionDb {
       const { data } = await admin.rpc('_premium_of', { p_user: userId });
       return data === true;
     },
+    async writeGrants(userId, grants) {
+      const at = new Date().toISOString();
+      if (grants.length) {
+        const { error } = await admin.from('entitlement_grants').upsert(grants.map((g) => ({ ...g, user_id: userId, updated_at: at })));
+        if (error) { console.error('grants_upsert_error', error.code); return false; }
+      }
+      // Droits qui ne figurent plus chez RevenueCat (remboursés, transférés) : désactivés, jamais supprimés
+      const keep = grants.map((g) => g.entitlement);
+      let q = admin.from('entitlement_grants').update({ active: false, updated_at: at }).eq('user_id', userId).eq('active', true);
+      if (keep.length) q = q.not('entitlement', 'in', `(${keep.join(',')})`);
+      const { error } = await q;
+      if (error) { console.error('grants_disable_error', error.code); return false; }
+      return true;
+    },
   };
 }
 
@@ -90,10 +106,17 @@ function keepsRefund(current: StoredRow | null, next: SubscriptionRow, latestPur
   return refundedAt != null && (latestPurchaseAt == null || latestPurchaseAt <= refundedAt);
 }
 
+/** Copie les droits hors Premium d'une fiche RevenueCat (sans effet si la base ne le permet pas). */
+async function writeGrantsFrom(userId: string, body: RcSubscriberBody, db: SubscriptionDb, entitlement: string, now: number) {
+  const grants = grantsFromSubscriber(body, entitlement, now);
+  if (grants && db.writeGrants) await db.writeGrants(userId, grants);
+}
+
 /** Relit la fiche RevenueCat et l'enregistre. */
 async function syncFromApi(userId: string, api: RevenueCatApi, db: SubscriptionDb, entitlement: string, now: number, extra: Partial<SubscriptionRow> = {}) {
   const res = await api.subscriber(userId);
   if (!res.ok) return { ok: false as const, status: res.status };
+  await writeGrantsFrom(userId, res.body, db, entitlement, now);
   const parsed = subscriptionFromSubscriber(res.body, entitlement, now);
   if (!parsed) return { ok: false as const, status: 502 };
   const current = await db.read(userId);
@@ -132,7 +155,15 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
   }
   if (!event || typeof event.type !== 'string') return json({ error: 'bad_request' }, 400);
   if (event.type === 'TEST') return json({ ok: true, test: true });
-  if (!concernsEntitlement(event, deps.entitlement)) return json({ ok: true, ignored: 'other_entitlement' });
+  if (!concernsEntitlement(event, deps.entitlement)) {
+    // Assistant IA, outils à vie : la fiche RevenueCat fait foi pour ces droits
+    const uid = eventUserId(event);
+    if (!uid || !deps.api) return json({ ok: true, ignored: 'other_entitlement' });
+    const res = await deps.api.subscriber(uid);
+    if (!res.ok) return json({ error: 'server_error' }, 500); // RevenueCat réessaiera
+    await writeGrantsFrom(uid, res.body, deps.db, deps.entitlement, now);
+    return json({ ok: true, grants: true });
+  }
 
   if (event.type === 'TRANSFER') return handleTransfer(event, deps, now);
 
@@ -149,6 +180,7 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
   if (deps.api) {
     const res = await deps.api.subscriber(userId);
     const parsed = res.ok ? subscriptionFromSubscriber(res.body, deps.entitlement, now) : null;
+    if (res.ok) await writeGrantsFrom(userId, res.body, deps.db, deps.entitlement, now);
     if (parsed) {
       // L'API fait foi pour l'état et les dates ; l'événement apporte son type, sa date, sa raison et le prix payé
       row = {

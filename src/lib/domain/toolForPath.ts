@@ -15,7 +15,8 @@ const ID = '__id__';
 export function normalizeToolPath(href: string): string {
   const [path, query = ''] = href.split('?');
   let p = path.replace(/^\/\(tabs\)/, '').replace(/\/+$/, '') || '/';
-  p = p.replace(/\/(child|bottle|sleep)\/[^/]+/, `/$1/${ID}`);
+  // écrans fixes qui partagent ces dossiers avec un identifiant (ex. /bottle/scoops, /bottle/history) : jamais remplacés
+  if (!/^\/bottle\/(scoops|history)$/.test(p)) p = p.replace(/\/(child|bottle|sleep)\/[^/]+/, `/$1/${ID}`);
   const keep = new URLSearchParams(query);
   const kept: string[] = [];
   for (const k of ['tab']) { const v = keep.get(k); if (v) kept.push(`${k}=${v}`); }

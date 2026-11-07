@@ -214,3 +214,47 @@ async function waitForServerEntitlement(timeoutMs = 20000): Promise<boolean> {
   }
   return false;
 }
+
+// ---------------------------------------------------------------- offres du 07/11/2026 : Assistant IA, outils à vie
+/** Prix réels de la boutique pour ces produits (jamais de prix inventé ; démonstration : grille DEMO_OFFER_PRICES). */
+export async function getOfferPrices(productIds: string[]): Promise<Record<string, string>> {
+  if (getPurchaseMode() !== 'store' || !productIds.length) return {};
+  if (ready) await ready.catch(() => undefined);
+  const out: Record<string, string> = {};
+  for (const cat of [Purchases.PRODUCT_CATEGORY.SUBSCRIPTION, Purchases.PRODUCT_CATEGORY.NON_SUBSCRIPTION]) {
+    try {
+      for (const p of await Purchases.getProducts(productIds, cat)) out[p.identifier] = p.priceString;
+    } catch { /* produit absent de la boutique : pas de prix affiché */ }
+  }
+  return out;
+}
+
+/**
+ * Achat d'un abonnement Assistant IA ou d'un outil à vie. « confirmed » seulement quand le SERVEUR voit le droit
+ * (my_access), après relecture de RevenueCat par subscription-sync.
+ */
+export async function purchaseOffer(productId: string, entitlement: string, kind: 'subscription' | 'lifetime'): Promise<PurchaseOutcome> {
+  const mode = getPurchaseMode();
+  if (mode === 'test') {
+    await backend.rpc('set_demo_grant', { entitlement, product_id: productId });
+    return 'confirmed';
+  }
+  if (mode !== 'store') throw new Error(tr('l1.pur.notConfigured'));
+  if (ready) await ready.catch(() => undefined);
+  const products = await Purchases.getProducts([productId], kind === 'subscription' ? Purchases.PRODUCT_CATEGORY.SUBSCRIPTION : Purchases.PRODUCT_CATEGORY.NON_SUBSCRIPTION);
+  if (!products[0]) throw new Error(tr('offer.notInStore'));
+  try {
+    await Purchases.purchaseStoreProduct(products[0]);
+  } catch (e) {
+    if ((e as { userCancelled?: boolean | null })?.userCancelled) return 'cancelled';
+    throw e;
+  }
+  await syncSubscription(true);
+  const start = Date.now();
+  while (Date.now() - start < 20000) {
+    const a = await backend.rpc<{ ai?: boolean; tools?: { key: string; owned: boolean; product_id: string }[] } | null>('my_access').catch(() => null);
+    if (kind === 'subscription' ? a?.ai : a?.tools?.some((t) => t.product_id === productId && t.owned)) return 'confirmed';
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+  return 'pending';
+}

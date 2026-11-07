@@ -12,7 +12,8 @@ const Purchases = {
   addCustomerInfoUpdateListener: () => undefined,
   removeCustomerInfoUpdateListener: () => false,
   logIn: unavailable, logOut: unavailable, getOfferings: unavailable, purchasePackage: unavailable, getCustomerInfo: unavailable,
-  restorePurchases: unavailable, showManageSubscriptions: unavailable,
+  restorePurchases: unavailable, showManageSubscriptions: unavailable, getProducts: unavailable, purchaseStoreProduct: unavailable,
+  PRODUCT_CATEGORY: { NON_SUBSCRIPTION: 'NON_SUBSCRIPTION', SUBSCRIPTION: 'SUBSCRIPTION', UNKNOWN: 'UNKNOWN' },
   checkTrialOrIntroductoryPriceEligibility: async () => ({}),
   INTRO_ELIGIBILITY_STATUS: { INTRO_ELIGIBILITY_STATUS_UNKNOWN: 0, INTRO_ELIGIBILITY_STATUS_INELIGIBLE: 1, INTRO_ELIGIBILITY_STATUS_ELIGIBLE: 2, INTRO_ELIGIBILITY_STATUS_NO_INTRO_OFFER_EXISTS: 3 },
 };

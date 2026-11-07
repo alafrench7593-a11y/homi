@@ -257,3 +257,40 @@ Deno.test('suppression du compte : client RevenueCat supprimé, sans jamais bloq
   assertEquals(await deleteRevenueCatCustomer(revenueCatApi('k', (() => Promise.reject(new Error('réseau'))) as typeof fetch), U1), 'failed');
   assertEquals(await deleteRevenueCatCustomer(null, U1), 'not_configured');
 });
+
+// ---------------------------------------------------------------- Assistant IA et outils à vie (07/11/2026)
+import { grantsFromSubscriber, type GrantRow } from './revenuecat.ts';
+
+Deno.test('droits hors Premium : Assistant IA (abonnement) et outil à vie, remboursement, Premium ignoré', () => {
+  const body: RcSubscriberBody = {
+    subscriber: {
+      entitlements: {
+        [ENT]: { expires_date: new Date(NOW + DAY).toISOString(), product_identifier: 'aufildenous_premium_monthly' },
+        ASSISTANT_IA: { expires_date: new Date(NOW + 20 * DAY).toISOString(), product_identifier: 'aufildenous_ai_monthly' },
+        TOOL_CUSTODY: { expires_date: null, product_identifier: 'aufildenous_tool_custody' },
+        TOOL_PMA_TRACKER: { expires_date: null, product_identifier: 'aufildenous_tool_pma_tracker' },
+        'nom invalide': { expires_date: null, product_identifier: 'x' },
+      },
+      subscriptions: {
+        aufildenous_ai_monthly: { store: 'APP_STORE' },
+        aufildenous_tool_pma_tracker: { store: 'APP_STORE', refunded_at: '2026-11-04T10:00:00Z' },
+      },
+    },
+  };
+  const g = grantsFromSubscriber(body, ENT, NOW)!;
+  assertEquals(g.map((x) => [x.entitlement, x.active]), [['ASSISTANT_IA', true], ['TOOL_CUSTODY', true], ['TOOL_PMA_TRACKER', false]], 'droits');
+  assertEquals(g[0].store, 'app_store', 'boutique');
+  const expired = grantsFromSubscriber({ subscriber: { entitlements: { ASSISTANT_IA: { expires_date: new Date(NOW - 1000).toISOString(), product_identifier: 'aufildenous_ai_monthly' } } } }, ENT, NOW)!;
+  assertEquals(expired[0].active, false, 'abonnement expiré');
+});
+
+Deno.test('webhook : achat d\'un outil à vie → droit recopié depuis la fiche RevenueCat', async () => {
+  const { db } = memoryDb();
+  const written: { userId: string; grants: GrantRow[] }[] = [];
+  db.writeGrants = (userId, grants) => { written.push({ userId, grants }); return Promise.resolve(true); };
+  const api = fakeApi({ [U1]: { subscriber: { entitlements: { TOOL_CUSTODY: { expires_date: null, product_identifier: 'aufildenous_tool_custody' } }, subscriptions: {} } } });
+  const res = await handleWebhook(req(ev('NON_RENEWING_PURCHASE', { product_id: 'aufildenous_tool_custody', entitlement_ids: ['TOOL_CUSTODY'] })), { secret: SECRET, entitlement: ENT, api, db, now: () => NOW });
+  assertEquals(res.status, 200, 'statut');
+  assertEquals(written.length, 1, 'écriture');
+  assertEquals(written[0].grants.map((x) => [x.entitlement, x.active]), [['TOOL_CUSTODY', true]], 'droit');
+});

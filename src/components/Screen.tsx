@@ -21,6 +21,9 @@ import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { Button, type IconName } from './ui';
 import { ToolArticles } from '@/features/ToolArticles';
 import { ScreenToolContext } from '@/lib/screenTool';
+import { ToolAccessBanner } from '@/features/offers/ToolOffer';
+import { useToolAccess } from '@/lib/data/hooks-access';
+import { isPaidTool, type PaidTool } from '@/lib/premium/offers';
 import { ChildBackdrop, isChildPage } from '@/features/story/ChildBackdrop';
 
 interface ScreenProps {
@@ -58,6 +61,9 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   const [origin] = React.useState<ToolOrigin | null>(() => peekToolOrigin(pathname));
   React.useEffect(() => { if (origin) takeToolOrigin(pathname); }, [origin, pathname]);
   const tool = React.useMemo(() => (forcedTool === false ? null : forcedTool ?? (title ? toolForPath(pathname) : null)), [forcedTool, pathname, title]);
+  // Outils « à vie » (07/11/2026) : après le mois gratuit et sans achat, le contenu reste lisible mais l'ajout est bloqué
+  const paidTool = isPaidTool(tool?.id) ? (tool!.id as PaidTool) : null;
+  const content = paidTool ? <PaidToolGate tool={paidTool} scroll={scroll}>{children}</PaidToolGate> : children;
   const accent = tool ? glyphColor(t, tool.theme, tool.urgent) : null;
   const glowId = `g${React.useId().replace(/:/g, '')}`;
   const header = (title || back || right || account) && (
@@ -105,14 +111,14 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
-      {children}
+      {content}
       {/* Chaque outil : ses articles « Pour aller plus loin » */}
       {tool ? <ToolArticles toolId={tool.id} /> : null}
     </ScrollView>
   ) : (
     <View style={[styles.wide, { flex: 1, paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? 0 : insets.top }, contentStyle]}>
       {/* écran à liste : la liste ajoute elle-même « Pour aller plus loin » en bas */}
-      <ScreenToolContext.Provider value={tool ? tool.id : null}>{children}</ScreenToolContext.Provider>
+      <ScreenToolContext.Provider value={tool ? tool.id : null}>{content}</ScreenToolContext.Provider>
     </View>
   );
 
@@ -127,13 +133,29 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
         {body}
         {footer || action ? (
           <View style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: insets.bottom + spacing.sm, paddingTop: spacing.sm, gap: spacing.sm }}>
-            {action ? <Button label={action.label} icon={action.icon ?? 'plus'} size="lg" full onPress={action.onPress} disabled={action.disabled} testID={action.testID ?? 'miniapp-action'} /> : null}
+            {action ? (paidTool ? <PaidToolAction tool={paidTool} action={action} /> : <Button label={action.label} icon={action.icon ?? 'plus'} size="lg" full onPress={action.onPress} disabled={action.disabled} testID={action.testID ?? 'miniapp-action'} />) : null}
             {footer}
           </View>
         ) : null}
       </KeyboardAvoidingView>
     </Animated.View>
   );
+}
+
+/** Outil payant : bandeau d'offre, puis contenu lisible mais non modifiable quand le mois gratuit est terminé sans achat. */
+function PaidToolGate({ tool, scroll, children }: { tool: PaidTool; scroll: boolean; children: React.ReactNode }) {
+  const locked = !useToolAccess(tool).allowed;
+  return (
+    <>
+      <ToolAccessBanner tool={tool} />
+      <View pointerEvents={locked ? 'none' : 'auto'} style={[scroll ? { gap: spacing.md } : { flex: 1 }, locked ? { opacity: 0.55 } : null]} testID={locked ? 'tool-locked-content' : undefined}>{children}</View>
+    </>
+  );
+}
+
+function PaidToolAction({ tool, action }: { tool: PaidTool; action: NonNullable<ScreenProps['action']> }) {
+  const locked = !useToolAccess(tool).allowed;
+  return <Button label={action.label} icon={action.icon ?? 'plus'} size="lg" full onPress={action.onPress} disabled={action.disabled || locked} testID={action.testID ?? 'miniapp-action'} />;
 }
 
 /** Le glyphe de la carte touchée arrive dans l'en-tête (glisse depuis le bas, se réduit, se pose). */
