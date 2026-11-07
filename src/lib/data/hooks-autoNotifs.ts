@@ -11,6 +11,8 @@ import { useFamilyTasks } from './hooks-family-load';
 import { useFamilyPapers, usePrepDone } from './hooks-mental';
 import { DEFAULT_AUTO_PREFS, planAutoNotifications, type AutoPrefs, type AutoTexts } from '../domain/autoNotifs';
 import { upcomingPrep } from '../domain/mentalLoad';
+import { remindersOn } from '../domain/myDay';
+import { useDoseLogsSince } from './hooks-myTreatments';
 import { addDays, todayISO } from '../domain/dates';
 import { getAutoPrefs, setAutoPrefs, syncAutoNotifications } from '../notifications';
 import { t as tr, type TKey } from '@/i18n';
@@ -30,7 +32,11 @@ const texts = (): AutoTexts => ({
   task: (title) => ({ title, body: tr('nt.taskB') }),
   prep: (title) => ({ title, body: tr('nt.prepB') }),
   paper: (title, days) => ({ title: tr('nt.paperT', { title }), body: tr('nt.paperB', { count: days }) }),
+  dose: (time) => ({ title: tr('med.followT'), body: tr('med.followB', { time }) }),
 });
+
+const localStart = (day: string) => { const [y, m, d] = day.split('-').map(Number); return new Date(y, m - 1, d, 0, 0, 0, 0); };
+const atLocal = (day: string, hm: string) => { const [y, m, d] = day.split('-').map(Number); const [h, mi] = hm.split(':').map(Number); return new Date(y, m - 1, d, h, mi, 0, 0); };
 
 /** À monter une fois (barre d'onglets) : reprogramme dès que quelque chose change. */
 export function useAutoNotificationsSync() {
@@ -43,6 +49,7 @@ export function useAutoNotificationsSync() {
   const prepDone = usePrepDone().data;
   const children = useChildren().data;
   const today = todayISO();
+  const doseLogs = useDoseLogsSince(localStart(today).toISOString());
   const plans = useMemo(() => {
     if (!prefs || !appointments || !tasks) return null;
     const done = new Set((prepDone ?? []).map((d) => `${d.key}|${d.occurs_on}`));
@@ -52,12 +59,22 @@ export function useAutoNotificationsSync() {
         const lead = addDays(it.occursOn, -it.leadDays);
         return { key: `${it.key}-${it.occursOn}`, title: tr(`cm.prep.${it.kind}` as TKey, { name: it.label ?? '' }), notifyOn: lead > today ? lead : addDays(today, 1) };
       });
+    // Prises prévues aujourd'hui et demain d'après MES rappels de traitement (enfant ou moi)
+    const handled = new Set([...(doseLogs.child ?? []), ...(doseLogs.mine ?? [])].filter((l) => l.status !== 'snoozed').map((l) => `${l.treatment_id}|${new Date(l.scheduled_for).getTime()}`));
+    const medRems = (reminders ?? []).filter((r) => (r.treatment_id || r.my_treatment_id) && (!me || r.user_id === me));
+    const doses = doseLogs.loaded ? [today, addDays(today, 1)].flatMap((day) => remindersOn(medRems as never, day).filter((it) => it.time && !it.every).map((it) => {
+      const r = medRems.find((x) => x.id === it.refId)!;
+      const planned = atLocal(day, it.time!);
+      const treatmentId = (r.treatment_id ?? r.my_treatment_id)!;
+      return { treatmentId, source: (r.treatment_id ? 'treatment' : 'my_treatment') as 'treatment' | 'my_treatment', householdId: r.household_id, scheduledFor: planned.toISOString(),
+        url: r.deep_link ?? '/medications', handled: handled.has(`${treatmentId}|${planned.getTime()}`) };
+    })) : [];
     const paperRows = (papers ?? []).filter((p) => p.expires_on).map((p) => ({ id: p.id, title: tr(`cm.pp.k.${p.kind}` as TKey), expires_on: p.expires_on! }));
     return planAutoNotifications({
-      now: new Date(), me, appointments, tasks, prep, papers: paperRows,
+      now: new Date(), me, appointments, tasks, prep, papers: paperRows, doses,
       appointmentsWithReminder: new Set((reminders ?? []).map((r) => r.appointment_id).filter(Boolean) as string[]),
     }, prefs, texts());
-  }, [prefs, appointments, reminders, tasks, papers, prepDone, children, today, me]);
+  }, [prefs, appointments, reminders, tasks, papers, prepDone, children, today, me, doseLogs.child, doseLogs.mine, doseLogs.loaded]);
   const key = plans ? JSON.stringify(plans.map((p) => [p.id, p.at.toISOString(), p.title])) : null;
   useEffect(() => { if (plans) void syncAutoNotifications(plans).catch(() => undefined); }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
   return plans;

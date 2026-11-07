@@ -3,6 +3,7 @@ import { DEFAULT_AUTO_PREFS, afterQuiet, inQuiet, planAutoNotifications, type Au
 const tx: AutoTexts = {
   apptEve: (t, h) => ({ title: `Demain : ${t}`, body: h }), apptSoon: (t, h) => ({ title: `Dans 1 h : ${t}`, body: h }), apptPrivate: 'Rendez-vous',
   task: (t) => ({ title: t, body: 'à faire' }), prep: (t) => ({ title: t, body: 'à préparer' }), paper: (t, d) => ({ title: t, body: `${d} j` }),
+  dose: (h) => ({ title: 'Prise à noter', body: `prévue à ${h}` }),
 };
 const NOW = new Date(2026, 10, 7, 10, 0); // samedi 7 nov. 2026, 10 h
 const base = (x: Partial<AutoInputs> = {}): AutoInputs => ({ now: NOW, me: 'me', appointments: [], appointmentsWithReminder: new Set(), tasks: [], prep: [], papers: [], ...x });
@@ -51,5 +52,36 @@ describe('notifications automatiques', () => {
     expect(planAutoNotifications(inp, { ...DEFAULT_AUTO_PREFS, prep: false, papers: false }, tx)).toEqual([]);
     const many = base({ tasks: Array.from({ length: 50 }, (_, k) => ({ id: `t${k}`, title: 't', due_at: '2026-11-09', status: 'todo', assignee_id: null })) });
     expect(planAutoNotifications(many, DEFAULT_AUTO_PREFS, tx)).toHaveLength(30);
+  });
+
+  describe('relance d’une prise non notée', () => {
+    const dose = (h: number, mi: number, x: Partial<NonNullable<AutoInputs['doses']>[number]> = {}) =>
+      ({ treatmentId: 'tr1', source: 'my_treatment' as const, scheduledFor: local(2026, 11, 7, h, mi), url: '/medications', handled: false, ...x });
+
+    it('30 min après l’heure prévue, avec Pris/Ignorer possibles (données jointes), texte neutre', () => {
+      const p = planAutoNotifications(base({ doses: [dose(12, 0)] }), DEFAULT_AUTO_PREFS, tx);
+      expect(p).toHaveLength(1);
+      expect(p[0].kind).toBe('dose');
+      expect(p[0].at.toISOString()).toBe(local(2026, 11, 7, 12, 30));
+      expect(p[0].data).toMatchObject({ source: 'my_treatment', treatmentId: 'tr1', scheduledFor: local(2026, 11, 7, 12, 0), dose: '12:00' });
+      expect(p[0].title).toBe('Prise à noter');
+      expect(p[0].id).toBe(`dose-tr1-${local(2026, 11, 7, 12, 0)}`);
+    });
+    it('rien si la prise est déjà notée, si l’heure de relance est passée ou si la relance est coupée', () => {
+      expect(planAutoNotifications(base({ doses: [dose(12, 0, { handled: true })] }), DEFAULT_AUTO_PREFS, tx)).toHaveLength(0);
+      expect(planAutoNotifications(base({ doses: [dose(9, 0)] }), DEFAULT_AUTO_PREFS, tx)).toHaveLength(0); // relance à 9 h 30 < 10 h
+      expect(planAutoNotifications(base({ doses: [dose(12, 0)] }), { ...DEFAULT_AUTO_PREFS, doseFollowUp: false }, tx)).toHaveLength(0);
+    });
+    it('jamais décalée par les heures calmes (prise de 23 h → relance à 23 h 30)', () => {
+      const p = planAutoNotifications(base({ doses: [dose(23, 0)] }), DEFAULT_AUTO_PREFS, tx);
+      expect(p[0].at.toISOString()).toBe(local(2026, 11, 7, 23, 30));
+    });
+    it('jamais évincée par la limite des autres notifications automatiques', () => {
+      const papers = Array.from({ length: 40 }, (_, k) => ({ id: `p${k}`, title: 'CNI', expires_on: `2027-0${1 + (k % 9)}-15` }));
+      const p = planAutoNotifications(base({ papers, doses: [dose(12, 0), dose(20, 0, { treatmentId: 'tr2', source: 'treatment', householdId: 'h1' })] }), DEFAULT_AUTO_PREFS, tx);
+      expect(p.length).toBeLessThanOrEqual(30);
+      expect(p.filter((x) => x.kind === 'dose')).toHaveLength(2);
+      expect(p.find((x) => x.data?.treatmentId === 'tr2')!.data).toMatchObject({ source: 'treatment', householdId: 'h1' });
+    });
   });
 });

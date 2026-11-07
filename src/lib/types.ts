@@ -114,7 +114,7 @@ export interface Appointment {
 
 export interface Reminder {
   id: string; user_id: string; household_id: string | null; child_id: string | null; pregnancy_id: string | null; appointment_id: string | null;
-  treatment_id?: string | null; journey_type?: string | null;
+  treatment_id?: string | null; my_treatment_id?: string | null; journey_type?: string | null;
   /** Partagé avec le foyer (migration 20261107000100) */
   shared?: boolean;
   category: 'appointment' | 'ultrasound' | 'exam' | 'checklist' | 'bottle' | 'meal' | 'medication' | 'tracking' | 'postnatal' | 'custom';

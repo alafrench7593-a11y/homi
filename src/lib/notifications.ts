@@ -44,14 +44,23 @@ export function doseScheduledFor(notifiedAt: number, dose: string | null): strin
  */
 export async function handleTreatmentResponse(response: Notifications.NotificationResponse): Promise<boolean> {
   const c = response.notification.request.content;
-  const data = (c.data ?? {}) as { source?: string; treatmentId?: string; householdId?: string; dose?: string | null; url?: string };
-  if (data.source !== 'treatment' || !data.treatmentId) return false;
+  const data = (c.data ?? {}) as { source?: string; treatmentId?: string; householdId?: string; dose?: string | null; url?: string; scheduledFor?: string };
+  // « treatment » : traitement d'un enfant (foyer) ; « my_treatment » : traitement de la maman (personnel, 07/11/2026)
+  if ((data.source !== 'treatment' && data.source !== 'my_treatment') || !data.treatmentId) return false;
   const status = response.actionIdentifier === TREAT_TAKEN ? 'taken' : response.actionIdentifier === TREAT_SKIP ? 'skipped' : response.actionIdentifier === TREAT_SNOOZE ? 'snoozed' : null;
   if (!status) return false;
-  const scheduled_for = doseScheduledFor(response.notification.date, data.dose ?? null);
-  const existing = await backend.select<{ id: string }>({ table: 'treatment_logs', filters: [eq('treatment_id', data.treatmentId), eq('scheduled_for', scheduled_for)], limit: 1 });
-  if (existing[0]) await backend.update('treatment_logs', { status }, [eq('id', existing[0].id)]);
-  else await backend.insert('treatment_logs', { treatment_id: data.treatmentId, household_id: data.householdId, scheduled_for, status });
+  // Relance (30 min après) : l'heure prévue exacte voyage avec la notification (une prise de 23:50 relancée à 00:20)
+  const scheduled_for = data.scheduledFor ?? doseScheduledFor(response.notification.date, data.dose ?? null);
+  const mine = data.source === 'my_treatment';
+  const table = mine ? 'my_treatment_logs' : 'treatment_logs';
+  const existing = await backend.select<{ id: string }>({ table, filters: [eq('treatment_id', data.treatmentId), eq('scheduled_for', scheduled_for)], limit: 1 });
+  if (existing[0]) await backend.update(table, { status }, [eq('id', existing[0].id)]);
+  else if (mine) {
+    const session = await backend.auth.getSession().catch(() => null);
+    if (!session?.userId) return false;
+    await backend.insert(table, { treatment_id: data.treatmentId, user_id: session.userId, scheduled_for, status });
+  } else await backend.insert(table, { treatment_id: data.treatmentId, household_id: data.householdId, scheduled_for, status });
+  if (status !== 'snoozed') await cancelDoseFollowUp(data.treatmentId, scheduled_for).catch(() => undefined);
   if (status === 'snoozed') await snoozeLocally(c.title ?? tr('l3.notif.treatment_default'), c.body ?? undefined, data.url);
   return true;
 }
@@ -175,8 +184,8 @@ const signature = (r: Reminder) => JSON.stringify([r.title, r.body, r.schedule, 
  * Texte visible sur l'écran verrouillé. Traitement d'un enfant : ni prénom, ni médicament, ni dose
  * (iOS affiche le contenu complet sans réglage particulier). Le détail s'affiche dans l'appli.
  */
-export function lockScreenText(r: Pick<Reminder, 'title' | 'body' | 'category' | 'treatment_id'>): { title: string; body?: string } {
-  if (r.treatment_id || r.category === 'medication') return { title: tr('l3.notif.lock_title'), body: tr('l3.notif.lock_body') };
+export function lockScreenText(r: Pick<Reminder, 'title' | 'body' | 'category' | 'treatment_id' | 'my_treatment_id'>): { title: string; body?: string } {
+  if (r.treatment_id || r.my_treatment_id || r.category === 'medication') return { title: tr('l3.notif.lock_title'), body: tr('l3.notif.lock_body') };
   return { title: r.title, body: r.body ?? undefined };
 }
 
@@ -237,10 +246,12 @@ async function syncLocalRemindersOnce(reminders: Reminder[]): Promise<{ schedule
       const id = await Notifications.scheduleNotificationAsync({
         content: {
           ...lockScreenText(r),
-          categoryIdentifier: r.treatment_id ? TREATMENT_CATEGORY : 'reminder',
+          categoryIdentifier: r.treatment_id || r.my_treatment_id ? TREATMENT_CATEGORY : 'reminder',
           data: r.treatment_id
             ? { url: r.deep_link ?? '/notifications', reminderId: r.id, source: 'treatment', treatmentId: r.treatment_id, householdId: r.household_id, dose: doseOf(r) }
-            : { url: r.deep_link ?? '/notifications', reminderId: r.id, source: 'reminder' },
+            : r.my_treatment_id
+              ? { url: r.deep_link ?? '/medications', reminderId: r.id, source: 'my_treatment', treatmentId: r.my_treatment_id, dose: doseOf(r) }
+              : { url: r.deep_link ?? '/notifications', reminderId: r.id, source: 'reminder' },
         },
         trigger: toTrigger(p),
       });
@@ -666,6 +677,23 @@ export async function handleDoneResponse(response: Notifications.NotificationRes
   return false;
 }
 
+/** Identifiant de la relance d'une prise (même clé côté planificateur). */
+export const doseFollowUpId = (treatmentId: string, scheduledFor: string) => `dose-${treatmentId}-${new Date(scheduledFor).toISOString()}`;
+/** Prise notée (prise ou ignorée) : sa relance éventuelle est retirée tout de suite, sans attendre la synchronisation. */
+export async function cancelDoseFollowUp(treatmentId: string, scheduledFor: string): Promise<void> {
+  if (!notificationsSupported) return;
+  const id = doseFollowUpId(treatmentId, scheduledFor);
+  const run = autoChain.catch(() => undefined).then(async () => {
+    const map = await readJson<AutoMap>(AUTO_MAP_KEY, {});
+    if (!map[id]) return;
+    await Notifications.cancelScheduledNotificationAsync(map[id].nid).catch(() => undefined);
+    delete map[id];
+    await AsyncStorage.setItem(AUTO_MAP_KEY, JSON.stringify(map));
+  });
+  autoChain = run;
+  await run;
+}
+
 /** Programme les notifications automatiques voulues ; annule celles qui ne le sont plus (et seulement celles-là). */
 export function syncAutoNotifications(plans: AutoPlan[]): Promise<{ scheduled: number; cancelled: number }> {
   const run = autoChain.catch(() => undefined).then(() => doSyncAuto(plans));
@@ -704,8 +732,9 @@ async function doSyncAuto(plans: AutoPlan[]): Promise<{ scheduled: number; cance
       const nid = await Notifications.scheduleNotificationAsync({
         content: {
           title: p.title, body: p.body, sound: 'default',
-          categoryIdentifier: p.taskId ? TASK_CATEGORY : undefined,
-          data: { url: p.url, source: 'auto', kind: 'auto', autoKind: p.kind, ...(p.taskId ? { taskId: p.taskId } : {}) },
+          categoryIdentifier: p.kind === 'dose' ? TREATMENT_CATEGORY : p.taskId ? TASK_CATEGORY : undefined,
+          // relance d'une prise : « Pris / Reporter / Ignorer » comme le rappel d'origine (source treatment ou my_treatment)
+          data: { url: p.url, ...(p.data ?? {}), kind: 'auto', autoKind: p.kind, ...(p.data?.source ? {} : { source: 'auto' }), ...(p.taskId ? { taskId: p.taskId } : {}) },
         },
         trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: p.at, channelId: 'reminders' },
       });

@@ -1,0 +1,33 @@
+import type { meds as fr } from '../fr/meds';
+import type { Messages } from '../types';
+
+export const meds: Messages<typeof fr> = {
+  'med.title': 'Medicines',
+  'med.subtitle': 'Your treatments and the children’s, in one place',
+  'med.rule': 'Copy the prescription or leaflet exactly. The app never calculates, suggests or changes a dose. If you miss a dose, take a double dose or have any doubt, ask your pharmacist or doctor. In an emergency: 15 (or 112).',
+  'med.pregnant': 'Pregnant or breastfeeding: always ask your doctor, midwife or pharmacist before taking any medicine, even without a prescription.',
+  'med.today': 'Today',
+  'med.todayCount': '{done} of {total} doses noted',
+  'med.todayNone': 'No dose planned today.',
+  'med.me': 'Me',
+  'med.mineTitle': 'My treatments',
+  'med.mineHint': 'Only you can see this: neither your co-parent nor other household members see your treatments.',
+  'med.addMine': 'Add one of my treatments',
+  'med.childTitle': '{name}’s treatments',
+  'med.childHint': 'Visible to household members who follow {name}’s health.',
+  'med.askTime': 'Dose at {time}: which treatment is it for?',
+  'med.askNone': 'No treatment saved yet: add it to be reminded at each dose.',
+  'med.followT': 'Dose to note',
+  'med.followB': 'The dose planned at {time} isn’t noted yet. Tap “Taken” if it’s done.',
+  'med.followPref': 'Follow-up if a dose isn’t noted',
+  'med.followPrefD': 'One follow-up only, 30 min after the planned time, even during quiet hours',
+  'med.open': 'Medicines',
+  'med.openD': 'My treatments and the children’s, today’s doses',
+  'med.who': 'For whom?',
+  'med.status.taken': 'Taken',
+  'med.status.skipped': 'Skipped',
+  'med.status.snoozed': 'Snoozed',
+  'med.status.todo': 'To take',
+  'med.tick': 'Mark “{title}” as taken',
+  'med.untick': '“{title}” is marked as taken. Tap to untick',
+};

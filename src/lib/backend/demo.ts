@@ -78,7 +78,7 @@ function checkBottleTimer(all: Row[], r: Row) {
 }
 const OWNER_TABLES: Record<string, string> = {
   period_entries: 'user_id', symptom_logs: 'user_id', ovulation_tests: 'user_id', pregnancy_tests: 'user_id', maternal_weights: 'user_id',
-  mood_checkins: 'user_id', reminders: 'user_id', favorites: 'user_id', product_scans: 'user_id', push_devices: 'user_id',
+  mood_checkins: 'user_id', reminders: 'user_id', my_treatments: 'user_id', my_treatment_logs: 'user_id', favorites: 'user_id', product_scans: 'user_id', push_devices: 'user_id',
   assistant_conversations: 'user_id', assistant_messages: 'user_id', assistant_feedback: 'user_id', consents: 'user_id', posts: 'author_id', comments: 'author_id', post_photos: 'author_id', community_notification_prefs: 'user_id',
   post_likes: 'user_id', saved_posts: 'user_id', reports: 'reporter_id', user_blocks: 'blocker_id', notes: 'author_id',
   documents: 'uploaded_by', name_votes: 'user_id',

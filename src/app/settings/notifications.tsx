@@ -54,6 +54,10 @@ export default function NotificationSettings() {
           <ToggleRow label={tr('nt.bottle')} hint={tr('nt.bottleD')} value={bottle} onChange={(v) => { setBottle(v); void setBottleNotificationsEnabled(v); }} />
         </View>
         <ListRow icon="clock" title={tr('nt.bottleOpen')} subtitle={tr('nt.bottleOpenD')} onPress={() => router.push('/track/bottle')} testID="nt-bottle" />
+        <View style={{ paddingHorizontal: spacing.md }}>
+          <ToggleRow label={tr('med.followPref')} hint={tr('med.followPrefD')} value={prefs.doseFollowUp} onChange={(v) => set({ doseFollowUp: v })} />
+        </View>
+        <ListRow icon="clipboard" title={tr('med.open')} subtitle={tr('med.openD')} onPress={() => router.push('/medications')} testID="nt-meds" />
         <ListRow icon="bell" title={tr('nt.reminders')} subtitle={tr('nt.remindersD')} onPress={() => router.push('/settings/reminders')} testID="nt-reminders" />
       </Card>
 

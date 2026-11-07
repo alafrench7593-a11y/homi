@@ -34,7 +34,7 @@ jest.mock('@/lib/backend', () => {
 });
 
 import { backend, eq } from '@/lib/backend';
-import { handleDoneResponse, syncAutoNotifications, TASK_DONE, TASK_SNOOZE } from '@/lib/notifications';
+import { cancelDoseFollowUp, handleDoneResponse, handleTreatmentResponse, syncAutoNotifications, TASK_DONE, TASK_SNOOZE, TREAT_SKIP, TREAT_TAKEN } from '@/lib/notifications';
 import type { AutoPlan } from '@/lib/domain/autoNotifs';
 
 const resp = (actionIdentifier: string, data: Record<string, unknown>) =>
@@ -95,5 +95,44 @@ describe('notifications automatiques et « C’est fait »', () => {
 
   it('un appui simple n’est pas traité comme « C’est fait »', async () => {
     expect(await handleDoneResponse(resp('expo.modules.notifications.actions.DEFAULT', { taskId: 'zz' }))).toBe(false);
+  });
+
+  describe('mes traitements : Pris / Ignorer depuis la notification et relance', () => {
+    const tresp = (action: string, data: Record<string, unknown>, date = Date.now()) =>
+      ({ actionIdentifier: action, notification: { date, request: { content: { title: 'Rappel de traitement', body: 'B', data } } } }) as never;
+    let tid = '';
+    beforeAll(async () => {
+      [{ id: tid }] = await backend.insert<{ id: string }>('my_treatments', { name: 'Fer', dose_text: '1 comprimé', times: ['08:00'], frequency: 'daily', weekdays: [], start_date: '2026-11-01', active: true });
+    });
+
+    it('« Pris » sur la relance note la prise à l’heure prévue (pas à l’heure de la relance) et retire la relance', async () => {
+      const planned = new Date(); planned.setHours(23, 50, 0, 0);
+      const plan: AutoPlan = { id: `dose-${tid}-${planned.toISOString()}`, kind: 'dose', at: new Date(planned.getTime() + 30 * 60_000), title: 'Prise à noter', body: 'x', url: '/medications',
+        data: { source: 'my_treatment', treatmentId: tid, scheduledFor: planned.toISOString(), dose: '23:50' } };
+      await syncAutoNotifications([plan]);
+      const relance = autos().find(([, r]) => r.content.data?.treatmentId === tid)!;
+      expect(relance[1].content.categoryIdentifier).toBe('treatment');
+      expect(relance[1].content.data?.source).toBe('my_treatment');
+      // relance reçue le lendemain à 00:20
+      expect(await handleTreatmentResponse(tresp(TREAT_TAKEN, relance[1].content.data!, planned.getTime() + 30 * 60_000))).toBe(true);
+      const logs = await backend.select<{ status: string; scheduled_for: string; user_id: string }>({ table: 'my_treatment_logs', filters: [eq('treatment_id', tid)] });
+      expect(logs).toHaveLength(1);
+      expect(logs[0]).toMatchObject({ status: 'taken', scheduled_for: planned.toISOString(), user_id: uid });
+      expect(autos().some(([, r]) => r.content.data?.treatmentId === tid)).toBe(false);
+    });
+
+    it('« Ignorer » depuis le rappel du matin note la prise de 08:00 du jour', async () => {
+      const at = new Date(); at.setHours(8, 0, 30, 0);
+      expect(await handleTreatmentResponse(tresp(TREAT_SKIP, { source: 'my_treatment', treatmentId: tid, dose: '08:00' }, at.getTime()))).toBe(true);
+      const eight = new Date(at); eight.setSeconds(0, 0);
+      const [l] = await backend.select<{ status: string }>({ table: 'my_treatment_logs', filters: [eq('treatment_id', tid), eq('scheduled_for', eight.toISOString())] });
+      expect(l.status).toBe('skipped');
+    });
+
+    it('annuler une relance inconnue ne touche à rien', async () => {
+      const before = mockScheduled.size;
+      await cancelDoseFollowUp('inconnu', new Date().toISOString());
+      expect(mockScheduled.size).toBe(before);
+    });
   });
 });

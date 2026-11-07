@@ -14,15 +14,18 @@ import { useUiStore } from '@/lib/store';
 
 export const needLabel = (k: NeedKind) => tr(`nd.kind.${k}` as TKey);
 
-export interface Dose { treatment: Treatment; time: string; scheduledFor: string; log: TreatmentLog | null }
+/** Champs communs aux traitements d'un enfant (child_treatments) et à ceux de la maman (my_treatments). */
+export type TreatmentLike = Pick<Treatment, 'id' | 'name' | 'dose_text' | 'times' | 'frequency' | 'weekdays' | 'start_date' | 'end_date' | 'instructions' | 'prescriber' | 'active'>;
+export type DoseLogLike = Pick<TreatmentLog, 'id' | 'treatment_id' | 'scheduled_for' | 'status' | 'note'>;
+export interface Dose<T extends TreatmentLike = Treatment, L extends DoseLogLike = TreatmentLog> { treatment: T; time: string; scheduledFor: string; log: L | null }
 
 const isoWeekday = (d: Date) => ((d.getDay() + 6) % 7) + 1;
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 /** Prises prévues un jour donné, d'après ce que le parent a saisi (heures, fréquence, dates). */
-export function dosesFor(day: Date, treatments: Treatment[], logs: TreatmentLog[]): Dose[] {
+export function dosesFor<T extends TreatmentLike, L extends DoseLogLike>(day: Date, treatments: T[], logs: L[]): Dose<T, L>[] {
   const date = ymd(day);
-  const out: Dose[] = [];
+  const out: Dose<T, L>[] = [];
   for (const t of treatments) {
     if (!t.active || t.start_date > date || (t.end_date && t.end_date < date)) continue;
     if (t.frequency === 'as_prescribed') continue;

@@ -11,6 +11,8 @@ import { ChildAvatar } from '@/features/childAvatar';
 import { Tappable } from '@/components/Tappable';
 import { useToast } from '@/components/Overlays';
 import { useDailyChecks, useToggleReminderDone, useToggleTaskDone } from '@/lib/data/hooks-autoNotifs';
+import { useDoseLogsSince, useLogMyDose, useUnlogDose } from '@/lib/data/hooks-myTreatments';
+import { useLogDose } from '@/lib/data/hooks-needs';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { haptic } from '@/components/ui';
 import { useAppointments, useDocuments, useJourneyState, useProfile, useReminders } from '@/lib/data/hooks';
@@ -45,14 +47,40 @@ export function MyDayCard() {
   const checks = useDailyChecks(day).data ?? [];
   const toggleRem = useToggleReminderDone();
   const toggleTask = useToggleTaskDone();
-  const isDone = (i: MyDayItem) => (i.kind === 'reminder' ? checks.some((c) => c.reminder_id === i.refId) : !!i.done);
+  // Prise de médicament (rappel lié à un traitement, le mien ou celui d'un enfant) : cocher = « Pris » (07/11/2026)
+  const doseLogs = useDoseLogsSince(atLocal(day).toISOString());
+  const logMine = useLogMyDose();
+  const logChild = useLogDose();
+  const unlog = useUnlogDose();
+  const doseOf = (i: MyDayItem) => {
+    const r = i.kind === 'reminder' && i.time && !i.every ? reminders.find((x) => x.id === i.refId) : undefined;
+    const treatmentId = r?.treatment_id ?? r?.my_treatment_id;
+    if (!r || !treatmentId) return null;
+    const [h, m] = i.time!.split(':').map(Number);
+    const at = atLocal(day); at.setHours(h, m, 0, 0);
+    const mine = !r.treatment_id;
+    const log = ((mine ? doseLogs.mine : doseLogs.child) ?? []).find((l) => l.treatment_id === treatmentId && new Date(l.scheduled_for).getTime() === at.getTime()) ?? null;
+    return { mine, treatmentId, scheduledFor: at.toISOString(), log };
+  };
+  const isDone = (i: MyDayItem) => {
+    const d = doseOf(i);
+    if (d) return d.log?.status === 'taken';
+    return i.kind === 'reminder' ? checks.some((c) => c.reminder_id === i.refId) : !!i.done;
+  };
   const checkable = (i: MyDayItem) => i.kind === 'reminder' || i.kind === 'task';
   const doable = items.filter(checkable);
   const doneCount = doable.filter(isDone).length;
   async function toggle(i: MyDayItem) {
     const done = !isDone(i);
     try {
-      if (i.kind === 'reminder') await toggleRem.mutateAsync({ reminderId: i.refId, day, done, checkId: checks.find((c) => c.reminder_id === i.refId)?.id });
+      const d = doseOf(i);
+      if (d) {
+        if (!done && d.log) await unlog.mutateAsync({ table: d.mine ? 'my_treatment_logs' : 'treatment_logs', id: d.log.id });
+        else if (done) {
+          const v = { treatment_id: d.treatmentId, scheduled_for: d.scheduledFor, status: 'taken' as const, existingId: d.log?.id };
+          if (d.mine) await logMine.mutateAsync(v); else await logChild.mutateAsync(v);
+        }
+      } else if (i.kind === 'reminder') await toggleRem.mutateAsync({ reminderId: i.refId, day, done, checkId: checks.find((c) => c.reminder_id === i.refId)?.id });
       else await toggleTask.mutateAsync({ taskId: i.refId, done });
       haptic(done ? 'success' : 'light');
       if (done) toast(tr('nt.doneToast'));
@@ -118,6 +146,7 @@ export function OrganizeSection() {
       <SectionTitle title={tr('hub.org.title')} />
       <Card padded={false} testID="hub-organize">
         <ListRow icon="calendar" title={tr('hub.org.calendar')} subtitle={tr('hub.org.calendarD')} onPress={() => router.push('/agenda')} testID="hub-calendar" />
+        <ListRow icon="clipboard" title={tr('med.open')} subtitle={tr('med.openD')} onPress={() => router.push('/medications')} testID="hub-meds" />
         <ListRow icon="bell" title={tr('nt.settingsRow')} subtitle={tr('nt.settingsRowD')} onPress={() => router.push('/settings/notifications')} testID="hub-notifs" />
         <ListRow icon="bell" title={tr('hub.org.reminders')} subtitle={tr('hub.org.remindersD', { count: remindersN })} onPress={() => router.push('/settings/reminders')} testID="hub-reminders" />
         <ListRow icon="check-square" title={tr('hub.org.family')} subtitle={tr('hub.org.familyD')} onPress={() => router.push('/family')} testID="hub-family-org" />

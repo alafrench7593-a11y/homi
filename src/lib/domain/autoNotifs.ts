@@ -7,20 +7,25 @@
  *  - papiers qui expirent : 60 jours et 15 jours avant, à 10 h.
  * Heures calmes (par défaut 22 h – 7 h) : ces notifications sont décalées à la fin des heures calmes.
  * Les rappels de médicaments, de traitements et le minuteur biberon ne sont JAMAIS concernés (ils ont leurs propres règles).
+ *  - relance d'une prise (07/11/2026) : si une prise de médicament (la sienne ou celle d'un enfant) n'est pas notée
+ *    « prise » ou « ignorée » 30 min après l'heure prévue, une seule relance. Jamais décalée par les heures calmes.
+ *    Le texte reste neutre (aucun nom de médicament sur l'écran verrouillé).
  */
-export type AutoKind = 'appointment' | 'task' | 'prep' | 'paper';
+export type AutoKind = 'appointment' | 'task' | 'prep' | 'paper' | 'dose';
 
 export interface AutoPrefs {
   appointments: boolean;
   tasks: boolean;
   prep: boolean;
   papers: boolean;
+  /** relance si une prise n'est pas notée 30 min après l'heure prévue */
+  doseFollowUp: boolean;
   quiet: boolean;
   /** heures calmes, en heures entières (début inclus, fin exclue), ex. 22 → 7 */
   quietFrom: number;
   quietTo: number;
 }
-export const DEFAULT_AUTO_PREFS: AutoPrefs = { appointments: true, tasks: true, prep: true, papers: true, quiet: true, quietFrom: 22, quietTo: 7 };
+export const DEFAULT_AUTO_PREFS: AutoPrefs = { appointments: true, tasks: true, prep: true, papers: true, doseFollowUp: true, quiet: true, quietFrom: 22, quietTo: 7 };
 
 export interface AutoPlan {
   /** identifiant stable : la même chose n'est programmée qu'une fois */
@@ -32,7 +37,12 @@ export interface AutoPlan {
   url: string;
   /** tâche validable depuis la notification */
   taskId?: string;
+  /** données jointes (relance d'une prise : source, traitement, heure prévue) */
+  data?: Record<string, string>;
 }
+
+export const DOSE_FOLLOW_UP_MIN = 30;
+const MAX_DOSE = 12;
 
 export interface AutoInputs {
   now: Date;
@@ -43,6 +53,8 @@ export interface AutoInputs {
   tasks: { id: string; title: string; due_at: string | null; status: string; assignee_id: string | null }[];
   prep: { key: string; title: string; notifyOn: string }[];
   papers: { id: string; title: string; expires_on: string }[];
+  /** prises prévues (rappels de traitement actifs de la personne) ; handled = déjà notée prise ou ignorée */
+  doses?: { treatmentId: string; source: 'treatment' | 'my_treatment'; householdId?: string | null; scheduledFor: string; url: string; handled: boolean }[];
 }
 
 export interface AutoTexts {
@@ -52,6 +64,7 @@ export interface AutoTexts {
   task: (title: string) => { title: string; body: string };
   prep: (title: string) => { title: string; body: string };
   paper: (title: string, days: number) => { title: string; body: string };
+  dose: (time: string) => { title: string; body: string };
 }
 
 const MAX_AUTO = 30; // iOS : 64 notifications en attente pour toute l'appli ; on en garde pour les rappels
@@ -109,10 +122,26 @@ export function planAutoNotifications(i: AutoInputs, prefs: AutoPrefs, tx: AutoT
       for (const days of [60, 15]) push({ id: `paper-${p.id}-${days}`, kind: 'paper', at: at(addDays(p.expires_on, -days), 10), ...tx.paper(p.title, days), url: '/family/papers' }, true);
     }
   }
-  return out.sort((a, b) => a.at.getTime() - b.at.getTime()).slice(0, MAX_AUTO);
+  const doses: AutoPlan[] = [];
+  if (prefs.doseFollowUp) {
+    for (const d of i.doses ?? []) {
+      if (d.handled) continue;
+      const planned = new Date(d.scheduledFor);
+      const when = new Date(planned.getTime() + DOSE_FOLLOW_UP_MIN * 60_000);
+      if (when.getTime() <= now + 30_000) continue;
+      doses.push({
+        id: `dose-${d.treatmentId}-${planned.toISOString()}`, kind: 'dose', at: when, ...tx.dose(hhmm(planned)), url: d.url,
+        data: { source: d.source, treatmentId: d.treatmentId, scheduledFor: planned.toISOString(), dose: hhmm(planned), ...(d.householdId ? { householdId: d.householdId } : {}) },
+      });
+    }
+  }
+  // Les relances de prises passent en premier (jamais évincées par les autres notifications automatiques)
+  const keptDoses = doses.sort((a, b) => a.at.getTime() - b.at.getTime()).slice(0, MAX_DOSE);
+  const others = out.sort((a, b) => a.at.getTime() - b.at.getTime()).slice(0, MAX_AUTO - keptDoses.length);
+  return [...keptDoses, ...others].sort((a, b) => a.at.getTime() - b.at.getTime());
 }
 
 /** Signature d'un plan : s'il change (heure, texte), la notification est reprogrammée. */
 export function planSignature(p: AutoPlan): string {
-  return JSON.stringify([p.at.toISOString(), p.title, p.body, p.url, p.taskId ?? null]);
+  return JSON.stringify([p.at.toISOString(), p.title, p.body, p.url, p.taskId ?? null, p.data ?? null]);
 }

@@ -7,7 +7,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { backend, eq, gte, inList, type Filter } from '../backend';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
-import { syncLocalReminders } from '../notifications';
+import { cancelDoseFollowUp, syncLocalReminders } from '../notifications';
 import { loadDeviceReminders } from './deviceReminders';
 import { useUserId } from '../auth';
 import type { Reminder } from '../types';
@@ -123,6 +123,7 @@ export function useLogDose() {
       const row = { status: v.status, note: v.note ?? null };
       if (v.existingId) await backend.update('treatment_logs', row, [eq('id', v.existingId)]);
       else await backend.insert('treatment_logs', { ...row, treatment_id: v.treatment_id, scheduled_for: v.scheduled_for, household_id: hid });
+      if (v.status !== 'snoozed') await cancelDoseFollowUp(v.treatment_id, v.scheduled_for).catch(() => undefined);
     },
     onSuccess: () => inv('treatment_logs'),
   });

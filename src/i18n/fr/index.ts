@@ -53,3 +53,4 @@ export { videos } from './videos';
 export { profilePhoto } from './profilePhoto';
 export { hub } from './hub';
 export { notifs } from './notifs';
+export { meds } from './meds';
