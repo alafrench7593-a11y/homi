@@ -54,7 +54,7 @@ with sync_playwright() as p:
         pg.screenshot(path=SHOT+'decroche.png', full_page=True)
         if has(pg,'off-stop'): tid(pg,'off-stop').click(); pg.wait_for_timeout(1500); R['off_repris']=not has(pg,'off-active')
     else:
-        R['off_seul_message']='Invitez l’autre parent' in pg.inner_text('body')
+        R['off_seul_message']='cercle d’aide' in pg.inner_text('body') and pg.locator('[data-testid="off-add-circle"]').count()>0
         pg.screenshot(path=SHOT+'decroche.png', full_page=True)
 
     # 6. Carnet

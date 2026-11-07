@@ -227,6 +227,7 @@ export const TOOLS: ToolDef[] = [
   { id: 'house_notebook', theme: 'tasks', icon: 'book', scopes: TOGETHER, href: () => '/family/notebook' },
   { id: 'couple_week', theme: 'relay', icon: 'coffee', scopes: TOGETHER, href: () => '/family/couple' },
   { id: 'exhaustion_check', theme: 'mood', icon: 'battery', scopes: TOGETHER, href: () => '/family/exhausted' },
+  { id: 'solo_parent', theme: 'resources', icon: 'heart', scopes: ALL, universal: true, href: () => '/family/solo' },
   { id: 'family_papers', theme: 'resources', icon: 'folder', scopes: ALL, universal: true, href: () => '/family/papers' },
 ];
 

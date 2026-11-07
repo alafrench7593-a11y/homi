@@ -9,7 +9,7 @@ import { useAuth } from '@/lib/auth';
 import { extractInviteCode, savePendingInvite, takePendingInvite } from '@/lib/authFlow';
 import * as Linking from 'expo-linking';
 import { Screen } from '@/components/Screen';
-import { Banner, Button, Card, Chip, Divider, Field, Loading, Row, Segmented, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Divider, Field, ListRow, Loading, Row, Segmented, SectionTitle, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { BRAND } from '@/config/brand';
 import { useUserId } from '@/lib/auth';
@@ -313,6 +313,9 @@ function FamilyScreenSignedIn() {
       {isDemo ? (
         <Banner tone="demo" title={tr('u1.fam.demoTitle')}>{tr('u1.fam.demoBody')}</Banner>
       ) : null}
+
+      {/* Ma situation (07/11/2026) : seule → accueil « Maman solo », cercle d'aide pour « Je décroche » */}
+      <ListRow icon="heart" title={tr('sol.settings')} subtitle={tr('sol.settingsD')} onPress={() => router.push('/family/solo')} testID="fam-situation" />
 
       {!hid && !isLoading ? (
         <Card tone="soft">

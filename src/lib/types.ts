@@ -17,7 +17,11 @@ export interface Profile {
   home_shortcuts: string[];
   hide_weight_module: boolean;
   theme: 'system' | 'light' | 'dark';
+  /** Situation familiale (07/11/2026) : null = non renseignée. */
+  family_situation?: FamilySituation | null;
 }
+
+export type FamilySituation = 'couple' | 'solo' | 'coparenting';
 
 export interface Household { id: string; name: string; created_by: string; created_at: string }
 export interface HouseholdMember {

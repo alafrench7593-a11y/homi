@@ -284,6 +284,8 @@ export const HOME_CARDS: { key: string; label: string; detail: string; defaultHi
   { key: 'quick', get label() { return tr('u5.home.hc_quick'); }, get detail() { return tr('u5.home.hc_quick_d'); } },
   // Visible par défaut (07/11/2026) : « Mon assistant IA », juste après les raccourcis
   { key: 'assistant', get label() { return tr('u5.home.hc_assistant'); }, get detail() { return tr('u5.home.hc_assistant_d'); } },
+  // Maman solo (07/11/2026) : ne s'affiche que si la situation familiale est « seule avec mes enfants »
+  { key: 'solo', get label() { return tr('tool.solo_parent'); }, get detail() { return tr('sol.home.detail'); } },
   { key: 'library', get label() { return tr('lib.home.title'); }, get detail() { return tr('lib.home.byTheme'); } },
   { key: 'upcoming', get label() { return tr('u5.home.hc_upcoming'); }, get detail() { return ''; } },
   { key: 'outings', get label() { return tr('u5.home.hc_outings'); }, get detail() { return tr('u5.home.hc_outings_d'); } },

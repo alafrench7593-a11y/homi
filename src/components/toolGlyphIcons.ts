@@ -164,6 +164,7 @@ const BY_ID: Record<string, string> = {
   couple_week: 'coffee',                   // point de couple
   exhaustion_check: 'battery-low',         // je suis à bout
   family_papers: 'folder-account',         // papiers de la famille
+  solo_parent: 'human-female-girl',        // maman solo
 };
 
 /** Repli par catégorie puis icône d'origine (glyphes sans identifiant d'outil). */

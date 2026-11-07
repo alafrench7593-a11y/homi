@@ -7,7 +7,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -82,7 +82,9 @@ export default function Papers() {
   const children = useChildren().data ?? [];
   const papers = useFamilyPapers().data ?? [];
   const [who, setWho] = useState<string | null>(null); // null = la famille
-  const [proc, setProc] = useState<Procedure | null>(null);
+  // « Préparer le dossier » depuis Maman solo (?proc=caf) ouvre directement la démarche
+  const { proc: procParam } = useLocalSearchParams<{ proc?: string }>();
+  const [proc, setProc] = useState<Procedure | null>(PROCEDURES.includes(procParam as Procedure) ? (procParam as Procedure) : null);
   const [sheet, setSheet] = useState<{ kind: PaperKind; childId: string | null } | null>(null);
   // Carte d'identité, passeport et photo existent aussi pour les parents : visibles dans « La famille » comme pour chaque enfant.
   const kinds = PAPER_KINDS.filter((k) => (who ? PER_CHILD.includes(k) : !PER_CHILD.includes(k) || PARENT_TOO.includes(k) || !children.length));

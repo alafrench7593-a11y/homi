@@ -108,6 +108,7 @@ export const APP_ROUTES: readonly string[] = [
   '/family/prep',
   '/family/review',
   '/family/routines',
+  '/family/solo',
   '/family/sos',
   '/family/urgent',
   '/fertility',
