@@ -60,6 +60,11 @@ export default function Profile() {
           </Card>}
         </Appear>
 
+        <Card>
+          <ListRow icon="message-circle" title={tr('ai.home.title')} subtitle={tr('ai.profile.sub')} onPress={() => router.push('/assistant/chat')} testID="profile-ai" />
+          <ListRow icon="clock" title={tr('ai.profile.history')} onPress={() => router.push('/ask')} />
+        </Card>
+
         <SectionTitle title={tr('profile.family')} />
         {childrenQ.isLoading && !children ? <Skeleton kind="list" rows={1} /> : childrenQ.isError && !children ? (
           <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} title={tr('profile.familyError')} />

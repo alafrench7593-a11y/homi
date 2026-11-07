@@ -23,6 +23,7 @@ import { FamilyOverview, NoJourneyCard } from '@/features/journeys';
 import { useActivePregnancy, useArticle, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
+import { HomeAssistantCard } from '@/features/aiHome/HomeAssistantCard';
 import { HomeCommunityCard } from '@/features/communitySocial';
 import { CycleHome } from '@/features/cycle3/CycleHome';
 import { ArticleCard, Cocoon, CocoonAdd } from '@/features/cocoon/Cocoon';
@@ -122,25 +123,14 @@ export default function Home() {
     article: article ? <ArticleCard article={article} premium={premium} /> : null,
     recipe: <HomeRecipeCard />,
     recommendation: null as React.ReactNode,
-    assistant: (
-      <Tappable accessibilityRole="button" accessibilityLabel={tr('home.askA11y')} onPress={() => router.push('/assistant/chat')} style={{ borderRadius: 24, overflow: 'hidden' }}>
-        <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, minHeight: MIN_TOUCH + 16 }}>
-          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.35)', alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="message-circle" color="#FFFFFF" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text weight="bold" color="#FFFFFF">{tr('home.ask')}</Text>
-            <Text variant="caption" color="rgba(255,255,255,0.85)">{tr('home.askSub')}</Text>
-          </View>
-          <Icon name="arrow-right" color="#FFFFFF" />
-        </LinearGradient>
-      </Tappable>
-    ),
+    assistant: <HomeAssistantCard />,
   };
   // « Suivre mon cycle » : l'accueil ne montre que le calendrier, les 5 raccourcis, une carte intelligente et le prochain rappel
   // Profil enfant : le cocon remplace les cartes par défaut ; les cartes facultatives que le parent a lui-même
   // activées dans Réglages › Mon accueil (recette, question) restent affichées en dessous
-  const homeCards = cycleMode && !mainLoading && !mainError ? ['main']
+  // « Mon assistant IA » reste visible dans tous les modes (sauf si la personne l'a masqué dans Mon accueil)
+  const aiShown = !effectiveHidden(homeOrder, homeHidden).includes('assistant');
+  const homeCards = cycleMode && !mainLoading && !mainError ? ['main', ...(aiShown ? ['assistant'] : [])]
     : childScope && !mainLoading && !mainError ? ['main', ...orderedHomeCards(homeOrder, homeHidden).filter((k) => k === 'recipe' || k === 'assistant' || k === 'outings')]
       : orderedHomeCards(homeOrder, homeHidden);
   // Recommandation du jour : l'article adapté s'il existe, sinon une idée de repas — sans doublon si ces cartes sont déjà affichées

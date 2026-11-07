@@ -79,7 +79,7 @@ def run(p):
     R['accueil_4_actions'] = has(pg, 'home-card-quick')
     R['accueil_publication_communaute'] = has(pg, 'home-community') and has(pg, 'home-see-community')
     R['accueil_recommandation'] = has(pg, 'home-card-recommendation')
-    R['accueil_pas_de_fil_social'] = pg.locator('[data-testid^="post-"]').count() == 0 and not has(pg, 'home-card-assistant') and not has(pg, 'home-card-article')
+    R['accueil_pas_de_fil_social'] = pg.locator('[data-testid^="post-"]').count() == 0 and not has(pg, 'home-card-article')
     R['accueil_resume_du_jour'] = has(pg, 'home-today')
     tid(pg, 'home-see-community').click(); pg.wait_for_timeout(2500)
     R['accueil_voir_la_communaute'] = pg.url.rstrip('/').endswith('/community')

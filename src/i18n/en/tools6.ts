@@ -251,4 +251,13 @@ export const tools6: Messages<typeof fr> = {
   'cu.exDeleteQ': 'Delete this exception?',
   'cu.range': 'from {from} to {to}',
   'cu.help': 'Disagreement, tension, a pattern that no longer suits your child: family mediation can help you reach an agreement.',
+  'ai.home.title': 'My AI assistant',
+  'ai.home.sub': 'Pregnancy, baby, children, cycle, everyday life: ask your question',
+  'ai.home.openA11y': 'Open my AI assistant',
+  'ai.home.placeholder': 'Type your question…',
+  'ai.home.inputA11y': 'Your question for the AI assistant',
+  'ai.home.send': 'Send the question',
+  'ai.home.disclaimer': 'Information, not a diagnosis. Emergency: call 15 or 112.',
+  'ai.profile.sub': 'Ask a question, any time',
+  'ai.profile.history': 'My conversations with the assistant',
 };

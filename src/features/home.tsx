@@ -282,13 +282,14 @@ export const HOME_CARDS: { key: string; label: string; detail: string; defaultHi
   { key: 'story', get label() { return 'Au fil de nous'; }, get detail() { return tr('u5.home.hc_story_d'); } },
   { key: 'main', get label() { return tr('u5.home.hc_main'); }, get detail() { return tr('u5.home.hc_main_d'); } },
   { key: 'quick', get label() { return tr('u5.home.hc_quick'); }, get detail() { return tr('u5.home.hc_quick_d'); } },
+  // Visible par défaut (07/11/2026) : « Mon assistant IA », juste après les raccourcis
+  { key: 'assistant', get label() { return tr('u5.home.hc_assistant'); }, get detail() { return tr('u5.home.hc_assistant_d'); } },
   { key: 'upcoming', get label() { return tr('u5.home.hc_upcoming'); }, get detail() { return ''; } },
   { key: 'outings', get label() { return tr('u5.home.hc_outings'); }, get detail() { return tr('u5.home.hc_outings_d'); } },
   { key: 'community', get label() { return tr('u5.home.hc_community'); }, get detail() { return tr('u5.home.hc_community_d'); } },
   { key: 'recommendation', get label() { return tr('u5.home.hc_recommendation'); }, get detail() { return tr('u5.home.hc_recommendation_d'); } },
   { key: 'article', get label() { return tr('u5.home.hc_article'); }, get detail() { return ''; }, defaultHidden: true },
   { key: 'recipe', get label() { return tr('u5.home.hc_recipe'); }, get detail() { return tr('u5.home.hc_recipe_d'); }, defaultHidden: true },
-  { key: 'assistant', get label() { return tr('u5.home.hc_assistant'); }, get detail() { return tr('u5.home.hc_assistant_d'); }, defaultHidden: true },
 ];
 
 /** Cartes masquées : choix de la personne + cartes masquées par défaut qu'elle n'a jamais placées dans son ordre. */

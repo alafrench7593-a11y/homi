@@ -256,4 +256,14 @@ export const tools6 = {
   'cu.exDeleteQ': 'Supprimer cette exception ?',
   'cu.range': 'du {from} au {to}',
   'cu.help': 'Désaccord, tension, rythme qui ne convient plus à l’enfant : la médiation familiale (renseignements auprès de la CAF ou du tribunal) peut vous aider à trouver un accord.',
+  // ---------------------------------------------------------------- « Mon assistant IA » (accueil et profil)
+  'ai.home.title': 'Mon assistant IA',
+  'ai.home.sub': 'Grossesse, bébé, enfants, cycle, quotidien : posez votre question',
+  'ai.home.openA11y': 'Ouvrir mon assistant IA',
+  'ai.home.placeholder': 'Écrivez votre question…',
+  'ai.home.inputA11y': 'Votre question pour l’assistant IA',
+  'ai.home.send': 'Envoyer la question',
+  'ai.home.disclaimer': 'Des informations, pas un diagnostic. Urgence : 15 ou 112.',
+  'ai.profile.sub': 'Écrire une question, à tout moment',
+  'ai.profile.history': 'Mes conversations avec l’assistant',
 };
