@@ -9,7 +9,7 @@ def tid(pg,t): return pg.locator(f'[data-testid="{t}"]').filter(visible=True).fi
 def has(pg,t): return pg.locator(f'[data-testid="{t}"]').filter(visible=True).count()>0
 with sync_playwright() as p:
     b=p.chromium.launch()
-    for w,h,name in [(390,844,'iphone'),(320,568,'petit')]:
+    for w,h,name in [(390,844,'iphone'),(375,667,'petit')]:
         pg=b.new_page(viewport={'width':w,'height':h}, locale='fr-FR')
         pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
         pg.goto(B+'/welcome'); pg.wait_for_timeout(2500)

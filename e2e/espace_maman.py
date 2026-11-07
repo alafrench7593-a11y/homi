@@ -34,7 +34,7 @@ with sync_playwright() as p:
     R['sections']=all(has(pg,t) for t in ['hub-organize','hub-docs','hub-me']) and has(pg,'hub-child-Lina') and has(pg,'hub-child-Noé')
     R['rien_supprime']=all(x in body for x in ['Mon assistant IA','Bibliothèque','Vidéos & articles','Ajouter un enfant','Urgences']) and all(has(pg,t) for t in ['profile-community','profile-account','edit-journey','profile-photo','profile-ai','profile-library'])
     # liens
-    checks={'hub-calendar':'/calendar','hub-reminders':'/settings/reminders','hub-family-org':'/family','hub-docs-all':'/documents','hub-docs-scan':'/documents/scan','hub-papers':'/family/papers','hub-book':'/documents/book','hub-child-Lina-vaccines':'/vaccines','hub-child-Lina-growth':'croissance','hub-child-Lina-tracking':'/health-tracking','hub-child-Lina-appointments':'/appointments','hub-child-Lina-card':'/card','hub-me-appointments':'/appointments','hub-me-space':'/me'}
+    checks={'hub-calendar':'/agenda','hub-reminders':'/settings/reminders','hub-family-org':'/family','hub-docs-all':'/documents','hub-docs-scan':'/documents/scan','hub-papers':'/family/papers','hub-book':'/documents/book','hub-child-Lina-vaccines':'/vaccines','hub-child-Lina-growth':'croissance','hub-child-Lina-tracking':'/health-tracking','hub-child-Lina-appointments':'/appointments','hub-child-Lina-card':'/card','hub-me-appointments':'/appointments','hub-me-space':'/me'}
     bad=[]
     for t,frag in checks.items():
         pg.goto(B+'/profile'); pg.wait_for_timeout(2200)

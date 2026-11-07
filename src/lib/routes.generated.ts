@@ -6,6 +6,7 @@ export const APP_ROUTES: readonly string[] = [
   '/admin/products',
   '/admin/recipes',
   '/admin/resources',
+  '/agenda',
   '/appointments',
   '/article/[slug]',
   '/ask',

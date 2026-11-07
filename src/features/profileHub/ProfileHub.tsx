@@ -81,7 +81,7 @@ export function OrganizeSection() {
     <>
       <SectionTitle title={tr('hub.org.title')} />
       <Card padded={false} testID="hub-organize">
-        <ListRow icon="calendar" title={tr('hub.org.calendar')} subtitle={tr('hub.org.calendarD')} onPress={() => router.push('/calendar')} testID="hub-calendar" />
+        <ListRow icon="calendar" title={tr('hub.org.calendar')} subtitle={tr('hub.org.calendarD')} onPress={() => router.push('/agenda')} testID="hub-calendar" />
         <ListRow icon="bell" title={tr('hub.org.reminders')} subtitle={tr('hub.org.remindersD', { count: remindersN })} onPress={() => router.push('/settings/reminders')} testID="hub-reminders" />
         <ListRow icon="check-square" title={tr('hub.org.family')} subtitle={tr('hub.org.familyD')} onPress={() => router.push('/family')} testID="hub-family-org" />
         <ListRow icon="calendar" title={tr('tool.family_prep')} subtitle={tr('tool.family_prep.sub')} onPress={() => router.push('/family/prep')} />

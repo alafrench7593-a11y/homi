@@ -40,7 +40,8 @@ const longDay = (day: string) => formatDate(atLocal(day, 12), { weekday: 'long',
 
 type Draft = { id?: string; title: string; kind: EventKind; date: string; from: string; to: string; allDay: boolean; location: string; notes: string; recurrence: 'none' | 'daily' | 'weekly' | 'monthly'; until: string; childId: string | null };
 
-export default function FamilyCalendar() {
+/** Agenda du foyer. `inTab` : affiché comme onglet de la barre du bas (pas de bouton retour, place pour la barre). */
+export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   const t = useTheme();
   const toast = useToast();
   const params = useLocalSearchParams<{ view?: View_; new?: string }>();
@@ -169,7 +170,7 @@ export default function FamilyCalendar() {
   );
 
   return (
-    <Screen back account title={tr('u3.cal.title')} subtitle={tr('u3.cal.subtitle')} right={<IconButton icon="plus" label={tr('u3.cal.newEvent')} onPress={() => openNew()} />}
+    <Screen back={!inTab} account bottomInset={inTab ? 96 : 0} title={tr('u3.cal.title')} subtitle={tr('u3.cal.subtitle')} right={<IconButton icon="plus" label={tr('u3.cal.newEvent')} onPress={() => openNew()} />}
       action={{ label: tr('u3.cal.addEvent'), icon: 'plus', onPress: () => openNew(), testID: 'calendar-add' }}>
       {(() => {
         const nextUp = todayItems.filter((x) => Date.parse(x.ends) >= Date.now()).sort((a, b) => (a.starts < b.starts ? -1 : 1))[0];
@@ -439,4 +440,8 @@ function FeedCard() {
       </Sheet>
     </Card>
   );
+}
+
+export default function FamilyCalendar() {
+  return <FamilyCalendarScreen />;
 }

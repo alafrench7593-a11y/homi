@@ -25,8 +25,8 @@ import { UserAvatar } from './UserAvatar';
 import { avatarInitial } from './AccountActions';
 import { Tappable } from '@/components/Tappable';
 
-const TAB_ICONS: Record<string, IconName> = { index: 'home', track: 'activity', ask: 'message-circle', community: 'users', profile: 'user', tools: 'grid', moi: 'user' };
-const SHORT_KEYS = { index: 'tab.home', track: 'tab.track', ask: 'tab.ask', community: 'tab.community', profile: 'tab.profile', moi: 'tab.me' } as const;
+const TAB_ICONS: Record<string, IconName> = { index: 'home', agenda: 'calendar', track: 'activity', ask: 'message-circle', community: 'users', profile: 'user', tools: 'grid', moi: 'user' };
+const SHORT_KEYS = { index: 'tab.home', agenda: 'tab.agenda', track: 'tab.track', ask: 'tab.ask', community: 'tab.community', profile: 'tab.profile', moi: 'tab.me' } as const;
 const short = (name: string) => (name in SHORT_KEYS ? tr(SHORT_KEYS[name as keyof typeof SHORT_KEYS]) : undefined);
 
 export const DOCK_HEIGHT = 74;
@@ -150,7 +150,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   const reduce = useReduceMotion();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
-  // Onglets visibles ; « Outils » entre les deux groupes, chaque onglet a la même largeur (libellés entiers)
+  // Onglets visibles ; « Outils » entre les deux groupes (3 de chaque côté), chaque onglet a la même largeur
   const visible = state.routes.filter((r) => {
     const o = descriptors[r.key].options as { href?: unknown; tabBarItemStyle?: { display?: string } };
     // expo-router traduit `href: null` en élément masqué : la route existe toujours (liens profonds), hors de la barre

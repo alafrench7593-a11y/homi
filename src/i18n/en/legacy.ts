@@ -4,6 +4,7 @@ import type { Messages } from '../types';
 export const legacy: Messages<typeof fr> = {
   'tab.home': 'Home',
   'tab.track': 'Tracking',
+  'tab.agenda': 'Calendar',
   'tab.ask': 'Questions',
   'tab.me': 'Me',
   'tab.discover': 'Discover',

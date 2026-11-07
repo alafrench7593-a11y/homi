@@ -132,7 +132,8 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
         {header}
         {body}
         {footer || action ? (
-          <View style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: insets.bottom + spacing.sm, paddingTop: spacing.sm, gap: spacing.sm }}>
+          <View style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: bottomInset > 0 ? bottomInset + spacing.xs : insets.bottom + spacing.sm, paddingTop: spacing.sm, gap: spacing.sm }}>
+            {/* écran d'onglet (barre du bas) : le bouton d'action reste au-dessus de la barre */}
             {action ? (paidTool ? <PaidToolAction tool={paidTool} action={action} /> : <Button label={action.label} icon={action.icon ?? 'plus'} size="lg" full onPress={action.onPress} disabled={action.disabled} testID={action.testID ?? 'miniapp-action'} />) : null}
             {footer}
           </View>

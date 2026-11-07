@@ -20,6 +20,8 @@ export default function TabsLayout() {
     {session ? <DigestSync /> : null}
     <Tabs detachInactiveScreens screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' }, freezeOnBlur: true }} tabBar={(props) => <Dock {...props} />}>
       <Tabs.Screen name="index" options={{ title: tr('tab.home') }} />
+      {/* Agenda (07/11/2026, demande de la propriétaire) : 3 onglets de chaque côté, « Outils » au centre exact */}
+      <Tabs.Screen name="agenda" options={{ title: tr('tab.agenda') }} />
       <Tabs.Screen name="track" options={{ title: tr('tab.track') }} />
       {/* Au centre exact de la barre ; appui long : ajout rapide (ancien bouton « + ») */}
       <Tabs.Screen name="tools" options={{ title: tr('dock.tools') }} />

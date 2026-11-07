@@ -2,6 +2,7 @@
 export const legacy = {
   'tab.home': 'Accueil',
   'tab.track': 'Suivi',
+  'tab.agenda': 'Agenda',
   'tab.ask': 'Questions',
   'tab.me': 'Moi',
   'tab.discover': 'Découvrir',
