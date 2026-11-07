@@ -264,7 +264,7 @@ export const ui8 = {
   'u8.local.keep': 'À retenir',
   'u8.local.none': 'Je n’ai pas trouvé de réponse précise dans les articles.',
   'u8.local.noneBody': 'Je préfère ne rien inventer. Essayez avec d’autres mots, ou posez la question à un professionnel de santé (médecin, sage-femme, PMI, pharmacien).',
-  'u8.local.online': 'Demander à l’assistant en ligne',
+  'u8.local.online': 'Réponse plus détaillée avec l’IA en ligne',
   'u8.local.ph': 'Posez votre question…',
   'u8.local.read': 'Lire l’article complet',
   'u8.local.seeAlso': 'Voir aussi :',

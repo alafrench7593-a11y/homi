@@ -1,6 +1,7 @@
 /**
- * « Mon assistant IA » sur l'accueil : on écrit sa question directement dans la carte, l'envoi ouvre la
- * conversation avec la question déjà posée (/assistant/chat?q=…). Le consentement à l'IA et les règles de
+ * « Mon assistant IA » sur l'accueil : on écrit sa question directement dans la carte ; l'envoi interroge d'abord
+ * l'IA locale (gratuite, sur le téléphone, à partir des articles : /assistant/local?q=…), et un lien mène à l'IA
+ * en ligne (/assistant/chat) pour une réponse plus détaillée. Le consentement à l'IA et les règles de
  * sécurité santé restent ceux de l'écran de conversation : cette carte ne fait qu'y mener.
  */
 import React, { useState } from 'react';
@@ -17,11 +18,12 @@ export function HomeAssistantCard() {
   const send = () => {
     const question = q.trim();
     setQ('');
-    router.push(question.length >= 2 ? { pathname: '/assistant/chat', params: { q: question } } : '/assistant/chat');
+    // D'abord l'IA locale (gratuite, sur le téléphone, à partir des articles) ; l'IA en ligne reste à un geste
+    router.push(question.length >= 2 ? { pathname: '/assistant/local', params: { q: question } } : '/assistant/local');
   };
   return (
     <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: 24, padding: spacing.md, gap: spacing.sm }}>
-      <Tappable accessibilityRole="button" accessibilityLabel={tr('ai.home.openA11y')} onPress={() => router.push('/assistant/chat')} testID="home-ai-open"
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('ai.home.openA11y')} onPress={() => router.push('/assistant/local')} testID="home-ai-open"
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH }}>
         <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.35)', alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="message-circle" color="#FFFFFF" />
@@ -41,7 +43,13 @@ export function HomeAssistantCard() {
           <Icon name="send" color="#87533F" />
         </Tappable>
       </View>
-      <Text variant="caption" color="rgba(255,255,255,0.85)">{tr('ai.home.disclaimer')}</Text>
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('ai.home.online')} onPress={() => router.push(q.trim().length >= 2 ? { pathname: '/assistant/chat', params: { q: q.trim() } } : '/assistant/chat')} testID="home-ai-online"
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH }}>
+        <Icon name="cloud" size={16} color="#FFFFFF" />
+        <Text variant="small" weight="bold" color="#FFFFFF" style={{ flex: 1 }}>{tr('ai.home.online')}</Text>
+        <Icon name="chevron-right" size={16} color="#FFFFFF" />
+      </Tappable>
+      <Text variant="caption" color="rgba(255,255,255,0.85)">{tr('ai.home.localNote')} {tr('ai.home.disclaimer')}</Text>
     </LinearGradient>
   );
 }

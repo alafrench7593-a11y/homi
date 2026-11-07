@@ -9,7 +9,7 @@ import { MySubscriptionSection } from '@/features/subscription';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Button, Card, Chip, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
-import { useActivePregnancy, useChildren, useJourneyState, usePremium, useProfile } from '@/lib/data/hooks';
+import { useActivePregnancy, useArticles, useChildren, useJourneyState, usePremium, useProfile } from '@/lib/data/hooks';
 import { JOURNEY_ICON, useJourneyProfileLabel } from '@/features/journeys';
 import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
@@ -26,6 +26,7 @@ export default function Profile() {
   const childrenQ = useChildren();
   const children = childrenQ.data;
   const premium = usePremium();
+  const articleCount = useArticles().data?.length ?? 0;
   const js = useJourneyState();
   const profileLabel = useJourneyProfileLabel();
 
@@ -63,6 +64,7 @@ export default function Profile() {
         <Card>
           <ListRow icon="message-circle" title={tr('ai.home.title')} subtitle={tr('ai.profile.sub')} onPress={() => router.push('/assistant/chat')} testID="profile-ai" />
           <ListRow icon="clock" title={tr('ai.profile.history')} onPress={() => router.push('/ask')} />
+          <ListRow icon="book-open" title={tr('lib.home.title')} subtitle={tr('lib.profile.sub', { count: articleCount })} onPress={() => router.push('/library')} testID="profile-library" />
         </Card>
 
         <SectionTitle title={tr('profile.family')} />

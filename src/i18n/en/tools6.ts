@@ -263,4 +263,13 @@ export const tools6: Messages<typeof fr> = {
   'ai.demo.left': { one: 'Demo: {count} question left today (out of {limit}).', other: 'Demo: {count} questions left today (out of {limit}).' },
   'ai.demo.noneLeft': 'Demo questions used up for today: create a free account to continue.',
   'ai.demo.placeholderDone': 'Come back tomorrow, or create an account',
+  'lib.home.title': 'Library',
+  'lib.home.counts': '{articles} articles · {themes} categories · {subjects} topics',
+  'lib.home.openA11y': 'Open the library, {count} articles',
+  'lib.home.search': 'Search the articles…',
+  'lib.home.byTheme': 'By theme',
+  'lib.subjects': 'Topics',
+  'lib.profile.sub': '{count} articles sorted by theme, category and topic',
+  'ai.home.localNote': 'Instant answer from the articles, on your phone. For a more detailed answer, use the online assistant.',
+  'ai.home.online': 'More detailed answer with online AI',
 };

@@ -267,7 +267,7 @@ export const ui8: Messages<typeof fr> = {
   'u8.local.keep': 'Key points',
   'u8.local.none': 'I could not find a precise answer in the articles.',
   'u8.local.noneBody': 'I would rather not make anything up. Try different words, or ask a healthcare professional (doctor, midwife, maternal and child health service, pharmacist).',
-  'u8.local.online': 'Ask the online assistant',
+  'u8.local.online': 'More detailed answer with online AI',
   'u8.local.ph': 'Ask your question…',
   'u8.local.read': 'Read the full article',
   'u8.local.seeAlso': 'See also:',

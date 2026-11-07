@@ -44,3 +44,15 @@ describe('compteur de mesurettes', () => {
     expect(scoopsFor(900, 30)).toBeNull();
   });
 });
+
+import { countSubjects, hasSubject, topSubjects } from '@/lib/domain/librarySubjects';
+describe('bibliothèque : sujets', () => {
+  const arts = [{ tags: ['Sommeil', 'pleurs'] }, { tags: ['sommeil', 'Bain'] }, { tags: ['pleurs', 'Pleurs'] }, { tags: ['bain', 'éveil'] }, { tags: ['eveil'] }];
+  it('regroupe sans tenir compte des majuscules ni des accents, compte un article une fois', () => {
+    const s = topSubjects(arts);
+    expect(s.map((x) => [x.key, x.count])).toEqual([['bain', 2], ['eveil', 2], ['pleurs', 2], ['sommeil', 2]]);
+    expect(s[0].label).toBe('Bain');
+    expect(hasSubject(arts[3], 'eveil')).toBe(true);
+    expect(countSubjects(arts)).toBe(4);
+  });
+});

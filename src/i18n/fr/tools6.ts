@@ -269,4 +269,14 @@ export const tools6 = {
   'ai.demo.left': { one: 'Démonstration : il vous reste {count} question aujourd’hui (sur {limit}).', other: 'Démonstration : il vous reste {count} questions aujourd’hui (sur {limit}).' },
   'ai.demo.noneLeft': 'Questions de démonstration épuisées pour aujourd’hui : créez un compte gratuit pour continuer.',
   'ai.demo.placeholderDone': 'Revenez demain, ou créez un compte',
+  // ---------------------------------------------------------------- bibliothèque sur l'accueil
+  'lib.home.title': 'Bibliothèque',
+  'lib.home.counts': '{articles} articles · {themes} catégories · {subjects} sujets',
+  'lib.home.openA11y': 'Ouvrir la bibliothèque, {count} articles',
+  'lib.home.search': 'Chercher dans les articles…',
+  'lib.home.byTheme': 'Par thème',
+  'lib.subjects': 'Sujets',
+  'lib.profile.sub': '{count} articles rangés par thème, catégorie et sujet',
+  'ai.home.localNote': 'Réponse immédiate tirée des articles, sur votre téléphone. Pour une réponse plus détaillée, l’assistant en ligne.',
+  'ai.home.online': 'Réponse plus détaillée avec l’IA en ligne',
 };

@@ -24,6 +24,7 @@ import { useActivePregnancy, useArticle, useArticles, useJourneyState, usePremiu
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { HomeAssistantCard } from '@/features/aiHome/HomeAssistantCard';
+import { HomeLibraryCard } from '@/features/library/HomeLibraryCard';
 import { HomeCommunityCard } from '@/features/communitySocial';
 import { CycleHome } from '@/features/cycle3/CycleHome';
 import { ArticleCard, Cocoon, CocoonAdd } from '@/features/cocoon/Cocoon';
@@ -124,14 +125,16 @@ export default function Home() {
     recipe: <HomeRecipeCard />,
     recommendation: null as React.ReactNode,
     assistant: <HomeAssistantCard />,
+    library: <HomeLibraryCard />,
   };
   // « Suivre mon cycle » : l'accueil ne montre que le calendrier, les 5 raccourcis, une carte intelligente et le prochain rappel
   // Profil enfant : le cocon remplace les cartes par défaut ; les cartes facultatives que le parent a lui-même
   // activées dans Réglages › Mon accueil (recette, question) restent affichées en dessous
   // « Mon assistant IA » reste visible dans tous les modes (sauf si la personne l'a masqué dans Mon accueil)
   const aiShown = !effectiveHidden(homeOrder, homeHidden).includes('assistant');
-  const homeCards = cycleMode && !mainLoading && !mainError ? ['main', ...(aiShown ? ['assistant'] : [])]
-    : childScope && !mainLoading && !mainError ? ['main', ...orderedHomeCards(homeOrder, homeHidden).filter((k) => k === 'recipe' || k === 'assistant' || k === 'outings')]
+  const libShown = !effectiveHidden(homeOrder, homeHidden).includes('library');
+  const homeCards = cycleMode && !mainLoading && !mainError ? ['main', ...(aiShown ? ['assistant'] : []), ...(libShown ? ['library'] : [])]
+    : childScope && !mainLoading && !mainError ? ['main', ...orderedHomeCards(homeOrder, homeHidden).filter((k) => k === 'recipe' || k === 'assistant' || k === 'library' || k === 'outings')]
       : orderedHomeCards(homeOrder, homeHidden);
   // Recommandation du jour : l'article adapté s'il existe, sinon une idée de repas — sans doublon si ces cartes sont déjà affichées
   cards.recommendation = (!homeCards.includes('article') ? cards.article : null) ?? (!homeCards.includes('recipe') ? cards.recipe : null);
