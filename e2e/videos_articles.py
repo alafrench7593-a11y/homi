@@ -14,16 +14,19 @@ with sync_playwright() as p:
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.reload(); pg.wait_for_timeout(3500)
     # accueil
-    R['accueil_carte']=has(pg,'home-videos') and '20 vidéos officielles' in pg.inner_text('body')
+    R['accueil_carte']=has(pg,'home-videos') and '98 vidéos officielles' in pg.inner_text('body') and has(pg,'home-videos-tutos')
     if has(pg,'home-videos'):
         tid(pg,'home-videos').scroll_into_view_if_needed(); pg.wait_for_timeout(300); pg.screenshot(path=SHOT+'accueil.png')
-        tid(pg,'home-videos-sleep').click(); pg.wait_for_timeout(2500)
-        R['accueil_vers_theme_sommeil']='/videos' in pg.url and has(pg,'vid-card-qG88EmGtSPQ') and not has(pg,'vid-card-O2IzhSBA0OI')
+        chips=[c.get_attribute('data-testid') for c in pg.locator('[data-testid^="home-videos-"]').filter(visible=True).all()]
+        topics=[c.replace('home-videos-','') for c in chips if c not in ('home-videos-open','home-videos-tutos')]
+        R['accueil_themes_du_profil']=topics
+        tid(pg,f'home-videos-{topics[0]}').click(); pg.wait_for_timeout(2500)
+        R['accueil_vers_theme']='/videos' in pg.url and f'topic={topics[0]}' in pg.url and pg.locator('[data-testid^="vid-card-"]').filter(visible=True).count()>=1
     # section complète
     pg.goto(B+'/videos'); pg.wait_for_timeout(3000)
     tid(pg,'vid-topic-all').click(); pg.wait_for_timeout(800)
-    R['toutes_20']=pg.locator('[data-testid^="vid-card-"]').filter(visible=True).count()==20
-    R['articles_sous_videos']=pg.locator('[data-testid^="vid-art-"]').filter(visible=True).count()>=40
+    R['toutes_98']=pg.locator('[data-testid^="vid-card-"]').filter(visible=True).count()==98
+    R['articles_sous_videos']=pg.locator('[data-testid^="vid-art-"]').filter(visible=True).count()>=250
     R['rien_youtube_avant_lecture']=len(yt)==0
     tid(pg,'vid-topic-feeding').click(); pg.wait_for_timeout(800)
     R['theme_allaitement']=has(pg,'vid-card-O2IzhSBA0OI') and pg.locator('[data-testid^="vid-card-"]').filter(visible=True).count()==2
@@ -37,6 +40,26 @@ with sync_playwright() as p:
     art=pg.locator('[data-testid^="vid-art-O2IzhSBA0OI-"]').filter(visible=True).first
     art.click(); pg.wait_for_timeout(2500)
     R['ouvre_article']='/article/' in pg.url and len(pg.inner_text('body'))>500
+    # thèmes par profil
+    pg.goto(B+'/videos'); pg.wait_for_timeout(3000)
+    for t in ['cycle','contraception','fertility','birth','health','firstaid','admin']:
+        tid(pg,f'vid-topic-{t}').click(); pg.wait_for_timeout(400)
+        R[f'theme_{t}']=pg.locator('[data-testid^="vid-card-"]').filter(visible=True).count()>=2
+    # tutos
+    pg.goto(B+'/tutos'); pg.wait_for_timeout(3000)
+    R['tutos_page']=has(pg,'tuto-group-firstaid') and has(pg,'tuto-group-meals') and has(pg,'tuto-group-admin')
+    R['tutos_nombre']=pg.locator('[data-testid^="vid-card-"]').filter(visible=True).count()
+    R['tuto_etouffement_bebe']=has(pg,'vid-card-XsaXjXMFMXw') and 'Bébé s’étouffe' in pg.inner_text('body')
+    R['tutos_avertissement_formation']='ne remplace pas une formation' in pg.inner_text('body')
+    tid(pg,'tuto-group-firstaid').scroll_into_view_if_needed(); pg.wait_for_timeout(300)
+    pg.screenshot(path=SHOT+'tutos.png')
+    tid(pg,'video-play-XsaXjXMFMXw').click(); pg.wait_for_timeout(1500)
+    R['tuto_lecture']=pg.locator('iframe[data-testid="video-frame"]').count()==1
+    tid(pg,'vid-tab-themes').click(); pg.wait_for_timeout(600)
+    R['onglet_themes']=has(pg,'vid-topic-all')
+    pg.goto(B+'/'); pg.wait_for_timeout(3000)
+    tid(pg,'home-videos-tutos').click(); pg.wait_for_timeout(2000)
+    R['accueil_vers_tutos']='/tutos' in pg.url
     # bibliothèque
     pg.goto(B+'/library'); pg.wait_for_timeout(3500)
     tid(pg,'library-videos').scroll_into_view_if_needed(); pg.wait_for_timeout(400)
@@ -44,9 +67,11 @@ with sync_playwright() as p:
     pg.screenshot(path=SHOT+'bibliotheque.png')
     tid(pg,'library-videos-open').click(); pg.wait_for_timeout(2000)
     R['bibliotheque_vers_section']='/videos' in pg.url
+    pg.goto(B+'/library'); pg.wait_for_timeout(3000)
+    R['bibliotheque_lien_tutos']=has(pg,'library-tutos-open')
     # profil
     pg.goto(B+'/profile'); pg.wait_for_timeout(3000)
-    R['profil_ligne']=has(pg,'profile-videos')
+    R['profil_ligne']=has(pg,'profile-videos') and has(pg,'profile-tutos')
     # maman solo
     pg.goto(B+'/family/solo'); pg.wait_for_timeout(3000)
     R['solo_lien_section']=has(pg,'sol-videos-all')
@@ -54,6 +79,6 @@ with sync_playwright() as p:
     R['solo_vers_section']='/videos' in pg.url
     # catalogue
     pg.goto(B+'/tools'); pg.wait_for_timeout(2500)
-    R['catalogue']='Vidéos & articles' in pg.inner_text('body')
+    R['catalogue']='Vidéos & articles' in pg.inner_text('body') and 'Tutos vidéo' in pg.inner_text('body')
     R['erreurs']=errs
     print(json.dumps(R,ensure_ascii=False,indent=1))

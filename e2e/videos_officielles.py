@@ -20,7 +20,7 @@ with sync_playwright() as p:
     pg.screenshot(path=SHOT+'liste.png')
     tid(pg,'sol-v-topic-me').click(); pg.wait_for_timeout(500)
     R['theme_pour_moi']=has(pg,'video-play-cF5O8Mkz-Is') and not has(pg,'video-play--9O4Go_lidQ')
-    tid(pg,'sol-v-topic-baby').click(); pg.wait_for_timeout(500)
+    tid(pg,'sol-v-topic-sleep').click(); pg.wait_for_timeout(500)
     tid(pg,'video-play-qG88EmGtSPQ').click(); pg.wait_for_timeout(1500)
     fr=pg.locator('iframe[data-testid="video-frame"]')
     R['lecteur_dans_l_appli']=fr.count()==1

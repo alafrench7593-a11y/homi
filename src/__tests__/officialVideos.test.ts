@@ -1,5 +1,5 @@
 /** Section « Vidéos & articles » : chaque vidéo a des articles à lire ensuite, pertinents. */
-import { OFFICIAL_VIDEOS, VIDEO_TOPICS, articlesForVideo, defaultTopic } from '@/lib/domain/officialVideos';
+import { ALL_VIDEOS as OFFICIAL_VIDEOS, TUTOS, VIDEO_TOPICS, articlesForVideo, defaultTopic, orderedTopics } from '@/lib/domain/officialVideos';
 import { LIBRARY_ARTICLES } from '@/content/articles/library';
 import { NEURO_LIBRARY } from '@/content/articles/rows';
 import { GUIDE_ARTICLES } from '@/content/articles/guide';
@@ -31,5 +31,21 @@ describe('vidéos & articles', () => {
     expect(defaultTopic(['pregnant', 'newborn'])).toBe('pregnancy');
     expect(defaultTopic(['newborn'])).toBe('baby');
     expect(defaultTopic([])).toBe('me');
+  });
+});
+
+describe('tutos et thèmes par profil', () => {
+  it('au moins 25 tutos, dont premiers secours, repas et démarches', () => {
+    expect(TUTOS.length).toBeGreaterThanOrEqual(25);
+    for (const k of ['firstaid', 'meals', 'admin'] as const) expect(TUTOS.some((v) => v.topic === k)).toBe(true);
+  });
+  it('chaque profil a ses thèmes en premier', () => {
+    expect(orderedTopics(['avoid']).slice(0, 2)).toEqual(['cycle', 'contraception']);
+    expect(orderedTopics(['ttc'])[0]).toBe('fertility');
+    expect(orderedTopics(['newborn'])[0]).toBe('baby');
+    expect(orderedTopics([]).length).toBe(VIDEO_TOPICS.length);
+  });
+  it('chaque thème a au moins une vidéo, et au moins 2 sauf le couple', () => {
+    expect(VIDEO_TOPICS.filter((k) => OFFICIAL_VIDEOS.filter((v) => v.topic === k).length < (k === 'couple' ? 1 : 2))).toEqual([]);
   });
 });

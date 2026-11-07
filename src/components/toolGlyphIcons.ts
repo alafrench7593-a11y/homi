@@ -166,6 +166,7 @@ const BY_ID: Record<string, string> = {
   family_papers: 'folder-account',         // papiers de la famille
   solo_parent: 'human-female-girl',        // maman solo
   official_videos: 'play-box-multiple',    // vidéos & articles
+  video_tutos: 'human-male-board',         // tutos vidéo
 };
 
 /** Repli par catégorie puis icône d'origine (glyphes sans identifiant d'outil). */

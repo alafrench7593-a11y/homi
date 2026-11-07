@@ -7,7 +7,7 @@ import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { Card, Chip, Field, Icon, ListRow, SectionTitle, Text } from '@/components/ui';
 import { VideoCard } from '@/components/video/VideoCard';
-import { OFFICIAL_VIDEOS } from '@/lib/domain/officialVideos';
+import { ALL_VIDEOS, TUTOS } from '@/lib/domain/officialVideos';
 import { EmptyStateCard } from '@/components/ui-extra';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { useActivePregnancy, useArticles, useCategories, useChildren, useFullArticles, usePremium, useProfile, useRows } from '@/lib/data/hooks';
@@ -195,9 +195,10 @@ export default function Library() {
       <SectionTitle title={tr('art.videos')} />
       {/* Vidéos officielles lues dans l'appli (07/11/2026) ; les vidéos maison publiées, s'il y en a, restent listées */}
       <Card testID="library-videos">
-        <ListRow icon="play-circle" title={tr('vid.title')} subtitle={tr('vid.librarySub', { count: OFFICIAL_VIDEOS.length })} onPress={() => router.push('/videos')} testID="library-videos-open" />
+        <ListRow icon="play-circle" title={tr('vid.title')} subtitle={tr('vid.librarySub', { count: ALL_VIDEOS.length })} onPress={() => router.push('/videos')} testID="library-videos-open" />
+        <ListRow icon="tool" title={tr('vid.tutos')} subtitle={tr('vid.tutosSub', { count: TUTOS.length })} onPress={() => router.push('/tutos')} testID="library-tutos-open" />
         <View style={{ paddingHorizontal: spacing.md, paddingBottom: spacing.md, gap: spacing.md }}>
-          {OFFICIAL_VIDEOS.slice(0, 2).map((v) => <VideoCard key={v.id} video={v} compact />)}
+          {ALL_VIDEOS.slice(0, 2).map((v) => <VideoCard key={v.id} video={v} compact />)}
         </View>
       </Card>
       {videos?.length ? <Card>{videos.map((v) => <ListRow key={v.id} icon="play-circle" title={v.title} />)}</Card> : null}

@@ -8,7 +8,7 @@ import { Button, Icon, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { useToast } from '@/components/Overlays';
 import { openLink } from '@/lib/links';
-import { watchUrl, type OfficialVideo } from '@/lib/domain/officialVideos';
+import { durationMinutes, watchUrl, type OfficialVideo } from '@/lib/domain/officialVideos';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { getLocale, t as tr, type TKey } from '@/i18n';
@@ -21,6 +21,8 @@ export function VideoCard({ video, compact }: { video: OfficialVideo; compact?: 
   const [failed, setFailed] = useState(false);
   const title = tr(`sol.v.${video.key}` as TKey);
   const by = tr(`sol.v.by.${video.by}` as TKey);
+  const min = durationMinutes(video.dur);
+  const meta = [by, min ? tr('vid.minutes', { count: min }) : null, video.kind === 'tuto' ? tr('vid.tutoTag') : null].filter(Boolean).join(' · ');
   return (
     <View style={{ gap: 6 }} testID={`video-${video.id}`}>
       <View style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: radius.md, overflow: 'hidden', backgroundColor: '#1f1a1a' }}>
@@ -33,7 +35,7 @@ export function VideoCard({ video, compact }: { video: OfficialVideo; compact?: 
               <Icon name="play" size={26} color={t.colors.gold} />
             </View>
             {!compact ? <Text weight="bold" color="#fff" style={{ textAlign: 'center' }}>{title}</Text> : null}
-            <Text variant="caption" color="rgba(255,255,255,0.8)">{failed ? tr('sol.v.failed') : `${tr('sol.v.play')} · ${by}`}</Text>
+            <Text variant="caption" color="rgba(255,255,255,0.8)">{failed ? tr('sol.v.failed') : `${tr('sol.v.play')} · ${meta}`}</Text>
           </Tappable>
         )}
       </View>

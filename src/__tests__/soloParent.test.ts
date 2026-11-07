@@ -47,7 +47,7 @@ describe('i18n maman solo', () => {
   });
 });
 
-import { OFFICIAL_VIDEOS, embedUrl, watchUrl } from '@/lib/domain/officialVideos';
+import { ALL_VIDEOS as OFFICIAL_VIDEOS, embedUrl, watchUrl } from '@/lib/domain/officialVideos';
 
 describe('vidéos officielles', () => {
   it('identifiants YouTube valides, uniques, sans doublon de clé', () => {
