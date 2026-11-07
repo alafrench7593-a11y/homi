@@ -13,7 +13,8 @@ const anon = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || extra.supabaseAnonKey;
 /** Vrai backend (Supabase) s'il est configuré. */
 const real: Backend | null = url && anon ? createSupabaseBackend(url, anon) : null;
 let demo: Backend | null = null;
-const getDemo = () => (demo ??= createDemoBackend());
+// La démonstration pose ses questions d'assistant à la fonction « assistant-demo » (sans compte, limitée)
+const getDemo = () => (demo ??= createDemoBackend({ remoteAssistant: url && anon ? { url: url.replace(/\/$/, ''), anonKey: anon } : undefined }));
 
 let active: Backend = real ?? getDemo();
 

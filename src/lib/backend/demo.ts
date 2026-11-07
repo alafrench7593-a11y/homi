@@ -160,8 +160,52 @@ function matches(row: Row, f: Filter): boolean {
   }
 }
 
-export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backend {
+/** Questions à l'assistant par jour en démonstration (même valeur que DEMO_LIMITS.perDevice côté serveur). */
+export const DEMO_AI_PER_DAY = 3;
+
+export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistant?: { url: string; anonKey: string } } = {}): Backend {
   const streamDelayMs = opts.streamDelayMs ?? 14;
+  const remoteAssistant = opts.remoteAssistant;
+
+  /**
+   * Assistant de la démonstration relié à la vraie IA (07/11/2026) : la question et les derniers échanges partent
+   * vers la fonction serveur « assistant-demo » (sans compte, 3 questions par jour et par appareil). Aucune donnée
+   * du profil de démonstration n'est envoyée ; rien n'est écrit dans la vraie base.
+   */
+  async function remoteDemoAssistant(b: Row, signal?: AbortSignal): Promise<Row> {
+    const r = remoteAssistant!;
+    const dev = (state.tables._device ??= []);
+    if (!dev[0]) { dev.push({ id: uuid() }); persist(); }
+    let res: Response;
+    try {
+      res = await fetch(`${r.url}/functions/v1/assistant-demo`, {
+        method: 'POST',
+        headers: { apikey: r.anonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: b.message, device_id: dev[0].id, recent_turns: b.recent_turns }),
+        signal,
+      });
+    } catch {
+      if (signal?.aborted) throw new BackendError(tr('l2.sb.stopped'), 'aborted');
+      throw new BackendError(tr('l2.sb.unavailable'), 'network');
+    }
+    let payload: Row | null = null;
+    try { payload = await res.json(); } catch { payload = null; }
+    if (res.status === 402 && payload?.error === 'quota_reached') { dev[0].day = new Date().toISOString().slice(0, 10); dev[0].count = DEMO_AI_PER_DAY; persist(); }
+    if (!res.ok || !payload) throw new BackendError(String(payload?.message ?? tr('l2.dm.assistantDown')), String(payload?.error ?? 'function_error'), undefined, res.status === 402 ? 429 : res.status); // limite de la démo : pas l'offre Premium
+    // Compteur du jour sur l'appareil (miroir de la limite du serveur, pour l'affichage) — urgences et refus non comptés
+    if (payload.safety === 'none' && !payload.refused) {
+      const today = new Date().toISOString().slice(0, 10);
+      dev[0].count = dev[0].day === today ? Number(dev[0].count ?? 0) + 1 : 1;
+      dev[0].day = today;
+      persist();
+    }
+    const used = demoQuestionsToday();
+    return { conversation_id: null, message_id: null, ...payload, quota: { used, limit: DEMO_AI_PER_DAY, remaining: Math.max(0, DEMO_AI_PER_DAY - used) } };
+  }
+  function demoQuestionsToday(): number {
+    const d = state.tables._device?.[0];
+    return d && d.day === new Date().toISOString().slice(0, 10) ? Number(d.count ?? 0) : 0;
+  }
   let state: DemoState = { users: [], session: null, tables: {} };
   let loaded: Promise<void> | null = null;
   const listeners = new Set<(s: Session | null) => void>();
@@ -1158,6 +1202,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
       return T('product_recalls').reduce((n, rc) => n + notifyRecall(rc, me), 0);
     },
     assistant_quota_status: () => {
+      if (remoteAssistant) {
+        const used = demoQuestionsToday();
+        return [{ used, quota: DEMO_AI_PER_DAY, remaining: Math.max(0, DEMO_AI_PER_DAY - used) }];
+      }
       const month = new Date().toISOString().slice(0, 7);
       const used = T('assistant_usage').find((x) => x.user_id === uid() && x.month === month)?.questions ?? 0;
       const quota = limit('assistant_questions_per_month');
@@ -1825,7 +1873,19 @@ export function createDemoBackend(opts: { streamDelayMs?: number } = {}): Backen
     async invokeStream<R>(fn: string, body: Record<string, unknown>, onEvent: (event: string, data: unknown) => void, opts?: { signal?: AbortSignal }) {
       await load();
       if (fn !== 'assistant') return this.invoke<R>(fn, body);
-      const { result, raw } = assistantCore(body ?? {});
+      let core: { result: Row; raw: string | null };
+      try {
+        core = assistantCore(body ?? {});
+      } catch (e) {
+        // Pas d'IA locale : la question part vers la vraie IA de démonstration (si le serveur est configuré)
+        if (e instanceof BackendError && e.code === 'ai_not_configured' && remoteAssistant) {
+          const result = await remoteDemoAssistant(body ?? {}, opts?.signal);
+          onEvent('meta', { conversation_id: null, demo: true });
+          return JSON.parse(JSON.stringify(result)) as R;
+        }
+        throw e;
+      }
+      const { result, raw } = core;
       persist();
       if (raw) {
         // Diffusion simulée : le texte arrive par petits morceaux, comme avec le vrai service

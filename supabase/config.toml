@@ -89,6 +89,10 @@ file_size_limit = "25MiB"
 [functions.assistant]
 verify_jwt = true
 
+# Assistant du mode démonstration : sans compte (limites strictes dans la fonction)
+[functions.assistant-demo]
+verify_jwt = false
+
 [functions.delete-account]
 verify_jwt = true
 

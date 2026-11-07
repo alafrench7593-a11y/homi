@@ -266,4 +266,7 @@ export const tools6 = {
   'ai.home.disclaimer': 'Des informations, pas un diagnostic. Urgence : 15 ou 112.',
   'ai.profile.sub': 'Écrire une question, à tout moment',
   'ai.profile.history': 'Mes conversations avec l’assistant',
+  'ai.demo.left': { one: 'Démonstration : il vous reste {count} question aujourd’hui (sur {limit}).', other: 'Démonstration : il vous reste {count} questions aujourd’hui (sur {limit}).' },
+  'ai.demo.noneLeft': 'Questions de démonstration épuisées pour aujourd’hui : créez un compte gratuit pour continuer.',
+  'ai.demo.placeholderDone': 'Revenez demain, ou créez un compte',
 };

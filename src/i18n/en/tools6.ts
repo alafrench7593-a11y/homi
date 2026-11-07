@@ -260,4 +260,7 @@ export const tools6: Messages<typeof fr> = {
   'ai.home.disclaimer': 'Information, not a diagnosis. Emergency: call 15 or 112.',
   'ai.profile.sub': 'Ask a question, any time',
   'ai.profile.history': 'My conversations with the assistant',
+  'ai.demo.left': { one: 'Demo: {count} question left today (out of {limit}).', other: 'Demo: {count} questions left today (out of {limit}).' },
+  'ai.demo.noneLeft': 'Demo questions used up for today: create a free account to continue.',
+  'ai.demo.placeholderDone': 'Come back tomorrow, or create an account',
 };

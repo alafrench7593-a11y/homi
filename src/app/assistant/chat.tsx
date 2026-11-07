@@ -15,7 +15,7 @@ import {
   type AskResponse, type StructuredAnswer, type UrgentContact,
 } from '@/features/assistant';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
-import { backend, BackendError, eq } from '@/lib/backend';
+import { backend, BackendError, eq, hasRealBackend, isDemo } from '@/lib/backend';
 import { useUserId } from '@/lib/auth';
 import { useChild, useConsents, useConversations, useInvalidate, useMessages, usePrivacy, useSetConsent } from '@/lib/data/hooks';
 import { SLEEP_QUESTIONS, useSleepAssistantContext } from '@/features/sleepAssistant';
@@ -186,6 +186,8 @@ export default function Chat() {
       } else if (e instanceof BackendError && e.code === 'aborted') {
         patchMsg(answerId, { streaming: false, raw: undefined, stopped: true, content: tr('u8.chat.stopped') });
       } else {
+        // Démonstration : limite du jour atteinte côté serveur → le compteur affiché passe à 0
+        if (e instanceof BackendError && e.code === 'quota_reached') setQuota((q) => (q ? { used: q.limit, limit: q.limit } : q));
         patchMsg(answerId, { streaming: false, raw: undefined, error: true, content: friendlyError(e, tr('u8.chat.unavailable')) });
       }
     } finally {
@@ -323,6 +325,8 @@ export default function Chat() {
 
   const tooLong = input.length > MAX_QUESTION_LENGTH - 200;
   const blocked = remaining === 0;
+  // Démonstration reliée à la vraie IA : limite par jour, pas d'offre Premium (il n'y a pas de compte)
+  const demoAi = isDemo && hasRealBackend;
 
   return (
     <Screen
@@ -429,7 +433,7 @@ export default function Chat() {
             </View>
           )
         )}
-        ListFooterComponent={premiumNeeded || blocked ? (
+        ListFooterComponent={!demoAi && (premiumNeeded || blocked) ? (
           <Card tone="gold">
             <Text weight="bold">{premiumNeeded ?? tr('u8.chat.usedAll', { limit: limit ?? 0 })}</Text>
             <Text variant="small" muted>{tr('u8.chat.premiumPitch')}</Text>
@@ -441,7 +445,9 @@ export default function Chat() {
       <View style={{ paddingBottom: insets.bottom + spacing.sm, gap: 4 }}>
         {remaining != null && (
           <Text variant="caption" muted center>
-            {remaining > 0 ? tr('u8.chat.left', { count: remaining, limit: limit ?? 0 }) : tr('u8.chat.noneLeft')}
+            {demoAi
+              ? (remaining > 0 ? tr('ai.demo.left', { count: remaining, limit: limit ?? 0 }) : tr('ai.demo.noneLeft'))
+              : remaining > 0 ? tr('u8.chat.left', { count: remaining, limit: limit ?? 0 }) : tr('u8.chat.noneLeft')}
           </Text>
         )}
         {tooLong && <Text variant="caption" color={t.colors.danger} center>{tr('u8.chat.chars', { n: input.length, max: MAX_QUESTION_LENGTH })}</Text>}
@@ -449,7 +455,7 @@ export default function Chat() {
           <TextInput
             value={input}
             onChangeText={setInput}
-            placeholder={blocked ? tr('u8.chat.limitReached') : tr('u8.chat.placeholder')}
+            placeholder={blocked ? (demoAi ? tr('ai.demo.placeholderDone') : tr('u8.chat.limitReached')) : tr('u8.chat.placeholder')}
             placeholderTextColor={t.colors.textMuted}
             accessibilityLabel={tr('u8.chat.yourQ')}
             multiline
