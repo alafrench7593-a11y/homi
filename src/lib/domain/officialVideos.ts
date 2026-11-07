@@ -143,7 +143,7 @@ export const MORE_VIDEOS: OfficialVideo[] = [
   T('D4P2pbjKgGo', 'crf', 'firstaid', 'fa_baby_cpr', 360, { kind: 'tuto', words: ['arret cardiaque', 'massage cardiaque', 'inconscient', 'premiers secours'], not: ['grossesse'] }),
   T('N0WvrneAY2Q', 'crf', 'firstaid', 'fa_choking', 178, { kind: 'tuto', words: ['etouffement', 'fausse route', 'premiers secours'] }),
   T('H_QkQnklspw', 'crf', 'firstaid', 'fa_burn', 234, { kind: 'tuto', words: ['brulure', 'premiers secours', 'accidents domestiques'] }),
-  T('RkRv6hIxQ14', 'crf', 'firstaid', 'fa_bleeding', 55, { kind: 'tuto', words: ['plaie', 'saignement', 'premiers secours'], not: ['grossesse', 'ivg', 'regles'] }),
+  T('RkRv6hIxQ14', 'crf', 'firstaid', 'fa_bleeding', 55, { kind: 'tuto', words: ['plaie', 'saignement', 'premiers secours'], not: ['grossesse', 'ivg', 'regles', 'menopause'] }),
   T('HEeQboKlGgM', 'crf', 'firstaid', 'fa_nosebleed', 18, { kind: 'tuto', words: ['saignement de nez', 'epistaxis', 'premiers secours'], not: ['grossesse'] }),
   T('H-Y1pEBS4Es', 'crf', 'firstaid', 'fa_drowning', 59, { kind: 'tuto', words: ['noyade', 'piscine', 'premiers secours'] }),
   T('3jLtqhl_12g', 'crf', 'firstaid', 'fa_alert', 44, { kind: 'tuto', words: ['appeler le 15', 'urgence', 'premiers secours'] }),
