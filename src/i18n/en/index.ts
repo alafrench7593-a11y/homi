@@ -50,3 +50,4 @@ export { tools6 } from './tools6';
 export { mental } from './mental';
 export { solo } from './solo';
 export { videos } from './videos';
+export { profilePhoto } from './profilePhoto';

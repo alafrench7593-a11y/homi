@@ -1,20 +1,24 @@
 /** Profil : mes parcours, ma famille, mon espace et mes réglages. */
-import React from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import { ALL_VIDEOS, TUTOS } from '@/lib/domain/officialVideos';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Tappable } from '@/components/Tappable';
+import { UserAvatar } from '@/components/UserAvatar';
+import { avatarInitial } from '@/components/AccountActions';
+import { ProfilePhotoSheet } from '@/features/profilePhoto/ProfilePhotoSheet';
+import { useTheme } from '@/theme/ThemeProvider';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
 import { MySubscriptionSection } from '@/features/subscription';
 import { ErrorView, Skeleton } from '@/components/States';
-import { Button, Card, Chip, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Button, Card, Chip, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { useActivePregnancy, useArticles, useChildren, useJourneyState, usePremium, useProfile } from '@/lib/data/hooks';
 import { JOURNEY_ICON, useJourneyProfileLabel } from '@/features/journeys';
 import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
-import { NACRE, spacing } from '@/theme/tokens';
+import { palette, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { useCycleSharedWithMe } from '@/lib/data/hooks-cycle3';
 
@@ -27,6 +31,8 @@ export default function Profile() {
   const childrenQ = useChildren();
   const children = childrenQ.data;
   const premium = usePremium();
+  const t = useTheme();
+  const [photoOpen, setPhotoOpen] = useState(false);
   const articleCount = useArticles().data?.length ?? 0;
   const js = useJourneyState();
   const profileLabel = useJourneyProfileLabel();
@@ -36,12 +42,19 @@ export default function Profile() {
       <Screen back account bottomInset={96}>
         <Appear kind="scale" delay={0.06}>
           <Row style={{ marginTop: spacing.sm }}>
-            <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center' }}>
-              <Text variant="title" color="#FFFFFF">{(profile?.display_name ?? '•').slice(0, 1).toUpperCase()}</Text>
-            </LinearGradient>
+            {/* Photo de profil (07/11/2026) : un appui pour l'ajouter, la changer ou la supprimer */}
+            <Tappable accessibilityRole="button" accessibilityLabel={profile?.avatar_path ? tr('pphoto.change') : tr('pphoto.add')} onPress={() => setPhotoOpen(true)} testID="profile-photo">
+              <UserAvatar path={profile?.avatar_path} initial={avatarInitial(profile?.display_name, session?.email)} size={72} testID="profile-avatar" />
+              <View style={{ position: 'absolute', right: -2, bottom: -2, width: 26, height: 26, borderRadius: 13, backgroundColor: palette.gold, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: t.colors.background }}>
+                <Icon name="camera" size={13} color="#FFFFFF" />
+              </View>
+            </Tappable>
             <View style={{ flex: 1 }}>
               <Text variant="title" accessibilityRole="header">{profile?.display_name || tr('profile.title')}</Text>
               <Text variant="small" muted>{session?.email ?? ''}{premium ? tr('profile.premium') : ''}</Text>
+              <Tappable accessibilityRole="button" onPress={() => setPhotoOpen(true)} style={{ minHeight: 32, justifyContent: 'center' }} testID="profile-photo-link">
+                <Text variant="small" weight="bold" color={t.colors.primary}>{profile?.avatar_path ? tr('pphoto.change') : tr('pphoto.add')}</Text>
+              </Tappable>
             </View>
           </Row>
         </Appear>
@@ -105,6 +118,7 @@ export default function Profile() {
           <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle="15 · 112 · 3114" danger onPress={() => router.push('/emergency')} />
         </Card>
       </Screen>
+      <ProfilePhotoSheet visible={photoOpen} onClose={() => setPhotoOpen(false)} />
     </View>
   );
 }

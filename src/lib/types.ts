@@ -19,6 +19,8 @@ export interface Profile {
   theme: 'system' | 'light' | 'dark';
   /** Situation familiale (07/11/2026) : null = non renseignée. */
   family_situation?: FamilySituation | null;
+  /** Photo de profil (07/11/2026) : chemin dans l'espace privé « profile-photos » ; null = initiale. */
+  avatar_path?: string | null;
 }
 
 export type FamilySituation = 'couple' | 'solo' | 'coparenting';

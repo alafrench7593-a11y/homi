@@ -1210,6 +1210,14 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     has_premium: () => isPremium(),
     // Offres du 07/11/2026 (miroir de my_access / has_tool) : essai, achats simulés de la démonstration
     my_access: () => demoAccess(),
+    // Photo de profil : membres des foyers que je partage (moi compris), seulement ceux qui ont une photo
+    member_avatars: () => {
+      const me = state.session?.userId;
+      const mine = new Set(T('household_members').filter((m) => m.user_id === me).map((m) => m.household_id));
+      const ids = new Set(T('household_members').filter((m) => mine.has(m.household_id)).map((m) => m.user_id));
+      if (me) ids.add(me);
+      return T('profiles').filter((p) => ids.has(p.id) && p.avatar_path).map((p) => ({ user_id: p.id, avatar_path: p.avatar_path }));
+    },
     has_tool: (a) => (demoAccess().tools.find((t) => t.key === a.p_tool)?.allowed ?? true),
     set_demo_grant: (a) => {
       // Démonstration uniquement (aucun paiement) : achat simulé d'un droit, ou fin d'essai simulée pour les tests

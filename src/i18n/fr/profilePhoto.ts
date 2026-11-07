@@ -1,0 +1,22 @@
+/** Photo de profil (07/11/2026). */
+export const profilePhoto = {
+  'pphoto.title': 'Photo de profil',
+  'pphoto.add': 'Ajouter une photo',
+  'pphoto.change': 'Changer la photo',
+  'pphoto.current': 'Votre photo de profil',
+  'pphoto.hasPhoto': 'Elle s’affiche en haut des écrans et pour les membres de votre foyer.',
+  'pphoto.noPhoto': 'Pas encore de photo : votre initiale s’affiche à la place.',
+  'pphoto.camera': 'Prendre une photo',
+  'pphoto.library': 'Choisir dans la galerie',
+  'pphoto.remove': 'Supprimer la photo',
+  'pphoto.removeTitle': 'Supprimer la photo',
+  'pphoto.removeQ': 'Votre photo de profil sera effacée ; votre initiale s’affichera à la place.',
+  'pphoto.saved': 'Photo de profil enregistrée',
+  'pphoto.removed': 'Photo supprimée',
+  'pphoto.privacy': 'Visible seulement par vous et les membres de votre foyer (autre parent, nounou, grands-parents invités). Elle est recadrée, réduite et enregistrée sans sa position GPS, dans un espace privé.',
+  'pphoto.errLogin': 'Connectez-vous pour ajouter une photo.',
+  'pphoto.err.permission_camera': 'Autorisez l’accès à l’appareil photo dans les réglages du téléphone.',
+  'pphoto.err.permission_library': 'Autorisez l’accès à vos photos dans les réglages du téléphone.',
+  'pphoto.err.unreadable': 'Cette image n’a pas pu être lue. Essayez avec une autre photo.',
+  'pphoto.err.too_large': 'Cette photo est trop lourde. Essayez avec une autre.',
+};

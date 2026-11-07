@@ -1,17 +1,17 @@
 /**
  * Coin supérieur droit des écrans principaux : accès au Profil (avatar) et aux Réglages.
- * L'avatar reprend celui du Profil (initiale sur dégradé nacré) : le modèle de données n'a pas de photo de compte.
+ * L'avatar reprend celui du Profil : la photo de profil si elle existe (07/11/2026), sinon l'initiale sur dégradé nacré.
  */
 import React, { useEffect, useRef } from 'react';
 import { Animated, Pressable, View } from 'react-native';
 import { router, usePathname } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { haptic, IconButton, Text } from './ui';
 import { useProfile } from '@/lib/data/hooks';
 import { useAuth } from '@/lib/auth';
 import { springTo } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { MIN_TOUCH, NACRE, palette } from '@/theme/tokens';
+import { MIN_TOUCH, palette } from '@/theme/tokens';
+import { UserAvatar } from './UserAvatar';
 import { t as tr } from '@/i18n';
 
 const SIZE = 32;
@@ -48,9 +48,7 @@ export function ProfileAvatarButton() {
       <Animated.View style={{ transform: [{ scale: press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.88] }) }] }}>
         {/* anneau doré quand le Profil est ouvert */}
         <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -3, left: -3, right: -3, bottom: -3, borderRadius: (SIZE + 6) / 2, borderWidth: 1.5, borderColor: palette.gold, opacity: ring }} />
-        <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: SIZE, height: SIZE, borderRadius: SIZE / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: t.isDark ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.9)' }}>
-          <Text weight="bold" color="#FFFFFF" style={{ fontSize: 14, lineHeight: 17 }}>{avatarInitial(profile?.display_name, session?.email)}</Text>
-        </LinearGradient>
+        <UserAvatar path={profile?.avatar_path} initial={avatarInitial(profile?.display_name, session?.email)} size={SIZE} testID="header-avatar" />
       </Animated.View>
     </Pressable>
   );

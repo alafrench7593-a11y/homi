@@ -56,7 +56,9 @@ Deno.serve(withCors(async (req) => {
   // (évite de laisser des fichiers orphelins impossibles à rattacher à quelqu'un).
   const cycle = await removeUserFolder(admin, 'cycle-private', auth.user.id);
   const community = await removeUserFolder(admin, 'community', auth.user.id);
-  if (!cycle.ok || !community.ok) {
+  // Photo de profil (07/11/2026) : dossier <user_id>/ de l'espace privé « profile-photos »
+  const profilePhoto = await removeUserFolder(admin, 'profile-photos', auth.user.id);
+  if (!cycle.ok || !community.ok || !profilePhoto.ok) {
     console.error('delete_account_cycle_storage_error');
     return json({ error: 'server_error' }, 500);
   }

@@ -10,6 +10,8 @@ import { extractInviteCode, savePendingInvite, takePendingInvite } from '@/lib/a
 import * as Linking from 'expo-linking';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, Chip, Divider, Field, ListRow, Loading, Row, Segmented, SectionTitle, Text } from '@/components/ui';
+import { UserAvatar } from '@/components/UserAvatar';
+import { useMemberAvatars } from '@/lib/data/hooks-profilePhoto';
 import { confirm, useToast } from '@/components/Overlays';
 import { BRAND } from '@/config/brand';
 import { useUserId } from '@/lib/auth';
@@ -87,6 +89,7 @@ function PermissionMatrix({ value, onChange, disabled }: { value: Rights; onChan
 function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: boolean; amOwner: boolean }) {
   const toast = useToast();
   const update = useUpdateMemberRights();
+  const { data: avatars } = useMemberAvatars();
   const remove = useRemoveMember();
   const [rights, setRights] = useState<Rights>({ view: member.can_view, edit: member.can_edit });
   const [scope, setScope] = useState<Scope>({ children: member.child_scope ?? null, pregnancy: member.pregnancy_access ?? true });
@@ -131,6 +134,7 @@ function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: 
   return (
     <Card>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <UserAvatar path={avatars?.[member.user_id]} initial={(isMe ? tr('u7.people.you') : roleLabel(member.role)).slice(0, 1).toUpperCase()} size={40} testID={`member-avatar-${member.role}`} />
         <View style={{ flex: 1, gap: 2 }}>
           <Text weight="bold">{isMe ? tr('u1.fam.youRole', { role: roleLabel(member.role) }) : roleLabel(member.role)}</Text>
           <Text variant="small" muted>{tr('u1.fam.memberSince', { date: formatDate(member.joined_at) })}</Text>
