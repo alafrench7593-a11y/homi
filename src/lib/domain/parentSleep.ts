@@ -4,6 +4,10 @@
  */
 import { t as tr, getLocale } from '@/i18n';
 import { localized } from '@/i18n/localized';
+import { MONTHS as MONTHS_BY_LANG, WEEKDAYS_SHORT } from '@/i18n/formats';
+import { POSTPARTUM_TIPS_ES, GENERAL_TIPS_ES } from './parentSleep.es';
+import { POSTPARTUM_TIPS_DE, GENERAL_TIPS_DE } from './parentSleep.de';
+import { POSTPARTUM_TIPS_IT, GENERAL_TIPS_IT } from './parentSleep.it';
 import { addDays, daysBetween, type ISODate, parseISODate } from './dates';
 import type { Nap, NightWaking, ParentSleepLog } from '../types-sleep';
 
@@ -67,18 +71,26 @@ export function durationInput(minutes: number | null | undefined): string {
   return `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}`;
 }
 
-const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const MONTHS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-
-/** « Nuit du 14 au 15 octobre », « Nuit du 31 octobre au 1er novembre ». */
+/**
+ * « Nuit du 14 au 15 octobre », « Nuit du 31 octobre au 1er novembre ».
+ * es : « 15 de octubre » ; de : « 15. Oktober » ; it : « 1º novembre ».
+ */
 export function nightLabel(logDate: ISODate): string {
   const end = parseISODate(logDate);
   const start = parseISODate(addDays(logDate, -1));
-  const en = getLocale() === 'en';
-  const MONTHS = en ? MONTHS_EN : MONTHS_FR;
-  const day = (d: Date) => (!en && d.getUTCDate() === 1 ? '1er' : String(d.getUTCDate()));
+  const l = getLocale();
+  const lang = MONTHS_BY_LANG[l] ? l : 'fr';
+  const MONTHS = MONTHS_BY_LANG[lang];
+  const day = (d: Date) => {
+    const n = d.getUTCDate();
+    if (lang === 'fr' && n === 1) return '1er';
+    if (lang === 'it' && n === 1) return '1º';
+    if (lang === 'de') return `${n}.`;
+    return String(n);
+  };
+  const month = (d: Date) => (lang === 'es' ? ` de ${MONTHS[d.getUTCMonth()]}` : ` ${MONTHS[d.getUTCMonth()]}`);
   const sameMonth = start.getUTCMonth() === end.getUTCMonth();
-  return tr('l1.sleep.nightLabel', { from: `${day(start)}${sameMonth ? '' : ` ${MONTHS[start.getUTCMonth()]}`}`, to: `${day(end)} ${MONTHS[end.getUTCMonth()]}` });
+  return tr('l1.sleep.nightLabel', { from: `${day(start)}${sameMonth ? '' : month(start)}`, to: `${day(end)}${month(end)}` });
 }
 
 /**
@@ -169,7 +181,9 @@ export function validateSleepForm(f: SleepForm, today: ISODate): Record<string, 
 // ---------------------------------------------------------------- résumé des 7 derniers jours
 const WEEKDAYS_FR = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
 const WEEKDAYS_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const WEEKDAYS = localized(WEEKDAYS_FR, WEEKDAYS_EN);
+/** Index 0 = dimanche (getUTCDay) ; formats.ts range les jours de 1 = lundi à 7 = dimanche. */
+const weekdaysFrom = (l: string) => [7, 1, 2, 3, 4, 5, 6].map((i) => WEEKDAYS_SHORT[l][i]);
+const WEEKDAYS = localized(WEEKDAYS_FR, WEEKDAYS_EN, { es: weekdaysFrom('es'), de: weekdaysFrom('de'), it: weekdaysFrom('it') });
 
 export interface WeekDay { date: ISODate; label: string; minutes: number | null }
 export interface WeekSummary {
@@ -272,7 +286,7 @@ const POSTPARTUM_TIPS_EN: SleepTip[] = [
   { key: 'relais', icon: 'users', title: 'Ask for a night-time handover', text: 'Sharing the nights with the other parent or a relative (changing, rocking, bottle) lets each of you have a longer block of sleep.' },
   { key: 'aide', icon: 'gift', title: 'Accept the help you are offered', text: 'A meal brought round, an errand, an hour of childcare: accepting is also a way of looking after your family.' },
 ];
-const POSTPARTUM_TIPS = localized(POSTPARTUM_TIPS_FR, POSTPARTUM_TIPS_EN);
+const POSTPARTUM_TIPS = localized(POSTPARTUM_TIPS_FR, POSTPARTUM_TIPS_EN, { es: POSTPARTUM_TIPS_ES, de: POSTPARTUM_TIPS_DE, it: POSTPARTUM_TIPS_IT });
 
 function pregnancyTips(late: boolean): SleepTip[] {
   return [
@@ -294,7 +308,7 @@ const GENERAL_TIPS_EN: SleepTip[] = [
   { key: 'rituel', icon: 'feather', title: 'A little evening ritual', text: 'Soft light, a warm caffeine-free drink, a few slow breaths: a simple cue can sometimes help you let go.' },
   { key: 'cafeine', icon: 'coffee', title: 'Caffeine in the morning rather than later', text: 'Coffee, tea, fizzy drinks: keeping them for the start of the day may make it easier to fall asleep.' },
 ];
-const GENERAL_TIPS = localized(GENERAL_TIPS_FR, GENERAL_TIPS_EN);
+const GENERAL_TIPS = localized(GENERAL_TIPS_FR, GENERAL_TIPS_EN, { es: GENERAL_TIPS_ES, de: GENERAL_TIPS_DE, it: GENERAL_TIPS_IT });
 
 /** Repères généraux et doux adaptés au contexte. Jamais d'objectif chiffré. */
 export function sleepTips(ctx: SleepContext): SleepTip[] {

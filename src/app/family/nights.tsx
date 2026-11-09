@@ -118,7 +118,7 @@ export default function NightRelay() {
       <SectionTitle title={tr('u2.nights.planned')} />
       {upcoming.length ? (
         <Card padded={false} style={{ paddingVertical: spacing.sm }}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md }}>
+          <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md }}>
             <RelayStrip nights={upcoming} labelOf={labelOf} />
           </ScrollView>
         </Card>

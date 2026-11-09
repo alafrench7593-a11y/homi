@@ -35,14 +35,16 @@ export function TodaySummary({ title = tr('u7.today'), items, testID }: { title?
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
         {items.map((it, i) => (
           <GlassSurface key={i} fill={t.colors.surface} depth={1} radius={20} style={{ flexGrow: 1, flexBasis: items.length > 2 ? '30%' : '45%', minWidth: 96 }}>
-            <View style={{ padding: spacing.md, gap: 4 }} testID={it.testID}>
+            {/* Marge latérale 10 px (au lieu de 16) : « Symptômes », « (estimation) » tiennent sur leur ligne dans une tuile de 100 px */}
+            <View style={{ paddingVertical: spacing.md, paddingHorizontal: 10, gap: 4 }} testID={it.testID}>
               {it.icon ? (
                 <View style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: tint(accent, t.isDark ? 0.22 : 0.14) }}>
                   <Icon name={it.icon} size={15} color={accent} />
                 </View>
               ) : null}
-              <Text weight="bold" style={valueStyle(it.value, items.length)} numberOfLines={2}>{it.value}</Text>
-              <Text variant="caption" muted numberOfLines={2} style={Platform.OS === 'web' ? ({ hyphens: 'auto' } as object) : undefined}>{it.label}</Text>
+              {/* Pas de limite de lignes : valeur et libellé restent entiers (jamais « … »), la tuile s'adapte */}
+              <Text weight="bold" style={valueStyle(it.value, items.length)}>{it.value}</Text>
+              <Text variant="caption" muted style={Platform.OS === 'web' ? ({ hyphens: 'auto' } as object) : undefined}>{it.label}</Text>
             </View>
           </GlassSurface>
         ))}

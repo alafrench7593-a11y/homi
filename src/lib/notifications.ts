@@ -2,7 +2,7 @@
  * Notifications LOCALES (rappels personnels, programmés sur le téléphone, sans réseau)
  * et PUSH (réponses du forum, abonnement, rappels officiels de produits).
  */
-import { t as tr } from '@/i18n';
+import { getLocale, onLocaleChange, t as tr } from '@/i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DIGEST_NOTIFICATION, parseTime } from './domain/dailyDigest';
 import Constants from 'expo-constants';
@@ -15,6 +15,7 @@ import { IOS_PENDING_LIMIT, planReminder, toExpoWeekday, validateSchedule, type 
 import type { Child, Reminder } from './types';
 import type { BottleTimer } from './types-bottle';
 import { DEFAULT_AUTO_PREFS, planSignature, type AutoPlan, type AutoPrefs } from './domain/autoNotifs';
+import { insertOrQueue, recordRefused } from './offline';
 
 export const notificationsSupported = Platform.OS === 'ios' || Platform.OS === 'android';
 const MAP_KEY = 'toietmoi.scheduled.v1';
@@ -49,32 +50,49 @@ export async function handleTreatmentResponse(response: Notifications.Notificati
   if ((data.source !== 'treatment' && data.source !== 'my_treatment') || !data.treatmentId) return false;
   const status = response.actionIdentifier === TREAT_TAKEN ? 'taken' : response.actionIdentifier === TREAT_SKIP ? 'skipped' : response.actionIdentifier === TREAT_SNOOZE ? 'snoozed' : null;
   if (!status) return false;
-  // Relance (30 min après) : l'heure prévue exacte voyage avec la notification (une prise de 23:50 relancée à 00:20)
-  const scheduled_for = data.scheduledFor ?? doseScheduledFor(response.notification.date, data.dose ?? null);
-  const mine = data.source === 'my_treatment';
-  const table = mine ? 'my_treatment_logs' : 'treatment_logs';
-  const existing = await backend.select<{ id: string }>({ table, filters: [eq('treatment_id', data.treatmentId), eq('scheduled_for', scheduled_for)], limit: 1 });
-  if (existing[0]) await backend.update(table, { status }, [eq('id', existing[0].id)]);
-  else if (mine) {
-    const session = await backend.auth.getSession().catch(() => null);
-    if (!session?.userId) return false;
-    await backend.insert(table, { treatment_id: data.treatmentId, user_id: session.userId, scheduled_for, status });
-  } else await backend.insert(table, { treatment_id: data.treatmentId, household_id: data.householdId, scheduled_for, status });
-  if (status !== 'snoozed') await cancelDoseFollowUp(data.treatmentId, scheduled_for).catch(() => undefined);
-  if (status === 'snoozed') await snoozeLocally(c.title ?? tr('l3.notif.treatment_default'), c.body ?? undefined, data.url);
-  return true;
+  // Une réponse n'est traitée qu'une fois (écouteur + relecture au démarrage quand l'appli était fermée)
+  const key = `${response.notification.request.identifier}:${response.actionIdentifier}:${response.notification.date}`;
+  if (treatHandling.has(key) || (await readJson<string[]>(TREAT_HANDLED_KEY, [])).includes(key)) return false;
+  treatHandling.add(key);
+  try {
+    // Relance (30 min après) : l'heure prévue exacte voyage avec la notification (une prise de 23:50 relancée à 00:20)
+    const scheduled_for = data.scheduledFor ?? doseScheduledFor(response.notification.date, data.dose ?? null);
+    const mine = data.source === 'my_treatment';
+    // La relance est retirée tout de suite, réseau ou pas (09/11/2026 : hors ligne, elle sonnait quand même)
+    if (status !== 'snoozed') await cancelDoseFollowUp(data.treatmentId, scheduled_for).catch(() => undefined);
+    let owner: Record<string, unknown>;
+    if (mine) {
+      const session = await backend.auth.getSession().catch(() => null);
+      if (!session?.userId) { treatHandling.delete(key); return false; }
+      owner = { user_id: session.userId };
+    } else owner = { household_id: data.householdId };
+    // Une seule réponse par prise (treatment_id, scheduled_for), comme dans l'appli. Hors connexion (09/11/2026) :
+    // gardée sur le téléphone et envoyée au retour du réseau (avant : perdue sans message).
+    const table = mine ? 'my_treatment_logs' : 'treatment_logs';
+    const row = { treatment_id: data.treatmentId, ...owner, scheduled_for, status };
+    const opts = { conflict: 'treatment_id,scheduled_for', merge: true };
+    // Refus du serveur (droits, Premium…) : jamais perdu en silence, visible dans Réglages > Synchronisation
+    await insertOrQueue(table, row, opts).catch((e) => recordRefused(table, row, opts, e));
+    if (status === 'snoozed') await snoozeLocally(c.title ?? tr('l3.notif.treatment_default'), c.body ?? undefined, data.url, 30, { data: { ...data, scheduledFor: scheduled_for } });
+    const done = await readJson<string[]>(TREAT_HANDLED_KEY, []);
+    await AsyncStorage.setItem(TREAT_HANDLED_KEY, JSON.stringify([...done, key].slice(-40)));
+    return true;
+  } finally {
+    treatHandling.delete(key);
+  }
+}
+const TREAT_HANDLED_KEY = 'toietmoi.treat-handled.v1';
+const treatHandling = new Set<string>();
+
+/** Appli fermée au moment du choix (« Pris », « Ignorer »…) : la réponse est relue au démarrage (sans doublon). */
+async function applyPendingTreatmentResponse() {
+  const last = Notifications.getLastNotificationResponse?.();
+  if (last) await handleTreatmentResponse(last);
 }
 
-export function configureNotifications() {
-  if (!notificationsSupported) return;
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowBanner: true,
-      shouldShowList: true,
-      shouldPlaySound: true, // le mode silencieux du téléphone reste respecté par le système
-      shouldSetBadge: false,
-    }),
-  });
+let localeSub: (() => void) | null = null;
+/** Canaux Android et boutons d'action (« Pris », « C'est fait »…) dans la langue en cours. */
+function registerChannelsAndCategories() {
   if (Platform.OS === 'android') {
     // Écran verrouillé : contenu masqué (PRIVATE) par défaut ; le système affiche « contenu masqué » si l'utilisatrice l'a choisi
     Notifications.setNotificationChannelAsync('reminders', { name: tr('l3.notif.ch_reminders'), importance: Notifications.AndroidImportance.HIGH, vibrationPattern: [0, 200, 120, 200], lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PRIVATE }).catch(() => undefined);
@@ -109,12 +127,29 @@ export function configureNotifications() {
     { identifier: TASK_DONE, buttonTitle: tr('nt.a_done'), options: { opensAppToForeground: false } },
     { identifier: TASK_SNOOZE, buttonTitle: tr('nt.a_15'), options: { opensAppToForeground: false } },
   ]).catch(() => undefined);
+}
+
+export function configureNotifications() {
+  if (!notificationsSupported) return;
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true, // le mode silencieux du téléphone reste respecté par le système
+      shouldSetBadge: false,
+    }),
+  });
+  registerChannelsAndCategories();
+  // Changement de langue : noms des canaux Android et boutons des notifications dans la nouvelle langue (08/11/2026)
+  if (!localeSub) localeSub = onLocaleChange(() => registerChannelsAndCategories());
   if (!bottleResponseSub) {
     bottleResponseSub = Notifications.addNotificationResponseReceivedListener((r) => {
       handleBottleNotificationResponse(r).catch(() => undefined);
       handleTreatmentResponse(r).catch(() => undefined);
       handleDoneResponse(r).catch(() => undefined);
     });
+    // « Pris » choisi pendant que l'appli était fermée : relu au démarrage (le minuteur biberon fait de même)
+    void applyPendingTreatmentResponse().catch(() => undefined);
   }
 }
 
@@ -173,7 +208,9 @@ function toTrigger(p: PlannedTrigger): Notifications.NotificationTriggerInput {
   }
 }
 
-const signature = (r: Reminder) => JSON.stringify([r.title, r.body, r.schedule, r.enabled, r.snoozed_until, r.deep_link]);
+// La langue fait partie de la signature : après un changement de langue, les notifications futures sont reprogrammées
+// avec leurs textes (écran verrouillé, boutons) dans la nouvelle langue (08/11/2026).
+const signature = (r: Reminder) => JSON.stringify([getLocale(), r.title, r.body, r.schedule, r.enabled, r.snoozed_until, r.deep_link]);
 
 /**
  * Synchronise les notifications programmées avec la liste des rappels :
@@ -225,22 +262,32 @@ async function syncLocalRemindersOnce(reminders: Reminder[]): Promise<{ schedule
     const pending = await Notifications.getAllScheduledNotificationsAsync();
     await Promise.all(pending
       .filter((n) => {
-        const src = (n.content?.data as { source?: string } | undefined)?.source;
-        return (src === 'reminder' || src === 'treatment') && !known.has(n.identifier);
+        const d = n.content?.data as { source?: string; kind?: string } | undefined;
+        // Les relances de prise (kind « auto », source treatment/my_treatment) appartiennent à syncAutoNotifications :
+        // les annuler ici supprimait la relance 30 min des traitements d'enfant à chaque synchronisation (09/11/2026).
+        if (d?.kind) return false;
+        return (d?.source === 'reminder' || d?.source === 'treatment' || d?.source === 'my_treatment') && !known.has(n.identifier);
       })
       .map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier).catch(() => undefined)));
   } catch { /* lecture impossible : on garde le comportement précédent */ }
 
+  // iOS : 64 notifications en attente pour TOUTE l'appli (rappels, relances, biberon, sommeil, résumé) :
+  // on compte ce qui est réellement programmé, pas seulement les rappels (09/11/2026).
   let total = Object.values(map).reduce((t, e) => t + e.ids.length, 0);
+  try { total = Math.max(total, (await Notifications.getAllScheduledNotificationsAsync()).length); } catch { /* compte des rappels seulement */ }
   let scheduled = 0;
   let skipped = 0;
-  for (const r of wanted.values()) {
+  // Médicaments d'abord : si la limite est atteinte, ce sont les autres rappels qui attendent
+  const ordered = [...wanted.values()].sort((a, b) => Number(!(a.treatment_id || a.my_treatment_id)) - Number(!(b.treatment_id || b.my_treatment_id)));
+  for (const r of ordered) {
     if (map[r.id]) continue;
     const plans = planReminder(r.schedule, new Date(), r.snoozed_until);
     const ids: string[] = [];
+    let incomplete = false;
     for (const p of plans) {
       if (Platform.OS === 'ios' && total >= IOS_PENDING_LIMIT - 4) {
         skipped++;
+        incomplete = true;
         continue;
       }
       const id = await Notifications.scheduleNotificationAsync({
@@ -259,7 +306,9 @@ async function syncLocalRemindersOnce(reminders: Reminder[]): Promise<{ schedule
       total++;
       scheduled++;
     }
-    map[r.id] = { signature: signature(r), ids };
+    // Rappel incomplet (limite iOS) : signature « à refaire », il est retenté à la prochaine synchronisation
+    // (avant : marqué comme programmé, il ne l'était plus jamais, même une fois de la place libérée).
+    map[r.id] = { signature: incomplete ? `incomplete:${signature(r)}` : signature(r), ids };
   }
   await AsyncStorage.setItem(MAP_KEY, JSON.stringify(map));
   // Même chemin de synchronisation (ouverture de l'app, modification des rappels) : minuteurs biberon
@@ -268,10 +317,16 @@ async function syncLocalRemindersOnce(reminders: Reminder[]): Promise<{ schedule
 }
 
 /** Report ponctuel (« Reporter de 30 min ») : notification unique, sans modifier le rappel. */
-export async function snoozeLocally(title: string, body: string | undefined, url: string | undefined, minutes = 30) {
+export async function snoozeLocally(title: string, body: string | undefined, url: string | undefined, minutes = 30,
+  treatment?: { data: Record<string, unknown> }) {
   if (!notificationsSupported) return;
+  // Prise reportée (09/11/2026) : même catégorie que le rappel du traitement (« Pris », « Reporter », « Ignorer »),
+  // et même prise prévue (scheduledFor) : la réponse s'applique à la prise d'origine.
+  const content = treatment
+    ? { title, body, categoryIdentifier: TREATMENT_CATEGORY, data: { ...treatment.data, url } }
+    : { title, body, categoryIdentifier: 'reminder', data: { url, source: 'snooze' } };
   await Notifications.scheduleNotificationAsync({
-    content: { title, body, categoryIdentifier: 'reminder', data: { url, source: 'snooze' } },
+    content,
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(Date.now() + minutes * 60000), channelId: 'reminders' },
   });
 }
@@ -433,7 +488,7 @@ async function doSyncBottleTimers(): Promise<BottleSyncResult> {
 
   const now = Date.now();
   const wanted = new Map(timers.filter((t) => Date.parse(t.due_at) > now && names.has(t.child_id)).map((t) => [t.id, t]));
-  const sig = (t: BottleTimer) => JSON.stringify([t.due_at, showQty ? t.planned_ml : null, names.get(t.child_id), t.child_id]);
+  const sig = (t: BottleTimer) => JSON.stringify([getLocale(), t.due_at, showQty ? t.planned_ml : null, names.get(t.child_id), t.child_id]);
 
   let cancelled = 0;
   for (const [id, entry] of Object.entries(map)) {
@@ -552,7 +607,7 @@ async function doSyncSleep(childId: string, wanted: SleepNotificationRequest[]) 
   if (!notificationsSupported) return { scheduled: 0, cancelled: 0 };
   const map = await readJson<SleepMap>(SLEEP_MAP_KEY, {});
   const future = wanted.filter((n) => n.at > Date.now());
-  const signature = JSON.stringify(future.map((n) => [n.id, n.at, n.body]));
+  const signature = JSON.stringify([getLocale(), ...future.map((n) => [n.id, n.at, n.body])]);
   if (map[childId]?.signature === signature) return { scheduled: 0, cancelled: 0 };
   let cancelled = 0;
   const previous = map[childId]?.ids ?? [];
@@ -597,7 +652,7 @@ export async function syncDigestNotifications(prefs: { morning: boolean; morning
   if (!notificationsSupported) return 0;
   let saved: { signature: string; ids: string[] } = { signature: '', ids: [] };
   try { saved = JSON.parse((await AsyncStorage.getItem(DIGEST_KEY)) ?? '{"signature":"","ids":[]}'); } catch { /* état local perdu : on reprogramme */ }
-  const signature = JSON.stringify(prefs ? [prefs.morning, prefs.morning_time, prefs.evening, prefs.evening_time] : null);
+  const signature = JSON.stringify(prefs ? [getLocale(), prefs.morning, prefs.morning_time, prefs.evening, prefs.evening_time] : null);
   if (signature === saved.signature) {
     // A-08 : même réglage, mais les notifications ont-elles survécu (déconnexion, système) ?
     let alive = true;
@@ -726,8 +781,14 @@ async function doSyncAuto(plans: AutoPlan[]): Promise<{ scheduled: number; cance
     }
   } catch { /* liste indisponible */ }
   let scheduled = 0;
-  for (const p of plans) {
+  // iOS : 64 notifications en attente pour toute l'appli. Au-delà, le système en jette sans prévenir : on s'arrête
+  // avant (marge de 4), relances de prise d'abord ; ce qui n'est pas programmé est retenté à la synchronisation suivante.
+  let pendingCount = 0;
+  try { pendingCount = (await Notifications.getAllScheduledNotificationsAsync()).length; } catch { /* inconnu */ }
+  const ordered = [...plans].sort((a, b) => Number(a.kind !== 'dose') - Number(b.kind !== 'dose'));
+  for (const p of ordered) {
     if (map[p.id]) continue;
+    if (Platform.OS === 'ios' && pendingCount >= IOS_PENDING_LIMIT - 4) continue;
     try {
       const nid = await Notifications.scheduleNotificationAsync({
         content: {
@@ -740,6 +801,7 @@ async function doSyncAuto(plans: AutoPlan[]): Promise<{ scheduled: number; cance
       });
       map[p.id] = { sig: planSignature(p), nid };
       scheduled++;
+      pendingCount++;
     } catch { /* refusée par le système : réessayée à la prochaine synchronisation */ }
   }
   await AsyncStorage.setItem(AUTO_MAP_KEY, JSON.stringify(map));

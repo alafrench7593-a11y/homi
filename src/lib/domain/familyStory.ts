@@ -99,8 +99,45 @@ const STORY_CHAPTERS_TEXT_EN: Record<string, { title: string; text: string }> = 
   growing: { title: 'Growing up', text: 'School, friends, big questions.' },
   ten: { title: 'Ten years old, hand in hand', text: 'Your child has grown, and your hand is still there.' },
 };
-const STORY_CHAPTERS_EN: StoryChapter[] = STORY_CHAPTERS_FR.map((c) => ({ ...c, ...STORY_CHAPTERS_TEXT_EN[c.key] }));
-export const STORY_CHAPTERS: StoryChapter[] = localized(STORY_CHAPTERS_FR, STORY_CHAPTERS_EN);
+const STORY_CHAPTERS_TEXT_ES: Record<string, { title: string; text: string }> = {
+  before: { title: 'Antes', text: 'Una mujer, su ritmo, sus deseos. La historia empieza por ella.' },
+  early: { title: 'Las primeras semanas', text: 'Todavía no se nota nada y, sin embargo, todo está cambiando ya.' },
+  round: { title: 'Una barriga que se redondea', text: 'Semana tras semana, la vida se hace su sitio.' },
+  term: { title: 'Pronto', text: 'Los últimos días de espera, con la barriga bien redonda.' },
+  birth: { title: 'El encuentro', text: 'Tu bebé en tus brazos, muy pegado a ti.' },
+  sitting: { title: 'Sentarse', text: 'Tu bebé descubre el mundo a la altura de la alfombra.' },
+  steps: { title: 'Los primeros pasos', text: 'De pie, con una mano en la tuya: el primer impulso.' },
+  little: { title: 'A tu lado', text: 'Un niño pequeño que camina junto a su madre.' },
+  growing: { title: 'Crecer', text: 'El colegio, los amigos, las grandes preguntas.' },
+  ten: { title: 'Diez años, de la mano', text: 'Tu hijo ha crecido, y tu mano sigue ahí.' },
+};
+const STORY_CHAPTERS_TEXT_DE: Record<string, { title: string; text: string }> = {
+  before: { title: 'Davor', text: 'Eine Frau, ihr Rhythmus, ihre Wünsche. Die Geschichte beginnt mit ihr.' },
+  early: { title: 'Die ersten Wochen', text: 'Noch sieht man nichts, und doch verändert sich schon alles.' },
+  round: { title: 'Ein Bauch, der runder wird', text: 'Woche für Woche nimmt das Leben seinen Platz ein.' },
+  term: { title: 'Bald', text: 'Die letzten Tage des Wartens, mit einem schön runden Bauch.' },
+  birth: { title: 'Die erste Begegnung', text: 'Dein Baby in deinen Armen, ganz nah bei dir.' },
+  sitting: { title: 'Sitzen', text: 'Dein Baby entdeckt die Welt auf Höhe der Spieldecke.' },
+  steps: { title: 'Die ersten Schritte', text: 'Aufrecht, eine Hand in deiner: der erste Schwung.' },
+  little: { title: 'An deiner Seite', text: 'Ein kleines Kind, das neben seiner Mutter läuft.' },
+  growing: { title: 'Groß werden', text: 'Die Schule, die Freunde, die großen Fragen.' },
+  ten: { title: 'Zehn Jahre, Hand in Hand', text: 'Dein Kind ist groß geworden, und deine Hand ist immer noch da.' },
+};
+const STORY_CHAPTERS_TEXT_IT: Record<string, { title: string; text: string }> = {
+  before: { title: 'Prima', text: 'Una donna, il suo ritmo, i suoi desideri. La storia comincia da lei.' },
+  early: { title: 'Le prime settimane', text: 'Non si vede ancora niente, eppure tutto sta già cambiando.' },
+  round: { title: 'Una pancia che si arrotonda', text: 'Settimana dopo settimana, la vita si fa spazio.' },
+  term: { title: 'Presto', text: 'Gli ultimi giorni di attesa, con la pancia ben rotonda.' },
+  birth: { title: 'L’incontro', text: 'Il tuo bambino tra le tue braccia, stretto a te.' },
+  sitting: { title: 'Stare seduto', text: 'Il tuo bambino scopre il mondo all’altezza del tappeto.' },
+  steps: { title: 'I primi passi', text: 'In piedi, una mano nella tua: il primo slancio.' },
+  little: { title: 'Al tuo fianco', text: 'Un bambino piccolo che cammina accanto alla sua mamma.' },
+  growing: { title: 'Crescere', text: 'La scuola, gli amici, le grandi domande.' },
+  ten: { title: 'Dieci anni, mano nella mano', text: 'Tuo figlio è cresciuto, e la tua mano è sempre lì.' },
+};
+const chaptersWith = (m: Record<string, { title: string; text: string }>): StoryChapter[] => STORY_CHAPTERS_FR.map((c) => ({ ...c, ...m[c.key] }));
+const STORY_CHAPTERS_EN: StoryChapter[] = chaptersWith(STORY_CHAPTERS_TEXT_EN);
+export const STORY_CHAPTERS: StoryChapter[] = localized(STORY_CHAPTERS_FR, STORY_CHAPTERS_EN, { es: chaptersWith(STORY_CHAPTERS_TEXT_ES), de: chaptersWith(STORY_CHAPTERS_TEXT_DE), it: chaptersWith(STORY_CHAPTERS_TEXT_IT) });
 
 /**
  * Étape illustrée (image générée, ElevenLabs, 26/10/2026) correspondant à une scène : 0 à 9 dans l'ordre de

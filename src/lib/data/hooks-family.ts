@@ -6,6 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import { backend, BackendError, eq } from '../backend';
 import { useAuth } from '../auth';
 import { useRows } from './hooks';
+import { friendlyErrorMessage } from '../errors';
+import { t as tr } from '@/i18n';
 
 // ---------------------------------------------------------------- types (alignés sur supabase/migrations)
 export type MilestoneKind = 'milestone' | 'memory' | 'tooth' | 'learning' | 'habit';
@@ -55,6 +57,7 @@ export function isPremiumError(e: unknown): boolean {
   return e instanceof BackendError && e.isPremiumRequired;
 }
 
-export function errorMessage(e: unknown, fallback = 'Enregistrement impossible.'): string {
-  return e instanceof Error && e.message ? e.message : fallback;
+/** Message d'erreur dans la langue de l'application (jamais de texte technique brut, jamais de français figé). */
+export function errorMessage(e: unknown, fallback = tr('l5.err.generic')): string {
+  return friendlyErrorMessage(e, fallback);
 }

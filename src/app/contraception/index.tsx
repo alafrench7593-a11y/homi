@@ -112,7 +112,8 @@ export default function ContraceptionScreen() {
       </Card>
       )}
 
-      <Card tone="gold" onPress={() => router.push('/contraception/emergency' as never)} accessibilityLabel={tr('u7.contra.index.emergA11y')}>
+      {/* Pas de onPress sur la carte : elle contient déjà le bouton « Que faire ? » (même destination) ; un bouton dans un bouton est invalide sur le web */}
+      <Card tone="gold" accessibilityLabel={tr('u7.contra.index.emergA11y')}>
         <Text weight="bold">{tr('u7.contra.index.emergTitle')}</Text>
         <Text variant="small">{tr('u7.contra.index.emergBody')}</Text>
         <Button label={tr('u7.contra.index.whatToDo')} size="sm" variant="secondary" style={{ marginTop: spacing.xs, alignSelf: 'flex-start' }} onPress={() => router.push('/contraception/emergency' as never)} />

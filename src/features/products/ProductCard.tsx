@@ -5,12 +5,13 @@ import { router } from 'expo-router';
 import { haptic, Icon, Row, Text } from '@/components/ui';
 import type { KidProduct, ProductPrice } from '@/lib/data/hooks-products';
 import type { CriteriaResult } from '@/lib/domain/productCriteria';
-import { formatDate, t as tr, type TKey } from '@/i18n';
+import { formatDate, getLocale, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 
-export const euro = (v: number) => `${v.toFixed(2).replace('.', ',')} €`;
+/** Prix en euros selon la langue : « 12,50 € » (fr, es, de, it), « €12.50 » (en). Sans Intl (Hermes). */
+export const euro = (v: number) => (getLocale() === 'en' ? `€${v.toFixed(2)}` : `${v.toFixed(2).replace('.', ',')} €`);
 
 export function ProductCard({ p, c, price, selected, onSelect }: { p: KidProduct; c: CriteriaResult | undefined; price: ProductPrice | null; selected?: boolean; onSelect?: () => void }) {
   const t = useTheme();

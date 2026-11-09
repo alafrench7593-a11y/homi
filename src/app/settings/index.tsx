@@ -195,7 +195,8 @@ export default function SettingsScreen() {
       <Card tone="soft">
         <Text variant="heading">{BRAND.name}</Text>
         <Text italic muted>{tr('brand.tagline')}</Text>
-        <Text variant="small" muted style={{ marginTop: spacing.xs }} onPress={() => {
+        {/* Ligne informative : le geste caché (7 appuis, mode développeur) reste, sans surbrillance de bouton au toucher (iOS) */}
+        <Text variant="small" muted suppressHighlighting style={{ marginTop: spacing.xs }} onPress={() => {
           const n = versionTaps.current + 1;
           versionTaps.current = n;
           if (n === 7) { void setDeveloperMode(!devMode); toast(devMode ? tr('settings.devOff') : tr('settings.devOn')); versionTaps.current = 0; }

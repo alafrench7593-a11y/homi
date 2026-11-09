@@ -263,6 +263,8 @@ export const isToolAllowed = (id: string, c: ScopeCtx) => toolsFor(c).some((x) =
 const SCREEN_RULES: { prefix: string; scopes: Scope[]; subOnly?: boolean }[] = [
   { prefix: '/pregnancy/start', scopes: SCOPES },
   { prefix: '/postpartum/partner', scopes: SCOPES },
+  // Personnes de confiance : ouvertes depuis « Journée difficile » et « Je craque » (outils de toutes les portées)
+  { prefix: '/postpartum/support', scopes: SCOPES },
   { prefix: '/cycle', scopes: ['avoid', 'ttc', 'cycle'] },
   { prefix: '/pregnancy', scopes: ['pregnancy'] },
   { prefix: '/bottle', scopes: ['baby', 'postpartum'] },

@@ -47,7 +47,7 @@ export function pregnancyProgress(due: ISODate, today: ISODate = todayISO()): Pr
     daysToDue,
     progress: Math.min(1, Math.max(0, daysSinceLmp / DAYS_LMP_TO_DUE_FR)),
     // Semaines d'aménorrhée : « 26 SA + 3 j » en français, « 26 wks + 3 d » en anglais
-    label: getLocale() === 'en' ? `${weeksSA} wks${extraDays ? ` + ${extraDays} d` : ''}` : `${weeksSA} SA${extraDays ? ` + ${extraDays} j` : ''}`,
+    label: `${weeksSA} ${tr('f5.wksShort')}${extraDays ? ` + ${extraDays} ${tr('f5.daysShort')}` : ''}`,
   };
 }
 

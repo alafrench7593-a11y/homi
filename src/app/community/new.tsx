@@ -6,7 +6,7 @@
  * Rien n'est jamais publié automatiquement (ni conversation avec l'assistant, ni donnée de suivi, ni photo privée).
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, ScrollView, View } from 'react-native';
+import { Image, Keyboard, ScrollView, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { ErrorView, Skeleton } from '@/components/States';
@@ -111,6 +111,7 @@ export default function Composer() {
 
   async function publish() {
     if (busy || preparing || !validate()) return;
+    Keyboard.dismiss();
     // Avertissement avant de publier une information sensible
     if (hints.length && !warned) { setWarned(true); setPreview(true); return; }
     if (hints.some((h) => h.blocking) && !(await confirm(tr('cm2.new.warnTitle'), tr('cm2.new.warnBody'), tr('cm2.publishAnyway'), false))) return;
@@ -182,7 +183,7 @@ export default function Composer() {
       ) : (
         <View style={{ gap: spacing.sm }}>
           <Text variant="label">{tr('cm2.new.category')}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
+          <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
             {spaces.primary.map((f) => <Chip key={f.id} label={f.title} icon={spaceIcon(f)} selected={f.id === forumId} onPress={() => setForumId(f.id)} testID={`composer-cat-${f.slug}`} />)}
             {forum && !spaces.primary.some((f) => f.id === forum.id) ? <Chip label={forum.title} icon={spaceIcon(forum)} selected /> : null}
             <Chip label={tr('cm2.new.allCategories')} icon="grid" onPress={() => setAllOpen(true)} testID="composer-all-categories" />
@@ -193,7 +194,7 @@ export default function Composer() {
           <Field label={kind === 'testimony' ? tr('cm2.new.yourTestimony') : tr('cm2.new.yourQuestion')} value={body} onChangeText={(v) => { setBodyCut(v.length > 8000); setBody(v.slice(0, 8000)); }} multiline error={errors.body} style={{ minHeight: 140, textAlignVertical: 'top' }} testID="composer-body"
             hint={bodyCut ? tr('cm2.new.bodyCut') : `${body.length} / 8000`} />
           {mq && mentionResults.data?.length ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }} testID="composer-mentions">
+            <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }} testID="composer-mentions">
               {mentionResults.data.slice(0, 6).map((m) => <Chip key={m.handle} label={`@${m.handle}`} icon="at-sign" onPress={() => setBody((b) => completeMention(b, m.handle))} />)}
             </ScrollView>
           ) : null}

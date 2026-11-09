@@ -29,6 +29,7 @@ export const ui2 = {
   'u2.difficult.essential': 'Essentiel',
   'u2.difficult.essential_today': 'L’essentiel aujourd’hui',
   'u2.difficult.help_sent': 'Demande d’aide envoyée à votre foyer.',
+  'u2.difficult.help_message': 'Journée difficile : j’ai besoin d’aide aujourd’hui.',
   'u2.difficult.my_trusted': 'Mes personnes de confiance',
   'u2.difficult.need_help': 'J’ai besoin d’aide aujourd’hui',
   'u2.difficult.no_essential': 'Aucune tâche marquée essentielle ou importante. Vous pouvez en marquer une comme « essentielle » dans la tâche.',

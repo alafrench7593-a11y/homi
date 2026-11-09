@@ -1,7 +1,7 @@
 /** Accès aux données (TanStack Query). Toutes les lectures passent par la RLS côté Supabase. */
 import { useMutation, useQuery, useQueryClient, type QueryKey } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { backend, eq, gte, inList, type Filter, type Query } from '../backend';
+import { backend, eq, gte, inList, isDemo, type Filter, type Query } from '../backend';
 import { useAuth, useUserId } from '../auth';
 import { useUiStore, type ActiveSubject } from '../store';
 import { isBody, visiblePregnancy, type JourneyRow } from '../journeys/model';
@@ -52,8 +52,13 @@ export function useUpdateProfile() {
 }
 
 export function useMemberships() {
+  const { ready } = useAuth();
   const userId = useUserId();
-  return useRows<HouseholdMember>(['memberships'], userId ? { table: 'household_members', filters: [eq('user_id', userId)], order: [{ col: 'joined_at' }] } : null);
+  const q = useRows<HouseholdMember>(['memberships'], userId ? { table: 'household_members', filters: [eq('user_id', userId)], order: [{ col: 'joined_at' }] } : null);
+  // Session pas encore restaurée (écran ouvert directement, premier écran après connexion) : la requête est
+  // désactivée faute d'utilisateur, ce n'est pas « aucun foyer ». On la dit en chargement pour ne jamais
+  // afficher « enfant introuvable » à tort (fiche enfant ouverte en premier écran).
+  return !ready && !q.data ? { ...q, isLoading: true } : q;
 }
 
 /** Foyer courant : celui choisi, sinon le premier dont on est membre. */
@@ -164,6 +169,16 @@ export function useTrackedChildren() {
 export function useChild(id: string | null | undefined) {
   const { data } = useChildren();
   return data?.find((c) => c.id === id) ?? null;
+}
+
+/**
+ * Vrai tant que la liste des enfants n'est pas connue (session, foyer ou enfants en chargement) : `useChild`
+ * renvoie alors `null` sans que l'enfant soit introuvable. À tester avant d'afficher « enfant introuvable ».
+ */
+export function useChildrenLoading(): boolean {
+  const membershipsQ = useMemberships();
+  const childrenQ = useChildren();
+  return (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
 }
 
 /**
@@ -335,44 +350,79 @@ export function useNameVotes() {
 }
 
 // ---------------------------------------------------------------- contenus
-/** Version anglaise d'un article quand elle existe (titre ET texte anglais) ; sinon le texte français d'origine.
- *  Ligne de liste (sans texte) : english_ready, calculé par le serveur, dit si le texte anglais existe. */
-export function localizeArticle<T extends ArticleSummary & { body_md?: string; body_md_en?: string | null }>(a: T, lang: string = getLocale()): T {
-  if (lang !== 'en' || !a.title_en || !(a.english_ready ?? !!a.body_md_en)) return a;
+type XLang = 'es' | 'de' | 'it';
+const isXLang = (l: string): l is XLang => l === 'es' || l === 'de' || l === 'it';
+/**
+ * Langue des contenus enregistrés en base (articles) : le français ; l'anglais pour les autres langues ;
+ * l'espagnol, l'allemand ou l'italien seulement quand cette langue est PUBLIÉE (content_locales, après relecture
+ * humaine — décision du 08/11/2026). Les thèmes et espaces (textes courts) s'affichent directement dans leur langue.
+ */
+export const contentLang = (lang: string = getLocale()): 'fr' | 'en' => (lang === 'fr' ? 'fr' : 'en');
+/** Langues dont les articles traduits sont publiés (lecture publique ; mise à jour réservée à l'administration). */
+export function useContentLocales() {
+  return useRows<{ locale: string; articles_published: boolean }>(['content_locales'], { table: 'content_locales' }, { staleTime: 3600_000 });
+}
+function usePublishedXLang(): XLang | null {
+  const lang = getLocale();
+  const q = useContentLocales();
+  return isXLang(lang) && !!q.data?.find((r) => r.locale === lang && r.articles_published) ? lang : null;
+}
+type LocalizableArticle = ArticleSummary & { body_md?: string; body_md_en?: string | null } & Partial<Record<`body_md_${XLang}`, string | null>> & Partial<Record<`${XLang}_ready`, boolean>>;
+/** Article dans la langue affichée : langue publiée (es/de/it) quand sa traduction existe, sinon anglais (hors français), sinon français. */
+export function localizeArticle<T extends LocalizableArticle>(a: T, lang: string = getLocale(), published: XLang | null = null): T {
+  if (published && isXLang(lang) && published === lang) {
+    const title = a[`title_${lang}`]; const body = a[`body_md_${lang}`];
+    if (title && (a[`${lang}_ready`] ?? !!body)) return { ...a, title, summary: a[`summary_${lang}`] ?? a.summary, ...(body ? { body_md: body } : {}) };
+  }
+  if (contentLang(lang) !== 'en' || !a.title_en || !(a.english_ready ?? !!a.body_md_en)) return a;
   return { ...a, title: a.title_en, summary: a.summary_en ?? a.summary, ...(a.body_md_en ? { body_md: a.body_md_en } : {}) };
 }
-/** Champs de liste : tout sauf body_md, body_md_en et sources (≈ 0,8 Mo au lieu de 11 Mo pour 1 122 articles). */
+/** Champs de liste : tout sauf les textes complets et les sources (≈ 0,8 Mo au lieu de 11 Mo pour 1 122 articles). */
 export const ARTICLE_LIST_COLUMNS = 'id,slug,category_id,title,summary,journeys,min_week,max_week,min_age_months,max_age_months,postpartum,tags,'
   + 'author_name,reviewer_name,reviewer_qualification,validated_at,updated_on,status,is_premium,is_safety_critical,editorial_status,title_en,summary_en,english_ready';
+const listColumns = (x: XLang | null) => (x ? `${ARTICLE_LIST_COLUMNS},title_${x},summary_${x},${x}_ready` : ARTICLE_LIST_COLUMNS);
+/** Texte complet : on ne télécharge que le français, l'anglais et la langue publiée affichée (pas les 5 langues). */
+const FULL_COLUMNS = `${ARTICLE_LIST_COLUMNS.replace(',english_ready', '')},body_md,body_md_en,sources`;
+const fullColumns = (x: XLang | null) => (x ? `${FULL_COLUMNS},title_${x},summary_${x},body_md_${x}` : FULL_COLUMNS);
 const PUBLISHED_ARTICLES: Query = { table: 'articles', filters: [eq('status', 'published')], order: [{ col: 'updated_on', asc: false }] };
-function useLocalized<T extends ArticleSummary>(rows: T[] | undefined) {
+function useLocalized<T extends LocalizableArticle>(rows: T[] | undefined, published: XLang | null) {
   // L'arbre est remonté à chaque changement de langue : getLocale() suffit ici
   const lang = getLocale();
-  return useMemo(() => (rows && lang === 'en' ? rows.map((a) => localizeArticle(a, lang)) : rows), [rows, lang]);
+  return useMemo(() => (rows && lang !== 'fr' ? rows.map((a) => localizeArticle(a, lang, published)) : rows), [rows, lang, published]);
 }
 /** Articles publiés pour les listes (accueil, bibliothèque, outils…), sans le texte : voir useArticle pour la lecture. */
 export function useArticles() {
-  const q = useRows<ArticleSummary>(['articles', 'list'], { ...PUBLISHED_ARTICLES, columns: ARTICLE_LIST_COLUMNS }, { staleTime: 600_000 });
-  const data = useLocalized(q.data);
+  const x = usePublishedXLang();
+  const q = useRows<ArticleSummary>(['articles', 'list', x ?? ''], { ...PUBLISHED_ARTICLES, columns: listColumns(x) }, { staleTime: 600_000 });
+  const data = useLocalized(q.data, x);
   return { ...q, data } as typeof q;
 }
 /** Articles publiés avec leur texte complet (11 Mo) : seulement à la demande (recherche dans le texte, assistant hors ligne). */
 export function useFullArticles(enabled = true) {
-  const q = useRows<Article>(['articles', 'full'], PUBLISHED_ARTICLES, { staleTime: 600_000, enabled });
-  const data = useLocalized(q.data);
+  const x = usePublishedXLang();
+  const q = useRows<Article>(['articles', 'full', x ?? ''], { ...PUBLISHED_ARTICLES, ...(isDemo ? {} : { columns: fullColumns(x) }) }, { staleTime: 600_000, enabled });
+  const data = useLocalized(q.data, x);
   return { ...q, data } as typeof q;
 }
 /** Un article publié, texte et sources compris (écran de lecture). data : null si introuvable ou non accessible. */
 export function useArticle(slug: string | null | undefined) {
-  const q = useRows<Article>(['articles', 'one', slug ?? ''], slug ? { table: 'articles', filters: [eq('status', 'published'), eq('slug', slug)], limit: 1 } : null, { staleTime: 600_000 });
+  const x = usePublishedXLang();
+  const q = useRows<Article>(['articles', 'one', slug ?? '', x ?? ''], slug ? { table: 'articles', filters: [eq('status', 'published'), eq('slug', slug)], limit: 1 } : null, { staleTime: 600_000 });
   const lang = getLocale();
-  const data = useMemo(() => (q.data ? (q.data[0] ? localizeArticle(q.data[0], lang) : null) : undefined), [q.data, lang]);
+  const data = useMemo(() => (q.data ? (q.data[0] ? localizeArticle(q.data[0], lang, x) : null) : undefined), [q.data, lang, x]);
   return { ...q, data };
+}
+/** Libellé d'un thème dans la langue affichée (thèmes courts traduits dans les 5 langues). */
+export function localizeCategory<T extends Category>(c: T, lang: string = getLocale()): T {
+  if (lang === 'fr') return c;
+  const own = isXLang(lang) ? c[`label_${lang}`] : null;
+  const label = own || c.label_en;
+  return label ? { ...c, label } : c;
 }
 export function useCategories() {
   const q = useRows<Category>(['content_categories'], { table: 'content_categories', order: [{ col: 'position' }] }, { staleTime: 3600_000 });
   const lang = getLocale();
-  const data = useMemo(() => (q.data && lang === 'en' ? q.data.map((c) => (c.label_en ? { ...c, label: c.label_en } : c)) : q.data), [q.data, lang]);
+  const data = useMemo(() => (q.data && lang !== 'fr' ? q.data.map((c) => localizeCategory(c, lang)) : q.data), [q.data, lang]);
   return { ...q, data } as typeof q;
 }
 export function useEmergencyResources() {
@@ -393,16 +443,18 @@ export function useSavedAnswers() {
 }
 
 // ---------------------------------------------------------------- communauté
-/** Espace affiché dans la langue de l'application : anglais quand il existe (colonnes *_en), sinon français. */
-export function localizeForum<T extends Pick<Forum, 'title' | 'description' | 'title_en' | 'description_en'>>(f: T, lang: string = getLocale()): T {
-  if (lang !== 'en' || !f.title_en) return f;
+/** Espace affiché dans la langue de l'application : sa langue (colonnes *_es/_de/_it) ou l'anglais, sinon le français. */
+export function localizeForum<T extends Pick<Forum, 'title' | 'description' | 'title_en' | 'description_en'> & Partial<Pick<Forum, 'title_es' | 'description_es' | 'title_de' | 'description_de' | 'title_it' | 'description_it'>>>(f: T, lang: string = getLocale()): T {
+  if (lang === 'fr') return f;
+  if (isXLang(lang) && f[`title_${lang}`]) return { ...f, title: f[`title_${lang}`]!, description: f[`description_${lang}`] || f.description_en || f.description };
+  if (!f.title_en) return f;
   return { ...f, title: f.title_en, description: f.description_en || f.description };
 }
 export function useForums() {
   const q = useRows<Forum>(['forums'], { table: 'forums', order: [{ col: 'position' }] }, { staleTime: 3600_000 });
   // L'arbre est remonté à chaque changement de langue : getLocale() suffit ici
   const lang = getLocale();
-  const data = useMemo(() => (q.data && lang === 'en' ? q.data.map((f) => localizeForum(f, lang)) : q.data), [q.data, lang]);
+  const data = useMemo(() => (q.data && lang !== 'fr' ? q.data.map((f) => localizeForum(f, lang)) : q.data), [q.data, lang]);
   return { ...q, data } as typeof q;
 }
 export function useFeed(forumId?: string | null) {

@@ -225,7 +225,12 @@ export function PeriodLogger() {
         </Row>
         <View style={{ gap: 6, marginTop: spacing.sm }}>
           <Text variant="label">{tr('u5.fert.flow_opt')}</Text>
-          <Segmented label={tr('u5.fert.flow')} value={flow} onChange={setFlow} options={[{ value: 'none', label: '—' }, { value: 'spotting', label: tr('u5.fert.o_spotting') }, { value: 'light', label: tr('u5.fert.o_light') }, { value: 'medium', label: tr('u5.fert.o_medium') }, { value: 'heavy', label: tr('u5.fert.o_heavy') }, { value: 'very_heavy', label: tr('u5.fert.o_vheavy') }]} />
+          {/* Six choix : pastilles qui passent à la ligne (dans un sélecteur segmenté, les libellés étaient coupés lettre par lettre) */}
+          <View accessibilityRole="radiogroup" accessibilityLabel={tr('u5.fert.flow')} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+            {([{ value: 'none', label: '—' }, { value: 'spotting', label: tr('u5.fert.o_spotting') }, { value: 'light', label: tr('u5.fert.o_light') }, { value: 'medium', label: tr('u5.fert.o_medium') }, { value: 'heavy', label: tr('u5.fert.o_heavy') }, { value: 'very_heavy', label: tr('u5.fert.o_vheavy') }] as { value: Flow; label: string }[]).map((o) => (
+              <Chip key={o.value} label={o.label} selected={flow === o.value} onPress={() => setFlow(o.value)} />
+            ))}
+          </View>
         </View>
         <Button label={tr('u5.fert.save_p')} icon="plus" style={{ marginTop: spacing.sm }} loading={saving} onPress={add} />
       </Card>

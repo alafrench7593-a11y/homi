@@ -22,10 +22,8 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { symptomCard, symptomsFor, type Frequency, type Intensity, type SafetyLevel, type SymptomCard } from '@/lib/domain/pregnancyCare';
 import { NOT_ADVICE, SAFETY_CONTACTS, type SymptomKey } from '@/content/pregnancyCare';
-import { formatDate, getLocale, t as tr, type TKey } from '@/i18n';
+import { formatDate, t as tr, type TKey } from '@/i18n';
 
-/** Libellé court bilingue (les clés de traduction de cet écran restent inchangées). */
-const L = (fr: string, en: string) => (getLocale().startsWith('fr') ? fr : en);
 import { useTheme } from '@/theme/ThemeProvider';
 import { frequentValues, withFrequentFirst } from '@/lib/domain/quickPicks';
 import { spacing } from '@/theme/tokens';
@@ -101,9 +99,9 @@ export default function Feel() {
         ? { label: tr('care.feel.another'), icon: 'plus', onPress: () => setCards(null), testID: 'feel-another' }
         : { label: tr(d.id ? 'common.save' : 'care.feel.save'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'feel-save' }}>
       <TodaySummary items={[
-        { icon: 'feather', value: String(todayCount), label: L('Noté aujourd’hui', 'Logged today') },
-        { icon: 'clock', value: logs[0] ? symLabel(logs[0].symptom) : '—', label: L('Dernier noté', 'Last logged') },
-        { icon: 'moon', value: pregnancy ? tr('care.cal.sa', { w: week }) : '—', label: L('Semaine', 'Week') },
+        { icon: 'feather', value: String(todayCount), label: tr('care.feel.sumToday') },
+        { icon: 'clock', value: logs[0] ? symLabel(logs[0].symptom) : '—', label: tr('care.feel.sumLast') },
+        { icon: 'moon', value: pregnancy ? tr('care.cal.sa', { w: week }) : '—', label: tr('care.feel.sumWeek') },
       ]} />
       {frequent.length && !cards && !d.id ? (
         <View style={{ gap: 6 }} testID="feel-quick">
@@ -140,7 +138,11 @@ export default function Feel() {
             ) : (
               <Button label={[tr('care.feel.start'), tr('care.feel.frequency'), tr('care.feel.note')].join(' · ')} size="sm" variant="ghost" icon="plus" style={{ alignSelf: 'flex-start' }} onPress={() => setMore(true)} testID="feel-more" />
             )}
-            <Toggle label={tr('care.feel.worried')} value={d.worried} onChange={(v) => setD({ ...d, worried: v })} />
+            {/* Libellé visible à côté de l'interrupteur (il n'était lu que par les lecteurs d'écran) */}
+            <Row style={{ justifyContent: 'space-between' }}>
+              <Text style={{ flex: 1 }}>{tr('care.feel.worried')}</Text>
+              <Toggle label={tr('care.feel.worried')} value={d.worried} onChange={(v) => setD({ ...d, worried: v })} />
+            </Row>
             {d.id ? <Button label={tr('common.cancel')} variant="ghost" onPress={() => setD(EMPTY)} /> : null}
             <Text variant="caption" muted>{tr('care.feel.private')}</Text>
           </View>

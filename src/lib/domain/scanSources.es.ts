@@ -1,0 +1,22 @@
+/** Sources du scanner — textes affichés en espagnol (mêmes identifiants, liens et dates ; noms d'organismes conservés). */
+export const ES_TEXT: Record<string, { label: string; publisher?: string }> = {
+  'eu-1223-2009': { label: 'Reglamento (CE) n.º 1223/2009 sobre los productos cosméticos', publisher: 'Unión Europea (EUR-Lex)' },
+  'eu-2023-1545': { label: 'Reglamento (UE) 2023/1545: etiquetado de las sustancias perfumantes alergénicas', publisher: 'Comisión Europea (EUR-Lex)' },
+  'eu-clp-1272-2008': { label: 'Reglamento (CE) n.º 1272/2008 (CLP): clasificación, etiquetado y envasado de mezclas', publisher: 'Unión Europea (EUR-Lex)' },
+  'eu-inco-1169-2011': { label: 'Reglamento (UE) n.º 1169/2011: información alimentaria facilitada al consumidor, incluidos los alérgenos', publisher: 'Unión Europea (EUR-Lex)' },
+  'ansm-phenoxy-2019': { label: 'Decisión del 13/03/2019: los productos cosméticos sin aclarado que contienen fenoxietanol no deben usarse en la zona del pañal de niños de 3 años o menos' },
+  'anses-he-2024': { label: 'Aceites esenciales: riesgos y precauciones' },
+  'anses-diffuseurs': { label: 'Sprays y difusores a base de aceites esenciales: la Anses pide prudencia' },
+  'anses-lait-cru-2022': { label: 'Quesos de leche cruda: ¿qué riesgos para la salud y cómo prevenirlos mejor?' },
+  'anses-mercure-2024': { label: 'Metilmercurio: un riesgo para la salud en caso de consumo elevado de pescado' },
+  'anses-reglisse-2025': { label: 'Evaluación de los riesgos del consumo alimentario de regaliz (solicitud 2022-AUTO-0077)' },
+  'anses-miel-2010': { label: 'Dictamen sobre el etiquetado de la miel: no dársela a lactantes menores de un año (botulismo infantil)' },
+  'spf-grossesse-2025': { label: '¿Qué alimentos evitar y qué precauciones tomar durante el embarazo?' },
+  'mpedia-listeriose-2025': { label: 'Listeriosis durante el embarazo: ¿qué alimentos evitar?', publisher: 'mpedia (AFPA) en Santé.fr' },
+  'sante-alcool': { label: 'El alcohol durante el embarazo y la lactancia' },
+  'spf-pas-a-pas': { label: 'Paso a paso, tu hijo come como un mayor (alimentación complementaria hasta los 3 años)' },
+  lecrat: { label: 'Medicamentos, vacunas, embarazo y lactancia', publisher: 'CRAT – Centro de referencia sobre agentes teratógenos (AP-HP)' },
+  rappelconso: { label: 'RappelConso, web oficial de retiradas de productos', publisher: 'Gobierno francés (DGCCRF, DGAL, DGS)' },
+  cosing: { label: 'Base de datos CosIng de ingredientes cosméticos', publisher: 'Comisión Europea' },
+  ciqual: { label: 'Tabla de composición nutricional Ciqual' },
+};

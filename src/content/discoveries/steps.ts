@@ -7,6 +7,9 @@
  * `main` : étape principale (version gratuite) ; les autres font partie du suivi complet (Premium).
  */
 import { localized } from '@/i18n/localized';
+import { STEP_SOURCE_LABELS_ES, STEP_TEXT_ES } from './steps.es';
+import { STEP_SOURCE_LABELS_DE, STEP_TEXT_DE } from './steps.de';
+import { STEP_SOURCE_LABELS_IT, STEP_TEXT_IT } from './steps.it';
 
 export type StepCategory = 'gross_motor' | 'fine_motor' | 'communication' | 'language' | 'social' | 'emotions' | 'awakening' | 'autonomy' | 'eating' | 'sleep';
 export const STEP_CATEGORIES: StepCategory[] = ['gross_motor', 'fine_motor', 'communication', 'language', 'social', 'emotions', 'awakening', 'autonomy', 'eating', 'sleep'];
@@ -130,10 +133,13 @@ const STEP_SOURCE_LABELS_EN: Record<StepSource, string> = {
   sf_diversification: 'Santé.fr (Manger Bouger) — Between 4 and 6 months: introducing foods gently',
   spf_diversification: 'Santé publique France — Pas à pas, votre enfant mange comme un grand (leaflet)',
 };
-const STEP_SOURCES_EN = Object.fromEntries(
-  (Object.keys(STEP_SOURCES_FR) as StepSource[]).map((k) => [k, { ...STEP_SOURCES_FR[k], label: STEP_SOURCE_LABELS_EN[k] }]),
+const withLabels = (labels: Record<StepSource, string>) => Object.fromEntries(
+  (Object.keys(STEP_SOURCES_FR) as StepSource[]).map((k) => [k, { ...STEP_SOURCES_FR[k], label: labels[k] }]),
 ) as Record<StepSource, StepSourceDef>;
-export const STEP_SOURCES = localized(STEP_SOURCES_FR, STEP_SOURCES_EN);
+const STEP_SOURCES_EN = withLabels(STEP_SOURCE_LABELS_EN);
+export const STEP_SOURCES = localized(STEP_SOURCES_FR, STEP_SOURCES_EN, {
+  es: withLabels(STEP_SOURCE_LABELS_ES), de: withLabels(STEP_SOURCE_LABELS_DE), it: withLabels(STEP_SOURCE_LABELS_IT),
+});
 
 const FLOOR_EN = 'Play on the floor, on a mat, never on a bed, a sofa or a changing table without your hand on them.';
 const SMALL_EN = 'Keep small objects that fit in the mouth out of reach (button batteries, magnets, marbles).';
@@ -191,13 +197,20 @@ const STEP_TEXT_EN: Record<string, StepText> = {
   one_nap: T('Has a single nap', 'Around 18 months, the morning nap drops away in favour of a longer nap in the early afternoon.', 'A quiet time after lunch.', 'A very long nap can delay bedtime: ask for advice if needed.', 'How should I manage the switch to one nap?'),
 };
 
-const STEPS_EN: StepDef[] = STEPS_FR.map((st) => {
-  const t = STEP_TEXT_EN[st.key];
+/** Même liste que STEPS_FR (clés, catégories, âges, sources), textes remplacés par la langue donnée. */
+const withTexts = (texts: Record<string, StepText>): StepDef[] => STEPS_FR.map((st) => {
+  const t = texts[st.key];
   return t ? { ...st, ...t } : st;
 });
+const STEPS_EN: StepDef[] = withTexts(STEP_TEXT_EN);
+const STEPS_ES: StepDef[] = withTexts(STEP_TEXT_ES);
+const STEPS_DE: StepDef[] = withTexts(STEP_TEXT_DE);
+const STEPS_IT: StepDef[] = withTexts(STEP_TEXT_IT);
 
-export const STEPS: StepDef[] = localized(STEPS_FR, STEPS_EN);
+export const STEPS: StepDef[] = localized(STEPS_FR, STEPS_EN, { es: STEPS_ES, de: STEPS_DE, it: STEPS_IT });
 
 const mapByKey = (list: StepDef[]): Record<string, StepDef> => Object.fromEntries(list.map((x) => [x.key, x]));
-export const STEP_BY_KEY: Record<string, StepDef> = localized(mapByKey(STEPS_FR), mapByKey(STEPS_EN));
+export const STEP_BY_KEY: Record<string, StepDef> = localized(mapByKey(STEPS_FR), mapByKey(STEPS_EN), {
+  es: mapByKey(STEPS_ES), de: mapByKey(STEPS_DE), it: mapByKey(STEPS_IT),
+});
 export const MAIN_STEP_KEYS = STEPS_FR.filter((s) => s.main).map((s) => s.key);

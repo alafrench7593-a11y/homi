@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Animated, Easing, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -21,7 +21,7 @@ import { ToastProvider, useToast } from '@/components/Overlays';
 import { PremiumPreviewHost } from '@/components/Premium';
 import { SleepNotificationsHost } from '@/features/sleep';
 import { configureNotifications, notificationRoute, notificationsSupported, registerPushToken, snoozeLocally, handleDoneResponse } from '@/lib/notifications';
-import { startOfflineSync } from '@/lib/offline';
+import { startOfflineSync, useOfflineStore } from '@/lib/offline';
 import { configurePurchases, resetPurchasesUser } from '@/lib/purchases';
 import { usePurchasesSync } from '@/lib/data/hooks-premium';
 import { SpaceGrotesk_500Medium } from '@expo-google-fonts/space-grotesk/500Medium';
@@ -35,6 +35,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo
 import { useLowPower } from '@/lib/lowPower';
 import { VideoBackdrop } from '@/components/VideoBackdrop';
 import { JourneyGuard } from '@/components/JourneyGuard';
+import { PremiumGate } from '@/components/PremiumGate';
 import { DemoBar } from '@/components/DemoBar';
 import { OfflinePill } from '@/components/OfflinePill';
 import { AppErrorBoundary } from '@/components/AppErrorBoundary';
@@ -87,6 +88,14 @@ function Bootstrap() {
   useRealtimeSync(session ? householdId : null, session?.userId ?? null);
 
   useEffect(() => startOfflineSync((n) => toast(tr('sync.done', { count: n }))), [toast]);
+  // Saisie refusée par le serveur (ex. Premium requis) : prévenir une fois, le détail est dans Réglages › Synchronisation
+  useEffect(() => {
+    let prev = useOfflineStore.getState().conflicts.length;
+    return useOfflineStore.subscribe((s) => {
+      if (s.conflicts.length > prev) toast(tr('pw.sync.conflict'), 'error');
+      prev = s.conflicts.length;
+    });
+  }, [toast]);
   // Abonnement : relecture de has_premium après une resynchronisation avec RevenueCat (subscription-sync)
   usePurchasesSync();
 
@@ -146,6 +155,17 @@ function SessionGuard() {
   return null;
 }
 
+function SessionLoading() {
+  const { ready } = useAuth();
+  const t = useTheme();
+  if (ready) return null;
+  return (
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t.colors.background, alignItems: 'center', justifyContent: 'center' }} testID="session-loading">
+      <ActivityIndicator color={t.colors.primary} accessibilityLabel={tr('common.loadingA11y')} />
+    </View>
+  );
+}
+
 function Navigator() {
   const t = useTheme();
   const base = t.isDark ? DarkTheme : DefaultTheme;
@@ -194,6 +214,10 @@ export default function RootLayout() {
                 <WebFrame>
                   <Backdrop />
                   <Navigator />
+                  {/* Session pas encore restaurée : écran de chargement (évite les faux « introuvable » au démarrage) */}
+                  <SessionLoading />
+                  {/* Premium strict : écran Premium par-dessus les écrans réservés (src/lib/premium/access.ts) */}
+                  <PremiumGate />
                   <JourneyGuard />
                   <DemoBar />
                   <OfflinePill />

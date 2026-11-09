@@ -38,14 +38,35 @@ const STOOL_COLORS_EN: { value: StoolColor; label: string }[] = [
   { value: 'yellow', label: 'Yellow' }, { value: 'green', label: 'Green' }, { value: 'brown', label: 'Brown' },
   { value: 'pale', label: 'White, putty-coloured, very pale' }, { value: 'black', label: 'Black' }, { value: 'red', label: 'Red' }, { value: 'other', label: 'Other' },
 ];
-export const STOOL_COLORS = localized(STOOL_COLORS_FR, STOOL_COLORS_EN);
+const STOOL_COLORS_ES: { value: StoolColor; label: string }[] = [
+  { value: 'yellow', label: 'Amarilla' }, { value: 'green', label: 'Verde' }, { value: 'brown', label: 'Marrón' },
+  { value: 'pale', label: 'Blanca, color masilla, muy pálida' }, { value: 'black', label: 'Negra' }, { value: 'red', label: 'Roja' }, { value: 'other', label: 'Otro' },
+];
+const STOOL_COLORS_DE: { value: StoolColor; label: string }[] = [
+  { value: 'yellow', label: 'Gelb' }, { value: 'green', label: 'Grün' }, { value: 'brown', label: 'Braun' },
+  { value: 'pale', label: 'Weiß, kittfarben, sehr hell' }, { value: 'black', label: 'Schwarz' }, { value: 'red', label: 'Rot' }, { value: 'other', label: 'Andere' },
+];
+const STOOL_COLORS_IT: { value: StoolColor; label: string }[] = [
+  { value: 'yellow', label: 'Gialla' }, { value: 'green', label: 'Verde' }, { value: 'brown', label: 'Marrone' },
+  { value: 'pale', label: 'Bianca, color stucco, molto chiara' }, { value: 'black', label: 'Nera' }, { value: 'red', label: 'Rossa' }, { value: 'other', label: 'Altro' },
+];
+export const STOOL_COLORS = localized(STOOL_COLORS_FR, STOOL_COLORS_EN, { es: STOOL_COLORS_ES, de: STOOL_COLORS_DE, it: STOOL_COLORS_IT });
 const STOOL_CONSISTENCY_FR: { value: 'liquid' | 'soft' | 'formed' | 'hard'; label: string }[] = [
   { value: 'liquid', label: 'Liquide' }, { value: 'soft', label: 'Molle' }, { value: 'formed', label: 'Moulée' }, { value: 'hard', label: 'Dure' },
 ];
 const STOOL_CONSISTENCY_EN: { value: 'liquid' | 'soft' | 'formed' | 'hard'; label: string }[] = [
   { value: 'liquid', label: 'Liquid' }, { value: 'soft', label: 'Soft' }, { value: 'formed', label: 'Formed' }, { value: 'hard', label: 'Hard' },
 ];
-export const STOOL_CONSISTENCY = localized(STOOL_CONSISTENCY_FR, STOOL_CONSISTENCY_EN);
+const STOOL_CONSISTENCY_ES: typeof STOOL_CONSISTENCY_FR = [
+  { value: 'liquid', label: 'Líquida' }, { value: 'soft', label: 'Blanda' }, { value: 'formed', label: 'Formada' }, { value: 'hard', label: 'Dura' },
+];
+const STOOL_CONSISTENCY_DE: typeof STOOL_CONSISTENCY_FR = [
+  { value: 'liquid', label: 'Flüssig' }, { value: 'soft', label: 'Weich' }, { value: 'formed', label: 'Geformt' }, { value: 'hard', label: 'Hart' },
+];
+const STOOL_CONSISTENCY_IT: typeof STOOL_CONSISTENCY_FR = [
+  { value: 'liquid', label: 'Liquida' }, { value: 'soft', label: 'Morbida' }, { value: 'formed', label: 'Formata' }, { value: 'hard', label: 'Dura' },
+];
+export const STOOL_CONSISTENCY = localized(STOOL_CONSISTENCY_FR, STOOL_CONSISTENCY_EN, { es: STOOL_CONSISTENCY_ES, de: STOOL_CONSISTENCY_DE, it: STOOL_CONSISTENCY_IT });
 
 export interface SafetyNotice { level: 'urgent' | 'soon' | 'watch'; title: string; body: string; source: 'stools' | 'dehydration' | 'fever' }
 
@@ -125,7 +146,31 @@ const WELLBEING_SCALES_EN: typeof WELLBEING_SCALES_FR = [
   { key: 'sleep', label: 'Sleep', levels: ['Restless', 'As usual', 'Very good'] },
   { key: 'digestive_comfort', label: 'Digestive comfort', levels: ['Discomfort', 'As usual', 'Very good'] },
 ];
-export const WELLBEING_SCALES: typeof WELLBEING_SCALES_FR = localized(WELLBEING_SCALES_FR, WELLBEING_SCALES_EN);
+const WELLBEING_SCALES_ES: typeof WELLBEING_SCALES_FR = [
+  { key: 'crying', label: 'Llanto', levels: ['Poco', 'Como siempre', 'Mucho'] },
+  { key: 'irritability', label: 'Irritabilidad', levels: ['Tranquilo', 'Como siempre', 'Muy gruñón'] },
+  { key: 'energy', label: 'Energía', levels: ['Cansado', 'Como siempre', 'Muy activo'] },
+  { key: 'appetite', label: 'Apetito', levels: ['Poco apetito', 'Como siempre', 'Mucho apetito'] },
+  { key: 'sleep', label: 'Sueño', levels: ['Agitado', 'Como siempre', 'Muy bueno'] },
+  { key: 'digestive_comfort', label: 'Bienestar digestivo', levels: ['Molestias', 'Como siempre', 'Muy bien'] },
+];
+const WELLBEING_SCALES_DE: typeof WELLBEING_SCALES_FR = [
+  { key: 'crying', label: 'Weinen', levels: ['Wenig', 'Wie immer', 'Viel'] },
+  { key: 'irritability', label: 'Reizbarkeit', levels: ['Ruhig', 'Wie immer', 'Sehr quengelig'] },
+  { key: 'energy', label: 'Energie', levels: ['Müde', 'Wie immer', 'Sehr aktiv'] },
+  { key: 'appetite', label: 'Appetit', levels: ['Wenig Appetit', 'Wie immer', 'Großer Appetit'] },
+  { key: 'sleep', label: 'Schlaf', levels: ['Unruhig', 'Wie immer', 'Sehr gut'] },
+  { key: 'digestive_comfort', label: 'Verdauung', levels: ['Beschwerden', 'Wie immer', 'Sehr gut'] },
+];
+const WELLBEING_SCALES_IT: typeof WELLBEING_SCALES_FR = [
+  { key: 'crying', label: 'Pianto', levels: ['Poco', 'Come al solito', 'Molto'] },
+  { key: 'irritability', label: 'Irritabilità', levels: ['Calmo', 'Come al solito', 'Molto nervoso'] },
+  { key: 'energy', label: 'Energia', levels: ['Stanco', 'Come al solito', 'Molto attivo'] },
+  { key: 'appetite', label: 'Appetito', levels: ['Poco appetito', 'Come al solito', 'Molto appetito'] },
+  { key: 'sleep', label: 'Sonno', levels: ['Agitato', 'Come al solito', 'Molto buono'] },
+  { key: 'digestive_comfort', label: 'Benessere digestivo', levels: ['Fastidio', 'Come al solito', 'Molto bene'] },
+];
+export const WELLBEING_SCALES: typeof WELLBEING_SCALES_FR = localized(WELLBEING_SCALES_FR, WELLBEING_SCALES_EN, { es: WELLBEING_SCALES_ES, de: WELLBEING_SCALES_DE, it: WELLBEING_SCALES_IT });
 
 const DEV_DOMAINS_FR: { value: 'motor' | 'language' | 'communication' | 'social' | 'autonomy' | 'learning' | 'eating' | 'sleep' | 'other'; label: string }[] = [
   { value: 'motor', label: 'Motricité' }, { value: 'language', label: 'Langage' }, { value: 'communication', label: 'Communication' },
@@ -137,7 +182,22 @@ const DEV_DOMAINS_EN: typeof DEV_DOMAINS_FR = [
   { value: 'social', label: 'Relationships' }, { value: 'autonomy', label: 'Independence' }, { value: 'learning', label: 'Learning' },
   { value: 'eating', label: 'Eating' }, { value: 'sleep', label: 'Sleep' }, { value: 'other', label: 'Other' },
 ];
-export const DEV_DOMAINS: typeof DEV_DOMAINS_FR = localized(DEV_DOMAINS_FR, DEV_DOMAINS_EN);
+const DEV_DOMAINS_ES: typeof DEV_DOMAINS_FR = [
+  { value: 'motor', label: 'Motricidad' }, { value: 'language', label: 'Lenguaje' }, { value: 'communication', label: 'Comunicación' },
+  { value: 'social', label: 'Relaciones' }, { value: 'autonomy', label: 'Autonomía' }, { value: 'learning', label: 'Aprendizajes' },
+  { value: 'eating', label: 'Alimentación' }, { value: 'sleep', label: 'Sueño' }, { value: 'other', label: 'Otro' },
+];
+const DEV_DOMAINS_DE: typeof DEV_DOMAINS_FR = [
+  { value: 'motor', label: 'Motorik' }, { value: 'language', label: 'Sprache' }, { value: 'communication', label: 'Kommunikation' },
+  { value: 'social', label: 'Beziehungen' }, { value: 'autonomy', label: 'Selbstständigkeit' }, { value: 'learning', label: 'Lernen' },
+  { value: 'eating', label: 'Ernährung' }, { value: 'sleep', label: 'Schlaf' }, { value: 'other', label: 'Anderes' },
+];
+const DEV_DOMAINS_IT: typeof DEV_DOMAINS_FR = [
+  { value: 'motor', label: 'Motricità' }, { value: 'language', label: 'Linguaggio' }, { value: 'communication', label: 'Comunicazione' },
+  { value: 'social', label: 'Relazioni' }, { value: 'autonomy', label: 'Autonomia' }, { value: 'learning', label: 'Apprendimenti' },
+  { value: 'eating', label: 'Alimentazione' }, { value: 'sleep', label: 'Sonno' }, { value: 'other', label: 'Altro' },
+];
+export const DEV_DOMAINS: typeof DEV_DOMAINS_FR = localized(DEV_DOMAINS_FR, DEV_DOMAINS_EN, { es: DEV_DOMAINS_ES, de: DEV_DOMAINS_DE, it: DEV_DOMAINS_IT });
 
 // ------------------------------------------------------------------ dents de lait (schéma)
 /** 20 dents de lait, dans l'ordre des arcades (haut droite → haut gauche, bas gauche → bas droite, vu de face). */
@@ -160,4 +220,16 @@ const PRIMARY_TEETH_EN: Tooth[] = buildTeeth(
   { second: 'Second molar', first: 'First molar', canine: 'Canine', lateral: 'Lateral incisor', central: 'Central incisor' },
   (name, arch, side) => `${name}, ${arch === 'top' ? 'upper' : 'lower'} ${side}`,
 );
-export const PRIMARY_TEETH: Tooth[] = localized(PRIMARY_TEETH_FR, PRIMARY_TEETH_EN);
+const PRIMARY_TEETH_ES: Tooth[] = buildTeeth(
+  { second: 'Segundo molar', first: 'Primer molar', canine: 'Canino', lateral: 'Incisivo lateral', central: 'Incisivo central' },
+  (name, arch, side) => `${name} ${arch === 'top' ? 'superior' : 'inferior'} ${side === 'right' ? 'derecho' : 'izquierdo'}`,
+);
+const PRIMARY_TEETH_DE: Tooth[] = buildTeeth(
+  { second: 'Zweiter Backenzahn', first: 'Erster Backenzahn', canine: 'Eckzahn', lateral: 'Seitlicher Schneidezahn', central: 'Mittlerer Schneidezahn' },
+  (name, arch, side) => `${name}, ${arch === 'top' ? 'oben' : 'unten'} ${side === 'right' ? 'rechts' : 'links'}`,
+);
+const PRIMARY_TEETH_IT: Tooth[] = buildTeeth(
+  { second: 'Secondo molare', first: 'Primo molare', canine: 'Canino', lateral: 'Incisivo laterale', central: 'Incisivo centrale' },
+  (name, arch, side) => `${name} ${arch === 'top' ? 'superiore' : 'inferiore'} ${side === 'right' ? 'destro' : 'sinistro'}`,
+);
+export const PRIMARY_TEETH: Tooth[] = localized(PRIMARY_TEETH_FR, PRIMARY_TEETH_EN, { es: PRIMARY_TEETH_ES, de: PRIMARY_TEETH_DE, it: PRIMARY_TEETH_IT });

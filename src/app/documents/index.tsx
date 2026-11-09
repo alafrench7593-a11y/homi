@@ -111,7 +111,7 @@ export default function DocumentsHome() {
       {!filtering && !loading && !failed && favorites.length && !selecting ? (
         <View style={{ gap: spacing.xs }} testID="docs-fav-strip">
           <SectionTitle title={tr('docs.section.favorites')} />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }}>
+          <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }}>
             {favorites.slice(0, 12).map((d) => (
               <Tappable key={d.id} onPress={() => open(d)} accessibilityRole="button" accessibilityLabel={d.title} testID={`docs-fav-${d.id}`}>
                 <GlassSurface fill={t.colors.surface} depth={1} radius={20} style={{ width: 132 }}>

@@ -34,7 +34,22 @@ const CYCLE_CAVEATS_EN = [
   'They do not guarantee a pregnancy and cannot be used to avoid one.',
   'A cycle can vary with stress, tiredness, breastfeeding, illness or stopping contraception.',
 ];
-export const CYCLE_CAVEATS = localized(CYCLE_CAVEATS_FR, CYCLE_CAVEATS_EN);
+const CYCLE_CAVEATS_ES = [
+  'Estas fechas son estimaciones calculadas a partir de tus registros.',
+  'No garantizan un embarazo ni permiten evitarlo.',
+  'Un ciclo puede variar con el estrés, el cansancio, la lactancia, una enfermedad o al dejar un método anticonceptivo.',
+];
+const CYCLE_CAVEATS_DE = [
+  'Diese Daten sind Schätzungen, die aus deinen Einträgen berechnet werden.',
+  'Sie bieten keine Gewähr für eine Schwangerschaft und eignen sich nicht, eine zu verhindern.',
+  'Ein Zyklus kann sich durch Stress, Müdigkeit, Stillen, eine Krankheit oder das Absetzen eines Verhütungsmittels verändern.',
+];
+const CYCLE_CAVEATS_IT = [
+  'Queste date sono stime calcolate a partire dalle tue registrazioni.',
+  'Non garantiscono una gravidanza e non permettono di evitarla.',
+  'Un ciclo può variare con lo stress, la stanchezza, l’allattamento, una malattia o l’interruzione di un contraccettivo.',
+];
+export const CYCLE_CAVEATS = localized(CYCLE_CAVEATS_FR, CYCLE_CAVEATS_EN, { es: CYCLE_CAVEATS_ES, de: CYCLE_CAVEATS_DE, it: CYCLE_CAVEATS_IT });
 
 export function estimateCycle(entries: PeriodEntry[], today: ISODate = todayISO()): CycleEstimate {
   const starts = [...new Set(entries.map((e) => e.start_date))].sort();

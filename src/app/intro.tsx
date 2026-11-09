@@ -8,7 +8,7 @@
  * « réduire les animations », tout s'affiche directement.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, PanResponder, View } from 'react-native';
+import { Animated, Easing, PanResponder, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -57,7 +57,8 @@ function AnimatedMark({ size = 84 }: { size?: number }) {
   const enter = useRef(new Animated.Value(reduce ? 1 : 0)).current;
   const glow = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    if (reduce) return;
+    // réglage « réduire les animations » lu après le premier rendu : le logo ne doit pas rester invisible
+    if (reduce) { enter.setValue(1); return; }
     Animated.spring(enter, { toValue: 1, tension: 60, friction: 9, useNativeDriver: NATIVE_DRIVER }).start();
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(glow, { isInteraction: false, toValue: 1, duration: 2600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
@@ -188,7 +189,9 @@ export default function Intro() {
         ) : <View style={{ minHeight: 44 }} />}
       </View>
 
-      <Animated.View key={`${slide}-${locale}`} style={[{ flex: 1, justifyContent: 'center', gap: spacing.md }, enter]}>
+      <Animated.View key={`${slide}-${locale}`} style={[{ flex: 1 }, enter]}>
+        {/* Petit écran (320×568) : la diapositive défile au lieu de passer sous « Passer » et sous le bouton du bas */}
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', gap: spacing.md, paddingVertical: spacing.xs }} showsVerticalScrollIndicator={false}>
         {slide === 'hello' ? (
           <View style={{ alignItems: 'center', gap: spacing.md }}>
             <AnimatedMark size={112} />
@@ -265,6 +268,7 @@ export default function Intro() {
             <Appear kind="soft" delay={0.4}><Text variant="small" muted>{tr('intro.privacy.next')}</Text></Appear>
           </View>
         ) : null}
+        </ScrollView>
       </Animated.View>
 
       {last ? (

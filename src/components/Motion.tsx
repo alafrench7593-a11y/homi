@@ -270,7 +270,8 @@ export function StepSwap({ dir, children }: { dir: number; children: React.React
   const reduce = useReduceMotion();
   const v = useRef(new Animated.Value(reduce ? 1 : 0)).current;
   useEffect(() => {
-    if (reduce) return;
+    // « Réduire les animations » est lu après le premier rendu : sans ce setValue l'étape restait invisible (opacité 0)
+    if (reduce) { v.setValue(1); return; }
     const a = Animated.timing(v, { toValue: 1, duration: duration.slow, easing: easing.decelerate, useNativeDriver: NATIVE_DRIVER });
     a.start();
     return () => a.stop();

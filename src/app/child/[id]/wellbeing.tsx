@@ -30,6 +30,10 @@ const MOOD_ICONS = ['cloud-rain', 'cloud', 'cloud-drizzle', 'sun', 'star'] as co
 export default function ChildWellbeing() {
   const toast = useToast();
   const MOODS = moodLabels();
+  // Petit écran + mot long (« Abbastanza », « Ziemlich ») : les 5 humeurs passent sur deux rangées au lieu de déborder
+  const [moodRowW, setMoodRowW] = useState(0);
+  const longestWord = Math.max(...MOODS.flatMap((m) => m.split(/\s+/).map((w) => w.length)));
+  const moodTwoRows = moodRowW > 0 && (moodRowW - 6 * 4) / 5 < longestWord * 6.6 + 4;
   const inv = useInvalidate();
   const { id } = useLocalSearchParams<{ id: string }>();
   const child = useChild(id);
@@ -92,19 +96,21 @@ export default function ChildWellbeing() {
       <Card>
         <View style={{ gap: spacing.sm }}>
           <Text weight="bold">{child ? tr('u4.wb.todayNamed', { name: child.first_name }) : tr('u4.wb.today')}</Text>
-          <Row style={{ gap: 6 }}>
+          <View onLayout={(e) => setMoodRowW(e.nativeEvent.layout.width)}>
+          <Row wrap={moodTwoRows} style={{ gap: 6 }}>
             {MOODS.map((m, i) => {
               const on = lastMood === i + 1;
               return (
                 <Tappable key={m} accessibilityRole="button" accessibilityLabel={tr('u4.wb.quickA11y', { mood: m })} onPress={() => void quickMood(i + 1)} testID={`wellbeing-quick-${i + 1}`}
-                  style={{ flex: 1, alignItems: 'center', gap: 4, paddingVertical: spacing.sm, borderRadius: 18, borderWidth: 1,
+                  style={{ ...(moodTwoRows ? { flexGrow: 1, flexBasis: '30%' } : { flex: 1 }), alignItems: 'center', gap: 4, paddingVertical: spacing.sm, borderRadius: 18, borderWidth: 1,
                     borderColor: on ? th.colors.gold : tint(th.colors.primary, 0.25), backgroundColor: on ? tint(th.colors.gold, th.isDark ? 0.3 : 0.18) : 'transparent' }}>
                   <Icon name={MOOD_ICONS[i]} size={22} color={on ? th.colors.gold : th.colors.primary} />
-                  <Text variant="caption" center numberOfLines={2} style={{ fontSize: 11 }}>{m}</Text>
+                  <Text variant="caption" center style={{ fontSize: 11 }}>{m}</Text>
                 </Tappable>
               );
             })}
           </Row>
+          </View>
           <Button label={details ? tr('u4.wb.hideDetails') : tr('u4.wb.addDetails')} variant="ghost" size="sm" icon={details ? 'chevron-up' : 'plus'} onPress={() => setDetails((d) => !d)} testID="wellbeing-details" />
         </View>
       </Card>

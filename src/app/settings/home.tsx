@@ -61,14 +61,17 @@ export default function HomeSettings() {
         return (
           <StaggerItem key={key} index={i}>
             <Card style={{ paddingVertical: spacing.xs }}>
-              <Row>
-                <View style={{ flex: 1, opacity: visible ? 1 : 0.55 }}>
+              {/* Libellé jamais coupé au milieu d'un mot : sur écran étroit, flèches et interrupteur passent dessous, à droite */}
+              <Row wrap>
+                <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 128, opacity: visible ? 1 : 0.55 }}>
                   <Text weight="medium">{c.label}</Text>
                   {c.detail ? <Text variant="caption" muted>{c.detail}</Text> : null}
                 </View>
-                <IconButton icon="arrow-up" label={tr('u1.home.up', { name: c.label })} onPress={() => move(key, -1)} />
-                <IconButton icon="arrow-down" label={tr('u1.home.down', { name: c.label })} onPress={() => move(key, 1)} />
-                <Toggle label={tr('u1.home.show', { name: c.label })} value={visible} onChange={(v) => toggle(key, v)} />
+                <Row style={{ marginLeft: 'auto' }}>
+                  <IconButton icon="arrow-up" label={tr('u1.home.up', { name: c.label })} onPress={() => move(key, -1)} />
+                  <IconButton icon="arrow-down" label={tr('u1.home.down', { name: c.label })} onPress={() => move(key, 1)} />
+                  <Toggle label={tr('u1.home.show', { name: c.label })} value={visible} onChange={(v) => toggle(key, v)} />
+                </Row>
               </Row>
             </Card>
           </StaggerItem>

@@ -54,9 +54,69 @@ const THEMES_EN: { key: ToolTheme; title: string; short: string }[] = [
   { key: 'reminders', title: 'Notifications, reminders and settings', short: 'Reminders' },
   { key: 'resources', title: 'Questions, reading and community', short: 'Resources' },
 ];
-export const THEMES: { key: ToolTheme; title: string; short: string }[] = localized(THEMES_FR, THEMES_EN);
+const THEMES_ES: { key: ToolTheme; title: string; short: string }[] = [
+  { key: 'feeding', title: 'Alimentación y biberones', short: 'Comidas' },
+  { key: 'sleep', title: 'Sueño y despertares', short: 'Sueño' },
+  { key: 'diapers', title: 'Pañales y digestión', short: 'Pañales' },
+  { key: 'teeth', title: 'Dientes e higiene', short: 'Dientes' },
+  { key: 'growth', title: 'Crecimiento y desarrollo', short: 'Crecimiento' },
+  { key: 'health', title: 'Salud y citas', short: 'Salud' },
+  { key: 'mood', title: 'Estado de ánimo y bienestar', short: 'Ánimo' },
+  { key: 'pregnancy', title: 'Embarazo', short: 'Embarazo' },
+  { key: 'cycle', title: 'Ciclo y posparto', short: 'Ciclo' },
+  { key: 'scanner', title: 'Escáner y alérgenos', short: 'Escáner' },
+  { key: 'calendar', title: 'Calendario familiar', short: 'Agenda' },
+  { key: 'tasks', title: 'Tareas y reparto', short: 'Tareas' },
+  { key: 'relay', title: 'Relevos de noche', short: 'Relevos' },
+  { key: 'metime', title: 'Tiempo para ti', short: 'Para ti' },
+  { key: 'prevention', title: 'Prevenir la sobrecarga', short: 'Sobrecarga' },
+  { key: 'memories', title: 'Recuerdos y etapas', short: 'Recuerdos' },
+  { key: 'reminders', title: 'Notificaciones, recordatorios y ajustes', short: 'Recordatorios' },
+  { key: 'resources', title: 'Preguntas, lecturas y comunidad', short: 'Recursos' },
+];
+const THEMES_DE: { key: ToolTheme; title: string; short: string }[] = [
+  { key: 'feeding', title: 'Ernährung und Fläschchen', short: 'Mahlzeiten' },
+  { key: 'sleep', title: 'Schlaf und Aufwachen', short: 'Schlaf' },
+  { key: 'diapers', title: 'Wickeln und Verdauung', short: 'Wickeln' },
+  { key: 'teeth', title: 'Zähne und Hygiene', short: 'Zähne' },
+  { key: 'growth', title: 'Wachstum und Entwicklung', short: 'Wachstum' },
+  { key: 'health', title: 'Gesundheit und Termine', short: 'Gesundheit' },
+  { key: 'mood', title: 'Stimmung und Wohlbefinden', short: 'Stimmung' },
+  { key: 'pregnancy', title: 'Schwangerschaft', short: 'Schwangerschaft' },
+  { key: 'cycle', title: 'Zyklus und Wochenbett', short: 'Zyklus' },
+  { key: 'scanner', title: 'Scanner und Allergene', short: 'Scanner' },
+  { key: 'calendar', title: 'Familienkalender', short: 'Kalender' },
+  { key: 'tasks', title: 'Aufgaben und Aufteilung', short: 'Aufgaben' },
+  { key: 'relay', title: 'Nachtablösung', short: 'Ablösung' },
+  { key: 'metime', title: 'Zeit für dich', short: 'Für dich' },
+  { key: 'prevention', title: 'Überlastung vorbeugen', short: 'Überlastung' },
+  { key: 'memories', title: 'Erinnerungen und Meilensteine', short: 'Erinnerungen' },
+  { key: 'reminders', title: 'Benachrichtigungen, Erinnerungen und Einstellungen', short: 'Erinnerungen' },
+  { key: 'resources', title: 'Fragen, Lektüre und Community', short: 'Ressourcen' },
+];
+const THEMES_IT: { key: ToolTheme; title: string; short: string }[] = [
+  { key: 'feeding', title: 'Alimentazione e biberon', short: 'Pasti' },
+  { key: 'sleep', title: 'Sonno e risvegli', short: 'Sonno' },
+  { key: 'diapers', title: 'Cambi e digestione', short: 'Cambi' },
+  { key: 'teeth', title: 'Denti e igiene', short: 'Denti' },
+  { key: 'growth', title: 'Crescita e sviluppo', short: 'Crescita' },
+  { key: 'health', title: 'Salute e appuntamenti', short: 'Salute' },
+  { key: 'mood', title: 'Umore e benessere', short: 'Umore' },
+  { key: 'pregnancy', title: 'Gravidanza', short: 'Gravidanza' },
+  { key: 'cycle', title: 'Ciclo e post-partum', short: 'Ciclo' },
+  { key: 'scanner', title: 'Scanner e allergeni', short: 'Scanner' },
+  { key: 'calendar', title: 'Calendario familiare', short: 'Agenda' },
+  { key: 'tasks', title: 'Compiti e condivisione', short: 'Compiti' },
+  { key: 'relay', title: 'Turni di notte', short: 'Turni' },
+  { key: 'metime', title: 'Tempo per te', short: 'Per te' },
+  { key: 'prevention', title: 'Prevenire il sovraccarico', short: 'Sovraccarico' },
+  { key: 'memories', title: 'Ricordi e tappe', short: 'Ricordi' },
+  { key: 'reminders', title: 'Notifiche, promemoria e impostazioni', short: 'Promemoria' },
+  { key: 'resources', title: 'Domande, letture e community', short: 'Risorse' },
+];
+export const THEMES: { key: ToolTheme; title: string; short: string }[] = localized(THEMES_FR, THEMES_EN, { es: THEMES_ES, de: THEMES_DE, it: THEMES_IT });
 const themeTitles = (l: typeof THEMES_FR) => Object.fromEntries(l.map((x) => [x.key, x.title])) as Record<ToolTheme, string>;
-export const THEME_TITLE = localized(themeTitles(THEMES_FR), themeTitles(THEMES_EN));
+export const THEME_TITLE = localized(themeTitles(THEMES_FR), themeTitles(THEMES_EN), { es: themeTitles(THEMES_ES), de: themeTitles(THEMES_DE), it: themeTitles(THEMES_IT) });
 
 export interface CatalogTool {
   /** Identifiant stable (favoris) : dérivé de l'adresse sans l'identifiant d'enfant. */
@@ -76,7 +136,7 @@ export interface CatalogTool {
 
 /** Identifiant stable : l'adresse sans identifiant d'enfant, plus le thème. */
 export function toolId(theme: ToolTheme, href: string) {
-  const clean = href.replace(/\/child\/[^/?]+/, '/child/:id').replace(/\/bottle\/[^/?]+$/, '/bottle/:id').replace(/([?&])child=[^&]+/, '$1child=:id');
+  const clean = href.replace(/\/child\/[^/?]+/, '/child/:id').replace(/\/bottle\/(?!(?:scoops|history)$)[^/?]+$/, '/bottle/:id').replace(/([?&])child=[^&]+/, '$1child=:id');
   return `${theme}:${clean}`;
 }
 
@@ -146,7 +206,7 @@ export type StatusKey = 'bottleTimer' | 'feeding' | 'sleep' | 'diapers' | 'famil
 /** Quelle carte affiche quel état (par adresse, indépendamment de l'enfant). */
 export function statusKeyFor(tool: Pick<CatalogTool, 'href' | 'theme'>): StatusKey | null {
   const h = tool.href;
-  if (h.startsWith('/bottle/') && !h.startsWith('/bottle/history')) return 'bottleTimer';
+  if (h.startsWith('/bottle/') && !h.startsWith('/bottle/history') && !h.startsWith('/bottle/scoops')) return 'bottleTimer';
   if (h === '/bottle') return 'bottleTimer';
   if (h === '/(tabs)/track') return tool.theme === 'diapers' ? 'diapers' : 'feeding';
   if (h === '/night') return 'sleep';

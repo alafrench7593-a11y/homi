@@ -108,7 +108,7 @@ export const recettes: Messages<typeof fr> = {
   'rc.filters.noPork': 'No pork',
   'rc.filters.exclude': 'Exclude an allergen',
   'rc.count': { one: '{count} recipe', other: '{count} recipes' },
-  'rc.none': 'No matching recipe',
+  'rc.noMatch': 'No matching recipe',
   'rc.noneBody': 'Try removing a filter.',
   'rc.footer': 'Recipes written by an AI, then checked automatically; professional review in progress. Sources: Santé publique France, Santé.fr, ANSES. Generated illustrations, not photographs.',
   'rc.card.meta': '{min} min · serves {n}',

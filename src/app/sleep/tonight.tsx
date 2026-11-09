@@ -12,7 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Chip, Icon, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { BigButton, SleepRecordButtons } from '@/features/sleep';
-import { useChild, useTrackedChildren } from '@/lib/data/hooks';
+import { useChild, useChildrenLoading, useTrackedChildren } from '@/lib/data/hooks';
 import { useScope } from '@/lib/data/hooks-scope';
 import { useNightFeeds, useSleepPlan } from '@/lib/data/hooks-sleepPlanner';
 import { childAge } from '@/lib/domain/child';
@@ -45,6 +45,9 @@ export default function Tonight() {
   const childrenQ = useTrackedChildren();
   const kids = (childrenQ.data ?? []).filter((c) => c.enabled_tracking.includes('sleep'));
   const child = fromLink ?? scope.child ?? kids[0] ?? null;
+  const childrenLoading = useChildrenLoading();
+  // Premier écran après connexion : « Chargement… », pas « ajoutez le profil d'un enfant » à tort
+  const loading = !child && (!scope.loaded || childrenLoading);
   const insets = useSafeAreaInsets();
   return (
     <View style={{ flex: 1, backgroundColor: BG }} testID="tonight">
@@ -62,7 +65,7 @@ export default function Tonight() {
         {kids.length > 1 ? (
           <Row wrap>{kids.map((c) => <Chip key={c.id} label={c.first_name} selected={c.id === child?.id} onPress={() => router.setParams({ child: c.id })} />)}</Row>
         ) : null}
-        {child ? <TonightBody child={child} /> : <Text color={TEXT}>{tr('u4.tonight.noChild')}</Text>}
+        {child ? <TonightBody child={child} /> : <Text color={TEXT}>{tr(loading ? 'common.loadingA11y' : 'u4.tonight.noChild')}</Text>}
       </ScrollView>
     </View>
   );

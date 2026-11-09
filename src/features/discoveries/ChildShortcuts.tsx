@@ -42,24 +42,24 @@ export function ChildShortcuts({ child }: { child: Pick<Child, 'id' | 'first_nam
       <Tappable accessibilityRole="button" accessibilityLabel={`${tr('dc.title')}. ${lastFood ? tr('cs.lastFood', { food: lastFood.name }) : tr('cs.noFood')}`} onPress={() => router.push(`/child/${child.id}/discoveries` as never)} style={{ flex: 1 }} testID="cs-discoveries">
         <GlassSurface fill={fill} depth={1} radius={22} padded={12} style={{ minHeight: 150 }}>
           <View style={{ gap: 6 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
               {lastFood ? <FoodArt food={lastFood} size={34} /> : <Icon name="feather" size={18} color={t.colors.primary} />}
-              <Text weight="bold" style={{ flex: 1 }} numberOfLines={2}>{tr('cs.discoveries')}</Text>
+              <Text weight="bold" style={{ flexShrink: 1 }}>{tr('cs.discoveries')}</Text>
             </View>
-            <Text variant="caption" muted numberOfLines={2} testID="cs-last-food">{lastFood && lastTaste ? tr('cs.lastFoodOn', { food: lastFood.name, date: formatDate(`${lastTaste.tasted_on}T12:00:00`, { day: 'numeric', month: 'short' }) }) : tr('cs.noFood')}</Text>
-            {recipe ? <Text variant="caption" numberOfLines={2} testID="cs-recipe">{tr('cs.recipe', { title: recipe.title })}</Text> : null}
+            <Text variant="caption" muted testID="cs-last-food">{lastFood && lastTaste ? tr('cs.lastFoodOn', { food: lastFood.name, date: formatDate(`${lastTaste.tasted_on}T12:00:00`, { day: 'numeric', month: 'short' }) }) : tr('cs.noFood')}</Text>
+            {recipe ? <Text variant="caption" testID="cs-recipe">{tr('cs.recipe', { title: recipe.title })}</Text> : null}
           </View>
         </GlassSurface>
       </Tappable>
       <Tappable accessibilityRole="button" accessibilityLabel={`${tr('gr.title')}. ${lastStep ? tr('cs.lastStep', { step: STEP_BY_KEY[lastStep.step_key]?.title ?? '' }) : tr('cs.noStep')}`} onPress={() => router.push(`/child/${child.id}/grow` as never)} style={{ flex: 1 }} testID="cs-grow">
         <GlassSurface fill={fill} depth={1} radius={22} padded={12} style={{ minHeight: 150 }}>
           <View style={{ gap: 6 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
               <Icon name="star" size={18} color={t.colors.primary} />
-              <Text weight="bold" style={{ flex: 1 }}>{tr('gr.title')}</Text>
+              <Text weight="bold" style={{ flexShrink: 1 }}>{tr('gr.title')}</Text>
             </View>
-            <Text variant="caption" muted numberOfLines={2} testID="cs-last-step">{lastStep && STEP_BY_KEY[lastStep.step_key] ? tr('cs.lastStep', { step: STEP_BY_KEY[lastStep.step_key].title }) : tr('cs.noStep')}</Text>
-            {nextStep ? <Text variant="caption" numberOfLines={3} testID="cs-activity">{premium ? tr('cs.activity', { text: nextStep.play }) : tr('cs.nextStep', { step: nextStep.title })}</Text> : null}
+            <Text variant="caption" muted testID="cs-last-step">{lastStep && STEP_BY_KEY[lastStep.step_key] ? tr('cs.lastStep', { step: STEP_BY_KEY[lastStep.step_key].title }) : tr('cs.noStep')}</Text>
+            {nextStep ? <Text variant="caption" testID="cs-activity">{premium ? tr('cs.activity', { text: nextStep.play }) : tr('cs.nextStep', { step: nextStep.title })}</Text> : null}
           </View>
         </GlassSurface>
       </Tappable>

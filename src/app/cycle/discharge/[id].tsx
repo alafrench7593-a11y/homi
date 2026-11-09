@@ -20,13 +20,13 @@ import { estimateCycle } from '@/lib/domain/cycle';
 import { usePeriods } from '@/lib/data/hooks';
 import { daysBetween } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
-import { guideBySlug } from '@/content/dischargeGuides';
+import { guideBySlug, guideLang } from '@/content/dischargeGuides';
 import { dl } from '@/features/cycle/discharge';
 import { Choices, Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
 import { AdviceCard } from '@/features/cycle/AdviceCard';
 import { useAdvice } from '@/features/cycle/useAdvice';
 import { uuid } from '@/lib/uuid';
-import { getLocale, t as tr } from '@/i18n';
+import { t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
 type YesNo = 'yes' | 'no';
@@ -76,7 +76,7 @@ export default function DischargeForm() {
   const live = preview('discharge', { id: existing?.id ?? 'draft', observed_at: `${frToISO(dayText) ?? todayISO()}T12:00:00`, ...obs });
   const top = live[0];
   const guides = useMemo(() => guidesFor(obs).map(guideBySlug).filter(Boolean), [amount, color, textures, odor, symptoms]); // eslint-disable-line react-hooks/exhaustive-deps
-  const lang = getLocale() === 'en' ? 'en' : 'fr';
+  const lang = guideLang();
 
   function setSymptomsSafe(v: string[]) {
     // « Aucun » exclut les autres symptômes (et inversement)

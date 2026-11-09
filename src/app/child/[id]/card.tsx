@@ -10,10 +10,10 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { confirm, useToast } from '@/components/Overlays';
-import { EmptyState } from '@/components/States';
+import { EmptyState, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Field, ListRow, SectionTitle, Text } from '@/components/ui';
 import { backend, eq } from '@/lib/backend';
-import { useChild, useInvalidate } from '@/lib/data/hooks';
+import { useChild, useChildrenLoading, useInvalidate } from '@/lib/data/hooks';
 import { useHealthItems, type HealthItem, type HealthItemKind } from '@/lib/data/hooks-family';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { childAge } from '@/lib/domain/child';
@@ -37,12 +37,14 @@ export default function ChildCard() {
   const inv = useInvalidate();
   const { id } = useLocalSearchParams<{ id: string }>();
   const child = useChild(id);
+  const childLoading = useChildrenLoading();
   const { data: items } = useHealthItems(id);
   const [adding, setAdding] = useState<'soothe' | 'info' | null>(null);
   const [label, setLabel] = useState('');
   const [details, setDetails] = useState('');
   const [saving, setSaving] = useState(false);
-  if (!child) return <Screen back title={tr('tool.kid_card')}><EmptyState icon="user" title={tr('kc.noChild')} /></Screen>;
+  // Pendant le chargement (premier écran après connexion) : squelette, jamais « enfant introuvable » à tort
+  if (!child) return <Screen back title={tr('tool.kid_card')}>{childLoading ? <Skeleton kind="detail" rows={4} /> : <EmptyState icon="user" title={tr('kc.noChild')} />}</Screen>;
 
   const allergies = [...new Set([...(child.allergies_declared ?? []), ...(items ?? []).filter((i) => i.kind === 'allergy').map((i) => i.label)])];
   const of = (k: HealthItemKind) => (items ?? []).filter((i) => i.kind === k && (k !== 'treatment' || !i.done_on));

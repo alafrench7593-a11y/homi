@@ -229,7 +229,7 @@ export function AttachedDocs({ ids }: { ids?: string[] }) {
       {list.map((d) => (
         <Tappable key={d!.id} accessibilityRole="link" onPress={() => router.push(`/documents/${d!.id}` as never)} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36 }}>
           <Icon name="paperclip" size={14} color={t.colors.primary} />
-          <Text variant="small" color={t.colors.primary} numberOfLines={1}>{d!.title}</Text>
+          <Text variant="small" color={t.colors.primary} style={{ flexShrink: 1 }}>{d!.title}</Text>
         </Tappable>
       ))}
     </View>

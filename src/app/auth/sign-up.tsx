@@ -1,5 +1,6 @@
 /** Inscription : validation en direct, règles du mot de passe, 18 ans et CGU, confirmation par e-mail. */
 import React, { useEffect, useRef, useState } from 'react';
+import { friendlyErrorMessage } from '@/lib/errors';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -9,7 +10,7 @@ import { backend, isDemo } from '@/lib/backend';
 import { LEGAL_VERSIONS, peekPendingInvite, savePendingConsents } from '@/lib/authFlow';
 import { emailSchema, fieldErrors, issueText, signUpSchema } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
-import { t as tr } from '@/i18n';
+import { getLocale, t as tr } from '@/i18n';
 
 export default function SignUp() {
   const [form, setForm] = useState({ email: '', password: '', confirm: '', adult: false, terms: false });
@@ -53,7 +54,7 @@ export default function SignUp() {
     try {
       const acceptedAt = new Date().toISOString();
       const { needsConfirmation } = await backend.auth.signUp(parsed.data.email, parsed.data.password, {
-        adult_confirmed: true, terms_version: LEGAL_VERSIONS.terms, privacy_version: LEGAL_VERSIONS.privacy, consents_accepted_at: acceptedAt,
+        adult_confirmed: true, locale: getLocale(), terms_version: LEGAL_VERSIONS.terms, privacy_version: LEGAL_VERSIONS.privacy, consents_accepted_at: acceptedAt,
       });
       if (isDemo) {
         // Pas de déclencheur serveur en démonstration : consentements enregistrés tout de suite
@@ -64,7 +65,7 @@ export default function SignUp() {
       if (needsConfirmation) setSent(true);
       else router.replace('/');
     } catch (e) {
-      setErrors({ _: e instanceof Error && e.message ? e.message : tr('auth.signUp.failed') });
+      setErrors({ _: signUpError(e) });
     } finally {
       inFlight.current = false;
       setLoading(false);
@@ -113,4 +114,14 @@ export default function SignUp() {
       <Button label={tr('auth.signUp.haveAccount')} variant="ghost" onPress={() => router.replace('/auth/sign-in')} />
     </Screen>
   );
+}
+
+/** Erreurs connues du service de connexion (en anglais) : message traduit ; sinon message générique traduit. */
+function signUpError(e: unknown): string {
+  const m = e instanceof Error ? e.message : '';
+  if (/already (registered|exists)|user_already_exists/i.test(m)) return tr('pw.auth.exists');
+  if (/password/i.test(m) && /(weak|short|least|characters|pwned|leaked)/i.test(m)) return tr('pw.auth.weak');
+  if (/rate limit|too many/i.test(m)) return tr('pw.auth.rate');
+  if (/invalid.*email|email.*invalid/i.test(m)) return tr('pw.auth.email');
+  return friendlyErrorMessage(e, tr('auth.signUp.failed'));
 }

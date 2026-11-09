@@ -5,6 +5,7 @@
  * ne propose ni ne modifie aucune dose.
  */
 import React, { useEffect, useMemo, useState } from 'react';
+import { useReminders } from '@/lib/data/hooks';
 import { View } from 'react-native';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Skeleton } from '@/components/States';
@@ -17,7 +18,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { useDeleteTreatment, useLogDose, useSaveTreatment, useTreatmentLogs, useTreatments, type Treatment, type TreatmentLog } from '@/lib/data/hooks-needs';
 import { useDeleteMyTreatment, useLogMyDose, useMyTreatmentLogs, useMyTreatments, useSaveMyTreatment, useUnlogDose, type MyTreatment, type MyTreatmentLog } from '@/lib/data/hooks-myTreatments';
 import { formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
-import { snoozeLocally } from '@/lib/notifications';
+import { getPermission, notificationsSupported, requestPermission, snoozeLocally, type PermissionState } from '@/lib/notifications';
 import { toFrDate } from '@/lib/validation';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
@@ -60,6 +61,9 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
   const url = isChild ? `/child/${childId}/needs?tab=treatments` : '/medications?who=me';
   const tid = (x: string) => (isChild ? x : `me-${x}`);
   const toast = useToast();
+  // Notifications refusées sur ce téléphone : les rappels ne sonneront pas, on le dit clairement (09/11/2026)
+  const [perm, setPerm] = useState<PermissionState>('granted');
+  useEffect(() => { void getPermission().then(setPerm).catch(() => undefined); }, []);
   const th = useTheme();
   const now = useNow(60_000);
   const childQ = useTreatments(childId);
@@ -72,6 +76,8 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
   const myLogs = useMyTreatmentLogs(isChild ? [] : ids, dayStart.toISOString()).data;
   const logs: AnyLog[] | undefined = isChild ? childLogs : myLogs;
   const doses = useMemo(() => dosesFor<AnyTreatment, AnyLog>(dayStart, treatments ?? [], logs ?? []), [dayStart, treatments, logs]);
+  // Mes rappels : l'interrupteur « Rappels » reprend l'état réel du traitement en modification (09/11/2026)
+  const myReminders = useReminders().data;
   const saveChild = useSaveTreatment();
   const saveMine = useSaveMyTreatment();
   const save = isChild ? saveChild : saveMine;
@@ -98,7 +104,8 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
     setErrors({});
     setDraft(t === 'new' ? emptyT() : {
       name: t.name, dose: t.dose_text, times: t.times.join(', '), frequency: t.frequency, weekdays: t.weekdays, start: toFrDate(t.start_date), end: t.end_date ? toFrDate(t.end_date) : '',
-      instructions: t.instructions ?? '', prescriber: t.prescriber ?? '', reminders: true, active: t.active,
+      instructions: t.instructions ?? '', prescriber: t.prescriber ?? '',
+      reminders: myReminders ? myReminders.some((r) => (r.treatment_id === t.id || r.my_treatment_id === t.id) && r.enabled !== false) : true, active: t.active,
     });
   }
   async function submit() {
@@ -118,7 +125,8 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
       const v = { treatment_id: d.treatment.id, scheduled_for: d.scheduledFor, status, note: withNote ?? d.log?.note ?? null, existingId: d.log?.id };
       const res = isChild ? await logChild.mutateAsync(v) : await logMine.mutateAsync(v);
       if (res === 'queued') toast(tr('u7.track.queued'), 'info');
-      if (status === 'snoozed') await snoozeLocally(label(d.treatment.name), d.treatment.dose_text, url).catch(() => undefined);
+      // Écran verrouillé : texte neutre, ni prénom, ni médicament, ni dose (même règle que les rappels, 09/11/2026)
+      if (status === 'snoozed') await snoozeLocally(tr('l3.notif.lock_title'), tr('l3.notif.lock_body'), url).catch(() => undefined);
       haptic('success');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
@@ -207,6 +215,12 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
         <Field label={tr('nd.t.instructions')} optional value={draft.instructions} onChangeText={(v) => set('instructions', v)} multiline maxLength={2000} />
         <Field label={tr('nd.t.prescriber')} optional value={draft.prescriber} onChangeText={(v) => set('prescriber', v)} maxLength={120} />
         <Toggle label={tr('nd.t.reminders')} value={draft.reminders} onChange={(v) => set('reminders', v)} />
+        {draft.reminders && notificationsSupported && perm !== 'granted' ? (
+          <Banner tone="warning" icon="bell-off" title={tr('nt.permOff')}
+            action={<Button label={tr('nt.permAsk')} size="sm" onPress={() => void requestPermission().then((p) => { setPerm(p); if (p !== 'granted') toast(tr('nt.permDenied'), 'info'); })} />}>
+            {tr('nt.permOffD')}
+          </Banner>
+        ) : null}
         <Toggle label={tr('nd.t.active')} value={draft.active} onChange={(v) => set('active', v)} />
         <Button label={tr('common.save')} loading={save.isPending} onPress={() => submit()} testID="t-save" />
         {editing && editing !== 'new' ? <Button label={tr('common.delete')} variant="ghost" icon="trash-2" onPress={async () => {

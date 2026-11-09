@@ -3,7 +3,8 @@
  * bébé, enfant) avec leur nombre d'articles. Chaque thème ouvre ses catégories, puis ses sujets (écran /library).
  */
 import React, { useMemo, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { Keyboard, TextInput, View } from 'react-native';
+import { useRevealOnFocus } from '@/components/keyboard';
 import { router } from 'expo-router';
 import { Tappable } from '@/components/Tappable';
 import { Card, Chip, Icon, Text } from '@/components/ui';
@@ -27,7 +28,10 @@ export function HomeLibraryCard() {
     }).filter((g) => g.count > 0);
     return { total: list.length, themes: (categories ?? []).length, subjects: countSubjects(list), groups };
   }, [articles, categories]);
+  const inputRef = React.useRef<TextInput>(null);
+  const reveal = useRevealOnFocus(inputRef);
   const search = () => {
+    Keyboard.dismiss();
     const s = q.trim();
     setQ('');
     router.push(s ? { pathname: '/library', params: { q: s } } : '/library');
@@ -46,7 +50,7 @@ export function HomeLibraryCard() {
       </Tappable>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: spacing.xs, borderRadius: 16, borderWidth: 0.5, borderColor: t.colors.border, paddingLeft: spacing.md, minHeight: MIN_TOUCH }}>
         <Icon name="search" size={16} color={t.colors.textMuted} />
-        <TextInput value={q} onChangeText={setQ} placeholder={tr('lib.home.search')} placeholderTextColor={t.colors.textMuted} returnKeyType="search" onSubmitEditing={search}
+        <TextInput ref={inputRef} onFocus={reveal} value={q} onChangeText={setQ} placeholder={tr('lib.home.search')} placeholderTextColor={t.colors.textMuted} returnKeyType="search" onSubmitEditing={search}
           accessibilityLabel={tr('lib.home.search')} testID="home-library-search" style={{ flex: 1, minHeight: MIN_TOUCH, color: t.colors.text, fontSize: 16 }} />
       </View>
       <Text variant="caption" muted style={{ marginTop: spacing.sm }}>{tr('lib.home.byTheme')}</Text>

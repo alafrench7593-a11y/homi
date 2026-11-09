@@ -7,6 +7,7 @@
  * sujets consultés servent à ordonner ce que la personne voit ; ils ne sont jamais publiés ni envoyés aux autres membres.
  * Pas de concours de popularité : la participation compte peu (logarithme), aucune autrice n'est « mise en avant ».
  */
+import { monthName } from '@/i18n/formats';
 import { localized } from '@/i18n/localized';
 import { getLocale, t as tr } from '@/i18n';
 
@@ -60,6 +61,10 @@ export interface CohortSuggestion { type: CohortType; month: string; label: stri
 export function cohortName(type: CohortType, month: string, lang: string = getLocale()): string {
   const [y, m] = month.split('-').map(Number);
   if (lang === 'en') return `${type === 'birth' ? 'Babies born in' : 'Due in'} ${MONTHS_EN[m - 1]} ${y}`;
+  // Affichage seulement (le nom enregistré côté serveur reste le français)
+  if (lang === 'es') return `${type === 'birth' ? 'Bebés nacidos en' : 'Fecha prevista en'} ${monthName(m - 1, 'es')} de ${y}`;
+  if (lang === 'de') return `${type === 'birth' ? 'Geboren im' : 'Termin im'} ${monthName(m - 1, 'de')} ${y}`;
+  if (lang === 'it') return `${type === 'birth' ? 'Nati a' : 'Termine previsto a'} ${monthName(m - 1, 'it')} ${y}`;
   return `${type === 'birth' ? 'Bébés nés en' : 'Terme prévu en'} ${MONTHS[m - 1]} ${y}`;
 }
 
@@ -228,10 +233,16 @@ export type ProfileAccent = (typeof PROFILE_ACCENTS)[number];
 export type ProfileBanner = (typeof PROFILE_BANNERS)[number];
 const ACCENT_LABEL_FR: Record<ProfileAccent, string> = { rose: 'Rose', lavande: 'Lavande', menthe: 'Menthe', peche: 'Pêche', ciel: 'Ciel', sable: 'Sable' };
 const ACCENT_LABEL_EN: Record<ProfileAccent, string> = { rose: 'Rose', lavande: 'Lavender', menthe: 'Mint', peche: 'Peach', ciel: 'Sky', sable: 'Sand' };
-export const ACCENT_LABEL: Record<ProfileAccent, string> = localized(ACCENT_LABEL_FR, ACCENT_LABEL_EN);
+const ACCENT_LABEL_ES: Record<ProfileAccent, string> = { rose: 'Rosa', lavande: 'Lavanda', menthe: 'Menta', peche: 'Melocotón', ciel: 'Cielo', sable: 'Arena' };
+const ACCENT_LABEL_DE: Record<ProfileAccent, string> = { rose: 'Rosa', lavande: 'Lavendel', menthe: 'Minze', peche: 'Pfirsich', ciel: 'Himmel', sable: 'Sand' };
+const ACCENT_LABEL_IT: Record<ProfileAccent, string> = { rose: 'Rosa', lavande: 'Lavanda', menthe: 'Menta', peche: 'Pesca', ciel: 'Cielo', sable: 'Sabbia' };
+export const ACCENT_LABEL: Record<ProfileAccent, string> = localized(ACCENT_LABEL_FR, ACCENT_LABEL_EN, { es: ACCENT_LABEL_ES, de: ACCENT_LABEL_DE, it: ACCENT_LABEL_IT });
 const BANNER_LABEL_FR: Record<ProfileBanner, string> = { aube: 'Aube', nuit: 'Nuit étoilée', prairie: 'Prairie', ocean: 'Océan', nacre: 'Nacre' };
 const BANNER_LABEL_EN: Record<ProfileBanner, string> = { aube: 'Dawn', nuit: 'Starry night', prairie: 'Meadow', ocean: 'Ocean', nacre: 'Mother-of-pearl' };
-export const BANNER_LABEL: Record<ProfileBanner, string> = localized(BANNER_LABEL_FR, BANNER_LABEL_EN);
+const BANNER_LABEL_ES: Record<ProfileBanner, string> = { aube: 'Amanecer', nuit: 'Noche estrellada', prairie: 'Pradera', ocean: 'Océano', nacre: 'Nácar' };
+const BANNER_LABEL_DE: Record<ProfileBanner, string> = { aube: 'Morgendämmerung', nuit: 'Sternennacht', prairie: 'Wiese', ocean: 'Ozean', nacre: 'Perlmutt' };
+const BANNER_LABEL_IT: Record<ProfileBanner, string> = { aube: 'Alba', nuit: 'Notte stellata', prairie: 'Prateria', ocean: 'Oceano', nacre: 'Madreperla' };
+export const BANNER_LABEL: Record<ProfileBanner, string> = localized(BANNER_LABEL_FR, BANNER_LABEL_EN, { es: BANNER_LABEL_ES, de: BANNER_LABEL_DE, it: BANNER_LABEL_IT });
 
 // ─── Gratuit / Premium ─────────────────────────────────────────────────────────────────────────────
 
@@ -258,7 +269,40 @@ const COMMUNITY_FREE_EN: typeof COMMUNITY_FREE_FR = [
   'Report and block',
   'Rules and safety information',
 ];
-export const COMMUNITY_FREE = localized(COMMUNITY_FREE_FR, COMMUNITY_FREE_EN);
+const COMMUNITY_FREE_ES: typeof COMMUNITY_FREE_FR = [
+  'Crear tu perfil en la comunidad',
+  'Publicar texto y hasta 4 fotos',
+  'Comentar, responder, dar me gusta',
+  'Seguir a miembros y categorías',
+  'Unirte a las categorías, a los grupos temáticos y a los grupos por mes',
+  'Crear y responder encuestas',
+  'Recibir las notificaciones de respuestas y menciones',
+  'Denunciar y bloquear',
+  'Normas e información de seguridad',
+];
+const COMMUNITY_FREE_DE: typeof COMMUNITY_FREE_FR = [
+  'Dein Community-Profil erstellen',
+  'Text und bis zu 4 Fotos posten',
+  'Kommentieren, antworten, liken',
+  'Mitgliedern und Kategorien folgen',
+  'Kategorien, Themengruppen und Monatsgruppen beitreten',
+  'Umfragen erstellen und beantworten',
+  'Benachrichtigungen bei Antworten und Erwähnungen erhalten',
+  'Melden und blockieren',
+  'Regeln und Sicherheitsinformationen',
+];
+const COMMUNITY_FREE_IT: typeof COMMUNITY_FREE_FR = [
+  'Creare il tuo profilo nella community',
+  'Pubblicare testo e fino a 4 foto',
+  'Commentare, rispondere, mettere mi piace',
+  'Seguire membri e categorie',
+  'Unirti alle categorie, ai gruppi tematici e ai gruppi per mese',
+  'Creare sondaggi e rispondere',
+  'Ricevere le notifiche di risposte e menzioni',
+  'Segnalare e bloccare',
+  'Regole e informazioni sulla sicurezza',
+];
+export const COMMUNITY_FREE = localized(COMMUNITY_FREE_FR, COMMUNITY_FREE_EN, { es: COMMUNITY_FREE_ES, de: COMMUNITY_FREE_DE, it: COMMUNITY_FREE_IT });
 
 const COMMUNITY_PREMIUM_FR = [
   'Profil personnalisé : couleur, bannière, présentation enrichie',
@@ -282,4 +326,37 @@ const COMMUNITY_PREMIUM_EN: typeof COMMUNITY_PREMIUM_FR = [
   'Summaries of long discussions and translation (AI service to be configured on the server)',
   'Workshops and meet-ups for subscribers',
 ];
-export const COMMUNITY_PREMIUM = localized(COMMUNITY_PREMIUM_FR, COMMUNITY_PREMIUM_EN);
+const COMMUNITY_PREMIUM_ES: typeof COMMUNITY_PREMIUM_FR = [
+  'Perfil personalizado: color, banner, presentación ampliada',
+  'Insignia Premium discreta y opcional',
+  'Grupos privados e invitaciones',
+  'Álbumes de fotos privados o compartidos con miembros elegidos',
+  'Filtros avanzados del muro y búsqueda avanzada',
+  'Registro de actividad completo',
+  'Carpetas para ordenar tus guardados',
+  'Resumen de las discusiones largas y traducción (servicio de IA que se configura en el servidor)',
+  'Talleres y encuentros reservados a las personas suscritas',
+];
+const COMMUNITY_PREMIUM_DE: typeof COMMUNITY_PREMIUM_FR = [
+  'Persönliches Profil: Farbe, Banner, ausführliche Vorstellung',
+  'Dezentes, optionales Premium-Abzeichen',
+  'Private Gruppen und Einladungen',
+  'Fotoalben, privat oder mit ausgewählten Mitgliedern geteilt',
+  'Erweiterte Feed-Filter und erweiterte Suche',
+  'Vollständiges Aktivitätsprotokoll',
+  'Ordner, um deine gespeicherten Beiträge zu sortieren',
+  'Zusammenfassung langer Diskussionen und Übersetzung (KI-Dienst, der auf dem Server einzurichten ist)',
+  'Workshops und Treffen nur für Abonnent·innen',
+];
+const COMMUNITY_PREMIUM_IT: typeof COMMUNITY_PREMIUM_FR = [
+  'Profilo personalizzato: colore, banner, presentazione arricchita',
+  'Badge Premium discreto e facoltativo',
+  'Gruppi privati e inviti',
+  'Album fotografici privati o condivisi con membri scelti',
+  'Filtri avanzati del feed e ricerca avanzata',
+  'Registro attività completo',
+  'Cartelle per ordinare i tuoi salvataggi',
+  'Riassunto delle discussioni lunghe e traduzione (servizio di IA da configurare sul server)',
+  'Laboratori e incontri riservati agli abbonati e alle abbonate',
+];
+export const COMMUNITY_PREMIUM = localized(COMMUNITY_PREMIUM_FR, COMMUNITY_PREMIUM_EN, { es: COMMUNITY_PREMIUM_ES, de: COMMUNITY_PREMIUM_DE, it: COMMUNITY_PREMIUM_IT });

@@ -2,7 +2,7 @@
  * Hooks du scanner (produits et aliments). Les droits et le quota sont vérifiés côté serveur
  * (RLS, déclencheur de quota) ; ici on ne fait que refléter l'état.
  */
-import { localized } from '@/i18n/localized';
+import { inLang, localized } from '@/i18n/localized';
 import { t as tr } from '@/i18n';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef } from 'react';
@@ -20,13 +20,16 @@ import { useActivePregnancy, useChildren, useInvalidate, useRows } from './hooks
 // ---------------------------------------------------------------- profils proposés
 export interface ProfileOption { key: string; label: string; sub?: string; profile: ScanProfile }
 
+const MY_PREGNANCY = { fr: 'Ma grossesse', en: 'My pregnancy', es: 'Mi embarazo', de: 'Meine Schwangerschaft', it: 'La mia gravidanza' };
+const PREGNANT_PERSON = { fr: 'Personne enceinte', en: 'Pregnant person', es: 'Persona embarazada', de: 'Schwangere Person', it: 'Persona in gravidanza' };
+
 /** Profils pré-remplis : grossesse en cours, enfants du foyer (âge exact, allergies déclarées), puis profils génériques. */
 export function useScanProfileOptions(): ProfileOption[] {
   const pregnancy = useActivePregnancy();
   const { data: children } = useChildren();
   return useMemo(() => {
     const out: ProfileOption[] = [];
-    if (pregnancy) out.push({ key: 'pregnancy', label: 'Ma grossesse', sub: 'Personne enceinte', profile: { kind: 'pregnant' } });
+    if (pregnancy) out.push({ key: 'pregnancy', label: inLang(MY_PREGNANCY), sub: inLang(PREGNANT_PERSON), profile: { kind: 'pregnant' } });
     for (const c of children ?? []) {
       const months = childAge(c.birth_date).months;
       const kind = months < 1 ? 'newborn' : months < 36 ? 'baby' : 'child';
@@ -56,7 +59,31 @@ const GENERIC_PROFILES_EN: { key: string; label: string; kind: ScanProfile['kind
   { key: 'g:child', label: 'Child (3 years and over)', kind: 'child', needsAge: true },
   { key: 'g:adult', label: 'Adult', kind: 'adult', needsAge: false },
 ];
-export const GENERIC_PROFILES: { key: string; label: string; kind: ScanProfile['kind']; needsAge: boolean }[] = localized(GENERIC_PROFILES_FR, GENERIC_PROFILES_EN);
+const GENERIC_PROFILES_ES: { key: string; label: string; kind: ScanProfile['kind']; needsAge: boolean }[] = [
+  { key: 'g:pregnant', label: 'Persona embarazada', kind: 'pregnant', needsAge: false },
+  { key: 'g:breastfeeding', label: 'Persona que da el pecho', kind: 'breastfeeding', needsAge: false },
+  { key: 'g:newborn', label: 'Recién nacido (menos de un mes)', kind: 'newborn', needsAge: false },
+  { key: 'g:baby', label: 'Bebé (menos de 3 años)', kind: 'baby', needsAge: true },
+  { key: 'g:child', label: 'Niño o niña (3 años o más)', kind: 'child', needsAge: true },
+  { key: 'g:adult', label: 'Adulto', kind: 'adult', needsAge: false },
+];
+const GENERIC_PROFILES_DE: { key: string; label: string; kind: ScanProfile['kind']; needsAge: boolean }[] = [
+  { key: 'g:pregnant', label: 'Schwangere Person', kind: 'pregnant', needsAge: false },
+  { key: 'g:breastfeeding', label: 'Stillende Person', kind: 'breastfeeding', needsAge: false },
+  { key: 'g:newborn', label: 'Neugeborenes (unter einem Monat)', kind: 'newborn', needsAge: false },
+  { key: 'g:baby', label: 'Baby (unter 3 Jahren)', kind: 'baby', needsAge: true },
+  { key: 'g:child', label: 'Kind (ab 3 Jahren)', kind: 'child', needsAge: true },
+  { key: 'g:adult', label: 'Erwachsene Person', kind: 'adult', needsAge: false },
+];
+const GENERIC_PROFILES_IT: { key: string; label: string; kind: ScanProfile['kind']; needsAge: boolean }[] = [
+  { key: 'g:pregnant', label: 'Persona in gravidanza', kind: 'pregnant', needsAge: false },
+  { key: 'g:breastfeeding', label: 'Persona che allatta', kind: 'breastfeeding', needsAge: false },
+  { key: 'g:newborn', label: 'Neonato (meno di un mese)', kind: 'newborn', needsAge: false },
+  { key: 'g:baby', label: 'Bebè (meno di 3 anni)', kind: 'baby', needsAge: true },
+  { key: 'g:child', label: 'Bambino (3 anni e più)', kind: 'child', needsAge: true },
+  { key: 'g:adult', label: 'Adulto', kind: 'adult', needsAge: false },
+];
+export const GENERIC_PROFILES: { key: string; label: string; kind: ScanProfile['kind']; needsAge: boolean }[] = localized(GENERIC_PROFILES_FR, GENERIC_PROFILES_EN, { es: GENERIC_PROFILES_ES, de: GENERIC_PROFILES_DE, it: GENERIC_PROFILES_IT });
 
 // ---------------------------------------------------------------- historique
 export function useScanHistory(kind?: ScanKind) {

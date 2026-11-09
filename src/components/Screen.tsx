@@ -1,6 +1,7 @@
 import React from 'react';
 import { parentRoute } from '@/lib/parentRoute';
-import { Animated, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Animated, Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor, useKeyboardVisible } from './keyboard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useIsFocused, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -54,6 +55,21 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   const t = useTheme();
   const insets = useSafeAreaInsets();
   const focused = useIsFocused();
+  // Clavier : la zone qui défile garde le champ actif visible ; quitter l'écran ferme le clavier ouvert par un de ses champs
+  const scrollRef = React.useRef<ScrollView>(null);
+  const { scope: keyboardScope, onScroll } = useKeyboardScopeFor(scrollRef);
+  const keyboardVisible = useKeyboardVisible();
+  React.useEffect(() => {
+    if (!focused) keyboardScope.dismissIfOwned();
+  }, [focused, keyboardScope]);
+  React.useEffect(() => () => keyboardScope.dismissIfOwned(), [keyboardScope]);
+  // Écran présenté en modale iOS (feuille décalée vers le bas) : KeyboardAvoidingView compte depuis son parent,
+  // on lui donne le décalage réel dans la fenêtre pour que le bas de l'écran remonte entièrement au-dessus du clavier
+  const rootRef = React.useRef<View>(null);
+  const [keyboardOffset, setKeyboardOffset] = React.useState(0);
+  const measureOffset = React.useCallback(() => {
+    setTimeout(() => rootRef.current?.measureInWindow?.((_x, y) => { const v = Math.max(0, Math.round(y)); setKeyboardOffset((o) => (Math.abs(o - v) > 2 ? v : o)); }), 450);
+  }, []);
   // Continuité de navigation : le contenu entre en fondu et monte légèrement à chaque arrivée sur l'écran
   const entrance = useFocusEntrance(focused);
   // Arrivée depuis une carte « Outils » : son glyphe se pose à côté du titre
@@ -107,6 +123,11 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
 
   const body = scroll ? (
     <ScrollView
+      ref={scrollRef}
+      onScroll={onScroll}
+      onScrollEndDrag={onScroll}
+      onMomentumScrollEnd={onScroll}
+      scrollEventThrottle={64}
       contentContainerStyle={[styles.wide, { paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? spacing.md : insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xxl + bottomInset, gap: spacing.md }, contentStyle]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
@@ -123,21 +144,24 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   );
 
   return (
-    <Animated.View style={[{ flex: 1, backgroundColor: 'transparent' }, entrance]} pointerEvents={focused ? 'auto' : 'none'}>
+    <Animated.View ref={rootRef} onLayout={measureOffset} style={[{ flex: 1, backgroundColor: 'transparent' }, entrance]} pointerEvents={focused ? 'auto' : 'none'}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       {/* Pages du bébé et de l'enfant : vidéo des galets le jour et l'animation de la maman avec son enfant */}
       {isChildPage(pathname, tool?.id) ? <ChildBackdrop /> : null}
       {(stars || t.isDark) && <StarField density={t.name === 'night' ? 30 : stars ? 26 : 16} color="#FFF1E6" />}
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      {/* « padding » sur iOS et Android : Android est toujours edge-to-edge (Expo 54+), adjustResize ne réduit plus l'écran */}
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={KEYBOARD_BEHAVIOR} keyboardVerticalOffset={keyboardOffset}>
+        <KeyboardScopeContext.Provider value={keyboardScope}>
         {header}
         {body}
         {footer || action ? (
-          <View style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: bottomInset > 0 ? bottomInset + spacing.xs : insets.bottom + spacing.sm, paddingTop: spacing.sm, gap: spacing.sm }}>
+          <View style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: keyboardVisible ? spacing.sm : bottomInset > 0 ? bottomInset + spacing.xs : insets.bottom + spacing.sm, paddingTop: spacing.sm, gap: spacing.sm }}>
             {/* écran d'onglet (barre du bas) : le bouton d'action reste au-dessus de la barre */}
-            {action ? (paidTool ? <PaidToolAction tool={paidTool} action={action} /> : <Button label={action.label} icon={action.icon ?? 'plus'} size="lg" full onPress={action.onPress} disabled={action.disabled} testID={action.testID ?? 'miniapp-action'} />) : null}
+            {action ? (paidTool ? <PaidToolAction tool={paidTool} action={action} /> : <Button label={action.label} icon={action.icon ?? 'plus'} size="lg" full onPress={() => { Keyboard.dismiss(); action.onPress(); }} disabled={action.disabled} testID={action.testID ?? 'miniapp-action'} />) : null}
             {footer}
           </View>
         ) : null}
+        </KeyboardScopeContext.Provider>
       </KeyboardAvoidingView>
     </Animated.View>
   );
@@ -156,7 +180,7 @@ function PaidToolGate({ tool, scroll, children }: { tool: PaidTool; scroll: bool
 
 function PaidToolAction({ tool, action }: { tool: PaidTool; action: NonNullable<ScreenProps['action']> }) {
   const locked = !useToolAccess(tool).allowed;
-  return <Button label={action.label} icon={action.icon ?? 'plus'} size="lg" full onPress={action.onPress} disabled={action.disabled || locked} testID={action.testID ?? 'miniapp-action'} />;
+  return <Button label={action.label} icon={action.icon ?? 'plus'} size="lg" full onPress={() => { Keyboard.dismiss(); action.onPress(); }} disabled={action.disabled || locked} testID={action.testID ?? 'miniapp-action'} />;
 }
 
 /** Le glyphe de la carte touchée arrive dans l'en-tête (glisse depuis le bas, se réduit, se pose). */

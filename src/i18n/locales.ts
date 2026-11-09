@@ -10,10 +10,11 @@ export interface LocaleInfo { code: string; native: string; dir: 'ltr' | 'rtl'; 
 export const LOCALES: LocaleInfo[] = [
   { code: 'fr', native: 'Français', dir: 'ltr', status: 'available', tag: 'fr-FR' },
   { code: 'en', native: 'English', dir: 'ltr', status: 'available', tag: 'en-GB' },
-  { code: 'es', native: 'Español', dir: 'ltr', status: 'planned', tag: 'es-ES' },
-  { code: 'it', native: 'Italiano', dir: 'ltr', status: 'planned', tag: 'it-IT' },
+  // Espagnol, allemand, italien : activés le 08/11/2026 à la demande de la fondatrice (interface complète, mêmes clés que le français).
+  { code: 'es', native: 'Español', dir: 'ltr', status: 'available', tag: 'es-ES' },
+  { code: 'de', native: 'Deutsch', dir: 'ltr', status: 'available', tag: 'de-DE' },
+  { code: 'it', native: 'Italiano', dir: 'ltr', status: 'available', tag: 'it-IT' },
   { code: 'pt', native: 'Português', dir: 'ltr', status: 'planned', tag: 'pt-PT' },
-  { code: 'de', native: 'Deutsch', dir: 'ltr', status: 'planned', tag: 'de-DE' },
   { code: 'nl', native: 'Nederlands', dir: 'ltr', status: 'planned', tag: 'nl-NL' },
   { code: 'ar', native: 'العربية', dir: 'rtl', status: 'planned', tag: 'ar' },
   { code: 'he', native: 'עברית', dir: 'rtl', status: 'planned', tag: 'he-IL' },
@@ -52,15 +53,20 @@ export const SOURCE_LOCALE = 'fr';
 export const availableLocales = () => LOCALES.filter((l) => l.status === 'available');
 export const localeInfo = (code: string) => LOCALES.find((l) => l.code === code) ?? LOCALES[0];
 
-/** Langue proposée à la première ouverture : celle du téléphone si elle est disponible, sinon l'anglais (international), le français pour la francophonie. */
+/** Langue proposée à la première ouverture : celle du téléphone si elle est disponible, sinon le français
+ *  (langue de secours, décision du 08/11/2026 ; auparavant l'anglais). */
 export function proposeLocale(deviceLanguages: string[]): string {
   for (const raw of deviceLanguages) {
     const code = raw.toLowerCase();
     const hit = availableLocales().find((l) => l.code === code || code.startsWith(`${l.code}-`));
     if (hit) return hit.code;
   }
-  return 'en';
+  return SOURCE_LOCALE;
 }
+
+/** Langues d'interface complètes (dictionnaires + contenus du code). */
+export const UI_LOCALES = ['fr', 'en', 'es', 'de', 'it'] as const;
+export type UiLocale = (typeof UI_LOCALES)[number];
 
 /** Pays de résidence (distinct de la langue) : pour adapter urgences et contenus de santé. */
 export const REGIONS: { code: string; fr: string; en: string; emergency: string }[] = [
@@ -85,4 +91,17 @@ export const REGIONS: { code: string; fr: string; en: string; emergency: string 
 export function defaultRegion(deviceRegionCode: string | null | undefined): string {
   const c = (deviceRegionCode ?? '').toUpperCase();
   return REGIONS.some((r) => r.code === c) ? c : c ? 'OTHER' : 'FR';
+}
+
+/** Nom d'un pays dans la langue affichée : noms fournis en français et en anglais ; pour les autres langues,
+ *  Intl.DisplayNames quand le téléphone le fournit, sinon le nom anglais. */
+export function regionLabel(r: { code: string; fr: string; en: string }, lang: string): string {
+  if (lang === 'fr') return r.fr;
+  if (lang === 'en') return r.en;
+  try {
+    const DN = (Intl as unknown as { DisplayNames?: new (l: string[], o: { type: 'region' }) => { of: (c: string) => string | undefined } }).DisplayNames;
+    const name = DN ? new DN([lang], { type: 'region' }).of(r.code) : undefined;
+    if (name && name !== r.code) return name;
+  } catch { /* Hermes sans DisplayNames */ }
+  return r.en;
 }

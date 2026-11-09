@@ -1,7 +1,11 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { backend } from '@/lib/backend';
-import { localized } from '@/i18n/localized';
+import { inLang, localized } from '@/i18n/localized';
+import { ASSISTANT_INTRO as ASSISTANT_INTRO_FR, ASSISTANT_INTRO_EN as ASSISTANT_INTRO_EN_TEXT } from '../../supabase/functions/_shared/assistant-format';
+import { ASSISTANT_INTRO_ES, SUGGESTIONS_BY_JOURNEY_ES } from './assistant.es';
+import { ASSISTANT_INTRO_DE, SUGGESTIONS_BY_JOURNEY_DE } from './assistant.de';
+import { ASSISTANT_INTRO_IT, SUGGESTIONS_BY_JOURNEY_IT } from './assistant.it';
 import { useAuth } from '@/lib/auth';
 import { useActivePregnancy, useChildren, useLogs, useMoods, usePeriods, useProfile } from '@/lib/data/hooks';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
@@ -14,6 +18,7 @@ import type { StructuredAnswer } from '../../supabase/functions/_shared/assistan
 import type { UrgentContact } from '../../supabase/functions/_shared/safety';
 
 export { ASSISTANT_INTRO, ASSISTANT_INTRO_EN, MAX_QUESTION_LENGTH, DEV_MODE_LABEL, parseStructuredAnswer, SECTION_TITLES } from '../../supabase/functions/_shared/assistant-format';
+export { ASSISTANT_INTRO_ES, ASSISTANT_INTRO_DE, ASSISTANT_INTRO_IT };
 export type { StructuredAnswer, OfficialSource } from '../../supabase/functions/_shared/assistant-format';
 export { describeContext } from '../../supabase/functions/_shared/assistant-prompt';
 export { urgentContacts } from '../../supabase/functions/_shared/safety';
@@ -214,7 +219,10 @@ const SUGGESTIONS_BY_JOURNEY_EN: Suggestions = {
   },
 };
 
-export const SUGGESTIONS_BY_JOURNEY: Suggestions = localized(SUGGESTIONS_BY_JOURNEY_FR, SUGGESTIONS_BY_JOURNEY_EN);
+export const SUGGESTIONS_BY_JOURNEY: Suggestions = localized(SUGGESTIONS_BY_JOURNEY_FR, SUGGESTIONS_BY_JOURNEY_EN, { es: SUGGESTIONS_BY_JOURNEY_ES, de: SUGGESTIONS_BY_JOURNEY_DE, it: SUGGESTIONS_BY_JOURNEY_IT });
+
+/** Présentation de l'assistant dans la langue en cours (repli : français). */
+export const assistantIntro = (): string => inLang({ fr: ASSISTANT_INTRO_FR, en: ASSISTANT_INTRO_EN_TEXT, es: ASSISTANT_INTRO_ES, de: ASSISTANT_INTRO_DE, it: ASSISTANT_INTRO_IT });
 
 export const JOURNEY_ORDER: Journey[] = ['avoid', 'ttc', 'pregnant', 'newborn', 'child', 'family'];
 

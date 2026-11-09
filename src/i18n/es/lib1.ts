@@ -1,0 +1,36 @@
+// es — généré depuis la traduction validée (scripts i18n du 08/11/2026). Mêmes clés que le français.
+import type { lib1 as fr } from '../fr/lib1';
+import type { Messages } from '../types';
+
+export const lib1: Messages<typeof fr> = {
+  "l1.dates.justNow": "ahora mismo",
+  "l1.dates.minAgo": "hace {n} min",
+  "l1.dates.hourAgo": "hace {h} h{r}",
+  "l1.dates.yesterday": "ayer",
+  "l1.dates.daysAgo": "hace {n} días",
+  "l1.sleep.nightLabel": "Noche del {from} al {to}",
+  "l1.sleep.err.futureDate": "La fecha no puede ser futura.",
+  "l1.sleep.err.bed": "Hora esperada en formato 22:30.",
+  "l1.sleep.err.wake": "Hora esperada en formato 07:00.",
+  "l1.sleep.err.wakeSame": "El despertar debe ser distinto de la hora de acostarse.",
+  "l1.sleep.err.wakings": "Un número entre 0 y 30.",
+  "l1.sleep.err.detailTime": "Hora esperada en formato 03:15.",
+  "l1.sleep.err.detailMinutes": "Duración en minutos (0 a 600).",
+  "l1.sleep.err.duration": "Duración esperada en formato 7h30.",
+  "l1.sleep.err.nap": "Inicio y fin en formato 14:00.",
+  "l1.sleep.err.napOrder": "El fin debe ser posterior al inicio.",
+  "l1.sleep.tip.sideLate.title": "Dormir de lado",
+  "l1.sleep.tip.sideLate.text": "Al final del embarazo, en general se aconseja dormir de lado (izquierdo o derecho). Si te despiertas boca arriba, no te preocupes: basta con darte la vuelta. Un cojín entre las rodillas o bajo la barriga puede ayudar.",
+  "l1.sleep.tip.sideEarly.title": "Encontrar una postura cómoda",
+  "l1.sleep.tip.sideEarly.text": "Con el paso de las semanas, dormir de lado suele ser lo más agradable; se aconseja al final del embarazo. Un cojín entre las rodillas puede aliviar.",
+  "l1.sleep.tip.hydration.title": "Beber sobre todo de día",
+  "l1.sleep.tip.hydration.text": "Beber bien durante el día y algo menos por la noche puede limitar los despertares para ir al baño.",
+  "l1.sleep.tip.rest.title": "Descansar sin culpa",
+  "l1.sleep.tip.rest.text": "El cansancio del embarazo es muy real. Tumbarte un rato durante el día, aunque sea poco, está permitido.",
+  "l1.pur.notConfigured": "Las compras aún no están configuradas en esta versión.",
+  "l1.scan.ciqualTable": "Tabla Ciqual",
+  "l1.scan.ciqualVersion": "Tabla Ciqual (Anses), {version}",
+  "l1.scan.ciqualVersionDate": "Tabla Ciqual (Anses), {version}, {date}",
+  "l1.scan.enteredByYou": "Introducido por ti",
+  "l1.scan.enteredByYouUnverified": "Introducido por ti (no verificado por una base de productos)",
+};

@@ -5,6 +5,9 @@
  * Catégorie « recettes familiales » : vide tant qu'aucun site n'a été vérifié et validé par un éditeur.
  */
 import { localized } from '@/i18n/localized';
+import { RESOURCE_DESCRIPTIONS_ES, RESOURCE_NOTES_ES } from './resources.es';
+import { RESOURCE_DESCRIPTIONS_DE, RESOURCE_NOTES_DE } from './resources.de';
+import { RESOURCE_DESCRIPTIONS_IT, RESOURCE_NOTES_IT } from './resources.it';
 export type ResourceKind = 'institution' | 'nutrition_org' | 'professional_blog' | 'family_recipes' | 'science';
 export const RESOURCE_KINDS: ResourceKind[] = ['institution', 'nutrition_org', 'professional_blog', 'family_recipes', 'science'];
 
@@ -129,4 +132,14 @@ const EXTERNAL_RESOURCES_EN: ExternalResource[] = [
     'Food composition data (energy, protein, fibre, salt, iron, calcium…) used to calculate our editorial score.', [null, null], ['nutrition', 'données'], '2026-10-20', '2020-07-07',
     'Etalab Open Licence; file retrieved from the public Open Food Facts repository.'),
 ];
-export const EXTERNAL_RESOURCES: ExternalResource[] = localized(EXTERNAL_RESOURCES_FR, EXTERNAL_RESOURCES_EN);
+/** es / de / it : même liste que le français, seuls le résumé et la note sont traduits (titres et éditeurs d'origine). */
+const translateResources = (desc: Record<string, string>, notes: Record<string, string>): ExternalResource[] =>
+  EXTERNAL_RESOURCES_FR.map((r) => ({
+    ...r,
+    description: desc[r.slug] ?? r.description,
+    references_note: r.references_note == null ? null : notes[r.slug] ?? r.references_note,
+  }));
+const EXTERNAL_RESOURCES_ES = translateResources(RESOURCE_DESCRIPTIONS_ES, RESOURCE_NOTES_ES);
+const EXTERNAL_RESOURCES_DE = translateResources(RESOURCE_DESCRIPTIONS_DE, RESOURCE_NOTES_DE);
+const EXTERNAL_RESOURCES_IT = translateResources(RESOURCE_DESCRIPTIONS_IT, RESOURCE_NOTES_IT);
+export const EXTERNAL_RESOURCES: ExternalResource[] = localized(EXTERNAL_RESOURCES_FR, EXTERNAL_RESOURCES_EN, { es: EXTERNAL_RESOURCES_ES, de: EXTERNAL_RESOURCES_DE, it: EXTERNAL_RESOURCES_IT });

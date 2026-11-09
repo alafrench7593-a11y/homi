@@ -1,5 +1,7 @@
 /** Onglet Questions : accueil de l'assistant (nouvelle conversation, suggestions par parcours, favoris, historique privé). */
 import React, { useMemo, useState } from 'react';
+import { aiAssistantOnline } from '@/config/features';
+import { AiComingSoonScreen } from '@/features/AiComingSoon';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -61,7 +63,12 @@ function PersonalSuggestions({ onAsk, disabled }: { onAsk: (q: string) => void; 
   );
 }
 
-export default function Ask() {
+export default function AskScreen() {
+  // Assistant IA en ligne « Bientôt disponible » (src/config/features.ts) : le vrai écran reste intact ci-dessous
+  return aiAssistantOnline() ? <Ask /> : <AiComingSoonScreen />;
+}
+
+function Ask() {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
@@ -138,6 +145,8 @@ export default function Ask() {
           multiline
           maxLength={MAX_QUESTION_LENGTH}
           returnKeyType="send"
+          // Multiligne : sans cela la touche « Envoyer » ajoutait une ligne au lieu d'envoyer
+          submitBehavior="blurAndSubmit"
           onSubmitEditing={() => q.trim().length >= 2 && !blocked && go(q.trim())}
         />
         <Row style={{ marginTop: spacing.sm }} wrap>

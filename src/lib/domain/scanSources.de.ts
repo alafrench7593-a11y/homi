@@ -1,0 +1,22 @@
+/** Sources du scanner — textes affichés en allemand (mêmes identifiants, liens et dates ; noms d'organismes conservés). */
+export const DE_TEXT: Record<string, { label: string; publisher?: string }> = {
+  'eu-1223-2009': { label: 'Verordnung (EG) Nr. 1223/2009 über kosmetische Mittel', publisher: 'Europäische Union (EUR-Lex)' },
+  'eu-2023-1545': { label: 'Verordnung (EU) 2023/1545: Kennzeichnung allergener Duftstoffe', publisher: 'Europäische Kommission (EUR-Lex)' },
+  'eu-clp-1272-2008': { label: 'Verordnung (EG) Nr. 1272/2008 (CLP): Einstufung, Kennzeichnung und Verpackung von Gemischen', publisher: 'Europäische Union (EUR-Lex)' },
+  'eu-inco-1169-2011': { label: 'Verordnung (EU) Nr. 1169/2011 (LMIV): Information der Verbraucher über Lebensmittel, einschließlich Allergene', publisher: 'Europäische Union (EUR-Lex)' },
+  'ansm-phenoxy-2019': { label: 'Entscheidung vom 13.03.2019: Kosmetische Mittel ohne Abspülen, die Phenoxyethanol enthalten, dürfen nicht im Windelbereich von Kindern bis einschließlich 3 Jahren verwendet werden' },
+  'anses-he-2024': { label: 'Ätherische Öle: Risiken und Vorsichtsmaßnahmen' },
+  'anses-diffuseurs': { label: 'Sprays und Diffuser mit ätherischen Ölen: Die Anses mahnt zur Vorsicht' },
+  'anses-lait-cru-2022': { label: 'Rohmilchkäse: Welche Gesundheitsrisiken gibt es und wie lassen sie sich besser vermeiden?' },
+  'anses-mercure-2024': { label: 'Methylquecksilber: ein Gesundheitsrisiko bei hohem Fischverzehr' },
+  'anses-reglisse-2025': { label: 'Bewertung der Risiken des Verzehrs von Süßholz/Lakritz (Anfrage 2022-AUTO-0077)' },
+  'anses-miel-2010': { label: 'Stellungnahme zur Kennzeichnung von Honig: Säuglingen unter einem Jahr keinen Honig geben (Säuglingsbotulismus)' },
+  'spf-grossesse-2025': { label: 'Welche Lebensmittel sollte man in der Schwangerschaft meiden und welche Vorsichtsmaßnahmen treffen?' },
+  'mpedia-listeriose-2025': { label: 'Listeriose in der Schwangerschaft: Welche Lebensmittel sollte man meiden?', publisher: 'mpedia (AFPA) auf Santé.fr' },
+  'sante-alcool': { label: 'Alkohol in der Schwangerschaft und Stillzeit' },
+  'spf-pas-a-pas': { label: 'Schritt für Schritt isst dein Kind wie ein Großes (Beikost bis 3 Jahre)' },
+  lecrat: { label: 'Medikamente, Impfstoffe, Schwangerschaft und Stillzeit', publisher: 'CRAT – Referenzzentrum für teratogene Substanzen (AP-HP)' },
+  rappelconso: { label: 'RappelConso, die offizielle Website für Produktrückrufe', publisher: 'Französische Regierung (DGCCRF, DGAL, DGS)' },
+  cosing: { label: 'CosIng-Datenbank der kosmetischen Inhaltsstoffe', publisher: 'Europäische Kommission' },
+  ciqual: { label: 'Nährwerttabelle Ciqual' },
+};

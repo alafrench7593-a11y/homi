@@ -7,6 +7,9 @@
  */
 import type { VaccineCalendar, VaccineSource, VaccineRule } from '@/lib/domain/vaccineRules';
 import { localized } from '@/i18n/localized';
+import { LABEL_ES, RULES_TEXT_ES, SITUATIONAL_ES, SOURCE_LABELS_ES } from './fr-2026.es';
+import { LABEL_DE, RULES_TEXT_DE, SITUATIONAL_DE, SOURCE_LABELS_DE } from './fr-2026.de';
+import { LABEL_IT, RULES_TEXT_IT, SITUATIONAL_IT, SOURCE_LABELS_IT } from './fr-2026.it';
 
 const SOURCES: Record<string, VaccineSource> = {
   calendrier2026: {
@@ -118,7 +121,34 @@ const FR_2026_EN: VaccineCalendar = {
   ],
 };
 
-export const FR_2026: VaccineCalendar = localized(FR_2026_FR, FR_2026_EN);
+// ─── Espagnol, allemand, italien : calendrier FRANÇAIS, seuls les libellés sont traduits (âges, vaccins, sources et dates inchangés) ───
 
-/** Les deux versions, pour les modules qui en extraient une partie (sources, règles) en gardant la langue dynamique. */
-export const FR_2026_VERSIONS = { fr: FR_2026_FR, en: FR_2026_EN };
+/** Même calendrier, mêmes règles dans le même ordre ; seuls les textes affichés viennent de la langue demandée. */
+function translatedCalendar(label: string, rulesText: Record<string, Partial<VaccineRule>>, sourceLabels: Record<string, string>, situational: string[]): VaccineCalendar {
+  return {
+    ...FR_2026_FR,
+    label,
+    sources: Object.fromEntries(Object.entries(SOURCES).map(([k, src]) => [k, { ...src, label: sourceLabels[k] ?? src.label }])),
+    rules: RULES.map((r) => ({ ...r, ...pickText(rulesText[r.key]) })),
+    situational,
+  };
+}
+/** Uniquement les champs de texte (jamais un âge, un groupe, une date ou une source). */
+const pickText = (t?: Partial<VaccineRule>): Partial<VaccineRule> => {
+  if (!t) return {};
+  const out: Partial<VaccineRule> = {};
+  if (t.label != null) out.label = t.label;
+  if (t.dose != null) out.dose = t.dose;
+  if (t.note != null) out.note = t.note;
+  if (t.population != null) out.population = t.population;
+  return out;
+};
+
+const FR_2026_ES: VaccineCalendar = translatedCalendar(LABEL_ES, RULES_TEXT_ES, SOURCE_LABELS_ES, SITUATIONAL_ES);
+const FR_2026_DE: VaccineCalendar = translatedCalendar(LABEL_DE, RULES_TEXT_DE, SOURCE_LABELS_DE, SITUATIONAL_DE);
+const FR_2026_IT: VaccineCalendar = translatedCalendar(LABEL_IT, RULES_TEXT_IT, SOURCE_LABELS_IT, SITUATIONAL_IT);
+
+export const FR_2026: VaccineCalendar = localized(FR_2026_FR, FR_2026_EN, { es: FR_2026_ES, de: FR_2026_DE, it: FR_2026_IT });
+
+/** Toutes les versions, pour les modules qui en extraient une partie (sources, règles) en gardant la langue dynamique. */
+export const FR_2026_VERSIONS = { fr: FR_2026_FR, en: FR_2026_EN, es: FR_2026_ES, de: FR_2026_DE, it: FR_2026_IT };

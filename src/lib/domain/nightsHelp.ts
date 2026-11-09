@@ -64,7 +64,8 @@ export const duration = (minutes: number) => (minutes >= 60 ? `${Math.floor(minu
 
 /** Phrases du bilan (constats). */
 export function reviewLines(r: SleepReview): string[] {
-  const dec = (n: number) => (localeTag().startsWith('fr') ? String(n).replace('.', ',') : String(n));
+  // Virgule décimale partout sauf en anglais (fr, es, de, it).
+  const dec = (n: number) => (localeTag().startsWith('en') ? String(n) : String(n).replace('.', ','));
   if (!r.enough) return [tr('l2.nh.notEnough', { count: r.daysNoted, min: MIN_DAYS_FOR_REVIEW })];
   const out = [tr('l2.nh.daysNoted', { n: r.daysNoted })];
   if (r.napsPerDay != null) out.push(tr('l2.nh.naps', { naps: dec(r.napsPerDay), total: r.napMinutes ? tr('l2.nh.napsTotal', { d: duration(r.napMinutes) }) : '' }));
@@ -123,7 +124,34 @@ const OBS_EN: { key: NightObservation; label: string }[] = [
   { key: 'unwell', label: 'Seems unwell or uncomfortable' },
   { key: 'parent_exhausted', label: 'I am exhausted' },
 ];
-export const NIGHT_OBSERVATIONS: { key: NightObservation; label: string }[] = localized(OBS_FR, OBS_EN);
+const OBS_ES: { key: NightObservation; label: string }[] = [
+  { key: 'many_wakings', label: 'Se despierta a menudo' },
+  { key: 'cannot_settle', label: 'No consigue volver a dormirse' },
+  { key: 'crying', label: 'Llora mucho' },
+  { key: 'hungry', label: 'Parece tener hambre' },
+  { key: 'early_waking', label: 'Se despierta muy temprano' },
+  { key: 'unwell', label: 'Me parece que está enfermo o incómodo' },
+  { key: 'parent_exhausted', label: 'No puedo más' },
+];
+const OBS_DE: { key: NightObservation; label: string }[] = [
+  { key: 'many_wakings', label: 'Wacht oft auf' },
+  { key: 'cannot_settle', label: 'Schläft nicht wieder ein' },
+  { key: 'crying', label: 'Weint viel' },
+  { key: 'hungry', label: 'Scheint Hunger zu haben' },
+  { key: 'early_waking', label: 'Wacht sehr früh auf' },
+  { key: 'unwell', label: 'Wirkt krank oder unwohl' },
+  { key: 'parent_exhausted', label: 'Ich bin am Ende meiner Kräfte' },
+];
+const OBS_IT: { key: NightObservation; label: string }[] = [
+  { key: 'many_wakings', label: 'Si sveglia spesso' },
+  { key: 'cannot_settle', label: 'Non riesce a riaddormentarsi' },
+  { key: 'crying', label: 'Piange molto' },
+  { key: 'hungry', label: 'Sembra avere fame' },
+  { key: 'early_waking', label: 'Si sveglia molto presto' },
+  { key: 'unwell', label: 'Mi sembra malato o a disagio' },
+  { key: 'parent_exhausted', label: 'Sono allo stremo' },
+];
+export const NIGHT_OBSERVATIONS: { key: NightObservation; label: string }[] = localized(OBS_FR, OBS_EN, { es: OBS_ES, de: OBS_DE, it: OBS_IT });
 
 /** Signes qui demandent de l'aide sans attendre (le module ne tente pas de les gérer). */
 const WORRYING_FR: { key: string; label: string }[] = [
@@ -144,7 +172,34 @@ const WORRYING_EN: { key: string; label: string }[] = [
   { key: 'unusual_cry', label: 'Unusual crying, whimpering, convulsions' },
   { key: 'harm', label: 'I am afraid of losing my temper with baby or of hurting them' },
 ];
-export const WORRYING_SIGNS: { key: string; label: string }[] = localized(WORRYING_FR, WORRYING_EN);
+const WORRYING_ES: { key: string; label: string }[] = [
+  { key: 'fever_young', label: 'Fiebre (38 °C o más) en un bebé de menos de 3 meses' },
+  { key: 'breathing', label: 'Respiración difícil, rápida o con pausas, labios azulados' },
+  { key: 'floppy', label: 'Bebé flácido, muy adormilado, difícil de despertar' },
+  { key: 'no_feeding', label: 'Se niega a comer, o muy pocos pañales mojados' },
+  { key: 'rash', label: 'Manchas rojas que no desaparecen al presionarlas' },
+  { key: 'unusual_cry', label: 'Llanto inusual, quejidos, convulsiones' },
+  { key: 'harm', label: 'Tengo miedo de enfadarme con el bebé o de hacerle daño' },
+];
+const WORRYING_DE: { key: string; label: string }[] = [
+  { key: 'fever_young', label: 'Fieber (38 °C oder mehr) bei einem Baby unter 3 Monaten' },
+  { key: 'breathing', label: 'Schwere, schnelle Atmung oder Atempausen, blaue Lippen' },
+  { key: 'floppy', label: 'Baby schlaff, sehr schläfrig, schwer zu wecken' },
+  { key: 'no_feeding', label: 'Verweigert das Trinken, oder sehr wenige nasse Windeln' },
+  { key: 'rash', label: 'Rote Flecken, die auf Druck nicht verblassen' },
+  { key: 'unusual_cry', label: 'Ungewöhnliches Weinen, Wimmern, Krampfanfälle' },
+  { key: 'harm', label: 'Ich habe Angst, die Beherrschung zu verlieren oder dem Baby wehzutun' },
+];
+const WORRYING_IT: { key: string; label: string }[] = [
+  { key: 'fever_young', label: 'Febbre (38 °C o più) in un bebè con meno di 3 mesi' },
+  { key: 'breathing', label: 'Respiro difficile, rapido o con pause, labbra blu' },
+  { key: 'floppy', label: 'Bebè molle, molto sonnolento, difficile da svegliare' },
+  { key: 'no_feeding', label: 'Rifiuta di bere, o pochissimi pannolini bagnati' },
+  { key: 'rash', label: 'Macchie rosse che non scompaiono alla pressione' },
+  { key: 'unusual_cry', label: 'Pianto insolito, lamenti, convulsioni' },
+  { key: 'harm', label: 'Ho paura di arrabbiarmi con il bebè o di fargli del male' },
+];
+export const WORRYING_SIGNS: { key: string; label: string }[] = localized(WORRYING_FR, WORRYING_EN, { es: WORRYING_ES, de: WORRYING_DE, it: WORRYING_IT });
 
 export interface NightStep { title: string; points: string[] }
 /** Pistes générales et douces selon ce que le parent observe. Jamais « laisser pleurer », jamais de culpabilité. */

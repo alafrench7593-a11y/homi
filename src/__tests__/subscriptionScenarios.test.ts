@@ -262,12 +262,12 @@ describe('3 packages, économies, prix', () => {
     expect(plans.map((p) => p.savingsPct)).toEqual([savingsPct(104, 12, 11.49), savingsPct(59, 6, 11.49), null]);
     expect(plans.every((p) => !p.demo)).toBe(true);
   });
-  it('démonstration : grille 10,99 / 54,99 / 99,99, signalée, essai de 3 jours sur le mensuel seulement', () => {
+  it('démonstration : grille 10,99 / 49,99 / 79,99 (08/11/2026), signalée, essai de 3 jours sur le mensuel seulement', () => {
     const plans = demoPlans('fr-FR');
     expect(plans.map((p) => [p.period, p.price.replace(/\s/g, ' '), p.trialDays, p.demo])).toEqual([
-      ['annual', '99,99 €', 0, true], ['six_months', '54,99 €', 0, true], ['monthly', '10,99 €', 3, true],
+      ['annual', '79,99 €', 0, true], ['six_months', '49,99 €', 0, true], ['monthly', '10,99 €', 3, true],
     ]);
-    expect(plans.map((p) => p.savingsPct)).toEqual([24, 16, null]);
+    expect(plans.map((p) => p.savingsPct)).toEqual([39, 24, null]);
   });
   it('dates : premier prélèvement après l’essai, renouvellement selon la durée', () => {
     const p: Pick<Plan, 'period' | 'trialDays'> = { period: 'monthly', trialDays: 3 };
@@ -282,7 +282,7 @@ describe('3 packages, économies, prix', () => {
       const p = path.join(d, e.name);
       return e.isDirectory() ? (e.name === '__tests__' ? [] : walk(p)) : /\.(tsx?|json)$/.test(e.name) ? [p] : [];
     });
-    const PRICE = /(?<![\d.,])(10[.,]99|54[.,]99|99[.,]99|5[.,]99|39[.,]99|3[.,]33)(?![\d])/;
+    const PRICE = /(?<![\d.,])(10[.,]99|49[.,]99|79[.,]99|54[.,]99|99[.,]99|5[.,]99|39[.,]99|3[.,]33)(?![\d])/;
     const allowed = new Set(['lib/premium/plans.ts', 'content/legal.ts']);
     const offenders = walk(root).filter((f) => !allowed.has(path.relative(root, f).replace(/\\/g, '/')) && !/content\/(articles|foods|recipes|firstnames|who)/.test(f))
       .filter((f) => PRICE.test(fs.readFileSync(f, 'utf8')));

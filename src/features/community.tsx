@@ -24,7 +24,7 @@ import { BRAND } from '@/config/brand';
 import { accentOf, FolderSheet, MentionText, PollView, PremiumBadge, Tag } from '@/features/communitySocial';
 import { useCommunityAi, useFollowMember, usePinPost } from '@/lib/data/hooks-social';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
-import { t as tr } from '@/i18n';
+import { getLocale, t as tr } from '@/i18n';
 
 /** Motifs de signalement ; `label` est traduit à la lecture (langue courante). */
 export const REPORT_REASONS: { key: ReportReason; readonly label: string }[] = [
@@ -283,7 +283,9 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
     setMenu(false);
     if (!aiAccess.require()) return;
     try {
-      const r = await ai.mutateAsync({ action: 'translate', postId: post.id, target: 'en' });
+      // Traduction à la demande (jamais automatique) : vers la langue de l'application ; en français, inchangé (vers l'anglais)
+      const lang = getLocale();
+      const r = await ai.mutateAsync({ action: 'translate', postId: post.id, target: lang === 'fr' ? 'en' : (lang as 'en' | 'es' | 'de' | 'it') });
       if ('text' in r) setTranslated(r.text); else toast(('message' in r && r.message) || tr('cm1.post.translateUnavailable'), 'error');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }

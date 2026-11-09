@@ -1,4 +1,5 @@
 # Soumission App Store — Au fil de nous
+> Mis à jour le 09/11/2026 : nouveaux prix (49,99 € / 79,99 €). Pour la checklist complète et à jour, voir PUBLICATION.md.
 
 > Préparé le 2 novembre 2026 à partir du code (commit 2a1aabd). Remplace `FICHES_STORES.md` (ancien nom « Toi & Moi »).
 > Rien n'est inventé : chaque information absente du projet est marquée **MANQUANT** et doit être fournie par l'éditeur.
@@ -54,7 +55,7 @@ VOTRE VIE PRIVÉE D'ABORD
 Aucune publicité, aucune revente de données. Verrouillage par Face ID, notifications discrètes, export et suppression de vos données à tout moment.
 
 AU FIL DE NOUS PREMIUM
-Fonctions avancées (partage avec votre co-parent, résumés, exports PDF, découvertes…). Trois formules au même contenu : mensuelle 10,99 € avec 3 jours d'essai, 6 mois 54,99 €, annuelle 99,99 €. L'abonnement se renouvelle automatiquement sauf résiliation au moins 24 h avant la fin de la période, depuis les réglages de votre compte Apple. Le paiement est débité sur votre compte Apple.
+Fonctions avancées (partage avec votre co-parent, résumés, exports PDF, découvertes…). Trois formules au même contenu : mensuelle 10,99 € avec 3 jours d'essai, 6 mois 49,99 €, annuelle 79,99 €. L'abonnement se renouvelle automatiquement sauf résiliation au moins 24 h avant la fin de la période, depuis les réglages de votre compte Apple. Le paiement est débité sur votre compte Apple.
 Conditions d'utilisation : [URL MANQUANTE] — Confidentialité : [URL MANQUANTE]
 
 Au fil de nous ne remplace pas l'avis d'un médecin ou d'une sage-femme. En cas d'urgence, appelez le 15 ou le 112.

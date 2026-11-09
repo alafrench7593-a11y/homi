@@ -5,6 +5,10 @@
  * aucun traitement. Relecture par un·e professionnel·le de santé à prévoir avant publication.
  */
 import type { GuideSlug } from '@/lib/domain/cycleV2';
+import { getLocale } from '@/i18n';
+import { DISCHARGE_GUIDES_ES } from './dischargeGuides.es';
+import { DISCHARGE_GUIDES_DE } from './dischargeGuides.de';
+import { DISCHARGE_GUIDES_IT } from './dischargeGuides.it';
 
 export const GUIDES_VERSION = '2026-10-19';
 export const GUIDES_CHECKED_ON = '2026-10-19';
@@ -19,12 +23,15 @@ export const SOURCES: Record<string, GuideSource> = {
 };
 
 export interface GuideText { title: string; intro: string; observe: string[]; variations: string[]; note: string[]; limits: string; seek: string[] }
-export interface Guide { slug: GuideSlug; tone: 'clear' | 'white' | 'stretchy' | 'more' | 'thick' | 'yellow' | 'odor' | 'pink' | 'itch' | 'dry'; sources: string[]; fr: GuideText; en: GuideText }
+export interface Guide { slug: GuideSlug; tone: 'clear' | 'white' | 'stretchy' | 'more' | 'thick' | 'yellow' | 'odor' | 'pink' | 'itch' | 'dry'; sources: string[]; fr: GuideText; en: GuideText; es: GuideText; de: GuideText; it: GuideText }
+export type GuideLang = 'fr' | 'en' | 'es' | 'de' | 'it';
+/** Langue d'affichage des fiches (repli : français). */
+export const guideLang = (): GuideLang => { const l = getLocale(); return l === 'en' || l === 'es' || l === 'de' || l === 'it' ? l : 'fr'; };
 
 const SEEK_FR_COMMON = 'Si vous êtes enceinte ou pensez pouvoir l’être et que vous avez des saignements avec des douleurs, contactez sans attendre un service d’urgence.';
 const SEEK_EN_COMMON = 'If you are or might be pregnant and have bleeding with pain, contact emergency services straight away.';
 
-export const GUIDES: Guide[] = [
+const GUIDES_FR_EN: Omit<Guide, 'es' | 'de' | 'it'>[] = [
   {
     slug: 'clear-fluid', tone: 'clear', sources: ['nhsDischarge'],
     fr: {
@@ -236,5 +243,7 @@ export const GUIDES: Guide[] = [
     },
   },
 ];
+
+export const GUIDES: Guide[] = GUIDES_FR_EN.map((g) => ({ ...g, es: DISCHARGE_GUIDES_ES[g.slug], de: DISCHARGE_GUIDES_DE[g.slug], it: DISCHARGE_GUIDES_IT[g.slug] }));
 
 export const guideBySlug = (slug: string) => GUIDES.find((g) => g.slug === slug) ?? null;

@@ -5,6 +5,9 @@
  */
 
 import { localized } from '@/i18n/localized';
+import { AWHONN_PUBLISHER_ES, PARTNER_ES, RECOVERY_WARNINGS_ES, UNDERSTAND_ES, USEFUL_PHRASES_ES } from './postpartum.es';
+import { AWHONN_PUBLISHER_DE, PARTNER_DE, RECOVERY_WARNINGS_DE, UNDERSTAND_DE, USEFUL_PHRASES_DE } from './postpartum.de';
+import { AWHONN_PUBLISHER_IT, PARTNER_IT, RECOVERY_WARNINGS_IT, UNDERSTAND_IT, USEFUL_PHRASES_IT } from './postpartum.it';
 
 export interface Source { title: string; publisher: string; url: string }
 
@@ -19,7 +22,10 @@ const SOURCES_EN: Record<string, Source> = {
   ...SOURCES_FR,
   awhonn: { ...SOURCES_FR.awhonn, publisher: 'AWHONN — Association of Women’s Health, Obstetric and Neonatal Nurses (United States)' },
 };
-export const SOURCES: Record<string, Source> = localized(SOURCES_FR, SOURCES_EN);
+const withPublisher = (publisher: string): Record<string, Source> => ({ ...SOURCES_FR, awhonn: { ...SOURCES_FR.awhonn, publisher } });
+export const SOURCES: Record<string, Source> = localized(SOURCES_FR, SOURCES_EN, {
+  es: withPublisher(AWHONN_PUBLISHER_ES), de: withPublisher(AWHONN_PUBLISHER_DE), it: withPublisher(AWHONN_PUBLISHER_IT),
+});
 
 export interface Section { id: string; title: string; body: string[]; sources: (keyof typeof SOURCES)[] }
 
@@ -267,7 +273,7 @@ const RECOVERY_WARNINGS_EN = {
   source: 'awhonn' as const,
 };
 
-export const UNDERSTAND: Section[] = localized(UNDERSTAND_FR, UNDERSTAND_EN);
-export const PARTNER: Section[] = localized(PARTNER_FR, PARTNER_EN);
-export const USEFUL_PHRASES = localized(USEFUL_PHRASES_FR, USEFUL_PHRASES_EN);
-export const RECOVERY_WARNINGS = localized(RECOVERY_WARNINGS_FR, RECOVERY_WARNINGS_EN);
+export const UNDERSTAND: Section[] = localized(UNDERSTAND_FR, UNDERSTAND_EN, { es: UNDERSTAND_ES, de: UNDERSTAND_DE, it: UNDERSTAND_IT });
+export const PARTNER: Section[] = localized(PARTNER_FR, PARTNER_EN, { es: PARTNER_ES, de: PARTNER_DE, it: PARTNER_IT });
+export const USEFUL_PHRASES = localized(USEFUL_PHRASES_FR, USEFUL_PHRASES_EN, { es: USEFUL_PHRASES_ES, de: USEFUL_PHRASES_DE, it: USEFUL_PHRASES_IT });
+export const RECOVERY_WARNINGS = localized(RECOVERY_WARNINGS_FR, RECOVERY_WARNINGS_EN, { es: RECOVERY_WARNINGS_ES, de: RECOVERY_WARNINGS_DE, it: RECOVERY_WARNINGS_IT });

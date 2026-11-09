@@ -1,0 +1,98 @@
+/** Fiches sur les pertes vaginales — version espagnole (traduite depuis le français, même structure). */
+import type { GuideSlug } from '@/lib/domain/cycleV2';
+import type { GuideText } from './dischargeGuides';
+
+const SEEK_ES_COMMON = 'Si estás embarazada o crees que podrías estarlo y tienes sangrado con dolor, contacta sin esperar con un servicio de urgencias.';
+
+export const DISCHARGE_GUIDES_ES: Record<GuideSlug, GuideText> = {
+  'clear-fluid': {
+    title: 'Flujo transparente y líquido',
+    intro: 'Notas un flujo claro, líquido o acuoso. Este tipo de flujo se describe con frecuencia y puede variar a lo largo del ciclo.',
+    observe: ['Color claro o transparente', 'Consistencia líquida o acuosa', 'Cantidad variable de un día a otro'],
+    variations: ['Suele describirse como más abundante en ciertos momentos del ciclo, sobre todo alrededor de la ovulación', 'La actividad sexual, el embarazo o algunos anticonceptivos pueden modificar la cantidad'],
+    note: ['El día del ciclo', 'La cantidad', 'Un olor inusual, picor o molestias, si los hay'],
+    limits: 'El aspecto por sí solo no permite confirmar nada: ni la ovulación ni la ausencia de problemas.',
+    seek: ['Si el aspecto, el olor o la cantidad cambian claramente respecto a lo habitual', 'Si aparecen picor, irritación o dolor'],
+  },
+  'white-creamy': {
+    title: 'Flujo blanco y cremoso',
+    intro: 'Notas un flujo blanco, lechoso o cremoso. Suele describirse como habitual cuando no tiene un olor fuerte.',
+    observe: ['Color blanco o blanquecino', 'Textura cremosa, espesa o pegajosa', 'Poco o ningún olor'],
+    variations: ['La textura y la cantidad pueden cambiar según el momento del ciclo', 'Puede parecer más visible algunos días'],
+    note: ['La textura (cremosa, pegajosa, grumosa…)', 'Si hay picor o irritación', 'Cualquier olor inusual'],
+    limits: 'Un flujo blanco puede ser habitual o acompañar a una infección: solo una consulta permite saberlo.',
+    seek: ['Si se vuelve grumoso y con picor', 'Si aparece un olor fuerte o inusual', 'Si una molestia persiste'],
+  },
+  'stretchy-slippery': {
+    title: 'Flujo elástico y resbaladizo',
+    intro: 'Notas un flujo transparente, elástico y resbaladizo. Algunas personas observan este tipo de flujo cerca de su periodo fértil. Sin embargo, este aspecto no basta para confirmar una ovulación. Puedes registrar tu observación y compararla con tu historial.',
+    observe: ['Aspecto transparente, a veces comparado con la clara de huevo cruda', 'Textura elástica: se estira entre dos dedos', 'Sensación húmeda o resbaladiza'],
+    variations: ['Su presencia y su duración varían de una persona a otra y de un ciclo a otro', 'Puede no aparecer incluso alrededor de la ovulación'],
+    note: ['El día del ciclo', 'El número de días en que lo observas', 'Los posibles test de ovulación del mismo día'],
+    limits: 'Esta observación no es ni una prueba de ovulación ni un método anticonceptivo fiable.',
+    seek: ['Si un cambio inusual se acompaña de picor, olor o dolor'],
+  },
+  'more-abundant': {
+    title: 'Flujo más abundante',
+    intro: 'Notas más flujo de lo habitual. La cantidad varía de forma natural, pero un cambio claro merece anotarse.',
+    observe: ['Cantidad mayor de lo que es habitual para ti', 'Posible necesidad de cambiarte la ropa interior o la protección más a menudo'],
+    variations: ['La cantidad suele aumentar alrededor de la ovulación, durante el embarazo o con algunos anticonceptivos', 'La actividad sexual también puede modificarla temporalmente'],
+    note: ['Desde cuándo', 'El color y el olor', 'Los síntomas asociados (picor, dolor, molestias al orinar)'],
+    limits: 'Un cambio de cantidad, por sí solo, no permite conocer la causa.',
+    seek: ['Si el aumento persiste o se acompaña de un cambio de color, de olor, de picor o de dolor'],
+  },
+  'thick-lumpy': {
+    title: 'Flujo espeso o grumoso',
+    intro: 'Notas un flujo espeso o de aspecto grumoso. Hay varias causas posibles; algunas requieren una valoración médica.',
+    observe: ['Textura espesa o en pequeños grumos', 'Color a menudo blanco', 'Con o sin picor'],
+    variations: ['Un flujo espeso puede ser habitual en ciertos momentos del ciclo', 'Si se acompaña de picor, suele ser un motivo de consulta'],
+    note: ['El picor, el escozor o la irritación', 'El olor', 'Un tratamiento antibiótico reciente'],
+    limits: 'El aspecto no basta para identificar una causa: evita el autodiagnóstico.',
+    seek: ['Si este flujo se acompaña de picor, escozor o irritación', 'Si es la primera vez o si vuelve a menudo'],
+  },
+  'yellow-green': {
+    title: 'Flujo amarillento, verdoso o grisáceo',
+    intro: 'Notas un flujo de color amarillento, verdoso o grisáceo. Un cambio de color es un motivo frecuente de consulta.',
+    observe: ['Un color inusual para ti', 'A veces una textura espumosa o un olor diferente'],
+    variations: ['Un ligero tono amarillento al secarse sobre la tela puede describirse sin otros signos', 'Un color claramente verde o gris, o acompañado de olor, debe revisarse'],
+    note: ['El color, lo más fielmente posible', 'El olor', 'El picor, el dolor o las molestias al orinar', 'Una actividad sexual reciente'],
+    limits: 'El color, por sí solo, no permite conocer la causa.',
+    seek: ['Consulta con un profesional sanitario o un centro de salud sexual si el color cambia claramente, sobre todo con olor, picor o dolor'],
+  },
+  'unusual-odor': {
+    title: 'Olor inusual',
+    intro: 'Notas un flujo acompañado de un olor inusual. Hay varias causas posibles. Anota los síntomas y pide una valoración médica si el cambio persiste o se acompaña de molestias.',
+    observe: ['Un olor más fuerte o diferente de lo habitual', 'A veces un cambio de color o de cantidad'],
+    variations: ['Un ligero olor puede ser habitual', 'Un olor fuerte, nuevo o desagradable es un motivo frecuente de consulta'],
+    note: ['Cuándo apareció el olor', 'El color y la textura', 'Los síntomas asociados', 'Los productos íntimos usados recientemente'],
+    limits: 'El olor no permite identificar una causa.',
+    seek: ['Si el olor persiste, es fuerte o se acompaña de picor, dolor o un cambio de color'],
+  },
+  'pink-brown': {
+    title: 'Flujo rosado o marronáceo',
+    intro: 'Notas un flujo rosado o marronáceo. A menudo contiene un poco de sangre; el momento en que aparece es importante.',
+    observe: ['Tono rosado, pardo o marrón', 'A menudo en pequeña cantidad'],
+    variations: ['Puede aparecer justo antes o después de la regla', 'Los sangrados entre reglas, después de una relación sexual o durante un embarazo deben comunicarse a un profesional'],
+    note: ['La fecha y el día del ciclo', 'Un embarazo conocido o posible', 'Una relación sexual reciente', 'Dolores'],
+    limits: 'El momento y el contexto importan más que el color, que no permite sacar ninguna conclusión.',
+    seek: ['Consulta si aparece entre reglas o después de una relación sexual', 'Pide ayuda urgente si se te ha retrasado la regla, o estás embarazada, y tienes sangrado y dolor de vientre', SEEK_ES_COMMON],
+  },
+  itching: {
+    title: 'Flujo con picor o irritación',
+    intro: 'Notas un flujo acompañado de picor, irritación o escozor. Hay varias causas posibles. Anota los síntomas y pide una valoración médica si el cambio persiste o se acompaña de molestias.',
+    observe: ['Picor o irritación de la vulva o la vagina', 'A veces escozor, sobre todo al orinar', 'Un posible cambio en el flujo'],
+    variations: ['Los productos perfumados, algunos jabones o tejidos pueden irritar', 'Estos signos también se describen en varias infecciones'],
+    note: ['La intensidad y la duración', 'El aspecto y el olor del flujo', 'Un producto íntimo o un tratamiento antibiótico reciente'],
+    limits: 'Estos signos no permiten saber por ti misma cuál es la causa: evita tratarte sin consejo profesional.',
+    seek: ['Si el picor dura, vuelve a menudo o se acompaña de dolor, escozor al orinar o lesiones'],
+  },
+  dryness: {
+    title: 'Sequedad o disminución del flujo',
+    intro: 'Notas poco flujo o una sensación de sequedad. Puede variar según el ciclo y según las etapas de la vida.',
+    observe: ['Poco o ningún flujo', 'Sensación de sequedad o incomodidad, a veces durante las relaciones sexuales'],
+    variations: ['Los cambios hormonales (lactancia, embarazo, menopausia), algunos medicamentos o productos perfumados pueden influir', 'La cantidad de flujo también varía de forma natural a lo largo del ciclo'],
+    note: ['Desde cuándo', 'Molestias durante las relaciones sexuales', 'Una lactancia o un tratamiento en curso'],
+    limits: 'Una sensación de sequedad no indica, por sí sola, su causa.',
+    seek: ['Si la sequedad dura varias semanas o afecta a tu día a día', 'Si se acompaña de sangrado después de una relación sexual o entre reglas'],
+  },
+};

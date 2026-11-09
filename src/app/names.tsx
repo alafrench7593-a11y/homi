@@ -210,7 +210,7 @@ export default function NamesScreen() {
       {explore ? (
         <>
           <Field label={tr('nm.search')} value={query} onChangeText={setQuery} placeholder={tr('nm.searchPh')} autoCorrect={false} testID="names-search" />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }} accessibilityLabel={tr('nm.az')}>
+          <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }} accessibilityLabel={tr('nm.az')}>
             <Chip label={tr('nm.allLetters')} selected={!letter} onPress={() => setLetter(null)} />
             {LETTERS.map((l) => <Chip key={l} label={l} selected={letter === l} onPress={() => setLetter(letter === l ? null : l)} accessibilityLabel={tr('nm.letterA11y', { l })} />)}
           </ScrollView>
@@ -226,7 +226,7 @@ export default function NamesScreen() {
               <Row wrap>
                 {(['very', 'common', 'uncommon', 'rare', 'old'] as Pop[]).map((p) => <Chip key={p} label={popLabel(p)} selected={pop === p} onPress={() => setPop(pop === p ? null : p)} />)}
               </Row>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+              <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
                 {origins.map((o) => <Chip key={o} tone="lavender" label={o} selected={origin === o} onPress={() => setOrigin(origin === o ? null : o)} />)}
               </ScrollView>
             </>

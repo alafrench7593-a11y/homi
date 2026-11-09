@@ -38,7 +38,31 @@ const PROFILE_LABEL_EN: Record<ScanProfileKind, string> = {
   child: 'Child',
   adult: 'Adult',
 };
-export const PROFILE_LABEL: Record<ScanProfileKind, string> = localized(PROFILE_LABEL_FR, PROFILE_LABEL_EN);
+const PROFILE_LABEL_ES: Record<ScanProfileKind, string> = {
+  pregnant: 'Persona embarazada',
+  breastfeeding: 'Persona que da el pecho',
+  newborn: 'Recién nacido',
+  baby: 'Bebé',
+  child: 'Niño o niña',
+  adult: 'Adulto',
+};
+const PROFILE_LABEL_DE: Record<ScanProfileKind, string> = {
+  pregnant: 'Schwangere Person',
+  breastfeeding: 'Stillende Person',
+  newborn: 'Neugeborenes',
+  baby: 'Baby',
+  child: 'Kind',
+  adult: 'Erwachsene Person',
+};
+const PROFILE_LABEL_IT: Record<ScanProfileKind, string> = {
+  pregnant: 'Persona in gravidanza',
+  breastfeeding: 'Persona che allatta',
+  newborn: 'Neonato',
+  baby: 'Bebè',
+  child: 'Bambino',
+  adult: 'Adulto',
+};
+export const PROFILE_LABEL: Record<ScanProfileKind, string> = localized(PROFILE_LABEL_FR, PROFILE_LABEL_EN, { es: PROFILE_LABEL_ES, de: PROFILE_LABEL_DE, it: PROFILE_LABEL_IT });
 
 export function profileLabel(p: ScanProfile): string {
   const base = PROFILE_LABEL[p.kind];
@@ -65,7 +89,10 @@ export const isChildProfile = (p: ScanProfile) => p.kind === 'newborn' || p.kind
 export type Certainty = 'high' | 'medium' | 'low';
 const CERTAINTY_LABEL_FR: Record<Certainty, string> = { high: 'Élevé', medium: 'Moyen', low: 'Faible' };
 const CERTAINTY_LABEL_EN: Record<Certainty, string> = { high: 'High', medium: 'Medium', low: 'Low' };
-export const CERTAINTY_LABEL: Record<Certainty, string> = localized(CERTAINTY_LABEL_FR, CERTAINTY_LABEL_EN);
+const CERTAINTY_LABEL_ES: Record<Certainty, string> = { high: 'Alto', medium: 'Medio', low: 'Bajo' };
+const CERTAINTY_LABEL_DE: Record<Certainty, string> = { high: 'Hoch', medium: 'Mittel', low: 'Niedrig' };
+const CERTAINTY_LABEL_IT: Record<Certainty, string> = { high: 'Alto', medium: 'Medio', low: 'Basso' };
+export const CERTAINTY_LABEL: Record<Certainty, string> = localized(CERTAINTY_LABEL_FR, CERTAINTY_LABEL_EN, { es: CERTAINTY_LABEL_ES, de: CERTAINTY_LABEL_DE, it: CERTAINTY_LABEL_IT });
 
 /** Niveau d'un constat. « professional » : la règle renvoie vers un professionnel de santé. */
 /** « prepare » : l'aliment peut convenir s'il est préparé autrement (cuisson, découpe, texture). */
@@ -112,11 +139,22 @@ export interface DataSourceInfo {
 }
 
 export { RECALL_DISCLAIMER, FORBIDDEN_PATTERNS, containsForbiddenPhrase } from '../../../supabase/functions/_shared/scan-explain';
-export let DEMO_LABEL = inLang({ fr: 'Données de démonstration', en: 'Demo data' });
-export let GENERAL_DISCLAIMER = inLang({
+const DEMO_LABEL_TEXTS = {
+  fr: 'Données de démonstration',
+  en: 'Demo data',
+  es: 'Datos de demostración',
+  de: 'Demodaten',
+  it: 'Dati dimostrativi',
+};
+const GENERAL_DISCLAIMER_TEXTS = {
   fr: 'Cette analyse s’appuie uniquement sur les informations disponibles et les sources citées, à leur date. Elle ne remplace pas l’avis d’un professionnel de santé et ne pose aucun diagnostic.',
   en: 'This analysis relies only on the information available and the sources cited, as at their date. It does not replace the advice of a health professional and does not make any diagnosis.',
-});
+  es: 'Este análisis se basa únicamente en la información disponible y en las fuentes citadas, a su fecha. No sustituye la opinión de un profesional de la salud y no establece ningún diagnóstico.',
+  de: 'Diese Analyse stützt sich ausschließlich auf die verfügbaren Informationen und die angegebenen Quellen, mit ihrem jeweiligen Stand. Sie ersetzt nicht den Rat einer medizinischen Fachperson und stellt keine Diagnose.',
+  it: 'Questa analisi si basa unicamente sulle informazioni disponibili e sulle fonti citate, alla loro data. Non sostituisce il parere di un professionista sanitario e non formula alcuna diagnosi.',
+};
+export let DEMO_LABEL = inLang(DEMO_LABEL_TEXTS);
+export let GENERAL_DISCLAIMER = inLang(GENERAL_DISCLAIMER_TEXTS);
 
 export const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
 
@@ -166,9 +204,6 @@ export function todayIso(now = new Date()): string {
 
 // Textes fixes recalculés à chaque changement de langue (les écrans lisent toujours la valeur à jour)
 onLocaleChange(() => {
-  DEMO_LABEL = inLang({ fr: 'Données de démonstration', en: 'Demo data' });
-  GENERAL_DISCLAIMER = inLang({
-  fr: 'Cette analyse s’appuie uniquement sur les informations disponibles et les sources citées, à leur date. Elle ne remplace pas l’avis d’un professionnel de santé et ne pose aucun diagnostic.',
-  en: 'This analysis relies only on the information available and the sources cited, as at their date. It does not replace the advice of a health professional and does not make any diagnosis.',
-});
+  DEMO_LABEL = inLang(DEMO_LABEL_TEXTS);
+  GENERAL_DISCLAIMER = inLang(GENERAL_DISCLAIMER_TEXTS);
 });

@@ -12,7 +12,7 @@ import { useToast } from '@/components/Overlays';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Text } from '@/components/ui';
 import { backend } from '@/lib/backend';
-import { ensureHousehold, useChecklists, useChild, useHouseholdId, useInvalidate } from '@/lib/data/hooks';
+import { ensureHousehold, useChecklists, useChild, useChildrenLoading, useHouseholdId, useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { isPremiumError } from '@/lib/data/hooks-family';
 import type { Checklist } from '@/lib/types';
@@ -28,10 +28,11 @@ export default function ChildSteps() {
   const hid = useHouseholdId();
   const { id } = useLocalSearchParams<{ id: string }>();
   const child = useChild(id);
+  const childLoading = useChildrenLoading();
   const listsQ = useChecklists();
   const [busy, setBusy] = useState(false);
   const [limit, setLimit] = useState(false);
-  if (!child) return <Screen back title={tr('tool.kid_steps')}><EmptyState icon="user" title={tr('kc.noChild')} /></Screen>;
+  if (!child) return <Screen back title={tr('tool.kid_steps')}>{childLoading ? <Skeleton rows={4} /> : <EmptyState icon="user" title={tr('kc.noChild')} />}</Screen>;
   const title = stepsTitle(child.first_name);
   const list = (listsQ.data ?? []).find((l) => l.kind === 'custom' && l.title === title) ?? null;
 

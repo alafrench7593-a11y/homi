@@ -1,0 +1,36 @@
+// it — généré depuis la traduction validée (scripts i18n du 08/11/2026). Mêmes clés que le français.
+import type { lib1 as fr } from '../fr/lib1';
+import type { Messages } from '../types';
+
+export const lib1: Messages<typeof fr> = {
+  "l1.dates.justNow": "proprio ora",
+  "l1.dates.minAgo": "{n} min fa",
+  "l1.dates.hourAgo": "{h} h{r} fa",
+  "l1.dates.yesterday": "ieri",
+  "l1.dates.daysAgo": "{n} giorni fa",
+  "l1.sleep.nightLabel": "Notte dal {from} al {to}",
+  "l1.sleep.err.futureDate": "La data non può essere nel futuro.",
+  "l1.sleep.err.bed": "Orario nel formato 22:30.",
+  "l1.sleep.err.wake": "Orario nel formato 07:00.",
+  "l1.sleep.err.wakeSame": "Il risveglio deve essere diverso dall’orario in cui vai a letto.",
+  "l1.sleep.err.wakings": "Un numero tra 0 e 30.",
+  "l1.sleep.err.detailTime": "Orario nel formato 03:15.",
+  "l1.sleep.err.detailMinutes": "Durata in minuti (da 0 a 600).",
+  "l1.sleep.err.duration": "Durata nel formato 7h30.",
+  "l1.sleep.err.nap": "Inizio e fine nel formato 14:00.",
+  "l1.sleep.err.napOrder": "La fine deve essere dopo l’inizio.",
+  "l1.sleep.tip.sideLate.title": "Dormire sul fianco",
+  "l1.sleep.tip.sideLate.text": "A fine gravidanza, dormire sul fianco (sinistro o destro) è in genere consigliato. Se ti svegli sulla schiena, niente paura: basta girarti. Un cuscino tra le ginocchia o sotto la pancia può aiutare.",
+  "l1.sleep.tip.sideEarly.title": "Trovare una posizione comoda",
+  "l1.sleep.tip.sideEarly.text": "Con il passare delle settimane, la posizione sul fianco diventa spesso la più piacevole; è consigliata a fine gravidanza. Un cuscino tra le ginocchia può dare sollievo.",
+  "l1.sleep.tip.hydration.title": "Bere soprattutto di giorno",
+  "l1.sleep.tip.hydration.text": "Bere bene durante la giornata e un po’ meno la sera può ridurre i risvegli notturni per andare in bagno.",
+  "l1.sleep.tip.rest.title": "Riposare senza sensi di colpa",
+  "l1.sleep.tip.rest.text": "La stanchezza in gravidanza è reale. Una pausa sdraiata durante il giorno, anche breve, è concessa.",
+  "l1.pur.notConfigured": "Gli acquisti non sono ancora configurati per questa versione.",
+  "l1.scan.ciqualTable": "Tabella Ciqual",
+  "l1.scan.ciqualVersion": "Tabella Ciqual (Anses), {version}",
+  "l1.scan.ciqualVersionDate": "Tabella Ciqual (Anses), {version}, {date}",
+  "l1.scan.enteredByYou": "Inserito da te",
+  "l1.scan.enteredByYouUnverified": "Inserito da te (non verificato da un database di prodotti)",
+};

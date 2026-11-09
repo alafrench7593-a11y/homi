@@ -1,0 +1,53 @@
+/** Offre Premium — textes affichés en italien (traduits depuis le français). Aucun produit, prix, quota ni droit ici : uniquement les libellés. */
+import type { PremiumFeature } from './features';
+import type { FeatureText } from './features.es';
+
+export const FEATURE_TEXT_IT: Record<PremiumFeature, FeatureText> = {
+  sleep_insights: { title: 'Scopri il ritmo personalizzato di {name}', benefit: 'Dopo ogni risveglio: prossimo pisolino, routine e nanna stimati in base all’età e poi ai suoi registri, ricalcolati in tempo reale, con notifiche delicate e tendenze su 7 giorni.', free: 'Annotare pisolini, notti, risvegli e poppate notturne; modificare gli orari; totali del giorno; aiuto per la notte; sonno sicuro', premium: 'Stime personalizzate, ricalcolo, notifiche, riscontri «giusto / troppo presto / troppo tardi», medie e andamento' },
+  bedtime_routine: { title: 'Una routine della nanna per {name}', benefit: 'Le tappe della vostra serata, nel vostro ordine, con un promemoria facoltativo all’ora che scegli.', free: '—', premium: 'Routine personalizzabile e promemoria' },
+  assistant_more: { title: 'Fai tutte le tue domande all’assistente', benefit: 'Molte più domande ogni mese, adatte al tuo percorso e al profilo visualizzato.', free: 'Alcune domande al mese', premium: 'Molte più domande' },
+  assistant_saved: { title: 'Conserva le risposte utili', benefit: 'Salva una risposta per ritrovarla in un attimo.', free: 'Rileggere le risposte già salvate', premium: 'Salvare nuove risposte' },
+  assistant_suggestions: { title: 'Domande suggerite per {name}', benefit: 'Idee di domande in base alla settimana di gravidanza o all’età esatta del bambino.', free: 'Suggerimenti generali', premium: 'Suggerimenti personalizzati' },
+  scanner_more: { title: 'Analizza tutti i tuoi prodotti', benefit: 'Analisi estese ogni mese, adatte al profilo scelto.', free: 'Alcune analisi al mese; avvisi ufficiali di richiamo sempre illimitati', premium: 'Analisi estese' },
+  scanner_compare: { title: 'Confronta questi prodotti', benefit: 'Composizione, allergeni e precauzioni fianco a fianco, senza un punteggio opaco.', free: '—', premium: 'Confronto e filtri per profilo' },
+  coparent_invite: { title: 'Condividi le informazioni con l’altro genitore', benefit: 'Invito sicuro, scelta dei profili condivisi, lettura o modifica, sincronizzazione senza doppioni, revoca immediata.', free: 'Rimuovere un membro e lasciare un nucleo familiare in qualsiasi momento', premium: 'Invitare e condividere per profilo' },
+  voice_entry: { title: 'Registra semplicemente con la voce', benefit: '«Lina ha bevuto 150 ml alle 13:10»: la frase diventa una registrazione, che confermi tu.', free: 'Alcune prove al mese', premium: 'Inserimento vocale, illimitato nella pratica' },
+  summaries: { title: 'Genera il riepilogo completo di {name}', benefit: 'Pasti, sonno, pannolini, sintomi annotati, trattamenti prescritti, misure: i fatti registrati, senza interpretazione.', free: 'Riepilogo del giorno', premium: 'Riepiloghi della settimana e prima delle visite' },
+  summary_export: { title: 'Esporta o condividi il riepilogo', benefit: 'Un PDF chiaro da mostrare al professionista sanitario.', free: '1 esportazione al mese', premium: 'Esportazioni frequenti' },
+  weekly_menu: { title: 'Prepara i menu di tutta la settimana', benefit: 'Un menu adatto a ogni profilo, con la lista della spesa fatta automaticamente.', free: 'Raccolta di ricette, preferiti, filtri, spesa per una ricetta', premium: 'Menu settimanali e spesa automatica' },
+  cycle_insights: { title: 'Capire i tuoi cicli', benefit: 'Statistiche chiare e tendenze su tutto il tuo storico (sempre stime).', free: 'Calendario, registrazioni, stime di base', premium: 'Statistiche e tendenze' },
+  cycle_trends: { title: 'Individua ciò che si ripete nel tuo ciclo', benefit: 'Le tendenze osservate nei tuoi dati (dopo diversi cicli confrontabili) e, se lo desideri, un messaggio prima di un periodo in cui annoti spesso un sintomo. Mai una certezza.', free: 'Calendario, mestruazioni, stima semplice, sintomi essenziali, informazioni generali e di sicurezza', premium: 'Tendenze personali e anticipazione' },
+  cycle_custom: { title: 'Personalizza il monitoraggio del ciclo', benefit: 'I tuoi elementi da monitorare e tutte le etichette che vuoi.', free: '3 etichette diverse', premium: 'Elementi personalizzati ed etichette illimitate' },
+  cycle_share: { title: 'Condividi il tuo ciclo con il tuo partner', benefit: 'Scegli tu cosa condividere (mestruazioni, finestra fertile stimata, umore, sintomi) con un membro del tuo nucleo familiare, in sola lettura; mai i rapporti, la contraccezione né le tue note. Revocabile in qualsiasi momento.', free: 'Non viene condiviso nulla', premium: 'Condivisione scelta e revocabile' },
+  cycle_monthly: { title: 'Il riepilogo del tuo mese', benefit: 'Mestruazioni, durata del ciclo, sintomi e stati d’animo più annotati del mese, in un PDF da conservare o mostrare al tuo professionista. Fatti annotati, mai una diagnosi.', free: 'Calendario e scheda di ogni giorno', premium: 'Riepilogo mensile e PDF' },
+  cycle_export: { title: 'Esporta il monitoraggio del ciclo', benefit: 'Un PDF da condividere con il tuo professionista sanitario.', free: '—', premium: 'Esportazione PDF' },
+  family_summary: { title: 'Il riepilogo familiare del giorno', benefit: 'Ogni bambino, i suoi pasti, il suo sonno e le sue visite, senza mescolare nulla.', free: 'Panoramica dei profili', premium: 'Riepilogo familiare quotidiano' },
+  more_children: { title: 'Segui più bambini', benefit: 'Più profili, ognuno con i propri dati.', free: 'Fino a 3 bambini', premium: 'Profili estesi' },
+  more_reminders: { title: 'Promemoria personali senza contare', benefit: 'Promemoria completamente configurabili: modificare, rimandare, disattivare.', free: '5 promemoria personali; farmaci prescritti, biberon e vaccini sempre illimitati', premium: 'Promemoria personali estesi' },
+  more_documents: { title: 'Un archivio di documenti esteso', benefit: 'Ecografie, ricette, referti: tutto nello stesso posto.', free: 'Archivio limitato', premium: 'Archivio esteso' },
+  more_lists: { title: 'Liste di preparazione illimitate', benefit: 'Borsa per il parto, documenti, cameretta…', free: 'Alcune liste', premium: 'Liste estese' },
+  premium_content: { title: 'Guide approfondite', benefit: 'Serie e guide adatte all’età esatta o alla settimana di gravidanza.', free: 'Tutte le informazioni di sicurezza', premium: 'Guide approfondite' },
+  growth_export: { title: 'Esporta le misure', benefit: 'Un file con le misure di crescita da condividere.', free: '—', premium: 'Esportazione delle misure' },
+  diversification: { title: 'Tutte le scoperte di {name}', benefit: 'Il catalogo completo degli alimenti, le ricette che usano ciò che ha già assaggiato, idee adatte alla sua età, filtri avanzati e tutto lo storico.', free: 'Fino a 15 alimenti seguiti per bambino, gli alimenti essenziali di ogni categoria, gli allergeni, le informazioni di sicurezza e lo storico degli ultimi 30 giorni', premium: 'Catalogo completo, ricette abbinate, idee personalizzate, filtri avanzati, storico completo' },
+  development_full: { title: 'Segui tutte le tappe di {name}', benefit: 'Tutte le tappe di ogni fascia d’età, con un’attività adatta per ciascuna, e un riepilogo PDF da mostrare al professionista.', free: 'Le tappe principali, i consigli di sicurezza, le fonti e il riepilogo sullo schermo', premium: 'Monitoraggio completo, attività adatte all’età, riepilogo PDF' },
+  community_profile: { title: 'Personalizza il tuo profilo nella community', benefit: 'Un colore, un banner, una presentazione più lunga e un badge Premium discreto, se lo desideri.', free: 'Pseudonimo, nome utente, avatar o foto, breve presentazione, percorso', premium: 'Colore, banner, presentazione arricchita, badge facoltativo' },
+  community_groups: { title: 'Crea il tuo gruppo privato di genitori', benefit: 'Uno spazio solo vostro, su invito: i post restano invisibili al resto della community.', free: 'Unirti ai gruppi tematici, ai gruppi per mese e ai gruppi privati a cui vieni invitato', premium: 'Creare gruppi privati e invitare membri' },
+  community_albums: { title: 'Album fotografici da condividere', benefit: 'Album privati, o condivisi solo con i membri che scegli. Foto ripulite dalla posizione GPS.', free: 'Vedere gli album condivisi con te; fino a 4 foto per post', premium: 'Creare album e condividerli' },
+  community_search: { title: 'Filtri e ricerca avanzati', benefit: 'Più categorie insieme, sondaggi, post con foto, senza risposta, di un membro, di un periodo.', free: 'Ricerca per parole chiave e per categoria, feed «Per te», «Seguiti» e «Recenti»', premium: 'Filtri combinati e ricerca avanzata' },
+  community_history: { title: 'Il tuo registro attività', benefit: 'La cronologia dei tuoi post, risposte, reazioni ed elementi salvati.', free: 'I tuoi post, le tue risposte e i post che ti piacciono o che hai salvato restano tutti consultabili', premium: 'Cronologia completa e filtrabile' },
+  saved_folders: { title: 'Organizza i tuoi salvataggi', benefit: 'Cartelle per ritrovare in un attimo le discussioni utili («Sonno», «Borsa per il parto»…).', free: 'Salvare senza limiti', premium: 'Cartelle' },
+  community_ai: { title: 'Riassumere una lunga discussione', benefit: 'L’essenziale di una discussione con più di 6 risposte, presentato come testimonianze. Traduzione di un messaggio se serve.', free: 'Leggere tutte le risposte', premium: 'Riassunto e traduzione (servizio di IA da configurare lato server)' },
+  community_events: { title: 'Laboratori e incontri', benefit: 'Laboratori e incontri in videochiamata riservati agli abbonati, quando il team li programma.', free: 'Tutta la community e le informazioni di sicurezza', premium: 'Iscrizione ai laboratori' },
+};
+
+export const ALWAYS_FREE_IT = [
+  'Informazioni e numeri di emergenza',
+  'Risorse sulla depressione post-partum',
+  'Avvisi ufficiali di richiamo dei prodotti',
+  'Eliminazione dell’account ed esportazione legale dei tuoi dati',
+  'Gestione dei consensi',
+  'Segnalazione e blocco nella community',
+  'Accesso a tutti i dati che hai già creato, anche dopo la fine di un abbonamento',
+  'Il tuo profilo e le tue impostazioni',
+  'Dare un parere sull’app',
+];

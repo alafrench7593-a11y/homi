@@ -27,10 +27,11 @@ import {
 } from '@/lib/domain/cycleDaily';
 import { intercourseInfo, todayInsight } from '@/lib/domain/cycleInsights';
 import { parseCycleVoice } from '@/lib/domain/cycleVoice';
-import { formatDate, getLocale, localeTag, t as tr, type TKey } from '@/i18n';
+import { formatDate, localeTag, t as tr, type TKey } from '@/i18n';
+import { decimal } from '@/i18n/formats';
 
-/** Séparateur décimal affiché selon la langue (virgule en français, point en anglais). */
-const decSep = (n: number | string) => (getLocale() === 'en' ? String(n) : String(n).replace('.', ','));
+/** Séparateur décimal affiché selon la langue (point en anglais, virgule en français, espagnol, allemand et italien). */
+const decSep = (n: number | string) => decimal(n);
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { InsightView, IntercourseView } from './InsightCard';
@@ -396,7 +397,7 @@ function VoiceEntry({ onApply }: { onApply: (pills: string[], pain: number | nul
     if (!parsed?.pills.length) return;
     if (!access.premium) {
       const r = await consume();
-      if (!r.allowed) { access.showPreview(undefined, { used: r.used, quota: r.quota, unit: 'saisies vocales' }); return; }
+      if (!r.allowed) { access.showPreview(undefined, { used: r.used, quota: r.quota, unit: tr('u6.quick.unit') }); return; }
     }
     onApply(parsed.pills, parsed.painIntensity, parsed.temperature);
     setText(''); setOpen(false);

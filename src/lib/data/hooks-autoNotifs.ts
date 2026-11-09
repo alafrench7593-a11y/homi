@@ -14,7 +14,7 @@ import { upcomingPrep } from '../domain/mentalLoad';
 import { remindersOn } from '../domain/myDay';
 import { useDoseLogsSince } from './hooks-myTreatments';
 import { useBottleTimers } from './hooks-bottle';
-import { insertOrQueue } from '../offline';
+import { insertOrQueue, useOfflineStore } from '../offline';
 import { babyWidgetContent } from '@/widgets/babyWidgetContent';
 import { BRAND } from '@/config/brand';
 import { syncBabyWidget } from '@/widgets/syncBabyWidget';
@@ -56,6 +56,8 @@ export function useAutoNotificationsSync() {
   const children = useChildren().data;
   const today = todayISO();
   const doseLogs = useDoseLogsSince(localStart(today).toISOString());
+  // Prises notées hors connexion (encore dans la file) : déjà répondues, pas de relance (09/11/2026)
+  const queuedDoses = useOfflineStore((st) => st.pending);
   const plans = useMemo(() => {
     if (!prefs || !appointments || !tasks) return null;
     const done = new Set((prepDone ?? []).map((d) => `${d.key}|${d.occurs_on}`));
@@ -66,7 +68,8 @@ export function useAutoNotificationsSync() {
         return { key: `${it.key}-${it.occursOn}`, title: tr(`cm.prep.${it.kind}` as TKey, { name: it.label ?? '' }), notifyOn: lead > today ? lead : addDays(today, 1) };
       });
     // Prises prévues aujourd'hui et demain d'après MES rappels de traitement (enfant ou moi)
-    const handled = new Set([...(doseLogs.child ?? []), ...(doseLogs.mine ?? [])].filter((l) => l.status !== 'snoozed').map((l) => `${l.treatment_id}|${new Date(l.scheduled_for).getTime()}`));
+    const queuedLogs = queuedDoses.filter((op) => op.table === 'treatment_logs' || op.table === 'my_treatment_logs').map((op) => op.row as { treatment_id: string; scheduled_for: string; status: string });
+    const handled = new Set([...(doseLogs.child ?? []), ...(doseLogs.mine ?? []), ...queuedLogs].filter((l) => l.status !== 'snoozed').map((l) => `${l.treatment_id}|${new Date(l.scheduled_for).getTime()}`));
     const medRems = (reminders ?? []).filter((r) => (r.treatment_id || r.my_treatment_id) && (!me || r.user_id === me));
     const doses = doseLogs.loaded ? [today, addDays(today, 1)].flatMap((day) => remindersOn(medRems as never, day).filter((it) => it.time && !it.every).map((it) => {
       const r = medRems.find((x) => x.id === it.refId)!;
@@ -80,7 +83,7 @@ export function useAutoNotificationsSync() {
       now: new Date(), me, appointments, tasks, prep, papers: paperRows, doses,
       appointmentsWithReminder: new Set((reminders ?? []).map((r) => r.appointment_id).filter(Boolean) as string[]),
     }, prefs, texts());
-  }, [prefs, appointments, reminders, tasks, papers, prepDone, children, today, me, doseLogs.child, doseLogs.mine, doseLogs.loaded]);
+  }, [prefs, appointments, reminders, tasks, papers, prepDone, children, today, me, doseLogs.child, doseLogs.mine, doseLogs.loaded, queuedDoses]);
   const key = plans ? JSON.stringify(plans.map((p) => [p.id, p.at.toISOString(), p.title])) : null;
   useEffect(() => { if (plans) void syncAutoNotifications(plans).catch(() => undefined); }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
 

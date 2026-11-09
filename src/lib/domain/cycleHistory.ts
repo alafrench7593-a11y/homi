@@ -27,8 +27,14 @@ const OVU_LABEL_FR: Record<string, string> = { positive: 'pic de LH possible', p
 const PREG_LABEL_FR: Record<string, string> = { positive: 'possiblement positif', faint: 'ligne pâle', negative: 'possiblement négatif', invalid: 'test invalide', uncertain: 'résultat incertain' };
 const OVU_LABEL_EN: Record<string, string> = { positive: 'possible LH surge', peak: 'possible LH surge', negative: 'LH surge not detected', invalid: 'invalid test', uncertain: 'uncertain result' };
 const PREG_LABEL_EN: Record<string, string> = { positive: 'possibly positive', faint: 'faint line', negative: 'possibly negative', invalid: 'invalid test', uncertain: 'uncertain result' };
-const OVU_LABEL: Record<string, string> = localized(OVU_LABEL_FR, OVU_LABEL_EN);
-const PREG_LABEL: Record<string, string> = localized(PREG_LABEL_FR, PREG_LABEL_EN);
+const OVU_LABEL_ES: Record<string, string> = { positive: 'posible pico de LH', peak: 'posible pico de LH', negative: 'pico de LH no detectado', invalid: 'test no válido', uncertain: 'resultado incierto' };
+const OVU_LABEL_DE: Record<string, string> = { positive: 'möglicher LH-Anstieg', peak: 'möglicher LH-Anstieg', negative: 'kein LH-Anstieg erkannt', invalid: 'ungültiger Test', uncertain: 'unsicheres Ergebnis' };
+const OVU_LABEL_IT: Record<string, string> = { positive: 'possibile picco di LH', peak: 'possibile picco di LH', negative: 'picco di LH non rilevato', invalid: 'test non valido', uncertain: 'risultato incerto' };
+const PREG_LABEL_ES: Record<string, string> = { positive: 'posiblemente positivo', faint: 'línea tenue', negative: 'posiblemente negativo', invalid: 'test no válido', uncertain: 'resultado incierto' };
+const PREG_LABEL_DE: Record<string, string> = { positive: 'möglicherweise positiv', faint: 'schwache Linie', negative: 'möglicherweise negativ', invalid: 'ungültiger Test', uncertain: 'unsicheres Ergebnis' };
+const PREG_LABEL_IT: Record<string, string> = { positive: 'forse positivo', faint: 'linea debole', negative: 'forse negativo', invalid: 'test non valido', uncertain: 'risultato incerto' };
+const OVU_LABEL: Record<string, string> = localized(OVU_LABEL_FR, OVU_LABEL_EN, { es: OVU_LABEL_ES, de: OVU_LABEL_DE, it: OVU_LABEL_IT });
+const PREG_LABEL: Record<string, string> = localized(PREG_LABEL_FR, PREG_LABEL_EN, { es: PREG_LABEL_ES, de: PREG_LABEL_DE, it: PREG_LABEL_IT });
 
 /** Date locale (AAAA-MM-JJ) d'un horodatage. */
 export function localDay(ts: string): ISODate {
@@ -117,4 +123,16 @@ const EVENT_LABEL_EN: Record<DayEventKind, string> = {
   period: 'Period', mucus: 'Mucus', temperature: 'Temperature', ovulation_test: 'Ovulation test',
   pregnancy_test: 'Pregnancy test', symptom: 'Symptoms', intercourse: 'Intercourse', note: 'Note',
 };
-export const EVENT_LABEL: Record<DayEventKind, string> = localized(EVENT_LABEL_FR, EVENT_LABEL_EN);
+const EVENT_LABEL_ES: Record<DayEventKind, string> = {
+  period: 'Regla', mucus: 'Moco cervical', temperature: 'Temperatura', ovulation_test: 'Test de ovulación',
+  pregnancy_test: 'Test de embarazo', symptom: 'Síntomas', intercourse: 'Relación sexual', note: 'Nota',
+};
+const EVENT_LABEL_DE: Record<DayEventKind, string> = {
+  period: 'Periode', mucus: 'Zervixschleim', temperature: 'Temperatur', ovulation_test: 'Ovulationstest',
+  pregnancy_test: 'Schwangerschaftstest', symptom: 'Symptome', intercourse: 'Geschlechtsverkehr', note: 'Notiz',
+};
+const EVENT_LABEL_IT: Record<DayEventKind, string> = {
+  period: 'Mestruazioni', mucus: 'Muco cervicale', temperature: 'Temperatura', ovulation_test: 'Test di ovulazione',
+  pregnancy_test: 'Test di gravidanza', symptom: 'Sintomi', intercourse: 'Rapporto', note: 'Nota',
+};
+export const EVENT_LABEL: Record<DayEventKind, string> = localized(EVENT_LABEL_FR, EVENT_LABEL_EN, { es: EVENT_LABEL_ES, de: EVENT_LABEL_DE, it: EVENT_LABEL_IT });

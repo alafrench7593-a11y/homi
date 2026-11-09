@@ -147,7 +147,7 @@ export default function Discoveries() {
               : top.length === 1 ? tr('dc.hero.line1', { name, a: countLabel(top[0].category, top[0].count) })
                 : tr('dc.hero.none', { name })}
           </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm, paddingVertical: 4 }}>
+          <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm, paddingVertical: 4 }}>
             {FOOD_CATEGORIES.filter((c) => progress[c] > 0).map((c) => (
               <View key={c} testID={`dc-progress-${c}`} style={{ alignItems: 'center', gap: 2, minWidth: 64 }}>
                 <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: 3, borderColor: CAT_TINT[c] }}>
@@ -171,10 +171,10 @@ export default function Discoveries() {
       {/* Cette semaine */}
       <SectionTitle title={tr('dc.week')} />
       {week.length ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }} testID="dc-week">
+        <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }} testID="dc-week">
           {week.map((k) => { const f = FOOD_BY_KEY[k]; return f ? (
             <Tappable key={k} accessibilityRole="button" onPress={() => openFood(f)} style={{ alignItems: 'center', gap: 4, width: 76 }}>
-              <FoodArt food={f} size={56} /><Text variant="caption" numberOfLines={1}>{f.name}</Text>
+              <FoodArt food={f} size={56} /><Text variant="caption" center>{f.name}</Text>
             </Tappable>
           ) : <Chip key={k} label={k} />; })}
         </ScrollView>
@@ -200,10 +200,10 @@ export default function Discoveries() {
       <SectionTitle title={tr('dc.ideas')} />
       <PremiumSection feature="diversification" name={name} preview={<Text variant="small">{tr('dc.ideasHint')}</Text>} testID="dc-ideas-locked">
         <Text variant="small" muted>{tr('dc.ideasHint')}</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }} testID="dc-ideas">
+        <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }} testID="dc-ideas">
           {ideas.map((f) => (
             <Tappable key={f.key} accessibilityRole="button" onPress={() => openFood(f)} testID={`dc-idea-${f.key}`} style={{ alignItems: 'center', gap: 4, width: 84 }}>
-              <FoodArt food={f} size={60} /><Text variant="caption" numberOfLines={1}>{f.name}</Text>
+              <FoodArt food={f} size={60} /><Text variant="caption" center>{f.name}</Text>
             </Tappable>
           ))}
         </ScrollView>
@@ -212,7 +212,7 @@ export default function Discoveries() {
       {/* Recherche et filtres */}
       <SectionTitle title={tr('dc.mosaic')} />
       <Field label={tr('dc.search')} value={q} onChangeText={setQ} placeholder={tr('dc.searchPh')} testID="dc-search" />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
         <Chip label={tr('dc.filter.allCats')} selected={!cat} onPress={() => setCat(null)} testID="dc-cat-all" />
         {FOOD_CATEGORIES.map((c) => <Chip key={c} label={tr(`dc.cat.${c}` as TKey)} selected={cat === c} onPress={() => setCat(cat === c ? null : c)} testID={`dc-cat-${c}`} />)}
       </ScrollView>
@@ -261,7 +261,7 @@ export default function Discoveries() {
           {history.slice(0, premium ? 200 : 40).map((h) => (
             <View key={h.id} testID={`dc-h-${h.id}`} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: 40 }}>
               <Text variant="caption" muted style={{ width: 72 }}>{day(h.tasted_on)}</Text>
-              <Text style={{ flex: 1 }} numberOfLines={2}>{h.food_name} · {tr(`dc.status.${h.status}` as TKey)}{h.texture ? ` · ${tr(`dc.texture.${h.texture}` as TKey)}` : ''}{h.reaction ? ` · ${tr('dc.reactionNoted')}` : ''}</Text>
+              <Text style={{ flex: 1 }}>{h.food_name} · {tr(`dc.status.${h.status}` as TKey)}{h.texture ? ` · ${tr(`dc.texture.${h.texture}` as TKey)}` : ''}{h.reaction ? ` · ${tr('dc.reactionNoted')}` : ''}</Text>
             </View>
           ))}
         </View>
@@ -298,8 +298,8 @@ function FoodTile({ food, entry, state, width, locked, onPress }: { food: FoodDe
       <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.58)'} depth={1} radius={22} padded={10} style={{ alignItems: 'center' }}>
         <View style={{ alignItems: 'center', gap: 6 }}>
           <FoodArt food={food} size={Math.min(84, width - 28)} dim={state === 'not_yet_age' || locked} />
-          <Text weight="bold" variant="small" center numberOfLines={2}>{food.name}</Text>
-          <Text variant="caption" center color={badge[state]} numberOfLines={2} testID={`dc-state-${food.key}`}>{tr(`dc.state.${state}` as TKey)}</Text>
+          <Text weight="bold" variant="small" center>{food.name}</Text>
+          <Text variant="caption" center color={badge[state]} testID={`dc-state-${food.key}`}>{tr(`dc.state.${state}` as TKey)}</Text>
         </View>
         {entry?.favorite ? <View style={{ position: 'absolute', top: 6, right: 6 }}><Icon name="heart" size={14} color="#E5525F" /></View> : null}
         {locked ? <View style={{ position: 'absolute', top: 6, left: 6 }}><Icon name="lock" size={14} color={t.colors.textMuted} /></View> : null}
@@ -434,13 +434,13 @@ function RecipeLine({ r, onOpen }: { r: Recipe; onOpen: () => void }) {
     <Tappable accessibilityRole="button" onPress={onOpen} testID={`dc-recipe-${r.slug}`} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: 64 }}>
       <View style={{ width: 64 }}><RecipeArt recipe={r} height={56} label={false} rounded={12} /></View>
       <View style={{ flex: 1, gap: 2 }}>
-        <Text weight="bold" variant="small" numberOfLines={2}>{r.title}</Text>
-        <Text variant="caption" muted numberOfLines={3}>
+        <Text weight="bold" variant="small">{r.title}</Text>
+        <Text variant="caption" muted>
           {[tr('dc.recipe.time', { n: total }), r.textures.map((x) => textureLabel(x).toLowerCase()).join(', '),
             r.allergens.length ? tr('dc.recipe.allergens', { list: r.allergens.map((a) => allergenLabel(a).toLowerCase()).join(', ') }) : tr('dc.recipe.noAllergen'),
             freezes ? tr('dc.recipe.freeze') : tr('dc.recipe.noFreeze'), r.familyAdaptations || r.audiences.includes('family') ? tr('dc.recipe.family') : null].filter(Boolean).join(' · ')}
         </Text>
-        <Text variant="caption" muted numberOfLines={2}>{tr('dc.recipe.storage')} {r.storage}</Text>
+        <Text variant="caption" muted>{tr('dc.recipe.storage')} {r.storage}</Text>
       </View>
     </Tappable>
   );

@@ -115,7 +115,7 @@ function FavoriteButton({ on, label, color, onPress }: { on: boolean; label: str
 }
 
 /** Raccourci compact (favoris) : glyphe + libellé, centré, largeur fixe. */
-export function ToolShortcut({ tool, status }: { tool: CatalogTool; status?: ToolStatus }) {
+export function ToolShortcut({ tool, status, beforeOpen }: { tool: CatalogTool; status?: ToolStatus; beforeOpen?: () => void }) {
   const t = useTheme();
   const reduce = useReduceMotion();
   const press = usePressMotion({ pressed: 0.94, hoverLift: -2 });
@@ -128,7 +128,7 @@ export function ToolShortcut({ tool, status }: { tool: CatalogTool; status?: Too
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={[tool.label, status?.text].filter(Boolean).join(', ')}
-        onPress={(e) => { haptic('selection'); setPlay((p) => p + 1); lastY.current = e.nativeEvent.pageY; openTool(tool, e.nativeEvent.pageY, reduce); }}
+        onPress={(e) => { haptic('selection'); setPlay((p) => p + 1); lastY.current = e.nativeEvent.pageY; beforeOpen?.(); openTool(tool, e.nativeEvent.pageY, reduce); }}
         onPressIn={() => { setPressed(true); press.handlers.onPressIn(); }}
         onPressOut={() => { setPressed(false); press.handlers.onPressOut(); }}
         onHoverIn={() => { setHovered(true); press.handlers.onHoverIn?.(); }}

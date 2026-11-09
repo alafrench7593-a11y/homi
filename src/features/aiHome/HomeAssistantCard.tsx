@@ -5,7 +5,8 @@
  * sécurité santé restent ceux de l'écran de conversation : cette carte ne fait qu'y mener.
  */
 import React, { useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { Keyboard, TextInput, View } from 'react-native';
+import { useRevealOnFocus } from '@/components/keyboard';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Tappable } from '@/components/Tappable';
@@ -15,7 +16,10 @@ import { t as tr } from '@/i18n';
 
 export function HomeAssistantCard() {
   const [q, setQ] = useState('');
+  const inputRef = React.useRef<TextInput>(null);
+  const reveal = useRevealOnFocus(inputRef);
   const send = () => {
+    Keyboard.dismiss();
     const question = q.trim();
     setQ('');
     // D'abord l'IA locale (gratuite, sur le téléphone, à partir des articles) ; l'IA en ligne reste à un geste
@@ -35,7 +39,7 @@ export function HomeAssistantCard() {
         <Icon name="arrow-right" color="#FFFFFF" />
       </Tappable>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: 18, paddingLeft: spacing.md, minHeight: MIN_TOUCH }}>
-        <TextInput value={q} onChangeText={setQ} placeholder={tr('ai.home.placeholder')} placeholderTextColor="rgba(60,40,50,0.55)"
+        <TextInput ref={inputRef} onFocus={reveal} value={q} onChangeText={setQ} placeholder={tr('ai.home.placeholder')} placeholderTextColor="rgba(60,40,50,0.55)"
           accessibilityLabel={tr('ai.home.inputA11y')} returnKeyType="send" onSubmitEditing={send} maxLength={500} testID="home-ai-input"
           style={{ flex: 1, minHeight: MIN_TOUCH, color: '#2A1A22', fontSize: 16 }} />
         <Tappable accessibilityRole="button" accessibilityLabel={tr('ai.home.send')} onPress={send} testID="home-ai-send"

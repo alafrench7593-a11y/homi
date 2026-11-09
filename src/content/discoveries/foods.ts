@@ -9,6 +9,9 @@
  */
 import type { Allergen } from '@/lib/recipes/types';
 import { localized } from '@/i18n/localized';
+import { DISCOVERY_SOURCE_LABELS_ES, FOOD_TEXT_ES } from './foods.es';
+import { DISCOVERY_SOURCE_LABELS_DE, FOOD_TEXT_DE } from './foods.de';
+import { DISCOVERY_SOURCE_LABELS_IT, FOOD_TEXT_IT } from './foods.it';
 
 export type FoodCategory = 'veg' | 'fruit' | 'starch' | 'cereal' | 'legume' | 'meat' | 'fish' | 'egg' | 'dairy' | 'fat' | 'herb' | 'allergen' | 'other';
 export const FOOD_CATEGORIES: FoodCategory[] = ['veg', 'fruit', 'starch', 'cereal', 'legume', 'meat', 'fish', 'egg', 'dairy', 'fat', 'herb', 'allergen', 'other'];
@@ -184,10 +187,13 @@ const DISCOVERY_SOURCE_LABELS_EN: Record<SourceKey, string> = {
   lait_cru: 'No raw-milk cheese before age 5 (reminder from the French health authorities)',
   ameli_quincke: 'ameli.fr — Angioedema: the right reflexes (French national health insurance)',
 };
-const DISCOVERY_SOURCES_EN = Object.fromEntries(
-  (Object.keys(DISCOVERY_SOURCES_FR) as SourceKey[]).map((k) => [k, { ...DISCOVERY_SOURCES_FR[k], label: DISCOVERY_SOURCE_LABELS_EN[k] }]),
+const sourcesWith = (labels: Record<SourceKey, string>) => Object.fromEntries(
+  (Object.keys(DISCOVERY_SOURCES_FR) as SourceKey[]).map((k) => [k, { ...DISCOVERY_SOURCES_FR[k], label: labels[k] }]),
 ) as Record<SourceKey, DiscoverySource>;
-export const DISCOVERY_SOURCES = localized(DISCOVERY_SOURCES_FR, DISCOVERY_SOURCES_EN);
+const DISCOVERY_SOURCES_EN = sourcesWith(DISCOVERY_SOURCE_LABELS_EN);
+export const DISCOVERY_SOURCES = localized(DISCOVERY_SOURCES_FR, DISCOVERY_SOURCES_EN, {
+  es: sourcesWith(DISCOVERY_SOURCE_LABELS_ES), de: sourcesWith(DISCOVERY_SOURCE_LABELS_DE), it: sourcesWith(DISCOVERY_SOURCE_LABELS_IT),
+});
 
 const SMOOTH_EN = 'To begin with: cooked in water or steamed, puréed very smooth, with no added salt or sugar.';
 const ROUND_EN = 'Small, hard or round: cut into quarters lengthways, or mash, until age 5.';
@@ -313,28 +319,35 @@ const FOOD_TEXT_EN: Record<string, { name: string; prep: string; care?: string }
   olive: { name: 'Olives', prep: 'Stoned and finely chopped, later (they are salty).', care: 'Whole: cut into quarters until age 5.' },
 };
 
-const FOODS_EN: FoodDef[] = FOODS_FR.map((f) => {
-  const t = FOOD_TEXT_EN[f.key];
+const foodsWith = (texts: Record<string, { name: string; prep: string; care?: string }>): FoodDef[] => FOODS_FR.map((f) => {
+  const t = texts[f.key];
   if (!t) return f;
   const { care: _c, ...rest } = f;
   return { ...rest, name: t.name, prep: t.prep, ...(t.care ? { care: t.care } : f.care ? { care: f.care } : {}) };
 });
+const FOODS_EN: FoodDef[] = foodsWith(FOOD_TEXT_EN);
+const FOODS_ES: FoodDef[] = foodsWith(FOOD_TEXT_ES);
+const FOODS_DE: FoodDef[] = foodsWith(FOOD_TEXT_DE);
+const FOODS_IT: FoodDef[] = foodsWith(FOOD_TEXT_IT);
 
-export const FOODS: FoodDef[] = localized(FOODS_FR, FOODS_EN);
+export const FOODS: FoodDef[] = localized(FOODS_FR, FOODS_EN, { es: FOODS_ES, de: FOODS_DE, it: FOODS_IT });
 
 const mapByKey = (list: FoodDef[]): Record<string, FoodDef> => Object.fromEntries(list.map((f) => [f.key, f]));
-export const FOOD_BY_KEY: Record<string, FoodDef> = localized(mapByKey(FOODS_FR), mapByKey(FOODS_EN));
+export const FOOD_BY_KEY: Record<string, FoodDef> = localized(mapByKey(FOODS_FR), mapByKey(FOODS_EN), {
+  es: mapByKey(FOODS_ES), de: mapByKey(FOODS_DE), it: mapByKey(FOODS_IT),
+});
 
 /** Nom comparable : minuscules, sans accents, espaces réduits, pluriel simple retiré. */
 export function foodNameKey(name: string): string {
   return name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/œ/g, 'oe').replace(/\s+/g, ' ').trim().replace(/s$/, '');
 }
 const FOOD_KEY_BY_NAME = new Map<string, string>(
-  [...FOODS_FR, ...FOODS_EN].map((f) => [foodNameKey(f.name), f.key] as [string, string]),
+  // es/de/it d'abord : en cas de nom identique, le français puis l'anglais gardent la priorité (comportement inchangé).
+  [...FOODS_IT, ...FOODS_DE, ...FOODS_ES, ...FOODS_FR, ...FOODS_EN].map((f) => [foodNameKey(f.name), f.key] as [string, string]),
 );
 /**
  * F-02 (QA 02/11/2026) : aliment saisi librement (repas) → clé du catalogue « Ses découvertes »,
- * en français ou en anglais. null si l'aliment n'est pas au catalogue.
+ * en français, en anglais, en espagnol, en allemand ou en italien. null si l'aliment n'est pas au catalogue.
  */
 export function matchFoodKey(name: string | null | undefined): string | null {
   if (!name) return null;

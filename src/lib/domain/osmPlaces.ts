@@ -17,7 +17,11 @@ const OSM_CONFIG_FR = {
   attribution: '© contributeurs OpenStreetMap',
   attributionUrl: 'https://www.openstreetmap.org/copyright',
 };
-export const OSM_CONFIG = localized(OSM_CONFIG_FR, { ...OSM_CONFIG_FR, attribution: '© OpenStreetMap contributors' });
+export const OSM_CONFIG = localized(OSM_CONFIG_FR, { ...OSM_CONFIG_FR, attribution: '© OpenStreetMap contributors' }, {
+  es: { ...OSM_CONFIG_FR, attribution: '© colaboradores de OpenStreetMap' },
+  de: { ...OSM_CONFIG_FR, attribution: '© OpenStreetMap-Mitwirkende' },
+  it: { ...OSM_CONFIG_FR, attribution: '© contributori di OpenStreetMap' },
+});
 
 const KIDS = ['["kids_area"="yes"]', '["changing_table"="yes"]', '["highchair"="yes"]'];
 const NOT_PRIVATE = '["access"!~"^(private|no)$"]';
@@ -53,7 +57,7 @@ export function osmCategory(t: Tags, searched: FamilyCategory | 'all'): FamilyCa
   return null;
 }
 
-/** Libellé du type de lieu, en français. */
+/** Libellé du type de lieu, dans la langue en cours. */
 export function osmTypeLabel(t: Tags): string | null {
   const L = (k: string) => tr(`l7.osm.type_${k}` as TKey);
   if (t.leisure === 'playground') return t.indoor === 'yes' ? L('playground_indoor') : L('playground');
@@ -76,9 +80,13 @@ export function osmTypeLabel(t: Tags): string | null {
 export function osmHours(v?: string): string[] {
   if (!v || v.length > 300) return [];
   if (v.trim() === '24/7') return [tr('l7.osm.open_24h')];
-  const fr = getLocale() !== 'en';
+  const lang = getLocale();
+  // « 14 h » en français seulement ; « 14:00 » en anglais, espagnol, allemand et italien
+  const fr = lang === 'fr';
+  // Plage de jours (« lun.-ven. ») : tiret espacé ; en es/de/it, les jours peuvent commencer par une majuscule ou un accent
+  const dayDash = lang === 'es' || lang === 'de' || lang === 'it' ? /-(?=[a-zA-ZÀ-ÿ])/g : /-(?=[a-zé])/g;
   return v.split(';').map((s) => s.trim()).filter(Boolean).slice(0, 8).map((s) => {
-    let r = s.replace(/\b(Mo|Tu|We|Th|Fr|Sa|Su|PH)\b/g, (d) => tr(`l7.osm.day_${d}` as TKey)).replace(/-(?=[a-zé])/g, ' – ').replace(/\boff\b|\bclosed\b/gi, tr('l7.osm.closed'));
+    let r = s.replace(/\b(Mo|Tu|We|Th|Fr|Sa|Su|PH)\b/g, (d) => tr(`l7.osm.day_${d}` as TKey)).replace(dayDash, ' – ').replace(/\boff\b|\bclosed\b/gi, tr('l7.osm.closed'));
     if (fr) r = r.replace(/(\d\d):(\d\d)/g, '$1 h $2').replace(/ h 00/g, ' h');
     return r;
   });

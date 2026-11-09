@@ -8,12 +8,14 @@ import { Markdown } from './Markdown';
 import { useToast } from './Overlays';
 import { Icon, Text, type IconName } from './ui';
 import {
-  ASSISTANT_INTRO, ASSISTANT_INTRO_EN, SECTION_TITLES, urgentContacts,
+  ASSISTANT_INTRO, ASSISTANT_INTRO_EN, urgentContacts,
   type ArticleSourceRef, type StructuredAnswer, type UrgentContact,
 } from '@/features/assistant';
 import { isAllowedSourceUrl } from '../../supabase/functions/_shared/assistant-format';
-import { formatDate as fmtDate, getLocale, t as tr } from '@/i18n';
+import { formatDate as fmtDate, t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
+import { inLang } from '@/i18n/localized';
+import { ASSISTANT_INTRO_ES, ASSISTANT_INTRO_DE, ASSISTANT_INTRO_IT } from './Assistant.i18n';
 
 /** Avertissement affiché en tête de chaque conversation (texte imposé). */
 export function AssistantIntro() {
@@ -21,7 +23,7 @@ export function AssistantIntro() {
   return (
     <View accessibilityRole="summary" style={[styles.intro, { backgroundColor: t.colors.surfaceAlt, borderColor: t.colors.border }]}>
       <Icon name="cpu" size={18} color={t.colors.lavender} />
-      <Text variant="small" style={{ flex: 1 }}>{getLocale() === 'en' ? ASSISTANT_INTRO_EN : ASSISTANT_INTRO}</Text>
+      <Text variant="small" style={{ flex: 1 }}>{inLang({ fr: ASSISTANT_INTRO, en: ASSISTANT_INTRO_EN, es: ASSISTANT_INTRO_ES, de: ASSISTANT_INTRO_DE, it: ASSISTANT_INTRO_IT })}</Text>
     </View>
   );
 }
@@ -58,13 +60,13 @@ export function StructuredAnswerView({ answer, articles, streaming }: { answer: 
   return (
     <View style={{ gap: spacing.md }}>
       {!!answer.short && <Markdown source={answer.short} />}
-      <Section icon="check-circle" title={SECTION_TITLES.actions} items={answer.actions} color={t.colors.success} />
-      <Section icon="eye" title={SECTION_TITLES.watch} items={answer.watch} color={t.colors.gold} />
-      <Section icon="user-check" title={SECTION_TITLES.consult} items={answer.consult} color={t.colors.danger} />
-      <Section icon="help-circle" title={SECTION_TITLES.questions} items={answer.questions} color={t.colors.lavender} />
+      <Section icon="check-circle" title={tr('asec.actions')} items={answer.actions} color={t.colors.success} />
+      <Section icon="eye" title={tr('asec.watch')} items={answer.watch} color={t.colors.gold} />
+      <Section icon="user-check" title={tr('asec.consult')} items={answer.consult} color={t.colors.danger} />
+      <Section icon="help-circle" title={tr('asec.questions')} items={answer.questions} color={t.colors.lavender} />
       {!!sources.length && (
         <View style={{ gap: 4 }}>
-          <Text weight="bold" variant="small" accessibilityRole="header">{SECTION_TITLES.sources}</Text>
+          <Text weight="bold" variant="small" accessibilityRole="header">{tr('asec.sources')}</Text>
           {sources.map((s) => (
             <Tappable
               key={s.url}

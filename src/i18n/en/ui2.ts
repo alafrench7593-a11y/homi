@@ -32,6 +32,7 @@ export const ui2: Messages<typeof fr> = {
   'u2.difficult.essential': 'Essential',
   'u2.difficult.essential_today': 'Today’s essentials',
   'u2.difficult.help_sent': 'Help request sent to your household.',
+  'u2.difficult.help_message': 'Difficult day: I need help today.',
   'u2.difficult.my_trusted': 'My trusted people',
   'u2.difficult.need_help': 'I need help today',
   'u2.difficult.no_essential': 'No task is marked essential or important. You can mark one as “essential” in the task.',

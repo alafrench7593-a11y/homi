@@ -79,12 +79,14 @@ export default function MeSpace() {
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
         {links.map((l) => (
           <View key={l.to} style={{ flexBasis: '47%', flexGrow: 1 }}>
-            <Tappable accessibilityRole="button" accessibilityLabel={`${l.title}. ${l.subtitle}`} onPress={() => router.push(l.to as never)}>
-              <GlassSurface fill={t.colors.surface} depth={1} radius={20}>
+            {/* flex: 1 : les deux tuiles d'une rangée gardent la même hauteur quand un texte passe sur plusieurs lignes */}
+            <Tappable accessibilityRole="button" accessibilityLabel={`${l.title}. ${l.subtitle}`} onPress={() => router.push(l.to as never)} style={{ flex: 1 }}>
+              <GlassSurface fill={t.colors.surface} depth={1} radius={20} style={{ flex: 1 }}>
                 <View style={{ padding: spacing.md, gap: 6, minHeight: 96 }}>
                   <Icon name={l.icon} size={20} color={t.colors.primary} />
-                  <Text weight="bold" numberOfLines={1}>{l.title}</Text>
-                  <Text variant="caption" muted numberOfLines={2}>{l.subtitle}</Text>
+                  {/* Titre et sous-titre entiers (plus de « … ») : la tuile s'adapte à leur hauteur */}
+                  <Text weight="bold">{l.title}</Text>
+                  <Text variant="caption" muted>{l.subtitle}</Text>
                 </View>
               </GlassSurface>
             </Tappable>

@@ -200,7 +200,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
       <Segmented label={tr('u3.cal.view')} value={view} onChange={(v) => { dir.current = 0; setView(v); haptic('selection'); }} options={[{ value: 'day', label: tr('u3.cal.dayShort') }, { value: 'week', label: tr('u3.cal.vWeek') }, { value: 'month', label: tr('u3.cal.vMonth') }, { value: 'agenda', label: tr('u3.cal.vAgenda') }]} />
       <Row style={{ justifyContent: 'space-between' }}>
         {view !== 'agenda' ? <IconButton icon="chevron-left" label={tr('u3.cal.prevP')} onPress={() => move(-1)} /> : <View />}
-        <Tappable onPress={() => setCursor(todayISO())} accessibilityRole="button" accessibilityLabel={`${title}. ${tr('u3.cal.backToday')}`}>
+        <Tappable onPress={() => setCursor(todayISO())} accessibilityRole="button" accessibilityLabel={`${title}. ${tr('u3.cal.backToday')}`} style={{ flexShrink: 1 }}>
           <Text weight="bold" center>{title}</Text>
           {cursor !== todayISO() && view !== 'agenda' ? <Text variant="caption" color={t.colors.primary} center>{tr('u3.cal.backToday')}</Text> : null}
         </Tappable>

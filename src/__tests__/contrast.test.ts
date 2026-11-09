@@ -55,11 +55,21 @@ describe.each(Object.keys(themes) as ThemeName[])('thème %s', (name) => {
 });
 
 // Palette « Au fil de nous » : rose poudré et ciel pêche, accents dorés du logo (validé le 26/10/2026) ;
-// nuit bleu nuit et prune avec accents champagne
+// nuit bleu nuit et prune avec accents champagne. 09/11/2026 (audit d'accessibilité) : primaire, prune, succès et
+// erreur à peine assombris en clair pour rester ≥ 4,5:1 jusqu'au bas du dégradé (#EBD0C8) ; teintes inchangées.
 it('palette de marque « Au fil de nous » (couleurs verrouillées)', () => {
   expect(themes.light.colors.background).toBe('#F2DDD8');
-  expect(themes.light.colors.primary).toBe('#87533F');
-  expect(themes.light.colors.danger).toBe('#B02E2E');
+  expect(themes.light.colors.primary).toBe('#804F3C');
+  expect(themes.light.colors.danger).toBe('#A92C2C');
   expect(themes.dark.colors.primary).toBe('#E7C08F');
   expect(themes.night.colors.primary).toBe('#D9B48A');
+});
+
+// 09/11/2026 : le bas du dégradé clair (#EBD0C8) est la zone la plus sombre derrière le texte coloré
+it('couleurs de texte lisibles jusqu’au bas du dégradé clair (≥ 4,5:1)', () => {
+  const c = themes.light.colors;
+  const bottom = parse(c.gradient[2]).rgb;
+  for (const k of ['primary', 'lavender', 'success', 'danger', 'textMuted'] as const) {
+    expect([k, ratio(parse(c[k]).rgb, bottom) >= 4.5]).toEqual([k, true]);
+  }
 });

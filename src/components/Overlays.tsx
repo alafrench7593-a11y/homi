@@ -1,6 +1,7 @@
 /** Feuille modale, notifications éphémères (toasts) et confirmation. */
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Easing, Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Animated, Easing, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor } from './keyboard';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
@@ -17,6 +18,12 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
   const reduce = useReduceMotion();
   const [mounted, setMounted] = useState(visible);
   const v = useRef(new Animated.Value(0)).current;
+  // Clavier : le champ actif reste visible dans la feuille ; fermer la feuille ferme le clavier ouvert par un de ses champs
+  const scrollRef = useRef<ScrollView>(null);
+  const { scope: keyboardScope, onScroll } = useKeyboardScopeFor(scrollRef);
+  useEffect(() => {
+    if (!visible) keyboardScope.dismissIfOwned();
+  }, [visible, keyboardScope]);
   useEffect(() => {
     if (visible) {
       setMounted(true);
@@ -33,7 +40,9 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
       <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay, opacity: v }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={tr('common.close')} accessibilityRole="button" />
       </Animated.View>
-      <Animated.View style={[styles.sheet, { transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [420, 0] }) }] }]}>
+      {/* La feuille remonte au-dessus du clavier (iOS et Android) et ne passe jamais sous la barre d'état */}
+      <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} pointerEvents="box-none" style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', paddingTop: insets.top + spacing.sm }]}>
+      <Animated.View style={[styles.sheet, styles.sheetInFlow, { transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [420, 0] }) }] }]}>
         <GlassSurface fill={t.isDark ? t.colors.surface : '#FBF8F4'} depth={3} radius={radius.xl} style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
           <View style={[styles.grabber, { backgroundColor: t.colors.border }]} />
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg }}>
@@ -41,11 +50,12 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
             <IconButton icon="x" label={tr('common.close')} onPress={onClose} />
           </View>
           {/* flexShrink : le contenu long défile au lieu de dépasser de l'écran */}
-          <ScrollView style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled">
-            {children}
+          <ScrollView ref={scrollRef} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64} style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled">
+            <KeyboardScopeContext.Provider value={keyboardScope}>{children}</KeyboardScopeContext.Provider>
           </ScrollView>
         </GlassSurface>
       </Animated.View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -148,7 +158,7 @@ function ConfirmHost() {
   const done = (v: boolean) => { req.resolve(v); setReq(null); };
   return (
     <Modal visible transparent animationType="fade" onRequestClose={() => done(false)}>
-      <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }]} onPress={() => done(false)} accessibilityLabel={tr('common.close')} />
+      <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }]} onPress={() => done(false)} accessibilityRole="button" accessibilityLabel={tr('common.close')} />
       <Animated.View style={{ position: 'absolute', left: spacing.lg, right: spacing.lg, top: '30%', borderRadius: radius.xl, padding: spacing.lg, gap: spacing.sm, backgroundColor: t.isDark ? '#22152C' : '#FFFFFF', opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] }) }, { translateY: pop.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }], shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 30, shadowOffset: { width: 0, height: 14 } }} accessibilityViewIsModal accessibilityRole="alert">
         <Text variant="heading">{req.title}</Text>
         {req.message ? <Text muted>{req.message}</Text> : null}
@@ -163,6 +173,8 @@ function ConfirmHost() {
 
 const styles = StyleSheet.create({
   sheet: { position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '88%', borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, paddingTop: spacing.xs },
+  /** Dans la zone qui évite le clavier : la feuille suit le flux (posée en bas) et rétrécit si la place manque. */
+  sheetInFlow: { position: 'relative', flexShrink: 1 },
   grabber: { width: 44, height: 5, borderRadius: 3, alignSelf: 'center', marginBottom: spacing.xs },
   toast: { position: 'absolute', left: spacing.md, right: spacing.md, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md, zIndex: 1000, elevation: 10 },
 });

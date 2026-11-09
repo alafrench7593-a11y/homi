@@ -18,7 +18,7 @@ import { inLang } from '@/i18n/localized';
 export type GrowthIndicator = 'weight' | 'length' | 'head' | 'bmi';
 export type Sex = 'male' | 'female';
 export const WHO_MAX_MONTHS = 60;
-export const WHO_SOURCE = { get label() { return inLang({ fr: 'OMS — Standards de croissance de l’enfant (2006)', en: 'WHO — Child Growth Standards (2006)' }); }, url: 'https://www.who.int/tools/child-growth-standards' };
+export const WHO_SOURCE = { get label() { return inLang({ fr: 'OMS — Standards de croissance de l’enfant (2006)', en: 'WHO — Child Growth Standards (2006)', es: 'OMS — Patrones de crecimiento infantil (2006)', de: 'WHO — Wachstumsstandards für Kinder (2006)', it: 'OMS — Standard di crescita del bambino (2006)' }); }, url: 'https://www.who.int/tools/child-growth-standards' };
 
 const DAYS_PER_MONTH = 365.25 / 12;
 
@@ -104,7 +104,11 @@ export interface GrowthPosition { z: number; centile: number; band: 'below' | 'w
  * en dehors du 3e–97e centile, on invite à en parler au professionnel qui suit l'enfant.
  */
 function ordinal(n: number): string {
-  if (getLocale() !== 'en') return `${n}${n === 1 ? 'er' : 'e'}`;
+  const l = getLocale();
+  if (l === 'es') return `${n}.º`;
+  if (l === 'de') return `${n}.`;
+  if (l === 'it') return `${n}°`;
+  if (l !== 'en') return `${n}${n === 1 ? 'er' : 'e'}`;
   const r = n % 100;
   return `${n}${r >= 11 && r <= 13 ? 'th' : n % 10 === 1 ? 'st' : n % 10 === 2 ? 'nd' : n % 10 === 3 ? 'rd' : 'th'}`;
 }

@@ -48,7 +48,25 @@ const QUALITY_MESSAGES_EN: Record<QualityIssue, string> = {
   blurry: 'Photo blurry: hold the phone still, 10–15 cm away, and tap the screen to focus.',
   too_small: 'Image too small: move closer so that the result window fills a good part of the photo.',
 };
-export const QUALITY_MESSAGES: Record<QualityIssue, string> = localized(QUALITY_MESSAGES_FR, QUALITY_MESSAGES_EN);
+const QUALITY_MESSAGES_ES: Record<QualityIssue, string> = {
+  too_dark: 'Foto demasiado oscura: colócate cerca de una ventana o bajo una luz blanca, sin flash.',
+  too_bright: 'Foto sobreexpuesta: evita el flash y los reflejos directos sobre la ventana de resultado.',
+  blurry: 'Foto borrosa: sujeta el teléfono sin moverlo, a 10–15 cm, y toca la pantalla para enfocar.',
+  too_small: 'Imagen demasiado pequeña: acércate para que la ventana de resultado ocupe buena parte de la foto.',
+};
+const QUALITY_MESSAGES_DE: Record<QualityIssue, string> = {
+  too_dark: 'Foto zu dunkel: Stell dich an ein Fenster oder unter weißes Licht, ohne Blitz.',
+  too_bright: 'Foto überbelichtet: Vermeide den Blitz und direkte Spiegelungen auf dem Ergebnisfenster.',
+  blurry: 'Foto unscharf: Halte das Handy ruhig, in 10–15 cm Abstand, und tippe auf den Bildschirm, um scharfzustellen.',
+  too_small: 'Bild zu klein: Geh näher heran, damit das Ergebnisfenster einen guten Teil des Fotos ausfüllt.',
+};
+const QUALITY_MESSAGES_IT: Record<QualityIssue, string> = {
+  too_dark: 'Foto troppo scura: mettiti vicino a una finestra o sotto una luce bianca, senza flash.',
+  too_bright: 'Foto sovraesposta: evita il flash e i riflessi diretti sulla finestra del risultato.',
+  blurry: 'Foto sfocata: tieni il telefono fermo, a 10–15 cm, e tocca lo schermo per mettere a fuoco.',
+  too_small: 'Immagine troppo piccola: avvicinati perché la finestra del risultato occupi buona parte della foto.',
+};
+export const QUALITY_MESSAGES: Record<QualityIssue, string> = localized(QUALITY_MESSAGES_FR, QUALITY_MESSAGES_EN, { es: QUALITY_MESSAGES_ES, de: QUALITY_MESSAGES_DE, it: QUALITY_MESSAGES_IT });
 
 export function assessQuality(img: RGBAImage, windowBrightness: number | null = null): QualityReport {
   const { width: w, height: h, data } = img;

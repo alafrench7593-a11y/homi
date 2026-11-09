@@ -4,16 +4,16 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Row } from '@/components/ui';
-import { GUIDES, GUIDES_CHECKED_ON } from '@/content/dischargeGuides';
+import { GUIDES, GUIDES_CHECKED_ON, guideLang } from '@/content/dischargeGuides';
 import { GuideArt } from '@/features/cycle/GuideArt';
 import { Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
 import { fmtDayYear } from '@/features/cycle/format';
-import { getLocale, t as tr } from '@/i18n';
+import { t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
 export default function GuidesIndex() {
   const c = useCyclePalette();
-  const lang = getLocale() === 'en' ? 'en' : 'fr';
+  const lang = guideLang();
   return (
     <Screen back title={tr('cy.guides.title')} subtitle={tr('cy.guides.subtitle')}>
       <View style={{ padding: spacing.sm, borderRadius: 14, backgroundColor: c.powder }}>

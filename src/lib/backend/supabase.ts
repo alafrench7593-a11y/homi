@@ -221,7 +221,7 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
         } catch {
           payload = null;
         }
-        throw new BackendError(payload?.message ?? tr('l2.sb.unavailable'), payload?.error ?? 'function_error', payload?.error === 'quota_reached' ? 'premium_required' : undefined, ctx?.status);
+        throw new BackendError(payload?.message ?? tr('l2.sb.unavailable'), payload?.error ?? 'function_error', (payload?.error === 'quota_reached' || payload?.error === 'premium_required') ? 'premium_required' : undefined, ctx?.status);
       }
       return data as T;
     },
@@ -261,7 +261,7 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
           payload = null;
         }
         if (!res.ok) {
-          throw new BackendError(payload?.message ?? tr('l2.sb.unavailable'), payload?.error ?? 'function_error', payload?.error === 'quota_reached' ? 'premium_required' : undefined, res.status);
+          throw new BackendError(payload?.message ?? tr('l2.sb.unavailable'), payload?.error ?? 'function_error', (payload?.error === 'quota_reached' || payload?.error === 'premium_required') ? 'premium_required' : undefined, res.status);
         }
         return payload as T;
       }

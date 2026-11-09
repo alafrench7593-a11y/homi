@@ -112,7 +112,17 @@ export function useSaveTreatment() {
 }
 export function useDeleteTreatment() {
   const inv = useInvalidate();
-  return useMutation({ mutationFn: (id: string) => backend.remove('child_treatments', [eq('id', id)]), onSuccess: () => inv('child_treatments', 'treatment_logs', 'reminders') });
+  const userId = useUserId();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      // 09/11/2026 : comme pour mes traitements, les rappels sont retirés (le serveur le fait aussi par cascade, la démo non)
+      // et les notifications de CE téléphone sont annulées tout de suite, sans attendre un rechargement.
+      await backend.remove('reminders', [eq('treatment_id', id)]);
+      await backend.remove('child_treatments', [eq('id', id)]);
+      if (userId) await loadDeviceReminders(userId).then((rows) => syncLocalReminders(rows)).catch(() => undefined);
+    },
+    onSuccess: () => inv('child_treatments', 'treatment_logs', 'reminders'),
+  });
 }
 
 /** Réponse à une prise prévue : Pris, Reporter, Ignorer (avec note facultative). Une seule réponse par prise. */

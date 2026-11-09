@@ -13,7 +13,7 @@ import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Field, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { pickPhoto } from '@/features/cycleTests';
-import { useChild } from '@/lib/data/hooks';
+import { useChild, useChildrenLoading } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import {
   PhotoError, useAddChildPhoto, useCanAddPhotos, useChildPhotos, useDeleteChildPhoto, usePhotoUrl, useUpdateChildPhoto,
@@ -31,6 +31,7 @@ type Draft = { mode: 'add'; uri: string } | { mode: 'edit'; photo: ChildPhoto };
 export default function ChildAlbum() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const child = useChild(id);
+  const childLoading = useChildrenLoading();
   const toast = useToast();
   const photosQ = useChildPhotos(id);
   const canAdd = useCanAddPhotos();
@@ -45,7 +46,7 @@ export default function ChildAlbum() {
   if (!child) {
     return (
       <Screen back title={tr('alb.title')}>
-        {photosQ.isLoading ? <Skeleton rows={3} /> : <EmptyState icon="user-x" title={tr('alb.notFound')} />}
+        {childLoading || photosQ.isLoading ? <Skeleton rows={3} /> : <EmptyState icon="user-x" title={tr('alb.notFound')} />}
       </Screen>
     );
   }

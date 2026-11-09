@@ -1,4 +1,5 @@
 /** Dates « calendaires » (sans heure) manipulées en UTC pour éviter les décalages d'heure d'été. */
+import { clockHM, longDate } from '@/i18n/formats';
 import { t as tr, getLocale } from '@/i18n';
 
 export type ISODate = string; // AAAA-MM-JJ
@@ -52,13 +53,13 @@ const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July
 
 export function formatDateFr(iso: ISODate, withYear = true): string {
   const d = parseISODate(iso);
-  const months = getLocale() === 'en' ? MONTHS_EN : MONTHS;
-  return `${d.getUTCDate()} ${months[d.getUTCMonth()]}${withYear ? ' ' + d.getUTCFullYear() : ''}`;
+  // 5 langues (08/11/2026) : « 8 novembre 2026 », « 8 de noviembre de 2026 », « 8. November 2026 »…
+  return longDate(d.getUTCDate(), d.getUTCMonth(), withYear ? d.getUTCFullYear() : null);
 }
 
 export function formatTime(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  return `${String(d.getHours()).padStart(2, '0')}${getLocale() === 'en' ? ':' : 'h'}${String(d.getMinutes()).padStart(2, '0')}`;
+  return clockHM(d.getHours(), d.getMinutes());
 }
 
 /** « il y a 2 h 15 », « il y a 12 min », « à l'instant » */

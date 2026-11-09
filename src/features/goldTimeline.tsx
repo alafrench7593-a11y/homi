@@ -62,6 +62,14 @@ export function GoldTimeline({ items, testID }: { items: GoldItem[]; testID?: st
         const last = i === items.length - 1;
         const now = it.state === 'now';
         const color = it.state === 'done' ? gold : now ? accent : it.state === 'planned' ? accent : line;
+        const actionBtn = it.action ? (
+          <Tappable bare accessibilityRole="button" accessibilityLabel={`${it.action.label} — ${it.title}`} onPress={it.action.onPress} testID={it.action.testID} hitSlop={8}
+            style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: now ? accent : tint(accent, t.isDark ? 0.2 : 0.12) }}>
+            <Text variant="caption" weight="bold" color={now ? t.colors.primaryText : accent}>{it.action.label}</Text>
+          </Tappable>
+        ) : null;
+        // carte cliquable + action : l'action est posée sur la carte et non dedans (un bouton dans un bouton est invalide sur le web)
+        const overlay = !!it.action && !!it.onPress;
         const body = (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
             <View style={{ flex: 1, gap: 1 }}>
@@ -69,14 +77,14 @@ export function GoldTimeline({ items, testID }: { items: GoldItem[]; testID?: st
                 <Text weight="bold" style={{ fontSize: now ? 18 : 16, opacity: it.state === 'later' ? 0.75 : 1 }}>{it.title}</Text>
                 {it.tag ? <Text variant="caption" weight="bold" color={it.state === 'later' ? t.colors.textMuted : color}>{it.tag.toUpperCase()}</Text> : null}
               </View>
-              {it.subtitle ? <Text variant="small" muted numberOfLines={3}>{it.subtitle}</Text> : null}
+              {it.subtitle ? <Text variant="small" muted>{it.subtitle}</Text> : null}
             </View>
-            {it.action ? (
-              <Tappable bare accessibilityRole="button" accessibilityLabel={`${it.action.label} — ${it.title}`} onPress={it.action.onPress} testID={it.action.testID} hitSlop={8}
-                style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: now ? accent : tint(accent, t.isDark ? 0.2 : 0.12) }}>
-                <Text variant="caption" weight="bold" color={now ? t.colors.primaryText : accent}>{it.action.label}</Text>
-              </Tappable>
-            ) : it.onPress ? <Icon name="chevron-right" size={16} color={t.colors.textMuted} /> : null}
+            {it.action ? (overlay ? (
+              // place réservée (invisible) pour le bouton posé au-dessus de la carte
+              <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ paddingHorizontal: 12, paddingVertical: 7, opacity: 0 }}>
+                <Text variant="caption" weight="bold">{it.action.label}</Text>
+              </View>
+            ) : actionBtn) : it.onPress ? <Icon name="chevron-right" size={16} color={t.colors.textMuted} /> : null}
           </View>
         );
         return (
@@ -98,7 +106,13 @@ export function GoldTimeline({ items, testID }: { items: GoldItem[]; testID?: st
                     backgroundColor: now ? tint(accent, t.isDark ? 0.18 : 0.1) : 'transparent', borderWidth: now ? 1 : 0, borderColor: tint(accent, 0.35) }}>
                   {body}
                 </Tappable>
-              ) : (
+              ) : null}
+              {it.onPress && overlay ? (
+                <View pointerEvents="box-none" style={{ position: 'absolute', top: 0, bottom: last ? 0 : spacing.sm, right: now ? spacing.md : 0, justifyContent: 'center' }}>
+                  {actionBtn}
+                </View>
+              ) : null}
+              {it.onPress ? null : (
                 <View testID={it.testID} style={{ paddingVertical: now ? spacing.sm : 2, paddingHorizontal: now ? spacing.md : 0, borderRadius: 18,
                   backgroundColor: now ? tint(accent, t.isDark ? 0.18 : 0.1) : 'transparent', borderWidth: now ? 1 : 0, borderColor: tint(accent, 0.35) }}>
                   {body}

@@ -158,16 +158,17 @@ export function SafeSleepCard() {
 // ------------------------------------------------------------------ schéma des dents de lait
 export function ToothChart({ present, onPick }: { present: Set<string>; onPick: (label: string) => void }) {
   const t = useTheme();
-  const W = 300;
+  // Largeur adaptée à la carte (300 au plus) : sur un petit écran (320 px), le schéma ne déborde plus et n'est plus rogné
+  const [W, setW] = React.useState(300);
   const tooth = (arch: 'top' | 'bottom', index: number) => {
     const angle = Math.PI * (0.08 + (index / 9) * 0.84);
-    const rx = 120, ry = 80, cx = W / 2;
+    const rx = 120 * (W / 300), ry = 80, cx = W / 2;
     const x = cx - Math.cos(angle) * rx;
     const y = arch === 'top' ? 100 - Math.sin(angle) * ry : 130 + Math.sin(angle) * ry;
     return { x, y };
   };
   return (
-    <View style={{ alignItems: 'center' }}>
+    <View style={{ alignItems: 'center' }} onLayout={(e) => { const w = Math.min(300, Math.floor(e.nativeEvent.layout.width)); if (w > 0 && w !== W) setW(w); }}>
       <View style={{ width: W, height: 230 }}>
         {PRIMARY_TEETH.map((d) => {
           const p = tooth(d.arch, d.index);

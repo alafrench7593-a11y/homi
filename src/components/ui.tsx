@@ -17,6 +17,7 @@ import { usePop, usePressMotion, useShake, useTilt } from './Motion';
 import { duration, feedback, hapticsSupported, interaction, shakeX, springTo, successPulse, timeTo } from '@/theme/motion';
 import { Tappable } from './Tappable';
 import { Appear } from './Appear';
+import { useKeyboardScope } from './keyboard';
 import { t as tr } from '@/i18n';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { useToast } from './Overlays';
@@ -419,14 +420,16 @@ export function Segmented<T extends string>({ options, value, onChange, label }:
   const t = useTheme();
   const reduce = useReduceMotion();
   const [w, setW] = React.useState(0);
-  const idx = Math.max(0, options.findIndex((o) => o.value === value));
+  const found = options.findIndex((o) => o.value === value);
+  const idx = Math.max(0, found);
   const x = React.useRef(new Animated.Value(idx)).current;
   React.useEffect(() => { springTo(x, idx, 'gentle', reduce).start(); }, [x, idx, reduce]);
   const PAD = 4, GAP = 4;
   const segW = w ? (w - PAD * 2 - GAP * (options.length - 1)) / options.length : 0;
   return (
     <View accessibilityRole="radiogroup" accessibilityLabel={label} onLayout={(e) => setW(e.nativeEvent.layout.width)} style={[styles.segmented, { backgroundColor: t.colors.surfaceAlt, borderWidth: 1, borderColor: hairline(t.isDark) }]}>
-      {segW > 0 ? (
+      {/* aucune option choisie (ex. situation pas encore indiquée) : pas de pastille, sinon elle masque le libellé de la 1re option */}
+      {segW > 0 && found >= 0 ? (
         <Animated.View
           pointerEvents="none"
           style={{
@@ -468,8 +471,32 @@ interface FieldProps extends TextInputProps {
   revealable?: boolean;
 }
 
+const noSubscribe = () => () => undefined;
+const noVersion = () => 0;
+
 export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ label, hint, error, optional, suffix, style, revealable, secureTextEntry, onFocus, onBlur, ...rest }, ref) {
   const t = useTheme();
+  // Clavier (voir components/keyboard.tsx) : champ gardé visible au focus, « Suivant » passe au champ suivant
+  const input = React.useRef<TextInput>(null);
+  React.useImperativeHandle(ref, () => input.current as TextInput);
+  const scope = useKeyboardScope();
+  const editable = rest.editable !== false;
+  const singleLine = !rest.multiline && editable;
+  const live = React.useRef(editable);
+  live.current = editable;
+  const entry = React.useMemo(() => ({ ref: input, editable: () => live.current }), []);
+  React.useEffect(() => scope?.register(entry), [scope, entry]);
+  React.useSyncExternalStore(scope?.subscribe ?? noSubscribe, scope?.version ?? noVersion, noVersion);
+  // Sans action propre (pas d'onSubmitEditing ni de comportement imposé), un champ d'une ligne enchaîne sur le suivant ;
+  // le dernier affiche « OK » et ferme le clavier
+  const chain = !!scope && singleLine && rest.onSubmitEditing == null && rest.blurOnSubmit == null && rest.submitBehavior == null
+    && (rest.returnKeyType == null || rest.returnKeyType === 'next');
+  const chainProps: Partial<TextInputProps> = chain && scope ? {
+    returnKeyType: rest.returnKeyType ?? (scope.isLast(entry) ? 'done' : 'next'),
+    submitBehavior: 'submit',
+    blurOnSubmit: false,
+    onSubmitEditing: () => { void scope.focusNext(input.current); },
+  } : {};
   const [focused, setFocused] = React.useState(false);
   const [shown, setShown] = React.useState(false);
   const reduce = useReduceMotion();
@@ -487,15 +514,17 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
         {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: 18, borderWidth: 1.5, borderColor: t.colors.primary, opacity: focus }} /> : null}
         {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, borderRadius: 22, borderWidth: 3, borderColor: t.colors.primary, opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0, 0.16] }) }} /> : null}
         <TextInput
-          ref={ref}
+          ref={input}
           placeholderTextColor={t.colors.textMuted}
           accessibilityLabel={label}
           accessibilityHint={hint}
           maxFontSizeMultiplier={1.6}
-          style={[{ flex: 1, minWidth: 0, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, minHeight: MIN_TOUCH, paddingVertical: 10 }, style as StyleProp<TextStyle>]}
+          // Multiligne : le texte commence en haut du cadre (Android le centrait verticalement)
+          style={[{ flex: 1, minWidth: 0, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, minHeight: MIN_TOUCH, paddingVertical: 10 }, rest.multiline ? { textAlignVertical: 'top' } : null, style as StyleProp<TextStyle>]}
           {...rest}
+          {...chainProps}
           secureTextEntry={secureTextEntry && !shown}
-          onFocus={(e) => { setFocused(true); onFocus?.(e); }}
+          onFocus={(e) => { setFocused(true); scope?.reveal(input.current); onFocus?.(e); }}
           onBlur={(e) => { setFocused(false); onBlur?.(e); }}
         />
         {suffix ? <Text muted>{suffix}</Text> : null}
@@ -563,7 +592,7 @@ function BannerText({ text, fold, accent }: { text: string; fold: boolean; accen
     <>
       <Text variant="small" color={t.colors.text} numberOfLines={long && !open ? 2 : undefined} accessibilityLabel={text}>{text}</Text>
       {long ? (
-        <Tappable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')} hitSlop={10} hoverLift={0} style={{ alignSelf: 'flex-start', paddingVertical: 2 }}>
+        <Tappable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')} hitSlop={12} hoverLift={0} style={{ alignSelf: 'flex-start', paddingVertical: 2 }}>
           <Text variant="caption" weight="bold" color={accent}>{open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')}</Text>
         </Tappable>
       ) : null}
@@ -575,7 +604,7 @@ export function SectionTitle({ title, action, onAction }: { title: string; actio
   const t = useTheme();
   return (
     <View style={styles.sectionTitle}>
-      <Text variant="heading" accessibilityRole="header">{title}</Text>
+      <Text variant="heading" accessibilityRole="header" style={{ flexShrink: 1 }}>{title}</Text>
       {action && onAction ? (
         <Tappable onPress={onAction} accessibilityRole="button" hitSlop={6} style={({ pressed }) => [linkFrame(t.isDark), { alignSelf: 'center', opacity: pressed ? 0.8 : 1 }]}>
           <Text variant="small" weight="bold" color={t.colors.primary}>{action}</Text>
@@ -687,10 +716,12 @@ const styles = StyleSheet.create({
   button: { borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 8, overflow: 'hidden' },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6, minHeight: 44, maxWidth: '100%', borderRadius: 999, borderWidth: 1 },
   segmented: { flexDirection: 'row', borderRadius: 999, padding: 4, gap: 4 },
-  segment: { flex: 1, minHeight: 44, borderRadius: 999, justifyContent: 'center', paddingHorizontal: 8 },
+  // marge intérieure réduite (8 → 4) : à 320 px, 4 options allemandes (« Woche ») ne se coupent plus au milieu du mot
+  segment: { flex: 1, minHeight: 44, borderRadius: 999, justifyContent: 'center', paddingHorizontal: 4 },
   input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 18, paddingHorizontal: spacing.md + 2, gap: spacing.xs },
   banner: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, alignItems: 'flex-start' },
-  sectionTitle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.md },
+  // flexWrap : une action longue (allemand, italien, petit écran) passe sous le titre au lieu de sortir de l'écran
+  sectionTitle: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', columnGap: spacing.sm, rowGap: spacing.xxs, marginTop: spacing.md },
   listRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingVertical: spacing.xs },
   listIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
 });

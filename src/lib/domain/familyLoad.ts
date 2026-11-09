@@ -62,7 +62,46 @@ const CATEGORIES_EN: CategoryDef[] = [
   { value: 'parent_rest', label: 'Parental rest', icon: 'sun' },
   { value: 'other', label: 'Other', icon: 'circle' },
 ];
-export const CATEGORIES: CategoryDef[] = localized(CATEGORIES_FR, CATEGORIES_EN);
+const CATEGORIES_ES: CategoryDef[] = [
+  { value: 'feeding', label: 'Biberones y comidas', icon: 'coffee' },
+  { value: 'diapers', label: 'Cambios de pañal', icon: 'wind' },
+  { value: 'sleep', label: 'Sueño', icon: 'moon' },
+  { value: 'shopping', label: 'Compras', icon: 'shopping-cart' },
+  { value: 'packing', label: 'Preparar las cosas', icon: 'briefcase' },
+  { value: 'appointments', label: 'Citas', icon: 'calendar' },
+  { value: 'housework', label: 'Tareas del hogar', icon: 'home' },
+  { value: 'admin', label: 'Trámites', icon: 'file-text' },
+  { value: 'organization', label: 'Organización familiar', icon: 'grid' },
+  { value: 'parent_rest', label: 'Descanso parental', icon: 'sun' },
+  { value: 'other', label: 'Otro', icon: 'circle' },
+];
+const CATEGORIES_DE: CategoryDef[] = [
+  { value: 'feeding', label: 'Fläschchen und Mahlzeiten', icon: 'coffee' },
+  { value: 'diapers', label: 'Wickeln', icon: 'wind' },
+  { value: 'sleep', label: 'Schlaf', icon: 'moon' },
+  { value: 'shopping', label: 'Einkäufe', icon: 'shopping-cart' },
+  { value: 'packing', label: 'Sachen packen', icon: 'briefcase' },
+  { value: 'appointments', label: 'Termine', icon: 'calendar' },
+  { value: 'housework', label: 'Haushalt', icon: 'home' },
+  { value: 'admin', label: 'Behördenkram', icon: 'file-text' },
+  { value: 'organization', label: 'Familienorganisation', icon: 'grid' },
+  { value: 'parent_rest', label: 'Erholung für Eltern', icon: 'sun' },
+  { value: 'other', label: 'Anderes', icon: 'circle' },
+];
+const CATEGORIES_IT: CategoryDef[] = [
+  { value: 'feeding', label: 'Biberon e pasti', icon: 'coffee' },
+  { value: 'diapers', label: 'Cambi', icon: 'wind' },
+  { value: 'sleep', label: 'Sonno', icon: 'moon' },
+  { value: 'shopping', label: 'Spesa', icon: 'shopping-cart' },
+  { value: 'packing', label: 'Preparare le cose', icon: 'briefcase' },
+  { value: 'appointments', label: 'Appuntamenti', icon: 'calendar' },
+  { value: 'housework', label: 'Faccende di casa', icon: 'home' },
+  { value: 'admin', label: 'Pratiche', icon: 'file-text' },
+  { value: 'organization', label: 'Organizzazione familiare', icon: 'grid' },
+  { value: 'parent_rest', label: 'Riposo dei genitori', icon: 'sun' },
+  { value: 'other', label: 'Altro', icon: 'circle' },
+];
+export const CATEGORIES: CategoryDef[] = localized(CATEGORIES_FR, CATEGORIES_EN, { es: CATEGORIES_ES, de: CATEGORIES_DE, it: CATEGORIES_IT });
 export const categoryOf = (c: TaskCategory) => CATEGORIES.find((x) => x.value === c) ?? CATEGORIES[CATEGORIES.length - 1];
 
 /** Actions rapides (§ 20). `needsTask` / `needsShift` : il faut choisir l'élément concerné. */
@@ -85,9 +124,36 @@ const QUICK_ACTIONS_EN: QuickAction[] = [
   { kind: 'help_today', label: 'I need help today', icon: 'life-buoy', detail: 'A general request for help for the day.' },
   { kind: 'relay', label: 'Ask for a relay', icon: 'users', detail: 'So that someone takes the baby for a while.' },
 ];
-export const QUICK_ACTIONS: QuickAction[] = localized(QUICK_ACTIONS_FR, QUICK_ACTIONS_EN);
+const QUICK_ACTIONS_ES: QuickAction[] = [
+  { kind: 'taking_over', label: 'Tomo el relevo', icon: 'repeat', detail: 'Avisa al hogar de que te encargas tú.' },
+  { kind: 'rest', label: 'Necesito descansar', icon: 'moon', detail: 'Pide que alguien te releve para tomar aire.' },
+  { kind: 'take_task', label: '¿Puedes encargarte de esta tarea?', icon: 'share', detail: 'Proponer una tarea a otra persona.', needsTask: true },
+  { kind: 'available', label: 'Estoy disponible', icon: 'check-circle', detail: 'Avisar de que puedes ayudar.' },
+  { kind: 'swap_slot', label: 'Cambiar mi turno', icon: 'shuffle', detail: 'Proponer cambiar un turno de noche.', needsShift: true },
+  { kind: 'help_today', label: 'Necesito ayuda hoy', icon: 'life-buoy', detail: 'Petición de ayuda general para el día.' },
+  { kind: 'relay', label: 'Pedir un relevo', icon: 'users', detail: 'Para que alguien se ocupe del bebé un rato.' },
+];
+const QUICK_ACTIONS_DE: QuickAction[] = [
+  { kind: 'taking_over', label: 'Ich übernehme', icon: 'repeat', detail: 'Sagt dem Haushalt Bescheid, dass du übernimmst.' },
+  { kind: 'rest', label: 'Ich brauche eine Pause', icon: 'moon', detail: 'Bitte darum, abgelöst zu werden, um durchzuatmen.' },
+  { kind: 'take_task', label: 'Kannst du diese Aufgabe übernehmen?', icon: 'share', detail: 'Eine Aufgabe jemand anderem vorschlagen.', needsTask: true },
+  { kind: 'available', label: 'Ich bin verfügbar', icon: 'check-circle', detail: 'Zeigen, dass du helfen kannst.' },
+  { kind: 'swap_slot', label: 'Meine Schicht tauschen', icon: 'shuffle', detail: 'Vorschlagen, eine Nachtschicht zu tauschen.', needsShift: true },
+  { kind: 'help_today', label: 'Ich brauche heute Hilfe', icon: 'life-buoy', detail: 'Allgemeine Bitte um Hilfe für den Tag.' },
+  { kind: 'relay', label: 'Um Ablösung bitten', icon: 'users', detail: 'Damit jemand das Baby eine Weile nimmt.' },
+];
+const QUICK_ACTIONS_IT: QuickAction[] = [
+  { kind: 'taking_over', label: 'Do il cambio', icon: 'repeat', detail: 'Avvisa la famiglia che te ne occupi tu.' },
+  { kind: 'rest', label: 'Ho bisogno di riposare', icon: 'moon', detail: 'Chiedi a qualcuno di darti il cambio per tirare il fiato.' },
+  { kind: 'take_task', label: 'Puoi occuparti di questo compito?', icon: 'share', detail: 'Proporre un compito a qualcun altro.', needsTask: true },
+  { kind: 'available', label: 'Sono disponibile', icon: 'check-circle', detail: 'Far sapere che puoi aiutare.' },
+  { kind: 'swap_slot', label: 'Scambiare il mio turno', icon: 'shuffle', detail: 'Proporre di scambiare un turno di notte.', needsShift: true },
+  { kind: 'help_today', label: 'Ho bisogno di aiuto oggi', icon: 'life-buoy', detail: 'Richiesta di aiuto generale per la giornata.' },
+  { kind: 'relay', label: 'Chiedere il cambio', icon: 'users', detail: 'Perché qualcuno si occupi del bebè per un po’.' },
+];
+export const QUICK_ACTIONS: QuickAction[] = localized(QUICK_ACTIONS_FR, QUICK_ACTIONS_EN, { es: QUICK_ACTIONS_ES, de: QUICK_ACTIONS_DE, it: QUICK_ACTIONS_IT });
 const labelsOf = (list: QuickAction[]) => Object.fromEntries(list.map((a) => [a.kind, a.label])) as Record<RequestKind, string>;
-export const REQUEST_LABEL: Record<RequestKind, string> = localized(labelsOf(QUICK_ACTIONS_FR), labelsOf(QUICK_ACTIONS_EN));
+export const REQUEST_LABEL: Record<RequestKind, string> = localized(labelsOf(QUICK_ACTIONS_FR), labelsOf(QUICK_ACTIONS_EN), { es: labelsOf(QUICK_ACTIONS_ES), de: labelsOf(QUICK_ACTIONS_DE), it: labelsOf(QUICK_ACTIONS_IT) });
 
 // ------------------------------------------------------------------ dates (heure locale)
 const dayKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -255,7 +321,37 @@ const ROUTINE_TEMPLATES_EN: RoutineTemplate[] = [
   { kind: 'appointment', title: 'Getting ready for an appointment', items: ['Health record book', 'Questions to ask', 'Prescriptions', 'Journey'] },
   { kind: 'rest', title: 'Booking some rest', items: ['Choose a slot', 'Arrange the relay', 'Turn off notifications'] },
 ];
-export const ROUTINE_TEMPLATES: RoutineTemplate[] = localized(ROUTINE_TEMPLATES_FR, ROUTINE_TEMPLATES_EN);
+const ROUTINE_TEMPLATES_ES: RoutineTemplate[] = [
+  { kind: 'bag', title: 'Bolsa del niño', items: ['Pañales y toallitas', 'Ropa de recambio', 'Biberón o merienda', 'Peluche de apego', 'Cartilla de salud si hay cita'] },
+  { kind: 'bedtime', title: 'Preparar la hora de dormir', items: ['Baño o aseo', 'Pijama', 'Cuento', 'Lamparita', 'Preparar el biberón de la noche'] },
+  { kind: 'tomorrow', title: 'Preparar el día siguiente', items: ['Ropa', 'Bolsa', 'Comidas', 'Revisar la agenda'] },
+  { kind: 'shopping', title: 'Compras de la semana', items: ['Pañales', 'Leche o alimentos para bebé', 'Fruta y verdura', 'Productos de limpieza'] },
+  { kind: 'meals', title: 'Organizar las comidas', items: ['Elegir las comidas de la semana', 'Lista de la compra', 'Preparar con antelación'] },
+  { kind: 'weekly', title: 'Tareas de la semana', items: ['Ropa', 'Limpieza', 'Papeles', 'Balance de la semana juntos'] },
+  { kind: 'appointment', title: 'Preparar una cita', items: ['Cartilla de salud', 'Preguntas que hacer', 'Recetas', 'Trayecto'] },
+  { kind: 'rest', title: 'Reservar descanso', items: ['Elegir un momento', 'Organizar el relevo', 'Silenciar las notificaciones'] },
+];
+const ROUTINE_TEMPLATES_DE: RoutineTemplate[] = [
+  { kind: 'bag', title: 'Tasche des Kindes', items: ['Windeln und Feuchttücher', 'Wechselkleidung', 'Fläschchen oder Snack', 'Kuscheltier', 'Vorsorgeheft bei einem Termin'] },
+  { kind: 'bedtime', title: 'Schlafenszeit vorbereiten', items: ['Baden oder Waschen', 'Schlafanzug', 'Geschichte', 'Nachtlicht', 'Fläschchen für die Nacht vorbereiten'] },
+  { kind: 'tomorrow', title: 'Den nächsten Tag vorbereiten', items: ['Kleidung', 'Tasche', 'Mahlzeiten', 'Kalender prüfen'] },
+  { kind: 'shopping', title: 'Wocheneinkauf', items: ['Windeln', 'Milch oder Babynahrung', 'Obst und Gemüse', 'Putzmittel'] },
+  { kind: 'meals', title: 'Mahlzeiten planen', items: ['Die Mahlzeiten der Woche auswählen', 'Einkaufsliste', 'Vorkochen'] },
+  { kind: 'weekly', title: 'Aufgaben der Woche', items: ['Wäsche', 'Putzen', 'Papierkram', 'Gemeinsamer Wochenrückblick'] },
+  { kind: 'appointment', title: 'Einen Termin vorbereiten', items: ['Vorsorgeheft', 'Fragen, die du stellen willst', 'Rezepte', 'Anfahrt'] },
+  { kind: 'rest', title: 'Erholung einplanen', items: ['Einen Zeitraum wählen', 'Die Ablösung organisieren', 'Benachrichtigungen ausschalten'] },
+];
+const ROUTINE_TEMPLATES_IT: RoutineTemplate[] = [
+  { kind: 'bag', title: 'Borsa del bambino', items: ['Pannolini e salviette', 'Cambio di vestiti', 'Biberon o merenda', 'Pupazzo', 'Libretto sanitario se c’è un appuntamento'] },
+  { kind: 'bedtime', title: 'Preparare la nanna', items: ['Bagnetto o igiene', 'Pigiama', 'Storia', 'Lucina notturna', 'Preparare il biberon della notte'] },
+  { kind: 'tomorrow', title: 'Preparare il giorno dopo', items: ['Vestiti', 'Borsa', 'Pasti', 'Controllare l’agenda'] },
+  { kind: 'shopping', title: 'Spesa della settimana', items: ['Pannolini', 'Latte o alimenti per bebè', 'Frutta e verdura', 'Prodotti per la pulizia'] },
+  { kind: 'meals', title: 'Organizzare i pasti', items: ['Scegliere i pasti della settimana', 'Lista della spesa', 'Preparare in anticipo'] },
+  { kind: 'weekly', title: 'Compiti della settimana', items: ['Bucato', 'Pulizie', 'Documenti', 'Bilancio della settimana insieme'] },
+  { kind: 'appointment', title: 'Preparare un appuntamento', items: ['Libretto sanitario', 'Domande da fare', 'Prescrizioni', 'Tragitto'] },
+  { kind: 'rest', title: 'Prenotare del riposo', items: ['Scegliere una fascia oraria', 'Organizzare il cambio', 'Disattivare le notifiche'] },
+];
+export const ROUTINE_TEMPLATES: RoutineTemplate[] = localized(ROUTINE_TEMPLATES_FR, ROUTINE_TEMPLATES_EN, { es: ROUTINE_TEMPLATES_ES, de: ROUTINE_TEMPLATES_DE, it: ROUTINE_TEMPLATES_IT });
 
 /** Tâches qu'une routine créerait (aperçu à valider : aucune création automatique). */
 export function routinePreview(r: Pick<Routine, 'items' | 'default_assignee' | 'kind'>, dueAt: string | null) {

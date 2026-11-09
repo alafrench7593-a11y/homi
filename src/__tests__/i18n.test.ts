@@ -61,13 +61,15 @@ describe('dictionnaires', () => {
 
 describe('moteur', () => {
   afterEach(() => setLocale('fr'));
-  it('propose la langue du téléphone si elle est disponible, sinon l’anglais ; ne l’impose pas', () => {
+  it('propose la langue du téléphone si elle est disponible, sinon le français ; ne l’impose pas', () => {
     expect(proposeLocale(['en-US'])).toBe('en');
     expect(proposeLocale(['fr-CA', 'en'])).toBe('fr');
-    expect(proposeLocale(['de-DE'])).toBe('en');
-    expect(initialLocale(null)).toBe('en'); // téléphone en allemand (non disponible) → anglais proposé
+    expect(proposeLocale(['de-DE'])).toBe('de');
+    expect(proposeLocale(['pt-BR'])).toBe('fr'); // langue non disponible → français (secours)
+    expect(initialLocale(null)).toBe('de'); // téléphone en allemand (disponible depuis le 08/11/2026) → allemand proposé
     expect(initialLocale('fr')).toBe('fr'); // choix enregistré prioritaire
-    expect(initialLocale('xx')).toBe('en');
+    expect(initialLocale('it')).toBe('it');
+    expect(initialLocale('xx')).toBe('de'); // choix inconnu → langue du téléphone
   });
   it('pluriels selon la langue (Intl.PluralRules)', () => {
     setLocale('fr');

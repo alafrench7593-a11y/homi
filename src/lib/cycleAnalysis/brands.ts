@@ -8,6 +8,9 @@
 
 import { t as tr } from '@/i18n';
 import { localized } from '@/i18n/localized';
+import { ES_TEXTS } from './brands.es';
+import { DE_TEXTS } from './brands.de';
+import { IT_TEXTS } from './brands.it';
 
 export type TestKind = 'ovulation' | 'pregnancy';
 export type TestFormat = 'lines' | 'cross' | 'digital';
@@ -175,12 +178,13 @@ const TEST_RULES_FR: TestRule[] = [
 ];
 
 /** Textes anglais des règles : mêmes identifiants et même ordre ; seuls les libellés affichés changent. */
-const EN_TEXTS: Record<string, {
+export type RuleTexts = Record<string, {
   model: string;
   readingRules: string[];
   options?: Record<string, string>;
   source: { title: string; note?: string };
-}> = {
+}>;
+const EN_TEXTS: RuleTexts = {
   'clearblue-detection-precoce': {
     model: 'Détection Précoce (lines)',
     readingRules: [
@@ -258,8 +262,8 @@ const EN_TEXTS: Record<string, {
   },
 };
 
-const TEST_RULES_EN: TestRule[] = TEST_RULES_FR.map((r) => {
-  const x = EN_TEXTS[r.id];
+const withTexts = (texts: RuleTexts): TestRule[] => TEST_RULES_FR.map((r) => {
+  const x = texts[r.id];
   if (!x) return r;
   return {
     ...r,
@@ -270,7 +274,12 @@ const TEST_RULES_EN: TestRule[] = TEST_RULES_FR.map((r) => {
   };
 });
 
-export const TEST_RULES: TestRule[] = localized(TEST_RULES_FR, TEST_RULES_EN);
+const TEST_RULES_EN: TestRule[] = withTexts(EN_TEXTS);
+const TEST_RULES_ES: TestRule[] = withTexts(ES_TEXTS);
+const TEST_RULES_DE: TestRule[] = withTexts(DE_TEXTS);
+const TEST_RULES_IT: TestRule[] = withTexts(IT_TEXTS);
+
+export const TEST_RULES: TestRule[] = localized(TEST_RULES_FR, TEST_RULES_EN, { es: TEST_RULES_ES, de: TEST_RULES_DE, it: TEST_RULES_IT });
 
 export const UNKNOWN_TEST_ID = 'unknown';
 

@@ -2,6 +2,7 @@
  * « Le ciel de la famille » : un arc de ciel où le soleil (ou la lune) avance avec l'heure réelle,
  * et où se posent les moments du jour (repas, siestes, changes, rendez-vous, rappels).
  */
+import { hourTick } from '@/i18n/formats';
 import React, { useMemo } from 'react';
 import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
@@ -112,7 +113,7 @@ export function SkyArc({ phase, moments, greeting, subtitle, now = new Date() }:
         <Line x1={0} x2={w} y1={h - 22} y2={h - 22} stroke={ink} strokeOpacity={0.18} />
         {(mode === 'day' ? [6, 12, 18, 22] : [20, 24, 28, 32]).map((hh) => {
           const q = pos(hh);
-          return <SvgText key={hh} x={q.x} y={h - 6} fontSize={10.5} fill={ink} fillOpacity={0.45} textAnchor="middle" fontFamily={fonts.body}>{getLocale() === 'en' ? `${String(hh % 24).padStart(2, '0')}:00` : `${hh % 24}h`}</SvgText>;
+          return <SvgText key={hh} x={q.x} y={h - 6} fontSize={10.5} fill={ink} fillOpacity={0.45} textAnchor="middle" fontFamily={fonts.body}>{hourTick(hh % 24)}</SvgText>;
         })}
         {visible.map((m) => {
           const q = pos(hourOf(m.at));

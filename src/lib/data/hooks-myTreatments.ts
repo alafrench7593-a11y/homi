@@ -47,8 +47,8 @@ export function myTreatmentReminderRows(t: MyTreatment, userId: string, househol
 
 async function resync(userId: string | null) {
   if (!userId) return;
-  const rows = await loadDeviceReminders(userId);
-  await syncLocalReminders(rows).catch(() => undefined);
+  // Hors connexion après l'enregistrement : la resynchronisation se fera à la prochaine ouverture (pas d'erreur affichée à tort)
+  await loadDeviceReminders(userId).then((rows) => syncLocalReminders(rows)).catch(() => undefined);
 }
 
 export function useSaveMyTreatment() {

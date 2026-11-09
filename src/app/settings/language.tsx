@@ -13,7 +13,7 @@ import { backend, eq, isDemo } from '@/lib/backend';
 import { useUiStore } from '@/lib/store';
 import { deviceLanguages, deviceRegion, getLocale, t as tr } from '@/i18n';
 import { returnHereAfterLocaleChange } from '@/i18n/I18nProvider';
-import { availableLocales, defaultRegion, LOCALES, proposeLocale, REGIONS } from '@/i18n/locales';
+import { availableLocales, defaultRegion, LOCALES, proposeLocale, regionLabel, REGIONS } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
@@ -32,7 +32,7 @@ export default function LanguageScreen() {
     if (code === current) return;
     haptic('selection');
     // la langue est aussi gardée dans le profil (autres appareils, e-mails futurs) ; jamais en démonstration
-    if (session && !isDemo && (code === 'fr' || code === 'en')) {
+    if (session && !isDemo) {
       backend.update('profiles', { locale: code }, [eq('id', session.userId)]).catch(() => undefined);
     }
     returnHereAfterLocaleChange('/settings/language');
@@ -40,7 +40,7 @@ export default function LanguageScreen() {
     setTimeout(() => toast(tr('language.changed')), 300);
   }
 
-  const regionName = (r: (typeof REGIONS)[number]) => (current === 'fr' ? r.fr : r.en);
+  const regionName = (r: (typeof REGIONS)[number]) => regionLabel(r, current);
   const regionInfo = REGIONS.find((r) => r.code === region) ?? REGIONS[0];
 
   return (

@@ -43,7 +43,7 @@ export default function DifficultDay() {
 
   async function askHelp() {
     try {
-      await ask.mutateAsync({ kind: 'help_today', message: 'Journée difficile : j’ai besoin d’aide aujourd’hui.' });
+      await ask.mutateAsync({ kind: 'help_today', message: tr('u2.difficult.help_message') });
       setAsked(true);
       toast(tr('u2.difficult.help_sent'));
     } catch (e) { toast(friendlyError(e), 'error'); }

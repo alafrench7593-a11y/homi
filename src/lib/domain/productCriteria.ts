@@ -35,7 +35,22 @@ const PRODUCT_CRITERIA_SOURCES_EN = [
   { ...PRODUCT_CRITERIA_SOURCES_FR[1], label: 'ANSM (French medicines agency) — Decision of 13/03/2019: leave-on cosmetic products containing phenoxyethanol, “not to be used on the bottom of children aged 3 or under”' },
   { ...PRODUCT_CRITERIA_SOURCES_FR[2], label: 'Open Food Facts / Open Beauty Facts — collaborative databases (ODbL)' },
 ];
-export const PRODUCT_CRITERIA_SOURCES: { label: string; url: string }[] = localized(PRODUCT_CRITERIA_SOURCES_FR, PRODUCT_CRITERIA_SOURCES_EN);
+const PRODUCT_CRITERIA_SOURCES_ES = [
+  { ...PRODUCT_CRITERIA_SOURCES_FR[0], label: 'Reglamento (CE) n.º 1223/2009 sobre los productos cosméticos — anexo III (sustancias perfumantes alergénicas)' },
+  { ...PRODUCT_CRITERIA_SOURCES_FR[1], label: 'ANSM (agencia francesa del medicamento) — Decisión del 13/03/2019: productos cosméticos sin aclarado que contienen fenoxietanol, «no utilizar en la zona del pañal de niños de 3 años o menos»' },
+  { ...PRODUCT_CRITERIA_SOURCES_FR[2], label: 'Open Food Facts / Open Beauty Facts — bases de datos colaborativas (ODbL)' },
+];
+const PRODUCT_CRITERIA_SOURCES_DE = [
+  { ...PRODUCT_CRITERIA_SOURCES_FR[0], label: 'Verordnung (EG) Nr. 1223/2009 über kosmetische Mittel — Anhang III (allergene Duftstoffe)' },
+  { ...PRODUCT_CRITERIA_SOURCES_FR[1], label: 'ANSM (französische Arzneimittelbehörde) — Entscheidung vom 13/03/2019: kosmetische Mittel ohne Abspülen mit Phenoxyethanol, „nicht im Windelbereich von Kindern bis einschließlich 3 Jahren anwenden“' },
+  { ...PRODUCT_CRITERIA_SOURCES_FR[2], label: 'Open Food Facts / Open Beauty Facts — gemeinschaftliche Datenbanken (ODbL)' },
+];
+const PRODUCT_CRITERIA_SOURCES_IT = [
+  { ...PRODUCT_CRITERIA_SOURCES_FR[0], label: 'Regolamento (CE) n. 1223/2009 sui prodotti cosmetici — allegato III (sostanze profumanti allergizzanti)' },
+  { ...PRODUCT_CRITERIA_SOURCES_FR[1], label: 'ANSM (agenzia francese del farmaco) — Decisione del 13/03/2019: prodotti cosmetici senza risciacquo contenenti fenossietanolo, «non utilizzare nella zona del pannolino dei bambini di 3 anni o meno»' },
+  { ...PRODUCT_CRITERIA_SOURCES_FR[2], label: 'Open Food Facts / Open Beauty Facts — banche dati collaborative (ODbL)' },
+];
+export const PRODUCT_CRITERIA_SOURCES: { label: string; url: string }[] = localized(PRODUCT_CRITERIA_SOURCES_FR, PRODUCT_CRITERIA_SOURCES_EN, { es: PRODUCT_CRITERIA_SOURCES_ES, de: PRODUCT_CRITERIA_SOURCES_DE, it: PRODUCT_CRITERIA_SOURCES_IT });
 
 /** Liste d'ingrédients séparée par virgules (INCI ou alimentaire). */
 export const splitIngredients = (text: string) => text.split(/[,;]|\s-\s/).map((x) => x.trim()).filter(Boolean);
@@ -54,7 +69,7 @@ export function productCriteria(p: ProductForCriteria): CriteriaResult {
   if (p.category === 'food') {
     const sugar = p.nutrition?.sugars_g_100g ?? null;
     const salt = p.nutrition?.salt_g_100g ?? null;
-    const sweet = /aspartame|acesulfame|sucralose|saccharine|st[ée]vi|cyclamate|[ée]dulcorant|sweetener/i.test(p.composition ?? '');
+    const sweet = /aspartame|acesulfame|sucralose|saccharine|st[ée]vi|cyclamate|[ée]dulcorant|sweetener|aspartamo|acesulfamo|sucralosa|sucralosio|sacarina|saccarina|saccharin|ciclamato|cyclamat|s[üu](?:ß|ss)stoff|suessstoff/i.test(p.composition ?? '');
     criteria = [
       c('composition', known, 20),
       sugar == null ? c('sugar', null, 30) : c('sugar', sugar <= 5, 30, sugar <= 12.5 ? 15 : 0),

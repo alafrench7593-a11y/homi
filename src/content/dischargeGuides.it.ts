@@ -1,0 +1,98 @@
+/** Fiches sur les pertes vaginales — version italienne (traduite depuis le français, même structure). */
+import type { GuideSlug } from '@/lib/domain/cycleV2';
+import type { GuideText } from './dischargeGuides';
+
+const SEEK_IT_COMMON = 'Se sei incinta o pensi di poterlo essere e hai perdite di sangue con dolore, contatta subito un servizio di emergenza.';
+
+export const DISCHARGE_GUIDES_IT: Record<GuideSlug, GuideText> = {
+  'clear-fluid': {
+    title: 'Perdite trasparenti e fluide',
+    intro: 'Noti perdite chiare, fluide o acquose. Questo tipo di perdite è descritto spesso e può variare nel corso del ciclo.',
+    observe: ['Colore chiaro o trasparente', 'Consistenza fluida o acquosa', 'Quantità variabile da un giorno all’altro'],
+    variations: ['Sono spesso descritte come più abbondanti in certi momenti del ciclo, soprattutto intorno all’ovulazione', 'L’attività sessuale, la gravidanza o alcuni contraccettivi possono modificarne la quantità'],
+    note: ['Il giorno del ciclo', 'La quantità', 'Un odore insolito, prurito o fastidio, se presenti'],
+    limits: 'L’aspetto da solo non permette di confermare nulla: né l’ovulazione, né l’assenza di problemi.',
+    seek: ['Se l’aspetto, l’odore o la quantità cambiano nettamente rispetto al solito', 'Se compaiono prurito, irritazione o dolore'],
+  },
+  'white-creamy': {
+    title: 'Perdite bianche e cremose',
+    intro: 'Noti perdite bianche, lattiginose o cremose. Sono spesso descritte come abituali quando non hanno un odore forte.',
+    observe: ['Colore bianco o bianco sporco', 'Consistenza cremosa, densa o appiccicosa', 'Poco o nessun odore'],
+    variations: ['Consistenza e quantità possono cambiare a seconda del momento del ciclo', 'Possono sembrare più visibili in alcuni giorni'],
+    note: ['La consistenza (cremosa, appiccicosa, grumosa…)', 'La presenza di prurito o irritazione', 'Qualsiasi odore insolito'],
+    limits: 'Le perdite bianche possono essere abituali oppure accompagnare un’infezione: solo una visita permette di dirlo.',
+    seek: ['Se diventano grumose con prurito', 'Se compare un odore forte o insolito', 'Se un fastidio persiste'],
+  },
+  'stretchy-slippery': {
+    title: 'Perdite filanti e scivolose',
+    intro: 'Noti perdite trasparenti, elastiche e scivolose. Alcune persone osservano questo tipo di perdite in prossimità del loro periodo fertile. Questo aspetto, però, non basta a confermare un’ovulazione. Puoi registrare la tua osservazione e confrontarla con il tuo storico.',
+    observe: ['Aspetto trasparente, a volte paragonato all’albume d’uovo crudo', 'Consistenza elastica: si allungano tra due dita', 'Sensazione di bagnato o di scivoloso'],
+    variations: ['La loro presenza e durata variano da una persona all’altra e da un ciclo all’altro', 'Possono mancare anche intorno all’ovulazione'],
+    note: ['Il giorno del ciclo', 'Il numero di giorni in cui le osservi', 'Eventuali test di ovulazione dello stesso giorno'],
+    limits: 'Questa osservazione non è né una prova di ovulazione né un metodo contraccettivo affidabile.',
+    seek: ['Se un cambiamento insolito si accompagna a prurito, odore o dolore'],
+  },
+  'more-abundant': {
+    title: 'Perdite più abbondanti',
+    intro: 'Noti più perdite del solito. La quantità varia naturalmente, ma un cambiamento netto merita di essere annotato.',
+    observe: ['Quantità maggiore rispetto al tuo solito', 'Eventuale bisogno di cambiare biancheria o assorbente più spesso'],
+    variations: ['La quantità aumenta spesso intorno all’ovulazione, in gravidanza o con alcuni contraccettivi', 'Anche l’attività sessuale può modificarla temporaneamente'],
+    note: ['Da quando', 'Il colore e l’odore', 'I sintomi associati (prurito, dolore, fastidio nell’urinare)'],
+    limits: 'Una variazione di quantità, da sola, non permette di conoscerne la causa.',
+    seek: ['Se l’aumento persiste o si accompagna a un cambiamento di colore, di odore, a prurito o a dolore'],
+  },
+  'thick-lumpy': {
+    title: 'Perdite dense o grumose',
+    intro: 'Noti perdite dense o dall’aspetto grumoso. Sono possibili diverse cause; alcune richiedono un parere medico.',
+    observe: ['Consistenza densa o a piccoli grumi', 'Colore spesso bianco', 'Con o senza prurito'],
+    variations: ['Perdite dense possono essere abituali in certi momenti del ciclo', 'Se accompagnate da prurito, sono spesso un motivo per una visita'],
+    note: ['Prurito, bruciore o irritazione', 'L’odore', 'Una recente terapia antibiotica'],
+    limits: 'L’aspetto non basta per individuare una causa: evita l’autodiagnosi.',
+    seek: ['Se prurito, bruciore o irritazione accompagnano queste perdite', 'Se è la prima volta o se succede spesso'],
+  },
+  'yellow-green': {
+    title: 'Perdite giallastre, verdastre o grigiastre',
+    intro: 'Noti perdite di colore giallastro, verdastro o grigiastro. Un cambiamento di colore è un motivo frequente per una visita.',
+    observe: ['Un colore insolito per te', 'A volte una consistenza schiumosa o un odore diverso'],
+    variations: ['Una leggera sfumatura giallastra quando si asciugano sul tessuto può essere descritta senza altri segni', 'Un colore decisamente verde o grigio, o accompagnato da odore, va fatto controllare'],
+    note: ['Il colore, nel modo più fedele possibile', 'L’odore', 'Prurito, dolore o fastidio nell’urinare', 'Un’attività sessuale recente'],
+    limits: 'Il colore, da solo, non permette di conoscere la causa.',
+    seek: ['Rivolgiti a un o una professionista sanitario o a un centro per la salute sessuale se il colore cambia nettamente, soprattutto con odore, prurito o dolore'],
+  },
+  'unusual-odor': {
+    title: 'Odore insolito',
+    intro: 'Noti perdite accompagnate da un odore insolito. Sono possibili diverse cause. Annota i sintomi e chiedi un parere medico se il cambiamento persiste o si accompagna a un fastidio.',
+    observe: ['Un odore più marcato o diverso dal solito', 'A volte un cambiamento di colore o di quantità'],
+    variations: ['Un leggero odore può essere abituale', 'Un odore forte, nuovo o sgradevole è un motivo frequente per una visita'],
+    note: ['Quando è comparso l’odore', 'Il colore e la consistenza', 'I sintomi associati', 'I prodotti intimi usati di recente'],
+    limits: 'L’odore non permette di individuare una causa.',
+    seek: ['Se l’odore persiste, è forte o si accompagna a prurito, dolore o un cambiamento di colore'],
+  },
+  'pink-brown': {
+    title: 'Perdite rosate o brunastre',
+    intro: 'Noti perdite rosate o brunastre. Spesso contengono un po’ di sangue; conta il momento in cui compaiono.',
+    observe: ['Tonalità rosata, bruna o marrone', 'Spesso in piccola quantità'],
+    variations: ['Possono comparire subito prima o dopo il ciclo mestruale', 'Le perdite di sangue tra un ciclo e l’altro, dopo un rapporto o in gravidanza vanno segnalate a un o una professionista'],
+    note: ['La data e il giorno del ciclo', 'Una gravidanza nota o possibile', 'Un rapporto recente', 'Eventuali dolori'],
+    limits: 'Il momento e il contesto contano più del colore, che non permette alcuna conclusione.',
+    seek: ['Fatti visitare se compaiono tra un ciclo e l’altro o dopo un rapporto', 'Chiedi aiuto urgente se hai saltato il ciclo, o sei incinta, e hai perdite di sangue e dolore alla pancia', SEEK_IT_COMMON],
+  },
+  itching: {
+    title: 'Perdite con prurito o irritazione',
+    intro: 'Noti perdite accompagnate da prurito, irritazione o bruciore. Sono possibili diverse cause. Annota i sintomi e chiedi un parere medico se il cambiamento persiste o si accompagna a un fastidio.',
+    observe: ['Prurito o irritazione della vulva o della vagina', 'A volte bruciore, soprattutto quando urini', 'Un eventuale cambiamento delle perdite'],
+    variations: ['Prodotti profumati, alcuni saponi o tessuti possono irritare', 'Questi segni sono descritti anche in diverse infezioni'],
+    note: ['L’intensità e la durata', 'L’aspetto e l’odore delle perdite', 'Un prodotto intimo o una terapia antibiotica recente'],
+    limits: 'Questi segni non ti permettono di capire da sola qual è la causa: evita di curarti senza un parere.',
+    seek: ['Se il prurito dura, ritorna spesso o si accompagna a dolore, bruciore nell’urinare o lesioni'],
+  },
+  dryness: {
+    title: 'Secchezza o diminuzione delle perdite',
+    intro: 'Noti poche perdite o una sensazione di secchezza. Può variare a seconda del ciclo e delle fasi della vita.',
+    observe: ['Poche o nessuna perdita', 'Sensazione di secchezza o di disagio, a volte durante i rapporti'],
+    variations: ['Cambiamenti ormonali (allattamento, gravidanza, menopausa), alcuni farmaci o prodotti profumati possono influire', 'Anche la quantità di perdite varia naturalmente nel corso del ciclo'],
+    note: ['Da quando', 'Un fastidio durante i rapporti', 'Un allattamento o una terapia in corso'],
+    limits: 'Una sensazione di secchezza non indica, da sola, la sua causa.',
+    seek: ['Se la secchezza dura diverse settimane o disturba la tua vita quotidiana', 'Se si accompagna a perdite di sangue dopo un rapporto o tra un ciclo e l’altro'],
+  },
+};

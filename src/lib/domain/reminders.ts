@@ -6,6 +6,7 @@
  *   contrairement à un intervalle en secondes qui dériverait).
  */
 
+import { clockHM, WEEKDAYS_SHORT } from '@/i18n/formats';
 import { t as tr, formatDate, getLocale } from '@/i18n';
 import { localized } from '@/i18n/localized';
 
@@ -100,8 +101,8 @@ export function toExpoWeekday(d: Weekday): number {
 
 const WEEKDAY_SHORT_FR = ['', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'];
 const WEEKDAY_SHORT_EN = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const WEEKDAY_SHORT = localized(WEEKDAY_SHORT_FR, WEEKDAY_SHORT_EN);
-const hm = (h: number, m: number) => (getLocale() === 'en' ? `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}` : `${String(h).padStart(2, '0')}h${String(m).padStart(2, '0')}`);
+const WEEKDAY_SHORT = localized(WEEKDAY_SHORT_FR, WEEKDAY_SHORT_EN, { es: WEEKDAYS_SHORT.es, de: WEEKDAYS_SHORT.de, it: WEEKDAYS_SHORT.it });
+const hm = (h: number, m: number) => clockHM(h, m);
 
 export function describeSchedule(s: ReminderSchedule): string {
   switch (s.type) {

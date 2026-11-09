@@ -34,7 +34,34 @@ const OUTCOME_LABEL_EN: Record<TestOutcome, string> = {
   uncertain: 'Uncertain result',
   unusable: 'Photo can’t be used',
 };
-export const OUTCOME_LABEL: Record<TestOutcome, string> = localized(OUTCOME_LABEL_FR, OUTCOME_LABEL_EN);
+const OUTCOME_LABEL_ES: Record<TestOutcome, string> = {
+  lh_peak_possible: 'Posible pico de LH',
+  lh_peak_not_detected: 'Pico de LH no detectado',
+  possibly_positive: 'Resultado posiblemente positivo',
+  possibly_negative: 'Resultado posiblemente negativo',
+  invalid: 'Test no válido',
+  uncertain: 'Resultado incierto',
+  unusable: 'Foto no aprovechable',
+};
+const OUTCOME_LABEL_DE: Record<TestOutcome, string> = {
+  lh_peak_possible: 'LH-Anstieg möglich',
+  lh_peak_not_detected: 'Kein LH-Anstieg erkannt',
+  possibly_positive: 'Möglicherweise positives Ergebnis',
+  possibly_negative: 'Möglicherweise negatives Ergebnis',
+  invalid: 'Ungültiger Test',
+  uncertain: 'Unsicheres Ergebnis',
+  unusable: 'Foto nicht auswertbar',
+};
+const OUTCOME_LABEL_IT: Record<TestOutcome, string> = {
+  lh_peak_possible: 'Possibile picco di LH',
+  lh_peak_not_detected: 'Picco di LH non rilevato',
+  possibly_positive: 'Risultato forse positivo',
+  possibly_negative: 'Risultato forse negativo',
+  invalid: 'Test non valido',
+  uncertain: 'Risultato incerto',
+  unusable: 'Foto non utilizzabile',
+};
+export const OUTCOME_LABEL: Record<TestOutcome, string> = localized(OUTCOME_LABEL_FR, OUTCOME_LABEL_EN, { es: OUTCOME_LABEL_ES, de: OUTCOME_LABEL_DE, it: OUTCOME_LABEL_IT });
 
 // Messages affichés tels quels par les écrans : relus à chaque changement de langue.
 export let OVULATION_REMINDER = tr('l8.int.reminder');

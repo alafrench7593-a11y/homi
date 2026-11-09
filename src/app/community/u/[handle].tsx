@@ -4,6 +4,7 @@
  */
 import { FollowButton } from '@/features/communitySocial';
 import React, { useState } from 'react';
+import { useAuth } from '@/lib/auth';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -28,6 +29,7 @@ export default function MemberProfile() {
   const block = useBlockMember();
   const unblock = useUnblock();
   const [reporting, setReporting] = useState(false);
+  const { ready: authReady } = useAuth(); // session pas encore restaurée : chargement, pas « introuvable »
 
   async function doBlock() {
     if (!(await confirm(tr('cm2.member.blockTitle', { handle }), tr('cm2.member.blockBody'), tr('cm2.member.block')))) return;
@@ -39,7 +41,7 @@ export default function MemberProfile() {
     try { await unblock.mutateAsync(target.userId); toast(tr('cm2.member.unblocked')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
-  if (q.isLoading && !m) return <Screen back title={tr('cm2.member.title')}><Skeleton kind="detail" rows={4} /></Screen>;
+  if ((q.isLoading || !authReady) && !m) return <Screen back title={tr('cm2.member.title')}><Skeleton kind="detail" rows={4} /></Screen>;
   if (q.isError && !m) return <Screen back title={tr('cm2.member.title')}><ErrorView error={q.error} onRetry={() => void q.refetch()} /></Screen>;
   if (!m) return <Screen back title={tr('cm2.member.title')}><EmptyState icon="user-x" title={tr('cm2.member.notFound')} body={tr('cm2.member.notFoundBody')} /></Screen>;
   if (m.unavailable) return <Screen back title={`@${m.handle}`}><EmptyState icon="lock" title={tr('cm2.member.unavailable')} body={tr('cm2.member.unavailableBody')} /></Screen>;

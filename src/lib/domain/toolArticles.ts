@@ -4,6 +4,9 @@
  */
 import type { ArticleSummary, Category } from '@/lib/types';
 import { localized } from '@/i18n/localized';
+import { ASK_ES } from './toolArticles.es';
+import { ASK_DE } from './toolArticles.de';
+import { ASK_IT } from './toolArticles.it';
 
 export interface ToolTopic {
   /** Début de mots cherchés dans le titre et les étiquettes (sans accents, en minuscules). */
@@ -287,10 +290,12 @@ const ASK_EN: Record<string, string> = {
   'official_videos': 'What everyday gestures with baby?',
   'solo_parent': 'I am raising my child alone: what help is available?',
 };
-const TOOL_TOPICS_EN: Record<string, ToolTopic> = Object.fromEntries(
-  Object.entries(TOOL_TOPICS_FR).map(([k, v]) => [k, { ...v, ask: ASK_EN[k] ?? v.ask }]),
+/** Même outil, mêmes mots-clés : seule la question proposée à l'assistant change de langue. */
+const withAsk = (ask: Record<string, string>): Record<string, ToolTopic> => Object.fromEntries(
+  Object.entries(TOOL_TOPICS_FR).map(([k, v]) => [k, { ...v, ask: ask[k] ?? v.ask }]),
 );
-export const TOOL_TOPICS: Record<string, ToolTopic> = localized(TOOL_TOPICS_FR, TOOL_TOPICS_EN);
+const TOOL_TOPICS_EN: Record<string, ToolTopic> = withAsk(ASK_EN);
+export const TOOL_TOPICS: Record<string, ToolTopic> = localized(TOOL_TOPICS_FR, TOOL_TOPICS_EN, { es: withAsk(ASK_ES), de: withAsk(ASK_DE), it: withAsk(ASK_IT) });
 
 const norm = (s: string) => ` ${s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'`]/g, ' ').replace(/[^a-z0-9œ\- ]+/g, ' ').replace(/\s+/g, ' ')} `;
 

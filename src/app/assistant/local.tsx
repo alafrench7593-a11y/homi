@@ -4,7 +4,8 @@
  * et la présente : réponse, points clés, quand demander conseil, article et sources. Aucune question ne quitte le téléphone.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, Linking, TextInput, View } from 'react-native';
+import { aiAssistantOnline } from '@/config/features';
+import { FlatList, Keyboard, Linking, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
@@ -56,7 +57,7 @@ function AnswerCard({ m }: { m: Msg }) {
           <Text variant="small" muted>{tr('u8.local.noneBody')}</Text>
           {a.related.length ? <Text variant="caption" muted>{tr('u8.local.closest')}</Text> : null}
           <Related items={a.related} />
-          <Chip icon="cloud" label={tr('u8.local.online')} onPress={() => router.push({ pathname: '/assistant/chat', params: { q: m.q } })} testID="local-online" />
+          {aiAssistantOnline() ? <Chip icon="cloud" label={tr('u8.local.online')} onPress={() => router.push({ pathname: '/assistant/chat', params: { q: m.q } })} testID="local-online" /> : null}
         </View>
       </GlassSurface>
     );
@@ -162,6 +163,7 @@ export default function LocalAssistant() {
   function ask(q: string, query?: string) {
     const question = q.trim();
     if (!question || !index) return;
+    Keyboard.dismiss();
     haptic('light');
     setMsgs((m) => [...m, { id: `${Date.now()}`, q: question, a: answer(index, query ?? question) }]);
     setText('');
@@ -173,7 +175,7 @@ export default function LocalAssistant() {
       footer={(
         <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm }}>
           <TextInput value={text} onChangeText={setText} placeholder={tr('u8.local.ph')} placeholderTextColor={t.colors.textMuted} multiline maxLength={300}
-            onSubmitEditing={() => ask(text)} blurOnSubmit returnKeyType="send" testID="local-input" accessibilityLabel={tr('u8.local.yourQ')}
+            onSubmitEditing={() => ask(text)} submitBehavior="blurAndSubmit" blurOnSubmit textAlignVertical="top" returnKeyType="send" testID="local-input" accessibilityLabel={tr('u8.local.yourQ')}
             style={{ flex: 1, minHeight: 48, maxHeight: 120, borderRadius: 24, paddingHorizontal: 18, paddingVertical: 12, color: t.colors.text, fontFamily: fonts.body, fontSize: 16,
               backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.9)', borderWidth: 1, borderColor: t.isDark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.3)' }} />
           <IconButton icon="send" label={tr('u8.local.send')} tone="primary" onPress={() => ask(text)} disabled={!text.trim() || !index} />

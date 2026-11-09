@@ -418,13 +418,19 @@ export default function MySleepScreen() {
           const m = nightMinutes(l);
           return (
             <Card style={{ paddingVertical: spacing.xs }}>
-              <ListRow
-                icon="moon"
-                title={`${nightLabel(l.log_date)}${m != null ? ` · ${formatDuration(m)}` : ''}`}
-                subtitle={[logSubtitle(l), l.note ? (l.note.length > 80 ? `${l.note.slice(0, 80)}…` : l.note) : null].filter(Boolean).join(' — ') || undefined}
-                onPress={() => setForm(formFromLog(l))}
-                right={<Button label={tr('u8.sleep.f.delete')} size="sm" variant="ghost" loading={removingId === l.id} onPress={() => remove(l)} accessibilityLabel={tr('u8.sleep.delA11y', { night: nightLabel(l.log_date).toLowerCase() })} />}
-              />
+              {/* « Supprimer » à côté de la ligne et non dedans : un bouton dans un bouton est invalide sur le web */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <ListRow
+                    icon="moon"
+                    title={`${nightLabel(l.log_date)}${m != null ? ` · ${formatDuration(m)}` : ''}`}
+                    subtitle={[logSubtitle(l), l.note ? (l.note.length > 80 ? `${l.note.slice(0, 80)}…` : l.note) : null].filter(Boolean).join(' — ') || undefined}
+                    onPress={() => setForm(formFromLog(l))}
+                    right={<View />}
+                  />
+                </View>
+                <Button label={tr('u8.sleep.f.delete')} size="sm" variant="ghost" loading={removingId === l.id} onPress={() => remove(l)} accessibilityLabel={tr('u8.sleep.delA11y', { night: nightLabel(l.log_date).toLowerCase() })} />
+              </View>
             </Card>
           );
         }}

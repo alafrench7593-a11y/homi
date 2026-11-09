@@ -22,6 +22,7 @@ export function OfflinePill() {
         accessibilityLabel={tr('sync.openA11y', { label })}
         accessibilityLiveRegion="polite"
         onPress={() => router.push('/settings/sync')}
+        hitSlop={8}
         style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, minHeight: 32, borderRadius: 999, backgroundColor: conflicts.length ? 'rgba(194,65,110,0.92)' : 'rgba(42,27,46,0.85)' }}
       >
         <Icon name={online ? 'refresh-cw' : 'wifi-off'} size={14} color="#FFFFFF" />

@@ -50,4 +50,73 @@ const CHECKLIST_TEMPLATES_EN: Templates = {
   multiples: { title: 'Twins & triplets', icon: 'copy', items: ['Two (or three) suitable car seats', 'Double or triple pushchair', 'Night shifts in relay', 'Ask family and friends for help', 'Find out about parent associations for multiples'] },
 };
 
-export const CHECKLIST_TEMPLATES: Templates = localized(CHECKLIST_TEMPLATES_FR, CHECKLIST_TEMPLATES_EN);
+const CHECKLIST_TEMPLATES_ES: Templates = {
+  maternity_bag: {
+    title: 'Bolsa para la maternidad',
+    icon: 'briefcase',
+    items: ['Tarjeta sanitaria (Carte Vitale) y documento de identidad', 'Historial del seguimiento del embarazo y resultados de las pruebas', 'Tarjeta de grupo sanguíneo (si la tienes)', 'Ropa cómoda y zapatillas', 'Compresas y ropa interior adecuadas', 'Neceser de aseo', 'Cargador del teléfono', 'Bodis, pijamas, gorrito y calcetines para el bebé', 'Saco de dormir o mantita', 'Silla de coche adecuada para la vuelta a casa'],
+  },
+  baby_items: {
+    title: 'Cosas del bebé',
+    icon: 'gift',
+    items: ['Lugar para dormir adecuado (colchón firme, sin protector de cuna ni edredón)', 'Sacos de dormir', 'Bodis y pijamas', 'Cambiador o colchoneta para cambiar', 'Pañales y linimento o agua', 'Termómetro', 'Silla de coche', 'Portabebés o carrito'],
+  },
+  home: { title: 'Preparar la casa', icon: 'home', items: ['Preparar el rincón para dormir', 'Prever un espacio para cambiar al bebé', 'Organizar los armarios', 'Comprobar el detector de humo'] },
+  admin: {
+    title: 'Trámites administrativos',
+    icon: 'file-text',
+    items: ['Declarar el embarazo (antes de que acabe el 3.er mes)', 'Informar a tu empresa si lo deseas', 'Preparar la declaración de nacimiento (en los 5 días)', 'Avisar a la caja del seguro de enfermedad (Assurance maladie) y a la CAF', 'Elegir un modo de cuidado infantil'],
+  },
+  purchases: { title: 'Compras útiles', icon: 'shopping-bag', items: ['Silla de coche', 'Cuna o moisés', 'Bañera o hamaca de baño', 'Sacaleches (si hace falta)', 'Biberones (si hace falta)'] },
+  coparent: { title: 'Preparación del otro progenitor', icon: 'users', items: ['Informarse sobre el permiso de nacimiento / paternidad', 'Preparar la organización de las primeras semanas', 'Asistir a una cita de preparación', 'Saber reconocer las señales de malestar después del parto'] },
+  siblings: { title: 'Organización con los hermanos mayores', icon: 'smile', items: ['Anunciar la llegada del bebé con palabras sencillas', 'Prever quién cuida a los mayores durante el parto', 'Guardar un momento a solas con cada hermano mayor', 'Leer un libro sobre la llegada de un hermanito o una hermanita'] },
+  multiples: { title: 'Gemelos y trillizos', icon: 'copy', items: ['Dos (o tres) sillas de coche adecuadas', 'Carrito doble o triple', 'Organizar las noches por turnos', 'Pedir ayuda a tu entorno', 'Informarse sobre las asociaciones de padres de partos múltiples'] },
+};
+
+const CHECKLIST_TEMPLATES_DE: Templates = {
+  maternity_bag: {
+    title: 'Kliniktasche',
+    icon: 'briefcase',
+    items: ['Versichertenkarte (Carte Vitale) und Ausweis', 'Unterlagen zur Schwangerschaftsvorsorge und Untersuchungsergebnisse', 'Blutgruppenausweis (falls vorhanden)', 'Bequeme Kleidung und Hausschuhe', 'Wochenbetteinlagen und passende Unterwäsche', 'Kulturbeutel', 'Handy-Ladegerät', 'Bodys, Schlafanzüge, Mütze und Söckchen fürs Baby', 'Schlafsack oder Decke', 'Passender Autositz für die Heimfahrt'],
+  },
+  baby_items: {
+    title: 'Babysachen',
+    icon: 'gift',
+    items: ['Geeigneter Schlafplatz (feste Matratze, ohne Nestchen und Bettdecke)', 'Babyschlafsäcke', 'Bodys und Schlafanzüge', 'Wickeltisch oder Wickelauflage', 'Windeln und Pflegeöl-Lotion (Liniment) oder Wasser', 'Thermometer', 'Autositz', 'Babytrage oder Kinderwagen'],
+  },
+  home: { title: 'Die Wohnung vorbereiten', icon: 'home', items: ['Die Schlafecke einrichten', 'Einen Wickelplatz einplanen', 'Stauraum organisieren', 'Den Rauchmelder prüfen'] },
+  admin: {
+    title: 'Behördengänge',
+    icon: 'file-text',
+    items: ['Die Schwangerschaft melden (vor Ende des 3. Monats)', 'Den Arbeitgeber informieren, wenn du möchtest', 'Die Geburtsanzeige vorbereiten (innerhalb von 5 Tagen)', 'Die Krankenkasse (Assurance maladie) und die CAF benachrichtigen', 'Eine Betreuungsform wählen'],
+  },
+  purchases: { title: 'Nützliche Anschaffungen', icon: 'shopping-bag', items: ['Autositz', 'Bett oder Wiege', 'Babybadewanne oder Badesitz', 'Milchpumpe (bei Bedarf)', 'Fläschchen (bei Bedarf)'] },
+  coparent: { title: 'Vorbereitung des anderen Elternteils', icon: 'users', items: ['Sich über den Geburts- / Vaterschaftsurlaub informieren', 'Die Organisation der ersten Wochen planen', 'An einem Vorbereitungstermin teilnehmen', 'Anzeichen seelischer Not nach der Geburt erkennen können'] },
+  siblings: { title: 'Organisation mit den älteren Geschwistern', icon: 'smile', items: ['Die Ankunft des Babys mit einfachen Worten ankündigen', 'Planen, wer während der Geburt auf die Älteren aufpasst', 'Mit jedem älteren Kind eine Zeit nur zu zweit behalten', 'Ein Buch über die Ankunft eines kleinen Bruders oder einer kleinen Schwester lesen'] },
+  multiples: { title: 'Zwillinge & Drillinge', icon: 'copy', items: ['Zwei (oder drei) passende Autositze', 'Zwillings- oder Drillingskinderwagen', 'Die Nächte im Wechsel organisieren', 'Das Umfeld um Hilfe bitten', 'Sich über Elternvereine für Mehrlinge informieren'] },
+};
+
+const CHECKLIST_TEMPLATES_IT: Templates = {
+  maternity_bag: {
+    title: 'Borsa per il parto',
+    icon: 'briefcase',
+    items: ['Tessera sanitaria (Carte Vitale) e documento d’identità', 'Cartella di monitoraggio della gravidanza e risultati degli esami', 'Tessera del gruppo sanguigno (se ce l’hai)', 'Vestiti comodi e pantofole', 'Assorbenti e biancheria adatti', 'Beauty case', 'Caricatore del telefono', 'Body, tutine, cappellino e calzini per il bebè', 'Sacco nanna o copertina', 'Seggiolino auto adatto per il ritorno a casa'],
+  },
+  baby_items: {
+    title: 'Cose del bebè',
+    icon: 'gift',
+    items: ['Posto per dormire adatto (materasso rigido, senza paracolpi né piumone)', 'Sacchi nanna', 'Body e tutine', 'Fasciatoio o materassino per il cambio', 'Pannolini e oleolito (liniment) o acqua', 'Termometro', 'Seggiolino auto', 'Marsupio o passeggino'],
+  },
+  home: { title: 'Preparare la casa', icon: 'home', items: ['Preparare l’angolo nanna', 'Prevedere uno spazio per il cambio', 'Organizzare gli armadi', 'Controllare il rilevatore di fumo'] },
+  admin: {
+    title: 'Pratiche amministrative',
+    icon: 'file-text',
+    items: ['Dichiarare la gravidanza (prima della fine del 3° mese)', 'Informare il datore di lavoro, se lo desideri', 'Preparare la dichiarazione di nascita (entro 5 giorni)', 'Avvisare la cassa dell’assicurazione sanitaria (Assurance maladie) e la CAF', 'Scegliere una soluzione per la custodia del bambino'],
+  },
+  purchases: { title: 'Acquisti utili', icon: 'shopping-bag', items: ['Seggiolino auto', 'Lettino o culla', 'Vaschetta o sdraietta da bagno', 'Tiralatte (se serve)', 'Biberon (se serve)'] },
+  coparent: { title: 'Preparazione del co-genitore', icon: 'users', items: ['Informarsi sul congedo di nascita / paternità', 'Preparare l’organizzazione delle prime settimane', 'Partecipare a un incontro di preparazione', 'Saper riconoscere i segni di disagio dopo la nascita'] },
+  siblings: { title: 'Organizzazione con i fratelli maggiori', icon: 'smile', items: ['Annunciare l’arrivo del bebè con parole semplici', 'Prevedere chi tiene i più grandi durante il parto', 'Tenere un momento solo per ciascun figlio maggiore', 'Leggere un libro sull’arrivo di un fratellino o di una sorellina'] },
+  multiples: { title: 'Gemelli e trigemini', icon: 'copy', items: ['Due (o tre) seggiolini auto adatti', 'Passeggino doppio o triplo', 'Organizzare le notti a turno', 'Chiedere aiuto alle persone vicine', 'Informarsi sulle associazioni di genitori di gemelli'] },
+};
+
+export const CHECKLIST_TEMPLATES: Templates = localized(CHECKLIST_TEMPLATES_FR, CHECKLIST_TEMPLATES_EN, { es: CHECKLIST_TEMPLATES_ES, de: CHECKLIST_TEMPLATES_DE, it: CHECKLIST_TEMPLATES_IT });

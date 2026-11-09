@@ -14,8 +14,11 @@ import {
   type Certainty, type DataSourceInfo, type Finding, type RecallCheck, type RecallInfo, type ScanProfile,
 } from './scanCommon';
 import type { ScanSource } from './scanSources';
-import { t as tr } from '@/i18n';
+import { getLocale, t as tr } from '@/i18n';
 import { localized } from '@/i18n/localized';
+import { EXPOSURE_EXPLANATION_ES, EXPOSURE_LABEL_ES, PRODUCT_TYPE_LABEL_ES, ZONE_LABEL_ES } from './scanProduct.es';
+import { EXPOSURE_EXPLANATION_DE, EXPOSURE_LABEL_DE, PRODUCT_TYPE_LABEL_DE, ZONE_LABEL_DE } from './scanProduct.de';
+import { EXPOSURE_EXPLANATION_IT, EXPOSURE_LABEL_IT, PRODUCT_TYPE_LABEL_IT, ZONE_LABEL_IT } from './scanProduct.it';
 
 export type ProductType =
   | 'cream' | 'oil' | 'wash_gel' | 'shampoo' | 'sunscreen' | 'makeup' | 'stretch_marks' | 'wipes' | 'diapers'
@@ -33,7 +36,7 @@ const PRODUCT_TYPE_LABEL_EN: Record<ProductType, string> = {
   baby_care: 'Baby / child care', medicine: 'Medicine', essential_oil: 'Essential oil', supplement: 'Food supplement',
   treatment: 'Treatment product (lice, warts…)', other: 'Other',
 };
-export const PRODUCT_TYPE_LABEL: Record<ProductType, string> = localized(PRODUCT_TYPE_LABEL_FR, PRODUCT_TYPE_LABEL_EN);
+export const PRODUCT_TYPE_LABEL: Record<ProductType, string> = localized(PRODUCT_TYPE_LABEL_FR, PRODUCT_TYPE_LABEL_EN, { es: PRODUCT_TYPE_LABEL_ES, de: PRODUCT_TYPE_LABEL_DE, it: PRODUCT_TYPE_LABEL_IT });
 
 /** Types pour lesquels l'application ne se prononce pas : avis d'un professionnel. */
 export const PROFESSIONAL_TYPES: ProductType[] = ['medicine', 'essential_oil', 'supplement', 'treatment'];
@@ -63,8 +66,8 @@ const EXPOSURE_EXPLANATION_EN: Record<Exposure, string> = {
   indirect: 'Contact is mainly through washed textiles or surfaces; the main risk comes from the undiluted product (accidental swallowing, splashing).',
   unknown: 'The app does not know whether this product is rinsed off, left on the skin or inhaled: specify it to refine the analysis.',
 };
-export const EXPOSURE_LABEL: Record<Exposure, string> = localized(EXPOSURE_LABEL_FR, EXPOSURE_LABEL_EN);
-const EXPOSURE_EXPLANATION: Record<Exposure, string> = localized(EXPOSURE_EXPLANATION_FR, EXPOSURE_EXPLANATION_EN);
+export const EXPOSURE_LABEL: Record<Exposure, string> = localized(EXPOSURE_LABEL_FR, EXPOSURE_LABEL_EN, { es: EXPOSURE_LABEL_ES, de: EXPOSURE_LABEL_DE, it: EXPOSURE_LABEL_IT });
+const EXPOSURE_EXPLANATION: Record<Exposure, string> = localized(EXPOSURE_EXPLANATION_FR, EXPOSURE_EXPLANATION_EN, { es: EXPOSURE_EXPLANATION_ES, de: EXPOSURE_EXPLANATION_DE, it: EXPOSURE_EXPLANATION_IT });
 const ZONE_LABEL_FR: Record<Zone, string> = {
   face: 'Visage', body: 'Corps', diaper_area: 'Siège (zone du change)', scalp: 'Cuir chevelu', lips: 'Lèvres', hands: 'Mains',
   air: 'Air ambiant', textiles: 'Textiles', surfaces: 'Surfaces', unknown: 'Zone non précisée',
@@ -73,7 +76,9 @@ const ZONE_LABEL_EN: Record<Zone, string> = {
   face: 'Face', body: 'Body', diaper_area: 'Nappy area (change zone)', scalp: 'Scalp', lips: 'Lips', hands: 'Hands',
   air: 'Room air', textiles: 'Textiles', surfaces: 'Surfaces', unknown: 'Area not specified',
 };
-export const ZONE_LABEL: Record<Zone, string> = localized(ZONE_LABEL_FR, ZONE_LABEL_EN);
+export const ZONE_LABEL: Record<Zone, string> = localized(ZONE_LABEL_FR, ZONE_LABEL_EN, { es: ZONE_LABEL_ES, de: ZONE_LABEL_DE, it: ZONE_LABEL_IT });
+/** Libellé inséré au milieu d'une phrase : minuscule initiale, sauf en allemand (les noms y gardent leur majuscule). */
+const inSentence = (s: string) => (getLocale() === 'de' ? s : s.toLowerCase());
 
 export function defaultExposure(type: ProductType | null): Exposure {
   switch (type) {
@@ -385,7 +390,7 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
     } else {
       findings.push({
         id: 'phenoxy_zone', level: 'precaution', title: tr('l4.sp.f.phenoxy_zone.t'),
-        explanation: tr('l4.sp.f.phenoxy_zone.e', { zone: ZONE_LABEL[zone].toLowerCase() }),
+        explanation: tr('l4.sp.f.phenoxy_zone.e', { zone: inSentence(ZONE_LABEL[zone]) }),
         sourceIds: ['ansm-phenoxy-2019'],
       });
       if (zone === 'unknown') missing.push(tr('l4.sp.miss.zone'));
@@ -435,7 +440,7 @@ export function analyzeProduct(input: ProductInput, profile: ScanProfile, now = 
   if (fragranceAllergens.length) {
     findings.push({
       id: 'fragrance_allergens', level: 'info', title: tr('l4.sp.f.fragrance_allergens.t', { list: fragranceAllergens.join(', ') }),
-      explanation: tr('l4.sp.f.fragrance_allergens.e', { exposure: EXPOSURE_LABEL[exposure].toLowerCase() }),
+      explanation: tr('l4.sp.f.fragrance_allergens.e', { exposure: inSentence(EXPOSURE_LABEL[exposure]) }),
       sourceIds: ['eu-1223-2009', 'eu-2023-1545'],
     });
   }

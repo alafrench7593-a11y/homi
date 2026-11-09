@@ -147,7 +147,19 @@ const TRACKING_OPTIONS_EN: { key: string; label: string }[] = [
   { key: 'breastfeed', label: 'Breastfeeding' }, { key: 'bottle', label: 'Bottles' }, { key: 'diaper', label: 'Nappies' },
   { key: 'sleep', label: 'Sleep' }, { key: 'meal', label: 'Meals' }, { key: 'growth', label: 'Height & weight' },
 ];
-export const TRACKING_OPTIONS: { key: string; label: string }[] = localized(TRACKING_OPTIONS_FR, TRACKING_OPTIONS_EN);
+const TRACKING_OPTIONS_ES: { key: string; label: string }[] = [
+  { key: 'breastfeed', label: 'Lactancia' }, { key: 'bottle', label: 'Biberones' }, { key: 'diaper', label: 'Pañales' },
+  { key: 'sleep', label: 'Sueño' }, { key: 'meal', label: 'Comidas' }, { key: 'growth', label: 'Talla y peso' },
+];
+const TRACKING_OPTIONS_DE: { key: string; label: string }[] = [
+  { key: 'breastfeed', label: 'Stillen' }, { key: 'bottle', label: 'Fläschchen' }, { key: 'diaper', label: 'Windeln' },
+  { key: 'sleep', label: 'Schlaf' }, { key: 'meal', label: 'Mahlzeiten' }, { key: 'growth', label: 'Größe & Gewicht' },
+];
+const TRACKING_OPTIONS_IT: { key: string; label: string }[] = [
+  { key: 'breastfeed', label: 'Allattamento' }, { key: 'bottle', label: 'Biberon' }, { key: 'diaper', label: 'Pannolini' },
+  { key: 'sleep', label: 'Sonno' }, { key: 'meal', label: 'Pasti' }, { key: 'growth', label: 'Altezza e peso' },
+];
+export const TRACKING_OPTIONS: { key: string; label: string }[] = localized(TRACKING_OPTIONS_FR, TRACKING_OPTIONS_EN, { es: TRACKING_OPTIONS_ES, de: TRACKING_OPTIONS_DE, it: TRACKING_OPTIONS_IT });
 
 export function validateChild(d: ChildDraft): { errors: Record<string, string>; birth?: string } {
   const errors: Record<string, string> = {};

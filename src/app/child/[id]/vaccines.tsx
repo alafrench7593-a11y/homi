@@ -263,9 +263,15 @@ export default function Vaccines() {
       {vaccinations.map((v, i) => (
         <StaggerItem key={v.id} index={i}>
           <Card style={{ paddingVertical: 4 }}>
-            <ListRow icon="shield" title={`${v.vaccine}${v.dose_label ? ` · ${v.dose_label}` : ''}`} subtitle={[toFrDate(v.given_on), v.given_by, v.lot ? tr('vx.lot', { lot: v.lot }) : null, tr(`vx.src.${v.source}` as TKey)].filter(Boolean).join(' · ')}
-              onPress={() => setD({ id: v.id, vaccine: v.vaccine, date: toFrDate(v.given_on), dose: v.dose_label ?? '', lot: v.lot ?? '', by: v.given_by ?? '', source: v.source, note: v.note ?? '' })}
-              right={<Row gap={0}><IconButton icon="paperclip" label={tr('vx.attachA11y', { name: v.vaccine })} size={18} onPress={() => setDocsFor({ table: 'child_vaccinations', id: v.id, ids: v.document_ids ?? [] })} /><IconButton icon="trash-2" label={tr('vx.deleteA11y', { name: v.vaccine })} size={18} onPress={() => remove(v)} /></Row>} />
+            {/* pièce jointe et suppression à côté de la ligne et non dedans : un bouton dans un bouton est invalide sur le web */}
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <ListRow icon="shield" title={`${v.vaccine}${v.dose_label ? ` · ${v.dose_label}` : ''}`} subtitle={[toFrDate(v.given_on), v.given_by, v.lot ? tr('vx.lot', { lot: v.lot }) : null, tr(`vx.src.${v.source}` as TKey)].filter(Boolean).join(' · ')}
+                  onPress={() => setD({ id: v.id, vaccine: v.vaccine, date: toFrDate(v.given_on), dose: v.dose_label ?? '', lot: v.lot ?? '', by: v.given_by ?? '', source: v.source, note: v.note ?? '' })}
+                  right={<View />} />
+              </View>
+              <Row gap={0}><IconButton icon="paperclip" label={tr('vx.attachA11y', { name: v.vaccine })} size={18} onPress={() => setDocsFor({ table: 'child_vaccinations', id: v.id, ids: v.document_ids ?? [] })} /><IconButton icon="trash-2" label={tr('vx.deleteA11y', { name: v.vaccine })} size={18} onPress={() => remove(v)} /></Row>
+            </View>
             <AttachedDocs ids={v.document_ids} />
           </Card>
         </StaggerItem>

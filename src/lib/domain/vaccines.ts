@@ -6,7 +6,10 @@
  * ce module garde les noms historiques utilisés par les écrans et les tests.
  */
 import { FR_2026, FR_2026_VERSIONS as V } from '@/content/vaccineCalendars/fr-2026';
-import { localized } from '@/i18n/localized';
+import { localized, type MoreLangs } from '@/i18n/localized';
+import { VACCINES_ES } from './vaccines.es';
+import { VACCINES_DE } from './vaccines.de';
+import { VACCINES_IT } from './vaccines.it';
 import { addMonthsISO, byVisit, nextDoses, scheduleFor, type DoseState, type ScheduledDose, type VaccineCalendar, type VaccineRule, type VaccineSource, type VaccineStatus } from './vaccineRules';
 import type { ISODate } from './dates';
 
@@ -14,11 +17,34 @@ import type { ISODate } from './dates';
 export const BUNDLED_CALENDARS: VaccineCalendar[] = [FR_2026];
 export const DEFAULT_CALENDAR = FR_2026;
 
-export const VACCINE_SOURCES: Record<string, VaccineSource> = localized(V.fr.sources, V.en.sources);
-export const CALENDAR_VERSION = localized({ label: V.fr.label, updated: V.fr.updated, checked: V.fr.checked }, { label: V.en.label, updated: V.en.updated, checked: V.en.checked });
+/** Textes affichés du calendrier en es / de / it (mêmes clés, âges, sources et dates que le français). */
+export interface VaccineTexts {
+  label: string;
+  sources: Record<string, string>;
+  rules: Record<string, Partial<Pick<VaccineRule, 'label' | 'dose' | 'population' | 'note'>>>;
+  situational: string[];
+  questions: string[];
+}
+type CalendarLang = 'es' | 'de' | 'it';
+/** Si le fichier du calendrier fournit un jour sa propre version es/de/it, elle est prioritaire. */
+const VX = V as typeof V & MoreLangs<VaccineCalendar>;
+const TEXTS: Record<CalendarLang, VaccineTexts> = { es: VACCINES_ES, de: VACCINES_DE, it: VACCINES_IT };
+const LANGS: CalendarLang[] = ['es', 'de', 'it'];
+const perLang = <T,>(f: (cal: VaccineCalendar | undefined, t: VaccineTexts) => T): MoreLangs<T> =>
+  Object.fromEntries(LANGS.map((l) => [l, f(VX[l], TEXTS[l])])) as MoreLangs<T>;
+const sourcesFor = (t: VaccineTexts): Record<string, VaccineSource> =>
+  Object.fromEntries(Object.entries(V.fr.sources).map(([k, src]) => [k, { ...src, label: t.sources[k] ?? src.label }]));
+const rulesFor = (t: VaccineTexts): VaccineRule[] => V.fr.rules.map((r) => ({ ...r, ...t.rules[r.key] }));
+
+export const VACCINE_SOURCES: Record<string, VaccineSource> = localized(V.fr.sources, V.en.sources, perLang((c, t) => c?.sources ?? sourcesFor(t)));
+export const CALENDAR_VERSION = localized(
+  { label: V.fr.label, updated: V.fr.updated, checked: V.fr.checked },
+  { label: V.en.label, updated: V.en.updated, checked: V.en.checked },
+  perLang((c, t) => ({ label: c?.label ?? t.label, updated: V.fr.updated, checked: V.fr.checked })),
+);
 export type VaccineDose = VaccineRule;
-export const VACCINE_DOSES: VaccineDose[] = localized(V.fr.rules, V.en.rules);
-export const SITUATIONAL = localized(V.fr.situational, V.en.situational);
+export const VACCINE_DOSES: VaccineDose[] = localized(V.fr.rules, V.en.rules, perLang((c, t) => c?.rules ?? rulesFor(t)));
+export const SITUATIONAL = localized(V.fr.situational, V.en.situational, perLang((c, t) => c?.situational ?? t.situational));
 
 /** Échéances avec le calendrier français en vigueur (compatibilité). */
 export function vaccineSchedule(birthDate: ISODate, today: ISODate, done: Record<string, string | null> = {}, planned: string[] = [], postponed: Record<string, ISODate | null> = {}, cal: VaccineCalendar = FR_2026): ScheduledDose[] {
@@ -47,4 +73,4 @@ const VACCINE_QUESTIONS_EN = [
   'Is any catch-up needed?',
   'Does our situation (prematurity, illness, travel, people around us) change anything?',
 ];
-export const VACCINE_QUESTIONS = localized(VACCINE_QUESTIONS_FR, VACCINE_QUESTIONS_EN);
+export const VACCINE_QUESTIONS = localized(VACCINE_QUESTIONS_FR, VACCINE_QUESTIONS_EN, { es: VACCINES_ES.questions, de: VACCINES_DE.questions, it: VACCINES_IT.questions });

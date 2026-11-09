@@ -3,6 +3,9 @@
  * jamais une interprétation du résultat de la personne. Chaque explication est marquée comme telle à l'écran.
  */
 import { getLocale } from '@/i18n';
+import { GLOSSARY_ES } from './glossary.es';
+import { GLOSSARY_DE } from './glossary.de';
+import { GLOSSARY_IT } from './glossary.it';
 
 interface Entry { re: RegExp; term: string; fr: string; en: string }
 
@@ -51,17 +54,52 @@ const G: Entry[] = [
   { re: /\bvaleurs? de r[ée]f[ée]rence|\bnormes?\b/i, term: 'Valeurs de référence', fr: 'Intervalle indiqué par le laboratoire pour situer un résultat ; il dépend de la méthode et du laboratoire.', en: 'Range given by the lab to place a result; it depends on the method and the lab.' },
 ];
 
+/** Textes affichés en espagnol, allemand et italien, par terme français : [terme affiché, explication]. */
+const MORE_LANGS: Record<string, Record<string, [string, string]>> = { es: GLOSSARY_ES, de: GLOSSARY_DE, it: GLOSSARY_IT };
+
+/**
+ * En es/de/it seulement : formes courantes des mêmes termes dans ces langues (le document peut être rédigé ainsi).
+ * Les règles françaises ci-dessus restent appliquées telles quelles ; rien ne change en français ni en anglais.
+ */
+const MORE_FORMS: Record<string, RegExp> = {
+  'Hémoglobine': /\b(hemoglobina|emoglobina|h[äa]moglobin)\b/i,
+  'Ferritine': /\bferritin[ae]?\b/i,
+  'Plaquettes': /\b(plaquetas|piastrine|thrombozyten)\b/i,
+  'Leucocytes': /\b(leucocitos|leucociti|leukozyten|globuli bianchi)\b/i,
+  'NFS': /\b(hemograma|emocromo|blutbild)\b/i,
+  'Glycémie': /\b(glucemia|glicemia|blutzucker)\b/i,
+  'Créatinine': /\b(creatinina|kreatinin)\b/i,
+  'Sérologie': /\b(serolog[íi]a|sierologia|serologie)\b/i,
+  'Toxoplasmose': /\b(toxoplasmosis|toxoplasmosi)\b/i,
+  'Rubéole': /\b(rub[ée]ola|rosolia|r[öo]teln)\b/i,
+  'Protéinurie': /\b(proteinuria|proteinurie)\b/i,
+  'Glycosurie': /\b(glucosuria|glicosuria|glukosurie)\b/i,
+  'Échographie': /\b(ecograf[íi]a|ecografie|ultraschall)/i,
+  'Biométrie': /\b(biometr[íi]a|biometrie)\b/i,
+  'Clarté nucale': /\b(translucencia nucal|translucenza nucale|nackentransparenz)\b/i,
+  'Percentile': /\b(percentil(es)?|perzentile?)\b/i,
+  'Périmètre crânien': /\b(per[íi]metro cef[áa]lico|circonferenza cranica|kopfumfang)\b/i,
+  'Posologie': /\b(posolog[íi]a|dosierung)\b/i,
+  'Frottis': /\b(pap[- ]?test|abstrich)\b/i,
+  'IMC': /\bbmi\b/i,
+  'Valeurs de référence': /\b(valores de referencia|valori di riferimento|referenzbereich|referenzwerte?|normbereich)\b/i,
+};
+
 export interface GlossaryHit { term: string; explanation: string }
 
 /** Termes du document expliqués de façon générale, dans la langue active, sans doublon. */
 export function glossaryFor(text: string): GlossaryHit[] {
-  const en = getLocale() === 'en';
+  const lang = getLocale();
+  const en = lang === 'en';
+  const more = MORE_LANGS[lang];
   const seen = new Set<string>();
   const out: GlossaryHit[] = [];
   for (const e of G) {
-    if (e.re.test(text) && !seen.has(e.term)) {
+    const found = e.re.test(text) || (!!more && !!MORE_FORMS[e.term]?.test(text));
+    if (found && !seen.has(e.term)) {
       seen.add(e.term);
-      out.push({ term: e.term, explanation: en ? e.en : e.fr });
+      const tx = more?.[e.term];
+      out.push(tx ? { term: tx[0], explanation: tx[1] } : { term: e.term, explanation: en ? e.en : e.fr });
     }
   }
   return out;

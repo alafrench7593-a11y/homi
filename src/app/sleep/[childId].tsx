@@ -132,8 +132,8 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
     if (when.getTime() <= Date.now()) { toast(tr('u4.sp.restSoon'), 'info'); return; }
     try {
       // jamais en double : un rappel « repos » déjà programmé pour cet enfant est remplacé
-      for (const r of (allReminders ?? []).filter((x) => x.deep_link === `/sleep/${child.id}` && x.title === `Repos de ${name}`)) await deleteReminder.mutateAsync(r.id);
-      await saveReminder.mutateAsync({ draft: { title: `Repos de ${name}`, body: 'Estimation d’après vos relevés : observez les signes de fatigue.', category: 'tracking', schedule: { type: 'once', at: when.toISOString() }, enabled: true, deep_link: `/sleep/${child.id}`, child_id: child.id } });
+      for (const r of (allReminders ?? []).filter((x) => x.deep_link === `/sleep/${child.id}` && (x.title === `Repos de ${name}` || x.title === tr('u4.sp.restTitle', { name })))) await deleteReminder.mutateAsync(r.id);
+      await saveReminder.mutateAsync({ draft: { title: tr('u4.sp.restTitle', { name }), body: tr('u4.sp.restBody'), category: 'tracking', schedule: { type: 'once', at: when.toISOString() }, enabled: true, deep_link: `/sleep/${child.id}`, child_id: child.id } });
       toast(tr('u4.sp.reminderSet', { time: clock(when) }), 'success');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
@@ -302,7 +302,7 @@ function BedtimeRoutine({ child, profileBedtime }: { child: Child; profileBedtim
       if (remind && hmv) {
         const [h, mi] = hmv.split(':').map(Number);
         const at = h * 60 + mi - 15;
-        await saveReminder.mutateAsync({ draft: { title: `Routine du coucher de ${name}`, body: steps.slice(0, 3).join(' · ') || null, category: 'tracking', schedule: { type: 'daily', hour: Math.floor((at + 1440) % 1440 / 60), minute: (at + 1440) % 60 }, enabled: true, deep_link: `/sleep/${child.id}?routine=1`, child_id: child.id } });
+        await saveReminder.mutateAsync({ draft: { title: tr('u4.sp.routineTitle', { name }), body: steps.slice(0, 3).join(' · ') || null, category: 'tracking', schedule: { type: 'daily', hour: Math.floor((at + 1440) % 1440 / 60), minute: (at + 1440) % 60 }, enabled: true, deep_link: `/sleep/${child.id}?routine=1`, child_id: child.id } });
       }
       inv('bedtime_routines', 'reminders');
       toast(tr('u4.sp.routineSaved'), 'success');
@@ -447,7 +447,7 @@ function TrendsTab({ child, data }: { child: Child; data: PlanData }) {
               ) : <Text variant="small" muted>{tr('u4.sp.noFullDay')}</Text>}
             </Card>
           </View>
-          <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <Row wrap style={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <SectionTitle title={tr('u4.sp.dayByDay')} />
             <Row><Chip label={tr('u4.sp.r7')} selected={range === 7} onPress={() => setRange(7)} /><Chip label={tr('u4.sp.r14')} selected={range === 14} onPress={() => setRange(14)} /></Row>
           </Row>

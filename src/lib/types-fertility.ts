@@ -36,7 +36,34 @@ const CERVICAL_MUCUS_EN: { value: CervicalMucus; label: string }[] = [
   { value: 'unusual', label: 'Unusual' },
   { value: 'unknown', label: 'I don’t know' },
 ];
-export const CERVICAL_MUCUS: { value: CervicalMucus; label: string }[] = localized(CERVICAL_MUCUS_FR, CERVICAL_MUCUS_EN);
+const CERVICAL_MUCUS_ES: { value: CervicalMucus; label: string }[] = [
+  { value: 'dry', label: 'Seca o ausente' },
+  { value: 'sticky', label: 'Espesa o pegajosa' },
+  { value: 'creamy', label: 'Cremosa' },
+  { value: 'egg_white', label: 'Transparente y elástica' },
+  { value: 'watery', label: 'Acuosa' },
+  { value: 'unusual', label: 'Inusual' },
+  { value: 'unknown', label: 'No lo sé' },
+];
+const CERVICAL_MUCUS_DE: { value: CervicalMucus; label: string }[] = [
+  { value: 'dry', label: 'Trocken oder nicht vorhanden' },
+  { value: 'sticky', label: 'Dick oder klebrig' },
+  { value: 'creamy', label: 'Cremig' },
+  { value: 'egg_white', label: 'Klar und spinnbar' },
+  { value: 'watery', label: 'Wässrig' },
+  { value: 'unusual', label: 'Ungewöhnlich' },
+  { value: 'unknown', label: 'Weiß ich nicht' },
+];
+const CERVICAL_MUCUS_IT: { value: CervicalMucus; label: string }[] = [
+  { value: 'dry', label: 'Secco o assente' },
+  { value: 'sticky', label: 'Denso o appiccicoso' },
+  { value: 'creamy', label: 'Cremoso' },
+  { value: 'egg_white', label: 'Trasparente ed elastico' },
+  { value: 'watery', label: 'Acquoso' },
+  { value: 'unusual', label: 'Insolito' },
+  { value: 'unknown', label: 'Non lo so' },
+];
+export const CERVICAL_MUCUS: { value: CervicalMucus; label: string }[] = localized(CERVICAL_MUCUS_FR, CERVICAL_MUCUS_EN, { es: CERVICAL_MUCUS_ES, de: CERVICAL_MUCUS_DE, it: CERVICAL_MUCUS_IT });
 
 export interface FertilityObservation {
   id: string; user_id: string; observed_on: string;

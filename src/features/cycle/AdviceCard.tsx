@@ -48,7 +48,9 @@ export function AdviceCard({ advice, isNew, compact, delay = 0 }: { advice: Advi
   const toast = useToast();
   const numbers = useEmergencyNumbers();
   const region = useRegion();
-  const lang = getLocale() === 'en' ? 'en' : 'fr';
+  const loc = getLocale();
+  const LANGS = ['fr', 'en', 'es', 'de', 'it'] as const;
+  const lang: (typeof LANGS)[number] = (LANGS as readonly string[]).includes(loc) ? (loc as (typeof LANGS)[number]) : 'fr';
   // Les dates passées en paramètre sont affichées dans la langue active
   const params = { ...Object.fromEntries(Object.entries(advice.params).map(([k, v]) => [k, typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? fmtDay(v) : v])), numbers };
   const k = `adv.${advice.ruleId}.${advice.variant}`;
@@ -111,7 +113,7 @@ export function AdviceCard({ advice, isNew, compact, delay = 0 }: { advice: Advi
             <View style={{ gap: 2 }}>
               <Ink variant="caption" soft>{tr('adv.ui.notDiagnosis')}</Ink>
               {sources.length ? (
-                <Ink variant="caption" soft>{`${tr('adv.ui.sources')} : ${sources.map((s) => s.org).filter((v, i, arr) => arr.indexOf(v) === i).join(', ')}`}</Ink>
+                <Ink variant="caption" soft>{`${tr('adv.ui.sources')}${lang === 'fr' || lang === 'en' ? ' : ' : ': '}${sources.map((s) => s.org).filter((v, i, arr) => arr.indexOf(v) === i).join(', ')}`}</Ink>
               ) : null}
               {sources.slice(0, 2).map((s) => (
                 <Button key={s.id} label={`${s.org} — ${s.title}`} variant="ghost" size="sm" icon="external-link" onPress={() => open(s.url)} />

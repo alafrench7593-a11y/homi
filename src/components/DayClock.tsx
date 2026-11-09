@@ -10,6 +10,7 @@ import { palette, fonts } from '@/theme/tokens';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { Text } from './ui';
 import { t as tr } from '@/i18n';
+import { hourTick } from '@/i18n/formats';
 import { ambientDelay } from '@/theme/motion';
 
 export interface ClockEvent {
@@ -58,7 +59,7 @@ export function DayClock({ events, size = 280, children, now = new Date(), label
         })}
         {size >= 260 && [0, 6, 12, 18].map((h) => {
           const p = polar(c, c, rDiaper - 16, (h / 24) * 360 - 90);
-          return <SvgText key={h} x={p.x} y={p.y + 4} fontSize={11} fill={ink} fillOpacity={0.5} textAnchor="middle" fontFamily={fonts.bodyMedium}>{h === 0 ? '0h' : `${h}h`}</SvgText>;
+          return <SvgText key={h} x={p.x} y={p.y + 4} fontSize={11} fill={ink} fillOpacity={0.5} textAnchor="middle" fontFamily={fonts.bodyMedium}>{hourTick(h)}</SvgText>;
         })}
         {/* sommeils */}
         {recent.filter((e) => e.kind === 'sleep').map((e, i) => {

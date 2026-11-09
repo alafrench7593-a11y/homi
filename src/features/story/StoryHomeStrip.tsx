@@ -78,10 +78,11 @@ export function StoryHomeStrip() {
   });
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.story.strip.a11y', { caption, scene: storyA11y(scene) })} onPress={() => router.push('/story' as never)} testID="home-story"
-      style={{ height: STORY_STRIP_HEIGHT, flexDirection: 'row', alignItems: 'flex-end' }}>
+      style={{ minHeight: STORY_STRIP_HEIGHT, flexDirection: 'row', alignItems: 'flex-end' }}>
       <View style={{ flex: 1, alignSelf: 'center', gap: 4, paddingRight: spacing.xs }}>
         <Text variant="caption" muted style={{ letterSpacing: 1.2, textTransform: 'uppercase' }}>{tr('u4.story.strip.title')}</Text>
-        <Text weight="bold" numberOfLines={2} testID="home-story-caption">{caption}</Text>
+        {/* Légende entière : le bandeau grandit (hauteur minimale) au lieu de couper la phrase par « … » */}
+        <Text weight="bold" testID="home-story-caption">{caption}</Text>
         <View style={[linkFrame(t.isDark), { marginTop: 4, minHeight: 34, paddingHorizontal: 12 }]}>
           <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('u4.story.strip.cta')}</Text>
           <Icon name="arrow-right" size={13} color={t.colors.primary} />

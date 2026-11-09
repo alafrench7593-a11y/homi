@@ -99,7 +99,7 @@ export function EmptyState({ icon = 'inbox', title, body, action }: EmptyProps) 
 }
 
 // ------------------------------------------------------------------ erreur
-export function ErrorView({ error, onRetry, title = 'Impossible d’afficher ces informations' }: { error: unknown; onRetry?: () => void; title?: string }) {
+export function ErrorView({ error, onRetry, title = tr('common.cannotShow') }: { error: unknown; onRetry?: () => void; title?: string }) {
   const t = useTheme();
   const [tick, setTick] = React.useState(0);
   useEffect(() => { setTick((n) => n + 1); }, [error]);

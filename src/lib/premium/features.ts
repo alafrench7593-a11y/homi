@@ -5,6 +5,9 @@
  */
 import { t as tr } from '@/i18n';
 import { localized } from '@/i18n/localized';
+import { ALWAYS_FREE_ES, FEATURE_TEXT_ES, type FeatureText } from './features.es';
+import { ALWAYS_FREE_DE, FEATURE_TEXT_DE } from './features.de';
+import { ALWAYS_FREE_IT, FEATURE_TEXT_IT } from './features.it';
 
 export type PremiumFeature =
   | 'sleep_insights' | 'bedtime_routine' | 'assistant_more' | 'assistant_saved' | 'assistant_suggestions'
@@ -105,7 +108,13 @@ const FEATURES_EN: Record<PremiumFeature, FeatureInfo> = {
   community_ai: { icon: 'align-left', title: 'Summarise a long discussion', benefit: 'The gist of a discussion with more than 6 replies, presented as personal accounts. Translation of a message if needed.', free: 'Read all the replies', premium: 'Summary and translation (AI service to be configured server-side)' },
   community_events: { icon: 'video', title: 'Workshops and meet-ups', benefit: 'Online workshops and meet-ups reserved for subscribers, when the team schedules them.', free: 'The whole community and the safety information', premium: 'Workshop registration' },
 };
-export const FEATURES: Record<PremiumFeature, FeatureInfo> = localized(FEATURES_FR, FEATURES_EN);
+/** Même offre que FEATURES_FR (mêmes clés, mêmes icônes) : seuls les textes affichés sont remplacés. */
+const withTexts = (texts: Record<PremiumFeature, FeatureText>) => Object.fromEntries(
+  (Object.keys(FEATURES_FR) as PremiumFeature[]).map((k) => [k, { ...FEATURES_FR[k], ...texts[k], icon: FEATURES_FR[k].icon }]),
+) as Record<PremiumFeature, FeatureInfo>;
+export const FEATURES: Record<PremiumFeature, FeatureInfo> = localized(FEATURES_FR, FEATURES_EN, {
+  es: withTexts(FEATURE_TEXT_ES), de: withTexts(FEATURE_TEXT_DE), it: withTexts(FEATURE_TEXT_IT),
+});
 
 /** Toujours gratuit, quel que soit l'abonnement (affiché sur l'écran d'abonnement et vérifié par les tests). */
 const ALWAYS_FREE_FR = [
@@ -115,9 +124,9 @@ const ALWAYS_FREE_FR = [
   'Suppression du compte et export légal de vos données',
   'Gestion des consentements',
   'Signalement et blocage dans la communauté',
-  'Profil communautaire, publications avec photos, commentaires, réactions, abonnements à des membres et à des catégories',
   'Accès à toutes les données que vous avez déjà créées, même après la fin d’un abonnement',
-  'Rappels de médicaments prescrits, de biberon et de vaccins',
+  'Votre profil et vos réglages',
+  'Donner votre avis sur l’application',
 ];
 
 const ALWAYS_FREE_EN = [
@@ -127,11 +136,11 @@ const ALWAYS_FREE_EN = [
   'Account deletion and legal export of your data',
   'Consent management',
   'Reporting and blocking in the community',
-  'Community profile, posts with photos, comments, reactions, following members and categories',
   'Access to all the data you have already created, even after a subscription ends',
-  'Reminders for prescribed medicines, bottles and vaccines',
+  'Your profile and settings',
+  'Giving feedback on the app',
 ];
-export const ALWAYS_FREE = localized(ALWAYS_FREE_FR, ALWAYS_FREE_EN);
+export const ALWAYS_FREE = localized(ALWAYS_FREE_FR, ALWAYS_FREE_EN, { es: ALWAYS_FREE_ES, de: ALWAYS_FREE_DE, it: ALWAYS_FREE_IT });
 
 export const featureTitle = (f: PremiumFeature, name?: string | null) => FEATURES[f].title.replace('{name}', name || tr('l6.prem.yourChild'));
 

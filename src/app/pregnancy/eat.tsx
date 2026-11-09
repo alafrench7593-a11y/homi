@@ -24,9 +24,8 @@ import { filterRecipes } from '@/lib/recipes/engine';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import type { Allergen, Meal, Recipe, Tag } from '@/lib/recipes/types';
 import { EAT_AVOID, EAT_HYGIENE, EAT_INTERESTING, NOT_ADVICE, NUTRIENTS, NUTRITION_SOURCES, SUPPLEMENT_NOTICE, type FoodSection } from '@/content/pregnancyCare';
-import { formatDate, getLocale, t as tr, type TKey } from '@/i18n';
+import { formatDate, t as tr, type TKey } from '@/i18n';
 
-const L = (fr: string, en: string) => (getLocale().startsWith('fr') ? fr : en);
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
@@ -66,9 +65,9 @@ export default function EatWellPregnant() {
       action={{ label: tr('care.eat.shopping'), icon: 'shopping-cart', onPress: () => router.push('/meals/shopping'), testID: 'eat-shopping' }}>
       <View testID="eat-pregnant" />
       <TodaySummary items={[
-        { icon: 'layers', value: tr('care.cal.trimester', { count: current }), label: L('Mon trimestre', 'My trimester') },
-        { icon: 'coffee', value: all ? String(list.length) : '—', label: L('Idées adaptées', 'Matching ideas') },
-        { icon: 'heart', value: String(fav.slugs.length), label: L('Favoris', 'Favourites') },
+        { icon: 'layers', value: tr('care.cal.trimester', { count: current }), label: tr('care.eat.sumTrimester') },
+        { icon: 'coffee', value: all ? String(list.length) : '—', label: tr('care.eat.sumIdeas') },
+        { icon: 'heart', value: String(fav.slugs.length), label: tr('care.eat.sumFav') },
       ]} />
 
       <SectionTitle title={tr('care.eat.ideas')} />
@@ -82,7 +81,7 @@ export default function EatWellPregnant() {
       </Row>
       {(() => {
         const active = (trimester !== current ? 1 : 0) + (vegetarian ? 1 : 0) + (noPork ? 1 : 0) + allergens.length;
-        return <Chip label={`${L('Trimestre, préférences, allergènes', 'Trimester, preferences, allergens')}${active ? ` · ${active}` : ''}`} icon={filters ? 'chevron-up' : 'sliders'} selected={filters || active > 0} onPress={() => setFilters(!filters)} testID="eat-filters" />;
+        return <Chip label={`${tr('care.eat.filtersChip')}${active ? ` · ${active}` : ''}`} icon={filters ? 'chevron-up' : 'sliders'} selected={filters || active > 0} onPress={() => setFilters(!filters)} testID="eat-filters" />;
       })()}
       {filters ? (
         <>

@@ -12,7 +12,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { spacing } from '@/theme/tokens';
 import { t as tr, formatDate, type TKey } from '@/i18n';
 
-const TABLE_KEYS = new Set(['bottles','breastfeeds','pumpings','diapers','sleeps','meals','child_observations','period_entries','symptom_logs','ovulation_tests','pregnancy_tests','fertility_observations','intercourse_logs','mood_checkins','maternal_weights','child_measurements','child_milestones','food_introductions','child_health_items']);
+const TABLE_KEYS = new Set(['bottles','breastfeeds','pumpings','diapers','sleeps','meals','child_observations','period_entries','symptom_logs','ovulation_tests','pregnancy_tests','fertility_observations','intercourse_logs','mood_checkins','maternal_weights','child_measurements','child_milestones','food_introductions','child_health_items','treatment_logs','my_treatment_logs','daily_checks']);
 const tableLabel = (table: string) => (TABLE_KEYS.has(table) ? tr(`u1.sync.t.${table}` as TKey) : tr('u1.sync.entry'));
 
 const when = (iso: string) => formatDate(iso, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });

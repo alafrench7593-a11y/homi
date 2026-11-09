@@ -49,7 +49,16 @@ const THREAD_LABEL_FR: Record<ThreadState, string> = {
 const THREAD_LABEL_EN: Record<ThreadState, string> = {
   done: 'Done', now: 'In progress', late: 'Late', past: 'Past', next: 'Next', todo: 'Planned', anytime: 'Sometime today',
 };
-export const THREAD_LABEL: Record<ThreadState, string> = localized(THREAD_LABEL_FR, THREAD_LABEL_EN);
+const THREAD_LABEL_ES: Record<ThreadState, string> = {
+  done: 'Hecho', now: 'En curso', late: 'Con retraso', past: 'Pasado', next: 'Después', todo: 'Previsto', anytime: 'Durante el día',
+};
+const THREAD_LABEL_DE: Record<ThreadState, string> = {
+  done: 'Erledigt', now: 'Läuft', late: 'Verspätet', past: 'Vorbei', next: 'Als Nächstes', todo: 'Geplant', anytime: 'Im Laufe des Tages',
+};
+const THREAD_LABEL_IT: Record<ThreadState, string> = {
+  done: 'Fatto', now: 'In corso', late: 'In ritardo', past: 'Passato', next: 'Dopo', todo: 'Previsto', anytime: 'Durante la giornata',
+};
+export const THREAD_LABEL: Record<ThreadState, string> = localized(THREAD_LABEL_FR, THREAD_LABEL_EN, { es: THREAD_LABEL_ES, de: THREAD_LABEL_DE, it: THREAD_LABEL_IT });
 
 /** Compte à rebours lisible : « dans 2 h 15 », « dans 3 jours », « aujourd’hui à 14 h 30 ». */
 export function countdown(iso: string, now: Date = new Date()): string {

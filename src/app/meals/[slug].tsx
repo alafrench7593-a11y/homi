@@ -4,6 +4,7 @@
  * vérification et statut réel (« À vérifier » tant qu'aucun professionnel ne l'a relue).
  */
 import React, { useState } from 'react';
+import { useAuth } from '@/lib/auth';
 import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -44,11 +45,12 @@ export default function RecipeDetail() {
   const createList = useCreateShoppingList();
   const inv = useInvalidate();
   const r = all?.find((x) => x.slug === slug) ?? null;
+  const { ready: authReady } = useAuth(); // session pas encore restaurée : chargement, pas « introuvable »
   const [servings, setServings] = useState<number | null>(null);
   // Cuisine pas-à-pas : étapes cochées d'un tap, et mode plein écran une étape à la fois
   const [doneSteps, setDoneSteps] = useState<number[]>([]);
   const [cookAt, setCookAt] = useState<number | null>(null);
-  if (loading && !all) return <Screen back title={tr('rc.title')}><Skeleton kind="detail" rows={5} /></Screen>;
+  if ((loading && !all) || (!authReady && !r)) return <Screen back title={tr('rc.title')}><Skeleton kind="detail" rows={5} /></Screen>;
   if (!r) return <Screen back title={tr('rc.title')}><EmptyState icon="book" title={tr('rc.notFound')} /></Screen>;
   const n = servings ?? r.servings;
   const why = incompatibility(r, profile);

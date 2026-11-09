@@ -12,7 +12,7 @@ import { getLocale, t as tr } from '@/i18n';
 
 export default function RiskScreen() {
   const region = useRegion();
-  const sources = orderSources(['qsEC', 'spEC', 'nhsPregnancyTest'], getLocale() === 'en' ? 'en' : 'fr', region);
+  const sources = orderSources(['qsEC', 'spEC', 'nhsPregnancyTest'], getLocale() === 'fr' ? 'fr' : 'en', region);
   return (
     <Screen back title={tr('adv.risk.title')}>
       {(['p1', 'p2', 'p3', 'p4', 'p5'] as const).map((p, i) => (

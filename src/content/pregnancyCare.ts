@@ -12,6 +12,9 @@ import { onLocaleChange } from '@/i18n';
 import { S as L } from './articles/library/sources';
 import type { ArticleSource } from './articles/library/types';
 import { inLang, localized } from '@/i18n/localized';
+import { careES } from './pregnancyCare.es';
+import { careDE } from './pregnancyCare.de';
+import { careIT } from './pregnancyCare.it';
 
 const C = '2026-10-22';
 
@@ -33,6 +36,8 @@ const CARE_SOURCES_FR = {
   toxoplasmose: { label: 'Santé.fr — La toxoplasmose enceinte, comment l’éviter ?', url: 'https://www.sante.fr/la-toxoplasmose-enceinte-comment-leviter', consulted_on: C },
 } satisfies Record<string, ArticleSource>;
 const S = CARE_SOURCES_FR;
+export type CareSources = typeof CARE_SOURCES_FR;
+export type SafetyContact = { readonly key: 'samu' | 'eu' | 'sms'; readonly label: string; readonly phone: '15' | '112' | '114' };
 
 // ─── « Comment je me sens aujourd'hui ? » ───────────────────────────────────────────────────────
 
@@ -483,20 +488,30 @@ const SUPPLEMENT_NOTICE_EN = 'The app does not recommend any food supplement. So
 const NOT_ADVICE_EN = 'General information from official French sources, not personalised medical advice.';
 const NUTRITION_SOURCES_EN: ArticleSource[] = [SE.ameliAlimentation, SE.ameliAliments, SE.listeriose, SE.toxoplasmose, L.santeB9];
 
-export const CARE_SOURCES = localized(CARE_SOURCES_FR, CARE_SOURCES_EN);
-export const SYMPTOM_CARE = localized(SYMPTOM_CARE_FR, SYMPTOM_CARE_EN);
-export const SAFETY_CONTACTS = localized(SAFETY_CONTACTS_FR, SAFETY_CONTACTS_EN as unknown as typeof SAFETY_CONTACTS_FR);
-export const EAT_INTERESTING = localized(EAT_INTERESTING_FR, EAT_INTERESTING_EN);
-export const EAT_AVOID = localized(EAT_AVOID_FR, EAT_AVOID_EN);
-export const EAT_HYGIENE = localized(EAT_HYGIENE_FR, EAT_HYGIENE_EN);
-export const NUTRIENTS = localized(NUTRIENTS_FR, NUTRIENTS_EN);
-export const NUTRITION_SOURCES = localized(NUTRITION_SOURCES_FR, NUTRITION_SOURCES_EN);
-/** Textes simples : constantes françaises (API inchangée) + versions suivant la langue en cours (supplementNotice(), notAdvice()). */
-export let SUPPLEMENT_NOTICE = inLang({ fr: SUPPLEMENT_NOTICE_FR, en: SUPPLEMENT_NOTICE_EN });
-export let NOT_ADVICE = inLang({ fr: NOT_ADVICE_FR, en: NOT_ADVICE_EN });
-onLocaleChange(() => {
-  SUPPLEMENT_NOTICE = inLang({ fr: SUPPLEMENT_NOTICE_FR, en: SUPPLEMENT_NOTICE_EN });
-  NOT_ADVICE = inLang({ fr: NOT_ADVICE_FR, en: NOT_ADVICE_EN });
+// ─── Espagnol, allemand, italien (fichiers frères : même forme, mêmes clés, même ordre) ──────────
+const ES = careES(CARE_SOURCES_FR);
+const DE = careDE(CARE_SOURCES_FR);
+const IT = careIT(CARE_SOURCES_FR);
+const more = <K extends keyof typeof ES>(k: K) => ({ es: ES[k], de: DE[k], it: IT[k] });
+
+export const CARE_SOURCES = localized(CARE_SOURCES_FR, CARE_SOURCES_EN, more('CARE_SOURCES'));
+export const SYMPTOM_CARE = localized(SYMPTOM_CARE_FR, SYMPTOM_CARE_EN, more('SYMPTOM_CARE'));
+export const SAFETY_CONTACTS = localized(SAFETY_CONTACTS_FR, SAFETY_CONTACTS_EN as unknown as typeof SAFETY_CONTACTS_FR, {
+  es: ES.SAFETY_CONTACTS as unknown as typeof SAFETY_CONTACTS_FR, de: DE.SAFETY_CONTACTS as unknown as typeof SAFETY_CONTACTS_FR, it: IT.SAFETY_CONTACTS as unknown as typeof SAFETY_CONTACTS_FR,
 });
-export const supplementNotice = () => inLang({ fr: SUPPLEMENT_NOTICE_FR, en: SUPPLEMENT_NOTICE_EN });
-export const notAdvice = () => inLang({ fr: NOT_ADVICE_FR, en: NOT_ADVICE_EN });
+export const EAT_INTERESTING = localized(EAT_INTERESTING_FR, EAT_INTERESTING_EN, more('EAT_INTERESTING'));
+export const EAT_AVOID = localized(EAT_AVOID_FR, EAT_AVOID_EN, more('EAT_AVOID'));
+export const EAT_HYGIENE = localized(EAT_HYGIENE_FR, EAT_HYGIENE_EN, more('EAT_HYGIENE'));
+export const NUTRIENTS = localized(NUTRIENTS_FR, NUTRIENTS_EN, more('NUTRIENTS'));
+export const NUTRITION_SOURCES = localized(NUTRITION_SOURCES_FR, NUTRITION_SOURCES_EN, more('NUTRITION_SOURCES'));
+/** Textes simples : constantes françaises (API inchangée) + versions suivant la langue en cours (supplementNotice(), notAdvice()). */
+const supplementAll = () => ({ fr: SUPPLEMENT_NOTICE_FR, en: SUPPLEMENT_NOTICE_EN, ...more('SUPPLEMENT_NOTICE') });
+const notAdviceAll = () => ({ fr: NOT_ADVICE_FR, en: NOT_ADVICE_EN, ...more('NOT_ADVICE') });
+export let SUPPLEMENT_NOTICE = inLang(supplementAll());
+export let NOT_ADVICE = inLang(notAdviceAll());
+onLocaleChange(() => {
+  SUPPLEMENT_NOTICE = inLang(supplementAll());
+  NOT_ADVICE = inLang(notAdviceAll());
+});
+export const supplementNotice = () => inLang(supplementAll());
+export const notAdvice = () => inLang(notAdviceAll());

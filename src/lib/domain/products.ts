@@ -20,7 +20,22 @@ const LEVEL_LABEL_EN: Record<FindingLevel, string> = {
   attention: 'Point to watch',
   info: 'Information',
 };
-export const LEVEL_LABEL = localized(LEVEL_LABEL_FR, LEVEL_LABEL_EN);
+const LEVEL_LABEL_ES: Record<FindingLevel, string> = {
+  avoid_advised: 'Generalmente desaconsejado según la fuente citada',
+  attention: 'Punto de atención',
+  info: 'Información',
+};
+const LEVEL_LABEL_DE: Record<FindingLevel, string> = {
+  avoid_advised: 'Laut der genannten Quelle im Allgemeinen nicht empfohlen',
+  attention: 'Worauf du achten solltest',
+  info: 'Information',
+};
+const LEVEL_LABEL_IT: Record<FindingLevel, string> = {
+  avoid_advised: 'Generalmente sconsigliato secondo la fonte citata',
+  attention: 'Punto di attenzione',
+  info: 'Informazione',
+};
+export const LEVEL_LABEL = localized(LEVEL_LABEL_FR, LEVEL_LABEL_EN, { es: LEVEL_LABEL_ES, de: LEVEL_LABEL_DE, it: LEVEL_LABEL_IT });
 
 const CATEGORY_LABEL_FR: Record<string, string> = {
   cream: 'Crème', shampoo: 'Shampooing', wash_gel: 'Gel lavant', wipes: 'Lingettes', diapers: 'Couches', laundry: 'Lessive',
@@ -30,7 +45,19 @@ const CATEGORY_LABEL_EN: Record<string, string> = {
   cream: 'Cream', shampoo: 'Shampoo', wash_gel: 'Wash gel', wipes: 'Wipes', diapers: 'Nappies', laundry: 'Laundry detergent',
   household: 'Household cleaning', sunscreen: 'Sun protection', food: 'Food', drink: 'Drink', baby_equipment: 'Equipment', other: 'Other',
 };
-export const CATEGORY_LABEL = localized(CATEGORY_LABEL_FR, CATEGORY_LABEL_EN);
+const CATEGORY_LABEL_ES: Record<string, string> = {
+  cream: 'Crema', shampoo: 'Champú', wash_gel: 'Gel limpiador', wipes: 'Toallitas', diapers: 'Pañales', laundry: 'Detergente para ropa',
+  household: 'Limpieza del hogar', sunscreen: 'Protección solar', food: 'Alimentación', drink: 'Bebida', baby_equipment: 'Equipamiento', other: 'Otro',
+};
+const CATEGORY_LABEL_DE: Record<string, string> = {
+  cream: 'Creme', shampoo: 'Shampoo', wash_gel: 'Waschgel', wipes: 'Feuchttücher', diapers: 'Windeln', laundry: 'Waschmittel',
+  household: 'Haushaltsreiniger', sunscreen: 'Sonnenschutz', food: 'Lebensmittel', drink: 'Getränk', baby_equipment: 'Ausstattung', other: 'Sonstiges',
+};
+const CATEGORY_LABEL_IT: Record<string, string> = {
+  cream: 'Crema', shampoo: 'Shampoo', wash_gel: 'Gel detergente', wipes: 'Salviette', diapers: 'Pannolini', laundry: 'Detersivo per bucato',
+  household: 'Pulizia della casa', sunscreen: 'Protezione solare', food: 'Alimentazione', drink: 'Bevanda', baby_equipment: 'Attrezzatura', other: 'Altro',
+};
+export const CATEGORY_LABEL = localized(CATEGORY_LABEL_FR, CATEGORY_LABEL_EN, { es: CATEGORY_LABEL_ES, de: CATEGORY_LABEL_DE, it: CATEGORY_LABEL_IT });
 
 export function cleanBarcode(input: string): string {
   return input.replace(/\D/g, '');

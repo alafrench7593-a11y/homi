@@ -1,0 +1,98 @@
+/** Fiches sur les pertes vaginales — version allemande (traduite depuis le français, même structure). */
+import type { GuideSlug } from '@/lib/domain/cycleV2';
+import type { GuideText } from './dischargeGuides';
+
+const SEEK_DE_COMMON = 'Wenn du schwanger bist oder es sein könntest und Blutungen mit Schmerzen hast, wende dich sofort an einen Notdienst.';
+
+export const DISCHARGE_GUIDES_DE: Record<GuideSlug, GuideText> = {
+  'clear-fluid': {
+    title: 'Klarer, flüssiger Ausfluss',
+    intro: 'Du bemerkst klaren, flüssigen oder wässrigen Ausfluss. Diese Art von Ausfluss wird häufig beschrieben und kann sich im Laufe des Zyklus verändern.',
+    observe: ['Klare oder durchsichtige Farbe', 'Flüssige oder wässrige Konsistenz', 'Menge, die von Tag zu Tag schwankt'],
+    variations: ['Er wird oft zu bestimmten Zeitpunkten im Zyklus als stärker beschrieben, besonders um den Eisprung', 'Sex, eine Schwangerschaft oder manche Verhütungsmittel können die Menge verändern'],
+    note: ['Den Zyklustag', 'Die Menge', 'Einen ungewöhnlichen Geruch, Juckreiz oder Beschwerden, falls vorhanden'],
+    limits: 'Das Aussehen allein kann nichts bestätigen – weder einen Eisprung noch, dass alles in Ordnung ist.',
+    seek: ['Wenn sich Aussehen, Geruch oder Menge deutlich von dem unterscheiden, was für dich üblich ist', 'Wenn Juckreiz, Reizung oder Schmerzen auftreten'],
+  },
+  'white-creamy': {
+    title: 'Weißer, cremiger Ausfluss',
+    intro: 'Du bemerkst weißen, milchigen oder cremigen Ausfluss. Er wird oft als üblich beschrieben, wenn er nicht stark riecht.',
+    observe: ['Weiße oder cremeweiße Farbe', 'Cremige, dicke oder klebrige Konsistenz', 'Wenig oder kein Geruch'],
+    variations: ['Konsistenz und Menge können sich je nach Zeitpunkt im Zyklus ändern', 'An manchen Tagen kann er auffälliger wirken'],
+    note: ['Die Konsistenz (cremig, klebrig, bröckelig …)', 'Ob Juckreiz oder eine Reizung besteht', 'Jeden ungewöhnlichen Geruch'],
+    limits: 'Weißer Ausfluss kann üblich sein oder mit einer Infektion einhergehen: Das kann nur eine ärztliche Untersuchung klären.',
+    seek: ['Wenn er bröckelig wird und juckt', 'Wenn ein starker oder ungewöhnlicher Geruch auftritt', 'Wenn Beschwerden anhalten'],
+  },
+  'stretchy-slippery': {
+    title: 'Fadenziehender, glitschiger Ausfluss',
+    intro: 'Du bemerkst klaren, dehnbaren und glitschigen Ausfluss. Manche Menschen beobachten diese Art von Ausfluss in der Nähe ihrer fruchtbaren Tage. Dieses Aussehen reicht jedoch nicht aus, um einen Eisprung zu bestätigen. Du kannst deine Beobachtung speichern und mit deinem Verlauf vergleichen.',
+    observe: ['Klares Aussehen, manchmal mit rohem Eiweiß verglichen', 'Dehnbare Konsistenz: Er lässt sich zwischen zwei Fingern ziehen', 'Feuchtes oder glitschiges Gefühl'],
+    variations: ['Ob und wie lange er auftritt, ist von Person zu Person und von Zyklus zu Zyklus verschieden', 'Er kann auch um den Eisprung herum fehlen'],
+    note: ['Den Zyklustag', 'An wie vielen Tagen du ihn beobachtest', 'Eventuelle Ovulationstests am selben Tag'],
+    limits: 'Diese Beobachtung ist weder ein Beweis für einen Eisprung noch eine zuverlässige Verhütungsmethode.',
+    seek: ['Wenn eine ungewöhnliche Veränderung mit Juckreiz, Geruch oder Schmerzen einhergeht'],
+  },
+  'more-abundant': {
+    title: 'Stärkerer Ausfluss',
+    intro: 'Du bemerkst mehr Ausfluss als sonst. Die Menge schwankt ganz natürlich, aber eine deutliche Veränderung solltest du notieren.',
+    observe: ['Mehr als die für dich übliche Menge', 'Eventuell musst du Unterwäsche oder Slipeinlage öfter wechseln'],
+    variations: ['Die Menge nimmt oft um den Eisprung, in der Schwangerschaft oder mit manchen Verhütungsmitteln zu', 'Auch Sex kann sie vorübergehend verändern'],
+    note: ['Seit wann', 'Farbe und Geruch', 'Begleitende Beschwerden (Juckreiz, Schmerzen, Beschwerden beim Wasserlassen)'],
+    limits: 'Eine veränderte Menge allein verrät nicht die Ursache.',
+    seek: ['Wenn die Zunahme anhält oder mit einer Veränderung von Farbe oder Geruch, mit Juckreiz oder Schmerzen einhergeht'],
+  },
+  'thick-lumpy': {
+    title: 'Dicker oder bröckeliger Ausfluss',
+    intro: 'Du bemerkst dicken oder bröckelig aussehenden Ausfluss. Mehrere Ursachen sind möglich; manche erfordern eine ärztliche Einschätzung.',
+    observe: ['Dicke Konsistenz oder kleine Bröckchen', 'Oft weiß', 'Mit oder ohne Juckreiz'],
+    variations: ['Dicker Ausfluss kann zu bestimmten Zeitpunkten im Zyklus üblich sein', 'Zusammen mit Juckreiz ist er oft ein Grund für einen Arztbesuch'],
+    note: ['Juckreiz, Brennen oder Reizung', 'Den Geruch', 'Eine kürzliche Antibiotika-Behandlung'],
+    limits: 'Das Aussehen reicht nicht aus, um eine Ursache zu erkennen: Verzichte auf Selbstdiagnosen.',
+    seek: ['Wenn Juckreiz, Brennen oder eine Reizung den Ausfluss begleiten', 'Wenn es das erste Mal ist oder häufig wiederkommt'],
+  },
+  'yellow-green': {
+    title: 'Gelblicher, grünlicher oder gräulicher Ausfluss',
+    intro: 'Du bemerkst gelblichen, grünlichen oder gräulichen Ausfluss. Eine Farbveränderung ist ein häufiger Grund für einen Arztbesuch.',
+    observe: ['Eine für dich ungewöhnliche Farbe', 'Manchmal eine schaumige Konsistenz oder ein anderer Geruch'],
+    variations: ['Ein leicht gelblicher Ton, wenn er auf Stoff trocknet, kann ohne weitere Anzeichen beschrieben werden', 'Eine deutlich grüne oder graue Farbe, oder eine mit Geruch, sollte untersucht werden'],
+    note: ['Die Farbe, so genau wie möglich', 'Den Geruch', 'Juckreiz, Schmerzen oder Beschwerden beim Wasserlassen', 'Kürzliche sexuelle Aktivität'],
+    limits: 'Die Farbe allein verrät nicht die Ursache.',
+    seek: ['Wende dich an eine medizinische Fachperson oder eine Beratungsstelle für sexuelle Gesundheit, wenn sich die Farbe deutlich verändert, besonders mit Geruch, Juckreiz oder Schmerzen'],
+  },
+  'unusual-odor': {
+    title: 'Ungewöhnlicher Geruch',
+    intro: 'Du bemerkst Ausfluss mit einem ungewöhnlichen Geruch. Mehrere Ursachen sind möglich. Notiere die Beschwerden und hol dir ärztlichen Rat, wenn die Veränderung anhält oder mit Beschwerden einhergeht.',
+    observe: ['Ein stärkerer oder anderer Geruch als sonst', 'Manchmal eine Veränderung von Farbe oder Menge'],
+    variations: ['Ein leichter Geruch kann üblich sein', 'Ein starker, neuer oder unangenehmer Geruch ist ein häufiger Grund für einen Arztbesuch'],
+    note: ['Wann der Geruch aufgetreten ist', 'Farbe und Konsistenz', 'Begleitende Beschwerden', 'Kürzlich verwendete Intimprodukte'],
+    limits: 'Der Geruch allein lässt keine Ursache erkennen.',
+    seek: ['Wenn der Geruch anhält, stark ist oder mit Juckreiz, Schmerzen oder einer Farbveränderung einhergeht'],
+  },
+  'pink-brown': {
+    title: 'Rosa oder bräunlicher Ausfluss',
+    intro: 'Du bemerkst rosa oder bräunlichen Ausfluss. Er enthält oft etwas Blut; wann er auftritt, ist wichtig.',
+    observe: ['Rosa, brauner oder dunkelbrauner Farbton', 'Oft in kleiner Menge'],
+    variations: ['Er kann kurz vor oder nach der Periode auftreten', 'Blutungen zwischen den Perioden, nach dem Sex oder in der Schwangerschaft solltest du einer Fachperson melden'],
+    note: ['Das Datum und den Zyklustag', 'Eine bekannte oder mögliche Schwangerschaft', 'Kürzlichen Sex', 'Schmerzen'],
+    limits: 'Zeitpunkt und Zusammenhang zählen mehr als die Farbe, die keine Schlussfolgerung erlaubt.',
+    seek: ['Lass dich untersuchen, wenn er zwischen den Perioden oder nach dem Sex auftritt', 'Hol dir dringend Hilfe, wenn deine Periode ausgeblieben ist oder du schwanger bist und Blutungen und Bauchschmerzen hast', SEEK_DE_COMMON],
+  },
+  itching: {
+    title: 'Ausfluss mit Juckreiz oder Reizung',
+    intro: 'Du bemerkst Ausfluss mit Juckreiz, einer Reizung oder Brennen. Mehrere Ursachen sind möglich. Notiere die Beschwerden und hol dir ärztlichen Rat, wenn die Veränderung anhält oder mit Beschwerden einhergeht.',
+    observe: ['Juckreiz oder Reizung an der Vulva oder in der Scheide', 'Manchmal Brennen, besonders beim Wasserlassen', 'Eine mögliche Veränderung des Ausflusses'],
+    variations: ['Parfümierte Produkte, manche Seifen oder Textilien können reizen', 'Diese Anzeichen werden auch bei verschiedenen Infektionen beschrieben'],
+    note: ['Stärke und Dauer', 'Aussehen und Geruch des Ausflusses', 'Ein kürzlich verwendetes Intimprodukt oder eine Antibiotika-Behandlung'],
+    limits: 'Anhand dieser Anzeichen kannst du allein nicht erkennen, was die Ursache ist: Behandle dich nicht ohne fachlichen Rat.',
+    seek: ['Wenn der Juckreiz anhält, häufig wiederkommt oder mit Schmerzen, Brennen beim Wasserlassen oder wunden Stellen einhergeht'],
+  },
+  dryness: {
+    title: 'Trockenheit oder weniger Ausfluss',
+    intro: 'Du bemerkst wenig Ausfluss oder ein Trockenheitsgefühl. Das kann je nach Zyklus und Lebensphase unterschiedlich sein.',
+    observe: ['Wenig oder kein Ausfluss', 'Trockenheits- oder Unbehagensgefühl, manchmal beim Sex'],
+    variations: ['Hormonelle Veränderungen (Stillzeit, Schwangerschaft, Wechseljahre), manche Medikamente oder parfümierte Produkte können eine Rolle spielen', 'Die Menge des Ausflusses schwankt auch natürlicherweise im Laufe des Zyklus'],
+    note: ['Seit wann', 'Beschwerden beim Sex', 'Stillzeit oder eine laufende Behandlung'],
+    limits: 'Ein Trockenheitsgefühl allein verrät nicht seine Ursache.',
+    seek: ['Wenn die Trockenheit mehrere Wochen anhält oder deinen Alltag beeinträchtigt', 'Wenn sie mit Blutungen nach dem Sex oder zwischen den Perioden einhergeht'],
+  },
+};

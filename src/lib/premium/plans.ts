@@ -31,8 +31,8 @@ export const PLAN_BADGE: Record<PlanPeriod, 'best' | 'save' | 'flex'> = { annual
 export const DEMO_CURRENCY = 'EUR';
 export const DEMO_GRID: Record<PlanPeriod, { amount: number; trialDays: number }> = {
   monthly: { amount: 10.99, trialDays: 3 },
-  six_months: { amount: 54.99, trialDays: 0 },
-  annual: { amount: 99.99, trialDays: 0 },
+  six_months: { amount: 49.99, trialDays: 0 },
+  annual: { amount: 79.99, trialDays: 0 },
 };
 
 export interface Plan {

@@ -1,0 +1,22 @@
+/** Sources du scanner — textes affichés en italien (mêmes identifiants, liens et dates ; noms d'organismes conservés). */
+export const IT_TEXT: Record<string, { label: string; publisher?: string }> = {
+  'eu-1223-2009': { label: 'Regolamento (CE) n. 1223/2009 sui prodotti cosmetici', publisher: 'Unione europea (EUR-Lex)' },
+  'eu-2023-1545': { label: 'Regolamento (UE) 2023/1545: etichettatura delle sostanze profumate allergizzanti', publisher: 'Commissione europea (EUR-Lex)' },
+  'eu-clp-1272-2008': { label: 'Regolamento (CE) n. 1272/2008 (CLP): classificazione, etichettatura e imballaggio delle miscele', publisher: 'Unione europea (EUR-Lex)' },
+  'eu-inco-1169-2011': { label: 'Regolamento (UE) n. 1169/2011: informazioni sugli alimenti ai consumatori, compresi gli allergeni', publisher: 'Unione europea (EUR-Lex)' },
+  'ansm-phenoxy-2019': { label: 'Decisione del 13/03/2019: i prodotti cosmetici senza risciacquo contenenti fenossietanolo non devono essere usati nella zona del pannolino dei bambini di 3 anni o meno' },
+  'anses-he-2024': { label: 'Oli essenziali: rischi e precauzioni' },
+  'anses-diffuseurs': { label: 'Spray e diffusori a base di oli essenziali: l’Anses invita alla prudenza' },
+  'anses-lait-cru-2022': { label: 'Formaggi a latte crudo: quali rischi per la salute e come prevenirli meglio?' },
+  'anses-mercure-2024': { label: 'Metilmercurio: un rischio per la salute in caso di consumo elevato di pesce' },
+  'anses-reglisse-2025': { label: 'Valutazione dei rischi legati al consumo alimentare di liquirizia (richiesta 2022-AUTO-0077)' },
+  'anses-miel-2010': { label: 'Parere sull’etichettatura del miele: non darlo ai lattanti sotto l’anno (botulismo infantile)' },
+  'spf-grossesse-2025': { label: 'Quali alimenti evitare e quali precauzioni prendere in gravidanza?' },
+  'mpedia-listeriose-2025': { label: 'Listeriosi in gravidanza: quali alimenti evitare?', publisher: 'mpedia (AFPA) su Santé.fr' },
+  'sante-alcool': { label: 'L’alcol in gravidanza e durante l’allattamento' },
+  'spf-pas-a-pas': { label: 'Passo dopo passo, tuo figlio mangia come un grande (svezzamento fino ai 3 anni)' },
+  lecrat: { label: 'Farmaci, vaccini, gravidanza e allattamento', publisher: 'CRAT – Centro di riferimento sugli agenti teratogeni (AP-HP)' },
+  rappelconso: { label: 'RappelConso, il sito ufficiale dei richiami di prodotti', publisher: 'Governo francese (DGCCRF, DGAL, DGS)' },
+  cosing: { label: 'Banca dati CosIng degli ingredienti cosmetici', publisher: 'Commissione europea' },
+  ciqual: { label: 'Tabella di composizione nutrizionale Ciqual' },
+};

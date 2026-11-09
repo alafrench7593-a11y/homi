@@ -4,6 +4,7 @@
  * retire un membre, épingle, supprime le groupe. La liste des membres d'un groupe ouvert n'est jamais affichée.
  */
 import React, { useState } from 'react';
+import { useAuth } from '@/lib/auth';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -50,7 +51,8 @@ export default function GroupScreen() {
     }
   }
 
-  if (q.isLoading && !g) return <Screen back title={tr('cm3.group.title')}><Skeleton kind="card" rows={3} /></Screen>;
+  const { ready: authReady } = useAuth(); // session pas encore restaurée : chargement, pas « introuvable »
+  if ((q.isLoading || !authReady) && !g) return <Screen back title={tr('cm3.group.title')}><Skeleton kind="card" rows={3} /></Screen>;
   if (q.isError && !g) return <Screen back title={tr('cm3.group.title')}><ErrorView error={q.error} onRetry={() => void q.refetch()} /></Screen>;
   if (!g) return <Screen back title={tr('cm3.group.title')}><EmptyState icon="lock" title={tr('cm3.group.notFoundTitle')} body={tr('cm3.group.notFoundBody')} /></Screen>;
 

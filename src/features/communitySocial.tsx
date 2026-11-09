@@ -176,7 +176,7 @@ export function GroupCard({ g, compact }: { g: CommunityGroup; compact?: boolean
 export function FeedTabs<T extends string>({ value, onChange, options }: { value: T; onChange: (v: T) => void; options: { value: T; label: string }[] }) {
   const t = useTheme();
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 2 }} accessibilityRole="tablist" testID="feed-tabs">
+    <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 2 }} accessibilityRole="tablist" testID="feed-tabs">
       {options.map((o) => {
         const selected = value === o.value;
         return (
@@ -198,7 +198,7 @@ export function FiltersSheet({ visible, onClose, forums, value, onApply }: { vis
   const toggleForum = (id: string) => set({ forumIds: (f.forumIds ?? []).includes(id) ? (f.forumIds ?? []).filter((x) => x !== id) : [...(f.forumIds ?? []), id] });
   return (
     <Sheet visible={visible} onClose={onClose} title={tr('cm1.filters.title')}>
-      <ScrollView contentContainerStyle={{ gap: spacing.sm }} testID="filters-sheet">
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: spacing.sm }} testID="filters-sheet">
         <Field label={tr('cm1.filters.keywords')} value={f.query ?? ''} onChangeText={(v) => set({ query: v })} />
         <Text variant="label" muted>{tr('cm1.filters.type')}</Text>
         <Row wrap gap={6}>

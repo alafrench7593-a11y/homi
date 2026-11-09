@@ -85,7 +85,7 @@ const atMinutes = (ref: Date, minutes: number) => new Date(ref.getFullYear(), re
 export function clock(d: Date | number): string {
   const x = new Date(d);
   const m = x.getMinutes();
-  if (getLocale() === 'en') return `${String(x.getHours()).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  if (getLocale() !== 'fr') return `${String(x.getHours()).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   return m ? `${x.getHours()} h ${String(m).padStart(2, '0')}` : `${x.getHours()} h`;
 }
 /** « 1 h 35 », « 45 min », « 2 h » */
@@ -93,7 +93,7 @@ export function span(minutes: number): string {
   const m = Math.max(0, Math.round(minutes));
   if (m < 60) return `${m} min`;
   const h = Math.floor(m / 60); const r = m % 60;
-  if (getLocale() === 'en') return r ? `${h}h ${String(r).padStart(2, '0')}` : `${h}h`;
+  if (getLocale() !== 'fr') return r ? `${h}h ${String(r).padStart(2, '0')}` : `${h}h`;
   return r ? `${h} h ${String(r).padStart(2, '0')}` : `${h} h`;
 }
 
@@ -149,7 +149,20 @@ const AGE_LABEL_EN: Record<string, string> = {
   '0-1': 'under 1 month', '1-3': '1 to 3 months', '3-5': '3 to 5 months', '5-7': '5 to 7 months', '7-9': '7 to 9 months', '9-12': '9 to 12 months',
   '12-15': '12 to 15 months', '15-18': '15 to 18 months', '18-36': '18 months to 3 years', '36+': 'over 3 years',
 };
-export const AGE_REFERENCES: AgeReference[] = localized(AGE_REFERENCES_FR, AGE_REFERENCES_FR.map((r) => ({ ...r, label: AGE_LABEL_EN[r.key] ?? r.label })));
+const AGE_LABEL_ES: Record<string, string> = {
+  '0-1': 'menos de 1 mes', '1-3': 'de 1 a 3 meses', '3-5': 'de 3 a 5 meses', '5-7': 'de 5 a 7 meses', '7-9': 'de 7 a 9 meses', '9-12': 'de 9 a 12 meses',
+  '12-15': 'de 12 a 15 meses', '15-18': 'de 15 a 18 meses', '18-36': 'de 18 meses a 3 años', '36+': 'más de 3 años',
+};
+const AGE_LABEL_DE: Record<string, string> = {
+  '0-1': 'unter 1 Monat', '1-3': '1 bis 3 Monate', '3-5': '3 bis 5 Monate', '5-7': '5 bis 7 Monate', '7-9': '7 bis 9 Monate', '9-12': '9 bis 12 Monate',
+  '12-15': '12 bis 15 Monate', '15-18': '15 bis 18 Monate', '18-36': '18 Monate bis 3 Jahre', '36+': 'über 3 Jahre',
+};
+const AGE_LABEL_IT: Record<string, string> = {
+  '0-1': 'meno di 1 mese', '1-3': 'da 1 a 3 mesi', '3-5': 'da 3 a 5 mesi', '5-7': 'da 5 a 7 mesi', '7-9': 'da 7 a 9 mesi', '9-12': 'da 9 a 12 mesi',
+  '12-15': 'da 12 a 15 mesi', '15-18': 'da 15 a 18 mesi', '18-36': 'da 18 mesi a 3 anni', '36+': 'più di 3 anni',
+};
+const withAgeLabels = (labels: Record<string, string>) => AGE_REFERENCES_FR.map((r) => ({ ...r, label: labels[r.key] ?? r.label }));
+export const AGE_REFERENCES: AgeReference[] = localized(AGE_REFERENCES_FR, withAgeLabels(AGE_LABEL_EN), { es: withAgeLabels(AGE_LABEL_ES), de: withAgeLabels(AGE_LABEL_DE), it: withAgeLabels(AGE_LABEL_IT) });
 
 export const referenceFor = (months: number): AgeReference =>
   AGE_REFERENCES.find((r) => months >= r.fromMonths && months < r.toMonths) ?? AGE_REFERENCES[AGE_REFERENCES.length - 1];
@@ -467,11 +480,26 @@ export function estimateBefore(input: Omit<PlanInput, 'now'>, sleep: SleepRecord
 export type Sex = 'female' | 'male' | 'unspecified' | null | undefined;
 export const agree = (sex: Sex, masc: string, fem: string, neutral: string) => (sex === 'female' ? fem : sex === 'male' ? masc : neutral);
 
+/** Mots accordés selon la langue : [masculin, féminin, neutre] (l'anglais et l'allemand n'accordent pas ces adjectifs). */
+type Agreed = Record<'fr' | 'en' | 'es' | 'de' | 'it', [string, string, string]>;
+const AWAKE_WORD: Agreed = {
+  fr: ['Éveillé', 'Éveillée', 'Éveillé·e'], en: ['Awake', 'Awake', 'Awake'], es: ['Despierto', 'Despierta', 'Despierto/a'],
+  de: ['Wach', 'Wach', 'Wach'], it: ['Sveglio', 'Sveglia', 'Sveglio/a'],
+};
+const ASLEEP_WORD: Agreed = {
+  fr: ['Endormi', 'Endormie', 'Endormi·e'], en: ['Asleep', 'Asleep', 'Asleep'], es: ['Dormido', 'Dormida', 'Dormido/a'],
+  de: ['Schlafend', 'Schlafend', 'Schlafend'], it: ['Addormentato', 'Addormentata', 'Addormentato/a'],
+};
+const AWAKE_LOWER: Agreed = {
+  fr: ['éveillé', 'éveillée', 'éveillé·e'], en: ['awake', 'awake', 'awake'], es: ['despierto', 'despierta', 'despierto/a'],
+  de: ['wach', 'wach', 'wach'], it: ['sveglio', 'sveglia', 'sveglio/a'],
+};
+const agreedWord = (w: Agreed, sex: Sex) => { const l = getLocale(); const set = w[l as keyof Agreed] ?? w.fr; return agree(sex, set[0], set[1], set[2]); };
+
 export function planLines(plan: SleepPlan, name: string, sex?: Sex, now = new Date()) {
-  // Accord en genre en français ; l'anglais n'accorde pas
-  const en = getLocale() === 'en';
-  const awakeWord = en ? 'Awake' : agree(sex, 'Éveillé', 'Éveillée', 'Éveillé·e');
-  const asleepWord = en ? 'Asleep' : agree(sex, 'Endormi', 'Endormie', 'Endormi·e');
+  // Accord en genre (français, espagnol, italien) ; l'anglais et l'allemand n'accordent pas
+  const awakeWord = agreedWord(AWAKE_WORD, sex);
+  const asleepWord = agreedWord(ASLEEP_WORD, sex);
   const N = now.getTime();
   const lines: { key: string; text: string }[] = [];
   switch (plan.state) {
@@ -530,7 +558,7 @@ export function planSleepNotifications(plan: SleepPlan, prefs: NotifyPrefs, name
   const lead = clamp(Math.round(prefs.lead), 0, 90) * MIN;
   const title = tx('l7.sp.notif_title', { name });
   const out: PlannedNotification[] = [];
-  const awake = getLocale() === 'en' ? 'awake' : agree(sex, 'éveillé', 'éveillée', 'éveillé·e');
+  const awake = agreedWord(AWAKE_LOWER, sex);
   if (plan.nextNap && !plan.nextNap.overdue) {
     if (prefs.signs && plan.since !== null) {
       const at = plan.nextNap.routineAt - lead;
@@ -641,6 +669,11 @@ export function sleepTrends(sleeps: SleepRecord[], childId: string, now = new Da
 export const DIFFICULTY_LABEL: Record<Difficulty, string> = localized(
   { falling_asleep: 'Endormissement difficile', night_wakings: 'Réveils fréquents', short_naps: 'Siestes courtes', early_waking: 'Réveil matinal', irregular: 'Rythme irrégulier' } as Record<Difficulty, string>,
   { falling_asleep: 'Trouble falling asleep', night_wakings: 'Frequent night wakings', short_naps: 'Short naps', early_waking: 'Early waking', irregular: 'Irregular rhythm' } as Record<Difficulty, string>,
+  {
+    es: { falling_asleep: 'Dificultad para dormirse', night_wakings: 'Despertares frecuentes', short_naps: 'Siestas cortas', early_waking: 'Despertar temprano', irregular: 'Ritmo irregular' } as Record<Difficulty, string>,
+    de: { falling_asleep: 'Schwieriges Einschlafen', night_wakings: 'Häufiges Aufwachen', short_naps: 'Kurze Tagschläfchen', early_waking: 'Frühes Aufwachen', irregular: 'Unregelmäßiger Rhythmus' } as Record<Difficulty, string>,
+    it: { falling_asleep: 'Addormentamento difficile', night_wakings: 'Risvegli frequenti', short_naps: 'Sonnellini brevi', early_waking: 'Risveglio precoce', irregular: 'Ritmo irregolare' } as Record<Difficulty, string>,
+  },
 );
 
 /** Texte à montrer ou partager avec un médecin, une sage-femme ou la PMI. Uniquement ce qui a été noté. */

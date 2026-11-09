@@ -113,6 +113,9 @@
       "/node_modules/@react-native/babel-preset/"
     ],
     "globalSetup": "<rootDir>/scripts/jest-global-setup.js",
-    "testTimeout": 20000
+    "testTimeout": 20000,
+    "setupFilesAfterEnv": [
+      "<rootDir>/scripts/jest-setup-features.js"
+    ]
   }
 }

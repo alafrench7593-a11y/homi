@@ -115,12 +115,12 @@ export default function Meals() {
       </Row>
 
       <Field label={tr('rc.search')} value={q} onChangeText={setQ} placeholder={tr('rc.searchPh')} autoCorrect={false} testID="recipes-search" />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
         <Chip label={tr('rc.all')} selected={!meal} onPress={() => setMeal(null)} />
         {MEALS_FOR[aud].map((m) => <Chip key={m} label={mealLabel(m)} selected={meal === m} onPress={() => setMeal(meal === m ? null : m)} />)}
         <Chip label={tr('rc.favorites')} icon="star" selected={onlyFav} onPress={() => setOnlyFav(!onlyFav)} />
       </ScrollView>
-      <View testID="rc-quick-filters"><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+      <View testID="rc-quick-filters"><ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
         <Chip tone="lavender" label={tr('rc.quick.classic')} selected={classic} onPress={() => setClassic(!classic)} />
         <Chip tone="lavender" label={tr('rc.quick.family')} selected={familyOnly} onPress={() => setFamilyOnly(!familyOnly)} />
         <Chip tone="lavender" label={tr('rc.quick.quick')} selected={quickOnly} onPress={() => setQuickOnly(!quickOnly)} />
@@ -133,7 +133,7 @@ export default function Meals() {
       {groups.length > 1 ? (
         <View testID="rc-groups" style={{ gap: 4 }}>
           <Text variant="caption" muted>{tr('rc.groups')}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+          <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
             {groups.map((k) => <Chip key={k} label={tr(`rc.group.${k}` as never)} selected={group === k} onPress={() => setGroup(group === k ? null : k)} />)}
           </ScrollView>
         </View>
@@ -162,7 +162,7 @@ export default function Meals() {
         <Text variant="small" muted testID="recipes-count">{tr('rc.count', { count: list.length })}</Text>
         <Chip label={tr('rc.sort.score')} icon="bar-chart-2" selected={byScore} onPress={() => setByScore(!byScore)} />
       </Row>
-      {loading && !all ? <Skeleton rows={4} /> : !list.length ? <EmptyState icon="search" title={tr('rc.none')} body={tr('rc.noneBody')} /> : (
+      {loading && !all ? <Skeleton rows={4} /> : !list.length ? <EmptyState icon="search" title={tr('rc.noMatch')} body={tr('rc.noneBody')} /> : (
         <ResultsFade k={list.map((r) => r.id).slice(0, 40).join()} style={{ gap: spacing.xs }}>
           {list.slice(0, shown).map((r) => <RecipeCard key={r.id} r={r} favorite={fav.ids.includes(r.id)} score={scores.get(r.id)?.score} />)}
           {list.length > shown ? <Button label={tr('rc.more', { count: list.length - shown })} variant="secondary" onPress={() => setShown(shown + 30)} testID="recipes-more" /> : null}

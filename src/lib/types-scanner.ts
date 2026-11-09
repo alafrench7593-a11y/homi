@@ -159,7 +159,8 @@ export const COSING_FUNCTION_FR: Record<string, string> = {
 };
 
 export function cosingFunctionLabel(f: string): string {
-  if (getLocale() === 'en') {
+  if (getLocale() !== 'fr') {
+    // Fonctions INCI : termes techniques anglais (base CosIng) ; traduction française seulement en français
     const w = f.trim().replace(/_/g, ' ').toLowerCase();
     return w.charAt(0).toUpperCase() + w.slice(1);
   }

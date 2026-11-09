@@ -92,10 +92,13 @@ export default function NotificationsScreen() {
     const to = routeOf(n);
     const isUnread = !n.read_at;
     const urgent = n.category === 'product_recall';
+    // Déjà lue et sans lien : appuyer ne fait rien, la ligne reste donc un texte (ni effet de pression, ni vibration)
+    const inert = !to && !isUnread;
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: isUnread ? t.colors.surface : t.colors.surfaceAlt }}>
         <Tappable
-          accessibilityRole="button"
+          accessibilityRole={inert ? undefined : 'button'}
+          disabled={inert}
           accessibilityLabel={`${isUnread ? `${tr('u2.notif.unread_dot')} ` : ''}${catLabel(meta.label)} : ${n.title}${n.body ? `. ${n.body}` : ''}`}
           accessibilityHint={to ? tr('u2.notif.hint_open') : isUnread ? tr('u2.notif.hint_mark') : undefined}
           onPress={() => { haptic('selection'); openNotif(n); }}
@@ -109,7 +112,8 @@ export default function NotificationsScreen() {
               {isUnread && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: t.colors.heart }} />}
               <Text weight={isUnread ? 'bold' : 'medium'} style={{ flex: 1 }}>{n.title}</Text>
             </Row>
-            {n.body ? <Text variant="small" muted numberOfLines={3}>{n.body}</Text> : null}
+            {/* Message entier : une notification sans lien n'a pas d'autre endroit où le lire */}
+            {n.body ? <Text variant="small" muted>{n.body}</Text> : null}
             <Text variant="caption" muted>{catLabel(meta.label)} · {ago(n.created_at)}</Text>
           </View>
           {!!to && <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}

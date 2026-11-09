@@ -4,6 +4,7 @@
  * l'application se comporte de la même façon ; la sécurité multi-utilisateur
  * (RLS) n'a pas de sens ici puisqu'un seul compte local existe par appareil.
  */
+import { AI_TABLES, STRICT_TABLES } from '../premium/access';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EXTERNAL_RESOURCES } from '@/content/resources';
 // Contenus lourds (catalogues, articles FR et EN, recettes) : chargés à l'ouverture de la démonstration (QA E-06)
@@ -15,7 +16,7 @@ import { lib2 as enDict } from '@/i18n/en/lib2';
 import { uuid } from '../uuid';
 import { grants } from '../premium/entitlement';
 import { DEMO_CURRENCY, DEMO_GRID, PLAN_MONTHS, PREMIUM_ENTITLEMENT, PRODUCT_IDS, type PlanPeriod } from '../premium/plans';
-import { AI_ENTITLEMENT, PAID_TOOLS, toolEntitlement, toolProductId, toolTrialUntil, type AccessInfo } from '../premium/offers';
+import { AI_ENTITLEMENT, PAID_TOOLS, toolEntitlement, toolProductId, type AccessInfo } from '../premium/offers';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
 import { STEP_BY_KEY } from '@/content/discoveries/steps';
 import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../../../supabase/functions/_shared/safety';
@@ -168,7 +169,12 @@ function matches(row: Row, f: Filter): boolean {
 /** Questions à l'assistant par jour en démonstration (même valeur que DEMO_LIMITS.perDevice côté serveur). */
 export const DEMO_AI_PER_DAY = 3;
 
-export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistant?: { url: string; anonKey: string } } = {}): Backend {
+/**
+ * strictPremium : verrouillage strict du Premium (miroir de premium_policy.strict = vrai sur le serveur). L'application
+ * l'active toujours ; les tests unitaires d'avant le 08/11/2026 (quotas de la version gratuite…) tournent sans lui,
+ * comme les tests SQL 00 à 89 (supabase/tests/run-local.sh).
+ */
+export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistant?: { url: string; anonKey: string }; strictPremium?: boolean } = {}): Backend {
   const streamDelayMs = opts.streamDelayMs ?? 14;
   const remoteAssistant = opts.remoteAssistant;
 
@@ -289,16 +295,21 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   };
   const grantActive = (ent: string) => T('entitlement_grants').some((g) => g.user_id === state.session?.userId && g.entitlement === ent && g.active && (!g.expires_at || Date.parse(g.expires_at) > Date.now()));
   function demoAccess(): AccessInfo {
-    const me = state.session?.userId;
     const premium = isPremium();
-    const created = (T('profiles').find((p) => p.id === me)?.created_at as string | undefined) ?? null;
-    const trialUntil = (state.tables._access?.[0]?.trial_until as string | undefined) ?? toolTrialUntil(created);
-    const inTrial = Date.parse(trialUntil) > Date.now();
+    // plus de mois gratuit des outils depuis le 08/11/2026 (20261108000300_premium_strict.sql)
     return {
-      premium, ai: grantActive(AI_ENTITLEMENT), trial_until: trialUntil,
-      tools: PAID_TOOLS.map((k) => { const owned = grantActive(toolEntitlement(k)); return { key: k, product_id: toolProductId(k), owned, allowed: premium || inTrial || owned }; }),
+      premium, ai: grantActive(AI_ENTITLEMENT), trial_until: null, strict: !!opts.strictPremium,
+      tools: PAID_TOOLS.map((k) => { const owned = grantActive(toolEntitlement(k)); return { key: k, product_id: toolProductId(k), owned, allowed: premium || owned }; }),
     };
   }
+  /** Premium strict : mêmes tables et mêmes exceptions que _require_premium_write (20261108000300_premium_strict.sql). */
+  const strictGuard = (table: string) => {
+    if (!opts.strictPremium || !state.session || isPremium()) return;
+    if (AI_TABLES.includes(table) && grantActive(AI_ENTITLEMENT)) return;
+    if (STRICT_TABLES.includes(table) || AI_TABLES.includes(table)) {
+      throw new BackendError('Fonction Premium : abonnement requis pour enregistrer de nouvelles données', 'P0001', 'premium_required');
+    }
+  };
   const isPremium = () => {
     const s = T('subscriptions').find((r) => r.user_id === state.session?.userId);
     // Même règle que le serveur (_subscription_grants) : remboursé → rien ; échéance nulle → seulement promotionnel / à vie
@@ -656,6 +667,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     }
     if (table === 'product_scans') checkScan(r);
     // Fonctions Premium : mêmes règles que les déclencheurs serveur (20261021000500_premium.sql)
+    strictGuard(table);
     const PREMIUM_INSERT: Record<string, string> = { meal_plans: 'weekly_menu', bedtime_routines: 'bedtime_routine', sleep_feedback: 'sleep_insights' };
     if (PREMIUM_INSERT[table] && !isPremium()) throw new BackendError(`Fonction Premium (${PREMIUM_INSERT[table]})`, 'P0001', 'premium_required');
     // « Ses découvertes » : quelques aliments gratuits par enfant (20261027000100_discoveries_grow_nearby.sql)
@@ -1760,6 +1772,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           return JSON.parse(JSON.stringify(rows)) as R[];
         }
       }
+      if (rows.length) strictGuard(table);
       rows = rows.filter((r) => social.beforeUpdate(table, r, patch) && outings.beforeUpdate(table, r, patch));
       markLib(table, rows);
       if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError(tr('l2.dm.forbidden'), '42501');

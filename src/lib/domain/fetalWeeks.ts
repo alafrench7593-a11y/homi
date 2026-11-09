@@ -65,7 +65,70 @@ const SIZES_EN: SizePoint[] = [
   { sa: 40, lengthCm: 51.5, weightG: 3400, compare: 'a watermelon' },
   { sa: 41, lengthCm: 52, weightG: 3500, compare: 'a watermelon' },
 ];
-const SIZES = localized(SIZES_FR, SIZES_EN);
+const SIZES_ES: SizePoint[] = [
+  { sa: 6, lengthCm: 0.5, weightG: 1, compare: 'un grano de arroz' },
+  { sa: 8, lengthCm: 1.5, weightG: 2, compare: 'un arándano' },
+  { sa: 10, lengthCm: 3, weightG: 11, compare: 'una aceituna' },
+  { sa: 12, lengthCm: 5, weightG: 28, compare: 'una lima' },
+  { sa: 14, lengthCm: 8.5, weightG: 65, compare: 'un limón' },
+  { sa: 16, lengthCm: 13, weightG: 135, compare: 'un aguacate' },
+  { sa: 18, lengthCm: 18, weightG: 200, compare: 'un pimiento' },
+  { sa: 20, lengthCm: 23, weightG: 345, compare: 'un plátano' },
+  { sa: 22, lengthCm: 27, weightG: 500, compare: 'una papaya' },
+  { sa: 24, lengthCm: 31, weightG: 660, compare: 'una mazorca de maíz' },
+  { sa: 26, lengthCm: 33, weightG: 890, compare: 'una lechuga' },
+  { sa: 28, lengthCm: 35, weightG: 1130, compare: 'una berenjena' },
+  { sa: 30, lengthCm: 38, weightG: 1400, compare: 'una col' },
+  { sa: 32, lengthCm: 41.5, weightG: 1700, compare: 'un coco' },
+  { sa: 34, lengthCm: 45, weightG: 2000, compare: 'un melón' },
+  { sa: 36, lengthCm: 47, weightG: 2680, compare: 'una lechuga romana' },
+  { sa: 38, lengthCm: 50, weightG: 3000, compare: 'una calabaza pequeña' },
+  { sa: 40, lengthCm: 51.5, weightG: 3400, compare: 'una sandía' },
+  { sa: 41, lengthCm: 52, weightG: 3500, compare: 'una sandía' },
+];
+const SIZES_DE: SizePoint[] = [
+  { sa: 6, lengthCm: 0.5, weightG: 1, compare: 'ein Reiskorn' },
+  { sa: 8, lengthCm: 1.5, weightG: 2, compare: 'eine Heidelbeere' },
+  { sa: 10, lengthCm: 3, weightG: 11, compare: 'eine Olive' },
+  { sa: 12, lengthCm: 5, weightG: 28, compare: 'eine Limette' },
+  { sa: 14, lengthCm: 8.5, weightG: 65, compare: 'eine Zitrone' },
+  { sa: 16, lengthCm: 13, weightG: 135, compare: 'eine Avocado' },
+  { sa: 18, lengthCm: 18, weightG: 200, compare: 'eine Paprika' },
+  { sa: 20, lengthCm: 23, weightG: 345, compare: 'eine Banane' },
+  { sa: 22, lengthCm: 27, weightG: 500, compare: 'eine Papaya' },
+  { sa: 24, lengthCm: 31, weightG: 660, compare: 'ein Maiskolben' },
+  { sa: 26, lengthCm: 33, weightG: 890, compare: 'ein Salatkopf' },
+  { sa: 28, lengthCm: 35, weightG: 1130, compare: 'eine Aubergine' },
+  { sa: 30, lengthCm: 38, weightG: 1400, compare: 'ein Kohlkopf' },
+  { sa: 32, lengthCm: 41.5, weightG: 1700, compare: 'eine Kokosnuss' },
+  { sa: 34, lengthCm: 45, weightG: 2000, compare: 'eine Melone' },
+  { sa: 36, lengthCm: 47, weightG: 2680, compare: 'ein Römersalat' },
+  { sa: 38, lengthCm: 50, weightG: 3000, compare: 'ein kleiner Kürbis' },
+  { sa: 40, lengthCm: 51.5, weightG: 3400, compare: 'eine Wassermelone' },
+  { sa: 41, lengthCm: 52, weightG: 3500, compare: 'eine Wassermelone' },
+];
+const SIZES_IT: SizePoint[] = [
+  { sa: 6, lengthCm: 0.5, weightG: 1, compare: 'un chicco di riso' },
+  { sa: 8, lengthCm: 1.5, weightG: 2, compare: 'un mirtillo' },
+  { sa: 10, lengthCm: 3, weightG: 11, compare: 'un’oliva' },
+  { sa: 12, lengthCm: 5, weightG: 28, compare: 'un lime' },
+  { sa: 14, lengthCm: 8.5, weightG: 65, compare: 'un limone' },
+  { sa: 16, lengthCm: 13, weightG: 135, compare: 'un avocado' },
+  { sa: 18, lengthCm: 18, weightG: 200, compare: 'un peperone' },
+  { sa: 20, lengthCm: 23, weightG: 345, compare: 'una banana' },
+  { sa: 22, lengthCm: 27, weightG: 500, compare: 'una papaya' },
+  { sa: 24, lengthCm: 31, weightG: 660, compare: 'una pannocchia di mais' },
+  { sa: 26, lengthCm: 33, weightG: 890, compare: 'un cespo di lattuga' },
+  { sa: 28, lengthCm: 35, weightG: 1130, compare: 'una melanzana' },
+  { sa: 30, lengthCm: 38, weightG: 1400, compare: 'un cavolo' },
+  { sa: 32, lengthCm: 41.5, weightG: 1700, compare: 'una noce di cocco' },
+  { sa: 34, lengthCm: 45, weightG: 2000, compare: 'un melone' },
+  { sa: 36, lengthCm: 47, weightG: 2680, compare: 'una lattuga romana' },
+  { sa: 38, lengthCm: 50, weightG: 3000, compare: 'una piccola zucca' },
+  { sa: 40, lengthCm: 51.5, weightG: 3400, compare: 'un’anguria' },
+  { sa: 41, lengthCm: 52, weightG: 3500, compare: 'un’anguria' },
+];
+const SIZES = localized(SIZES_FR, SIZES_EN, { es: SIZES_ES, de: SIZES_DE, it: SIZES_IT });
 
 interface Stage {
   from: number;
@@ -108,7 +171,58 @@ const STAGES_EN: Stage[] = [
     mother: ['Your due date is approaching: follow your maternity unit’s guidance on when to come in.'] },
 ];
 
-const STAGES = localized(STAGES_FR, STAGES_EN);
+const STAGES_ES: Stage[] = [
+  { from: 0, to: 7, baby: ['Se están formando las primerísimas estructuras.', 'El corazón empieza a formarse.'],
+    mother: ['Puede haber cansancio, pechos sensibles o náuseas, o nada de eso: cada embarazo es diferente.'] },
+  { from: 8, to: 13, baby: ['Se forman los principales órganos.', 'Las manos y los pies se van dibujando.'],
+    mother: ['Puede haber náuseas, que en muchas personas se suavizan hacia el final del 1.er trimestre.', 'Suele ser el momento de la primera ecografía.'] },
+  { from: 14, to: 19, baby: ['El bebé se mueve mucho, aunque todavía no siempre se note.', 'Los rasgos de la cara se van definiendo.'],
+    mother: ['Muchas personas recuperan algo de energía.', 'Los primeros movimientos pueden notarse más o menos entre las 16 y las 22 SA.'] },
+  { from: 20, to: 27, baby: ['El bebé oye sonidos, entre ellos tu voz.', 'Alterna periodos de vigilia y de sueño.'],
+    mother: ['La barriga se redondea; la espalda puede resentirse.', 'Suele ser el momento de la ecografía del 2.º trimestre.'] },
+  { from: 28, to: 33, baby: ['El bebé gana peso y sus pulmones siguen madurando.', 'Abre los ojos a ratos.'],
+    mother: ['El sueño puede volverse menos cómodo.', 'Avisa de cualquier disminución clara de los movimientos del bebé.'] },
+  { from: 34, to: 37, baby: ['El bebé gana fuerza y reservas.', 'A menudo se coloca para el nacimiento.'],
+    mother: ['Pueden aparecer contracciones irregulares.', 'Piensa en preparar la bolsa y los papeles.'] },
+  { from: 38, to: 45, baby: ['El bebé está listo para nacer: sigue creciendo hasta el nacimiento.'],
+    mother: ['Se acerca la fecha prevista: sigue las indicaciones de tu maternidad para saber cuándo ir.'] },
+];
+
+const STAGES_DE: Stage[] = [
+  { from: 0, to: 7, baby: ['Die allerersten Strukturen entstehen.', 'Das Herz beginnt sich zu bilden.'],
+    mother: ['Müdigkeit, empfindliche Brüste oder Übelkeit sind möglich – oder gar nicht vorhanden: Jede Schwangerschaft ist anders.'] },
+  { from: 8, to: 13, baby: ['Die wichtigsten Organe bilden sich.', 'Hände und Füße nehmen Gestalt an.'],
+    mother: ['Übelkeit kann auftreten und lässt bei vielen gegen Ende des 1. Trimesters nach.', 'Oft ist das die Zeit des ersten Ultraschalls.'] },
+  { from: 14, to: 19, baby: ['Das Baby bewegt sich viel, auch wenn man es noch nicht immer spürt.', 'Die Gesichtszüge werden feiner.'],
+    mother: ['Viele bekommen wieder etwas mehr Energie.', 'Die ersten Bewegungen können etwa zwischen der 16. und 22. SSW (SA) gespürt werden.'] },
+  { from: 20, to: 27, baby: ['Das Baby hört Geräusche, auch deine Stimme.', 'Es wechselt zwischen Wach- und Schlafphasen.'],
+    mother: ['Der Bauch wird runder; der Rücken kann beansprucht werden.', 'Oft ist das die Zeit des Ultraschalls im 2. Trimester.'] },
+  { from: 28, to: 33, baby: ['Das Baby nimmt zu und seine Lunge reift weiter.', 'Es öffnet zeitweise die Augen.'],
+    mother: ['Der Schlaf kann unbequemer werden.', 'Melde jede deutliche Abnahme der Kindsbewegungen.'] },
+  { from: 34, to: 37, baby: ['Das Baby sammelt Kraft und Reserven.', 'Oft dreht es sich in die Geburtsposition.'],
+    mother: ['Unregelmäßige Wehen können auftreten.', 'Denk daran, die Kliniktasche und die Unterlagen vorzubereiten.'] },
+  { from: 38, to: 45, baby: ['Das Baby ist bereit für die Geburt: Es wächst bis zur Geburt weiter.'],
+    mother: ['Der Termin rückt näher: Halte dich an die Hinweise deiner Geburtsklinik, wann du kommen sollst.'] },
+];
+
+const STAGES_IT: Stage[] = [
+  { from: 0, to: 7, baby: ['Si formano le primissime strutture.', 'Il cuore comincia a formarsi.'],
+    mother: ['Stanchezza, seno sensibile o nausea sono possibili, oppure assenti: ogni gravidanza è diversa.'] },
+  { from: 8, to: 13, baby: ['Si formano gli organi principali.', 'Mani e piedi prendono forma.'],
+    mother: ['La nausea può essere presente e poi attenuarsi per molte persone verso la fine del 1° trimestre.', 'Spesso è il periodo della prima ecografia.'] },
+  { from: 14, to: 19, baby: ['Il bebè si muove molto, anche se non sempre lo si sente ancora.', 'I tratti del viso si definiscono.'],
+    mother: ['Molte persone ritrovano un po’ di energia.', 'I primi movimenti possono essere percepiti tra le 16 e le 22 SA circa.'] },
+  { from: 20, to: 27, baby: ['Il bebè sente i suoni, tra cui la tua voce.', 'Alterna periodi di veglia e di sonno.'],
+    mother: ['La pancia si arrotonda; la schiena può affaticarsi.', 'Spesso è il periodo dell’ecografia del 2° trimestre.'] },
+  { from: 28, to: 33, baby: ['Il bebè prende peso e i suoi polmoni continuano a maturare.', 'A tratti apre gli occhi.'],
+    mother: ['Il sonno può diventare meno comodo.', 'Segnala qualsiasi netta diminuzione dei movimenti del bebè.'] },
+  { from: 34, to: 37, baby: ['Il bebè accumula forze e riserve.', 'Spesso si posiziona per la nascita.'],
+    mother: ['Possono comparire contrazioni irregolari.', 'Pensa a preparare la borsa e i documenti.'] },
+  { from: 38, to: 45, baby: ['Il bebè è pronto a nascere: continua a crescere fino alla nascita.'],
+    mother: ['Il termine si avvicina: segui le indicazioni del tuo punto nascita per sapere quando andare.'] },
+];
+
+const STAGES = localized(STAGES_FR, STAGES_EN, { es: STAGES_ES, de: STAGES_DE, it: STAGES_IT });
 
 export interface WeekInfo {
   sa: number;

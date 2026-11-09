@@ -290,12 +290,13 @@ function Capsule({ m }: { m: ActionModel }) {
     <View testID={`track-card-${m.key}`} style={{ width: 128 }}>
       <Tappable accessibilityRole="button" accessibilityLabel={`${actionLabel(m.key)}. ${m.info}`} accessibilityHint={tr('trk.cards.openHint')}
         onPress={() => { haptic('selection'); m.onOpen(); }} pressScale={reduce ? 1 : 0.97}
-        style={{ minHeight: 132, borderRadius: 22, padding: 10, gap: 6, backgroundColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.72)', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.95)' }}>
+        style={{ flexGrow: 1, minHeight: 132, borderRadius: 22, padding: 10, gap: 6, backgroundColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.72)', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.95)' }}>
         <View style={{ width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', backgroundColor: dark ? 'rgba(201,184,255,0.14)' : `${INK[m.key]}1A` }}>
           <ActionGlyph k={m.key} color={ink} size={24} />
         </View>
-        <Text variant="small" weight="bold" numberOfLines={2}>{actionLabel(m.key)}</Text>
-        <Text variant="caption" muted numberOfLines={3} testID={`track-info-${m.key}`}>{m.info}</Text>
+        {/* Libellé et information entiers (plus de « … ») ; flexGrow : les capsules voisines gardent la même hauteur */}
+        <Text variant="small" weight="bold">{actionLabel(m.key)}</Text>
+        <Text variant="caption" muted testID={`track-info-${m.key}`}>{m.info}</Text>
       </Tappable>
       <Tappable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={10} testID={`track-add-${m.key}`}
         onPress={() => { haptic('light'); m.onAdd(); }} pressScale={0.9} hoverLift={0}

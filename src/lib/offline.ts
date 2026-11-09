@@ -26,6 +26,23 @@ export interface PendingOp {
   merge?: boolean;
   /** Compte qui a fait la saisie : jamais envoyée ni montrée sous un autre compte. */
   owner?: string | null;
+  /** Refusée parce que la fonction demande l'abonnement (premium_required) : pas renvoyée automatiquement. */
+  premium?: boolean;
+}
+
+/** Erreur passagère (réseau, session à rafraîchir, serveur indisponible) : la saisie reste en file, dans l'ordre. */
+function isTransient(e: unknown): boolean {
+  if (!(e instanceof BackendError)) return false;
+  if (e.isNetwork) return true;
+  const x = e as BackendError & { status?: number; hint?: string };
+  if (x.hint === 'premium_required') return false;
+  return x.code === 'jwt_rejected' || x.code === 'timeout' || (typeof x.status === 'number' && x.status >= 500);
+}
+/** Saisie refusée : message lisible ; « premium_required » reconnu explicitement. */
+function refusal(op: PendingOp, e: unknown): PendingOp {
+  const x = e as { hint?: string; status?: number; message?: string } | null;
+  const premium = !!x && (x.hint === 'premium_required' || x.status === 402);
+  return { ...op, premium: premium || undefined, error: premium ? tr('premium.locked') : e instanceof Error ? e.message : tr('l6.offline.unknownError') };
 }
 
 function uuidLike(): string {
@@ -96,20 +113,31 @@ async function save() {
   await AsyncStorage.setItem(KEY, JSON.stringify({ pending, conflicts }));
 }
 
-export async function loadQueue() {
-  try {
-    const raw = await AsyncStorage.getItem(KEY);
-    if (raw) {
-      const { pending, conflicts } = JSON.parse(raw);
-      useOfflineStore.setState({ pending: pending ?? [], conflicts: conflicts ?? [] });
-      if (queueOwner) await adoptQueueOwner(queueOwner); // chargée après la connexion : même filtre
+let loading: Promise<void> | null = null;
+export function loadQueue(): Promise<void> {
+  loading = (async () => {
+    try {
+      const raw = await AsyncStorage.getItem(KEY);
+      if (raw) {
+        const { pending, conflicts } = JSON.parse(raw) as { pending?: PendingOp[]; conflicts?: PendingOp[] };
+        // 09/11/2026 : FUSION avec ce qui a été mis en file pendant la lecture (ex. « Pris » depuis une notification
+        // au démarrage, hors ligne). Avant, la file relue remplaçait l'état : la nouvelle saisie était perdue.
+        const now = useOfflineStore.getState();
+        const merge = (stored: PendingOp[] = [], current: PendingOp[]) => [...stored, ...current.filter((c) => !stored.some((s) => s.id === c.id && s.queuedAt === c.queuedAt))];
+        useOfflineStore.setState({ pending: merge(pending, now.pending), conflicts: merge(conflicts, now.conflicts) });
+        if (now.pending.length || now.conflicts.length) await save();
+        if (queueOwner) await adoptQueueOwner(queueOwner); // chargée après la connexion : même filtre
+      }
+    } catch {
+      // file illisible : on n'écrase rien
     }
-  } catch {
-    // file illisible : on n'écrase rien
-  }
+  })();
+  return loading;
 }
 
 export async function enqueue(table: string, row: PendingOp['row'], opts: { conflict?: string; merge?: boolean } = {}) {
+  // Jamais d'écriture de la file pendant sa lecture au démarrage (sinon l'une écrase l'autre)
+  if (loading) await loading;
   const id = String(row.client_id ?? row.id ?? uuidLike());
   useOfflineStore.setState((s) => ({ pending: [...s.pending, { id, table, row, queuedAt: new Date().toISOString(), owner: queueOwner, ...opts }] }));
   await save();
@@ -135,7 +163,8 @@ export async function insertOrQueue(table: string, input: Record<string, unknown
     await send(op);
     return 'sent';
   } catch (e) {
-    if (e instanceof BackendError && e.isNetwork) {
+    // Réseau coupé, session à rafraîchir, serveur indisponible : gardée sur le téléphone (jamais perdue)
+    if (isTransient(e)) {
       await enqueue(table, row, opts);
       return 'queued';
     }
@@ -149,23 +178,30 @@ export async function flushQueue(): Promise<number> {
   useOfflineStore.setState({ syncing: true });
   let sent = 0;
   const batch = st.pending;
-  const processed = new Set(batch.map((op) => op.id));
+  // Par objet et non par id : une nouvelle saisie au même id (même client_id) arrivée pendant l'envoi est gardée
+  const processed = new Set(batch);
   const remaining: PendingOp[] = [];
   const newConflicts: PendingOp[] = [];
+  let stalled = false;
   for (const op of batch) {
     if (op.owner != null && op.owner !== queueOwner) { remaining.push(op); continue; } // jamais sous une autre session
+    // 09/11/2026 : après une erreur passagère, on n'envoie plus rien de ce passage. Envoyer la suite changeait l'ordre :
+    // « Pris » puis « Ignorer » (même prise) pouvait finir en « Pris », l'ancienne réponse repartant en dernier.
+    if (stalled) { remaining.push(op); continue; }
     try {
       await send(op);
       sent++;
     } catch (e) {
-      if (e instanceof BackendError && e.isNetwork) remaining.push(op);
-      else newConflicts.push({ ...op, error: e instanceof Error ? e.message : tr('l6.offline.unknownError') });
+      if (isTransient(e)) {
+        stalled = true;
+        remaining.push(e instanceof BackendError && e.isNetwork ? op : { ...op, error: (e as Error).message });
+      } else newConflicts.push(refusal(op, e)); // refus définitif (droits, Premium…) : jamais renvoyé en boucle
     }
   }
   // F-01 (QA 02/11/2026, P0) : on FUSIONNE avec l'état courant. Remplacer la file par la copie prise au départ
   // effaçait sans trace les saisies mises en file pendant l'envoi (réseau instable).
   const now = useOfflineStore.getState();
-  const arrived = now.pending.filter((op) => !processed.has(op.id));
+  const arrived = now.pending.filter((op) => !processed.has(op));
   useOfflineStore.setState({ pending: [...remaining, ...arrived], conflicts: [...now.conflicts, ...newConflicts], syncing: false });
   await save();
   // Saisies arrivées pendant l'envoi : nouvel envoi si le réseau est là
@@ -173,10 +209,22 @@ export async function flushQueue(): Promise<number> {
   return sent;
 }
 
+/**
+ * Saisie refusée hors de la file (ex. « Pris » depuis une notification) : gardée dans « à vérifier »
+ * (Réglages > Synchronisation) au lieu d'être perdue ; une erreur passagère la met simplement en file.
+ */
+export async function recordRefused(table: string, row: PendingOp['row'], opts: { conflict?: string; merge?: boolean }, e: unknown) {
+  if (isTransient(e)) return enqueue(table, row, opts);
+  if (loading) await loading;
+  const op: PendingOp = { id: String(row.client_id ?? row.id ?? uuidLike()), table, row, queuedAt: new Date().toISOString(), owner: queueOwner, ...opts };
+  useOfflineStore.setState((s) => ({ conflicts: [...s.conflicts, refusal(op, e)] }));
+  await save();
+}
+
 export async function retryConflict(id: string) {
   const op = useOfflineStore.getState().conflicts.find((c) => c.id === id);
   if (!op) return;
-  useOfflineStore.setState((s) => ({ conflicts: s.conflicts.filter((c) => c.id !== id), pending: [...s.pending, { ...op, error: undefined }] }));
+  useOfflineStore.setState((s) => ({ conflicts: s.conflicts.filter((c) => c.id !== id), pending: [...s.pending, { ...op, error: undefined, premium: undefined }] }));
   await save();
   await flushQueue();
 }

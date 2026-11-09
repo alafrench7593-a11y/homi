@@ -9,6 +9,7 @@
  * a lui-même préparée la dernière fois (ou prévue sur le rappel). Sans délai choisi, aucun créneau n'est inventé.
  */
 import type { Bottle } from '@/lib/types';
+import { getLocale } from '@/i18n';
 
 export type SlotStatus = 'done' | 'missed' | 'next' | 'planned';
 
@@ -81,5 +82,7 @@ export function nextSlot(slots: DaySlot[]): DaySlot | null {
 /** Heure affichée « 14 h 30 ». */
 export function slotClock(iso: string): string {
   const d = new Date(iso);
+  // français : « 14 h 30 » ; autres langues : « 14:30 »
+  if (getLocale() !== 'fr') return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   return `${d.getHours()} h ${String(d.getMinutes()).padStart(2, '0')}`;
 }

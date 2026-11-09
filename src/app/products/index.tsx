@@ -65,7 +65,7 @@ export default function Products() {
       <Banner tone="info">{tr('pr.intro')}</Banner>
       {isEditor ? <Button label={tr('pr.admin.open')} icon="plus" variant="secondary" onPress={() => router.push('/admin/products')} testID="products-admin" /> : null}
       <Field label={tr('pr.search')} value={q} onChangeText={setQ} autoCorrect={false} testID="products-search" />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
         <Chip label={tr('pr.all')} selected={!cat} onPress={() => setCat(null)} />
         {PRODUCT_CATEGORIES.map((c) => <Chip key={c} label={tr(`pr.cat.${c}` as TKey)} selected={cat === c} onPress={() => setCat(cat === c ? null : c)} />)}
       </ScrollView>
@@ -74,7 +74,7 @@ export default function Products() {
         {[5, 10, 20].map((m) => <Chip key={m} label={tr('pr.maxPrice', { m })} selected={maxPrice === m} onPress={() => setMaxPrice(maxPrice === m ? null : m)} />)}
         {(['no_perfume', 'no_eo', 'no_allergens', 'no_phenoxy'] as Comp[]).map((k) => <Chip key={k} label={tr(`pr.comp.${k}` as TKey)} selected={comp.includes(k)} onPress={() => setComp(comp.includes(k) ? comp.filter((x) => x !== k) : [...comp, k])} />)}
       </Row>
-      {brands.length ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>{brands.map((b) => <Chip key={b} label={b} selected={brand === b} onPress={() => setBrand(brand === b ? null : b)} />)}</ScrollView> : null}
+      {brands.length ? <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>{brands.map((b) => <Chip key={b} label={b} selected={brand === b} onPress={() => setBrand(brand === b ? null : b)} />)}</ScrollView> : null}
       <Row wrap>
         <Text variant="small" muted>{tr('pr.sort')}</Text>
         {(['criteria', 'price', 'name'] as const).map((s) => <Chip key={s} label={tr(`pr.sort.${s}` as TKey)} selected={sort === s} onPress={() => setSort(s)} />)}

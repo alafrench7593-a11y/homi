@@ -24,8 +24,8 @@ export default function PostpartumRecovery() {
     </Card>
   );
   return (
-    <Screen back title={tr('pr.title')} subtitle={tr('pr.subtitle')}>
-      <Banner tone="info">{tr('pr.intro')}</Banner>
+    <Screen back title={tr('pr.rec.title')} subtitle={tr('pr.rec.subtitle')}>
+      <Banner tone="info">{tr('pr.rec.intro')}</Banner>
       {section(tr('pr.scar.title'), [tr('pr.scar.1'), tr('pr.scar.2')], { slug: 'cesarienne', label: tr('pr.scar.article') })}
       {section(tr('pr.perineum.title'), [tr('pr.perineum.1'), tr('pr.perineum.2'), tr('pr.perineum.3')], { slug: 'perinee-role', label: tr('pr.perineum.article') })}
       {section(tr('pr.abdo.title'), [tr('pr.abdo.1'), tr('pr.abdo.2')], { slug: 'diastasis', label: tr('pr.abdo.article') })}

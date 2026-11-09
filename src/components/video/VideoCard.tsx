@@ -19,18 +19,21 @@ export function VideoCard({ video, compact }: { video: OfficialVideo; compact?: 
   const toast = useToast();
   const [playing, setPlaying] = useState(false);
   const [failed, setFailed] = useState(false);
+  // Aperçu : 16:9 au minimum, mais il grandit si le titre et la source (langues longues, petit écran) ne tiennent pas
+  const [w, setW] = useState(0);
   const title = tr(`sol.v.${video.key}` as TKey);
   const by = tr(`sol.v.by.${video.by}` as TKey);
   const min = durationMinutes(video.dur);
   const meta = [by, min ? tr('vid.minutes', { count: min }) : null, video.kind === 'tuto' ? tr('vid.tutoTag') : null].filter(Boolean).join(' · ');
   return (
     <View style={{ gap: 6 }} testID={`video-${video.id}`}>
-      <View style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: radius.md, overflow: 'hidden', backgroundColor: '#1f1a1a' }}>
+      <View onLayout={(e) => setW(e.nativeEvent.layout.width)}
+        style={[{ width: '100%', borderRadius: radius.md, overflow: 'hidden', backgroundColor: '#1f1a1a' }, playing && !failed ? { aspectRatio: 16 / 9 } : w ? { minHeight: (w * 9) / 16 } : { aspectRatio: 16 / 9 }]}>
         {playing && !failed ? (
           <YouTubeFrame id={video.id} title={title} lang={getLocale()} onError={() => setFailed(true)} />
         ) : (
           <Tappable accessibilityRole="button" accessibilityLabel={`${tr('sol.v.play')} : ${title}`} onPress={() => (failed ? openLink(watchUrl(video.id), toast) : setPlaying(true))}
-            testID={`video-play-${video.id}`} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.xs, padding: spacing.md }}>
+            testID={`video-play-${video.id}`} style={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.xs, padding: spacing.md }}>
             <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(255,255,255,0.92)', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="play" size={26} color={t.colors.gold} />
             </View>

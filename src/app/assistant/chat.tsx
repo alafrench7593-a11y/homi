@@ -1,6 +1,9 @@
 /** Conversation avec l'assistant (réponses structurées, diffusion progressive, orientation urgente). */
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, TextInput, View } from 'react-native';
+import { aiAssistantOnline } from '@/config/features';
+import { AiComingSoonScreen } from '@/features/AiComingSoon';
+import { ActivityIndicator, FlatList, Keyboard, TextInput, View } from 'react-native';
+import { useKeyboardVisible } from '@/components/keyboard';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
@@ -53,12 +56,18 @@ const fromHistory = (m: AssistantMessage): LocalMsg => ({
   sources: m.sources, safety: m.safety_level ?? 'none', feedback: m.feedback, saved: m.saved,
 });
 
-export default function Chat() {
+export default function ChatScreen() {
+  // Assistant IA en ligne « Bientôt disponible » (src/config/features.ts) : le vrai écran reste intact ci-dessous
+  return aiAssistantOnline() ? <Chat /> : <AiComingSoonScreen back />;
+}
+
+function Chat() {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
   const userId = useUserId();
   const insets = useSafeAreaInsets();
+  const keyboardVisible = useKeyboardVisible();
   const params = useLocalSearchParams<{ id?: string; q?: string; topic?: string; child?: string }>();
   // « M'aider pour les nuits » : conversation sommeil sur l'enfant choisi
   const sleepChild = useChild(params.topic === 'sleep' ? params.child : null);
@@ -143,6 +152,7 @@ export default function Chat() {
   async function send(text?: string) {
     const message = (text ?? input).trim().slice(0, MAX_QUESTION_LENGTH);
     if (message.length < 2 || sending) return;
+    Keyboard.dismiss();
     setInput('');
     setPremiumNeeded(null);
     const now = Date.now();
@@ -442,7 +452,7 @@ export default function Chat() {
         ) : null}
       />
 
-      <View style={{ paddingBottom: insets.bottom + spacing.sm, gap: 4 }}>
+      <View style={{ paddingBottom: keyboardVisible ? spacing.sm : insets.bottom + spacing.sm, gap: 4 }}>
         {remaining != null && (
           <Text variant="caption" muted center>
             {demoAi
@@ -459,6 +469,7 @@ export default function Chat() {
             placeholderTextColor={t.colors.textMuted}
             accessibilityLabel={tr('u8.chat.yourQ')}
             multiline
+            textAlignVertical="top"
             editable={!blocked}
             maxLength={MAX_QUESTION_LENGTH}
             style={{ flex: 1, minHeight: 44, maxHeight: 140, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, paddingHorizontal: spacing.sm, paddingTop: 10 }}

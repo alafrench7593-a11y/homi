@@ -49,6 +49,9 @@ export default function UnderstandCycleScreen() {
         <ErrorView error={prefsQ.error} onRetry={() => void prefsQ.refetch()} title={tr('u3.fertUnd.errOpt')} />
       ) : (
       <Card>
+        {/* Libellé visible à côté de l'interrupteur (il n'était lu que par les lecteurs d'écran) */}
+        <Row style={{ justifyContent: 'space-between' }}>
+        <Text style={{ flex: 1 }}>{tr('u3.fertUnd.tog')}</Text>
         <Toggle
           value={prefs.track_intercourse}
           label={tr('u3.fertUnd.tog')}
@@ -56,6 +59,7 @@ export default function UnderstandCycleScreen() {
             try { await savePrefs.mutateAsync({ track_intercourse: v }); } catch (err) { toast(friendlyError(err), 'error'); }
           }}
         />
+        </Row>
         <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u3.fertUnd.togNote')}</Text>
       </Card>
       )}

@@ -1,4 +1,4 @@
-import { favoriteTools, groupByTheme, searchTools, THEMES, toggleFavorite, toolCatalog, toolId } from '@/lib/domain/toolCatalog';
+import { favoriteTools, groupByTheme, searchTools, statusKeyFor, THEMES, toggleFavorite, toolCatalog, toolId } from '@/lib/domain/toolCatalog';
 import { SCOPES, type ScopeCtx } from '@/lib/journeys/tools';
 
 const CTXS: ScopeCtx[] = [
@@ -22,6 +22,14 @@ describe('catalogue des outils (depuis le registre central)', () => {
     expect(toolId('growth', '/child/abc/growth')).toBe(toolId('growth', '/child/xyz/growth'));
     expect(toolId('feeding', '/bottle/abc')).toBe(toolId('feeding', '/bottle/def'));
     expect(toolId('teeth', '/teeth?child=a')).toBe(toolId('teeth', '/teeth?child=b'));
+  });
+  it('le compteur de mesurettes n’est pas confondu avec le minuteur biberon (/bottle/:id)', () => {
+    expect(toolId('feeding', '/bottle/scoops')).not.toBe(toolId('feeding', '/bottle/abc'));
+    expect(toolCatalog({ scope: 'baby', childId: 'c1' }).map((x) => x.key)).toEqual(expect.arrayContaining(['baby_bottle_timer', 'bottle_scoops']));
+    expect(toolCatalog({ scope: 'postpartum', babyId: 'c1' }).map((x) => x.key)).toEqual(expect.arrayContaining(['pp_bottle', 'bottle_scoops']));
+    // la carte du compteur n'affiche pas l'état du minuteur biberon
+    expect(statusKeyFor({ href: '/bottle/scoops', theme: 'feeding' })).toBeNull();
+    expect(statusKeyFor({ href: '/bottle/abc', theme: 'feeding' })).toBe('bottleTimer');
   });
   it('regroupe dans l’ordre des thèmes et recherche sans tenir compte des accents', () => {
     const cat = toolCatalog({ scope: 'baby', childId: 'c1' });

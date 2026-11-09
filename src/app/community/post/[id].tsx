@@ -1,6 +1,8 @@
 /** Publication, commentaires et réponses en fil (un niveau). Une notification ouvre directement le commentaire visé. */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { type FlatList, type TextInput, View } from 'react-native';
+import { useAuth } from '@/lib/auth';
+import { type FlatList, Keyboard, type TextInput, View } from 'react-native';
+import { whenKeyboardShown } from '@/components/keyboard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -29,7 +31,8 @@ export default function PostScreen() {
   const insets = useSafeAreaInsets();
   const postQ = usePost(id);
   const { data: post } = postQ;
-  const isLoading = postQ.isLoading && !postQ.data;
+  const { ready: authReady } = useAuth(); // session pas encore restaurée : chargement, pas « introuvable »
+  const isLoading = (postQ.isLoading && !postQ.data) || (!authReady && !post);
   const commentsQ = useCommentThreads(id);
   const { threads } = commentsQ;
   const commentsLoading = commentsQ.isLoading && !commentsQ.data;
@@ -74,6 +77,7 @@ export default function PostScreen() {
 
   async function send() {
     if (!body.trim() || create.isPending) return;
+    Keyboard.dismiss();
     try {
       const c = await create.mutateAsync({ body, parentId: replyTo?.id ?? null });
       setBody('');
@@ -139,10 +143,10 @@ export default function PostScreen() {
             </Tappable>
             <View style={{ flex: 1 }}>
               <Row gap={6} style={{ flexWrap: 'nowrap' }}>
-                <Text variant="small" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>{who}{c.is_op && !c.anonymous ? tr('cm2.post.opSuffix') : ''}</Text>
+                <Text variant="small" weight="bold" style={{ flexShrink: 1 }}>{who}{c.is_op && !c.anonymous ? tr('cm2.post.opSuffix') : ''}</Text>
                 {c.author_badge ? <PremiumBadge /> : null}
               </Row>
-              <Text variant="caption" muted numberOfLines={1}>{[c.author_handle ? `@${c.author_handle}` : null, timeAgo(c.created_at), c.edited_at ? tr('cm2.post.editedTag') : null, c.status !== 'visible' ? tr('cm2.post.inReview') : null].filter(Boolean).join(' · ')}</Text>
+              <Text variant="caption" muted>{[c.author_handle ? `@${c.author_handle}` : null, timeAgo(c.created_at), c.edited_at ? tr('cm2.post.editedTag') : null, c.status !== 'visible' ? tr('cm2.post.inReview') : null].filter(Boolean).join(' · ')}</Text>
             </View>
           </Row>
           <MentionText text={c.body} style={{ fontSize: 14 }} />
@@ -182,9 +186,11 @@ export default function PostScreen() {
               <Tappable onPress={() => setReplyTo(null)} hitSlop={4} accessibilityRole="button" accessibilityLabel={tr('cm2.post.cancelReply')} style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={16} /></Tappable>
             </Row>
           )}
-          <Field ref={inputRef} label={replyTo ? tr('cm2.post.yourReply') : tr('cm2.post.yourComment')} value={body} onChangeText={setBody} multiline maxLength={4000} testID="comment-input" />
+          <Field ref={inputRef} label={replyTo ? tr('cm2.post.yourReply') : tr('cm2.post.yourComment')} value={body} onChangeText={setBody} multiline maxLength={4000} testID="comment-input"
+            // Zone de réponse en bas de la liste : elle remonte au-dessus du clavier
+            onFocus={() => { whenKeyboardShown(() => listRef.current?.scrollToEnd({ animated: true })); }} />
           {mentionHits.length ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingTop: spacing.xs }} testID="comment-mentions">
+            <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingTop: spacing.xs }} testID="comment-mentions">
               {mentionHits.map((m) => <Chip key={m.handle} label={`@${m.handle}`} icon="at-sign" onPress={() => setBody((b) => completeMention(b, m.handle))} />)}
             </ScrollView>
           ) : null}

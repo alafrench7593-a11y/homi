@@ -34,7 +34,7 @@ export default function Sources() {
       <Banner tone="info">{tr('src.intro')}</Banner>
       {isEditor ? <Button label={tr('src.admin.open')} icon="edit-2" variant="secondary" onPress={() => router.push('/admin/resources')} testID="sources-admin" /> : null}
       <Field label={tr('src.search')} value={q} onChangeText={setQ} autoCorrect={false} testID="sources-search" />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
         <Chip label={tr('pr.all')} selected={!kind} onPress={() => setKind(null)} />
         {RESOURCE_KINDS.map((k) => <Chip key={k} label={tr(`src.kind.${k}` as TKey)} selected={kind === k} onPress={() => setKind(kind === k ? null : k)} />)}
       </ScrollView>

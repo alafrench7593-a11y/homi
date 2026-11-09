@@ -1,0 +1,36 @@
+// de — généré depuis la traduction validée (scripts i18n du 08/11/2026). Mêmes clés que le français.
+import type { lib1 as fr } from '../fr/lib1';
+import type { Messages } from '../types';
+
+export const lib1: Messages<typeof fr> = {
+  "l1.dates.justNow": "gerade eben",
+  "l1.dates.minAgo": "vor {n} Min.",
+  "l1.dates.hourAgo": "vor {h} h{r}",
+  "l1.dates.yesterday": "gestern",
+  "l1.dates.daysAgo": "vor {n} Tagen",
+  "l1.sleep.nightLabel": "Nacht vom {from} auf den {to}",
+  "l1.sleep.err.futureDate": "Das Datum darf nicht in der Zukunft liegen.",
+  "l1.sleep.err.bed": "Uhrzeit im Format 22:30 erwartet.",
+  "l1.sleep.err.wake": "Uhrzeit im Format 07:00 erwartet.",
+  "l1.sleep.err.wakeSame": "Aufwachen muss sich vom Zubettgehen unterscheiden.",
+  "l1.sleep.err.wakings": "Eine Zahl zwischen 0 und 30.",
+  "l1.sleep.err.detailTime": "Uhrzeit im Format 03:15 erwartet.",
+  "l1.sleep.err.detailMinutes": "Dauer in Minuten (0 bis 600).",
+  "l1.sleep.err.duration": "Dauer im Format 7h30 erwartet.",
+  "l1.sleep.err.nap": "Beginn und Ende im Format 14:00.",
+  "l1.sleep.err.napOrder": "Das Ende muss nach dem Beginn liegen.",
+  "l1.sleep.tip.sideLate.title": "Auf der Seite schlafen",
+  "l1.sleep.tip.sideLate.text": "Gegen Ende der Schwangerschaft wird meist empfohlen, auf der Seite (links oder rechts) zu schlafen. Wenn du auf dem Rücken aufwachst, keine Sorge: Dreh dich einfach um. Ein Kissen zwischen den Knien oder unter dem Bauch kann helfen.",
+  "l1.sleep.tip.sideEarly.title": "Eine bequeme Position finden",
+  "l1.sleep.tip.sideEarly.text": "Mit den Wochen wird die Seitenlage oft am angenehmsten; gegen Ende der Schwangerschaft wird sie empfohlen. Ein Kissen zwischen den Knien kann entlasten.",
+  "l1.sleep.tip.hydration.title": "Eher tagsüber trinken",
+  "l1.sleep.tip.hydration.text": "Tagsüber gut zu trinken und abends etwas weniger kann nächtliches Aufstehen verringern.",
+  "l1.sleep.tip.rest.title": "Ruhe ohne schlechtes Gewissen",
+  "l1.sleep.tip.rest.text": "Die Müdigkeit in der Schwangerschaft ist real. Eine Pause im Liegen tagsüber, auch eine kurze, ist erlaubt.",
+  "l1.pur.notConfigured": "Käufe sind für diese Version noch nicht eingerichtet.",
+  "l1.scan.ciqualTable": "Ciqual-Tabelle",
+  "l1.scan.ciqualVersion": "Ciqual-Tabelle (Anses), {version}",
+  "l1.scan.ciqualVersionDate": "Ciqual-Tabelle (Anses), {version}, {date}",
+  "l1.scan.enteredByYou": "Von dir eingegeben",
+  "l1.scan.enteredByYouUnverified": "Von dir eingegeben (nicht durch eine Produktdatenbank geprüft)",
+};

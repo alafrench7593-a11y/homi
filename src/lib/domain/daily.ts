@@ -1,4 +1,6 @@
 /** Synthèses du suivi quotidien — descriptives, jamais interprétatives. */
+import { getLocale } from '@/i18n';
+import { WEEKDAYS_SHORT } from '@/i18n/formats';
 
 export interface BottleLog { at: string; prepared_ml?: number | null; consumed_ml?: number | null }
 export interface FeedLog { started_at: string; ended_at?: string | null; side: 'left' | 'right' | 'both' }
@@ -75,7 +77,7 @@ export function lastDaysSeries<T>(days: number, items: T[], getDate: (t: T) => s
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
     const v = items.filter((it) => sameDay(getDate(it), d)).reduce((t, it) => t + value(it), 0);
-    out.push({ label: d.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', ''), value: v, date: d });
+    out.push({ label: (WEEKDAYS_SHORT[getLocale()] ?? WEEKDAYS_SHORT.fr)[d.getDay() || 7].replace('.', ''), value: v, date: d });
   }
   return out;
 }

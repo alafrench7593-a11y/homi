@@ -46,7 +46,28 @@ const DELAY_PRESETS_EN: { minutes: number; label: string }[] = [
   { minutes: 210, label: '3h 30' },
   { minutes: 240, label: '4h' },
 ];
-export const DELAY_PRESETS: { minutes: number; label: string }[] = localized(DELAY_PRESETS_FR, DELAY_PRESETS_EN);
+const DELAY_PRESETS_ES: { minutes: number; label: string }[] = [
+  { minutes: 120, label: '2 h' },
+  { minutes: 150, label: '2 h 30' },
+  { minutes: 180, label: '3 h' },
+  { minutes: 210, label: '3 h 30' },
+  { minutes: 240, label: '4 h' },
+];
+const DELAY_PRESETS_DE: { minutes: number; label: string }[] = [
+  { minutes: 120, label: '2 Std.' },
+  { minutes: 150, label: '2 Std. 30' },
+  { minutes: 180, label: '3 Std.' },
+  { minutes: 210, label: '3 Std. 30' },
+  { minutes: 240, label: '4 Std.' },
+];
+const DELAY_PRESETS_IT: { minutes: number; label: string }[] = [
+  { minutes: 120, label: '2 h' },
+  { minutes: 150, label: '2 h 30' },
+  { minutes: 180, label: '3 h' },
+  { minutes: 210, label: '3 h 30' },
+  { minutes: 240, label: '4 h' },
+];
+export const DELAY_PRESETS: { minutes: number; label: string }[] = localized(DELAY_PRESETS_FR, DELAY_PRESETS_EN, { es: DELAY_PRESETS_ES, de: DELAY_PRESETS_DE, it: DELAY_PRESETS_IT });
 /** Reports proposés depuis l'écran de l'enfant (ouvert par la notification). */
 export const SNOOZE_PRESETS = [10, 15, 30, 60];
 
@@ -233,7 +254,7 @@ export function zonedParts(date: Date | string, timeZone?: string): ZonedParts {
   return { year: Number(get('year')), month: Number(get('month')), day: Number(get('day')), hour: Number(get('hour')) % 24, minute: Number(get('minute')), weekday: wd < 0 ? 0 : wd };
 }
 
-/** Heure murale en français : « 14 h 45 », « 4 h 00 ». */
+/** Heure murale (format porté par le dictionnaire de la langue) : « 14 h 45 » en français. */
 export function formatClock(date: Date | string, timeZone?: string): string {
   const p = zonedParts(date, timeZone);
   return tr('l5.bt.clock', { h: p.hour, m: String(p.minute).padStart(2, '0') });

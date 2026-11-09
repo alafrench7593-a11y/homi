@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { useToast } from '@/components/Overlays';
-import { EmptyState } from '@/components/States';
+import { EmptyState, Skeleton } from '@/components/States';
 import { Banner, Card, Chip, Field, ListRow, Row, Text } from '@/components/ui';
 import { textureLabel } from '@/features/recipes/labels';
 import { useScope } from '@/lib/data/hooks-scope';
@@ -35,6 +35,7 @@ export default function FoodSettings() {
     if (!s.data) return;
     setTexture(s.data.texture); setVeg(s.data.vegetarian); setNoPork(s.data.no_pork); setRefused(s.data.refused); setAdvice(s.data.pro_advice ?? ''); setNeedAdvice(s.data.allergen_advice_needed);
   }, [s.data]);
+  if (!child && !scope.loaded) return <Screen back title={tr('rc.settings.title')}><Skeleton rows={4} /></Screen>; // chargement, pas « choisissez un profil »
   if (!child) return <Screen back title={tr('rc.settings.title')}><EmptyState icon="smile" title={tr('rc.settings.noChild')} /></Screen>;
   return (
     <Screen back title={tr('rc.settings.open', { name: child.first_name })} action={{ label: tr('common.save'), icon: 'check', disabled: save.isPending, testID: 'food-settings-save', onPress: async () => {

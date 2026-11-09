@@ -1,3 +1,4 @@
+import { FEATURES } from '@/config/features';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createDemoBackend } from './demo';
@@ -14,7 +15,7 @@ const anon = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || extra.supabaseAnonKey;
 const real: Backend | null = url && anon ? createSupabaseBackend(url, anon) : null;
 let demo: Backend | null = null;
 // La démonstration pose ses questions d'assistant à la fonction « assistant-demo » (sans compte, limitée)
-const getDemo = () => (demo ??= createDemoBackend({ remoteAssistant: url && anon ? { url: url.replace(/\/$/, ''), anonKey: anon } : undefined }));
+const getDemo = () => (demo ??= createDemoBackend({ strictPremium: FEATURES.demoStrictPremium, remoteAssistant: url && anon ? { url: url.replace(/\/$/, ''), anonKey: anon } : undefined }));
 
 let active: Backend = real ?? getDemo();
 

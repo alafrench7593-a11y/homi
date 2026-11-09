@@ -22,8 +22,11 @@ export interface ScanSource {
   review: 'verified' | 'to_review';
 }
 
-import { t as tr } from '@/i18n';
+import { getLocale, t as tr } from '@/i18n';
 import { localized } from '@/i18n/localized';
+import { ES_TEXT } from './scanSources.es';
+import { DE_TEXT } from './scanSources.de';
+import { IT_TEXT } from './scanSources.it';
 
 const C = '2026-10-16';
 
@@ -132,10 +135,13 @@ const EN_TEXT: Record<string, { label: string; publisher?: string }> = {
   cosing: { label: 'CosIng database of cosmetic ingredients', publisher: 'European Commission' },
   ciqual: { label: 'Ciqual food composition table' },
 };
-const SCAN_SOURCES_EN: Record<string, ScanSource> = Object.fromEntries(
-  Object.entries(SCAN_SOURCES_FR).map(([k, v]) => [k, { ...v, ...EN_TEXT[k] }]),
+const withTexts = (texts: Record<string, { label: string; publisher?: string }>): Record<string, ScanSource> => Object.fromEntries(
+  Object.entries(SCAN_SOURCES_FR).map(([k, v]) => [k, { ...v, ...texts[k] }]),
 );
-export const SCAN_SOURCES: Record<string, ScanSource> = localized(SCAN_SOURCES_FR, SCAN_SOURCES_EN);
+const SCAN_SOURCES_EN: Record<string, ScanSource> = withTexts(EN_TEXT);
+export const SCAN_SOURCES: Record<string, ScanSource> = localized(SCAN_SOURCES_FR, SCAN_SOURCES_EN, {
+  es: withTexts(ES_TEXT), de: withTexts(DE_TEXT), it: withTexts(IT_TEXT),
+});
 
 export function sourceById(id: string): ScanSource | null {
   return SCAN_SOURCES[id] ?? null;
@@ -163,5 +169,5 @@ export function sourceLine(s: ScanSource): string {
 
 export function frDate(iso: string): string {
   const [y, m, d] = iso.slice(0, 10).split('-');
-  return `${d}/${m}/${y}`;
+  return getLocale() === 'de' ? `${d}.${m}.${y}` : `${d}/${m}/${y}`;
 }

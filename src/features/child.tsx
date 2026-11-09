@@ -51,7 +51,7 @@ import { useUiStore } from '@/lib/store';
 export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: ChildTab) => void }) {
   const t = useTheme();
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} accessibilityRole="tablist" contentContainerStyle={{ gap: 6, paddingVertical: 2 }}>
+    <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} accessibilityRole="tablist" contentContainerStyle={{ gap: 6, paddingVertical: 2 }}>
       {CHILD_TABS.map((tab) => {
         const sel = tab.value === value;
         return (
@@ -183,7 +183,7 @@ function QuickTile({ icon, label, onPress }: { icon: IconName; label: string; on
       <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
         <Icon name={icon} size={18} color={t.colors.primaryText} />
       </View>
-      <Text variant="caption" weight="bold" center numberOfLines={1}>{label}</Text>
+      <Text variant="caption" weight="bold" center>{label}</Text>
     </Tappable>
   );
 }

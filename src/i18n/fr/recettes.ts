@@ -106,7 +106,7 @@ export const recettes = {
   'rc.filters.noPork': 'Sans porc',
   'rc.filters.exclude': 'Exclure un allergène',
   'rc.count': { one: '{count} recette', other: '{count} recettes' },
-  'rc.none': 'Aucune recette ne correspond',
+  'rc.noMatch': 'Aucune recette ne correspond',
   'rc.noneBody': 'Essayez d’enlever un filtre.',
   'rc.footer': 'Recettes rédigées par une IA puis vérifiées par des contrôles automatiques ; relecture par un professionnel en cours. Sources : Santé publique France, Santé.fr, ANSES. Illustrations générées, pas des photographies.',
   'rc.card.meta': '{min} min · {n} pers.',

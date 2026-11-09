@@ -5,7 +5,7 @@
  * hors de France, on affiche les numéros d'urgence du pays (REGIONS), traduits.
  */
 import { deviceRegion, t as tr, type TKey } from '@/i18n';
-import { defaultRegion, REGIONS } from '@/i18n/locales';
+import { defaultRegion, regionLabel, REGIONS } from '@/i18n/locales';
 import { useUiStore } from '@/lib/store';
 import type { EmergencyResource } from '@/lib/types';
 
@@ -44,7 +44,7 @@ export function emergencyItems(region: string, rows: EmergencyResource[] | undef
     });
   }
   const country = REGIONS.find((x) => x.code === region);
-  const name = country && region !== 'OTHER' ? (lang === 'fr' ? country.fr : country.en) : '';
+  const name = country && region !== 'OTHER' ? regionLabel(country, lang) : '';
   return regionPhones(region).map((phone, i) => ({
     phone,
     label: phone === '112' ? tr('u7.emg.intl112.label') : name ? tr('u7.emg.local.label', { country: name }) : tr('u7.emg.generic.label'),

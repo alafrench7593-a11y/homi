@@ -17,17 +17,35 @@ l'application (`EXPO_PUBLIC_…`), tout le reste est un **secret Supabase**.
 | Offering | l'offering **courante** (« Current ») de RevenueCat, identifiant recommandé `default` |
 | Packages | `$rc_monthly` (Monthly), `$rc_six_month` (6 Month), `$rc_annual` (Annual) |
 | Produit mensuel | `aufildenous_premium_monthly` — 10,99 € / mois — **essai gratuit 3 jours** (nouveaux abonnés) |
-| Produit 6 mois | `aufildenous_premium_6months` — 54,99 € / 6 mois — pas d'essai |
-| Produit annuel | `aufildenous_premium_annual` — 99,99 € / an — pas d'essai |
+| Produit 6 mois | `aufildenous_premium_6months` — 49,99 € / 6 mois — pas d'essai |
+| Produit annuel | `aufildenous_premium_annual` — 79,99 € / an — pas d'essai |
 | appUserID RevenueCat | identifiant Supabase de l'utilisatrice (UUID) |
 
 - Les 3 formules donnent **exactement le même Premium** (un seul droit).
 - L'application affiche **toujours les prix renvoyés par la boutique** (`priceString`), calcule le prix par mois et
-  l'économie par rapport au mensuel à partir de ces prix réels. La grille 10,99 / 54,99 / 99,99 n'est affichée qu'en
+  l'économie par rapport au mensuel à partir de ces prix réels. La grille 10,99 / 49,99 / 79,99 n'est affichée qu'en
   **démonstration** (« Découvrir sans compte »), avec la mention « Montants de démonstration ».
 - L'essai n'est affiché que si la boutique le propose réellement à la personne (iOS : éligibilité confirmée par Apple ;
   Android : phase gratuite présente dans l'option appliquée à l'achat).
 - Partage : l'abonné·e + **un seul** co-parent adulte du foyer (2 comptes adultes maximum).
+
+
+### 0.1 Modèle « Premium strict » (depuis le 08/11/2026)
+
+- **Sans Premium**, un compte garde : inscription, connexion, présentation, onboarding, profil, réglages (compte,
+  confidentialité, langue, notifications, foyer, synchronisation, abonnement), **consultation, export et suppression de
+  toutes ses données**, numéros et pages d'urgence, alertes officielles de rappel de produits, sources, mentions légales,
+  « Donner mon avis ». Tout le reste affiche l'écran Premium (logo, fil doré des étapes de vie, fonctions réelles,
+  3 formules, « Commencer mes 3 jours d'essai gratuit » / « Continuer avec Premium », restauration des achats).
+- **Serveur** : migration `20261108000300_premium_strict.sql`. Les nouvelles saisies sur les tables de suivi sont
+  refusées sans Premium (`hint = premium_required`). Lecture, suppression et écritures du serveur ne sont jamais bloquées.
+  Le co-parent d'une abonnée est couvert. **Aucune donnée n'est supprimée à la fin d'un abonnement.**
+- **Interrupteur de secours** (admin uniquement, sans nouvelle migration) :
+  `update public.premium_policy set strict = false;` revient au modèle précédent ; `= true` le réactive.
+- **Assistant IA seul** (`aufildenous_ai_monthly`, ~5 €/mois) : abonnement séparé qui ouvre **uniquement** l'assistant.
+- **Plus de mois gratuit des outils, plus de vente d'outils à 1 €** : ne créez pas (ou retirez de la vente) les produits
+  `aufildenous_tool_*`. Les outils déjà achetés à vie restent ouverts à leur propriétaire.
+- **Essai** : uniquement sur le mensuel (offre d'introduction « 3 jours gratuits », nouveaux abonnés).
 
 ---
 
@@ -51,7 +69,7 @@ Prérequis : contrat **Apps payantes** signé et informations bancaires / fiscal
 4. Pour chaque produit :
    - **Disponibilité** : pays où l'app est vendue.
    - **Prix de l'abonnement** › **Ajouter un prix** (ou « Configurer le prix ») › pays de référence **France** ›
-     10,99 € / 54,99 € / 99,99 € (si Apple ne propose pas exactement ce palier, choisir le plus proche : l'appli affichera
+     10,99 € / 49,99 € / 79,99 € (si Apple ne propose pas exactement ce palier, choisir le plus proche : l'appli affichera
      de toute façon le prix réel). Laisser Apple calculer les autres pays ou les ajuster.
    - **Localisation de l'App Store** › **+** : français et anglais (nom affiché, description).
    - **Informations pour la revue** : capture d'écran de la page Premium (écran *AU FIL DE NOUS PREMIUM* de l'app).
@@ -107,8 +125,8 @@ modèles (produits « `abonnement:offre-de-base` » ou 3 identifiants distincts)
    | ID de l'offre de base | Période de facturation | Prix (France) |
    |---|---|---|
    | `monthly` | 1 mois | 10,99 € |
-   | `six-months` | 6 mois | 54,99 € |
-   | `annual` | 1 an | 99,99 € |
+   | `six-months` | 6 mois | 49,99 € |
+   | `annual` | 1 an | 79,99 € |
 
    Pour chacune : **Période de grâce** (ex. 7 jours) et **Suspension du compte** (account hold, ex. 30 jours) ;
    option « Autoriser la reprise / la mise en pause » selon votre choix (la pause est gérée par l'appli : « En pause »).

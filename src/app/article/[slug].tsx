@@ -12,7 +12,7 @@ import { Banner, Button, Card, Divider, FavoriteButton, Icon, IconButton, Row, T
 import { backend } from '@/lib/backend';
 import { useArticle, useInvalidate, usePremium, useRows } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { useUserId } from '@/lib/auth';
+import { useAuth, useUserId } from '@/lib/auth';
 import { isLocked } from '@/lib/domain/content';
 import { formatDateFr } from '@/lib/domain/dates';
 import { getLocale, t as tr, type TKey } from '@/i18n';
@@ -29,6 +29,7 @@ export default function ArticleScreen() {
   // L'article seul, texte et sources compris (la liste des articles ne contient plus le texte)
   const articleQ = useArticle(slug);
   const { data: article, isLoading } = articleQ;
+  const { ready: authReady } = useAuth(); // session pas encore restaurée : chargement, pas « introuvable »
   const [saving, setSaving] = useState(false);
   const premium = usePremium();
   const a = article ?? undefined;
@@ -50,7 +51,7 @@ export default function ArticleScreen() {
     }
   }
 
-  if (isLoading && article === undefined) return <Screen back><Skeleton kind="detail" rows={8} /></Screen>;
+  if ((isLoading && article === undefined) || (!authReady && !article)) return <Screen back><Skeleton kind="detail" rows={8} /></Screen>;
   if (articleQ.isError && article === undefined) return <Screen back title={tr('u3.art.article')}><ErrorView error={articleQ.error} onRetry={() => void articleQ.refetch()} title={tr('u3.art.errShow')} /></Screen>;
   if (!a) {
     return (
@@ -94,7 +95,7 @@ export default function ArticleScreen() {
           </Tappable>
         )) : <Text variant="small" muted>{tr('u3.art.noSrc')}</Text>}
         <View style={{ marginTop: spacing.sm, gap: 2 }}>
-          {!!a.author_name && <Text variant="caption" muted>{tr('u3.art.author', { name: getLocale() === 'en' && a.author_name === AI_AUTHOR_FR ? AI_AUTHOR_EN : a.author_name })}</Text>}
+          {!!a.author_name && <Text variant="caption" muted>{tr('u3.art.author', { name: getLocale() !== 'fr' && a.author_name === AI_AUTHOR_FR ? AI_AUTHOR_EN : a.author_name })}</Text>}
           <Text variant="caption" muted>{tr('u3.art.review', { who: a.reviewer_name ? `${a.reviewer_name}${a.reviewer_qualification ? `, ${a.reviewer_qualification}` : ''}${a.validated_at ? ` — ${formatDateFr(a.validated_at)}` : ''}` : tr('u3.art.notReviewed') })}</Text>
           <Text variant="caption" muted>{tr('u3.art.updated', { date: formatDateFr(a.updated_on) })}</Text>
         </View>

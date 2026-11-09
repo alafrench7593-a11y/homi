@@ -30,7 +30,40 @@ const JOURNAL_CATEGORIES_EN: { value: JournalCategory; label: string }[] = [
   { value: 'appointment', label: 'Appointments' },
   { value: 'task', label: 'Tasks done' },
 ];
-export const JOURNAL_CATEGORIES: { value: JournalCategory; label: string }[] = localized(JOURNAL_CATEGORIES_FR, JOURNAL_CATEGORIES_EN);
+const JOURNAL_CATEGORIES_ES: { value: JournalCategory; label: string }[] = [
+  { value: 'feeding', label: 'Biberones y comidas' },
+  { value: 'sleep', label: 'Sueño' },
+  { value: 'diaper', label: 'Cambios de pañal' },
+  { value: 'health', label: 'Observaciones' },
+  { value: 'medication', label: 'Medicamentos anotados' },
+  { value: 'teeth', label: 'Dientes' },
+  { value: 'memory', label: 'Recuerdos y etapas' },
+  { value: 'appointment', label: 'Citas' },
+  { value: 'task', label: 'Tareas hechas' },
+];
+const JOURNAL_CATEGORIES_DE: { value: JournalCategory; label: string }[] = [
+  { value: 'feeding', label: 'Fläschchen und Mahlzeiten' },
+  { value: 'sleep', label: 'Schlaf' },
+  { value: 'diaper', label: 'Wickeln' },
+  { value: 'health', label: 'Beobachtungen' },
+  { value: 'medication', label: 'Notierte Medikamente' },
+  { value: 'teeth', label: 'Zähne' },
+  { value: 'memory', label: 'Erinnerungen und Meilensteine' },
+  { value: 'appointment', label: 'Termine' },
+  { value: 'task', label: 'Erledigte Aufgaben' },
+];
+const JOURNAL_CATEGORIES_IT: { value: JournalCategory; label: string }[] = [
+  { value: 'feeding', label: 'Biberon e pasti' },
+  { value: 'sleep', label: 'Sonno' },
+  { value: 'diaper', label: 'Cambi' },
+  { value: 'health', label: 'Osservazioni' },
+  { value: 'medication', label: 'Farmaci annotati' },
+  { value: 'teeth', label: 'Denti' },
+  { value: 'memory', label: 'Ricordi e tappe' },
+  { value: 'appointment', label: 'Appuntamenti' },
+  { value: 'task', label: 'Compiti fatti' },
+];
+export const JOURNAL_CATEGORIES: { value: JournalCategory; label: string }[] = localized(JOURNAL_CATEGORIES_FR, JOURNAL_CATEGORIES_EN, { es: JOURNAL_CATEGORIES_ES, de: JOURNAL_CATEGORIES_DE, it: JOURNAL_CATEGORIES_IT });
 
 export interface JournalEntry { key: string; at: string; category: JournalCategory; title: string; detail: string; note?: string | null; route?: string }
 

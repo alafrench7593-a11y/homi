@@ -66,7 +66,7 @@ function FamilyDay({ child }: { child: Child }) {
   return (
     <View style={{ gap: 4 }} testID={`family-summary-${child.id}`}>
       <SectionTitle title={child.first_name} />
-      <SectionsView sections={sections.filter((s) => s.heading !== 'Mesures de croissance (dernières)')} />
+      <SectionsView sections={sections.filter((s) => s.heading !== tr('l7.sum.h_growth'))} />
     </View>
   );
 }

@@ -94,7 +94,28 @@ const SECTION_LABEL_EN: Record<string, string> = {
   diapers: 'Nappies', sleeps: 'Sleep', meals: 'Meals', children: 'Children', pregnancies: 'Pregnancies', appointments: 'Appointments',
   documents: 'Documents', reminders: 'Reminders', assistant_conversations: 'Conversations with the assistant', parent_sleep_logs: 'My sleep', postpartum_settings: 'Postpartum: settings and support plan', postpartum_checkins: 'Postpartum: my daily check-ins', trusted_contacts: 'Trusted contacts', postpartum_actions: 'Postpartum: my steps', postpartum_shared_status: 'Postpartum: what I share',
 };
-const SECTION_LABEL: Record<string, string> = localized(SECTION_LABEL_FR, SECTION_LABEL_EN);
+const SECTION_LABEL_ES: Record<string, string> = {
+  profile: 'Perfil', personal: 'Datos personales', households: 'Hogares', consents: 'Consentimientos', privacy_settings: 'Privacidad',
+  period_entries: 'Menstruación', symptom_logs: 'Síntomas', ovulation_tests: 'Tests de ovulación', pregnancy_tests: 'Pruebas de embarazo',
+  fertility_observations: 'Temperatura y moco cervical', mood_checkins: 'Estado de ánimo', maternal_weights: 'Peso', bottles: 'Biberones', breastfeeds: 'Tomas de pecho',
+  diapers: 'Pañales', sleeps: 'Sueño', meals: 'Comidas', children: 'Hijos', pregnancies: 'Embarazos', appointments: 'Citas',
+  documents: 'Documentos', reminders: 'Recordatorios', assistant_conversations: 'Conversaciones con el asistente', parent_sleep_logs: 'Mi sueño', postpartum_settings: 'Posparto: ajustes y plan de apoyo', postpartum_checkins: 'Posparto: mis balances del día', trusted_contacts: 'Contactos de confianza', postpartum_actions: 'Posparto: mis trámites', postpartum_shared_status: 'Posparto: lo que comparto',
+};
+const SECTION_LABEL_DE: Record<string, string> = {
+  profile: 'Profil', personal: 'Persönliche Daten', households: 'Haushalte', consents: 'Einwilligungen', privacy_settings: 'Datenschutz',
+  period_entries: 'Periode', symptom_logs: 'Symptome', ovulation_tests: 'Ovulationstests', pregnancy_tests: 'Schwangerschaftstests',
+  fertility_observations: 'Temperatur und Zervixschleim', mood_checkins: 'Stimmung', maternal_weights: 'Gewicht', bottles: 'Fläschchen', breastfeeds: 'Stillmahlzeiten',
+  diapers: 'Windeln', sleeps: 'Schlaf', meals: 'Mahlzeiten', children: 'Kinder', pregnancies: 'Schwangerschaften', appointments: 'Termine',
+  documents: 'Dokumente', reminders: 'Erinnerungen', assistant_conversations: 'Gespräche mit dem Assistenten', parent_sleep_logs: 'Mein Schlaf', postpartum_settings: 'Wochenbett: Einstellungen und Unterstützungsplan', postpartum_checkins: 'Wochenbett: meine Tagesrückblicke', trusted_contacts: 'Vertrauenspersonen', postpartum_actions: 'Wochenbett: meine Schritte', postpartum_shared_status: 'Wochenbett: was ich teile',
+};
+const SECTION_LABEL_IT: Record<string, string> = {
+  profile: 'Profilo', personal: 'Dati personali', households: 'Nuclei familiari', consents: 'Consensi', privacy_settings: 'Privacy',
+  period_entries: 'Mestruazioni', symptom_logs: 'Sintomi', ovulation_tests: 'Test di ovulazione', pregnancy_tests: 'Test di gravidanza',
+  fertility_observations: 'Temperatura e muco cervicale', mood_checkins: 'Umore', maternal_weights: 'Peso', bottles: 'Biberon', breastfeeds: 'Poppate',
+  diapers: 'Pannolini', sleeps: 'Sonno', meals: 'Pasti', children: 'Figli', pregnancies: 'Gravidanze', appointments: 'Appuntamenti',
+  documents: 'Documenti', reminders: 'Promemoria', assistant_conversations: 'Conversazioni con l’assistente', parent_sleep_logs: 'Il mio sonno', postpartum_settings: 'Post-partum: impostazioni e piano di sostegno', postpartum_checkins: 'Post-partum: i miei punti del giorno', trusted_contacts: 'Contatti di fiducia', postpartum_actions: 'Post-partum: le mie pratiche', postpartum_shared_status: 'Post-partum: cosa condivido',
+};
+const SECTION_LABEL: Record<string, string> = localized(SECTION_LABEL_FR, SECTION_LABEL_EN, { es: SECTION_LABEL_ES, de: SECTION_LABEL_DE, it: SECTION_LABEL_IT });
 
 const esc = (v: unknown) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const HIDDEN = new Set(['id', 'user_id', 'household_id', 'created_by', 'client_id', 'storage_path', 'photo_path', 'token_hash']);
@@ -132,7 +153,7 @@ function walk(name: string, v: unknown, out: string[]) {
 export function exportHtml(data: unknown, email: string | null): string {
   const parts: string[] = [];
   for (const [k, v] of Object.entries((data ?? {}) as Record<string, unknown>)) walk(k, v, parts);
-  return `<!doctype html><html lang="${getLocale() === 'fr' ? 'fr' : 'en'}"><head><meta charset="utf-8"><title>${esc(tr('l5.exp.docTitle', { name: BRAND.name }))}</title>
+  return `<!doctype html><html lang="${getLocale()}"><head><meta charset="utf-8"><title>${esc(tr('l5.exp.docTitle', { name: BRAND.name }))}</title>
 <style>body{font-family:-apple-system,Helvetica,Arial,sans-serif;color:#2A1A26;margin:24px;font-size:11px}h1{color:#C93A64;font-size:20px}h2{font-size:15px;margin-top:22px;border-bottom:1px solid #eee}h3{font-size:12.5px;margin:14px 0 4px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #e5dde2;padding:3px 5px;text-align:left;vertical-align:top}th{background:#FBF1F4}.muted{color:#7E6873;font-weight:normal}</style></head>
 <body><h1>${esc(tr('l5.exp.h1', { name: BRAND.name }))}</h1><p class="muted">${esc(tr('l5.exp.meta', { email: email ?? '—', date: new Date().toLocaleString(localeTag()) }))}</p>${parts.join('')}</body></html>`;
 }

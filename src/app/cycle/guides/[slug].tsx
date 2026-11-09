@@ -5,10 +5,10 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState } from '@/components/States';
 import { Button, Row } from '@/components/ui';
-import { guideBySlug, SOURCES } from '@/content/dischargeGuides';
+import { guideBySlug, guideLang, SOURCES } from '@/content/dischargeGuides';
 import { GuideArt } from '@/features/cycle/GuideArt';
 import { CycleIcon, Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
-import { getLocale, t as tr } from '@/i18n';
+import { t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
 function Section({ title, items, icon, delay }: { title: string; items: string[]; icon: 'symptoms' | 'stats' | 'journal' | 'privacy' | 'reminders'; delay: number }) {
@@ -27,7 +27,7 @@ export default function GuideScreen() {
   const c = useCyclePalette();
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const g = guideBySlug(slug ?? '');
-  const lang = getLocale() === 'en' ? 'en' : 'fr';
+  const lang = guideLang();
   if (!g) return <Screen back title={tr('cy.guides.title')}><EmptyState icon="book-open" title={tr('cy.guides.notFound')} /></Screen>;
   const x = g[lang];
   return (

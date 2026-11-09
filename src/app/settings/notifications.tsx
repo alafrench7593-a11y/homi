@@ -14,7 +14,7 @@ import { Banner, Button, Card, Chip, ListRow, Row, SectionTitle, Text } from '@/
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { useAutoNotificationsSync, useAutoPrefs, useSaveAutoPrefs } from '@/lib/data/hooks-autoNotifs';
 import { DEFAULT_AUTO_PREFS, type AutoPrefs } from '@/lib/domain/autoNotifs';
-import { getBottleNotificationsEnabled, getPermission, notificationsSupported, requestPermission, sendTestNotification, setBottleNotificationsEnabled, type PermissionState } from '@/lib/notifications';
+import { getBottleNotificationsEnabled, getPermission, notificationsSupported, requestPermission, sendTestNotification, setBottleNotificationsEnabled, syncAutoNotifications, type PermissionState } from '@/lib/notifications';
 import { spacing } from '@/theme/tokens';
 import { formatDate, formatTime, t as tr, type TKey } from '@/i18n';
 
@@ -34,7 +34,7 @@ export default function NotificationSettings() {
       {!notificationsSupported ? <Banner tone="info" icon="smartphone">{tr('nt.webOnly')}</Banner>
         : perm !== 'granted' ? (
           <Banner tone="warning" icon="bell-off" title={tr('nt.permOff')}
-            action={<Button label={tr('nt.permAsk')} size="sm" onPress={() => void requestPermission().then((p) => { setPerm(p); if (p !== 'granted') toast(tr('nt.permDenied'), 'info'); })} testID="nt-perm" />}>
+            action={<Button label={tr('nt.permAsk')} size="sm" onPress={() => void requestPermission().then((p) => { setPerm(p); if (p !== 'granted') toast(tr('nt.permDenied'), 'info'); else void syncAutoNotifications(plans).catch(() => undefined); })} testID="nt-perm" />}>
             {tr('nt.permOffD')}
           </Banner>
         ) : null}

@@ -121,7 +121,9 @@ export function EmergencyInfo({ date, hoursSince, compact }: { date?: string | n
       <View style={{ gap: 4 }} testID="c3-ec-sources">
         <Text weight="bold">{tr('c3.ec.sources')}</Text>
         {EC_SOURCES.map((s) => (
-          <Tappable key={s.id} accessibilityRole="link" onPress={() => void Linking.openURL(s.url).catch(() => undefined)} style={{ gap: 2, minHeight: 40, justifyContent: 'center' }}>
+          <Tappable key={s.id} accessibilityRole="link" onPress={() => void Linking.openURL(s.url).catch(() => undefined)}
+            // Titre et date l'un sous l'autre (le cadre des liens est en ligne par défaut : le titre était écrasé sur 4 lignes)
+            style={{ gap: 2, minHeight: 40, justifyContent: 'center', flexDirection: 'column', alignItems: 'flex-start', borderRadius: 18, paddingVertical: 8 }}>
             <Text variant="small" color={t.colors.primary}>{tr(s.titleKey as TKey)}</Text>
             <Text variant="caption" muted>{tr('c3.ec.srcMeta', { org: s.org, published: formatDate(`${s.published}T12:00:00`), checked: formatDate(`${s.checked}T12:00:00`) })}</Text>
           </Tappable>

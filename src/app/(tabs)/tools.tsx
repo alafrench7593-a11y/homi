@@ -63,7 +63,8 @@ export default function Tools() {
     else if (activeFilter !== 'all') list = list.filter((x) => x.theme === activeFilter);
     return list;
   }, [catalog, q, activeFilter, favIds]);
-  const groups = useMemo(() => (activeFilter === 'fav' ? [{ key: 'fav' as const, title: tr('u3.tools.shortcuts'), short: '', items: visible }] : groupByTheme(visible)), [visible, activeFilter]);
+  // Favoris : pas d'en-tête « Raccourcis » vide quand seuls des outils d'autres profils sont en favori
+  const groups = useMemo(() => (activeFilter === 'fav' ? (visible.length ? [{ key: 'fav' as const, title: tr('u3.tools.shortcuts'), short: '', items: visible }] : []) : groupByTheme(visible)), [visible, activeFilter]);
   const urgent = catalog.find((x) => x.urgent);
   // Tous les outils restent visibles : ceux des autres profils (chaque enfant, grossesse, moi) sont listés ensuite
   const { setSubject } = useActiveSubject();
@@ -74,6 +75,13 @@ export default function Tools() {
     else if (activeFilter !== 'all') list = list.filter((x) => x.theme === activeFilter);
     return { ...o, tools: list };
   }).filter((o) => o.tools.length), [others, q, activeFilter, favIds]);
+  // Compteur de la puce « Favoris » : aussi les favoris pris dans les outils des autres profils (affichés par ce filtre)
+  // Favoris pris dans les outils des autres profils : aussi dans « Mes raccourcis » (ouverture sur le bon profil)
+  const otherFavs = useMemo(() => {
+    const seen = new Set(favs.map((x) => x.id));
+    return others.flatMap((o) => favoriteTools(o.tools, favIds).filter((x) => !seen.has(x.id) && (seen.add(x.id), true)).map((tool) => ({ tool, o })));
+  }, [others, favIds, favs]);
+  const favCount = useMemo(() => favs.length + others.reduce((n, o) => n + favoriteTools(o.tools, favIds).length, 0), [favs, others, favIds]);
 
   // grille : 2 colonnes sur téléphone, 3 sur tablette, 4 sur grand écran ; largeur MESURÉE du contenu
   // (l'application peut être affichée dans un cadre plus étroit que la fenêtre)
@@ -108,19 +116,20 @@ export default function Tools() {
 
       <Field label={tr('u3.tools.search')} value={q} onChangeText={setQ} placeholder={tr('u3.tools.searchPh')} returnKeyType="search" autoCorrect={false} accessibilityLabel={tr('u3.tools.search')} />
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }} style={{ marginHorizontal: -2, flexGrow: 0 }} accessibilityRole="tablist" accessibilityLabel={tr('u3.tools.filterTools')}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }} style={{ marginHorizontal: -2, flexGrow: 0 }} accessibilityRole="tablist" accessibilityLabel={tr('u3.tools.filterTools')}>
         <Chip label={tr('u3.tools.all')} selected={activeFilter === 'all'} onPress={() => { haptic('selection'); setFilter('all'); }} />
-        <Chip label={`${tr('u3.tools.favs')}${favs.length ? ` (${favs.length})` : ''}`} icon="star" selected={activeFilter === 'fav'} onPress={() => { haptic('selection'); setFilter('fav'); }} />
+        <Chip label={`${tr('u3.tools.favs')}${favCount ? ` (${favCount})` : ''}`} icon="star" selected={activeFilter === 'fav'} onPress={() => { haptic('selection'); setFilter('fav'); }} />
         {THEMES.filter((th) => present.has(th.key)).map((th) => (
           <Chip key={th.key} label={th.short} selected={activeFilter === th.key} onPress={() => { haptic('selection'); setFilter(activeFilter === th.key ? 'all' : th.key); }} accessibilityLabel={tr('u3.tools.filter', { title: th.title })} />
         ))}
       </ScrollView>
 
-      {activeFilter === 'all' && !q && favs.length ? (
+      {activeFilter === 'all' && !q && (favs.length || otherFavs.length) ? (
         <Appear kind="soft" delay={0.05} style={{ gap: spacing.xs }}>
           <Text variant="heading" accessibilityRole="header">{tr('u3.tools.shortcuts')}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }}>
+          <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }}>
             {favs.map((tool) => <ToolShortcut key={tool.id} tool={tool} status={statusOf(tool)} />)}
+            {otherFavs.map(({ tool, o }) => <ToolShortcut key={`${o.key}-${tool.id}`} tool={tool} beforeOpen={() => setSubject(o.subject)} />)}
           </ScrollView>
         </Appear>
       ) : null}

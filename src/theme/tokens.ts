@@ -104,14 +104,14 @@ export const themes: Record<ThemeName, Theme> = {
       border: 'rgba(255,255,255,0.78)',
       text: '#3A2621', // brun chaud
       textMuted: '#6A5049', // taupe brun (≥ 4,5:1 sur le fond)
-      primary: '#87533F', // cuivre doré (fil du logo), ≥ 4,5:1 sur le fond
+      primary: '#804F3C', // cuivre doré (fil du logo), ≥ 4,5:1 sur tout le dégradé (09/11/2026 : 4,64 sur #EBD0C8)
       primaryText: '#FFFFFF',
       accent: '#E6BE96', // pêche champagne
       accentSoft: 'rgba(230,190,150,0.38)',
-      lavender: '#7D5263', // prune taupe
+      lavender: '#784F5F', // prune taupe (≥ 4,5:1 sur tout le dégradé)
       gold: '#80532A', // or brun (lisible sur le rose)
-      success: '#2A7A50',
-      danger: '#B02E2E', // rouge des urgences, assombri pour rester lisible sur le rose poudré (≥ 4,5:1)
+      success: '#236643', // ≥ 4,5:1 sur tout le dégradé clair (était 3,6 sur #EBD0C8)
+      danger: '#A92C2C', // rouge des urgences, lisible sur tout le dégradé clair (≥ 4,5:1)
       dangerSoft: palette.dangerSoft,
       tabBar: 'rgba(74,50,42,0.88)',
       overlay: 'rgba(58,38,33,0.35)',

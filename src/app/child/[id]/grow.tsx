@@ -123,10 +123,10 @@ export default function Grow() {
       ) : <Text muted variant="small">{tr('gr.recentNone', { name })}</Text>}
 
       <SectionTitle title={tr('gr.byAge')} />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
         {AGE_BANDS.map((x) => <Chip key={x.key} label={tr(`gr.band.${x.key}` as TKey) + (x.key === current.key ? ` · ${tr('gr.now')}` : '')} selected={band === x.key} onPress={() => setBand(x.key)} testID={`gr-band-${x.key}`} />)}
       </ScrollView>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
         <Chip label={tr('gr.cat.all')} selected={!cat} onPress={() => setCat(null)} testID="gr-cat-all" />
         {STEP_CATEGORIES.map((c) => <Chip key={c} label={tr(`gr.cat.${c}` as TKey)} selected={cat === c} onPress={() => setCat(cat === c ? null : c)} testID={`gr-cat-${c}`} />)}
       </ScrollView>
@@ -170,7 +170,10 @@ function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildS
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   const tint = st === 'observed' ? (t.colors.success ?? '#3E8E41') : st === 'in_progress' ? t.colors.primary : t.colors.textMuted;
+  const quick = !locked && st !== 'observed';
+  // Le bouton « Observé » est posé SUR la carte et non dedans : un bouton dans un bouton est invalide sur le web
   return (
+    <View>
     <Tappable accessibilityRole="button" onPress={onPress} testID={`gr-step-${s.key}`}
       accessibilityLabel={`${s.title}. ${tr('gr.around', { range: range(s.around[0], s.around[1]) })}${st ? `. ${tr(`gr.status.${st}` as TKey)}` : ''}${locked ? `. ${tr('gr.locked')}` : ''}`}>
       <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.6)'} depth={1} radius={20} padded={spacing.sm + 4}>
@@ -183,15 +186,24 @@ function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildS
             <Text variant="caption" muted>{tr(`gr.cat.${s.category}` as TKey)} · {tr('gr.around', { range: range(s.around[0], s.around[1]) })}</Text>
             {st ? <Text variant="caption" color={tint} testID={`gr-status-${s.key}`}>{tr(`gr.status.${st}` as TKey)}</Text> : null}
           </View>
-          {!locked && st !== 'observed' ? (
-            <Tappable bare accessibilityRole="button" accessibilityLabel={`${tr('mb.gr.quickObserved')} — ${s.title}`} onPress={() => void quickObserved()} hitSlop={8} testID={`gr-quick-${s.key}`}
-              style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: t.colors.primary }}>
-              <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('mb.gr.quickObserved')}</Text>
-            </Tappable>
+          {quick ? (
+            // place réservée (invisible) pour le bouton posé au-dessus
+            <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ paddingHorizontal: 12, paddingVertical: 7, opacity: 0 }}>
+              <Text variant="caption" weight="bold">{tr('mb.gr.quickObserved')}</Text>
+            </View>
           ) : <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
         </View>
       </GlassSurface>
     </Tappable>
+    {quick ? (
+      <View pointerEvents="box-none" style={{ position: 'absolute', top: 0, bottom: 0, right: spacing.sm + 4, justifyContent: 'center' }}>
+        <Tappable bare accessibilityRole="button" accessibilityLabel={`${tr('mb.gr.quickObserved')} — ${s.title}`} onPress={() => void quickObserved()} hitSlop={8} testID={`gr-quick-${s.key}`}
+          style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: t.colors.primary }}>
+          <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('mb.gr.quickObserved')}</Text>
+        </Tappable>
+      </View>
+    ) : null}
+    </View>
   );
 }
 

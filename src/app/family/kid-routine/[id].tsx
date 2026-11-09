@@ -10,7 +10,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useToast } from '@/components/Overlays';
 import { Tappable } from '@/components/Tappable';
-import { haptic, Loading, Text } from '@/components/ui';
+import { Button, haptic, Loading, Text } from '@/components/ui';
+import { useMemberships } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useKidChecks, useKidRoutines, useToggleKidStep } from '@/lib/data/hooks-tools6';
 import { todayISO } from '@/lib/domain/dates';
@@ -27,10 +28,11 @@ export default function KidRoutineMode() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const day = todayISO();
   const routinesQ = useKidRoutines();
+  const membershipsQ = useMemberships(); // foyer pas encore connu : chargement, pas « introuvable »
   const routine = (routinesQ.data ?? []).find((r) => r.id === id);
   const checks = (useKidChecks(day).data ?? []).filter((c) => c.routine_id === id);
   const toggle = useToggleKidStep();
-  if (!routine) return routinesQ.isLoading ? <Loading /> : <View style={{ flex: 1, backgroundColor: t.colors.background, alignItems: 'center', justifyContent: 'center' }}><Text>{tr('kr.notFound')}</Text></View>;
+  if (!routine) return routinesQ.isLoading || (membershipsQ.isLoading && !membershipsQ.data) ? <Loading /> : <View style={{ flex: 1, backgroundColor: t.colors.background, alignItems: 'center', justifyContent: 'center', gap: spacing.md }}><Text>{tr('kr.notFound')}</Text><Button label={tr('common.back')} icon="arrow-left" variant="secondary" onPress={() => goBack('/family/kid-routines')} /></View>;
   const done = new Set(checks.map((c) => c.step));
   const total = routine.steps.length;
   const all = done.size >= total;

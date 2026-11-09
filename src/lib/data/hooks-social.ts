@@ -242,11 +242,11 @@ export function useDigestSync() {
 // ---------------------------------------------------------------- résumé et traduction (Premium, serveur)
 export type CommunityAiResult =
   | { ai: 'ok' | 'demo'; kind: 'summary'; points: string[]; caution: string | null; message?: string }
-  | { ai: 'ok'; kind: 'translation'; text: string; target: 'fr' | 'en' }
+  | { ai: 'ok'; kind: 'translation'; text: string; target: 'fr' | 'en' | 'es' | 'de' | 'it' }
   | { ai: 'not_configured' | 'unavailable' | 'rejected' | 'consent_required'; message: string };
 export function useCommunityAi() {
   return useMutation({
-    mutationFn: (p: { action: 'summarize' | 'translate'; postId: string; commentId?: string | null; target?: 'fr' | 'en' }) =>
+    mutationFn: (p: { action: 'summarize' | 'translate'; postId: string; commentId?: string | null; target?: 'fr' | 'en' | 'es' | 'de' | 'it' }) =>
       backend.invoke<CommunityAiResult>('community-ai', { action: p.action, post_id: p.postId, comment_id: p.commentId ?? null, target_lang: p.target ?? 'fr' }),
   });
 }

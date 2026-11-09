@@ -1,6 +1,9 @@
 /** Aide pour la nuit : repères généraux par âge, routines apaisantes, questions à préparer. Brouillon IA, statut « À vérifier ». */
 import type { ArticleSource } from './articles/library';
 import { localized } from '@/i18n/localized';
+import { NIGHT_BANDS_ES, SOOTHING_ROUTINES_ES, SAFE_SLEEP_ES, QUESTIONS_FOR_PRO_ES, SEEK_HELP_NOW_ES } from './nightHelp.es';
+import { NIGHT_BANDS_DE, SOOTHING_ROUTINES_DE, SAFE_SLEEP_DE, QUESTIONS_FOR_PRO_DE, SEEK_HELP_NOW_DE } from './nightHelp.de';
+import { NIGHT_BANDS_IT, SOOTHING_ROUTINES_IT, SAFE_SLEEP_IT, QUESTIONS_FOR_PRO_IT, SEEK_HELP_NOW_IT } from './nightHelp.it';
 
 export interface NightAgeBand { key: string; fromMonths: number; toMonths: number; title: string; points: string[]; sources: string[] /* keys of NIGHT_SOURCES */ }
 
@@ -370,10 +373,10 @@ const SEEK_HELP_NOW_EN: string[] = [
   'If you have thoughts of harming yourself or of not being here any more: call 3114 (free, 24 hours a day).',
 ];
 
-export const NIGHT_BANDS: NightAgeBand[] = localized(NIGHT_BANDS_FR, NIGHT_BANDS_EN);
-export const SOOTHING_ROUTINES: { title: string; steps: string[] }[] = localized(SOOTHING_ROUTINES_FR, SOOTHING_ROUTINES_EN);
-export const SAFE_SLEEP: string[] = localized(SAFE_SLEEP_FR, SAFE_SLEEP_EN);
-export const QUESTIONS_FOR_PRO: string[] = localized(QUESTIONS_FOR_PRO_FR, QUESTIONS_FOR_PRO_EN);
-export const SEEK_HELP_NOW: string[] = localized(SEEK_HELP_NOW_FR, SEEK_HELP_NOW_EN);
+export const NIGHT_BANDS: NightAgeBand[] = localized(NIGHT_BANDS_FR, NIGHT_BANDS_EN, { es: NIGHT_BANDS_ES, de: NIGHT_BANDS_DE, it: NIGHT_BANDS_IT });
+export const SOOTHING_ROUTINES: { title: string; steps: string[] }[] = localized(SOOTHING_ROUTINES_FR, SOOTHING_ROUTINES_EN, { es: SOOTHING_ROUTINES_ES, de: SOOTHING_ROUTINES_DE, it: SOOTHING_ROUTINES_IT });
+export const SAFE_SLEEP: string[] = localized(SAFE_SLEEP_FR, SAFE_SLEEP_EN, { es: SAFE_SLEEP_ES, de: SAFE_SLEEP_DE, it: SAFE_SLEEP_IT });
+export const QUESTIONS_FOR_PRO: string[] = localized(QUESTIONS_FOR_PRO_FR, QUESTIONS_FOR_PRO_EN, { es: QUESTIONS_FOR_PRO_ES, de: QUESTIONS_FOR_PRO_DE, it: QUESTIONS_FOR_PRO_IT });
+export const SEEK_HELP_NOW: string[] = localized(SEEK_HELP_NOW_FR, SEEK_HELP_NOW_EN, { es: SEEK_HELP_NOW_ES, de: SEEK_HELP_NOW_DE, it: SEEK_HELP_NOW_IT });
 
 export const NIGHT_STATUS = 'to_review' as const;

@@ -217,7 +217,7 @@ export default function PrivacyScreen() {
       <Sheet visible={exportText != null} onClose={() => setExportText(null)} title={tr('u1.acc.myData')}>
         <Text variant="small" muted>{tr('u1.priv.shareUnavailable')}</Text>
         <Button label={tr('u1.priv.shareText')} icon="share-2" size="sm" style={{ alignSelf: 'flex-start' }} onPress={() => Share.share({ message: exportText ?? '', title: tr('u1.acc.myData') }).catch(() => undefined)} />
-        <ScrollView horizontal style={{ maxHeight: 360, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, padding: spacing.sm }}>
+        <ScrollView horizontal keyboardShouldPersistTaps="handled" style={{ maxHeight: 360, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, padding: spacing.sm }}>
           <Text selectable variant="caption">{(exportText ?? '').slice(0, 20000)}{(exportText?.length ?? 0) > 20000 ? '\n…' : ''}</Text>
         </ScrollView>
       </Sheet>

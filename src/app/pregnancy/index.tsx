@@ -139,7 +139,7 @@ export default function PregnancyUniverse() {
       {/* carte transparente : le fond de l'application (vidéo jour / nuit) reste visible derrière le bébé */}
       <View style={{ paddingVertical: spacing.md, gap: spacing.sm }} testID="preg-hero">
         <Text variant="small" color={heroGold} center>{multLabel(pregnancy.multiplicity)}</Text>
-        <Text variant="hero" color={heroText} center>{w} {getLocale() === 'en' ? 'wks' : 'SA'}</Text>
+        <Text variant="hero" color={heroText} center>{w} {tr('f5.wksShort')}</Text>
         <Text center color={heroMuted}>{tr('u2.preg.weeks_trimester', { weeks: Math.max(0, w - 2), trimester: w < 15 ? 1 : w < 29 ? 2 : 3 })}</Text>
         <View style={{ alignItems: 'center', paddingVertical: spacing.sm }}>
           <WeeksRing week={w} size={310}><FetusArt week={w} growth={info.growth} size={n > 1 ? 220 : 250} hue={HUES[selected % 3]} accessibilityLabel={babies?.[selected]?.nickname ? tr('u2.preg.art_a11y_named', { name: babies[selected].nickname as string, week: w }) : tr('u2.preg.art_a11y', { week: w })} /></WeeksRing>
@@ -156,7 +156,7 @@ export default function PregnancyUniverse() {
         {multiple && <Text center variant="caption" color={heroMuted}>{tr('u2.preg.multiple_note')}</Text>}
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }} accessibilityLabel={tr('u2.preg.choose_week')}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }} accessibilityLabel={tr('u2.preg.choose_week')}>
         {Array.from({ length: 39 }, (_, i) => i + 4).map((s) => (
           <Tappable key={s} accessibilityRole="button" accessibilityState={{ selected: s === w }} accessibilityLabel={tr('u2.preg.week_n', { n: s })} onPress={() => setWeek(s === p.weeksSA ? null : s)} style={{ width: 46, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: s === w ? '#FF8FB1' : s === p.weeksSA ? '#3A1D2E' : 'transparent', borderWidth: 1, borderColor: '#FF8FB155' }}>
             <Text variant="small" weight="bold" color={s === w ? '#1A0A13' : undefined}>{s}</Text>

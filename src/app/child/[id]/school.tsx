@@ -37,7 +37,7 @@ export default function ChildSchool() {
         { icon: 'book', value: loadFailed ? '—' : String(entries?.length ?? 0), label: tr('mb.sc.count') },
         { icon: 'clock', value: last ? formatDateFr(last.occurred_on) : '—', label: tr('mb.sc.last') },
       ]} />
-      <Text muted>{tr('sc.intro')}</Text>
+      <Text muted>{tr('sc.schoolIntro')}</Text>
       <Card>
         <Field label={tr('sc.title')} value={title} onChangeText={setTitle} maxLength={120} placeholder={tr('sc.placeholder')} testID="school-title" />
         <Field label={tr('sc.body')} optional value={body} onChangeText={setBody} multiline maxLength={4000} />

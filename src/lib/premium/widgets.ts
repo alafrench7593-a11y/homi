@@ -21,7 +21,7 @@ export interface WidgetSnapshot { title: string; lines: WidgetLine[]; quickActio
 
 const hm = (iso: string, tz?: string) => {
   const s = new Date(iso).toLocaleTimeString(localeTag(), { hour: '2-digit', minute: '2-digit', timeZone: tz });
-  return getLocale() === 'en' ? s : s.replace(':', ' h ');
+  return getLocale() === 'fr' ? s.replace(':', ' h ') : s;
 };
 const dm = (iso: string, tz?: string) => new Date(iso).toLocaleDateString(localeTag(), { weekday: 'short', day: 'numeric', month: 'short', timeZone: tz });
 

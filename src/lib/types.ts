@@ -163,11 +163,15 @@ export interface Article {
   editorial_status?: 'ai_draft' | 'to_review' | 'reviewed' | 'validated';
   /** Version anglaise (traduction à relire) ; absente : l'article s'affiche en français. */
   title_en?: string | null; summary_en?: string | null; body_md_en?: string | null;
+  // 08/11/2026 : espagnol, allemand, italien (affichés seulement quand la langue est publiée, voir content_locales)
+  title_es?: string | null; summary_es?: string | null; body_md_es?: string | null;
+  title_de?: string | null; summary_de?: string | null; body_md_de?: string | null;
+  title_it?: string | null; summary_it?: string | null; body_md_it?: string | null;
 }
 /** Article dans les listes (accueil, bibliothèque, outils…) : sans le texte ni les sources, lus à l'ouverture (useArticle).
  *  english_ready : titre ET texte anglais disponibles (champ calculé serveur, même règle que localizeArticle). */
-export type ArticleSummary = Omit<Article, 'body_md' | 'body_md_en' | 'sources'> & { english_ready?: boolean };
-export interface Category { id: string; slug: string; label: string; label_en?: string | null; icon: string | null; position: number }
+export type ArticleSummary = Omit<Article, 'body_md' | 'body_md_en' | 'body_md_es' | 'body_md_de' | 'body_md_it' | 'sources'> & { english_ready?: boolean; es_ready?: boolean; de_ready?: boolean; it_ready?: boolean };
+export interface Category { id: string; slug: string; label: string; label_en?: string | null; label_es?: string | null; label_de?: string | null; label_it?: string | null; icon: string | null; position: number }
 export interface EmergencyResource { id: string; country: string; label: string; phone: string; description: string; kind: string; available: string | null; position: number; active: boolean }
 
 export interface Conversation { id: string; user_id: string; title: string; context_enabled?: boolean; created_at: string; updated_at: string }
@@ -180,7 +184,7 @@ export interface AssistantMessage {
 }
 export interface AssistantFeedback { id: string; message_id: string; user_id: string; value: -1 | 1; reason: string | null; created_at: string; updated_at: string }
 
-export interface Forum { id: string; slug: string; title: string; description: string; title_en?: string | null; description_en?: string | null; journeys: Journey[]; icon: string | null; is_local: boolean; position: number }
+export interface Forum { id: string; slug: string; title: string; description: string; title_en?: string | null; description_en?: string | null; title_es?: string | null; description_es?: string | null; title_de?: string | null; description_de?: string | null; title_it?: string | null; description_it?: string | null; journeys: Journey[]; icon: string | null; is_local: boolean; position: number }
 export interface FeedPhoto { path: string; width: number | null; height: number | null }
 export interface FeedPost {
   id: string; forum_id: string; forum_slug?: string | null; title: string | null; body: string; kind?: 'question' | 'testimony'; anonymous?: boolean;

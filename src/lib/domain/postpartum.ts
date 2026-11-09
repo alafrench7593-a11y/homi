@@ -29,7 +29,34 @@ const NEEDS_EN: { value: Need; label: string }[] = [
   { value: 'other', label: 'I need something else' },
   { value: 'no_answer', label: 'I would rather not answer' },
 ];
-export const NEEDS: { value: Need; label: string }[] = localized(NEEDS_FR, NEEDS_EN);
+const NEEDS_ES: { value: Need; label: string }[] = [
+  { value: 'rest', label: 'Dormir o descansar' },
+  { value: 'relay', label: 'Que alguien me releve con el bebé' },
+  { value: 'talk', label: 'Hablar con alguien' },
+  { value: 'practical', label: 'Recibir ayuda práctica' },
+  { value: 'professional', label: 'Pedir cita con un profesional' },
+  { value: 'other', label: 'Necesito otra cosa' },
+  { value: 'no_answer', label: 'Prefiero no responder' },
+];
+const NEEDS_DE: { value: Need; label: string }[] = [
+  { value: 'rest', label: 'Schlafen oder mich ausruhen' },
+  { value: 'relay', label: 'Beim Baby abgelöst werden' },
+  { value: 'talk', label: 'Mit jemandem sprechen' },
+  { value: 'practical', label: 'Praktische Hilfe bekommen' },
+  { value: 'professional', label: 'Einen Termin bei einer Fachperson vereinbaren' },
+  { value: 'other', label: 'Ich brauche etwas anderes' },
+  { value: 'no_answer', label: 'Ich möchte lieber nicht antworten' },
+];
+const NEEDS_IT: { value: Need; label: string }[] = [
+  { value: 'rest', label: 'Dormire o riposarmi' },
+  { value: 'relay', label: 'Avere il cambio con il bebè' },
+  { value: 'talk', label: 'Parlare con qualcuno' },
+  { value: 'practical', label: 'Ricevere un aiuto pratico' },
+  { value: 'professional', label: 'Prendere appuntamento con un professionista' },
+  { value: 'other', label: 'Ho bisogno di altro' },
+  { value: 'no_answer', label: 'Preferisco non rispondere' },
+];
+export const NEEDS: { value: Need; label: string }[] = localized(NEEDS_FR, NEEDS_EN, { es: NEEDS_ES, de: NEEDS_DE, it: NEEDS_IT });
 
 export interface PostpartumCheckin {
   id: string;
@@ -87,7 +114,40 @@ const SCALES_EN: ScaleDef[] = [
   { key: 'rest_need', label: 'My need for rest', positive: false, low: 'Low', high: 'Very high' },
   { key: 'help_need', label: 'My need for help', positive: false, low: 'Low', high: 'Very high' },
 ];
-export const SCALES: ScaleDef[] = localized(SCALES_FR, SCALES_EN);
+const SCALES_ES: ScaleDef[] = [
+  { key: 'feeling', label: 'Cómo me siento hoy', positive: true, low: 'Muy mal', high: 'Bien' },
+  { key: 'mood', label: 'Mi estado de ánimo general', positive: true, low: 'Muy bajo', high: 'Bueno' },
+  { key: 'fatigue', label: 'Mi cansancio', positive: false, low: 'Poco cansada', high: 'Agotada' },
+  { key: 'stress', label: 'Mi estrés o mi ansiedad', positive: false, low: 'Tranquila', high: 'Muy fuerte' },
+  { key: 'sleep_quality', label: 'La calidad de mi sueño', positive: true, low: 'Muy mala', high: 'Buena' },
+  { key: 'supported', label: 'Me siento apoyada', positive: true, low: 'Nada', high: 'Totalmente' },
+  { key: 'coping', label: 'Consigo llevar el día a día', positive: true, low: 'Nada', high: 'Totalmente' },
+  { key: 'rest_need', label: 'Mi necesidad de descanso', positive: false, low: 'Baja', high: 'Muy fuerte' },
+  { key: 'help_need', label: 'Mi necesidad de ayuda', positive: false, low: 'Baja', high: 'Muy fuerte' },
+];
+const SCALES_DE: ScaleDef[] = [
+  { key: 'feeling', label: 'Wie ich mich heute fühle', positive: true, low: 'Sehr schlecht', high: 'Gut' },
+  { key: 'mood', label: 'Meine allgemeine Stimmung', positive: true, low: 'Sehr gedrückt', high: 'Gut' },
+  { key: 'fatigue', label: 'Meine Müdigkeit', positive: false, low: 'Kaum müde', high: 'Erschöpft' },
+  { key: 'stress', label: 'Mein Stress oder meine Angst', positive: false, low: 'Ruhig', high: 'Sehr stark' },
+  { key: 'sleep_quality', label: 'Die Qualität meines Schlafs', positive: true, low: 'Sehr schlecht', high: 'Gut' },
+  { key: 'supported', label: 'Ich fühle mich unterstützt', positive: true, low: 'Gar nicht', high: 'Voll und ganz' },
+  { key: 'coping', label: 'Ich komme im Alltag zurecht', positive: true, low: 'Gar nicht', high: 'Voll und ganz' },
+  { key: 'rest_need', label: 'Mein Bedürfnis nach Ruhe', positive: false, low: 'Gering', high: 'Sehr groß' },
+  { key: 'help_need', label: 'Mein Bedürfnis nach Hilfe', positive: false, low: 'Gering', high: 'Sehr groß' },
+];
+const SCALES_IT: ScaleDef[] = [
+  { key: 'feeling', label: 'Come mi sento oggi', positive: true, low: 'Molto male', high: 'Bene' },
+  { key: 'mood', label: 'Il mio umore generale', positive: true, low: 'Molto basso', high: 'Buono' },
+  { key: 'fatigue', label: 'La mia stanchezza', positive: false, low: 'Poco stanca', high: 'Sfinita' },
+  { key: 'stress', label: 'Il mio stress o la mia ansia', positive: false, low: 'Calma', high: 'Molto forte' },
+  { key: 'sleep_quality', label: 'La qualità del mio sonno', positive: true, low: 'Pessima', high: 'Buona' },
+  { key: 'supported', label: 'Mi sento sostenuta', positive: true, low: 'Per niente', high: 'Del tutto' },
+  { key: 'coping', label: 'Riesco a gestire la quotidianità', positive: true, low: 'Per niente', high: 'Del tutto' },
+  { key: 'rest_need', label: 'Il mio bisogno di riposo', positive: false, low: 'Basso', high: 'Molto forte' },
+  { key: 'help_need', label: 'Il mio bisogno di aiuto', positive: false, low: 'Basso', high: 'Molto forte' },
+];
+export const SCALES: ScaleDef[] = localized(SCALES_FR, SCALES_EN, { es: SCALES_ES, de: SCALES_DE, it: SCALES_IT });
 
 const PHYSICAL_SCALES_FR: ScaleDef[] = [
   { key: 'physical_fatigue', label: 'Fatigue physique', positive: false, low: 'Légère', high: 'Très forte' },
@@ -99,7 +159,22 @@ const PHYSICAL_SCALES_EN: ScaleDef[] = [
   { key: 'pain', label: 'Pain', positive: false, low: 'None or almost none', high: 'Strong' },
   { key: 'recovery', label: 'Overall recovery', positive: true, low: 'Hard', high: 'Good' },
 ];
-export const PHYSICAL_SCALES: ScaleDef[] = localized(PHYSICAL_SCALES_FR, PHYSICAL_SCALES_EN);
+const PHYSICAL_SCALES_ES: ScaleDef[] = [
+  { key: 'physical_fatigue', label: 'Cansancio físico', positive: false, low: 'Leve', high: 'Muy fuerte' },
+  { key: 'pain', label: 'Dolores', positive: false, low: 'Ninguno o casi', high: 'Fuertes' },
+  { key: 'recovery', label: 'Recuperación general', positive: true, low: 'Difícil', high: 'Buena' },
+];
+const PHYSICAL_SCALES_DE: ScaleDef[] = [
+  { key: 'physical_fatigue', label: 'Körperliche Müdigkeit', positive: false, low: 'Leicht', high: 'Sehr stark' },
+  { key: 'pain', label: 'Schmerzen', positive: false, low: 'Keine oder kaum', high: 'Stark' },
+  { key: 'recovery', label: 'Allgemeine Erholung', positive: true, low: 'Schwierig', high: 'Gut' },
+];
+const PHYSICAL_SCALES_IT: ScaleDef[] = [
+  { key: 'physical_fatigue', label: 'Stanchezza fisica', positive: false, low: 'Lieve', high: 'Molto forte' },
+  { key: 'pain', label: 'Dolori', positive: false, low: 'Nessuno o quasi', high: 'Forti' },
+  { key: 'recovery', label: 'Recupero generale', positive: true, low: 'Difficile', high: 'Buono' },
+];
+export const PHYSICAL_SCALES: ScaleDef[] = localized(PHYSICAL_SCALES_FR, PHYSICAL_SCALES_EN, { es: PHYSICAL_SCALES_ES, de: PHYSICAL_SCALES_DE, it: PHYSICAL_SCALES_IT });
 
 // ------------------------------------------------------------------ danger immédiat
 /** Questions de sécurité : facultatives, jamais enregistrées dans le détail. */
@@ -114,7 +189,22 @@ const DANGER_QUESTIONS_EN: readonly DangerQ[] = [
   { key: 'baby', label: 'I have thoughts of harming my baby.' },
   { key: 'confusion', label: 'I feel very confused, or I feel as if reality is slipping away from me.' },
 ];
-export const DANGER_QUESTIONS: readonly DangerQ[] = localized(DANGER_QUESTIONS_FR, DANGER_QUESTIONS_EN);
+const DANGER_QUESTIONS_ES: readonly DangerQ[] = [
+  { key: 'self', label: 'Tengo pensamientos de hacerme daño o de dejar de estar aquí.' },
+  { key: 'baby', label: 'Tengo pensamientos de hacerle daño a mi bebé.' },
+  { key: 'confusion', label: 'Me siento muy confundida, o tengo la sensación de que la realidad se me escapa.' },
+];
+const DANGER_QUESTIONS_DE: readonly DangerQ[] = [
+  { key: 'self', label: 'Ich habe Gedanken, mir etwas anzutun oder nicht mehr da zu sein.' },
+  { key: 'baby', label: 'Ich habe Gedanken, meinem Baby etwas anzutun.' },
+  { key: 'confusion', label: 'Ich fühle mich sehr verwirrt oder habe den Eindruck, dass mir die Realität entgleitet.' },
+];
+const DANGER_QUESTIONS_IT: readonly DangerQ[] = [
+  { key: 'self', label: 'Ho pensieri di farmi del male o di non esserci più.' },
+  { key: 'baby', label: 'Ho pensieri di fare del male al mio bebè.' },
+  { key: 'confusion', label: 'Mi sento molto confusa, o ho l’impressione che la realtà mi sfugga.' },
+];
+export const DANGER_QUESTIONS: readonly DangerQ[] = localized(DANGER_QUESTIONS_FR, DANGER_QUESTIONS_EN, { es: DANGER_QUESTIONS_ES, de: DANGER_QUESTIONS_DE, it: DANGER_QUESTIONS_IT });
 export type DangerKey = DangerQ['key'];
 
 export interface EmergencyContact { phone: string; label: string; when: string }
@@ -320,14 +410,32 @@ const REST_LABEL_FR: Record<NonNullable<SharedStatus['rest_need']>, string> = {
 const REST_LABEL_EN: Record<NonNullable<SharedStatus['rest_need']>, string> = {
   none: 'No particular need', some: 'Needs a breather', high: 'Really needs rest',
 };
-export const REST_LABEL: Record<NonNullable<SharedStatus['rest_need']>, string> = localized(REST_LABEL_FR, REST_LABEL_EN);
+const REST_LABEL_ES: Record<NonNullable<SharedStatus['rest_need']>, string> = {
+  none: 'Ninguna necesidad particular', some: 'Necesita un respiro', high: 'Necesita de verdad descansar',
+};
+const REST_LABEL_DE: Record<NonNullable<SharedStatus['rest_need']>, string> = {
+  none: 'Kein besonderer Bedarf', some: 'Braucht eine Verschnaufpause', high: 'Braucht wirklich Ruhe',
+};
+const REST_LABEL_IT: Record<NonNullable<SharedStatus['rest_need']>, string> = {
+  none: 'Nessun bisogno particolare', some: 'Ha bisogno di respirare', high: 'Ha davvero bisogno di riposo',
+};
+export const REST_LABEL: Record<NonNullable<SharedStatus['rest_need']>, string> = localized(REST_LABEL_FR, REST_LABEL_EN, { es: REST_LABEL_ES, de: REST_LABEL_DE, it: REST_LABEL_IT });
 const AVAILABILITY_LABEL_FR: Record<NonNullable<SharedStatus['availability']>, string> = {
   available: 'Disponible', resting: 'Se repose', unavailable: 'Pas disponible pour le moment',
 };
 const AVAILABILITY_LABEL_EN: Record<NonNullable<SharedStatus['availability']>, string> = {
   available: 'Available', resting: 'Resting', unavailable: 'Not available at the moment',
 };
-export const AVAILABILITY_LABEL: Record<NonNullable<SharedStatus['availability']>, string> = localized(AVAILABILITY_LABEL_FR, AVAILABILITY_LABEL_EN);
+const AVAILABILITY_LABEL_ES: Record<NonNullable<SharedStatus['availability']>, string> = {
+  available: 'Disponible', resting: 'Está descansando', unavailable: 'No disponible por ahora',
+};
+const AVAILABILITY_LABEL_DE: Record<NonNullable<SharedStatus['availability']>, string> = {
+  available: 'Verfügbar', resting: 'Ruht sich aus', unavailable: 'Im Moment nicht verfügbar',
+};
+const AVAILABILITY_LABEL_IT: Record<NonNullable<SharedStatus['availability']>, string> = {
+  available: 'Disponibile', resting: 'Si sta riposando', unavailable: 'Non disponibile al momento',
+};
+export const AVAILABILITY_LABEL: Record<NonNullable<SharedStatus['availability']>, string> = localized(AVAILABILITY_LABEL_FR, AVAILABILITY_LABEL_EN, { es: AVAILABILITY_LABEL_ES, de: AVAILABILITY_LABEL_DE, it: AVAILABILITY_LABEL_IT });
 
 /**
  * « Comment m'aider ? » : gestes concrets proposés au conjoint, à partir de ce que la mère a CHOISI
@@ -364,14 +472,48 @@ const ACTION_KINDS_EN: ActionKindDef[] = [
   { value: 'relay_received', label: 'Someone took over for me' },
   { value: 'other', label: 'Other step' },
 ];
-export const ACTION_KINDS: ActionKindDef[] = localized(ACTION_KINDS_FR, ACTION_KINDS_EN);
+const ACTION_KINDS_ES: ActionKindDef[] = [
+  { value: 'appointment_booked', label: 'He pedido una cita' },
+  { value: 'professional_contacted', label: 'He contactado con un profesional' },
+  { value: 'talked', label: 'Se lo he contado a alguien' },
+  { value: 'rest_taken', label: 'He descansado' },
+  { value: 'relay_received', label: 'Alguien me ha relevado' },
+  { value: 'other', label: 'Otro paso' },
+];
+const ACTION_KINDS_DE: ActionKindDef[] = [
+  { value: 'appointment_booked', label: 'Ich habe einen Termin vereinbart' },
+  { value: 'professional_contacted', label: 'Ich habe eine Fachperson kontaktiert' },
+  { value: 'talked', label: 'Ich habe mit jemandem darüber gesprochen' },
+  { value: 'rest_taken', label: 'Ich habe mich ausgeruht' },
+  { value: 'relay_received', label: 'Ich wurde abgelöst' },
+  { value: 'other', label: 'Anderer Schritt' },
+];
+const ACTION_KINDS_IT: ActionKindDef[] = [
+  { value: 'appointment_booked', label: 'Ho preso un appuntamento' },
+  { value: 'professional_contacted', label: 'Ho contattato un professionista' },
+  { value: 'talked', label: 'Ne ho parlato con qualcuno' },
+  { value: 'rest_taken', label: 'Mi sono riposata' },
+  { value: 'relay_received', label: 'Qualcuno mi ha dato il cambio' },
+  { value: 'other', label: 'Altro passo' },
+];
+export const ACTION_KINDS: ActionKindDef[] = localized(ACTION_KINDS_FR, ACTION_KINDS_EN, { es: ACTION_KINDS_ES, de: ACTION_KINDS_DE, it: ACTION_KINDS_IT });
 
 /** Idées de besoins de repos et de tâches à déléguer pour préparer le plan de soutien (avant ou après la naissance). */
 export const PLAN_REST_IDEAS: string[] = localized(
   ['Une sieste protégée chaque jour', 'Une nuit complète par semaine', 'Une douche tranquille', 'Sortir marcher seule', 'Limiter les visites'],
   ['A protected nap every day', 'A full night once a week', 'A quiet shower', 'Going out for a walk alone', 'Limiting visits'],
+  {
+    es: ['Una siesta protegida cada día', 'Una noche completa por semana', 'Una ducha tranquila', 'Salir a caminar sola', 'Limitar las visitas'],
+    de: ['Ein geschützter Mittagsschlaf jeden Tag', 'Eine ganze Nacht pro Woche', 'Eine ruhige Dusche', 'Allein spazieren gehen', 'Besuche begrenzen'],
+    it: ['Un pisolino protetto ogni giorno', 'Una notte intera a settimana', 'Una doccia tranquilla', 'Uscire a camminare da sola', 'Limitare le visite'],
+  },
 );
 export const PLAN_TASK_IDEAS: string[] = localized(
   ['Courses', 'Repas', 'Linge', 'Ménage', 'Rendez-vous administratifs', 'Aînés : école et activités', 'Accueillir les visites', 'Biberons de nuit'],
   ['Grocery shopping', 'Meals', 'Laundry', 'Cleaning', 'Paperwork appointments', 'Older children: school and activities', 'Hosting visitors', 'Night bottles'],
+  {
+    es: ['Compras', 'Comidas', 'Ropa', 'Limpieza', 'Citas administrativas', 'Mayores: colegio y actividades', 'Recibir las visitas', 'Biberones de noche'],
+    de: ['Einkäufe', 'Mahlzeiten', 'Wäsche', 'Putzen', 'Behördentermine', 'Ältere Kinder: Schule und Aktivitäten', 'Besuch empfangen', 'Nächtliche Fläschchen'],
+    it: ['Spesa', 'Pasti', 'Bucato', 'Pulizie', 'Appuntamenti amministrativi', 'Figli più grandi: scuola e attività', 'Accogliere le visite', 'Biberon notturni'],
+  },
 );

@@ -9,6 +9,9 @@
 import type { ContraceptionMethodKind, FertilityJourney } from '@/lib/types-fertility';
 import { t as tr, onLocaleChange } from '@/i18n';
 import { inLang, localized } from '@/i18n/localized';
+import * as ES from './fertility.es';
+import * as DE from './fertility.de';
+import * as IT from './fertility.it';
 
 // ---------------------------------------------------------------- messages transverses
 const TTC_DISCLAIMER_FR =
@@ -539,34 +542,34 @@ const AVOID_REMINDER_PRESETS_EN: ReminderPreset[] = [
   { key: 'prescription', title: 'Renew my prescription', discreetTitle: 'Appointment to book', kind: 'once', category: 'custom', hint: 'Before the end of your last box or pack.' },
 ];
 
-export let TTC_DISCLAIMER = inLang({ fr: TTC_DISCLAIMER_FR, en: TTC_DISCLAIMER_EN });
-export let AVOID_DISCLAIMER = inLang({ fr: AVOID_DISCLAIMER_FR, en: AVOID_DISCLAIMER_EN });
-export let AVOID_NO_SAFE_DAYS = inLang({ fr: AVOID_NO_SAFE_DAYS_FR, en: AVOID_NO_SAFE_DAYS_EN });
-export const TIMING_INFO: { title: string; text: string }[] = localized(TIMING_INFO_FR, TIMING_INFO_EN);
-export let EXAMS_INTRO = inLang({ fr: EXAMS_INTRO_FR, en: EXAMS_INTRO_EN });
-export const WHEN_TO_TALK: string[] = localized(WHEN_TO_TALK_FR, WHEN_TO_TALK_EN);
-export const WHO_TO_SEE: string[] = localized(WHO_TO_SEE_FR, WHO_TO_SEE_EN);
-export const POSSIBLE_EXAMS: { title: string; text: string }[] = localized(POSSIBLE_EXAMS_FR, POSSIBLE_EXAMS_EN);
-export let EXAMS_FOOTER = inLang({ fr: EXAMS_FOOTER_FR, en: EXAMS_FOOTER_EN });
-export let CONTRACEPTION_INTRO = inLang({ fr: CONTRACEPTION_INTRO_FR, en: CONTRACEPTION_INTRO_EN });
-export const CONTRACEPTION_METHODS: MethodInfo[] = localized(CONTRACEPTION_METHODS_FR, CONTRACEPTION_METHODS_EN);
-export let CONTRACEPTION_FOOTER = inLang({ fr: CONTRACEPTION_FOOTER_FR, en: CONTRACEPTION_FOOTER_EN });
-export let EMERGENCY_INTRO = inLang({ fr: EMERGENCY_INTRO_FR, en: EMERGENCY_INTRO_EN });
-export const EMERGENCY_OPTIONS: { title: string; delay: string; text: string }[] = localized(EMERGENCY_OPTIONS_FR, EMERGENCY_OPTIONS_EN);
-export const EMERGENCY_FACTS: string[] = localized(EMERGENCY_FACTS_FR, EMERGENCY_FACTS_EN);
-export const EMERGENCY_CONTACTS: { label: string; phone: string; description: string }[] = localized(EMERGENCY_CONTACTS_FR, EMERGENCY_CONTACTS_EN);
-export const QUESTION_SUGGESTIONS: Record<FertilityJourney, string[]> = localized(QUESTION_SUGGESTIONS_FR, QUESTION_SUGGESTIONS_EN);
-export const TTC_REMINDER_PRESETS: ReminderPreset[] = localized(TTC_REMINDER_PRESETS_FR, TTC_REMINDER_PRESETS_EN);
-export const AVOID_REMINDER_PRESETS: ReminderPreset[] = localized(AVOID_REMINDER_PRESETS_FR, AVOID_REMINDER_PRESETS_EN);
+export let TTC_DISCLAIMER = inLang({ fr: TTC_DISCLAIMER_FR, en: TTC_DISCLAIMER_EN, es: ES.TTC_DISCLAIMER_ES, de: DE.TTC_DISCLAIMER_DE, it: IT.TTC_DISCLAIMER_IT });
+export let AVOID_DISCLAIMER = inLang({ fr: AVOID_DISCLAIMER_FR, en: AVOID_DISCLAIMER_EN, es: ES.AVOID_DISCLAIMER_ES, de: DE.AVOID_DISCLAIMER_DE, it: IT.AVOID_DISCLAIMER_IT });
+export let AVOID_NO_SAFE_DAYS = inLang({ fr: AVOID_NO_SAFE_DAYS_FR, en: AVOID_NO_SAFE_DAYS_EN, es: ES.AVOID_NO_SAFE_DAYS_ES, de: DE.AVOID_NO_SAFE_DAYS_DE, it: IT.AVOID_NO_SAFE_DAYS_IT });
+export const TIMING_INFO: { title: string; text: string }[] = localized(TIMING_INFO_FR, TIMING_INFO_EN, { es: ES.TIMING_INFO_ES, de: DE.TIMING_INFO_DE, it: IT.TIMING_INFO_IT });
+export let EXAMS_INTRO = inLang({ fr: EXAMS_INTRO_FR, en: EXAMS_INTRO_EN, es: ES.EXAMS_INTRO_ES, de: DE.EXAMS_INTRO_DE, it: IT.EXAMS_INTRO_IT });
+export const WHEN_TO_TALK: string[] = localized(WHEN_TO_TALK_FR, WHEN_TO_TALK_EN, { es: ES.WHEN_TO_TALK_ES, de: DE.WHEN_TO_TALK_DE, it: IT.WHEN_TO_TALK_IT });
+export const WHO_TO_SEE: string[] = localized(WHO_TO_SEE_FR, WHO_TO_SEE_EN, { es: ES.WHO_TO_SEE_ES, de: DE.WHO_TO_SEE_DE, it: IT.WHO_TO_SEE_IT });
+export const POSSIBLE_EXAMS: { title: string; text: string }[] = localized(POSSIBLE_EXAMS_FR, POSSIBLE_EXAMS_EN, { es: ES.POSSIBLE_EXAMS_ES, de: DE.POSSIBLE_EXAMS_DE, it: IT.POSSIBLE_EXAMS_IT });
+export let EXAMS_FOOTER = inLang({ fr: EXAMS_FOOTER_FR, en: EXAMS_FOOTER_EN, es: ES.EXAMS_FOOTER_ES, de: DE.EXAMS_FOOTER_DE, it: IT.EXAMS_FOOTER_IT });
+export let CONTRACEPTION_INTRO = inLang({ fr: CONTRACEPTION_INTRO_FR, en: CONTRACEPTION_INTRO_EN, es: ES.CONTRACEPTION_INTRO_ES, de: DE.CONTRACEPTION_INTRO_DE, it: IT.CONTRACEPTION_INTRO_IT });
+export const CONTRACEPTION_METHODS: MethodInfo[] = localized(CONTRACEPTION_METHODS_FR, CONTRACEPTION_METHODS_EN, { es: ES.CONTRACEPTION_METHODS_ES, de: DE.CONTRACEPTION_METHODS_DE, it: IT.CONTRACEPTION_METHODS_IT });
+export let CONTRACEPTION_FOOTER = inLang({ fr: CONTRACEPTION_FOOTER_FR, en: CONTRACEPTION_FOOTER_EN, es: ES.CONTRACEPTION_FOOTER_ES, de: DE.CONTRACEPTION_FOOTER_DE, it: IT.CONTRACEPTION_FOOTER_IT });
+export let EMERGENCY_INTRO = inLang({ fr: EMERGENCY_INTRO_FR, en: EMERGENCY_INTRO_EN, es: ES.EMERGENCY_INTRO_ES, de: DE.EMERGENCY_INTRO_DE, it: IT.EMERGENCY_INTRO_IT });
+export const EMERGENCY_OPTIONS: { title: string; delay: string; text: string }[] = localized(EMERGENCY_OPTIONS_FR, EMERGENCY_OPTIONS_EN, { es: ES.EMERGENCY_OPTIONS_ES, de: DE.EMERGENCY_OPTIONS_DE, it: IT.EMERGENCY_OPTIONS_IT });
+export const EMERGENCY_FACTS: string[] = localized(EMERGENCY_FACTS_FR, EMERGENCY_FACTS_EN, { es: ES.EMERGENCY_FACTS_ES, de: DE.EMERGENCY_FACTS_DE, it: IT.EMERGENCY_FACTS_IT });
+export const EMERGENCY_CONTACTS: { label: string; phone: string; description: string }[] = localized(EMERGENCY_CONTACTS_FR, EMERGENCY_CONTACTS_EN, { es: ES.EMERGENCY_CONTACTS_ES, de: DE.EMERGENCY_CONTACTS_DE, it: IT.EMERGENCY_CONTACTS_IT });
+export const QUESTION_SUGGESTIONS: Record<FertilityJourney, string[]> = localized(QUESTION_SUGGESTIONS_FR, QUESTION_SUGGESTIONS_EN, { es: ES.QUESTION_SUGGESTIONS_ES, de: DE.QUESTION_SUGGESTIONS_DE, it: IT.QUESTION_SUGGESTIONS_IT });
+export const TTC_REMINDER_PRESETS: ReminderPreset[] = localized(TTC_REMINDER_PRESETS_FR, TTC_REMINDER_PRESETS_EN, { es: ES.TTC_REMINDER_PRESETS_ES, de: DE.TTC_REMINDER_PRESETS_DE, it: IT.TTC_REMINDER_PRESETS_IT });
+export const AVOID_REMINDER_PRESETS: ReminderPreset[] = localized(AVOID_REMINDER_PRESETS_FR, AVOID_REMINDER_PRESETS_EN, { es: ES.AVOID_REMINDER_PRESETS_ES, de: DE.AVOID_REMINDER_PRESETS_DE, it: IT.AVOID_REMINDER_PRESETS_IT });
 
 // Textes fixes recalculés à chaque changement de langue (les écrans lisent toujours la valeur à jour)
 onLocaleChange(() => {
-  TTC_DISCLAIMER = inLang({ fr: TTC_DISCLAIMER_FR, en: TTC_DISCLAIMER_EN });
-  AVOID_DISCLAIMER = inLang({ fr: AVOID_DISCLAIMER_FR, en: AVOID_DISCLAIMER_EN });
-  AVOID_NO_SAFE_DAYS = inLang({ fr: AVOID_NO_SAFE_DAYS_FR, en: AVOID_NO_SAFE_DAYS_EN });
-  EXAMS_INTRO = inLang({ fr: EXAMS_INTRO_FR, en: EXAMS_INTRO_EN });
-  EXAMS_FOOTER = inLang({ fr: EXAMS_FOOTER_FR, en: EXAMS_FOOTER_EN });
-  CONTRACEPTION_INTRO = inLang({ fr: CONTRACEPTION_INTRO_FR, en: CONTRACEPTION_INTRO_EN });
-  CONTRACEPTION_FOOTER = inLang({ fr: CONTRACEPTION_FOOTER_FR, en: CONTRACEPTION_FOOTER_EN });
-  EMERGENCY_INTRO = inLang({ fr: EMERGENCY_INTRO_FR, en: EMERGENCY_INTRO_EN });
+  TTC_DISCLAIMER = inLang({ fr: TTC_DISCLAIMER_FR, en: TTC_DISCLAIMER_EN, es: ES.TTC_DISCLAIMER_ES, de: DE.TTC_DISCLAIMER_DE, it: IT.TTC_DISCLAIMER_IT });
+  AVOID_DISCLAIMER = inLang({ fr: AVOID_DISCLAIMER_FR, en: AVOID_DISCLAIMER_EN, es: ES.AVOID_DISCLAIMER_ES, de: DE.AVOID_DISCLAIMER_DE, it: IT.AVOID_DISCLAIMER_IT });
+  AVOID_NO_SAFE_DAYS = inLang({ fr: AVOID_NO_SAFE_DAYS_FR, en: AVOID_NO_SAFE_DAYS_EN, es: ES.AVOID_NO_SAFE_DAYS_ES, de: DE.AVOID_NO_SAFE_DAYS_DE, it: IT.AVOID_NO_SAFE_DAYS_IT });
+  EXAMS_INTRO = inLang({ fr: EXAMS_INTRO_FR, en: EXAMS_INTRO_EN, es: ES.EXAMS_INTRO_ES, de: DE.EXAMS_INTRO_DE, it: IT.EXAMS_INTRO_IT });
+  EXAMS_FOOTER = inLang({ fr: EXAMS_FOOTER_FR, en: EXAMS_FOOTER_EN, es: ES.EXAMS_FOOTER_ES, de: DE.EXAMS_FOOTER_DE, it: IT.EXAMS_FOOTER_IT });
+  CONTRACEPTION_INTRO = inLang({ fr: CONTRACEPTION_INTRO_FR, en: CONTRACEPTION_INTRO_EN, es: ES.CONTRACEPTION_INTRO_ES, de: DE.CONTRACEPTION_INTRO_DE, it: IT.CONTRACEPTION_INTRO_IT });
+  CONTRACEPTION_FOOTER = inLang({ fr: CONTRACEPTION_FOOTER_FR, en: CONTRACEPTION_FOOTER_EN, es: ES.CONTRACEPTION_FOOTER_ES, de: DE.CONTRACEPTION_FOOTER_DE, it: IT.CONTRACEPTION_FOOTER_IT });
+  EMERGENCY_INTRO = inLang({ fr: EMERGENCY_INTRO_FR, en: EMERGENCY_INTRO_EN, es: ES.EMERGENCY_INTRO_ES, de: DE.EMERGENCY_INTRO_DE, it: IT.EMERGENCY_INTRO_IT });
 });

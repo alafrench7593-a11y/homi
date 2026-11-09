@@ -29,6 +29,8 @@ export interface AccessInfo {
   premium: boolean;
   ai: boolean;
   trial_until: string | null;
+  /** Verrouillage strict en vigueur (premium_policy) ; absent : strict */
+  strict?: boolean;
   tools: { key: string; product_id: string; owned: boolean; allowed: boolean }[];
 }
 

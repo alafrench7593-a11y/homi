@@ -40,6 +40,18 @@ const GPS = /-?[0-9]{1,2}\.[0-9]{4,} *, *-?[0-9]{1,3}\.[0-9]{4,}/;
 const SSN = /\b[12] ?[0-9]{2} ?[01][0-9] ?[0-9]{2} ?[0-9]{3} ?[0-9]{3}( ?[0-9]{2})?\b/;
 const MEDICAL = /\b(médicament|traitement|dose|posologie|mg\b|ml de doliprane|antibiotique|ordonnance|diagnostic)/i;
 
+/**
+ * Mêmes avertissements pour un texte saisi en espagnol, allemand ou italien (avertissements AVANT publication
+ * seulement : textNeedsReview reste identique à la règle serveur). Les adresses s'y écrivent nom puis numéro.
+ */
+const ADDRESS_INTL = [
+  /\b(?:[Cc]alle|C\/|[Aa]venida|[Aa]vda\.|[Pp]laza|[Pp]aseo|[Cc]amino|[Cc]arrer|Via|Viale|Piazza|Piazzale|Corso|Vicolo|Largo)\s+[^0-9\n.!?]{2,40}?,?\s*(?:n\.?\s*|nº\s*)?[0-9]{1,4}\b/,
+  /\b[A-Za-zÄÖÜäöüß-]{2,}(?:straße|strasse|str\.|weg|platz|allee|gasse|ring|damm|ufer)\s*[0-9]{1,4}[a-z]?\b/i,
+];
+const BIRTHDATE_INTL = /((?:^|[^a-zà-ÿ])(?:nacid[oa]s?|nat[oaie]|geboren)(?![a-zà-ÿ])|nacimiento|cumpleaños|geburt|geburtstag|nascita|compleanno)[^.!?]{0,40}(?<![0-9])[0-3]?[0-9][/.-][01]?[0-9][/.-]((19|20)[0-9]{2}|[0-9]{2})(?![0-9])/i;
+const MEDICAL_INTL = /\b(medicamento|tratamiento|dosis|receta médica|antibiótico|diagnóstico|medikament|behandlung|dosierung|antibiotikum|rezept|diagnose|farmaco|trattamento|posologia|antibiotico|ricetta medica|diagnosi)/i;
+const hasAddress = (t: string) => ADDRESS.test(t) || ADDRESS_INTL.some((r) => r.test(t));
+
 const linkCount = (t: string) => (t.match(/https?:\/\//g) ?? []).length;
 
 /** Même règle que community_text_needs_review (hors termes surveillés, vérifiés côté serveur). */
@@ -54,12 +66,12 @@ export function sensitiveHints(text: string): SensitiveHint[] {
   const out: SensitiveHint[] = [];
   if (PHONE.test(text)) out.push({ key: 'phone', text: tr('l4.cr.hint.phone'), blocking: true });
   if (EMAIL.test(text)) out.push({ key: 'email', text: tr('l4.cr.hint.email'), blocking: true });
-  if (ADDRESS.test(text)) out.push({ key: 'address', text: tr('l4.cr.hint.address'), blocking: true });
-  if (BIRTHDATE.test(text)) out.push({ key: 'birthdate', text: tr('l4.cr.hint.birthdate'), blocking: true });
+  if (hasAddress(text)) out.push({ key: 'address', text: tr('l4.cr.hint.address'), blocking: true });
+  if (BIRTHDATE.test(text) || BIRTHDATE_INTL.test(text)) out.push({ key: 'birthdate', text: tr('l4.cr.hint.birthdate'), blocking: true });
   if (GPS.test(text)) out.push({ key: 'gps', text: tr('l4.cr.hint.gps'), blocking: true });
   if (SSN.test(text)) out.push({ key: 'ssn', text: tr('l4.cr.hint.ssn'), blocking: true });
   if (linkCount(text) >= 3) out.push({ key: 'links', text: tr('l4.cr.hint.links'), blocking: false });
-  if (MEDICAL.test(text)) out.push({ key: 'medical', text: tr('l4.cr.hint.medical'), blocking: false });
+  if (MEDICAL.test(text) || MEDICAL_INTL.test(text)) out.push({ key: 'medical', text: tr('l4.cr.hint.medical'), blocking: false });
   return out;
 }
 
@@ -108,7 +120,19 @@ const JOURNEY_LABELS_EN: Record<string, string> = {
   cycle: 'Tracking their cycle', projet: 'Trying for a baby', grossesse: 'Pregnant', jumeaux: 'Parent of twins or triplets',
   bebe: 'Parent of a baby', enfant: 'Parent of a child', famille: 'Parent of several children', postpartum: 'Postpartum',
 };
-export const JOURNEY_LABELS: Record<string, string> = localized(JOURNEY_LABELS_FR, JOURNEY_LABELS_EN);
+const JOURNEY_LABELS_ES: Record<string, string> = {
+  cycle: 'Sigue su ciclo', projet: 'Buscando un bebé', grossesse: 'Embarazada', jumeaux: 'Madre o padre de gemelos o trillizos',
+  bebe: 'Madre o padre de un bebé', enfant: 'Madre o padre de un niño', famille: 'Madre o padre de varios hijos', postpartum: 'En posparto',
+};
+const JOURNEY_LABELS_DE: Record<string, string> = {
+  cycle: 'Verfolgt den eigenen Zyklus', projet: 'Mit Kinderwunsch', grossesse: 'Schwanger', jumeaux: 'Elternteil von Zwillingen oder Drillingen',
+  bebe: 'Elternteil eines Babys', enfant: 'Elternteil eines Kindes', famille: 'Elternteil mehrerer Kinder', postpartum: 'Im Wochenbett',
+};
+const JOURNEY_LABELS_IT: Record<string, string> = {
+  cycle: 'Segue il proprio ciclo', projet: 'In cerca di un bambino', grossesse: 'Incinta', jumeaux: 'Genitore di gemelli o trigemini',
+  bebe: 'Genitore di un neonato', enfant: 'Genitore di un bambino', famille: 'Genitore di più figli', postpartum: 'Nel post-partum',
+};
+export const JOURNEY_LABELS: Record<string, string> = localized(JOURNEY_LABELS_FR, JOURNEY_LABELS_EN, { es: JOURNEY_LABELS_ES, de: JOURNEY_LABELS_DE, it: JOURNEY_LABELS_IT });
 
 /** « Membre depuis octobre 2026 » (mois seulement, jamais la date exacte). */
 export function joinedLabel(month: string | null | undefined): string | null {

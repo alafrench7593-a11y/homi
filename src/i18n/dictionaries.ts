@@ -4,6 +4,9 @@
  */
 import * as fr from './fr';
 import * as en from './en';
+import * as es from './es';
+import * as de from './de';
+import * as it from './it';
 import type { Msg } from './types';
 
 const flat = (mods: Record<string, Record<string, Msg>>) => Object.assign({}, ...Object.values(mods)) as Record<string, Msg>;
@@ -12,5 +15,8 @@ export const FR = flat(fr as unknown as Record<string, Record<string, Msg>>);
 export const DICTIONARIES: Record<string, Record<string, Msg>> = {
   fr: FR,
   en: flat(en as unknown as Record<string, Record<string, Msg>>),
+  es: flat(es as unknown as Record<string, Record<string, Msg>>),
+  de: flat(de as unknown as Record<string, Record<string, Msg>>),
+  it: flat(it as unknown as Record<string, Record<string, Msg>>),
 };
 export type SourceDict = typeof fr;

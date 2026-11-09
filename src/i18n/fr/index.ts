@@ -56,3 +56,7 @@ export { notifs } from './notifs';
 export { meds } from './meds';
 export { feedback } from './feedback';
 export { moodSupport } from './moodSupport';
+export { formats5 } from './formats5';
+export { langAdmin } from './langAdmin';
+export { paywall } from './paywall';
+export { assistantSections } from './assistantSections';
