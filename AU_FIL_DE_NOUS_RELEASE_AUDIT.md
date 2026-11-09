@@ -124,7 +124,7 @@ Un seul mécanisme partagé (`Screen`, `Sheet`, `Field` et `src/components/keybo
 - **Textes juridiques complétés** dans les 5 langues : CGU, confidentialité (responsable du traitement, transferts hors
   Union européenne, assistant suspendu), mentions légales, suppression de compte sans l'app, aide. Le bandeau
   « Brouillon » est retiré, à ta demande. Éditeur : David PRINCIVIL (particulier), contact aufildenous@outlook.fr, sans
-  adresse postale. Version des documents : 2026-11. **Ces textes n'ont pas été relus par un juriste.**
+  adresse postale. Hébergement : Irlande (eu-west-1, relevé dans la configuration du projet). Version des documents : 2026-11. **Ces textes n'ont pas été relus par un juriste.**
 - **Pages publiques** prêtes (`legal-site/`, 25 pages : 5 documents × 5 langues), générées depuis les textes de l'app.
   Un test vérifie qu'elles restent identiques. Leur mise en ligne se fait avec `mettre-a-jour-v7.command`
   (EAS Hosting) : **NON VÉRIFIÉ** tant que ce script n'a pas tourné.
@@ -142,11 +142,9 @@ Un seul mécanisme partagé (`Screen`, `Sheet`, `Field` et `src/components/keybo
 2. Créer les produits d'abonnement dans les boutiques et les relier à RevenueCat.
 3. Créer le compte de démonstration pour Apple et vérifier le type de compte développeur. En tant que particulier,
    Apple peut refuser une app de santé (règle 5.1.1 ix).
-4. Indiquer la région d'hébergement Supabase : Dashboard › Settings › General, puis la reporter dans la politique de
-   confidentialité, section « Hébergement ».
-5. Faire relire les textes par un juriste (recommandé). Pour vendre des abonnements, un statut d'entrepreneur
+4. Faire relire les textes par un juriste (recommandé). Pour vendre des abonnements, un statut d'entrepreneur
    (micro-entreprise, par exemple) et une adresse dans les mentions légales sont en principe exigés.
-6. Remplacer la clé Gemini, puis supprimer les jetons `sbp_` exposés.
+5. Remplacer la clé Gemini, puis supprimer les jetons `sbp_` exposés.
 
 **À faire avec ton accord :**
 
