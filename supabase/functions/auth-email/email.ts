@@ -1,4 +1,5 @@
-/** Logique pure du hook « Send Email » de Supabase Auth : signature, liens, gabarits FR, envoi Resend. */
+/** Logique pure du hook « Send Email » de Supabase Auth : signature, liens, gabarits (fr, en, es, de, it), envoi Resend.
+ *  Langue : celle enregistrée à l'inscription (métadonnée `locale`), sinon le français. */
 
 export interface HookPayload {
   user: { email: string; user_metadata?: Record<string, unknown> };
@@ -37,29 +38,94 @@ export function verifyLink(supabaseUrl: string, d: HookPayload['email_data'], ha
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
+type Mail = { subject: string; intro: string; cta: string };
+interface MailLang { types: Record<string, Mail>; fallback: Mail; code: string; ignore: string; team: string }
+const MAIL: Record<'fr' | 'en' | 'es' | 'de' | 'it', MailLang> = {
+  fr: {
+    types: {
+      signup: { subject: 'Confirmez votre adresse — {app}', intro: 'Bienvenue ! Confirmez votre adresse e-mail pour activer votre compte.', cta: 'Confirmer mon adresse' },
+      recovery: { subject: 'Réinitialiser votre mot de passe — {app}', intro: 'Vous avez demandé à réinitialiser votre mot de passe. Si ce n’est pas vous, ignorez simplement ce message.', cta: 'Choisir un nouveau mot de passe' },
+      magiclink: { subject: 'Votre lien de connexion — {app}', intro: 'Voici votre lien de connexion. Il n’est valable que quelques minutes.', cta: 'Me connecter' },
+      invite: { subject: 'Vous êtes invité·e sur {app}', intro: 'Vous avez été invité·e à rejoindre un espace familial.', cta: 'Accepter l’invitation' },
+      email_change: { subject: 'Confirmez votre nouvelle adresse — {app}', intro: 'Confirmez le changement d’adresse e-mail de votre compte.', cta: 'Confirmer le changement' },
+      reauthentication: { subject: 'Votre code de vérification — {app}', intro: 'Utilisez ce code pour confirmer votre identité.', cta: '' },
+    },
+    fallback: { subject: '{app}', intro: 'Action à confirmer sur votre compte.', cta: 'Continuer' },
+    code: 'Code', ignore: 'Si vous n’êtes pas à l’origine de cette demande, ignorez ce message.', team: '— L’équipe {app}',
+  },
+  en: {
+    types: {
+      signup: { subject: 'Confirm your email address — {app}', intro: 'Welcome! Confirm your email address to activate your account.', cta: 'Confirm my address' },
+      recovery: { subject: 'Reset your password — {app}', intro: 'You asked to reset your password. If this wasn’t you, simply ignore this message.', cta: 'Choose a new password' },
+      magiclink: { subject: 'Your sign-in link — {app}', intro: 'Here is your sign-in link. It is only valid for a few minutes.', cta: 'Sign me in' },
+      invite: { subject: 'You’re invited to {app}', intro: 'You’ve been invited to join a family space.', cta: 'Accept the invitation' },
+      email_change: { subject: 'Confirm your new email address — {app}', intro: 'Confirm the change of email address on your account.', cta: 'Confirm the change' },
+      reauthentication: { subject: 'Your verification code — {app}', intro: 'Use this code to confirm your identity.', cta: '' },
+    },
+    fallback: { subject: '{app}', intro: 'An action needs confirming on your account.', cta: 'Continue' },
+    code: 'Code', ignore: 'If you didn’t make this request, please ignore this message.', team: '— The {app} team',
+  },
+  es: {
+    types: {
+      signup: { subject: 'Confirma tu dirección de correo — {app}', intro: '¡Bienvenida! Confirma tu dirección de correo electrónico para activar tu cuenta.', cta: 'Confirmar mi dirección' },
+      recovery: { subject: 'Restablecer tu contraseña — {app}', intro: 'Has pedido restablecer tu contraseña. Si no has sido tú, ignora este mensaje.', cta: 'Elegir una nueva contraseña' },
+      magiclink: { subject: 'Tu enlace de inicio de sesión — {app}', intro: 'Aquí tienes tu enlace de inicio de sesión. Solo es válido durante unos minutos.', cta: 'Iniciar sesión' },
+      invite: { subject: 'Te han invitado a {app}', intro: 'Te han invitado a unirte a un espacio familiar.', cta: 'Aceptar la invitación' },
+      email_change: { subject: 'Confirma tu nueva dirección de correo — {app}', intro: 'Confirma el cambio de dirección de correo electrónico de tu cuenta.', cta: 'Confirmar el cambio' },
+      reauthentication: { subject: 'Tu código de verificación — {app}', intro: 'Usa este código para confirmar tu identidad.', cta: '' },
+    },
+    fallback: { subject: '{app}', intro: 'Hay una acción pendiente de confirmar en tu cuenta.', cta: 'Continuar' },
+    code: 'Código', ignore: 'Si no has hecho esta solicitud, ignora este mensaje.', team: '— El equipo de {app}',
+  },
+  de: {
+    types: {
+      signup: { subject: 'Bestätige deine E-Mail-Adresse — {app}', intro: 'Willkommen! Bestätige deine E-Mail-Adresse, um dein Konto zu aktivieren.', cta: 'Adresse bestätigen' },
+      recovery: { subject: 'Passwort zurücksetzen — {app}', intro: 'Du hast angefordert, dein Passwort zurückzusetzen. Falls du das nicht warst, ignoriere diese Nachricht einfach.', cta: 'Neues Passwort wählen' },
+      magiclink: { subject: 'Dein Anmeldelink — {app}', intro: 'Hier ist dein Anmeldelink. Er ist nur wenige Minuten gültig.', cta: 'Anmelden' },
+      invite: { subject: 'Du wurdest zu {app} eingeladen', intro: 'Du wurdest eingeladen, einem Familienbereich beizutreten.', cta: 'Einladung annehmen' },
+      email_change: { subject: 'Bestätige deine neue E-Mail-Adresse — {app}', intro: 'Bestätige die Änderung der E-Mail-Adresse deines Kontos.', cta: 'Änderung bestätigen' },
+      reauthentication: { subject: 'Dein Bestätigungscode — {app}', intro: 'Verwende diesen Code, um deine Identität zu bestätigen.', cta: '' },
+    },
+    fallback: { subject: '{app}', intro: 'In deinem Konto muss eine Aktion bestätigt werden.', cta: 'Weiter' },
+    code: 'Code', ignore: 'Falls du diese Anfrage nicht gestellt hast, ignoriere diese Nachricht.', team: '— Dein {app}-Team',
+  },
+  it: {
+    types: {
+      signup: { subject: 'Conferma il tuo indirizzo email — {app}', intro: 'Benvenuta! Conferma il tuo indirizzo email per attivare il tuo account.', cta: 'Conferma il mio indirizzo' },
+      recovery: { subject: 'Reimposta la tua password — {app}', intro: 'Hai chiesto di reimpostare la password. Se non sei stata tu, ignora semplicemente questo messaggio.', cta: 'Scegli una nuova password' },
+      magiclink: { subject: 'Il tuo link di accesso — {app}', intro: 'Ecco il tuo link di accesso. È valido solo per pochi minuti.', cta: 'Accedi' },
+      invite: { subject: 'Sei stato/a invitato/a su {app}', intro: 'Sei stato/a invitato/a a unirti a uno spazio familiare.', cta: 'Accetta l’invito' },
+      email_change: { subject: 'Conferma il tuo nuovo indirizzo email — {app}', intro: 'Conferma la modifica dell’indirizzo email del tuo account.', cta: 'Conferma la modifica' },
+      reauthentication: { subject: 'Il tuo codice di verifica — {app}', intro: 'Usa questo codice per confermare la tua identità.', cta: '' },
+    },
+    fallback: { subject: '{app}', intro: 'C’è un’azione da confermare sul tuo account.', cta: 'Continua' },
+    code: 'Codice', ignore: 'Se non hai fatto tu questa richiesta, ignora questo messaggio.', team: '— Il team di {app}',
+  },
+};
+
+/** Langue de l'e-mail : une des 5 langues de l'application, sinon le français. */
+export function emailLang(v: unknown): 'fr' | 'en' | 'es' | 'de' | 'it' {
+  return v === 'en' || v === 'es' || v === 'de' || v === 'it' ? v : 'fr';
+}
+
 export function buildEmail(appName: string, supabaseUrl: string, p: HookPayload): { subject: string; html: string; text: string } {
   const d = p.email_data;
   const link = verifyLink(supabaseUrl, d);
-  const T: Record<string, { subject: string; intro: string; cta: string }> = {
-    signup: { subject: `Confirmez votre adresse — ${appName}`, intro: 'Bienvenue ! Confirmez votre adresse e-mail pour activer votre compte.', cta: 'Confirmer mon adresse' },
-    recovery: { subject: `Réinitialiser votre mot de passe — ${appName}`, intro: 'Vous avez demandé à réinitialiser votre mot de passe. Si ce n’est pas vous, ignorez simplement ce message.', cta: 'Choisir un nouveau mot de passe' },
-    magiclink: { subject: `Votre lien de connexion — ${appName}`, intro: 'Voici votre lien de connexion. Il n’est valable que quelques minutes.', cta: 'Me connecter' },
-    invite: { subject: `Vous êtes invité·e sur ${appName}`, intro: 'Vous avez été invité·e à rejoindre un espace familial.', cta: 'Accepter l’invitation' },
-    email_change: { subject: `Confirmez votre nouvelle adresse — ${appName}`, intro: 'Confirmez le changement d’adresse e-mail de votre compte.', cta: 'Confirmer le changement' },
-    reauthentication: { subject: `Votre code de vérification — ${appName}`, intro: 'Utilisez ce code pour confirmer votre identité.', cta: '' },
-  };
-  const t = T[d.email_action_type] ?? { subject: `${appName}`, intro: 'Action à confirmer sur votre compte.', cta: 'Continuer' };
-  const code = d.token ? `Code : ${d.token}` : '';
-  const text = [t.intro, t.cta ? `${t.cta} : ${link}` : '', code, '', 'Si vous n’êtes pas à l’origine de cette demande, ignorez ce message.', `— L’équipe ${appName}`].filter((x) => x !== '').join('\n');
-  const html = `<!doctype html><html lang="fr"><body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#FFF6EF;margin:0;padding:24px;color:#2A1A26">
+  const lang = emailLang(p.user.user_metadata?.locale);
+  const L = MAIL[lang];
+  const t = L.types[d.email_action_type] ?? L.fallback;
+  const subject = t.subject.replace('{app}', appName);
+  const code = d.token ? `${L.code} : ${d.token}` : '';
+  const text = [t.intro, t.cta ? `${t.cta} : ${link}` : '', code, '', L.ignore, L.team.replace('{app}', appName)].filter((x) => x !== '').join('\n');
+  const html = `<!doctype html><html lang="${lang}"><body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#FFF6EF;margin:0;padding:24px;color:#2A1A26">
 <div style="max-width:480px;margin:auto;background:#fff;border-radius:20px;padding:28px">
 <h1 style="font-size:22px;margin:0 0 12px">${esc(appName)}</h1>
 <p style="font-size:16px;line-height:1.5">${esc(t.intro)}</p>
 ${t.cta ? `<p style="margin:24px 0"><a href="${esc(link)}" style="background:#E9587C;color:#fff;text-decoration:none;padding:12px 20px;border-radius:999px;font-weight:600;display:inline-block">${esc(t.cta)}</a></p>` : ''}
-${d.token ? `<p style="font-size:15px">Code : <strong style="letter-spacing:2px">${esc(d.token)}</strong></p>` : ''}
-<p style="font-size:13px;color:#7E6873">Si vous n’êtes pas à l’origine de cette demande, ignorez ce message.</p>
+${d.token ? `<p style="font-size:15px">${esc(L.code)} : <strong style="letter-spacing:2px">${esc(d.token)}</strong></p>` : ''}
+<p style="font-size:13px;color:#7E6873">${esc(L.ignore)}</p>
 </div></body></html>`;
-  return { subject: t.subject, html, text };
+  return { subject, html, text };
 }
 
 export async function sendWithResend(apiKey: string, from: string, to: string, mail: { subject: string; html: string; text: string }, fetchImpl: typeof fetch = fetch): Promise<{ ok: boolean; status: number; id?: string }> {

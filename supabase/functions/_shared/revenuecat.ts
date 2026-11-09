@@ -289,10 +289,31 @@ const NOTICES = {
     refunded: ['Subscription refunded', 'Your subscription was refunded: Premium access has ended. Your data remains available.'],
     paused: ['Subscription paused', 'Your subscription will be paused at the end of the current period. Premium remains available until then.'],
   },
+  es: {
+    billing: ['Problema con el pago', 'No se ha podido renovar tu suscripción. Comprueba tu método de pago en el App Store o Google Play.'],
+    expired: ['Suscripción finalizada', 'Tu suscripción a Au fil de nous Premium ha finalizado. Tus datos y las funciones esenciales siguen disponibles.'],
+    cancelled: ['Renovación desactivada', 'Tu suscripción sigue activa hasta su fecha de vencimiento y después no se renovará.'],
+    refunded: ['Suscripción reembolsada', 'Tu suscripción ha sido reembolsada: el acceso Premium ha finalizado. Tus datos siguen disponibles.'],
+    paused: ['Suscripción en pausa', 'Tu suscripción se pausará al final del periodo actual. Premium sigue disponible hasta entonces.'],
+  },
+  de: {
+    billing: ['Zahlungsproblem', 'Dein Abo konnte nicht verlängert werden. Prüfe deine Zahlungsmethode im App Store oder bei Google Play.'],
+    expired: ['Abo beendet', 'Dein Abo für Au fil de nous Premium ist beendet. Deine Daten und die wichtigsten Funktionen bleiben verfügbar.'],
+    cancelled: ['Verlängerung deaktiviert', 'Dein Abo bleibt bis zum Ablaufdatum aktiv und wird danach nicht verlängert.'],
+    refunded: ['Abo erstattet', 'Dein Abo wurde erstattet: Der Premium-Zugang ist beendet. Deine Daten bleiben verfügbar.'],
+    paused: ['Abo pausiert', 'Dein Abo wird am Ende des aktuellen Zeitraums pausiert. Premium bleibt bis dahin verfügbar.'],
+  },
+  it: {
+    billing: ['Problema di pagamento', 'Non è stato possibile rinnovare il tuo abbonamento. Controlla il metodo di pagamento nell’App Store o su Google Play.'],
+    expired: ['Abbonamento terminato', 'Il tuo abbonamento Au fil de nous Premium è terminato. I tuoi dati e le funzioni essenziali restano disponibili.'],
+    cancelled: ['Rinnovo disattivato', 'Il tuo abbonamento resta attivo fino alla data di scadenza, poi non verrà rinnovato.'],
+    refunded: ['Abbonamento rimborsato', 'Il tuo abbonamento è stato rimborsato: l’accesso Premium è terminato. I tuoi dati restano disponibili.'],
+    paused: ['Abbonamento in pausa', 'Il tuo abbonamento verrà messo in pausa alla fine del periodo in corso. Premium resta disponibile fino ad allora.'],
+  },
 } as const;
 
 export function noticeFor(event: RcEvent, status: SubStatus, locale: string | null | undefined): { title: string; body: string } | null {
-  const lang = locale === 'en' ? 'en' : 'fr';
+  const lang = locale === 'en' || locale === 'es' || locale === 'de' || locale === 'it' ? locale : 'fr';
   const key = status === 'refunded' ? 'refunded'
     : event.type === 'BILLING_ISSUE' ? 'billing'
     : event.type === 'EXPIRATION' ? 'expired'

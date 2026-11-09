@@ -41,6 +41,11 @@ const CAUTIOUS_ANSWER: StructuredAnswer = {
 
 Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  // Assistant IA « Bientôt disponible » (09/11/2026, src/config/features.ts) : aucun appel à l'IA tant que le secret
+  // ASSISTANT_ENABLED ne vaut pas « true » (activation : supabase secrets set ASSISTANT_ENABLED=true)
+  if (Deno.env.get('ASSISTANT_ENABLED') !== 'true') {
+    return new Response(JSON.stringify({ error: 'coming_soon', message: 'L’assistant IA sera bientôt disponible.' }), { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+  }
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
   // 0) Authentification : le JWT est vérifié auprès de Supabase Auth ; `db` agit AVEC les droits
@@ -164,6 +169,8 @@ Deno.serve(withCors(async (req) => {
   if (quotaErr) return json({ error: 'server_error' }, 500);
   const quota = quotaRows?.[0];
   if (!quota?.allowed) {
+    // Premium strict (20261108000300 + 20261109000100) : sans Premium ni offre « Assistant IA », le quota vaut 0
+    if (!quota?.quota) return json({ error: 'premium_required', message: 'L’assistant fait partie de Premium (ou de l’offre Assistant IA).' }, 402);
     return json({ error: 'quota_reached', message: `Vous avez utilisé vos ${quota?.quota ?? ''} questions de ce mois.`, used: quota?.used, quota: quota?.quota }, 402);
   }
   const quotaOut = { used: quota.used as number, limit: quota.quota as number, remaining: Math.max(0, (quota.quota as number) - (quota.used as number)) };

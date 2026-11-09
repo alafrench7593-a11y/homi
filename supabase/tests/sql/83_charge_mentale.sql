@@ -10,6 +10,8 @@ insert into public.households (id, name, created_by) values (:'MH', 'Foyer charg
 insert into public.household_members (household_id, user_id, role) values (:'MH', :'MA', 'owner') on conflict (household_id, user_id) do update set role = 'owner';
 insert into public.household_members (household_id, user_id, role) values (:'MH', :'MB', 'coparent'), (:'MH', :'MN', 'caregiver') on conflict do nothing;
 
+-- outils réservés (Premium ou achat à vie) depuis la fin du mois gratuit (08/11/2026) ; le co-parent est couvert
+select tests.set_premium(:'MA', true);
 set role authenticated; set request.jwt.claim.sub = :'MA';
 insert into public.family_domains (household_id, key, owner_id) values (:'MH', 'vaccines', :'MB');
 insert into public.family_prep (household_id, key, occurs_on) values (:'MH', 'back_to_school', '2027-09-01');

@@ -10,7 +10,7 @@
 //             OPEN_FACTS_ENABLED=false pour les couper), RAPPELCONSO_ENABLED (défaut true),
 //             RAPPELCONSO_DATASET (défaut rappelconso-v2-gtin-espaces).
 // Sans base réelle connectée, la réponse le dit explicitement (`database: 'not_connected'`) : aucun résultat n'est inventé.
-import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
+import { adminClient, corsHeaders, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
 import { assessProduct, type ProductData, type ScanContext } from '../_shared/product-rules.ts';
 import { fromProductRow, lookupOpenFactsCached, searchOpenFactsCached, type LookupStatus, type NormalizedProduct, type OpenFactsStore } from '../_shared/open-facts.ts';
 import { fetchRecallRecords, matchRecalls, recallRow, sameGtin } from '../_shared/rappelconso.ts';
@@ -103,6 +103,8 @@ Deno.serve(withCors(async (req) => {
 
   const body = await req.json().catch(() => ({}));
   const action = typeof body.action === 'string' ? body.action : 'lookup';
+  // Premium strict : le scanner est réservé ; les alertes officielles de rappel (recall_watch) restent libres
+  if (action !== 'recall_watch') { const locked = await requirePremium(auth.client); if (locked) return locked; }
   const database = openFactsEnabled() ? 'open_facts' : 'not_connected';
 
   // ------------------------------------------------------------ recherche par nom ou EAN

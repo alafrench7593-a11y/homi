@@ -7,7 +7,7 @@ import { buildSummaryPrompt, checkSummary, checkTranslation, neutralize, SUMMARY
 
 export type CommunityAiResult =
   | { ai: 'ok'; kind: 'summary'; points: string[]; caution: string | null; model: string }
-  | { ai: 'ok'; kind: 'translation'; text: string; target: 'fr' | 'en'; model: string }
+  | { ai: 'ok'; kind: 'translation'; text: string; target: 'fr' | 'en' | 'es' | 'de' | 'it'; model: string }
   | { ai: 'not_configured' | 'unavailable' | 'rejected'; message: string; reason?: string };
 
 export async function runSummary(cfg: GeminiConfig | null, post: { title?: string | null; body: string }, comments: { body: string }[], pseudonyms: string[], fetchImpl: typeof fetch = fetch): Promise<CommunityAiResult> {
@@ -23,7 +23,7 @@ export async function runSummary(cfg: GeminiConfig | null, post: { title?: strin
   return { ai: 'ok', kind: 'summary', points: checked.points, caution: checked.caution, model: cfg.model };
 }
 
-export async function runTranslation(cfg: GeminiConfig | null, text: string, target: 'fr' | 'en', fetchImpl: typeof fetch = fetch): Promise<CommunityAiResult> {
+export async function runTranslation(cfg: GeminiConfig | null, text: string, target: 'fr' | 'en' | 'es' | 'de' | 'it', fetchImpl: typeof fetch = fetch): Promise<CommunityAiResult> {
   if (!cfg) return { ai: 'not_configured', message: 'La traduction automatique n’est pas encore configurée.' };
   const source = neutralize(text);
   let raw: string;

@@ -43,6 +43,11 @@ const LIMIT_MESSAGE = 'Vous avez utilisé les 3 questions de la démonstration p
 
 Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  // Assistant IA « Bientôt disponible » (09/11/2026, src/config/features.ts) : aucun appel à l'IA tant que le secret
+  // ASSISTANT_ENABLED ne vaut pas « true » (activation : supabase secrets set ASSISTANT_ENABLED=true)
+  if (Deno.env.get('ASSISTANT_ENABLED') !== 'true') {
+    return new Response(JSON.stringify({ error: 'coming_soon', message: 'L’assistant IA sera bientôt disponible.' }), { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+  }
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
   let body: { message?: unknown; device_id?: unknown; recent_turns?: unknown };

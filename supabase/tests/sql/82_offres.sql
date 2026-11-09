@@ -9,12 +9,15 @@ insert into public.households (id, name, created_by) values (:'OH', 'Foyer offre
 insert into public.household_members (household_id, user_id, role) values (:'OH', :'OA', 'owner') on conflict (household_id, user_id) do update set role = 'owner';
 insert into public.household_members (household_id, user_id, role) values (:'OH', :'OB', 'coparent') on conflict do nothing;
 
--- Pendant le mois gratuit : tout est ouvert
+-- Plus de mois gratuit (08/11/2026) : sans Premium ni achat, les outils payants sont fermés
 set role authenticated; set request.jwt.claim.sub = :'OC';
-select tests.ok(public.has_tool('custody') and public.has_tool('pma_tracker'), 'offres : outils ouverts pendant le mois gratuit');
+select tests.ok(not public.has_tool('custody') and not public.has_tool('pma_tracker'), 'offres : outils payants fermés sans achat ni Premium (plus de mois gratuit)');
 select tests.ok(public.has_tool('emergency'), 'offres : un outil gratuit reste toujours ouvert');
-select tests.ok((public.my_access()->>'trial_until')::timestamptz >= timestamptz '2026-12-07 00:00:00+01', 'offres : comptes existants, essai jusqu''au 07/12/2026 au moins');
-insert into public.pma_protocols (id, kind, label, started_on) values ('f9c00000-0000-4000-8000-0000000000c1', 'fiv', 'FIV', current_date);
+select tests.ok((public.my_access()->>'trial_until') is null, 'offres : plus aucune date de mois gratuit');
+select tests.throws($$insert into public.pma_protocols (kind, label, started_on) values ('fiv', 'FIV', current_date)$$, 'offres : ajout refusé sans achat');
+-- donnée créée avant le changement d'offre (écrite ici par le serveur)
+reset role; set request.jwt.claim.sub = '';
+insert into public.pma_protocols (id, user_id, kind, label, started_on) values ('f9c00000-0000-4000-8000-0000000000c1', :'OC', 'fiv', 'FIV', current_date);
 
 -- Après le mois gratuit (simulé en remplaçant temporairement la date de fin d'essai)
 reset role;

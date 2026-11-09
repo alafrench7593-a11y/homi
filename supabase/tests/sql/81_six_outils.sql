@@ -31,6 +31,8 @@ select tests.ok((select count(*) from public.reminders where user_id = 'f9b00000
   'rappel partagé : invisible hors du foyer');
 
 -- 2. Suivi PMA (strictement personnel) ---------------------------------------------------------
+-- outil réservé (Premium ou achat à vie) depuis la fin du mois gratuit (08/11/2026)
+reset role; select tests.set_premium(:'SA', true); set role authenticated;
 set request.jwt.claim.sub = :'SA';
 insert into public.pma_protocols (id, kind, label, started_on) values ('f9b00000-0000-4000-8000-0000000000c1', 'fiv', 'FIV 1', current_date);
 insert into public.pma_meds (id, protocol_id, name, route, dose_text, take_time)

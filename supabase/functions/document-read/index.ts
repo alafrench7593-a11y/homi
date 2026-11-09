@@ -3,13 +3,15 @@
 // Seul le fichier est envoyé (aucun nom, aucun profil). Le texte est renvoyé à l'application, qui le présente « à vérifier ».
 // Le texte n'est jamais écrit dans les journaux. POST { document_id }
 import { geminiConfig, geminiGenerate, GeminiError } from '../_shared/gemini.ts';
-import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
+import { adminClient, corsHeaders, hasConsent, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
 import { MAX_READ_BYTES, parseReadResponse, READ_INSTRUCTIONS, READ_SCHEMA, READABLE_MIME, toBase64 } from '../_shared/document-read.ts';
 
 Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
+  const locked = await requirePremium(auth.client); // Premium strict
+  if (locked) return locked;
   const admin = adminClient();
   if (!(await rateLimit(admin, `docread:${auth.user.id}`, 20, 3600))) return json({ error: 'rate_limited' }, 429);
   if (!(await hasConsent(admin, auth.user.id, 'document_reading'))) return json({ error: 'consent_required' }, 403);

@@ -71,6 +71,16 @@ export async function requireUser(req: Request): Promise<{ user: User; client: S
   return { user: data.user, client };
 }
 
+/**
+ * Premium strict (20261108000300_premium_strict.sql) : refuse l'appel sans Premium (personnel ou partagé par le foyer)
+ * tant que premium_policy.strict est vrai. Renvoie null si l'appel est autorisé.
+ */
+export async function requirePremium(client: SupabaseClient): Promise<Response | null> {
+  const [strict, prem] = await Promise.all([client.rpc('premium_strict'), client.rpc('has_premium')]);
+  if (strict.data === false || prem.data === true) return null;
+  return json({ error: 'premium_required', message: 'Fonction Premium.' }, 402);
+}
+
 export async function rateLimit(admin: SupabaseClient, key: string, limit: number, windowSeconds: number): Promise<boolean> {
   const { data, error } = await admin.rpc('rate_limit_hit', { p_key: key, p_limit: limit, p_window_seconds: windowSeconds });
   if (error) {

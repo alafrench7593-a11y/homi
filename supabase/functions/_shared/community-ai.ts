@@ -12,7 +12,7 @@ export const MIN_COMMENTS_FOR_SUMMARY = 6;
 export const MAX_SOURCE_CHARS = 24_000;
 
 export type CommunityAiAction = 'summarize' | 'translate';
-export interface CommunityAiRequest { action: CommunityAiAction; post_id: string; comment_id?: string | null; target_lang?: 'fr' | 'en' }
+export interface CommunityAiRequest { action: CommunityAiAction; post_id: string; comment_id?: string | null; target_lang?: 'fr' | 'en' | 'es' | 'de' | 'it' }
 
 export function parseRequest(body: unknown): CommunityAiRequest | null {
   const b = (body ?? {}) as Record<string, unknown>;
@@ -20,7 +20,7 @@ export function parseRequest(body: unknown): CommunityAiRequest | null {
   if (b.action !== 'summarize' && b.action !== 'translate') return null;
   if (typeof b.post_id !== 'string' || !uuidRe.test(b.post_id)) return null;
   if (b.comment_id != null && (typeof b.comment_id !== 'string' || !uuidRe.test(b.comment_id))) return null;
-  const target = b.target_lang === 'en' ? 'en' : 'fr';
+  const target = (['en', 'es', 'de', 'it'] as const).find((l) => l === b.target_lang) ?? 'fr';
   return { action: b.action, post_id: b.post_id, comment_id: (b.comment_id as string | null) ?? null, target_lang: target };
 }
 
@@ -53,8 +53,9 @@ export const SUMMARY_SCHEMA = {
 
 export const TRANSLATE_SCHEMA = { type: 'object', properties: { text: { type: 'string' } }, required: ['text'] };
 
-export function translateSystem(target: 'fr' | 'en') {
-  return `Traduis fidèlement le message d’un parent en ${target === 'en' ? 'anglais' : 'français'}. Garde le ton, n’ajoute ni ne retire rien, ne commente pas. Réponds en JSON : { "text": "…" }.`;
+const LANG_NAME = { fr: 'français', en: 'anglais', es: 'espagnol', de: 'allemand', it: 'italien' } as const;
+export function translateSystem(target: keyof typeof LANG_NAME) {
+  return `Traduis fidèlement le message d’un parent en ${LANG_NAME[target] ?? 'français'}. Garde le ton, n’ajoute ni ne retire rien, ne commente pas. Réponds en JSON : { "text": "…" }.`;
 }
 
 export function buildSummaryPrompt(post: { title?: string | null; body: string }, comments: { body: string }[]): string {
