@@ -119,15 +119,34 @@ Un seul mécanisme partagé (`Screen`, `Sheet`, `Field` et `src/components/keybo
 
 ## J. Préparation des boutiques et actions restantes
 
-**À faire par toi (bloquants) :**
+**Fait le 10/11/2026 :**
 
-1. Faire valider les CGU et la politique de confidentialité par un juriste, puis les publier à des URL publiques.
-   Prévoir aussi une URL de support et une page web de suppression de compte.
-2. Créer la clé Apple de révocation « Se connecter avec Apple » (nécessaire à la suppression de compte).
-3. Créer les produits d'abonnement dans App Store Connect et Google Play, et les relier à RevenueCat.
-4. Créer un compte de démonstration Premium pour l'équipe de revue d'Apple.
-5. Vérifier le type de compte développeur : Apple demande une organisation pour une app de santé.
-6. Remplacer la clé Gemini (forfait payant) avant de rallumer l'assistant. Supprimer les jetons `sbp_` exposés.
+- **Textes juridiques complétés** dans les 5 langues : CGU, confidentialité (responsable du traitement, transferts hors
+  Union européenne, assistant suspendu), mentions légales, suppression de compte sans l'app, aide. Le bandeau
+  « Brouillon » est retiré, à ta demande. Éditeur : David PRINCIVIL (particulier), contact aufildenous@outlook.fr, sans
+  adresse postale. Version des documents : 2026-11. **Ces textes n'ont pas été relus par un juriste.**
+- **Pages publiques** prêtes (`legal-site/`, 25 pages : 5 documents × 5 langues), générées depuis les textes de l'app.
+  Un test vérifie qu'elles restent identiques. Leur mise en ligne se fait avec `mettre-a-jour-v7.command`
+  (EAS Hosting) : **NON VÉRIFIÉ** tant que ce script n'a pas tourné.
+- **Révocation « Se connecter avec Apple »** codée : l'app transmet un code Apple à la suppression du compte, et le
+  serveur l'échange puis le révoque. Testé avec une clé de test et un serveur Apple simulé. **NON VÉRIFIÉ** avec la
+  vraie clé Apple.
+- **Premium strict** : installé mais en attente (migration `20261110000100`) tant que l'achat n'est pas possible.
+  L'offre Premium reste visible.
+
+**Reste à faire par toi :**
+
+1. Créer la clé « Sign in with Apple », puis lancer `configurer-apple.command`. Le fichier
+   `AuthKey_8G4N6JNZGG.p8` de tes Téléchargements n'a pas été ouvert : vérifie dans le portail Apple de quel type de
+   clé il s'agit.
+2. Créer les produits d'abonnement dans les boutiques et les relier à RevenueCat.
+3. Créer le compte de démonstration pour Apple et vérifier le type de compte développeur. En tant que particulier,
+   Apple peut refuser une app de santé (règle 5.1.1 ix).
+4. Indiquer la région d'hébergement Supabase : Dashboard › Settings › General, puis la reporter dans la politique de
+   confidentialité, section « Hébergement ».
+5. Faire relire les textes par un juriste (recommandé). Pour vendre des abonnements, un statut d'entrepreneur
+   (micro-entreprise, par exemple) et une adresse dans les mentions légales sont en principe exigés.
+6. Remplacer la clé Gemini, puis supprimer les jetons `sbp_` exposés.
 
 **À faire avec ton accord :**
 

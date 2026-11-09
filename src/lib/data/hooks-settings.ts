@@ -3,6 +3,7 @@
  * Les droits sont TOUJOURS vérifiés côté serveur (RLS / fonctions security definer) :
  * ce qui suit ne fait que refléter l'état dans l'interface.
  */
+import { appleRevocationCode } from '@/lib/backend/socialAuth';
 import { t as tr } from '@/i18n';
 import { friendlyErrorMessage } from '../errors';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -200,7 +201,10 @@ export function useExportData() {
 export function useDeleteAccount() {
   return useMutation({
     mutationFn: async () => {
-      const out = await backend.invoke<{ ok?: boolean; error?: string }>('delete-account', { confirm: 'SUPPRIMER' });
+      // Compte Apple (iPhone) : code à usage unique pour que le serveur révoque les jetons Apple (exigence Apple)
+      const session = isDemo ? null : await backend.auth.getSession();
+      const appleCode = session?.providers?.includes('apple') ? await appleRevocationCode() : null;
+      const out = await backend.invoke<{ ok?: boolean; error?: string }>('delete-account', appleCode ? { confirm: 'SUPPRIMER', apple_authorization_code: appleCode } : { confirm: 'SUPPRIMER' });
       if (out && out.ok === false) throw new Error(tr('l3.settings.delete_failed'));
       // Sur Supabase, l'utilisateur n'existe plus : on ferme la session locale
       if (!isDemo) await backend.auth.signOut().catch(() => undefined);

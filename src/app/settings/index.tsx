@@ -1,4 +1,5 @@
 /** Réglages : profil, apparence, famille, rappels, abonnement, confidentialité, aide, à propos, déconnexion. */
+import { LEGAL_NOTICE, PRIVACY, SUPPORT, TERMS } from '@/content/legal';
 import React, { useEffect, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router } from 'expo-router';
@@ -188,6 +189,14 @@ export default function SettingsScreen() {
         <ListRow icon="life-buoy" title={tr('settings.help.now')} subtitle={tr('settings.help.nowSub', { numbers: regionInfo.emergency })} danger onPress={() => router.push('/emergency')} />
         <Divider />
         <ListRow icon="mail" title={tr('settings.help.write')} subtitle={BRAND.supportEmail} onPress={() => Linking.openURL(`mailto:${BRAND.supportEmail}`).catch(() => toast(tr('settings.help.writeTo', { email: BRAND.supportEmail }), 'info'))} />
+        <Divider />
+        <ListRow icon="help-circle" title={SUPPORT.title} onPress={() => router.push('/legal/support')} testID="settings-support" />
+        <Divider />
+        <ListRow icon="file-text" title={TERMS.title} onPress={() => router.push('/legal/terms')} testID="settings-terms" />
+        <Divider />
+        <ListRow icon="lock" title={PRIVACY.title} onPress={() => router.push('/legal/privacy')} testID="settings-privacy-policy" />
+        <Divider />
+        <ListRow icon="info" title={LEGAL_NOTICE.title} onPress={() => router.push('/legal/notice')} testID="settings-legal-notice" />
       </Card>
       <Banner tone="info">{tr('settings.disclaimer')}</Banner>
 

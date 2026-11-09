@@ -18,7 +18,8 @@ export interface Query {
   limit?: number;
 }
 
-export interface Session { userId: string; email: string | null }
+/** `providers` : fournisseurs de connexion du compte (ex. « apple »), pour la révocation Apple à la suppression. */
+export interface Session { userId: string; email: string | null; providers?: string[] }
 
 export interface AuthApi {
   getSession(): Promise<Session | null>;

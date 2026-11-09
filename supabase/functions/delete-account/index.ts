@@ -7,10 +7,13 @@
 // 4) si REVENUECAT_SECRET_API_KEY est définie, supprime aussi le client RevenueCat (DELETE /v1/subscribers/{id}) ;
 //    un échec est journalisé et n'empêche pas la suppression (l'abonnement boutique, lui, se résilie dans l'App Store
 //    ou Google Play : supprimer le compte ne l'arrête pas).
+// 5) compte « Se connecter avec Apple » : si l'app envoie apple_authorization_code, échange puis révocation des
+//    jetons Apple (_shared/apple.ts) ; jamais bloquant, résultat renvoyé dans « apple ».
 // Aucun nom de fichier n'est journalisé.
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { deleteRevenueCatCustomer, revenueCatApi } from '../_shared/subscription-run.ts';
+import { revokeAppleFromCode } from '../_shared/apple.ts';
 
 const PAGE = 100;
 
@@ -112,5 +115,8 @@ Deno.serve(withCors(async (req) => {
   const rcKey = Deno.env.get('REVENUECAT_SECRET_API_KEY');
   const revenuecat = await deleteRevenueCatCustomer(rcKey ? revenueCatApi(rcKey) : null, auth.user.id);
   if (revenuecat === 'failed') console.error('delete_account_revenuecat_pending');
-  return json({ ok: true, files_removed: files.length + avatars.length - pending + photos.length + cycle.count + community.count, files_pending: pending, revenuecat });
+  const appleCode = typeof body?.apple_authorization_code === 'string' ? body.apple_authorization_code : undefined;
+  const apple = await revokeAppleFromCode(appleCode);
+  if (apple === 'failed' || (appleCode && apple === 'not_configured')) console.error('delete_account_apple_' + apple);
+  return json({ ok: true, apple, files_removed: files.length + avatars.length - pending + photos.length + cycle.count + community.count, files_pending: pending, revenuecat });
 }));

@@ -6,7 +6,7 @@
 import { PRIVACY } from '@/content/legal';
 
 // Même version que celle enregistrée à l'inscription (LEGAL_VERSIONS.privacy, src/lib/authFlow.ts)
-export const PRIVACY_POLICY_VERSION = '2026-10';
+export const PRIVACY_POLICY_VERSION = '2026-11';
 
 // Lu à chaque accès : suit la langue en cours (PRIVACY est déjà bilingue)
 export const PRIVACY_POLICY: { title: string; body: string }[] = new Proxy([] as { title: string; body: string }[], {

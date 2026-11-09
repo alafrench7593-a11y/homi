@@ -72,3 +72,22 @@ export async function socialSignIn(client: SupabaseClient, provider: 'apple' | '
   if (provider === 'apple' && Platform.OS === 'ios') return appleNative(client);
   return browserOAuth(client, provider);
 }
+
+/**
+ * Suppression d'un compte créé avec « Se connecter avec Apple » (iPhone) : Apple exige que l'app révoque ses jetons.
+ * On redemande une confirmation Apple pour obtenir un code d'autorisation à usage unique, que la fonction serveur
+ * « delete-account » échange puis révoque auprès d'Apple. Renvoie null si indisponible ou refusé : la suppression
+ * du compte se fait quand même (la personne peut aussi retirer l'app dans Réglages › Identifiant Apple).
+ */
+export async function appleRevocationCode(): Promise<string | null> {
+  if (Platform.OS !== 'ios') return null;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const Apple = require('expo-apple-authentication') as typeof import('expo-apple-authentication');
+    if (!(await Apple.isAvailableAsync())) return null;
+    const cred = await Apple.signInAsync({ requestedScopes: [] });
+    return cred.authorizationCode ?? null;
+  } catch {
+    return null;
+  }
+}

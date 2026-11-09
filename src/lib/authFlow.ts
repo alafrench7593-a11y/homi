@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { t as tr } from '@/i18n';
 
 /** Versions des documents acceptés à l'inscription (à mettre à jour à chaque nouvelle version). */
-export const LEGAL_VERSIONS = { terms: '2026-10', privacy: '2026-10' } as const;
+export const LEGAL_VERSIONS = { terms: '2026-11', privacy: '2026-11' } as const;
 
 export const RESEND_COOLDOWN_S = 60;
 

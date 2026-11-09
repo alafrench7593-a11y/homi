@@ -97,8 +97,8 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
     });
   }
 
-  const toSession = (s: { user: { id: string; email?: string | null } } | null): Session | null =>
-    s ? { userId: s.user.id, email: s.user.email ?? null } : null;
+  const toSession = (s: { user: { id: string; email?: string | null; app_metadata?: { providers?: unknown } } } | null): Session | null =>
+    s ? { userId: s.user.id, email: s.user.email ?? null, providers: Array.isArray(s.user.app_metadata?.providers) ? (s.user.app_metadata.providers as string[]) : [] } : null;
 
   const api: Backend = {
     mode: 'supabase',
