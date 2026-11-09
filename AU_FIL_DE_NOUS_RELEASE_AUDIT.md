@@ -25,13 +25,34 @@ et après une première passe sur appareil.
 
 ## B. Clavier (priorité de la mission)
 
-- Composant commun `src/components/keyboard.tsx` (test `keyboard.test.tsx` réussi). Il est utilisé dans le chat,
-  les commentaires de la communauté et les cartes d'accueil.
-- Vérifié dans un navigateur web en tailles 375×667 et 320×568 : champ visible au-dessus du clavier, touche
-  « Entrée » qui passe au champ suivant, fermeture de feuille.
-- **Le travail de l'agent clavier était encore en cours à la rédaction** (feuille « rendez-vous »). Son rapport sera
-  ajouté ici avec ses preuves.
-- **NON VÉRIFIÉ** : le comportement réel du clavier iOS et Android (le web ne simule pas le clavier natif).
+Un seul mécanisme partagé (`Screen`, `Sheet`, `Field` et `src/components/keyboard.tsx`), sans nouvelle dépendance.
+
+| Prio | Problème corrigé |
+|---|---|
+| P0 | Android : le clavier recouvrait le bas de tous les écrans. Avec l'affichage plein écran imposé par Expo 57, la fenêtre ne se redimensionne plus ; correction : `behavior="padding"` sur iOS et Android. |
+| P0 | Les ≈ 45 feuilles (`Sheet`) étaient recouvertes par le clavier. Elles remontent maintenant et leur contenu défile. |
+| P1 | iOS : un champ en bas d'un long formulaire restait caché. L'écran défile désormais vers le champ actif. |
+| P1 | La touche « Suivant » fermait le clavier au lieu de passer au champ suivant (connexion, inscription, etc.). Elle passe maintenant au champ suivant ; le dernier champ affiche « OK ». |
+| P1 | Le clavier restait ouvert après un envoi, ou sur l'écran suivant. Il se ferme à l'envoi et en quittant l'écran ou la feuille. |
+| P1 | Le premier toucher était ignoré sur les pastilles quand le clavier était ouvert. Corrigé par `keyboardShouldPersistTaps` sur 27 listes. |
+| P2 | Plusieurs points corrigés : la touche « Envoyer » de l'onglet Questions, le texte des champs multilignes sur Android, l'espace vide au-dessus du clavier et le décalage dans les modales iOS. |
+
+- VÉRIFIÉ : `keyboard.test.tsx` réussit 21 tests sur 21, en configuration iOS comme Android. L'ensemble de la suite
+  jest réussit 1426 tests sur 1426.
+- VÉRIFIÉ dans le navigateur, sur 22 écrans de saisie et 3 formats (375×667, 320×568, Android émulé) : focus, accents,
+  enchaînement des champs, envoi, feuille « Nouveau rendez-vous » entièrement visible. Aucun défaut trouvé.
+- Inventaire : 119 fichiers et environ 400 champs. Ceux qui n'ont pas été ouverts un par un bénéficient des corrections
+  des composants partagés, mais n'ont été relus que dans le code.
+- **NON VÉRIFIÉ** (appareil ou simulateur nécessaire) :
+  - la remontée réelle des écrans et des feuilles au-dessus du clavier natif, en particulier les feuilles sur Android ;
+  - les modales iOS ;
+  - les claviers en 5 langues ;
+  - la grande taille de texte et la rotation.
+- Restes : P1, un essai sur Android 15/16 et sur iPhone ; P2, le défilement automatique dans les listes
+  virtualisées ; P3, le libellé « OK » au lieu de « Suivant » sur un champ qui apparaît en cours de saisie ;
+  P3, pas de fermeture du clavier en faisant glisser la page.
+- Bibliothèque `react-native-keyboard-controller` : non installée. Elle ne serait utile que si les essais sur
+  appareil montrent des saccades sur Android, et elle demanderait une nouvelle build native.
 
 ## C. Écrans et navigation (216 routes)
 
