@@ -102,6 +102,8 @@ Un seul mécanisme partagé (`Screen`, `Sheet`, `Field` et `src/components/keybo
   `aufildenous_premium_annual`). Pour chacun : prix France 10,99 / 49,99 / 79,99 €, disponibilité dans 175 pays, nom
   et description en français. Essai gratuit de 3 jours sur le mensuel uniquement. État : « Finaliser avant
   soumission ».
+- Offre Assistant IA, créée le 10/11/2026 dans un groupe séparé « Au fil de nous Assistant IA » : produit
+  `aufildenous_ai_monthly`, 1 mois, 7,99 € en France, 175 pays, nom et description en français, sans essai.
 - Les 2 anciens produits (`toietmoi_premium_monthly`, `toietmoi_premium_annual`) n'ont pas été touchés.
 - **Bloquant** : le « Contrat relatif aux applications payantes » est à l'état « Nouveau » (non signé). Aucun achat
   ne peut fonctionner tant que David ne l'a pas signé et n'a pas renseigné banque et fiscalité.
