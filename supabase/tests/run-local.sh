@@ -47,7 +47,7 @@ fi
 
 # Les tests 00 à 89 décrivent les règles d'avant le Premium strict (quotas de la version gratuite, etc.) :
 # ils tournent avec le verrouillage désactivé. 90_premium_strict.sql le réactive et teste le modèle strict.
-"${DB[@]}" -c "update public.premium_policy set strict = false" >/dev/null
+"${DB[@]}" -c "update public.premium_policy set strict = false, assistant_paid = false" >/dev/null
 
 STATUS=0
 for t in "$ROOT"/supabase/tests/sql/*.sql; do
