@@ -134,6 +134,21 @@ Un seul mécanisme partagé (`Screen`, `Sheet`, `Field` et `src/components/keybo
 - **Premium strict** : installé mais en attente (migration `20261110000100`) tant que l'achat n'est pas possible.
   L'offre Premium reste visible.
 
+**Déployé le 10/11/2026 à 01h27 (script `mettre-a-jour-v7.command`, journal `mise-a-jour-v7.log`) : VÉRIFIÉ**
+
+- Base : 8 migrations appliquées en production (jusqu'à `20261110000100`).
+- Serveur : 14 fonctions déployées, aucun échec.
+- Pages publiques en ligne, 10 adresses contrôlées (code 200, bon titre, contact et hébergement présents) :
+  - confidentialité : https://toi-et-moi.expo.app/confidentialite/
+  - CGU : https://toi-et-moi.expo.app/cgu/
+  - mentions légales : https://toi-et-moi.expo.app/mentions-legales/
+  - suppression de compte : https://toi-et-moi.expo.app/suppression-compte/
+  - aide : https://toi-et-moi.expo.app/aide/
+- Build iOS numéro 13 (version 0.1.0) envoyée à Expo, puis programmée pour TestFlight. **NON VÉRIFIÉ** : fin de la
+  compilation et arrivée dans TestFlight.
+- Clé « Sign in with Apple » `P3424G836A` créée dans le compte Apple. **NON VÉRIFIÉ** : secrets serveur
+  (`configurer-apple.command` pas encore lancé).
+
 **Reste à faire par toi :**
 
 1. Créer la clé « Sign in with Apple », puis lancer `configurer-apple.command`. Le fichier

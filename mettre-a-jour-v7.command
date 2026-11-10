@@ -29,7 +29,7 @@ done
 echo "=== 4/5 Pages juridiques publiques ==="
 export EAS_NO_VCS=1
 npx --yes eas-cli@latest whoami >/dev/null 2>&1 || npx --yes eas-cli@latest login
-# Première fois : Expo demande un nom de domaine → tape  aufildenous  (adresse https://aufildenous.expo.app)
+# Adresse publique : https://toi-et-moi.expo.app (choisie au premier déploiement, le 10/11/2026)
 if npx --yes eas-cli@latest deploy --export-dir legal-site --prod; then echo "PAGES OK"; else echo "PAGES ÉCHEC"; ECHECS="$ECHECS pages"; fi
 
 echo "=== 5/5 Build iOS → TestFlight ==="
