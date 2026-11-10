@@ -95,8 +95,16 @@ Un seul mécanisme partagé (`Screen`, `Sheet`, `Field` et `src/components/keybo
 
 ## G. Paiements (RevenueCat)
 
-- Prix dans l'app : 10,99 € par mois (seule formule avec 3 jours d'essai), 49,99 € par an, 79,99 € à vie. L'offre
-  Assistant IA à 5 € est conservée mais affichée « bientôt disponible ».
+- Prix dans l'app : 10,99 € par mois (seule formule avec 3 jours d'essai), 49,99 € pour 6 mois, 79,99 € par an.
+  L'offre Assistant IA à 5 € est conservée mais affichée « bientôt disponible ».
+- App Store Connect, fait le 10/11/2026 dans le groupe « Au fil de nous Premium » : 3 produits créés avec les
+  identifiants attendus par le code (`aufildenous_premium_monthly`, `aufildenous_premium_6months`,
+  `aufildenous_premium_annual`). Pour chacun : prix France 10,99 / 49,99 / 79,99 €, disponibilité dans 175 pays, nom
+  et description en français. Essai gratuit de 3 jours sur le mensuel uniquement. État : « Finaliser avant
+  soumission ».
+- Les 2 anciens produits (`toietmoi_premium_monthly`, `toietmoi_premium_annual`) n'ont pas été touchés.
+- **Bloquant** : le « Contrat relatif aux applications payantes » est à l'état « Nouveau » (non signé). Aucun achat
+  ne peut fonctionner tant que David ne l'a pas signé et n'a pas renseigné banque et fiscalité.
 - Le bouton d'achat n'annonce un essai que si la boutique le propose vraiment. Le droit Premium vient toujours du
   serveur (`has_premium`).
 - **NON VÉRIFIÉ** : un achat réel ou sandbox, la restauration et le renouvellement. Les produits ne sont pas encore
