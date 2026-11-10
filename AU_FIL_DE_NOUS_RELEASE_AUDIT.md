@@ -187,3 +187,15 @@ Un seul mécanisme partagé (`Screen`, `Sheet`, `Field` et `src/components/keybo
 2. Définir le secret serveur `ASSISTANT_ENABLED=true`.
 
 Détail complet de la soumission : `PUBLICATION.md`.
+
+## À reprendre (état au 10/11/2026, 03h30)
+
+1. Contrat Apple des applications payantes : entité juridique, banque, fiscalité (David).
+2. Google Cloud : projet `au-fil-de-nous` créé, **sans facturation**. À faire : ajouter une carte dans Chrome, sur le
+   compte Google qui voit ce projet (David). Ensuite : activer Places API (New) et Maps SDK for iOS, créer 2 clés
+   restreintes, puis lancer `configurer-google.command`.
+3. Capture d'écran de la page Premium pour la vérification Apple des 4 abonnements.
+4. Tests de la build 13 sur iPhone (clavier, Questions « Bientôt disponible », rappels, textes juridiques).
+5. Plus tard : achat de test, puis activation du verrou Premium, puis réouverture de l'assistant IA avec une nouvelle
+   clé Gemini.
+
