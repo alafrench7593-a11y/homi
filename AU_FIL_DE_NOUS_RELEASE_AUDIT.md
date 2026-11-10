@@ -96,7 +96,7 @@ Un seul mécanisme partagé (`Screen`, `Sheet`, `Field` et `src/components/keybo
 ## G. Paiements (RevenueCat)
 
 - Prix dans l'app : 10,99 € par mois (seule formule avec 3 jours d'essai), 49,99 € pour 6 mois, 79,99 € par an.
-  L'offre Assistant IA à 5 € est conservée mais affichée « bientôt disponible ».
+  L'offre Assistant IA passe à 7,99 € par mois (décision du 10/11/2026) ; elle est conservée mais affichée « bientôt disponible ».
 - App Store Connect, fait le 10/11/2026 dans le groupe « Au fil de nous Premium » : 3 produits créés avec les
   identifiants attendus par le code (`aufildenous_premium_monthly`, `aufildenous_premium_6months`,
   `aufildenous_premium_annual`). Pour chacun : prix France 10,99 / 49,99 / 79,99 €, disponibilité dans 175 pays, nom

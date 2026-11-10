@@ -66,7 +66,7 @@ export function LockedNotice() {
   return <Banner tone="info" icon="lock">{tr('pw.lock.body')}</Banner>;
 }
 
-/** Écran Abonnement : offre « Assistant IA » (≈ 5 €/mois, 250 questions ; plus de mois offert depuis le 08/11/2026). */
+/** Écran Abonnement : offre « Assistant IA » (7,99 €/mois, 250 questions ; plus de mois offert depuis le 08/11/2026). */
 export function AiOfferCard() {
   const q = useAccess();
   const { price, demo } = useOfferPrice(AI_PRODUCT_ID, DEMO_OFFER_PRICES.ai);

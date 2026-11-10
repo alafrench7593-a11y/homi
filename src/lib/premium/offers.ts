@@ -23,7 +23,7 @@ export const toolProductId = (tool: PaidTool) => `aufildenous_tool_${tool}`;
 export const toolEntitlement = (tool: PaidTool) => `TOOL_${tool.toUpperCase()}`;
 
 /** Grille affichée UNIQUEMENT en démonstration (aucune boutique, aucun paiement). */
-export const DEMO_OFFER_PRICES = { ai: 4.99, tool: 0.99 } as const;
+export const DEMO_OFFER_PRICES = { ai: 7.99, tool: 0.99 } as const;
 
 export interface AccessInfo {
   premium: boolean;

@@ -132,7 +132,7 @@ expiration : données conservées, consultables, exportables (modèle « Premium
 **NON VÉRIFIÉ sur appareil** (achat sandbox, renouvellement, échec de paiement, remboursement).
 
 ### 3.3 Assistant IA seul — à préparer
-- Produit `aufildenous_ai_monthly`, droit `ASSISTANT_IA`, ~5 €/mois (grille de démonstration : 4,99 €), 250 questions/mois.
+- Produit `aufildenous_ai_monthly`, droit `ASSISTANT_IA`, 7,99 €/mois depuis le 10/11/2026 (grille de démonstration : 7,99 €), 250 questions/mois.
 - **Décision David** : même groupe d'abonnements Apple que Premium (passer de l'IA au Premium remplace l'abonnement, mais
   l'éligibilité aux essais est commune au groupe) **ou** groupe séparé (essais indépendants, mais une personne peut payer
   les deux). Google : produit d'abonnement distinct.

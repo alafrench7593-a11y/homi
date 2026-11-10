@@ -194,7 +194,7 @@ export default function SubscriptionScreen() {
         </>
       ) : null}
 
-      {/* L'assistant IA seul (5 €/mois) ; les outils achetés à vie avant le 08/11/2026 restent listés */}
+      {/* L'assistant IA seul (7,99 €/mois) ; les outils achetés à vie avant le 08/11/2026 restent listés */}
       <SectionTitle title={tr('offer.aiSection')} />
       <AiOfferCard />
       <ToolOffersCard />

@@ -42,7 +42,7 @@ l'application (`EXPO_PUBLIC_…`), tout le reste est un **secret Supabase**.
   Le co-parent d'une abonnée est couvert. **Aucune donnée n'est supprimée à la fin d'un abonnement.**
 - **Interrupteur de secours** (admin uniquement, sans nouvelle migration) :
   `update public.premium_policy set strict = false;` revient au modèle précédent ; `= true` le réactive.
-- **Assistant IA seul** (`aufildenous_ai_monthly`, ~5 €/mois) : abonnement séparé qui ouvre **uniquement** l'assistant.
+- **Assistant IA seul** (`aufildenous_ai_monthly`, 7,99 €/mois depuis le 10/11/2026) : abonnement séparé qui ouvre **uniquement** l'assistant.
 - **Plus de mois gratuit des outils, plus de vente d'outils à 1 €** : ne créez pas (ou retirez de la vente) les produits
   `aufildenous_tool_*`. Les outils déjà achetés à vie restent ouverts à leur propriétaire.
 - **Essai** : uniquement sur le mensuel (offre d'introduction « 3 jours gratuits », nouveaux abonnés).

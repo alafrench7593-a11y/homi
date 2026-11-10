@@ -6,7 +6,7 @@
  *  - son profil et ses réglages (compte, confidentialité avec export et suppression des données, langue,
  *    notifications, foyer, synchronisation, abonnement) ;
  *  - les numéros et pages d'urgence, les sources, les mentions légales, « Donner mon avis ».
- * L'offre « Assistant IA » (5 €/mois) ouvre l'assistant ; un outil acheté à vie avant le 08/11/2026 reste ouvert.
+ * L'offre « Assistant IA » (7,99 €/mois) ouvre l'assistant ; un outil acheté à vie avant le 08/11/2026 reste ouvert.
  * Tout le reste affiche l'écran Premium. Le serveur applique la même règle aux nouvelles saisies
  * (migration 20261108000300_premium_strict.sql) : l'application n'accorde jamais un droit seule.
  */
