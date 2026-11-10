@@ -104,6 +104,10 @@ Un seul mécanisme partagé (`Screen`, `Sheet`, `Field` et `src/components/keybo
   soumission ».
 - Offre Assistant IA, créée le 10/11/2026 dans un groupe séparé « Au fil de nous Assistant IA » : produit
   `aufildenous_ai_monthly`, 1 mois, 7,99 € en France, 175 pays, nom et description en français, sans essai.
+- RevenueCat, fait le 10/11/2026 (projet « Au fil de nous », app iOS) : 4 produits créés ; droits
+  `AU_FIL_DE_NOUS_PREMIUM` (3 produits Premium) et `ASSISTANT_IA` (produit IA) créés, car l'ancien droit `premium` ne
+  correspond pas au code ; offre `default` mise à jour avec `$rc_monthly`, `$rc_six_month` et `$rc_annual`.
+  RevenueCat affiche « Could not check » : il lui manque les identifiants App Store Connect. **NON VÉRIFIÉ** : achat.
 - Les 2 anciens produits (`toietmoi_premium_monthly`, `toietmoi_premium_annual`) n'ont pas été touchés.
 - **Bloquant** : le « Contrat relatif aux applications payantes » est à l'état « Nouveau » (non signé). Aucun achat
   ne peut fonctionner tant que David ne l'a pas signé et n'a pas renseigné banque et fiscalité.
