@@ -199,6 +199,6 @@ Détail complet de la soumission : `PUBLICATION.md`.
 5. Plus tard : achat de test, puis activation du verrou Premium, puis réouverture de l'assistant IA avec une nouvelle
    clé Gemini.
 6. Corrigé le 10/11/2026 (code, **pas encore déployé**) : l'assistant IA est réservé aux abonnés même verrou Premium
-   coupé (migration `20261110000200_assistant_payant`, test 94, 1525 vérifications base réussies). À déployer avec
-   `deployer-migrations.command`. L'ordre « verrou puis assistant » n'est donc plus obligatoire.
+   coupé (migration `20261110000200_assistant_payant`, test 94, 1525 vérifications base réussies). **Déployée en production le 11/11/2026 à 20h47** (lancée par David depuis l'éditeur SQL Supabase,
+   vérifiée : migration inscrite, compte gratuit → 0 question, verrou strict toujours coupé). L'ordre « verrou puis assistant » n'est donc plus obligatoire.
 
