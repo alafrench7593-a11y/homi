@@ -4,6 +4,7 @@ import React from 'react';
 import {
   ActivityIndicator, Animated, Easing, Pressable, StyleSheet, Text as RNText, TextInput, View,
   type GestureResponderEvent, type PressableProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle,
+  useWindowDimensions,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -344,6 +345,10 @@ export function IconButton({ icon, label, onPress, color, size = 20, style, tone
 export function Fab({ icon, label, onPress, style, accessibilityHint, showLabel = true }: { icon: IconName; label: string; onPress: () => void; style?: StyleProp<ViewStyle>; accessibilityHint?: string; showLabel?: boolean }) {
   const t = useTheme();
   const press = usePressMotion({ pressed: 0.97, hoverLift: 0 });
+  // Très petits écrans (< 360 px, ex. iPhone SE 1re génération) : icône seule, pour ne pas masquer le contenu
+  // (onglets, filtres) ; le libellé reste annoncé par le lecteur d'écran.
+  const { width } = useWindowDimensions();
+  const withLabel = showLabel && width >= 360;
   return (
     <Animated.View style={[styles.fab, { backgroundColor: t.colors.primary, shadowColor: t.isDark ? '#000000' : '#6B3F2E' }, style, press.style]}>
       <Pressable
@@ -352,11 +357,11 @@ export function Fab({ icon, label, onPress, style, accessibilityHint, showLabel 
         accessibilityHint={accessibilityHint}
         onPress={() => { haptic('light'); onPress(); }}
         {...press.handlers}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, minWidth: 52, justifyContent: 'center', paddingHorizontal: showLabel ? 22 : 0, borderRadius: 26, overflow: 'hidden' }}
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, minWidth: 52, justifyContent: 'center', paddingHorizontal: withLabel ? 22 : 0, borderRadius: 26, overflow: 'hidden' }}
       >
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#FFFFFF', opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, 0.14] }) }]} />
         <Icon name={icon} size={20} color={t.colors.primaryText} />
-        {showLabel ? <Text weight="bold" color={t.colors.primaryText} style={{ flexShrink: 1, fontSize: 15, letterSpacing: -0.15 }}>{label}</Text> : null}
+        {withLabel ? <Text weight="bold" color={t.colors.primaryText} style={{ flexShrink: 1, fontSize: 15, letterSpacing: -0.15 }}>{label}</Text> : null}
       </Pressable>
     </Animated.View>
   );

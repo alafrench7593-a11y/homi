@@ -13,6 +13,7 @@ import { Tappable } from '@/components/Tappable';
 import { Icon, Text } from '@/components/ui';
 import { MIN_TOUCH, NACRE, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { aiAssistantOnline } from '@/config/features';
 
 export function HomeAssistantCard() {
   const [q, setQ] = useState('');
@@ -51,6 +52,11 @@ export function HomeAssistantCard() {
         style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH }}>
         <Icon name="cloud" size={16} color="#FFFFFF" />
         <Text variant="small" weight="bold" color="#FFFFFF" style={{ flex: 1 }}>{tr('ai.home.online')}</Text>
+        {aiAssistantOnline() ? null : (
+          <View style={{ backgroundColor: 'rgba(255,255,255,0.28)', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 }} testID="home-ai-soon">
+            <Text variant="caption" weight="bold" color="#FFFFFF">{tr('pw.soon.badge')}</Text>
+          </View>
+        )}
         <Icon name="chevron-right" size={16} color="#FFFFFF" />
       </Tappable>
       <Text variant="caption" color="rgba(255,255,255,0.85)">{tr('ai.home.localNote')} {tr('ai.home.disclaimer')}</Text>

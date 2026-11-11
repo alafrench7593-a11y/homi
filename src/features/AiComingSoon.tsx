@@ -34,7 +34,8 @@ export function AiComingSoonCard() {
 
 export function AiComingSoonScreen({ back = false }: { back?: boolean }) {
   return (
-    <Screen back={back} title={tr('pw.soon.screenTitle')}>
+    // Dans l'onglet Questions (sans retour), réserver la place de la barre d'onglets comme les autres onglets
+    <Screen back={back} title={tr('pw.soon.screenTitle')} bottomInset={back ? 0 : 96}>
       <AiComingSoonCard />
       <Banner tone="info" icon="phone">{tr('pw.soon.urgent')}</Banner>
       <Button label={tr('pw.emergency')} icon="life-buoy" variant="ghost" onPress={() => router.push('/emergency')} testID="ai-soon-emergency" />
