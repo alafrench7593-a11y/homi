@@ -20,7 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Svg, { Defs, LinearGradient as SvgGradient, Path, Stop } from 'react-native-svg';
-import { BrandGlow, BrandLogo, BrandShine } from '@/components/BrandLogo';
+import { BrandLogo, BrandShine } from '@/components/BrandLogo';
 import { Tappable } from '@/components/Tappable';
 import { Icon } from '@/components/ui';
 import { BRAND } from '@/config/brand';
@@ -171,17 +171,15 @@ function ChapterCard({ clock, c, bottom }: { clock: Clock; c: CineChapter; botto
 function LogoReveal({ clock, w }: { clock: Clock; w: number }) {
   const L = CINE_LOGO.start;
   const size = Math.round(Math.min(148, w * 0.38));
-  const halo = Math.round(size * 2.1);
+  const halo = Math.round(size * 1.25);
   const name = BRAND.name.split('');
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: lin(clock, [L, L + 1.2], [0, 1]) }]}>
         <LinearGradient colors={[`${PLUM}0)`, `${PLUM}0.28)`, `${PLUM}0.36)`, `${PLUM}0)`]} locations={[0.15, 0.4, 0.62, 0.9]} style={{ flex: 1 }} />
       </Animated.View>
-      <View style={{ width: halo, height: halo, alignItems: 'center', justifyContent: 'center' }}>
-        <Animated.View testID="cine-logo-glow" style={{ position: 'absolute', width: halo, height: halo, opacity: lin(clock, [L, L + 1.2, L + 2.6, L + 3.6, D], [0, 1, 0.8, 0.95, 0.88]), transform: [{ scale: lin(clock, [L, L + 1.4, L + 3, D], [0.5, 1, 1.06, 1.02], ease) }] }}>
-          <BrandGlow size={halo} />
-        </Animated.View>
+      {/* 13/11/2026 : plus aucun cercle ni halo derrière le logo ; le voile prune (pleine largeur) assure la lisibilité */}
+      <View style={{ height: halo, alignItems: 'center', justifyContent: 'center' }}>
         <Animated.View testID="cine-logo" style={{ width: size, height: size, opacity: lin(clock, [L + 0.15, L + 0.7], [0, 1]), transform: [{ scale: lin(clock, [L + 0.15, L + 1.2], [0.62, 1], ease) }, { rotate: rot(clock, [L + 0.15, L + 1.2], [-14, 0], ease) }] }}>
           <BrandLogo size={size} />
           {/* éclat qui parcourt le fil (remplace le reflet rectangulaire de l'ancienne tuile) */}
