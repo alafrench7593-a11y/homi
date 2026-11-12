@@ -12,8 +12,9 @@ Les fichiers `SKILL.md` individuels n'ont pas encore été lus un par un : c'est
 | gorhom/react-native-bottom-sheet | Gorhom | MIT | reconnu | panneaux inférieurs | **Non ajouté** : demande Reanimated + Gesture Handler ; le projet a déjà des feuilles et modales (`Overlays`) |
 
 ## Constat technique décisif
-- `react-native-reanimated` et `react-native-gesture-handler` **ne sont pas** des dépendances du projet (toutes les animations utilisent `Animated` + pilote natif). Les skills d'animation Expo et Software Mansion supposent ces deux bibliothèques.
-- Les ajouter impose une **nouvelle build native** et des tests sur appareil : décision à valider avant d'installer (règle « pas de dépendance sans justification »).
+- `react-native-reanimated` 4.7.1, `react-native-worklets` 0.13.0 et `react-native-gesture-handler` 3.3.0 sont **déjà installés**, comme dépendances d'expo-router, expo-gl et @expo/ui, mais **non déclarés** dans `package.json`. Le code de l'application n'en utilise aucun : toutes ses animations passent par `Animated` avec le pilote natif.
+- Pour s'en servir directement (skills `expo-animation` et Software Mansion), il faut les **déclarer** dans `package.json` aux versions déjà présentes, puis vérifier sur une vraie build iOS. Aucune nouvelle bibliothèque ne serait téléchargée.
+- `@gorhom/bottom-sheet` v5 cible Reanimated 3 : la compatibilité avec Reanimated 4.7 n'est **pas vérifiée**. Il n'est pas ajouté.
 
 ## Installation
 Non effectuée. Méthode prévue après validation : `npx skills@latest add expo/skills --skill expo-animation` (etc.), après lecture du SKILL.md et du dossier `scripts` de chaque skill.
