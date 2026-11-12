@@ -28,7 +28,7 @@ import { duration, easing, timeTo } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NACRE, NATIVE_DRIVER, radius, spacing, typography } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
-import { BrandLogo } from '@/components/BrandLogo';
+import { BrandGlow, BrandLogo } from '@/components/BrandLogo';
 import { PowderSky } from '@/components/PowderSky';
 
 type Universe = 'cycle' | 'pregnancy' | 'child' | 'health' | 'tools' | 'community';
@@ -54,6 +54,7 @@ const SLIDES: Slide[] = ['hello', ...HOW.map((h) => h.key), ...UNIVERSES.map((u)
 /** Logo animé : la tuile « Au fil de nous » pivote et se pose, une lumière respire derrière (pas en boucle si animations réduites). */
 function AnimatedMark({ size = 84 }: { size?: number }) {
   const reduce = useReduceMotion();
+  const t = useTheme();
   const enter = useRef(new Animated.Value(reduce ? 1 : 0)).current;
   const glow = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -67,11 +68,12 @@ function AnimatedMark({ size = 84 }: { size?: number }) {
     loop.start();
     return () => loop.stop();
   }, [enter, glow, reduce]);
-  const box = size * 1.9;
+  const box = Math.round(size * 1.9);
   return (
     <View style={{ width: box, height: box, alignItems: 'center', justifyContent: 'center' }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      <Animated.View style={{ position: 'absolute', width: box, height: box, borderRadius: box / 2, opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0.3, 0.65] }), transform: [{ scale: glow.interpolate({ inputRange: [0, 1], outputRange: [0.88, 1.06] }) }] }}>
-        <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1, borderRadius: box / 2, opacity: 0.42 }} />
+      {/* halo doux, sans bord : la lumière respire derrière le logo sans l'enfermer dans un disque */}
+      <Animated.View testID="intro-logo-glow" style={{ position: 'absolute', width: box, height: box, opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1] }), transform: [{ scale: glow.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1.06] }) }] }}>
+        <BrandGlow size={box} core={t.isDark ? 'rgba(231,192,143,0.10)' : 'rgba(255,250,246,0.55)'} ring={t.isDark ? 'rgba(203,138,114,0.26)' : 'rgba(226,174,120,0.30)'} />
       </Animated.View>
       <Animated.View style={{ opacity: enter, transform: [{ scale: enter.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] }) }, { rotate: enter.interpolate({ inputRange: [0, 1], outputRange: ['-24deg', '0deg'] }) }] }}>
         <BrandLogo size={size} />

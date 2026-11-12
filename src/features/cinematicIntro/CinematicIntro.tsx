@@ -20,7 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Svg, { Defs, LinearGradient as SvgGradient, Path, Stop } from 'react-native-svg';
-import { BrandLogo } from '@/components/BrandLogo';
+import { BrandGlow, BrandLogo, BrandShine } from '@/components/BrandLogo';
 import { Tappable } from '@/components/Tappable';
 import { Icon } from '@/components/ui';
 import { BRAND } from '@/config/brand';
@@ -162,11 +162,16 @@ function ChapterCard({ clock, c, bottom }: { clock: Clock; c: CineChapter; botto
   );
 }
 
-/** Logo final : halo nacré, tuile qui pivote et se pose, reflet lumineux, nom lettre à lettre, signature. */
+/**
+ * Logo final : halo doux, logo qui pivote et se pose, éclat qui parcourt le fil, nom lettre à lettre, signature.
+ * 13/11/2026 : le logo est un PNG transparent, il n'est plus posé dans une tuile (carré arrondi, ombre et reflet
+ * rectangulaire hérités de l'ancien logo carré). Mêmes temps et mêmes mouvements ; le halo n'a plus de bord et
+ * l'éclat suit le tracé du fil doré.
+ */
 function LogoReveal({ clock, w }: { clock: Clock; w: number }) {
   const L = CINE_LOGO.start;
-  const size = Math.min(112, w * 0.28);
-  const halo = size * 2.4;
+  const size = Math.round(Math.min(148, w * 0.38));
+  const halo = Math.round(size * 2.1);
   const name = BRAND.name.split('');
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
@@ -174,17 +179,15 @@ function LogoReveal({ clock, w }: { clock: Clock; w: number }) {
         <LinearGradient colors={[`${PLUM}0)`, `${PLUM}0.28)`, `${PLUM}0.36)`, `${PLUM}0)`]} locations={[0.15, 0.4, 0.62, 0.9]} style={{ flex: 1 }} />
       </Animated.View>
       <View style={{ width: halo, height: halo, alignItems: 'center', justifyContent: 'center' }}>
-        <Animated.View style={{ position: 'absolute', width: halo, height: halo, borderRadius: halo / 2, opacity: lin(clock, [L, L + 1.2, L + 2.6, L + 3.6, D], [0, 0.6, 0.38, 0.55, 0.45]), transform: [{ scale: lin(clock, [L, L + 1.4, L + 3, D], [0.5, 1, 1.06, 1]) }] }}>
-          <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1, borderRadius: halo / 2, opacity: 0.55 }} />
+        <Animated.View testID="cine-logo-glow" style={{ position: 'absolute', width: halo, height: halo, opacity: lin(clock, [L, L + 1.2, L + 2.6, L + 3.6, D], [0, 1, 0.8, 0.95, 0.88]), transform: [{ scale: lin(clock, [L, L + 1.4, L + 3, D], [0.5, 1, 1.06, 1.02], ease) }] }}>
+          <BrandGlow size={halo} />
         </Animated.View>
-        <Animated.View style={{ opacity: lin(clock, [L + 0.15, L + 0.7], [0, 1]), transform: [{ scale: lin(clock, [L + 0.15, L + 1.2], [0.62, 1], ease) }, { rotate: rot(clock, [L + 0.15, L + 1.2], [-14, 0], ease) }] }}>
-          <View style={{ width: size, height: size, borderRadius: size * 0.23, overflow: 'hidden', shadowColor: '#7A3E55', shadowOpacity: 0.35, shadowRadius: 18, shadowOffset: { width: 0, height: 8 } }}>
-            <BrandLogo size={size} />
-            {/* reflet qui traverse la tuile */}
-            <Animated.View style={{ position: 'absolute', top: -size * 0.2, bottom: -size * 0.2, width: size * 0.45, transform: [{ translateX: lin(clock, [L + 1.0, L + 1.8], [-size * 0.6, size * 1.2], ease) }, { rotate: '20deg' }] }}>
-              <LinearGradient colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.65)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flex: 1 }} />
-            </Animated.View>
-          </View>
+        <Animated.View testID="cine-logo" style={{ width: size, height: size, opacity: lin(clock, [L + 0.15, L + 0.7], [0, 1]), transform: [{ scale: lin(clock, [L + 0.15, L + 1.2], [0.62, 1], ease) }, { rotate: rot(clock, [L + 0.15, L + 1.2], [-14, 0], ease) }] }}>
+          <BrandLogo size={size} />
+          {/* éclat qui parcourt le fil (remplace le reflet rectangulaire de l'ancienne tuile) */}
+          <Animated.View style={[StyleSheet.absoluteFill, { opacity: lin(clock, [L + 1.0, L + 1.4, L + 1.9], [0, 0.85, 0]) }]}>
+            <BrandShine size={size} />
+          </Animated.View>
         </Animated.View>
       </View>
       <View style={{ flexDirection: 'row', marginTop: 6 }} accessibilityLabel={BRAND.name} accessible>

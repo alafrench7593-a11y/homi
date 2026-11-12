@@ -35,7 +35,8 @@ const STATS: { icon: IconName; key: 'welcome.stat1' | 'welcome.stat2' | 'welcome
 export default function Welcome() {
   const insets = useSafeAreaInsets();
   const win = useWindowDimensions();
-  const narrow = win.width < 360;
+  // < 380 : à 360 px (Android compact) le nom de l'application était coupé (« Au fil de n… ») par la langue écrite en entier
+  const narrow = win.width < 380;
   // Écran court (ex. 320×568) : l'illustration se réduit (260 → 120 px) pour garder les boutons au premier écran
   const artSize = Math.round(Math.max(120, Math.min(260, win.height - 520)));
   const t = useTheme();
@@ -50,7 +51,7 @@ export default function Welcome() {
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
           <Appear kind="scale" delay={0.08} style={{ flexShrink: 1, minWidth: 0 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }} accessibilityRole="header" accessibilityLabel={BRAND.name}>
-              <BrandLogo size={28} />
+              <BrandLogo size={34} />
               {/* D-12 : à 320 px, le nom se raccourcit au lieu de pousser « Aide » hors de l'écran */}
               <Text weight="bold" numberOfLines={1} style={{ fontSize: 16, letterSpacing: -0.4, flexShrink: 1 }}>{BRAND.name}</Text>
             </View>

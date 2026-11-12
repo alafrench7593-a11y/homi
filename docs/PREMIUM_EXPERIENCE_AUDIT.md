@@ -81,3 +81,36 @@ Après modification : `tsc` 0 erreur, 0 texte en dur, routes à jour (217), Jest
 3. Accueil par parcours : audit bloc par bloc (cycle, grossesse, maternité) et hiérarchie.
 4. Introduction : resserrer à 7 écrans avec une diapositive « Le journal » (à valider, car cela retire des diapositives existantes).
 5. Inventaire complet des boutons avec test associé ; tests Maestro sur appareil ; mesures de performance.
+
+---
+
+# Tranche 2 (13/11/2026) — vidéo conservée, logo PNG fondu dans l'interface
+
+## Audit (avant toute modification)
+- **Vidéos** (toutes conservées, aucune modifiée) : 5 fonds en rotation (`jour-1`, `jour-2`, `jour-galets`, `nuit-1`, `nuit-2`, H.264, 720×1280 ou 540×960, 30 i/s, muets, 0,3 à 0,9 Mo), 3 vidéos d'histoire, l'introduction cinématique (1080×1920, 9,7 Mo, et 2160×3840, 46 Mo), `fond-ciel` (première vidéo, gardée).
+- **Chargement** : `src/components/VideoBackdrop.tsx` (monté dans `src/app/_layout.tsx` derrière toutes les pages ; `ChildBackdrop` pour les enfants), `contentFit="cover"`, fondu enchaîné de deux couches, pause en arrière-plan, image de remplacement (poster) pendant le chargement, en économie d'énergie et avec « réduire les animations ». Introduction : `src/features/cinematicIntro/CinematicIntro.tsx`, repli automatique si la vidéo ne peut pas être lue.
+- **Logo** : `assets/brand/logo-transparent.png` (1024 px, maître), `logo-mark.png`, `logo-line.png`, affichés par `BrandLogo` / `BrandLine` (toujours `contain`) dans : bienvenue, introduction, introduction cinématique, offre Premium, lancement (`LaunchIntro`), écran de lancement natif.
+
+## Défauts constatés et corrections
+| Défaut | Correction |
+|---|---|
+| `logo-mark.png` ne faisait que 256 px : flou à 112 pt sur écran Retina (il faut 336 px) | Régénéré en 768 px depuis le maître (même dessin, même cadrage) |
+| Frange rose clair sur le contour du fil (reste de l'ancien fond, alpha presque binaire) : environ 5 000 pixels de bord, visible sur fond sombre et sur la vidéo | Contour nettoyé (dé-mélange de la couleur de fond sur 2 px de bord), bords lissés ; dessin inchangé |
+| Introduction cinématique : le logo transparent était posé dans une **tuile carrée arrondie** (ombre + reflet blanc rectangulaire) héritée de l'ancien logo carré, dans un disque à bord net | Tuile supprimée ; halo doux sans bord (`BrandGlow`, dégradé radial vers le transparent) ; le reflet devient un éclat qui suit le tracé du fil (`BrandShine`). Mêmes temps, même rotation, même échelle. Logo agrandi (28 % → 38 % de la largeur, 148 pt au plus) |
+| Introduction en diapositives : disque à bord net derrière le logo | Même halo doux, la « respiration » est conservée |
+| Bienvenue à 360 px (Android compact) : nom coupé « Au fil de n… » | Langue en abrégé sous 380 px ; logo d'en-tête 28 → 34 pt |
+
+## Tests exécutés (Playwright, application web exportée, thème nuit, 320×568, 390×844, 430×932, 360×640, 412×915)
+- Bienvenue et introduction : 0 débordement, logo toujours `contain`, aucun fond peint derrière le logo, vidéo de fond en lecture, `cover`, plein écran, 0 erreur JavaScript — sur les 5 tailles.
+- Introduction cinématique : vidéo en lecture et `cover` sur les 5 tailles ; écran final du logo capturé sur 3 tailles (320, 390, 412).
+- Si la vidéo ne peut pas être lue : l'introduction cinématique passe directement à la suite et le fond affiche son image (constaté, car le navigateur de test ne lit pas le H.264).
+- Jest : 128 suites, 1 435 tests réussis ; typage 0 erreur ; 0 texte en dur.
+
+## Limites de ces tests (à dire clairement)
+- Le navigateur de test ne lit pas le H.264 : la lecture a été vérifiée avec des **copies de test en VP9** des mêmes vidéos (mêmes dimensions), jamais ajoutées au projet. La lecture H.264 réelle sur iPhone et Android n'est **pas vérifiée** ici.
+- **Non vérifié** : fluidité, mémoire, retour dans l'application, clignotement, thème de jour à l'écran pour ces captures, rendu natif du halo (react-native-svg) et de l'éclat (`tintColor`) sur iPhone et Android, écran de lancement natif (il ne change qu'à la prochaine build).
+- L'écran Premium (logo 64 pt) n'a pas été recapturé dans cette tranche.
+
+## Observations sans modification (décision à prendre)
+- `intro-cinematique.mp4` en 4K pèse 46 Mo dans l'application (la version 1080p pèse 9,7 Mo). Non touché.
+- L'icône de l'application et l'icône Android n'ont pas été modifiées.
