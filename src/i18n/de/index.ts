@@ -60,3 +60,4 @@ export { formats5 } from './formats5';
 export { langAdmin } from './langAdmin';
 export { paywall } from './paywall';
 export { assistantSections } from './assistantSections';
+export { diary } from './diary';

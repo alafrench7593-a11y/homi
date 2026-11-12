@@ -9,6 +9,7 @@ export const intro: Messages<typeof fr> = {
   "intro.next": "Siguiente",
   "intro.start": "Empezar",
   "intro.hello": "Bienvenida",
+  "intro.tagline": "Cada historia merece guardarse con cariño.",
   "intro.mission": "Desde el primer ciclo registrado hasta los 10 años de tu hijo, una aplicación que te acompaña, a tu ritmo.",
   "intro.languageQ": "¿En qué idioma quieres continuar?",
   "intro.languageHint": "Sugerido según tu teléfono. Podrás cambiarlo en cualquier momento en los ajustes.",

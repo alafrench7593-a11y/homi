@@ -6,6 +6,7 @@ export const intro = {
   'intro.next': 'Suivant',
   'intro.start': 'Commencer',
   'intro.hello': 'Bienvenue',
+  'intro.tagline': 'Chaque histoire mérite d’être précieusement gardée.',
   'intro.mission': 'Du premier cycle suivi aux 10 ans de votre enfant, une application qui vous accompagne, à votre rythme.',
   'intro.languageQ': 'Dans quelle langue souhaitez-vous continuer ?',
   'intro.languageHint': 'Proposée d’après votre téléphone. Vous pourrez la changer à tout moment dans les réglages.',

@@ -59,6 +59,7 @@ export default function MeSpace() {
   const links: { icon: IconName; title: string; subtitle: string; to: string }[] = [
     { icon: 'sun', title: tr('u8.me.l.postpartum'), subtitle: tr('u8.me.l.postpartumSub'), to: '/postpartum' },
     { icon: 'heart', title: tr('u8.me.l.mood'), subtitle: lastMood ? tr('u8.me.l.moodLast', { date: formatDate(lastMood.checked_at, { day: 'numeric', month: 'long' }) }) : tr('u8.me.l.moodNone'), to: '/me/mood' },
+    { icon: 'book-open', title: tr('dy.link'), subtitle: tr('dy.linkSub'), to: '/me/diary' },
     { icon: 'moon', title: tr('u8.me.l.sleep'), subtitle: lastNight ? `${nightLabel(lastNight.log_date)}${lastNightMinutes != null ? ` · ${formatDuration(lastNightMinutes)}` : ''}` : tr('u8.me.l.sleepNone'), to: '/me/sleep' },
     { icon: 'circle', title: tr('u8.me.l.cycle'), subtitle: tr('u8.me.l.cycleSub'), to: '/cycle' },
     { icon: 'calendar', title: tr('u8.me.l.appts'), subtitle: nextAppt ? tr('u8.me.l.apptNext', { title: nextAppt.title }) : tr('u8.me.l.apptNone'), to: '/appointments' },

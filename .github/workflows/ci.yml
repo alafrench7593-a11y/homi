@@ -1,0 +1,33 @@
+# Intégration continue « Au fil de nous » : rien n'est déployé ni publié ici.
+# À chaque envoi et chaque demande de fusion : typage, textes non traduits, routes à jour, tests unitaires et de composants.
+name: CI
+on:
+  push:
+    branches: [master, main, premium-experience]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Typage TypeScript
+        run: npx tsc --noEmit -p .
+      - name: Textes en dur (5 langues)
+        run: node scripts/i18n-scan.js
+      - name: Liste des routes à jour
+        run: node scripts/gen-routes.js --check
+      - name: Tests (logique, composants, parcours)
+        run: npx jest --forceExit --maxWorkers=2 --testTimeout=90000
+        env:
+          CI: '1'

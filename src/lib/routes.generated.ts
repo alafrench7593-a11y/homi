@@ -139,6 +139,7 @@ export const APP_ROUTES: readonly string[] = [
   '/library',
   '/lists',
   '/me',
+  '/me/diary',
   '/me/mood',
   '/me/sleep',
   '/meals',

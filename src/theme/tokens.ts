@@ -197,6 +197,41 @@ export const typeScale = {
   caption: { fontSize: 12.5, lineHeight: 17 },
 };
 
+/**
+ * Hiérarchie typographique complète (12/11/2026). Une seule source : famille, corps, interligne, graisse et
+ * approche pour chaque rôle. La couleur vient du thème (`text` ou `textMuted`) ; toutes les tailles suivent le
+ * réglage de taille de texte du téléphone, plafonné par `maxScale` pour ne jamais casser une mise en page.
+ * Titres : Space Grotesk (fonctionnel) ; accents de journal intime : Instrument Serif italique.
+ */
+export interface TypeStyle { fontFamily: string; fontSize: number; lineHeight: number; letterSpacing: number; color: 'text' | 'textMuted' | 'primaryText'; maxScale: number }
+export const typography = {
+  display: { fontFamily: fonts.display, ...typeScale.hero, color: 'text', maxScale: 1.3 },
+  headingXL: { fontFamily: fonts.display, ...typeScale.title, color: 'text', maxScale: 1.5 },
+  headingL: { fontFamily: fonts.displayMedium, fontSize: 24, lineHeight: 30, letterSpacing: -0.6, color: 'text', maxScale: 1.5 },
+  headingM: { fontFamily: fonts.displayMedium, ...typeScale.heading, color: 'text', maxScale: 1.7 },
+  bodyL: { fontFamily: fonts.body, fontSize: 18, lineHeight: 27, letterSpacing: 0, color: 'text', maxScale: 1.7 },
+  bodyM: { fontFamily: fonts.body, ...typeScale.body, letterSpacing: 0, color: 'text', maxScale: 1.7 },
+  bodyS: { fontFamily: fonts.body, ...typeScale.small, letterSpacing: 0, color: 'text', maxScale: 1.7 },
+  caption: { fontFamily: fonts.body, ...typeScale.caption, letterSpacing: 0, color: 'textMuted', maxScale: 1.7 },
+  label: { fontFamily: fonts.bodyMedium, ...typeScale.small, letterSpacing: 0.5, color: 'textMuted', maxScale: 1.5 },
+  button: { fontFamily: fonts.bodyBold, fontSize: 16, lineHeight: 22, letterSpacing: 0, color: 'primaryText', maxScale: 1.4 },
+  /** Voix du journal : dates et phrases d'ouverture. */
+  editorial: { fontFamily: fonts.serifItalic, fontSize: 26, lineHeight: 32, letterSpacing: -0.3, color: 'text', maxScale: 1.4 },
+  editorialS: { fontFamily: fonts.serifItalic, fontSize: 19, lineHeight: 25, letterSpacing: -0.1, color: 'textMuted', maxScale: 1.5 },
+} as const satisfies Record<string, TypeStyle>;
+export type TypographyRole = keyof typeof typography;
+
+/** Élévations : ombres chaudes et discrètes (jamais noires), trois niveaux seulement. */
+export const elevation = {
+  none: { shadowOpacity: 0, elevation: 0 },
+  low: { shadowColor: '#5A3626', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  mid: { shadowColor: '#5A3626', shadowOpacity: 0.12, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 5 },
+  high: { shadowColor: '#5A3626', shadowOpacity: 0.18, shadowRadius: 28, shadowOffset: { width: 0, height: 12 }, elevation: 10 },
+} as const;
+
+/** Tailles de contrôle (hauteur minimale) : boutons, champs, pastilles. */
+export const controlSize = { sm: 40, md: 52, lg: 58, chip: 40, field: 52 } as const;
+
 export const MIN_TOUCH = 48; // zone tactile minimale (Android 48dp, iOS 44pt)
 
 /** Animations natives sur téléphone ; le web n'a pas de pilote natif (évite un avertissement console). */

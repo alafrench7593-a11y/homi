@@ -26,7 +26,7 @@ import type { ToolTheme } from '@/lib/domain/toolCatalog';
 import { useUiStore } from '@/lib/store';
 import { duration, easing, timeTo } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { NACRE, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
+import { NACRE, NATIVE_DRIVER, radius, spacing, typography } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { BrandLogo } from '@/components/BrandLogo';
 import { PowderSky } from '@/components/PowderSky';
@@ -196,7 +196,8 @@ export default function Intro() {
           <View style={{ alignItems: 'center', gap: spacing.md }}>
             <AnimatedMark size={112} />
             <Appear kind="mask" delay={0.45}><Text variant="title" center accessibilityRole="header">{BRAND.name}</Text></Appear>
-            <Appear kind="soft" delay={0.65}><Text center muted style={{ maxWidth: 340 }}>{tr('intro.mission')}</Text></Appear>
+            <Appear kind="soft" delay={0.6}><Text center style={{ maxWidth: 340, fontFamily: typography.editorial.fontFamily, fontSize: typography.editorial.fontSize, lineHeight: typography.editorial.lineHeight, letterSpacing: typography.editorial.letterSpacing }}>{tr('intro.tagline')}</Text></Appear>
+            <Appear kind="soft" delay={0.75}><Text center muted style={{ maxWidth: 340 }}>{tr('intro.mission')}</Text></Appear>
             <Appear kind="soft" delay={0.85} style={{ alignSelf: 'stretch', gap: spacing.xs, marginTop: spacing.sm }}>
               <Text weight="bold" center>{tr('intro.languageQ')}</Text>
               <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.xs }}>
