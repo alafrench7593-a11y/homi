@@ -13,6 +13,8 @@
  *  - `calm`      : écrans denses (ciel, petit astre dans le coin, horizon bas ; rien sous le contenu).
  *
  * Mouvement : parallaxe LÉGÈRE (Reanimated, fil UI) — quatre plans dérivent de 3 à 12 px sur 22 s, aller-retour.
+ * Web : la même dérive passe par une animation CSS (compositeur du navigateur) ; Reanimated n'y a pas de fil UI et
+ * recalculait les quatre plans en JS à chaque image (audit 10 : ≈ 64 % du fil principal au repos, CPU ×4).
  * Mise en pause (image fixe, animation annulée) : application en arrière-plan, scène hors écran (`active={false}`),
  * Réduire les animations, économie d'énergie, thème nuit. Décoratif : masqué aux lecteurs d'écran, aucun toucher.
  *
@@ -20,7 +22,7 @@
  * profondeur (réfraction du verre, eau animée) sur ordinateur ; à n'envisager que derrière ce même composant.
  */
 import React, { useEffect, useState } from 'react';
-import { AppState, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
+import { AppState, Platform, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle, ClipPath, Defs, Ellipse, G, Line, LinearGradient as SvgLinear, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
@@ -59,7 +61,28 @@ function useAppActive() {
   return on;
 }
 
-function Plane({ drift, amp, children, lift = 0 }: { drift: SharedValue<number>; amp: number; children: React.ReactNode; lift?: number }) {
+const WEB = Platform.OS === 'web';
+const webDrift = new Map<string, StyleProp<ViewStyle>>();
+/** Web : aller-retour CSS équivalent (0 → amplitude, demi-période, sinusoïde approchée par ease-in-out). */
+export function webDriftStyle(amp: number, lift: number): StyleProp<ViewStyle> {
+  const key = `${amp}:${lift}`;
+  let style = webDrift.get(key);
+  if (!style) {
+    style = StyleSheet.create({ d: {
+      animationKeyframes: [{ '0%': { transform: 'translate3d(0px,0px,0px)' }, '100%': { transform: `translate3d(${amp}px,${-lift}px,0px)` } }],
+      animationDuration: `${SCENE.driftMs / 2}ms`, animationTimingFunction: 'ease-in-out', animationIterationCount: 'infinite', animationDirection: 'alternate',
+    } as unknown as ViewStyle }).d;
+    webDrift.set(key, style);
+  }
+  return style;
+}
+
+function Plane({ drift, amp, children, lift = 0, animate }: { drift: SharedValue<number>; amp: number; children: React.ReactNode; lift?: number; animate: boolean }) {
+  if (WEB) return <View pointerEvents="none" style={[StyleSheet.absoluteFill, animate ? webDriftStyle(amp, lift) : null]}>{children}</View>;
+  return <NativePlane drift={drift} amp={amp} lift={lift}>{children}</NativePlane>;
+}
+
+function NativePlane({ drift, amp, children, lift = 0 }: { drift: SharedValue<number>; amp: number; children: React.ReactNode; lift?: number }) {
   const style = useAnimatedStyle(() => ({ transform: [{ translateX: drift.value * amp }, { translateY: lift ? -Math.abs(drift.value) * lift : 0 }] }));
   return <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, style]}>{children}</Animated.View>;
 }
@@ -138,7 +161,7 @@ export function DesertScene({ variant = 'calm', active = true, still, style, tes
   const drift = useSharedValue(0);
   const animate = sceneAnimates({ level: m.level, appActive, active, still });
   useEffect(() => {
-    if (!animate) {
+    if (!animate || WEB) {
       cancelAnimation(drift);
       drift.value = withTiming(0, { duration: m.off ? 0 : 320 });
       return;
@@ -165,7 +188,7 @@ export function DesertScene({ variant = 'calm', active = true, still, style, tes
         <Ellipse cx={immersive ? 250 : 300} cy={immersive ? 610 : 820} rx={immersive ? 420 : 340} ry={immersive ? 170 : 120} fill={`url(#hz${id})`} />
       </Layer>
       {/* astre géant */}
-      <Plane drift={drift} amp={a1} lift={immersive ? 3 : 0}>
+      <Plane animate={animate} drift={drift} amp={a1} lift={immersive ? 3 : 0}>
         <Layer w={W} h={H} slice={immersive ? 'xMidYMax slice' : 'xMaxYMin slice'}>
           {immersive
             ? <Planet s={s} id={id} cx={300} cy={250} r={150} halo={s.horizon} />
@@ -173,7 +196,7 @@ export function DesertScene({ variant = 'calm', active = true, still, style, tes
         </Layer>
       </Plane>
       {/* plan lointain : dunes + arche de pierre */}
-      <Plane drift={drift} amp={a2}>
+      <Plane animate={animate} drift={drift} amp={a2}>
         <Layer w={W} h={H}>
           {immersive ? (
             <>
@@ -191,7 +214,7 @@ export function DesertScene({ variant = 'calm', active = true, still, style, tes
       {immersive ? (
         <>
           {/* plan médian : dune + maison de verre */}
-          <Plane drift={drift} amp={a3}>
+          <Plane animate={animate} drift={drift} amp={a3}>
             <Layer w={W} h={H}>
               <Defs>
                 <RadialGradient id={`wg${id}`} cx="50%" cy="50%" r="50%">
@@ -208,7 +231,7 @@ export function DesertScene({ variant = 'calm', active = true, still, style, tes
             </Layer>
           </Plane>
           {/* plan proche : rive + eau qui reflète l'astre */}
-          <Plane drift={drift} amp={a4}>
+          <Plane animate={animate} drift={drift} amp={a4}>
             <Layer w={W} h={H}>
               <Defs>
                 <SvgLinear id={`wt${id}`} x1="0" y1="0" x2="0" y2="1">
@@ -228,7 +251,7 @@ export function DesertScene({ variant = 'calm', active = true, still, style, tes
           </Plane>
         </>
       ) : (
-        <Plane drift={drift} amp={a4}>
+        <Plane animate={animate} drift={drift} amp={a4}>
           <Layer w={W} h={H}>
             <Path d="M-420 814 C-200 810 -80 812 0 816 C100 806 220 806 390 812 C540 816 680 812 810 812 L810 844 L-420 844 Z" fill={s.water[0]} />
             <Line x1={210} y1={826} x2={330} y2={826} stroke={s.glint} strokeOpacity={0.5} strokeWidth={1} strokeLinecap="round" />

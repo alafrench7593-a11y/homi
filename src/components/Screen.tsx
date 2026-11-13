@@ -10,7 +10,7 @@ import { spacing, typography } from '@/theme/tokens';
 import { timeTo } from '@/theme/motion';
 import { cappedScale, useFontScale } from '@/theme/fontScale';
 import { fitTitleSize } from './layoutFit';
-import { ScreenChromeContext, type ScrollerEntry } from './screenChrome';
+import { ScreenChromeContext, ScreenFocusContext, type ScrollerEntry } from './screenChrome';
 import { IconButton, Text } from './ui';
 import { useFocusEntrance } from './Motion';
 import { ToolGlyph } from './ToolGlyph';
@@ -266,6 +266,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   );
 
   return (
+    <ScreenFocusContext.Provider value={focused}>
     <Animated.View ref={rootRef} onLayout={measureOffset} style={[{ flex: 1, backgroundColor: 'transparent' }, entrance]} pointerEvents={focused ? 'auto' : 'none'}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       {/* Pages du bébé et de l'enfant : vidéo des galets le jour et l'animation de la maman avec son enfant */}
@@ -288,6 +289,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
         </ScreenChromeContext.Provider>
       </KeyboardAvoidingView>
     </Animated.View>
+    </ScreenFocusContext.Provider>
   );
 }
 

@@ -21,6 +21,7 @@ import { STORY_IMAGES } from './storyImages';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { FamilyStoryArt } from './FamilyStoryArt';
+import { useScreenFocused } from '@/components/screenChrome';
 
 export const STORY_STRIP_HEIGHT = 130;
 /** Durée d'affichage de chaque mini-vidéo sur l'accueil, puis fondu vers une autre étape. */
@@ -31,7 +32,7 @@ const FADE_MS = 1200;
  * Fait défiler les mini-vidéos de « Notre histoire » : commence par l'étape du profil, puis enchaîne les autres dans un
  * ordre aléatoire, sans jamais remontrer deux fois de suite la même. Immobile si les animations sont réduites.
  */
-export function useRotatingChapter(start: number | null, still: boolean): [number, number, number] | undefined {
+export function useRotatingChapter(start: number | null, still: boolean, paused = false): [number, number, number] | undefined {
   const plan = useMemo(() => {
     if (start == null) return [];
     const rest = backdropPlan(STORY_IMAGES.length, Math.random(), 60).map((x) => x.clip);
@@ -43,7 +44,8 @@ export function useRotatingChapter(start: number | null, still: boolean): [numbe
   const [k, setK] = useState(0);
   useEffect(() => { setStep(0); setK(0); }, [plan]);
   useEffect(() => {
-    if (still || plan.length < 2) return;
+    // en pause (écran non affiché) : l'étape affichée est gardée, la rotation reprend au retour
+    if (still || paused || plan.length < 2) return;
     let fade: ReturnType<typeof setInterval> | undefined;
     const hold = setTimeout(() => {
       const t0 = Date.now();
@@ -53,7 +55,7 @@ export function useRotatingChapter(start: number | null, still: boolean): [numbe
       }, 50);
     }, STORY_ROTATE_MS);
     return () => { clearTimeout(hold); if (fade) clearInterval(fade); };
-  }, [step, still, plan]);
+  }, [step, still, paused, plan]);
   if (start == null) return undefined;
   if (still || plan.length < 2) return [start, start, 0];
   return [plan[step], plan[(step + 1) % plan.length], k];
@@ -69,7 +71,8 @@ export function StoryHomeStrip() {
   const scene = useMemo(() => sceneFor(input), [input]);
   const reduce = useReduceMotion();
   const lowPower = useLowPower();
-  const blend = useRotatingChapter(chapterIndexForScene(scene), reduce || lowPower);
+  const focused = useScreenFocused();
+  const blend = useRotatingChapter(chapterIndexForScene(scene), reduce || lowPower, !focused);
   const twinNames = child?.multiple_group ? (children ?? []).filter((c) => c.id !== child.id && c.multiple_group === child.multiple_group).map((c) => c.first_name) : [];
   const caption = storyCaption({
     ...input, childName: child?.first_name, twinNames,

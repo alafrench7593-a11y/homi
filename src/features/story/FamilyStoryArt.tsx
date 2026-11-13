@@ -16,6 +16,7 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { ambientDelay } from '@/theme/motion';
 import { HOMI } from '@/features/homiColors';
+import { useScreenFocused } from '@/components/screenChrome';
 
 const TRANSITION_MS = 1400;
 
@@ -172,7 +173,9 @@ export function FamilyStoryArt({ scene, pose: forced, progress, blend, height = 
   const t = useTheme();
   const reduce = useReduceMotion();
   const lowPower = useLowPower();
-  const still = reduce || lowPower;
+  // écran non affiché (onglet en arrière-plan) : image immobile, comme en économie d'énergie
+  const focused = useScreenFocused();
+  const still = reduce || lowPower || !focused;
   const night = t.isDark;
   const target = useMemo(() => forced ?? poseFor(scene ?? { belly: 0, multiple: false, kids: [] }), [forced, scene]);
   const tweened = useTweenedPose(target, still || !!forced);

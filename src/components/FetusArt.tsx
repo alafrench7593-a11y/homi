@@ -12,6 +12,7 @@ import { useReduceMotion } from '@/theme/ThemeProvider';
 import { FetusOrb } from './FetusOrb';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { t as tr } from '@/i18n';
+import { useScreenFocused } from './screenChrome';
 
 export function foetusImageFor(week: number) {
   const available = Object.keys(FOETUS_IMAGES).map(Number).sort((a, b) => a - b);
@@ -40,6 +41,8 @@ export function FetusArt({ week, growth, size = 260, hue, interactive = true, ac
 
 function FetusImage({ source, size, interactive, accessibilityLabel }: { source: NonNullable<ReturnType<typeof foetusImageFor>>; size: number; interactive: boolean; accessibilityLabel?: string }) {
   const reduce = useReduceMotion();
+  // boucles décoratives (flottement, battement, liseré) : arrêtées aussi quand l'écran n'est pas affiché
+  const still = reduce || !useScreenFocused();
   const tilt = useRef(new Animated.Value(0)).current;
   const float = useRef(new Animated.Value(0)).current;
   const fade = useRef(new Animated.Value(0)).current;
@@ -51,18 +54,18 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
   }, [source, fade, reduce]);
 
   useEffect(() => {
-    if (reduce) return;
+    if (still) return;
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(float, { isInteraction: false, toValue: 1, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(float, { isInteraction: false, toValue: 0, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
-  }, [reduce, float]);
+  }, [still, float]);
 
   // Lueur du cœur : animation décorative (≈ 1 battement/s pour rester douce), ne mesure rien
   useEffect(() => {
-    if (reduce) return;
+    if (still) return;
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(beat, { isInteraction: false, toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(beat, { isInteraction: false, toValue: 0.35, duration: 160, useNativeDriver: NATIVE_DRIVER }),
@@ -71,7 +74,7 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
     ]));
     loop.start();
     return () => loop.stop();
-  }, [reduce, beat]);
+  }, [still, beat]);
 
   const pan = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_e, gs) => interactive && Math.abs(gs.dx) > 4,
@@ -93,7 +96,7 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
       <Animated.View style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', opacity: fade, transform: [{ perspective: 800 }, { translateY }, { rotateY }] }}>
         {/* image agrandie : son liseré sombre d'origine sort du cercle, remplacé par un liseré nacré lilas (HOMI) */}
         <Image source={source} style={{ position: 'absolute', width: size * 1.22, height: size * 1.22, left: -size * 0.11, top: -size * 0.11 }} resizeMode="cover" />
-        <GoldRim size={size} still={reduce} />
+        <GoldRim size={size} still={still} />
         <Animated.View testID="fetus-heart" pointerEvents="none" style={{
           position: 'absolute', left: size * 0.47, top: size * 0.47, width: size * 0.07, height: size * 0.07, borderRadius: size,
           backgroundColor: 'rgba(255,156,195,0.9)', shadowColor: '#FF9CC3', shadowOpacity: 0.9, shadowRadius: size * 0.05, shadowOffset: { width: 0, height: 0 },

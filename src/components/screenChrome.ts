@@ -21,6 +21,17 @@ export interface ScreenChrome {
 }
 export const ScreenChromeContext = React.createContext<ScreenChrome | null>(null);
 
+/**
+ * L'écran qui contient ce composant est-il affiché ? (`Screen` le fournit ; `true` hors d'un écran.)
+ * Les animations décoratives en boucle s'arrêtent quand il est faux : les onglets restent montés en arrière-plan
+ * et, sur le web, chaque image d'une boucle Animated coûte du JS (audit 10 : ≈ 1 200 écritures de style/s
+ * pendant qu'on consultait un autre onglet).
+ */
+export const ScreenFocusContext = React.createContext(true);
+export function useScreenFocused(): boolean {
+  return React.useContext(ScreenFocusContext);
+}
+
 /** Marge gardée au-dessus d'un élément vers lequel on fait défiler. */
 export const SCROLL_TO_MARGIN = 16;
 
