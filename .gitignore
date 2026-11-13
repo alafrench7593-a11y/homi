@@ -10,3 +10,18 @@ android/
 expo-env.d.ts
 .claude/
 __pycache__/
+
+# Transfert du 13/11/2026 : jamais de secret ni de build dans le dépôt
+.env*
+!.env.example
+*.keystore
+*.jks
+*.p8
+*.p12
+*.pem
+*.mobileprovision
+google-services.json
+GoogleService-Info.plist
+credentials.json
+coverage/
+au-fil-de-nous-source*.zip
