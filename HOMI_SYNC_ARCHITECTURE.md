@@ -74,6 +74,13 @@ validation d'achat ─stock.purchase_confirmed→ (futur Budget)
 
 Construction des clés : `<type>:<entité>:<instant ou version du fait>` — jamais un horodatage de réception (il change à chaque rejeu).
 
+**Envois directs (audit 08, `src/lib/idempotency.ts`)** : rendez-vous, demandes d'aide, traitements, listes de courses
+générées, tâches en lot, et aussi les créations de tâches / articles / stocks passant par la file : l'identifiant (`id`
+ou `client_id`) est **stable tant que la même saisie (même contenu) n'a pas abouti** (`withIdempotentId`), puis oublié.
+« Réessayer » après une réponse perdue, ou une double pression, renvoie donc le même identifiant → `on conflict … do
+nothing` → une seule ligne. Lignes d'un lot : `derivedId(lot, position)`. Les requêtes de données ont un délai maximal
+(30 s, `timedFetch`) : au-delà, erreur « timeout » (message clair, erreur passagère → la file la garde).
+
 ## 4. Conflits d'édition
 
 Avant : « le dernier qui écrit gagne » sans le savoir. Maintenant, sur `family_tasks`, `care_requests`, `shopping_items`, `household_stocks` (15/11/2026) :
@@ -90,10 +97,23 @@ Avant : « le dernier qui écrit gagne » sans le savoir. Maintenant, sur `famil
    - **texte** (titre, notes) : jamais de fusion automatique ; l'écran propose « garder la mienne / garder la sienne » ;
    - **assignation, échéance** : la plus récente côté serveur l'emporte, l'autre est proposée en un geste.
    L'écran de résolution reste à construire (agent interface) ; la détection serveur est en place et testée.
+4. **Branché sur les tâches (audit 08)** : `useSaveTask` passe par `mergeUpdate` (`offlineConflicts.ts`) avec la tâche
+   lue à l'ouverture du formulaire : seuls les champs réellement modifiés partent ; si la tâche a changé entre-temps, un
+   champ que l'autre n'a pas touché est reporté sur la nouvelle version, un champ déjà à la même valeur est ignoré (« fait »
+   des deux côtés), un champ changé différemment des deux côtés est **refusé** (`code: 'conflict'`, message
+   `rel.task.conflict`, liste relue). Cache d'avant la colonne `version` : la ligne est relue avant d'écrire.
+   Achat validé dont la réponse s'est perdue : le « conflict » renvoyé au nouvel essai est reconnu comme notre propre
+   achat (`isOwnReplayedPurchase`) — jamais compté deux fois, jamais affiché comme une erreur.
 
 ## 5. Hors ligne
 
 - **Insertions** : file existante (`insertOrQueue`, `flushQueue`), ordre conservé, erreurs passagères gardées, refus serveur → « conflits » visibles dans Réglages > Synchronisation, jamais supprimés en silence. Désormais aussi pour les **tâches** (`useSaveTask`) et les **articles de courses** (`useAddShoppingItem`) avec `client_id` par foyer. Les demandes d'aide gardent un envoi direct (une demande « SOS » ne doit pas paraître envoyée alors qu'elle attend) mais portent un `client_id`.
+- **Nouvel essai automatique (audit 08)** : après une erreur passagère alors que le réseau est présent (500, 503,
+  délai dépassé), la file réessaie seule à 5 s, 15 s, 30 s, 1 min, 2 min puis toutes les 5 min (`RETRY_DELAYS_MS`),
+  dans l'ordre, sans jamais rien perdre ; avant, elle attendait un changement de réseau ou un retour au premier plan.
+- **Déconnexion avec file non vide (audit 08)** : dernier essai d'envoi, puis avertissement explicite (les saisies
+  partent à la prochaine connexion du même compte, et sont effacées si un autre compte se connecte — jamais envoyées
+  sous lui).
 - **Modifications hors ligne** : pas encore mises en file. Prochaine étape : mettre en file `{table, id, version_lue, modifications}` et rejouer via `update_if_version` ; un `conflict` va dans « à vérifier » avec les deux versions.
 - **Suppressions** : directes uniquement (pas de suppression logique) ; le journal d'audit garde la trace (« avant » résumé).
 - **Révocation** : un membre retiré ne lit plus rien côté serveur à la seconde (RLS). **Depuis le 14/11/2026**, l'appareil purge aussi son cache : `useHouseholdRevocationGuard` (`src/lib/householdPurge.ts`, monté à la racine) compare la liste **fraîche** des appartenances (lue au serveur pendant la session, jamais le cache restauré) aux foyers déjà connus de l'appareil (`knownHouseholds`) ; pour un foyer disparu il retire du cache React Query toutes les requêtes dont la clé contient ce foyer ou dont les lignes portent son `household_id` (la persistance réécrit le cache sans elles), puis les saisies et refus de ce foyer dans la file hors ligne (`purgeQueueForHousehold`). Test Jest `householdPurge.test.ts`.

@@ -599,6 +599,20 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   function taskEvent(t: Row, kind: string, detail: Row = {}) {
     T('family_task_events').push({ id: uuid(), task_id: t.id, household_id: t.household_id, actor_id: state.session?.userId ?? null, kind, detail, created_at: nowIso() });
   }
+  /** Modification d'une tâche (update direct ou update_if_version) : mêmes règles et mêmes effets que le serveur. */
+  function applyTaskPatch(r: Row, patch: Row) {
+    if (r.mission_state && (['status', 'mission_state', 'assignee_id'].some((k) => k in patch && patch[k] !== r[k])
+        || (r.created_by !== state.session?.userId && Object.keys(patch).some((k) => patch[k] !== r[k])))) {
+      throw new BackendError(tr('l2.dm.forbidden'), '42501');
+    }
+    const before = { ...r };
+    Object.assign(r, patch, { updated_at: nowIso(), updated_by: state.session?.userId ?? null });
+    if (r.status === 'done' && before.status !== 'done') { r.done_at = nowIso(); r.done_by = state.session?.userId ?? null; }
+    if (r.status !== 'done') { r.done_at = null; r.done_by = null; }
+    if (r.assignee_id !== before.assignee_id) taskEvent(r, r.assignee_id ? 'assigned' : 'unassigned', { from: before.assignee_id, to: r.assignee_id });
+    if (r.status !== before.status) { taskEvent(r, r.status === 'done' ? 'done' : r.status === 'cancelled' ? 'cancelled' : 'reopened'); nextOccurrence(r); }
+    else if (before.due_at && r.due_at && r.due_at > before.due_at) taskEvent(r, 'postponed', { from: before.due_at, to: r.due_at });
+  }
   function nextOccurrence(t: Row) {
     if (t.status !== 'done' || !t.recurrence || !t.due_at) return;
     const every = Number(t.recurrence.every ?? 1);
@@ -1373,6 +1387,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       const row = T(String(a.p_table)).find((x) => x.id === a.p_id);
       if (!row) return { status: 'not_found' };
       if (Number(row.version ?? 1) !== Number(a.p_expected_version)) return { status: 'conflict', row: { ...row } };
+      if (a.p_table === 'family_tasks') {
+        // Audit 08 : même chemin que l'update direct (historique, occurrence suivante, règles des missions)
+        applyTaskPatch(row, patch);
+        row.version = Number(row.version ?? 1) + 1;
+        persist();
+        return { status: 'ok', row: { ...row } };
+      }
       const wasDone = row.status === 'done';
       const before = { ...row };
       Object.assign(row, patch, { version: Number(row.version ?? 1) + 1, updated_at: nowIso() });
@@ -1908,18 +1929,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           if (r.status === 'to_verify' || r.status === 'rejected') { r.verified_by = null; r.verified_at = null; }
           continue;
         }
-        if (table === 'family_tasks' && r.mission_state && (['status', 'mission_state', 'assignee_id'].some((k) => k in patch && patch[k] !== r[k])
-            || (r.created_by !== state.session?.userId && Object.keys(patch).some((k) => patch[k] !== r[k])))) {
-          throw new BackendError(tr('l2.dm.forbidden'), '42501');
-        }
         if (table === 'family_tasks') {
-          const before = { ...r };
-          Object.assign(r, patch, { updated_at: nowIso(), updated_by: state.session?.userId ?? null });
-          if (r.status === 'done' && before.status !== 'done') { r.done_at = nowIso(); r.done_by = state.session?.userId ?? null; }
-          if (r.status !== 'done') { r.done_at = null; r.done_by = null; }
-          if (r.assignee_id !== before.assignee_id) taskEvent(r, r.assignee_id ? 'assigned' : 'unassigned', { from: before.assignee_id, to: r.assignee_id });
-          if (r.status !== before.status) { taskEvent(r, r.status === 'done' ? 'done' : r.status === 'cancelled' ? 'cancelled' : 'reopened'); nextOccurrence(r); }
-          else if (before.due_at && r.due_at && r.due_at > before.due_at) taskEvent(r, 'postponed', { from: before.due_at, to: r.due_at });
+          applyTaskPatch(r, patch);
           continue;
         }
         if (table === 'household_stocks' || table === 'shopping_items') {

@@ -3,7 +3,7 @@
  * féminin / masculin / mixte, longueur, fréquence, origine et signification (liste éditoriale), favoris,
  * vote avec le coparent, suggestions pour une fratrie et pour des jumeaux ou triplés.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
@@ -22,6 +22,7 @@ import { NameSwipeDeck } from '@/features/namesSwipe';
 import type { NameFavorite, NameVote } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
 
 type Mode = 'explore' | 'swipe' | 'favorites' | 'ideas';
 const norm = fold;
@@ -81,17 +82,19 @@ export default function NamesScreen() {
   const score = (f: NameFavorite) => votesFor(f).reduce((s, v) => s + v.vote, 0);
   const sortedFavorites = [...(favorites ?? [])].sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name, getLocale()));
 
-  async function addFavorite(name: string) {
+  async function addFavorite(name: string): Promise<boolean> {
     const clean = name.trim();
-    if (!clean) return;
+    if (!clean) return false;
     setBusy(clean);
     try {
       const h = hid ?? (await ensureHousehold());
       await backend.insert('name_favorites', { household_id: h, name: clean, list_label: 'Favoris', added_by: userId });
       inv('name_favorites', 'memberships');
       toast(tr('u7.names.added', { name: clean }));
+      return true;
     } catch (e) {
       toast(friendlyError(e, tr('u7.names.addFail')), 'error');
+      return false;
     } finally {
       setBusy(null);
     }
@@ -111,10 +114,22 @@ export default function NamesScreen() {
     }
   }
 
+  // Un prénom en cours d'ajout ou de retrait ignore les appuis suivants (jamais deux favoris identiques)
+  // … et, juste après, tant que la liste des favoris n'est pas relue (double appui sur le cœur)
+  const togglingRef = useRef(new Set<string>());
+  const { arm, shielded } = useTapShield();
   async function toggleFavorite(n: NameEntry) {
-    const f = favByName.get(norm(n.name));
-    if (f) await removeFavorite(f, true);
-    else await addFavorite(n.name);
+    const k = norm(n.name);
+    if (togglingRef.current.has(k) || shielded()) return;
+    togglingRef.current.add(k);
+    try {
+      const f = favByName.get(k);
+      if (f) await removeFavorite(f, true);
+      else await addFavorite(n.name);
+      arm();
+    } finally {
+      togglingRef.current.delete(k);
+    }
   }
 
   async function vote(f: NameFavorite, value: -1 | 1) {
@@ -138,8 +153,8 @@ export default function NamesScreen() {
     if (clean.length > 40) return setCustomError(tr('u7.names.max40'));
     if (favByName.has(norm(clean))) return setCustomError(tr('u7.names.already'));
     setCustomError(null);
-    await addFavorite(clean);
-    setCustom('');
+    // En cas d'échec (réseau…), le prénom saisi reste dans le champ pour réessayer
+    if (await addFavorite(clean)) setCustom('');
   }
 
   const explore = view === 'explore';

@@ -33,7 +33,7 @@ let onTokenRejected: (() => void) | null = null;
 export const isTokenRejected = (error: { message: string; code?: string }, status?: number) =>
   status === 401 || error.code === 'PGRST301' || error.code === 'PGRST303' || /JWT expired|invalid JWT|JWSError/i.test(error.message);
 
-function wrap(error: { message: string; code?: string; hint?: string } | null, status?: number): never | void {
+export function wrap(error: { message: string; code?: string; hint?: string } | null, status?: number): never | void {
   if (!error) return;
   // A-12 : jeton refusé (horloge décalée, session révoquée) → rafraîchissement, sinon déconnexion locale ;
   // jamais un compte « vide » affiché comme si de rien n'était.
@@ -41,8 +41,33 @@ function wrap(error: { message: string; code?: string; hint?: string } | null, s
     onTokenRejected?.();
     throw new BackendError(tr('auth.err.session'), 'jwt_rejected', error.hint, 401);
   }
+  // Audit 08 : délai dépassé (voir timedFetch) → message clair et erreur passagère (la file hors ligne la garde)
+  if (/^(AbortError|TimeoutError)\b/.test(error.message)) throw new BackendError(tr('l2.sb.slow'), 'timeout', undefined, status);
   const network = /network|fetch failed|Failed to fetch/i.test(error.message);
   throw new BackendError(friendly(error.message, error.code), network ? 'network' : error.code, error.hint, status);
+}
+
+/** Délai maximal d'une requête de données (PostgREST : tables et RPC). */
+export const REST_TIMEOUT_MS = 30_000;
+/**
+ * Audit 08 : sans délai, une requête restée sans réponse (réseau qui « pend », serveur saturé) laissait le bouton
+ * « en cours » indéfiniment, sans message ni nouvel essai. Seules les requêtes de données sont limitées : les envois
+ * de fichiers et les fonctions (assistant en diffusion) gardent leurs propres délais.
+ */
+export function timedFetch(ms = REST_TIMEOUT_MS, base?: typeof fetch): typeof fetch {
+  return (input, init) => {
+    const doFetch = base ?? globalThis.fetch;
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : (input as Request).url;
+    if (!/\/rest\/v1\//.test(url)) return doFetch(input, init);
+    const ac = new AbortController();
+    const outer = init?.signal;
+    if (outer) {
+      if (outer.aborted) ac.abort();
+      else outer.addEventListener('abort', () => ac.abort(), { once: true });
+    }
+    const timer = setTimeout(() => ac.abort(), ms);
+    return doFetch(input, { ...init, signal: ac.signal }).finally(() => clearTimeout(timer));
+  };
 }
 
 /** Messages de la base : jamais de texte technique brut (souvent en anglais). */
@@ -74,6 +99,7 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
       detectSessionInUrl: Platform.OS === 'web',
       flowType: 'pkce',
     },
+    global: { fetch: timedFetch() },
   });
 
   let recovering = false;

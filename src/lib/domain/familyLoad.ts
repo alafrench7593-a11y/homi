@@ -16,6 +16,8 @@ export interface FamilyTask {
   priority: 'low' | 'normal' | 'high'; essential: boolean; recurrence: Recurrence; status: 'todo' | 'done' | 'cancelled';
   done_at: string | null; done_by: string | null; notes: string | null; routine_id: string | null; created_by: string | null;
   updated_by?: string | null; created_at: string; updated_at?: string;
+  /** Posée par le serveur (+1 à chaque modification) ; absente d'un cache d'avant le 13/11/2026. */
+  version?: number; client_id?: string | null;
 }
 
 export type RequestKind = 'relay' | 'taking_over' | 'rest' | 'take_task' | 'available' | 'swap_slot' | 'help_today';

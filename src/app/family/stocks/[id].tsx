@@ -68,7 +68,7 @@ export default function StockDetail() {
   }
   async function onValidate(qty: number, mode: 'add' | 'set') {
     try {
-      await validate.mutateAsync({ id: s!.id, qty, mode, version: s!.version });
+      await validate.mutateAsync({ id: s!.id, qty, mode, version: s!.version, before: s!.qty_estimate });
       haptic('success'); toast(tr('stk.toast.validated')); setBuying(false);
     } catch (e) { toast(friendlyError(e), 'error'); }
   }

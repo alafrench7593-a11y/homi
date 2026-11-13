@@ -4,7 +4,9 @@
  * l'application ne calcule, ne propose ni ne modifie aucune dose. Données strictement personnelles.
  */
 import { useMutation } from '@tanstack/react-query';
-import { backend, eq, gte, inList } from '../backend';
+import { t as tr } from '@/i18n';
+import { backend, BackendError, eq, gte, inList } from '../backend';
+import { withIdempotentId } from '../idempotency';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
 import { syncLocalReminders, cancelDoseFollowUp } from '../notifications';
 import { loadDeviceReminders } from './deviceReminders';
@@ -59,7 +61,23 @@ export function useSaveMyTreatment() {
     mutationFn: async (v: { id?: string | null; reminders: boolean; row: TreatmentRow }) => {
       let saved: MyTreatment;
       if (v.id) saved = (await backend.update<MyTreatment>('my_treatments', v.row as unknown as Record<string, unknown>, [eq('id', v.id)]))[0];
-      else saved = (await backend.insert<MyTreatment>('my_treatments', { ...v.row, user_id: userId }))[0];
+      else {
+        // Audit 08 : traitement créé mais rappels en échec (ou réponse perdue) → « Réessayer » reprend le MÊME traitement
+        // (id stable tant que l'enregistrement complet n'a pas abouti) au lieu d'en créer un second.
+        const insert = { ...v.row, user_id: userId };
+        saved = await withIdempotentId('my_treatments', { insert, reminders: v.reminders }, async (id) => {
+          await backend.insert<MyTreatment>('my_treatments', { id, ...insert }, { onConflict: 'id', ignoreDuplicates: true });
+          const [row] = await backend.select<MyTreatment>({ table: 'my_treatments', filters: [eq('id', id)], limit: 1 });
+          if (!row) throw new BackendError(tr('l2.sb.generic'));
+          // Rappels remplacés (jamais deux rappels pour une même prise), DANS l'essai : un échec garde l'id pour le suivant
+          await backend.remove('reminders', [eq('my_treatment_id', row.id)]);
+          const rem = v.reminders && row.active && userId ? myTreatmentReminderRows(row, userId, hid ?? null) : [];
+          if (rem.length) await backend.insert('reminders', rem);
+          return row;
+        });
+        await resync(userId);
+        return saved;
+      }
       // Rappels remplacés à chaque modification (jamais deux rappels pour une même prise)
       await backend.remove('reminders', [eq('my_treatment_id', saved.id)]);
       const rem = v.reminders && saved.active && userId ? myTreatmentReminderRows(saved, userId, hid ?? null) : [];

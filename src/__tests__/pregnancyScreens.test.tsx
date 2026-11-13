@@ -106,7 +106,9 @@ describe(`grossesse (${Platform.OS})`, () => {
     expect(logs).toHaveLength(1);
     expect(logs[0]).toMatchObject({ symptom: 'nausea', intensity: 1, note: 'Le matin surtout', week_sa: 9 });
     expect(t).toContain('Le matin surtout');
-    // saignement important : informations de sécurité et contacts
+    // saignement important : informations de sécurité et contacts (« Noter autre chose » ignore le double appui
+    // sur « Enregistrer » pendant 700 ms : audit 05)
+    await flush(800);
     await press(r, 'feel-another');
     await press(r, 'feel-sym-bleeding');
     await press(r, 'feel-intensity-3');

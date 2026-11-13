@@ -75,7 +75,7 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
       ]).start(() => resolve());
     });
     try {
-      await save.mutateAsync({ id: task.id, input: { status: next ? 'done' : 'todo' } });
+      await save.mutateAsync({ id: task.id, input: { status: next ? 'done' : 'todo' }, base: task });
       if (next) toast(task.recurrence ? tr('u6.fl.done_next') : tr('u6.fl.done'));
     } catch (e) {
       setOptimistic(null); fill.setValue(done ? 1 : 0); strike.setValue(done ? 1 : 0); leave.setValue(1);
@@ -123,10 +123,13 @@ export function TaskSheet({ task, open, onClose, defaults }: { task: FamilyTask 
   const { people } = usePeople();
   const [d, setD] = useState<Draft | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  // Tâche telle qu'elle était à l'ouverture (avec sa version) : une modification faite entre-temps par l'autre n'est jamais écrasée
+  const base = useRef<FamilyTask | null>(null);
 
   useEffect(() => {
     if (!open) return;
     setErrors({});
+    base.current = task;
     if (task) {
       const w = splitLocal(task.due_at);
       setD({ id: task.id, title: task.title, category: task.category, date: w.date, time: w.time, assignee: task.assignee_id, priority: task.priority, essential: task.essential, recurrence: task.recurrence?.type ?? 'none', notes: task.notes ?? '' });
@@ -147,9 +150,9 @@ export function TaskSheet({ task, open, onClose, defaults }: { task: FamilyTask 
       recurrence: d.recurrence === 'none' ? null : { type: d.recurrence }, notes: d.notes.trim() || null,
     };
     try {
-      await save.mutateAsync({ id: d.id, input });
+      const out = await save.mutateAsync({ id: d.id, input, base: d.id ? base.current : null });
       haptic('success');
-      toast(d.id ? tr('u6.fl.task_edited') : tr('u6.fl.task_added'));
+      toast(out === 'queued' ? tr('rel.queued') : d.id ? tr('u6.fl.task_edited') : tr('u6.fl.task_added'));
       onClose();
     } catch (err) { toast(friendlyError(err), 'error'); }
   }

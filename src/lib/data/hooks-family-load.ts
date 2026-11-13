@@ -4,7 +4,8 @@ import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tansta
 import { backend, eq, gte } from '../backend';
 import { useUserId } from '../auth';
 import { insertOrQueue } from '../offline';
-import { uuid } from '../uuid';
+import { changedFields, mergeUpdate } from '../offlineConflicts';
+import { derivedId, withIdempotentId } from '../idempotency';
 import { useHouseholdId, useHouseholdMembers, useInvalidate, useRows } from './hooks';
 import type { CareRequest, CareShift, FamilyTask, RequestKind, Routine } from '../domain/familyLoad';
 import type { FamilyEvent } from '../domain/calendar';
@@ -87,21 +88,34 @@ export function useSaveTask() {
   const hid = useHouseholdId();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, input }: { id?: string; input: Partial<TaskInput> & { status?: FamilyTask['status'] } }) => {
+    /** `base` : la tâche telle qu'elle était à l'ouverture du formulaire (avec sa version) ; à défaut, la copie en cache. */
+    mutationFn: async ({ id, input, base }: { id?: string; input: Partial<TaskInput> & { status?: FamilyTask['status'] }; base?: FamilyTask | null }) => {
       // Mission (14/11/2026) : « fait » / « annulé » passent par sa réponse serveur (mission_respond), jamais par un update direct
       const known = id ? cachedTask(qc, id) : undefined;
       if (id && known?.mission_state && input.status && input.status !== known.status) {
         const action = input.status === 'done' ? 'complete' : input.status === 'cancelled' ? 'cancel' : null;
         if (action) return backend.rpc('mission_respond', { p_task: id, p_action: action });
       }
+      // Audit 08 : plus d'écrasement silencieux. Seuls les champs réellement modifiés partent, à la version lue
+      // (update_if_version) ; une modification concurrente d'un AUTRE champ est reportée, un vrai conflit est refusé.
+      const read = (base ?? known) as Record<string, unknown> | undefined;
+      if (id && read && Object.keys(changedFields(read, input)).every((k) => VERSIONED_TASK_FIELDS.includes(k))) {
+        return mergeUpdate('family_tasks', id, read, input, { conflict: tr('rel.task.conflict'), notFound: tr('rel.task.notFound') });
+      }
       if (id) return backend.update('family_tasks', input, [eq('id', id)]);
       if (!hid) throw new Error(tr('l3.familyload.need_household'));
       // client_id unique par foyer : renvoyée par la file hors ligne sans jamais créer de doublon
-      return insertOrQueue('family_tasks', { client_id: uuid(), ...input, household_id: hid });
+      // Audit 08 : double pression (deux envois simultanés du même contenu) → même client_id → une seule tâche
+      const row = { ...input, household_id: hid };
+      return withIdempotentId('family_tasks', row, (client_id) => insertOrQueue('family_tasks', { client_id, ...row }));
     },
     onSuccess: () => inv('family_tasks', 'family_task_events', 'shopping_items', 'notifications'),
+    // Conflit ou tâche disparue : la version à jour est relue tout de suite (le message renvoie à ce qui est affiché)
+    onError: (e) => { if ((e as { code?: string }).code === 'conflict' || (e as { code?: string }).code === 'not_found') inv('family_tasks'); },
   });
 }
+/** Colonnes modifiables par update_if_version sur family_tasks (liste blanche du serveur). */
+const VERSIONED_TASK_FIELDS = ['title', 'category', 'due_at', 'assignee_id', 'priority', 'essential', 'recurrence', 'status', 'notes'];
 
 /** Plusieurs tâches d'un coup (routine validée, report groupé) : une seule validation de l'utilisateur. */
 export function useBatchTasks() {
@@ -111,7 +125,10 @@ export function useBatchTasks() {
     mutationFn: async (a: { create?: Partial<TaskInput>[]; postpone?: { id: string; to: string }[] }) => {
       if (a.create?.length) {
         if (!hid) throw new Error(tr('l3.familyload.need_household'));
-        await backend.insert('family_tasks', a.create.map((t) => ({ client_id: uuid(), ...t, household_id: hid })));
+        // Audit 08 : lot rejoué (réponse perdue, report en échec au milieu) → mêmes client_id → aucune tâche en double
+        const rows = a.create;
+        await withIdempotentId('family_tasks.batch', { hid, rows }, (batch) =>
+          backend.insert('family_tasks', rows.map((t, n) => ({ client_id: derivedId(batch, n), ...t, household_id: hid })), { onConflict: 'household_id,client_id', ignoreDuplicates: true }));
       }
       for (const p of a.postpone ?? []) await backend.update('family_tasks', { due_at: p.to }, [eq('id', p.id)]);
     },
@@ -142,7 +159,10 @@ export function useCreateRequest() {
   return useMutation({
     mutationFn: async (r: { kind: RequestKind; message?: string | null; to_user?: string | null; task_id?: string | null; shift_id?: string | null; starts_at?: string | null; ends_at?: string | null }) => {
       if (!hid) throw new Error(tr('l3.familyload.need_household'));
-      return backend.insert('care_requests', { client_id: uuid(), ...r, household_id: hid });
+      // Audit 08 : même demande renvoyée après une réponse perdue ou une double pression → même client_id → aucun doublon
+      const row = { ...r, household_id: hid };
+      return withIdempotentId('care_requests', row, (client_id) =>
+        backend.insert('care_requests', { client_id, ...row }, { onConflict: 'household_id,client_id', ignoreDuplicates: true }));
     },
     onSuccess: () => inv('care_requests'),
   });

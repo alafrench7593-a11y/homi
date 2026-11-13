@@ -91,12 +91,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setState({ session: s, ready: true });
     };
+    // L'écoute de la session ne commence qu'APRÈS le rétablissement du mode (démo ou serveur) : abonnée avant,
+    // elle visait le vrai serveur (session vide) et renvoyait la démo vers /welcome à chaque rechargement.
+    let off: () => void = () => undefined;
     initBackendMode()
       .then(async () => { lastUser.current = await readLastUser(); })
-      .then(() => backend.auth.getSession())
+      .then(() => {
+        if (mounted) off = backend.auth.onChange((s) => mounted && apply(s));
+        return backend.auth.getSession();
+      })
       .then((s) => mounted && apply(s))
       .catch(() => mounted && setState({ session: null, ready: true }));
-    const off = backend.auth.onChange((s) => mounted && apply(s));
     return () => {
       mounted = false;
       off();

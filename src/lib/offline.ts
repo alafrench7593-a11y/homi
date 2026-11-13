@@ -167,6 +167,7 @@ export async function insertOrQueue(table: string, input: Record<string, unknown
     // Réseau coupé, session à rafraîchir, serveur indisponible : gardée sur le téléphone (jamais perdue)
     if (isTransient(e)) {
       await enqueue(table, row, opts);
+      scheduleRetry(); // réseau « présent » mais serveur injoignable : nouvel essai sans attendre un changement de réseau
       return 'queued';
     }
     throw e;
@@ -205,6 +206,10 @@ export async function flushQueue(): Promise<number> {
   const arrived = now.pending.filter((op) => !processed.has(op));
   useOfflineStore.setState({ pending: [...remaining, ...arrived], conflicts: [...now.conflicts, ...newConflicts], syncing: false });
   await save();
+  // Audit 08 : serveur indisponible (500, délai dépassé) alors que le réseau est là → nouvel essai automatique, espacé.
+  // Avant, la saisie attendait un changement de réseau ou un retour au premier plan, parfois des heures.
+  if (stalled) scheduleRetry();
+  else if (!useOfflineStore.getState().pending.some((o) => o.owner == null || o.owner === queueOwner)) resetRetry();
   // Saisies arrivées pendant l'envoi : nouvel envoi si le réseau est là
   if (arrived.length && useOfflineStore.getState().online) sent += await flushQueue();
   return sent;
@@ -215,7 +220,11 @@ export async function flushQueue(): Promise<number> {
  * (Réglages > Synchronisation) au lieu d'être perdue ; une erreur passagère la met simplement en file.
  */
 export async function recordRefused(table: string, row: PendingOp['row'], opts: { conflict?: string; merge?: boolean }, e: unknown) {
-  if (isTransient(e)) return enqueue(table, row, opts);
+  if (isTransient(e)) {
+    await enqueue(table, row, opts);
+    scheduleRetry();
+    return;
+  }
   if (loading) await loading;
   const op: PendingOp = { id: String(row.client_id ?? row.id ?? uuidLike()), table, row, queuedAt: new Date().toISOString(), owner: queueOwner, ...opts };
   useOfflineStore.setState((s) => ({ conflicts: [...s.conflicts, refusal(op, e)] }));
@@ -237,8 +246,30 @@ export async function discardConflict(id: string) {
 
 let onSyncedCb: ((n: number) => void) | undefined;
 
+/** Délais des nouveaux essais automatiques après une erreur passagère (5 s, 15 s, 30 s, 1 min, 2 min, puis 5 min). */
+export const RETRY_DELAYS_MS = [5_000, 15_000, 30_000, 60_000, 120_000, 300_000] as const;
+let autoRetry = false;
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
+let retryAttempt = 0;
+function scheduleRetry() {
+  if (!autoRetry || retryTimer) return;
+  const delay = RETRY_DELAYS_MS[Math.min(retryAttempt, RETRY_DELAYS_MS.length - 1)];
+  retryAttempt++;
+  retryTimer = setTimeout(() => {
+    retryTimer = null;
+    // Hors ligne : rien à faire ici, le retour du réseau relance l'envoi
+    if (useOfflineStore.getState().online) void flushQueue().then((n) => n && onSyncedCb?.(n));
+  }, delay);
+}
+function resetRetry() {
+  retryAttempt = 0;
+  if (retryTimer) clearTimeout(retryTimer);
+  retryTimer = null;
+}
+
 export function startOfflineSync(onSynced?: (n: number) => void) {
   onSyncedCb = onSynced;
+  autoRetry = true;
   loadQueue().then(() => flushQueue().then((n) => n && onSynced?.(n)));
   const offNet = NetInfo.addEventListener((state) => {
     const online = state.isConnected !== false && state.isInternetReachable !== false;
@@ -253,6 +284,8 @@ export function startOfflineSync(onSynced?: (n: number) => void) {
   return () => {
     offNet();
     appSub.remove();
+    autoRetry = false;
+    resetRetry();
     if (onSyncedCb === onSynced) onSyncedCb = undefined;
   };
 }

@@ -11,7 +11,8 @@ import { backend, BackendError, eq, inList } from '../backend';
 import { insertOrQueue } from '../offline';
 import { updateIfVersion } from '../offlineConflicts';
 import { useUiStore } from '../store';
-import { uuid } from '../uuid';
+import { useUserId } from '../auth';
+import { withIdempotentId } from '../idempotency';
 import { INGREDIENTS } from '../recipes/ingredients';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
 import { pantryClientId, pantryKeysOf, pantryMigrationRows, sortStocks, type Stock, type StockCategory, type StockUnit } from '../domain/stocks';
@@ -42,9 +43,11 @@ export function useAddStock() {
   return useMutation({
     mutationFn: async (v: StockInput) => {
       if (!hid) throw new Error(tr('l3.familyload.need_household'));
-      const client_id = uuid();
-      await insertOrQueue('household_stocks', { client_id, household_id: hid, reminder: true, ...v });
-      return client_id;
+      // Audit 08 : double pression → même client_id (clé d'idempotence par contenu) → un seul stock
+      return withIdempotentId('household_stocks', { hid, ...v }, async (client_id) => {
+        await insertOrQueue('household_stocks', { client_id, household_id: hid, reminder: true, ...v });
+        return client_id;
+      });
     },
     onSuccess: () => inv(...INVALIDATE),
   });
@@ -89,11 +92,29 @@ export function useRestock() {
 /** Achat validé explicitement : la quantité estimée change ici, jamais au simple cochage. */
 export function useValidatePurchase() {
   const inv = useInvalidate();
+  const me = useUserId();
   return useMutation({
-    mutationFn: async (v: { id: string; qty: number; mode: 'add' | 'set'; version?: number }) =>
-      checked(await backend.rpc<RpcResult>('stock_validate_purchase', { p_stock: v.id, p_qty: v.qty, p_mode: v.mode, p_expected_version: v.version ?? null })),
+    /** `before` : quantité estimée lue avec `version` (sert à reconnaître son propre achat déjà enregistré). */
+    mutationFn: async (v: { id: string; qty: number; mode: 'add' | 'set'; version?: number; before?: number | string | null }) => {
+      const out = await backend.rpc<RpcResult>('stock_validate_purchase', { p_stock: v.id, p_qty: v.qty, p_mode: v.mode, p_expected_version: v.version ?? null });
+      if (out?.status === 'conflict' && out.row && v.version != null && isOwnReplayedPurchase(out.row, v, me)) return { ...out, status: 'ok' as const, unchanged: true };
+      return checked(out);
+    },
     onSuccess: () => inv(...INVALIDATE),
+    onError: () => inv(...INVALIDATE),
   });
+}
+
+/**
+ * Audit 08 : réponse perdue après un achat validé, puis « Réessayer ». Le serveur répond « conflict » (la version a
+ * avancé) — à juste titre, rien n'est ajouté deux fois — mais c'était NOTRE achat : exactement une modification depuis
+ * la lecture, validée par moi, et la quantité est celle que j'attendais. On l'affiche comme fait, pas comme une erreur.
+ */
+export function isOwnReplayedPurchase(row: Pick<Stock, 'version' | 'last_validated_by' | 'qty_estimate'>, v: { qty: number; mode: 'add' | 'set'; version?: number; before?: number | string | null }, me: string): boolean {
+  if (v.version == null || row.version !== v.version + 1 || !me || row.last_validated_by !== me) return false;
+  if (v.mode === 'add' && v.before === undefined) return false;
+  const expected = v.mode === 'set' ? v.qty : Number(v.before ?? 0) + v.qty;
+  return Number(row.qty_estimate) === expected;
 }
 
 /** Deux articles identiques (souvent ajoutés sur deux téléphones) : un seul reste, ses liens (mission, stock) sont repris. */

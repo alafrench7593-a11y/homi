@@ -94,8 +94,9 @@ export default function FamilyHome() {
     const title = quick.trim();
     if (!title) return;
     try {
-      await saveTask.mutateAsync({ input: { title: title.slice(0, 120), category: 'other', due_at: null, assignee_id: null, priority: 'normal', essential: false, recurrence: null, notes: null } });
-      haptic('success'); setQuick(''); toast(tr('u2.fam.added_today'));
+      const out = await saveTask.mutateAsync({ input: { title: title.slice(0, 120), category: 'other', due_at: null, assignee_id: null, priority: 'normal', essential: false, recurrence: null, notes: null } });
+      // Audit 08 : gardée en file (hors ligne, serveur indisponible) → on le dit, jamais un faux « ajoutée »
+      haptic('success'); setQuick(''); toast(out === 'queued' ? tr('rel.queued') : tr('u2.fam.added_today'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
@@ -128,7 +129,7 @@ export default function FamilyHome() {
         <View style={{ flex: 1 }}>
           <Field label={tr('u2.fam.quick_add')} placeholder={tr('u2.fam.quick_ph')} value={quick} onChangeText={setQuick} onSubmitEditing={() => void quickAdd()} returnKeyType="done" testID="family-quick" />
         </View>
-        <Button label={tr('u2.fam.add')} icon="plus" size="sm" onPress={() => void quickAdd()} disabled={!quick.trim()} testID="family-quick-add" />
+        <Button label={tr('u2.fam.add')} icon="plus" size="sm" onPress={() => quickAdd()} disabled={!quick.trim()} testID="family-quick-add" />
       </Row>
 
       <Card tone="soft" onPress={() => router.push('/family/difficult')} accessibilityLabel={tr('u2.fam.hard_a11y')}>

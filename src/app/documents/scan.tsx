@@ -16,7 +16,7 @@ import { Appear } from '@/components/Appear';
 import { Banner, Button, Card, Field, haptic, Icon, IconButton, Row, Segmented, Text, Toggle } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
-import { backend, BackendError, eq } from '@/lib/backend';
+import { backend, BackendError, eq, inList } from '@/lib/backend';
 import { ensureHousehold, useActivePregnancy, useChildren, useHouseholdId, useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { frToISO } from '@/lib/domain/dates';
@@ -197,6 +197,8 @@ export default function ScanScreen() {
     if (Object.keys(e).length) return;
     setStep('saving');
     const uploaded: string[] = [];
+    // Audit 08 : fiches créées (id posé ici, AVANT l'envoi : une fiche écrite dont la réponse s'est perdue est connue aussi)
+    const created: string[] = [];
     try {
       const household_id = hid ?? (await ensureHousehold());
       const common = {
@@ -209,11 +211,13 @@ export default function ScanScreen() {
         const path = `${household_id}/${uuid()}.pdf`;
         await backend.storage.upload(BUCKET, path, { uri: '', bytes: pdf, mimeType: 'application/pdf', size: pdf.length, name: `${title.trim()}.pdf` });
         uploaded.push(path);
+        const id = uuid();
+        created.push(id);
         const [row] = await backend.insert<{ id: string }>('documents', {
-          ...common, title: title.trim().slice(0, 120), storage_path: path, mime_type: 'application/pdf', size_bytes: pdf.length, page_count: pages.length,
+          id, ...common, title: title.trim().slice(0, 120), storage_path: path, mime_type: 'application/pdf', size_bytes: pdf.length, page_count: pages.length,
           ocr_text: text, ocr_source: text != null ? 'device' : null, review_status: text != null ? 'to_verify' : 'none',
         });
-        lastId = row?.id ?? null;
+        lastId = row?.id ?? id;
       } else {
         for (const f of files) {
           const path = `${household_id}/${uuid()}.${ACCEPTED[f.mimeType]}`;
@@ -222,8 +226,10 @@ export default function ScanScreen() {
           await backend.storage.upload(BUCKET, path, { uri: f.uri, mimeType: f.mimeType, size: f.size, name: f.name });
           uploaded.push(path);
           const name = files.length === 1 && title.trim() ? title.trim() : f.name.replace(/\.[^.]+$/, '');
-          const [row] = await backend.insert<{ id: string }>('documents', { ...common, title: name.slice(0, 120), storage_path: path, mime_type: f.mimeType, size_bytes: f.size, page_count: pageCount });
-          lastId = row?.id ?? null;
+          const id = uuid();
+          created.push(id);
+          const [row] = await backend.insert<{ id: string }>('documents', { id, ...common, title: name.slice(0, 120), storage_path: path, mime_type: f.mimeType, size_bytes: f.size, page_count: pageCount });
+          lastId = row?.id ?? id;
         }
       }
       inv('documents');
@@ -237,7 +243,9 @@ export default function ScanScreen() {
       setStep('done');
       setPages([]); // libère la mémoire des pages
     } catch (err) {
-      // Rien ne reste à moitié enregistré : les fichiers déjà envoyés sont retirés
+      // Rien ne reste à moitié enregistré : les fiches déjà créées PUIS les fichiers déjà envoyés sont retirés
+      // (avant l'audit 08, seuls les fichiers l'étaient : avec plusieurs fichiers, une fiche pointait vers un fichier effacé)
+      if (created.length) await backend.remove('documents', [inList('id', created)]).catch(() => undefined);
       await backend.storage.remove(BUCKET, uploaded).catch(() => undefined);
       setStep('details');
       toast(err instanceof BackendError && err.isPremiumRequired ? err.message : friendlyError(err, tr('docs.err.save')), 'error');
