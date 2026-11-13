@@ -24,10 +24,12 @@ const inRange = (iso: string | null | undefined, from: Date, to: Date) => !!iso 
 
 /** Début de la période : aujourd'hui 0 h, 7 jours, ou depuis le dernier rendez-vous passé (30 jours au plus). */
 export function periodStart(period: SummaryPeriod, now: Date, lastAppointment?: string | null): Date {
-  const d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // Jours calendaires locaux (et non « − n × 24 h ») : une période qui traverse un changement d'heure commence bien à 0 h
+  const dayStart = (back: number) => new Date(now.getFullYear(), now.getMonth(), now.getDate() - back);
+  const d0 = dayStart(0);
   if (period === 'day') return d0;
-  if (period === 'week') return new Date(d0.getTime() - 6 * 86_400_000);
-  const max = new Date(d0.getTime() - 29 * 86_400_000);
+  if (period === 'week') return dayStart(6);
+  const max = dayStart(29);
   return lastAppointment && Date.parse(lastAppointment) > max.getTime() ? new Date(lastAppointment) : max;
 }
 
@@ -41,7 +43,8 @@ const dec = (n: number) => { const v = String(n); return localeTag().startsWith(
 
 export function childSummary(d: ChildData, from: Date, to: Date, tz?: string): SummarySection[] {
   const out: SummarySection[] = [];
-  const multiDay = to.getTime() - from.getTime() > 86_400_000 + 1;
+  // Plusieurs jours calendaires (un jour de changement d'heure dure 25 h : ce n'est pas « plusieurs jours »)
+  const multiDay = from.toDateString() !== new Date(to.getTime() - 1).toDateString();
   const when = (iso: string) => (multiDay ? `${dayLabel(iso, tz)} ${clock(iso, tz)}` : clock(iso, tz));
 
   const bottles = d.bottles.filter((b) => inRange(b.at, from, to)).sort((a, b) => b.at.localeCompare(a.at));

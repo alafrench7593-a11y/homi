@@ -36,7 +36,8 @@ export function summarizeDay(
   const feeds = (data.feeds ?? []).filter((f) => sameDay(f.started_at, day));
   const diapers = (data.diapers ?? []).filter((d) => sameDay(d.at, day));
   const dayStart = new Date(day.getFullYear(), day.getMonth(), day.getDate());
-  const dayEnd = new Date(dayStart.getTime() + 86_400_000);
+  // Lendemain 0 h en heure locale (et non « + 24 h ») : les jours de changement d'heure durent 23 h ou 25 h
+  const dayEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1);
 
   // Sommeil : on compte la part de chaque session comprise dans la journée
   let sleepMinutes = 0;
@@ -81,6 +82,9 @@ export function lastDaysSeries<T>(days: number, items: T[], getDate: (t: T) => s
   }
   return out;
 }
+
+/** Quantité BUE notée (ml) pour le graphique « Lait bu par jour » : jamais la quantité préparée. */
+export const drunkMl = (b: Pick<BottleLog, 'consumed_ml'>): number => b.consumed_ml ?? 0;
 
 /** Suggestion de côté pour la prochaine tétée : simple rappel de l'alternance, à titre indicatif. */
 export function suggestedNextSide(last: FeedLog['side'] | null): 'left' | 'right' | null {

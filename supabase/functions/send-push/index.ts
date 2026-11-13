@@ -9,7 +9,7 @@
 //  - écran verrouillé : texte générique sauf accord explicite (notification_settings.lockscreen_details) ;
 //  - l'envoi ne touche jamais read_at : une notification n'est jamais considérée comme lue.
 import { adminClient, env, json, safeEqual } from '../_shared/http.ts';
-import { channelFor, lockScreenText, planDelivery, pushCategory, pushData, type PushRow } from '../_shared/push-rules.ts';
+import { channelFor, lockScreenText, planDelivery, pushCategory, pushData, quietUntilOnLookupError, type PushRow } from '../_shared/push-rules.ts';
 
 type Row = PushRow & { deliver_after: string | null };
 
@@ -33,8 +33,9 @@ Deno.serve(async (req) => {
   // Heures calmes : calculées par le serveur (fuseau et réglages de chaque destinataire)
   const quietOf = new Map<string, string | null>();
   for (const uid of new Set(due.filter((r) => !r.urgent).map((r) => r.user_id))) {
-    const { data } = await admin.rpc('push_quiet_until', { p_user: uid, p_at: now.toISOString() });
-    quietOf.set(uid, (data as string | null) ?? null);
+    const { data, error } = await admin.rpc('push_quiet_until', { p_user: uid, p_at: now.toISOString() });
+    // Échec du calcul : jamais d'envoi « par défaut » pendant d'éventuelles heures calmes (nouvel essai différé)
+    quietOf.set(uid, error ? quietUntilOnLookupError(now) : ((data as string | null) ?? null));
   }
   const toDefer = new Map<string, string[]>();
   const candidates: Row[] = [];

@@ -1,14 +1,19 @@
-/** Tous les minuteurs biberon du foyer : un par enfant (jumeaux, triplés…). */
+/**
+ * Biberons du foyer (v3) : un enfant par ligne (jumeaux, triplés…) sur une surface MATE ; chaque ligne montre l'état
+ * réel (biberon en cours, prochain rappel) et s'agrandit vers l'écran de l'enfant (transition carte → détail).
+ * Point focal : l'action « Noter un biberon » en bas d'écran.
+ */
 import React from 'react';
 import { router } from 'expo-router';
-import { Appear } from '@/components/Appear';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Button, SectionTitle, Text } from '@/components/ui';
-import { BottleNotificationSettings, BottleTimerCard, noRecommendationNote } from '@/features/bottle';
-
-import { useBottleTimers } from '@/lib/data/hooks-bottle';
-import { useBottleChildren } from '@/lib/data/hooks-bottle';
+import { SectionTitle, Text } from '@/components/ui';
+import { SecondaryButton } from '@/components/controls';
+import { MatteSurface } from '@/components/surfaces';
+import { BottleNotificationSettings, noRecommendationNote } from '@/features/bottle';
+import { BottleChildRow } from '@/features/bottleList';
+import { useBottleChildren, useBottleTimers } from '@/lib/data/hooks-bottle';
+import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
 export default function BottleTimers() {
@@ -33,13 +38,11 @@ export default function BottleTimers() {
           action={{ label: tr('u6.bottle_index.add_child'), onPress: () => router.push({ pathname: '/profiles/new', params: { kind: 'child' } }) }}
         />
       ) : (
-        sorted.map((c, i) => (
-          <Appear key={c.id} kind="soft" delay={0.05 * i}>
-            <BottleTimerCard child={c} />
-          </Appear>
-        ))
+        <MatteSurface radius={radius.lg} padded={spacing.xs} testID="bottle-children">
+          {sorted.map((c, i) => <BottleChildRow key={c.id} child={c} last={i === sorted.length - 1} />)}
+        </MatteSurface>
       )}
-      {sorted.length ? <Button label={tr('u6.bottle_index.history')} icon="list" variant="secondary" onPress={() => router.push({ pathname: '/bottle/history', params: { child: sorted[0].id } })} /> : null}
+      {sorted.length ? <SecondaryButton label={tr('u6.bottle_index.history')} icon="list" onPress={() => router.push({ pathname: '/bottle/history', params: { child: sorted[0].id } })} testID="bottles-history" /> : null}
       <SectionTitle title={tr('u6.bottle_index.notifications')} />
       <BottleNotificationSettings />
       <Text variant="caption" muted>{noRecommendationNote()}</Text>

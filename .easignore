@@ -16,3 +16,21 @@ docs/
 supabase/migrations/
 supabase/seed*
 store/
+
+# Audit 04 (13/11/2026) : jamais de clé privée, de certificat ni de fichier d'environnement secondaire dans l'archive
+# envoyée à EAS (seul .env, réservé aux clés PUBLIQUES EXPO_PUBLIC_*, est transmis ; vérifié par
+# scripts/homi/privacy-check.mjs). Les identifiants de signature restent gérés par EAS (credentialsSource distant).
+.env.*
+!.env.example
+*.p8
+*.p12
+*.pem
+*.key
+*.keystore
+*.jks
+*.mobileprovision
+credentials.json
+supabase/.temp/
+supabase/.branches/
+coverage/
+au-fil-de-nous-source*.zip

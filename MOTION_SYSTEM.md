@@ -149,6 +149,9 @@ Démonstration : **Réglages → Mon accueil** (`src/app/settings/home.tsx`), ca
 | Barre d'onglets (v3) | ressort `panneau` | indicateur de verre teinté qui glisse |
 | Sélecteurs (`ChoiceGroup`, `Segmented`) | ressort `panneau` | indicateur qui glisse ; orbes qui grandissent / se resserrent |
 | Fond de coque (`DesertScene`) | `withRepeat` + `cancelAnimation` | parallaxe légère, image fixe sinon |
+| Assistant du scanner (`features/scanner/WizardChrome.tsx`) | `m.timing` 280 ms `decelerate` (nuit : fondu 160 ms ; `off` : immédiat) | l'étape glisse de 16 px dans le sens du geste + fondu ; les segments de progression se remplissent / se vident en `translateX` au même moment ; chaque étape repart en haut |
+| Historique / dernier scan → fiche (`features/scanner/components.tsx`) | `useMorphSource('scan-<id>')` + `MorphTarget` | la surface mate de la ligne s'agrandit vers la fiche résultat, retour vers la même ligne |
+| Biberon (`features/bottleSession.tsx`, `bottleStats.tsx`, `bottleList.tsx`, `bottleClock.tsx`, `bottleDay.tsx`, `app/bottle/**`) | `useMotion` (`rebondLeger`, `vif`, `timing` 150 / 400), `MorphSource` / `MorphTarget`, `Sheet` | commande ronde : souffle + fondu de l'icône au changement d'état ; coche du résultat en ressort ; ligne → enfant et tuile → historique en morph ; aiguille du cadran posée une fois (400 ms) ; doseur : chiffre qui « tape » et arc qui avance ; AUCUNE boucle (chronomètre à l'écran) ; `off` : états finaux |
 | Réglages → Apparence (`app/settings/appearance.tsx`) | `GlowCard` (sélecteur, `role="radio"`), `CompletionCheck`, `CompletionGlow`, `PressSheen` | démonstration vivante ; palette Auto : couleurs interpolées par paliers de 5 min (pas d'animation, voir `HOMI_DESIGN_SYSTEM.md`) |
 
 Tout passe par `useMotion` : `off` (Réduire les animations, économie d'énergie) → état final immédiat, `minimal` (nuit) → fondus courts sans déplacement ni élévation. Transform et opacité uniquement.
@@ -174,7 +177,7 @@ Jest : Reanimated tourne dans son implémentation JS officielle grâce au résol
 - **Socle partagé (à migrer en premier, gain maximal)** : `components/ui.tsx` (le reflet du bouton principal est déjà en Reanimated), `Motion.tsx`, `MotionKit.tsx`, `Appear.tsx`, `Tappable.tsx`, `Screen.tsx`, `Overlays.tsx` (toasts ; la feuille `Sheet` est migrée), `States.tsx`, `Glass.tsx` (reflet au curseur), `ToolCard.tsx`, `AccountActions.tsx`, `theme/motion.ts` (helpers `springTo`, `timeTo`, `shakeX`, `successPulse`).
 - **Navigation / coque** : `app/_layout.tsx` (`components/Dock.tsx` migré le 13/11/2026, voir « Branchements »).
 - **Fonds et décors en boucle** (`Animated.loop`) : `Aurora.tsx` (`PowderSky.tsx` et `StarField.tsx` : retirés en v3), `VideoBackdrop.tsx`, `DayClock.tsx`, `FetusArt.tsx`, `FetusOrb.tsx`, `ToolGlyph.tsx`, `features/motionViz.tsx`, `story/FamilyStoryArt.tsx`, `goldTimeline.tsx`, `pregnancyThread.tsx`, `dayThread.tsx`, `dayStrip/DayStrip.tsx`, `cycle/GuideArt.tsx`, `cycle/GoldCycleRing.tsx`, `cocoon/Cocoon.tsx`.
-- **Instruments et chronomètres** : `bottleClock.tsx`, `bottleDay.tsx`, `bottleInstrument.tsx`, `childCare.tsx`.
+- **Instruments et chronomètres** : `childCare.tsx` (biberon migré le 13/11/2026 : `bottleInstrument.tsx` retiré, `bottleClock.tsx` et `bottleDay.tsx` sur Reanimated / sans boucle).
 - **Écrans et modules** : `app/intro.tsx`, `app/calendar.tsx`, `app/cycle/calendar.tsx`, `app/child/[id]/discoveries.tsx`, `Paywall.tsx`, `subscription.tsx`, `community.tsx`, `namesSwipe.tsx`, `familyLoad.tsx`, `postpartum.tsx`, `cycle/Bars.tsx`, `cycle/PainKit.tsx`, `cycle/kit.tsx`, `cycle3/CycleCalendar.tsx`, `cycle3/ui.tsx`, `Charts.tsx`, `GrowthChart.tsx`.
 
 ## Plan de migration

@@ -11,6 +11,7 @@
 //             RAPPELCONSO_DATASET (défaut rappelconso-v2-gtin-espaces).
 // Sans base réelle connectée, la réponse le dit explicitement (`database: 'not_connected'`) : aucun résultat n'est inventé.
 import { adminClient, corsHeaders, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
+import { escapeLike, optText, readJsonBody } from '../_shared/body.ts';
 import { assessProduct, type ProductData, type ScanContext } from '../_shared/product-rules.ts';
 import { fromProductRow, lookupOpenFactsCached, searchOpenFactsCached, type LookupStatus, type NormalizedProduct, type OpenFactsStore } from '../_shared/open-facts.ts';
 import { fetchRecallRecords, matchRecalls, recallRow, sameGtin } from '../_shared/rappelconso.ts';
@@ -79,7 +80,7 @@ async function checkRecalls(admin: Any, product: { barcode?: string | null; bran
     cached = data ?? [];
   }
   const byName = product.brand && product.name ? matchRecalls(
-    ((await admin.from('product_recalls').select('id,title,reason,risks,recommended_action,official_url,source,published_on,lot_numbers,is_demo,barcode,gtins,brand,product_name').ilike('brand', product.brand).limit(50)).data ?? [])
+    ((await admin.from('product_recalls').select('id,title,reason,risks,recommended_action,official_url,source,published_on,lot_numbers,is_demo,barcode,gtins,brand,product_name').ilike('brand', escapeLike(product.brand)).limit(50)).data ?? [])
       .map((r: Any) => ({ key: r.id, gtins: r.gtins ?? [], title: r.title, brand: r.brand, product_name: r.product_name, reason: r.reason, risks: r.risks, recommended_action: r.recommended_action, official_url: r.official_url, image_url: null, published_on: r.published_on, lot_numbers: r.lot_numbers ?? [], category: null, row: r })),
     { brand: product.brand, name: product.name },
   ) : [];
@@ -101,7 +102,8 @@ Deno.serve(withCors(async (req) => {
   const admin = adminClient();
   if (!(await rateLimit(admin, `scan:${auth.user.id}`, 40, 60))) return json({ error: 'rate_limited', message: 'Trop de recherches en peu de temps. Réessayez dans une minute.' }, 429);
 
-  const body = await req.json().catch(() => ({}));
+  const body: Any = await readJsonBody(req, 16 * 1024);
+  if (!body) return json({ error: 'too_large' }, 413);
   const action = typeof body.action === 'string' ? body.action : 'lookup';
   // Premium strict : le scanner est réservé ; les alertes officielles de rappel (recall_watch) restent libres
   if (action !== 'recall_watch') { const locked = await requirePremium(auth.client); if (locked) return locked; }
@@ -149,7 +151,8 @@ Deno.serve(withCors(async (req) => {
   // ------------------------------------------------------------ rappels d'un produit précis
   if (action === 'recalls') {
     const barcode = body.barcode ? String(body.barcode).replace(/\D/g, '') : null;
-    const { recalls, status } = await checkRecalls(admin, { barcode, brand: body.brand ?? null, name: body.name ?? null });
+    // Marque et nom : texte borné (jamais un objet, jamais une chaîne géante envoyée à RappelConso)
+    const { recalls, status } = await checkRecalls(admin, { barcode, brand: optText(body.brand, 120), name: optText(body.name, 200) });
     return json({ recalls, recall_check: status });
   }
 

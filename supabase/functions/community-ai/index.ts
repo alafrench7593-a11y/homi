@@ -7,6 +7,7 @@
 // Sans GEMINI_API_KEY : { ai: 'not_configured' } — l'application l'indique, jamais un faux résumé.
 import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { geminiConfig } from '../_shared/gemini.ts';
+import { readJsonBody } from '../_shared/body.ts';
 import { MIN_COMMENTS_FOR_SUMMARY, parseRequest } from '../_shared/community-ai.ts';
 import { runSummary, runTranslation } from '../_shared/community-ai-run.ts';
 
@@ -14,7 +15,9 @@ Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
-  const request = parseRequest(await req.json().catch(() => ({})));
+  const raw = await readJsonBody(req, 4 * 1024);
+  if (!raw) return json({ error: 'too_large' }, 413);
+  const request = parseRequest(raw);
   if (!request) return json({ error: 'bad_request', message: 'Demande invalide.' }, 400);
 
   const { data: premium } = await auth.client.rpc('has_premium');

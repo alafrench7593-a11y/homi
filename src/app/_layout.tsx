@@ -15,7 +15,7 @@ import { backdropVariant, DesertScene } from '@/components/scene/DesertScene';
 import { MorphHost } from '@/motion/Morph';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { I18nProvider } from '@/i18n/I18nProvider';
-import { AuthProvider, useAuth } from '@/lib/auth';
+import { AuthProvider, PERSISTED_CACHE_KEY, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
 import { PremiumPreviewHost } from '@/components/Premium';
 import { SleepNotificationsHost } from '@/features/sleep';
@@ -62,7 +62,7 @@ const queryClient = new QueryClient({
 
 // Cache des données récentes sur l'appareil : consultation possible hors connexion.
 // Les conversations avec l'assistant et les documents ne sont pas mis en cache.
-const persister = createAsyncStoragePersister({ storage: AsyncStorage, key: 'toietmoi.cache.v1', throttleTime: 2000 });
+const persister = createAsyncStoragePersister({ storage: AsyncStorage, key: PERSISTED_CACHE_KEY, throttleTime: 2000 });
 // user_journeys est conservé (types de parcours, pas de donnée de santé) : sans lui, l'accueil et l'onglet Suivi
 // restaient bloqués hors connexion. En ligne, il est rechargé dès l'ouverture (un parcours archivé disparaît aussitôt).
 // google_places / google_photo : contenus Google jamais enregistrés sur l'appareil (conditions d'utilisation de Google Maps Platform)

@@ -3,6 +3,7 @@
 // Aucune interprétation. POST { document_id }
 import { geminiConfig, geminiGenerate, GeminiError } from '../_shared/gemini.ts';
 import { adminClient, corsHeaders, hasConsent, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
+import { isUuid, readJsonBody } from '../_shared/body.ts';
 import { READABLE_MIME } from '../_shared/document-read.ts';
 
 
@@ -34,8 +35,10 @@ Deno.serve(withCors(async (req) => {
     return json({ error: 'consent_required', message: 'Activez la lecture automatique des documents dans Confidentialité.' }, 403);
   }
 
-  const { document_id } = await req.json().catch(() => ({}));
-  if (typeof document_id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(document_id)) return json({ error: 'bad_request' }, 400);
+  const body = await readJsonBody(req);
+  if (!body) return json({ error: 'too_large' }, 413);
+  const document_id = body.document_id;
+  if (!isUuid(document_id)) return json({ error: 'bad_request' }, 400);
   // Vérification des droits AVEC la RLS de l'utilisateur
   const { data: doc } = await auth.client.from('documents').select('id,household_id,uploaded_by,storage_path,mime_type,size_bytes').eq('id', document_id).maybeSingle();
   if (!doc) return json({ error: 'not_found' }, 404);

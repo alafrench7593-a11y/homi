@@ -1,19 +1,45 @@
-/** Accueil du scanner : produit ou aliment, historique récent, favoris, comparaison. */
+/**
+ * Accueil du scanner : point focal = « Nouvelle analyse » (bouton du pied). Dernier scan en surface mate (l'ouvrir
+ * agrandit la surface vers sa fiche, morph `scan-<id>`), deux parcours (produit, aliment) en verre givré, analyses
+ * récentes et favoris en surface mate, outils (historique, comparaison, produits à éviter, alertes de rappel
+ * officielles — toujours gratuites). États : chargement, erreur (réessayer), vide.
+ */
 import React from 'react';
-import { Image, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
-import { GlassSurface } from '@/components/Glass';
-import { frDate } from '@/lib/domain/scanSources';
+import { Banner, Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { FrostedGlass } from '@/components/surfaces';
+import { usePressScale } from '@/motion';
 import { isDemo } from '@/lib/backend';
 import { useRecallWatch, useScanFavorites, useScanHistory, useScanQuota } from '@/lib/data/hooks-scanner';
 import { useTheme } from '@/theme/ThemeProvider';
-import { spacing } from '@/theme/tokens';
-import { ScanListRow, VerdictBadge } from '@/features/scanner/components';
+import { radius, spacing } from '@/theme/tokens';
+import { ScanListRow } from '@/features/scanner/components';
+import type { IconName } from '@/components/ui';
 import { t as tr } from '@/i18n';
+
+function EntryCard({ to, icon, title, sub, testID }: { to: '/scanner/product' | '/scanner/food'; icon: IconName; title: string; sub: string; testID: string }) {
+  const t = useTheme();
+  const p = usePressScale({ scale: 0.97 });
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={title} accessibilityHint={sub} onPress={() => router.push(to)} onPressIn={p.onPressIn} onPressOut={p.onPressOut}
+      style={{ flex: 1, minWidth: 130 }} testID={testID}>
+      <Animated.View style={[{ flex: 1 }, p.style]}>
+        <FrostedGlass radius={radius.lg} padded={spacing.md} style={{ flex: 1 }} contentStyle={{ gap: spacing.xs }}>
+          <View style={{ width: 44, height: 44, borderRadius: radius.orb, alignItems: 'center', justifyContent: 'center', backgroundColor: t.material.lines.iconWell }}>
+            <Icon name={icon} size={22} color={t.colors.primary} />
+          </View>
+          <Text weight="bold">{title}</Text>
+          <Text variant="caption" muted>{sub}</Text>
+        </FrostedGlass>
+      </Animated.View>
+    </Pressable>
+  );
+}
 
 export default function ScannerHub() {
   const t = useTheme();
@@ -24,7 +50,9 @@ export default function ScannerHub() {
   const { data: quota } = useScanQuota();
   const last = (history ?? [])[0];
   const recent = (history ?? []).slice(1, 5);
-  const favorites = (history ?? []).filter((s) => favIds.has(s.id)).slice(0, 4);
+  // Une analyse n'apparaît qu'une fois à l'écran (une seule surface d'origine par fiche pour le morph)
+  const shown = new Set([last?.id, ...recent.map((s) => s.id)]);
+  const favorites = (history ?? []).filter((s) => favIds.has(s.id) && !shown.has(s.id)).slice(0, 4);
 
   return (
     <Screen back title={tr('u8.hub.title')} subtitle={tr('u8.hub.subtitle')}
@@ -35,71 +63,42 @@ export default function ScannerHub() {
         { icon: 'star', value: history ? String((history ?? []).filter((x) => favIds.has(x.id)).length) : '—', label: tr('u8.hub.favorites') },
         { icon: 'zap', value: quota ? String(quota.remaining) : '—', label: tr('u8.hub.remaining') },
       ]} />
-      {last ? (
-        // Dernier scan en grand : le résultat d'un coup d'œil, et le même type de scan relancé en un geste
-        <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
-          <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="scanner-last">
-            <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>{tr('u8.hub.lastScan')}</Text>
-            <Row style={{ alignItems: 'center' }}>
-              {last.product_snapshot?.image_url ? (
-                <Image source={{ uri: last.product_snapshot.image_url }} style={{ width: 64, height: 64, borderRadius: 16, backgroundColor: t.colors.surfaceAlt }} accessibilityIgnoresInvertColors />
-              ) : (
-                <View style={{ width: 64, height: 64, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt }}>
-                  <Icon name={last.kind === 'food' ? 'search' : 'maximize'} size={26} color={t.colors.primary} />
-                </View>
-              )}
-              <View style={{ flex: 1, gap: 2 }}>
-                <Text variant="heading" numberOfLines={2}>{`${last.product_snapshot?.name ?? tr('u8.hub.noName')}${favIds.has(last.id) ? ' ★' : ''}`}</Text>
-                <Text variant="caption" muted>{[last.kind === 'food' ? tr('u8.hub.food') : tr('u8.hub.product'), last.product_snapshot?.brand, last.analysed_at ? frDate(last.analysed_at) : null].filter(Boolean).join(' · ')}</Text>
-                {last.verdict ? <VerdictBadge verdict={last.verdict} /> : null}
-              </View>
-            </Row>
-            <Row wrap>
-              <Button label={tr('u8.hub.viewResult')} icon="eye" size="sm" variant="secondary" onPress={() => router.push(`/scanner/result/${last.id}`)} testID="scanner-last-open" style={{ flexGrow: 1 }} />
-              <Button label={last.kind === 'food' ? tr('u8.hub.otherFood') : tr('u8.hub.otherProduct')} icon="camera" size="sm" onPress={() => router.push(last.kind === 'food' ? '/scanner/food' : '/scanner/product')} testID="scanner-last-again" style={{ flexGrow: 1 }} />
-            </Row>
-          </View>
-        </GlassSurface>
-      ) : null}
-      <Row style={{ alignItems: 'stretch' }}>
-        {([
-          { to: '/scanner/product', icon: 'maximize', title: tr('u8.hub.scanProduct'), sub: tr('u8.hub.scanProductSub') },
-          { to: '/scanner/food', icon: 'search', title: tr('u8.hub.scanFood'), sub: tr('u8.hub.scanFoodSub') },
-        ] as const).map((c) => (
-          <View key={c.to} style={{ flex: 1 }}>
-            <Card onPress={() => router.push(c.to)} accessibilityLabel={c.title} style={{ flex: 1 }}>
-              <View style={{ gap: spacing.xs }}>
-                <View style={{ width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt }}>
-                  <Icon name={c.icon} size={26} color={t.colors.primary} />
-                </View>
-                <Text weight="bold">{c.title}</Text>
-                <Text variant="caption" muted>{c.sub}</Text>
-              </View>
-            </Card>
-          </View>
-        ))}
+
+      <Row wrap style={{ alignItems: 'stretch' }}>
+        <EntryCard to="/scanner/product" icon="maximize" title={tr('u8.hub.scanProduct')} sub={tr('u8.hub.scanProductSub')} testID="scanner-entry-product" />
+        <EntryCard to="/scanner/food" icon="search" title={tr('u8.hub.scanFood')} sub={tr('u8.hub.scanFoodSub')} testID="scanner-entry-food" />
       </Row>
       {quota ? <Text variant="caption" muted>{tr('u8.hub.quotaLine', { remaining: quota.remaining, quota: quota.quota })}</Text> : null}
+
+      {last ? (
+        <View style={{ gap: spacing.xs }} testID="scanner-last">
+          <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>{tr('u8.hub.lastScan')}</Text>
+          <ScanListRow s={last} favorite={favIds.has(last.id)} testID="scanner-last-open" />
+        </View>
+      ) : null}
 
       <SectionTitle title={last ? tr('u8.hub.before') : tr('u8.hub.recent')} action={history?.length ? tr('u8.hub.seeAll') : undefined} onAction={() => router.push('/scanner/history')} />
       {historyQ.isLoading && !history ? <Skeleton kind="card" rows={2} /> : historyQ.isError && !history ? (
         <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title={tr('u8.hub.listErr')} />
-      ) : recent.length ? recent.map((s) => <ScanListRow key={s.id} s={s} favorite={favIds.has(s.id)} />) : last ? null : (
+      ) : recent.length ? (
+        <View style={{ gap: spacing.sm }}>{recent.map((s) => <ScanListRow key={s.id} s={s} favorite={favIds.has(s.id)} />)}</View>
+      ) : last ? null : (
         <EmptyState icon="maximize" title={tr('u8.hub.none')} body={tr('u8.hub.noneBody')} action={{ label: tr('u8.hub.firstScan'), icon: 'camera', onPress: () => router.push('/scanner/product') }} />
       )}
 
       {favorites.length ? (
         <>
           <SectionTitle title={tr('u8.hub.favorites')} action={tr('u8.hub.seeAll')} onAction={() => router.push({ pathname: '/scanner/history', params: { filter: 'favorites' } })} />
-          {favorites.map((s) => <ScanListRow key={s.id} s={s} favorite />)}
+          <View style={{ gap: spacing.sm }}>{favorites.map((s) => <ScanListRow key={s.id} s={s} favorite />)}</View>
         </>
       ) : null}
 
       <SectionTitle title={tr('u8.hub.tools')} />
       <Card padded={false}>
-        <ListRow icon="clock" title={tr('u8.hub.histFav')} subtitle={tr('u8.hub.histFavSub')} onPress={() => router.push('/scanner/history')} />
-        <ListRow icon="columns" title={tr('u8.hub.compare')} subtitle={tr('u8.hub.compareSub')} onPress={() => router.push('/scanner/compare')} />
+        <ListRow icon="clock" title={tr('u8.hub.histFav')} subtitle={tr('u8.hub.histFavSub')} onPress={() => router.push('/scanner/history')} testID="scanner-tool-history" />
+        <ListRow icon="columns" title={tr('u8.hub.compare')} subtitle={tr('u8.hub.compareSub')} onPress={() => router.push('/scanner/compare')} testID="scanner-tool-compare" />
         <ListRow icon="slash" title={tr('u8.hub.avoid')} subtitle={tr('u8.hub.avoidSub')} onPress={() => router.push('/scanner/avoid')} />
+        <ListRow icon="bell" title={tr('tool.recall_alerts')} subtitle={tr('scn.recallsFree')} onPress={() => router.push('/scanner/recalls')} testID="scanner-tool-recalls" />
       </Card>
 
       <Card tone="soft">
