@@ -1,5 +1,5 @@
 /**
- * Mode nuit : ambiance très sombre et chaude, gros boutons, animations lentes, aucun son.
+ * Mode nuit : ambiance très sombre (midnight violet HOMI, accents champagne tamisé), gros boutons, animations lentes, aucun son.
  * Ne modifie jamais la luminosité du téléphone et laisse l'accès aux urgences visible.
  */
 import React, { useEffect, useState } from 'react';
@@ -22,9 +22,13 @@ import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr } from '@/i18n';
 
-const GOLD = '#FF8FB1';
-const TEXT = '#F2DFC1';
-const MUTED = '#B8A88F';
+// Couleurs du thème « Nuit » HOMI (src/theme/tokens.ts) : champagne tamisé, perle lilas, jamais de blanc pur
+const GOLD = '#CDB48A';
+const TEXT = '#DDD0EC';
+const MUTED = '#A598C0';
+const BG = '#0F0B1E';
+const CARD = '#1A1430';
+const CARD_PRESSED = '#2E2650';
 
 function BigButton({ icon, label, sub, onPress }: { icon: React.ComponentProps<typeof Icon>['name']; label: string; sub?: string; onPress: () => void }) {
   return (
@@ -32,7 +36,7 @@ function BigButton({ icon, label, sub, onPress }: { icon: React.ComponentProps<t
       accessibilityRole="button"
       accessibilityLabel={sub ? `${label}, ${sub}` : label}
       onPress={() => { haptic('light'); onPress(); }}
-      style={({ pressed }) => ({ flex: 1, minHeight: 92, borderRadius: radius.lg, backgroundColor: pressed ? '#262E5C' : '#161C40', borderWidth: 1, borderColor: '#262E5C', alignItems: 'center', justifyContent: 'center', gap: 4, padding: spacing.xs })}
+      style={({ pressed }) => ({ flex: 1, minHeight: 92, borderRadius: radius.lg, backgroundColor: pressed ? CARD_PRESSED : CARD, borderWidth: 1, borderColor: CARD_PRESSED, alignItems: 'center', justifyContent: 'center', gap: 4, padding: spacing.xs })}
     >
       <Icon name={icon} color={GOLD} size={24} />
       <Text weight="medium" color={TEXT} center>{label}</Text>
@@ -143,10 +147,10 @@ export default function NightMode() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0D0912', overflow: 'hidden' }}>
+    <View style={{ flex: 1, backgroundColor: BG, overflow: 'hidden' }}>
       <StatusBar style="light" />
       <Aurora mood="lowlight" />
-      <StarField density={40} color="#F3D6DF" />
+      <StarField density={40} color={TEXT} />
       {/* Défilement : sur petit écran (ou texte agrandi) rien n'est coupé ; le décor reste à l'intérieur de l'écran */}
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, gap: spacing.md }}>
         <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
@@ -155,7 +159,7 @@ export default function NightMode() {
           </Tappable>
           <Text variant="small" color={MUTED}>{formatTime(new Date(now))}</Text>
           <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.night.emergency')} onPress={() => router.push('/emergency')} hitSlop={10} style={{ minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="life-buoy" color="#F0A0A0" size={22} />
+            <Icon name="life-buoy" color="#F0A0AA" size={22} />
           </Tappable>
         </Row>
 
@@ -192,7 +196,7 @@ export default function NightMode() {
                 accessibilityLabel={openSleep ? tr('u6.night.stop_sleep') : tr('u6.night.start_sleep')}
                 accessibilityState={{ busy: busy === 'sleep' }}
                 onPress={toggleSleep}
-                style={({ pressed }) => ({ marginTop: spacing.md, width: 168, height: 168, borderRadius: 84, borderWidth: 2, borderColor: GOLD, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? '#1D2450' : 'rgba(226,184,132,0.08)' })}
+                style={({ pressed }) => ({ marginTop: spacing.md, width: 168, height: 168, borderRadius: 84, borderWidth: 2, borderColor: GOLD, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? CARD_PRESSED : 'rgba(205,180,138,0.08)' })}
               >
                 <Icon name={openSleep ? 'sun' : 'moon'} color={GOLD} size={34} />
                 <Text weight="medium" color={TEXT} style={{ marginTop: 6 }}>{openSleep ? tr('u6.night.wake') : tr('u6.night.sleeps')}</Text>

@@ -11,7 +11,11 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Tappable } from '@/components/Tappable';
 import { Icon, Text } from '@/components/ui';
-import { MIN_TOUCH, NACRE, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, spacing } from '@/theme/tokens';
+import { HOMI } from '@/features/homiColors';
+
+/** Carte HOMI : prune → midnight violet, texte perle lisible partout (≥ 4,5:1, ce que le dégradé champagne ne garantissait pas). */
+const CARD: [string, string, string] = [HOMI.prune, '#3E2370', HOMI.midnightSoft];
 import { t as tr } from '@/i18n';
 import { aiAssistantOnline } from '@/config/features';
 
@@ -27,10 +31,10 @@ export function HomeAssistantCard() {
     router.push(question.length >= 2 ? { pathname: '/assistant/local', params: { q: question } } : '/assistant/local');
   };
   return (
-    <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: 24, padding: spacing.md, gap: spacing.sm }}>
+    <LinearGradient colors={CARD} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: 24, padding: spacing.md, gap: spacing.sm }}>
       <Tappable accessibilityRole="button" accessibilityLabel={tr('ai.home.openA11y')} onPress={() => router.push('/assistant/local')} testID="home-ai-open"
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH }}>
-        <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.35)', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(205,190,250,0.28)', alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="message-circle" color="#FFFFFF" />
         </View>
         <View style={{ flex: 1 }}>
@@ -40,12 +44,12 @@ export function HomeAssistantCard() {
         <Icon name="arrow-right" color="#FFFFFF" />
       </Tappable>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: 18, paddingLeft: spacing.md, minHeight: MIN_TOUCH }}>
-        <TextInput ref={inputRef} onFocus={reveal} value={q} onChangeText={setQ} placeholder={tr('ai.home.placeholder')} placeholderTextColor="rgba(60,40,50,0.55)"
+        <TextInput ref={inputRef} onFocus={reveal} value={q} onChangeText={setQ} placeholder={tr('ai.home.placeholder')} placeholderTextColor="rgba(28,21,51,0.66)"
           accessibilityLabel={tr('ai.home.inputA11y')} returnKeyType="send" onSubmitEditing={send} maxLength={500} testID="home-ai-input"
-          style={{ flex: 1, minHeight: MIN_TOUCH, color: '#2A1A22', fontSize: 16 }} />
+          style={{ flex: 1, minHeight: MIN_TOUCH, color: HOMI.ink, fontSize: 16 }} />
         <Tappable accessibilityRole="button" accessibilityLabel={tr('ai.home.send')} onPress={send} testID="home-ai-send"
           style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name="send" color="#5B2A86" />
+          <Icon name="send" color={HOMI.prune} />
         </Tappable>
       </View>
       <Tappable accessibilityRole="button" accessibilityLabel={tr('ai.home.online')} onPress={() => router.push(q.trim().length >= 2 ? { pathname: '/assistant/chat', params: { q: q.trim() } } : '/assistant/chat')} testID="home-ai-online"

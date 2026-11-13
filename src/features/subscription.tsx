@@ -20,7 +20,8 @@ import type { EntitlementState } from '@/lib/premium/entitlement';
 import { billingDates, formatMoney, periodOfProduct, PLAN_BADGE, type Plan, type PlanPeriod } from '@/lib/premium/plans';
 import { getPurchaseMode, loadPlans, purchasesSdk } from '@/lib/purchaseMode';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { NACRE, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { HOMI_FILL } from './homiColors';
 import { springTo } from '@/theme/motion';
 import { DrawCheck } from '@/components/MotionKit';
 import { Appear } from '@/components/Appear';
@@ -44,7 +45,7 @@ export const webWithoutPurchase = (mode: string) => Platform.OS === 'web' && mod
 // ---------------------------------------------------------------- en-tête
 export function PremiumHero() {
   return (
-    <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: radius.xl, padding: spacing.lg, gap: spacing.xs }}>
+    <LinearGradient colors={HOMI_FILL} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: radius.xl, padding: spacing.lg, gap: spacing.xs }}>
       <View testID="premium-hero">
         <Row>
           <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' }}>

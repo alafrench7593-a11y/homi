@@ -230,7 +230,7 @@ export default function Composer() {
               <View key={p.path} style={{ width: 84, height: 84 }}>
                 <CommunityImage path={p.path} style={{ width: 84, height: 84, borderRadius: radius.md }} />
                 <Tappable accessibilityRole="button" accessibilityLabel={tr('cm2.new.deletePhoto')} onPress={() => { setKept((k) => k.filter((x) => x.path !== p.path)); setRemoved((r) => [...r, p.path]); }} style={{ position: 'absolute', top: -8, right: -8, width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
-                  <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: 'rgba(20,10,17,0.75)', alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={14} color="#FFFFFF" /></View>
+                  <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: 'rgba(15,11,20,0.75)', alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={14} color="#FFFFFF" /></View>
                 </Tappable>
               </View>
             ))}
@@ -238,7 +238,7 @@ export default function Composer() {
               <View key={`${i}-${p.previewUri.slice(-24)}`} style={{ width: 84, height: 84 }}>
                 <Image source={{ uri: p.previewUri }} style={{ width: 84, height: 84, borderRadius: radius.md }} accessibilityLabel={tr('cm2.new.addedPhoto', { n: String(i + 1) })} />
                 <Tappable accessibilityRole="button" accessibilityLabel={tr('cm2.new.removePhoto')} onPress={() => setAdded((a) => a.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -8, right: -8, width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
-                  <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: 'rgba(20,10,17,0.75)', alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={14} color="#FFFFFF" /></View>
+                  <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: 'rgba(15,11,20,0.75)', alignItems: 'center', justifyContent: 'center' }}><Icon name="x" size={14} color="#FFFFFF" /></View>
                 </Tappable>
               </View>
             ))}

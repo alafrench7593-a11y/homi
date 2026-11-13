@@ -22,7 +22,7 @@ import { useAuth } from '@/lib/auth';
 function Avatar({ label, color, icon, size = 40 }: { label?: string; color: string; icon?: IconName; size?: number }) {
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: color, alignItems: 'center', justifyContent: 'center' }}>
-      {icon ? <Icon name={icon} size={size * 0.45} color="#2B2433" /> : <Text weight="bold" color="#2B2433" variant="small">{label}</Text>}
+      {icon ? <Icon name={icon} size={size * 0.45} color="#1C1533" /> : <Text weight="bold" color="#1C1533" variant="small">{label}</Text>}
     </View>
   );
 }
@@ -35,9 +35,9 @@ function Bubble({ label, active, onPress, testID, children, a11y }: { label: str
     <Tappable testID={testID} accessibilityRole={active === undefined ? 'button' : 'radio'} accessibilityState={active === undefined ? undefined : { selected: active }} accessibilityLabel={a11y}
       onPress={() => { haptic('selection'); onPress(); }} style={({ pressed }) => ({ alignItems: 'center', gap: 4, width: 68, opacity: pressed ? 0.8 : 1, transform: [{ scale: pressed ? 0.96 : 1 }] })}>
       <View style={{ width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center', borderWidth: 2.5,
-        borderColor: active ? (t.isDark ? '#FFD27A' : '#E0607E') : (t.isDark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.9)'),
+        borderColor: active ? t.colors.primary : (t.isDark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.9)'),
         backgroundColor: t.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.55)',
-        shadowColor: active ? '#E0607E' : '#B4507A', shadowOpacity: active ? 0.35 : 0.1, shadowRadius: active ? 12 : 8, shadowOffset: { width: 0, height: 4 } }}>
+        shadowColor: '#5B2A86', shadowOpacity: active ? 0.35 : 0.1, shadowRadius: active ? 12 : 8, shadowOffset: { width: 0, height: 4 } }}>
         {children}
       </View>
       <Text variant="caption" weight={active ? 'bold' : 'medium'} numberOfLines={1} center>{label}</Text>
@@ -67,7 +67,7 @@ export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubb
     const names = babies?.map((b) => b.nickname).filter(Boolean).join(' · ');
     items.push({
       key: 'preg', label: tr('pj.subject.pregnancy'), sub: `${names ? `${names} · ` : ''}${p.label}`,
-      avatar: <Avatar color="#E8D9B8" icon="moon" />, active: subject.type === 'pregnancy',
+      avatar: <Avatar color="#E9CFA4" icon="moon" />, active: subject.type === 'pregnancy',
       onPress: () => setSubject({ type: 'pregnancy', id: pregnancy.id }),
     });
   }
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   switcher: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: 8, paddingRight: spacing.md, borderRadius: radius.pill, borderWidth: 1, minHeight: 58 },
   pill: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingVertical: 6, paddingLeft: 6, paddingRight: 14, borderRadius: radius.pill, borderWidth: 1.2, minHeight: MIN_TOUCH + 4 },
   add: { paddingHorizontal: 14, paddingRight: 14, justifyContent: 'center' },
-  fab: { position: 'absolute', right: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 18, minHeight: 52, borderRadius: 14, shadowColor: '#5B3A2E', shadowOpacity: 0.25, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 6 },
+  fab: { position: 'absolute', right: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 18, minHeight: 52, borderRadius: 14, shadowColor: '#16112B', shadowOpacity: 0.25, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 6 },
   emergency: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.sm, borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, minHeight: 64 },
   phone: { minWidth: 64, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
 });

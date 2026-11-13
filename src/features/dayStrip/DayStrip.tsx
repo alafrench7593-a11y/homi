@@ -51,7 +51,7 @@ export function DayStrip({ title, events, now, legend, testID, empty }: {
   const t = useTheme();
   const gold = t.colors.gold;
   const accent = t.colors.primary;
-  const thread = tint(t.isDark ? '#E7C08F' : '#B8865A', t.isDark ? 0.45 : 0.4);
+  const thread = tint(t.isDark ? '#E5C190' : '#AC8B5D', t.isDark ? 0.45 : 0.4);
   const colorOf = (k: DayEvent['kind']) => (k === 'sleep' ? tint(gold, t.isDark ? 0.75 : 0.55) : k === 'feed' ? accent : k === 'bottle' ? accent : gold);
   const label = events.length
     ? tr('l5.daystrip.entries', { title, count: events.length })

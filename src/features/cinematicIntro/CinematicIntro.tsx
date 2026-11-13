@@ -1,6 +1,10 @@
 /**
  * Introduction cinématique « HOMI » (première ouverture, rejouable depuis Réglages › Mon accueil).
  *
+ * À REMPLACER (13/11/2026) : la vidéo vient encore d'« Au fil de nous » (ciel rose et pêche, fil doré). Les couleurs
+ * dessinées par-dessus sont passées en champagne et lilas HOMI, mais il faut une nouvelle vidéo aux couleurs HOMI.
+ * Les vidéos sources citées par scripts/build-intro-video.sh (histoire-3d.mp4, jour-1.mp4) ont été retirées du dépôt.
+ *
  * Une seule vidéo de fond (assets/video/intro-cinematique.mp4, montée à partir des vidéos de l'application :
  * voir scripts/build-intro-video.sh) et, par-dessus, tout le motion design en natif :
  *  - phrase d'ouverture mot à mot, 7 étapes de vie (numéro, filet doré, titre, fonctionnalité réelle),
@@ -37,8 +41,8 @@ const VIDEO_1080 = require('../../../assets/video/intro-cinematique-1080.mp4');
 export const CINEMATIC_POSTER: number = require('../../../assets/video/intro-cinematique.jpg');
 const POSTER = CINEMATIC_POSTER;
 
-const GOLD = '#E8C48E';
-const CREAM = '#FFF6EE';
+const GOLD = '#E8C493';
+const CREAM = '#FEF6EE';
 const PLUM = 'rgba(34,18,44,';
 const D = CINE_DURATION_S;
 const START_TIMEOUT_MS = 4000;
@@ -89,7 +93,7 @@ function LightLeak({ clock, w, h }: { clock: Clock; w: number; h: number }) {
       opacity: lin(clock, [0, 1.2, D * 0.45, D * 0.7, D], [0, 0.22, 0.12, 0.2, 0.08]),
       transform: [{ translateX: lin(clock, [0, D], [-w * 0.1, w * 1.1]) }, { rotate: '-18deg' }, { scaleY: 0.55 }],
     }}>
-      <LinearGradient colors={['rgba(255,214,165,0)', 'rgba(255,214,165,0.55)', 'rgba(255,190,200,0)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flex: 1, borderRadius: size / 2 }} />
+      <LinearGradient colors={['rgba(241,217,188,0)', 'rgba(241,217,188,0.55)', 'rgba(215,200,241,0)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flex: 1, borderRadius: size / 2 }} />
     </Animated.View>
   );
 }
@@ -110,7 +114,7 @@ function GoldThread({ clock, w, top, start, end, variant }: { clock: Clock; w: n
             <SvgGradient id={`g${variant}`} x1="0" y1="0" x2="1" y2="0">
               <Stop offset="0" stopColor={GOLD} stopOpacity="0" />
               <Stop offset="0.25" stopColor={GOLD} stopOpacity="0.95" />
-              <Stop offset="0.8" stopColor="#F6DDB2" stopOpacity="1" />
+              <Stop offset="0.8" stopColor="#F5DCBF" stopOpacity="1" />
               <Stop offset="1" stopColor={GOLD} stopOpacity="0.2" />
             </SvgGradient>
           </Defs>
@@ -149,14 +153,14 @@ function ChapterCard({ clock, c, bottom }: { clock: Clock; c: CineChapter; botto
     <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 28, right: 28, bottom, opacity: out, transform: [{ translateY: lin(clock, [c.end - 0.38, c.end], [0, -14]) }] }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
         <Animated.Text maxFontSizeMultiplier={MAX_FONT_SCALE} style={{ fontFamily: fonts.bodyBold, fontSize: 13, letterSpacing: 2.5, color: GOLD, opacity: lin(clock, [c.start, c.start + 0.4], [0, 1]) }}>
-          {`0${c.n}`}<RNText style={{ color: 'rgba(255,246,238,0.55)' }}>{` / 0${CINE_CHAPTERS.length}`}</RNText>
+          {`0${c.n}`}<RNText style={{ color: 'rgba(254,246,238,0.55)' }}>{` / 0${CINE_CHAPTERS.length}`}</RNText>
         </Animated.Text>
         <Animated.View style={{ height: 1, flex: 1, marginLeft: 12, backgroundColor: GOLD, opacity: 0.8, transformOrigin: 'left', transform: [{ scaleX: lin(clock, [c.start + 0.1, c.start + 0.9], [0, 1], ease) }] }} />
       </View>
       <RisingWords clock={clock} text={tr(c.title)} at={c.start + 0.12} style={{ fontFamily: fonts.display, fontSize: 36, lineHeight: 40, letterSpacing: -1, color: CREAM, textShadowColor: 'rgba(30,10,30,0.35)', textShadowRadius: 12 }} />
       <Animated.View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, opacity: lin(clock, [c.start + 0.45, c.start + 0.9], [0, 1]), transform: [{ translateX: lin(clock, [c.start + 0.45, c.start + 1.0], [-12, 0], ease) }] }}>
         <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: GOLD, marginRight: 10 }} />
-        <RNText maxFontSizeMultiplier={MAX_FONT_SCALE} style={{ fontFamily: fonts.bodyMedium, fontSize: 15.5, lineHeight: 21, color: 'rgba(255,246,238,0.92)', flex: 1 }}>{tr(c.feature)}</RNText>
+        <RNText maxFontSizeMultiplier={MAX_FONT_SCALE} style={{ fontFamily: fonts.bodyMedium, fontSize: 15.5, lineHeight: 21, color: 'rgba(254,246,238,0.92)', flex: 1 }}>{tr(c.feature)}</RNText>
       </Animated.View>
     </Animated.View>
   );
@@ -192,7 +196,7 @@ function LogoReveal({ clock, w }: { clock: Clock; w: number }) {
         {name.map((ch, i) => {
           const s = L + 0.85 + i * 0.045;
           return (
-            <Animated.Text key={i} maxFontSizeMultiplier={MAX_FONT_SCALE} style={{ fontFamily: fonts.display, fontSize: 38, letterSpacing: -1.2, color: CREAM, textShadowColor: 'rgba(70,25,55,0.55)', textShadowRadius: 12, opacity: lin(clock, [s, s + 0.3], [0, 1]), transform: [{ translateY: lin(clock, [s, s + 0.55], [18, 0], ease) }] }}>
+            <Animated.Text key={i} maxFontSizeMultiplier={MAX_FONT_SCALE} style={{ fontFamily: fonts.display, fontSize: 38, letterSpacing: -1.2, color: CREAM, textShadowColor: 'rgba(46,35,74,0.55)', textShadowRadius: 12, opacity: lin(clock, [s, s + 0.3], [0, 1]), transform: [{ translateY: lin(clock, [s, s + 0.55], [18, 0], ease) }] }}>
               {ch === ' ' ? ' ' : ch}
             </Animated.Text>
           );
@@ -205,7 +209,7 @@ function LogoReveal({ clock, w }: { clock: Clock; w: number }) {
             <Defs>
               <SvgGradient id="logoThread" x1="0" y1="0" x2="1" y2="0">
                 <Stop offset="0" stopColor={GOLD} stopOpacity="0" />
-                <Stop offset="0.5" stopColor="#F6DDB2" stopOpacity="1" />
+                <Stop offset="0.5" stopColor="#F5DCBF" stopOpacity="1" />
                 <Stop offset="1" stopColor={GOLD} stopOpacity="0" />
               </SvgGradient>
             </Defs>
@@ -213,7 +217,7 @@ function LogoReveal({ clock, w }: { clock: Clock; w: number }) {
           </Svg>
         </Animated.View>
       </Animated.View>
-      <Animated.Text maxFontSizeMultiplier={MAX_FONT_SCALE} style={{ fontFamily: fonts.serifItalic, fontSize: 23, color: CREAM, textShadowColor: 'rgba(70,25,55,0.7)', textShadowRadius: 10, textShadowOffset: { width: 0, height: 1 }, marginTop: 6, textAlign: 'center', paddingHorizontal: 32, opacity: lin(clock, [L + 1.8, L + 2.5], [0, 1]), transform: [{ translateY: lin(clock, [L + 1.8, L + 2.6], [10, 0], ease) }] }}>
+      <Animated.Text maxFontSizeMultiplier={MAX_FONT_SCALE} style={{ fontFamily: fonts.serifItalic, fontSize: 23, color: CREAM, textShadowColor: 'rgba(46,35,74,0.7)', textShadowRadius: 10, textShadowOffset: { width: 0, height: 1 }, marginTop: 6, textAlign: 'center', paddingHorizontal: 32, opacity: lin(clock, [L + 1.8, L + 2.5], [0, 1]), transform: [{ translateY: lin(clock, [L + 1.8, L + 2.6], [10, 0], ease) }] }}>
         {tr('cine.logo.tagline')}
       </Animated.Text>
     </View>
@@ -356,8 +360,8 @@ function MotionIntro({ onDone }: { onDone: () => void }) {
         <LinearGradient colors={[`${PLUM}0)`, `${PLUM}0.34)`, `${PLUM}0.34)`, `${PLUM}0)`]} locations={[0, 0.35, 0.65, 1]} style={{ flex: 1 }} />
       </Animated.View>
       <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 32, right: 32, top: h * 0.36, opacity: openOut, transform: [{ scale: lin(clock, [0, CINE_OPENING.end], [1, 1.04]) }] }}>
-        <RisingWords clock={clock} text={tr('cine.open.l1')} at={CINE_OPENING.start} style={{ fontFamily: fonts.displayMedium, fontSize: 34, lineHeight: 40, letterSpacing: -0.8, color: CREAM, textShadowColor: 'rgba(70,25,55,0.6)', textShadowRadius: 10, textShadowOffset: { width: 0, height: 1 } }} />
-        <RisingWords clock={clock} text={tr('cine.open.l2')} at={CINE_OPENING.start + 0.45} style={{ fontFamily: fonts.serifItalic, fontSize: 40, lineHeight: 46, color: '#F9E3C0', textShadowColor: 'rgba(70,25,55,0.75)', textShadowRadius: 10, textShadowOffset: { width: 0, height: 1 } }} />
+        <RisingWords clock={clock} text={tr('cine.open.l1')} at={CINE_OPENING.start} style={{ fontFamily: fonts.displayMedium, fontSize: 34, lineHeight: 40, letterSpacing: -0.8, color: CREAM, textShadowColor: 'rgba(46,35,74,0.6)', textShadowRadius: 10, textShadowOffset: { width: 0, height: 1 } }} />
+        <RisingWords clock={clock} text={tr('cine.open.l2')} at={CINE_OPENING.start + 0.45} style={{ fontFamily: fonts.serifItalic, fontSize: 40, lineHeight: 46, color: '#FAE2C4', textShadowColor: 'rgba(46,35,74,0.75)', textShadowRadius: 10, textShadowOffset: { width: 0, height: 1 } }} />
       </Animated.View>
 
       {/* étapes de vie : fil doré + carte */}
@@ -369,7 +373,7 @@ function MotionIntro({ onDone }: { onDone: () => void }) {
       {/* progression des étapes */}
       <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 24, right: 24, bottom: insets.bottom + 26, flexDirection: 'row', gap: 6, opacity: chromeIn }}>
         {CINE_CHAPTERS.map((c) => (
-          <View key={c.n} style={{ flex: 1, height: 2.5, borderRadius: 2, backgroundColor: 'rgba(255,246,238,0.25)', overflow: 'hidden' }}>
+          <View key={c.n} style={{ flex: 1, height: 2.5, borderRadius: 2, backgroundColor: 'rgba(254,246,238,0.25)', overflow: 'hidden' }}>
             <Animated.View style={{ flex: 1, backgroundColor: GOLD, transformOrigin: 'left', transform: [{ scaleX: lin(clock, [c.start, c.end], [0, 1]) }] }} />
           </View>
         ))}

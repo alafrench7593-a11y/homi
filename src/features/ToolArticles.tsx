@@ -29,7 +29,7 @@ function Inner({ toolId, ask }: { toolId: string; ask: string }) {
   return (
     <View
       testID={`tool-articles-${toolId}`}
-      style={{ marginTop: spacing.md, borderRadius: 18, borderWidth: 1, borderColor: t.isDark ? 'rgba(231,192,143,0.28)' : 'rgba(176,132,84,0.22)', padding: spacing.md, gap: spacing.sm }}
+      style={{ marginTop: spacing.md, borderRadius: 18, borderWidth: 1, borderColor: t.isDark ? 'rgba(229,193,144,0.28)' : 'rgba(168,135,89,0.22)', padding: spacing.md, gap: spacing.sm }}
     >
       <Tappable onPress={() => setOpen((v) => !v)} pressScale={0.99} hoverLift={0} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={tr('u1.ta.a11y')}
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }} hitSlop={6} testID="tool-articles-toggle">

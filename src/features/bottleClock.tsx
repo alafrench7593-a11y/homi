@@ -1,8 +1,8 @@
 /**
- * Cadran « journée biberons » : une horloge de 24 h en or, comme une montre de luxe.
- * - lunette dorée (dégradé, double filet), graduations fines, repères 0 h / 6 h / 12 h / 18 h, soleil et lune ;
- * - perles sur le cadran : biberons donnés (or plein), suivant (perle qui pulse), prévus (or creux), à remplir (pointillés) ;
- * - arc doré du dernier biberon au suivant : la partie déjà écoulée brille, le reste est plus pâle ;
+ * Cadran « journée biberons » : une horloge de 24 h en nacre HOMI (champagne, lilas, prune), comme une belle montre.
+ * - lunette nacrée (dégradé, double filet), graduations fines, repères 0 h / 6 h / 12 h / 18 h, soleil et lune ;
+ * - perles sur le cadran : biberons donnés (pleines), suivant (perle qui pulse), prévus (creuses), à remplir (pointillés) ;
+ * - arc lilas du dernier biberon au suivant : la partie déjà écoulée brille, le reste est plus pâle ;
  * - aiguille de l'heure actuelle (elle se met en place en tournant à l'ouverture), reflet qui fait le tour de la lunette ;
  * - au centre : le prochain biberon, en grand, et dans combien de temps.
  * Chaque perle se touche : remplir / noter / modifier. Immobile si les animations sont réduites.
@@ -17,6 +17,7 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { openSlot } from './bottleDay';
 import { t as tr } from '@/i18n';
+import { HOMI } from './homiColors';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -58,10 +59,11 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
   const R = c - 8; // lunette
   const rTrack = R - 34; // perles
   const accent = t.colors.primary;
-  const goldA = dark ? '#FFE7B0' : '#C99360';
-  const goldB = dark ? '#E2AE78' : '#9C6650';
-  const ink = dark ? '#F6E7CF' : '#5B3526';
-  const muted = dark ? 'rgba(246,231,207,0.55)' : 'rgba(91,53,38,0.55)';
+  // HOMI : goldA = filets et perles (champagne la nuit, lilas le jour) ; goldB = chiffres et repères (≥ 4,5:1)
+  const goldA = dark ? HOMI.champagne : '#9C86E8';
+  const goldB = dark ? HOMI.lilac : HOMI.prune;
+  const ink = t.colors.text;
+  const muted = t.colors.textMuted;
 
   const next = slots.find((s) => s.status === 'next') ?? null;
   const lastDone = [...slots].reverse().find((s) => s.status === 'done') ?? null;
@@ -113,11 +115,11 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
       <Svg width={size} height={size} style={{ position: 'absolute' }}>
         <Defs>
           <LinearGradient id="bcBezel" x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0" stopColor="#FFF4D6" />
-            <Stop offset="0.3" stopColor="#E9BE84" />
-            <Stop offset="0.55" stopColor="#A86E46" />
-            <Stop offset="0.8" stopColor="#F3D4A6" />
-            <Stop offset="1" stopColor="#C38A5E" />
+            <Stop offset="0" stopColor={HOMI.pearl} />
+            <Stop offset="0.3" stopColor={HOMI.champagne} />
+            <Stop offset="0.55" stopColor={HOMI.pruneSoft} />
+            <Stop offset="0.8" stopColor={HOMI.lilac} />
+            <Stop offset="1" stopColor="#9C86E8" />
           </LinearGradient>
           <LinearGradient id="bcArc" x1="0" y1="0" x2="1" y2="1">
             <Stop offset="0" stopColor={goldA} />
@@ -168,13 +170,13 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
             const q = pt(c, rTrack - 19, dayAngle(new Date(s.at)));
             return (
               <G key={i}>
-                <AnimatedCircle cx={p.x} cy={p.y} r={pop(i, slots.length, 8)} fill="url(#bcArc)" stroke={dark ? '#FFF4D6' : '#FFFFFF'} strokeWidth={1.5} />
+                <AnimatedCircle cx={p.x} cy={p.y} r={pop(i, slots.length, 8)} fill="url(#bcArc)" stroke={dark ? HOMI.pearl : '#FFFFFF'} strokeWidth={1.5} />
                 {ml != null ? <SvgText x={q.x} y={q.y + 3} fontSize={9} fontWeight="700" fill={goldB} textAnchor="middle">{ml}</SvgText> : null}
               </G>
             );
           }
           if (s.status === 'missed') return <AnimatedCircle key={i} cx={p.x} cy={p.y} r={pop(i, slots.length, 7)} fill="none" stroke={t.colors.heart} strokeWidth={2} strokeDasharray="3 3" />;
-          return <AnimatedCircle key={i} cx={p.x} cy={p.y} r={pop(i, slots.length, 6)} fill={dark ? '#1B1836' : '#FFFBF5'} stroke={goldB} strokeWidth={1.6} />;
+          return <AnimatedCircle key={i} cx={p.x} cy={p.y} r={pop(i, slots.length, 6)} fill={dark ? '#1B1836' : HOMI.pearl} stroke={goldB} strokeWidth={1.6} />;
         })}
       </Svg>
 
@@ -188,7 +190,7 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
       {!reduce ? (
         <Animated.View pointerEvents="none" style={[full, { transform: [{ rotate: gleam.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] }) }] }]}>
           <Svg width={size} height={size}>
-            <Path d={arcPath(c, R - 5, -14, 14)} stroke="#FFFBEA" strokeOpacity={0.85} strokeWidth={4} strokeLinecap="round" fill="none" />
+            <Path d={arcPath(c, R - 5, -14, 14)} stroke={HOMI.pearl} strokeOpacity={0.85} strokeWidth={4} strokeLinecap="round" fill="none" />
           </Svg>
         </Animated.View>
       ) : null}
@@ -196,15 +198,15 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
       {/* aiguille de l'heure actuelle */}
       <Animated.View pointerEvents="none" style={[full, { transform: [{ rotate: hand.interpolate({ inputRange: [0, 360], outputRange: ['0deg', '360deg'] }) }] }]} testID="bottle-clock-hand">
         <Svg width={size} height={size}>
-          <Path d={`M ${c - 3.5} ${c - 52} L ${c} ${c - rTrack + 14} L ${c + 3.5} ${c - 52} Z`} stroke={dark ? 'none' : '#6B3F2E'} strokeWidth={0.6} fill="url(#bcHand)" />
+          <Path d={`M ${c - 3.5} ${c - 52} L ${c} ${c - rTrack + 14} L ${c + 3.5} ${c - 52} Z`} stroke={dark ? 'none' : HOMI.ink} strokeWidth={0.6} fill="url(#bcHand)" />
           <Defs>
             <LinearGradient id="bcHand" x1="0" y1="0" x2="1" y2="0">
-              <Stop offset="0" stopColor={dark ? goldB : '#7A4A33'} />
-              <Stop offset="0.5" stopColor={dark ? '#FFF4D6' : '#C99360'} />
-              <Stop offset="1" stopColor={dark ? goldB : '#7A4A33'} />
+              <Stop offset="0" stopColor={dark ? goldB : HOMI.prune} />
+              <Stop offset="0.5" stopColor={dark ? HOMI.pearl : '#9C86E8'} />
+              <Stop offset="1" stopColor={dark ? goldB : HOMI.prune} />
             </LinearGradient>
           </Defs>
-          <Circle cx={c} cy={c - rTrack + 14} r={3.5} fill={dark ? '#FFF4D6' : '#7A4A33'} />
+          <Circle cx={c} cy={c - rTrack + 14} r={3.5} fill={dark ? HOMI.pearl : HOMI.prune} />
         </Svg>
       </Animated.View>
 

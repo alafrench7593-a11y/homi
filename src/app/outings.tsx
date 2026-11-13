@@ -51,7 +51,7 @@ export default function Outings() {
   return (
     <Screen back title={tr('out.title')} subtitle={tr('out.subtitle')}>
       <View testID="outings" />
-      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(255,214,190,0.05)', 'rgba(201,184,255,0.06)'] : ['#FFF7EE', '#F3EEFB', '#FDEBE0']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 3000, borderRadius: 32 }} />
+      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(243,219,189,0.05)', 'rgba(201,184,255,0.06)'] : ['#FFF7EE', '#F3EEFB', '#F9EDDE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 3000, borderRadius: 32 }} />
       <Text variant="small" muted testID="out-privacy">{tr('out.privacy')}</Text>
 
       <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.55)' : 'rgba(255,255,255,0.62)'} depth={2} radius={24} padded={spacing.md}>
@@ -119,7 +119,7 @@ export default function Outings() {
           <View style={{ gap: spacing.xs }} testID="out-favorites">
             {favs.data.map((f) => (
               <Tappable key={f.id} accessibilityRole="link" disabled={f.lat == null} onPress={() => f.lat != null && f.lon != null && openLink(directionsUrl({ lat: f.lat, lon: f.lon, name: f.name }, Platform.OS), toast)} testID={`out-fav-${f.place_id}`} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
-                <Icon name="heart" size={16} color="#E5525F" />
+                <Icon name="heart" size={16} color={t.colors.heart} />
                 <View style={{ flex: 1 }}><Text weight="bold">{f.name}</Text>{f.address ? <Text variant="caption" muted>{f.address}</Text> : null}</View>
                 <Icon name="navigation" size={16} color={t.colors.textMuted} />
               </Tappable>

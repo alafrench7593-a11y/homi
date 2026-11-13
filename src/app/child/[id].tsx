@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { initialsColor } from '@/components/Illustrations';
+import { homiInitialsColor as initialsColor } from '@/features/homiColors';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Button, Icon, IconButton, Row, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';

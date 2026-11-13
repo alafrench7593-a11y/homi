@@ -67,7 +67,7 @@ export function BottleDayTimeline({ childId, slots, intervalMinutes, timerId, on
   const t = useTheme();
   const gold = t.colors.gold;
   const accent = t.colors.primary;
-  const line = tint(t.isDark ? '#E7C08F' : '#B8865A', 0.55);
+  const line = tint(t.isDark ? '#E5C190' : '#AC8B5D', 0.55);
 
   if (!slots.length) {
     return (
@@ -90,7 +90,7 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval, don
   const t = useTheme();
   const [showList, setShowList] = useState(false);
   return (
-    <View style={{ borderRadius: 26, borderWidth: 1, borderColor: t.isDark ? 'rgba(255,231,176,0.22)' : 'rgba(156,102,80,0.22)' }}>
+    <View style={{ borderRadius: 26, borderWidth: 1, borderColor: t.isDark ? 'rgba(205,190,250,0.22)' : 'rgba(91,42,134,0.18)' }}>
       <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="bottle-day">
         <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: spacing.sm }}>
           <Text variant="heading">{tr('u7.bottleDay.title')}</Text>
