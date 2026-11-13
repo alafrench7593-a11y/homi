@@ -1,6 +1,6 @@
 # Audit n°8 — Fiabilité et données
 
-Établi le 13/11/2026 sur `homi/fondations` (≥ `4e586e8`, puis fusion de `b6fc1ae`). Périmètre : erreurs réseau,
+Établi le 13/11/2026 sur `homi/fondations` (≥ `4e586e8`, puis fusion de `b6fc1ae`). Après fusion : Jest 150 suites / 1 777 tests verts, SQL 1 987 / 0, e2e 19 / 19. Périmètre : erreurs réseau,
 nouveaux essais, doubles pressions, modifications concurrentes, reprise après fermeture, déconnexion avec file non vide,
 compatibilité des données anciennes, échecs partiels d'actions composées. Détail scénario par scénario :
 `docs/audit/tools_fiabilite.csv`.
@@ -11,9 +11,9 @@ compatibilité des données anciennes, échecs partiels d'actions composées. D�
   `e2e/fake_supabase.py`) qui applique les règles du vrai serveur (`on conflict … do nothing`, version +1,
   `update_if_version`). Pannes injectées par `page.route` : 500, 503 continu, **réponse perdue après écriture réussie**
   (le faux serveur écrit puis la connexion est coupée), `context.set_offline`, deux comptes du même foyer, fermeture de
-  l'onglet en pleine file, anciennes clés `localStorage`. 23 vérifications.
+  l'onglet en pleine file, anciennes clés `localStorage`. 19 vérifications.
 - **Mesure avant / après** : le même script a été joué sur l'export du code d'origine (`/tmp/audit8/dist_before`) puis
-  sur l'export corrigé (`--clear` dans les deux cas). Avant : **11 vérifications rouges** ; après : **toutes vertes**
+  sur l'export corrigé (`--clear` dans les deux cas). Avant : **10 vérifications rouges** ; après : **toutes vertes**
   (observations : 2 tâches pour un double clic → 1 ; 2 demandes d'aide après « Réessayer » → 1 ; titre de l'autre
   écrasé → conservé ; note de l'autre effacée → conservée).
   Attention : les ports 8977/8978 étaient déjà occupés par d'autres agents ; les mesures valides ont été faites sur
