@@ -104,7 +104,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
       closeAnim();
     }
   }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
-  // Première mesure : on part de « fermé » et on se pose sur le plus petit cran
+  // Première mesure : on part de « fermé » et on se pose sur le grand cran (voir plus bas)
   const onLayout = (e: { nativeEvent: { layout: { height: number } } }) => {
     const hh = Math.round(e.nativeEvent.layout.height);
     if (hh <= 0) return;
@@ -114,7 +114,10 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
     if (!opened.current && visible) {
       opened.current = true;
       y.value = hh + 24;
-      settle(snaps[snaps.length - 1]);
+      // Audit 09 / 05 : ouverture au GRAND cran (tout le panneau, plafonné à l'écran) : au cran moyen, le bouton
+      // « Enregistrer » d'un formulaire restait sous le bord tant qu'on ne tirait pas la poignée. Le cran moyen reste
+      // accessible au geste.
+      settle(snaps[0]);
     }
   };
   // Clavier ouvert : grand cran

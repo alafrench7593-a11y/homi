@@ -202,6 +202,7 @@ export const ui5: Messages<typeof fr> = {
   "u5.pp_support.phone": "Telefon",
   "u5.pp_support.email": "E-Mail",
   "u5.pp_support.note_f": "Notiz",
+  "u5.fert.q_dup": "Diese Frage steht bereits auf deiner Liste.",
   "u5.fert.rel_insufficient": "Zu wenige Daten",
   "u5.fert.rel_low": "Geringe Zuverlässigkeit",
   "u5.fert.rel_moderate": "Mittlere Zuverlässigkeit",

@@ -303,6 +303,7 @@ export const ui5: Messages<typeof fr> = {
   'u5.fert.soon_b': 'The articles for this journey will soon be in the library.',
   'u5.fert.open_lib': 'Open the library',
   'u5.fert.q_del': 'Delete this question?',
+  'u5.fert.q_dup': 'This question is already on your list.',
   'u5.fert.a_saved': 'Answer saved.',
   'u5.fert.q_add': 'Add a question',
   'u5.fert.q_ph': 'e.g. How long should we wait before seeing someone?',

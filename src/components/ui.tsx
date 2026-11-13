@@ -286,10 +286,10 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
   const off = !!disabled;
   // Libellé trop long pour une ligne (bouton pleine largeur) : sans icône, puis libellé court
   const fontScale = useFontScale();
-  // L'étape est liée au libellé ET à la largeur : remise à 0 pendant le rendu (pas dans un effet, qui pouvait
-  // annuler une mesure déjà faite et laisser le libellé sur 2 lignes)
-  const [boxW, setBoxW] = React.useState(0);
-  const stepKey = `${label}|${shortLabel ?? ''}|${boxW}`;
+  // L'étape est liée au libellé : remise à 0 pendant le rendu quand il change (pas dans un effet, qui pouvait annuler
+  // une mesure déjà faite). Pas de remise à 0 sur la largeur : la mesure suivante ne viendrait pas si la rangée ne
+  // change pas de taille (le libellé resterait sur 2 lignes) ; un bouton qui s'élargit garde sa forme compacte.
+  const stepKey = `${label}|${shortLabel ?? ''}`;
   const [lay, setLay] = React.useState({ key: stepKey, step: 0 });
   const step = lay.key === stepKey ? lay.step : 0;
   const adapt = !!full || size === 'lg';
@@ -361,7 +361,6 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
       onHoverIn={m.handlers.onHoverIn}
       onHoverOut={m.handlers.onHoverOut}
       onPress={handlePress}
-      onLayout={adapt ? (e) => { const w = Math.round(e.nativeEvent.layout.width); setBoxW((cur) => (Math.abs(w - cur) > 2 ? w : cur)); } : undefined}
       style={[
         styles.button,
         { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: step >= 1 ? BUTTON.padX.sm : BUTTON.padX[size] },

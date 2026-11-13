@@ -25,6 +25,7 @@ import { confirmationLook } from '@/components/controls/ConfirmationCard';
 import { webInteractionCss } from '@/components/WebInteractionStyles';
 import { cappedScale } from '@/theme/fontScale';
 import { barChartLayout, chartNumber } from '@/components/Charts';
+import { newQuestions } from '@/components/Fertility';
 import { CHOICE } from '@/components/controls';
 import { MIN_TOUCH, typography } from '@/theme/tokens';
 
@@ -243,5 +244,12 @@ describe('bouton pleine largeur : rendu', () => {
     expect(textNodes(r, 'Enregistrer').length).toBeGreaterThan(0);
     // le lecteur d'écran lit toujours le libellé complet
     expect(r.root.findAll((n) => n.props.accessibilityLabel === 'Enregistrer : Plutôt bien').length).toBeGreaterThan(0);
+  });
+});
+
+describe('questions de consultation : pas de doublon (audit 05)', () => {
+  it('ignore casse, espaces et ponctuation finale, dans la liste comme dans l’ajout', () => {
+    expect(newQuestions(['  Quand faire le test ?', 'quand faire le test', 'Autre question'], ['Autre question?'])).toEqual(['Quand faire le test ?']);
+    expect(newQuestions(['   '], [])).toEqual([]);
   });
 });

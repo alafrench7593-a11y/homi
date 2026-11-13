@@ -478,6 +478,23 @@ export function JourneyArticles({ journey }: { journey: FertilityJourney }) {
 }
 
 // ---------------------------------------------------------------- questions pour la consultation
+/** Questions à ajouter : nettoyées, sans doublon entre elles ni avec la liste existante (pur, testé). */
+export function questionKey(q: string): string {
+  return q.trim().replace(/\s+/g, ' ').replace(/[\s?!.…]+$/u, '').toLocaleLowerCase('fr');
+}
+export function newQuestions(qs: string[], existing: string[]): string[] {
+  const seen = new Set(existing.map(questionKey));
+  const out: string[] = [];
+  for (const q of qs) {
+    const t = q.trim().replace(/\s+/g, ' ');
+    const k = questionKey(t);
+    if (!k || seen.has(k)) continue;
+    seen.add(k);
+    out.push(t);
+  }
+  return out;
+}
+
 export function ConsultationChecklist({ journey, childId }: { journey: FertilityJourney; childId?: string | null }) {
   const t = useTheme();
   const toast = useToast();
@@ -497,8 +514,12 @@ export function ConsultationChecklist({ journey, childId }: { journey: Fertility
   const nextPos = list.length ? Math.max(...list.map((q) => q.position)) + 1 : 0;
 
   async function addQuestions(qs: string[]) {
-    const clean = qs.map((q) => q.trim()).filter(Boolean);
-    if (!clean.length) return;
+    // jamais deux fois la même question (casse, espaces et ponctuation finale ignorés) — audit 05 / 09
+    const clean = newQuestions(qs, list.map((q) => q.question));
+    if (!clean.length) {
+      if (qs.some((q) => q.trim())) { toast(tr('u5.fert.q_dup'), 'info'); setText(''); }
+      return;
+    }
     try {
       await add.mutateAsync({ questions: clean, startPosition: nextPos });
       setText('');

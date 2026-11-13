@@ -300,6 +300,7 @@ export const ui5 = {
   'u5.fert.soon_b': 'Les articles de ce parcours arrivent bientôt dans la bibliothèque.',
   'u5.fert.open_lib': 'Ouvrir la bibliothèque',
   'u5.fert.q_del': 'Supprimer cette question ?',
+  'u5.fert.q_dup': 'Cette question est déjà dans votre liste.',
   'u5.fert.a_saved': 'Réponse enregistrée.',
   'u5.fert.q_add': 'Ajouter une question',
   'u5.fert.q_ph': 'ex. Combien de temps attendre avant de consulter ?',
