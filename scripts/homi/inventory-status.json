@@ -10,9 +10,17 @@
     "auth/reset.tsx": "fait",
     "auth/callback.tsx": "fait",
     "onboarding.tsx": "tranche",
-    "intro.tsx": "tranche"
+    "intro.tsx": "tranche",
+    "bottle/index.tsx": "fait",
+    "bottle/[childId].tsx": "fait",
+    "bottle/history.tsx": "fait",
+    "bottle/scoops.tsx": "fait"
   },
-  "tools": {},
+  "tools": {
+    "feeding:/bottle/:id": { "ecrans_refondus": "oui", "commandes_adaptees": "oui", "transition_implementee": "oui", "parcours_verifie": "oui" },
+    "feeding:/bottle/scoops": { "ecrans_refondus": "oui", "commandes_adaptees": "oui", "transition_implementee": "oui", "parcours_verifie": "oui" },
+    "feeding:/bottle/history?child=:id": { "ecrans_refondus": "oui", "commandes_adaptees": "oui", "transition_implementee": "oui", "parcours_verifie": "oui" }
+  },
   "pilots": [
     {
       "kind": "Saisie",

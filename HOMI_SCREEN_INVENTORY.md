@@ -21,15 +21,15 @@
 |---|---:|---:|---:|---:|---:|---:|
 | Auth / entrée | 10 | 0 | 2 | 8 | 0 | 1 |
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
-| Réglages | 21 | 21 | 0 | 0 | 2 | 0 |
+| Réglages | 21 | 21 | 0 | 0 | 4 | 0 |
 | Accueil | 20 | 20 | 0 | 0 | 9 | 1 |
 | Santé | 29 | 29 | 0 | 0 | 16 | 0 |
 | Cycle et fertilité | 46 | 46 | 0 | 0 | 15 | 1 |
 | Grossesse et post-partum | 19 | 19 | 0 | 0 | 6 | 0 |
-| Bébé et enfant | 32 | 32 | 0 | 0 | 70 | 1 |
+| Bébé et enfant | 32 | 28 | 0 | 4 | 70 | 1 |
 | Famille | 30 | 30 | 0 | 0 | 6 | 0 |
 | Communauté | 16 | 16 | 0 | 0 | 4 | 0 |
-| **Total** | **230** | **220** | **2** | **8** | **128** | **4** |
+| **Total** | **230** | **216** | **2** | **12** | **130** | **4** |
 
 Rôles : détail 35 · formulaire 46 · historique 17 · liste 85 · réglage 27 · résultat 13 · scène 7.
 
@@ -87,7 +87,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/profiles/new` | formulaire | — | Screen, Card, Button, Banner, Segmented, ErrorView, Skeleton | 0 |  | à faire |
 | `/settings` | réglage | settings | Screen, Card, Field, Button, Banner, Toggle, ListRow, SectionTitle | 0 |  | à faire |
 | `/settings/account` | réglage | — | Screen, Card, Sheet, Field, Button, Banner, ListRow, SectionTitle | 0 |  | à faire |
-| `/settings/appearance` | réglage | — | Screen, GlowCard, Button, Banner, Chip, Segmented, Toggle, SectionTitle, CompletionCheck | 1 |  | à faire |
+| `/settings/appearance` | réglage | — | Screen, GlowCard, Sheet, Field, Button, Banner, Chip, Segmented, Toggle, SectionTitle, CompletionCheck | 3 |  | à faire |
 | `/settings/family` | réglage | — | Screen, Card, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle | 0 |  | à faire |
 | `/settings/home` | réglage | home_settings | Screen, Card, Button, IconButton, Chip, Toggle, SectionTitle, Cascade | 0 |  | à faire |
 | `/settings/language` | réglage | — | Screen, Card, Banner, SectionTitle | 0 |  | à faire |
@@ -237,10 +237,10 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | Route | Rôle | Outils | Composants | Couleurs | Animated RN | Statut |
 |---|---|---|---|---:|:-:|---|
 | `/baby` | détail | — | — | 0 |  | à faire |
-| `/bottle` | liste | — | Screen, Button, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/bottle/[childId]` | détail | pp_bottle | Screen, Card, Sheet, Field, Button, Banner, Chip, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/bottle/history` | historique | baby_bottle_history | Screen, Card, Sheet, Button, IconButton, Chip, Segmented, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
-| `/bottle/scoops` | détail | bottle_scoops | Screen, Card, Field, Button, Banner | 0 |  | à faire |
+| `/bottle` | liste | — | Screen, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/bottle/[childId]` | détail | pp_bottle | Screen, Sheet, Field, Banner, Chip, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/bottle/history` | historique | baby_bottle_history | Screen, Sheet, IconButton, Chip, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | fait |
+| `/bottle/scoops` | détail | bottle_scoops | Screen, Field, Banner | 0 |  | fait |
 | `/child/[id]` | détail | kid_profile, kid_milestones | Screen, Button, IconButton, EmptyState, ErrorView, Skeleton | 1 |  | à faire |
 | `/child/[id]/album` | historique | — | Screen, Card, Sheet, Field, Button, Banner, Segmented, SectionTitle, EmptyState, ErrorView, Skeleton | 2 |  | à faire |
 | `/child/[id]/card` | résultat | kid_card | Screen, Card, Field, Button, Banner, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
@@ -285,10 +285,10 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/family/kid-routines` | liste | kid_routines | Screen, Card, Sheet, Field, Button, IconButton, Banner, Chip, SectionTitle, EmptyState | 0 |  | à faire |
 | `/family/load` | liste | mental_load | Screen, Card, Button, Banner, EmptyState | 0 |  | à faire |
 | `/family/me-time` | formulaire | family_metime | Screen, Card, Field, Button, Segmented, ListRow, SectionTitle, EmptyState | 0 |  | à faire |
-| `/family/missions` | liste | — | Screen, Button, Segmented, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
-| `/family/missions/[id]` | formulaire | — | Screen, Card, Field, Button, Banner, Chip, EmptyState, Skeleton, Cascade, DetailEnter | 0 |  | à faire |
-| `/family/missions/new` | formulaire | — | Screen, Card, Field, Button, Banner, Chip, Segmented, Cascade | 0 |  | à faire |
-| `/family/missions/responsibilities` | liste | — | Screen, Card, Button, Chip, Skeleton, Cascade | 0 |  | à faire |
+| `/family/missions` | liste | — | Screen, Button, Segmented, ListRow, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
+| `/family/missions/[id]` | formulaire | — | Screen, Field, Button, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
+| `/family/missions/new` | formulaire | — | Screen, Field, Button, Banner, Chip, Segmented | 0 |  | à faire |
+| `/family/missions/responsibilities` | liste | — | Screen, ListRow, ErrorView, Skeleton, Cascade | 0 |  | à faire |
 | `/family/nights` | formulaire | family_nights | Screen, Card, GlassSurface, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/family/notebook` | liste | house_notebook | Screen, Card, Sheet, Field, Button, Banner, Chip, ListRow, SectionTitle, EmptyState | 0 |  | à faire |
 | `/family/offduty` | liste | offduty | Screen, Card, Field, Button, Banner, Chip | 0 |  | à faire |
@@ -450,8 +450,8 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Je décroche | `offduty` | `/family/offduty` | — | — | — | non | non | non | non |
 | Mouvements de bébé | `preg_moves` | `/pregnancy/moves` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/weight` | non | non | non | non |
 | Allaitement | `pp_feeding` | `/track/[kind]` | dans l’écran | — | — | non | non | non | non |
-| Biberon | `pp_bottle` | `/bottle/[childId]` | feuille dans l’écran | `/bottle/scoops` | `/bottle/history` | non | non | non | non |
-| Compteur de mesurettes | `bottle_scoops` | `/bottle/scoops` | — | `/bottle/[childId]` | `/bottle/history` | non | non | non | non |
+| Biberon | `pp_bottle` | `/bottle/[childId]` | feuille dans l’écran | `/bottle/scoops` | `/bottle/history` | oui | oui | oui | oui |
+| Compteur de mesurettes | `bottle_scoops` | `/bottle/scoops` | — | `/bottle/[childId]` | `/bottle/history` | oui | oui | oui | oui |
 | Biberons | `baby_bottle` | `/track/[kind]` | dans l’écran | — | — | non | non | non | non |
 | Sommeil | `kid_sleep` | `/night` | — | — | `/night/help` | non | non | non | non |
 | Aide pour la nuit | `baby_night_help` | `/night/help` | — | — | — | non | non | non | non |
@@ -480,7 +480,7 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Suivi du poids | `preg_weight` | `/pregnancy/weight` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves` | non | non | non | non |
 | Récupération | `pp_recovery` | `/postpartum` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
 | Cicatrisation et rééducation | `pp_body` | `/postpartum/recovery` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/partner /postpartum/sharing /postpartum/understand` | non | non | non | non |
-| Historique des biberons | `baby_bottle_history` | `/bottle/history` | feuille dans l’écran | `/bottle/[childId] /bottle/scoops` | `/bottle/history` | non | non | non | non |
+| Historique des biberons | `baby_bottle_history` | `/bottle/history` | feuille dans l’écran | `/bottle/[childId] /bottle/scoops` | `/bottle/history` | oui | oui | oui | oui |
 | Planning de sommeil | `kid_sleep_rhythm` | `/sleep/[childId]` | dans l’écran | `/sleep/difficult/[childId] /sleep/help/[childId]` | — | non | non | non | non |
 | Suivi de la journée | `baby_daily` | `/track` | `/track/[kind]` | — | — | non | non | non | non |
 | Dents | `kid_teeth` | `/teeth` | feuille dans l’écran | — | — | non | non | non | non |

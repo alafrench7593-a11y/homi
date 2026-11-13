@@ -20,10 +20,10 @@ ecran,Auth / entrée,/auth/reset,src/app/auth/reset.tsx,formulaire,,Field Button
 ecran,Auth / entrée,/auth/sign-in,src/app/auth/sign-in.tsx,formulaire,,Field Button Banner EntryHero EntryScreen MattePanel,0,non,fait,,,,,,,,,,,,,
 ecran,Auth / entrée,/auth/sign-up,src/app/auth/sign-up.tsx,formulaire,,Field Button Banner EntryHero EntryScreen MattePanel,0,non,fait,,,,,,,,,,,,,
 ecran,Bébé et enfant,/baby,src/app/(tabs)/baby.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
-ecran,Bébé et enfant,/bottle,src/app/bottle/index.tsx,liste,,Screen Button SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Bébé et enfant,/bottle/[childId],src/app/bottle/[childId].tsx,détail,pp_bottle,Screen Card Sheet Field Button Banner Chip EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Bébé et enfant,/bottle/history,src/app/bottle/history.tsx,historique,baby_bottle_history,Screen Card Sheet Button IconButton Chip Segmented SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
-ecran,Bébé et enfant,/bottle/scoops,src/app/bottle/scoops.tsx,détail,bottle_scoops,Screen Card Field Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/bottle,src/app/bottle/index.tsx,liste,,Screen SectionTitle EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
+ecran,Bébé et enfant,/bottle/[childId],src/app/bottle/[childId].tsx,détail,pp_bottle,Screen Sheet Field Banner Chip EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
+ecran,Bébé et enfant,/bottle/history,src/app/bottle/history.tsx,historique,baby_bottle_history,Screen Sheet IconButton Chip SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,fait,,,,,,,,,,,,,
+ecran,Bébé et enfant,/bottle/scoops,src/app/bottle/scoops.tsx,détail,bottle_scoops,Screen Field Banner,0,non,fait,,,,,,,,,,,,,
 ecran,Accueil,/calendar,src/app/calendar.tsx,formulaire,family_calendar,Screen Card Sheet Field Button IconButton Banner Chip Segmented Toggle SectionTitle ErrorView Skeleton,0,oui,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id],src/app/child/[id].tsx,détail,kid_profile kid_milestones,Screen Button IconButton EmptyState ErrorView Skeleton,1,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/album,src/app/child/[id]/album.tsx,historique,,Screen Card Sheet Field Button Banner Segmented SectionTitle EmptyState ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
@@ -105,10 +105,10 @@ ecran,Famille,/family/kid-routine/[id],src/app/family/kid-routine/[id].tsx,déta
 ecran,Famille,/family/kid-routines,src/app/family/kid-routines.tsx,liste,kid_routines,Screen Card Sheet Field Button IconButton Banner Chip SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/load,src/app/family/load.tsx,liste,mental_load,Screen Card Button Banner EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/me-time,src/app/family/me-time.tsx,formulaire,family_metime,Screen Card Field Button Segmented ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
-ecran,Famille,/family/missions,src/app/family/missions/index.tsx,liste,,Screen Button Segmented EmptyState ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
-ecran,Famille,/family/missions/[id],src/app/family/missions/[id].tsx,formulaire,,Screen Card Field Button Banner Chip EmptyState Skeleton Cascade DetailEnter,0,non,à faire,,,,,,,,,,,,,
-ecran,Famille,/family/missions/new,src/app/family/missions/new.tsx,formulaire,,Screen Card Field Button Banner Chip Segmented Cascade,0,non,à faire,,,,,,,,,,,,,
-ecran,Famille,/family/missions/responsibilities,src/app/family/missions/responsibilities.tsx,liste,,Screen Card Button Chip Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions,src/app/family/missions/index.tsx,liste,,Screen Button Segmented ListRow EmptyState ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions/[id],src/app/family/missions/[id].tsx,formulaire,,Screen Field Button EmptyState ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions/new,src/app/family/missions/new.tsx,formulaire,,Screen Field Button Banner Chip Segmented,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions/responsibilities,src/app/family/missions/responsibilities.tsx,liste,,Screen ListRow ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/nights,src/app/family/nights.tsx,formulaire,family_nights,Screen Card GlassSurface Field Button Banner Chip Segmented ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/notebook,src/app/family/notebook.tsx,liste,house_notebook,Screen Card Sheet Field Button Banner Chip ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/offduty,src/app/family/offduty.tsx,liste,offduty,Screen Card Field Button Banner Chip,0,non,à faire,,,,,,,,,,,,,
@@ -204,7 +204,7 @@ ecran,Santé,/scanner/recalls,src/app/scanner/recalls.tsx,liste,recall_alerts,Sc
 ecran,Santé,/scanner/result/[id],src/app/scanner/result/[id].tsx,résultat,,Screen Card Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings,src/app/settings/index.tsx,réglage,settings,Screen Card Field Button Banner Toggle ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/account,src/app/settings/account.tsx,réglage,,Screen Card Sheet Field Button Banner ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
-ecran,Réglages,/settings/appearance,src/app/settings/appearance.tsx,réglage,,Screen GlowCard Button Banner Chip Segmented Toggle SectionTitle CompletionCheck,1,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/appearance,src/app/settings/appearance.tsx,réglage,,Screen GlowCard Sheet Field Button Banner Chip Segmented Toggle SectionTitle CompletionCheck,3,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/family,src/app/settings/family.tsx,réglage,,Screen Card Field Button Banner Chip Segmented ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/home,src/app/settings/home.tsx,réglage,home_settings,Screen Card Button IconButton Chip Toggle SectionTitle Cascade,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/language,src/app/settings/language.tsx,réglage,,Screen Card Banner SectionTitle,0,non,à faire,,,,,,,,,,,,,
@@ -328,8 +328,8 @@ outil,Santé,/library,,,,,,,,resources:/library?journey=pregnant,preg_articles,A
 outil,Santé,/library,,,,,,,,resources:/library?cat=sexualite,preg_intimacy,Sexualité pendant la grossesse,resources,autre,/library,,,,non,non,non,non
 outil,Bébé et enfant,/meals,,,,,,,,feeding:/meals?for=postpartum,meals,Repas et recettes,feeding,tâches/planning,/meals,/meals/new /meals/shopping,/meals/[slug] /meals/rankings,/meals/menu /meals/pantry,non,non,non,non
 outil,Accueil,/track/[kind],,,,,,,,feeding:/track/breastfeed?child=:id,pp_feeding,Allaitement,feeding,minuteur/session,/track/[kind],dans l’écran,,,non,non,non,non
-outil,Bébé et enfant,/bottle/[childId],,,,,,,,feeding:/bottle/:id,pp_bottle,Biberon,feeding,minuteur/session,/bottle/[childId],feuille dans l’écran,/bottle/scoops,/bottle/history,non,non,non,non
-outil,Bébé et enfant,/bottle/scoops,,,,,,,,feeding:/bottle/scoops,bottle_scoops,Compteur de mesurettes,feeding,minuteur/session,/bottle/scoops,,/bottle/[childId],/bottle/history,non,non,non,non
+outil,Bébé et enfant,/bottle/[childId],,,,,,,,feeding:/bottle/:id,pp_bottle,Biberon,feeding,minuteur/session,/bottle/[childId],feuille dans l’écran,/bottle/scoops,/bottle/history,oui,oui,oui,oui
+outil,Bébé et enfant,/bottle/scoops,,,,,,,,feeding:/bottle/scoops,bottle_scoops,Compteur de mesurettes,feeding,minuteur/session,/bottle/scoops,,/bottle/[childId],/bottle/history,oui,oui,oui,oui
 outil,Santé,/guide/[topic],,,,,,,,health:/guide/neonat?child=:id,guide_neonat,Mon bébé en néonat,health,autre,/guide/[topic],,,,non,non,non,non
 outil,Grossesse et post-partum,/postpartum,,,,,,,,mood:/postpartum,pp_recovery,Récupération,mood,suivi/mesures,/postpartum,/postpartum/checkin /postpartum/support,,/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand,non,non,non,non
 outil,Grossesse et post-partum,/postpartum/checkin,,,,,,,,mood:/postpartum/checkin,pp_checkin,Point du jour,mood,humeur/journal,/postpartum/checkin,/postpartum/support,,/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand,non,non,non,non
@@ -343,7 +343,7 @@ outil,Communauté,/community,,,,,,,,resources:/(tabs)/community?space=post-partu
 outil,Bébé et enfant,/meals,,,,,,,,feeding:/meals?for=baby&child=:id,meals,Repas et recettes,feeding,tâches/planning,/meals,/meals/new /meals/shopping,/meals/[slug] /meals/rankings,/meals/menu /meals/pantry,non,non,non,non
 outil,Bébé et enfant,/meals/rankings,,,,,,,,feeding:/meals/rankings,meal_rankings,Classements des recettes,feeding,autre,/meals/rankings,/meals/new /meals/shopping,/meals/[slug],/meals/menu /meals/pantry,non,non,non,non
 outil,Accueil,/track/[kind],,,,,,,,feeding:/track/bottle?child=:id,baby_bottle,Biberons,feeding,minuteur/session,/track/[kind],dans l’écran,,,non,non,non,non
-outil,Bébé et enfant,/bottle/history,,,,,,,,feeding:/bottle/history?child=:id,baby_bottle_history,Historique des biberons,feeding,suivi/mesures,/bottle/history,feuille dans l’écran,/bottle/[childId] /bottle/scoops,/bottle/history,non,non,non,non
+outil,Bébé et enfant,/bottle/history,,,,,,,,feeding:/bottle/history?child=:id,baby_bottle_history,Historique des biberons,feeding,suivi/mesures,/bottle/history,feuille dans l’écran,/bottle/[childId] /bottle/scoops,/bottle/history,oui,oui,oui,oui
 outil,Bébé et enfant,/child/[id]/discoveries,,,,,,,,feeding:/child/:id/discoveries,baby_foods,Ses découvertes,feeding,humeur/journal,/child/[id]/discoveries,feuille dans l’écran,,,non,non,non,non
 outil,Santé,/guide/[topic],,,,,,,,feeding:/guide/kidfood,guide_kidfood,Alimentation 1–10 ans,feeding,autre,/guide/[topic],,,,non,non,non,non
 outil,Bébé et enfant,/night,,,,,,,,sleep:/night?child=:id,kid_sleep,Sommeil,sleep,minuteur/session,/night,,,/night/help,non,non,non,non

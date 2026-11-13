@@ -12,9 +12,11 @@ src/__tests__/bottleReminder.test.ts (déclencheur absolu, redémarrage, autoris
   npx expo export --platform web --clear && python3 e2e/spa_server.py dist 8822 &
   python3 e2e/biberon.py
 """
-import json, os
+import json, os, sys
 from datetime import datetime, timedelta, timezone
 from playwright.sync_api import sync_playwright
+sys.path.insert(0, os.path.dirname(__file__))
+from journey_seed import PREMIUM_ON  # noqa: E402
 
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8822')
 SHOTS = os.environ.get('E2E_SHOTS', '/tmp/toietmoi-e2e')
@@ -43,6 +45,19 @@ def go(pg, path, wait=2200):
     pg.goto(B + path); pg.wait_for_timeout(wait)
 
 
+def expand_sheet(pg):
+    """Panneau du bas gestuel (v3) : on le tire jusqu'au grand cran pour atteindre le bas de son contenu."""
+    h = pg.locator('[data-testid="sheet-handle"]').filter(visible=True).first
+    box = h.bounding_box()
+    if not box:
+        return
+    x, y = box['x'] + box['width'] / 2, box['y'] + box['height'] / 2
+    pg.mouse.move(x, y); pg.mouse.down()
+    for k in range(1, 9):
+        pg.mouse.move(x, y - 70 * k); pg.wait_for_timeout(16)
+    pg.mouse.up(); pg.wait_for_timeout(700)
+
+
 def next_text(pg):
     return tid(pg, 'bottle-next').inner_text().replace('\n', ' ')
 
@@ -59,7 +74,7 @@ def record(pg, child, hhmm, delay_label=None):
 
 
 def run(p):
-    b = p.chromium.launch()
+    b = p.chromium.launch(executable_path=os.environ.get('PW_CHROMIUM') or None)
     ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR', timezone_id='Europe/Paris')
     pg = ctx.new_page()
     pg.on('console', lambda m: m.type == 'error' and 'ERR_TUNNEL' not in m.text and errs.append(m.text[:200]))
@@ -67,6 +82,7 @@ def run(p):
     pg.clock.install(time=at(13, 15))
     go(pg, '/welcome', 2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate(PREMIUM_ON)  # outils de suivi réservés à Premium depuis l'offre : la démo l'active
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     hid = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').household_id")
     # Deuxième bébé suivi au biberon (jumeaux, fratrie rapprochée)
@@ -103,10 +119,12 @@ def run(p):
     pg.get_by_text('30 min', exact=True).filter(visible=True).first.click(); pg.wait_for_timeout(1200)
     R['3_report_30min_20h50'] = 'à 20 h 50' in next_text(pg)
     tid(pg, 'bottle-edit').click(); pg.wait_for_timeout(600)
+    expand_sheet(pg)
     pg.get_by_text('2 h 30', exact=True).filter(visible=True).first.click(); pg.wait_for_timeout(200)
     tid(pg, 'bottle-save-interval').click(); pg.wait_for_timeout(1200)
     R['3_intervalle_2h30_19h20'] = 'à 19 h 20' in next_text(pg)
     tid(pg, 'bottle-edit').click(); pg.wait_for_timeout(600)
+    expand_sheet(pg)
     pg.locator('input[aria-label="Heure précise"]').filter(visible=True).first.fill('21h05'); pg.wait_for_timeout(200)
     tid(pg, 'bottle-set-time').click(); pg.wait_for_timeout(1200)
     R['3_heure_choisie_21h05'] = 'à 21 h 05' in next_text(pg)
