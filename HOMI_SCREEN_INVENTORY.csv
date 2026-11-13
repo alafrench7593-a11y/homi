@@ -105,10 +105,10 @@ ecran,Famille,/family/kid-routine/[id],src/app/family/kid-routine/[id].tsx,déta
 ecran,Famille,/family/kid-routines,src/app/family/kid-routines.tsx,liste,kid_routines,Screen Card Sheet Field Button IconButton Banner Chip SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/load,src/app/family/load.tsx,liste,mental_load,Screen Card Button Banner EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/me-time,src/app/family/me-time.tsx,formulaire,family_metime,Screen Card Field Button Segmented ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
-ecran,Famille,/family/missions,src/app/family/missions/index.tsx,liste,,Screen Button Segmented EmptyState ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
-ecran,Famille,/family/missions/[id],src/app/family/missions/[id].tsx,formulaire,,Screen Card Field Button Banner Chip EmptyState Skeleton Cascade DetailEnter,0,non,à faire,,,,,,,,,,,,,
-ecran,Famille,/family/missions/new,src/app/family/missions/new.tsx,formulaire,,Screen Card Field Button Banner Chip Segmented Cascade,0,non,à faire,,,,,,,,,,,,,
-ecran,Famille,/family/missions/responsibilities,src/app/family/missions/responsibilities.tsx,liste,,Screen Card Button Chip Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions,src/app/family/missions/index.tsx,liste,,Screen Button Segmented ListRow EmptyState ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions/[id],src/app/family/missions/[id].tsx,formulaire,,Screen Field Button EmptyState ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions/new,src/app/family/missions/new.tsx,formulaire,,Screen Field Button Banner Chip Segmented,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions/responsibilities,src/app/family/missions/responsibilities.tsx,liste,,Screen ListRow ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/nights,src/app/family/nights.tsx,formulaire,family_nights,Screen Card GlassSurface Field Button Banner Chip Segmented ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/notebook,src/app/family/notebook.tsx,liste,house_notebook,Screen Card Sheet Field Button Banner Chip ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/offduty,src/app/family/offduty.tsx,liste,offduty,Screen Card Field Button Banner Chip,0,non,à faire,,,,,,,,,,,,,
@@ -150,8 +150,9 @@ ecran,Réglages,/legal/[doc],src/app/legal/[doc].tsx,détail,,Screen Card,0,non,
 ecran,Santé,/library,src/app/library.tsx,liste,library ttc_articles preg_birth_prep preg_articles preg_intimacy,Screen Card GlassSurface Field Chip ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
 ecran,Grossesse et post-partum,/lists,src/app/lists.tsx,liste,preg_lists,Screen Card Sheet Field Button IconButton Banner ListRow SectionTitle EmptyState ErrorView Skeleton,1,non,à faire,,,,,,,,,,,,,
 ecran,Accueil,/me,src/app/me/index.tsx,liste,,Screen Card GlassSurface Banner ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
-ecran,Accueil,/me/diary,src/app/me/diary.tsx,historique,,Screen Card Field Button Banner Chip EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Accueil,/me/mood,src/app/me/mood.tsx,liste,mood,Screen Card Field Button Banner Chip Toggle ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/me/diary,src/app/me/diary.tsx,historique,,Screen Field Button EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
+ecran,Accueil,/me/mood,src/app/me/mood/index.tsx,liste,mood,Screen Field Chip Toggle SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,fait,,,,,,,,,,,,,
+ecran,Accueil,/me/mood/[id],src/app/me/mood/[id].tsx,détail,,Screen Chip EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
 ecran,Accueil,/me/sleep,src/app/me/sleep.tsx,liste,sleep,Screen Card Sheet Field Button IconButton Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/meals,src/app/meals/index.tsx,liste,meals,Screen Field Button Banner Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/meals/[slug],src/app/meals/[slug].tsx,détail,,Screen Card Sheet Button IconButton Banner Chip SectionTitle EmptyState Skeleton,1,non,à faire,,,,,,,,,,,,,
@@ -204,7 +205,7 @@ ecran,Santé,/scanner/recalls,src/app/scanner/recalls.tsx,liste,recall_alerts,Sc
 ecran,Santé,/scanner/result/[id],src/app/scanner/result/[id].tsx,résultat,,Screen Card Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings,src/app/settings/index.tsx,réglage,settings,Screen Card Field Button Banner Toggle ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/account,src/app/settings/account.tsx,réglage,,Screen Card Sheet Field Button Banner ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
-ecran,Réglages,/settings/appearance,src/app/settings/appearance.tsx,réglage,,Screen GlowCard Button Banner Chip Segmented Toggle SectionTitle CompletionCheck,1,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/appearance,src/app/settings/appearance.tsx,réglage,,Screen GlowCard Sheet Field Button Banner Chip Segmented Toggle SectionTitle CompletionCheck,3,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/family,src/app/settings/family.tsx,réglage,,Screen Card Field Button Banner Chip Segmented ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/home,src/app/settings/home.tsx,réglage,home_settings,Screen Card Button IconButton Chip Toggle SectionTitle Cascade,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/language,src/app/settings/language.tsx,réglage,,Screen Card Banner SectionTitle,0,non,à faire,,,,,,,,,,,,,
@@ -230,12 +231,12 @@ ecran,Santé,/tutos,src/app/tutos.tsx,détail,video_tutos,,0,non,à faire,,,,,,,
 ecran,Santé,/videos,src/app/videos.tsx,liste,official_videos,Screen Card Chip Segmented ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Auth / entrée,/welcome,src/app/welcome.tsx,scène,,Button IconButton FocalMark,0,non,fait,,,,,,,,,,,,,
 outil,Bébé et enfant,/meals,,,,,,,,feeding:/meals?for=avoid,meals,Repas et recettes,feeding,tâches/planning,/meals,/meals/new /meals/shopping,/meals/[slug] /meals/rankings,/meals/menu /meals/pantry,non,non,non,non
-outil,Accueil,/me/sleep,,,,,,,,sleep:/me/sleep,sleep,Mon sommeil,sleep,suivi/mesures,/me/sleep,feuille dans l’écran,,/me/diary /me/mood,non,non,non,non
+outil,Accueil,/me/sleep,,,,,,,,sleep:/me/sleep,sleep,Mon sommeil,sleep,suivi/mesures,/me/sleep,feuille dans l’écran,/me/mood/[id],/me/diary /me/mood,non,non,non,non
 outil,Santé,/appointments,,,,,,,,health:/appointments,appointments,Rendez-vous et examens,health,tâches/planning,/appointments,feuille dans l’écran,,,non,non,non,non
 outil,Santé,/documents,,,,,,,,health:/documents,documents,Documents,health,formulaire/assistant,/documents,/documents/[id] /documents/scan,/documents/export,/documents/book,non,non,non,non
 outil,Santé,/emergency,,,,,,,,health:/emergency,emergency,Urgences,health,formulaire/assistant,/emergency,,,,non,non,non,non
 outil,Santé,/consult/questions,,,,,,,,health:/consult/questions,consult_questions,Mes questions pour le rendez-vous,health,formulaire/assistant,/consult/questions,dans l’écran,,,non,non,non,non
-outil,Accueil,/me/mood,,,,,,,,mood:/me/mood,mood,Mon humeur,mood,humeur/journal,/me/mood,,,/me/diary /me/sleep,non,non,non,non
+outil,Accueil,/me/mood,,,,,,,,mood:/me/mood,mood,Mon humeur,mood,humeur/journal,/me/mood,,/me/mood/[id],/me/diary /me/sleep,oui,oui,oui,oui
 outil,Santé,/guide/[topic],,,,,,,,mood:/guide/loss,guide_loss,Après une perte,mood,autre,/guide/[topic],,,,non,non,non,non
 outil,Famille,/family/exhausted,,,,,,,,mood:/family/exhausted,exhaustion_check,Je suis à bout,mood,formulaire/assistant,/family/exhausted,,,,non,non,non,non
 outil,Grossesse et post-partum,/pregnancy/start,,,,,,,,pregnancy:/pregnancy/start,ttc_start_pregnancy,J’ai un test positif,pregnancy,formulaire/assistant,/pregnancy/start,/pregnancy/edit /pregnancy/end /pregnancy/feel,,/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight,non,non,non,non
