@@ -61,6 +61,7 @@ export const ui6: Messages<typeof fr> = {
   "u6.quick.parse": "Interpretar",
   "u6.quick.listening": "Escuchando…",
   "u6.quick.dictate": "Dictar",
+  "u6.quick.dictateUnavailable": "Dictado no disponible: revisa el acceso al micrófono o escribe tu frase.",
   "u6.quick.med_note": "El nombre y la dosis proceden únicamente del tratamiento ya registrado a partir de la receta; aquí no se añade nada.",
   "u6.quick.confirm_save": "Confirmar y guardar",
   "u6.quick.check_save": "Revisar y guardar",
