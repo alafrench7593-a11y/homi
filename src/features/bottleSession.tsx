@@ -219,6 +219,17 @@ function SecondsRing({ size, lit, state }: { size: number; lit: number; state: S
 }
 
 // ------------------------------------------------------------------ carte de session (point focal de l'écran)
+/**
+ * Cadran et espacements de la carte (pur, testé). Le cadran suit la largeur ET la hauteur ; sur un écran court
+ * (< 640 px, ex. 320 × 568) il est un peu plus petit et la carte plus serrée, pour que la commande ronde reste visible
+ * sans défiler même quand le titre de l'écran passe sur deux lignes (titres sans coupure de mot, audit 09).
+ */
+export function sessionLayout(width: number, height: number): { dial: number; gap: number } {
+  const short = height < 640;
+  const dial = Math.max(168, Math.min(SESSION.dialMax, width - 2 * spacing.lg - 2 * spacing.md - 16, Math.round(height * (short ? 0.3 : 0.34))));
+  return { dial, gap: short ? spacing.xs : spacing.md };
+}
+
 export function BottleSessionCard({ child, onRecordPast }: { child: Child; onRecordPast: () => void }) {
   const t = useTheme();
   const m = useMotion();
@@ -227,7 +238,7 @@ export function BottleSessionCard({ child, onRecordPast }: { child: Child; onRec
   const [sheet, setSheet] = useState(false);
   const [form, setForm] = useState({ prepared: '', consumed: '', milk: '', note: '' });
   // le cadran suit la largeur ET la hauteur : sur 320 × 568, la commande ronde reste visible sans défiler
-  const dial = Math.max(168, Math.min(SESSION.dialMax, width - 2 * spacing.lg - 2 * spacing.md - 16, Math.round(height * 0.34)));
+  const { dial, gap } = sessionLayout(width, height);
   const cmd = primaryCommand(s.state);
   const active = s.state !== 'idle';
   const lit = active ? s.seconds % 60 : 0;
@@ -255,7 +266,7 @@ export function BottleSessionCard({ child, onRecordPast }: { child: Child; onRec
   }
 
   return (
-    <OpticalGlass radius={radius.xl} padded={spacing.md} testID="bottle-session" contentStyle={{ gap: spacing.md, alignItems: 'center' }}>
+    <OpticalGlass radius={radius.xl} padded={spacing.md} testID="bottle-session" contentStyle={{ gap, alignItems: 'center' }}>
       <Row style={{ alignSelf: 'stretch', justifyContent: 'space-between' }}>
         <Text variant="label">{tr('bs.title')}</Text>
         <Row gap={6} testID="bottle-session-state">

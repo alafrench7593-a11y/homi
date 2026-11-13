@@ -30,15 +30,25 @@ import { backend, eq } from '@/lib/backend';
 import { AuthProvider } from '@/lib/auth';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 import { ToastProvider } from '@/components/Overlays';
-import { BottleSessionCard, SESSION } from '@/features/bottleSession';
+import { BottleSessionCard, SESSION, sessionLayout } from '@/features/bottleSession';
 import { BottleStatsTiles } from '@/features/bottleStats';
 import { Sparkline } from '@/components/controls';
 import { bottleStats, primaryCommand, sessionClock, sessionSeconds, sessionState, sessionTickMs, type StatsPeriod } from '@/lib/domain/bottleSession';
 import type { BottleLike } from '@/lib/domain/bottleHistory';
 import type { Child } from '@/lib/types';
+import { spacing } from '@/theme/tokens';
 
 // ------------------------------------------------------------------ logique pure
 describe('session de biberon : logique pure', () => {
+  it('écran court (320 × 568) : cadran et carte resserrés, la commande ronde reste sous le pli (audit 10)', () => {
+    // relevé web 320 × 568 (titre « Biberon de Lina » sur deux lignes) : haut de la carte à 244 px, libellé 20 px,
+    // marge intérieure 16 px ; la commande ronde (88 px) doit finir avant 568 px
+    const small = sessionLayout(320, 568);
+    expect(244 + spacing.md + 20 + small.gap + small.dial + small.gap + SESSION.orb).toBeLessThanOrEqual(568);
+    expect(small.dial).toBeGreaterThanOrEqual(168);
+    // grand écran : inchangé
+    expect(sessionLayout(390, 844)).toEqual({ dial: SESSION.dialMax, gap: spacing.md });
+  });
   it('une seule commande principale : démarrer → pause → reprendre', () => {
     expect(sessionState(null)).toBe('idle');
     expect(sessionState({ paused_at: null })).toBe('running');
