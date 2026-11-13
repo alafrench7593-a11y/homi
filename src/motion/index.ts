@@ -12,3 +12,5 @@ export { DetailEnter, LiftCard, useCardLift } from './CardTransition';
 export { AnimatedNumber, formatCounter, localeSeparators } from './AnimatedNumber';
 export { MorphIcon } from './MorphIcon';
 export { MORPH_MODULE, MORPH_POINTS, MORPH_SHAPES, morphPath, type MorphShape } from './morphShapes';
+export { PressSheen, SHEEN_MS, usePressSheen } from './PressSheen';
+export { COMPLETION, CompletionCheck, CompletionGlow } from './TaskComplete';

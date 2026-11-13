@@ -4,29 +4,33 @@
  * le thème ne porte pas : teintes de décor (halos, ciels illustrés) et couleurs SÉMANTIQUES des catégories
  * (sommeil, repas, couche…), harmonisées avec la marque (lilas, champagne, bleu nuit, vert sauge, framboise).
  *
- * Encres « ink » : texte et pictogrammes sur fond clair, ≥ 4,5:1 sur blanc et sur la perle (#F4F0FA).
- * Lueurs « glow » : les mêmes catégories sur fond sombre (Minuit), ≥ 4,5:1 sur #16112B.
+ * Encres « ink » : texte et pictogrammes sur fond clair, ≥ 4,5:1 sur blanc et sur l'ivoire (#F4F1EB).
+ * Lueurs « glow » : les mêmes catégories sur fond sombre (graphite), ≥ 4,5:1 sur #0D0E11.
  */
 
-/** Palette de marque (identique à src/theme/tokens.ts, pour les dessins qui n'ont pas accès au thème). */
+/**
+ * Couleurs fixes pour les dessins qui n'ont pas accès au thème (HOMI v2 : graphite, ivoire, palette Aurore par
+ * défaut). Les écrans doivent préférer `useTheme()` (`theme.tokens`), qui suit la palette choisie (Auto comprise).
+ * Les anciens noms (midnight, prune, lilac, champagne) sont conservés pour ne rien casser, mais réalignés.
+ */
 export const HOMI = {
-  midnight: '#16112B',
-  midnightSoft: '#261C4A',
-  midnightDeep: '#0F0B1E',
-  ink: '#1C1533',
-  inkSoft: '#584D72',
-  prune: '#5B2A86',
-  pruneSoft: '#7A4FB0',
-  lilac: '#CDBEFA',
-  lilacPale: '#E4DAFB',
-  lilacInk: '#5E44A8',
-  champagne: '#E9CFA4',
+  midnight: '#0D0E11', // graphite
+  midnightSoft: '#1E1F25',
+  midnightDeep: '#0A0B0D',
+  ink: '#1C1B20',
+  inkSoft: '#55525C',
+  prune: '#5E36C4', // violet d'Aurore (encre : texte blanc ≥ 7:1)
+  pruneSoft: '#7B5BD6',
+  lilac: '#C4B2FF', // violet d'Aurore (lueur)
+  lilacPale: '#E6E1F7',
+  lilacInk: '#5E36C4',
+  champagne: '#E9C987', // ambre doux (soleil, étoiles)
   champagnePale: '#F6ECDA',
-  champagneInk: '#76561D',
-  pearl: '#F7F4FB',
-  pearlBg: '#F4F0FA',
+  champagneInk: '#7A5212',
+  pearl: '#F3F2F5',
+  pearlBg: '#F4F1EB', // ivoire
   white: '#FFFFFF',
-  /** Lumière d'étoile et de lune (nuit) : perle très légèrement champagne, jamais jaune vif. */
+  /** Lumière d'étoile et de lune (nuit) : blanc très légèrement chaud, jamais jaune vif. */
   starlight: '#F6EFE4',
 } as const;
 
@@ -43,7 +47,7 @@ export const CATEGORY_INK: Record<HomiCategory, string> = {
   meal: '#286B40', // vert sauge
   diaper: '#2A609C', // bleu
   medication: '#4B3FB0', // indigo
-  appointment: '#5B2A86', // prune
+  appointment: '#5E36C4', // violet d'Aurore
   symptom: '#8A5A0E', // ambre : attention, sans alarme
   note: '#5E5873', // gris lilas
   growth: '#4A6E2A', // vert mousse
@@ -76,20 +80,20 @@ export const CATEGORY_GLOW: Record<HomiCategory, string> = {
 /** Encre ou lueur selon le fond. */
 export const categoryColor = (k: HomiCategory, dark: boolean): string => (dark ? CATEGORY_GLOW[k] : CATEGORY_INK[k]);
 
-/** Voiles de verre HOMI (cartes illustrées) : perle et lilas le jour, midnight violet le soir. */
+/** Voiles de verre HOMI (cartes illustrées) : ivoire le jour, graphite fumé le soir (v2). */
 export const HOMI_WASH = {
-  day: ['rgba(244,240,250,0.78)', 'rgba(228,218,251,0.55)', 'rgba(246,236,218,0.5)'] as [string, string, string],
-  night: ['rgba(38,28,74,0.78)', 'rgba(91,42,134,0.5)', 'rgba(22,17,43,0.72)'] as [string, string, string],
+  day: ['rgba(250,248,244,0.8)', 'rgba(230,240,248,0.55)', 'rgba(238,232,250,0.5)'] as [string, string, string],
+  night: ['rgba(30,31,37,0.82)', 'rgba(23,24,28,0.6)', 'rgba(13,14,17,0.78)'] as [string, string, string],
 };
 
 /**
- * Dégradé des boutons et pastilles pleines portant du texte ou une icône blanche : prune → midnight violet.
- * (Le dégradé signature NACRE commence en champagne : un texte blanc n'y est pas lisible.)
+ * Dégradé des pastilles pleines portant du texte ou une icône blanche (hors thème) : encres d'Aurore, cyan → violet.
+ * Les composants thématisés utilisent `theme.material.primaryGradient` (palette choisie).
  */
-export const HOMI_FILL: [string, string, string] = ['#7A4FB0', '#5B2A86', '#3E2370'];
+export const HOMI_FILL: [string, string, string] = ['#0A6176', '#34479F', '#5E36C4'];
 
-/** Avatars à initiales : tonalité douce HOMI stable par identifiant (initiales en encre #1C1533, ≥ 7:1). */
-const INITIALS = ['#CDBEFA', '#E9CFA4', '#B5D3BE', '#D3B3E3', '#BCD0F0', '#B9AEDB'];
+/** Avatars à initiales : tonalité douce HOMI stable par identifiant (initiales en encre #1C1B20, ≥ 7:1). */
+const INITIALS = ['#C4B2FF', '#E9C987', '#A8E6D8', '#F7C4DC', '#B7DDF5', '#C8CCFA'];
 export function homiInitialsColor(id: string): string {
   let h = 0;
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;

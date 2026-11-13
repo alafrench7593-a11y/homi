@@ -49,7 +49,7 @@ type LiftProps = Omit<PressableProps, 'style' | 'children' | 'onPress'> & {
   shadowColor?: string;
 };
 
-export function LiftCard({ children, onOpen, style, radius = 22, shadowColor = '#16112B', ...rest }: LiftProps) {
+export function LiftCard({ children, onOpen, style, radius = 22, shadowColor = '#0D0E11', ...rest }: LiftProps) {
   const c = useCardLift();
   return (
     <Pressable
@@ -96,5 +96,5 @@ export function DetailEnter({ children, style, testID }: { children: React.React
 
 const styles = StyleSheet.create({
   // ombre douce et statique (seule l'opacité du calque est animée)
-  shadowBlur: { shadowColor: '#16112B', shadowOpacity: 0.28, shadowRadius: 18, shadowOffset: { width: 0, height: 10 } },
+  shadowBlur: { shadowColor: '#0D0E11', shadowOpacity: 0.28, shadowRadius: 18, shadowOffset: { width: 0, height: 10 } },
 });

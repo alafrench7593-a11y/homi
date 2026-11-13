@@ -1,75 +1,218 @@
 /**
- * HOMI (13/11/2026) : direction « Keynote » chaleureuse — midnight violet, prune, lilas, champagne, perle.
- * Clair « Perle », sombre « Minuit », mode nuit tamisé. Mêmes rôles de couleur qu'avant : tous les écrans
- * qui passent par le thème changent d'un coup. Le rouge reste réservé aux urgences.
+ * HOMI v2 (13/11/2026, décision de la propriétaire) — « Lumière sur graphite » : remplace la palette perle / prune /
+ * lilas / champagne. Deux réglages indépendants (Réglages → Apparence) :
+ *  1. Apparence : Système, Clair (ivoire, verre légèrement teinté, ombres douces), Sombre (graphite presque noir,
+ *     surfaces fumées, accents lumineux maîtrisés). Le mode « nuit » des soins nocturnes reste un comportement
+ *     interne (écran /night) : graphite très tamisé, palette atténuée, ni flou ni halo.
+ *  2. Palette : Auto (selon l'heure locale, transition douce), Aurore (cyan + violet), Crépuscule (corail + ambre),
+ *     Menthe (turquoise + vert), Iris (indigo + rose).
  *
- * Historique (Au fil de nous) — Mise à jour du 26/10/2026 (logo validé) : accents dorés et rose doré, comme le fil du logo et la lumière de la
- * vidéo de fond (ciel rose et pêche). Liens et boutons cuivre doré, dégradé signature champagne → rose doré ;
- * la nuit garde le bleu nuit et la prune, avec des accents champagne.
- *
- * Direction artistique « Au fil de nous » (octobre 2026) : fond rose poudré doux et lumineux (#F2DDD8), dégradés
- * crème et beige rosé, traits et textes brun chaud, accents taupe et rose poudré. Nuit : bleu nuit et prune,
- * jamais de noir. Remplace la palette « Aurore » à la demande de la porteuse du projet.
- *
- * Ancienne direction « Aurore » — immersive et chaleureuse.
- * Un fond d'aurore boréale aux couleurs douces (pêche, rose, lavande, menthe) ondule derrière
- * des cartes translucides. Jour : lumière crème et pêche. Soir & nuit : aurore lumineuse sur ciel prune.
- * Le rouge reste réservé aux urgences.
+ * Les rôles historiques (`colors.background`, `text`, `primary`…) sont conservés et alimentés par les nouveaux jetons
+ * (`theme.tokens`) : les ~220 écrans changent d'un coup sans modification. Contrastes testés pour chaque palette ×
+ * clair / sombre / nuit et pour les mélanges de l'Auto (src/__tests__/contrast.test.ts). Voir HOMI_DESIGN_SYSTEM.md.
  */
 
-export const palette = {
-  night: '#16112B', // midnight violet
-  nightDeep: '#0F0B1E',
-  nightSoft: '#2A1F52',
-  mist: '#F4F0FA', // perle lilas
-  mistDeep: '#ECE6F6',
-  milk: '#F7F4FB', // perle : texte sur fond sombre
-  powder: '#E4DAFB', // lilas pâle
-  powderDeep: '#CDBEFA', // lilas
-  clay: '#C2477E', // framboise : cœur, repas
-  lavender: '#CDBEFA',
-  lavenderInk: '#5E44A8',
-  gold: '#E9CFA4', // champagne
-  goldInk: '#76561D',
-  ink: '#1C1533',
-  inkSoft: '#584D72',
+// ======================================================================== Couleurs de base
+type Hex = string;
+const hexRgb = (c: Hex): [number, number, number] => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)) as [number, number, number];
+const toHex = (v: number[]) => `#${v.map((x) => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+/** Mélange linéaire de deux couleurs #RRGGBB (k = 0 → a, k = 1 → b). */
+export function mixHex(a: Hex, b: Hex, k: number): Hex {
+  const A = hexRgb(a); const B = hexRgb(b);
+  return toHex(A.map((x, i) => x + (B[i] - x) * k));
+}
+/** « r,g,b » pour composer des rgba(). */
+export const rgbOf = (c: Hex) => hexRgb(c).join(',');
+/** rgba() depuis une couleur #RRGGBB. */
+export const alpha = (c: Hex, a: number) => `rgba(${rgbOf(c)},${a})`;
+
+/** Neutres : ivoire chaud (clair), graphite (sombre, pas violet), graphite tamisé (nuit). */
+export const NEUTRALS = {
+  ivory: '#F4F1EB',
+  ivoryHigh: '#FAF8F4',
+  ivoryLow: '#EEEAE3',
+  ink: '#1C1B20',
+  inkSoft: '#55525C',
+  graphite: '#0D0E11',
+  graphiteHigh: '#17181C',
+  graphiteLow: '#0A0B0D',
+  smoke: '#1E1F25',
+  pearl: '#F3F2F5',
+  pearlSoft: '#A9A8B3',
+  nightBg: '#09090C',
   white: '#FFFFFF',
+} as const;
+
+/** Couleurs d'origine conservées comme noms (anciens imports) mais réalignées sur la v2. */
+export const palette = {
+  night: NEUTRALS.graphite, // graphite (ancien « midnight violet »)
+  nightDeep: NEUTRALS.graphiteLow,
+  nightSoft: NEUTRALS.smoke,
+  mist: NEUTRALS.ivory,
+  mistDeep: NEUTRALS.ivoryLow,
+  milk: NEUTRALS.pearl,
+  powder: '#E6E3F2',
+  powderDeep: '#C4B2FF',
+  clay: '#C2477E', // framboise : cœur, repas
+  lavender: '#C4B2FF', // violet d'Aurore (lueur)
+  lavenderInk: '#5E36C4',
+  gold: '#E9C987',
+  goldInk: '#7A5212',
+  ink: NEUTRALS.ink,
+  inkSoft: NEUTRALS.inkSoft,
+  white: NEUTRALS.white,
   danger: '#C8283F',
-  dangerSoft: '#FCE3E7',
+  dangerSoft: '#FBE4E4',
 };
 
-/** Dégradé signature (bouton +, anneau, accents). */
-export const NACRE: [string, string, string] = ['#E9CFA4', '#B9A6F2', '#5B2A86']; // champagne → lilas → prune
+// ======================================================================== Palettes
+export type PaletteName = 'aurore' | 'crepuscule' | 'menthe' | 'iris';
+export type PaletteChoice = 'auto' | PaletteName;
+export const PALETTE_NAMES: PaletteName[] = ['aurore', 'crepuscule', 'menthe', 'iris'];
 
+/**
+ * Une palette = deux accents (a, b) en deux versions :
+ *  - `ink`  : encres pour le clair (texte, icônes, boutons à texte blanc) — ≥ 4,5:1 sur l'ivoire et ses surfaces ;
+ *  - `glow` : lueurs pour le sombre (texte coloré, filets, halos) — ≥ 4,5:1 sur le graphite et ses surfaces.
+ */
+export interface PaletteAccents { ink: [Hex, Hex]; glow: [Hex, Hex] }
+export const PALETTES: Record<PaletteName, PaletteAccents> = {
+  aurore: { ink: ['#0A6176', '#5E36C4'], glow: ['#6FE3F5', '#C4B2FF'] }, // cyan + violet
+  crepuscule: { ink: ['#A63A1C', '#8A4D00'], glow: ['#FF9C84', '#FFC56E'] }, // corail + ambre
+  menthe: { ink: ['#0A6459', '#256A28'], glow: ['#5EE6D0', '#93E89A'] }, // turquoise + vert
+  iris: { ink: ['#4540C8', '#A11F60'], glow: ['#A9B2FF', '#F7A4CF'] }, // indigo + rose
+};
+/** Mélange de deux palettes (transition de l'Auto). */
+export function blendAccents(a: PaletteAccents, b: PaletteAccents, k: number): PaletteAccents {
+  if (k <= 0) return a;
+  if (k >= 1) return b;
+  return {
+    ink: [mixHex(a.ink[0], b.ink[0], k), mixHex(a.ink[1], b.ink[1], k)],
+    glow: [mixHex(a.glow[0], b.glow[0], k), mixHex(a.glow[1], b.glow[1], k)],
+  };
+}
+
+// ======================================================================== Palette « Auto » (heure locale)
+/**
+ * Plages de l'Auto (heure LOCALE du téléphone) :
+ *  - 06:00 Menthe : le matin, frais et calme (réveil, petit-déjeuner) ;
+ *  - 11:00 Aurore : la journée, lumière nette et neutre (cyan + violet, la signature HOMI) ;
+ *  - 17:00 Crépuscule : fin de journée, chaleur du coucher de soleil (retours d'école, repas, bain) ;
+ *  - 21:00 Iris : soir et nuit, indigo apaisé (couchers, réveils nocturnes).
+ * Chaque changement est un fondu de 60 min centré sur l'heure prévue (30 min avant → 30 min après), par paliers de
+ * 5 min : environ 8 % de la différence à chaque palier, donc aucun saut perceptible, jamais de hasard.
+ */
+export const AUTO_SCHEDULE: { from: number; palette: PaletteName }[] = [
+  { from: 6, palette: 'menthe' },
+  { from: 11, palette: 'aurore' },
+  { from: 17, palette: 'crepuscule' },
+  { from: 21, palette: 'iris' },
+];
+export const AUTO_BLEND_MINUTES = 60;
+export const AUTO_STEP_MINUTES = 5;
+
+export interface AutoState {
+  /** Palette dominante (celle dont on se rapproche le plus) */
+  dominant: PaletteName;
+  from: PaletteName;
+  to: PaletteName;
+  /** 0 → `from`, 1 → `to` (quantifié par paliers de 5 min) */
+  k: number;
+  /** Prochain instant où la couleur affichée change (palier suivant ou début du prochain fondu) */
+  next: Date;
+  /** Prochaine palette prévue et heure de bascule (affichage dans les réglages) */
+  upcoming: { palette: PaletteName; at: Date };
+}
+
+/** État de l'Auto à un instant donné (logique pure, testée). */
+export function autoPaletteAt(d: Date = new Date()): AutoState {
+  const minutes = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
+  const S = AUTO_SCHEDULE;
+  const half = AUTO_BLEND_MINUTES / 2;
+  const at = (m: number) => { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setMinutes(m); return x; };
+  // Bascule la plus proche (avant ou après), boucle sur minuit
+  for (let i = 0; i < S.length; i++) {
+    const edge = S[i].from * 60;
+    for (const shift of [0, -1440, 1440]) {
+      const e = edge + shift;
+      if (minutes >= e - half && minutes < e + half) {
+        const prev = S[(i - 1 + S.length) % S.length].palette;
+        const raw = (minutes - (e - half)) / AUTO_BLEND_MINUTES;
+        const steps = AUTO_BLEND_MINUTES / AUTO_STEP_MINUTES;
+        const step = Math.floor(raw * steps);
+        const k = Math.min(1, Math.max(0, step / steps));
+        const nextStep = e - half + (step + 1) * AUTO_STEP_MINUTES;
+        const nextEdgeIdx = (i + 1) % S.length;
+        return {
+          dominant: k < 0.5 ? prev : S[i].palette,
+          from: prev, to: S[i].palette, k,
+          next: at(nextStep),
+          upcoming: k < 0.5 ? { palette: S[i].palette, at: at(e) } : { palette: S[nextEdgeIdx].palette, at: at(S[nextEdgeIdx].from * 60 + (nextEdgeIdx === 0 ? 1440 : 0) + shift) },
+        };
+      }
+    }
+  }
+  // Hors fondu : palette de la plage courante
+  let idx = S.length - 1;
+  for (let i = 0; i < S.length; i++) if (minutes >= S[i].from * 60) idx = i;
+  const nextIdx = (idx + 1) % S.length;
+  let nextEdge = S[nextIdx].from * 60;
+  if (nextEdge <= minutes) nextEdge += 1440;
+  const p = S[idx].palette;
+  return { dominant: p, from: p, to: p, k: 0, next: at(nextEdge - half), upcoming: { palette: S[nextIdx].palette, at: at(nextEdge) } };
+}
+
+/** Heure représentative de chaque palette (aperçu « voir à 8 h »… dans les réglages). */
+export const AUTO_PREVIEW_PHASE: Record<PaletteName, 'dawn' | 'day' | 'dusk' | 'night'> = { menthe: 'dawn', aurore: 'day', crepuscule: 'dusk', iris: 'night' };
+
+// ======================================================================== Thèmes
 export type ThemeName = 'light' | 'dark' | 'night';
 
-/** Le ciel de la famille : l'ambiance suit l'heure réelle. */
+/** Le ciel de la famille (ancienne API, conservée pour l'accueil et l'aperçu de l'Auto). */
 export type SkyPhase = 'dawn' | 'day' | 'dusk' | 'night';
 export function skyPhase(d: Date = new Date()): SkyPhase {
   const h = d.getHours() + d.getMinutes() / 60;
-  if (h >= 5.5 && h < 8.5) return 'dawn';
-  if (h >= 8.5 && h < 18.5) return 'day';
-  if (h >= 18.5 && h < 21.5) return 'dusk';
+  if (h >= 6 && h < 11) return 'dawn';
+  if (h >= 11 && h < 17) return 'day';
+  if (h >= 17 && h < 21) return 'dusk';
   return 'night';
 }
 export const SKY_GRADIENTS: Record<Exclude<SkyPhase, 'night'>, [string, string, string]> = {
-  dawn: ['#FBF9FE', '#F4F0FA', '#E9E2F5'],
-  day: ['#FBF9FE', '#F4F0FA', '#E9E2F5'],
-  dusk: ['#261C4A', '#1A1433', '#110D23'],
+  dawn: [NEUTRALS.ivoryHigh, NEUTRALS.ivory, NEUTRALS.ivoryLow],
+  day: [NEUTRALS.ivoryHigh, NEUTRALS.ivory, NEUTRALS.ivoryLow],
+  dusk: [NEUTRALS.graphiteHigh, NEUTRALS.graphite, NEUTRALS.graphiteLow],
 };
-/** Heure représentative de chaque phase (aperçu dans les réglages). */
+/** Heure représentative de chaque phase (aperçu dans les réglages) : une par palette de l'Auto. */
 export function previewTime(p: SkyPhase): Date {
   const d = new Date();
-  const [h, m] = { dawn: [7, 10], day: [13, 30], dusk: [19, 45], night: [2, 15] }[p];
+  const [h, m] = { dawn: [8, 0], day: [14, 0], dusk: [19, 0], night: [23, 0] }[p];
   d.setHours(h, m, 0, 0);
   return d;
 }
-export const SKY_LABEL: Record<SkyPhase, string> = { dawn: 'Aube', day: 'Jour', dusk: 'Crépuscule', night: 'Nuit' };
+export const SKY_LABEL: Record<SkyPhase, string> = { dawn: 'Matin', day: 'Journée', dusk: 'Fin de journée', night: 'Soir' };
+
+/**
+ * Jetons sémantiques v2 (une seule source pour chaque rôle). Tous les composants partagés lisent ces jetons ;
+ * `colors` (rôles historiques) en est un alias.
+ */
+export interface DesignTokens {
+  surface: { background: string; card: string; glass: string; glassStrong: string; opaque: string };
+  text: { primary: string; secondary: string; onAccent: string };
+  accent: { accent: string; accent2: string; /** dégradé de palette (a → b) */ gradient: [string, string]; /** version lumineuse (halos, filets), même en clair */ glow: [string, string] };
+  border: { rest: string; active: string };
+  halo: { color: string; color2: string; intensity: number };
+  status: { success: string; warning: string; danger: string; info: string };
+}
 
 export interface Theme {
   name: ThemeName;
   phase?: SkyPhase;
   isDark: boolean;
+  /** Palette dominante affichée (Auto : celle de la plage horaire courante) */
+  palette: PaletteName;
+  tokens: DesignTokens;
+  /** Matière dérivée (verre, traits, teintes, dégradé principal) : voir plus bas */
+  material: Material;
   colors: {
     background: string;
     backgroundAlt: string;
@@ -86,6 +229,8 @@ export interface Theme {
     lavender: string;
     gold: string;
     success: string;
+    warning: string;
+    info: string;
     danger: string;
     dangerSoft: string;
     tabBar: string;
@@ -94,90 +239,171 @@ export interface Theme {
   };
 }
 
+// ======================================================================== Matière (verre, traits, teintes)
+/**
+ * Niveaux de surface (du plus bas au plus haut). La hiérarchie se lit par l'opacité du verre, le liseré et l'ombre :
+ *  - `inset`    : creux (champs, rails de sélecteur, pastilles au repos) ; pas d'ombre ;
+ *  - `raised`   : cartes (= `theme.colors.surface`) ; ombre physique `mid` ;
+ *  - `floating` : panneaux flottants, feuilles, barre d'onglets, menus ; presque opaque, ombre `high`.
+ * `edge` = liseré (bord du verre) ; `highlight` = arête supérieure éclairée ; `blur` = intensité du flou
+ * (iOS/web ; Android garde le remplissage seul) ; 0 en mode nuit (économie, calme).
+ */
+export type SurfaceLevel = 'inset' | 'raised' | 'floating';
+export type ElevationLevel = 'low' | 'mid' | 'high';
+export interface GlassLevel { fill: string; edge: string; highlight: string; blur: number; shadow: ElevationLevel | null }
+export type CardTint = 'soft' | 'lavender' | 'gold';
+export interface Lines { controlFill: string; hairline: string; separator: string; track: string; iconWell: string; thumbEdge: string }
+export interface Material {
+  glass: Record<SurfaceLevel, GlassLevel>;
+  lines: Lines;
+  cardTint: Record<CardTint, string>;
+  /** Dégradé des boutons principaux (texte `primaryText` lisible sur chaque arrêt) */
+  primaryGradient: [string, string, string];
+  /** Composantes « r,g,b » des deux accents (ombres teintées, halos) */
+  accentRgb: string;
+  accent2Rgb: string;
+  /** Encre des ombres physiques */
+  shadowInk: string;
+}
+
+const STATUS = {
+  light: { success: '#1B6234', warning: '#7E4800', danger: '#A51F2B', info: '#1D5AA6' },
+  dark: { success: '#8BE0A6', warning: '#F7C770', danger: '#FF9A93', info: '#9CC4FF' },
+  night: { success: '#94C29E', warning: '#D9B577', danger: '#E8A3A0', info: '#9EB6D8' },
+} as const;
+
+/** Thème complet pour un mode et une palette (éventuellement mélangée par l'Auto). */
+export function buildTheme(mode: ThemeName, acc: PaletteAccents, paletteName: PaletteName): Theme {
+  const N = NEUTRALS;
+  if (mode === 'light') {
+    const [a, b] = acc.ink;
+    const [ga, gb] = acc.glow;
+    // Verre « légèrement teinté » : 3 % de l'accent dans le blanc des cartes
+    const cardBase = mixHex('#FFFFFF', ga, 0.05);
+    const floatBase = mixHex('#FFFFFF', ga, 0.03);
+    const status = STATUS.light;
+    const surface = alpha(cardBase, 0.74);
+    const material: Material = {
+      glass: {
+        inset: { fill: 'rgba(120,104,80,0.07)', edge: 'rgba(28,27,32,0.09)', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+        raised: { fill: surface, edge: 'rgba(255,255,255,0.95)', highlight: 'rgba(255,255,255,1)', blur: 26, shadow: 'mid' },
+        floating: { fill: alpha(floatBase, 0.88), edge: 'rgba(255,255,255,1)', highlight: 'rgba(255,255,255,1)', blur: 40, shadow: 'high' },
+      },
+      lines: { controlFill: 'rgba(255,255,255,0.86)', hairline: alpha(a, 0.2), separator: 'rgba(28,27,32,0.09)', track: 'rgba(85,82,92,0.3)', iconWell: alpha(a, 0.08), thumbEdge: 'rgba(28,27,32,0.08)' },
+      cardTint: { soft: alpha(mixHex('#FFFFFF', ga, 0.1), 0.8), lavender: alpha(mixHex('#FFFFFF', gb, 0.16), 0.72), gold: 'rgba(246,234,210,0.72)' },
+      primaryGradient: [mixHex(a, '#FFFFFF', 0.06), mixHex(a, b, 0.5), b],
+      accentRgb: rgbOf(a), accent2Rgb: rgbOf(b), shadowInk: '28,24,20',
+    };
+    return {
+      name: 'light', isDark: false, palette: paletteName, material,
+      tokens: {
+        surface: { background: N.ivory, card: surface, glass: material.glass.raised.fill, glassStrong: material.glass.floating.fill, opaque: '#FFFFFF' },
+        text: { primary: N.ink, secondary: N.inkSoft, onAccent: '#FFFFFF' },
+        accent: { accent: a, accent2: b, gradient: [a, b], glow: [ga, gb] },
+        border: { rest: 'rgba(28,27,32,0.10)', active: alpha(a, 0.55) },
+        halo: { color: ga, color2: gb, intensity: 0.32 },
+        status,
+      },
+      colors: {
+        background: N.ivory, backgroundAlt: N.ivoryLow, gradient: [N.ivoryHigh, N.ivory, N.ivoryLow],
+        surface, surfaceAlt: 'rgba(255,255,255,0.52)', border: 'rgba(255,255,255,0.92)',
+        text: N.ink, textMuted: N.inkSoft,
+        primary: a, primaryText: '#FFFFFF',
+        accent: mixHex(gb, '#FFFFFF', 0.45), accentSoft: alpha(gb, 0.22),
+        lavender: b, gold: '#7A5212',
+        success: status.success, warning: status.warning, info: status.info, danger: status.danger, dangerSoft: '#FBE4E4',
+        tabBar: 'rgba(255,255,255,0.8)', overlay: 'rgba(20,19,24,0.34)', heart: '#A8346A',
+      },
+    };
+  }
+  if (mode === 'dark') {
+    const [a, b] = acc.glow;
+    const status = STATUS.dark;
+    // Surfaces fumées : blanc très légèrement teinté de l'accent
+    const smoke = mixHex('#FFFFFF', a, 0.14);
+    const surface = alpha(smoke, 0.065);
+    const material: Material = {
+      glass: {
+        inset: { fill: 'rgba(255,255,255,0.05)', edge: 'rgba(255,255,255,0.10)', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+        raised: { fill: surface, edge: 'rgba(255,255,255,0.10)', highlight: 'rgba(255,255,255,0.22)', blur: 26, shadow: 'mid' },
+        floating: { fill: alpha(mixHex(N.smoke, a, 0.04), 0.93), edge: 'rgba(255,255,255,0.13)', highlight: 'rgba(255,255,255,0.26)', blur: 40, shadow: 'high' },
+      },
+      lines: { controlFill: 'rgba(255,255,255,0.09)', hairline: 'rgba(255,255,255,0.14)', separator: 'rgba(255,255,255,0.08)', track: 'rgba(255,255,255,0.2)', iconWell: alpha(a, 0.1), thumbEdge: 'rgba(0,0,0,0)' },
+      cardTint: { soft: alpha(a, 0.07), lavender: alpha(b, 0.1), gold: 'rgba(233,201,135,0.10)' },
+      primaryGradient: [mixHex(a, '#FFFFFF', 0.12), mixHex(a, b, 0.5), b],
+      accentRgb: rgbOf(a), accent2Rgb: rgbOf(b), shadowInk: '4,4,6',
+    };
+    return {
+      name: 'dark', isDark: true, palette: paletteName, material,
+      tokens: {
+        surface: { background: N.graphite, card: surface, glass: material.glass.raised.fill, glassStrong: material.glass.floating.fill, opaque: N.smoke },
+        text: { primary: N.pearl, secondary: N.pearlSoft, onAccent: N.graphite },
+        accent: { accent: a, accent2: b, gradient: [a, b], glow: [a, b] },
+        border: { rest: 'rgba(255,255,255,0.10)', active: alpha(a, 0.6) },
+        halo: { color: a, color2: b, intensity: 0.5 },
+        status,
+      },
+      colors: {
+        background: N.graphite, backgroundAlt: '#131418', gradient: [N.graphiteHigh, N.graphite, N.graphiteLow],
+        surface, surfaceAlt: 'rgba(255,255,255,0.10)', border: 'rgba(255,255,255,0.10)',
+        text: N.pearl, textMuted: N.pearlSoft,
+        primary: a, primaryText: N.graphite,
+        accent: b, accentSoft: alpha(b, 0.16),
+        lavender: b, gold: '#E9C987',
+        success: status.success, warning: status.warning, info: status.info, danger: status.danger, dangerSoft: 'rgba(255,120,110,0.15)',
+        tabBar: 'rgba(24,25,30,0.86)', overlay: 'rgba(0,0,0,0.58)', heart: '#FF9CC3',
+      },
+    };
+  }
+  // Nuit (soins à 3 h) : graphite très tamisé, accents atténués (mêlés de gris), ni flou ni halo
+  const [ga, gb] = acc.glow;
+  const a = mixHex(ga, '#A3A0AB', 0.35);
+  const b = mixHex(gb, '#A3A0AB', 0.35);
+  const status = STATUS.night;
+  const material: Material = {
+    glass: {
+      inset: { fill: '#101014', edge: '#24242B', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+      raised: { fill: '#141418', edge: '#24242B', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+      floating: { fill: '#1A1A20', edge: '#24242B', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+    },
+    lines: { controlFill: 'rgba(255,255,255,0.07)', hairline: 'rgba(255,255,255,0.11)', separator: 'rgba(255,255,255,0.07)', track: 'rgba(255,255,255,0.16)', iconWell: 'rgba(255,255,255,0.06)', thumbEdge: 'rgba(0,0,0,0)' },
+    cardTint: { soft: alpha(a, 0.06), lavender: alpha(b, 0.08), gold: 'rgba(217,181,119,0.08)' },
+    primaryGradient: [a, a, a],
+    accentRgb: rgbOf(a), accent2Rgb: rgbOf(b), shadowInk: '0,0,0',
+  };
+  return {
+    name: 'night', isDark: true, palette: paletteName, material,
+    tokens: {
+      surface: { background: N.nightBg, card: '#141418', glass: '#141418', glassStrong: '#1A1A20', opaque: '#141418' },
+      text: { primary: '#D9D6DE', secondary: '#9B98A5', onAccent: N.nightBg },
+      accent: { accent: a, accent2: b, gradient: [a, b], glow: [a, b] },
+      border: { rest: '#24242B', active: alpha(a, 0.5) },
+      halo: { color: a, color2: b, intensity: 0 },
+      status,
+    },
+    colors: {
+      background: N.nightBg, backgroundAlt: '#0E0E12', gradient: ['#0E0E12', '#0B0B0F', '#08080B'],
+      surface: '#141418', surfaceAlt: '#1A1A20', border: '#24242B',
+      text: '#D9D6DE', textMuted: '#9B98A5',
+      primary: a, primaryText: N.nightBg,
+      accent: b, accentSoft: '#1E1E25',
+      lavender: b, gold: '#CDB48A',
+      success: status.success, warning: status.warning, info: status.info, danger: status.danger, dangerSoft: '#2A1A1C',
+      tabBar: N.nightBg, overlay: 'rgba(0,0,0,0.6)', heart: '#E09AB8',
+    },
+  };
+}
+
+/** Palette par défaut des exports statiques (anciens imports hors thème) : Aurore. */
+export const DEFAULT_PALETTE: PaletteName = 'aurore';
 export const themes: Record<ThemeName, Theme> = {
-  // Jour : « Perle » — fond perle lilas, texte nuit violette, accents prune et champagne
-  light: {
-    name: 'light',
-    isDark: false,
-    colors: {
-      background: '#F4F0FA', // perle lilas
-      backgroundAlt: '#ECE6F6',
-      gradient: ['#FBF9FE', '#F4F0FA', '#E9E2F5'], // perle → lilas très pâle
-      surface: 'rgba(255,255,255,0.74)',
-      surfaceAlt: 'rgba(255,255,255,0.5)',
-      border: 'rgba(255,255,255,0.92)',
-      text: '#1C1533', // nuit violette
-      textMuted: '#584D72', // ≥ 4,5:1 jusqu'au bas du dégradé
-      primary: '#5B2A86', // prune
-      primaryText: '#FFFFFF',
-      accent: '#E9CFA4', // champagne
-      accentSoft: 'rgba(233,207,164,0.42)',
-      lavender: '#5E44A8', // lilas encre (lisible)
-      gold: '#76561D', // champagne encre (lisible)
-      success: '#1D6644',
-      danger: '#A3243A', // rouge des urgences
-      dangerSoft: palette.dangerSoft,
-      tabBar: 'rgba(28,21,51,0.9)',
-      overlay: 'rgba(28,21,51,0.38)',
-      heart: '#A8346A',
-    },
-  },
-  // Soir : « Minuit » — nuit violette profonde, verre lisible, accents lilas et champagne
-  dark: {
-    name: 'dark',
-    isDark: true,
-    colors: {
-      background: '#16112B', // midnight violet
-      backgroundAlt: '#1D1638',
-      gradient: ['#261C4A', '#1A1433', '#110D23'],
-      surface: 'rgba(255,255,255,0.07)',
-      surfaceAlt: 'rgba(255,255,255,0.11)',
-      border: 'rgba(205,190,250,0.16)',
-      text: '#F7F4FB', // perle
-      textMuted: '#C3B8DD',
-      primary: '#CDBEFA', // lilas
-      primaryText: '#1C1533',
-      accent: '#E9CFA4', // champagne
-      accentSoft: 'rgba(233,207,164,0.16)',
-      lavender: '#BBA8F5',
-      gold: '#E9CFA4',
-      success: '#9FE0B5',
-      danger: '#FF97A6',
-      dangerSoft: 'rgba(255,110,130,0.16)',
-      tabBar: 'rgba(22,17,43,0.88)',
-      overlay: 'rgba(0,0,0,0.55)',
-      heart: '#FF9CC3',
-    },
-  },
-  // Mode nuit (soins à 3 h du matin) : très peu de lumière, jamais de blanc pur ni de noir
-  night: {
-    name: 'night',
-    isDark: true,
-    colors: {
-      background: '#0F0B1E',
-      backgroundAlt: '#140F27',
-      gradient: ['#161029', '#120D22', '#0E0A1C'],
-      surface: '#1A1430',
-      surfaceAlt: '#211A3A',
-      border: '#2E2650',
-      text: '#DDD0EC',
-      textMuted: '#A598C0',
-      primary: '#B9A6EA', // lilas tamisé
-      primaryText: '#0F0B1E',
-      accent: '#CDB48A',
-      accentSoft: '#2A2142',
-      lavender: '#A996DD',
-      gold: '#CDB48A',
-      success: '#9CC1A2',
-      danger: '#F0A0AA',
-      dangerSoft: '#3A2036',
-      tabBar: '#0F0B1E',
-      overlay: 'rgba(0,0,0,0.6)',
-      heart: '#E09AB8',
-    },
-  },
+  light: buildTheme('light', PALETTES.aurore, 'aurore'),
+  dark: buildTheme('dark', PALETTES.aurore, 'aurore'),
+  night: buildTheme('night', PALETTES.aurore, 'aurore'),
 };
 
+/** Dégradé signature (anneaux, barres de progression décoratives) : Aurore lumineuse. */
+export const NACRE: [string, string, string] = ['#6FE3F5', '#9ACBFA', '#C4B2FF'];
 export const spacing = { xxs: 4, xs: 8, sm: 12, md: 16, lg: 24, xl: 32, xxl: 48 };
 export const radius = { sm: 10, md: 16, lg: 24, xl: 32, pill: 999 };
 
@@ -228,38 +454,36 @@ export const typography = {
 } as const satisfies Record<string, TypeStyle>;
 export type TypographyRole = keyof typeof typography;
 
-/** Élévations : ombres nuit violette et discrètes (jamais noires), trois niveaux seulement. */
+/** Élévations (ancien format) : ombres graphite discrètes (jamais noires), trois niveaux seulement. */
 export const elevation = {
   none: { shadowOpacity: 0, elevation: 0 },
-  low: { shadowColor: '#2A1F52', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  mid: { shadowColor: '#2A1F52', shadowOpacity: 0.12, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 5 },
-  high: { shadowColor: '#2A1F52', shadowOpacity: 0.18, shadowRadius: 28, shadowOffset: { width: 0, height: 12 }, elevation: 10 },
+  low: { shadowColor: '#1C1814', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  mid: { shadowColor: '#1C1814', shadowOpacity: 0.12, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 5 },
+  high: { shadowColor: '#1C1814', shadowOpacity: 0.18, shadowRadius: 28, shadowOffset: { width: 0, height: 12 }, elevation: 10 },
 } as const;
-export type ElevationLevel = Exclude<keyof typeof elevation, 'none'>;
 
-// ======================================================================== Design system HOMI (13/11/2026)
-// Jetons de matière : verre, ombres physiques, voiles d'état. Ils ne modifient AUCUNE couleur de thème verrouillée ;
-// chaque nouvelle surface est vérifiée par src/__tests__/designSystem.test.ts (texte ≥ 4,5:1). Voir DESIGN_SYSTEM.md.
+
+// ======================================================================== Design system HOMI v2
+// Jetons de matière : verre, ombres physiques, voiles d'état. Chaque surface est vérifiée par
+// src/__tests__/designSystem.test.ts (texte ≥ 4,5:1) pour chaque palette. Voir DESIGN_SYSTEM.md.
 
 /**
- * Encre des ombres : nuit violette, jamais noir pur. En sombre, une nuit plus profonde (sinon l'ombre disparaît
- * sur le fond midnight). Composantes RVB, l'opacité vient de chaque couche.
+ * Encre des ombres : graphite chaud en clair, presque noir en sombre (jamais #000 pur, pour garder une ombre douce).
+ * Composantes RVB, l'opacité vient de chaque couche.
  */
-export const SHADOW_INK = { light: '42,31,82', dark: '6,4,16' } as const;
+export const SHADOW_INK = { light: '28,24,20', dark: '4,4,6' } as const;
 
 /** Couche d'ombre au format `boxShadow` de React Native (iOS, Android et web avec la même syntaxe). */
 export interface ShadowLayer { offsetX: number; offsetY: number; blurRadius: number; spreadDistance?: number; color: string; inset?: boolean }
 
 /**
- * Ombres physiques : chaque niveau = une ombre de contact (courte, nette, sous l'objet) + une ombre d'ambiance
- * (longue, diffuse, décalée vers le bas comme sous une lumière zénithale). C'est la paire qui donne la sensation
- * d'un objet posé, pas un halo flou. Opacités plus fortes en sombre pour rester perceptibles.
+ * Ombres physiques : chaque niveau = une ombre de contact (courte, nette) + une ombre d'ambiance (longue, diffuse,
+ * décalée vers le bas). Opacités plus fortes en sombre pour rester perceptibles.
  */
 const SHADOW_STEPS: Record<ElevationLevel, { contact: [number, number, number]; ambient: [number, number, number] }> = {
-  // [décalage Y, flou, opacité claire] ; l'opacité sombre est dérivée (× 4, plafonnée)
   low: { contact: [1, 2, 0.06], ambient: [4, 14, 0.06] },
-  mid: { contact: [1, 3, 0.08], ambient: [10, 28, 0.11] },
-  high: { contact: [2, 6, 0.08], ambient: [18, 44, 0.14] },
+  mid: { contact: [1, 3, 0.07], ambient: [10, 28, 0.1] },
+  high: { contact: [2, 6, 0.08], ambient: [18, 44, 0.13] },
 };
 export function physicalShadow(level: ElevationLevel, isDark: boolean): ShadowLayer[] {
   const s = SHADOW_STEPS[level];
@@ -270,96 +494,73 @@ export function physicalShadow(level: ElevationLevel, isDark: boolean): ShadowLa
     { offsetX: 0, offsetY: s.ambient[0], blurRadius: s.ambient[1], spreadDistance: -Math.round(s.ambient[1] / 6), color: `rgba(${ink},${a(s.ambient[2])})` },
   ];
 }
-/**
- * Dégradé des boutons principaux (et du bouton d'action flottant) : prune éclairé en haut, prune au centre, plus
- * profond en bas ; lilas en sombre. Vertical seulement, deux teintes voisines : un volume, pas un arc-en-ciel.
- */
-export const primaryGradient = (isDark: boolean): [string, string, string] => (isDark ? ['#E2D7FF', '#CDBEFA', '#B4A1F0'] : ['#6E3A9E', '#5B2A86', '#4A2170']);
 
-/** Ombre colorée des boutons pleins : la lumière traverse le prune (ou le lilas la nuit), jamais du gris. */
+/** Dégradé des boutons principaux de la palette par défaut (préférer `primaryGradientOf(theme)`). */
+export const primaryGradient = (isDark: boolean): [string, string, string] => themes[isDark ? 'dark' : 'light'].material.primaryGradient;
+/** Dégradé des boutons principaux du thème affiché (palette comprise). */
+export const primaryGradientOf = (t: Theme): [string, string, string] => t.material.primaryGradient;
+
+/** Ombre colorée douce sous les éléments pleins : la lumière traverse l'accent, jamais du gris. */
 export function tintedShadow(rgb: string, isDark: boolean): ShadowLayer[] {
   return [
-    { offsetX: 0, offsetY: 1, blurRadius: 2, color: `rgba(${isDark ? SHADOW_INK.dark : rgb},${isDark ? 0.4 : 0.18})` },
-    { offsetX: 0, offsetY: 8, blurRadius: 20, spreadDistance: -4, color: `rgba(${rgb},${isDark ? 0.22 : 0.3})` },
+    { offsetX: 0, offsetY: 1, blurRadius: 2, color: `rgba(${isDark ? SHADOW_INK.dark : rgb},${isDark ? 0.4 : 0.16})` },
+    { offsetX: 0, offsetY: 8, blurRadius: 22, spreadDistance: -4, color: `rgba(${rgb},${isDark ? 0.26 : 0.28})` },
   ];
 }
 
 /**
- * Niveaux de surface (du plus bas au plus haut). La hiérarchie se lit par l'opacité du verre, le liseré et l'ombre,
- * jamais par la couleur :
- *  - `inset`    : creux (champs, rails de sélecteur, pastilles au repos) ; pas d'ombre, liseré fin teinté.
- *  - `raised`   : cartes (= `theme.colors.surface`, inchangée) ; ombre physique `mid`.
- *  - `floating` : panneaux flottants, feuilles, menus, bouton d'action ; presque opaque, ombre `high`.
- * `edge` = liseré lumineux (bord du verre) ; `highlight` = reflet d'1 px sur l'arête supérieure ;
- * `blur` = intensité de expo-blur (iOS/web ; Android garde le remplissage seul) ; 0 en mode nuit (économie, calme).
+ * Halo diffus (cartes sélectionnées, validation) : deux lueurs décalées aux couleurs de la palette, qui débordent du
+ * contour. À réserver à UN élément à la fois (carte choisie, action importante, moment de validation).
  */
-export type SurfaceLevel = 'inset' | 'raised' | 'floating';
-export interface GlassLevel { fill: string; edge: string; highlight: string; blur: number; shadow: ElevationLevel | null }
-export const glass: Record<ThemeName, Record<SurfaceLevel, GlassLevel>> = {
-  light: {
-    inset: { fill: 'rgba(236,230,246,0.7)', edge: 'rgba(91,42,134,0.14)', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
-    raised: { fill: themes.light.colors.surface, edge: themes.light.colors.border, highlight: 'rgba(255,255,255,1)', blur: 26, shadow: 'mid' },
-    floating: { fill: 'rgba(255,255,255,0.88)', edge: 'rgba(255,255,255,1)', highlight: 'rgba(255,255,255,1)', blur: 38, shadow: 'high' },
-  },
-  dark: {
-    inset: { fill: 'rgba(255,255,255,0.06)', edge: 'rgba(205,190,250,0.18)', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
-    raised: { fill: themes.dark.colors.surface, edge: themes.dark.colors.border, highlight: 'rgba(255,255,255,0.20)', blur: 26, shadow: 'mid' },
-    floating: { fill: 'rgba(50,38,92,0.92)', edge: 'rgba(205,190,250,0.22)', highlight: 'rgba(255,255,255,0.24)', blur: 38, shadow: 'high' },
-  },
-  night: {
-    inset: { fill: themes.night.colors.backgroundAlt, edge: themes.night.colors.border, highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
-    raised: { fill: themes.night.colors.surface, edge: themes.night.colors.border, highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
-    floating: { fill: themes.night.colors.surfaceAlt, edge: themes.night.colors.border, highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
-  },
-};
+export function haloShadow(t: Theme, strength = 1): ShadowLayer[] {
+  const i = t.tokens.halo.intensity * strength;
+  if (i <= 0) return [];
+  return [
+    { offsetX: -6, offsetY: 4, blurRadius: 26, spreadDistance: -2, color: alpha(t.tokens.halo.color, +(i * 0.9).toFixed(3)) },
+    { offsetX: 6, offsetY: 10, blurRadius: 34, spreadDistance: -4, color: alpha(t.tokens.halo.color2, +(i * 0.8).toFixed(3)) },
+  ];
+}
 
-/**
- * Teintes de carte (`<Card tone>`) : un voile de couleur de marque posé sur le verre. Toujours très léger en sombre
- * (les teintes chaudes sur violet tournent au brun : la carte « soft » est une perle lilas, pas du champagne).
- */
-export type CardTint = 'soft' | 'lavender' | 'gold';
-export const cardTint: Record<'light' | 'dark', Record<CardTint, string>> = {
-  light: { soft: 'rgba(236,230,246,0.78)', lavender: 'rgba(228,218,251,0.66)', gold: 'rgba(240,222,190,0.62)' },
-  dark: { soft: 'rgba(205,190,250,0.08)', lavender: 'rgba(205,190,250,0.13)', gold: 'rgba(233,207,164,0.12)' },
+/** Verre de la palette par défaut, par thème (anciens imports). Préférer `glassOf(theme)`. */
+export const glass: Record<ThemeName, Record<SurfaceLevel, GlassLevel>> = {
+  light: themes.light.material.glass,
+  dark: themes.dark.material.glass,
+  night: themes.night.material.glass,
 };
+export const glassOf = (t: Theme) => t.material.glass;
+
+/** Teintes de carte (`<Card tone>`) de la palette par défaut. Préférer `cardTintOf(theme)`. */
+export const cardTint: Record<'light' | 'dark', Record<CardTint, string>> = { light: themes.light.material.cardTint, dark: themes.dark.material.cardTint };
+export const cardTintOf = (t: Theme) => t.material.cardTint;
 
 /** Bandeaux : fond teinté + liseré + couleur d'accent (icône, titre). `fg` est lu comme du texte : ≥ 4,5:1. */
 export type BannerTone = 'info' | 'warning' | 'danger' | 'demo' | 'success';
 export interface BannerColors { bg: string; edge: string; fg: string }
 export function bannerColors(theme: Theme): Record<BannerTone, BannerColors> {
+  const s = theme.tokens.status;
   const c = theme.colors;
   if (!theme.isDark) {
     return {
-      info: { bg: 'rgba(228,218,251,0.72)', edge: 'rgba(94,68,168,0.18)', fg: c.lavender },
-      warning: { bg: 'rgba(250,234,206,0.82)', edge: 'rgba(118,86,29,0.22)', fg: '#7A4E0E' },
-      danger: { bg: c.dangerSoft, edge: 'rgba(163,36,58,0.22)', fg: c.danger },
-      demo: { bg: 'rgba(255,255,255,0.66)', edge: 'rgba(91,42,134,0.12)', fg: c.textMuted },
-      success: { bg: 'rgba(214,240,224,0.78)', edge: 'rgba(29,102,68,0.2)', fg: c.success },
+      info: { bg: 'rgba(226,236,250,0.78)', edge: alpha(s.info, 0.2), fg: s.info },
+      warning: { bg: 'rgba(250,236,210,0.82)', edge: alpha(s.warning, 0.22), fg: s.warning },
+      danger: { bg: c.dangerSoft, edge: alpha(s.danger, 0.22), fg: s.danger },
+      demo: { bg: 'rgba(255,255,255,0.66)', edge: 'rgba(28,27,32,0.10)', fg: c.textMuted },
+      success: { bg: 'rgba(218,240,224,0.8)', edge: alpha(s.success, 0.2), fg: s.success },
     };
   }
   return {
-    info: { bg: 'rgba(205,190,250,0.12)', edge: 'rgba(205,190,250,0.22)', fg: c.lavender },
-    warning: { bg: 'rgba(240,190,110,0.12)', edge: 'rgba(240,190,110,0.24)', fg: theme.name === 'night' ? '#E0B877' : '#F5C983' },
-    danger: { bg: c.dangerSoft, edge: 'rgba(255,151,166,0.26)', fg: c.danger },
-    demo: { bg: 'rgba(255,255,255,0.06)', edge: 'rgba(205,190,250,0.14)', fg: c.textMuted },
-    success: { bg: 'rgba(159,224,181,0.11)', edge: 'rgba(159,224,181,0.22)', fg: c.success },
+    info: { bg: alpha(s.info, 0.1), edge: alpha(s.info, 0.22), fg: s.info },
+    warning: { bg: alpha(s.warning, 0.1), edge: alpha(s.warning, 0.22), fg: s.warning },
+    danger: { bg: c.dangerSoft, edge: alpha(s.danger, 0.24), fg: s.danger },
+    demo: { bg: 'rgba(255,255,255,0.05)', edge: 'rgba(255,255,255,0.10)', fg: c.textMuted },
+    success: { bg: alpha(s.success, 0.09), edge: alpha(s.success, 0.2), fg: s.success },
   };
 }
 
-/**
- * Traits et voiles d'interaction (dérivés du texte et du prune, aucune nouvelle teinte) :
- *  - `controlFill` : verre des contrôles secondaires (en sombre, un voile blanc : un contrôle relevé est plus clair) ;
- *  - `hairline` : liseré des contrôles (boutons secondaires, pastilles, champs) ;
- *  - `separator` : séparateur dans une carte (visible sur verre blanc, contrairement à `border`) ;
- *  - `track` : rail d'interrupteur éteint (visible sur le verre blanc ; l'état se lit aussi par la position du pouce) ;
- *  - `iconWell` : pastille derrière une icône de liste ;
- *  - `pressVeil` : voile ajouté à l'appui (les boutons pleins s'assombrissent, le reste se teinte).
- */
-export const lines = {
-  light: { controlFill: 'rgba(255,255,255,0.88)', hairline: 'rgba(91,42,134,0.16)', separator: 'rgba(28,21,51,0.09)', track: 'rgba(88,77,114,0.28)', iconWell: 'rgba(91,42,134,0.07)', thumbEdge: 'rgba(28,21,51,0.08)' },
-  dark: { controlFill: 'rgba(255,255,255,0.1)', hairline: 'rgba(205,190,250,0.18)', separator: 'rgba(205,190,250,0.12)', track: 'rgba(205,190,250,0.24)', iconWell: 'rgba(205,190,250,0.10)', thumbEdge: 'rgba(0,0,0,0)' },
-} as const;
+/** Traits et voiles d'interaction de la palette par défaut. Préférer `linesOf(theme)`. */
+export const lines = { light: themes.light.material.lines, dark: themes.dark.material.lines } as const;
 export const linesFor = (isDark: boolean) => (isDark ? lines.dark : lines.light);
+export const linesOf = (t: Theme) => t.material.lines;
 
 /** Voiles d'état (survol web, appui) : opacités, sur une couche absolue (aucun décalage de mise en page). */
 export const stateVeil = { hoverSolid: 0.1, hoverGlass: 0.05, pressSolidDarken: 0.12, pressGlass: 0.09, pressTint: 0.14 } as const;

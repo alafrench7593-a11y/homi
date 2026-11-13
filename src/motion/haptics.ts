@@ -8,14 +8,14 @@ import * as Haptics from 'expo-haptics';
 import { useUiStore } from '@/lib/store';
 import { hapticsSupported } from '@/theme/motion';
 
-export type MotionHaptic = 'light' | 'selection' | 'none';
+export type MotionHaptic = 'light' | 'selection' | 'success' | 'none';
 
 export function motionHaptic(kind: MotionHaptic = 'light') {
   if (kind === 'none' || !hapticsSupported) return;
   const s = useUiStore.getState();
   if (!s.hapticsEnabled || (s.nightMode && !s.nightVibrations)) return;
   try {
-    const p = kind === 'selection' ? Haptics.selectionAsync() : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const p = kind === 'selection' ? Haptics.selectionAsync() : kind === 'success' ? Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Promise.resolve(p).catch(() => undefined);
   } catch {
     // retour haptique indisponible (simulateur)

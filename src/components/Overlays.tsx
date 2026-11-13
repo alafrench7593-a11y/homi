@@ -5,19 +5,30 @@ import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor } from './
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
+import { radius, spacing, themes } from '@/theme/tokens';
 import { Button, Icon, IconButton, Text } from './ui';
-import { GlassSurface } from './Glass';
+import { LiquidGlass } from './Glass';
+import ReAnimated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
+import { useMotion } from '@/motion/useMotion';
 import { duration, easing, spring as SPRING, springTo, timeTo } from '@/theme/motion';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
 
+/**
+ * Panneau du bas (v2 « Liquid Glass ») : verre teinté de la palette, arête claire, ombre colorée douce.
+ * Ouverture en ressort « doux » (Reanimated, depuis la position courante : interruptible), fermeture 240 ms
+ * `accelerate`. Réduire les animations / économie d'énergie : apparition immédiate ; nuit : fondu court.
+ */
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
-  const reduce = useReduceMotion();
+  const m = useMotion();
   const [mounted, setMounted] = useState(visible);
-  const v = useRef(new Animated.Value(0)).current;
+  const p = useSharedValue(0);
+  useEffect(() => () => cancelAnimation(p), [p]);
+  const backdropStyle = useAnimatedStyle(() => ({ opacity: Math.min(1, Math.max(0, p.value)) }));
+  const sheetStyle = useAnimatedStyle(() => ({ transform: [{ translateY: (1 - p.value) * 420 }] }));
   // Clavier : le champ actif reste visible dans la feuille ; fermer la feuille ferme le clavier ouvert par un de ses champs
   const scrollRef = useRef<ScrollView>(null);
   const { scope: keyboardScope, onScroll } = useKeyboardScopeFor(scrollRef);
@@ -27,24 +38,26 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
   useEffect(() => {
     if (visible) {
       setMounted(true);
-      v.setValue(0);
-      if (reduce) v.setValue(1);
-      else Animated.spring(v, { toValue: 1, ...SPRING.gentle, useNativeDriver: NATIVE_DRIVER }).start();
+      p.value = m.spring(1, 'doux');
     } else if (mounted) {
-      timeTo(v, 0, duration.base, reduce, easing.accelerate).start(() => setMounted(false));
+      const unmount = () => setMounted(false);
+      p.value = m.timing(0, duration.base, 'accelerate', (finished) => {
+        'worklet';
+        if (finished) scheduleOnRN(unmount);
+      });
     }
-  }, [visible, reduce]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [visible, m.level]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!mounted) return null;
   return (
     <Modal visible transparent animationType="none" onRequestClose={onClose} accessibilityViewIsModal>
-      <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay, opacity: v }]}>
+      <ReAnimated.View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }, backdropStyle]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={tr('common.close')} accessibilityRole="button" />
-      </Animated.View>
+      </ReAnimated.View>
       {/* La feuille remonte au-dessus du clavier (iOS et Android) et ne passe jamais sous la barre d'état */}
       <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} pointerEvents="box-none" style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', paddingTop: insets.top + spacing.sm }]}>
-      <Animated.View style={[styles.sheet, styles.sheetInFlow, { transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [420, 0] }) }] }]}>
-        <GlassSurface fill={t.isDark ? t.colors.surface : '#FBF8F4'} depth={3} radius={radius.xl} style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0, paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
-          <View style={[styles.grabber, { backgroundColor: t.colors.border }]} />
+      <ReAnimated.View style={[styles.sheet, styles.sheetInFlow, sheetStyle]}>
+        <LiquidGlass testID="sheet-panel" edges="top" radius={radius.xl} style={{ maxHeight: '100%', flexShrink: 1 }} contentStyle={{ paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
+          <View style={[styles.grabber, { backgroundColor: t.isDark ? 'rgba(255,255,255,0.22)' : 'rgba(28,27,32,0.16)' }]} />
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg }}>
             <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{title}</Text>
             <IconButton icon="x" label={tr('common.close')} onPress={onClose} />
@@ -53,8 +66,8 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
           <ScrollView ref={scrollRef} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64} style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled">
             <KeyboardScopeContext.Provider value={keyboardScope}>{children}</KeyboardScopeContext.Provider>
           </ScrollView>
-        </GlassSurface>
-      </Animated.View>
+        </LiquidGlass>
+      </ReAnimated.View>
       </KeyboardAvoidingView>
     </Modal>
   );
@@ -99,21 +112,22 @@ function ToastView({ msg, tone, onDone }: { msg: string; tone: ToastTone; onDone
     return () => { alive = false; intro.stop(); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const name = tone === 'success' ? 'check-circle' : tone === 'error' ? 'alert-circle' : 'info';
-  const accent = tone === 'error' ? '#F5A3A3' : '#CDBEFA';
+  // Le toast est toujours sombre : lueurs du thème sombre (statuts) ou de la palette affichée
+  const accent = tone === 'error' ? themes.dark.tokens.status.danger : tone === 'success' ? themes.dark.tokens.status.success : t.tokens.accent.glow[0];
   return (
     <Animated.View
       accessibilityLiveRegion="polite"
       accessibilityRole="alert"
       style={[styles.toast, {
-        top: insets.top + 8, backgroundColor: t.isDark ? '#2A2F4E' : '#2B2433', opacity: anim, overflow: 'hidden',
-        shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 20, shadowOffset: { width: 0, height: 10 },
+        top: insets.top + 8, backgroundColor: t.isDark ? '#24252B' : '#1F1E24', opacity: anim, overflow: 'hidden',
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)', shadowColor: '#0A0908', shadowOpacity: 0.25, shadowRadius: 20, shadowOffset: { width: 0, height: 10 },
         transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [-28, 0] }) }, { scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }],
       }]}
     >
       <Animated.View style={{ transform: [{ scale: icon.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) }, { rotate: icon.interpolate({ inputRange: [0, 1], outputRange: [tone === 'error' ? '-25deg' : '-90deg', '0deg'] }) }] }}>
         <Icon name={name} size={18} color={accent} />
       </Animated.View>
-      <Text variant="small" color="#F7F4FB" style={{ flex: 1 }}>{msg}</Text>
+      <Text variant="small" color="#F3F2F5" style={{ flex: 1 }}>{msg}</Text>
       {/* Temps restant avant disparition */}
       <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 2, backgroundColor: accent, opacity: 0.6, transform: [{ scaleX: life.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }] }} />
     </Animated.View>

@@ -1,18 +1,17 @@
 /**
- * Fond « HOMI ».
- *  · Jour « Perle » : perle et lilas très pâle, lumière douce qui suit lentement l'heure, quelques particules claires.
- *  · Nuit « Minuit » : midnight violet et prune (jamais noir), halo lilas, particules lumineuses.
+ * Fond HOMI v2 (derrière toutes les pages).
+ *  · Clair : ivoire chaud, deux lueurs pastel de la palette (accent en haut, accent 2 en bas) qui suivent lentement
+ *    l'heure, quelques particules claires.
+ *  · Sombre : graphite presque noir (jamais violet), lueurs de la palette très retenues, particules discrètes.
+ * Les couleurs viennent du thème (palette Auto comprise : la transition horaire se voit aussi ici, en douceur).
  * Décoratif, toujours derrière le contenu ; « Réduire les animations » ou économie d'énergie : immobile.
  */
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
-import { useReduceMotion } from '@/theme/ThemeProvider';
-import { NATIVE_DRIVER } from '@/theme/tokens';
-
-export const POWDER = { base: '#F4F0FA', cream: '#FBF9FE', beige: '#E9E2F5', light: '#FFFFFF' };
-export const NIGHT_SKY = { top: '#261C4A', mid: '#1A1433', bottom: '#110D23', plum: '#5B2A86' };
+import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
+import { NATIVE_DRIVER, PALETTES, themes } from '@/theme/tokens';
 
 function useLoop(ms: number, still: boolean) {
   const v = useRef(new Animated.Value(0.5)).current;
@@ -29,43 +28,51 @@ function useLoop(ms: number, still: boolean) {
   return v;
 }
 
-/** Position de la lumière chaude selon l'heure (0..1 en x). */
+/** Position de la lumière selon l'heure (0..1 en x). */
 export const lightX = (hour: number) => Math.max(0.1, Math.min(0.9, (hour - 6) / 14));
 
 export function PowderSky({ hour, night, still: stillProp }: { hour: number; night: boolean; still?: boolean }) {
   const reduce = useReduceMotion();
+  const theme = useTheme();
   const still = reduce || !!stillProp;
   const { width: W, height: H } = useWindowDimensions();
   const breathe = useLoop(8000, still);
   const drift = useLoop(30000, still);
   const id = React.useId().replace(/:/g, '');
   const lx = lightX(hour);
-  const motes = useMemo(() => Array.from({ length: night ? 22 : 12 }, (_, i) => ({ x: ((i * 61) % 100) / 100, y: ((i * 37) % 100) / 100, r: 0.8 + (i % 3) * 0.6, o: 0.35 + (i % 4) * 0.13 })), [night]);
+  // Les deux calques (clair et sombre) existent pendant le fondu : chacun prend les neutres de SON mode et les
+  // lueurs de la palette affichée
+  const base = themes[night ? 'dark' : 'light'].colors;
+  const [ga, gb] = theme.name === 'night' ? PALETTES[theme.palette].glow : theme.tokens.accent.glow;
+  const g = base.gradient;
+  const motes = useMemo(() => Array.from({ length: night ? 18 : 10 }, (_, i) => ({ x: ((i * 61) % 100) / 100, y: ((i * 37) % 100) / 100, r: 0.8 + (i % 3) * 0.5, o: 0.3 + (i % 4) * 0.12 })), [night]);
   return (
-    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden', backgroundColor: night ? NIGHT_SKY.mid : POWDER.base }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID={night ? 'bg-night' : 'bg-powder'}>
-      <LinearGradient
-        colors={night ? [NIGHT_SKY.top, NIGHT_SKY.mid, NIGHT_SKY.bottom] : [POWDER.cream, POWDER.base, POWDER.beige]}
-        locations={[0, 0.5, 1]} start={{ x: 0.2, y: 0 }} end={{ x: 0.8, y: 1 }} style={StyleSheet.absoluteFill}
-      />
-      {/* lumière chaude (jour) ou halo prune (nuit), qui respire lentement */}
-      <Animated.View style={[StyleSheet.absoluteFill, { opacity: breathe.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1] }), transform: [{ translateX: drift.interpolate({ inputRange: [0, 1], outputRange: [-14, 14] }) }] }]}>
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden', backgroundColor: base.background }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID={night ? 'bg-night' : 'bg-powder'}>
+      <LinearGradient colors={g} locations={[0, 0.5, 1]} start={{ x: 0.2, y: 0 }} end={{ x: 0.8, y: 1 }} style={StyleSheet.absoluteFill} />
+      {/* lueurs de la palette, qui respirent lentement */}
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity: breathe.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }), transform: [{ translateX: drift.interpolate({ inputRange: [0, 1], outputRange: [-14, 14] }) }] }]}>
         <Svg width={W} height={H}>
           <Defs>
             <RadialGradient id={`l${id}`} cx="50%" cy="50%" r="50%">
-              <Stop offset="0" stopColor={night ? NIGHT_SKY.plum : POWDER.light} stopOpacity={night ? 0.55 : 0.85} />
-              <Stop offset="1" stopColor={night ? NIGHT_SKY.plum : POWDER.light} stopOpacity="0" />
+              <Stop offset="0" stopColor={ga} stopOpacity={night ? 0.16 : 0.3} />
+              <Stop offset="1" stopColor={ga} stopOpacity="0" />
             </RadialGradient>
             <RadialGradient id={`b${id}`} cx="50%" cy="50%" r="50%">
-              <Stop offset="0" stopColor={night ? '#4A3A8C' : '#E4DAFB'} stopOpacity={night ? 0.5 : 0.7} />
-              <Stop offset="1" stopColor={night ? '#4A3A8C' : '#E4DAFB'} stopOpacity="0" />
+              <Stop offset="0" stopColor={gb} stopOpacity={night ? 0.13 : 0.26} />
+              <Stop offset="1" stopColor={gb} stopOpacity="0" />
+            </RadialGradient>
+            <RadialGradient id={`w${id}`} cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor="#FFFFFF" stopOpacity={night ? 0.03 : 0.7} />
+              <Stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
             </RadialGradient>
           </Defs>
-          <Ellipse cx={W * lx} cy={H * 0.16} rx={W * 0.85} ry={H * 0.32} fill={`url(#l${id})`} />
-          <Ellipse cx={W * (1 - lx)} cy={H * 0.86} rx={W * 0.9} ry={H * 0.3} fill={`url(#b${id})`} />
+          <Ellipse cx={W * lx} cy={H * 0.1} rx={W * 0.95} ry={H * 0.3} fill={`url(#l${id})`} />
+          <Ellipse cx={W * (1 - lx)} cy={H * 0.9} rx={W * 0.95} ry={H * 0.3} fill={`url(#b${id})`} />
+          <Ellipse cx={W * 0.5} cy={H * 0.42} rx={W * 0.7} ry={H * 0.22} fill={`url(#w${id})`} />
         </Svg>
       </Animated.View>
       <Svg width={W} height={H} style={StyleSheet.absoluteFill}>
-        {motes.map((m, i) => <Circle key={i} cx={m.x * W} cy={m.y * H} r={m.r} fill={night ? '#F3E6FF' : '#FFFFFF'} opacity={night ? m.o : m.o * 0.7} />)}
+        {motes.map((m, i) => <Circle key={i} cx={m.x * W} cy={m.y * H} r={m.r} fill="#FFFFFF" opacity={night ? m.o * 0.5 : m.o * 0.7} />)}
       </Svg>
     </View>
   );

@@ -121,9 +121,9 @@ function SvgLabel({ text, color }: { text: string; color: string }) {
 
 /** Anneau des 40 semaines autour de l'illustration du bébé. */
 // HOMI : perles champagne (plus de jaune doré néon)
-const NEON = '#E9CFA4';
+const NEON = '#E9C987';
 const NEON_CORE = '#F6ECDA';
-const NEON_HOT = '#F7F4FB';
+const NEON_HOT = '#F3F2F5';
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 /**

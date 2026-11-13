@@ -1,8 +1,8 @@
 /**
- * Barre d'onglets HOMI (13/11/2026) : Accueil · Santé · Bébé · Famille · Communauté.
- * Style « Keynote premium » : capsule flottante en verre (BlurView + voile), minuit en clair ; en sombre, verre
- * relevé plus clair que le fond (« plus haut = plus clair »), liseré lilas et ombre haute pour la détacher du fond ;
- * nuit : surface opaque tamisée, sans flou ni ombre.
+ * Barre d'onglets HOMI (v2, 13/11/2026) : Accueil · Santé · Bébé · Famille · Communauté.
+ * Style « Liquid Glass » : capsule flottante en verre (`LiquidGlass` : GlassView natif sur iOS 26+, sinon flou +
+ * remplissage), teintée d'un dégradé pastel de la palette, arête claire en haut, ombre colorée douce dessous.
+ * Clair : verre ivoire ; sombre : verre fumé plus clair que le graphite ; nuit : surface opaque tamisée, sans flou ni ombre.
  *
  * Libellés : chaque onglet prend la largeur de son libellé (au moins 44 px), la taille commune reste à 12 px et ne
  * descend qu'au quart de pixel près (≥ 11 px à 320 px de large), jamais d'ellipse (`tabLayout`, testé).
@@ -15,17 +15,18 @@
  * Un seul bouton d'action par écran. Les écrans d'onglet réservent `TAB_SCREEN_INSET` en bas de leur contenu.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Pressable, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from 'expo-router/tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, glass, palette, physicalShadow, primaryGradient, radius, spacing, themes, type Theme } from '@/theme/tokens';
-import { useMotion, usePressScale } from '@/motion';
+import { fonts, radius, spacing } from '@/theme/tokens';
+import { PressSheen, useMotion, usePressScale, usePressSheen } from '@/motion';
+import { LiquidGlass, liquidShadow } from './Glass';
+import { GlowCard } from './GlowCard';
 import { useScope } from '@/lib/data/hooks-scope';
 import { ACTIVE_ALIAS, dockGeometry, estimateLabelWidth, NAV_TABS, TAB_BAR_H, TAB_LABEL_MAX, tabLayout, type NavTab } from '@/features/hubs/hubMap';
 import { Sheet } from './Overlays';
@@ -48,17 +49,9 @@ const PILL_W = 44;
 const PILL_H = 30;
 const ICON_TOP = 8;
 
-/** Encres de la barre : capsule toujours sombre, donc encres du thème sombre (nuit : ses propres encres tamisées). */
+/** Encres de la barre : celles du thème (verre clair en clair, fumé en sombre). */
 function useBarInk() {
-  const t = useTheme();
-  return t.isDark ? t.colors : themes.dark.colors;
-}
-
-/** Matière de la capsule selon le thème (voir l'en-tête). */
-function barSurface(t: Theme) {
-  if (t.name === 'night') return { fill: t.colors.surfaceAlt, edge: t.colors.border, highlight: 'transparent', blur: false, shadow: undefined };
-  if (t.isDark) return { fill: glass.dark.floating.fill, edge: tint(themes.dark.colors.primary, 0.34), highlight: glass.dark.floating.highlight, blur: true, shadow: physicalShadow('high', true) };
-  return { fill: t.colors.tabBar, edge: tint(themes.dark.colors.primary, 0.28), highlight: tint(palette.white, 0.16), blur: true, shadow: physicalShadow('high', false) };
+  return useTheme().colors;
 }
 
 function TabItem({ tab, width, focused, label, a11y, fontSize, onPress, onLongPress }: { tab: NavTab; width: number; focused: boolean; label: string; a11y: string; fontSize: number; onPress: () => void; onLongPress: () => void }) {
@@ -120,6 +113,7 @@ export function DockActionButton({ route, size = 56, onQuickAdd }: { route: stri
   const t = useTheme();
   const custom = useDockActionFor(route);
   const p = usePressScale({ scale: 0.92 });
+  const sheen = usePressSheen();
   const action: DockAction = custom ?? { icon: 'plus', label: tr('nav.quickAdd'), hint: tr('nav.quickAddHint'), testID: 'quick-add', onPress: () => onQuickAdd?.() };
   const night = t.name === 'night';
   return (
@@ -128,15 +122,18 @@ export function DockActionButton({ route, size = 56, onQuickAdd }: { route: stri
       accessibilityRole="button"
       accessibilityLabel={action.label}
       accessibilityHint={action.hint}
-      onPressIn={p.onPressIn}
+      onPressIn={() => { p.onPressIn(); sheen.play(); }}
       onPressOut={p.onPressOut}
       onPress={() => { haptic('light'); action.onPress(); }}
       style={{ width: size, height: size }}
     >
-      <Animated.View style={[{ flex: 1, borderRadius: size / 2, boxShadow: night ? undefined : physicalShadow('mid', t.isDark) }, p.style]}>
-        <LinearGradient colors={night ? [t.colors.primary, t.colors.primary, t.colors.primary] : primaryGradient(t.isDark)} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }}
-          style={{ flex: 1, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: tint(palette.white, t.isDark ? 0.35 : 0.4) }}>
+      {/* Bouton capsule rond : dégradé de la palette, arête claire, ombre colorée ; reflet qui glisse à la pression */}
+      <Animated.View style={[{ flex: 1, borderRadius: size / 2, boxShadow: liquidShadow(t, 'mid') }, p.style]}>
+        <LinearGradient colors={night ? [t.colors.primary, t.colors.primary, t.colors.primary] : t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+          style={{ flex: 1, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: tint('#FFFFFF', t.isDark ? 0.3 : 0.45), overflow: 'hidden' }}>
+          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: size * 0.22, right: size * 0.22, height: 1, backgroundColor: 'rgba(255,255,255,0.5)' }} />
           <Icon name={action.icon as IconName} size={size >= 56 ? 25 : 22} color={t.colors.primaryText} />
+          <PressSheen sheen={sheen} intensity={0.45} />
         </LinearGradient>
       </Animated.View>
     </Pressable>
@@ -148,7 +145,6 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [open, setOpen] = useState(false);
-  const surface = barSurface(t);
 
   const focusedName = state.routes[state.index]?.name ?? 'index';
   const activeName = ACTIVE_ALIAS[focusedName] ?? focusedName;
@@ -189,21 +185,13 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
           </View>
         </View>
         <View pointerEvents="box-none" style={{ width: g.row, flexDirection: 'row', alignItems: 'center', gap: g.gap }}>
+          <LiquidGlass testID="tab-bar-glass" radius={radius.pill} style={{ height: TAB_BAR_H, width: g.barW }}>
           <View
             accessibilityRole="tablist"
             accessibilityLabel={tr('nav.tablist')}
-            style={{ height: TAB_BAR_H, width: g.barW, borderRadius: radius.pill, backgroundColor: Platform.OS === 'android' || !surface.blur ? surface.fill : 'transparent', flexDirection: 'row', alignItems: 'center', paddingHorizontal: g.pad,
-              borderWidth: 1, borderColor: surface.edge, boxShadow: surface.shadow }}
+            style={{ height: TAB_BAR_H, flexDirection: 'row', alignItems: 'center', paddingHorizontal: g.pad - 1 }}
           >
-            {Platform.OS !== 'android' && surface.blur ? (
-              <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.pill, overflow: 'hidden' }]}>
-                <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
-                <View style={[StyleSheet.absoluteFill, { backgroundColor: surface.fill }]} />
-                {/* reflet de verre sur l'arête haute */}
-                <View style={{ position: 'absolute', top: 0, left: 28, right: 28, height: 1, backgroundColor: surface.highlight }} />
-              </View>
-            ) : null}
-            <ActivePill x={pillX} visible={activeIndex >= 0} />
+            <ActivePill x={pillX - 1} visible={activeIndex >= 0} />
             {tabs.map(({ tab, route }, i) => (
               <TabItem
                 key={route.key}
@@ -218,6 +206,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
               />
             ))}
           </View>
+          </LiquidGlass>
           <DockActionButton route={focusedName} size={g.action} onQuickAdd={() => setOpen(true)} />
         </View>
       </View>
@@ -265,10 +254,10 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
       {child ? <Text variant="small" weight="bold" testID="quick-for">{tr('dock.forChild', { name: child.first_name })}</Text> : null}
       {compact ? (
         <Tappable accessibilityRole="button" onPress={go(() => router.push('/assistant/chat'))}
-          style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: tint(palette.lavender, 0.35), backgroundColor: pressed ? palette.nightSoft : palette.night })}>
-          <Icon name="message-circle" color={palette.lavender} />
-          <Text weight="bold" color={palette.milk} style={{ flex: 1 }}>{tr('dock.ask')}</Text>
-          <Icon name="chevron-right" size={18} color={palette.milk} />
+          style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: t.tokens.border.active, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+          <Icon name="message-circle" color={t.colors.primary} />
+          <Text weight="bold" style={{ flex: 1 }}>{tr('dock.ask')}</Text>
+          <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
         </Tappable>
       ) : null}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
@@ -278,7 +267,7 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
             accessibilityRole="button"
             accessibilityLabel={tr('dock.addA11y', { label: i.label })}
             onPress={() => { haptic('light'); i.onPress(); }}
-            style={({ pressed }) => ({ width: compact ? '31.5%' : '23%', flexGrow: compact ? 0 : 1, minHeight: compact ? 72 : 76, borderRadius: radius.lg, borderWidth: compact ? 1 : 0, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : compact ? t.colors.surface : t.colors.background, alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: compact ? spacing.xs : 0 })}
+            style={({ pressed }) => ({ width: compact ? '31.5%' : '23%', flexGrow: compact ? 0 : 1, minHeight: compact ? 72 : 76, borderRadius: radius.lg, borderWidth: 1, borderColor: compact ? t.colors.border : t.tokens.border.rest, backgroundColor: pressed ? t.colors.surfaceAlt : compact ? t.colors.surface : t.material.lines.controlFill, alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: compact ? spacing.xs : 0 })}
           >
             <Icon name={i.icon} color={t.colors.text} />
             <Text variant="caption" weight="medium" center style={{ paddingHorizontal: 4 }}>{i.label}</Text>
@@ -290,20 +279,21 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
 }
 
 function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+  const t = useTheme();
   const { child, go } = useQuickAdd(onClose);
   return (
     <Sheet visible={visible} onClose={onClose} title={child ? tr('dock.forChild', { name: child.first_name }) : tr('dock.add')}>
-      <Tappable
-        accessibilityRole="button"
-        onPress={go(() => router.push('/assistant/chat'))}
-        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: tint(palette.lavender, 0.35), backgroundColor: pressed ? palette.nightSoft : palette.night })}
-      >
-        <Icon name="message-circle" color={palette.lavender} />
-        <View style={{ flex: 1 }}>
-          <Text weight="bold" color={palette.milk}>{tr('dock.ask')}</Text>
-          <Text variant="small" color={tint(palette.milk, 0.78)}>{tr('dock.askSub')}</Text>
+      {/* Action importante de la feuille : carte lumineuse (filet dégradé + halo), seule mise en avant de l'écran */}
+      <GlowCard active emphasis="action" onPress={go(() => router.push('/assistant/chat'))} accessibilityLabel={`${tr('dock.ask')}, ${tr('dock.askSub')}`} testID="quick-ask">
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+          <Icon name="message-circle" color={t.colors.primary} />
+          <View style={{ flex: 1 }}>
+            <Text weight="bold">{tr('dock.ask')}</Text>
+            <Text variant="small" muted>{tr('dock.askSub')}</Text>
+          </View>
+          <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
         </View>
-      </Tappable>
+      </GlowCard>
       <QuickAddGrid onBefore={onClose} />
     </Sheet>
   );

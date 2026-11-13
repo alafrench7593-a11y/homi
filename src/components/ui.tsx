@@ -14,9 +14,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import {
-  bannerColors, cardTint, controlSize, fonts, glass, linesFor, MIN_TOUCH, physicalShadow, primaryGradient, radius, spacing, stateVeil, themes, tintedShadow, typeScale, typography,
-  type BannerTone, type TypographyRole,
+  bannerColors, cardTintOf, controlSize, fonts, glassOf, linesFor, linesOf, MIN_TOUCH, NEUTRALS, physicalShadow, primaryGradient, radius, rgbOf, spacing, stateVeil, themes, tintedShadow, typeScale, typography,
+  type BannerTone, type Theme, type TypographyRole,
 } from '@/theme/tokens';
+import { GlowCard, type GlowEmphasis } from './GlowCard';
+import { PressSheen, usePressSheen } from '@/motion/PressSheen';
 import { useUiStore } from '@/lib/store';
 import { GlassSurface } from './Glass';
 import { linkFrame } from './linkFrame';
@@ -95,19 +97,37 @@ interface CardProps {
   accessibilityHint?: string;
   padded?: boolean;
   testID?: string;
+  /**
+   * v2 : carte mise en avant (filet lumineux en dégradé + halo, voir GlowCard). `selected` : carte choisie dans un
+   * groupe (au repos : contour statique discret) ; `emphasis` : action importante ou moment de validation.
+   * À réserver à UN élément à la fois ; jamais pour toutes les cartes d'une liste.
+   */
+  selected?: boolean;
+  emphasis?: GlowEmphasis;
 }
 
-export function Card({ children, onPress, tone = 'surface', style, accessibilityLabel, accessibilityHint, padded = true, testID }: CardProps) {
+export function Card({ children, onPress, tone = 'surface', style, accessibilityLabel, accessibilityHint, padded = true, testID, selected, emphasis }: CardProps) {
+  if (selected !== undefined || emphasis) {
+    return (
+      <GlowCard active={selected ?? true} emphasis={emphasis ?? 'selected'} onPress={onPress} style={style} padded={padded} testID={testID} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint}>
+        {children}
+      </GlowCard>
+    );
+  }
+  return <PlainCard {...{ children, onPress, tone, style, accessibilityLabel, accessibilityHint, padded, testID }} />;
+}
+
+function PlainCard({ children, onPress, tone = 'surface', style, accessibilityLabel, accessibilityHint, padded = true, testID }: CardProps) {
   const t = useTheme();
   const press = usePressMotion({ pressed: 0.985, hoverLift: -1 });
   const tilt = useTilt(1);
-  const tint = cardTint[t.isDark ? 'dark' : 'light'];
+  const tint = cardTintOf(t);
   const bg = {
     surface: t.colors.surface,
     soft: tint.soft,
     lavender: tint.lavender,
-    // Carte « nuit » : une scène sombre posée sur la page, même en clair (texte perle dessus)
-    night: themes.dark.colors.background,
+    // Carte « nuit » : une scène graphite posée sur la page, même en clair (texte perle dessus)
+    night: NEUTRALS.graphite,
     gold: tint.gold,
     danger: t.colors.dangerSoft,
   }[tone];
@@ -117,7 +137,7 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
     <GlassSurface
       fill={bg}
       // Cartes teintées : liseré lumineux plus discret (la teinte suffit à les détacher), sans ombre portée
-      borderColor={tone === 'surface' ? undefined : glass[t.name].inset.edge}
+      borderColor={tone === 'surface' ? undefined : glassOf(t).inset.edge}
       depth={onPress ? 2 : 1}
       padded={padded ? spacing.md : 0}
       shadow={tone === 'surface'}
@@ -127,7 +147,7 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
       {children}
     </GlassSurface>
   ) : (
-    <View style={[styles.card, { backgroundColor: bg, borderColor: tone === 'danger' ? bannerColors(t).danger.edge : 'rgba(205,190,250,0.14)', padding: padded ? spacing.md : 0 },
+    <View style={[styles.card, { backgroundColor: bg, borderColor: tone === 'danger' ? bannerColors(t).danger.edge : 'rgba(255,255,255,0.10)', padding: padded ? spacing.md : 0 },
       t.name !== 'night' && { boxShadow: physicalShadow('low', t.isDark) }, style]}>
       {children}
     </View>
@@ -192,10 +212,13 @@ export const BUTTON = {
   pressOutMs: 200,
 };
 
-/** Liseré discret des contrôles, dérivé du prune / lilas (jeton `lines.*.hairline`). */
+/** Liseré discret des contrôles (jeton `lines.*.hairline`) ; `hairlineOf(theme)` suit la palette affichée. */
 export const hairline = (isDark: boolean) => linesFor(isDark).hairline;
-/** Dégradé des boutons principaux : prune éclairé en haut, prune au centre, plus profond en bas (lilas en sombre). */
+export const hairlineOf = (t: Theme) => linesOf(t).hairline;
+/** Dégradé des boutons principaux de la palette par défaut ; les composants utilisent `t.material.primaryGradient`. */
 export const PRIMARY_GRADIENT = primaryGradient;
+/** Ombre teintée de la palette affichée (sous les éléments pleins). */
+const accentShadow = (t: Theme) => tintedShadow(t.material.accentRgb, t.isDark);
 
 /** Seules les flèches « avancent » de 2 px au survol : un indice de direction, pas un effet. */
 const NUDGE: Partial<Record<IconName, 'x' | 'up'>> = { 'arrow-right': 'x', 'chevron-right': 'x', 'external-link': 'up', send: 'x', 'log-in': 'x' };
@@ -239,14 +262,15 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
   const shake = React.useRef(new Animated.Value(0)).current;
   const solid = variant === 'primary' || variant === 'danger' || variant === 'night';
 
-  const nightC = themes.night.colors;
-  const bg = { primary: t.colors.primary, secondary: linesFor(t.isDark).controlFill, outline: 'transparent', ghost: glass[t.name].inset.fill, danger: t.colors.danger, night: nightC.primary }[variant];
+  const nightC = t.name === 'night' ? t.colors : themes.night.colors;
+  const sheen = usePressSheen();
+  const bg = { primary: t.colors.primary, secondary: linesOf(t).controlFill, outline: 'transparent', ghost: glassOf(t).inset.fill, danger: t.colors.danger, night: nightC.primary }[variant];
   const fg = {
     primary: t.colors.primaryText, secondary: t.colors.text, outline: t.colors.primary, ghost: t.colors.primary,
     danger: t.isDark ? t.colors.primaryText : '#FFFFFF', night: nightC.primaryText,
   }[variant];
-  const lines = linesFor(t.isDark);
-  const border = { primary: 'transparent', secondary: t.isDark ? 'rgba(205,190,250,0.24)' : 'rgba(91,42,134,0.18)', outline: t.colors.primary, ghost: lines.hairline, danger: t.colors.danger, night: nightC.primary }[variant];
+  const lines = linesOf(t);
+  const border = { primary: 'transparent', secondary: lines.hairline, outline: t.colors.primary, ghost: lines.hairline, danger: t.colors.danger, night: nightC.primary }[variant];
   // Voile d'état : clair sur les boutons pleins (survol), teinte de la marque sur les boutons transparents
   const veil = solid ? '#FFFFFF' : variant === 'secondary' ? t.colors.text : t.colors.primary;
   const veilHover = solid ? stateVeil.hoverSolid : variant === 'secondary' ? stateVeil.hoverGlass : 0.08;
@@ -283,7 +307,7 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
       accessibilityState={{ disabled: off || isBusy, busy: isBusy }}
       disabled={off || isBusy}
       hitSlop={size === 'sm' ? 5 : 0}
-      onPressIn={m.handlers.onPressIn}
+      onPressIn={() => { m.handlers.onPressIn(); if (variant === 'primary') sheen.play(); }}
       onPressOut={m.handlers.onPressOut}
       onHoverIn={m.handlers.onHoverIn}
       onHoverOut={m.handlers.onHoverOut}
@@ -293,18 +317,18 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
         { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: BUTTON.padX[size] },
         // Profondeur : ombre teintée sous les boutons pleins (la lumière traverse le prune), ombre physique basse sous
         // le verre ; aucune ombre désactivé ni en mode nuit (calme, rien ne « flotte » à 3 h du matin)
-        solid && !off && t.name !== 'night' && { boxShadow: tintedShadow(variant === 'danger' ? '163,36,58' : t.isDark ? '205,190,250' : '91,42,134', t.isDark) },
+        solid && !off && t.name !== 'night' && { boxShadow: variant === 'danger' ? tintedShadow(rgbOf(t.tokens.status.danger), t.isDark) : accentShadow(t) },
         variant === 'secondary' && !off && t.name !== 'night' && { boxShadow: physicalShadow('low', t.isDark) },
       ]}
       {...rest}
     >
-      {/* Bouton principal : dégradé prune (lilas en sombre) */}
-      {variant === 'primary' && !off ? <LinearGradient pointerEvents="none" colors={PRIMARY_GRADIENT(t.isDark)} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} /> : null}
+      {/* Bouton principal (capsule) : dégradé de la palette, en diagonale (accent → accent 2) */}
+      {variant === 'primary' && !off ? <LinearGradient pointerEvents="none" colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} /> : null}
       {/* Reflet d'arête d'1 px en haut des boutons pleins et du verre (edge highlight) */}
       {solid || variant === 'secondary' ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: radiusPx * 0.7, right: radiusPx * 0.7, height: 1, backgroundColor: solid ? 'rgba(255,255,255,0.3)' : t.isDark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.95)' }} /> : null}
       {/* Survol puis appui : voile d'état (sans décalage de mise en page) */}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veil, opacity: m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, veilHover] }) }]} />
-      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veilPress < 0 ? themes.dark.colors.background : veil, opacity: m.press.interpolate({ inputRange: [0, 1], outputRange: [0, veilPress < 0 ? stateVeil.pressSolidDarken : veilPress], extrapolate: 'clamp' }) }]} />
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veilPress < 0 ? NEUTRALS.graphite : veil, opacity: m.press.interpolate({ inputRange: [0, 1], outputRange: [0, veilPress < 0 ? stateVeil.pressSolidDarken : veilPress], extrapolate: 'clamp' }) }]} />
       {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur, à taille constante */}
       <Animated.View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
         {icon && <Animated.View style={nudge(icon)}><Icon name={icon} size={iconSize} color={fg} /></Animated.View>}
@@ -315,6 +339,8 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
         ) : null}
         {iconRight && <Animated.View style={nudge(iconRight)}><Icon name={iconRight} size={iconSize} color={fg} /></Animated.View>}
       </Animated.View>
+      {/* Reflet bref qui glisse sur le bouton principal à la pression (Reanimated, une traversée) */}
+      {variant === 'primary' && !off ? <PressSheen sheen={sheen} /> : null}
       {isBusy ? (
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', opacity: busy }]}>
           <ActivityIndicator size="small" color={fg} />
@@ -332,7 +358,7 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
 export function IconButton({ icon, label, onPress, color, size = 20, style, tone = 'plain', disabled }: { icon: IconName; label: string; onPress: () => void; color?: string; size?: number; style?: StyleProp<ViewStyle>; tone?: 'plain' | 'filled' | 'primary'; disabled?: boolean }) {
   const t = useTheme();
   const m = useButtonMotion();
-  const bg = tone === 'primary' ? t.colors.primary : tone === 'filled' ? linesFor(t.isDark).controlFill : 'transparent';
+  const bg = tone === 'primary' ? t.colors.primary : tone === 'filled' ? linesOf(t).controlFill : 'transparent';
   const veil = tone === 'primary' ? '#FFFFFF' : t.colors.text;
   const D = 40;
   return (
@@ -350,7 +376,7 @@ export function IconButton({ icon, label, onPress, color, size = 20, style, tone
       style={[{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', borderRadius: MIN_TOUCH / 2, opacity: disabled ? 0.45 : 1 }, style]}
     >
       <Animated.View style={{ width: D, height: D, borderRadius: D / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: bg,
-        borderWidth: tone === 'filled' ? 1 : 0, borderColor: hairline(t.isDark),
+        borderWidth: tone === 'filled' ? 1 : 0, borderColor: hairlineOf(t),
         transform: [{ scale: m.press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.94] }) }] }}>
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: D / 2, backgroundColor: veil, opacity: Animated.add(
           m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, tone === 'primary' ? 0.12 : 0.07] }),
@@ -370,9 +396,9 @@ export function Fab({ icon, label, onPress, style, accessibilityHint, showLabel 
   const { width } = useWindowDimensions();
   const withLabel = showLabel && width >= 360;
   return (
-    <Animated.View style={[styles.fab, { backgroundColor: t.colors.primary }, t.name !== 'night' && { boxShadow: [...tintedShadow(t.isDark ? '205,190,250' : '91,42,134', t.isDark), ...physicalShadow('high', t.isDark)] }, style, press.style]}>
+    <Animated.View style={[styles.fab, { backgroundColor: t.colors.primary }, t.name !== 'night' && { boxShadow: [...accentShadow(t), ...physicalShadow('high', t.isDark)] }, style, press.style]}>
       {/* Élément flottant le plus haut de la page : même dégradé que le bouton principal, reflet d'arête */}
-      {t.name !== 'night' ? <LinearGradient pointerEvents="none" colors={PRIMARY_GRADIENT(t.isDark)} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: 26 }]} /> : null}
+      {t.name !== 'night' ? <LinearGradient pointerEvents="none" colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: 26 }]} /> : null}
       <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 18, right: 18, height: 1, backgroundColor: 'rgba(255,255,255,0.3)' }} />
       <Pressable
         accessibilityRole="button"
@@ -437,9 +463,9 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel,
       // 44 px visibles + 2 px de chaque côté : cible ≥ 48 px sans alourdir les rangées de filtres
       hitSlop={onPress ? { top: 2, bottom: 2 } : undefined}
       onPress={onPress ? () => { haptic('selection'); onPress(); } : undefined}
-      style={[styles.chip, { borderColor: selected ? active : hairline(t.isDark), backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : glass[t.name].inset.fill },
+      style={[styles.chip, { borderColor: selected ? active : hairlineOf(t), backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : glassOf(t).inset.fill },
         // Pastille choisie : elle se lève (ombre teintée) ; au repos elle reste dans le plan
-        filled && t.name !== 'night' && { boxShadow: tintedShadow(t.isDark ? '205,190,250' : '91,42,134', t.isDark) }]}
+        filled && t.name !== 'night' && { boxShadow: accentShadow(t) }]}
     >
       {icon && <Icon name={icon} size={15} color={filled ? t.colors.primaryText : selected ? active : t.colors.textMuted} />}
       {label ? <Text variant="small" weight="medium" color={filled ? t.colors.primaryText : selected ? active : t.colors.text} style={{ flexShrink: 1 }}>{label}</Text> : null}
@@ -459,17 +485,21 @@ export function Segmented<T extends string>({ options, value, onChange, label }:
   const PAD = 4, GAP = 4;
   const segW = w ? (w - PAD * 2 - GAP * (options.length - 1)) / options.length : 0;
   return (
-    <View accessibilityRole="radiogroup" accessibilityLabel={label} onLayout={(e) => setW(e.nativeEvent.layout.width)} style={[styles.segmented, { backgroundColor: glass[t.name].inset.fill, borderWidth: 1, borderColor: glass[t.name].inset.edge }]}>
+    <View accessibilityRole="radiogroup" accessibilityLabel={label} onLayout={(e) => setW(e.nativeEvent.layout.width)} style={[styles.segmented, { backgroundColor: glassOf(t).inset.fill, borderWidth: 1, borderColor: glassOf(t).inset.edge }]}>
       {/* aucune option choisie (ex. situation pas encore indiquée) : pas de pastille, sinon elle masque le libellé de la 1re option */}
       {segW > 0 && found >= 0 ? (
         <Animated.View
           pointerEvents="none"
           style={{
             position: 'absolute', top: PAD, bottom: PAD, left: PAD, width: segW, borderRadius: 999, backgroundColor: t.colors.primary,
-            boxShadow: t.name === 'night' ? undefined : tintedShadow(t.isDark ? '205,190,250' : '91,42,134', t.isDark),
+            boxShadow: t.name === 'night' ? undefined : accentShadow(t), overflow: 'hidden',
             transform: [{ translateX: x.interpolate({ inputRange: [0, Math.max(1, options.length - 1)], outputRange: [0, (segW + GAP) * Math.max(1, options.length - 1)] }) }],
           }}
-        />
+        >
+          {/* Pastille capsule : dégradé de la palette + arête claire (Liquid Glass) */}
+          {t.name !== 'night' ? <LinearGradient colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
+          {t.name !== 'night' ? <View style={{ position: 'absolute', top: 0, left: 12, right: 12, height: 1, backgroundColor: 'rgba(255,255,255,0.35)' }} /> : null}
+        </Animated.View>
       ) : null}
       {options.map((o) => {
         const sel = o.value === value;
@@ -543,7 +573,7 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
         {optional ? <Text variant="small" muted>{`  (${tr('common.optional')})`}</Text> : null}
       </Text>
       {/* Champ = surface « inset » : un creux de verre au liseré fin, qui s'éclaire au focus (halo prune) */}
-      <View style={[styles.input, { borderColor: error ? t.colors.danger : glass[t.name].inset.edge, backgroundColor: focused ? glass[t.name].floating.fill : glass[t.name].inset.fill }]}>
+      <View style={[styles.input, { borderColor: error ? t.colors.danger : glassOf(t).inset.edge, backgroundColor: focused ? glassOf(t).floating.fill : glassOf(t).inset.fill }]}>
         {/* Halo de focus : liseré de la couleur principale qui apparaît en fondu */}
         {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: 18, borderWidth: 1.5, borderColor: t.colors.primary, opacity: focus }} /> : null}
         {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, borderRadius: 22, borderWidth: 3, borderColor: t.colors.primary, opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0, 0.16] }) }} /> : null}
@@ -592,7 +622,8 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
 });
 
 // ---------------------------------------------------------------- Bandeaux & états
-const BANNER_ICON: Record<BannerTone, IconName> = { info: 'info', warning: 'alert-triangle', danger: 'alert-octagon', demo: 'smartphone', success: 'check-circle' };
+/** Chaque ton de bandeau a son icône : le statut ne repose jamais sur la couleur seule (testé). */
+export const BANNER_ICON: Record<BannerTone, IconName> = { info: 'info', warning: 'alert-triangle', danger: 'alert-octagon', demo: 'smartphone', success: 'check-circle' };
 
 /**
  * Bandeau d'information : fond teinté + liseré de la même teinte (jetons `bannerColors`, contraste testé), icône dans
@@ -690,7 +721,7 @@ export function Row({ children, gap = spacing.sm, style, wrap, testID }: { child
 export function Divider() {
   const t = useTheme();
   // `separator` et non `border` : en clair, le liseré blanc des cartes serait invisible sur le verre blanc
-  return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: linesFor(t.isDark).separator, marginVertical: spacing.xs }} />;
+  return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: linesOf(t).separator, marginVertical: spacing.xs }} />;
 }
 
 export function ListRow({ icon, leading, title, subtitle, onPress, right, danger, testID }: { icon?: IconName; leading?: React.ReactNode; title: string; subtitle?: string; onPress?: () => void; right?: React.ReactNode; danger?: boolean; testID?: string }) {
@@ -698,7 +729,7 @@ export function ListRow({ icon, leading, title, subtitle, onPress, right, danger
   const inner = (
     <View style={[styles.listRow]}>
       {leading ? leading : icon && (
-        <View style={[styles.listIcon, { backgroundColor: danger ? t.colors.dangerSoft : linesFor(t.isDark).iconWell }]}>
+        <View style={[styles.listIcon, { backgroundColor: danger ? t.colors.dangerSoft : linesOf(t).iconWell }]}>
           <Icon name={icon} size={18} color={danger ? t.colors.danger : t.colors.text} />
         </View>
       )}
@@ -744,13 +775,16 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
       onPress={() => { haptic('selection'); onChange(!value); }}
       hitSlop={8}
       // Rail éteint visible sur le verre blanc (l'ancien `border` blanc disparaissait en clair)
-      style={{ width: 52, height: 32, borderRadius: 16, padding: 3, backgroundColor: linesFor(t.isDark).track, justifyContent: 'center', overflow: 'hidden' }}
+      style={{ width: 52, height: 32, borderRadius: 16, padding: 3, backgroundColor: linesOf(t).track, justifyContent: 'center', overflow: 'hidden' }}
     >
-      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 16, backgroundColor: t.colors.primary, opacity: on }]} />
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 16, backgroundColor: t.colors.primary, opacity: on, overflow: 'hidden' }]}>
+        {/* Interrupteur capsule allumé : dégradé de la palette */}
+        {t.name !== 'night' ? <LinearGradient colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
+      </Animated.View>
       <Animated.View
         style={{
-          width: 26, height: 26, borderRadius: 13, backgroundColor: t.name === 'night' ? themes.night.colors.text : '#FFFFFF',
-          borderWidth: StyleSheet.hairlineWidth, borderColor: linesFor(t.isDark).thumbEdge,
+          width: 26, height: 26, borderRadius: 13, backgroundColor: t.name === 'night' ? t.colors.text : '#FFFFFF',
+          borderWidth: StyleSheet.hairlineWidth, borderColor: linesOf(t).thumbEdge,
           boxShadow: physicalShadow('low', t.isDark),
           transform: [{ translateX: on.interpolate({ inputRange: [0, 1], outputRange: [0, 20] }) }, { scaleX: squish.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
         }}
