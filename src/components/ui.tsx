@@ -90,10 +90,10 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
   const tilt = useTilt(1);
   const bg = {
     surface: t.colors.surface,
-    soft: t.isDark ? 'rgba(231,192,143,0.10)' : 'rgba(250,234,223,0.7)',
-    lavender: t.isDark ? 'rgba(195,178,255,0.12)' : 'rgba(225,215,255,0.6)',
-    night: '#1E0F1A',
-    gold: t.isDark ? 'rgba(231,192,143,0.14)' : 'rgba(240,215,180,0.55)',
+    soft: t.isDark ? 'rgba(233,207,164,0.10)' : 'rgba(236,230,246,0.72)',
+    lavender: t.isDark ? 'rgba(205,190,250,0.12)' : 'rgba(228,218,251,0.62)',
+    night: '#16112B',
+    gold: t.isDark ? 'rgba(233,207,164,0.14)' : 'rgba(233,207,164,0.45)',
     danger: t.colors.dangerSoft,
   }[tone];
   // Verre liquide pour les cartes translucides ; les cartes pleines (nuit, alerte) restent opaques
@@ -176,9 +176,9 @@ export const BUTTON = {
 };
 
 /** Liseré discret, dérivé de la couleur du texte du thème (aucune nouvelle couleur). */
-export const hairline = (isDark: boolean) => (isDark ? 'rgba(240,217,207,0.18)' : 'rgba(135,83,63,0.16)');
+export const hairline = (isDark: boolean) => (isDark ? 'rgba(205,190,250,0.18)' : 'rgba(91,42,134,0.16)');
 /** Dégradé des boutons principaux : reflet doré en haut, cuivre au centre, plus profond en bas. */
-export const PRIMARY_GRADIENT = (isDark: boolean): [string, string, string] => (isDark ? ['#F3D4A6', '#E7C08F', '#D6A874'] : ['#9C6650', '#87533F', '#764533']);
+export const PRIMARY_GRADIENT = (isDark: boolean): [string, string, string] => (isDark ? ['#E2D7FF', '#CDBEFA', '#B4A1F0'] : ['#6E3A9E', '#5B2A86', '#4A2170']);
 
 /** Seules les flèches « avancent » de 2 px au survol : un indice de direction, pas un effet. */
 const NUDGE: Partial<Record<IconName, 'x' | 'up'>> = { 'arrow-right': 'x', 'chevron-right': 'x', 'external-link': 'up', send: 'x', 'log-in': 'x' };
@@ -222,12 +222,12 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
   const shake = React.useRef(new Animated.Value(0)).current;
   const solid = variant === 'primary' || variant === 'danger' || variant === 'night';
 
-  const bg = { primary: t.colors.primary, secondary: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.72)', outline: 'transparent', ghost: t.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,250,246,0.5)', danger: t.colors.danger, night: '#D9B48A' }[variant];
+  const bg = { primary: t.colors.primary, secondary: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.74)', outline: 'transparent', ghost: t.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,250,246,0.5)', danger: t.colors.danger, night: '#D9B48A' }[variant];
   const fg = {
     primary: t.colors.primaryText, secondary: t.colors.text, outline: t.colors.primary, ghost: t.colors.primary,
-    danger: t.isDark ? t.colors.primaryText : '#FFFFFF', night: '#141831',
+    danger: t.isDark ? t.colors.primaryText : '#FFFFFF', night: '#0F0B1E',
   }[variant];
-  const border = { primary: 'transparent', secondary: t.isDark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.30)', outline: t.colors.primary, ghost: t.isDark ? 'rgba(240,217,207,0.18)' : 'rgba(184,134,90,0.24)', danger: t.colors.danger, night: '#D9B48A' }[variant];
+  const border = { primary: 'transparent', secondary: t.isDark ? 'rgba(205,190,250,0.22)' : 'rgba(91,42,134,0.22)', outline: t.colors.primary, ghost: t.isDark ? 'rgba(205,190,250,0.18)' : 'rgba(184,134,90,0.24)', danger: t.colors.danger, night: '#D9B48A' }[variant];
   // Voile d'état : clair sur les boutons pleins (survol), teinte de la marque sur les boutons transparents
   const veil = solid ? '#FFFFFF' : variant === 'secondary' ? t.colors.text : t.colors.primary;
   const veilHover = solid ? 0.1 : variant === 'secondary' ? 0.05 : 0.08;
@@ -273,8 +273,8 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
         styles.button,
         { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: BUTTON.padX[size] },
         // Profondeur subtile : ombre courte et douce sur les boutons pleins seulement (aucune ombre désactivé)
-        solid && !off && { shadowColor: variant === 'danger' ? t.colors.danger : t.isDark ? '#000000' : '#6B3F2E', shadowOpacity: t.isDark ? 0.3 : 0.24, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 3 },
-        variant === 'secondary' && !off && { shadowColor: '#6B3F2E', shadowOpacity: t.isDark ? 0 : 0.08, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
+        solid && !off && { shadowColor: variant === 'danger' ? t.colors.danger : t.isDark ? '#000000' : '#2A1F52', shadowOpacity: t.isDark ? 0.3 : 0.24, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 3 },
+        variant === 'secondary' && !off && { shadowColor: '#2A1F52', shadowOpacity: t.isDark ? 0 : 0.08, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
       ]}
       {...rest}
     >
@@ -350,7 +350,7 @@ export function Fab({ icon, label, onPress, style, accessibilityHint, showLabel 
   const { width } = useWindowDimensions();
   const withLabel = showLabel && width >= 360;
   return (
-    <Animated.View style={[styles.fab, { backgroundColor: t.colors.primary, shadowColor: t.isDark ? '#000000' : '#6B3F2E' }, style, press.style]}>
+    <Animated.View style={[styles.fab, { backgroundColor: t.colors.primary, shadowColor: t.isDark ? '#000000' : '#2A1F52' }, style, press.style]}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={label}
@@ -439,7 +439,7 @@ export function Segmented<T extends string>({ options, value, onChange, label }:
           pointerEvents="none"
           style={{
             position: 'absolute', top: PAD, bottom: PAD, left: PAD, width: segW, borderRadius: 999, backgroundColor: t.colors.primary,
-            shadowColor: t.isDark ? '#000000' : '#6B3F2E', shadowOpacity: 0.2, shadowRadius: 8, shadowOffset: { width: 0, height: 3 },
+            shadowColor: t.isDark ? '#000000' : '#2A1F52', shadowOpacity: 0.2, shadowRadius: 8, shadowOffset: { width: 0, height: 3 },
             transform: [{ translateX: x.interpolate({ inputRange: [0, Math.max(1, options.length - 1)], outputRange: [0, (segW + GAP) * Math.max(1, options.length - 1)] }) }],
           }}
         />
@@ -716,7 +716,7 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
 
 const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: 1 },
-  shadow: { shadowColor: '#6B3F2E', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 0 },
+  shadow: { shadowColor: '#2A1F52', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 0 },
   fab: { borderRadius: 26, shadowOpacity: 0.26, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 4 },
   button: { borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 8, overflow: 'hidden' },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6, minHeight: 44, maxWidth: '100%', borderRadius: 999, borderWidth: 1 },

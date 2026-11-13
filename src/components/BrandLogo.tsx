@@ -1,38 +1,45 @@
 /**
- * Fichiers (13/11/2026) : logo-mark.png 768 px et logo-line.png 1024 px, régénérés depuis le logo officiel détouré
- * (même dessin, même cadrage) : net jusqu'à 256 pt sur écran Retina, et contour nettoyé de la frange rose laissée par
- * l'ancien fond (visible sur les fonds sombres et sur la vidéo). Toujours `contain` : jamais étiré ni rogné.
- *  - BrandShine : éclat qui suit le tracé du fil (copie claire du logo), sans cadre rectangulaire.
- *
- * Logo « HOMI » (nouveau logo du 04/11/2026, identique à YouTube et TikTok) : utérus dessiné d'un fil doré,
- * feuilles, pousse et silhouette de femme enceinte, sur un fond rose clair uni.
- *  - BrandLogo : le fil doré seul, sur fond transparent (aucune tuile ni fond de couleur dans l'appli) ;
- *  - BrandLine : le fil doré seul sur fond transparent, pour les grands visuels.
+ * Logo HOMI (13/11/2026) : maison lumineuse, deux parents et deux enfants au centre.
+ * Vectoriel (react-native-svg), net à toutes les tailles ; tracés générés par `scripts/homi/brand.mjs`
+ * (même source que assets/brand/homi-*.svg et les icônes de l'application).
+ *  - BrandLogo : marque en couleur (nuit, lilas, perle), fond transparent ;
+ *  - BrandLine : même marque pour les grands visuels ;
+ *  - BrandShine : version monochrome claire à superposer pour un éclat animé.
+ * API inchangée (size, style) pour ne toucher à aucun écran existant.
  */
-import { Image, type ImageStyle, type StyleProp } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { SvgXml } from 'react-native-svg';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-export const LOGO_MARK: number = require('../../assets/brand/logo-mark.png');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-export const LOGO_LINE: number = require('../../assets/brand/logo-line.png');
+import { HOMI_MARK_MONO_SVG, HOMI_MARK_SVG } from '@/brand/homiMarkSvg';
 
-export function BrandLogo({ size = 28, style }: { size?: number; style?: StyleProp<ImageStyle> }) {
+type LogoProps = { size?: number; style?: StyleProp<ViewStyle> };
+
+export function BrandLogo({ size = 28, style }: LogoProps) {
   return (
-    <Image
-      source={LOGO_MARK}
-      style={[{ width: size, height: size }, style]}
-      resizeMode="contain"
-      accessibilityIgnoresInvertColors
-      accessible={false}
-    />
+    <View style={[{ width: size, height: size }, style]} accessible={false} importantForAccessibility="no-hide-descendants">
+      <SvgXml xml={HOMI_MARK_SVG} width={size} height={size} />
+    </View>
   );
 }
 
-export function BrandLine({ size = 160, style }: { size?: number; style?: StyleProp<ImageStyle> }) {
-  return <Image source={LOGO_LINE} style={[{ width: size, height: size }, style]} resizeMode="contain" accessible={false} />;
+export function BrandLine({ size = 160, style }: LogoProps) {
+  return <BrandLogo size={size} style={style} />;
 }
 
-/** Copie claire du logo, à superposer exactement au logo : son opacité animée donne un éclat qui suit le tracé. */
-export function BrandShine({ size, color = '#FFF1D6' }: { size: number; color?: string }) {
-  return <Image source={LOGO_MARK} style={{ width: size, height: size, tintColor: color }} resizeMode="contain" accessible={false} />;
+/** Copie monochrome de la marque, à superposer exactement au logo : son opacité animée donne un éclat. */
+export function BrandShine({ size, color = '#F7F4FB' }: { size: number; color?: string }) {
+  return (
+    <View style={{ width: size, height: size }} accessible={false} importantForAccessibility="no-hide-descendants">
+      <SvgXml xml={HOMI_MARK_MONO_SVG} width={size} height={size} color={color} />
+    </View>
+  );
+}
+
+/** Logo monochrome de la couleur du texte (en-têtes, pieds de page, petits formats). */
+export function BrandMono({ size = 24, color, style }: LogoProps & { color: string }) {
+  return (
+    <View style={[{ width: size, height: size }, style]} accessible={false} importantForAccessibility="no-hide-descendants">
+      <SvgXml xml={HOMI_MARK_MONO_SVG} width={size} height={size} color={color} />
+    </View>
+  );
 }

@@ -1,8 +1,7 @@
 /**
  * Fond « HOMI ».
- *  · Jour : rose poudré doux et lumineux (#F2DDD8), dégradés subtils crème et beige rosé, lumière chaude diffuse
- *    qui suit lentement l'heure (matin à gauche, fin de journée à droite), quelques particules claires.
- *  · Nuit : bleu nuit et prune (jamais noir), halo prune, particules lumineuses.
+ *  · Jour « Perle » : perle et lilas très pâle, lumière douce qui suit lentement l'heure, quelques particules claires.
+ *  · Nuit « Minuit » : midnight violet et prune (jamais noir), halo lilas, particules lumineuses.
  * Décoratif, toujours derrière le contenu ; « Réduire les animations » ou économie d'énergie : immobile.
  */
 import React, { useEffect, useMemo, useRef } from 'react';
@@ -12,8 +11,8 @@ import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-s
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 
-export const POWDER = { base: '#F2DDD8', cream: '#F8EBE4', beige: '#EBD3CC', light: '#FFF6F0' };
-export const NIGHT_SKY = { top: '#2A2448', mid: '#1F2344', bottom: '#191D3A', plum: '#5B3D66' };
+export const POWDER = { base: '#F4F0FA', cream: '#FBF9FE', beige: '#E9E2F5', light: '#FFFFFF' };
+export const NIGHT_SKY = { top: '#261C4A', mid: '#1A1433', bottom: '#110D23', plum: '#5B2A86' };
 
 function useLoop(ms: number, still: boolean) {
   const v = useRef(new Animated.Value(0.5)).current;
@@ -57,8 +56,8 @@ export function PowderSky({ hour, night, still: stillProp }: { hour: number; nig
               <Stop offset="1" stopColor={night ? NIGHT_SKY.plum : POWDER.light} stopOpacity="0" />
             </RadialGradient>
             <RadialGradient id={`b${id}`} cx="50%" cy="50%" r="50%">
-              <Stop offset="0" stopColor={night ? '#3A3F78' : '#F6E3DA'} stopOpacity={night ? 0.5 : 0.7} />
-              <Stop offset="1" stopColor={night ? '#3A3F78' : '#F6E3DA'} stopOpacity="0" />
+              <Stop offset="0" stopColor={night ? '#4A3A8C' : '#E4DAFB'} stopOpacity={night ? 0.5 : 0.7} />
+              <Stop offset="1" stopColor={night ? '#4A3A8C' : '#E4DAFB'} stopOpacity="0" />
             </RadialGradient>
           </Defs>
           <Ellipse cx={W * lx} cy={H * 0.16} rx={W * 0.85} ry={H * 0.32} fill={`url(#l${id})`} />

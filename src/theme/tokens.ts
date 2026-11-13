@@ -1,5 +1,9 @@
 /**
- * Mise à jour du 26/10/2026 (logo validé) : accents dorés et rose doré, comme le fil du logo et la lumière de la
+ * HOMI (13/11/2026) : direction « Keynote » chaleureuse — midnight violet, prune, lilas, champagne, perle.
+ * Clair « Perle », sombre « Minuit », mode nuit tamisé. Mêmes rôles de couleur qu'avant : tous les écrans
+ * qui passent par le thème changent d'un coup. Le rouge reste réservé aux urgences.
+ *
+ * Historique (Au fil de nous) — Mise à jour du 26/10/2026 (logo validé) : accents dorés et rose doré, comme le fil du logo et la lumière de la
  * vidéo de fond (ciel rose et pêche). Liens et boutons cuivre doré, dégradé signature champagne → rose doré ;
  * la nuit garde le bleu nuit et la prune, avec des accents champagne.
  *
@@ -14,28 +18,28 @@
  */
 
 export const palette = {
-  night: '#1E0F1A', // rose nuit (prune profonde)
-  nightDeep: '#140A11',
-  nightSoft: '#2B1724',
-  mist: '#FFF1F4', // fond rose clair
-  mistDeep: '#FFE6EE',
-  milk: '#FFF4F7', // texte sur fond sombre
-  powder: '#FFD3DE',
-  powderDeep: '#F7B0C3',
-  clay: '#FF5C8A', // rose vif : cœur, repas
-  lavender: '#C9B5FF',
-  lavenderInk: '#7A5CE0',
-  gold: '#FF8FB1', // rose néon doux : accents sur fond sombre
-  goldInk: '#C2416E',
-  ink: '#1A1016',
-  inkSoft: '#7D6B75',
+  night: '#16112B', // midnight violet
+  nightDeep: '#0F0B1E',
+  nightSoft: '#2A1F52',
+  mist: '#F4F0FA', // perle lilas
+  mistDeep: '#ECE6F6',
+  milk: '#F7F4FB', // perle : texte sur fond sombre
+  powder: '#E4DAFB', // lilas pâle
+  powderDeep: '#CDBEFA', // lilas
+  clay: '#C2477E', // framboise : cœur, repas
+  lavender: '#CDBEFA',
+  lavenderInk: '#5E44A8',
+  gold: '#E9CFA4', // champagne
+  goldInk: '#76561D',
+  ink: '#1C1533',
+  inkSoft: '#584D72',
   white: '#FFFFFF',
-  danger: '#D63A3A',
-  dangerSoft: '#FDE1E1',
+  danger: '#C8283F',
+  dangerSoft: '#FCE3E7',
 };
 
 /** Dégradé signature (bouton +, anneau, accents). */
-export const NACRE: [string, string, string] = ['#E2AE78', '#CB8A72', '#A9697A']; // champagne → rose doré → vieux rose
+export const NACRE: [string, string, string] = ['#E9CFA4', '#B9A6F2', '#5B2A86']; // champagne → lilas → prune
 
 export type ThemeName = 'light' | 'dark' | 'night';
 
@@ -49,9 +53,9 @@ export function skyPhase(d: Date = new Date()): SkyPhase {
   return 'night';
 }
 export const SKY_GRADIENTS: Record<Exclude<SkyPhase, 'night'>, [string, string, string]> = {
-  dawn: ['#FAEADF', '#F2DDD8', '#EBD0C8'],
-  day: ['#FAEADF', '#F2DDD8', '#EBD0C8'],
-  dusk: ['#2A2448', '#1F2344', '#191D3A'],
+  dawn: ['#FBF9FE', '#F4F0FA', '#E9E2F5'],
+  day: ['#FBF9FE', '#F4F0FA', '#E9E2F5'],
+  dusk: ['#261C4A', '#1A1433', '#110D23'],
 };
 /** Heure représentative de chaque phase (aperçu dans les réglages). */
 export function previewTime(p: SkyPhase): Date {
@@ -91,85 +95,85 @@ export interface Theme {
 }
 
 export const themes: Record<ThemeName, Theme> = {
-  // Jour : « Rose »
+  // Jour : « Perle » — fond perle lilas, texte nuit violette, accents prune et champagne
   light: {
     name: 'light',
     isDark: false,
     colors: {
-      background: '#F2DDD8', // rose poudré
-      backgroundAlt: '#EED5CF',
-      gradient: ['#FAEADF', '#F2DDD8', '#EBD0C8'], // pêche lumineuse → rose poudré → rose beige (ciel de la vidéo)
-      surface: 'rgba(255,250,246,0.62)',
-      surfaceAlt: 'rgba(255,250,246,0.42)',
-      border: 'rgba(255,255,255,0.78)',
-      text: '#3A2621', // brun chaud
-      textMuted: '#6A5049', // taupe brun (≥ 4,5:1 sur le fond)
-      primary: '#804F3C', // cuivre doré (fil du logo), ≥ 4,5:1 sur tout le dégradé (09/11/2026 : 4,64 sur #EBD0C8)
+      background: '#F4F0FA', // perle lilas
+      backgroundAlt: '#ECE6F6',
+      gradient: ['#FBF9FE', '#F4F0FA', '#E9E2F5'], // perle → lilas très pâle
+      surface: 'rgba(255,255,255,0.74)',
+      surfaceAlt: 'rgba(255,255,255,0.5)',
+      border: 'rgba(255,255,255,0.92)',
+      text: '#1C1533', // nuit violette
+      textMuted: '#584D72', // ≥ 4,5:1 jusqu'au bas du dégradé
+      primary: '#5B2A86', // prune
       primaryText: '#FFFFFF',
-      accent: '#E6BE96', // pêche champagne
-      accentSoft: 'rgba(230,190,150,0.38)',
-      lavender: '#784F5F', // prune taupe (≥ 4,5:1 sur tout le dégradé)
-      gold: '#80532A', // or brun (lisible sur le rose)
-      success: '#236643', // ≥ 4,5:1 sur tout le dégradé clair (était 3,6 sur #EBD0C8)
-      danger: '#A92C2C', // rouge des urgences, lisible sur tout le dégradé clair (≥ 4,5:1)
+      accent: '#E9CFA4', // champagne
+      accentSoft: 'rgba(233,207,164,0.42)',
+      lavender: '#5E44A8', // lilas encre (lisible)
+      gold: '#76561D', // champagne encre (lisible)
+      success: '#1D6644',
+      danger: '#A3243A', // rouge des urgences
       dangerSoft: palette.dangerSoft,
-      tabBar: 'rgba(74,50,42,0.88)',
-      overlay: 'rgba(58,38,33,0.35)',
-      heart: '#B4545F',
+      tabBar: 'rgba(28,21,51,0.9)',
+      overlay: 'rgba(28,21,51,0.38)',
+      heart: '#A8346A',
     },
   },
-  // Soir & nuit : « Rose nuit »
+  // Soir : « Minuit » — nuit violette profonde, verre lisible, accents lilas et champagne
   dark: {
     name: 'dark',
     isDark: true,
     colors: {
-      background: '#1F2344', // bleu nuit
-      backgroundAlt: '#262A4D',
-      gradient: ['#2A2448', '#1F2344', '#191D3A'], // prune → bleu nuit
+      background: '#16112B', // midnight violet
+      backgroundAlt: '#1D1638',
+      gradient: ['#261C4A', '#1A1433', '#110D23'],
       surface: 'rgba(255,255,255,0.07)',
       surfaceAlt: 'rgba(255,255,255,0.11)',
-      border: 'rgba(255,255,255,0.12)',
-      text: '#FFF4EE',
-      textMuted: '#CDB8C6',
-      primary: '#E7C08F', // champagne
-      primaryText: '#2A2448',
-      accent: '#F0D9CF',
-      accentSoft: 'rgba(231,192,143,0.16)',
-      lavender: '#C3B2FF',
-      gold: '#E7C08F',
+      border: 'rgba(205,190,250,0.16)',
+      text: '#F7F4FB', // perle
+      textMuted: '#C3B8DD',
+      primary: '#CDBEFA', // lilas
+      primaryText: '#1C1533',
+      accent: '#E9CFA4', // champagne
+      accentSoft: 'rgba(233,207,164,0.16)',
+      lavender: '#BBA8F5',
+      gold: '#E9CFA4',
       success: '#9FE0B5',
-      danger: '#FF8A8A',
-      dangerSoft: 'rgba(255,90,90,0.16)',
-      tabBar: 'rgba(30,32,64,0.86)',
+      danger: '#FF97A6',
+      dangerSoft: 'rgba(255,110,130,0.16)',
+      tabBar: 'rgba(22,17,43,0.88)',
       overlay: 'rgba(0,0,0,0.55)',
-      heart: '#FF86A8',
+      heart: '#FF9CC3',
     },
   },
-  // Mode nuit (suivi de bébé à 3 h du matin) : très peu de lumière, rose tamisé
+  // Mode nuit (soins à 3 h du matin) : très peu de lumière, jamais de blanc pur ni de noir
   night: {
     name: 'night',
     isDark: true,
     colors: {
-      background: '#141831', // bleu nuit tamisé (jamais noir)
-      backgroundAlt: '#191C38',
-      gradient: ['#1A1834', '#151830', '#12152C'],
-      surface: '#1E2140',
-      surfaceAlt: '#252848',
-      border: '#33365A',
-      text: '#F3D6DF',
-      textMuted: '#B8939F',
-      primary: '#D9B48A', // champagne tamisé
-      primaryText: '#141831',
-      accent: '#C9A27E',
-      accentSoft: '#2C2547',
-      lavender: '#B7A3E6',
-      gold: '#D9B48A',
+      background: '#0F0B1E',
+      backgroundAlt: '#140F27',
+      gradient: ['#161029', '#120D22', '#0E0A1C'],
+      surface: '#1A1430',
+      surfaceAlt: '#211A3A',
+      border: '#2E2650',
+      text: '#DDD0EC',
+      textMuted: '#A598C0',
+      primary: '#B9A6EA', // lilas tamisé
+      primaryText: '#0F0B1E',
+      accent: '#CDB48A',
+      accentSoft: '#2A2142',
+      lavender: '#A996DD',
+      gold: '#CDB48A',
       success: '#9CC1A2',
-      danger: '#F0A0A0',
-      dangerSoft: '#3A2440',
-      tabBar: '#141831',
+      danger: '#F0A0AA',
+      dangerSoft: '#3A2036',
+      tabBar: '#0F0B1E',
       overlay: 'rgba(0,0,0,0.6)',
-      heart: '#E89AB0',
+      heart: '#E09AB8',
     },
   },
 };
@@ -224,9 +228,9 @@ export type TypographyRole = keyof typeof typography;
 /** Élévations : ombres chaudes et discrètes (jamais noires), trois niveaux seulement. */
 export const elevation = {
   none: { shadowOpacity: 0, elevation: 0 },
-  low: { shadowColor: '#5A3626', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  mid: { shadowColor: '#5A3626', shadowOpacity: 0.12, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 5 },
-  high: { shadowColor: '#5A3626', shadowOpacity: 0.18, shadowRadius: 28, shadowOffset: { width: 0, height: 12 }, elevation: 10 },
+  low: { shadowColor: '#2A1F52', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  mid: { shadowColor: '#2A1F52', shadowOpacity: 0.12, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 5 },
+  high: { shadowColor: '#2A1F52', shadowOpacity: 0.18, shadowRadius: 28, shadowOffset: { width: 0, height: 12 }, elevation: 10 },
 } as const;
 
 /** Tailles de contrôle (hauteur minimale) : boutons, champs, pastilles. */

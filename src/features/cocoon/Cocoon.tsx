@@ -88,7 +88,7 @@ function Glass({ children, wash, style, rounded = 30, testID, clear }: { childre
   // Cadre transparent (fond vidéo visible), simple liseré champagne : grand cadre du profil de l'enfant
   if (clear) {
     return (
-      <View testID={testID} style={[{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(240,217,207,0.28)' : 'rgba(184,134,90,0.35)' }, style]}>
+      <View testID={testID} style={[{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(205,190,250,0.28)' : 'rgba(184,134,90,0.35)' }, style]}>
         {children}
       </View>
     );
@@ -405,7 +405,7 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
               {actions.map((a, i) => (
                 <Tappable key={a.testID} testID={a.testID} accessibilityRole="button" accessibilityLabel={`${a.label}, ${child.first_name}`} disabled={busy} onPress={() => go(a)}
                   style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: 18, borderRadius: radius.pill, opacity: busy ? 0.6 : pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }],
-                    borderWidth: 1, borderColor: i === 0 ? 'transparent' : dark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.30)',
+                    borderWidth: 1, borderColor: i === 0 ? 'transparent' : dark ? 'rgba(205,190,250,0.22)' : 'rgba(184,134,90,0.30)',
                     backgroundColor: i === 0 ? t.colors.primary : (dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,250,246,0.75)') })}>
                   <Icon name={a.icon} size={17} color={i === 0 ? t.colors.primaryText : t.colors.text} />
                   <Text weight="bold" color={i === 0 ? t.colors.primaryText : undefined}>{a.label}</Text>

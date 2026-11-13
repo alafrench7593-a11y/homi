@@ -35,10 +35,7 @@ export const ratio = (a: RGB, b: RGB) => {
  * n'atteignent pas 4,5:1 sont listées ici, mesurées, et compensées autrement (graisse, taille,
  * ombre portée du texte) : le test échoue si une NOUVELLE paire passe sous le seuil.
  */
-const KNOWN_BRAND_EXCEPTIONS: Record<string, number> = {
-  'light:erreurs sur fond': 4.3,
-  'light:erreurs sur carte secondaire': 4.4,
-};
+const KNOWN_BRAND_EXCEPTIONS: Record<string, number> = {};
 const min = (key: string) => KNOWN_BRAND_EXCEPTIONS[key] ?? 4.5;
 
 describe.each(Object.keys(themes) as ThemeName[])('thème %s', (name) => {
@@ -54,18 +51,18 @@ describe.each(Object.keys(themes) as ThemeName[])('thème %s', (name) => {
   it('texte des boutons principaux', () => expect(ratio(parse(c.primaryText).rgb, parse(c.primary).rgb)).toBeGreaterThanOrEqual(min(`${name}:boutons principaux`)));
 });
 
-// Palette « Au fil de nous » : rose poudré et ciel pêche, accents dorés du logo (validé le 26/10/2026) ;
-// nuit bleu nuit et prune avec accents champagne. 09/11/2026 (audit d'accessibilité) : primaire, prune, succès et
-// erreur à peine assombris en clair pour rester ≥ 4,5:1 jusqu'au bas du dégradé (#EBD0C8) ; teintes inchangées.
-it('palette de marque « Au fil de nous » (couleurs verrouillées)', () => {
-  expect(themes.light.colors.background).toBe('#F2DDD8');
-  expect(themes.light.colors.primary).toBe('#804F3C');
-  expect(themes.light.colors.danger).toBe('#A92C2C');
-  expect(themes.dark.colors.primary).toBe('#E7C08F');
-  expect(themes.night.colors.primary).toBe('#D9B48A');
+// Palette HOMI (13/11/2026) : midnight violet, prune, lilas, champagne, perle. Verrouillée : toute modification
+// doit être volontaire (mettre à jour HOMI_BRAND.md et ce test).
+it('palette de marque HOMI (couleurs verrouillées)', () => {
+  expect(themes.light.colors.background).toBe('#F4F0FA');
+  expect(themes.light.colors.primary).toBe('#5B2A86');
+  expect(themes.light.colors.danger).toBe('#A3243A');
+  expect(themes.dark.colors.background).toBe('#16112B');
+  expect(themes.dark.colors.primary).toBe('#CDBEFA');
+  expect(themes.night.colors.primary).toBe('#B9A6EA');
 });
 
-// 09/11/2026 : le bas du dégradé clair (#EBD0C8) est la zone la plus sombre derrière le texte coloré
+// Le bas du dégradé clair est la zone la plus sombre derrière le texte coloré
 it('couleurs de texte lisibles jusqu’au bas du dégradé clair (≥ 4,5:1)', () => {
   const c = themes.light.colors;
   const bottom = parse(c.gradient[2]).rgb;

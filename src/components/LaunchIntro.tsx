@@ -10,17 +10,16 @@
  *  - absente à la toute première ouverture (l'introduction cinématique joue déjà ce rôle) ;
  *  - « Réduire les animations » : aucune introduction (état final immédiat).
  * Uniquement transform et opacity, sur le fil natif ; aucune couleur ajoutée (fond = fond du thème, logo officiel
- * détouré sans retouche : assets/brand/logo-transparent.png).
+ * HOMI vectoriel : src/components/BrandLogo.tsx).
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Image, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Animated, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { easing, intro } from '@/theme/motion';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useUiStore } from '@/lib/store';
+import { BrandLogo } from '@/components/BrandLogo';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-export const LOGO_TRANSPARENT: number = require('../../assets/brand/logo-transparent.png');
 
 /** Une seule fois par exécution de l'application (lancement à froid). */
 let played = false;
@@ -115,7 +114,7 @@ export function LaunchIntro() {
           {/* Révélation de bas en haut : la fenêtre monte pendant que l'image reste immobile (masque glissant natif) */}
           <Animated.View style={{ width: size, height: size, overflow: 'hidden', transform: [{ translateY: reveal.interpolate({ inputRange: [0, 1], outputRange: [size, 0] }) }] }}>
             <Animated.View style={{ width: size, height: size, transform: [{ translateY: reveal.interpolate({ inputRange: [0, 1], outputRange: [-size, 0] }) }] }}>
-              <Image source={LOGO_TRANSPARENT} style={{ width: size, height: size }} resizeMode="contain" accessible={false} />
+              <BrandLogo size={size} />
             </Animated.View>
           </Animated.View>
         </Animated.View>

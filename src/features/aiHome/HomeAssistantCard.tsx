@@ -45,7 +45,7 @@ export function HomeAssistantCard() {
           style={{ flex: 1, minHeight: MIN_TOUCH, color: '#2A1A22', fontSize: 16 }} />
         <Tappable accessibilityRole="button" accessibilityLabel={tr('ai.home.send')} onPress={send} testID="home-ai-send"
           style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name="send" color="#87533F" />
+          <Icon name="send" color="#5B2A86" />
         </Tappable>
       </View>
       <Tappable accessibilityRole="button" accessibilityLabel={tr('ai.home.online')} onPress={() => router.push(q.trim().length >= 2 ? { pathname: '/assistant/chat', params: { q: q.trim() } } : '/assistant/chat')} testID="home-ai-online"

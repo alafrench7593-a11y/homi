@@ -85,7 +85,7 @@ const config: ExpoConfig = {
   android: {
     package: BRAND.bundleId,
     adaptiveIcon: {
-      backgroundColor: '#F2DDD8',
+      backgroundColor: '#16112B',
       foregroundImage: './assets/android-icon-foreground.png',
       backgroundImage: './assets/android-icon-background.png',
       monochromeImage: './assets/android-icon-monochrome.png',
@@ -105,8 +105,8 @@ const config: ExpoConfig = {
     'expo-sharing',
     'expo-apple-authentication',
     'expo-web-browser',
-    ['expo-splash-screen', { backgroundColor: '#F2DDD8', image: './assets/splash-icon.png', imageWidth: 180, dark: { backgroundColor: '#1F2344', image: './assets/splash-icon.png' } }],
-    ['expo-notifications', { color: '#87533F' }],
+    ['expo-splash-screen', { backgroundColor: '#16112B', image: './assets/splash-icon.png', imageWidth: 200, dark: { backgroundColor: '#0F0B1E', image: './assets/splash-icon.png' } }],
+    ['expo-notifications', { color: '#5B2A86' }],
     ['expo-local-authentication', { faceIDPermission: 'Face ID protège l’accès aux informations les plus intimes de votre suivi du cycle.' }],
     // Widget iOS « Mon cycle » (discret par défaut) — nécessite une build de développement, indisponible dans Expo Go
     ['expo-widgets', { widgets: [{ name: 'CycleWidget', displayName: 'Mon cycle', description: 'Jour du cycle, de façon discrète si vous le souhaitez.', ios: { supportedFamilies: ['systemSmall', 'accessoryRectangular'] } },

@@ -33,7 +33,6 @@ import { Manrope_700Bold } from '@expo-google-fonts/manrope/700Bold';
 import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument-serif/400Regular_Italic';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router';
 import { useLowPower } from '@/lib/lowPower';
-import { VideoBackdrop } from '@/components/VideoBackdrop';
 import { JourneyGuard } from '@/components/JourneyGuard';
 import { PremiumGate } from '@/components/PremiumGate';
 import { DemoBar } from '@/components/DemoBar';
@@ -286,14 +285,14 @@ function Backdrop() {
     <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: t.colors.background }}>
       {mounted.dark ? (
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>
-          {/* Nuit « HOMI » : la vidéo de fond sous un voile bleu nuit et prune ; fond fixe en attendant ou sans animation */}
-          <VideoBackdrop fallback={<PowderSky hour={hour} night still={lowPower} />} />
-          {glow > 0 && hour >= 18 ? <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(214,120,170,0.20)', 'rgba(255,164,128,0.30)']} locations={[0.3, 0.7, 1]} style={[StyleSheet.absoluteFill, { opacity: glow }]} /> : null}
+          {/* HOMI : ciel minuit vectoriel (plus de vidéo de fond : identité HOMI, moins de batterie) */}
+          <PowderSky hour={hour} night still={lowPower} />
+          {glow > 0 && hour >= 18 ? <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(155,120,230,0.18)', 'rgba(233,207,164,0.22)']} locations={[0.3, 0.7, 1]} style={[StyleSheet.absoluteFill, { opacity: glow }]} /> : null}
         </Animated.View>
       ) : null}
       {mounted.light ? (
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: v }]}>
-          <VideoBackdrop fallback={<PowderSky hour={hour} night={false} still={lowPower} />} />
+          <PowderSky hour={hour} night={false} still={lowPower} />
         </Animated.View>
       ) : null}
     </View>

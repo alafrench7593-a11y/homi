@@ -14,29 +14,29 @@ export type AuroraMood = 'day' | 'dawn' | 'evening' | 'night' | 'lowlight';
 
 const MOODS: Record<AuroraMood, { base: [string, string, string]; glows: { c: string; o: number }[]; ribbons: { c: string; o: number }[] }> = {
   dawn: {
-    base: ['#FFF3EC', '#FFEFF1', '#F7F0FB'],
-    glows: [{ c: '#FFC2A3', o: 0.75 }, { c: '#FFB0C8', o: 0.6 }, { c: '#D3C4FF', o: 0.55 }, { c: '#FFE2A6', o: 0.5 }],
-    ribbons: [{ c: '#FFB3C7', o: 0.35 }, { c: '#C9B8FF', o: 0.3 }],
+    base: ['#FBF9FE', '#F4F0FA', '#EFE9F8'],
+    glows: [{ c: '#E4DAFB', o: 0.75 }, { c: '#F1E3C7', o: 0.55 }, { c: '#CDBEFA', o: 0.55 }, { c: '#F6EEDD', o: 0.5 }],
+    ribbons: [{ c: '#D9CCFA', o: 0.35 }, { c: '#E9CFA4', o: 0.25 }],
   },
   day: {
-    base: ['#FFF7F0', '#FFF2F1', '#F6F1FC'],
-    glows: [{ c: '#FFCBB0', o: 0.65 }, { c: '#FFB9CF', o: 0.55 }, { c: '#CFC2FF', o: 0.55 }, { c: '#BFEBDC', o: 0.5 }],
-    ribbons: [{ c: '#FFC1D2', o: 0.3 }, { c: '#BDE9DB', o: 0.28 }],
+    base: ['#FFFFFF', '#F7F4FB', '#F1ECF9'],
+    glows: [{ c: '#E9DFFC', o: 0.65 }, { c: '#F3E6CC', o: 0.5 }, { c: '#D3C6FB', o: 0.55 }, { c: '#E8E1F7', o: 0.5 }],
+    ribbons: [{ c: '#DCD0FA', o: 0.3 }, { c: '#EFDDBA', o: 0.24 }],
   },
   evening: {
-    base: ['#2A1834', '#1C1128', '#120B1C'],
-    glows: [{ c: '#FF7EA6', o: 0.42 }, { c: '#FFA071', o: 0.32 }, { c: '#8F70FF', o: 0.4 }, { c: '#46CDB4', o: 0.22 }],
-    ribbons: [{ c: '#FF8DB0', o: 0.28 }, { c: '#9C82FF', o: 0.26 }],
+    base: ['#261C4A', '#1A1433', '#110D23'],
+    glows: [{ c: '#7B5CD6', o: 0.42 }, { c: '#E9CFA4', o: 0.22 }, { c: '#5B2A86', o: 0.45 }, { c: '#CDBEFA', o: 0.2 }],
+    ribbons: [{ c: '#9C86E8', o: 0.26 }, { c: '#E9CFA4', o: 0.16 }],
   },
   night: {
-    base: ['#1D1430', '#140D22', '#0C0815'],
-    glows: [{ c: '#7C66FF', o: 0.4 }, { c: '#3FD1B5', o: 0.3 }, { c: '#FF77A2', o: 0.3 }, { c: '#FFB07A', o: 0.16 }],
-    ribbons: [{ c: '#4FE0C2', o: 0.26 }, { c: '#A08BFF', o: 0.26 }],
+    base: ['#1A1433', '#120E26', '#0C0919'],
+    glows: [{ c: '#6E52D0', o: 0.4 }, { c: '#5B2A86', o: 0.36 }, { c: '#CDBEFA', o: 0.18 }, { c: '#E9CFA4', o: 0.14 }],
+    ribbons: [{ c: '#8E78E2', o: 0.24 }, { c: '#B9A6F2', o: 0.2 }],
   },
   lowlight: {
-    base: ['#0D0912', '#100A16', '#140C1B'],
-    glows: [{ c: '#7C5A8E', o: 0.22 }, { c: '#8A4D66', o: 0.18 }, { c: '#3D6E6A', o: 0.12 }, { c: '#7A5A3E', o: 0.1 }],
-    ribbons: [{ c: '#6E5A8E', o: 0.12 }, { c: '#4E7A74', o: 0.1 }],
+    base: ['#0C0919', '#0F0B1E', '#120D24'],
+    glows: [{ c: '#5E4A9E', o: 0.22 }, { c: '#5B2A86', o: 0.18 }, { c: '#3E3470', o: 0.12 }, { c: '#7A6440', o: 0.08 }],
+    ribbons: [{ c: '#6A58A8', o: 0.12 }, { c: '#4A3C80', o: 0.1 }],
   },
 };
 

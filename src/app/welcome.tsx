@@ -83,7 +83,7 @@ export default function Welcome() {
         <View style={{ alignItems: 'center' }}>
           <Appear kind="pop" delay={0.22}>
             <LinearGradient colors={t.isDark ? ['rgba(231,192,143,0.45)', 'rgba(42,36,72,0.65)', 'rgba(31,35,68,0.75)'] : ['rgba(230,190,150,0.7)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, marginBottom: 18 }}>
-              <Sparkle color={t.isDark ? '#FFFFFF' : '#87533F'} />
+              <Sparkle color={t.isDark ? '#FFFFFF' : '#5B2A86'} />
               <Text variant="small" color={ink}>{tr('brand.tagline')}</Text>
             </LinearGradient>
           </Appear>

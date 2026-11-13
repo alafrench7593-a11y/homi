@@ -15,7 +15,7 @@ export function linkFrame(isDark: boolean): ViewStyle {
     paddingVertical: 6,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: isDark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.30)',
+    borderColor: isDark ? 'rgba(205,190,250,0.22)' : 'rgba(184,134,90,0.30)',
     backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.72)',
   };
 }
