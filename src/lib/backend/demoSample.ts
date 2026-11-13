@@ -2,6 +2,7 @@
 import { uuid } from '../uuid';
 import { t as tr } from '@/i18n';
 import { addDays, todayISO } from '../domain/dates';
+import { seedTodayHousehold } from './demoToday';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -104,4 +105,7 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
       naps, quality, fatigue, mood, note, created_at: iso(ago * 24), updated_at: iso(ago * 24),
     });
   }
+
+  // « Aujourd'hui dans le foyer » : co-parent, missions et tâches du jour, événement, relais de ce soir
+  seedTodayHousehold({ userId, hid, childId: lina, T });
 }

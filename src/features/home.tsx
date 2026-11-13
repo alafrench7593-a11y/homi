@@ -239,8 +239,10 @@ export function UpcomingCard({ single = false }: { single?: boolean } = {}) {
   const { data: appts } = useAppointments({ upcomingOnly: true });
   const { data: reminders } = useReminders();
   const ctx = useRelevanceCtx();
-  // Uniquement ce qui concerne le profil affiché (jamais un rendez-vous de grossesse sur le profil d'un bébé)
-  const next: Appointment | undefined = (appts ?? []).find((a) => appointmentRelevant(a, ctx));
+  // Uniquement ce qui concerne le profil affiché (jamais un rendez-vous de grossesse sur le profil d'un bébé) ;
+  // ceux d'aujourd'hui sont déjà dans « Aujourd'hui dans le foyer » en tête de l'accueil (pas de doublon)
+  const endOfToday = new Date(); endOfToday.setHours(24, 0, 0, 0);
+  const next: Appointment | undefined = (appts ?? []).find((a) => appointmentRelevant(a, ctx) && Date.parse(a.starts_at) >= endOfToday.getTime());
   const nextReminder = (reminders ?? [])
     .filter((r) => r.enabled && reminderRelevant(r, ctx))
     .map((r) => ({ r, at: nextOccurrence(r.schedule) }))

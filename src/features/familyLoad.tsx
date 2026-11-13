@@ -13,7 +13,7 @@ import { useChildren } from '@/lib/data/hooks';
 import { useHealthItems } from '@/lib/data/hooks-family';
 import { childAge } from '@/lib/domain/child';
 import type { Child } from '@/lib/types';
-import { useCareRequests, useCareShifts, useCreateRequest, useDeleteTask, useFamilyTasks, usePeople, useRespondRequest, useSaveTask, type TaskInput } from '@/lib/data/hooks-family-load';
+import { useCareRequests, useCareShifts, useCreateRequest, useDeleteTask, usePeople, useRespondRequest, useSaveTask, type TaskInput } from '@/lib/data/hooks-family-load';
 import { router } from 'expo-router';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { CATEGORIES, QUICK_ACTIONS, REQUEST_LABEL, categoryOf, sameLocalDay, type CareRequest, type FamilyTask, type RequestKind } from '@/lib/domain/familyLoad';
@@ -330,26 +330,27 @@ function ChildEssentialCard({ child, large }: { child: Child; large?: boolean })
 }
 
 // ------------------------------------------------------------------ carte d'accueil
-/** Accueil : demandes qui m'attendent, mes tâches du jour, et l'accès immédiat à « Journée difficile ». */
+/**
+ * Accueil : demandes qui m'attendent, le prochain relais de nuit et l'accès immédiat à « Journée difficile ».
+ * Les tâches du jour et le relais de ce soir sont dans « Aujourd'hui dans le foyer » (en tête de l'accueil) : pas de doublon ici.
+ */
 export function FamilyHomeCard() {
   const t = useTheme();
   const { me, labelOf } = usePeople();
   const { data: requests } = useCareRequests();
-  const { data: tasks } = useFamilyTasks();
   const day = todayISO();
   const waiting = (requests ?? []).filter((r) => r.status === 'open' && r.from_user !== me && (!r.to_user || r.to_user === me));
-  const mineToday = (tasks ?? []).filter((x) => x.status === 'todo' && x.assignee_id === me && x.due_at && sameLocalDay(x.due_at, day));
   const { data: shifts } = useCareShifts('night');
-  const nextNight = (shifts ?? []).filter((s) => s.status !== 'cancelled' && Date.parse(s.ends_at) > Date.now()).sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1))[0];
+  const nextNight = (shifts ?? []).filter((s) => s.status !== 'cancelled' && Date.parse(s.ends_at) > Date.now() && !sameLocalDay(s.starts_at, day)).sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1))[0];
   return (
     <View style={{ gap: spacing.xs }}>
-      {waiting.length || mineToday.length ? (
+      {waiting.length ? (
         <Card onPress={() => router.push('/family')} accessibilityLabel={tr('u6.fl.open_family')}>
           <Row>
-            <Icon name={waiting.length ? 'bell' : 'check-square'} color={t.colors.primary} />
+            <Icon name="bell" color={t.colors.primary} />
             <View style={{ flex: 1 }}>
-              <Text weight="bold">{waiting.length ? tr('u6.fl.waiting', { count: waiting.length }) : tr('u6.fl.today_tasks', { count: mineToday.length })}</Text>
-              <Text variant="small" muted>{waiting.length ? REQUEST_LABEL[waiting[0].kind] : mineToday.map((x) => x.title).join(' · ')}</Text>
+              <Text weight="bold">{tr('u6.fl.waiting', { count: waiting.length })}</Text>
+              <Text variant="small" muted>{REQUEST_LABEL[waiting[0].kind]}</Text>
             </View>
             <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
           </Row>

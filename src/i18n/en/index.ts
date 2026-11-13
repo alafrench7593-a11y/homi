@@ -64,3 +64,4 @@ export { diary } from './diary';
 export { nav } from './nav';
 export { missions } from './missions';
 export { stocks } from './stocks';
+export { homeToday } from './homeToday';
