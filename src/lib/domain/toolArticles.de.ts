@@ -23,6 +23,7 @@ export const ASK_DE: Record<string, string> = {
   'preg_eat': 'Welche Lebensmittel in der Schwangerschaft meiden?',
   'pp_feeding': 'Woran erkenne ich, ob mein Baby genug trinkt?',
   'baby_breastfeed': 'Das Stillen tut mir weh',
+  'feeding_home': 'Wie pumpe ich Milch ab und bewahre sie auf?',
   'pp_bottle': 'Wie bereite ich ein Fläschchen zu?',
   'baby_bottle_timer': 'Wie bereite ich ein Fläschchen zu?',
   'baby_bottle': 'Wie lange ist ein Fläschchen haltbar?',

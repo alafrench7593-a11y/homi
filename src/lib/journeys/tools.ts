@@ -152,6 +152,8 @@ export const TOOLS: ToolDef[] = [
   { id: 'pp_partner', theme: 'mood', icon: 'users', scopes: ['postpartum', 'baby'], when: (c) => c.scope === 'postpartum' || !!c.postpartum, href: () => '/postpartum/partner' },
   { id: 'pp_feeding', theme: 'feeding', icon: 'droplet', scopes: ['postpartum'], when: (c) => !!c.babyId, href: (c) => (c.babyId ? `/track/breastfeed?child=${c.babyId}` : null) },
   { id: 'pp_bottle', theme: 'feeding', icon: 'coffee', scopes: ['postpartum'], when: (c) => !!c.babyId, href: (c) => (c.babyId ? `/bottle/${c.babyId}` : null) },
+  // Accueil « L'alimentation de mon bébé » (13/11/2026) : tétées, tirages, biberons, réserve — s'ajoute aux accès existants
+  { id: 'feeding_home', theme: 'feeding', icon: 'heart', scopes: ['baby', 'postpartum'], when: (c) => c.scope !== 'postpartum' || !!c.babyId, href: (c) => { const id = c.scope === 'postpartum' ? c.babyId : c.childId; return id ? `/feeding?child=${id}` : null; } },
 
   // ---------------------------------------------------------------- bébé (enfant né, moins de 2 ans)
   { id: 'baby_breastfeed', theme: 'feeding', icon: 'droplet', scopes: ['baby'], href: (c) => q('/track/breastfeed', c) },
@@ -268,6 +270,7 @@ const SCREEN_RULES: { prefix: string; scopes: Scope[]; subOnly?: boolean }[] = [
   { prefix: '/cycle', scopes: ['avoid', 'ttc', 'cycle'] },
   { prefix: '/pregnancy', scopes: ['pregnancy'] },
   { prefix: '/bottle', scopes: ['baby', 'postpartum'] },
+  { prefix: '/feeding', scopes: ['baby', 'postpartum'] },
   // « /track » seul est l'onglet Suivi (pour tous) ; « /track/biberon… » est une saisie pour un enfant né
   { prefix: '/track', scopes: ['baby', 'child', 'postpartum'], subOnly: true },
   { prefix: '/fertility', scopes: ['ttc'] },

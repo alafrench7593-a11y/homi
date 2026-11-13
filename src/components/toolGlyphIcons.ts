@@ -59,6 +59,7 @@ const BY_ID: Record<string, string> = {
   preg_eat: 'food-apple',                  // bien manger enceinte
   pp_feeding: 'mother-nurse',              // allaitement après la naissance
   baby_breastfeed: 'mother-nurse',         // allaitement
+  feeding_home: 'mother-nurse',            // accueil alimentation (tétées, tirages, réserve)
   pp_bottle: 'baby-bottle',                // biberon
   baby_bottle: 'baby-bottle',              // biberon
   baby_bottle_timer: 'timer-sand',         // minuteur du biberon : sablier

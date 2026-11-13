@@ -54,6 +54,7 @@ const TOOL_TOPICS_FR: Record<string, ToolTopic> = {
   preg_eat: { words: ['aliment', 'manger', 'fromage', 'poisson', 'sushi', 'toxoplasm', 'listeri', 'cafe', 'alcool', 'vitamine', 'fer', 'nausee', 'repas'], cats: ['alimentation-grossesse'], journeys: PREG, ask: 'Quels aliments éviter enceinte ?' },
   // Allaitement et biberon
   pp_feeding: { words: ['allait', 'sein', 'tetee', 'lait maternel', 'crevasse', 'mastite', 'engorgement', 'tire-lait', 'tirer'], cats: ['alimentation-bebe'], journeys: BABY, ask: 'Comment savoir si mon bébé boit assez ?' },
+  feeding_home: { words: ['allait', 'sein', 'tetee', 'lait maternel', 'tire-lait', 'tirer', 'biberon', 'allaitement mixte'], cats: ['alimentation-bebe'], journeys: BABY, ask: 'Comment tirer et conserver mon lait ?' },
   baby_breastfeed: { words: ['allait', 'sein', 'tetee', 'lait maternel', 'crevasse', 'mastite', 'engorgement', 'tire-lait', 'tirer'], cats: ['alimentation-bebe'], journeys: BABY, ask: 'J’ai mal en allaitant' },
   pp_bottle: { words: ['biberon', 'lait infantile', 'preparation', 'sterilis', 'tetine', 'regurgit'], cats: ['alimentation-bebe'], journeys: BABY, ask: 'Comment préparer un biberon ?' },
   baby_bottle_timer: { words: ['biberon', 'lait infantile', 'preparation', 'sterilis', 'tetine', 'regurgit', 'rythme'], cats: ['alimentation-bebe'], journeys: BABY, ask: 'Comment préparer un biberon ?' },
@@ -190,6 +191,7 @@ const ASK_EN: Record<string, string> = {
   'preg_eat': 'Which foods should I avoid when pregnant?',
   'pp_feeding': 'How can I tell if my baby is drinking enough?',
   'baby_breastfeed': 'It hurts when I breastfeed',
+  'feeding_home': 'How do I express and store my milk?',
   'pp_bottle': 'How do I prepare a bottle?',
   'baby_bottle_timer': 'How do I prepare a bottle?',
   'baby_bottle': 'How long can a bottle be kept?',

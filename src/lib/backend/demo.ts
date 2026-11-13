@@ -4,7 +4,7 @@
  * l'application se comporte de la même façon ; la sécurité multi-utilisateur
  * (RLS) n'a pas de sens ici puisqu'un seul compte local existe par appareil.
  */
-import { AI_TABLES, STRICT_TABLES } from '../premium/access';
+import { AI_TABLES, LATER_STRICT_TABLES, STRICT_TABLES } from '../premium/access';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EXTERNAL_RESOURCES } from '@/content/resources';
 // Contenus lourds (catalogues, articles FR et EN, recettes) : chargés à l'ouverture de la démonstration (QA E-06)
@@ -64,7 +64,17 @@ const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_r
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
 const demoRecallMessage = () => tr('l2.dm.recallCheck');
-const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements', 'food_tastings', 'child_steps'];
+const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements', 'food_tastings', 'child_steps', 'milk_stash'];
+
+/** Réserve de lait : mêmes contrôles que la table milk_stash (20261113000100_allaitement.sql). */
+function checkMilkStash(r: Row) {
+  if (!Number.isInteger(r.volume_ml) || r.volume_ml < 1 || r.volume_ml > 1000) throw new BackendError(tr('lac.dm.volume'), '23514');
+  if (!['fridge', 'freezer', 'other'].includes(r.storage)) throw new BackendError(tr('lac.dm.storage'), '23514');
+  if (!['available', 'used', 'discarded'].includes(r.status)) throw new BackendError(tr('lac.dm.status'), '23514');
+  if ((r.status === 'available') !== (r.status_at == null)) throw new BackendError(tr('lac.dm.statusAt'), '23514');
+  if (r.status_at != null && Date.parse(r.status_at) < Date.parse(r.collected_at)) throw new BackendError(tr('lac.dm.statusAt'), '23514');
+  if (r.location != null && String(r.location).length > 120) throw new BackendError(tr('lac.dm.location'), '23514');
+}
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
 function checkBottleTimer(all: Row[], r: Row) {
@@ -306,7 +316,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   const strictGuard = (table: string) => {
     if (!opts.strictPremium || !state.session || isPremium()) return;
     if (AI_TABLES.includes(table) && grantActive(AI_ENTITLEMENT)) return;
-    if (STRICT_TABLES.includes(table) || AI_TABLES.includes(table)) {
+    if (STRICT_TABLES.includes(table) || LATER_STRICT_TABLES.includes(table) || AI_TABLES.includes(table)) {
       throw new BackendError('Fonction Premium : abonnement requis pour enregistrer de nouvelles données', 'P0001', 'premium_required');
     }
   };
@@ -834,6 +844,16 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       checkBottleTimer(T('bottle_timers'), r);
     }
     if (table === 'bottles') r.planned_next_ml ??= null;
+    // Allaitement (20261113000100_allaitement.sql) : colonnes facultatives du tirage et de la tétée, réserve de lait
+    if (table === 'breastfeeds') r.session_id ??= null;
+    if (table === 'pumpings') {
+      r.left_ml ??= null; r.right_ml ??= null; r.duration_min ??= null; r.comfort ??= null;
+      if (r.comfort != null && !['comfortable', 'uncomfortable', 'painful'].includes(r.comfort)) throw new BackendError(tr('lac.dm.comfort'), '23514');
+    }
+    if (table === 'milk_stash') {
+      r.status ??= 'available'; r.status_at ??= null; r.location ??= null; r.note ??= null; r.pumping_id ??= null; r.updated_at = nowIso();
+      checkMilkStash(r);
+    }
     if (table === 'parent_sleep_logs') {
       // Même règles que la base : une entrée par jour, réveil après le coucher
       if (T(table).some((x) => x.user_id === r.user_id && x.log_date === r.log_date)) throw new BackendError(tr('l2.dm.nightExists'));
@@ -1427,7 +1447,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
         place_suggestions: T('place_suggestions').filter((x) => x.user_id === uid()),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
-          ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines', 'food_introductions', 'food_tastings', 'child_steps']
+          ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines', 'food_introductions', 'food_tastings', 'child_steps', 'milk_stash']
             .map((t) => [t, byHousehold(t).filter((r) => r.household_id === h.id)])),
         })),
         community: {
@@ -1783,6 +1803,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
         if (table === 'community_profiles' && patch.pseudonym != null) checkPseudonym({ ...patch, user_id: r.user_id }, false);
         if (table === 'sleeps' && patch.ended_at && Date.parse(patch.ended_at) < Date.parse(patch.started_at ?? r.started_at)) throw new BackendError(tr('l2.dm.sleepEnd'));
         if (table === 'bottle_timers') checkBottleTimer(T(table), { ...r, ...patch, id: r.id });
+        if (table === 'milk_stash') checkMilkStash({ ...r, ...patch });
         if (table === 'bottles') {
           const next = { ...r, ...patch };
           if (next.prepared_ml != null && next.consumed_ml != null && next.consumed_ml > next.prepared_ml) throw new BackendError(tr('l2.dm.bottleDrunk'));
@@ -1850,7 +1871,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           if (r.user_id !== state.session?.userId) continue;
           if (patch.log_date && T(table).some((x) => x.id !== r.id && x.user_id === r.user_id && x.log_date === patch.log_date)) throw new BackendError(tr('l2.dm.nightExists'));
         }
-        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'parent_sleep_logs', 'contraception_methods', 'consultation_questions', 'bottle_timers', 'cycle_preferences', 'postpartum_checkins'].includes(table) ? { updated_at: nowIso() } : {});
+        Object.assign(r, patch, ['reminders', 'profiles', 'pregnancies', 'children', 'parent_sleep_logs', 'contraception_methods', 'consultation_questions', 'bottle_timers', 'cycle_preferences', 'postpartum_checkins', 'milk_stash'].includes(table) ? { updated_at: nowIso() } : {});
       }
       persist();
       return JSON.parse(JSON.stringify(rows)) as R[];

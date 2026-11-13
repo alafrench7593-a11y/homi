@@ -90,5 +90,10 @@ export const STRICT_TABLES: readonly string[] = [
   'forum_subscriptions', 'group_members', 'group_invitations', 'community_groups', 'community_albums',
   'community_meetups', 'meetup_participants', 'event_registrations',
 ];
+/**
+ * Tables créées APRÈS 20261108000300 et protégées par la même garde dans leur propre migration
+ * (réserve de lait : 20261113000100_allaitement.sql).
+ */
+export const LATER_STRICT_TABLES: readonly string[] = ['milk_stash'];
 /** Tables de l'assistant : ouvertes aussi par l'offre « Assistant IA ». */
 export const AI_TABLES: readonly string[] = ['assistant_conversations', 'assistant_messages', 'assistant_feedback'];

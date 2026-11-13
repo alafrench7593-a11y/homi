@@ -428,6 +428,9 @@ function TrackEntry() {
         <QuickDiaperCard childId={childId} householdId={child.household_id} name={child.first_name}
           lastAt={[...dayRows].map((r) => r.at).filter((x): x is string => !!x).sort().pop() ?? null} />
       ) : null}
+      {!editing && kind === 'breastfeed' && !timerStart ? (
+        <Button label={tr('lac.link.timer')} icon="watch" variant="secondary" onPress={() => router.push({ pathname: '/feeding/timer', params: { child: childId } })} testID="track-feed-timer-v2" />
+      ) : null}
       {!editing && kind === 'breastfeed' ? (
         <LastSideCard last={lastSide(feedsQ.data ?? [])} running={!!timerStart}
           onStart={(sd) => { setSide(sd); setTimerStart(new Date()); }} />

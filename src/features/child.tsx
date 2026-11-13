@@ -145,6 +145,12 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
           <QuickTile key={x.key} icon={x.icon} label={x.label} onPress={x.go} />
         ))}
       </View>
+      {/* Accueil « L'alimentation de … » (tétées, tirages, biberons, réserve) : s'ajoute aux tuiles, ne les remplace pas */}
+      {child.enabled_tracking.includes('breastfeed') || isBottleChild(child.birth_date, js.childType(child.id)) ? (
+        <Card padded={false}>
+          <ListRow icon="heart" title={tr('lac.link.home', { name: child.first_name })} subtitle={tr('lac.link.homeSub')} onPress={() => router.push({ pathname: '/feeding', params: { child: child.id } })} testID="child-feeding-home" />
+        </Card>
+      ) : null}
 
       <SectionTitle title={tr('u7.child.latestEntries')} />
       {logsLoading ? <Skeleton kind="list" rows={3} /> : logsError ? (

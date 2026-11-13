@@ -23,6 +23,7 @@ export const ASK_IT: Record<string, string> = {
   'preg_eat': 'Quali alimenti evitare in gravidanza?',
   'pp_feeding': 'Come capire se il mio bambino beve abbastanza?',
   'baby_breastfeed': 'Allattare mi fa male',
+  'feeding_home': 'Come tirare e conservare il mio latte?',
   'pp_bottle': 'Come preparare un biberon?',
   'baby_bottle_timer': 'Come preparare un biberon?',
   'baby_bottle': 'Quanto tempo si conserva un biberon?',

@@ -191,6 +191,7 @@ export default function Track() {
             <ListRow icon="smile" title={tr('tool.mood')} onPress={() => router.push('/me/mood')} />
             <ListRow icon="cloud" title={tr('tool.sleep')} onPress={() => router.push('/me/sleep')} />
             {scope.babyId ? <ListRow icon="droplet" title={tr('tool.pp_feeding')} onPress={() => router.push(`/track/breastfeed?child=${scope.babyId}`)} /> : null}
+            {scope.babyId ? <ListRow icon="heart" title={tr('tool.feeding_home')} subtitle={tr('tool.feeding_home.sub')} onPress={() => router.push(`/feeding?child=${scope.babyId}`)} testID="track-feeding-home" /> : null}
           </Card>
         )}
         {subject.type === 'family' && (
