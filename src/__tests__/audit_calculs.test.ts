@@ -23,6 +23,8 @@ import { trendSeries } from '@/lib/domain/postpartum';
 import { summarizeWeek } from '@/lib/domain/parentSleep';
 import { weekKey } from '@/lib/domain/moodSupport';
 import { stockLevel } from '@/lib/domain/stocks';
+import { addMonthsISO } from '@/lib/domain/vaccineRules';
+import { cycleStats } from '@/lib/domain/cycleV2';
 import type { Sleep } from '@/lib/types';
 import type { ParentSleepLog } from '@/lib/types-sleep';
 import type { PostpartumCheckin } from '@/lib/domain/postpartum';
@@ -236,5 +238,22 @@ describe('autres calculs de suivi', () => {
     expect(stockLevel({ qty_estimate: 0, threshold: 2 })).toBe('out');
     expect(stockLevel({ qty_estimate: 2, threshold: 2 })).toBe('low');
     expect(stockLevel({ qty_estimate: 3, threshold: 2 })).toBe('ok');
+  });
+  it('vaccins : échéance « + n mois » en fin de mois (même convention que l’âge de l’enfant)', () => {
+    expect(addMonthsISO('2026-01-31', 1)).toBe('2026-02-28');
+    expect(addMonthsISO('2028-01-31', 1)).toBe('2028-02-29');
+    expect(addMonthsISO('2026-08-31', 1)).toBe('2026-09-30');
+    expect(addMonthsISO('2026-11-15', 2)).toBe('2027-01-15');
+  });
+  it('statistiques du cycle : durées inclusives, février compté, moyennes sans les jours non renseignés', () => {
+    const s = cycleStats(
+      [{ start_date: '2026-01-29', end_date: '2026-02-02' }, { start_date: '2026-02-26', end_date: '2026-03-01' }, { start_date: '2026-03-26', end_date: null }],
+      [{ logged_on: '2026-02-01', mood: 3 }, { logged_on: '2026-02-02', mood: null }, { logged_on: '2026-02-03', mood: 5 }],
+    );
+    // 29/01 → 26/02 = 28 j ; 26/02 → 26/03 = 28 j ; règles du 29/01 au 02/02 = 5 j, du 26/02 au 01/03 = 4 j (2026 non bissextile)
+    expect(s.cycles.map((c) => c.length)).toEqual([28, 28]);
+    expect([s.averageLength, s.shortest, s.longest]).toEqual([28, 28, 28]);
+    expect([s.periodDurations, s.averagePeriod]).toEqual([[5, 4], 4.5]);
+    expect([s.wellbeing.mood, s.wellbeing.days]).toEqual([4, 2]);
   });
 });
