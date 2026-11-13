@@ -30,6 +30,16 @@ Objectif : remplacer les couplages directs « déclencheur A met à jour la tabl
 - **Exemple branché** : `family_tasks` passe à `done` → `task.completed` (clé `task.completed:<tâche>:<horodatage de fin>`) ; réouverture → `task.reopened`. Une tâche terminée, rouverte puis terminée de nouveau produit deux faits distincts ; une modification sans changement de statut n'en produit aucun.
 - **Non branché** (volontairement) : les 13 synchronisations inter-modules. Chacune deviendra un consommateur : par ex. `task.completed` (catégorie courses) → cocher l'article lié ; `shopping.item_checked` → stock ; `expense.recorded` → budget ; `timesheet.validated` → contrat/budget. Le déclencheur existant « demande acceptée → tâche transférée » (`care_requests_after`) reste en place jusqu'à sa migration vers un consommateur.
 
+## 2 bis. Premier consommateur branché : missions familiales (14/11/2026)
+
+`20261114000300_missions.sql` — voir `HOMI_MISSIONS_SPEC.md`.
+- Types : `mission.requested`, `mission.accepted`, `mission.declined`, `mission.postponed`, `mission.started`, `mission.completed`, `mission.cancelled`, `mission.question`, `mission.reminded` (migration dédiée `20261114000200`).
+- Émission : par les RPC `create_mission` / `mission_respond` (jamais par un client, jamais par un déclencheur ad hoc). Clé : `mission.<fait>:<tâche>:<entrée d'historique>` (création : `…:created`) — un fait = une entrée d'historique, donc un rejeu ne produit rien de neuf.
+- **Un seul consommateur** `_consume_mission_event` : (a) notification neutre au bon destinataire (idempotente : `payload.event_id`) ; (b) mission d'achat acceptée/commencée → article de courses lié dans la liste la plus récente du foyer (créée « Courses » si aucune), rattaché à un article identique non coché s'il existe, sinon créé avec `client_id = md5('mission-item:'||tâche)` + `on conflict do nothing` → **jamais de doublon, même rejoué** ; (c) mission terminée → article coché une fois.
+- Exécution : `_dispatch_household_event(id)` juste après l'émission (même transaction, bloc d'erreur isolé : en cas d'échec l'événement redevient `pending` avec `last_error`, la réponse métier n'est jamais annulée) + `process_household_events(limite)` pour un passage planifié (serveur, `service_role`, à planifier avec pg_cron ou une fonction — non déployé). Anti-boucle : le consommateur s'exécute sous `_begin_event_processing` ; il n'émet rien.
+- Agenda : rien à synchroniser — une mission datée est une tâche datée, déjà lue par l'agenda (missions refusées/annulées masquées).
+- Tests : `98m_missions.sql` (consommateur rejoué deux fois, clé rejouée, `process_household_events` → 0, anti-doublon d'article).
+
 ## 3. Idempotence
 
 | Niveau | Mécanisme |
@@ -63,7 +73,7 @@ Avant : « le dernier qui écrit gagne » sans le savoir. Maintenant, sur `famil
 - **Insertions** : file existante (`insertOrQueue`, `flushQueue`), ordre conservé, erreurs passagères gardées, refus serveur → « conflits » visibles dans Réglages > Synchronisation, jamais supprimés en silence. Désormais aussi pour les **tâches** (`useSaveTask`) et les **articles de courses** (`useAddShoppingItem`) avec `client_id` par foyer. Les demandes d'aide gardent un envoi direct (une demande « SOS » ne doit pas paraître envoyée alors qu'elle attend) mais portent un `client_id`.
 - **Modifications hors ligne** : pas encore mises en file. Prochaine étape : mettre en file `{table, id, version_lue, modifications}` et rejouer via `update_if_version` ; un `conflict` va dans « à vérifier » avec les deux versions.
 - **Suppressions** : directes uniquement (pas de suppression logique) ; le journal d'audit garde la trace (« avant » résumé).
-- **Révocation** : un membre retiré ne lit plus rien côté serveur à la seconde (RLS). Son cache local garde ce qu'il avait déjà lu tant qu'il ne se déconnecte pas (`localWipe.ts` à la déconnexion) — voir `HOMI_SECURITY_REVIEW.md` § Reste à faire.
+- **Révocation** : un membre retiré ne lit plus rien côté serveur à la seconde (RLS). **Depuis le 14/11/2026**, l'appareil purge aussi son cache : `useHouseholdRevocationGuard` (`src/lib/householdPurge.ts`, monté à la racine) compare la liste **fraîche** des appartenances (lue au serveur pendant la session, jamais le cache restauré) aux foyers déjà connus de l'appareil (`knownHouseholds`) ; pour un foyer disparu il retire du cache React Query toutes les requêtes dont la clé contient ce foyer ou dont les lignes portent son `household_id` (la persistance réécrit le cache sans elles), puis les saisies et refus de ce foyer dans la file hors ligne (`purgeQueueForHousehold`). Test Jest `householdPurge.test.ts`.
 
 ## 6. Anti-boucle
 
@@ -83,6 +93,6 @@ Avant : « le dernier qui écrit gagne » sans le savoir. Maintenant, sur `famil
 ## 8. Ce qui reste
 
 1. File hors ligne des **modifications** (rejeu via `update_if_version`) et écran de résolution des conflits.
-2. Consommateur générique des événements (fonction planifiée ou `pg_cron`) et migration des synchronisations codées en dur.
+2. Planifier `process_household_events` (pg_cron / fonction) ; brancher les autres synchronisations sur le même modèle que les missions (« article coché → mission terminée », stock, budget) et migrer `care_requests_after`.
 3. Realtime : ajouter `shopping_items`, `shopping_lists`, `document_shares` à la publication si les écrans en ont besoin.
 4. Suppression logique (`deleted_at`) pour les modules où l'historique compte (pointages, contrats).

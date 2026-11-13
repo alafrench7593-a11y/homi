@@ -112,6 +112,8 @@ export const ASK_IT: Record<string, string> = {
   'custody': 'Come organizzare l’affidamento condiviso per un bambino piccolo?',
   'brain_dump': 'Come alleggerire il mio carico mentale?',
   'family_domains': 'Come dividere meglio i compiti in due?',
+  'family_missions': 'Come dividerci i compiti senza dover ricordare tutto all’altro?',
+  'family_responsibilities': 'Come dividere in due gli ambiti della casa?',
   'mental_load': 'Come parlare del carico mentale nella coppia?',
   'family_prep': 'Come preparare il rientro a scuola senza stress?',
   'offduty': 'Come prendermi del tempo per me?',

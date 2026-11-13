@@ -8,7 +8,7 @@ import type { IconName } from '@/components/ui';
 import { t as tr } from '@/i18n';
 import { localized } from '@/i18n/localized';
 
-export type TaskCategory = 'feeding' | 'diapers' | 'sleep' | 'shopping' | 'packing' | 'appointments' | 'housework' | 'admin' | 'organization' | 'parent_rest' | 'other';
+export type TaskCategory = 'feeding' | 'diapers' | 'sleep' | 'shopping' | 'packing' | 'appointments' | 'housework' | 'admin' | 'organization' | 'parent_rest' | 'other' | 'pets' | 'childcare' | 'health';
 export type Recurrence = { type: 'daily' | 'weekly' | 'monthly'; every?: number } | null;
 
 export interface FamilyTask {
@@ -47,6 +47,9 @@ const CATEGORIES_FR: CategoryDef[] = [
   { value: 'admin', label: 'Administration', icon: 'file-text' },
   { value: 'organization', label: 'Organisation familiale', icon: 'grid' },
   { value: 'parent_rest', label: 'Repos parental', icon: 'sun' },
+  { value: 'childcare', label: 'Crèche et garde', icon: 'users' },
+  { value: 'pets', label: 'Animaux', icon: 'feather' },
+  { value: 'health', label: 'Santé familiale', icon: 'activity' },
   { value: 'other', label: 'Autre', icon: 'circle' },
 ];
 const CATEGORIES_EN: CategoryDef[] = [
@@ -60,6 +63,9 @@ const CATEGORIES_EN: CategoryDef[] = [
   { value: 'admin', label: 'Paperwork', icon: 'file-text' },
   { value: 'organization', label: 'Family organisation', icon: 'grid' },
   { value: 'parent_rest', label: 'Parental rest', icon: 'sun' },
+  { value: 'childcare', label: 'Nursery and childcare', icon: 'users' },
+  { value: 'pets', label: 'Pets', icon: 'feather' },
+  { value: 'health', label: 'Family health', icon: 'activity' },
   { value: 'other', label: 'Other', icon: 'circle' },
 ];
 const CATEGORIES_ES: CategoryDef[] = [
@@ -73,6 +79,9 @@ const CATEGORIES_ES: CategoryDef[] = [
   { value: 'admin', label: 'Trámites', icon: 'file-text' },
   { value: 'organization', label: 'Organización familiar', icon: 'grid' },
   { value: 'parent_rest', label: 'Descanso parental', icon: 'sun' },
+  { value: 'childcare', label: 'Guardería y cuidado', icon: 'users' },
+  { value: 'pets', label: 'Mascotas', icon: 'feather' },
+  { value: 'health', label: 'Salud familiar', icon: 'activity' },
   { value: 'other', label: 'Otro', icon: 'circle' },
 ];
 const CATEGORIES_DE: CategoryDef[] = [
@@ -86,6 +95,9 @@ const CATEGORIES_DE: CategoryDef[] = [
   { value: 'admin', label: 'Behördenkram', icon: 'file-text' },
   { value: 'organization', label: 'Familienorganisation', icon: 'grid' },
   { value: 'parent_rest', label: 'Erholung für Eltern', icon: 'sun' },
+  { value: 'childcare', label: 'Kita und Betreuung', icon: 'users' },
+  { value: 'pets', label: 'Haustiere', icon: 'feather' },
+  { value: 'health', label: 'Familiengesundheit', icon: 'activity' },
   { value: 'other', label: 'Anderes', icon: 'circle' },
 ];
 const CATEGORIES_IT: CategoryDef[] = [
@@ -99,6 +111,9 @@ const CATEGORIES_IT: CategoryDef[] = [
   { value: 'admin', label: 'Pratiche', icon: 'file-text' },
   { value: 'organization', label: 'Organizzazione familiare', icon: 'grid' },
   { value: 'parent_rest', label: 'Riposo dei genitori', icon: 'sun' },
+  { value: 'childcare', label: 'Nido e custodia', icon: 'users' },
+  { value: 'pets', label: 'Animali', icon: 'feather' },
+  { value: 'health', label: 'Salute della famiglia', icon: 'activity' },
   { value: 'other', label: 'Altro', icon: 'circle' },
 ];
 export const CATEGORIES: CategoryDef[] = localized(CATEGORIES_FR, CATEGORIES_EN, { es: CATEGORIES_ES, de: CATEGORIES_DE, it: CATEGORIES_IT });

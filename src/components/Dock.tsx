@@ -251,6 +251,8 @@ function useQuickAdd(onBefore?: () => void) {
     { icon: 'edit-3', label: tr('pj.q.checkin'), onPress: go(() => router.push('/postpartum/checkin')), show: scope.scope === 'postpartum' || (scope.scope === 'baby' && !!scope.postpartum) },
     { icon: 'heart', label: tr('dock.q.mood'), onPress: go(() => router.push('/me/mood')), show: !kid },
     { icon: 'maximize', label: tr('dock.q.scanner'), onPress: go(() => router.push('/scanner')), show: true },
+    // Missions familiales : une demande pratique au foyer, depuis n'importe quel écran
+    { icon: 'send', label: tr('dock.q.mission'), onPress: go(() => router.push('/family/missions/new')), show: true },
   ];
   return { child, go, items: items.filter((i) => i.show) };
 }

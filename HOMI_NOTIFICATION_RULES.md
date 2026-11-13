@@ -39,8 +39,24 @@ Préparé, non construit :
 - les événements métier (`household_events`) permettront de choisir **qui** prévenir d'un fait (ex. `timesheet.submitted` → propriétaire seulement) au lieu de notifier depuis chaque déclencheur ;
 - regroupement (« 3 nouvelles demandes ») : à faire dans `send-push` en groupant les lignes différées par destinataire au moment de l'envoi.
 
+## 7. Missions familiales (14/11/2026)
+
+- Décidées par le consommateur des événements `mission.*` (jamais par un déclencheur de table), texte neutre (`_mission_notification`, miroir `missionNotification`) :
+
+| Fait | Destinataire | Titre (centre de notifications) |
+|---|---|---|
+| nouvelle mission / proposée à quelqu'un d'autre | destinataire (ou tout le foyer qui a l'accès « organisation » si « à prendre », sauf l'autrice) | « Nouvelle mission : … » |
+| acceptée · non prise · autre moment · précision demandée · terminée | autrice | « Mission acceptée : … » · « Mission non prise : … » · « Autre moment proposé : … » · « Une précision est demandée : … » · « Mission terminée : … » |
+| annulée · petit rappel | destinataire | « Mission annulée : … » · « Petit rappel : … » |
+| commencée | **personne** | — |
+
+- Jamais à l'auteur du fait ; jamais à une personne qui ne voit pas la mission (enfant non confié, sans accès « organisation ») ; une seule fois par événement.
+- Écran verrouillé : texte générique par défaut (§ 3) ; heures calmes et non-lecture inchangées (§ 2, § 4).
+- Rappels : aucun automatique ; « Petit rappel » manuel limité à 1 par 24 h par le serveur.
+- Actions interactives : catégorie `mission` (« J'accepte » / « Je ne peux pas ») jointe par `send-push` seulement pour une nouvelle mission **et** si le détail est autorisé sur l'écran verrouillé (`pushCategory`, `pushData` avec `taskId`) ; traitée sur le téléphone par `handleDoneResponse` → `mission_respond`. Non testée sur appareil.
+
 ## 6. Ce qui reste
 
 - Passage planifié de `send-push` (toutes les 15 min) à créer dans le tableau de bord Supabase (non déployé ici).
-- Préférences par catégorie et par émetteur ; actions interactives sur les notifications serveur.
+- Préférences par catégorie et par émetteur ; actions interactives serveur : préparées pour les missions seulement (§ 7), à vérifier sur appareil.
 - Test d'envoi réel sur appareil (jamais fait).

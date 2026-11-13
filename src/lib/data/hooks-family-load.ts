@@ -1,6 +1,6 @@
 /** Charge familiale : tâches, demandes, créneaux, routines (domaine « lists », partagé dans le foyer). */
 import { t as tr } from '@/i18n';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { backend, eq, gte } from '../backend';
 import { useUserId } from '../auth';
 import { insertOrQueue } from '../offline';
@@ -35,17 +35,33 @@ export function useFamilyTasks() {
 
 export type TaskInput = Pick<FamilyTask, 'title' | 'category' | 'due_at' | 'assignee_id' | 'priority' | 'essential' | 'recurrence' | 'notes'> & { routine_id?: string | null };
 
+/** Tâche déjà lue (cache) : sert à reconnaître une mission, dont l'état ne change que par ses réponses. */
+function cachedTask(qc: QueryClient, id: string): (FamilyTask & { mission_state?: string | null }) | undefined {
+  for (const [, rows] of qc.getQueriesData<FamilyTask[]>({ predicate: (q) => q.queryKey.includes('family_tasks') })) {
+    const hit = Array.isArray(rows) ? rows.find((r) => r?.id === id) : undefined;
+    if (hit) return hit;
+  }
+  return undefined;
+}
+
 export function useSaveTask() {
   const inv = useInvalidate();
   const hid = useHouseholdId();
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, input }: { id?: string; input: Partial<TaskInput> & { status?: FamilyTask['status'] } }) => {
+      // Mission (14/11/2026) : « fait » / « annulé » passent par sa réponse serveur (mission_respond), jamais par un update direct
+      const known = id ? cachedTask(qc, id) : undefined;
+      if (id && known?.mission_state && input.status && input.status !== known.status) {
+        const action = input.status === 'done' ? 'complete' : input.status === 'cancelled' ? 'cancel' : null;
+        if (action) return backend.rpc('mission_respond', { p_task: id, p_action: action });
+      }
       if (id) return backend.update('family_tasks', input, [eq('id', id)]);
       if (!hid) throw new Error(tr('l3.familyload.need_household'));
       // client_id unique par foyer : renvoyée par la file hors ligne sans jamais créer de doublon
       return insertOrQueue('family_tasks', { client_id: uuid(), ...input, household_id: hid });
     },
-    onSuccess: () => inv('family_tasks', 'family_task_events'),
+    onSuccess: () => inv('family_tasks', 'family_task_events', 'shopping_items', 'notifications'),
   });
 }
 

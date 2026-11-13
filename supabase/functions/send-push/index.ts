@@ -9,7 +9,7 @@
 //  - écran verrouillé : texte générique sauf accord explicite (notification_settings.lockscreen_details) ;
 //  - l'envoi ne touche jamais read_at : une notification n'est jamais considérée comme lue.
 import { adminClient, env, json, safeEqual } from '../_shared/http.ts';
-import { channelFor, lockScreenText, planDelivery, type PushRow } from '../_shared/push-rules.ts';
+import { channelFor, lockScreenText, planDelivery, pushCategory, pushData, type PushRow } from '../_shared/push-rules.ts';
 
 type Row = PushRow & { deliver_after: string | null };
 
@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
   // À envoyer : jamais envoyées, dont l'heure d'envoi est venue (report des heures calmes : 24 h au plus)
   const { data: pending } = await admin
     .from('notifications')
-    .select('id,user_id,title,body,deep_link,category,urgent,deliver_after')
+    .select('id,user_id,title,body,deep_link,category,urgent,deliver_after,payload')
     .is('pushed_at', null)
     .or(`deliver_after.is.null,deliver_after.lte.${now.toISOString()}`)
     .gt('created_at', new Date(now.getTime() - 48 * 3600 * 1000).toISOString())
@@ -77,7 +77,9 @@ Deno.serve(async (req) => {
       sound: 'default',
       priority: r.urgent ? 'high' : 'default',
       channelId: channelFor(r),
-      data: { url: r.deep_link ?? '/notifications', notificationId: r.id },
+      // Nouvelle mission avec détail visible : boutons « J'accepte » / « Je ne peux pas » (catégorie enregistrée par l'application)
+      ...(pushCategory(r, detailsOf.get(r.user_id) ?? false) ? { categoryId: pushCategory(r, detailsOf.get(r.user_id) ?? false) } : {}),
+      data: pushData(r),
     })),
   );
 

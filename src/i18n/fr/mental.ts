@@ -70,6 +70,12 @@ export const mental = {
   'cm.domain.clothes.d': 'Tailles, saisons, chaussures',
   'cm.domain.nights': 'Nuits et réveils',
   'cm.domain.nights.d': 'Qui se lève, quelle nuit',
+  'cm.domain.baby': 'Bébé',
+  'cm.domain.baby.d': 'Couches, biberons, affaires du bébé',
+  'cm.domain.childcare': 'Crèche et garde',
+  'cm.domain.childcare.d': 'Sac, trajets, crèche, nounou',
+  'cm.domain.pets': 'Animaux',
+  'cm.domain.pets.d': 'Promenades, croquettes, vétérinaire',
 
   // ---------------------------------------------------------------- qui y pense
   'cm.load.intro': 'Sur les 30 derniers jours, d’après l’organisation du foyer. Ce n’est pas un concours : c’est une base pour en parler à deux.',

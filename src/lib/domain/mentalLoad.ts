@@ -84,12 +84,13 @@ export function parseBrainDump(text: string, today: ISODate): DumpItem[] {
 }
 
 // ---------------------------------------------------------------- domaines confiables
-export const DOMAINS = ['health', 'school', 'activities', 'birthdays', 'shopping', 'meals', 'laundry', 'admin', 'home', 'holidays', 'clothes', 'nights'] as const;
+export const DOMAINS = ['health', 'school', 'activities', 'birthdays', 'shopping', 'meals', 'laundry', 'admin', 'home', 'holidays', 'clothes', 'nights', 'baby', 'childcare', 'pets'] as const;
 export type DomainKey = (typeof DOMAINS)[number];
 
 /** Catégorie de tâche du foyer → domaine (pour proposer la bonne personne). */
 export const DOMAIN_OF_CATEGORY: Partial<Record<string, DomainKey>> = {
   appointments: 'health', shopping: 'shopping', admin: 'admin', housework: 'home', feeding: 'meals', packing: 'holidays', sleep: 'nights',
+  diapers: 'baby', childcare: 'childcare', pets: 'pets', health: 'health',
 };
 
 export function domainForText(text: string, kind?: DumpKind): DomainKey | null {

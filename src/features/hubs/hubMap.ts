@@ -152,5 +152,8 @@ export const ACTIVE_ALIAS: Record<string, NavTab['name']> = { ask: 'health', tra
 export const HUB_ENTRIES: Record<HubKey, { href: string; icon: IconName; title: TKey; sub: TKey; testID: string }[]> = {
   health: [{ href: '/ask', icon: 'message-circle', title: 'nav.hub.ask', sub: 'nav.hub.askSub', testID: 'hub-entry-ask' }],
   baby: [{ href: '/track', icon: 'activity', title: 'nav.hub.track', sub: 'nav.hub.trackSub', testID: 'hub-entry-track' }],
-  family: [{ href: '/agenda', icon: 'calendar', title: 'nav.hub.agenda', sub: 'nav.hub.agendaSub', testID: 'hub-entry-agenda' }],
+  family: [
+    { href: '/family/missions', icon: 'send', title: 'nav.hub.missions', sub: 'nav.hub.missionsSub', testID: 'hub-entry-missions' },
+    { href: '/agenda', icon: 'calendar', title: 'nav.hub.agenda', sub: 'nav.hub.agendaSub', testID: 'hub-entry-agenda' },
+  ],
 };

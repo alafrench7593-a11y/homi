@@ -29,6 +29,7 @@ import {
 import { buildSampleFamily } from './demoSample';
 import { createSocial } from './demoSocial';
 import { createOutings } from './demoOutings';
+import { createMissions } from './demoMissions';
 import { extractiveSummary, MIN_COMMENTS_FOR_SUMMARY } from '../../../supabase/functions/_shared/community-ai';
 import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
 import { fromProductRow } from '../../../supabase/functions/_shared/open-facts';
@@ -332,7 +333,11 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   const isPremium = () => {
     const s = T('subscriptions').find((r) => r.user_id === state.session?.userId);
     // Même règle que le serveur (_subscription_grants) : remboursé → rien ; échéance nulle → seulement promotionnel / à vie
-    return grants(s as never);
+    if (grants(s as never)) return true;
+    // Co-parent : Premium partagé par la propriétaire abonnée du foyer (miroir de _premium_of ; jamais pour une nounou)
+    const me = state.session?.userId;
+    return T('household_members').some((m) => m.user_id === me && m.role === 'coparent'
+      && T('household_members').some((o) => o.household_id === m.household_id && o.role === 'owner' && grants(T('subscriptions').find((r) => r.user_id === o.user_id) as never)));
   };
   const limit = (key: string) => {
     const l = T('plan_limits').find((p) => p.key === key);
@@ -443,6 +448,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   // Mini-réseau social (mêmes règles que 20261023000100_community_social.sql)
   const social = createSocial({ T, me: () => state.session?.userId, uid, uuid, nowIso, limit, isModerator, blockedBetween, notify, actorLabel });
   // Sorties & rencontres (mêmes règles que 20261028000100_outings_meetups.sql)
+  const missions = createMissions({ T, me: () => state.session?.userId, nowIso, uuid, taskEvent: (t, k, d) => taskEvent(t, k, d), nextOccurrence: (t) => nextOccurrence(t) });
   const outings = createOutings({ T, me: () => state.session?.userId, nowIso, isModerator, blockedBetween,
     needsReview: (text) => PERSONAL_DATA.test(text) || textNeedsReview(text) || DEMO_TERMS.some((x) => x.pattern.test(text)) });
 
@@ -597,6 +603,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     const due = d.toISOString();
     if (T('family_tasks').some((x) => x.household_id === t.household_id && x.title === t.title && x.due_at === due && x.status === 'todo')) return;
     const next = { ...t, id: uuid(), due_at: due, status: 'todo', done_at: null, done_by: null, created_at: nowIso(), updated_at: nowIso() };
+    // Mission récurrente : l'occurrence suivante est « À accepter », sans notification ni article de courses (comme le serveur)
+    if (t.mission_state) Object.assign(next, { mission_state: 'pending', shopping_item_id: null, responded_at: null, last_reminded_at: null, client_id: null, version: 1 });
     T('family_tasks').push(next);
     taskEvent(next, 'created');
   }
@@ -707,6 +715,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       const active = T('reminders').filter((x) => x.user_id === (r.user_id ?? me) && x.category === 'custom' && !x.treatment_id && x.enabled !== false).length;
       if (active >= limit('custom_reminders_count')) throw new BackendError('Limite de la version gratuite atteinte (custom_reminders_count)', 'P0001', 'premium_required');
     }
+    if (table === 'family_tasks' && r.mission_state) throw new BackendError(tr('l2.dm.forbidden'), '42501');
     if (table === 'family_tasks') {
       r.status ??= 'todo'; r.priority ??= 'normal'; r.category ??= 'other'; r.essential ??= false; r.created_by ??= me; r.updated_at = nowIso();
       if (r.status === 'done') { r.done_at ??= nowIso(); r.done_by ??= me; }
@@ -1120,6 +1129,15 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   // ---------------------------------------------------------------- fonctions backend simulées
   const rpcs: Record<string, (a: Row) => unknown> = {
     ...social.rpcs,
+    ...missions.rpcs,
+    // Démonstration uniquement : passer d'une personne du foyer à l'autre (missions : les deux côtés sur un appareil)
+    demo_switch_person: (a) => {
+      const me = state.session?.userId;
+      const mine = new Set(T('household_members').filter((m) => m.user_id === me).map((m) => m.household_id));
+      if (!T('household_members').some((m) => m.user_id === a.p_user && mine.has(m.household_id))) throw new BackendError(tr('l2.dm.forbidden'), '42501');
+      setSession({ userId: String(a.p_user), email: null });
+      return { user_id: a.p_user };
+    },
     // Effacer toutes ses données du cycle (le compte reste)
     delete_my_cycle_data: () => {
       const me = uid();
@@ -1234,7 +1252,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     create_household_invitation: (a) => {
       if (!isPremium()) throw new BackendError('Fonction Premium (coparent_invite)', 'P0001', 'premium_required');
       const token = uuid().replace(/-/g, '');
-      T('household_invitations').push({ id: uuid(), household_id: a.p_household, token_hash: fnv(token), role: a.p_role ?? 'coparent', can_view: a.p_can_view, can_edit: a.p_can_edit, child_scope: a.p_child_scope ?? null, pregnancy_access: a.p_pregnancy_access ?? true, created_at: nowIso(), expires_at: new Date(Date.now() + 7 * 86400_000).toISOString() });
+      T('household_invitations').push({ id: uuid(), household_id: a.p_household, token_hash: fnv(token), role: a.p_role ?? 'coparent', can_view: a.p_can_view, can_edit: a.p_can_edit, child_scope: a.p_child_scope ?? null, pregnancy_access: a.p_pregnancy_access ?? ((a.p_role ?? 'coparent') !== 'caregiver'), created_at: nowIso(), expires_at: new Date(Date.now() + 7 * 86400_000).toISOString() });
       return token;
     },
     accept_household_invitation: () => {
@@ -1336,7 +1354,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     },
     set_member_scope: (a) => {
       const m = T('household_members').find((x) => x.household_id === a.p_household && x.user_id === a.p_user && x.role !== 'owner');
-      if (m) { m.child_scope = a.p_child_scope ?? null; m.pregnancy_access = a.p_pregnancy_access ?? true; }
+      if (m) { m.child_scope = a.p_child_scope ?? null; m.pregnancy_access = a.p_pregnancy_access ?? m.pregnancy_access ?? (m.role !== 'caregiver'); }
       return null;
     },
     premium_article_teasers: () => T('articles').filter((x) => x.status === 'published' && x.is_premium && !x.is_safety_critical).map((x) => ({ id: x.id, slug: x.slug, title: x.title, summary: x.summary, category_id: x.category_id, journeys: x.journeys, is_premium: true })),
@@ -1856,6 +1874,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           if (stamp) { r.verified_by = state.session?.userId ?? null; r.verified_at = nowIso(); }
           if (r.status === 'to_verify' || r.status === 'rejected') { r.verified_by = null; r.verified_at = null; }
           continue;
+        }
+        if (table === 'family_tasks' && r.mission_state && (['status', 'mission_state', 'assignee_id'].some((k) => k in patch && patch[k] !== r[k])
+            || (r.created_by !== state.session?.userId && Object.keys(patch).some((k) => patch[k] !== r[k])))) {
+          throw new BackendError(tr('l2.dm.forbidden'), '42501');
         }
         if (table === 'family_tasks') {
           const before = { ...r };

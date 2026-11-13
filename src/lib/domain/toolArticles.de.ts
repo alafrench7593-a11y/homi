@@ -112,6 +112,8 @@ export const ASK_DE: Record<string, string> = {
   'custody': 'Wie organisieren wir das Wechselmodell für ein kleines Kind?',
   'brain_dump': 'Wie entlaste ich meine Mental Load?',
   'family_domains': 'Wie teilen wir die Aufgaben zu zweit besser auf?',
+  'family_missions': 'Wie teilen wir Aufgaben auf, ohne einander an alles erinnern zu müssen?',
+  'family_responsibilities': 'Wie teilen wir die Bereiche des Familienlebens zu zweit auf?',
   'mental_load': 'Wie sprechen wir als Paar über die Mental Load?',
   'family_prep': 'Wie bereite ich den Schulbeginn stressfrei vor?',
   'offduty': 'Wie nehme ich mir Zeit für mich?',

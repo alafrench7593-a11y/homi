@@ -77,7 +77,7 @@ export function occurrences(e: Pick<FamilyEvent, 'starts_at' | 'ends_at' | 'recu
 export interface Sources {
   events?: FamilyEvent[];
   appointments?: { id: string; title: string; starts_at: string; location_label: string | null; private_to_creator?: boolean; kind: string }[];
-  tasks?: { id: string; title: string; due_at: string | null; status: string; assignee_id: string | null }[];
+  tasks?: { id: string; title: string; due_at: string | null; status: string; assignee_id: string | null; mission_state?: string | null }[];
   shifts?: { id: string; kind: 'night' | 'me_time'; user_id: string; starts_at: string; ends_at: string; status: string }[];
 }
 
@@ -94,7 +94,8 @@ export function itemsBetween(s: Sources, from: Date, to: Date): CalendarItem[] {
     if (inRange(a.starts_at, ends)) out.push({ key: `appointment:${a.id}`, source: 'appointment', refId: a.id, title: a.title, starts: a.starts_at, ends, allDay: false, location: a.location_label, health: true, private: !!a.private_to_creator });
   }
   for (const t of s.tasks ?? []) {
-    if (!t.due_at || t.status === 'cancelled') continue;
+    // Mission refusée (14/11/2026) : plus dans l'agenda tant que la personne qui l'a demandée n'a pas décidé de la suite
+    if (!t.due_at || t.status === 'cancelled' || t.mission_state === 'declined') continue;
     const ends = new Date(Date.parse(t.due_at) + 1800000).toISOString();
     if (inRange(t.due_at, ends)) out.push({ key: `task:${t.id}`, source: 'task', refId: t.id, title: t.title, starts: t.due_at, ends, allDay: false, done: t.status === 'done', who: t.assignee_id });
   }

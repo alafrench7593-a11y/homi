@@ -17,6 +17,8 @@ export type PushRow = {
   deep_link: string | null;
   category: string;
   urgent?: boolean | null;
+  /** Données de la notification (ex. missions : { task_id, mission: 'mission.requested' }). */
+  payload?: Record<string, unknown> | null;
 };
 
 export type PushPlan = { action: 'send' } | { action: 'defer'; until: string };
@@ -54,4 +56,24 @@ export function lockScreenText(row: PushRow, lang: string | null | undefined, sh
 /** Canal Android : alertes (rappels produits, urgences) ou canal courant. */
 export function channelFor(row: Pick<PushRow, 'category' | 'urgent'>): 'alerts' | 'community' {
   return row.category === 'product_recall' || row.urgent === true ? 'alerts' : 'community';
+}
+
+// ------------------------------------------------------------------ missions familiales (14/11/2026)
+/** Catégorie d'actions (expo-notifications) d'une nouvelle mission : « J'accepte » / « Je ne peux pas ». */
+export const MISSION_PUSH_CATEGORY = 'mission';
+
+/**
+ * Catégorie d'actions jointe au push. Seulement quand le détail est visible sur l'écran verrouillé : une notification
+ * générique (« Nouvelle notification ») ne porte jamais de bouton « J'accepte » (on ne répond pas sans savoir à quoi).
+ */
+export function pushCategory(row: Pick<PushRow, 'payload'>, showDetails: boolean): string | undefined {
+  if (!showDetails) return undefined;
+  const p = row.payload ?? {};
+  return p.mission === 'mission.requested' && typeof p.task_id === 'string' ? MISSION_PUSH_CATEGORY : undefined;
+}
+
+/** Données jointes au push : lien à ouvrir, identifiant de la notification, mission concernée. Jamais de texte. */
+export function pushData(row: Pick<PushRow, 'id' | 'deep_link' | 'payload'>): { url: string; notificationId: string; taskId?: string } {
+  const taskId = typeof row.payload?.task_id === 'string' && row.payload?.mission ? (row.payload.task_id as string) : undefined;
+  return { url: row.deep_link ?? '/notifications', notificationId: row.id, ...(taskId ? { taskId } : {}) };
 }

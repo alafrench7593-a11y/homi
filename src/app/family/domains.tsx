@@ -16,11 +16,9 @@ import { DOMAINS, type DomainKey } from '@/lib/domain/mentalLoad';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
+import { DOMAIN_ICON } from '@/features/missions/domainIcons';
 
-export const DOMAIN_ICON: Record<DomainKey, string> = {
-  health: 'stethoscope', school: 'school', activities: 'run', birthdays: 'cake-variant', shopping: 'cart', meals: 'silverware-fork-knife',
-  laundry: 'washing-machine', admin: 'file-document-multiple', home: 'home-variant', holidays: 'bag-suitcase', clothes: 'tshirt-crew', nights: 'weather-night',
-};
+export { DOMAIN_ICON };
 
 export default function Domains() {
   const t = useTheme();

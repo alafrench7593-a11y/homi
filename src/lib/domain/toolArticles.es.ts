@@ -112,6 +112,8 @@ export const ASK_ES: Record<string, string> = {
   'custody': '¿Cómo organizar la custodia compartida de un niño pequeño?',
   'brain_dump': '¿Cómo aligerar mi carga mental?',
   'family_domains': '¿Cómo repartir mejor las tareas entre los dos?',
+  'family_missions': '¿Cómo repartirnos las tareas sin tener que recordárselo todo al otro?',
+  'family_responsibilities': '¿Cómo repartir los ámbitos del hogar entre los dos?',
   'mental_load': '¿Cómo hablar de la carga mental en la pareja?',
   'family_prep': '¿Cómo preparar la vuelta al cole sin estrés?',
   'offduty': '¿Cómo tomarme tiempo para mí?',

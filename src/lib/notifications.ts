@@ -123,6 +123,12 @@ function registerChannelsAndCategories() {
     { identifier: TREAT_NOTE, buttonTitle: tr('l3.notif.a_note'), options: { opensAppToForeground: true } },
   ]).catch(() => undefined);
   // Tâche du foyer (07/11/2026) : « C'est fait » (enregistrée sans ouvrir l'appli) ou « Dans 15 min »
+  // Nouvelle mission (push serveur, seulement si le détail est visible sur l'écran verrouillé) : « J'accepte » / « Je ne peux pas »
+  // (refus sans justification : autorisé tel quel). Les autres réponses demandent d'ouvrir la mission.
+  Notifications.setNotificationCategoryAsync(MISSION_CATEGORY, [
+    { identifier: MISSION_ACCEPT, buttonTitle: tr('mis.reply.accept'), options: { opensAppToForeground: false } },
+    { identifier: MISSION_DECLINE, buttonTitle: tr('mis.reply.decline'), options: { opensAppToForeground: false } },
+  ]).catch(() => undefined);
   Notifications.setNotificationCategoryAsync(TASK_CATEGORY, [
     { identifier: TASK_DONE, buttonTitle: tr('nt.a_done'), options: { opensAppToForeground: false } },
     { identifier: TASK_SNOOZE, buttonTitle: tr('nt.a_15'), options: { opensAppToForeground: false } },
@@ -392,6 +398,7 @@ export function notificationRoute(actionIdentifier: string, data: { url?: string
   const url = data?.url && data.url.startsWith('/') ? data.url : null;
   if (actionIdentifier === 'snooze' || actionIdentifier === 'done' || actionIdentifier === TASK_DONE || actionIdentifier === TASK_SNOOZE) return null;
   if (actionIdentifier.startsWith('treat-') && actionIdentifier !== 'treat-note') return null;
+  if (actionIdentifier === MISSION_ACCEPT || actionIdentifier === MISSION_DECLINE) return null; // réponse envoyée sans ouvrir d'écran
   if (actionIdentifier === BOTTLE_ACTION_RECORD && data?.childId) return `/track/bottle?child=${data.childId}`;
   if (actionIdentifier === BOTTLE_ACTION_EDIT && data?.childId) return `/bottle/${data.childId}?edit=1`;
   if (actionIdentifier.startsWith('bottle-')) return null; // reporter, annuler : traités sans ouvrir l'application
@@ -685,6 +692,10 @@ export async function syncDigestNotifications(prefs: { morning: boolean; morning
 // ===================================================================== « C'est fait » et notifications automatiques
 // (07/11/2026) Tâches du foyer, rendez-vous, échéances, papiers : programmés sur le téléphone, rien n'est envoyé ailleurs.
 export const TASK_CATEGORY = 'task';
+/** Missions familiales (14/11/2026) : même identifiant que MISSION_PUSH_CATEGORY (supabase/functions/_shared/push-rules.ts). */
+export const MISSION_CATEGORY = 'mission';
+export const MISSION_ACCEPT = 'mission-accept';
+export const MISSION_DECLINE = 'mission-decline';
 export const TASK_DONE = 'task-done';
 export const TASK_SNOOZE = 'task-snooze';
 export const AUTO_PREFS_KEY = 'toietmoi.auto-notifs-prefs.v1';
@@ -718,9 +729,19 @@ export async function handleDoneResponse(response: Notifications.NotificationRes
     });
     return true;
   }
+  if ((action === MISSION_ACCEPT || action === MISSION_DECLINE) && data.taskId) {
+    await backend.rpc('mission_respond', { p_task: data.taskId, p_action: action === MISSION_ACCEPT ? 'accept' : 'decline' });
+    return true;
+  }
   if (action === TASK_DONE && data.taskId) {
     const session = await backend.auth.getSession().catch(() => null);
-    await backend.update('family_tasks', { status: 'done', done_at: new Date().toISOString(), done_by: session?.userId ?? null }, [eq('id', data.taskId)]);
+    try {
+      await backend.update('family_tasks', { status: 'done', done_at: new Date().toISOString(), done_by: session?.userId ?? null }, [eq('id', data.taskId)]);
+    } catch (e) {
+      // Mission (14/11/2026) : son état ne change que par sa réponse serveur (« C'est terminé »)
+      const out = await backend.rpc<{ status?: string }>('mission_respond', { p_task: data.taskId, p_action: 'complete' }).catch(() => null);
+      if (out?.status !== 'ok') throw e;
+    }
     return true;
   }
   if (action === 'done' && data.reminderId && data.source === 'reminder') {

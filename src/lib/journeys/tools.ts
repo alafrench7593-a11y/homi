@@ -221,6 +221,9 @@ export const TOOLS: ToolDef[] = [
   // ---------------------------------------------------------------- charge mentale (07/11/2026)
   { id: 'brain_dump', theme: 'tasks', icon: 'edit-3', scopes: TOGETHER, href: () => '/family/brain-dump' },
   { id: 'family_domains', theme: 'tasks', icon: 'users', scopes: TOGETHER, href: () => '/family/domains' },
+  // ---------------------------------------------------------------- missions familiales (14/11/2026)
+  { id: 'family_missions', theme: 'tasks', icon: 'send', scopes: TOGETHER, href: () => '/family/missions' },
+  { id: 'family_responsibilities', theme: 'tasks', icon: 'user-check', scopes: TOGETHER, href: () => '/family/missions/responsibilities' },
   { id: 'mental_load', theme: 'relay', icon: 'pie-chart', scopes: TOGETHER, href: () => '/family/load' },
   { id: 'family_prep', theme: 'calendar', icon: 'calendar', scopes: TOGETHER, href: () => '/family/prep' },
   { id: 'offduty', theme: 'metime', icon: 'moon', scopes: TOGETHER, href: () => '/family/offduty' },
