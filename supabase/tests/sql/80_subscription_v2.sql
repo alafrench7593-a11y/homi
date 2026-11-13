@@ -77,8 +77,9 @@ insert into public.household_members (household_id, user_id, role, joined_at) va
   on conflict (household_id, user_id) do update set role = 'owner', joined_at = excluded.joined_at;
 insert into public.household_members (household_id, user_id, role, joined_at) values
   (:'H1', :'SB', 'coparent', '2026-02-01'), (:'H1', :'SC', 'coparent', '2026-03-01'), (:'H1', :'SD', 'caregiver', '2026-01-15');
-insert into public.subscriptions (user_id, status, store, period_type, expires_at, will_renew) values (:'SA', 'active', 'app_store', 'annual', now() + interval '300 days', true)
-  on conflict (user_id) do update set status = excluded.status, expires_at = excluded.expires_at;
+-- Depuis le 13/11/2026 (migration 20261113000300), seul Premium Famille est partagé : la règle « un seul co-parent » s'y applique
+insert into public.subscriptions (user_id, entitlement, product_id, status, store, period_type, expires_at, will_renew) values (:'SA', 'AU_FIL_DE_NOUS_FAMILLE', 'aufildenous_family_monthly', 'active', 'app_store', 'monthly', now() + interval '300 days', true)
+  on conflict (user_id) do update set status = excluded.status, expires_at = excluded.expires_at, entitlement = excluded.entitlement, product_id = excluded.product_id;
 select tests.ok(public._premium_of(:'SA'), 'partage : l''abonnée a Premium');
 select tests.ok(public._premium_of(:'SB'), 'partage : le premier co-parent arrivé a Premium');
 select tests.ok(not public._premium_of(:'SC'), 'partage : un second co-parent n''a pas Premium (2 adultes au maximum)');
@@ -102,7 +103,7 @@ select tests.ok(public._premium_partner_of(:'SA') = least(:'SC'::uuid, :'SF'::uu
 insert into public.household_members (household_id, user_id, role, joined_at) values (:'H3', :'SE', 'owner', '2026-01-01')
   on conflict (household_id, user_id) do update set role = 'owner', joined_at = excluded.joined_at;
 insert into public.household_members (household_id, user_id, role, joined_at) values (:'H3', :'SG', 'coparent', '2026-02-01');
-update public.subscriptions set status = 'active', expires_at = now() + interval '20 days' where user_id = :'SG';
+update public.subscriptions set status = 'active', expires_at = now() + interval '20 days', entitlement = 'AU_FIL_DE_NOUS_FAMILLE', product_id = 'aufildenous_family_monthly' where user_id = :'SG';
 select tests.ok(public._premium_of(:'SE'), 'partage : un co-parent abonné partage avec la propriétaire du foyer');
 -- Fin de l'abonnement : fin du partage
 update public.subscriptions set status = 'refunded', refunded_at = now() where user_id = :'SA';

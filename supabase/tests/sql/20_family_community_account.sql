@@ -121,7 +121,14 @@ set role authenticated; set request.jwt.claim.sub = :'CAMILLE';
 select tests.ok(public.has_premium(), 'abonnement : droits premium actifs après validation serveur');
 reset role;
 set role authenticated; set request.jwt.claim.sub = :'ALEX';
-select tests.ok(public.has_premium(), 'abonnement : le coparent profite de l''abonnement du foyer');
+-- Décision du 13/11/2026 (migration 20261113000300) : le Premium Individuel n'est plus partagé ; seul Premium Famille l'est
+select tests.ok(not public.has_premium(), 'abonnement : le Premium Individuel n''est pas partagé avec le coparent');
+reset role;
+set role service_role;
+update public.subscriptions set entitlement = 'AU_FIL_DE_NOUS_FAMILLE', product_id = 'aufildenous_family_monthly', period_type = 'monthly' where user_id = :'CAMILLE';
+reset role;
+set role authenticated; set request.jwt.claim.sub = :'ALEX';
+select tests.ok(public.has_premium(), 'abonnement : le coparent profite du Premium Famille du foyer');
 reset role;
 set role authenticated; set request.jwt.claim.sub = :'ZOE';
 select tests.ok(not public.has_premium(), 'abonnement : Zoé reste en version gratuite');

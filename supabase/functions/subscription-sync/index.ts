@@ -4,7 +4,7 @@
 // RevenueCat de l'appareil (CustomerInfo) diffère de celui du serveur. 20 appels par heure et par personne au plus.
 // Réponses : { synced: true, status, premium } | { synced: false, reason: 'not_configured' | 'rate_limited' | 'unavailable' }
 import { adminClient, corsHeaders, rateLimit, requireUser, withCors } from '../_shared/http.ts';
-import { entitlementId, handleSync, revenueCatApi, supabaseDb } from '../_shared/subscription-run.ts';
+import { entitlementId, familyEntitlementId, handleSync, revenueCatApi, supabaseDb } from '../_shared/subscription-run.ts';
 
 Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -18,6 +18,7 @@ Deno.serve(withCors(async (req) => {
     rateLimit: (userId) => rateLimit(admin, `subscription_sync:${userId}`, 20, 3600),
     api: key ? revenueCatApi(key) : null,
     entitlement: entitlementId(),
+    familyEntitlement: familyEntitlementId(),
     db: supabaseDb(admin),
   });
 }));

@@ -40,9 +40,15 @@ set role authenticated; set request.jwt.claim.sub = :'PA';
 insert into public.mood_checkins (mood) values (4);
 select tests.ok((select count(*) from public.mood_checkins) = 1, 'strict : abonnée : saisie acceptée');
 set request.jwt.claim.sub = :'PB';
-insert into public.mood_checkins (mood) values (2);
-select tests.ok((select count(*) from public.mood_checkins) = 1, 'strict : co-parent couvert par l''abonnement du foyer');
+-- Depuis le 13/11/2026 (migration 20261113000300) : le Premium Individuel n'est plus partagé, seul Premium Famille l'est
+select tests.throws($$insert into public.mood_checkins (mood) values (2)$$, 'strict : co-parent NON couvert par un Premium Individuel');
 reset role;
+update public.subscriptions set entitlement = 'AU_FIL_DE_NOUS_FAMILLE', product_id = 'aufildenous_family_monthly' where user_id = :'PA';
+set role authenticated; set request.jwt.claim.sub = :'PB';
+insert into public.mood_checkins (mood) values (2);
+select tests.ok((select count(*) from public.mood_checkins) = 1, 'strict : co-parent couvert par le Premium Famille du foyer');
+reset role;
+update public.subscriptions set entitlement = 'AU_FIL_DE_NOUS_PREMIUM', product_id = null where user_id = :'PA';
 select tests.set_premium(:'PA', false);
 set role authenticated; set request.jwt.claim.sub = :'PA';
 select tests.throws($$insert into public.mood_checkins (mood) values (4)$$, 'strict : abonnement expiré : saisie refusée');

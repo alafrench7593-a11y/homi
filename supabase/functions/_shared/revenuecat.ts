@@ -19,6 +19,18 @@
  */
 
 export const DEFAULT_ENTITLEMENT = 'AU_FIL_DE_NOUS_PREMIUM';
+/**
+ * Premium Famille (13/11/2026) : droit RevenueCat à créer AU_FIL_DE_NOUS_FAMILLE, produit aufildenous_family_monthly.
+ * Il peut être attaché seul au produit Famille, ou avec AU_FIL_DE_NOUS_PREMIUM (configuration recommandée) : dans les
+ * deux cas la ligne `subscriptions` porte entitlement = AU_FIL_DE_NOUS_FAMILLE, et le serveur (_is_family_plan) reconnaît
+ * aussi le produit par son préfixe. Aucune formule Famille 6 mois / 12 mois n'est configurée : tout produit
+ * « aufildenous_family… » futur sera reconnu sans changement de code.
+ */
+export const FAMILY_ENTITLEMENT = 'AU_FIL_DE_NOUS_FAMILLE';
+export const FAMILY_PRODUCT_PREFIX = 'aufildenous_family';
+export const FAMILY_PRODUCT_IDS = { monthly: 'aufildenous_family_monthly' } as const;
+/** Produit Famille (Google Play : « abonnement:offre-de-base » → partie avant « : »), même règle que _is_family_plan. */
+export const isFamilyProduct = (productId?: string | null) => (productId ?? '').toLowerCase().split(':')[0].startsWith(FAMILY_PRODUCT_PREFIX);
 
 /** Identifiants des produits (App Store ; Google Play : mêmes identifiants, ou « abonnement:offre-de-base »). */
 export const PRODUCT_IDS = {
@@ -163,8 +175,20 @@ export function mapStatus(type: string, expiresAt: number | null, now: number = 
 const NO_RENEW = new Set(['CANCELLATION', 'EXPIRATION', 'BILLING_ISSUE', 'SUBSCRIPTION_PAUSED', 'NON_RENEWING_PURCHASE']);
 const REACTIVATE = new Set(['INITIAL_PURCHASE', 'RENEWAL', 'UNCANCELLATION', 'REFUND_REVERSED']);
 
+/** Droit écrit dans la ligne : Famille si l'événement porte le droit Famille ou un produit Famille, sinon le droit Premium. */
+export function rowEntitlement(event: Pick<RcEvent, 'entitlement_ids' | 'entitlement_id'>, productId: string | null | undefined, entitlement: string, family: string = FAMILY_ENTITLEMENT): string {
+  if (isFamilyProduct(productId)) return family;
+  if (Array.isArray(event.entitlement_ids) && event.entitlement_ids.includes(family)) return family;
+  if (event.entitlement_id === family) return family;
+  return entitlement;
+}
+
+/** L'événement concerne-t-il le Premium (Individuel ou Famille) ? */
+export const concernsPremium = (event: RcEvent, entitlement: string, family: string = FAMILY_ENTITLEMENT) =>
+  concernsEntitlement(event, entitlement) || concernsEntitlement(event, family) || isFamilyProduct(event.product_id) || isFamilyProduct(event.new_product_id);
+
 /** Événement de webhook → ligne (sans relecture de l'API). */
-export function subscriptionFromEvent(event: RcEvent, expiresAt: number | null, productId: string | null, entitlement: string, now: number = Date.now()): SubscriptionRow {
+export function subscriptionFromEvent(event: RcEvent, expiresAt: number | null, productId: string | null, entitlement: string, now: number = Date.now(), family: string = FAMILY_ENTITLEMENT): SubscriptionRow {
   // Octroi temporaire (panne de validation de la boutique) : 24 h au plus d'après la doc RevenueCat
   const exp = event.type === 'TEMPORARY_ENTITLEMENT_GRANT' && expiresAt == null ? now + 24 * 3_600_000 : expiresAt;
   const status = mapStatus(event.type, exp, now, event);
@@ -172,7 +196,7 @@ export function subscriptionFromEvent(event: RcEvent, expiresAt: number | null, 
   const at = iso(event.event_timestamp_ms ?? now)!;
   const plan = periodOf(productId) ?? (exp == null && store === 'promotional' ? 'lifetime' : null);
   const row: SubscriptionRow = {
-    entitlement,
+    entitlement: rowEntitlement(event, productId, entitlement, family),
     status,
     product_id: productId,
     store,
@@ -216,10 +240,36 @@ export interface RcSubscriberBody {
  * Fiche abonné → ligne. Renvoie null si la réponse n'a pas la forme attendue.
  * `latestPurchaseAt` sert à ne pas annuler un remboursement avec une fiche antérieure à ce remboursement.
  */
-export function subscriptionFromSubscriber(body: RcSubscriberBody | null | undefined, entitlement: string, now: number = Date.now()): { row: SubscriptionRow; latestPurchaseAt: number | null } | null {
+/**
+ * Droit Premium à lire dans la fiche : Individuel (entitlement) ou Famille (family). Le droit ACTIF l'emporte ; s'ils le
+ * sont tous les deux (produit Famille qui porte aussi le droit Premium, ou changement de formule en cours), la Famille ;
+ * sinon l'échéance la plus récente. Renvoie le nom du droit choisi, ou null si aucun des deux n'existe.
+ */
+export function pickPremiumEntitlement(body: RcSubscriberBody | null | undefined, entitlement: string, family: string = FAMILY_ENTITLEMENT, now: number = Date.now()): string | null {
+  const ents = body?.subscriber?.entitlements ?? {};
+  const subs = body?.subscriber?.subscriptions ?? {};
+  const info = (name: string) => {
+    const e = ents[name];
+    if (!e) return null;
+    const pid = e.product_identifier ?? '';
+    const s = subs[pid] ?? subs[pid.split(':')[0]] ?? {};
+    const exp = parse(e.expires_date ?? null);
+    const grace = parse(e.grace_period_expires_date ?? s.grace_period_expires_date ?? null);
+    const effective = exp == null ? Infinity : Math.max(exp, grace ?? 0);
+    return { name, effective, active: !s.refunded_at && effective > now };
+  };
+  const list = [info(family), info(entitlement)].filter((x): x is NonNullable<ReturnType<typeof info>> => !!x);
+  if (!list.length) return null;
+  const active = list.find((x) => x.active);
+  if (active) return active.name; // ordre : Famille d'abord
+  return list.reduce((a, b) => (b.effective > a.effective ? b : a)).name;
+}
+
+export function subscriptionFromSubscriber(body: RcSubscriberBody | null | undefined, entitlement: string, now: number = Date.now(), family: string = FAMILY_ENTITLEMENT): { row: SubscriptionRow; latestPurchaseAt: number | null } | null {
   const sub = body?.subscriber;
   if (!sub || typeof sub !== 'object') return null;
-  const ent = sub.entitlements?.[entitlement];
+  const chosen = pickPremiumEntitlement(body, entitlement, family, now);
+  const ent = chosen ? sub.entitlements?.[chosen] : undefined;
   const nowIso = new Date(now).toISOString();
   if (!ent) {
     return { row: { entitlement, status: 'none', expires_at: null, will_renew: false, last_sync_at: nowIso }, latestPurchaseAt: null };
@@ -243,7 +293,7 @@ export function subscriptionFromSubscriber(body: RcSubscriberBody | null | undef
   else status = 'active';
   const plan = periodOf(pid) ?? (effective == null ? 'lifetime' : null);
   const row: SubscriptionRow = {
-    entitlement,
+    entitlement: chosen === family || isFamilyProduct(pid) ? family : entitlement,
     status,
     product_id: pid,
     store,
@@ -330,15 +380,16 @@ export function noticeFor(event: RcEvent, status: SubStatus, locale: string | nu
 export interface GrantRow { entitlement: string; product_id: string | null; store: string | null; active: boolean; expires_at: string | null }
 
 /**
- * Tous les droits de la fiche RevenueCat SAUF le Premium (géré par `subscriptions`). Actif si sans échéance (achat à vie)
+ * Tous les droits de la fiche RevenueCat SAUF le Premium et le Premium Famille (gérés par `subscriptions`). Actif si sans échéance (achat à vie)
  * ou échéance (période de grâce comprise) future, et jamais s'il a été remboursé. Noms de droits invalides ignorés.
  */
-export function grantsFromSubscriber(body: RcSubscriberBody | null | undefined, premiumEntitlement: string, now: number = Date.now()): GrantRow[] | null {
+export function grantsFromSubscriber(body: RcSubscriberBody | null | undefined, premiumEntitlement: string, now: number = Date.now(), family: string = FAMILY_ENTITLEMENT): GrantRow[] | null {
   const sub = body?.subscriber;
   if (!sub || typeof sub !== 'object') return null;
   const out: GrantRow[] = [];
   for (const [name, ent] of Object.entries(sub.entitlements ?? {})) {
-    if (name === premiumEntitlement || !/^[A-Z0-9_]{3,64}$/.test(name) || !ent || typeof ent !== 'object') continue;
+    // Premium Individuel et Premium Famille : gérés par `subscriptions`, jamais copiés dans entitlement_grants
+    if (name === premiumEntitlement || name === family || !/^[A-Z0-9_]{3,64}$/.test(name) || !ent || typeof ent !== 'object') continue;
     const pid = ent.product_identifier ?? null;
     const s = (pid && ((sub.subscriptions ?? {})[pid] ?? (sub.subscriptions ?? {})[pid.split(':')[0]])) || {};
     const exp = parse(ent.expires_date ?? null);

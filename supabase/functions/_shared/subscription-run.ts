@@ -11,7 +11,7 @@
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import { json, safeEqual } from './http.ts';
 import {
-  concernsEntitlement, DEFAULT_ENTITLEMENT, eventUserId, grantsFromSubscriber, isDuplicate, isRefund, isStale, noticeFor, subscriptionFromEvent,
+  concernsPremium, DEFAULT_ENTITLEMENT, eventUserId, FAMILY_ENTITLEMENT, grantsFromSubscriber, isDuplicate, isRefund, isStale, noticeFor, subscriptionFromEvent,
   subscriptionFromSubscriber, transferIds, type GrantRow, type RcEvent, type RcSubscriberBody, type SubscriptionRow,
 } from './revenuecat.ts';
 
@@ -20,6 +20,8 @@ const PREMIUM_STATUSES = new Set(['trial', 'active', 'grace', 'cancelled', 'paus
 const MAX_BODY = 64 * 1024;
 
 export const entitlementId = (v: string | undefined = Deno.env.get('REVENUECAT_ENTITLEMENT')) => (v ?? '').trim() || DEFAULT_ENTITLEMENT;
+/** Droit Premium Famille (variable facultative REVENUECAT_FAMILY_ENTITLEMENT, sinon AU_FIL_DE_NOUS_FAMILLE). */
+export const familyEntitlementId = (v: string | undefined = Deno.env.get('REVENUECAT_FAMILY_ENTITLEMENT')) => (v ?? '').trim() || FAMILY_ENTITLEMENT;
 
 export type StoredRow = Partial<SubscriptionRow> & { user_id: string };
 
@@ -107,17 +109,17 @@ function keepsRefund(current: StoredRow | null, next: SubscriptionRow, latestPur
 }
 
 /** Copie les droits hors Premium d'une fiche RevenueCat (sans effet si la base ne le permet pas). */
-async function writeGrantsFrom(userId: string, body: RcSubscriberBody, db: SubscriptionDb, entitlement: string, now: number) {
-  const grants = grantsFromSubscriber(body, entitlement, now);
+async function writeGrantsFrom(userId: string, body: RcSubscriberBody, db: SubscriptionDb, entitlement: string, now: number, family: string = FAMILY_ENTITLEMENT) {
+  const grants = grantsFromSubscriber(body, entitlement, now, family);
   if (grants && db.writeGrants) await db.writeGrants(userId, grants);
 }
 
 /** Relit la fiche RevenueCat et l'enregistre. */
-async function syncFromApi(userId: string, api: RevenueCatApi, db: SubscriptionDb, entitlement: string, now: number, extra: Partial<SubscriptionRow> = {}) {
+async function syncFromApi(userId: string, api: RevenueCatApi, db: SubscriptionDb, entitlement: string, now: number, extra: Partial<SubscriptionRow> = {}, family: string = FAMILY_ENTITLEMENT) {
   const res = await api.subscriber(userId);
   if (!res.ok) return { ok: false as const, status: res.status };
-  await writeGrantsFrom(userId, res.body, db, entitlement, now);
-  const parsed = subscriptionFromSubscriber(res.body, entitlement, now);
+  await writeGrantsFrom(userId, res.body, db, entitlement, now, family);
+  const parsed = subscriptionFromSubscriber(res.body, entitlement, now, family);
   if (!parsed) return { ok: false as const, status: 502 };
   const current = await db.read(userId);
   let row: SubscriptionRow = { ...parsed.row, ...extra };
@@ -130,6 +132,8 @@ async function syncFromApi(userId: string, api: RevenueCatApi, db: SubscriptionD
 export interface WebhookDeps {
   secret: string;
   entitlement: string;
+  /** Droit Premium Famille (défaut : AU_FIL_DE_NOUS_FAMILLE) */
+  familyEntitlement?: string;
   api: RevenueCatApi | null;
   db: SubscriptionDb;
   now?: () => number;
@@ -137,6 +141,7 @@ export interface WebhookDeps {
 
 export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Response> {
   const now = deps.now?.() ?? Date.now();
+  const family = deps.familyEntitlement ?? FAMILY_ENTITLEMENT;
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   if (!deps.secret) {
     console.error('revenuecat_webhook_secret_missing');
@@ -155,17 +160,17 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
   }
   if (!event || typeof event.type !== 'string') return json({ error: 'bad_request' }, 400);
   if (event.type === 'TEST') return json({ ok: true, test: true });
-  if (!concernsEntitlement(event, deps.entitlement)) {
+  if (!concernsPremium(event, deps.entitlement, family)) {
     // Assistant IA, outils à vie : la fiche RevenueCat fait foi pour ces droits
     const uid = eventUserId(event);
     if (!uid || !deps.api) return json({ ok: true, ignored: 'other_entitlement' });
     const res = await deps.api.subscriber(uid);
     if (!res.ok) return json({ error: 'server_error' }, 500); // RevenueCat réessaiera
-    await writeGrantsFrom(uid, res.body, deps.db, deps.entitlement, now);
+    await writeGrantsFrom(uid, res.body, deps.db, deps.entitlement, now, family);
     return json({ ok: true, grants: true });
   }
 
-  if (event.type === 'TRANSFER') return handleTransfer(event, deps, now);
+  if (event.type === 'TRANSFER') return handleTransfer(event, deps, now, family);
 
   const userId = eventUserId(event);
   if (!userId) return json({ ok: true, ignored: 'anonymous_user' }); // achat avant connexion : rattaché au logIn
@@ -176,11 +181,11 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
 
   // Changement de formule : le produit effectif est relu dans l'API quand elle est disponible ; sinon, l'ancien
   // produit reste affiché jusqu'au RENEWAL du nouveau (un changement « différé » ne prend effet qu'à l'échéance).
-  let row = subscriptionFromEvent(event, event.expiration_at_ms ?? null, event.product_id ?? null, deps.entitlement, now);
+  let row = subscriptionFromEvent(event, event.expiration_at_ms ?? null, event.product_id ?? null, deps.entitlement, now, family);
   if (deps.api) {
     const res = await deps.api.subscriber(userId);
-    const parsed = res.ok ? subscriptionFromSubscriber(res.body, deps.entitlement, now) : null;
-    if (res.ok) await writeGrantsFrom(userId, res.body, deps.db, deps.entitlement, now);
+    const parsed = res.ok ? subscriptionFromSubscriber(res.body, deps.entitlement, now, family) : null;
+    if (res.ok) await writeGrantsFrom(userId, res.body, deps.db, deps.entitlement, now, family);
     if (parsed) {
       // L'API fait foi pour l'état et les dates ; l'événement apporte son type, sa date, sa raison et le prix payé
       row = {
@@ -204,14 +209,14 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
 }
 
 /** TRANSFER : les achats passent d'un appUserID à un autre (même identifiant Apple / Google sur deux comptes). */
-async function handleTransfer(event: RcEvent, deps: WebhookDeps, now: number): Promise<Response> {
+async function handleTransfer(event: RcEvent, deps: WebhookDeps, now: number, family: string = FAMILY_ENTITLEMENT): Promise<Response> {
   const { from, to } = transferIds(event);
   if (!from.length && !to.length) return json({ ok: true, ignored: 'anonymous_user' });
   const at = new Date(event.event_timestamp_ms ?? now).toISOString();
   const mark = { last_event: 'TRANSFER', last_event_at: at };
   if (deps.api) {
     for (const id of [...from, ...to]) {
-      const r = await syncFromApi(id, deps.api, deps.db, deps.entitlement, now, mark);
+      const r = await syncFromApi(id, deps.api, deps.db, deps.entitlement, now, mark, family);
       if (!r.ok) return json({ error: 'server_error' }, 500);
     }
     return json({ ok: true, transferred: to.length });
@@ -238,6 +243,7 @@ export interface SyncDeps {
   rateLimit: (userId: string) => Promise<boolean>;
   api: RevenueCatApi | null;
   entitlement: string;
+  familyEntitlement?: string;
   db: SubscriptionDb;
   now?: () => number;
 }
@@ -254,7 +260,7 @@ export async function handleSync(req: Request, deps: SyncDeps): Promise<Response
   if (!userId) return json({ error: 'unauthorized', message: 'Connexion requise.' }, 401);
   if (!(await deps.rateLimit(userId))) return json({ synced: false, reason: 'rate_limited' }, 429);
   if (!deps.api) return json({ synced: false, reason: 'not_configured', premium: await deps.db.premium(userId) });
-  const r = await syncFromApi(userId, deps.api, deps.db, deps.entitlement, now);
+  const r = await syncFromApi(userId, deps.api, deps.db, deps.entitlement, now, {}, deps.familyEntitlement ?? FAMILY_ENTITLEMENT);
   if (!r.ok) {
     console.error('subscription_sync_error', r.status);
     return json({ synced: false, reason: 'unavailable' }, 502);

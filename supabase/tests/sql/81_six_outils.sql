@@ -32,7 +32,10 @@ select tests.ok((select count(*) from public.reminders where user_id = 'f9b00000
 
 -- 2. Suivi PMA (strictement personnel) ---------------------------------------------------------
 -- outil réservé (Premium ou achat à vie) depuis la fin du mois gratuit (08/11/2026)
-reset role; select tests.set_premium(:'SA', true); set role authenticated;
+reset role; select tests.set_premium(:'SA', true);
+-- Depuis le 13/11/2026 (migration 20261113000300) : seul Premium Famille couvre aussi le co-parent (routines ci-dessous)
+update public.subscriptions set entitlement = 'AU_FIL_DE_NOUS_FAMILLE', product_id = 'aufildenous_family_monthly' where user_id = :'SA';
+set role authenticated;
 set request.jwt.claim.sub = :'SA';
 insert into public.pma_protocols (id, kind, label, started_on) values ('f9b00000-0000-4000-8000-0000000000c1', 'fiv', 'FIV 1', current_date);
 insert into public.pma_meds (id, protocol_id, name, route, dose_text, take_time)
