@@ -7,6 +7,7 @@
 //  - SSE (text/event-stream) si stream=true : événements « meta », « delta » ({ text }), puis « done »
 //    (même contenu que la réponse JSON complète) ou « error ».
 import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
+import { readJsonBody } from '../_shared/body.ts';
 import { geminiConfig, geminiGenerate, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
 import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, sanitizeContext, type ArticleRef, type AssistantContext } from '../_shared/assistant-prompt.ts';
@@ -60,11 +61,9 @@ Deno.serve(withCors(async (req) => {
   }
 
   let body: { conversation_id?: unknown; message?: unknown; context?: unknown; use_context?: unknown; stream?: unknown; recent_turns?: unknown };
-  try {
-    body = await req.json();
-  } catch {
-    return json({ error: 'bad_request' }, 400);
-  }
+  const raw = await readJsonBody(req, 256 * 1024);
+  if (!raw) return json({ error: 'too_large' }, 413);
+  body = raw;
   const message = (typeof body.message === 'string' ? body.message : '').trim();
   if (message.length < 2 || message.length > MAX_QUESTION_LENGTH) {
     return json({ error: 'bad_request', message: `La question doit contenir entre 2 et ${MAX_QUESTION_LENGTH.toLocaleString('fr-FR')} caractères.` }, 400);
@@ -297,7 +296,7 @@ Deno.serve(withCors(async (req) => {
         }
         send('done', await finalize(raw.trim()));
       } catch (e) {
-        console.error('assistant_stream_error', e instanceof Error ? e.message : 'unknown');
+        console.error('assistant_stream_error', e instanceof GeminiError ? e.status : e instanceof Error ? e.name : 'unknown'); // jamais le texte de l'erreur (peut citer une saisie)
         send('error', raw ? { error: 'assistant_unavailable', message: 'La réponse a été interrompue. Réessayez dans un instant.' } : await unavailable());
       }
       close();

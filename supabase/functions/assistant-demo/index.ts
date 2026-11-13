@@ -9,6 +9,7 @@
 // Limites : 3 questions / jour / appareil, 6 / jour / adresse IP, 100 / jour pour toute la démo,
 // 10 / minute pour toute la démo. Les urgences sont orientées sans IA et sans rien décompter.
 import { adminClient, corsHeaders, json, rateLimit, withCors } from '../_shared/http.ts';
+import { readJsonBody } from '../_shared/body.ts';
 import { geminiConfig, geminiGenerate, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
 import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, type ArticleRef } from '../_shared/assistant-prompt.ts';
@@ -51,11 +52,9 @@ Deno.serve(withCors(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
   let body: { message?: unknown; device_id?: unknown; recent_turns?: unknown };
-  try {
-    body = await req.json();
-  } catch {
-    return json({ error: 'bad_request' }, 400);
-  }
+  const raw = await readJsonBody(req, 128 * 1024);
+  if (!raw) return json({ error: 'too_large' }, 413);
+  body = raw;
   const message = (typeof body.message === 'string' ? body.message : '').trim();
   const device = typeof body.device_id === 'string' && /^[0-9a-f-]{36}$/i.test(body.device_id) ? body.device_id.toLowerCase() : null;
   if (!device) return json({ error: 'bad_request', message: 'Appareil non reconnu.' }, 400);

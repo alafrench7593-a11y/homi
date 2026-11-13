@@ -6,6 +6,7 @@
 // { ai: 'not_configured' } — l'application affiche alors l'explication des règles, jamais un faux texte IA.
 import { adminClient, corsHeaders, hasConsent, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
 import { geminiConfig } from '../_shared/gemini.ts';
+import { isUuid, readJsonBody } from '../_shared/body.ts';
 import { sanitizePayload } from '../_shared/scan-explain.ts';
 import { runExplain } from '../_shared/scan-explain-run.ts';
 
@@ -16,7 +17,8 @@ Deno.serve(withCors(async (req) => {
   const locked = await requirePremium(auth.client); // Premium strict
   if (locked) return locked;
 
-  const body = await req.json().catch(() => ({}));
+  const body = await readJsonBody(req);
+  if (!body) return json({ error: 'too_large' }, 413);
   const payload = sanitizePayload(body);
   if (!payload) return json({ error: 'bad_request', message: 'Résultat d’analyse invalide.' }, 400);
 
@@ -40,7 +42,7 @@ Deno.serve(withCors(async (req) => {
     return json(publicResult);
   }
   // Mémorisation sur le résultat (RLS : uniquement si le scan appartient à la personne)
-  if (typeof body.scan_id === 'string') {
+  if (isUuid(body.scan_id)) {
     await auth.client.from('scan_results').update({ explanation: result }).eq('scan_id', body.scan_id);
   }
   return json(result);

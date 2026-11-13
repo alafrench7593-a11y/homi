@@ -4,6 +4,7 @@
 // Le texte n'est jamais écrit dans les journaux. POST { document_id }
 import { geminiConfig, geminiGenerate, GeminiError } from '../_shared/gemini.ts';
 import { adminClient, corsHeaders, hasConsent, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
+import { isUuid, readJsonBody } from '../_shared/body.ts';
 import { MAX_READ_BYTES, parseReadResponse, READ_INSTRUCTIONS, READ_SCHEMA, READABLE_MIME, toBase64 } from '../_shared/document-read.ts';
 
 Deno.serve(withCors(async (req) => {
@@ -16,8 +17,10 @@ Deno.serve(withCors(async (req) => {
   if (!(await rateLimit(admin, `docread:${auth.user.id}`, 20, 3600))) return json({ error: 'rate_limited' }, 429);
   if (!(await hasConsent(admin, auth.user.id, 'document_reading'))) return json({ error: 'consent_required' }, 403);
 
-  const { document_id } = await req.json().catch(() => ({}));
-  if (typeof document_id !== 'string') return json({ error: 'bad_request' }, 400);
+  const body = await readJsonBody(req);
+  if (!body) return json({ error: 'too_large' }, 413);
+  const document_id = body.document_id;
+  if (!isUuid(document_id)) return json({ error: 'bad_request' }, 400);
   // Droits vérifiés AVEC la RLS de l'utilisatrice : un document privé d'un autre membre est introuvable
   const { data: doc } = await auth.client.from('documents').select('id,household_id,uploaded_by,storage_path,mime_type,size_bytes').eq('id', document_id).maybeSingle();
   if (!doc) return json({ error: 'not_found' }, 404);
