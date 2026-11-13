@@ -1,28 +1,31 @@
 /**
- * Ligne d'une tâche ou d'une mission du jour : responsable (avatar ou initiale + prénom), heure, statut (icône ET
- * libellé, jamais la couleur seule), et l'action possible d'ici (« J'accepte », « C'est terminé », « Fait »).
- * La personne qui ne peut pas terminer (mission de quelqu'un d'autre) ne voit aucun bouton : seulement qui s'en charge.
+ * Accueil recomposé (16/11/2026) — deux présentations d'une tâche ou mission du jour :
  *
- * `emphasis` : ligne « à faire maintenant » (mission qui m'attend, ou ma prochaine tâche). Rendue aujourd'hui par une
- * surface teintée du thème ; le design system peut la rendre en halo (GlowCard) en remplaçant `TodayEmphasisSurface`.
- * Uniquement des jetons du thème (`useTheme()`), aucune couleur écrite en dur.
+ *  - `TodayFocus` : la PROCHAINE ACTION UTILE, point focal unique de l'écran (verre optique / halo :
+ *    `OpticalSurface`). Le seul bouton plein de l'accueil est ici (« J'accepte » ou « C'est fait »).
+ *  - `TodayAgendaRow` : une ligne d'agenda lisible (surface mate) : heure, titre, responsable (avatar + prénom),
+ *    statut (icône + libellé, jamais la couleur seule), « demandée par » quand la demandeuse n'est pas la responsable.
+ *    Une case à cocher discrète (`CompletionCheck`, 48 px) termine la tâche quand c'est permis ; toucher la ligne
+ *    ouvre le détail (transition carte → détail, `CardSource`). Plus de gros bouton ni de badges empilés.
+ *
+ * Uniquement des jetons du thème (`useTheme()`), les composants partagés et `src/motion` / `src/features/scene`.
  */
 import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
-import { Button, Card, Icon, Text, type IconName } from '@/components/ui';
-import { Tappable } from '@/components/Tappable';
+import { Button, Icon, Text, type IconName } from '@/components/ui';
 import { UserAvatar } from '@/components/UserAvatar';
 import { formatDate, formatTime, t as tr, type TKey } from '@/i18n';
 import { missionHref, STATE_LABEL, STATE_TONE } from '@/lib/domain/missions';
-import { GlowCard } from '@/components/GlowCard';
+import { CompletionCheck } from '@/motion';
+import { CardSource, OpticalSurface } from '@/features/scene';
 import { useTheme } from '@/theme/ThemeProvider';
-import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import type { TodayStatus, TodayTask } from './todayModel';
 import type { TodayPerson } from './useHomeToday';
 import type { DoneMarkProps } from './DoneMark';
 
-const STATUS_ICON: Record<TodayStatus, IconName> = {
+export const STATUS_ICON: Record<TodayStatus, IconName> = {
   pending: 'inbox', postponed: 'clock', accepted: 'thumbs-up', in_progress: 'play-circle', done: 'check-circle',
   declined: 'x-circle', cancelled: 'slash', todo: 'circle', open: 'user-plus',
 };
@@ -51,25 +54,54 @@ export function whenLabel(x: Pick<TodayTask, 'dueAt' | 'timed' | 'late'>): strin
 
 export const openTask = (x: Pick<TodayTask, 'id' | 'kind'>) => router.push((x.kind === 'mission' ? missionHref(x.id) : '/family') as never);
 
-/** Surface de la ligne mise en avant. Point de branchement du halo du design system (GlowCard). */
-export function TodayEmphasisSurface({ children, label, testID, success = false }: { children: React.ReactNode; label: string; testID?: string; success?: boolean }) {
+/**
+ * « Demandée par … » : seulement pour une mission dont la demandeuse n'est pas la responsable (ex. Sam demande à
+ * Camille) — corrige l'ancien « Camille · Mission » qui laissait croire que la mission venait de Camille.
+ */
+export function requestedByLabel(x: Pick<TodayTask, 'kind' | 'ownerId' | 'creatorId'>, creator: TodayPerson | null): string | null {
+  if (x.kind !== 'mission' || !x.creatorId || x.creatorId === x.ownerId || !creator) return null;
+  return creator.isMe ? tr('mis.fromYou') : tr('mis.from', { person: creator.name });
+}
+
+/** Libellé lu par les lecteurs d'écran : titre, statut, responsable, heure, demandeuse. */
+export function rowA11y(x: TodayTask, owner: TodayPerson, requested: string | null, status: string): string {
+  return [x.title, status, x.ownerId ? tr('ht.by', { name: owner.name }) : tr('ht.nobody'), whenLabel(x), requested].filter(Boolean).join('. ');
+}
+
+/** Responsable (avatar + prénom) puis statut (icône + libellé) : une seule ligne de métadonnées, qui peut passer à la ligne. */
+function Meta({ x, owner, status, requested, size = 22 }: { x: TodayTask; owner: TodayPerson; status: TodayStatus; requested: string | null; size?: number }) {
   const t = useTheme();
-  // HOMI v2 (image 1) : la ligne « à faire maintenant » est le seul élément en halo de l'accueil ;
-  // le filet passe en couleur de succès au moment de la validation.
+  const colorOf = useStatusColor();
+  const color = colorOf(status);
+  const label = statusLabel({ status, kind: x.kind });
   return (
-    <GlowCard active emphasis={success ? 'success' : 'action'} testID={testID} contentStyle={{ gap: spacing.xs }}>
-      <Text variant="caption" weight="bold" color={t.colors.primary} accessibilityRole="header">{label}</Text>
-      {children}
-    </GlowCard>
+    <View style={{ gap: 2 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: spacing.sm, rowGap: 2 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1 }}>
+          {x.ownerId ? (
+            <UserAvatar path={owner.avatarPath} initial={owner.initial} size={size} testID={`today-avatar-${x.id}`} />
+          ) : (
+            <View style={{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: t.material.lines.iconWell }}>
+              <Icon name="user-plus" size={Math.round(size * 0.55)} color={t.colors.primary} />
+            </View>
+          )}
+          <Text variant="small" weight="medium" numberOfLines={1} testID={`today-owner-${x.id}`} style={{ flexShrink: 1 }}>{x.ownerId ? owner.name : tr('ht.nobody')}</Text>
+        </View>
+        <View testID={`today-status-${x.id}`} accessibilityLabel={tr('ht.statusA11y', { status: label })} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <Icon name={STATUS_ICON[status]} size={14} color={color} />
+          <Text variant="small" weight="bold" color={color}>{label}</Text>
+        </View>
+      </View>
+      {requested ? <Text variant="caption" muted numberOfLines={1} testID={`today-requested-${x.id}`}>{requested}</Text> : null}
+    </View>
   );
 }
 
-export interface TodayTaskRowProps {
+export interface TodayFocusProps {
   x: TodayTask;
   owner: TodayPerson;
-  /** Ligne « à faire maintenant » : surface mise en avant (halo possible côté design system). */
-  emphasis?: boolean;
-  /** Validation optimiste en cours ou réussie sur cet écran (joue l'animation). */
+  creator: TodayPerson | null;
+  /** Validation optimiste en cours ou réussie sur cet écran (filet de succès). */
   celebrate?: boolean;
   busy?: 'complete' | 'accept' | null;
   onComplete: (x: TodayTask) => void;
@@ -77,53 +109,73 @@ export interface TodayTaskRowProps {
   DoneComponent: React.ComponentType<DoneMarkProps>;
 }
 
-export function TodayTaskRow({ x, owner, emphasis, celebrate = false, busy, onComplete, onAccept, DoneComponent }: TodayTaskRowProps) {
+/** Point focal unique : la prochaine action utile (une seule action pleine). */
+export function TodayFocus({ x, owner, creator, celebrate = false, busy, onComplete, onAccept, DoneComponent }: TodayFocusProps) {
   const t = useTheme();
   const colorOf = useStatusColor();
-  const done = x.done || !!celebrate;
+  const done = x.done || celebrate;
   const status: TodayStatus = done ? 'done' : x.status;
-  const color = colorOf(status);
-  const label = statusLabel({ status, kind: x.kind });
-  const when = whenLabel(x);
-  const who = x.ownerId ? owner.name : tr('ht.nobody');
-  const a11y = [x.title, label, x.ownerId ? tr('ht.by', { name: who }) : who, when].join('. ');
-
-  const body = (
-    <View style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }} testID={`today-row-${x.id}`}>
-      {x.ownerId ? (
-        <UserAvatar path={owner.avatarPath} initial={owner.initial} size={36} testID={`today-avatar-${x.id}`} />
-      ) : (
-        <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt, borderWidth: 1, borderColor: t.colors.border }}>
-          <Icon name="user-plus" size={16} color={t.colors.primary} />
-        </View>
-      )}
-      <View style={{ flex: 1, minWidth: 0, gap: 6 }}>
-        <Tappable accessibilityRole="button" accessibilityLabel={a11y} accessibilityHint={tr('ht.openHint')} onPress={() => openTask(x)} pressScale={0.99}
-          testID={`today-open-${x.id}`} style={{ minHeight: MIN_TOUCH, justifyContent: 'center', gap: 2 }}>
-          <Text weight="bold" numberOfLines={2} style={{ textDecorationLine: done ? 'line-through' : 'none', opacity: done ? 0.75 : 1 }}>{x.title}</Text>
-          <Text variant="small" muted numberOfLines={2}>{[who, when, x.kind === 'mission' ? tr('ht.mission') : null].filter(Boolean).join(' · ')}</Text>
-        </Tappable>
-        {/* Statut (icône + libellé) et actions possibles sur une même ligne, qui passe à la ligne sur petit écran */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: spacing.xs }}>
-          <View testID={`today-status-${x.id}`} accessibilityRole="text" accessibilityLabel={tr('ht.statusA11y', { status: label })}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 4, paddingRight: 10, minHeight: 28, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surfaceAlt }}>
-            <DoneComponent done={done} celebrate={!!celebrate} icon={STATUS_ICON[status]} color={color} size={20} />
-            <Text variant="caption" weight="bold" color={color}>{label}</Text>
-          </View>
-          {!done && x.canAccept ? (
-            <Button label={tr('mis.reply.accept')} icon="thumbs-up" variant="secondary" onPress={() => onAccept(x)} loading={busy === 'accept'} disabled={!!busy}
-              testID={`today-accept-${x.id}`} accessibilityLabel={tr('ht.acceptA11y', { title: x.title })} />
-          ) : null}
-          {!done && x.canComplete ? (
-            <Button label={x.kind === 'mission' ? tr('mis.reply.complete') : tr('ht.markDone')} icon="check" variant={emphasis || x.rank <= 1 ? 'primary' : 'secondary'}
-              onPress={() => onComplete(x)} loading={busy === 'complete'} disabled={!!busy} testID={`today-complete-${x.id}`}
-              accessibilityLabel={tr('ht.completeA11y', { title: x.title })} />
-          ) : null}
-        </View>
+  const requested = requestedByLabel(x, creator);
+  const a11y = rowA11y(x, owner, requested, statusLabel({ status, kind: x.kind }));
+  // Une seule action pleine : répondre d'abord si la mission attend ma réponse, sinon terminer
+  const primary: 'accept' | 'complete' | null = done ? null : x.canAccept ? 'accept' : x.canComplete ? 'complete' : null;
+  return (
+    <OpticalSurface testID="today-emphasis" tone={celebrate ? 'success' : 'action'}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+        <DoneComponent done={done} celebrate={celebrate} icon={x.awaitsMe ? 'inbox' : 'arrow-right-circle'} color={done ? t.colors.success : t.colors.primary} size={20} />
+        <Text variant="caption" weight="bold" color={t.colors.primary} accessibilityRole="header" style={{ flex: 1 }}>{x.awaitsMe ? tr('ht.awaitsYou') : tr('ht.now')}</Text>
+        <Text variant="small" weight="bold" color={colorOf(status)}>{whenLabel(x)}</Text>
       </View>
+      <CardSource sourceKey={`today:${x.id}`} onOpen={() => openTask(x)} testID={`today-open-${x.id}`} accessibilityLabel={a11y} accessibilityHint={tr('ht.openHint')}
+        style={{ gap: spacing.xs, minHeight: MIN_TOUCH }}>
+        <Text variant="heading" numberOfLines={3} style={{ textDecorationLine: done ? 'line-through' : 'none' }}>{x.title}</Text>
+        <Meta x={x} owner={owner} status={status} requested={requested} size={26} />
+      </CardSource>
+      {primary === 'accept' ? (
+        <Button label={tr('mis.reply.accept')} icon="thumbs-up" full onPress={() => onAccept(x)} loading={busy === 'accept'} disabled={!!busy}
+          testID={`today-accept-${x.id}`} accessibilityLabel={tr('ht.acceptA11y', { title: x.title })} />
+      ) : primary === 'complete' ? (
+        <Button label={x.kind === 'mission' ? tr('mis.reply.complete') : tr('ht.markDone')} icon="check" full onPress={() => onComplete(x)} loading={busy === 'complete'} disabled={!!busy}
+          testID={`today-complete-${x.id}`} accessibilityLabel={tr('ht.completeA11y', { title: x.title })} />
+      ) : null}
+    </OpticalSurface>
+  );
+}
+
+export interface TodayAgendaRowProps {
+  x: TodayTask;
+  owner: TodayPerson;
+  creator: TodayPerson | null;
+  celebrate?: boolean;
+  busy?: boolean;
+  onComplete: (x: TodayTask) => void;
+}
+
+/** Ligne d'agenda d'une tâche / mission : une ligne, case à cocher discrète, détail au toucher. */
+export function TodayAgendaRow({ x, owner, creator, celebrate = false, busy, onComplete }: TodayAgendaRowProps) {
+  const t = useTheme();
+  const done = x.done || celebrate;
+  const status: TodayStatus = done ? 'done' : x.status;
+  const requested = requestedByLabel(x, creator);
+  const a11y = rowA11y(x, owner, requested, statusLabel({ status, kind: x.kind }));
+  const checkable = x.canComplete || celebrate;
+  return (
+    <View testID={`today-row-${x.id}`} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, opacity: x.done && !celebrate ? 0.72 : 1 }}>
+      <CardSource grow sourceKey={`today:${x.id}`} onOpen={() => openTask(x)} testID={`today-open-${x.id}`} accessibilityLabel={a11y} accessibilityHint={tr('ht.openHint')}
+        style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, minHeight: MIN_TOUCH + 8, paddingVertical: spacing.xs }}>
+        <View style={{ width: 56, paddingTop: 1 }}>
+          <Text variant="small" weight="bold" numberOfLines={2} color={x.late ? t.colors.warning : t.colors.text}>{whenLabel(x)}</Text>
+        </View>
+        <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
+          <Text weight="bold" numberOfLines={3} style={{ textDecorationLine: done ? 'line-through' : 'none' }}>{x.title}</Text>
+          <Meta x={x} owner={owner} status={status} requested={requested} />
+        </View>
+      </CardSource>
+      {checkable ? (
+        <CompletionCheck done={done} disabled={!!busy && !done} onToggle={(next) => { if (next && !done) onComplete(x); }}
+          label={tr('ht.completeA11y', { title: x.title })} testID={`today-complete-${x.id}`} size={26}
+          style={{ width: MIN_TOUCH, height: MIN_TOUCH }} />
+      ) : <View style={{ width: MIN_TOUCH }} />}
     </View>
   );
-
-  if (emphasis && (!x.done || celebrate)) return <TodayEmphasisSurface label={x.awaitsMe ? tr('ht.awaitsYou') : tr('ht.now')} testID="today-emphasis" success={!!celebrate}>{body}</TodayEmphasisSurface>;
-  return body;
 }

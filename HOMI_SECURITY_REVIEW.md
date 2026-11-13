@@ -63,6 +63,7 @@ Pas de « suspension temporaire » d'un membre : la révocation passe par le ret
 | Boucle entre modules | Profondeur ≤ 3, détection de cycle, statut `skipped` | 97 |
 | Écrasement silencieux d'une modification | `version` + `update_if_version` (`conflict`) | 98 |
 | Notification forgée « urgente » ou marquée envoyée | Aucun client n'insère de notification ; `urgent`, `pushed_at`, `deliver_after` figés pour un client | 98 |
+| Profil d'un autre membre lu pour afficher son prénom | `household_member_names` : prénom + photo seulement, membres actifs du même foyer, nounou → parents seulement ; profils toujours illisibles (`profiles_self_select`) | 98n |
 | Détail sensible sur l'écran verrouillé | Texte générique par défaut côté serveur | Jest `pushRules` |
 
 ## 6. Ce qui reste (avant Missions / Nounou / Courses)

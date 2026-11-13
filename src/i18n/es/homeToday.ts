@@ -2,7 +2,7 @@ import type { homeToday as fr } from '../fr/homeToday';
 import type { Messages } from '../types';
 
 export const homeToday: Messages<typeof fr> = {
-  'ht.title': 'Hoy en casa',
+  'ht.title': 'Hoy',
   'ht.count.todo': { one: '{count} por hacer', other: '{count} por hacer' },
   'ht.count.done': { one: '{count} hecha', other: '{count} hechas' },
   'ht.count.awaiting': { one: '{count} espera tu respuesta', other: '{count} esperan tu respuesta' },
@@ -28,7 +28,7 @@ export const homeToday: Messages<typeof fr> = {
   'ht.conflict': 'Esta misión acaba de cambiar. Ábrela de nuevo para ver su estado.',
   'ht.more': { one: 'Ver toda la organización (+{count})', other: 'Ver toda la organización (+{count})' },
   'ht.empty.title': 'Nada previsto hoy',
-  'ht.empty.body': 'Añade una tarea para ti o confía una misión: aparecerá aquí, con la persona que se encarga.',
+  'ht.empty.body': 'Toca «+» abajo en la pantalla para añadir una tarea o confiar una misión: aparecerá aquí, con la persona que se encarga.',
   'ht.agenda': 'Agenda del día',
   'ht.openAgenda': 'Abrir la agenda',
   'ht.shift.night': 'Relevo de noche',
@@ -52,4 +52,20 @@ export const homeToday: Messages<typeof fr> = {
   'ht.demo.laundry': 'Tender la ropa',
   'ht.demo.event': 'Natación para bebés',
   'ht.demo.eventPlace': 'Piscina municipal',
+  'ht.demo.stock.night_diapers': 'Pañales de noche',
+  'ht.demo.stock.milk': 'Leche de continuación',
+  'ht.demo.stock.wipes': 'Toallitas',
+  'ht.demo.stock.kibble': 'Pienso del gato',
+  'ht.demo.stock.laundry': 'Detergente',
+  'ht.demo.stock.toilet': 'Papel higiénico',
+  'ht.empty.bodyNoAdd': 'Las tareas y misiones de casa aparecerán aquí, con la persona que se encarga.',
+  'ht.addHint': 'Tarea, misión u otro añadido rápido',
+  'ht.alreadyDone': 'Ya estaba hecho: no ha cambiado nada.',
+  'ht.alreadyAccepted': 'Misión ya aceptada: no ha cambiado nada.',
+  'ht.focus.clear': 'Nada te espera por ahora. El resto del día está debajo.',
+  'ht.kind.appointment': 'Cita',
+  'ht.kind.event': 'Evento de casa',
+  'ht.below': 'Tu recorrido',
+  'ht.add.others': 'Otros añadidos rápidos',
+  'ht.add.queued': 'Guardada en el teléfono: se enviará cuando vuelva la red.',
 };

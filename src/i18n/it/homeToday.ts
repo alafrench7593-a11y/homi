@@ -2,7 +2,7 @@ import type { homeToday as fr } from '../fr/homeToday';
 import type { Messages } from '../types';
 
 export const homeToday: Messages<typeof fr> = {
-  'ht.title': 'Oggi in casa',
+  'ht.title': 'Oggi',
   'ht.count.todo': { one: '{count} da fare', other: '{count} da fare' },
   'ht.count.done': { one: '{count} fatta', other: '{count} fatte' },
   'ht.count.awaiting': { one: '{count} attende la tua risposta', other: '{count} attendono la tua risposta' },
@@ -28,7 +28,7 @@ export const homeToday: Messages<typeof fr> = {
   'ht.conflict': 'Questa missione è appena cambiata. Riaprila per vederne lo stato.',
   'ht.more': { one: 'Vedi tutta l’organizzazione (+{count})', other: 'Vedi tutta l’organizzazione (+{count})' },
   'ht.empty.title': 'Niente in programma oggi',
-  'ht.empty.body': 'Aggiungi un’attività per te o affida una missione: apparirà qui, con la persona che se ne occupa.',
+  'ht.empty.body': 'Tocca «+» in basso per aggiungere un’attività o affidare una missione: apparirà qui, con la persona che se ne occupa.',
   'ht.agenda': 'Agenda di oggi',
   'ht.openAgenda': 'Apri l’agenda',
   'ht.shift.night': 'Turno di notte',
@@ -52,4 +52,20 @@ export const homeToday: Messages<typeof fr> = {
   'ht.demo.laundry': 'Stendere il bucato',
   'ht.demo.event': 'Acquaticità neonatale',
   'ht.demo.eventPlace': 'Piscina comunale',
+  'ht.demo.stock.night_diapers': 'Pannolini per la notte',
+  'ht.demo.stock.milk': 'Latte di proseguimento',
+  'ht.demo.stock.wipes': 'Salviette',
+  'ht.demo.stock.kibble': 'Crocchette del gatto',
+  'ht.demo.stock.laundry': 'Detersivo',
+  'ht.demo.stock.toilet': 'Carta igienica',
+  'ht.empty.bodyNoAdd': 'Le attività e le missioni di casa appariranno qui, con la persona che se ne occupa.',
+  'ht.addHint': 'Attività, missione o altra aggiunta rapida',
+  'ht.alreadyDone': 'Era già fatto: non è cambiato nulla.',
+  'ht.alreadyAccepted': 'Missione già accettata: non è cambiato nulla.',
+  'ht.focus.clear': 'Per ora non ti aspetta nulla. Il resto della giornata è qui sotto.',
+  'ht.kind.appointment': 'Appuntamento',
+  'ht.kind.event': 'Evento di casa',
+  'ht.below': 'Il tuo percorso',
+  'ht.add.others': 'Altre aggiunte rapide',
+  'ht.add.queued': 'Salvata sul telefono: verrà inviata quando torna la rete.',
 };

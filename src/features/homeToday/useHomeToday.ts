@@ -6,14 +6,14 @@
  */
 import { useMemo } from 'react';
 import { useUserId } from '@/lib/auth';
-import { useAppointments, useMyMembership, useProfile } from '@/lib/data/hooks';
+import { useAppointments, useMyMembership } from '@/lib/data/hooks';
 import { useCareShifts, useFamilyEvents, useFamilyTasks, usePeople, useSaveTask } from '@/lib/data/hooks-family-load';
 import { useRespondMission } from '@/lib/data/hooks-missions';
-import { useMemberAvatars } from '@/lib/data/hooks-profilePhoto';
 import { useCustodyExceptions, useCustodyPlans } from '@/lib/data/hooks-tools6';
 import { todayISO } from '@/lib/domain/dates';
 import { t as tr } from '@/i18n';
 import { custodyToday, emphasisId, todayAgenda, todayShifts, todayTasks, type TaskLike, type TodayModel, type TodayTask } from './todayModel';
+import type { RespondResultStatus } from '@/lib/data/hooks-missions';
 
 export interface TodayPerson { id: string | null; name: string; initial: string; avatarPath: string | null; isMe: boolean }
 
@@ -29,9 +29,7 @@ export function useHomeToday(now: Date = new Date()) {
   const plan = (plansQ.data ?? []).find((p) => p.active) ?? null;
   const day = todayISO(now);
   const exQ = useCustodyExceptions(plan?.id, day);
-  const { labelOf } = usePeople();
-  const profile = useProfile().data;
-  const avatars = useMemberAvatars().data;
+  const { personOf } = usePeople();
   const minute = Math.floor(now.getTime() / 60_000);
 
   const model = useMemo<TodayModel>(() => {
@@ -44,12 +42,15 @@ export function useHomeToday(now: Date = new Date()) {
     };
   }, [tasksQ.data, eventsQ.data, apptQ.data, shiftsQ.data, plan, exQ.data, me, canEdit, minute]);
 
-  /** Prénom de la personne : le mien vient de mon profil ; les autres membres sont nommés par leur rôle (les profils ne sont pas partagés entre membres). */
+  /**
+   * Prénom et photo de la personne (household_member_names : prénom affiché + avatar des membres actifs, rien
+   * d'autre du profil). Le rôle (« Coparent ») ne sert plus qu'en dernier recours, si aucun prénom n'est visible.
+   */
   const person = (id: string | null | undefined): TodayPerson => {
     if (!id) return { id: null, name: tr('ht.nobody'), initial: '', avatarPath: null, isMe: false };
-    const isMe = id === me;
-    const name = isMe ? profile?.display_name?.trim() || tr('u7.people.you') : labelOf(id);
-    return { id, name, initial: (name.trim()[0] ?? '?').toUpperCase(), avatarPath: avatars?.[id] ?? null, isMe };
+    const p = personOf(id);
+    const name = p?.name ?? tr('u7.people.former');
+    return { id, name, initial: (name.trim()[0] ?? '?').toUpperCase(), avatarPath: p?.avatarPath ?? null, isMe: id === me };
   };
 
   const loading = tasksQ.isLoading && !tasksQ.data;
@@ -59,21 +60,27 @@ export function useHomeToday(now: Date = new Date()) {
   return { me, canEdit, model, emphasis: emphasisId(model.tasks), person, loading, error, retry, hasHousehold: !!membership };
 }
 
-/** Terminer une ligne depuis l'accueil (le serveur revérifie les droits). */
+/**
+ * Terminer / accepter une ligne depuis l'accueil (le serveur revérifie les droits). Le résultat RENVOYÉ est celui du
+ * serveur : « ok » (fait maintenant), « unchanged » (c'était déjà fait : rejeu, double appui) ; « conflict » devient
+ * une erreur lisible. L'écran confirme seulement après ce résultat.
+ */
 export function useCompleteToday() {
   const respond = useRespondMission();
   const save = useSaveTask();
-  const complete = async (x: TodayTask) => {
+  const complete = async (x: TodayTask): Promise<RespondResultStatus> => {
     if (x.kind === 'mission') {
       const out = await respond.mutateAsync({ id: x.id, action: 'complete', version: x.version });
       if (out?.status === 'conflict') throw new Error(tr('ht.conflict'));
-      return;
+      return out?.unchanged ? 'unchanged' : 'ok';
     }
     await save.mutateAsync({ id: x.id, input: { status: 'done' } });
+    return 'ok';
   };
-  const accept = async (x: TodayTask) => {
+  const accept = async (x: TodayTask): Promise<RespondResultStatus> => {
     const out = await respond.mutateAsync({ id: x.id, action: 'accept', version: x.version });
     if (out?.status === 'conflict') throw new Error(tr('ht.conflict'));
+    return out?.unchanged ? 'unchanged' : 'ok';
   };
   return { complete, accept };
 }

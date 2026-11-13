@@ -60,4 +60,23 @@ export function seedTodayHousehold(o: { userId: string; hid: string; childId: st
   T('family_events').push({ id: uuid(), household_id: hid, child_id: childId, kind: 'activity', title: tr('ht.demo.event'), starts_at: at(h), ends_at: at(h, 45), all_day: false,
     location_label: tr('ht.demo.eventPlace'), notes: null, recurrence: null, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris', created_by: userId, created_at: nowIso, updated_at: nowIso });
   T('care_shifts').push({ id: uuid(), household_id: hid, kind: 'night', user_id: partner, starts_at: at(22), ends_at: at(6, 0, 1), status: 'planned', note: null, created_by: userId, created_at: nowIso });
+
+  // Stocks d'exemple (16/11/2026) : /family/stocks n'est plus vide dans la démo. Niveaux variés (bien, bientôt, non
+  // renseigné), aucun réapprovisionnement en cours : la suggestion naît du serveur émulé quand un niveau change.
+  // Libellés distincts des scénarios E2E (« Couches », « Croquettes ») pour ne pas fusionner avec leurs stocks.
+  if (!T('household_stocks').some((s) => s.household_id === hid && String(s.client_id ?? '').startsWith('demo-stock:'))) {
+    const stock = (key: string, r: Row): Row => ({
+      id: uuid(), household_id: hid, brand: null, size: null, unit: 'u', frequency_days: null, responsible_id: null, reminder: true, child_id: null, pet_id: null,
+      ingredient_key: null, source: 'manual', notes: null, restock_state: 'ok', low_since: null, restock_task_id: null, restock_item_id: null, last_purchase_at: null,
+      last_validated_by: null, client_id: `demo-stock:${key}`, version: 1, created_by: userId, created_at: new Date(now.getTime() - 20 * 86400_000).toISOString(), updated_at: nowIso, ...r,
+    });
+    for (const r of [
+      stock('night_diapers', { label: tr('ht.demo.stock.night_diapers'), category: 'diapers', size: '4', qty_estimate: 24, threshold: 10, frequency_days: 7, responsible_id: partner, child_id: childId }),
+      stock('milk', { label: tr('ht.demo.stock.milk'), category: 'milk', qty_estimate: 2, unit: 'boite', threshold: 1, frequency_days: 10, responsible_id: userId, child_id: childId }),
+      stock('wipes', { label: tr('ht.demo.stock.wipes'), category: 'wipes', qty_estimate: 3, unit: 'paquet', threshold: 2, child_id: childId }),
+      stock('kibble', { label: tr('ht.demo.stock.kibble'), category: 'pet_food', qty_estimate: 2, unit: 'kg', threshold: 1, responsible_id: partner }),
+      stock('laundry', { label: tr('ht.demo.stock.laundry'), category: 'laundry', qty_estimate: null, unit: 'bouteille', threshold: 1 }),
+      stock('toilet', { label: tr('ht.demo.stock.toilet'), category: 'toilet_paper', qty_estimate: 12, unit: 'rouleau', threshold: 6 }),
+    ]) T('household_stocks').push(r);
+  }
 }

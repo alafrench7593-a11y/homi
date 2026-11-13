@@ -2,7 +2,7 @@ import type { homeToday as fr } from '../fr/homeToday';
 import type { Messages } from '../types';
 
 export const homeToday: Messages<typeof fr> = {
-  'ht.title': 'Today at home',
+  'ht.title': 'Today',
   'ht.count.todo': { one: '{count} to do', other: '{count} to do' },
   'ht.count.done': { one: '{count} done', other: '{count} done' },
   'ht.count.awaiting': { one: '{count} awaits your reply', other: '{count} await your reply' },
@@ -28,7 +28,7 @@ export const homeToday: Messages<typeof fr> = {
   'ht.conflict': 'This mission has just changed. Open it again to see its status.',
   'ht.more': { one: 'See the whole plan (+{count})', other: 'See the whole plan (+{count})' },
   'ht.empty.title': 'Nothing planned today',
-  'ht.empty.body': 'Add a task for yourself or hand over a mission: it will show up here, with the person taking care of it.',
+  'ht.empty.body': 'Tap “+” at the bottom of the screen to add a task or hand over a mission: it will show up here, with the person taking care of it.',
   'ht.agenda': 'Today’s calendar',
   'ht.openAgenda': 'Open the calendar',
   'ht.shift.night': 'Night shift',
@@ -52,4 +52,20 @@ export const homeToday: Messages<typeof fr> = {
   'ht.demo.laundry': 'Hang out the laundry',
   'ht.demo.event': 'Baby swimming',
   'ht.demo.eventPlace': 'Town swimming pool',
+  'ht.demo.stock.night_diapers': 'Night nappies',
+  'ht.demo.stock.milk': 'Follow-on formula',
+  'ht.demo.stock.wipes': 'Wipes',
+  'ht.demo.stock.kibble': 'Cat kibble',
+  'ht.demo.stock.laundry': 'Laundry detergent',
+  'ht.demo.stock.toilet': 'Toilet paper',
+  'ht.empty.bodyNoAdd': 'Household tasks and missions will show up here, with the person taking care of them.',
+  'ht.addHint': 'Task, mission or another quick add',
+  'ht.alreadyDone': 'It was already done: nothing changed.',
+  'ht.alreadyAccepted': 'Mission already accepted: nothing changed.',
+  'ht.focus.clear': 'Nothing is waiting for you right now. The rest of the day is below.',
+  'ht.kind.appointment': 'Appointment',
+  'ht.kind.event': 'Household event',
+  'ht.below': 'Your journey',
+  'ht.add.others': 'Other quick adds',
+  'ht.add.queued': 'Saved on this phone: it will be sent when the network is back.',
 };

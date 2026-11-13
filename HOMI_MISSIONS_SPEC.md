@@ -84,3 +84,37 @@ Points d'entrée : onglet Famille (accès direct « Missions », `HUB_ENTRIES.fa
 - ~~Stock~~ : **branché le 15/11/2026** — une mission de réapprovisionnement naît d'une suggestion confirmée (`stock_restock`), jamais automatiquement.
 - Pas de téléversement de photo depuis la mission (choix d'un document existant).
 - Passage planifié `process_household_events` non déployé (pg_cron / fonction planifiée) : l'appel immédiat suffit tant qu'aucune erreur ne survient.
+
+## 10. Refonte « tranche intégrée » (16/11/2026) : Accueil + détail + Missions
+
+**Prénoms des membres** (bug « Coparent » au lieu de « Sam ») : `household_member_names(p_household)`
+(`20261116000100_prenoms_membres.sql`, sécurité définie, `anon` exclu) expose aux membres ACTIFS d'un même foyer le
+prénom affiché + la photo, rien d'autre du profil ; une nounou ne voit que les parents (et elle-même) ; autre foyer,
+membre révoqué, sans session : rien (25 tests SQL, `98n_prenoms_membres.sql`). Démo : même règle (`demo.ts`).
+Client : `useMemberNames()` / `usePeople()` (`label` = « Vous » pour moi, sinon le prénom ; `nameOf`, `personOf` avec
+avatar), utilisés par l'Accueil, la liste, le détail, l'historique, la création, les Responsabilités et la liste de
+courses liée. Le rôle ne sert plus qu'en dernier recours. « Demandée par Sam » s'affiche quand la demandeuse n'est pas
+la responsable (fin de l'ambiguïté « Camille · Mission »).
+
+**Accueil** : point focal unique (prochaine action utile, verre optique, seul bouton plein) puis agenda lisible (surface
+mate : heure, avatar + prénom, statut icône + libellé, case à cocher `CompletionCheck` 48 px, détail au toucher,
+réorganisation douce `useListLayout`). Une seule entrée d'ajout : le « + » de la barre d'onglets
+(`useDockAction('index')` → feuille « Ajouter pour aujourd'hui » : tâche avec sélecteur de membre, mission, autres ajouts
+rapides) ; sur l'accueil d'un enfant, le « + » reste celui du cocon. Confirmations selon le résultat réel du serveur
+(fait / déjà fait / conflit ; tâche en file hors ligne annoncée comme telle).
+
+**Missions** : liste (tuiles de résultat « À répondre / En cours / Terminées 7 j », sélecteur Reçues / Envoyées, lignes
+sur surface mate) ; détail (panneau en verre fumé, point focal = la réponse attendue avec UNE action pleine, suivi de
+l'autrice, annulation rouge avec confirmation, historique sobre) ; création en 3 étapes (Quoi / Qui et quand / Détails
+et envoi : progression discrète, transitions, « Précédent » et la flèche de retour reviennent à l'étape précédente sans
+perte, bouton principal dans le pied d'écran) ; Responsabilités (sélecteur de membre par domaine, état = serveur).
+Démo : pastille compacte « Démo · Camille ⇄ voir comme Sam » (même `testID` `mission-demo-switch`) ; stocks d'exemple.
+
+**Points d'injection pour le design system** (`src/features/scene/**`, aucun écran à modifier) :
+`registerSceneSurfaces({ OpticalSurface, SmokedSurface, MatteSurface })` ; `registerCardDetailTransition({ CardSource,
+DetailScene })` (morph carte → détail ; défaut : élévation 140 ms puis scène 380 ms, retour : la ligne se repose et reprend
+le focus, position de défilement conservée) ; `registerSceneControls({ MemberSelector, DataTile })` (TODO : `IconOrb`,
+`GlassSelector`) ; `setTodayDoneComponent` (existant).
+
+Tests : SQL 98n (25) ; Jest `homeTodayRow.test.tsx` ; E2E `e2e/accueil_missions_v3.py` (320 × 568, texte 1,3, Réduire les
+animations, captures clair / sombre), `home_today.py`, `missions_scenario_a.py`, `courses_stocks_scenarios.py` adaptés.
