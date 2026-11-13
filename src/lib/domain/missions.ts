@@ -20,6 +20,8 @@ export interface Mission extends FamilyTask {
   child_id: string | null;
   pet_id: string | null;
   shopping_item_id: string | null;
+  /** Stock du foyer réapprovisionné par cette mission (posé par le serveur, 15/11/2026). */
+  stock_id?: string | null;
   product_label: string | null;
   document_id: string | null;
   domain_key: string | null;

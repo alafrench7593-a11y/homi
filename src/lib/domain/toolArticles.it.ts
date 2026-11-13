@@ -114,6 +114,8 @@ export const ASK_IT: Record<string, string> = {
   'family_domains': 'Come dividere meglio i compiti in due?',
   'family_missions': 'Come dividerci i compiti senza dover ricordare tutto all’altro?',
   'family_responsibilities': 'Come dividere in due gli ambiti della casa?',
+  'family_shopping': 'Come organizzarci per la spesa di famiglia?',
+  'family_stocks': 'Come smettere di essere l’unica persona che pensa a pannolini e latte?',
   'mental_load': 'Come parlare del carico mentale nella coppia?',
   'family_prep': 'Come preparare il rientro a scuola senza stress?',
   'offduty': 'Come prendermi del tempo per me?',

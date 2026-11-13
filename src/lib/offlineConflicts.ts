@@ -11,7 +11,7 @@
 import { backend } from './backend';
 
 /** Tables dont le client_id est unique par foyer (contrainte <table>_client_uniq). */
-export const HOUSEHOLD_CLIENT_ID_TABLES: readonly string[] = ['family_tasks', 'care_requests', 'shopping_items'];
+export const HOUSEHOLD_CLIENT_ID_TABLES: readonly string[] = ['family_tasks', 'care_requests', 'shopping_items', 'household_stocks'];
 
 /** Colonne(s) d'unicité pour l'envoi idempotent d'une saisie mise en file. */
 export function conflictTarget(table: string, row: Record<string, unknown>): string {
@@ -19,7 +19,7 @@ export function conflictTarget(table: string, row: Record<string, unknown>): str
   return 'id';
 }
 
-export type VersionedTable = 'family_tasks' | 'care_requests' | 'shopping_items';
+export type VersionedTable = 'family_tasks' | 'care_requests' | 'shopping_items' | 'household_stocks';
 
 export type VersionedUpdate<R> =
   | { status: 'ok'; row: R }

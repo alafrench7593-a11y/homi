@@ -21,6 +21,7 @@ import { ToastProvider, useToast } from '@/components/Overlays';
 import { PremiumPreviewHost } from '@/components/Premium';
 import { SleepNotificationsHost } from '@/features/sleep';
 import { useHouseholdRevocationGuard } from '@/lib/householdPurge';
+import { usePantryMigration } from '@/lib/data/hooks-stocks';
 import { configureNotifications, notificationRoute, notificationsSupported, registerPushToken, snoozeLocally, handleDoneResponse } from '@/lib/notifications';
 import { startOfflineSync, useOfflineStore } from '@/lib/offline';
 import { configurePurchases, resetPurchasesUser } from '@/lib/purchases';
@@ -100,6 +101,8 @@ function Bootstrap() {
   usePurchasesSync();
   // Retrait ou départ d'un foyer : ses données lues auparavant sont effacées de ce téléphone
   useHouseholdRevocationGuard();
+  // Ancien garde-manger local → inventaire du foyer (serveur), une seule fois, sans perte ni doublon
+  usePantryMigration();
 
   useEffect(() => {
     if (session) {

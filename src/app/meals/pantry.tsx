@@ -1,4 +1,8 @@
-/** « Que puis-je cuisiner avec ce que j'ai ? » : je coche mes ingrédients, seules les recettes compatibles avec le profil affiché sont proposées. */
+/**
+ * « Que puis-je cuisiner avec ce que j'ai ? » : je coche mes ingrédients, seules les recettes compatibles avec le profil affiché sont proposées.
+ * Depuis le 15/11/2026, les ingrédients cochés vivent dans l'inventaire du foyer (household_stocks, partagé) ; l'ancien
+ * garde-manger local de l'appareil y est migré à la première synchronisation (usePantryMigration).
+ */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
@@ -10,15 +14,16 @@ import { useFoodProfile, useRecipes } from '@/lib/data/hooks-recipes';
 import { AISLE_ORDER, cookWithWhatIHave, STAPLES } from '@/lib/recipes/engine';
 import { INGREDIENTS } from '@/lib/recipes/ingredients';
 import { fold } from '@/lib/recipes/validate';
-import { useUiStore } from '@/lib/store';
+import { usePantry } from '@/lib/data/hooks-stocks';
+import { router } from 'expo-router';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
 export default function Pantry() {
   const { data: all } = useRecipes();
   const { profile } = useFoodProfile();
-  const have = useUiStore((s) => s.pantry);
-  const setHave = useUiStore((s) => s.setPantry);
+  const { keys: have, setKeys } = usePantry();
+  const setHave = (next: string[]) => void setKeys(next).catch(() => undefined);
   const [q, setQ] = useState('');
   const keys = Object.keys(INGREDIENTS).filter((k) => !STAPLES.includes(k));
   const shown = keys.filter((k) => !q || fold(INGREDIENTS[k].name).includes(fold(q)));
@@ -43,6 +48,7 @@ export default function Pantry() {
           </View>
         );
       })}
+      <Button label={tr('stk.pantry.shared')} icon="package" size="sm" variant="ghost" onPress={() => router.push('/family/stocks' as never)} testID="pantry-open-stocks" />
       <SectionTitle title={tr('rc.pantry.results', { count: results.length })} />
       <Text variant="caption" muted>{tr('rc.pantry.note')}</Text>
       {!have.length ? <Text muted>{tr('rc.pantry.pick')}</Text> : !results.length ? <EmptyState icon="package" title={tr('rc.pantry.none')} /> : (

@@ -36,7 +36,7 @@ export function MissionCard({ m, me, labelOf, onOpen }: { m: Mission; me: string
   const t = useTheme();
   const v = viewerOf(m, me);
   const cat = categoryOf(m.category);
-  const who = v === 'creator' ? (m.assignee_id ? tr('mis.to', { person: labelOf(m.assignee_id) }) : tr('mis.open')) : tr('mis.from', { person: labelOf(m.created_by) });
+  const who = v === 'creator' ? (m.assignee_id ? tr('mis.to', { person: labelOf(m.assignee_id) }) : tr('mis.open')) : m.created_by === me ? tr('mis.fromYou') : tr('mis.from', { person: labelOf(m.created_by) });
   const dim = m.mission_state === 'done' || m.mission_state === 'cancelled';
   return (
     <LiftCard testID={`mission-${m.id}`} accessibilityLabel={`${m.title}. ${tr(STATE_LABEL[m.mission_state])}. ${who}`} onOpen={onOpen} radius={radius.lg} shadowColor={palette.night}

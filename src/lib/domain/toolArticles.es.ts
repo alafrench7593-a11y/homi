@@ -114,6 +114,8 @@ export const ASK_ES: Record<string, string> = {
   'family_domains': '¿Cómo repartir mejor las tareas entre los dos?',
   'family_missions': '¿Cómo repartirnos las tareas sin tener que recordárselo todo al otro?',
   'family_responsibilities': '¿Cómo repartir los ámbitos del hogar entre los dos?',
+  'family_shopping': '¿Cómo organizarnos con la compra de la familia?',
+  'family_stocks': '¿Cómo dejar de ser la única persona que piensa en los pañales y la leche?',
   'mental_load': '¿Cómo hablar de la carga mental en la pareja?',
   'family_prep': '¿Cómo preparar la vuelta al cole sin estrés?',
   'offduty': '¿Cómo tomarme tiempo para mí?',

@@ -17,7 +17,7 @@ import { useCreateShoppingList, useFoodProfile, useLatestMealPlan, useRecipeDisl
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { generateMenu, moveSlot, replaceSlot, shoppingList, type MenuOptions, type MenuSlot } from '@/lib/recipes/engine';
 import { MEALS, type Meal } from '@/lib/recipes/types';
-import { useUiStore } from '@/lib/store';
+import { usePantry } from '@/lib/data/hooks-stocks';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -31,7 +31,7 @@ export default function MenuScreen() {
   const { profile, members } = useFoodProfile();
   const fav = useRecipeFavorites();
   const dislikes = useRecipeDislikes();
-  const pantry = useUiStore((s) => s.pantry);
+  const pantry = usePantry().keys; // inventaire du foyer (serveur) : plus de copie locale
   const saved = useLatestMealPlan();
   const save = useSaveMealPlan();
   const createList = useCreateShoppingList();

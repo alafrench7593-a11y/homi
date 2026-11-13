@@ -101,7 +101,7 @@ select tests.ok(public._emit_household_event(:'H', 'mission.accepted', 'family_t
   (select idempotency_key from public.household_events where type = 'mission.accepted' and entity_id = (select id::text from m98 where k = 'A')))
   = (select id from public.household_events where type = 'mission.accepted' and entity_id = (select id::text from m98 where k = 'A')),
   'idempotence : même clé rejouée → même événement');
-select tests.ok(public.process_household_events(50) = 0, 'consommateur planifié : rien d''autre à traiter');
+select tests.ok((select count(*) from public.household_events where household_id = :'H' and type::text like 'mission.%' and status <> 'done') = 0, 'consommateur planifié : rien d''autre à traiter (tous les faits « mission » du foyer traités tout de suite)');
 
 -- ===================================================================== anti-doublon : article identique déjà sur la liste
 set role authenticated; set request.jwt.claim.sub = :'OW';

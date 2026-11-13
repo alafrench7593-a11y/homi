@@ -224,6 +224,9 @@ export const TOOLS: ToolDef[] = [
   // ---------------------------------------------------------------- missions familiales (14/11/2026)
   { id: 'family_missions', theme: 'tasks', icon: 'send', scopes: TOGETHER, href: () => '/family/missions' },
   { id: 'family_responsibilities', theme: 'tasks', icon: 'user-check', scopes: TOGETHER, href: () => '/family/missions/responsibilities' },
+  // ---------------------------------------------------------------- courses et stocks (15/11/2026)
+  { id: 'family_shopping', theme: 'tasks', icon: 'shopping-cart', scopes: TOGETHER, href: () => '/meals/shopping' },
+  { id: 'family_stocks', theme: 'tasks', icon: 'package', scopes: TOGETHER, href: () => '/family/stocks' },
   { id: 'mental_load', theme: 'relay', icon: 'pie-chart', scopes: TOGETHER, href: () => '/family/load' },
   { id: 'family_prep', theme: 'calendar', icon: 'calendar', scopes: TOGETHER, href: () => '/family/prep' },
   { id: 'offduty', theme: 'metime', icon: 'moon', scopes: TOGETHER, href: () => '/family/offduty' },

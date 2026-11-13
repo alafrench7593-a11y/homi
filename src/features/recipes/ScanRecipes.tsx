@@ -10,7 +10,7 @@ import { Banner, Button, SectionTitle, Text } from '@/components/ui';
 import { useFoodProfile, useRecipes } from '@/lib/data/hooks-recipes';
 import { scannedProductAdvice } from '@/lib/recipes/engine';
 import { INGREDIENTS } from '@/lib/recipes/ingredients';
-import { useUiStore } from '@/lib/store';
+import { usePantry } from '@/lib/data/hooks-stocks';
 import { t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { RecipeCard } from './RecipeCard';
@@ -18,8 +18,7 @@ import { RecipeCard } from './RecipeCard';
 export function ScanRecipes({ name }: { name: string | null | undefined }) {
   const { data: all } = useRecipes();
   const { profile } = useFoodProfile();
-  const pantry = useUiStore((s) => s.pantry);
-  const setPantry = useUiStore((s) => s.setPantry);
+  const { keys: pantry, setKeys: setPantry } = usePantry(); // inventaire du foyer (serveur)
   const adv = useMemo(() => (all && name ? scannedProductAdvice(name, profile, all) : null), [all, name, profile]);
   if (!adv) return null;
   const add = adv.keys.filter((k) => !pantry.includes(k));
@@ -30,7 +29,7 @@ export function ScanRecipes({ name }: { name: string | null | undefined }) {
         <View testID="scan-precautions"><Banner tone="warning" title={tr('rc.scan.precautions')}>{adv.precautions.map((p) => `• ${p.text}${p.alternative ? ` ${tr('rc.scan.alt')} ${p.alternative}` : ''}`).join('\n')}</Banner></View>
       ) : null}
       {adv.recipes.length ? adv.recipes.slice(0, 4).map((r) => <RecipeCard key={r.id} r={r} />) : <Text variant="small" muted>{adv.keys.length ? tr('rc.scan.noRecipe') : tr('rc.scan.unknown')}</Text>}
-      {add.length ? <Button label={tr('rc.scan.addPantry', { list: add.map((k) => INGREDIENTS[k].name).join(', ') })} icon="plus" size="sm" variant="secondary" onPress={() => setPantry([...pantry, ...add])} /> : null}
+      {add.length ? <Button label={tr('rc.scan.addPantry', { list: add.map((k) => INGREDIENTS[k].name).join(', ') })} icon="plus" size="sm" variant="secondary" onPress={() => void setPantry([...pantry, ...add]).catch(() => undefined)} /> : null}
       <Button label={tr('rc.pantry.open')} icon="package" size="sm" variant="ghost" onPress={() => router.push('/meals/pantry')} testID="scan-open-pantry" />
       <Text variant="caption" muted>{tr('rc.scan.note')}</Text>
     </View>

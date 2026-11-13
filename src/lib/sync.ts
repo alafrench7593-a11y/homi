@@ -15,6 +15,8 @@ import { backend, type ChangeSpec } from '@/lib/backend';
 export const HOUSEHOLD_TABLES = [
   'bottles', 'breastfeeds', 'pumpings', 'diapers', 'sleeps', 'meals', 'child_observations', 'child_measurements',
   'bottle_timers', 'appointments', 'family_tasks', 'care_shifts', 'care_requests', 'family_events', 'checklist_items',
+  // Courses et stocks (15/11/2026) : publiés par 20261115000200_courses_stocks.sql
+  'shopping_lists', 'shopping_items', 'household_stocks',
 ] as const;
 export const PERSONAL_TABLES = ['notifications'] as const;
 

@@ -12,6 +12,8 @@
 | 4 | Mère | voit le statut « Acceptée » puis « En cours » | lecture de la même ligne (temps réel du foyer existant) | E2E `09`, `10` |
 | 5 | Conjoint | « C'est terminé » après l'achat | Terminée (`done_by` posé par le serveur) ; `mission.completed` → article coché ; `task.completed` publié (futur stock) | SQL « article coché » ; E2E `08` |
 | 6 | Mère | reçoit « Mission terminée : … » | notification de confirmation | E2E `confirmation_mere`, `11` |
+| 7 | Conjoint ou mère | (variante) coche « Couches taille 4 » dans la liste | `shopping.item_checked` : la mission se termine seulement si c'est le **destinataire** qui coche ; sinon proposition neutre, rien de forcé (15/11/2026) | SQL `98s` « coche par … » |
+| 8 | Mère | valide l'achat sur le stock « Couches taille 4 » (+52) | l'article était relié au stock (même produit) ; le stock était « acheté, à valider » (quantité inchangée) ; `stock_validate_purchase` → stock actualisé, `stock.purchase_confirmed` publié pour le futur budget | SQL `98s` « scénario A (étape 8) » ; E2E `e2e/courses_stocks_scenarios.py` `A8_*`, captures `/tmp/homi-stk/shots/A08a…`, `A08b…` |
 
 Captures : `/tmp/homi-mis/shots/00-famille-hub.png` … `13-dock-ajout-rapide.png` (démo web, 390 × 844).
 

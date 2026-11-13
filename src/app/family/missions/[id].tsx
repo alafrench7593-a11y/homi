@@ -101,8 +101,8 @@ export default function MissionDetail() {
           <Text variant="title" accessibilityRole="header">{m.title}</Text>
           {m.notes ? <Text>{m.notes}</Text> : null}
           <View style={{ gap: 6 }}>
-            <Meta icon="user" text={m.assignee_id ? tr('mis.to', { person: labelOf(m.assignee_id) }) : tr('mis.open')} />
-            <Meta icon="send" text={tr('mis.from', { person: labelOf(m.created_by) })} />
+            <Meta icon="user" text={m.assignee_id ? (m.assignee_id === me ? tr('mis.toYou') : tr('mis.to', { person: labelOf(m.assignee_id) })) : tr('mis.open')} />
+            <Meta icon="send" text={m.created_by === me ? tr('mis.fromYou') : tr('mis.from', { person: labelOf(m.created_by) })} />
             <Meta icon="calendar" text={m.due_at ? `${missionWhen(m)} · ${tr('mis.detail.agenda')}` : missionWhen(m)} />
             {child ? <Meta icon="smile" text={tr('mis.detail.child', { name: child.first_name })} /> : null}
             {m.domain_key ? <Meta icon="grid" text={tr('mis.detail.domain', { domain: tr(`cm.domain.${m.domain_key}` as TKey) })} /> : null}
@@ -118,6 +118,10 @@ export default function MissionDetail() {
                   <Text variant="small" muted testID="mission-shopping-state">{item ? (item.checked ? tr('mis.detail.bought') : tr('mis.detail.inList')) : tr('mis.detail.willAdd')}</Text>
                 </View>
               </View>
+              {item?.checked && m.mission_state !== 'done' && viewer === 'recipient' && item.checked_by && item.checked_by !== me ? (
+                <Text variant="small" testID="mission-item-checked-other">{tr('stk.mission.checkedByOther', { person: labelOf(item.checked_by) })}</Text>
+              ) : null}
+              {m.stock_id ? <Button label={tr('stk.mission.openStock')} icon="package" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => router.push(`/family/stocks/${m.stock_id}` as never)} testID="mission-open-stock" /> : null}
               {item ? <Button label={tr('mis.detail.openList')} icon="shopping-cart" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => router.push('/meals/shopping')} testID="mission-open-list" /> : null}
             </View>
           ) : null}

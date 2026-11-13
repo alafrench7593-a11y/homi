@@ -34,9 +34,9 @@ export function useMissionHistory(taskId: string | undefined) {
   return useRows<TaskEvent>(['family_task_events', 'mission', taskId ?? ''], hid && taskId ? { table: 'family_task_events', filters: [eq('task_id', taskId)], order: [{ col: 'created_at' }], limit: 200 } : null);
 }
 
-export interface ShoppingItemLite { id: string; label: string; checked: boolean; list_id: string }
+export interface ShoppingItemLite { id: string; label: string; checked: boolean; list_id: string; checked_by: string | null; stock_id: string | null }
 export function useShoppingItem(id: string | null | undefined) {
-  const q = useRows<ShoppingItemLite>(['shopping_items', 'one', id ?? ''], id ? { table: 'shopping_items', columns: 'id,label,checked,list_id', filters: [eq('id', id)] } : null);
+  const q = useRows<ShoppingItemLite>(['shopping_items', 'one', id ?? ''], id ? { table: 'shopping_items', columns: 'id,label,checked,list_id,checked_by,stock_id', filters: [eq('id', id)] } : null);
   return q.data?.[0] ?? null;
 }
 

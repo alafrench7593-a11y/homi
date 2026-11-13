@@ -25,6 +25,9 @@ export interface MissionsCtx {
   uuid: () => string;
   taskEvent: (t: Row, kind: string, detail?: Row) => void;
   nextOccurrence: (t: Row) => void;
+  /** Courses et stocks (15/11/2026) : stock du même produit, et fait « article coché » (demoStocks.ts). */
+  matchStock?: (household: unknown, label: string) => Row | null;
+  itemChecked?: (item: Row) => void;
 }
 
 export const DEMO_PARTNER_ID = '5a4d0000-0000-4000-8000-00000000d3a0';
@@ -62,17 +65,22 @@ export function createMissions(c: MissionsCtx) {
       const clientId = `mission-item:${t.id}`;
       let item = T('shopping_items').find((i) => i.list_id === list!.id && !i.checked && String(i.label).trim().toLowerCase() === label.toLowerCase())
         ?? T('shopping_items').find((i) => i.household_id === t.household_id && i.client_id === clientId);
+      const stock = t.stock_id ? T('household_stocks').find((s) => s.id === t.stock_id) ?? null : c.matchStock?.(t.household_id, label) ?? null;
       if (!item) {
         const position = Math.max(-1, ...T('shopping_items').filter((i) => i.list_id === list!.id).map((i) => Number(i.position ?? 0))) + 1;
         item = { id: c.uuid(), list_id: list.id, household_id: t.household_id, ingredient_key: null, label, qty: null, unit: null, aisle: 'epicerie',
-          at_home: false, checked: false, checked_by: null, checked_at: null, position, client_id: clientId, version: 1, updated_at: c.nowIso() };
+          at_home: false, checked: false, checked_by: null, checked_at: null, position, client_id: clientId, version: 1, updated_at: c.nowIso(),
+          stock_id: stock?.id ?? null, category: stock?.category ?? null, assignee_id: t.assignee_id ?? null, created_by: actor ?? null, created_at: c.nowIso() };
         T('shopping_items').push(item);
-      }
+      } else if (stock && !item.stock_id) item.stock_id = stock.id;
       t.shopping_item_id = item.id;
     }
     if (type === 'mission.completed' && t.shopping_item_id) {
       const item = T('shopping_items').find((i) => i.id === t.shopping_item_id);
-      if (item && !item.checked) Object.assign(item, { checked: true, checked_by: actor ?? null, checked_at: c.nowIso(), version: Number(item.version ?? 1) + 1 });
+      if (item && !item.checked) {
+        Object.assign(item, { checked: true, checked_by: actor ?? null, checked_at: c.nowIso(), version: Number(item.version ?? 1) + 1 });
+        c.itemChecked?.(item); // la mission est déjà terminée : le fait « article coché » ne la rejoue pas
+      }
     }
   }
 

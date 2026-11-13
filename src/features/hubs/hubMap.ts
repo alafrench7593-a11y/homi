@@ -151,9 +151,16 @@ export const ACTIVE_ALIAS: Record<string, NavTab['name']> = { ask: 'health', tra
 /** Accès directs en tête de chaque hub : les pages des anciens onglets. */
 export const HUB_ENTRIES: Record<HubKey, { href: string; icon: IconName; title: TKey; sub: TKey; testID: string }[]> = {
   health: [{ href: '/ask', icon: 'message-circle', title: 'nav.hub.ask', sub: 'nav.hub.askSub', testID: 'hub-entry-ask' }],
-  baby: [{ href: '/track', icon: 'activity', title: 'nav.hub.track', sub: 'nav.hub.trackSub', testID: 'hub-entry-track' }],
+  baby: [
+    { href: '/track', icon: 'activity', title: 'nav.hub.track', sub: 'nav.hub.trackSub', testID: 'hub-entry-track' },
+    // Couches, lingettes, lait : les stocks « bébé » du foyer (15/11/2026)
+    { href: '/family/stocks/baby', icon: 'package', title: 'nav.hub.babyStocks', sub: 'nav.hub.babyStocksSub', testID: 'hub-entry-baby-stocks' },
+  ],
   family: [
     { href: '/family/missions', icon: 'send', title: 'nav.hub.missions', sub: 'nav.hub.missionsSub', testID: 'hub-entry-missions' },
+    // Courses et stocks du foyer (15/11/2026)
+    { href: '/meals/shopping', icon: 'shopping-cart', title: 'nav.hub.shopping', sub: 'nav.hub.shoppingSub', testID: 'hub-entry-shopping' },
+    { href: '/family/stocks', icon: 'package', title: 'nav.hub.stocks', sub: 'nav.hub.stocksSub', testID: 'hub-entry-stocks' },
     { href: '/agenda', icon: 'calendar', title: 'nav.hub.agenda', sub: 'nav.hub.agendaSub', testID: 'hub-entry-agenda' },
   ],
 };

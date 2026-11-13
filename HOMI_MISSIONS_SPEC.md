@@ -21,7 +21,8 @@ Pas de nouvelle table. Raisons : une seule source de vérité pour l'agenda (tâ
 | date, heure | `due_at`, `all_day` | « dans la journée » si pas d'heure |
 | récurrence | `recurrence` | occurrence suivante = mission « À accepter », sans notification |
 | photo / pièce jointe | `document_id` → `documents` | stockage existant (documents du foyer) ; visible seulement sous les droits du document (nounou : partage explicite) ; pas de téléversement depuis la mission (choix d'un document existant) |
-| produit associé | `product_label`, `shopping_item_id` → `shopping_items` | article créé à l'acceptation, coché à la fin |
+| produit associé | `product_label`, `shopping_item_id` → `shopping_items` | article créé à l'acceptation, coché à la fin ; **cocher l'article termine la mission si c'est son destinataire qui coche** (15/11/2026) |
+| stock réapprovisionné | `stock_id` → `household_stocks` | posé par le serveur seulement (`stock_restock`, garde `family_tasks_stock_guard`) ; l'article de la mission est relié au stock (ou au stock du même produit) |
 | enfant associé | `child_id` → `children` | politique restrictive `family_tasks_child_id_scope` (périmètre nounou) |
 | animal associé | `pet_id` | **colonne prévue, nullable, sans clé étrangère** : le module animaux n'existe pas ; l'écran l'annonce « bientôt » |
 | foyer | `household_id` | existant |
@@ -68,6 +69,8 @@ Les 6 réponses rapides sont des boutons de l'écran Détail. `expo-notification
 | `/family/missions/[id]` | Détail, état, liste de courses liée, réponses rapides, actions de l'autrice, historique |
 | `/family/missions/responsibilities` | Les 8 responsabilités (voir `HOMI_RESPONSIBILITIES.md`) |
 
+Détail : « Pour vous » / « Demandée par vous » quand la personne est concernée (correctif 15/11/2026 : « Vous » n'a plus de majuscule au milieu de la phrase, 5 langues) ; lien « Voir le stock » et mention « coché par … » pour une mission de réapprovisionnement.
+
 Points d'entrée : onglet Famille (accès direct « Missions », `HUB_ENTRIES.family`), ajout rapide du Dock (« Nouvelle mission »), recherche d'outils (outils `family_missions` et `family_responsibilities`, catalogue porté à 150+ outils, garde-fou `homiToolMatrix` respecté). i18n 5 langues (`src/i18n/*/missions.ts`), DA : `Card`/`Chip`/`Segmented`/`Banner` de `ui.tsx`, `LiftCard`, `Cascade`, `DetailEnter` de `src/motion`.
 
 ## 8. Démonstration
@@ -77,7 +80,7 @@ Points d'entrée : onglet Famille (accès direct « Missions », `HUB_ENTRIES.fa
 ## 9. Limites
 
 - Création non mise en file hors ligne (RPC directe, comme les demandes d'aide) ; un nouvel essai réutilise le même `client_id`.
-- Sens inverse « article coché dans la liste → mission terminée » non branché (aucun émetteur `shopping.item_checked` ; à faire avec le module Courses/Stock).
-- Stock : seulement prévu (`stock.low` existe dans l'énuméré).
+- ~~Sens inverse « article coché → mission terminée »~~ : **branché le 15/11/2026** (`shopping.item_checked`, voir `HOMI_SHOPPING_STOCKS_SPEC.md` § 7) — seulement si c'est le destinataire qui coche ; sinon proposition, jamais de transition forcée ; anti-boucle vérifié.
+- ~~Stock~~ : **branché le 15/11/2026** — une mission de réapprovisionnement naît d'une suggestion confirmée (`stock_restock`), jamais automatiquement.
 - Pas de téléversement de photo depuis la mission (choix d'un document existant).
 - Passage planifié `process_household_events` non déployé (pg_cron / fonction planifiée) : l'appel immédiat suffit tant qu'aucune erreur ne survient.

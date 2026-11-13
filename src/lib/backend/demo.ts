@@ -30,6 +30,7 @@ import { buildSampleFamily } from './demoSample';
 import { createSocial } from './demoSocial';
 import { createOutings } from './demoOutings';
 import { createMissions } from './demoMissions';
+import { createStocks } from './demoStocks';
 import { extractiveSummary, MIN_COMMENTS_FOR_SUMMARY } from '../../../supabase/functions/_shared/community-ai';
 import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
 import { fromProductRow } from '../../../supabase/functions/_shared/open-facts';
@@ -329,7 +330,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     return (m.child_scope as unknown[]).includes(childId);
   };
   /** Tables versionnées (20261113000500_hors_ligne_versions.sql) : version posée par le serveur. */
-  const VERSIONED = ['family_tasks', 'care_requests', 'shopping_items'];
+  const VERSIONED = ['family_tasks', 'care_requests', 'shopping_items', 'household_stocks'];
   const isPremium = () => {
     const s = T('subscriptions').find((r) => r.user_id === state.session?.userId);
     // Même règle que le serveur (_subscription_grants) : remboursé → rien ; échéance nulle → seulement promotionnel / à vie
@@ -448,7 +449,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   // Mini-réseau social (mêmes règles que 20261023000100_community_social.sql)
   const social = createSocial({ T, me: () => state.session?.userId, uid, uuid, nowIso, limit, isModerator, blockedBetween, notify, actorLabel });
   // Sorties & rencontres (mêmes règles que 20261028000100_outings_meetups.sql)
-  const missions = createMissions({ T, me: () => state.session?.userId, nowIso, uuid, taskEvent: (t, k, d) => taskEvent(t, k, d), nextOccurrence: (t) => nextOccurrence(t) });
+  // Courses et stocks (mêmes règles que 20261115000200_courses_stocks.sql) ; reliés aux missions dans les deux sens
+  let stocks: ReturnType<typeof createStocks> | null = null;
+  const missions = createMissions({ T, me: () => state.session?.userId, nowIso, uuid, taskEvent: (t, k, d) => taskEvent(t, k, d), nextOccurrence: (t) => nextOccurrence(t),
+    matchStock: (h, label) => stocks?.matchStock(h, label) ?? null, itemChecked: (item) => stocks?.itemChecked(item) });
+  stocks = createStocks({ T, me: () => state.session?.userId, nowIso, uuid, missionRpc: (name, a) => missions.rpcs[name](a) });
+  const stockHooks = stocks;
   const outings = createOutings({ T, me: () => state.session?.userId, nowIso, isModerator, blockedBetween,
     needsReview: (text) => PERSONAL_DATA.test(text) || textNeedsReview(text) || DEMO_TERMS.some((x) => x.pattern.test(text)) });
 
@@ -618,6 +624,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     if (ownerCol && r[ownerCol] == null && me) r[ownerCol] = me;
     r.id ??= uuid();
     r.created_at ??= nowIso();
+    if (table === 'household_stocks' || table === 'shopping_items') {
+      if (table === 'household_stocks' && r.ingredient_key && T(table).some((x) => x.household_id === r.household_id && x.ingredient_key === r.ingredient_key)) throw new BackendError(tr('l2.dm.forbidden'), '23505');
+      stockHooks.beforeWrite(table, r);
+    }
     // Catalogue de produits : mêmes règles que la base (code-barres unique, prix datés et sourcés, jamais dans le futur)
     if (table === 'kid_products') {
       if (!/^[0-9]{8,14}$/.test(String(r.barcode ?? ''))) throw new BackendError(tr('l2.dm.barcodeInvalid'));
@@ -911,6 +921,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     if (prof) prof.journeys = legacyJourneys(T('user_journeys') as JourneyRow[], userId);
   }
   function afterInsert(table: string, r: Row) {
+    if (table === 'household_stocks' || table === 'shopping_items') stockHooks.afterWrite(table, undefined, r);
     social.afterInsert(table, r);
     outings.afterInsert(table, r);
     if (table === 'user_journeys') afterJourney(null, r);
@@ -1130,6 +1141,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   const rpcs: Record<string, (a: Row) => unknown> = {
     ...social.rpcs,
     ...missions.rpcs,
+    ...stockHooks.rpcs,
     // Démonstration uniquement : passer d'une personne du foyer à l'autre (missions : les deux côtés sur un appareil)
     demo_switch_person: (a) => {
       const me = state.session?.userId;
@@ -1337,7 +1349,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       const allowed: Record<string, string[]> = {
         family_tasks: ['title', 'category', 'due_at', 'assignee_id', 'priority', 'essential', 'recurrence', 'status', 'notes'],
         care_requests: ['status', 'message', 'starts_at', 'ends_at'],
-        shopping_items: ['label', 'qty', 'unit', 'aisle', 'at_home', 'checked', 'position'],
+        shopping_items: ['label', 'qty', 'unit', 'aisle', 'at_home', 'checked', 'position', 'brand', 'size', 'category', 'assignee_id', 'document_id'],
+        household_stocks: ['label', 'category', 'brand', 'size', 'qty_estimate', 'unit', 'threshold', 'frequency_days', 'responsible_id', 'reminder', 'child_id', 'notes'],
       };
       const cols = allowed[String(a.p_table)];
       const patch = (a.p_patch ?? {}) as Row;
@@ -1346,7 +1359,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       if (!row) return { status: 'not_found' };
       if (Number(row.version ?? 1) !== Number(a.p_expected_version)) return { status: 'conflict', row: { ...row } };
       const wasDone = row.status === 'done';
+      const before = { ...row };
       Object.assign(row, patch, { version: Number(row.version ?? 1) + 1, updated_at: nowIso() });
+      if (a.p_table === 'household_stocks' || a.p_table === 'shopping_items') {
+        try { stockHooks.beforeWrite(String(a.p_table), row, before); } catch (e) { Object.assign(row, before); throw e; }
+        stockHooks.afterWrite(String(a.p_table), before, row);
+      }
       if (a.p_table === 'family_tasks' && row.status === 'done' && !wasDone) { row.done_at = nowIso(); row.done_by = state.session?.userId ?? null; }
       if (a.p_table === 'family_tasks' && row.status !== 'done') { row.done_at = null; row.done_by = null; }
       persist();
@@ -1887,6 +1905,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           if (r.assignee_id !== before.assignee_id) taskEvent(r, r.assignee_id ? 'assigned' : 'unassigned', { from: before.assignee_id, to: r.assignee_id });
           if (r.status !== before.status) { taskEvent(r, r.status === 'done' ? 'done' : r.status === 'cancelled' ? 'cancelled' : 'reopened'); nextOccurrence(r); }
           else if (before.due_at && r.due_at && r.due_at > before.due_at) taskEvent(r, 'postponed', { from: before.due_at, to: r.due_at });
+          continue;
+        }
+        if (table === 'household_stocks' || table === 'shopping_items') {
+          const before = { ...r };
+          Object.assign(r, patch);
+          try { stockHooks.beforeWrite(table, r, before); } catch (e) { Object.assign(r, before); throw e; }
+          stockHooks.afterWrite(table, before, r);
           continue;
         }
         if (table === 'care_requests') {

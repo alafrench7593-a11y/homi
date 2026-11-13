@@ -40,6 +40,8 @@ export const missions: Messages<typeof fr> = {
   'mis.act.cancel': 'Cancel the mission',
   'mis.from': 'Requested by {person}',
   'mis.to': 'For {person}',
+  'mis.toYou': 'For you',
+  'mis.fromYou': 'Requested by you',
   'mis.open': 'Open: the first person available',
   'mis.noDue': 'No due date',
   'mis.allDay': '{date}, during the day',

@@ -253,6 +253,8 @@ function useQuickAdd(onBefore?: () => void) {
     { icon: 'maximize', label: tr('dock.q.scanner'), onPress: go(() => router.push('/scanner')), show: true },
     // Missions familiales : une demande pratique au foyer, depuis n'importe quel écran
     { icon: 'send', label: tr('dock.q.mission'), onPress: go(() => router.push('/family/missions/new')), show: true },
+    // Courses : ajout rapide d'un article à la liste partagée du foyer
+    { icon: 'shopping-cart', label: tr('dock.q.shopping'), onPress: go(() => router.push('/meals/shopping?add=1')), show: true },
   ];
   return { child, go, items: items.filter((i) => i.show) };
 }

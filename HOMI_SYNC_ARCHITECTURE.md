@@ -40,11 +40,34 @@ Objectif : remplacer les couplages directs « déclencheur A met à jour la tabl
 - Agenda : rien à synchroniser — une mission datée est une tâche datée, déjà lue par l'agenda (missions refusées/annulées masquées).
 - Tests : `98m_missions.sql` (consommateur rejoué deux fois, clé rejouée, `process_household_events` → 0, anti-doublon d'article).
 
+## 2 ter. Courses et stocks (15/11/2026)
+
+`20261115000100_courses_stocks_types.sql`, `20261115000200_courses_stocks.sql` — voir `HOMI_SHOPPING_STOCKS_SPEC.md`.
+- Nouveaux types : `stock.restock_confirmed`, `stock.restock_dismissed`, `stock.purchase_confirmed` (en plus de `stock.low` et `shopping.item_checked`, déjà dans l'énuméré, désormais **émis**).
+- Émission : `stock.low` et `shopping.item_checked` par des déclencheurs d'**émission seule** (comme `task.completed`) ; `stock.restock_*` et `stock.purchase_confirmed` par les RPC `stock_restock` / `stock_validate_purchase`. Clés : `stock.low:<stock>:<début de période basse>`, `shopping.item_checked:<article>:<version>` (décocher puis recocher = nouveau fait), `stock.restock_confirmed:<stock>:<mission>`, `stock.purchase_confirmed:<stock>:<version>`.
+- Consommateur `_consume_stock_event` (répartiteur commun `_dispatch_household_event`, même transaction, erreur isolée ; passage planifié `process_household_events` étendu) :
+  - `stock.low` → stock « suggested » + notification neutre au responsable ; **aucune mission** ;
+  - `stock.restock_confirmed` → liens mission ↔ stock (« ordered ») ; `stock.restock_dismissed` → « dismissed » ;
+  - `shopping.item_checked` → **boucle fermée** : la mission liée passe « Terminée » seulement si c'est son destinataire qui coche (`mission_respond('complete')`, mêmes règles) ; sinon notification de proposition, aucune transition forcée ; stock lié « bought » (quantité inchangée).
+- `stock.purchase_confirmed` n'a **pas encore de consommateur** : il reste `pending` pour le futur module Budget (contrat du `payload` : spec § 6).
+- Consommateur des missions étendu : l'article créé à l'acceptation porte le stock de la mission (ou du même produit) ; la fin de mission coche l'article, ce qui publie `shopping.item_checked` (profondeur 1) sans rien rejouer.
+- Répartiteur : il ne réserve plus que les types qui ont un consommateur, et **restaure le contexte de l'événement parent** après un traitement imbriqué (un fait émis ensuite garde sa chaîne d'origine).
+
+Boucles (chaque flèche = un fait typé, chaque fait une seule fois) :
+
+```
+stock bas ─stock.low→ suggestion ─(confirmation)→ create_mission ─stock.restock_confirmed→ mission ↔ stock
+mission acceptée ─mission.accepted→ article lié au stock
+article coché ─shopping.item_checked→ (destinataire) mission_respond('complete') ─mission.completed→ article déjà coché : fin
+mission terminée ─mission.completed→ article coché ─shopping.item_checked→ mission déjà terminée : fin ; stock « à valider »
+validation d'achat ─stock.purchase_confirmed→ (futur Budget)
+```
+
 ## 3. Idempotence
 
 | Niveau | Mécanisme |
 |---|---|
-| Saisie hors ligne (insertion) | `client_id` uuid généré sur l'appareil ; tables de suivi : `unique(client_id)` ; **tâches, demandes, articles de courses : `unique(household_id, client_id)`** ; envoi `on conflict … do nothing` (`conflictTarget()` dans `src/lib/offlineConflicts.ts`) |
+| Saisie hors ligne (insertion) | `client_id` uuid généré sur l'appareil ; tables de suivi : `unique(client_id)` ; **tâches, demandes, articles de courses, stocks : `unique(household_id, client_id)`** (garde-manger migré : `client_id` déterministe) ; envoi `on conflict … do nothing` (`conflictTarget()` dans `src/lib/offlineConflicts.ts`) |
 | Événements | `idempotency_key` unique ; une émission répétée renvoie l'événement existant (même en cas de course : `on conflict do nothing` puis relecture) |
 | Notifications push | Réservation atomique `pushed_at` avant l'envoi (deux exécutions de `send-push` n'envoient jamais deux fois) |
 | Tâches récurrentes | Occurrence suivante créée sans doublon (existant, `40_family_load.sql`) |
@@ -53,7 +76,7 @@ Construction des clés : `<type>:<entité>:<instant ou version du fait>` — jam
 
 ## 4. Conflits d'édition
 
-Avant : « le dernier qui écrit gagne » sans le savoir. Maintenant, sur `family_tasks`, `care_requests`, `shopping_items` :
+Avant : « le dernier qui écrit gagne » sans le savoir. Maintenant, sur `family_tasks`, `care_requests`, `shopping_items`, `household_stocks` (15/11/2026) :
 
 1. `version integer` posée par le serveur (`_bump_version`) : 1 à la création, +1 à chaque modification, **impossible à forcer** par l'appareil ; `client_id` figé ; `updated_at` mis à jour.
 2. `update_if_version(table, id, version_lue, modifications)` (RPC, `security invoker` : RLS et déclencheurs métier s'appliquent) renvoie :
@@ -87,12 +110,12 @@ Avant : « le dernier qui écrit gagne » sans le savoir. Maintenant, sur `famil
 
 - Ajout seul : écriture uniquement par le déclencheur `_audit_row` ; `UPDATE`, `DELETE` direct et `TRUNCATE` refusés **même pour le serveur** ; seule la suppression du foyer (cascade) efface son journal.
 - Contenu : foyer, instant, acteur (NULL = serveur), origine `client`/`server`, table, ligne, action, **avant/après résumés** (colonnes modifiées seulement, textes tronqués à 120 caractères, jamais d'empreinte de jeton, de chemin de fichier ni de champ technique).
-- Tables suivies : `household_members` (rôle, droits, enfants autorisés), `household_invitations`, `documents`, `document_shares`, `family_tasks`, `care_requests`. Brancher une table future : `select public._attach_audit('pointages', 'daily');` dans sa migration.
+- Tables suivies : `household_members` (rôle, droits, enfants autorisés), `household_invitations`, `documents`, `document_shares`, `family_tasks`, `care_requests`, et depuis le 15/11/2026 `shopping_lists`, `shopping_items`, `household_stocks` (domaine `lists`). Brancher une table future : `select public._attach_audit('pointages', 'daily');` dans sa migration.
 - Lecture : propriétaire (tout), co-parent (membres/invitations + domaines qu'il peut voir) ; jamais une nounou ; plus rien après un retrait.
 
 ## 8. Ce qui reste
 
 1. File hors ligne des **modifications** (rejeu via `update_if_version`) et écran de résolution des conflits.
-2. Planifier `process_household_events` (pg_cron / fonction) ; brancher les autres synchronisations sur le même modèle que les missions (« article coché → mission terminée », stock, budget) et migrer `care_requests_after`.
-3. Realtime : ajouter `shopping_items`, `shopping_lists`, `document_shares` à la publication si les écrans en ont besoin.
+2. Planifier `process_household_events` (pg_cron / fonction) ; consommateur Budget de `stock.purchase_confirmed` (module absent) ; migrer `care_requests_after`. (« Article coché → mission terminée » et stocks : **faits** le 15/11/2026.)
+3. Realtime : `shopping_items`, `shopping_lists` et `household_stocks` publiés le 15/11/2026 ; reste `document_shares` si un écran en a besoin.
 4. Suppression logique (`deleted_at`) pour les modules où l'historique compte (pointages, contrats).

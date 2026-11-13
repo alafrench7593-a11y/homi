@@ -3,9 +3,11 @@
  * du profil affiché, favoris, menus et listes de courses du foyer (partagés avec le coparent), réglages de l'enfant.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { getLocale } from '@/i18n';
+import { getLocale, t as tr } from '@/i18n';
 import { useMutation } from '@tanstack/react-query';
-import { backend, eq } from '../backend';
+import { backend, BackendError, eq } from '../backend';
+import { updateIfVersion } from '../offlineConflicts';
+import type { StockCategory, StockUnit } from '../domain/stocks';
 import { useUserId } from '../auth';
 import { insertOrQueue } from '../offline';
 import { ensureHousehold, useActivePregnancy, useHouseholdId, useInvalidate, useRows, useTrackedChildren, useJourneyState } from './hooks';
@@ -213,7 +215,17 @@ export function useSaveMealPlan() {
 
 // ---------------------------------------------------------------- liste de courses
 export interface ShoppingList { id: string; household_id: string; plan_id: string | null; title: string; created_at: string }
-export interface ShoppingItem { id: string; list_id: string; ingredient_key: string | null; label: string; qty: number | null; unit: ShoppingLine['unit']; aisle: string; at_home: boolean; checked: boolean; checked_by: string | null; position: number }
+export interface ShoppingItem {
+  id: string; list_id: string; household_id?: string; ingredient_key: string | null; label: string; qty: number | null; unit: ShoppingLine['unit'] | StockUnit | null; aisle: string; at_home: boolean;
+  checked: boolean; checked_by: string | null; checked_at?: string | null; position: number; version?: number;
+  // Courses et stocks (15/11/2026)
+  brand?: string | null; size?: string | null; category?: StockCategory | null; assignee_id?: string | null; stock_id?: string | null;
+  document_id?: string | null; created_by?: string | null; created_at?: string;
+}
+export interface ShoppingItemInput {
+  listId: string; householdId: string; label: string; position: number; qty?: number | null; unit?: StockUnit | null; brand?: string | null; size?: string | null;
+  category?: StockCategory | null; assignee_id?: string | null; stock_id?: string | null;
+}
 
 export function useLatestShoppingList() {
   const hid = useHouseholdId();
@@ -240,17 +252,38 @@ export function useToggleShoppingItem() {
   const inv = useInvalidate();
   const userId = useUserId();
   return useMutation({
+    // Cocher publie « shopping.item_checked » côté serveur : mission liée terminée si c'est son destinataire, stock « à valider »
     mutationFn: (v: { id: string; checked: boolean }) => backend.update('shopping_items', { checked: v.checked, checked_by: v.checked ? userId : null, checked_at: v.checked ? new Date().toISOString() : null }, [eq('id', v.id)]),
-    onSuccess: () => inv('shopping_items'),
+    onSuccess: () => inv('shopping_items', 'household_stocks', 'family_tasks', 'family_task_events', 'notifications'),
   });
 }
 export function useAddShoppingItem() {
   const inv = useInvalidate();
   return useMutation({
     // client_id unique par foyer : un article ajouté hors ligne est envoyé au retour du réseau, sans doublon
-    mutationFn: (v: { listId: string; householdId: string; label: string; position: number }) => insertOrQueue('shopping_items', { client_id: uuid(), list_id: v.listId, household_id: v.householdId, label: v.label, aisle: 'epicerie', position: v.position }),
+    mutationFn: (v: ShoppingItemInput) => insertOrQueue('shopping_items', {
+      client_id: uuid(), list_id: v.listId, household_id: v.householdId, label: v.label, aisle: 'epicerie', position: v.position,
+      ...(v.qty != null ? { qty: v.qty } : {}), ...(v.unit ? { unit: v.unit } : {}), ...(v.brand ? { brand: v.brand } : {}), ...(v.size ? { size: v.size } : {}),
+      ...(v.category ? { category: v.category } : {}), ...(v.assignee_id ? { assignee_id: v.assignee_id } : {}), ...(v.stock_id ? { stock_id: v.stock_id } : {}),
+    }),
     onSuccess: () => inv('shopping_items'),
   });
+}
+/** Modification d'un article lu à une version (quantité, marque, taille, responsable…) : jamais d'écrasement silencieux. */
+export function useUpdateShoppingItem() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: async (v: { id: string; version: number; patch: Record<string, unknown> }) => {
+      const out = await updateIfVersion<ShoppingItem>('shopping_items', v.id, v.version, v.patch);
+      if (out.status !== 'ok') throw new BackendError(out.status === 'conflict' ? tr('stk.err.conflict') : tr('stk.err.notFound'), out.status);
+      return out.row;
+    },
+    onSettled: () => inv('shopping_items', 'household_stocks'),
+  });
+}
+/** Articles déjà achetés (historique) : les plus récents d'abord. */
+export function useShoppingHistory(listId: string | null | undefined) {
+  return useRows<ShoppingItem>(['shopping_items', 'history', listId ?? ''], listId ? { table: 'shopping_items', filters: [eq('list_id', listId), eq('checked', true)], order: [{ col: 'checked_at', asc: false }], limit: 30 } : null);
 }
 
 // ---------------------------------------------------------------- recette personnelle (et création par l'équipe éditoriale)

@@ -59,9 +59,16 @@ interface UiState {
   markAdviceSeen: (signatures: string[]) => void;
   /** Outils favoris (identifiants stables du catalogue), dans l'ordre choisi. */
   toolFavorites: string[];
-  /** Ingrédients que j'ai à la maison (« Que puis-je cuisiner ? ») : préférence de l'appareil. */
+  /**
+   * ANCIEN garde-manger local (avant le 15/11/2026). Ce n'est plus une source de vérité : les ingrédients sont dans
+   * l'inventaire du foyer (household_stocks). Ce champ ne sert qu'à la migration douce à la première synchronisation
+   * (usePantryMigration), puis il est vidé.
+   */
   pantry: string[];
   setPantry: (keys: string[]) => void;
+  /** Foyers dont le garde-manger local a déjà été migré vers le serveur (jamais deux fois). */
+  pantryMigrated: string[];
+  setPantryMigrated: (householdId: string) => void;
   /** Questions préparées pour le médecin ou la PMI (aide pour la nuit), par enfant : préférence de l'appareil. */
   nightQuestions: Record<string, string[]>;
   setNightQuestions: (childId: string, list: string[]) => void;
@@ -139,6 +146,8 @@ export const useUiStore = create<UiState>()(
       toolFavorites: [],
       pantry: [],
       setPantry: (pantry) => set({ pantry }),
+      pantryMigrated: [],
+      setPantryMigrated: (id) => set((st) => ({ pantryMigrated: st.pantryMigrated.includes(id) ? st.pantryMigrated : [...st.pantryMigrated, id] })),
       nightQuestions: {},
       setNightQuestions: (childId, list) => set((st) => ({ nightQuestions: { ...st.nightQuestions, [childId]: list } })),
       setToolFavorites: (toolFavorites) => set({ toolFavorites }),

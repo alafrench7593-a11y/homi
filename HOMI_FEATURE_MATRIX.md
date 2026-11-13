@@ -26,8 +26,8 @@ Abréviations : `mig/` = `supabase/migrations/`, `app/` = `src/app/`, `hooks/` =
 | Pointages | AB | — | Audit, validation, export (`src/lib/csv.ts`) | P1 | Valeur légale (Pajemploi) | V |
 | Missions | EI | `family_tasks`, `family_task_events`, `care_requests` | Statuts étendus, liens objets | P0 | Statuts répartis sur 2 tables | V |
 | Responsabilités | EI | `family_domains` (clé libre), `app/family/domains.tsx` | Référentiel de domaines | P1 | Clé libre non contrainte à une liste | V |
-| Listes de courses / articles | EI | `shopping_lists`, `shopping_items`, `app/meals/shopping.tsx` | Liste libre | P1 | Unités culinaires seulement ; hors Realtime | V |
-| Stocks | AB | seul `shopping_items.at_home` ; garde-manger `meals/pantry.tsx` **local Zustand** | Table d'inventaire | P1 | Garde-manger non partagé, non serveur | V |
+| Listes de courses / articles | EF (15/11) | `shopping_items` complétée (marque, taille, catégorie, responsable, stock, photo prévue), `app/meals/shopping.tsx` refondu, liste libre | — | P1 | Photo : colonne prête, pas de téléversement | V |
+| Stocks | EF (15/11) | `household_stocks` (RLS foyer, audit, `client_id`/`version`), `app/family/stocks/*` ; garde-manger migré du local vers le serveur | — | P1 | Fréquence informative (pas de prévision de rupture) | V |
 | Dépenses | AB | prix vérifiés `ingredient_prices`, `product_prices` (référentiel) | Table dépenses | P1 | Montants, devise, arrondis | V |
 | Documents | EI | `documents` (`private_to_uploader`), `family_papers`, `app/documents/*` | Partage par document | P0 | Domaine entier ou privé, rien entre les deux | V |
 | Notifications | EI | `notifications`, `push_devices`, `send-push`, `src/lib/notifications.ts` | Prefs serveur | P0 | Heures calmes non appliquées côté serveur | V |
@@ -36,7 +36,7 @@ Abréviations : `mig/` = `supabase/migrations/`, `app/` = `src/app/`, `hooks/` =
 | Journaux d'audit | EI | `family_task_events` (tâches seulement), `moderation_actions` (communauté) | Audit générique append-only | P0 | Rien pour documents, droits, heures | V |
 | Source de vérité unique | EI | logique serveur en déclencheurs `security definer` | Événements métier | P0 | Garde-manger et prefs notif dupliqués localement | V |
 | Transactions | EI | déclencheurs (une transaction par écriture) | RPC multi-tables | P0 | Flux composites (courses→stock→dépense) inexistants | V |
-| Temps réel | EI | `useRealtimeSync` (`src/lib/sync.ts`), publication `20261019001000` (16 tables) | Ajout des nouvelles tables | P0 | Liste à maintenir à 2 endroits (SQL + `HOUSEHOLD_TABLES`) | V |
+| Temps réel | EI | `useRealtimeSync` (`src/lib/sync.ts`), publication `20261019001000` (16 tables) + courses et stocks (15/11 : 19) | Ajout des nouvelles tables | P0 | Liste à maintenir à 2 endroits (SQL + `HOUSEHOLD_TABLES`) | V |
 | Conflits simultanés | AB | — | Colonne version / `updated_at` conditionnel | P0 | `backend.update` = dernier qui écrit gagne | V |
 | Hors ligne + résolution de conflits | EI | `src/lib/offline.ts` (`insertOrQueue`, conflits visibles `settings/sync.tsx`), cache persistant | Mises à jour hors ligne | P0 | File = insertions seulement | V |
 | Idempotence / anti-doublons | EI | `client_id uuid unique` (tables de suivi), upsert `ignoreDuplicates`, récurrence sans doublon | `client_id` sur missions/courses | P0 | `family_tasks`, `care_requests`, `shopping_items` sans `client_id` | V |
@@ -91,9 +91,9 @@ Abréviations : `mig/` = `supabase/migrations/`, `app/` = `src/app/`, `hooks/` =
 
 | Fonctionnalité | Statut | À réutiliser | Dépendances | Prio | Risques techniques | Preuve |
 |---|---|---|---|---|---|---|
-| Liste partagée | EI | `shopping_lists/items`, `meals/shopping.tsx`, `useAddShoppingItem/useToggleShoppingItem` | Realtime, hors ligne | P1 | Hors Realtime ; cocher hors ligne impossible | V |
-| Inventaire avec seuils | AB | `meals/pantry.tsx` (local), `at_home` | Table stock | P1 | — | V |
-| Réapprovisionnement → mission → courses → stock après validation | AB | `family_tasks.category='shopping'`, déclencheurs comme modèle | Stock, événements métier, transactions | P1 | Chaîne multi-tables, idempotence | V |
+| Liste partagée | EF (15/11) | `shopping_items` complétée, Realtime, ajout hors ligne (`client_id`), doublons (alerte + `merge_shopping_items`), historique (audit + « Achetés récemment ») | — | P1 | Cocher hors ligne : toujours pas en file (§ 8 synchro) | V (SQL 98s, Jest, E2E) |
+| Inventaire avec seuils | EF (15/11) | `household_stocks`, `/family/stocks` (+ `/baby`), quantité estimée jamais inventée, seuil, fréquence, responsable, rappel, enfant ; animal prévu (`pet_id`) | — | P1 | Module animaux absent | V (SQL 98s, Jest, E2E) |
+| Réapprovisionnement → mission → courses → stock après validation | EF (15/11) | `stock.low` → suggestion → `stock_restock` → `create_mission` → article lié → `shopping.item_checked` → `stock_validate_purchase` ; `stock.purchase_confirmed` pour le Budget | Budget (consommateur) | P1 | Passage planifié non déployé | V (SQL 98s, Jest, E2E scénarios A et F) |
 
 ## F. Synchronisations inter-modules
 
@@ -103,13 +103,13 @@ Abréviations : `mig/` = `supabase/migrations/`, `app/` = `src/app/`, `hooks/` =
 | nounou ↔ missions | AB | `family_tasks.assignee_id` (une nounou membre peut déjà recevoir une tâche si `lists` en édition) | P1 | Premium strict | V |
 | nounou ↔ budget | AB | — | P2 | — | V |
 | nounou ↔ profil enfant | EI | tables de suivi bébé partagées (domaine `daily`) | P0 | Tous les enfants visibles | V |
-| missions ↔ courses | AB | — | P1 | — | V |
-| courses ↔ stocks | AB | `at_home` | P1 | — | V |
+| missions ↔ courses | EF (14–15/11) | `mission.accepted` → article ; `mission.completed` → coché ; `shopping.item_checked` → mission terminée si le destinataire coche | P1 | — | V |
+| courses ↔ stocks | EF (15/11) | `shopping.item_checked` → stock « à valider » ; quantité après `stock_validate_purchase` seulement | P1 | — | V |
 | missions ↔ calendrier | EF | tâches datées affichées dans `calendar.tsx` | P1 | — | V |
 | missions ↔ notifications | EF | `family_tasks_after` → `notifications` ; `autoNotifs` locales | P0 | Heures calmes serveur | V |
 | animaux ↔ missions | AB | — | P2 | — | V |
 | ménage ↔ missions | EI | catégorie `housework` | P2 | — | V |
-| budget ↔ achats | AB | — | P2 | — | V |
+| budget ↔ achats | EI (15/11) | `stock.purchase_confirmed` publié et documenté (sans montant), consommateur Budget absent | P2 | Module Budget absent | V |
 | communication ↔ notifications | EI | `offduty_periods` pause rappels locaux | P1 | Serveur non filtré | V |
 | mode Imprévu ↔ tous | EI | `family/urgent.tsx` (mode urgence organisation, UI minimale), `family/sos.tsx`, `help_today` | P1 | Pas d'état global « imprévu » propagé | V |
 
