@@ -253,3 +253,22 @@ describe('questions de consultation : pas de doublon (audit 05)', () => {
     expect(newQuestions(['   '], [])).toEqual([]);
   });
 });
+
+describe('corrections résiduelles (audit 09 § 4)', () => {
+  it('scanner : les segments franchis de la progression sont des cibles de 44 px (trait fin inchangé)', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { StepProgress } = require('@/features/scanner/WizardChrome') as typeof import('@/features/scanner/WizardChrome');
+    const r = await render(<StepProgress labels={['Identifier', 'Confirmer', 'Profil', 'Analyse']} index={1} onJump={() => undefined} />);
+    const seg = r.root.findAll((n) => n.props.testID === 'scan-progress-seg-0' && typeof n.props.onPress === 'function')[0];
+    const style = Object.assign({}, ...[seg.props.style].flat());
+    expect(style.height).toBeGreaterThanOrEqual(MIN_TOUCH);
+    // la place visuelle reste celle d'un trait de 20 px (marges négatives)
+    expect(style.height + 2 * style.marginVertical).toBe(20);
+  });
+  it('humeur : un seul `Reveal`, celui du design system (`@/motion`)', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('fs') as { readFileSync(p: string, enc: 'utf8'): string };
+    expect(fs.readFileSync('src/features/mood/MoodJournalUI.tsx', 'utf8')).not.toMatch(/export function Reveal/);
+    for (const f of ['src/app/me/mood/index.tsx', 'src/app/me/diary.tsx']) expect(fs.readFileSync(f, 'utf8')).toMatch(/import \{ Reveal \} from '@\/motion';/);
+  });
+});

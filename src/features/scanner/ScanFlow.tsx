@@ -104,13 +104,14 @@ function StepScroll({ step, children }: { step: string; children: React.ReactNod
 // ------------------------------------------------------------ pied : retour + action principale
 function WizardFooter({ w }: { w: ScanWizard }) {
   const busy = !!w.busy;
-  let primary: { label: string; icon?: 'search' | 'check' | 'arrow-right'; onPress: () => unknown; disabled: boolean; testID: string };
+  let primary: { label: string; shortLabel?: string; icon?: 'search' | 'check' | 'arrow-right'; onPress: () => unknown; disabled: boolean; testID: string };
   if (w.step === 'identify') {
     primary = { label: tr('u6.sf.search'), icon: 'search', onPress: () => w.runSearch(w.query, 'search'), disabled: w.query.trim().length < 2, testID: 'scan-search' };
   } else if (w.step === 'confirm') {
     const nothing = !w.candidates.length && !w.ciqual.length;
     const label = w.pick?.kind === 'manual' || nothing ? tr('u6.sf.continue_name') : w.pick?.kind === 'ciqual' ? tr('u6.sf.yes_food') : tr('u6.sf.yes_product');
-    primary = { label, onPress: () => w.confirmSubject(), disabled: !w.picked, testID: 'scan-confirm' };
+    // texte agrandi / 320 px : « Continuer avec ce nom » passait sur 2 lignes → « Continuer » (le lecteur d'écran lit le libellé complet)
+    primary = { label, shortLabel: tr('scn.next'), onPress: () => w.confirmSubject(), disabled: !w.picked, testID: 'scan-confirm' };
   } else if (w.step === 'profile') {
     primary = { label: tr('scn.next'), icon: 'arrow-right', onPress: w.continueProfile, disabled: !w.profile || w.needsAge, testID: 'scan-next' };
   } else {
@@ -120,7 +121,7 @@ function WizardFooter({ w }: { w: ScanWizard }) {
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
       {w.step !== 'identify' ? <IconOrb icon="arrow-left" label={tr('scn.prev')} onPress={w.back} testID="scan-prev" /> : null}
       <View style={{ flex: 1, minWidth: 0 }}>
-        <PrimaryButton label={primary.label} icon={primary.icon} size="lg" full loading={busy} disabled={primary.disabled}
+        <PrimaryButton label={primary.label} shortLabel={primary.shortLabel} icon={primary.icon} size="lg" full loading={busy} disabled={primary.disabled}
           onPress={primary.onPress as () => void} testID={primary.testID} />
       </View>
     </View>

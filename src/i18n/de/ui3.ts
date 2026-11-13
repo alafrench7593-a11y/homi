@@ -508,6 +508,7 @@ export const ui3: Messages<typeof fr> = {
   "u3.tools.errTools": "Deine Tools können nicht angezeigt werden",
   "u3.tools.favAdd": "„{label}“ zur Kurzwahl hinzugefügt.",
   "u3.tools.favDel": "„{label}“ aus der Kurzwahl entfernt.",
+  "u3.tools.favSwitch": "{label} in meiner Kurzwahl",
   "u3.tools.favs": "Favoriten",
   "u3.tools.filter": "Filter: {title}",
   "u3.tools.filterTools": "Tools filtern",

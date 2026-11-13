@@ -2,22 +2,19 @@
  * Humeur → journal : pièces visuelles partagées par `/me/mood`, `/me/diary` et `/me/mood/[id]` (refonte v3).
  *  - `MoodOrbs` : sélecteur « Lightly » (orbes de verre givré, UNE lumière qui se déplace vers le choix, choix qui se
  *    rapprochent) + libellé explicite du choix, annoncé aux lecteurs d'écran.
- *  - `Reveal` : la zone de saisie apparaît après le choix (fondu + montée 8 px, 280 ms `decelerate` ; Réduire les
- *    animations : affichée telle quelle). Transform et opacité seulement.
+ *  La zone de saisie qui apparaît après le choix utilise `Reveal` du design system (`@/motion`, audit 09).
  *  - `EntryRow` : ligne d'historique sur surface MATE, source de la transition carte → détail (`MorphSource`).
  *  - `SaveResult` : confirmation selon le résultat RÉEL (enregistré / gardé hors ligne / erreur).
  *  - `SupportBanner` : relais d'aide (inchangé sur le fond).
  */
-import React, { useEffect } from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
-import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import React from 'react';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { ChoiceGroup, PrimaryButton, SecondaryButton, type ChoiceOption } from '@/components/controls';
 import { MatteSurface } from '@/components/surfaces';
 import { EmergencyList } from '@/components/Family';
 import { Banner, Icon, Text } from '@/components/ui';
 import { MorphSource } from '@/motion/Morph';
-import { useMotion } from '@/motion/useMotion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius, spacing, typography } from '@/theme/tokens';
 import { formatDate, formatTime, t as tr, type TKey } from '@/i18n';
@@ -49,18 +46,6 @@ export function MoodOrbs({ value, onChange, label, hint, testIDPrefix }: { value
       </View>
     </View>
   );
-}
-
-/** Apparition naturelle de la zone de saisie après le choix. */
-export function Reveal({ children, style, testID }: { children: React.ReactNode; style?: StyleProp<ViewStyle>; testID?: string }) {
-  const m = useMotion();
-  const p = useSharedValue(m.off ? 1 : 0);
-  useEffect(() => {
-    p.value = m.timing(1, 280, 'decelerate');
-    return () => cancelAnimation(p);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const a = useAnimatedStyle(() => ({ opacity: p.value, transform: [{ translateY: (1 - p.value) * (m.level === 'full' ? 8 : 0) }] }));
-  return <Animated.View testID={testID} style={[{ gap: spacing.md }, style, a]}>{children}</Animated.View>;
 }
 
 /** Ligne d'historique (surface mate) → détail par transition carte → détail. */

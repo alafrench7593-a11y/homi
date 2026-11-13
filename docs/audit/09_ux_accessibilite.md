@@ -167,26 +167,31 @@ toutes les valeurs lues ; `track.tsx` suit la période et l'affiche sous chaque 
 (`scrollToTop`, `scrollToNode`, `ensureVisible`), `ChoiceGroup` qui passe à la ligne + `variant="cards"`,
 `DataTile.contextLines` (défaut 3, +1 texte agrandi), `Screen.action` (promesse, `loading`, `shortLabel`),
 `PrimaryButton` désactivé en sombre. Le pilote Humeur a son propre `Reveal` (`MoodJournalUI.tsx`) : à remplacer par
-celui de `@/motion` (non fait : écran pilote stable).
+celui de `@/motion` (fait le 13/11/2026, § 4).
 
 ## 4. Hors de ma zone — à corriger par les propriétaires (constats rejoués)
 
 | Gravité | Écran | Constat | Piste |
 |---|---|---|---|
 | ~~Critique~~ corrigé | toute adresse profonde rechargée en démo | renvoyait à `/welcome` (vu pendant l'audit, base `e91a321`) | corrigé dans `src/lib/auth.tsx` (fondations `6b3359f`) ; `audit_ux.py` navigue de toute façon dans l'app (`pushState`) |
-| Majeur | hubs `/health`, `/baby`, `/household` à 1,3 | « Rechercher un outil », « Ma grossesse » tronqués sans accès au texte complet | **agent navigation** : `numberOfLines` + `intentionalTruncation`, ou passage à la ligne |
-| Majeur | `/`, `/family`, `/community` clavier + 1,3 | champ de l'assistant, « Ajout rapide », « Rechercher » hors de la zone visible (écrans à défilement propre, sans `useKeyboardScopeFor` / `useRevealOnFocus`) | **agent navigation** : brancher la portée clavier |
-| Majeur | `/onboarding`, `/settings/account` clavier + 1,3 | champ visible sur 2–34 px seulement | **agent auth / onboarding** : `Screen` ou portée clavier |
-| Majeur | `/scanner/product` (produit inconnu) | « Revenir à l'étape 1 » : cible 65 × 20 px ; « Continuer avec ce nom » encore sur 2 lignes si l'adaptation ne suffit pas | **pilote Scanner** : `minHeight: 44` sur `StepProgress`, `shortLabel` (« Continuer ») |
-| Mineur | `/family` clavier | tâches tronquées « Donner le bain… » | **agent navigation** |
-| Mineur | onglets du `Dock` à 1,3 | onglets de 35–40 px de large (≥ 24 px, < 44 px) | `Dock` / `hubMap` : libellés plus courts ou icônes seules sous 360 px |
-| Mineur | `ToolCard` | libellé d'interrupteur en dur en français (« ajouter aux raccourcis ») | i18n (non détecté par `i18n-scan`) |
-| Info | ordre du focus (Tab) | `/me/mood`, `/settings/appearance` : 1–3 retours en arrière (grilles 2 colonnes, tuiles de semaine) | à revoir écran par écran |
+| ~~Majeur~~ corrigé | hubs `/health`, `/baby`, `/household` à 1,3 | « Rechercher un outil », « Ma grossesse » tronqués | passage à la ligne (plus de `numberOfLines`, `ToolSearch`, `ProfileSwitcher`) ; < 360 px + texte agrandi : plus d'avatar empilé, le nom garde sa ligne |
+| ~~Majeur~~ corrigé | `/`, `/family`, `/community`, `/onboarding`, `/settings/account`, `/me/mood#choix`, `/family/missions/new`, `/scanner/product#inconnu` clavier + 1,3 | champ « masqué » | **artefact de l'audit** : le texte était agrandi APRÈS le focus (champ déjà ramené en vue puis repoussé ; second `focus()` sans événement). Tous ces écrans ont déjà la portée clavier (`Screen` + `Field` / `useRevealOnFocus`) et passent à texte 1. `audit_ux.py` suit désormais l'ordre du téléphone (taille du texte → appui → clavier) et refocalise réellement après réagrandissement : 0 champ masqué |
+| ~~Majeur~~ corrigé | `/` carte assistant à 1,3 (révélé par le défilement ci-dessus) | « Ré-ponse plus dé-taillée » sur 3 lettres par ligne, pastille « Bientôt disponible » non rétrécissable | pastille sous le libellé quand la place manque (`HomeAssistantCard`) |
+| ~~Majeur~~ corrigé | `/scanner/product` (produit inconnu) | « Revenir à l'étape 1 » 65 × 20 px ; « Continuer avec ce nom » sur 2 lignes | segments franchis : cible de 44 px (48 px mesurés), trait de 20 px inchangé (`WizardChrome`) ; `shortLabel` « Continuer » sur le bouton de l'étape Confirmer (nom accessible complet) |
+| ~~Mineur~~ corrigé | `/family` (fil « Notre journée ») | titres tronqués « Do-n… », heure sur 3 lignes : colonne de texte écrasée à ~30 px par les boutons d'action | texte entier ; les boutons passent sous le texte sous 150 px (`DayThread`) |
+| ~~Mineur~~ corrigé | onglets du `Dock` à 1,3 | onglets de 35–40 px de large | **décision** : si, à 10 px, les libellés ne tiennent pas avec 44 px par onglet (320 px + texte agrandi, langue longue sur petit écran), **icônes seules**, onglets égaux ≥ 44 px (51 px à 320), nom accessible = libellé complet ; jamais de libellé abrégé (`tabLayout.iconsOnly`, Jest) ; contrôle bloquant `onglet_trop_etroit` dans `audit_ux.py` |
+| ~~Mineur~~ corrigé | `ToolCard` | libellé d'interrupteur en dur | `u3.tools.favSwitch` (5 langues), nom fixe, l'état est annoncé par le rôle `switch` ; `i18n-scan` lit maintenant les chaînes dans les expressions d'un gabarit (test) |
+| ~~Info~~ corrigé | ordre du focus (Tab) | `/me/mood`, `/settings/appearance` : 1–3 « retours en arrière » | **mesure fausse** : position lue à l'écran pendant que la zone défile vers l'élément focalisé ; dans le contenu, l'ordre est déjà haut → bas. Mesure corrigée (position dans le contenu) et contrôle rendu bloquant (`ordre_focus_*`, 0 retour admis hors bouclage vers l'en-tête) |
+| ~~Faible~~ corrigé | `/me/mood`, `/me/diary` | `Reveal` local au pilote Humeur (§ 3) | `Reveal` de `@/motion` (`/me/mood`, `/me/diary`) ; `e2e/humeur_journal_v3.py` vert |
+
+Liste « connus » de `e2e/audit_ux.py` : **vide** (13/11/2026).
 
 ## 5. Résultats finaux et vérifications
 
 - `e2e/audit_ux.py` : vert (0 constat bloquant nouveau ; 29 constats connus listés dans `A_connus`, propriétaires
-  au § 4) ; rapport JSON et captures dans `E2E_SHOTS`.
+  au § 4) ; rapport JSON et captures dans `E2E_SHOTS`. Après les corrections résiduelles (13/11/2026) : **0 constat
+  bloquant, 0 connu**, partie B entièrement verte (ordre du focus compris) ; restent 15 `cible_tactile_petite`
+  (24–44 px, non bloquant) et 9 `troncature_volontaire`.
 - Contrôle croisé avec l'audit 01 : **confirmé** — aucun débordement horizontal réel sur `/me/mood` et `/me/diary`
   (aucun `texte_rogne` / `texte_hors_ecran`, avant comme après) ; le rognage à gauche des captures du pilote
   venait de l'animation d'entrée. La troncature des libellés d'orbes (« Très diffi-… », « Diffici/le ») est, elle,

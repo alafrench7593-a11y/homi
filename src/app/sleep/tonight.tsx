@@ -6,12 +6,13 @@
  */
 import React from 'react';
 import { ScrollView, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDemoInset } from '@/components/demoInset';
 import { StatusBar } from 'expo-status-bar';
 import { Chip, Icon, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
+import { goUp } from '@/lib/links';
 import { BigButton, SleepRecordButtons } from '@/features/sleep';
 import { useChild, useChildrenLoading, useTrackedChildren } from '@/lib/data/hooks';
 import { useScope } from '@/lib/data/hooks-scope';
@@ -41,6 +42,7 @@ function Info({ label, value, testID }: { label: string; value: string; testID?:
 
 export default function Tonight() {
   const params = useLocalSearchParams<{ child?: string }>();
+  const pathname = usePathname();
   const scope = useScope();
   const fromLink = useChild(typeof params.child === 'string' ? params.child : null);
   const childrenQ = useTrackedChildren();
@@ -57,7 +59,7 @@ export default function Tonight() {
       <StatusBar style="light" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: topInset + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.md, gap: spacing.sm }}>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.tonight.closeA11y')} onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.tonight.closeA11y')} onPress={() => goUp(pathname)} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
             <Row gap={6}><Icon name="x" color={MUTED} size={20} /><Text color={MUTED}>{tr('u4.tonight.close')}</Text></Row>
           </Tappable>
           <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.tonight.emergency')} onPress={() => router.push('/emergency')} hitSlop={10} style={{ minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' }}>

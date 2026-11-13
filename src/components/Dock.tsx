@@ -6,7 +6,9 @@
  * Clair : verre ivoire ; sombre : verre fumé plus clair que le graphite ; nuit : surface opaque tamisée, sans flou ni ombre.
  *
  * Libellés : chaque onglet prend la largeur de son libellé (au moins 44 px), la taille commune reste à 12 px et ne
- * descend qu'au quart de pixel près (≥ 11 px à 320 px de large), jamais d'ellipse (`tabLayout`, testé).
+ * descend qu'au quart de pixel près (≥ 11 px à 320 px de large), jamais d'ellipse (`tabLayout`, testé). Au-delà
+ * (10 px ne suffisent pas avec 44 px par onglet : 320 px + texte agrandi, langue longue) : ICÔNES SEULES, onglets
+ * égaux ≥ 44 px, nom accessible = libellé complet (audit 09).
  * Mouvement (src/motion) : enfoncement en ressort à la pression (`usePressScale`) et pastille active qui GLISSE
  * d'un onglet à l'autre (translateX en ressort « doux ») ; Réduire les animations / économie d'énergie : état final
  * immédiat ; nuit : fondu court sans rebond.
@@ -50,13 +52,15 @@ const LONG_PRESS = 'tabLongPress' as const;
 const PILL_W = 44;
 const PILL_H = 30;
 const ICON_TOP = 8;
+/** Icônes seules : icône et pastille centrées verticalement dans la capsule. */
+const ICON_TOP_ALONE = (TAB_BAR_H - PILL_H) / 2;
 
 /** Encres de la barre : celles du thème (verre clair en clair, fumé en sombre). */
 function useBarInk() {
   return useTheme().colors;
 }
 
-function TabItem({ tab, width, focused, label, a11y, fontSize, onPress, onLongPress }: { tab: NavTab; width: number; focused: boolean; label: string; a11y: string; fontSize: number; onPress: () => void; onLongPress: () => void }) {
+function TabItem({ tab, width, focused, label, a11y, fontSize, iconsOnly, onPress, onLongPress }: { tab: NavTab; width: number; focused: boolean; label: string; a11y: string; fontSize: number; iconsOnly: boolean; onPress: () => void; onLongPress: () => void }) {
   const ink = useBarInk();
   const p = usePressScale({ scale: 0.9, haptic: 'none' });
   return (
@@ -72,18 +76,19 @@ function TabItem({ tab, width, focused, label, a11y, fontSize, onPress, onLongPr
       onPressOut={p.onPressOut}
       style={{ width, height: TAB_BAR_H }}
     >
-      <Animated.View style={[{ flex: 1, alignItems: 'center', paddingTop: ICON_TOP, gap: 3 }, p.style]}>
+      <Animated.View style={[{ flex: 1, alignItems: 'center', paddingTop: iconsOnly ? ICON_TOP_ALONE : ICON_TOP, gap: 3 }, p.style]}>
         <View style={{ height: PILL_H, alignItems: 'center', justifyContent: 'center' }}>
-          <Feather name={tab.icon} size={21} color={focused ? ink.primary : ink.textMuted} />
+          <Feather name={tab.icon} size={iconsOnly ? 23 : 21} color={focused ? ink.primary : ink.textMuted} />
         </View>
-        <Text
+        {/* Icônes seules (petit écran + texte agrandi) : libellé non affiché, le nom accessible reste le libellé complet */}
+        {iconsOnly ? null : <Text
           style={{ fontFamily: focused ? fonts.bodyBold : fonts.bodyMedium, fontSize, lineHeight: Math.round(fontSize * 1.3), letterSpacing: -0.15, textAlign: 'center' }}
           color={focused ? ink.text : ink.textMuted}
           numberOfLines={1}
           maxFontSizeMultiplier={1.2}
         >
           {label}
-        </Text>
+        </Text>}
       </Animated.View>
     </Pressable>
   );
@@ -93,7 +98,7 @@ function TabItem({ tab, width, focused, label, a11y, fontSize, onPress, onLongPr
  * Indicateur de VERRE de l'onglet actif (v3, référence « Lightly ») : capsule de verre teinté de la palette, arête
  * claire, lumière diffuse dessous ; elle GLISSE d'un onglet à l'autre (translateX, ressort « panneau » interruptible).
  */
-function ActivePill({ x, visible }: { x: number; visible: boolean }) {
+function ActivePill({ x, visible, top = ICON_TOP }: { x: number; visible: boolean; top?: number }) {
   const t = useTheme();
   const ink = useBarInk();
   const m = useMotion();
@@ -111,7 +116,7 @@ function ActivePill({ x, visible }: { x: number; visible: boolean }) {
   const style = useAnimatedStyle(() => ({ opacity: op.value, transform: [{ translateX: tx.value }] }));
   return (
     <Animated.View pointerEvents="none" testID="tab-indicator"
-      style={[{ position: 'absolute', left: 0, top: ICON_TOP, width: PILL_W, height: PILL_H, borderRadius: radius.pill, overflow: 'hidden', backgroundColor: tint(ink.primary, t.isDark ? 0.2 : 0.14), borderWidth: 1, borderColor: tint(ink.primary, 0.36),
+      style={[{ position: 'absolute', left: 0, top, width: PILL_W, height: PILL_H, borderRadius: radius.pill, overflow: 'hidden', backgroundColor: tint(ink.primary, t.isDark ? 0.2 : 0.14), borderWidth: 1, borderColor: tint(ink.primary, 0.36),
         boxShadow: night ? undefined : [{ offsetX: 0, offsetY: 4, blurRadius: 14, spreadDistance: -2, color: tint(t.tokens.accent.glow[0], t.isDark ? 0.5 : 0.4) }] }, style]}>
       {!night ? <LinearGradient colors={['rgba(255,255,255,0.38)', 'rgba(255,255,255,0)']} start={{ x: 0.2, y: 0 }} end={{ x: 0.5, y: 0.9 }} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }} /> : null}
     </Animated.View>
@@ -205,7 +210,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
             accessibilityLabel={tr('nav.tablist')}
             style={{ height: TAB_BAR_H, flexDirection: 'row', alignItems: 'center', paddingHorizontal: g.pad - 1 }}
           >
-            <ActivePill x={pillX - 1} visible={activeIndex >= 0} />
+            <ActivePill x={pillX - 1} visible={activeIndex >= 0} top={layout.iconsOnly ? ICON_TOP_ALONE : ICON_TOP} />
             {tabs.map(({ tab, route }, i) => (
               <TabItem
                 key={route.key}
@@ -215,6 +220,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
                 a11y={descriptors[route.key]?.options.title ?? labels[i]}
                 focused={activeName === tab.name}
                 fontSize={layout.fontSize}
+                iconsOnly={layout.iconsOnly}
                 onPress={() => go(route)}
                 onLongPress={() => navigation.emit({ type: LONG_PRESS, target: route.key })}
               />

@@ -15,7 +15,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Button, Field, Icon, Text } from '@/components/ui';
-import { capitalize, ComposerAction, EntryRow, MoodOrbs, Reveal, SaveResult, SupportBanner } from '@/features/mood/MoodJournalUI';
+import { capitalize, ComposerAction, EntryRow, MoodOrbs, SaveResult, SupportBanner } from '@/features/mood/MoodJournalUI';
+import { Reveal } from '@/motion';
 import { useDiaryPage } from '@/features/mood/useMoodJournal';
 import { useMoods } from '@/lib/data/hooks';
 import { diaryPages, groupByMonth } from '@/lib/domain/diary';
@@ -67,7 +68,7 @@ export default function Diary() {
         </Text>
         <MoodOrbs value={p.mood} onChange={p.setMood} label={tr('dy.mood')} hint={tr('mj.diary.pickFirst')} testIDPrefix="diary-mood" />
         {open ? (
-          <Reveal>
+          <Reveal visible appear>
             <Field label={tr('dy.field')} value={p.text} onChangeText={p.setText} multiline maxLength={p.max} placeholder={tr('dy.placeholder')} style={{ minHeight: 140, textAlignVertical: 'top' }} testID="diary-text" />
           </Reveal>
         ) : null}

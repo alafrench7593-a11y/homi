@@ -7,6 +7,8 @@
  *  - `scrollIntoView` : une fois apparue, si son HAUT est sous la zone visible (petit écran, clavier), l'écran
  *    défile pour la montrer (`useScreenScroll`, src/components/screenChrome.ts) — la nouvelle étape ne reste
  *    jamais cachée sous le pli.
+ *  - `appear` : monté déjà visible (section rendue sous condition, `{choix ? <Reveal visible appear>…}`), il entre
+ *    quand même ; démonté par son parent, il disparaît aussitôt (sans fondu de sortie). Pilote Humeur (audit 09).
  *  - Ne capte jamais les appuis pendant la sortie (`pointerEvents="none"`), aucun fantôme après la fin.
  */
 import React, { useEffect, useRef, useState } from 'react';
@@ -18,16 +20,17 @@ import { useScreenScroll } from '@/components/screenChrome';
 
 export const REVEAL = { rise: 12, inMs: 240, outMs: 160, scrollDelayMs: 260 } as const;
 
-export function Reveal({ visible, children, scrollIntoView = false, style, testID }: {
+export function Reveal({ visible, children, appear = false, scrollIntoView = false, style, testID }: {
   visible: boolean;
   children: React.ReactNode;
+  appear?: boolean;
   scrollIntoView?: boolean;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }) {
   const m = useMotion();
   const [mounted, setMounted] = useState(visible);
-  const v = useSharedValue(visible ? 1 : 0);
+  const v = useSharedValue(visible && !(appear && !m.off) ? 1 : 0);
   const ref = useRef<View>(null);
   const scroll = useScreenScroll();
   useEffect(() => {

@@ -508,6 +508,7 @@ export const ui3: Messages<typeof fr> = {
   'u3.tools.errTools': 'Unable to display your tools',
   'u3.tools.favAdd': '“{label}” added to your shortcuts.',
   'u3.tools.favDel': '“{label}” removed from your shortcuts.',
+  'u3.tools.favSwitch': '{label} in my shortcuts',
   'u3.tools.favs': 'Favourites',
   'u3.tools.filter': 'Filter: {title}',
   'u3.tools.filterTools': 'Filter the tools',

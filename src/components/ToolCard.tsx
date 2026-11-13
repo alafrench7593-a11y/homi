@@ -26,6 +26,7 @@ import { markToolOpen } from '@/lib/toolOrigin';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, palette, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { t as tr } from '@/i18n';
 
 export const TOOL_CARD_HEIGHT = 164;
 
@@ -127,7 +128,8 @@ function FavoriteButton({ on, label, color, onPress }: { on: boolean; label: str
       accessibilityRole="switch"
       accessibilityState={{ checked: on }}
       aria-checked={on}
-      accessibilityLabel={`${label} : ${on ? 'retirer des raccourcis' : 'ajouter aux raccourcis'}`}
+      // nom fixe (5 langues) : l'état coché / non coché est annoncé par le rôle « switch »
+      accessibilityLabel={tr('u3.tools.favSwitch', { label })}
       onPress={() => { haptic(on ? 'light' : 'success'); onPress(); }}
       hitSlop={6}
       style={{ position: 'absolute', top: 2, right: 2, width: MIN_TOUCH - 8, height: MIN_TOUCH - 8, alignItems: 'center', justifyContent: 'center' }}
