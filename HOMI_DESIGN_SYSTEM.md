@@ -190,6 +190,42 @@ une rangée d'en-tête. La pastille garde sa sortie visible (« Quitter la démo
 accessible « Quitter la démonstration ») ; son `hitSlop` (jusqu'à 45 px sous la zone sûre) ne mord pas sur les
 boutons d'en-tête, qui commencent à 50 px. Test : `src/__tests__/demoInset.test.tsx`.
 
+## 6 ter. Petit écran, texte agrandi, clavier (audit 09, `docs/audit/09_ux_accessibilite.md`)
+
+Règle : **rien n'est coupé, rien ne sort de l'écran, aucun mot n'est cassé** à 320 × 568, texte 1,3, clavier ouvert.
+Les décisions de place sont prises AVANT le rendu (`src/components/layoutFit.ts`, chasse des polices mesurée) avec la
+taille de texte réelle (`useFontScale()`, `src/theme/fontScale.ts` : `fontScale` du téléphone ; sur le web, police
+racine du navigateur / 16).
+
+- **En-tête de `Screen`** : écran qui défile → le grand titre (glyphe + titre + sous-titre) DÉFILE avec le contenu
+  (titre large iOS) et un **titre compact** d'une ligne apparaît à côté du retour quand il passe sous l'en-tête.
+  Écran `scroll={false}` → grand titre fixe qui **se replie** au clavier, sous 520 px de haut ou quand sa zone de
+  contenu défile (hystérésis, `nextInnerScrolled`). Fixe au plus : zone sûre + pastille démo + rangée de 48 px.
+- **Titre** : 32 → 28 → 24 → 21 px pour tenir en **2 lignes sans couper de mot** (`fitTitleSize`), glyphe de
+  40 px sous 360 px de large ou au-delà de 1,15 ; jamais de césure dans un titre ou un bouton.
+- **`ChoiceGroup` orbes** : libellé ENTIER sous l'orbe (3 lignes max, plus de `numberOfLines`) ; s'il ne tient pas,
+  les orbes passent sur **plusieurs rangées équilibrées** (5 → 3 + 2), chacune garde sa lumière (`orbLayout`).
+- **`ChoiceGroup` pills → cartes** : si un libellé ne tient pas en 2 lignes dans son segment (`pillsFit`), le
+  sélecteur devient une **liste de cartes** (`variant="cards"`, aussi utilisable directement, avec `description`).
+- **Bouton pleine largeur** (`Button full`, `Screen.action`) : si le libellé passe à la ligne, l'icône part, puis
+  `shortLabel` s'affiche (le lecteur d'écran lit toujours `label`). `Screen.action.onPress` peut renvoyer une
+  promesse (chargement, double appui ignoré) ; `action.loading` force le chargement.
+- **Désactivé en sombre** : bouton plein → verre neutre + texte secondaire (la couleur vive atténuée semblait active).
+- **Clavier** : `useKeyboardVisible()` vaut aussi sur le web (zone visible réduite ≥ 120 px pendant une saisie) ;
+  la barre d'onglets (`Dock`) s'efface, l'en-tête se replie, le champ actif est ramené en vue à l'ouverture.
+- **Défilement** : `useScreenScroll()` (`scrollToTop`, `scrollToNode`, `ensureVisible`) agit sur la zone de `Screen`
+  ou sur la zone qu'un écran `scroll={false}` inscrit (toute zone passée à `useKeyboardScopeFor`).
+- **`Reveal`** (`@/motion`) : section qui apparaît après un choix, fondu + 12 px, `scrollIntoView` si elle est sous le pli.
+- **`ConfirmationCard`** (`@/components/controls`) : `saved` / `offline` / `error` (+ « Réessayer »), annoncée,
+  ramenée en vue ; toujours après le résultat réel.
+- **`DataTile.contextLines`** (défaut 3, +1 avec texte agrandi, `0` = jamais abrégé ; texte complet lu).
+- **Graphiques** : nombres au format de la langue (`chartNumber` : « 62,7 ») ; `BarChart` lisible jusqu'à 30 barres.
+- **Web** : `input` rétrécissables (`min-width: 0`), un seul anneau de focus par champ (halo de `Field`).
+
+Contrôle rejouable : `e2e/audit_ux.py` (détecteur `e2e/audit_ux_detect.js` : boîte de chaque texte comparée à
+l'écran ET à ses conteneurs qui rognent, mots coupés, troncatures non déclarées, cibles < 24 px, champ masqué au
+clavier) ; tests Jest `src/__tests__/audit09Layout.test.tsx`.
+
 ## 7. Non vérifié ici
 
 Rendu iOS natif (GlassView, flou réel), Android (boxShadow coloré, absence de flou), geste du panneau au doigt sur

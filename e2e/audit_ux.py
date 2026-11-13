@@ -25,7 +25,7 @@ Sortie : JSON { A: {écran: {config: [constats]}}, B: {clé: bool}, erreurs } ; 
 import glob, json, os, sys
 from playwright.sync_api import sync_playwright
 sys.path.insert(0, os.path.dirname(__file__))
-from journey_seed import PREMIUM_ON, ensure  # noqa: E402
+from journey_seed import PREMIUM_ON  # noqa: E402
 
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8979')
 SHOTS = os.environ.get('E2E_SHOTS', '/tmp/audit9/shots')
@@ -91,6 +91,11 @@ FIELD_CHECK = """() => {
   return out; }"""
 
 
+# Navigation DANS l'application (history.pushState + popstate, comme un lien) : un rechargement complet de la démo
+# renvoie actuellement vers /welcome (session de démonstration non relue au démarrage — signalé, zone auth)
+NAV = "(p) => { window.history.pushState(null, '', p); window.dispatchEvent(new PopStateEvent('popstate', { state: null })); }"
+
+
 def tid(pg, t):
     return pg.locator(f'[data-testid="{t}"]').filter(visible=True).first
 
@@ -120,6 +125,8 @@ def enter_demo(pg):
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4200)
     pg.evaluate(PREMIUM_ON)
+    # Premium relu au démarrage : rechargement de l'Accueil (la session de démo y est conservée)
+    pg.reload(); pg.wait_for_timeout(3500)
 
 
 def new_ctx(b, cfg, reduced=False):
@@ -139,7 +146,10 @@ def new_ctx(b, cfg, reduced=False):
 def audit_route(pg, cfg, r, public=False):
     if cfg['kb']:
         pg.set_viewport_size({'width': W, 'height': H})
-    pg.goto(B + r.split('#')[0]); pg.wait_for_timeout(2600 if not public else 2000)
+    if public:
+        pg.goto(B + r.split('#')[0]); pg.wait_for_timeout(2000)
+    else:
+        pg.evaluate(NAV, r.split('#')[0]); pg.wait_for_timeout(2600)
     run_steps(pg, r)
     found = []
     if cfg['kb']:
@@ -167,9 +177,7 @@ def part_a(b):
             if f:
                 R_A.setdefault(r, {})[cfg['name']] = f
         enter_demo(pg)
-        jstate = {}
         for r in ROUTES:
-            ensure(pg, r, jstate)
             try:
                 f = audit_route(pg, cfg, r)
             except Exception as e:  # noqa: BLE001

@@ -112,10 +112,23 @@
       return null;
     };
     const intentional = (el) => !!el.closest('[data-truncate="intentional"]');
+    // Césure typographique (hyphens:auto, avec trait d'union) admise dans le texte courant ; jamais dans un titre,
+    // un onglet, un choix ou le bouton principal (« Plu-tôt bien »)
+    const strictBreak = (el) => getComputedStyle(el).hyphens !== 'auto' || !!el.closest('[role="heading"],[role="tab"],[role="radio"],[data-testid="screen-footer"]');
+    // Texte recouvert par un AUTRE écran de la pile de navigation : ignoré (il n'est pas à l'écran)
+    const covered = (el) => {
+      const r = el.getBoundingClientRect();
+      const x = Math.min(W - 1, Math.max(0, r.left + Math.min(r.width / 2, 20))), y = Math.min(H - 1, Math.max(0, r.top + Math.min(r.height / 2, 10)));
+      const hit = document.elementFromPoint(x, y);
+      if (!hit || hit === el || el.contains(hit) || hit.contains(el)) return false;
+      const scr = (n) => n.closest('[data-testid="screen-scroll"],[data-testid="screen-header"]');
+      const a = scr(hit), b = scr(el);
+      return !!a && !!b && a !== b && !a.contains(el) && !b.contains(hit) && a.parentElement !== b.parentElement;
+    };
 
     // 1-4. Textes
     for (const el of document.querySelectorAll(TEXT_SEL)) {
-      if (!hasOwnText(el) || !visible(el)) continue;
+      if (!hasOwnText(el) || !visible(el) || covered(el)) continue;
       if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA' && !el.innerText.trim()) continue;
       const r = el.getBoundingClientRect();
       const cs = getComputedStyle(el);
@@ -141,7 +154,7 @@
         continue;
       }
       if (el.scrollWidth > el.clientWidth + 2 && cs.overflowX !== 'auto' && cs.overflowX !== 'scroll') out.push({ kind: 'texte_deborde_sa_boite', text: label(el), ...where(el) });
-      const bw = brokenWord(el);
+      const bw = strictBreak(el) ? brokenWord(el) : null;
       if (bw) out.push({ kind: 'mot_coupe', text: bw + ' <- ' + label(el).slice(0, 40), ...where(el) });
     }
 

@@ -70,10 +70,13 @@ export function DemoBar() {
             disabled={leaving}
             hitSlop={{ top: slop, bottom: slop, left: 4, right: 8 }}
             onPress={leave}
-            style={({ pressed }) => ({ height: DEMO_LEAVE_HEIGHT, paddingHorizontal: 12, borderRadius: radius.pill, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: t.colors.primary, opacity: pressed ? 0.85 : 1 })}
+            // cible de 44 px de haut (le web ignore hitSlop) ; la pilule visible garde 28 px
+            style={({ pressed }) => ({ minHeight: 44, marginVertical: -(44 - DEMO_LEAVE_HEIGHT) / 2, justifyContent: 'center', opacity: pressed ? 0.85 : 1 })}
           >
-            {leaving ? <ActivityIndicator size="small" color={t.colors.primaryText} /> : <Icon name="log-out" size={14} color={t.colors.primaryText} />}
-            <Text variant="caption" weight="bold" color={t.colors.primaryText} maxFontSizeMultiplier={1.3}>{tr(narrow ? 'demo.leave' : 'demo.leaveVisible')}</Text>
+            <View style={{ height: DEMO_LEAVE_HEIGHT, paddingHorizontal: 12, borderRadius: radius.pill, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: t.colors.primary }}>
+              {leaving ? <ActivityIndicator size="small" color={t.colors.primaryText} /> : <Icon name="log-out" size={14} color={t.colors.primaryText} />}
+              <Text variant="caption" weight="bold" color={t.colors.primaryText} maxFontSizeMultiplier={1.3}>{tr(narrow ? 'demo.leave' : 'demo.leaveVisible')}</Text>
+            </View>
           </Tappable>
         ) : null}
       </View>

@@ -31,15 +31,16 @@ export function DemoPerson() {
   return (
     <Pressable testID="mission-demo-switch" accessibilityRole="button" accessibilityLabel={label} accessibilityHint={tr('mis.demo.hint')} disabled={sw.isPending}
       onPress={() => sw.mutateAsync(other?.id).catch((e) => toast(friendlyError(e), 'error'))}
-      style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minHeight: MIN_TOUCH, paddingLeft: 6, paddingRight: spacing.sm,
+      // maxWidth : sans borne, la pastille (alignSelf flex-start) prenait la largeur de son contenu et sortait de l'écran à 320 px (audit 09)
+      style={({ pressed }) => ({ alignSelf: 'flex-start', maxWidth: '100%', flexDirection: 'row', flexWrap: 'wrap', rowGap: 2, alignItems: 'center', gap: spacing.xs, minHeight: MIN_TOUCH, paddingLeft: 6, paddingRight: spacing.sm,
         borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.material.lines.controlFill, opacity: sw.isPending ? 0.6 : 1 })}>
       <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: t.material.lines.iconWell }}>
         <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('mis.demo.badge')}</Text>
       </View>
       {self ? <UserAvatar path={self.avatarPath} initial={self.initial} size={24} /> : null}
-      <Text variant="small" weight="bold" numberOfLines={1} testID="mission-demo-me" style={{ flexShrink: 1 }}>{myName}</Text>
+      <Text variant="small" weight="bold" testID="mission-demo-me" style={{ flexShrink: 1 }}>{myName}</Text>
       <Icon name="repeat" size={14} color={t.colors.textMuted} />
-      <Text variant="small" muted numberOfLines={1} style={{ flexShrink: 1 }}>{tr('mis.demo.switchShort', { person: otherName })}</Text>
+      <Text variant="small" muted style={{ flexShrink: 1 }}>{tr('mis.demo.switchShort', { person: otherName })}</Text>
     </Pressable>
   );
 }

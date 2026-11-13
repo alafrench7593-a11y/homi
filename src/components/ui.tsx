@@ -258,14 +258,16 @@ const NO_HYPHENS = (IS_WEB ? { hyphens: 'manual' } : null) as unknown as TextSty
 
 /**
  * Étape d'adaptation d'un bouton pleine largeur dont le libellé passe sur plusieurs lignes (logique pure, testée) :
- * 0 = icône + libellé ; 1 = libellé sans icône ; 2 = libellé court (si fourni). On n'avance que si le libellé
- * occupe plus d'une ligne ; jamais de retour en arrière tant que la largeur et le libellé ne changent pas.
+ * 0 = icône + libellé ; 1 = sans icône, marges intérieures réduites ; 2 = libellé court (si fourni) ;
+ * 3 = libellé 2 px plus petit (dernier recours, sans libellé court). On n'avance que si le libellé occupe plus d'une
+ * ligne ; jamais de retour en arrière tant que la largeur et le libellé ne changent pas.
  */
+export const LABEL_STEP_MAX = 3;
 export function nextLabelStep(step: number, o: { lines: number; hasIcon: boolean; hasShort: boolean }): number {
-  if (o.lines <= 1) return step;
-  if (step === 0 && o.hasIcon) return 1;
-  if (step <= 1 && o.hasShort) return 2;
-  return step;
+  if (o.lines <= 1 || step >= LABEL_STEP_MAX) return step;
+  if (step === 0) return 1;
+  if (step === 1 && o.hasShort) return 2;
+  return LABEL_STEP_MAX;
 }
 
 export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRight, loading, size = 'md', style, full, disabled, onPress, ...rest }: ButtonProps) {
@@ -287,8 +289,8 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
   const [step, setStep] = React.useState(0);
   const boxW = React.useRef(0);
   React.useEffect(() => { setStep(0); }, [label, shortLabel]);
-  const adapt = !!full && (!!icon || !!shortLabel);
-  const lineH = (BUTTON.font[size] + 6) * cappedScale(fontScale, typography.button.maxScale);
+  const adapt = !!full || size === 'lg';
+  const lineH = (BUTTON.font[size] + 6 - (step >= 3 ? 2 : 0)) * cappedScale(fontScale, typography.button.maxScale);
   const shownIcon = step >= 1 ? undefined : icon;
   const shownLabel = step >= 2 && shortLabel ? shortLabel : label;
   // Désactivation animée (fondu), réussite (respiration) et échec (tremblement) : l'action part toujours tout de suite,
@@ -355,7 +357,7 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
       onLayout={adapt ? (e) => { const w = Math.round(e.nativeEvent.layout.width); if (Math.abs(w - boxW.current) > 2) { boxW.current = w; setStep(0); } } : undefined}
       style={[
         styles.button,
-        { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: BUTTON.padX[size] },
+        { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: step >= 1 ? BUTTON.padX.sm : BUTTON.padX[size] },
         // Profondeur : ombre teintée sous les boutons pleins (la lumière traverse le prune), ombre physique basse sous
         // le verre ; aucune ombre désactivé ni en mode nuit (calme, rien ne « flotte » à 3 h du matin)
         solid && !off && t.name !== 'night' && { boxShadow: variant === 'danger' ? tintedShadow(rgbOf(t.tokens.status.danger), t.isDark) : accentShadow(t) },
@@ -380,7 +382,7 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
         {shownLabel ? (
           <Text weight="bold" color={fg} center maxFontSizeMultiplier={typography.button.maxScale}
             onLayout={adapt ? (e) => { const lines = Math.round(e.nativeEvent.layout.height / lineH); setStep((s) => nextLabelStep(s, { lines, hasIcon: !!icon && s === 0, hasShort: !!shortLabel })); } : undefined}
-            style={[{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size], lineHeight: BUTTON.font[size] + 6, letterSpacing: 0.1 }, NO_HYPHENS]}>
+            style={[{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size] - (step >= 3 ? 2 : 0), lineHeight: BUTTON.font[size] + 6 - (step >= 3 ? 2 : 0), letterSpacing: 0.1 }, NO_HYPHENS]}>
             {shownLabel}
           </Text>
         ) : null}

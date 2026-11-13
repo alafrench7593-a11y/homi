@@ -24,6 +24,7 @@ import { offsetToEnsure, offsetToReveal } from '@/components/screenChrome';
 import { confirmationLook } from '@/components/controls/ConfirmationCard';
 import { webInteractionCss } from '@/components/WebInteractionStyles';
 import { cappedScale } from '@/theme/fontScale';
+import { barChartLayout, chartNumber } from '@/components/Charts';
 import { CHOICE } from '@/components/controls';
 import { MIN_TOUCH, typography } from '@/theme/tokens';
 
@@ -159,8 +160,10 @@ describe('bouton principal : une ligne (sans icône, puis libellé court)', () =
     expect(nextLabelStep(0, { lines: 1, hasIcon: true, hasShort: true })).toBe(0);
     expect(nextLabelStep(0, { lines: 2, hasIcon: true, hasShort: true })).toBe(1);
     expect(nextLabelStep(1, { lines: 2, hasIcon: false, hasShort: true })).toBe(2);
-    expect(nextLabelStep(0, { lines: 2, hasIcon: false, hasShort: true })).toBe(2);
-    expect(nextLabelStep(1, { lines: 2, hasIcon: false, hasShort: false })).toBe(1);
+    // sans libellé court : dernier recours, libellé 2 px plus petit ; puis plus rien ne bouge
+    expect(nextLabelStep(1, { lines: 2, hasIcon: false, hasShort: false })).toBe(3);
+    expect(nextLabelStep(2, { lines: 2, hasIcon: false, hasShort: true })).toBe(3);
+    expect(nextLabelStep(3, { lines: 2, hasIcon: false, hasShort: true })).toBe(3);
   });
 });
 
@@ -197,5 +200,28 @@ describe('règles web des champs', () => {
     expect(css).toContain('input,textarea{min-width:0}');
     expect(css).toContain('input[data-field="1"]:focus');
     expect(css).toMatch(/input:not\(\[data-field="1"\]\):focus-visible[^{]*\{outline:2px solid #123456/);
+  });
+});
+
+describe('graphiques (signalés par l’audit 06)', () => {
+  it('axe et valeurs au format de la langue : « 62,7 », pas « 62.7 »', () => {
+    expect(chartNumber(62.7)).toBe('62,7');
+    expect(chartNumber(62.666)).toBe('62,7');
+    expect(chartNumber(3)).toBe('3');
+  });
+  it('7 barres : libellé et valeur partout', () => {
+    const l = barChartLayout([1, 0, 3, 4, 5, 6, 7]);
+    expect(l.compact).toBe(false);
+    expect([0, 1, 2, 3, 4, 5, 6].every(l.showLabel)).toBe(true);
+    expect(l.showValue(1)).toBe(false);
+  });
+  it('30 barres : une barre par jour, libellés espacés, valeurs sur la dernière et la plus haute seulement', () => {
+    const v = Array.from({ length: 30 }, (_, i) => (i === 12 ? 900 : 100 + i));
+    const l = barChartLayout(v);
+    expect(l.compact).toBe(true);
+    const labels = v.map((_, i) => i).filter(l.showLabel);
+    expect(labels).toContain(29);
+    expect(labels.length).toBeLessThanOrEqual(7);
+    expect(v.map((_, i) => i).filter(l.showValue)).toEqual([12, 29]);
   });
 });

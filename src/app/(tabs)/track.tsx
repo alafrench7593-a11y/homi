@@ -65,8 +65,11 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
   if (!child) return null;
   const chartDays = premium ? days : 7;
   // « Lait bu par jour » : seules les quantités BUES notées (une quantité préparée n'est pas une quantité bue)
-  const bottleSeries = lastDaysSeries(Math.min(chartDays, 7), bottles, (b) => b.at, drunkMl);
-  const diaperSeries = lastDaysSeries(Math.min(chartDays, 7), diapers, (d) => d.at, () => 1);
+  // La période choisie (7 / 30 jours) pilote les graphiques et leur libellé (audit 09 : « 30 jours » ne changeait
+  // rien, les séries étaient tronquées à 7 barres) ; 30 jours = 30 barres quotidiennes, lisibles (Charts.barChartLayout)
+  const bottleSeries = lastDaysSeries(chartDays, bottles, (b) => b.at, drunkMl);
+  const diaperSeries = lastDaysSeries(chartDays, diapers, (d) => d.at, () => 1);
+  const periodLabel = tr(chartDays === 30 ? 'trk.days30' : 'trk.days7');
 
   return (
     <View style={{ gap: spacing.md }}>
@@ -121,13 +124,13 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
         <PremiumGate feature={tr('trk.premiumCharts')}><View /></PremiumGate>
       ) : null}
       {child.enabled_tracking.includes('bottle') && (
-        <Card><Text weight="bold">{tr('trk.chart.milk')}</Text><BarChart data={bottleSeries} unit="ml" accessibilityLabel={tr('trk.chart.milkA11y')} /></Card>
+        <Card testID="trk-chart-milk"><Text weight="bold">{tr('trk.chart.milk')}</Text><Text variant="caption" muted>{periodLabel}</Text><BarChart data={bottleSeries} unit="ml" accessibilityLabel={`${tr('trk.chart.milkA11y')}, ${periodLabel}`} /></Card>
       )}
       {child.enabled_tracking.includes('sleep') && (
-        <Card><Text weight="bold">{tr('trk.chart.sleep')}</Text><View style={{ marginTop: spacing.xs }}><SleepNights sleeps={sleeps} days={7} /></View></Card>
+        <Card><Text weight="bold">{tr('trk.chart.sleep')}</Text><Text variant="caption" muted>{tr('trk.days7')}</Text><View style={{ marginTop: spacing.xs }}><SleepNights sleeps={sleeps} days={7} /></View></Card>
       )}
       {child.enabled_tracking.includes('diaper') && (
-        <Card><Text weight="bold">{tr('trk.chart.diapers')}</Text><BarChart data={diaperSeries} unit={tr('trk.chart.diapersUnit')} accessibilityLabel={tr('trk.chart.diapersA11y')} /></Card>
+        <Card testID="trk-chart-diapers"><Text weight="bold">{tr('trk.chart.diapers')}</Text><Text variant="caption" muted>{periodLabel}</Text><BarChart data={diaperSeries} unit={tr('trk.chart.diapersUnit')} accessibilityLabel={`${tr('trk.chart.diapersA11y')}, ${periodLabel}`} /></Card>
       )}
       <Text variant="caption" muted>{tr('trk.chart.disclaimer')}</Text>
 

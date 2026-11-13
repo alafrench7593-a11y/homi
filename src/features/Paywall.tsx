@@ -63,8 +63,9 @@ function GoldenThread() {
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
         {STAGES.map((s, i) => (
-          <StaggerItem key={s} index={i + 2}>
-            <View style={{ alignItems: 'center', width: 62 }}>
+          <StaggerItem key={s} index={i + 2} style={{ flex: 1, minWidth: 0 }}>
+            {/* colonnes souples (5 × 62 px débordaient de 38 px à 320 px de large : « Enfant » sortait de l'écran — audit 09) */}
+            <View style={{ alignItems: 'center', flex: 1, minWidth: 0 }}>
               <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: gold, marginBottom: 4 }} />
               <Text variant="caption" center weight="medium">{tr(`pw.stage.${s}` as TKey)}</Text>
             </View>

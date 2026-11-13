@@ -21,6 +21,7 @@ import { t as tr } from '@/i18n';
 import { ScreenToolContext } from '@/lib/screenTool';
 import { ToolArticles } from '@/features/ToolArticles';
 import { TOOL_TOPICS } from '@/lib/domain/toolArticles';
+import { KeyboardScopeContext, useKeyboardScopeFor } from '@/components/keyboard';
 
 // ------------------------------------------------------------------ squelettes
 export function SkeletonBlock({ height = 16, width = '100%', style }: { height?: number; width?: number | `${number}%`; style?: object }) {
@@ -147,7 +148,23 @@ export function QueryView<T>({ query, children, empty, skeleton = 'list', rows, 
  * À utiliser à l'intérieur d'un écran qui défile : `scrollEnabled={false}` n'est PAS virtualisé,
  * on utilise donc la liste comme conteneur de défilement (prop `screen` de <Screen scroll={false}>).
  */
-function VirtualListInner<T>({ renderItem, ListFooterComponent, ...props }: FlatListProps<T>, ref: React.ForwardedRef<FlatList<T>>) {
+function VirtualListInner<T>({ renderItem, ListFooterComponent, onScroll, ...props }: FlatListProps<T>, ref: React.ForwardedRef<FlatList<T>>) {
+  // Clavier + en-tête (audit 09) : la liste est la zone qui défile de l'écran `scroll={false}` ; ses champs
+  // (composer de l'humeur, recherche…) sont ramenés au-dessus du clavier, l'en-tête de Screen se replie à son
+  // défilement et `useScreenScroll()` la pilote. Sans cela, un champ d'en-tête de liste restait sous le clavier.
+  const list = useRef<FlatList<T>>(null);
+  React.useImperativeHandle(ref, () => list.current as FlatList<T>);
+  const target = React.useMemo(() => ({
+    current: {
+      measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => {
+        const n = list.current?.getNativeScrollRef?.() as unknown as { measureInWindow?: (c: typeof cb) => void } | null;
+        n?.measureInWindow?.(cb);
+      },
+      scrollToOffset: (o: { offset: number; animated?: boolean }) => list.current?.scrollToOffset(o),
+    },
+  }), []);
+  const { scope, onScroll: onKbScroll } = useKeyboardScopeFor(target);
+  const handleScroll = React.useCallback((e: Parameters<NonNullable<FlatListProps<T>['onScroll']>>[0]) => { onKbScroll(e); onScroll?.(e); }, [onKbScroll, onScroll]);
   // Liste d'un outil : ses articles « Pour aller plus loin » viennent après le pied de liste
   const toolId = React.useContext(ScreenToolContext);
   const Orig = ListFooterComponent;
@@ -172,8 +189,11 @@ function VirtualListInner<T>({ renderItem, ListFooterComponent, ...props }: Flat
     ? (info) => <StaggerItem index={info.index} fresh={seen.current !== null && !seen.current.has(keyOf(info.item, info.index))}>{renderItem(info)}</StaggerItem>
     : renderItem;
   return (
+    <KeyboardScopeContext.Provider value={scope}>
     <FlatList
-      ref={ref}
+      ref={list}
+      onScroll={handleScroll}
+      scrollEventThrottle={props.scrollEventThrottle ?? 32}
       renderItem={staggered}
       initialNumToRender={12}
       maxToRenderPerBatch={12}
@@ -183,6 +203,7 @@ function VirtualListInner<T>({ renderItem, ListFooterComponent, ...props }: Flat
       ListFooterComponent={footer}
       {...props}
     />
+    </KeyboardScopeContext.Provider>
   );
 }
 

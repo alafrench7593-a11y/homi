@@ -170,7 +170,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg }}>
                     <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{title}</Text>
-                    <IconButton icon="x" label={tr('common.close')} onPress={onClose} tone="filled" />
+                    <IconButton icon="x" label={tr('common.close')} onPress={onClose} tone="filled" testID="sheet-close" />
                   </View>
                 </View>
               </GestureDetector>
