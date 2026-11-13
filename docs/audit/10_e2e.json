@@ -1,0 +1,21 @@
+{
+ "demo_rechargement": "vert (4 vérifications vraies, 0 fausse)",
+ "etape1_auth": "vert (41 vérifications vraies, 0 fausse)",
+ "entree_homi": "vert (18 vérifications vraies, 0 fausse)",
+ "audit_auth": "vert (41 vérifications vraies, 0 fausse)",
+ "missions_scenario_a": "vert (24 vérifications vraies, 0 fausse)",
+ "courses_stocks_scenarios": "vert (35 vérifications vraies, 0 fausse)",
+ "home_today": "vert (26 vérifications vraies, 0 fausse)",
+ "accueil_missions_v3": "vert (37 vérifications vraies, 0 fausse)",
+ "apparence_v3": "vert (25 vérifications vraies, 0 fausse)",
+ "humeur_journal_v3": "vert (186 vérifications vraies, 0 fausse)",
+ "scanner_v3": "vert (43 vérifications vraies, 0 fausse)",
+ "cinematique": "vert (13 vérifications vraies, 0 fausse)",
+ "audit_saisie": "vert (220 vérifications vraies, 0 fausse)",
+ "audit_suivi": "vert (13 vérifications vraies, 0 fausse)",
+ "audit_foyer": "vert (37 vérifications vraies, 0 fausse)",
+ "audit_fiabilite": "vert (19 vérifications vraies, 0 fausse)",
+ "audit_ux": "vert (22 vérifications vraies, 0 fausse)",
+ "biberon_v3": "vert après correction (34 / 34)",
+ "audit_navigation": "vert : 230 routes + 230 sans Premium (0 défaut), 143 outils ouverts depuis leur point d’entrée (0 défaut, pp_bottle hors démo), balayage : 1 contrôle sans effet attendu (N-08)"
+}

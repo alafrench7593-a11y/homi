@@ -1,5 +1,5 @@
 /**
- * Détection protégée du Liquid Glass natif (iOS 26+, `expo-glass-effect` 57.0.4 déclaré dans package.json).
+ * Détection protégée du Liquid Glass natif (iOS 26+, `expo-glass-effect` 57.0.5 déclaré dans package.json).
  * Chargé paresseusement et seulement sur iOS, après les DEUX vérifications recommandées par la bibliothèque
  * (`isLiquidGlassAvailable()` ET `isGlassEffectAPIAvailable()` : certaines bêtas d'iOS 26 plantaient sans la
  * seconde). Partout ailleurs : `null` → repli BlurView (iOS ancien, web) ou remplissage (Android).
