@@ -72,8 +72,10 @@ with sync_playwright() as p:
     pg.goto(B + '/family/missions/new'); pg.wait_for_timeout(3000)
     tid(pg, 'mission-tpl-diapers').click(); pg.wait_for_timeout(500)
     R['modele_prerempli'] = pg.locator('[data-testid="mission-title"]').filter(visible=True).first.input_value() == TITLE
+    tid(pg, 'mission-next').click(); pg.wait_for_timeout(700)
     tid(pg, 'mission-who-coparent').click(); pg.wait_for_timeout(300)
     shot(pg, '02-creation-mission')
+    tid(pg, 'mission-next').click(); pg.wait_for_timeout(700)
     tid(pg, 'mission-send').click(); pg.wait_for_timeout(3500)
     R['detail_apres_envoi'] = '/family/missions/' in pg.url and tid(pg, 'mission-state-pending').count() > 0
     mission_id = pg.url.rstrip('/').split('/')[-1]
@@ -88,8 +90,10 @@ with sync_playwright() as p:
     R['notification_conjoint'] = any(n['title'] == 'Nouvelle mission : ' + TITLE and n['deep_link'] == f'/family/missions/{mission_id}' for n in notes)
     pg.goto(B + '/family/missions'); pg.wait_for_timeout(3000)
     R['recue_par_conjoint'] = tid(pg, f'mission-{mission_id}').count() > 0
+    R['prenom_demandeuse_liste'] = 'Camille vous demande' in (tid(pg, f'mission-who-line-{mission_id}').inner_text() if tid(pg, f'mission-who-line-{mission_id}').count() else '')
     shot(pg, '04-conjoint-recues')
     tid(pg, f'mission-{mission_id}').click(); pg.wait_for_timeout(3000)
+    R['prenoms_detail'] = 'Demandée par Camille' in (tid(pg, 'mission-from').inner_text() if tid(pg, 'mission-from').count() else '')
     R['reponses_rapides'] = all(tid(pg, f'mission-reply-{a}').count() > 0 for a in ['accept', 'start', 'complete', 'postpone', 'ask', 'decline'])
     shot(pg, '05-conjoint-detail-reponses')
     tid(pg, 'mission-reply-accept').click(); pg.wait_for_timeout(2500)

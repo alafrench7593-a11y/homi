@@ -113,8 +113,10 @@ with sync_playwright() as p:
     shot(pg, 'A01-stocks-bebe')
     pg.goto(B + '/family/missions/new'); pg.wait_for_timeout(3000)
     tid(pg, 'mission-tpl-diapers').click(); pg.wait_for_timeout(500)
+    tid(pg, 'mission-next').click(); pg.wait_for_timeout(700)  # création en étapes (16/11/2026)
     tid(pg, 'mission-who-coparent').click(); pg.wait_for_timeout(300)
     shot(pg, 'A02-creation-mission')
+    tid(pg, 'mission-next').click(); pg.wait_for_timeout(700)
     tid(pg, 'mission-send').click(); pg.wait_for_timeout(3500)
     mission_a = pg.url.rstrip('/').split('/')[-1]
     R['A_mission_envoyee'] = tid(pg, 'mission-state-pending').count() > 0

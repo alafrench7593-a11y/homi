@@ -68,6 +68,8 @@ export function useCreateMission() {
 
 export interface RespondArgs { id: string; action: MissionAction; note?: string | null; due_at?: string | null; assignee_id?: string | null; version?: number }
 type RespondResult = { status: 'ok' | 'not_found' | 'conflict'; unchanged?: boolean; row?: Mission };
+/** Résultat réel d'une réponse, pour la confirmation affichée : fait maintenant, ou déjà fait (rejeu). */
+export type RespondResultStatus = 'ok' | 'unchanged';
 
 /** Réponse à une mission. « not_found » et « conflict » deviennent des erreurs lisibles. */
 export async function respondMission(a: RespondArgs): Promise<RespondResult> {

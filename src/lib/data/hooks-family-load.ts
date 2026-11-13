@@ -1,6 +1,6 @@
 /** Charge familiale : tâches, demandes, créneaux, routines (domaine « lists », partagé dans le foyer). */
 import { t as tr } from '@/i18n';
-import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { backend, eq, gte } from '../backend';
 import { useUserId } from '../auth';
 import { insertOrQueue } from '../offline';
@@ -15,17 +15,55 @@ export interface TaskEvent { id: string; task_id: string; household_id: string; 
 const ROLE_KEY = { owner: 'u7.role.owner', coparent: 'u7.role.coparent', caregiver: 'u7.role.caregiver' } as const satisfies Record<HouseholdMember['role'], string>;
 const roleLabel = (r: HouseholdMember['role']) => tr(ROLE_KEY[r]);
 
-/** Membres du foyer, nommés par leur rôle (les profils ne sont pas exposés entre membres). */
+/** Prénom affiché + photo d'un membre actif du foyer (RPC household_member_names : rien d'autre du profil). */
+export interface MemberName { household_id: string; user_id: string; role: HouseholdMember['role']; display_name: string | null; avatar_path: string | null }
+
+/**
+ * Prénoms et photos des membres actifs de mon foyer (16/11/2026). Le serveur décide de ce qui est visible :
+ * parents → tous les membres ; nounou → les parents (et elle-même) ; autre foyer, ex-membre → rien.
+ */
+export function useMemberNames() {
+  const me = useUserId();
+  const hid = useHouseholdId();
+  return useQuery({
+    // 'profile' et 'members' dans la clé : un prénom ou une photo modifiés, un membre ajouté / retiré la rafraîchissent
+    queryKey: [me, 'member_names', hid ?? '', 'profile', 'members'],
+    queryFn: async () => ((await backend.rpc<MemberName[]>('household_member_names', { p_household: hid })) ?? []),
+    enabled: !!me && !!hid,
+    staleTime: 5 * 60_000,
+  });
+}
+
+export interface Person {
+  id: string;
+  /** Libellé dans une phrase : « Vous » pour moi, sinon le prénom (rôle si le prénom n'est pas renseigné / visible). */
+  label: string;
+  /** Prénom affiché (le mien compris) ; rôle en dernier recours. */
+  name: string;
+  initial: string;
+  avatarPath: string | null;
+  role: HouseholdMember['role'];
+  isMe: boolean;
+}
+
+/** Membres du foyer, nommés par leur PRÉNOM (household_member_names) ; le rôle seulement si aucun prénom n'est visible. */
 export function usePeople() {
   const me = useUserId();
   const { data } = useHouseholdMembers();
-  const list = (data ?? []).map((m, i, all) => {
+  const names = useMemberNames().data;
+  const list: Person[] = (data ?? []).map((m, i, all) => {
     const sameRole = all.filter((x) => x.role === m.role);
-    const label = m.user_id === me ? tr('u7.people.you') : sameRole.length > 1 ? `${roleLabel(m.role)} ${sameRole.indexOf(m) + 1}` : roleLabel(m.role);
-    return { id: m.user_id, label, role: m.role };
+    const byRole = sameRole.length > 1 ? `${roleLabel(m.role)} ${sameRole.indexOf(m) + 1}` : roleLabel(m.role);
+    const n = names?.find((x) => x.user_id === m.user_id);
+    const name = n?.display_name?.trim() || byRole;
+    const isMe = m.user_id === me;
+    return { id: m.user_id, label: isMe ? tr('u7.people.you') : name, name, initial: (name.trim()[0] ?? '?').toUpperCase(), avatarPath: n?.avatar_path ?? null, role: m.role, isMe };
   });
   const labelOf = (id: string | null | undefined) => (id ? list.find((p) => p.id === id)?.label ?? tr('u7.people.former') : tr('u7.people.nobody'));
-  return { people: list, labelOf, me };
+  /** Prénom (jamais « Vous ») : pour afficher qui porte une tâche à côté de son avatar. */
+  const nameOf = (id: string | null | undefined) => (id ? list.find((p) => p.id === id)?.name ?? tr('u7.people.former') : tr('u7.people.nobody'));
+  const personOf = (id: string | null | undefined): Person | null => (id ? list.find((p) => p.id === id) ?? null : null);
+  return { people: list, labelOf, nameOf, personOf, me };
 }
 
 export function useFamilyTasks() {

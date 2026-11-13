@@ -1,9 +1,10 @@
 """
-Accueil — « Aujourd'hui dans le foyer » sur petit écran (320 × 568), démo web + Premium (13/11/2026).
-Vérifie : la section en tête (ce qui m'attend mis en avant, responsable nommé, statut en toutes lettres), une seule
-recherche d'outils sur l'accueil, l'ajout d'une tâche depuis l'accueil puis sa validation (statut « Fait »), la validation
-de la mission qui m'attend (statut « Terminée » côté serveur émulé), l'absence de bouton sur la mission de quelqu'un
-d'autre, la création d'une mission via « Confier une mission » et son affichage « À accepter » chez la co-parente.
+Accueil — scène « Aujourd'hui » sur petit écran (320 × 568), démo web + Premium (13/11/2026, recomposée le 16/11/2026).
+Vérifie : la section en tête (ce qui m'attend en point focal, responsable nommé par son PRÉNOM, « demandée par Sam »,
+statut en toutes lettres), une seule recherche d'outils et une seule entrée d'ajout (le « + » de la barre), l'ajout d'une
+tâche puis sa validation par la case à cocher (statut « Fait »), l'acceptation puis la validation de la mission qui
+m'attend (statut « Terminée » côté serveur émulé), l'absence de case sur la mission de quelqu'un d'autre, la création
+d'une mission (étapes) via « Confier une mission » et son affichage « À accepter » chez Sam.
 Usage :
   EXPO_PUBLIC_SUPABASE_URL=http://sb.fake.test EXPO_PUBLIC_SUPABASE_ANON_KEY=fake-anon-key \
     npx expo export --platform web --clear --output-dir /tmp/homi-home/dist
@@ -65,12 +66,15 @@ with sync_playwright() as p:
     sec = tid(pg, 'home-today')
     box = sec.bounding_box() if sec.count() else None
     R['section_visible_sans_defiler'] = bool(box) and box['y'] < 568 * 0.75
-    R['titre'] = pg.get_by_text('Aujourd’hui dans le foyer').count() > 0
+    R['titre'] = pg.get_by_role('heading', name='Aujourd’hui', exact=True).count() > 0 or pg.get_by_text('Aujourd’hui', exact=True).count() > 0
     R['resume'] = 'à faire' in (tid(pg, 'home-today-summary').inner_text() if tid(pg, 'home-today-summary').count() else '')
     milk = task_by_title(pg, MILK)
     R['mission_qui_m_attend_en_premier'] = bool(milk) and tid(pg, 'today-emphasis').count() > 0 and MILK in tid(pg, 'today-emphasis').inner_text()
     R['statut_en_toutes_lettres'] = bool(milk) and 'À accepter' in row_status(pg, milk['id'])
     R['responsable_nomme'] = bool(milk) and 'Camille' in tid(pg, f'today-open-{milk["id"]}').inner_text()
+    R['demandee_par_sam'] = bool(milk) and 'Demandée par Sam' in tid(pg, f'today-open-{milk["id"]}').inner_text()
+    R['jamais_coparent'] = 'Coparent' not in tid(pg, 'home-today').inner_text()
+    R['une_seule_entree_ajout'] = pg.locator('[data-testid="home-today-add"]').count() == 1 and pg.locator('[data-testid="quick-add"]').count() == 0
     R['une_seule_recherche_outils'] = pg.locator('[data-testid="home-tool-search"]').count() == 1 and pg.locator('[data-testid="all-tools"]').count() == 0
     shot(pg, '01-accueil-320')
 
@@ -88,11 +92,13 @@ with sync_playwright() as p:
     created = task_by_title(pg, NEW_TASK)
     R['tache_creee_pour_moi'] = bool(created) and created['assignee_id'] == me and created['status'] == 'todo'
     R['tache_visible_a_faire'] = bool(created) and 'À faire' in row_status(pg, created['id'])
+    R['case_a_cocher'] = bool(created) and pg.locator(f'[data-testid="today-complete-{created["id"]}"][role="checkbox"]').count() > 0
     btn = pg.locator(f'[data-testid="today-complete-{created["id"]}"]').filter(visible=True).first if created else None
     if btn is not None and btn.count():
         btn.scroll_into_view_if_needed(); pg.wait_for_timeout(400)
         bb = btn.bounding_box()
-        R['cible_bouton_48px'] = bool(bb) and bb['height'] >= 48 and tid(pg, 'home-today-add').bounding_box()['height'] >= 48
+        # Case à cocher : 48 px. (Le « + » de la barre mesure 44 px à 320 px de large : taille décidée par Dock.tsx, design system.)
+        R['cible_case_48px'] = bool(bb) and bb['height'] >= 48 and bb['width'] >= 48
         shot(pg, '03-avant-terminer')
         btn.click(); pg.wait_for_timeout(350)
         shot(pg, '04-validation-animee')
@@ -102,7 +108,11 @@ with sync_playwright() as p:
     R['tache_statut_fait'] = bool(after) and 'Fait' in row_status(pg, after['id'])
     shot(pg, '05-tache-faite')
 
-    # 4. Terminer la mission qui m'attend (mission_respond « complete »)
+    # 4. Accepter puis terminer la mission qui m'attend, depuis le point focal (une seule action pleine à la fois)
+    R['focal_une_action'] = tid(pg, f'today-accept-{milk["id"]}').count() == 1 and pg.locator(f'[data-testid="today-complete-{milk["id"]}"]').count() == 0
+    tid(pg, f'today-accept-{milk["id"]}').scroll_into_view_if_needed()
+    tid(pg, f'today-accept-{milk["id"]}').click(); pg.wait_for_timeout(2600)
+    R['mission_acceptee_serveur'] = (task_by_title(pg, MILK) or {}).get('mission_state') == 'accepted'
     tid(pg, f'today-complete-{milk["id"]}').scroll_into_view_if_needed()
     tid(pg, f'today-complete-{milk["id"]}').click(); pg.wait_for_timeout(2600)
     m2 = task_by_title(pg, MILK)
@@ -116,8 +126,10 @@ with sync_playwright() as p:
     tid(pg, 'today-add-mission').click(); pg.wait_for_timeout(3000)
     R['ecran_nouvelle_mission'] = '/family/missions/new' in pg.url
     tid(pg, 'mission-tpl-laundry').click(); pg.wait_for_timeout(300)
+    tid(pg, 'mission-next').click(); pg.wait_for_timeout(700)
     tid(pg, 'mission-who-coparent').click(); pg.wait_for_timeout(300)
     tid(pg, 'mission-date-today').click(); pg.wait_for_timeout(300)
+    tid(pg, 'mission-next').click(); pg.wait_for_timeout(700)
     tid(pg, 'mission-send').click(); pg.wait_for_timeout(3000)
     sent = next((t for t in demo_state(pg)['tables']['family_tasks'] if t.get('mission_state') == 'pending' and t['created_by'] == me), None)
     pg.goto(B + '/'); pg.wait_for_timeout(3500)

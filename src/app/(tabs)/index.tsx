@@ -1,5 +1,6 @@
 /**
- * En tête : « Aujourd'hui dans le foyer » (src/features/homeToday : tâches et missions du jour, agenda, relais, ajouter / terminer).
+ * En tête : la scène « Aujourd'hui » (src/features/homeToday, recomposée le 16/11/2026) : la prochaine action utile en point
+ * focal unique, puis l'agenda du jour lisible ; une seule entrée d'ajout (le « + » de la barre d'onglets). Le reste, allégé, dessous.
  * Accueil volontairement court (profil « Suivre mon cycle » : calendrier, 5 raccourcis, une carte intelligente et le prochain
  * rappel seulement) : carte principale du profil affiché, les 4 actions du quotidien, le prochain rappel,
  * une publication de la communauté choisie pour vous (+ « Voir la communauté »), une recommandation (article ou repas).
@@ -167,30 +168,34 @@ export default function Home() {
           <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
           {subtitle && !childScope ? <Text variant="small" muted>{subtitle}</Text> : null}
         </View>
-        {/* HOMI : « Aujourd'hui dans le foyer » en tête — ce qui est prévu, qui s'en charge, ajouter / terminer */}
-        <HomeToday />
-        {/* Seule entrée de recherche d'outils de l'accueil (la feuille donne aussi accès à « Tous les outils ») */}
-        <ToolSearchButton testID="home-tool-search" />
+        {/* Scène « Aujourd'hui » en tête : point focal (prochaine action utile) puis agenda lisible. Seule entrée d'ajout :
+            le « + » de la barre d'onglets (sur l'accueil d'un enfant, il reste celui du cocon). */}
+        <HomeToday dockAdd={!childScope} />
 
-        {/* 1. Parcours et profil actifs */}
-        <Cascade index={0} style={{ gap: 4 }}>
-          {simple ? null : <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 }}>
-            <Icon name="compass" size={14} color={t.colors.textMuted} />
-            <Text variant="caption" muted style={{ flex: 1 }}>{tr('pj.home.journey', { name: journeyName ?? tr('pj.none') })}</Text>
-            <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.edit')}</Text>
-          </Tappable>}
-          <ProfileSwitcher variant={childScope && !mainLoading ? 'bubbles' : 'card'} />
-        </Cascade>
-        {/* « HOMI » : l'étape du profil affiché, discrète, au-dessus des cartes utiles */}
-        {!mainLoading && !effectiveHidden(homeOrder, homeHidden).includes('story') ? <Cascade index={1}><StoryHomeStrip /></Cascade> : null}
+        {/* Plus bas, allégé : le profil affiché (grossesse, enfant, cycle…), puis les cartes choisies dans Réglages › Mon accueil */}
+        <View style={{ gap: spacing.sm, marginTop: spacing.md }}>
+          <Text variant="heading" accessibilityRole="header">{tr('ht.below')}</Text>
+          <Cascade index={0} style={{ gap: 4 }}>
+            {simple ? null : <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH }}>
+              <Icon name="compass" size={14} color={t.colors.textMuted} />
+              <Text variant="caption" muted style={{ flex: 1 }}>{tr('pj.home.journey', { name: journeyName ?? tr('pj.none') })}</Text>
+              <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.edit')}</Text>
+            </Tappable>}
+            <ProfileSwitcher variant={childScope && !mainLoading ? 'bubbles' : 'card'} />
+          </Cascade>
+        </View>
         {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 
         {/* Cartes de l'accueil, dans l'ordre choisi (Réglages › Mon accueil) */}
         {homeCards.map((key, i) => {
           const node = cards[key];
           if (!node) return null;
-          return <Cascade key={key} index={2 + i}><View testID={`home-card-${key}`}>{node}</View></Cascade>;
+          return <Cascade key={key} index={1 + i}><View testID={`home-card-${key}`}>{node}</View></Cascade>;
         })}
+        {/* « HOMI » : l'étape du profil affiché, discrète, après les cartes utiles */}
+        {!mainLoading && !effectiveHidden(homeOrder, homeHidden).includes('story') ? <StoryHomeStrip /> : null}
+        {/* Seule entrée de recherche d'outils de l'accueil (la feuille donne aussi accès à « Tous les outils ») */}
+        <ToolSearchButton testID="home-tool-search" />
 
         <DemoBanner />
       </Screen>

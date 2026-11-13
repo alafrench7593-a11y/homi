@@ -2,7 +2,7 @@ import type { homeToday as fr } from '../fr/homeToday';
 import type { Messages } from '../types';
 
 export const homeToday: Messages<typeof fr> = {
-  'ht.title': 'Heute im Haushalt',
+  'ht.title': 'Heute',
   'ht.count.todo': { one: '{count} zu erledigen', other: '{count} zu erledigen' },
   'ht.count.done': { one: '{count} erledigt', other: '{count} erledigt' },
   'ht.count.awaiting': { one: '{count} wartet auf deine Antwort', other: '{count} warten auf deine Antwort' },
@@ -28,7 +28,7 @@ export const homeToday: Messages<typeof fr> = {
   'ht.conflict': 'Diese Mission hat sich gerade geändert. Öffne sie erneut, um ihren Stand zu sehen.',
   'ht.more': { one: 'Ganze Planung ansehen (+{count})', other: 'Ganze Planung ansehen (+{count})' },
   'ht.empty.title': 'Heute ist nichts geplant',
-  'ht.empty.body': 'Füge eine Aufgabe für dich hinzu oder vergib eine Mission: Sie erscheint hier, mit der Person, die sie übernimmt.',
+  'ht.empty.body': 'Tippe unten auf „+“, um eine Aufgabe hinzuzufügen oder eine Mission zu vergeben: Sie erscheint hier, mit der Person, die sie übernimmt.',
   'ht.agenda': 'Kalender von heute',
   'ht.openAgenda': 'Kalender öffnen',
   'ht.shift.night': 'Nachtdienst',
@@ -52,4 +52,20 @@ export const homeToday: Messages<typeof fr> = {
   'ht.demo.laundry': 'Wäsche aufhängen',
   'ht.demo.event': 'Babyschwimmen',
   'ht.demo.eventPlace': 'Städtisches Schwimmbad',
+  'ht.demo.stock.night_diapers': 'Nachtwindeln',
+  'ht.demo.stock.milk': 'Folgemilch',
+  'ht.demo.stock.wipes': 'Feuchttücher',
+  'ht.demo.stock.kibble': 'Katzentrockenfutter',
+  'ht.demo.stock.laundry': 'Waschmittel',
+  'ht.demo.stock.toilet': 'Toilettenpapier',
+  'ht.empty.bodyNoAdd': 'Aufgaben und Missionen des Haushalts erscheinen hier, mit der Person, die sie übernimmt.',
+  'ht.addHint': 'Aufgabe, Mission oder weiterer Schnelleintrag',
+  'ht.alreadyDone': 'Das war schon erledigt: Nichts hat sich geändert.',
+  'ht.alreadyAccepted': 'Mission schon angenommen: Nichts hat sich geändert.',
+  'ht.focus.clear': 'Gerade wartet nichts auf dich. Der Rest des Tages steht unten.',
+  'ht.kind.appointment': 'Termin',
+  'ht.kind.event': 'Ereignis im Haushalt',
+  'ht.below': 'Dein Weg',
+  'ht.add.others': 'Weitere Schnelleinträge',
+  'ht.add.queued': 'Auf dem Telefon gespeichert: Wird gesendet, sobald das Netz zurück ist.',
 };

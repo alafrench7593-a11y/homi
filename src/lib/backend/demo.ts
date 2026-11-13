@@ -1281,6 +1281,21 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       if (me) ids.add(me);
       return T('profiles').filter((p) => ids.has(p.id) && p.avatar_path).map((p) => ({ user_id: p.id, avatar_path: p.avatar_path }));
     },
+    // Prénoms des membres (miroir de household_member_names, 20261116000100) : prénom affiché + photo, rien d'autre ;
+    // membres actifs de mes foyers ; une nounou ne voit que les parents (et elle-même)
+    household_member_names: (a) => {
+      const me = state.session?.userId;
+      if (!me) return [];
+      return T('household_members')
+        .filter((mine) => mine.user_id === me && (a.p_household == null || mine.household_id === a.p_household))
+        .flatMap((mine) => T('household_members')
+          .filter((o) => o.household_id === mine.household_id && (mine.role !== 'caregiver' || o.role !== 'caregiver' || o.user_id === me))
+          .map((o) => {
+            const p = T('profiles').find((x) => x.id === o.user_id);
+            const name = String(p?.display_name ?? '').replace(/\s+/g, ' ').trim().slice(0, 40);
+            return { household_id: o.household_id, user_id: o.user_id, role: o.role, display_name: name || null, avatar_path: p?.avatar_path ?? null };
+          }));
+    },
     has_tool: (a) => (demoAccess().tools.find((t) => t.key === a.p_tool)?.allowed ?? true),
     set_demo_grant: (a) => {
       // Démonstration uniquement (aucun paiement) : achat simulé d'un droit, ou fin d'essai simulée pour les tests

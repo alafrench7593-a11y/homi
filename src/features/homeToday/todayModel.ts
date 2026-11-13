@@ -21,6 +21,8 @@ export interface TodayTask {
   kind: 'mission' | 'task';
   /** Personne qui s'en charge (null : à prendre). */
   ownerId: string | null;
+  /** Personne qui l'a créée / demandée (mission : la demandeuse). */
+  creatorId: string | null;
   /** Échéance ISO (null : dans la journée, sans heure). */
   dueAt: string | null;
   /** Heure significative (échéance aujourd'hui, pas « toute la journée »). */
@@ -97,7 +99,7 @@ export function todayTasks(tasks: TaskLike[], me: string | null | undefined, now
     const timed = !!t.due_at && !t.all_day && Date.parse(t.due_at) >= sod;
     const rank = done ? 3 : awaitsMe ? 0 : mine || canComplete ? 1 : 2;
     return {
-      id: t.id, title: t.title, kind: isMission(t) ? 'mission' : 'task', ownerId: t.assignee_id, dueAt: t.due_at, timed, late, status, done, awaitsMe,
+      id: t.id, title: t.title, kind: isMission(t) ? 'mission' : 'task', ownerId: t.assignee_id, creatorId: t.created_by ?? null, dueAt: t.due_at, timed, late, status, done, awaitsMe,
       canComplete, canAccept: awaitsMe && isMission(t) && !!nextState(t.mission_state, 'accept'), version: t.version, rank, raw: t,
     };
   });
@@ -156,4 +158,40 @@ export const isEmptyToday = (m: TodayModel) => !m.tasks.length && !m.agenda.leng
 /** Résumé chiffré pour l'en-tête et les lecteurs d'écran : à faire (non faites) et faites aujourd'hui. */
 export function todayCounts(list: TodayTask[]) {
   return { todo: list.filter((x) => !x.done).length, done: list.filter((x) => x.done).length, awaiting: list.filter((x) => x.awaitsMe).length };
+}
+
+/**
+ * Agenda lisible de l'accueil (16/11/2026) : UNE ligne par élément, dans l'ordre de la journée.
+ * Tâches et missions (sauf le point focal, déjà montré au-dessus), rendez-vous et événements, relais, garde.
+ * Ordre : en retard ; toute la journée (garde, journées entières) ; à l'heure, chronologiquement ; « dans la
+ * journée » (sans heure) ; puis ce qui est déjà fait aujourd'hui (le plus récent d'abord).
+ */
+export type TimelineEntry =
+  | { kind: 'task'; key: string; sort: number; task: TodayTask }
+  | { kind: 'event'; key: string; sort: number; item: CalendarItem }
+  | { kind: 'shift'; key: string; sort: number; shift: CareShift }
+  | { kind: 'custody'; key: string; sort: number; custody: CustodyToday };
+
+const LATE = -3e15;
+const ALL_DAY = -2e15;
+const UNTIMED = 9e15;
+const DONE = 9.5e15;
+
+export function todayTimeline(m: TodayModel, opts: { exclude?: string | null; now: Date }): TimelineEntry[] {
+  const out: TimelineEntry[] = [];
+  const sod = startOfDay(opts.now);
+  for (const x of m.tasks) {
+    if (x.id === opts.exclude) continue;
+    const sort = x.done ? DONE - Date.parse(x.raw.done_at ?? x.raw.created_at) / 1e3
+      : x.late ? LATE + Date.parse(x.dueAt ?? '') / 1e3
+        : x.timed && x.dueAt ? Date.parse(x.dueAt) : UNTIMED + x.rank;
+    out.push({ kind: 'task', key: `task:${x.id}`, sort, task: x });
+  }
+  for (const c of m.custody) {
+    const [h, mi] = (c.time ?? '').split(':').map(Number);
+    out.push({ kind: 'custody', key: `custody:${c.planId}`, sort: c.time ? sod + (h * 60 + mi) * 60_000 : ALL_DAY, custody: c });
+  }
+  for (const i of m.agenda) out.push({ kind: 'event', key: i.key, sort: i.allDay ? ALL_DAY + 1 : Date.parse(i.starts), item: i });
+  for (const s of m.shifts) out.push({ kind: 'shift', key: `${s.kind}:${s.id}`, sort: Date.parse(s.starts_at), shift: s });
+  return out.sort((a, b) => a.sort - b.sort || a.key.localeCompare(b.key));
 }
