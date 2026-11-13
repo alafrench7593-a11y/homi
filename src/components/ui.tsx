@@ -286,9 +286,12 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
   const off = !!disabled;
   // Libellé trop long pour une ligne (bouton pleine largeur) : sans icône, puis libellé court
   const fontScale = useFontScale();
-  const [step, setStep] = React.useState(0);
-  const boxW = React.useRef(0);
-  React.useEffect(() => { setStep(0); }, [label, shortLabel]);
+  // L'étape est liée au libellé ET à la largeur : remise à 0 pendant le rendu (pas dans un effet, qui pouvait
+  // annuler une mesure déjà faite et laisser le libellé sur 2 lignes)
+  const [boxW, setBoxW] = React.useState(0);
+  const stepKey = `${label}|${shortLabel ?? ''}|${boxW}`;
+  const [lay, setLay] = React.useState({ key: stepKey, step: 0 });
+  const step = lay.key === stepKey ? lay.step : 0;
   const adapt = !!full || size === 'lg';
   const lineH = (BUTTON.font[size] + 6 - (step >= 3 ? 2 : 0)) * cappedScale(fontScale, typography.button.maxScale);
   const shownIcon = step >= 1 ? undefined : icon;
@@ -354,7 +357,7 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
       onHoverIn={m.handlers.onHoverIn}
       onHoverOut={m.handlers.onHoverOut}
       onPress={handlePress}
-      onLayout={adapt ? (e) => { const w = Math.round(e.nativeEvent.layout.width); if (Math.abs(w - boxW.current) > 2) { boxW.current = w; setStep(0); } } : undefined}
+      onLayout={adapt ? (e) => { const w = Math.round(e.nativeEvent.layout.width); setBoxW((cur) => (Math.abs(w - cur) > 2 ? w : cur)); } : undefined}
       style={[
         styles.button,
         { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: step >= 1 ? BUTTON.padX.sm : BUTTON.padX[size] },
@@ -369,7 +372,7 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
       {variant === 'primary' && !off ? <LinearGradient pointerEvents="none" colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} /> : null}
       {/* Verre teinté (v3) : lumière d'en haut à gauche dans l'épaisseur du bouton ; givré pour le secondaire */}
       {(variant === 'primary' || variant === 'secondary') && !off && t.name !== 'night' ? (
-        <LinearGradient pointerEvents="none" colors={variant === 'primary' ? ['rgba(255,255,255,0.26)', 'rgba(255,255,255,0)'] : [t.material.light.sheen, 'rgba(255,255,255,0)']} start={t.material.light.start} end={{ x: 0.4, y: 0.75 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} />
+        <LinearGradient pointerEvents="none" colors={variant === 'primary' ? [t.isDark ? 'rgba(255,255,255,0.26)' : 'rgba(255,255,255,0.2)', 'rgba(255,255,255,0)'] : [t.material.light.sheen, 'rgba(255,255,255,0)']} start={t.material.light.start} end={variant === 'primary' && !t.isDark ? { x: 0.3, y: 0.45 } : { x: 0.4, y: 0.75 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} />
       ) : null}
       {/* Reflet d'arête d'1 px en haut des boutons pleins et du verre (edge highlight) */}
       {solid || variant === 'secondary' ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: radiusPx * 0.7, right: radiusPx * 0.7, height: 1, backgroundColor: solid ? 'rgba(255,255,255,0.3)' : t.isDark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.95)' }} /> : null}
@@ -381,7 +384,10 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
         {shownIcon && <Animated.View style={nudge(shownIcon)}><Icon name={shownIcon} size={iconSize} color={fg} /></Animated.View>}
         {shownLabel ? (
           <Text weight="bold" color={fg} center maxFontSizeMultiplier={typography.button.maxScale}
-            onLayout={adapt ? (e) => { const lines = Math.round(e.nativeEvent.layout.height / lineH); setStep((s) => nextLabelStep(s, { lines, hasIcon: !!icon && s === 0, hasShort: !!shortLabel })); } : undefined}
+            onLayout={adapt ? (e) => {
+              const lines = Math.round(e.nativeEvent.layout.height / lineH);
+              setLay((cur) => { const s = cur.key === stepKey ? cur.step : 0; const n = nextLabelStep(s, { lines, hasIcon: !!icon && s === 0, hasShort: !!shortLabel }); return n === s && cur.key === stepKey ? cur : { key: stepKey, step: n }; });
+            } : undefined}
             style={[{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size] - (step >= 3 ? 2 : 0), lineHeight: BUTTON.font[size] + 6 - (step >= 3 ? 2 : 0), letterSpacing: 0.1 }, NO_HYPHENS]}>
             {shownLabel}
           </Text>

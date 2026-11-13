@@ -123,6 +123,7 @@ function FavoriteButton({ on, label, color, onPress }: { on: boolean; label: str
     <Tappable
       accessibilityRole="switch"
       accessibilityState={{ checked: on }}
+      aria-checked={on}
       accessibilityLabel={`${label} : ${on ? 'retirer des raccourcis' : 'ajouter aux raccourcis'}`}
       onPress={() => { haptic(on ? 'light' : 'success'); onPress(); }}
       hitSlop={6}

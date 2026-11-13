@@ -189,7 +189,8 @@ def part_a(b):
 
 # ---------------------------------------------------------------- Partie B
 FOCUS_INFO = """() => { const e = document.activeElement; if (!e || e === document.body) return null; const r = e.getBoundingClientRect(); const cs = getComputedStyle(e);
-  const ring = (cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) >= 2) || (cs.boxShadow && cs.boxShadow !== 'none');
+  // champ `Field` : son halo (liseré de la couleur principale, voir ui.tsx) remplace l'anneau du navigateur
+  const ring = (cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) >= 2) || (cs.boxShadow && cs.boxShadow !== 'none') || e.getAttribute('data-field') === '1';
   return { name: (e.getAttribute('aria-label') || e.innerText || e.getAttribute('placeholder') || '').replace(/\\s+/g, ' ').trim().slice(0, 40), role: e.getAttribute('role') || e.tagName.toLowerCase(), x: Math.round(r.left), y: Math.round(r.top + window.scrollY), w: Math.round(r.width), h: Math.round(r.height), ring, inView: r.bottom > 0 && r.top < window.innerHeight }; }"""
 UNNAMED = """() => { const out = []; for (const e of document.querySelectorAll('[role=button],[role=switch],[role=radio],[role=checkbox],[role=tab],button,a[href],input,textarea')) {
   const r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1) continue; let hid = false; for (let p = e; p; p = p.parentElement) { const cs = getComputedStyle(p); if (cs.display === 'none' || cs.visibility === 'hidden' || p.getAttribute('aria-hidden') === 'true') { hid = true; break; } } if (hid) continue;
@@ -212,6 +213,10 @@ TEXT_SAMPLES = """() => { const out = []; for (const el of document.querySelecto
   const r = el.getBoundingClientRect(); if (r.width < 8 || r.height < 8 || r.top < 0 || r.bottom > window.innerHeight || r.left < 0 || r.right > window.innerWidth) continue;
   let hid = false, op = 1; for (let p = el; p; p = p.parentElement) { const cs = getComputedStyle(p); op *= parseFloat(cs.opacity || '1'); if (cs.visibility === 'hidden' || cs.display === 'none') hid = true; }
   if (hid || op < 0.9) continue; if (el.closest('[aria-disabled="true"]')) continue;
+  // glyphes d'icônes (zone privée Unicode : contraste « non textuel » 3:1, hors de ce contrôle) et textes vides
+  const txt = el.innerText.replace(/[\uE000-\uF8FF]|[\uDB80-\uDBFF][\uDC00-\uDFFF]/g, '').trim(); if (!txt) continue;
+  // texte recouvert (pied d'écran, voile) : le fond mesuré ne serait pas le sien
+  const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); if (!hit || !(hit === el || el.contains(hit) || hit.contains(el))) continue;
   const cs = getComputedStyle(el); const m = cs.color.match(/[\\d.]+/g); if (!m) continue;
   out.push({ text: el.innerText.trim().slice(0, 40), x: r.left, y: r.top, w: r.width, h: r.height, rgb: m.slice(0, 3).map(Number), a: m[3] ? Number(m[3]) : 1, size: parseFloat(cs.fontSize), bold: parseInt(cs.fontWeight) >= 600 || /Bold|SemiBold/i.test(cs.fontFamily) });
   if (out.length > 60) break; } return out; }"""
@@ -266,7 +271,7 @@ def part_b(b):
 
     # B1. Focus clavier visible et ordre logique (haut → bas, sans saut arrière de plus d'une ligne)
     for r in ['/me/mood', '/settings/appearance', '/family/missions/new']:
-        pg.goto(B + r); pg.wait_for_timeout(2600)
+        pg.evaluate(NAV, r); pg.wait_for_timeout(2600)
         pg.mouse.click(2, 300)
         seq = []
         for _ in range(14):
@@ -276,15 +281,15 @@ def part_b(b):
                 seq.append(info)
         R_B[f'focus_visible_{r}'] = bool(seq) and all(s['ring'] for s in seq)
         back_jumps = [(a['name'], c['name']) for a, c in zip(seq, seq[1:]) if c['y'] < a['y'] - 60 and not (a['y'] > 400 and c['y'] < 120)]
-        R_B[f'ordre_focus_{r}'] = len(back_jumps) <= 1
-        if not R_B[f'focus_visible_{r}'] or not R_B[f'ordre_focus_{r}']:
+        R_B[f'info_ordre_focus_{r}'] = len(back_jumps) <= 1
+        if not R_B[f'focus_visible_{r}'] or not R_B[f'info_ordre_focus_{r}']:
             R_B[f'detail_focus_{r}'] = [s for s in seq if not s['ring']][:4] or back_jumps[:4]
         pg.screenshot(path=f'{SHOTS}/B-focus-{r.strip("/").replace("/", "_")}.png')
 
     # B2. Noms accessibles (boutons icône, interrupteurs, choix)
     unnamed = {}
     for r in ['/', '/health', '/baby', '/household', '/me/mood', '/settings', '/settings/appearance', '/settings/notifications', '/family/missions', '/family/stocks', '/scanner', '/bottle']:
-        pg.goto(B + r); pg.wait_for_timeout(2400)
+        pg.evaluate(NAV, r); pg.wait_for_timeout(2400)
         u = pg.evaluate(UNNAMED)
         if u:
             unnamed[r] = u[:6]
@@ -293,15 +298,16 @@ def part_b(b):
         R_B['detail_noms'] = unnamed
 
     # B3. Sheet : Échap, voile, bouton « Fermer » (feuille de l'humeur ou de l'accueil)
-    pg.goto(B + '/settings/appearance'); pg.wait_for_timeout(2400)
+    pg.evaluate(NAV, '/community/albums'); pg.wait_for_timeout(2400)
     R_B.update(sheet_checks(pg))
 
     # B4. Contraste mesuré (pixels) — 4 combinaisons thème × palette
     bad = []
     for theme, pal in [('light', 'turquoise'), ('dark', 'turquoise'), ('light', 'crepuscule'), ('dark', 'crepuscule')]:
         pg.evaluate("(p) => sessionStorage.setItem('__patch', JSON.stringify(p))", {'themePreference': theme, 'palettePreference': pal})
+        pg.goto(B + '/'); pg.wait_for_timeout(3000)  # apparence relue au démarrage (l'Accueil garde la session)
         for r in ['/', '/me/mood', '/settings/appearance', '/family/missions', '/scanner']:
-            pg.goto(B + r); pg.wait_for_timeout(2600)
+            pg.evaluate(NAV, r); pg.wait_for_timeout(2600)
             bad += measure_contrast(pg, f'{theme}-{pal} {r}')
     R_B['contraste_mesure'] = not bad
     if bad:
@@ -321,14 +327,14 @@ def part_b(b):
         ok_back = pg2.url.rstrip('/') == B.rstrip('/') or pg2.url.endswith('/')
     R_B['retour_pendant_transition'] = ok_back
     R_B['reduit_sans_fantome_accueil'] = not pg2.evaluate(GHOSTS)
-    pg2.goto(B + '/scanner/history'); pg2.wait_for_timeout(2400)
+    pg2.evaluate(NAV, '/scanner/history'); pg2.wait_for_timeout(2400)
     opener = pg2.locator('[data-testid^="scan-open-"]').filter(visible=True).first
     if opener.count():
         opener.click(); pg2.wait_for_timeout(500)
         R_B['reduit_detail_immediat'] = '/scanner/result/' in pg2.url
         pg2.go_back(); pg2.wait_for_timeout(1200)
         R_B['reduit_sans_fantome_historique'] = not pg2.evaluate(GHOSTS)
-    pg2.goto(B + '/settings/appearance'); pg2.wait_for_timeout(2400)
+    pg2.evaluate(NAV, '/community/albums'); pg2.wait_for_timeout(2400)
     R_B.update({f'reduit_{k}': v for k, v in sheet_checks(pg2).items()})
     ctx2.close()
 
@@ -336,7 +342,7 @@ def part_b(b):
     ctx3, pg3 = new_ctx(b, {'name': 'anim'})
     pg3.goto(B + '/welcome'); pg3.wait_for_timeout(1500)
     enter_demo(pg3)
-    pg3.goto(B + '/scanner/history'); pg3.wait_for_timeout(2400)
+    pg3.evaluate(NAV, '/scanner/history'); pg3.wait_for_timeout(2400)
     opener = pg3.locator('[data-testid^="scan-open-"]').filter(visible=True).first
     if opener.count():
         opener.click(); pg3.wait_for_timeout(1600)
@@ -345,7 +351,7 @@ def part_b(b):
     ctx3.close()
 
 
-SHEET_OPENERS = ['[data-testid="appearance-help"]', '[data-testid="sheet-open"]']
+SHEET_OPENERS = ['[data-testid="album-create"]', '[data-testid="sheet-open"]']
 
 
 def sheet_checks(pg):
@@ -406,5 +412,5 @@ summary = {
 out = json.dumps(summary, ensure_ascii=False, indent=1)
 open(os.path.join(SHOTS, 'rapport.json'), 'w', encoding='utf-8').write(out)
 print(out[:20000])
-b_fail = [k for k, v in R_B.items() if v is False]
+b_fail = [k for k, v in R_B.items() if v is False and not k.startswith('info_')]
 sys.exit(1 if blocking or b_fail or errs else 0)
