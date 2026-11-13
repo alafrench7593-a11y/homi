@@ -14,6 +14,17 @@ export interface ProfileTools { key: string; title: string; subject: ActiveSubje
 
 const sameSubject = (a: ActiveSubject, b: ActiveSubject) => a.type === b.type && ('id' in a ? a.id : '') === ('id' in b ? b.id : '');
 
+/**
+ * Outils d'un autre profil à proposer : ni urgences (toujours en tête), ni outils déjà montrés.
+ * Un outil « pour tout le monde » n'est écarté que si le profil affiché a déjà le MÊME outil (il s'y adapte) ;
+ * sinon (Sommeil, Repas ou Humeur d'un enfant pendant qu'une grossesse est affichée) il n'apparaissait nulle part
+ * dans les onglets (audit navigation 13/11/2026, N-04).
+ */
+export function pickOtherTools(catalog: CatalogTool[], shown: CatalogTool[], already: Set<string>): CatalogTool[] {
+  const shownKeys = new Set(shown.map((x) => x.key));
+  return catalog.filter((x) => !x.urgent && !already.has(x.id) && !(x.universal && shownKeys.has(x.key)));
+}
+
 export function useOtherProfileTools(shown: CatalogTool[]): ProfileTools[] {
   const { subject } = useActiveSubject();
   const js = useJourneyState();
@@ -36,7 +47,7 @@ export function useOtherProfileTools(shown: CatalogTool[]): ProfileTools[] {
     return profiles
       .filter((p) => !sameSubject(p.subject, subject))
       .map((p) => {
-        const tools = toolCatalog(p.ctx).filter((x) => !x.urgent && !x.universal && !already.has(x.id));
+        const tools = pickOtherTools(toolCatalog(p.ctx), shown, already);
         tools.forEach((x) => already.add(x.id));
         return { key: p.key, title: p.title, subject: p.subject, tools };
       })
