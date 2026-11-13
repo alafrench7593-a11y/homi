@@ -73,6 +73,8 @@ export const springs = {
   vif: { damping: 34, stiffness: 420, mass: 1 },
   /** rebond léger (ζ ≈ 0,59, dépassement ≈ 10 %) : relâchement, validation */
   rebondLeger: { damping: 19, stiffness: 260, mass: 1 },
+  /** panneau (ζ ≈ 0,9) : panneau du bas qui suit le doigt puis se pose sur un cran, indicateur qui glisse (≈ 300 ms) */
+  panneau: { damping: 30, stiffness: 280, mass: 1 },
 } as const;
 export type SpringName = keyof typeof springs;
 

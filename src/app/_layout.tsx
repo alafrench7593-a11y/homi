@@ -11,9 +11,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { WebInteractionStyles } from '@/components/WebInteractionStyles';
 import { ThemeProvider, useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { PowderSky } from '@/components/PowderSky';
-import { PREVIEW_HOUR } from '@/theme/daySky';
-import { useUiStore } from '@/lib/store';
+import { backdropVariant, DesertScene } from '@/components/scene/DesertScene';
+import { MorphHost } from '@/motion/Morph';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
@@ -199,6 +199,7 @@ export default function RootLayout() {
   if (!loaded && !error) return null;
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <PersistQueryClientProvider
         client={queryClient}
@@ -218,6 +219,8 @@ export default function RootLayout() {
                 <WebFrame>
                   <Backdrop />
                   <Navigator />
+                  {/* Transition carte → détail : la surface d'origine s'agrandit au-dessus de la navigation */}
+                  <MorphHost />
                   {/* Session pas encore restaurée : écran de chargement (évite les faux « introuvable » au démarrage) */}
                   <SessionLoading />
                   {/* Premium strict : écran Premium par-dessus les écrans réservés (src/lib/premium/access.ts) */}
@@ -236,6 +239,7 @@ export default function RootLayout() {
         </AuthProvider>
       </PersistQueryClientProvider>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 
@@ -256,44 +260,36 @@ function WebFrame({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Fond unique, derrière toutes les pages (HOMI v2) : ivoire chaud (clair) ou graphite (sombre), avec les lueurs de
- * la palette affichée (`PowderSky`). Le passage clair ↔ sombre se fait en fondu ; la palette Auto change par paliers
- * de 5 min (interpolation de couleurs) : jamais de changement brutal. Immobile avec « Réduire les animations » ou en
- * économie d'énergie.
+ * Fond unique, derrière toutes les pages (HOMI v3) : scène « désert sci-fi » vectorielle (`DesertScene`), aux couleurs
+ * de la palette affichée. Variante `immersive` à l'ouverture et sur l'accueil, `calm` partout ailleurs (écrans
+ * denses). Le passage clair ↔ sombre se fait par un voile qui s'efface (400 ms ; Réduire les animations : immédiat) ;
+ * un changement de palette est interpolé par le ThemeProvider (lumière, reflets, accents et scène ensemble).
+ * Image fixe avec Réduire les animations, en économie d'énergie, en arrière-plan et la nuit.
  */
 function Backdrop() {
   const t = useTheme();
   const reduce = useReduceMotion();
   const lowPower = useLowPower();
-  const skyOverride = useUiStore((s) => s.skyOverride);
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => { const id = setInterval(() => setNow(new Date()), 60_000); return () => clearInterval(id); }, []);
-  const hour = skyOverride ? PREVIEW_HOUR[skyOverride] : now.getHours() + now.getMinutes() / 60;
-  const light = !t.isDark;
-  const v = useRef(new Animated.Value(light ? 1 : 0)).current;
-  const [mounted, setMounted] = useState({ light, dark: !light });
-  useEffect(() => {
-    setMounted({ light: true, dark: true });
-    const done = () => setMounted({ light, dark: !light });
-    if (reduce) { v.setValue(light ? 1 : 0); done(); return; }
-    Animated.timing(v, { toValue: light ? 1 : 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: Platform.OS !== 'web' }).start(({ finished }) => { if (finished) done(); });
-  }, [light, reduce, v]);
-  // Pendant l'introduction cinématique, elle seule joue une vidéo (fond fixe dessous, jamais noir)
   const pathname = usePathname();
+  // voile du mode précédent, qui s'efface quand le mode change
+  const [veil, setVeil] = useState<string | null>(null);
+  const prevBg = useRef(t.colors.background);
+  const fade = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (prevBg.current === t.colors.background) return;
+    const from = prevBg.current;
+    prevBg.current = t.colors.background;
+    if (reduce) { setVeil(null); return; }
+    setVeil(from);
+    fade.setValue(1);
+    Animated.timing(fade, { toValue: 0, duration: 400, easing: Easing.inOut(Easing.quad), useNativeDriver: Platform.OS !== 'web' }).start(({ finished }) => { if (finished) setVeil(null); });
+  }, [t.colors.background, reduce, fade]);
+  // Pendant l'introduction cinématique, elle seule joue une vidéo (fond fixe dessous, jamais noir)
   if (pathname === '/cinematic') return <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t.colors.background }} />;
   return (
-    <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: t.colors.background }}>
-      {mounted.dark ? (
-        <Animated.View style={[StyleSheet.absoluteFill, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>
-          {/* HOMI : ciel minuit vectoriel (plus de vidéo de fond : identité HOMI, moins de batterie) */}
-          <PowderSky hour={hour} night still={lowPower} />
-        </Animated.View>
-      ) : null}
-      {mounted.light ? (
-        <Animated.View style={[StyleSheet.absoluteFill, { opacity: v }]}>
-          <PowderSky hour={hour} night={false} still={lowPower} />
-        </Animated.View>
-      ) : null}
+    <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: t.colors.background }} testID={t.isDark ? 'bg-night' : 'bg-powder'}>
+      <DesertScene variant={backdropVariant(pathname)} still={lowPower} />
+      {veil ? <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: veil, opacity: fade }]} /> : null}
     </View>
   );
 }

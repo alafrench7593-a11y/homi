@@ -19,7 +19,18 @@ export const duration = {
   slow: 380,     // panneaux, feuilles
   entrance: 520, // apparition d'écran / de contenu
   screen: 280,   // transition de navigation (pile d'écrans)
+  // v3 — trois familles (MOTION_SYSTEM.md) : micro 120–180, panneaux 220–320, scènes 320–450
+  micro: 150,    // pression, coche, pastille, reflet de bouton
+  panel: 280,    // panneau du bas, sélecteur, indicateur, menu
+  scene: 400,    // carte → détail, changement de palette, fondu de mode
 };
+
+/** Bornes des trois familles de durées (testées). */
+export const durationFamilies = {
+  micro: [120, 180],
+  panel: [220, 320],
+  scene: [320, 450],
+} as const;
 
 export const easing = {
   /** cubic-bezier(0.16, 1, 0.3, 1) : décélération longue, signature de l'app */

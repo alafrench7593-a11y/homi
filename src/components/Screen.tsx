@@ -7,9 +7,7 @@ import { router, useIsFocused, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
-import { HOMI } from '@/features/homiColors';
 import { IconButton, Text } from './ui';
-import { StarField } from './StarField';
 import { useFocusEntrance } from './Motion';
 import { ToolGlyph } from './ToolGlyph';
 import { AccountActions } from './AccountActions';
@@ -52,7 +50,7 @@ interface ScreenProps {
   action?: { label: string; icon?: IconName; onPress: () => void; testID?: string; disabled?: boolean };
 }
 
-export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars, footer, contentStyle, bottomInset = 0, tool: forcedTool, action }: ScreenProps) {
+export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars: _stars, footer, contentStyle, bottomInset = 0, tool: forcedTool, action }: ScreenProps) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
   const focused = useIsFocused();
@@ -149,7 +147,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       {/* Pages du bébé et de l'enfant : vidéo des galets le jour et l'animation de la maman avec son enfant */}
       {isChildPage(pathname, tool?.id) ? <ChildBackdrop /> : null}
-      {(stars || t.isDark) && <StarField density={t.name === 'night' ? 30 : stars ? 26 : 16} color={HOMI.starlight} />}
+      {/* v3 : plus de particules décoratives (« étoiles ») ; `stars` est conservé pour compatibilité */}
       {/* « padding » sur iOS et Android : Android est toujours edge-to-edge (Expo 54+), adjustResize ne réduit plus l'écran */}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={KEYBOARD_BEHAVIOR} keyboardVerticalOffset={keyboardOffset}>
         <KeyboardScopeContext.Provider value={keyboardScope}>

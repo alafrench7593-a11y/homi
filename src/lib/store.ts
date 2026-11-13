@@ -14,7 +14,7 @@ export type ActiveSubject =
  *  nocturnes) restent acceptés à l'exécution pour les données déjà enregistrées et les scénarios de test. */
 export type ThemePreference = 'auto' | 'system' | 'light' | 'dark' | 'night';
 /** Palette : Auto (selon l'heure locale) ou fixe. */
-export type PalettePreference = 'auto' | 'aurore' | 'crepuscule' | 'menthe' | 'iris';
+export type PalettePreference = 'auto' | 'turquoise' | 'aurore' | 'crepuscule' | 'menthe' | 'iris';
 export interface AppearancePrefs { theme: ThemePreference; palette: PalettePreference }
 
 interface UiState {

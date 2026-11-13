@@ -1,6 +1,6 @@
 /**
  * Reflet bref qui GLISSE sur un bouton capsule à la pression (boutons principaux, bouton d'action de la barre).
- * Une bande de lumière inclinée traverse le bouton de gauche à droite en ~520 ms (`decelerate`), une seule fois par
+ * Une bande de lumière inclinée traverse le bouton de gauche à droite en ~320 ms (v3 : famille « panneau », brève) (`decelerate`), une seule fois par
  * appui : transform + opacité seulement, aucune boucle. 'off' (Réduire les animations, économie d'énergie) et
  * 'minimal' (nuit) : aucun reflet.
  *
@@ -13,7 +13,7 @@ import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'rea
 import { LinearGradient } from 'expo-linear-gradient';
 import { useMotion } from './useMotion';
 
-export const SHEEN_MS = 520;
+export const SHEEN_MS = 320;
 
 export function usePressSheen() {
   const m = useMotion();

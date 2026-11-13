@@ -1,6 +1,7 @@
 /**
  * Primitives d'interface du design system HOMI (règles et jetons : DESIGN_SYSTEM.md, src/theme/tokens.ts).
- * Verre lisible, ombres physiques nuit violette, surfaces superposées (inset → raised → floating), voiles d'état.
+ * v3 « désert sci-fi » : surfaces mates pour le contenu, verre givré / optique pour les commandes (src/components/surfaces),
+ * famille de commandes (src/components/controls), voiles d'état.
  * API stable : ~218 écrans en dépendent ; toute évolution ajoute des options, n'en retire aucune.
  */
 import React from 'react';
@@ -18,6 +19,7 @@ import {
   type BannerTone, type Theme, type TypographyRole,
 } from '@/theme/tokens';
 import { GlowCard, type GlowEmphasis } from './GlowCard';
+import { ChoiceGroup } from './controls/ChoiceGroup';
 import { PressSheen, usePressSheen } from '@/motion/PressSheen';
 import { useUiStore } from '@/lib/store';
 import { GlassSurface } from './Glass';
@@ -178,8 +180,8 @@ function PlainCard({ children, onPress, tone = 'surface', style, accessibilityLa
  * Bouton unique de l'application (refonte 2026 : sobre, net, cohérent).
  * Hiérarchie : primary (plein), secondary (fond discret + liseré), outline (liseré couleur), ghost (sans fond),
  * danger (= destructive), night (mode nuit). Tailles sm / md / lg ; hauteur minimale, jamais fixe : un libellé long
- * passe à la ligne. Forme pilule ; bouton principal en dégradé prune (lilas en sombre) avec reflet d'arête et ombre
- * teintée, secondaire en verre (niveau `inset` relevé) au liseré prune, ombre physique nuit violette.
+ * passe à la ligne. Forme pilule ; v3 : bouton principal en VERRE TEINTÉ de la palette (dégradé + lumière interne +
+ * reflet d'arête + ombre colorée), secondaire en verre givré / fumé au liseré fin, ombre physique douce.
  * États : survol (web, 180 ms : voile de couleur), appui (enfoncement 0,98 + voile plus marqué), focus clavier
  * (anneau global, src/components/WebInteractionStyles.tsx), désactivé (atténué, sans ombre), chargement
  * (indicateur à la place du libellé, sans changement de taille). « Réduire les animations » : états immédiats.
@@ -324,6 +326,10 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
     >
       {/* Bouton principal (capsule) : dégradé de la palette, en diagonale (accent → accent 2) */}
       {variant === 'primary' && !off ? <LinearGradient pointerEvents="none" colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} /> : null}
+      {/* Verre teinté (v3) : lumière d'en haut à gauche dans l'épaisseur du bouton ; givré pour le secondaire */}
+      {(variant === 'primary' || variant === 'secondary') && !off && t.name !== 'night' ? (
+        <LinearGradient pointerEvents="none" colors={variant === 'primary' ? ['rgba(255,255,255,0.26)', 'rgba(255,255,255,0)'] : [t.material.light.sheen, 'rgba(255,255,255,0)']} start={t.material.light.start} end={{ x: 0.4, y: 0.75 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} />
+      ) : null}
       {/* Reflet d'arête d'1 px en haut des boutons pleins et du verre (edge highlight) */}
       {solid || variant === 'secondary' ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: radiusPx * 0.7, right: radiusPx * 0.7, height: 1, backgroundColor: solid ? 'rgba(255,255,255,0.3)' : t.isDark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.95)' }} /> : null}
       {/* Survol puis appui : voile d'état (sans décalage de mise en page) */}
@@ -467,6 +473,8 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel,
         // Pastille choisie : elle se lève (ombre teintée) ; au repos elle reste dans le plan
         filled && t.name !== 'night' && { boxShadow: accentShadow(t) }]}
     >
+      {filled && t.name !== 'night' ? <LinearGradient pointerEvents="none" colors={['rgba(255,255,255,0.28)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0 }} end={{ x: 0, y: 0.8 }} style={[StyleSheet.absoluteFill, { borderRadius: 999 }]} /> : null}
+      {selected && !filled ? <Icon name="check" size={14} color={active} /> : null}
       {icon && <Icon name={icon} size={15} color={filled ? t.colors.primaryText : selected ? active : t.colors.textMuted} />}
       {label ? <Text variant="small" weight="medium" color={filled ? t.colors.primaryText : selected ? active : t.colors.text} style={{ flexShrink: 1 }}>{label}</Text> : null}
     </Pressable>
@@ -474,53 +482,12 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel,
   );
 }
 
+/**
+ * Sélecteur capsule (API historique) : délègue à `ChoiceGroup` (v3) — indicateur de verre teinté qui GLISSE vers le
+ * choix actif, lumière diffuse derrière lui, coche + gras en plus de la couleur.
+ */
 export function Segmented<T extends string>({ options, value, onChange, label }: { options: { value: T; label: string; testID?: string }[]; value: T; onChange: (v: T) => void; label: string }) {
-  const t = useTheme();
-  const reduce = useReduceMotion();
-  const [w, setW] = React.useState(0);
-  const found = options.findIndex((o) => o.value === value);
-  const idx = Math.max(0, found);
-  const x = React.useRef(new Animated.Value(idx)).current;
-  React.useEffect(() => { springTo(x, idx, 'gentle', reduce).start(); }, [x, idx, reduce]);
-  const PAD = 4, GAP = 4;
-  const segW = w ? (w - PAD * 2 - GAP * (options.length - 1)) / options.length : 0;
-  return (
-    <View accessibilityRole="radiogroup" accessibilityLabel={label} onLayout={(e) => setW(e.nativeEvent.layout.width)} style={[styles.segmented, { backgroundColor: glassOf(t).inset.fill, borderWidth: 1, borderColor: glassOf(t).inset.edge }]}>
-      {/* aucune option choisie (ex. situation pas encore indiquée) : pas de pastille, sinon elle masque le libellé de la 1re option */}
-      {segW > 0 && found >= 0 ? (
-        <Animated.View
-          pointerEvents="none"
-          style={{
-            position: 'absolute', top: PAD, bottom: PAD, left: PAD, width: segW, borderRadius: 999, backgroundColor: t.colors.primary,
-            boxShadow: t.name === 'night' ? undefined : accentShadow(t), overflow: 'hidden',
-            transform: [{ translateX: x.interpolate({ inputRange: [0, Math.max(1, options.length - 1)], outputRange: [0, (segW + GAP) * Math.max(1, options.length - 1)] }) }],
-          }}
-        >
-          {/* Pastille capsule : dégradé de la palette + arête claire (Liquid Glass) */}
-          {t.name !== 'night' ? <LinearGradient colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
-          {t.name !== 'night' ? <View style={{ position: 'absolute', top: 0, left: 12, right: 12, height: 1, backgroundColor: 'rgba(255,255,255,0.35)' }} /> : null}
-        </Animated.View>
-      ) : null}
-      {options.map((o) => {
-        const sel = o.value === value;
-        return (
-          <Pressable
-            key={o.value}
-            accessibilityRole="radio"
-            accessibilityState={{ selected: sel, checked: sel }}
-            aria-checked={sel}
-            accessibilityLabel={o.label}
-            testID={o.testID}
-            onPress={() => { haptic('selection'); onChange(o.value); }}
-            hitSlop={{ top: 4, bottom: 4 }}
-            style={[styles.segment, sel && !segW && { backgroundColor: t.colors.primary }]}
-          >
-            <Text variant="small" weight={sel ? 'bold' : 'medium'} color={sel ? t.colors.primaryText : t.colors.textMuted} center>{o.label}</Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
+  return <ChoiceGroup options={options} value={value} onChange={onChange} label={label} />;
 }
 
 // ---------------------------------------------------------------- Champ de formulaire
@@ -797,7 +764,7 @@ const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: 1 },
   fab: { borderRadius: 26 },
   button: { borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 8, overflow: 'hidden' },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6, minHeight: controlSize.chip, maxWidth: '100%', borderRadius: 999, borderWidth: 1 },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6, minHeight: controlSize.chip, maxWidth: '100%', borderRadius: 999, borderWidth: 1, overflow: 'hidden' },
   segmented: { flexDirection: 'row', borderRadius: 999, padding: 4, gap: 4 },
   // marge intérieure réduite (8 → 4) : à 320 px, 4 options allemandes (« Woche ») ne se coupent plus au milieu du mot
   segment: { flex: 1, minHeight: 44, borderRadius: 999, justifyContent: 'center', paddingHorizontal: 4 },

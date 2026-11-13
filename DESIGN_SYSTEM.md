@@ -1,61 +1,69 @@
 # HOMI — Design system
 
-**v2 (13/11/2026) « Lumière sur graphite »** — décision de la propriétaire : la palette perle / prune / lilas /
-champagne est remplacée. Synthèse complète (palettes, Auto, jetons, composants, règles du halo) :
-**`HOMI_DESIGN_SYSTEM.md`**. Ce document garde les règles de matière et de forme communes.
+**v3 (13/11/2026) « Désert sci-fi »** — décision du propriétaire : remplace la v2 « Lumière sur graphite ». Synthèse
+complète (palettes, Auto, matières, scène, famille de commandes, mouvement) : **`HOMI_DESIGN_SYSTEM.md`**. Ce document
+garde les règles de matière et de forme communes.
 
-Clair « Ivoire » (fond ivoire chaud, verre légèrement teinté, ombres douces), sombre « Graphite » (presque noir, pas
-violet, surfaces fumées, accents lumineux maîtrisés), mode nuit tamisé (soins à 3 h, interne à l'écran `/night`).
-Quatre palettes (Aurore, Crépuscule, Menthe, Iris) + Auto selon l'heure locale.
+Clair « ivoire minéral » (verre givré, ombres sable), sombre « obsidienne » (verre fumé, turquoise néon réservé à
+l'action), mode nuit tamisé (soins à 3 h, interne à l'écran `/night`). Cinq palettes (**Turquoise** signature, Aurore,
+Crépuscule, Menthe, Iris) + Auto selon l'heure locale. Trois matières : **verre optique**, **verre givré / fumé**,
+**surface mate**. Fond : scène vectorielle « désert sci-fi » (immersive / calme).
 
 | Fichier | Rôle |
 |---|---|
-| `src/theme/tokens.ts` | Neutres, `PALETTES`, Auto (`autoPaletteAt`, `blendAccents`), `buildTheme(mode, palette)` → `theme.tokens` (surfaces, texte, accents, bordures, halos, statuts) + `theme.material` (verre, traits, teintes, dégradé principal) + `theme.colors` (rôles historiques). Ombres `physicalShadow`, `tintedShadow`, `haloShadow`. Typographie, rayons, espacements. |
-| `src/theme/ThemeProvider.tsx` | Apparence (Système / Clair / Sombre) × palette (Auto / fixe), préférences par compte, minuteur de l'Auto |
-| `src/components/ui.tsx` | `Text`, `Card` (+ `selected` / `emphasis` → `GlowCard`), `Button`, `IconButton`, `Fab`, `Chip`, `Segmented`, `Field`, `Banner`, `SectionTitle`, `ListRow`, `Toggle`, `Divider` |
-| `src/components/Glass.tsx` | `GlassSurface` (cartes), `LiquidGlass` (barre, feuilles, sélecteurs ; `expo-glass-effect` sur iOS 26+) |
-| `src/components/GlowCard.tsx` | Carte lumineuse : filet en dégradé + halo (image 1) |
+| `src/theme/tokens.ts` | Neutres, `PALETTES`, Auto, `buildTheme(mode, palette)` → `theme.tokens` + `theme.material` (`glass`, `surfaces`, `scene`, `light`, traits, teintes, dégradé principal) + `theme.colors` (rôles historiques). Ombres `physicalShadow`, `tintedShadow`, `haloShadow`, `surfaceShadow` ; `innerLight`. Typographie, rayons, espacements. |
+| `src/theme/ThemeProvider.tsx` | Apparence × palette, préférences par compte, Auto, transition de palette |
+| `src/components/surfaces/` | `Surface` (`optical` / `frosted` / `matte`), `OpticalGlass`, `FrostedGlass`, `MatteSurface` |
+| `src/components/controls/` | `PrimaryButton`, `SecondaryButton`, `SensitiveButton`, `IconOrb`, `ChoiceGroup`, `DataTile`, `Sparkline` |
+| `src/components/scene/DesertScene.tsx` | Scène de fond (immersive / calme) |
+| `src/components/ui.tsx` | `Text`, `Card` (mate ; `selected` / `emphasis` → `GlowCard`), `Button`, `IconButton`, `Fab`, `Chip`, `Segmented` (→ `ChoiceGroup`), `Field`, `Banner`, `SectionTitle`, `ListRow`, `Toggle`, `Divider` |
+| `src/components/Glass.tsx` | `GlassSurface` (compat : mate si opaque, givré si translucide), `LiquidGlass` (→ `Surface`) |
+| `src/components/GlowCard.tsx` | Carte lumineuse : filet en dégradé + halo |
 | `src/theme/contrast.ts` | Calcul WCAG (mélange des couleurs translucides puis ratio) |
-| `src/__tests__/contrast.test.ts`, `designSystem.test.ts`, `homiV2.test.tsx` | Contrastes (4 palettes × 3 modes + Auto), matière, préférences, mouvement |
+| `src/__tests__/contrast.test.ts`, `designSystem.test.ts`, `homiV2.test.tsx`, `homiV3.test.tsx` | Contrastes (5 palettes × 3 modes × scène × matières + Auto + transitions), matière, préférences, commandes, mouvement |
 
 ## Principes
 
-1. **Lisible d'abord.** Tout texte ≥ 4,5:1 sur ce qui est réellement dessous (fond, trois arrêts du dégradé, cartes,
-   trois niveaux de verre, teintes), **pour chaque palette et chaque instant de l'Auto**. Le flou ne compte pas.
-2. **La hiérarchie vient de la matière.** Opacité du verre, liseré, ombre. La couleur porte le sens (accent = action,
-   rouge = urgence) et le statut a toujours une icône et un libellé.
-3. **Ombres douces.** Contact + ambiance ; encre graphite chaud en clair (`28,24,20`), quasi noire en sombre (`4,4,6`),
-   jamais `#000`. Sous les éléments pleins et le verre flottant : ombre **colorée** de la palette, discrète.
-4. **La lumière se mérite.** Filet lumineux et halo uniquement sur l'élément choisi / l'action importante / la
-   validation (voir `HOMI_DESIGN_SYSTEM.md` § 5). Listes sobres, aucune animation continue.
-5. **Mode nuit = calme.** Ni flou, ni reflet, ni halo, ni ombre ; palette atténuée.
+1. **Lisible d'abord.** Tout texte ≥ 4,5:1 sur ce qui est réellement dessous (fond, dégradé, chaque couleur de la
+   scène, chaque matière posée dessus, teintes, tuiles), **pour chaque palette, chaque instant de l'Auto et chaque
+   étape d'un changement de palette**. Le flou ne compte pas.
+2. **La hiérarchie vient de la matière.** Verre optique (scène, commande flottante) > verre givré (navigation,
+   panneaux) > surface mate (contenu, listes, formulaires, données — jamais de verre). La couleur porte le sens
+   (accent = action ou sélection, rouge = urgence) et le statut a toujours une icône et un libellé.
+3. **Ombres douces.** Contact + ambiance ; encre sable en clair (`40,32,20`), quasi noire en sombre (`2,4,5`), jamais
+   `#000`. Sous le verre optique et les éléments pleins : ombre **colorée** de la palette, discrète.
+4. **La lumière se mérite.** Un seul point focal lumineux par écran : l'action principale ou la sélection active
+   (voir `HOMI_DESIGN_SYSTEM.md` § 5). Listes mates, aucune animation continue hors la parallaxe lente du fond.
+5. **Mode nuit = calme.** Ni flou, ni reflet, ni halo, ni ombre, scène fixe ; palette atténuée.
 
 ## Jetons de matière
 
-### Surfaces (`theme.material.glass[level]`, aide `glassOf(theme)`)
+### Surfaces (`theme.material.glass[level]` historique, `theme.material.surfaces[kind]` v3)
 
-| Niveau | Usage | Clair | Sombre | Ombre |
+| Niveau / matière | Usage | Clair | Sombre | Ombre |
 |---|---|---|---|---|
-| fond | page | ivoire + lueurs pastel de la palette (`PowderSky`) | graphite + lueurs retenues | — |
-| `inset` | champs, rails de `Segmented`, pastilles au repos, bouton fantôme | `rgba(120,104,80,0.07)` | blanc 5 % | aucune |
-| `raised` | `Card` (= `colors.surface`) | blanc teinté 5 % de l'accent, 74 % | blanc teinté, 6,5 % | `mid` |
-| `floating` | feuilles, barre d'onglets, menus, champ au focus | blanc teinté 3 %, 88 % | fumée `#1E1F25` 93 % | `high` |
+| fond | page | scène « désert sci-fi » ivoire minéral (`DesertScene`) | scène obsidienne + turquoise | — |
+| `inset` | champs, rails de sélecteur, pastilles au repos, bouton fantôme | `rgba(110,96,70,0.055)` | blanc 5 % | aucune |
+| `raised` = `matte` | `Card`, listes, formulaires, données (= `colors.surface`, opaque) | `#FCFBF9` | obsidienne relevée | `low` / `mid` |
+| `floating` = `frosted` | panneaux du bas, menus, filtres | blanc 80 % | fumée 82 % | `mid` / `high` |
+| `optical` | barre d'onglets, commande flottante, carte de tête | blanc teinté 66 % + lumière interne | fumée teintée 76 % + lumière interne | `high` + colorée |
 
 `edge` (liseré), `highlight` (arête supérieure), `blur` (expo-blur, iOS + web ; Android garde le remplissage).
 
 ### Ombres
 - `physicalShadow('low' | 'mid' | 'high', isDark)` → `boxShadow` (iOS, Android, web).
 - `tintedShadow(theme.material.accentRgb, isDark)` sous les éléments pleins (bouton principal, pastille choisie, `Fab`).
-- `haloShadow(theme)` : halo diffus à deux lueurs (GlowCard, validation) ; `liquidShadow(theme)` : ombre physique + ombre colorée douce sous le verre flottant.
+- `haloShadow(theme)` : halo diffus à deux lueurs (GlowCard, validation) ; `surfaceShadow(theme, kind)` (et l'alias `liquidShadow`) : ombre physique + ombre colorée de l'accent sous le verre optique.
+- `innerLight(theme, teinte)` : foyer radial des tuiles de données (lumière « de l'intérieur »), borné pour le contraste.
 
 ### Teintes, bandeaux, traits
 - `cardTintOf(theme)` : `soft`, `lavender`, `gold` (voiles de la palette).
-- `bannerColors(theme)` : `info`, `warning`, `danger`, `demo`, `success` → `bg`, `edge`, `fg` (statuts v2, testés) ; icône par ton (`BANNER_ICON`).
+- `bannerColors(theme)` : `info`, `warning`, `danger`, `demo`, `success` → `bg`, `edge`, `fg` (testés sur toute la scène) ; icône par ton (`BANNER_ICON`).
 - `linesOf(theme)` : `controlFill`, `hairline`, `separator`, `track`, `iconWell`, `thumbEdge`.
 - `stateVeil` : opacités des voiles de survol et d'appui.
 
-### Forme et rythme (inchangés)
-- `radius` : sm 10 · md 16 · lg 24 (cartes, bandeaux) · xl 32 (feuilles) · pill (boutons, pastilles, barre, sélecteurs). Champs : 18.
+### Forme et rythme
+- `radius` (v3, coins généreux) : sm 12 · md 18 · lg 26 (cartes, bandeaux) · xl 34 · tile 30 (tuiles de données) · sheet 34 (panneau du bas) · orb 24 · pill (boutons, pastilles, barre, sélecteurs). Champs : 18.
 - `spacing` : 4 · 8 · 12 · 16 · 24 · 32 · 48. Marge intérieure des cartes : 16.
 - `controlSize` : bouton md 52 · champ 50 · pastille 44 (+ `hitSlop` → 48). `MIN_TOUCH` = 48.
 
