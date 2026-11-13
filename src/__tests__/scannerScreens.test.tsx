@@ -8,7 +8,7 @@ jest.mock('react-native-safe-area-context', () => require('react-native-safe-are
 jest.mock('expo-router', () => {
   const r = { push: jest.fn(), replace: jest.fn(), back: jest.fn(), canGoBack: () => true };
   const state = { params: {} as Record<string, string> };
-  return { router: r, useRouter: () => r, useLocalSearchParams: () => state.params, useIsFocused: () => true, usePathname: () => '/scanner', __state: state };
+  return { router: r, useRouter: () => r, useLocalSearchParams: () => state.params, useIsFocused: () => true, usePathname: () => '/scanner', useNavigation: () => ({ addListener: () => () => undefined }), __state: state };
 });
 jest.mock('expo-camera', () => ({ CameraView: () => null, useCameraPermissions: () => [{ granted: false, canAskAgain: true }, jest.fn(async () => ({ granted: false, canAskAgain: false }))] }));
 jest.mock('@expo/vector-icons', () => ({ Feather: () => null, MaterialCommunityIcons: () => null }));
@@ -53,8 +53,8 @@ async function render(el: React.ReactElement) {
   await flush(60);
   return r;
 }
-async function press(r: ReactTestRenderer, label: string) {
-  const el = r.root.findAll((n) => n.props.label === label && typeof n.props.onPress === 'function')[0];
+async function press(r: ReactTestRenderer, label: string, prop: 'label' | 'title' = 'label') {
+  const el = r.root.findAll((n) => n.props[prop] === label && typeof n.props.onPress === 'function')[0];
   if (!el) throw new Error(`Élément introuvable : ${label}\n${allText(r)}`);
   await act(async () => { await el.props.onPress(); });
   await flush(80);
@@ -87,6 +87,7 @@ describe('écrans du scanner (mode démonstration)', () => {
     await press(r, 'Bébé (moins de 3 ans)');
     const age = r.root.findAll((n) => n.props.label === 'Âge (en mois)' && typeof n.props.onChangeText === 'function')[0];
     await act(async () => { age.props.onChangeText('6'); });
+    await press(r, 'Continuer');
     await press(r, 'Analyser');
     expect(mockRouter.replace).toHaveBeenCalledWith(expect.stringMatching(/^\/scanner\/result\//));
     resultId = String(mockRouter.replace.mock.calls.at(-1)[0]).split('/').pop()!;
@@ -115,6 +116,7 @@ describe('écrans du scanner (mode démonstration)', () => {
     await press(r, 'Oui, c’est ce produit');
     await press(r, 'Personne enceinte');
     expect(allText(r)).toContain('Pour qui ?');
+    await press(r, 'Continuer');
     await press(r, 'Analyser');
     expect(mockRouter.replace).toHaveBeenCalledTimes(2);
     r.unmount();
@@ -127,8 +129,8 @@ describe('écrans du scanner (mode démonstration)', () => {
     expect(allText(h)).toContain('Brie au lait cru démo');
     h.unmount();
     const c = await render(<CompareScreen />);
-    await press(c, 'Lingettes parfumées démo');
-    await press(c, 'Brie au lait cru démo (aliment)');
+    await press(c, 'Lingettes parfumées démo', 'title');
+    await press(c, 'Brie au lait cru démo (aliment)', 'title');
     expect(allText(c)).toContain('Aucun classement ni note globale');
     c.unmount();
   });

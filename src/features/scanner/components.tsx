@@ -5,9 +5,12 @@
  */
 import { StaggerItem } from '@/components/Motion';
 import React from 'react';
-import { Image, Linking, View } from 'react-native';
+import { Image, Linking, Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { Banner, Button, Card, Divider, Icon, Row, SectionTitle, Text, type IconName } from '@/components/ui';
+import { DataTile, type TileTint } from '@/components/controls';
+import { MatteSurface, OpticalGlass } from '@/components/surfaces';
+import { useMorphSource } from '@/motion';
 import { CERTAINTY_LABEL, DEMO_LABEL, RECALL_DISCLAIMER, type Finding, type FindingLevel, type RecallInfo } from '@/lib/domain/scanCommon';
 import { ruleExplanation, type ScanAnalysis } from '@/lib/domain/scanExplain';
 import { foodVerdictLabel, type FoodAnalysis } from '@/lib/domain/scanFood';
@@ -16,7 +19,8 @@ import { frDate, type ScanSource } from '@/lib/domain/scanSources';
 import { cosingFunctionLabel, type ExplainResponse, type ScanRow } from '@/lib/types-scanner';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
-import { t as tr } from '@/i18n';
+import { formatDate, t as tr } from '@/i18n';
+import { resultTiles, type ResultTile } from './wizard';
 
 /** Résultat tel qu'enregistré (analyse des règles + allergènes déclarés par la base produit). */
 export type StoredAnalysis = ScanAnalysis & { declaredAllergens?: string[] };
@@ -284,37 +288,14 @@ export function ExplanationCard({ a, explanation, loading }: { a: StoredAnalysis
 
 /** Fiche résultat complète. */
 export function ResultView({ a, explanation, explaining, actions }: { a: StoredAnalysis; explanation: ExplainResponse | null; explaining?: boolean; actions?: React.ReactNode }) {
-  const t = useTheme();
-  const subject = a.kind === 'product' ? a.product : a.food;
   const index = new Map(a.sources.map((s, i) => [s.id, i + 1]));
   return (
     <>
-      {a.demo ? (
-        <Banner tone="demo" title={DEMO_LABEL}>{tr('u6.sc.demo_banner')}</Banner>
-      ) : null}
-      <StaggerItem index={0}><Card>
-        <Row gap={spacing.md} style={{ alignItems: 'flex-start' }}>
-          {subject.imageUrl && /^https:\/\//.test(subject.imageUrl) ? (
-            <Image source={{ uri: subject.imageUrl }} style={{ width: 72, height: 72, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} resizeMode="contain" accessibilityLabel={tr('u6.sc.photo')} />
-          ) : null}
-          <View style={{ flex: 1, gap: 2 }}>
-            {a.demo ? <DemoTag /> : null}
-            <Text variant="heading">{subject.name ?? tr('u6.sc.unnamed_product')}</Text>
-            <Text variant="small" muted>{[subject.brand, a.kind === 'product' ? a.product.typeLabel : tr('u6.sc.food'), subject.barcode ? `EAN ${subject.barcode}` : null].filter(Boolean).join(' · ')}</Text>
-            <Text variant="caption" muted>{tr('u6.sc.for_analysed', { profile: a.profileLabel, date: frDate(a.analysedOn) })}</Text>
-          </View>
-        </Row>
-        {actions ? <View style={{ marginTop: spacing.sm }}>{actions}</View> : null}
-      </Card></StaggerItem>
-
-      <StaggerItem index={1}><Card>
-        <Text variant="label">{tr('u6.sc.verdict')}</Text>
-        <View style={{ marginTop: 4 }}><VerdictBadge verdict={a.verdict} /></View>
-        <Text variant="small" style={{ marginTop: 4 }}>{tr('u6.sc.why', { text: a.verdictReason })}</Text>
-        <Text variant="small" style={{ marginTop: 6 }} weight="medium">{tr('u6.sc.certainty', { level: CERTAINTY_LABEL[a.certainty] })}</Text>
-        {a.certaintyReasons.map((r) => <Text key={r} variant="caption" muted>{`• ${r}`}</Text>)}
-        <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u6.sc.no_score')}</Text>
-      </Card></StaggerItem>
+      {/* Point focal : le verdict, sur verre optique éclairé par la teinte du verdict */}
+      <StaggerItem index={0}><VerdictHero a={a} actions={actions} /></StaggerItem>
+      <StaggerItem index={1}><ResultTiles a={a} /></StaggerItem>
+      {/* Démonstration : étiquette dans l'en-tête, explication ici (le verdict reste visible sans défiler) */}
+      {a.demo ? <Banner tone="demo" title={DEMO_LABEL}>{tr('u6.sc.demo_banner')}</Banner> : null}
 
       {a.askProfessional ? <Banner tone="info" icon="user">{a.askProfessional}</Banner> : null}
 
@@ -346,20 +327,103 @@ export function ResultView({ a, explanation, explaining, actions }: { a: StoredA
   );
 }
 
-/** Ligne d'historique : nom, type, date, verdict ; ouvre la fiche résultat. */
-export function ScanListRow({ s, favorite }: { s: ScanRow; favorite?: boolean }) {
+/**
+ * En-tête du résultat (point focal) : produit, profil, date d'analyse, verdict et sa raison, niveau de certitude.
+ * Verre optique teinté par le verdict (couleur + icône + libellé, jamais la couleur seule).
+ */
+export function VerdictHero({ a, actions }: { a: StoredAnalysis; actions?: React.ReactNode }) {
+  const t = useTheme();
+  const tone = useToneColor(verdictTone(a.verdict));
+  const subject = a.kind === 'product' ? a.product : a.food;
   return (
-    <Card onPress={() => router.push(`/scanner/result/${s.id}`)} accessibilityLabel={tr('u6.sc.see_result', { name: s.product_snapshot?.name ?? tr('u6.sc.this_product') })}>
-      <Row style={{ alignItems: 'center' }}>
-        <View style={{ flex: 1, gap: 2 }}>
-          <Text weight="bold">{`${s.product_snapshot?.name ?? tr('u6.sc.no_name')}${favorite ? ' ★' : ''}`}</Text>
-          <Text variant="caption" muted>
-            {[s.kind === 'food' ? tr('u6.sc.food') : tr('u6.sc.product'), s.product_snapshot?.brand, s.analysed_at ? frDate(s.analysed_at) : null, s.is_demo ? tr('u6.sc.demo_data') : null].filter(Boolean).join(' · ')}
-          </Text>
-          {s.verdict ? <VerdictBadge verdict={s.verdict} small /> : null}
+    <OpticalGlass radius={radius.xl} padded={spacing.lg} tint={tone} contentStyle={{ gap: spacing.sm }} testID="scan-verdict">
+      <Row gap={spacing.md} style={{ alignItems: 'flex-start' }}>
+        {subject.imageUrl && /^https:\/\//.test(subject.imageUrl) ? (
+          <Image source={{ uri: subject.imageUrl }} style={{ width: 64, height: 64, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} resizeMode="contain" accessibilityLabel={tr('u6.sc.photo')} />
+        ) : null}
+        <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
+          {a.demo ? <DemoTag /> : null}
+          <Text variant="heading" accessibilityRole="header">{subject.name ?? tr('u6.sc.unnamed_product')}</Text>
+          <Text variant="small" muted>{[subject.brand, a.kind === 'product' ? a.product.typeLabel : tr('u6.sc.food'), subject.barcode ? `EAN ${subject.barcode}` : null].filter(Boolean).join(' · ')}</Text>
+          <Text variant="caption" muted>{tr('u6.sc.for_analysed', { profile: a.profileLabel, date: frDate(a.analysedOn) })}</Text>
         </View>
-        <Icon name="chevron-right" size={18} />
       </Row>
-    </Card>
+      <View style={{ gap: 4 }}>
+        <Text variant="label">{tr('u6.sc.verdict')}</Text>
+        <VerdictBadge verdict={a.verdict} />
+        <Text variant="small">{tr('u6.sc.why', { text: a.verdictReason })}</Text>
+        <Text variant="small" weight="medium">{tr('u6.sc.certainty', { level: CERTAINTY_LABEL[a.certainty] })}</Text>
+        {a.certaintyReasons.map((r) => <Text key={r} variant="caption" muted>{`• ${r}`}</Text>)}
+        <Text variant="caption" muted>{tr('u6.sc.no_score')}</Text>
+      </View>
+      {actions ? <View>{actions}</View> : null}
+    </OpticalGlass>
+  );
+}
+
+const TILE_TINT: Record<ResultTile['tone'], TileTint> = { neutral: 'accent2', warning: 'warning', danger: 'danger' };
+const shortList = (items: string[], max = 3) => (items.length > max ? `${items.slice(0, max).join(', ')}${tr('scn.tile.more', { count: items.length - max })}` : items.join(', '));
+const isoDay = (iso: string) => new Date(iso.length === 10 ? `${iso}T12:00:00` : iso);
+
+/**
+ * Tuiles de résultat (DataTile) : valeurs RÉELLES de l'analyse enregistrée. Une information absente de la source
+ * est un état inconnu explicite (« — » + raison), jamais « 0 ».
+ */
+export function ResultTiles({ a }: { a: StoredAnalysis }) {
+  const tiles = resultTiles(a);
+  const one = (x: ResultTile) => {
+    const unknown = x.unknown === 'no_composition' ? tr('scn.tile.unknownComposition') : x.unknown === 'not_declared' ? tr('scn.tile.unknownDeclared')
+      : x.unknown === 'not_checked' ? tr('scn.tile.unknownRecall') : x.unknown === 'no_date' ? tr('scn.tile.unknownDate') : undefined;
+    if (x.key === 'source') {
+      const d = x.date ? isoDay(x.date) : null;
+      return (
+        <DataTile key={x.key} label={tr('scn.tile.source')} icon="database" tint="accent"
+          value={d ? formatDate(d, { day: 'numeric', month: 'short' }) : null} unit={d ? String(d.getFullYear()) : undefined}
+          context={x.items[0]} emptyText={[unknown, x.items[0]].filter(Boolean).join(' · ')} testID="scan-tile-source" style={{ flexBasis: '100%', flexGrow: 1 }} />
+      );
+    }
+    const label = x.key === 'allergens' ? tr('scn.tile.allergens') : x.key === 'recalls' ? tr('scn.tile.recalls') : a.kind === 'product' ? tr('scn.tile.watch') : tr('scn.tile.watchFood');
+    const none = x.key === 'allergens' ? (a.kind === 'product' ? tr('scn.tile.allergensNone') : '') : x.key === 'recalls' ? '' : tr('scn.tile.watchNone');
+    const context = x.key === 'recalls'
+      ? [x.items.length ? shortList(x.items, 1) : null, x.date ? tr('scn.tile.recallChecked', { source: a.recallCheck?.source ?? 'RappelConso', date: frDate(x.date) }) : null].filter(Boolean).join(' · ')
+      : x.items.length ? shortList(x.items) : none;
+    const icon: IconName = x.key === 'allergens' ? 'alert-circle' : x.key === 'recalls' ? 'bell' : 'eye';
+    return (
+      <DataTile key={x.key} label={label} icon={icon} tint={TILE_TINT[x.tone]} value={x.count == null ? null : String(x.count)}
+        context={context || undefined} emptyText={unknown} testID={`scan-tile-${x.key}`} style={{ flexBasis: 130, flexGrow: 1 }} />
+    );
+  };
+  return (
+    <View testID="scan-tiles" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+      {tiles.map(one)}
+    </View>
+  );
+}
+
+/**
+ * Ligne d'historique (surface MATE) : nom, type, date, verdict. L'ouvrir agrandit la surface vers la fiche résultat
+ * (morph `scan-<id>`, retour vers la même ligne). `trailing` : commandes de la ligne (favori, suppression).
+ */
+export function ScanListRow({ s, favorite, trailing, testID }: { s: ScanRow; favorite?: boolean; trailing?: React.ReactNode; testID?: string }) {
+  const src = useMorphSource(`scan-${s.id}`, { radius: radius.lg });
+  const name = s.product_snapshot?.name ?? tr('u6.sc.no_name');
+  return (
+    <View ref={src.ref} collapsable={false} testID={testID ?? `scan-row-${s.id}`}>
+      <MatteSurface radius={radius.lg} padded={spacing.sm}>
+        <Row style={{ alignItems: 'center' }}>
+          <Pressable accessibilityRole="button" accessibilityLabel={tr('u6.sc.see_result', { name })} onPress={() => src.open(() => router.push(`/scanner/result/${s.id}`))}
+            style={{ flex: 1, minWidth: 0, minHeight: 48, paddingHorizontal: spacing.xs, paddingVertical: 4, justifyContent: 'center' }} testID={`scan-open-${s.id}`}>
+            <View style={{ gap: 2 }}>
+              <Text weight="bold" numberOfLines={2}>{`${name}${favorite ? ' ★' : ''}`}</Text>
+              <Text variant="caption" muted>
+                {[s.kind === 'food' ? tr('u6.sc.food') : tr('u6.sc.product'), s.product_snapshot?.brand, s.analysed_at ? frDate(s.analysed_at) : null, s.is_demo ? tr('u6.sc.demo_data') : null].filter(Boolean).join(' · ')}
+              </Text>
+              {s.verdict ? <VerdictBadge verdict={s.verdict} small /> : <Text variant="caption" muted>{tr('scn.notAnalysed')}</Text>}
+            </View>
+          </Pressable>
+          {trailing ?? <Icon name="chevron-right" size={18} />}
+        </Row>
+      </MatteSurface>
+    </View>
   );
 }
