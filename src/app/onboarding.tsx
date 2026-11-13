@@ -23,8 +23,7 @@ import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, Pr
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { FocalMark, useCompactEntry } from '@/features/entry/EntryKit';
-import { DEMO_PILL_HEIGHT } from '@/components/DemoBar';
-import { useBackendMode } from '@/lib/demoMode';
+import { useDemoInset } from '@/components/demoInset';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { INTERESTS, interestHint, interestLabel, journeyOptions, reminderSuggestions, type Interest } from '@/lib/domain/journeys';
 import { formatList, getLocale, t as tr } from '@/i18n';
@@ -76,7 +75,8 @@ export default function Onboarding() {
   const finishing = useRef(false);
   const compact = useCompactEntry();
   // Démonstration : la pastille « Démo » flotte en haut ; l'écran (sans en-tête) lui laisse sa place
-  const demoTop = useBackendMode().isDemo ? { paddingTop: insets.top + spacing.md + DEMO_PILL_HEIGHT } : undefined;
+  const demoInset = useDemoInset();
+  const demoTop = demoInset ? { paddingTop: insets.top + spacing.md + demoInset } : undefined;
 
   // Reprise : brouillon le plus récent entre l'appareil et le profil
   useEffect(() => {

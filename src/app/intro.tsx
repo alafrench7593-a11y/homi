@@ -12,6 +12,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, ScrollView, useWindowDimensions, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Appear } from '@/components/Appear';
 import { StaggerItem } from '@/components/Motion';
@@ -199,6 +200,8 @@ function useWindowHeight() { return useWindowDimensions().height; }
 export default function Intro() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const reduce = useReduceMotion();
   const setIntroSeen = useUiStore((s) => s.setIntroSeen);
   const setLocalePref = useUiStore((s) => s.setLocalePref);
@@ -261,7 +264,7 @@ export default function Intro() {
         <LinearGradient colors={[alpha(t.colors.background, 0.5), alpha(t.colors.background, 0.2), alpha(t.colors.background, 0.7)]}
           locations={[0, 0.45, 1]} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
       </View>
-    <View style={{ flex: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg }} {...pan.panHandlers}>
+    <View style={{ flex: 1, paddingTop: topInset + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg }} {...pan.panHandlers}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 44 }}>
         <View accessibilityRole="progressbar" accessibilityLabel={tr('intro.progress', { step: i + 1, total: SLIDES.length })} style={{ flexDirection: 'row', gap: 5 }}>
           {SLIDES.map((s, k) => <View key={s} style={{ width: k === i ? 22 : 7, height: 7, borderRadius: 4, backgroundColor: k <= i ? t.colors.primary : t.colors.border }} />)}

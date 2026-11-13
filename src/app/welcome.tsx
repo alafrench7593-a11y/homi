@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { StatusBar } from 'expo-status-bar';
 import { Button, Icon, IconButton, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
@@ -23,6 +24,8 @@ import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 
 export default function Welcome() {
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const win = useWindowDimensions();
   const t = useTheme();
   // Écran court (320×568) : le point focal se resserre pour garder les actions au premier écran
@@ -43,7 +46,7 @@ export default function Welcome() {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + spacing.xs, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: topInset + spacing.xs, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg }} showsVerticalScrollIndicator={false}>
         {/* En-tête : marque, langue (bouton rond), aide (toujours nommée) */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minHeight: MIN_TOUCH }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }} accessible accessibilityRole="header" accessibilityLabel={BRAND.name}>

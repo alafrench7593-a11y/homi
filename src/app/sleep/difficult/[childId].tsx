@@ -11,6 +11,7 @@ import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { StatusBar } from 'expo-status-bar';
 import { Icon, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
@@ -39,6 +40,8 @@ const stepLabels = () => [tr('u4.dn.s1'), tr('u4.dn.s2'), tr('u4.dn.s3'), tr('u4
 
 export default function DifficultNight() {
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const STEPS = stepLabels();
   const { childId } = useLocalSearchParams<{ childId: string }>();
   const toast = useToast();
@@ -59,7 +62,7 @@ export default function DifficultNight() {
     return (
       <View style={{ flex: 1, backgroundColor: BG }} testID="difficult-night">
         <StatusBar style="light" />
-        <View style={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, gap: spacing.md }}>
+        <View style={{ padding: spacing.lg, paddingTop: topInset + spacing.md, gap: spacing.md }}>
           <Row style={{ alignItems: 'center' }}>
             <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.dn.close')} onPress={() => goBack()} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }} testID="dn-close"><Icon name="x" color={MUTED} /></Tappable>
           </Row>
@@ -86,7 +89,7 @@ export default function DifficultNight() {
   return (
     <View style={{ flex: 1, backgroundColor: BG }} testID="difficult-night">
       <StatusBar style="light" />
-      <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + 140, gap: spacing.md }}>
+      <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingTop: topInset + spacing.md, paddingBottom: insets.bottom + 140, gap: spacing.md }}>
         <Row style={{ alignItems: 'center' }}>
           <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.dn.close')} onPress={() => goBack()} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" color={MUTED} /></Tappable>
           <Text variant="caption" color={MUTED} style={{ flex: 1 }}>{tr('u4.dn.stepOf', { n: step + 1, total: STEPS.length, name })}</Text>

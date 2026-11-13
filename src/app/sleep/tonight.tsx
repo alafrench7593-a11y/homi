@@ -8,6 +8,7 @@ import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { StatusBar } from 'expo-status-bar';
 import { Chip, Icon, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
@@ -49,10 +50,12 @@ export default function Tonight() {
   // Premier écran après connexion : « Chargement… », pas « ajoutez le profil d'un enfant » à tort
   const loading = !child && (!scope.loaded || childrenLoading);
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   return (
     <View style={{ flex: 1, backgroundColor: BG }} testID="tonight">
       <StatusBar style="light" />
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.md, gap: spacing.sm }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: topInset + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.md, gap: spacing.sm }}>
         <Row style={{ justifyContent: 'space-between' }}>
           <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.tonight.closeA11y')} onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
             <Row gap={6}><Icon name="x" color={MUTED} size={20} /><Text color={MUTED}>{tr('u4.tonight.close')}</Text></Row>

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Linking, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { useActivePregnancy, useActiveSubject, useEmergencyResources, useExpectedBabies, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
@@ -249,13 +250,15 @@ export function DemoBanner() {
 export function EmergencyShortcut() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   return (
     <Tappable
       accessibilityRole="button"
       accessibilityLabel={tr('u7.family.helpA11y')}
       onPress={() => router.push('/emergency')}
       hitSlop={8}
-      style={{ position: 'absolute', top: insets.top + 6, right: spacing.md, minHeight: MIN_TOUCH, minWidth: MIN_TOUCH, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.dangerSoft }}
+      style={{ position: 'absolute', top: topInset + 6, right: spacing.md, minHeight: MIN_TOUCH, minWidth: MIN_TOUCH, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.dangerSoft }}
     >
       <Icon name="life-buoy" size={20} color={t.colors.danger} />
     </Tappable>

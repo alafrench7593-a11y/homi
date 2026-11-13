@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { StatusBar } from 'expo-status-bar';
 import { StarField } from '@/components/StarField';
 import { Button, Chip, haptic, Icon, Row, Text, Toggle } from '@/components/ui';
@@ -47,6 +48,8 @@ function BigButton({ icon, label, sub, onPress }: { icon: React.ComponentProps<t
 
 export default function NightMode() {
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const toast = useToast();
   const inv = useInvalidate();
   const setNightMode = useUiStore((s) => s.setNightMode);
@@ -152,7 +155,7 @@ export default function NightMode() {
       <Aurora mood="lowlight" />
       <StarField density={40} color={TEXT} />
       {/* Défilement : sur petit écran (ou texte agrandi) rien n'est coupé ; le décor reste à l'intérieur de l'écran */}
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, gap: spacing.md }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: topInset + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, gap: spacing.md }}>
         <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.night.quit_a11y')} onPress={() => router.back()} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>
             <Row gap={6}><Icon name="x" color={MUTED} size={20} /><Text color={MUTED}>{tr('u6.night.quit')}</Text></Row>

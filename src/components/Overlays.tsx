@@ -4,6 +4,7 @@ import { Alert, Animated, Easing, Keyboard, KeyboardAvoidingView, Modal, Platfor
 import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor } from './keyboard';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing, themes } from '@/theme/tokens';
 import { Button, Icon, IconButton, Text } from './ui';
@@ -205,6 +206,8 @@ function ToastView({ msg, tone, onDone }: { msg: string; tone: ToastTone; onDone
   const t = useTheme();
   const reduce = useReduceMotion();
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const anim = useRef(new Animated.Value(0)).current;
   const icon = useRef(new Animated.Value(0)).current;
   const life = useRef(new Animated.Value(0)).current;
@@ -231,7 +234,7 @@ function ToastView({ msg, tone, onDone }: { msg: string; tone: ToastTone; onDone
       accessibilityLiveRegion="polite"
       accessibilityRole="alert"
       style={[styles.toast, {
-        top: insets.top + 8, backgroundColor: t.isDark ? '#24252B' : '#1F1E24', opacity: anim, overflow: 'hidden',
+        top: topInset + 8, backgroundColor: t.isDark ? '#24252B' : '#1F1E24', opacity: anim, overflow: 'hidden',
         borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)', shadowColor: '#0A0908', shadowOpacity: 0.25, shadowRadius: 20, shadowOffset: { width: 0, height: 10 },
         transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [-28, 0] }) }, { scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }],
       }]}

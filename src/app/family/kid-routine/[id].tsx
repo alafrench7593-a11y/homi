@@ -8,6 +8,7 @@ import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { useToast } from '@/components/Overlays';
 import { Tappable } from '@/components/Tappable';
 import { Button, haptic, Loading, Text } from '@/components/ui';
@@ -23,6 +24,8 @@ import { t as tr } from '@/i18n';
 export default function KidRoutineMode() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const toast = useToast();
   const { width } = useWindowDimensions();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -47,7 +50,7 @@ export default function KidRoutineMode() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} testID="kid-mode"
-      contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.md, alignSelf: 'center', width: '100%', maxWidth: 900 }}>
+      contentContainerStyle={{ padding: spacing.lg, paddingTop: topInset + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.md, alignSelf: 'center', width: '100%', maxWidth: 900 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <Tappable accessibilityRole="button" accessibilityLabel={tr('kr.parentsA11y')} accessibilityHint={tr('kr.parentsHint')} delayLongPress={600}
           onPress={() => toast(tr('kr.parentsHint'), 'info')} onLongPress={() => goBack('/family/kid-routines')} testID="kid-exit"

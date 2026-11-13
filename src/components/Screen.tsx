@@ -25,6 +25,7 @@ import { ToolAccessBanner } from '@/features/offers/ToolOffer';
 import { useToolAccess } from '@/lib/data/hooks-access';
 import { isPaidTool, type PaidTool } from '@/lib/premium/offers';
 import { ChildBackdrop, isChildPage } from '@/features/story/ChildBackdrop';
+import { useDemoInset } from './demoInset';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -53,6 +54,8 @@ interface ScreenProps {
 export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars: _stars, footer, contentStyle, bottomInset = 0, tool: forcedTool, action }: ScreenProps) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  // Haut de l'écran : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const top = insets.top + useDemoInset();
   const focused = useIsFocused();
   // Clavier : la zone qui défile garde le champ actif visible ; quitter l'écran ferme le clavier ouvert par un de ses champs
   const scrollRef = React.useRef<ScrollView>(null);
@@ -82,7 +85,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   const accent = tool ? glyphColor(t, tool.theme, tool.urgent) : null;
   const glowId = `g${React.useId().replace(/:/g, '')}`;
   const header = (title || back || right || account) && (
-    <View style={[styles.header, styles.wide, { paddingTop: insets.top + spacing.xs }]}>
+    <View style={[styles.header, styles.wide, { paddingTop: top + spacing.xs }]}>
       {accent ? (
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
           <Svg width="100%" height="100%">
@@ -127,7 +130,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       onScrollEndDrag={onScroll}
       onMomentumScrollEnd={onScroll}
       scrollEventThrottle={64}
-      contentContainerStyle={[styles.wide, { paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? spacing.md : insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xxl + bottomInset, gap: spacing.md }, contentStyle]}
+      contentContainerStyle={[styles.wide, { paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? spacing.md : top + spacing.md, paddingBottom: insets.bottom + spacing.xxl + bottomInset, gap: spacing.md }, contentStyle]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
@@ -136,7 +139,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       {tool ? <ToolArticles toolId={tool.id} /> : null}
     </ScrollView>
   ) : (
-    <View style={[styles.wide, { flex: 1, paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? 0 : insets.top }, contentStyle]}>
+    <View style={[styles.wide, { flex: 1, paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? 0 : top }, contentStyle]}>
       {/* écran à liste : la liste ajoute elle-même « Pour aller plus loin » en bas */}
       <ScreenToolContext.Provider value={tool ? tool.id : null}>{content}</ScreenToolContext.Provider>
     </View>

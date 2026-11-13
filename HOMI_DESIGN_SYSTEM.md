@@ -169,6 +169,24 @@ repartent de la valeur courante). Réduire les animations / économie d'énergie
 - **Morph carte → détail** : `MorphSource` / `useMorphSource(id).open(navigate)` côté carte, `MorphTarget id` côté
   détail, `MorphHost` monté une fois dans `_layout.tsx`. Retour vers le même élément (rectangle re-mesuré).
 
+## 6 bis. Haut d'écran et pastille « Démonstration » (`src/components/demoInset.ts`)
+
+La pastille de démonstration (`DemoBar`, montée une fois dans `_layout.tsx`) flotte en position absolue au centre,
+sous la zone sûre. Pour qu'elle ne recouvre **jamais** la première ligne d'un en-tête (date de l'Accueil, avatar et
+Réglages des hubs, bouton retour), la place est **réservée** plutôt que la pastille déplacée dans chaque en-tête :
+
+- `useDemoInset()` → `DEMO_INSET` (42 px : 4 d'écart + 34 de pastille + 4 de respiration) quand la pastille est
+  affichée (démonstration **et** session ouverte), **0 sinon** — aucun décalage hors démo ;
+- `useTopInset()` → `insets.top + useDemoInset()` ; c'est le haut à utiliser partout au lieu de `insets.top` seul.
+
+`Screen` l'applique à son en-tête (ou au contenu s'il n'a pas d'en-tête) : tous les onglets, hubs, réglages et
+écrans internes en héritent. Les écrans plein cadre qui calculent eux-mêmes leur haut (nuit, sommeil, urgence, SOS,
+routine enfant, onboarding, accueil sans compte, `PremiumGate`, toasts) ajoutent `useDemoInset()`.
+Nouvel écran : utiliser `Screen`, ou `useTopInset()` pour un écran plein cadre — jamais une pastille dupliquée dans
+une rangée d'en-tête. La pastille garde sa sortie visible (« Quitter la démo », cible ≥ 48 px via `hitSlop`, nom
+accessible « Quitter la démonstration ») ; son `hitSlop` (jusqu'à 45 px sous la zone sûre) ne mord pas sur les
+boutons d'en-tête, qui commencent à 50 px. Test : `src/__tests__/demoInset.test.tsx`.
+
 ## 7. Non vérifié ici
 
 Rendu iOS natif (GlassView, flou réel), Android (boxShadow coloré, absence de flou), geste du panneau au doigt sur

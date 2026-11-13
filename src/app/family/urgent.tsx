@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { useToast } from '@/components/Overlays';
 import { callNumber, goBack } from '@/lib/links';
 import { haptic, Icon, type IconName, Text } from '@/components/ui';
@@ -34,6 +35,8 @@ function Big({ icon, label, onPress, tone }: { icon: IconName; label: string; on
 export default function OrgEmergency() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const toast = useToast();
   const ask = useCreateRequest();
   const batch = useBatchTasks();
@@ -46,7 +49,7 @@ export default function OrgEmergency() {
   const send = (kind: 'relay' | 'help_today', msg: string) => ask.mutateAsync({ kind }).then(() => toast(msg)).catch((e) => toast(friendlyError(e), 'error'));
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.sm }}>
+    <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} contentContainerStyle={{ padding: spacing.lg, paddingTop: topInset + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.sm }}>
       <Tappable accessibilityRole="button" accessibilityLabel={tr('u2.urgent.back_label')} onPress={() => goBack()} style={{ minHeight: 44, justifyContent: 'center' }}>
         <Text weight="bold" color={t.colors.primary}>{tr('u2.urgent.back')}</Text>
       </Tappable>

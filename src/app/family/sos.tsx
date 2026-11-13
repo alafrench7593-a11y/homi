@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { useToast } from '@/components/Overlays';
 import { Tappable } from '@/components/Tappable';
 import { haptic, Icon, type IconName, Text } from '@/components/ui';
@@ -40,6 +41,8 @@ function Big({ icon, label, sub, onPress, tone, testID }: { icon: IconName; labe
 export default function FamilySos() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const toast = useToast();
   const hid = useHouseholdId();
   const ask = useCreateRequest();
@@ -54,7 +57,7 @@ export default function FamilySos() {
   const people = (contacts ?? []).filter((c) => c.phone);
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.sm }} testID="family-sos">
+    <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} contentContainerStyle={{ padding: spacing.lg, paddingTop: topInset + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.sm }} testID="family-sos">
       <Tappable accessibilityRole="button" accessibilityLabel={tr('u2.urgent.back_label')} onPress={() => goBack()} style={{ minHeight: 44, justifyContent: 'center' }}>
         <Text weight="bold" color={t.colors.primary}>{tr('u2.urgent.back')}</Text>
       </Tappable>

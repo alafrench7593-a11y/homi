@@ -3,6 +3,7 @@
  * La sortie est un vrai bouton (« Quitter la démo », ≥ 48 px de cible, lu « Quitter la démonstration » par les lecteurs
  * d'écran), jamais caché derrière un menu. Écran étroit (< 360 px) : « Démo » + bouton « Quitter » avec icône.
  * Couleurs : verre flottant du thème (aucune valeur en dur).
+ * Place réservée : les écrans décalent leur haut de `useDemoInset()` (src/components/demoInset.ts) tant qu'elle est affichée.
  */
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
@@ -17,10 +18,10 @@ import { useToast } from '@/components/Overlays';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, physicalShadow, radius } from '@/theme/tokens';
+import { DEMO_LEAVE_HEIGHT, DEMO_PILL_HEIGHT, DEMO_PILL_TOP } from './demoInset';
 
-/** Hauteur visible de la pastille et de son bouton ; la cible tactile du bouton est complétée à 48 px par `hitSlop`. */
-export const DEMO_PILL_HEIGHT = 34;
-export const DEMO_LEAVE_HEIGHT = DEMO_PILL_HEIGHT - 6;
+// Dimensions partagées avec la réserve d'en-tête (`useDemoInset`) : la pastille ne recouvre jamais un en-tête
+export { DEMO_LEAVE_HEIGHT, DEMO_PILL_HEIGHT } from './demoInset';
 
 export function DemoBar() {
   const { isDemo, canLeave } = useBackendMode();
@@ -51,7 +52,7 @@ export function DemoBar() {
   }
 
   return (
-    <View pointerEvents="box-none" style={{ position: 'absolute', top: insets.top + 4, left: 0, right: 0, alignItems: 'center', zIndex: 50 }}>
+    <View pointerEvents="box-none" style={{ position: 'absolute', top: insets.top + DEMO_PILL_TOP, left: 0, right: 0, alignItems: 'center', zIndex: 50 }}>
       <View
         testID="demo-pill"
         style={{ flexDirection: 'row', alignItems: 'center', height: DEMO_PILL_HEIGHT, paddingLeft: 12, paddingRight: canLeave ? 3 : 12, gap: 8, borderRadius: radius.pill, backgroundColor: glass.fill, borderWidth: 1, borderColor: glass.edge, boxShadow: physicalShadow('mid', t.isDark) }}

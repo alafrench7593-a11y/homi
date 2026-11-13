@@ -9,6 +9,7 @@ import { View } from 'react-native';
 import { usePathname } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { Loading } from '@/components/ui';
 import { Paywall } from '@/features/Paywall';
 import { backend } from '@/lib/backend';
@@ -23,6 +24,8 @@ export function PremiumGate() {
   const pathname = usePathname() ?? '/';
   const th = useTheme();
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   // même clé que usePremium() : une seule lecture de has_premium pour toute l'application
   const q = useQuery({ queryKey: [session?.userId, 'subscriptions', 'premium'], queryFn: () => backend.rpc<boolean>('has_premium'), enabled: !!session, staleTime: 60_000 });
   const access = useAccess();
@@ -32,7 +35,7 @@ export function PremiumGate() {
   const decision = gateFor(pathname, premium, access.data ?? null);
   if (decision === 'open') return null;
   return (
-    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: th.colors.background, paddingTop: insets.top, paddingBottom: insets.bottom }}
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: th.colors.background, paddingTop: topInset, paddingBottom: insets.bottom }}
       testID={decision === 'checking' ? 'premium-gate-checking' : 'premium-gate'} accessibilityViewIsModal>
       {decision === 'checking' ? <Loading label={tr('pw.checking')} /> : <Paywall locked />}
     </View>
