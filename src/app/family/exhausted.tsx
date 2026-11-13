@@ -12,6 +12,7 @@ import { Banner, Button, Card, Chip, Text } from '@/components/ui';
 import { backend } from '@/lib/backend';
 import { useUserId } from '@/lib/auth';
 import { useInvalidate } from '@/lib/data/hooks';
+import { useTapShield } from '@/features/tapShield';
 import { useExhaustionCheckins } from '@/lib/data/hooks-mental';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { EXHAUSTION_QUESTIONS, exhaustionLevel, type ExhaustionLevel } from '@/lib/domain/mentalLoad';
@@ -27,10 +28,13 @@ export default function Exhausted() {
   const [answers, setAnswers] = useState<(number | null)[]>(EXHAUSTION_QUESTIONS.map(() => null));
   const [result, setResult] = useState<ExhaustionLevel | null>(null);
   const complete = answers.every((a) => a != null);
+  // Le résultat prend la place des questions : un double appui sur « Voir où j'en suis » n'ouvre pas une piste
+  const { arm, guard } = useTapShield();
 
   async function finish() {
     const vals = answers.map((a) => a ?? 0);
     const { level } = exhaustionLevel(vals);
+    arm();
     setResult(level);
     try {
       await backend.insert('exhaustion_checkins', { user_id: uid, answers: vals });
@@ -59,12 +63,12 @@ export default function Exhausted() {
             <Text variant="title">{tr(`cm.ex.r.${result}` as TKey)}</Text>
             <Text>{tr(`cm.ex.r.${result}.d` as TKey)}</Text>
           </Card>
-          <Button label={tr('tool.offduty')} icon="moon" onPress={() => router.push('/family/offduty')} />
-          <Button label={tr('cm.ex.relay')} icon="users" variant="secondary" onPress={() => router.push('/family/nights')} />
-          <Button label={tr('cm.ex.metime')} icon="sun" variant="secondary" onPress={() => router.push('/family/me-time')} />
+          <Button label={tr('tool.offduty')} icon="moon" onPress={guard(() => router.push('/family/offduty'))} />
+          <Button label={tr('cm.ex.relay')} icon="users" variant="secondary" onPress={guard(() => router.push('/family/nights'))} />
+          <Button label={tr('cm.ex.metime')} icon="sun" variant="secondary" onPress={guard(() => router.push('/family/me-time'))} />
           {result !== 'low' ? <Banner tone="info" icon="user-check">{tr('cm.ex.pro')}</Banner> : null}
-          <Button label={tr('cm.ex.allo')} icon="phone" variant="ghost" onPress={() => callNumber('0800003456', toast)} />
-          <Button label={tr('cm.ex.retake')} variant="ghost" onPress={() => { setResult(null); setAnswers(EXHAUSTION_QUESTIONS.map(() => null)); }} />
+          <Button label={tr('cm.ex.allo')} icon="phone" variant="ghost" onPress={guard(() => callNumber('0800003456', toast))} />
+          <Button label={tr('cm.ex.retake')} variant="ghost" onPress={guard(() => { setResult(null); setAnswers(EXHAUSTION_QUESTIONS.map(() => null)); })} />
         </>
       )}
       <Banner tone="danger" icon="alert-octagon">{tr('cm.ex.urgent')}</Banner>
