@@ -398,13 +398,29 @@ with sync_playwright() as p:
         part_b(br)
     br.close()
 
-blocking = {r: {c: [f for f in fs if f['kind'] in BLOCKING] for c, fs in cfgs.items()} for r, cfgs in R_A.items()}
+# Constats CONNUS hors des composants partagés : signalés à leur propriétaire (docs/audit/09_ux_accessibilite.md § 4).
+# Ils restent listés (« A_connus ») mais ne font pas échouer la suite ; tout NOUVEAU constat la fait échouer.
+KNOWN = [
+    ('/health', 'texte_tronque', ''), ('/baby', 'texte_tronque', ''), ('/household', 'texte_tronque', ''),  # hubs (navigation)
+    ('/family', 'texte_tronque', ''), ('/family', 'champ_masque', ''), ('/community', 'champ_masque', ''),  # hubs (navigation)
+    ('/', 'champ_masque', 'Votre question'),  # Accueil, assistant (navigation)
+    ('/onboarding', 'champ_masque', ''), ('/settings/account', 'champ_masque', ''),  # auth / onboarding
+    ('/scanner/product#inconnu', 'cible_tactile_trop_petite', 'Revenir'), ('/scanner/product#inconnu', 'bouton_principal_2_lignes', ''),  # pilote Scanner
+    ('/scanner/product#inconnu', 'champ_masque', ''),  # pilote Scanner (zone de l'assistant, texte 1,3 + clavier)
+    ('/me/mood#choix', 'champ_masque', ''), ('/family/missions/new', 'champ_masque', ''),  # texte 1,3 + clavier : 308 px, cf. § 6
+]
+known_of = lambda r, f: any(r == kr and f['kind'] == kk and (f.get('text') or '').startswith(kt) for kr, kk, kt in KNOWN)  # noqa: E731
+known = {r: {c: [f for f in fs if f['kind'] in BLOCKING and known_of(r, f)] for c, fs in cfgs.items()} for r, cfgs in R_A.items()}
+known = {r: {c: fs for c, fs in cfgs.items() if fs} for r, cfgs in known.items()}
+known = {r: c for r, c in known.items() if c}
+blocking = {r: {c: [f for f in fs if f['kind'] in BLOCKING and not known_of(r, f)] for c, fs in cfgs.items()} for r, cfgs in R_A.items()}
 blocking = {r: {c: fs for c, fs in cfgs.items() if fs} for r, cfgs in blocking.items()}
 blocking = {r: c for r, c in blocking.items() if c}
 summary = {
     'ecrans_testes': len(ROUTES) + len(PUBLIC),
     'ecrans_en_defaut': sorted(blocking),
     'A_bloquants': blocking,
+    'A_connus': known,
     'A_autres': {r: {c: [f for f in fs if f['kind'] not in BLOCKING] for c, fs in cfgs.items()} for r, cfgs in R_A.items()},
     'B': R_B,
     'erreurs': errs[:10],

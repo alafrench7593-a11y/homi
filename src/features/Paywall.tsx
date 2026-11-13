@@ -104,6 +104,9 @@ export function paywallCta(plan: Pick<Plan, 'trialDays'> | undefined): string {
 }
 
 export function Paywall({ locked = false, embedded = false }: { locked?: boolean; embedded?: boolean }) {
+  // Écran verrouillé (PremiumGate, par-dessus la page) : chaque bouton REMPLACE l'écran verrouillé au lieu d'en
+  // empiler un de plus (audit 01 N-05) ; ailleurs, navigation habituelle
+  const go = (path: '/settings/subscription' | '/settings' | '/settings/privacy' | '/emergency') => (locked ? router.replace(path) : router.push(path));
   const th = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
@@ -180,12 +183,12 @@ export function Paywall({ locked = false, embedded = false }: { locked?: boolean
         <LegalLink doc="privacy">{tr('sub2.my.privacy')}</LegalLink>
       </Row>
       <View style={{ gap: spacing.xs }}>
-        <Button label={tr('pw.details')} variant="secondary" icon="list" onPress={() => router.push('/settings/subscription')} testID="pw-details" />
+        <Button label={tr('pw.details')} variant="secondary" icon="list" onPress={() => go('/settings/subscription')} testID="pw-details" />
         {locked ? (
           <>
-            <Button label={tr('pw.account')} variant="ghost" icon="settings" onPress={() => router.push('/settings')} testID="pw-account" />
-            <Button label={tr('pw.myData')} variant="ghost" icon="download" onPress={() => router.push('/settings/privacy')} testID="pw-data" />
-            <Button label={tr('pw.emergency')} variant="ghost" icon="life-buoy" onPress={() => router.push('/emergency')} testID="pw-emergency" />
+            <Button label={tr('pw.account')} variant="ghost" icon="settings" onPress={() => go('/settings')} testID="pw-account" />
+            <Button label={tr('pw.myData')} variant="ghost" icon="download" onPress={() => go('/settings/privacy')} testID="pw-data" />
+            <Button label={tr('pw.emergency')} variant="ghost" icon="life-buoy" onPress={() => go('/emergency')} testID="pw-emergency" />
           </>
         ) : null}
       </View>

@@ -124,7 +124,7 @@ def journey(pg, tag, zoom=False, reduced=False):
     field = pg.locator('[data-testid="mood-note"]').filter(visible=True).first
     field.scroll_into_view_if_needed(); field.click(); field.fill(note)
     btn = tid(pg, 'mood-main-action')
-    R[k('bouton_visible_pendant_saisie')] = in_view(pg, btn) and 'Plutôt bien' in btn.inner_text()
+    R[k('bouton_visible_pendant_saisie')] = in_view(pg, btn) and 'Plutôt bien' in (btn.get_attribute('aria-label') or btn.inner_text())  # libellé court possible à l'écran (audit 09), nom complet lu
     bw = btn.bounding_box()['width']
     R[k('bouton_pleine_largeur')] = bw >= 320 - 2 * 24 - 2
     shot(pg, f'{tag}-03-saisie')

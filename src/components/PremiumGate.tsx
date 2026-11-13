@@ -6,7 +6,10 @@
  */
 import React from 'react';
 import { View } from 'react-native';
-import { usePathname } from 'expo-router';
+import { router, usePathname } from 'expo-router';
+import { IconButton } from '@/components/ui';
+import { parentRoute } from '@/lib/parentRoute';
+import { spacing } from '@/theme/tokens';
 import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDemoInset } from '@/components/demoInset';
@@ -37,6 +40,11 @@ export function PremiumGate() {
   return (
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: th.colors.background, paddingTop: topInset, paddingBottom: insets.bottom }}
       testID={decision === 'checking' ? 'premium-gate-checking' : 'premium-gate'} accessibilityViewIsModal>
+      {/* Retour toujours visible (audit 01 N-05 / 09) : l'écran verrouillé couvre l'en-tête et la barre d'onglets */}
+      <View style={{ flexDirection: 'row', paddingHorizontal: spacing.sm }}>
+        <IconButton icon="arrow-left" label={tr('common.back')} testID="premium-gate-back"
+          onPress={() => (router.canGoBack() ? router.back() : router.replace(parentRoute(pathname) as never))} />
+      </View>
       {decision === 'checking' ? <Loading label={tr('pw.checking')} /> : <Paywall locked />}
     </View>
   );

@@ -374,7 +374,8 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
       {/* Bouton principal (capsule) : dégradé de la palette, en diagonale (accent → accent 2) */}
       {variant === 'primary' && !off ? <LinearGradient pointerEvents="none" colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} /> : null}
       {/* Verre teinté (v3) : lumière d'en haut à gauche dans l'épaisseur du bouton ; givré pour le secondaire */}
-      {(variant === 'primary' || variant === 'secondary') && !off && t.name !== 'night' ? (
+      {/* clair : pas de reflet sur le bouton principal (il ramenait le libellé blanc à 4,3:1 — audit 09) */}
+      {(variant === 'secondary' || (variant === 'primary' && t.isDark)) && !off && t.name !== 'night' ? (
         <LinearGradient pointerEvents="none" colors={variant === 'primary' ? [t.isDark ? 'rgba(255,255,255,0.26)' : 'rgba(255,255,255,0.2)', 'rgba(255,255,255,0)'] : [t.material.light.sheen, 'rgba(255,255,255,0)']} start={t.material.light.start} end={variant === 'primary' && !t.isDark ? { x: 0.3, y: 0.45 } : { x: 0.4, y: 0.75 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} />
       ) : null}
       {/* Reflet d'arête d'1 px en haut des boutons pleins et du verre (edge highlight) */}
