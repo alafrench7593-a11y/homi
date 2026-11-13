@@ -183,7 +183,7 @@ def set_body(P, need, cur):
         cur['body'] = need
 
 
-BLOCKING = {'plantage', 'introuvable', 'ecran_blanc', 'erreur_donnees', 'onglet_plante'}
+BLOCKING = {'plantage', 'introuvable', 'ecran_blanc', 'erreur_donnees', 'onglet_plante', 'session_perdue'}
 
 
 # ------------------------------------------------------------------ phase routes (liens profonds)
@@ -228,6 +228,9 @@ def check_route(S, route, premium):
         st = P.state()
         errs = P.take_errs()
         if errs: st['flags'].append('exception_console')
+        # lien direct renvoyé vers l'accueil public : la session (démonstration) n'a pas été reprise (N-10)
+        if st['path'].split('?')[0] in ('/welcome', '/intro') and not url.startswith(('/welcome', '/intro', '/auth', '/onboarding', '/cinematic')):
+            st['flags'].append('session_perdue')
         if not premium and 'premium' in st['flags']: pass  # écran Premium attendu sans abonnement
         row = {'route': route, 'url': url, 'id_reel': real, **st, 'errors': errs[:4]}
         # Retour depuis un lien direct (pas d'historique) : doit rester dans l'application, sur un écran valide

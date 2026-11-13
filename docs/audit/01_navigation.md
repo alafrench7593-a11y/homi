@@ -42,9 +42,9 @@ correspondant (`e2e/journey_seed.py`), sinon la garde de parcours redirige (comp
 
 | Contrôle | Testés | OK | KO |
 |---|---|---|---|
-| Liens profonds, démo + Premium (chaque route par URL directe, puis « Retour ») | 230 | 230 | 0 après correction (N-02, N-03 corrigés) |
+| Liens profonds, démo + Premium (chaque route par URL directe, puis « Retour ») | 230 | 230 (dernier passage sur la base intégrée b6fc1ae + corrections) | 0 après correction (N-02, N-03, N-10) |
 | Liens profonds, sans Premium | 230 | 230 sans plantage : 41 écrans libres ouverts, 189 écrans Premium (attendu) | 0 (voir N-05) |
-| Outils ouverts depuis leur point d'entrée normal, puis « Retour » | 144 | voir `tools_entry.csv` | 0 après correction (N-01, N-04) |
+| Outils ouverts depuis leur point d'entrée normal, puis « Retour » | 144 | 143 (141 par leur carte d'onglet, 2 par la recherche) ; 1 non proposé dans la démo (`pp_bottle`, même adresse que `baby_bottle_timer`) | 0 après correction (N-01, N-04) |
 | Boutons et liens sans effet (21 écrans principaux, jusqu'à 40 contrôles chacun, actions destructrices exclues) | 21 écrans | — | 7 signalés : 4 attendus (N-08), 3 défauts faibles (N-09) |
 
 Aucun écran blanc, aucune page « introuvable » sur une adresse valide, aucune exception console ni écran d'erreur global
@@ -78,6 +78,13 @@ Aucun écran blanc, aucune page « introuvable » sur une adresse valide, aucune
 - **Cause** : `useOtherProfileTools` écartait **tous** les outils « universels » des autres profils, même quand le profil affiché ne les avait pas.
 - **Correction** : `pickOtherTools` (`src/lib/data/hooks-alltools.ts`) : un outil universel n'est écarté que si le profil affiché a le même outil. Effet aussi sur « Tous mes outils » et la recherche.
 - **Test** : `src/__tests__/otherProfileTools.test.ts` (garde-fou : tout outil d'un profil suivi est atteignable) ; E2E phase `tools`.
+
+### N-10 — Base intégrée (b6fc1ae) : tout lien direct ouvert à froid en démonstration renvoie vers `/welcome` (bloquant, corrigé)
+- **Étapes** : démo → recharger, puis ouvrir `/household` (ou `/settings`, `/`…) par URL directe.
+- **Attendu** : l'écran demandé. **Observé** : `/welcome` (ou `/intro` pour `/`) — 219 routes sur 230 au premier passage du robot sur la base intégrée.
+- **Cause** : `AuthProvider` branchait l'écoute de session sur le VRAI backend avant la reprise de la démonstration ; depuis l'attente de la relecture du cache (audit 2, `9ea0ccc`), cette écoute recevait aussitôt « aucune session » : prêt sans session → `SessionGuard` → `/welcome`.
+- **Correction** : `src/lib/auth.tsx` — l'écoute est branchée après `initBackendMode()`. Propriétaire d'origine : audit 2 (authentification), prévenu par ce rapport.
+- **Test** : `src/__tests__/authDeepLinkDemo.test.tsx` (échoue sans la correction) ; le robot signale désormais `session_perdue` (lien direct renvoyé vers `/welcome`/`/intro`).
 
 ### N-05 — Écran Premium verrouillé : pas de « Retour » (moyen, NON corrigé — propriétaire : Premium / paywall)
 - **Étapes** : sans Premium, ouvrir un écran réservé (lien direct, ou depuis Réglages un lien vers `/settings/reminders`).
