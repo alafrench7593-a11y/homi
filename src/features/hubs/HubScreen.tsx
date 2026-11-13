@@ -4,18 +4,23 @@
  * Suivi, Agenda) · favoris du hub · outils par thème (4 par thème, « Voir plus » pour le reste : pas de mur de
  * boutons) · outils des autres profils · communauté contextuelle · tous les outils.
  * Urgences en tête, sans animation.
+ *
+ * Mouvement (src/motion) : les sections apparaissent en cascade (`Cascade`, +45 ms par rang, plafond 360 ms) ;
+ * accès directs et rappel communauté s'élèvent avant d'ouvrir leur page (`LiftCard`) ; cartes d'outils : voir
+ * ToolCard. Réduire les animations / économie d'énergie : tout est en place d'emblée ; nuit : fondus courts.
  */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Appear } from '@/components/Appear';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
+import { Cascade, LiftCard } from '@/motion';
+import { Tappable } from '@/components/Tappable';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
 import { ToolCard, ToolShortcut } from '@/components/ToolCard';
 import { glyphColor, tint, ToolGlyph } from '@/components/ToolGlyph';
 import { ProfileSwitcher } from '@/components/Family';
-import { Tappable } from '@/components/Tappable';
 import { Button, Icon, Text } from '@/components/ui';
 import { useProfile } from '@/lib/data/hooks';
 import { useToolStatuses } from '@/lib/data/hooks-tools';
@@ -23,7 +28,7 @@ import { favoriteTools, statusKeyFor, THEME_TITLE, toggleFavorite, type CatalogT
 import { SPACE_FOR_SCOPE } from '@/lib/journeys/tools';
 import { useUiStore } from '@/lib/store';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
+import { lines, palette, radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { HUB_ENTRIES, hubGroups, hubTools, THEME_ICON, type HubKey } from './hubMap';
 import { ToolSearchButton, useAllToolEntries, useOpenEntry, type ToolEntry } from './ToolSearch';
@@ -31,8 +36,6 @@ import { ToolSearchButton, useAllToolEntries, useOpenEntry, type ToolEntry } fro
 const GAP = spacing.sm;
 const MAX_W = 1080;
 const PREVIEW = 4;
-/** Espace sous le contenu : barre d'onglets + bouton d'ajout rapide. */
-export const HUB_BOTTOM_INSET = 156;
 
 const TITLE: Record<HubKey, { title: TKey; sub: TKey }> = {
   health: { title: 'nav.hub.health.title', sub: 'nav.hub.health.sub' },
@@ -77,7 +80,7 @@ export function HubScreen({ hub }: { hub: HubKey }) {
   const space = SPACE_FOR_SCOPE[scope.scope];
 
   return (
-    <Screen account title={tr(TITLE[hub].title)} subtitle={tr(TITLE[hub].sub)} tool={false} bottomInset={HUB_BOTTOM_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
+    <Screen account title={tr(TITLE[hub].title)} subtitle={tr(TITLE[hub].sub)} tool={false} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
       <View onLayout={(e) => setMeasured(Math.floor(e.nativeEvent.layout.width))} style={{ height: 0, alignSelf: 'stretch', marginBottom: -spacing.md }} />
       <View testID={`hub-${hub}`} style={{ gap: spacing.md }}>
         {urgent.map((u) => <UrgentStrip key={u.id} tool={u} />)}
@@ -88,10 +91,11 @@ export function HubScreen({ hub }: { hub: HubKey }) {
         </View>
 
         {/* Accès directs : les pages des anciens onglets (Questions, Suivi, Agenda) */}
-        {HUB_ENTRIES[hub].map((e) => (
-          <Tappable key={e.href} testID={e.testID} accessibilityRole="button" accessibilityLabel={`${tr(e.title)}. ${tr(e.sub)}`} onPress={() => router.push(e.href as never)} pressScale={0.985}
-            style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 64, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.lg,
-              backgroundColor: pressed ? tint(t.colors.primary, 0.16) : tint(t.colors.primary, t.isDark ? 0.12 : 0.08), borderWidth: 1, borderColor: tint(t.colors.primary, 0.22) })}>
+        {HUB_ENTRIES[hub].map((e, i) => (
+          <Cascade key={e.href} index={1 + i}>
+          <LiftCard testID={e.testID} accessibilityLabel={`${tr(e.title)}. ${tr(e.sub)}`} onOpen={() => router.push(e.href as never)} radius={radius.lg} shadowColor={palette.night}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 64, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.lg,
+              backgroundColor: tint(t.colors.primary, t.isDark ? 0.12 : 0.08), borderWidth: 1, borderColor: tint(t.colors.primary, 0.22) }}>
             <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
               <Icon name={e.icon} size={20} color={t.colors.primaryText} />
             </View>
@@ -100,16 +104,17 @@ export function HubScreen({ hub }: { hub: HubKey }) {
               <Text variant="small" muted>{tr(e.sub)}</Text>
             </View>
             <Icon name="chevron-right" size={18} color={t.colors.primary} />
-          </Tappable>
+          </LiftCard>
+          </Cascade>
         ))}
 
         {favs.length ? (
-          <View style={{ gap: spacing.xs }}>
+          <Cascade index={2} style={{ gap: spacing.xs }}>
             <Text variant="heading" accessibilityRole="header">{tr('nav.hub.favs')}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }}>
               {favs.map((tool) => <ToolShortcut key={tool.id} tool={tool} status={statusOf(tool)} beforeOpen={() => onOpen(entry(tool))} />)}
             </ScrollView>
-          </View>
+          </Cascade>
         ) : null}
 
         {profileQ.isLoading && !profileQ.data ? <Skeleton kind="card" rows={3} /> : profileQ.isError && !profileQ.data ? (
@@ -119,7 +124,7 @@ export function HubScreen({ hub }: { hub: HubKey }) {
         ) : groups.map((g, gi) => {
           const more = g.items.length > PREVIEW && !open[g.theme];
           return (
-            <Appear key={g.theme} kind="soft" delay={0.05 + Math.min(gi, 6) * 0.05} style={{ gap: spacing.sm }}>
+            <Cascade key={g.theme} index={3 + gi} style={{ gap: spacing.sm }}>
               <SectionHead theme={g.theme} count={g.items.length} index={gi} />
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: GAP }}>
                 {(more ? g.items.slice(0, PREVIEW) : g.items).map((tool) => (
@@ -130,7 +135,7 @@ export function HubScreen({ hub }: { hub: HubKey }) {
                 <Button label={open[g.theme] ? tr('pj.tools.less') : tr('pj.tools.more', { count: g.items.length - PREVIEW })} variant="ghost" size="sm" icon={open[g.theme] ? 'chevron-up' : 'chevron-down'}
                   style={{ alignSelf: 'flex-start' }} testID={`hub-more-${g.theme}`} onPress={() => setOpen({ ...open, [g.theme]: !open[g.theme] })} />
               ) : null}
-            </Appear>
+            </Cascade>
           );
         })}
 
@@ -156,17 +161,17 @@ export function HubScreen({ hub }: { hub: HubKey }) {
         ) : null}
 
         {/* La communauté n'est jamais cachée : rappel contextuel (forum du profil affiché) */}
-        <Tappable testID={`hub-${hub}-community`} accessibilityRole="button" accessibilityLabel={`${tr('nav.hub.community')}. ${tr('nav.hub.communitySub')}`}
-          onPress={() => router.push((space ? `/community?space=${space}` : '/community') as never)} pressScale={0.985}
-          style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 64, padding: spacing.md, borderRadius: radius.lg,
-            backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border })}>
+        <LiftCard testID={`hub-${hub}-community`} accessibilityLabel={`${tr('nav.hub.community')}. ${tr('nav.hub.communitySub')}`}
+          onOpen={() => router.push((space ? `/community?space=${space}` : '/community') as never)} radius={radius.lg} shadowColor={palette.night}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 64, padding: spacing.md, borderRadius: radius.lg,
+            backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.isDark ? t.colors.border : lines.light.hairline }}>
           <Icon name="message-circle" size={22} color={t.colors.primary} />
           <View style={{ flex: 1, gap: 2 }}>
             <Text weight="bold">{tr('nav.hub.community')}</Text>
             <Text variant="small" muted>{tr('nav.hub.communitySub')}</Text>
           </View>
           <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
-        </Tappable>
+        </LiftCard>
 
         <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID={`hub-${hub}-all-tools`} />
       </View>

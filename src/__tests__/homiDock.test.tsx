@@ -17,6 +17,7 @@ import { AuthProvider } from '@/lib/auth';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 import { ToastProvider } from '@/components/Overlays';
 import { Dock } from '@/components/Dock';
+import { useDockAction } from '@/components/dockAction';
 import { setLocale } from '@/i18n';
 
 const ROUTES = ['index', 'health', 'baby', 'household', 'community', 'agenda', 'track', 'tools', 'ask', 'moi', 'profile'];
@@ -57,6 +58,26 @@ describe('Barre d’onglets HOMI', () => {
     expect(list.map((n) => !!n.props.accessibilityState?.selected)).toEqual([true, false, false, false, false]);
     expect(r.root.findAll((n) => n.props.testID === 'quick-add' && typeof n.type === 'string').length).toBeGreaterThan(0);
     expect(r.root.findAll((n) => typeof n.type === 'string' && n.props.accessibilityRole === 'tablist')).toHaveLength(1);
+    act(() => r.unmount());
+  });
+
+  it('un seul bouton d’action : l’écran Communauté remplace « + » par « Publier » (même place, même ligne)', async () => {
+    const onPublish = jest.fn();
+    function Publish() {
+      useDockAction('community', { icon: 'edit-3', label: 'Publier', testID: 'community-publish', onPress: onPublish });
+      return null;
+    }
+    const host = (n: { type: unknown; props: { testID?: string } }, id: string) => typeof n.type === 'string' && n.props.testID === id;
+    const r = await render(<><Publish /><Dock {...props('community')} /></>);
+    expect(r.root.findAll((n) => host(n, 'quick-add'))).toHaveLength(0);
+    const pub = r.root.findAll((n) => n.props.testID === 'community-publish' && typeof n.props.onPress === 'function')[0];
+    expect(pub.props.accessibilityLabel).toBe('Publier');
+    act(() => { pub.props.onPress(); });
+    expect(onPublish).toHaveBeenCalledTimes(1);
+    // ailleurs (Accueil), le « + » revient
+    await act(async () => { r.update(<QueryClientProvider client={new QueryClient()}><AuthProvider><ThemeProvider><ToastProvider><Publish /><Dock {...props('index')} /></ToastProvider></ThemeProvider></AuthProvider></QueryClientProvider>); });
+    expect(r.root.findAll((n) => host(n, 'quick-add')).length).toBeGreaterThan(0);
+    expect(r.root.findAll((n) => host(n, 'tab-indicator'))).toHaveLength(1);
     act(() => r.unmount());
   });
 

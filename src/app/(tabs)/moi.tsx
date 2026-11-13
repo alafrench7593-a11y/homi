@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { ErrorView, Skeleton } from '@/components/States';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, ListRow, Row, Segmented, SectionTitle, Text } from '@/components/ui';
@@ -33,7 +34,7 @@ export default function Moi() {
   const [space, setSpace] = useState<Space>(params.tab === 'account' ? 'account' : 'community');
   return (
     <View style={{ flex: 1 }}>
-      <Screen back account title={tr('cm3.moi.title')} bottomInset={96}>
+      <Screen back account title={tr('cm3.moi.title')} bottomInset={TAB_SCREEN_INSET}>
         <Segmented label={tr('cm3.moi.space')} value={space} onChange={setSpace} options={[{ value: 'community', label: tr('cm3.moi.spaceCommunity') }, { value: 'account', label: tr('cm3.moi.spaceAccount') }]} />
         {space === 'community' ? <MyCommunity /> : <PrivateAccount />}
       </Screen>

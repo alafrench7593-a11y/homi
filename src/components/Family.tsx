@@ -1,6 +1,6 @@
 /** Composants transverses : sélecteur de profil, bouton « Poser une question », accès premium, urgences. */
 import React, { useState } from 'react';
-import { Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -47,6 +47,7 @@ function Bubble({ label, active, onPress, testID, children, a11y }: { label: str
 
 export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubbles' } = {}) {
   const t = useTheme();
+  const { width: winW } = useWindowDimensions();
   const [open, setOpen] = useState(false);
   const { subject, setSubject } = useActiveSubject();
   const pregnancy = useActivePregnancy();
@@ -84,6 +85,8 @@ export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubb
   }
   const current = items.find((i) => i.active) ?? items[0];
   const others = items.filter((i) => i !== current).slice(0, 3);
+  // < 360 px : un seul avatar empilé derrière le profil affiché, pour laisser la place au nom
+  const narrow = winW < 360;
 
   const sheet = (
       <Sheet visible={open} onClose={() => setOpen(false)} title={tr('pj.switcher.title')}>
@@ -153,15 +156,16 @@ export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubb
         onPress={() => { haptic('selection'); setOpen(true); }}
         style={({ pressed }) => [styles.switcher, { backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderColor: t.colors.border }]}
       >
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', flexShrink: 0 }}>
           {current.avatar}
-          {others.map((o, i) => (
+          {others.slice(0, narrow ? 1 : 3).map((o, i) => (
             <View key={o.key} style={{ marginLeft: -12, zIndex: -i - 1, opacity: 0.9, borderWidth: 2, borderColor: t.colors.surface, borderRadius: 22 }}>{o.avatar}</View>
           ))}
         </View>
-        <View style={{ flex: 1 }}>
-          <Text weight="bold">{current.label}</Text>
-          <Text variant="caption" muted>{current.sub}</Text>
+        {/* Petit écran : le nom du profil tient sur une ligne (ellipse), jamais coupé en plein mot (« Ma gros-sesse ») */}
+        <View style={{ flex: 1, minWidth: 0 }}>
+          <Text weight="bold" numberOfLines={1}>{current.label}</Text>
+          <Text variant="caption" muted numberOfLines={2}>{current.sub}</Text>
         </View>
         <Icon name="chevron-down" size={18} color={t.colors.textMuted} />
       </Tappable>

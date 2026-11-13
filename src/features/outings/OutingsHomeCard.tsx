@@ -34,7 +34,7 @@ export function OutingsHomeCard() {
   const area = here ? tr('nb.aroundHere') : town ? town.label.replace(/\s*\d{5}.*$/, '') : null;
   return (
     <View style={{ borderRadius: 26, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border }} testID="home-outings">
-      <LinearGradient colors={t.isDark ? ['#2A2440', '#231E36'] : ['#FFF7EE', '#F3EEFB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: spacing.md, gap: spacing.sm }}>
+      <LinearGradient colors={t.isDark ? ['#2A2440', '#231E36'] : ['#F7F4FB', '#F3EEFB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: spacing.md, gap: spacing.sm }}>
         <Row style={{ alignItems: 'center' }}>
           <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: `${t.colors.lavender}33`, alignItems: 'center', justifyContent: 'center' }}><Icon name="map-pin" size={18} color={t.colors.lavender} /></View>
           <View style={{ flex: 1 }}>

@@ -4,7 +4,7 @@ import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 
 /** Étoiles discrètes qui scintillent lentement ; immobiles si « Réduire les animations » est activé. */
-export function StarField({ density = 36, color = '#F4E6C8' }: { density?: number; color?: string }) {
+export function StarField({ density = 36, color = '#F6EFE4' }: { density?: number; color?: string }) {
   const reduce = useReduceMotion();
   const stars = useMemo(
     () => Array.from({ length: density }, (_, i) => ({

@@ -116,8 +116,8 @@ describe('poses', () => {
     const e = elbow([0, 0], [100, 0], 10, 10);
     expect(Math.hypot(e.h[0], e.h[1])).toBeLessThanOrEqual(20); // main hors de portée : bras tendu, jamais allongé
   });
-  it('traits brun chaud le jour, tons bleu nuit et prune la nuit', () => {
-    expect(DAY_PALETTE.line).toBe('#7A5546');
+  it('traits encre violette HOMI le jour (plus de brun chaud), tons bleu nuit et prune la nuit', () => {
+    expect(DAY_PALETTE.line).toBe('#584D72');
     expect(poseSvg(poseFor(WOMAN_ALONE), NIGHT_PALETTE)).toContain(NIGHT_PALETTE.dress);
   });
 });

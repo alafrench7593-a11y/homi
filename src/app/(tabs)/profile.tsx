@@ -12,6 +12,7 @@ import { MoodSupportCard } from '@/features/mood/MoodSupportCard';
 import { ChildrenHealthSection, FamilyDocsSection, ForMeSection, MyDayCard, OrganizeSection } from '@/features/profileHub/ProfileHub';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Screen } from '@/components/Screen';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { Appear } from '@/components/Appear';
 import { MySubscriptionSection } from '@/features/subscription';
 import { ErrorView, Skeleton } from '@/components/States';
@@ -42,7 +43,7 @@ export default function Profile() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Screen back account bottomInset={96}>
+      <Screen back account bottomInset={TAB_SCREEN_INSET}>
         <Appear kind="scale" delay={0.06}>
           <Row style={{ marginTop: spacing.sm }}>
             {/* Photo de profil (07/11/2026) : un appui pour l'ajouter, la changer ou la supprimer */}

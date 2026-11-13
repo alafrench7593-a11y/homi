@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Linking, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { TodaySummary } from '@/components/MiniApp';
 import { ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem, usePop } from '@/components/Motion';
@@ -40,7 +41,7 @@ const longDay = (day: string) => formatDate(atLocal(day, 12), { weekday: 'long',
 
 type Draft = { id?: string; title: string; kind: EventKind; date: string; from: string; to: string; allDay: boolean; location: string; notes: string; recurrence: 'none' | 'daily' | 'weekly' | 'monthly'; until: string; childId: string | null };
 
-/** Agenda du foyer. `inTab` : affiché comme onglet de la barre du bas (pas de bouton retour, place pour la barre). */
+/** Agenda du foyer. `inTab` : affiché comme route d'onglet (/agenda) : bouton retour et place pour la barre du bas. */
 export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   const t = useTheme();
   const toast = useToast();
@@ -170,7 +171,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   );
 
   return (
-    <Screen back={!inTab} account bottomInset={inTab ? 96 : 0} title={tr('u3.cal.title')} subtitle={tr('u3.cal.subtitle')} right={<IconButton icon="plus" label={tr('u3.cal.newEvent')} onPress={() => openNew()} />}
+    <Screen back account bottomInset={inTab ? TAB_SCREEN_INSET : 0} title={tr('u3.cal.title')} subtitle={tr('u3.cal.subtitle')} right={<IconButton icon="plus" label={tr('u3.cal.newEvent')} onPress={() => openNew()} />}
       action={{ label: tr('u3.cal.addEvent'), icon: 'plus', onPress: () => openNew(), testID: 'calendar-add' }}>
       {(() => {
         const nextUp = todayItems.filter((x) => Date.parse(x.ends) >= Date.now()).sort((a, b) => (a.starts < b.starts ? -1 : 1))[0];

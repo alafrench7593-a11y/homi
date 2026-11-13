@@ -164,8 +164,8 @@ export default function DifficultNight() {
 
 function Box({ title, children, tone, testID }: { title: string; children: React.ReactNode; tone?: 'danger'; testID?: string }) {
   return (
-    <View testID={testID} style={{ backgroundColor: CARD, borderRadius: radius.lg, padding: spacing.md, gap: spacing.xs, borderWidth: 1, borderColor: tone === 'danger' ? '#B5566B' : LINE }}>
-      <Text weight="bold" color={tone === 'danger' ? '#F2A7B5' : TEXT}>{title}</Text>
+    <View testID={testID} style={{ backgroundColor: CARD, borderRadius: radius.lg, padding: spacing.md, gap: spacing.xs, borderWidth: 1, borderColor: tone === 'danger' ? 'rgba(240,160,170,0.55)' : LINE }}>
+      <Text weight="bold" color={tone === 'danger' ? '#F0A0AA' : TEXT}>{title}</Text>
       {children}
     </View>
   );

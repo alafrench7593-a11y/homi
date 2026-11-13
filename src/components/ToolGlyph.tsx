@@ -162,7 +162,7 @@ export function ToolGlyph({ id, theme, icon, size = 56, play = 0, hovered, press
 function NacreGlyph({ name, size, color, dark }: { name: string; size: number; color: string; dark: boolean }) {
   const icon = <MaterialCommunityIcons name={name as never} size={size} color={color} />;
   if (Platform.OS === 'web') return icon;
-  const colors = dark ? ['#F3D3A8', NACRE[0], NACRE[1]] as const : [NACRE[0], NACRE[1], NACRE[2]] as const;
+  const colors = dark ? ['#F6ECDA', NACRE[0], NACRE[1]] as const : [NACRE[0], NACRE[1], NACRE[2]] as const;
   return (
     <MaskedView maskElement={<View style={{ alignItems: 'center', justifyContent: 'center' }}>{icon}</View>} style={{ width: size, height: size }}>
       <NativeGradient colors={colors} start={{ x: 0.1, y: 0 }} end={{ x: 0.9, y: 1 }} style={{ width: size, height: size }} />

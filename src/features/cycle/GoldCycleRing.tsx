@@ -20,9 +20,9 @@ import { ambientDelay } from '@/theme/motion';
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const DAY = 86_400_000;
 const dn = (iso: string) => Math.floor(Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) / DAY);
-const NEON = '#F0CB9A';
-const NEON_CORE = '#FDE5C7';
-const NEON_HOT = '#FFF6DC';
+const NEON = '#E9CFA4'; // champagne HOMI
+const NEON_CORE = '#F6ECDA';
+const NEON_HOT = '#F7F4FB';
 const pd = (k: string, p?: Record<string, string | number>) => tr(k as TKey, p);
 
 export function GoldCycleRing({ data, size = 260 }: { data: RingData; size?: number }) {

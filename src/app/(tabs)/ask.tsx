@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { AssistantIntro } from '@/components/Assistant';
 import { Banner, Button, Card, Chip, Field, Icon, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -65,7 +66,7 @@ function PersonalSuggestions({ onAsk, disabled }: { onAsk: (q: string) => void; 
 
 export default function AskScreen() {
   // Assistant IA en ligne « Bientôt disponible » (src/config/features.ts) : le vrai écran reste intact ci-dessous
-  return aiAssistantOnline() ? <Ask /> : <AiComingSoonScreen />;
+  return aiAssistantOnline() ? <Ask /> : <AiComingSoonScreen inTab />;
 }
 
 function Ask() {
@@ -267,7 +268,7 @@ function Ask() {
             </View>
           );
         }}
-        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl + 96 }}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl + TAB_SCREEN_INSET }}
         showsVerticalScrollIndicator={false}
       />
     </Screen>

@@ -7,6 +7,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { Banner, Button, Card, Icon, Text } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
@@ -32,10 +33,11 @@ export function AiComingSoonCard() {
   );
 }
 
-export function AiComingSoonScreen({ back = false }: { back?: boolean }) {
+export function AiComingSoonScreen({ back = false, inTab = false }: { back?: boolean; inTab?: boolean }) {
   return (
-    // Dans l'onglet Questions (sans retour), réserver la place de la barre d'onglets comme les autres onglets
-    <Screen back={back} title={tr('pw.soon.screenTitle')} bottomInset={back ? 0 : 96}>
+    // Ancienne route d'onglet /ask (HOMI : hors de la barre, onglet Santé allumé) : retour, compte en haut à droite et
+    // place de la barre d'onglets, comme /track et /agenda
+    <Screen back={back || inTab} account={inTab} title={tr('pw.soon.screenTitle')} bottomInset={inTab ? TAB_SCREEN_INSET : 0}>
       <AiComingSoonCard />
       <Banner tone="info" icon="phone">{tr('pw.soon.urgent')}</Banner>
       <Button label={tr('pw.emergency')} icon="life-buoy" variant="ghost" onPress={() => router.push('/emergency')} testID="ai-soon-emergency" />

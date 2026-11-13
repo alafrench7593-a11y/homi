@@ -99,7 +99,7 @@ function ToastView({ msg, tone, onDone }: { msg: string; tone: ToastTone; onDone
     return () => { alive = false; intro.stop(); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const name = tone === 'success' ? 'check-circle' : tone === 'error' ? 'alert-circle' : 'info';
-  const accent = tone === 'error' ? '#F5A3A3' : '#F2DFC1';
+  const accent = tone === 'error' ? '#F5A3A3' : '#CDBEFA';
   return (
     <Animated.View
       accessibilityLiveRegion="polite"
@@ -113,7 +113,7 @@ function ToastView({ msg, tone, onDone }: { msg: string; tone: ToastTone; onDone
       <Animated.View style={{ transform: [{ scale: icon.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) }, { rotate: icon.interpolate({ inputRange: [0, 1], outputRange: [tone === 'error' ? '-25deg' : '-90deg', '0deg'] }) }] }}>
         <Icon name={name} size={18} color={accent} />
       </Animated.View>
-      <Text variant="small" color="#F7F1E8" style={{ flex: 1 }}>{msg}</Text>
+      <Text variant="small" color="#F7F4FB" style={{ flex: 1 }}>{msg}</Text>
       {/* Temps restant avant disparition */}
       <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 2, backgroundColor: accent, opacity: 0.6, transform: [{ scaleX: life.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }] }} />
     </Animated.View>

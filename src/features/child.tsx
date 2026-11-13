@@ -179,7 +179,7 @@ function QuickTile({ icon, label, onPress }: { icon: IconName; label: string; on
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={tr('u7.child.logKind', { kind: label })} onPress={onPress}
       style={{ flexGrow: 1, flexBasis: '30%', minWidth: 92, alignItems: 'center', gap: 6, paddingVertical: spacing.md, borderRadius: 20, borderWidth: 1,
-        borderColor: t.isDark ? 'rgba(205,190,250,0.2)' : 'rgba(172,139,93,0.28)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,250,246,0.7)' }}>
+        borderColor: t.isDark ? 'rgba(205,190,250,0.2)' : 'rgba(91,42,134,0.14)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.7)' }}>
       <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
         <Icon name={icon} size={18} color={t.colors.primaryText} />
       </View>

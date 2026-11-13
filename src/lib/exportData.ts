@@ -154,7 +154,7 @@ export function exportHtml(data: unknown, email: string | null): string {
   const parts: string[] = [];
   for (const [k, v] of Object.entries((data ?? {}) as Record<string, unknown>)) walk(k, v, parts);
   return `<!doctype html><html lang="${getLocale()}"><head><meta charset="utf-8"><title>${esc(tr('l5.exp.docTitle', { name: BRAND.name }))}</title>
-<style>body{font-family:-apple-system,Helvetica,Arial,sans-serif;color:#2A1A26;margin:24px;font-size:11px}h1{color:#C93A64;font-size:20px}h2{font-size:15px;margin-top:22px;border-bottom:1px solid #eee}h3{font-size:12.5px;margin:14px 0 4px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #e5dde2;padding:3px 5px;text-align:left;vertical-align:top}th{background:#FBF1F4}.muted{color:#7E6873;font-weight:normal}</style></head>
+<style>body{font-family:-apple-system,Helvetica,Arial,sans-serif;color:#1C1533;margin:24px;font-size:11px}h1{color:#5B2A86;font-size:20px}h2{font-size:15px;margin-top:22px;border-bottom:1px solid #eee}h3{font-size:12.5px;margin:14px 0 4px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #E4DAFB;padding:3px 5px;text-align:left;vertical-align:top}th{background:#F4F0FA}.muted{color:#584D72;font-weight:normal}</style></head>
 <body><h1>${esc(tr('l5.exp.h1', { name: BRAND.name }))}</h1><p class="muted">${esc(tr('l5.exp.meta', { email: email ?? '—', date: new Date().toLocaleString(localeTag()) }))}</p>${parts.join('')}</body></html>`;
 }
 

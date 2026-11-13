@@ -68,7 +68,7 @@ export default function NightsHelp() {
   return (
     <Screen back title={tr('u4.nh.title')} subtitle={`${name} · ${age.label}`}>
       <View testID="nights-help" />
-      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(122,95,184,0.10)', 'rgba(40,32,70,0.0)'] : ['#EEF0FB', '#FFF7EE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2400, borderRadius: 32 }} />
+      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(122,95,184,0.10)', 'rgba(40,32,70,0.0)'] : ['#EEF0FB', '#F4F0FA']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2400, borderRadius: 32 }} />
 
       <Row wrap>
         <Button label={tr('u4.nh.difficult')} icon="moon" onPress={() => router.push(`/sleep/difficult/${child.id}` as never)} testID="nh-difficult" />

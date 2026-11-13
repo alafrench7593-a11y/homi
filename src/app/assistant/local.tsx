@@ -177,7 +177,7 @@ export default function LocalAssistant() {
           <TextInput value={text} onChangeText={setText} placeholder={tr('u8.local.ph')} placeholderTextColor={t.colors.textMuted} multiline maxLength={300}
             onSubmitEditing={() => ask(text)} submitBehavior="blurAndSubmit" blurOnSubmit textAlignVertical="top" returnKeyType="send" testID="local-input" accessibilityLabel={tr('u8.local.yourQ')}
             style={{ flex: 1, minHeight: 48, maxHeight: 120, borderRadius: 24, paddingHorizontal: 18, paddingVertical: 12, color: t.colors.text, fontFamily: fonts.body, fontSize: 16,
-              backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.9)', borderWidth: 1, borderColor: t.isDark ? 'rgba(205,190,250,0.22)' : 'rgba(172,139,93,0.3)' }} />
+              backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.88)', borderWidth: 1, borderColor: t.isDark ? 'rgba(205,190,250,0.22)' : 'rgba(91,42,134,0.16)' }} />
           <IconButton icon="send" label={tr('u8.local.send')} tone="primary" onPress={() => ask(text)} disabled={!text.trim() || !index} />
         </View>
       )}>

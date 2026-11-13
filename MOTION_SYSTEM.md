@@ -67,6 +67,19 @@ goutte → allaitement · lune → sommeil · cercle → cycle · ventre → gro
 Méthode fiable : chaque forme est un contour fermé unique rééchantillonné à 72 points équidistants, sens horaire, départ au point situé au-dessus du centre ; interpolation point à point (pas de bibliothèque de chemins, pas de commandes incompatibles).
 Démonstration : **Réglages → Mon accueil** (`src/app/settings/home.tsx`), carte en tête : choisir un module transforme l'icône.
 
+## Branchements (13/11/2026)
+
+| Où | Primitive | Effet |
+|---|---|---|
+| Barre d'onglets (`components/Dock.tsx`) | `usePressScale` (0,9, sans haptique : la navigation a déjà la sienne) + pastille active en `translateX` (`m.spring(x, 'doux')`) | la pastille lilas glisse d'un onglet à l'autre ; première position posée sans animation ; fondu `standard` si aucun onglet n'est actif |
+| Bouton d'action de la barre (« + », Publier, Ajouter) | `usePressScale` (0,92) | enfoncement en ressort |
+| Cartes d'outils (`components/ToolCard.tsx`) | `usePressScale` (0,965) + `useCardLift` | enfoncement, puis élévation 140 ms avant l'ouverture (urgences : immédiat) ; survol web −3 px en `timing` |
+| Accès directs et rappel communauté des hubs | `LiftCard` | élévation avant navigation |
+| Sections des hubs (`features/hubs/HubScreen.tsx`) | `Cascade` (rangs 1…) | accès directs, favoris, puis chaque thème |
+| Cartes de l'accueil (`app/(tabs)/index.tsx`) | `Cascade` (rangs 0…) | profil, fil HOMI, cartes dans l'ordre choisi, « Tous les outils » |
+
+Tout passe par `useMotion` : `off` (Réduire les animations, économie d'énergie) → état final immédiat, `minimal` (nuit) → fondus courts sans déplacement ni élévation. Transform et opacité uniquement.
+
 ## Accessibilité
 
 - « Réduire les animations » (iOS, Android, `prefers-reduced-motion` web) **et** économie d'énergie → état final immédiat, jamais un écran vide ou à moitié apparu.
@@ -82,7 +95,7 @@ Jest : Reanimated tourne dans son implémentation JS officielle grâce au résol
 ## Inventaire `Animated` (React Native) restant — 53 fichiers hors tests
 
 - **Socle partagé (à migrer en premier, gain maximal)** : `components/ui.tsx`, `Motion.tsx`, `MotionKit.tsx`, `Appear.tsx`, `Tappable.tsx`, `Screen.tsx`, `Overlays.tsx`, `States.tsx`, `Glass.tsx`, `ToolCard.tsx`, `AccountActions.tsx`, `theme/motion.ts` (helpers `springTo`, `timeTo`, `shakeX`, `successPulse`).
-- **Navigation / coque** : `app/_layout.tsx`, `components/Dock.tsx`.
+- **Navigation / coque** : `app/_layout.tsx` (`components/Dock.tsx` migré le 13/11/2026, voir « Branchements »).
 - **Fonds et décors en boucle** (`Animated.loop`) : `Aurora.tsx`, `PowderSky.tsx`, `StarField.tsx`, `VideoBackdrop.tsx`, `DayClock.tsx`, `FetusArt.tsx`, `FetusOrb.tsx`, `ToolGlyph.tsx`, `features/motionViz.tsx`, `story/FamilyStoryArt.tsx`, `goldTimeline.tsx`, `pregnancyThread.tsx`, `dayThread.tsx`, `dayStrip/DayStrip.tsx`, `cycle/GuideArt.tsx`, `cycle/GoldCycleRing.tsx`, `cocoon/Cocoon.tsx`.
 - **Instruments et chronomètres** : `bottleClock.tsx`, `bottleDay.tsx`, `bottleInstrument.tsx`, `childCare.tsx`.
 - **Écrans et modules** : `app/intro.tsx`, `app/calendar.tsx`, `app/cycle/calendar.tsx`, `app/child/[id]/discoveries.tsx`, `cinematicIntro/CinematicIntro.tsx`, `Paywall.tsx`, `subscription.tsx`, `community.tsx`, `namesSwipe.tsx`, `familyLoad.tsx`, `postpartum.tsx`, `cycle/Bars.tsx`, `cycle/PainKit.tsx`, `cycle/kit.tsx`, `cycle3/CycleCalendar.tsx`, `cycle3/ui.tsx`, `Charts.tsx`, `GrowthChart.tsx`.
@@ -92,8 +105,8 @@ Jest : Reanimated tourne dans son implémentation JS officielle grâce au résol
 1. **Socle** : réécrire `usePressMotion`, `StaggerItem`, `usePop`, `Appear` sur `usePressScale` / `useCascade` en gardant leurs signatures → tous les écrans en profitent sans modification (coordonner avec les propriétaires de `ui.tsx`).
 2. **Décors en boucle** : passer sur `useMotion` (`off` et `minimal` → immobiles), puis `withRepeat` ; vérifier qu'aucun ne tourne près d'un chronomètre.
 3. **Instruments** (biberon, soins) : migrer en dernier, avec tests de non-régression des chronomètres ; aucune animation permanente pendant le suivi nocturne.
-4. **Transitions de carte** : brancher `LiftCard` / `DetailEnter` sur les cartes de modules de l'accueil (fichiers `(tabs)` réservés à un autre agent aujourd'hui).
-5. **Morphs** : à faire — utiliser `MorphIcon` dans le Dock et les en-têtes de module lors de la navigation entre modules (Dock réservé aujourd'hui), et icônes de module dédiées (`src/components/icons/**`, agent Iconographie).
+4. **Transitions de carte** : fait pour les cartes d'outils (`ToolCard`) et les accès directs des hubs ; reste : `DetailEnter` côté écran détail, cartes propres à chaque module de l'accueil.
+5. **Morphs** : à faire — utiliser `MorphIcon` dans les en-têtes de module lors de la navigation entre modules, et icônes de module dédiées (`src/components/icons/**`, agent Iconographie). Le Dock n'en utilise pas (icônes Feather, pastille glissante).
 6. **Gestes** : react-native-gesture-handler 3.3 est présent mais non déclaré ; à déclarer avant tout geste (glisser pour fermer, tri à la main).
 7. Une fois `Animated` absent de `src/`, retirer les helpers `Animated` de `theme/motion.ts` (garder les jetons).
 

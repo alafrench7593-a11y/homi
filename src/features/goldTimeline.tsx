@@ -55,7 +55,7 @@ export function GoldTimeline({ items, testID }: { items: GoldItem[]; testID?: st
   const t = useTheme();
   const gold = t.colors.gold;
   const accent = t.colors.primary;
-  const line = tint(t.isDark ? '#E5C190' : '#AC8B5D', 0.55);
+  const line = tint(t.isDark ? '#E9CFA4' : '#76561D', 0.55);
   return (
     <View testID={testID}>
       {items.map((it, i) => {

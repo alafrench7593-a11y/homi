@@ -83,14 +83,14 @@ export function OsmMap({ center, places, height = 320, onSelect, interactive = t
   const moved = !!view || zoom != null;
   return (
     <View onLayout={(e) => setW(Math.max(200, Math.round(e.nativeEvent.layout.width)))} testID="out-map" accessibilityLabel={tr('out.mapA11y')}
-      style={{ height, borderRadius: 24, overflow: 'hidden', backgroundColor: t.isDark ? '#2A2440' : '#F4EEE6', borderWidth: 1, borderColor: t.colors.border }}
+      style={{ height, borderRadius: 24, overflow: 'hidden', backgroundColor: t.isDark ? '#2A2440' : '#F4F0FA', borderWidth: 1, borderColor: t.colors.border }}
       {...pan.panHandlers}>
       {tiles.map((tile) => (
         <Image key={tile.key} source={{ uri: tile.url }} accessibilityIgnoresInvertColors testID="out-map-tile"
           style={{ position: 'absolute', left: tile.left, top: tile.top, width: TILE, height: TILE, opacity: t.isDark ? 0.62 : 0.9 }} />
       ))}
       {/* voile doux pour adoucir les couleurs du fond de carte */}
-      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: t.isDark ? 'rgba(35,30,54,0.25)' : 'rgba(255,247,238,0.18)' }} />
+      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: t.isDark ? 'rgba(35,30,54,0.25)' : 'rgba(247,244,251,0.18)' }} />
       <View pointerEvents="none" style={{ position: 'absolute', left: me.x - 7, top: me.y - 7, width: 14, height: 14, borderRadius: 7, borderWidth: 3, borderColor: '#FFFFFF', backgroundColor: '#7A5FB8' }} />
       {places.map((p) => {
         const pt = point(p);

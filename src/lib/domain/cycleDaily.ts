@@ -46,10 +46,13 @@ export const categoryOf = (pill: string): CategoryKey | null => CATEGORIES.find(
 export const PILL_ICON: Record<CategoryKey, string> = {
   period: 'droplet', pain: 'zap', mood: 'smile', body: 'activity', sleep: 'moon', fertility: 'sun', intimacy: 'heart', contraception: 'shield', habits: 'coffee', notes: 'edit-3',
 };
-/** Couleurs douces des catégories (encres déjà utilisées dans l'application). */
+/**
+ * Couleurs douces des catégories (HOMI, 13/11/2026 : framboise, ambre et champagne remplacent la terre cuite,
+ * le corail et le cuivre de l'ancienne marque). Encre ≥ 4,5:1 sur son fond (testé).
+ */
 export const CATEGORY_TINT: Record<CategoryKey, { bg: string; ink: string }> = {
-  period: { bg: '#FBE4DD', ink: '#B4533C' }, pain: { bg: '#FFEDEB', ink: '#C25145' }, mood: { bg: '#FFF3E6', ink: '#C27A2C' }, body: { bg: '#EAF7EC', ink: '#3C8C55' },
-  sleep: { bg: '#EEEAFF', ink: '#6A52D6' }, fertility: { bg: '#F1ECFF', ink: '#5E4CC2' }, intimacy: { bg: '#FBEAF5', ink: '#A6448A' }, contraception: { bg: '#E9F4FF', ink: '#3A78B5' },
+  period: { bg: '#F7E6EF', ink: '#A8346A' }, pain: { bg: '#F2EEF7', ink: '#8A5A0E' }, mood: { bg: '#F6ECDA', ink: '#76561D' }, body: { bg: '#EAF7EC', ink: '#3C8C55' },
+  sleep: { bg: '#EEEAFF', ink: '#6A52D6' }, fertility: { bg: '#F1ECFF', ink: '#5E4CC2' }, intimacy: { bg: '#F3E8F6', ink: '#8A3F9A' }, contraception: { bg: '#E9F4FF', ink: '#3A78B5' },
   habits: { bg: '#E6F6F4', ink: '#2A8A80' }, notes: { bg: '#EEF2F6', ink: '#5B6B7C' },
 };
 

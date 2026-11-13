@@ -10,9 +10,10 @@ import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { DOCK_HEIGHT } from '@/components/Dock';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
+import { useDockAction } from '@/components/dockAction';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
-import { Banner, Button, Card, Chip, Fab, Field, Icon, IconButton, Row, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, Icon, IconButton, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { CategorySheet, PostCard, spaceIcon } from '@/features/community';
 import { FeedTabs, FiltersButton, FiltersSheet, FollowButton, MemberRow } from '@/features/communitySocial';
@@ -104,6 +105,8 @@ export default function Community() {
   const waiting = useMemo(() => (mode === 'foryou' && !forumId && !searching && !filters ? recommendedDiscussions(feed.data ?? [], signals) : []), [mode, forumId, searching, filters, feed.data, signals]);
 
   const newPost = () => router.push(me ? { pathname: '/community/new', params: { forum: forumId ?? '' } } : { pathname: '/community/profile', params: { next: 'new' } });
+  // « Publier » prend la place du « + » dans la barre d'onglets : un seul bouton d'action, jamais sur le fil
+  useDockAction('community', { icon: 'edit-3', label: tr('cm1.feed.publish'), testID: 'community-publish', onPress: newPost });
   const primaryIds = new Set(spaces.primary.map((f) => f.id));
   const subscribed = !!current && subs.ids.includes(current.id);
 
@@ -238,13 +241,9 @@ export default function Community() {
         ListHeaderComponent={header}
         ListFooterComponent={footer}
         ListEmptyComponent={empty}
-        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl + 200, gap: spacing.sm }}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl + TAB_SCREEN_INSET, gap: spacing.sm }}
         showsVerticalScrollIndicator={false}
       />
-      {/* Au-dessus du bouton d'ajout rapide de la barre (HOMI) */}
-      <View pointerEvents="box-none" style={{ position: 'absolute', right: spacing.sm + 4, bottom: Math.max(insets.bottom, 10) + DOCK_HEIGHT + 74 }}>
-        <Fab icon="edit-3" label={tr('cm1.feed.publish')} onPress={newPost} />
-      </View>
       <CategorySheet visible={allOpen} onClose={() => setAllOpen(false)} forums={spaces.all} selected={forumId} onSelect={setForumId} />
       {filtersOpen ? <FiltersSheet visible={filtersOpen} onClose={() => setFiltersOpen(false)} forums={spaces.all} value={filters} onApply={setFilters} /> : null}
     </Screen>
