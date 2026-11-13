@@ -176,7 +176,7 @@ export default function Track() {
   const cycle = scope.scope === 'avoid' || scope.scope === 'ttc' || scope.scope === 'cycle';
   return (
     <View style={{ flex: 1 }}>
-      <Screen account title={tr('screen.track.title')} bottomInset={96}>
+      <Screen back account title={tr('screen.track.title')} bottomInset={156}>
         <ProfileSwitcher />
         {loading ? <Skeleton kind="card" rows={2} /> : failed ? (
           <ErrorView error={failed.error} onRetry={() => { void childrenQ.refetch(); void pregnanciesQ.refetch(); void journeysQ.refetch(); }} />

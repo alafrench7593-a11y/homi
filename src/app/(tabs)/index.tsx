@@ -44,6 +44,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, NACRE, previewTime, spacing } from '@/theme/tokens';
 import { AccountActions } from '@/components/AccountActions';
 import { Tappable } from '@/components/Tappable';
+import { ToolSearchButton } from '@/features/hubs/ToolSearch';
 
 /** Parcours historiques équivalents à la portée affichée (suggestion d'articles). */
 const LEGACY_FOR: Record<Scope, Journey[]> = {
@@ -145,7 +146,7 @@ export default function Home() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Screen bottomInset={childScope ? 156 : 96}>
+      <Screen bottomInset={156}>
         {/* En-tête */}
         {/* Ligne du haut : date à gauche ; aide, notifications, Réglages et Profil à droite. Salutation pleine largeur dessous. */}
         <View style={{ gap: 2, marginTop: spacing.xs }}>
@@ -163,6 +164,8 @@ export default function Home() {
           <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
           {subtitle && !childScope ? <Text variant="small" muted>{subtitle}</Text> : null}
         </View>
+        {/* HOMI : point d'entrée de la recherche universelle des outils (favoris et récents quand le champ est vide) */}
+        <ToolSearchButton testID="home-tool-search" />
 
         {/* 1. Parcours et profil actifs */}
         <Appear kind="soft" delay={0.1} style={{ gap: 4 }}>

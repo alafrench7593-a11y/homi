@@ -230,7 +230,7 @@ function Ask() {
   );
 
   return (
-    <Screen account scroll={false} padded={false} title={tr('screen.ask.title')} subtitle={tr('screen.ask.sub')}>
+    <Screen back account scroll={false} padded={false} title={tr('screen.ask.title')} subtitle={tr('screen.ask.sub')}>
       <VirtualList
         data={rows}
         keyExtractor={(c) => c.id}
