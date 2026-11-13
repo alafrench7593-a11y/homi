@@ -321,7 +321,7 @@ function SourceLink({ s }: { s: { label: string; url: string; published?: string
 
 // ---------------------------------------------------------------- fiche d'un aliment
 function FoodSheet({ food, child, age, entry, entries, tastings, recipes, premium, onClose, onDiscovered, onQuota }: {
-  food: FoodDef | null; entries: FoodEntry[]; child: { id: string; household_id: string; first_name: string }; age: number; entry?: FoodEntry; tastings: { id: string; food_key: string | null; tasted_on: string; status: string; texture: string | null; reaction: boolean }[];
+  food: FoodDef | null; entries: FoodEntry[]; child: { id: string; household_id: string; first_name: string; birth_date?: string | null }; age: number; entry?: FoodEntry; tastings: { id: string; food_key: string | null; tasted_on: string; status: string; texture: string | null; reaction: boolean }[];
   recipes: Recipe[]; premium: boolean; onClose: () => void; onDiscovered: (f: FoodDef) => void; onQuota: () => void;
 }) {
   const t = useTheme();
@@ -354,6 +354,8 @@ function FoodSheet({ food, child, age, entry, entries, tastings, recipes, premiu
     const iso = status === 'not_yet' ? null : frToISO(date);
     if (status !== 'not_yet' && !iso) return setErr(tr('dc.err.date'));
     if (iso && iso > todayISO()) return setErr(tr('dc.err.future'));
+    // Une dégustation ne peut pas précéder la naissance (date saisie à la main, ex. 01/01/2001)
+    if (iso && child.birth_date && iso < child.birth_date) return setErr(tr('u7.child.err.beforeBirth'));
     const wasNew = !entry || entry.status === 'not_yet';
     try {
       await save.mutateAsync({ child, food: { key: food!.key, name: food!.name }, existing: entry ?? null, status, date: iso, texture, preparation: prep, note: note.trim() || null, reaction, reactionNote: reaction ? (rxNote.trim() || null) : null, log: status !== 'not_yet' });
