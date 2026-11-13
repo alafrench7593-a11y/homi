@@ -4,7 +4,7 @@
  * au médecin ou à la sage-femme — et oser dire qu'elle ne convient plus. Aucune interprétation : seule la
  * consultation peut décider d'un changement de méthode.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -21,6 +21,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { exportTextFile } from '@/lib/exportData';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
 
 const EFFECTS = ['mood', 'bleeding', 'pain', 'libido', 'skin', 'weight', 'headache', 'nausea', 'other'] as const;
 type Effect = (typeof EFFECTS)[number];
@@ -33,19 +34,25 @@ export default function ContraceptionJournal() {
   const [effect, setEffect] = useState<Effect | null>(null);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
+  // Double appui sur « Noter » : le second appui (choix déjà remis à zéro) n'affiche pas « Choisissez d'abord… »
+  const { arm, guard } = useTapShield();
+  const sending = useRef(false);
   const rows = useMemo(() => (logsQ.data ?? []).filter((l) => l.kind === 'effect'), [logsQ.data]);
   const last30 = rows.filter((l) => Date.parse(l.logged_on) > Date.now() - 30 * 86400000);
   const label = (l: { label: string | null }) => (EFFECTS.includes(l.label as Effect) ? tr(`cj.effect.${l.label}` as TKey) : l.label ?? tr('cj.effect.other'));
 
   async function add() {
     if (!effect) return toast(tr('cj.pick'), 'info');
+    if (sending.current) return;
+    sending.current = true;
     setBusy(true);
     try {
       await backend.insert('contraception_logs', { user_id: userId, logged_on: todayISO(), kind: 'effect', label: effect, note: note.trim() || null });
       inv('contraception_logs');
+      arm();
       setEffect(null); setNote('');
       toast(tr('cj.saved'));
-    } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
+    } catch (e) { toast(friendlyError(e), 'error'); } finally { sending.current = false; setBusy(false); }
   }
   async function remove(id: string) {
     if (!(await confirm(tr('common.delete'), tr('cj.deleteQ'), tr('common.delete')))) return;
@@ -60,7 +67,7 @@ export default function ContraceptionJournal() {
 
   return (
     <Screen back title={tr('tool.contraception_journal')} subtitle={tr('tool.contraception_journal.sub')}
-      action={{ label: tr('cj.add'), icon: 'plus', onPress: () => void add(), testID: 'cj-save', disabled: busy }}>
+      action={{ label: tr('cj.add'), icon: 'plus', onPress: guard(() => void add()), testID: 'cj-save', disabled: busy }}>
       <Text muted>{tr('cj.intro')}</Text>
       <TodaySummary title={tr('cj.summary')} items={[
         { icon: 'edit-3', value: String(last30.length), label: tr('cj.last30') },
