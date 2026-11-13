@@ -33,9 +33,12 @@ const person = (cx, headY, headR, bodyW, bodyTop, bottom, legGap) => {
   const hip = bodyTop + (bottom - bodyTop) * 0.52;
   const rad = bodyW * 0.42;
   const g = legGap / 2;
+  const bodyD = `M${l} ${bodyTop + rad} Q${l} ${bodyTop} ${l + rad} ${bodyTop} L${r - rad} ${bodyTop} Q${r} ${bodyTop} ${r} ${bodyTop + rad} L${r} ${hip} Q${r} ${hip + 4} ${r - 3} ${hip + 4} L${r - 3} ${bottom - 3} Q${r - 3} ${bottom} ${r - 6} ${bottom} L${cx + g + 2} ${bottom} Q${cx + g} ${bottom} ${cx + g} ${bottom - 3} L${cx + g} ${hip + 10} L${cx - g} ${hip + 10} L${cx - g} ${bottom - 3} Q${cx - g} ${bottom} ${cx - g - 2} ${bottom} L${l + 6} ${bottom} Q${l + 3} ${bottom} ${l + 3} ${bottom - 3} L${l + 3} ${hip + 4} Q${l} ${hip + 4} ${l} ${hip} Z`;
   return {
     head: `<circle cx="${cx}" cy="${headY}" r="${headR}"/>`,
-    body: `<path d="M${l} ${bodyTop + rad} Q${l} ${bodyTop} ${l + rad} ${bodyTop} L${r - rad} ${bodyTop} Q${r} ${bodyTop} ${r} ${bodyTop + rad} L${r} ${hip} Q${r} ${hip + 4} ${r - 3} ${hip + 4} L${r - 3} ${bottom - 3} Q${r - 3} ${bottom} ${r - 6} ${bottom} L${cx + g + 2} ${bottom} Q${cx + g} ${bottom} ${cx + g} ${bottom - 3} L${cx + g} ${hip + 10} L${cx - g} ${hip + 10} L${cx - g} ${bottom - 3} Q${cx - g} ${bottom} ${cx - g - 2} ${bottom} L${l + 6} ${bottom} Q${l + 3} ${bottom} ${l + 3} ${bottom - 3} L${l + 3} ${hip + 4} Q${l} ${hip + 4} ${l} ${hip} Z"/>`,
+    body: `<path d="${bodyD}"/>`,
+    // Pièces détachées (animation du logo) : exactement les mêmes valeurs que le dessin ci-dessus
+    parts: { cx, headY, headR, bodyD, top: headY - headR, bottom },
   };
 };
 const FAMILY = [
@@ -44,6 +47,45 @@ const FAMILY = [
   person(113, 148, 12, 24, 166, 206, 4), // enfant
   person(143, 148, 12, 24, 166, 206, 4), // enfant
 ];
+const FAMILY_ROLES = ['parent', 'parent', 'child', 'child'];
+
+/** Longueur d'un tracé M/L/Q/Z (quadratiques échantillonnées) : sert au tracé progressif du contour (strokeDashoffset). */
+export function pathLength(d) {
+  const nums = (str) => str.trim().split(/[\s,]+/).filter(Boolean).map(Number);
+  let len = 0;
+  let x = 0;
+  let y = 0;
+  let sx = 0;
+  let sy = 0;
+  for (const [, cmd, args] of d.matchAll(/([MLQZ])([^MLQZ]*)/g)) {
+    const a = nums(args);
+    if (cmd === 'M') {
+      [x, y] = a;
+      sx = x;
+      sy = y;
+    } else if (cmd === 'L') {
+      len += Math.hypot(a[0] - x, a[1] - y);
+      [x, y] = a;
+    } else if (cmd === 'Q') {
+      let px = x;
+      let py = y;
+      for (let i = 1; i <= 64; i++) {
+        const t = i / 64;
+        const qx = (1 - t) ** 2 * x + 2 * (1 - t) * t * a[0] + t * t * a[2];
+        const qy = (1 - t) ** 2 * y + 2 * (1 - t) * t * a[1] + t * t * a[3];
+        len += Math.hypot(qx - px, qy - py);
+        px = qx;
+        py = qy;
+      }
+      [x, y] = [a[2], a[3]];
+    } else {
+      len += Math.hypot(sx - x, sy - y);
+      x = sx;
+      y = sy;
+    }
+  }
+  return Math.round(len * 100) / 100;
+}
 const familyShapes = () => FAMILY.map((p) => p.head + p.body).join('');
 
 const defs = `
@@ -88,6 +130,26 @@ ${bg}
 </svg>`;
 }
 
+/** Module TypeScript de l'application : marque complète + pièces détachées du même dessin pour l'animation de lancement. */
+export function markModule() {
+  const parts = FAMILY.map((p, i) => ({ role: FAMILY_ROLES[i], ...p.parts }));
+  return `/** Généré par scripts/homi/brand.mjs — ne pas modifier à la main. */
+export const HOMI_MARK_SVG = ${JSON.stringify(markSvg())};
+export const HOMI_MARK_MONO_SVG = ${JSON.stringify(monoSvg())};
+
+/** Pièces détachées du même dessin (carré de 256) : animation du logo (maison tracée puis illuminée, puis silhouettes). */
+export const HOMI_VIEWBOX = 256;
+export const HOMI_HOUSE_PATH = ${JSON.stringify(HOUSE)};
+/** Longueur du contour de la maison (unités du carré de 256) : strokeDasharray / strokeDashoffset. */
+export const HOMI_HOUSE_LENGTH = ${pathLength(HOUSE)};
+export const HOMI_HOUSE_STROKE = 9;
+export type HomiFigure = { role: 'parent' | 'child'; cx: number; headY: number; headR: number; bodyD: string; top: number; bottom: number };
+/** Ordre d'apparition : les deux parents, puis les deux enfants. */
+export const HOMI_FAMILY: readonly HomiFigure[] = ${JSON.stringify(parts)};
+export const HOMI_COLORS = ${JSON.stringify(COLORS)} as const;
+`;
+}
+
 const png = (svg, size, file) => sharp(Buffer.from(svg), { density: 384 }).resize(size, size).png().toFile(file);
 
 async function main() {
@@ -96,7 +158,7 @@ async function main() {
   fs.writeFileSync(path.join(OUT_BRAND, 'homi-mark-mono.svg'), monoSvg());
   fs.writeFileSync(path.join(OUT_BRAND, 'homi-app-icon.svg'), tileSvg());
   // Source unique pour l'application : mêmes tracés que les fichiers SVG
-  fs.writeFileSync(path.join(ROOT, 'src/brand/homiMarkSvg.ts'), `/** Généré par scripts/homi/brand.mjs — ne pas modifier à la main. */\nexport const HOMI_MARK_SVG = ${JSON.stringify(markSvg())};\nexport const HOMI_MARK_MONO_SVG = ${JSON.stringify(monoSvg())};\n`);
+  fs.writeFileSync(path.join(ROOT, 'src/brand/homiMarkSvg.ts'), markModule());
 
   await png(tileSvg(1024), 1024, path.join(OUT_ASSETS, 'icon.png'));
   await sharp(Buffer.from(tileSvg(1024)), { density: 384 }).resize(1024, 1024).flatten({ background: COLORS.midnight }).png().toFile(path.join(OUT_ASSETS, 'icon.png.tmp'));
