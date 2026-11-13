@@ -15,6 +15,7 @@ import { Tappable } from '@/components/Tappable';
 import { UserAvatar } from '@/components/UserAvatar';
 import { formatDate, formatTime, t as tr, type TKey } from '@/i18n';
 import { missionHref, STATE_LABEL, STATE_TONE } from '@/lib/domain/missions';
+import { GlowCard } from '@/components/GlowCard';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import type { TodayStatus, TodayTask } from './todayModel';
@@ -51,13 +52,15 @@ export function whenLabel(x: Pick<TodayTask, 'dueAt' | 'timed' | 'late'>): strin
 export const openTask = (x: Pick<TodayTask, 'id' | 'kind'>) => router.push((x.kind === 'mission' ? missionHref(x.id) : '/family') as never);
 
 /** Surface de la ligne mise en avant. Point de branchement du halo du design system (GlowCard). */
-export function TodayEmphasisSurface({ children, label, testID }: { children: React.ReactNode; label: string; testID?: string }) {
+export function TodayEmphasisSurface({ children, label, testID, success = false }: { children: React.ReactNode; label: string; testID?: string; success?: boolean }) {
   const t = useTheme();
+  // HOMI v2 (image 1) : la ligne « à faire maintenant » est le seul élément en halo de l'accueil ;
+  // le filet passe en couleur de succès au moment de la validation.
   return (
-    <Card tone="lavender" testID={testID} style={{ gap: spacing.xs, borderColor: t.colors.primary, borderWidth: 1.5 }}>
+    <GlowCard active emphasis={success ? 'success' : 'action'} testID={testID} contentStyle={{ gap: spacing.xs }}>
       <Text variant="caption" weight="bold" color={t.colors.primary} accessibilityRole="header">{label}</Text>
       {children}
-    </Card>
+    </GlowCard>
   );
 }
 
@@ -121,6 +124,6 @@ export function TodayTaskRow({ x, owner, emphasis, celebrate = false, busy, onCo
     </View>
   );
 
-  if (emphasis && (!x.done || celebrate)) return <TodayEmphasisSurface label={x.awaitsMe ? tr('ht.awaitsYou') : tr('ht.now')} testID="today-emphasis">{body}</TodayEmphasisSurface>;
+  if (emphasis && (!x.done || celebrate)) return <TodayEmphasisSurface label={x.awaitsMe ? tr('ht.awaitsYou') : tr('ht.now')} testID="today-emphasis" success={!!celebrate}>{body}</TodayEmphasisSurface>;
   return body;
 }
