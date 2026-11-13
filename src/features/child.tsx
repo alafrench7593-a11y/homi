@@ -47,6 +47,7 @@ import { CHILD_TABS, type ChildTab } from '@/lib/domain/childTabs';
 import { Tappable } from '@/components/Tappable';
 import { isBottleChild } from '@/lib/domain/bottleTimer';
 import { useUiStore } from '@/lib/store';
+import { toastSaved } from '@/features/saveOutcome';
 
 export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: ChildTab) => void }) {
   const t = useTheme();
@@ -267,12 +268,12 @@ export function GrowthTab({ child }: { child: Child }) {
     if (Object.keys(e).length) return;
     setSaving(true);
     try {
-      await insertOrQueue('child_measurements', { child_id: child.id, household_id: child.household_id, measured_on: iso, ...row, source, note: note.trim() || null });
+      const res = await insertOrQueue('child_measurements', { child_id: child.id, household_id: child.household_id, measured_on: iso, ...row, source, note: note.trim() || null });
       inv('child_measurements');
       setValues({ weight_kg: '', height_cm: '', head_cm: '' });
       setNote('');
       haptic('success');
-      toast(tr('u7.child.measureSaved'));
+      toastSaved(toast, res, tr('u7.child.measureSaved'));
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
@@ -416,10 +417,10 @@ export function MilestonesTab({ child }: { child: Child }) {
     if (Object.keys(e).length) return;
     setSaving(true);
     try {
-      await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind, title: title.trim(), happened_on: iso, note: note.trim() || null, domain });
+      const res = await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind, title: title.trim(), happened_on: iso, note: note.trim() || null, domain });
       inv('child_milestones');
       haptic('success');
-      toast(tr('u7.child.momentAdded'));
+      toastSaved(toast, res, tr('u7.child.momentAdded'));
       setOpen(false);
     } catch (err) {
       setErrors({ form: errorMessage(err) });
@@ -544,9 +545,9 @@ export function HealthTab({ child }: { child: Child }) {
     if (Object.keys(e).length) return;
     setSaving(true);
     try {
-      await insertOrQueue('child_health_items', { child_id: child.id, household_id: child.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: dueIso, done_on: null });
+      const res = await insertOrQueue('child_health_items', { child_id: child.id, household_id: child.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: dueIso, done_on: null });
       inv('child_health_items');
-      toast(tr('u7.child.added'));
+      toastSaved(toast, res, tr('u7.child.added'));
       setAdding(null);
     } catch (err) {
       setErrors({ form: errorMessage(err) });
@@ -687,12 +688,12 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
     if (Object.keys(e).length) return;
     setSaving(true);
     try {
-      await insertOrQueue('food_introductions', { child_id: child.id, household_id: child.household_id, food_name: food, first_tried_on: iso, reaction_note: reaction.trim() || null });
+      const res = await insertOrQueue('food_introductions', { child_id: child.id, household_id: child.household_id, food_name: food, first_tried_on: iso, reaction_note: reaction.trim() || null });
       inv('food_introductions');
       setName('');
       setReaction('');
       haptic('success');
-      toast(tr('u7.child.foodAdded', { food }));
+      toastSaved(toast, res, tr('u7.child.foodAdded', { food }));
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {

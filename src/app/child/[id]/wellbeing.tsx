@@ -2,7 +2,7 @@
  * Humeur et bien-être de l'enfant : un journal descriptif (pleurs, énergie, appétit, sommeil,
  * confort digestif, événements inhabituels). Aucune conclusion médicale à partir d'un comportement.
  */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -21,6 +21,8 @@ import { WELLBEING_SCALES } from '@/lib/domain/childCare';
 import { insertOrQueue } from '@/lib/offline';
 import { spacing } from '@/theme/tokens';
 import { localeTag, t as tr } from '@/i18n';
+import { toastSaved } from '@/features/saveOutcome';
+import { useTapShield } from '@/features/tapShield';
 
 type Scales = Partial<Record<(typeof WELLBEING_SCALES)[number]['key'], 1 | 2 | 3>>;
 interface Entry { id: string; at: string; mood: number | null; unusual_event: string | null; note: string | null; crying: number | null; irritability: number | null; energy: number | null; appetite: number | null; sleep: number | null; digestive_comfort: number | null }
@@ -47,26 +49,32 @@ export default function ChildWellbeing() {
   const th = useTheme();
 
   /** Un tap sur une humeur : enregistré tout de suite (les détails restent possibles ensuite). */
+  // Double appui sur une humeur : une seule note (l'état « saving » n'est pas encore à jour au second appui)
+  const sending = useRef(false);
+  const { arm, shielded } = useTapShield();
   async function quickMood(level: number) {
-    if (!child || saving) return;
+    if (!child || saving || sending.current || shielded()) return;
+    sending.current = true;
     setSaving(true);
     try {
-      await insertOrQueue('child_wellbeing', { child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), mood: level, unusual_event: null, note: null });
+      const res = await insertOrQueue('child_wellbeing', { child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), mood: level, unusual_event: null, note: null });
       inv('child_wellbeing');
       haptic('success');
-      toast(tr('u4.wb.noted', { mood: MOODS[level - 1].toLowerCase() }));
-    } catch (e) { toast(friendlyError(e), 'error'); } finally { setSaving(false); }
+      arm();
+      toastSaved(toast, res, tr('u4.wb.noted', { mood: MOODS[level - 1].toLowerCase() }));
+    } catch (e) { toast(friendlyError(e), 'error'); } finally { sending.current = false; setSaving(false); }
   }
 
   async function save() {
-    if (!child) return;
+    if (!child || sending.current || shielded()) return;
     if (!mood && !Object.keys(scales).length && !unusual.trim() && !note.trim()) return toast(tr('u4.wb.atLeast'), 'error');
     setSaving(true);
     try {
-      await insertOrQueue('child_wellbeing', { child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), mood, ...scales, unusual_event: unusual.trim() || null, note: note.trim() || null });
+      const res = await insertOrQueue('child_wellbeing', { child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), mood, ...scales, unusual_event: unusual.trim() || null, note: note.trim() || null });
       inv('child_wellbeing');
       haptic('success');
-      toast(tr('u4.wb.savedShort'));
+      arm();
+      toastSaved(toast, res, tr('u4.wb.savedShort'));
       setMood(null); setScales({}); setUnusual(''); setNote(''); setDetails(false);
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setSaving(false); }
   }

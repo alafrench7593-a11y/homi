@@ -22,6 +22,7 @@ import { insertOrQueue } from '@/lib/offline';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { toastSaved } from '@/features/saveOutcome';
 
 const SECTIONS: { kind: HealthItemKind; icon: 'alert-circle' | 'package' | 'phone' | 'heart' | 'info'; danger?: boolean }[] = [
   { kind: 'allergy', icon: 'alert-circle', danger: true },
@@ -54,10 +55,10 @@ export default function ChildCard() {
     if (!adding || !label.trim()) return toast(tr('kc.errLabel'), 'error');
     setSaving(true);
     try {
-      await insertOrQueue('child_health_items', { child_id: child!.id, household_id: child!.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: null, done_on: null });
+      const res = await insertOrQueue('child_health_items', { child_id: child!.id, household_id: child!.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: null, done_on: null });
       inv('child_health_items');
       setAdding(null); setLabel(''); setDetails('');
-      toast(tr('kc.added'));
+      toastSaved(toast, res, tr('kc.added'));
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setSaving(false); }
   }
   async function remove(i: HealthItem) {
