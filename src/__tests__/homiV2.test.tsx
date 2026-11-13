@@ -54,11 +54,14 @@ describe('préférences d’apparence', () => {
     expect(seen!.name).toBe('light');
     expect(seen!.colors.primary).toBe(PALETTES.aurore.ink[0]);
     await act(async () => { useUiStore.getState().setPalette('menthe'); });
+    // v3 : la palette est interpolée en 4 paliers (≈ 360 ms) — d'abord la couleur affichée, puis la nouvelle
+    expect(seen!.colors.primary).toBe(PALETTES.aurore.ink[0]);
+    await act(async () => { jest.advanceTimersByTime(400); });
     expect(seen!.colors.primary).toBe(PALETTES.menthe.ink[0]);
     await act(async () => { useUiStore.getState().setTheme('dark'); });
     expect(seen!.name).toBe('dark');
     expect(seen!.colors.primary).toBe(PALETTES.menthe.glow[0]);
-    expect(seen!.colors.background).toBe('#0D0E11');
+    expect(seen!.colors.background).toBe('#06090B');
   });
   it('Auto : palette de l’heure locale, aperçu d’un autre moment via skyOverride', async () => {
     await act(async () => { useUiStore.setState({ palettePreference: 'auto', skyOverride: 'dusk' }); });

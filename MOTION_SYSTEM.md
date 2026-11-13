@@ -3,6 +3,67 @@
 Nouveau code : **Reanimated 4.7.1** (`react-native-worklets` 0.13.0), primitives dans `src/motion/**`.
 Jetons partagés avec l'API `Animated` historique : `src/theme/motion.ts`.
 
+## v3 « désert sci-fi » (13/11/2026) — trois familles, quatre gestes signature
+
+| Famille | Bornes | Jeton | Exemples |
+|---|---|---|---|
+| Micro-interactions | 120–180 ms | `duration.micro` 150, ressorts `vif` / `rebondLeger` | pression (0,98 bouton, 0,92 orbe), coche, pastille, haptique |
+| Panneaux | 220–320 ms | `duration.panel` 280, ressort `panneau` (30 / 280 / 1, ζ ≈ 0,9) | panneau du bas (crans, fermeture), indicateur qui glisse (sélecteur, barre d'onglets), reflet de bouton 320 ms |
+| Scènes | 320–450 ms | `duration.scene` 400 | carte → détail (400 / retour 340), changement de palette (4 × 90 ms), fondu clair ↔ sombre du fond (400) |
+
+Tout est **interruptible** (ressorts et `withTiming` repartent de la valeur courante ; un nouveau choix de palette
+annule la transition en cours et repart de la couleur affichée ; une nouvelle ouverture de morph repart de la géométrie
+courante). **Réduire les animations / économie d'énergie** (`off`) : états finaux immédiats, ou fondus simples (fond de
+coque) ; **nuit** (`minimal`) : fondus courts, pas de parallaxe, pas de fantôme de morph.
+
+### Panneau du bas gestuel (`Sheet`, `src/components/Overlays.tsx`, API inchangée)
+
+- react-native-gesture-handler 3.3 (déclaré dans `package.json`) : `Gesture.Pan()` sur la poignée et l'en-tête,
+  `GestureHandlerRootView` dans la modale (et à la racine, `_layout.tsx`). Le panneau suit le doigt sur le fil UI ;
+  au-dessus du grand cran, résistance élastique (×0,18).
+- Crans (`sheetSnaps`, testé) : contenu court → un cran ; contenu haut (> 62 % de l'écran) → cran moyen (≈ 58 % visible)
+  + grand cran. Relâcher (`sheetRelease`, testé) : lancer > 900 px/s → cran suivant dans le sens du geste ; sinon le
+  plus proche ; au-delà de 40 % sous le plus petit cran, ou lancer vers le bas depuis ce cran → fermeture.
+- Pose : ressort `panneau` avec la vitesse du doigt. Fermeture : 280 ms `accelerate` — la MÊME pour le geste, le voile,
+  le bouton Fermer, le retour Android et `visible={false}` ; démontage via `scheduleOnRN` à la fin seulement.
+- Clavier : zone qui évite le clavier (KeyboardAvoidingView) + passage au grand cran à l'ouverture du clavier ; fermer
+  le panneau ferme le clavier ouvert par un de ses champs.
+- Lecteurs d'écran : poignée « réglable » (agrandir / réduire ou fermer) + bouton Fermer.
+- Tests : `src/__tests__/homiV3.test.tsx` (crans, relâcher) ; E2E `e2e/apparence_v3.py` (ouvrir, le panneau suit le
+  doigt, retour au cran, saisie au clavier, fermeture glissée / voile / bouton, Réduire les animations).
+
+### Morph carte → détail (`src/motion/Morph.tsx`) — pour l'agent « Accueil »
+
+```tsx
+// carte (source) — la surface s'agrandit vers l'écran détail
+<MorphSource id={`mission-${m.id}`} onOpen={() => router.push(`/family/missions/${m.id}`)} radius={radius.lg} tint={accent?} accessibilityLabel={…}>…</MorphSource>
+// ou sur une surface existante
+const src = useMorphSource(`mission-${m.id}`, { radius: radius.lg });
+<View ref={src.ref} collapsable={false}>…</View>  … onPress={() => src.open(() => router.push(…))}
+// écran détail — le contenu apparaît sous la surface ; au retour (démontage), la surface revient vers la carte
+<MorphTarget id={`mission-${id}`}>…</MorphTarget>
+```
+
+Un fantôme de surface mate (lumière interne de la palette ou `tint`) est animé par `<MorphHost />` (monté une fois au
+dessus de la navigation) : rectangle de la carte → plein écran en 400 ms `decelerate`, la navigation part dès la
+première image (rien n'attend), fondu 160 ms qui révèle le détail ; retour 340 ms vers le rectangle RE-MESURÉ de la
+carte (seulement pour l'élément réellement ouvert : `morphRegistry.lastOpened`). `off` : navigation immédiate, aucun
+fantôme ; `minimal` : fondu court du contenu. `DataTile morphId` l'utilise directement. `LiftCard` / `DetailEnter`
+restent disponibles (élévation sans fantôme).
+
+### Changement de palette
+
+`ThemeProvider` : un seul mélange de palettes alimente accents, sélections, confirmations, halo, reflets ET scène ;
+4 paliers × 90 ms (`PALETTE_TWEEN`), courbe « décélération ». L'Auto garde ses paliers de 5 min (pas de seconde
+transition). Fond : changement clair ↔ sombre par un voile qui s'efface en 400 ms (immédiat avec Réduire les
+animations). Chaque palier intermédiaire est lisible (contrast.test.ts, « changement de palette animé »).
+
+### Scène (`DesertScene`)
+
+Parallaxe légère : 4 plans (3 / 6 / 9 / 12 px), 22 s aller-retour en sinus, `withRepeat` sur le fil UI. Image fixe
+(`sceneAnimates`, testé) : `off`, `minimal`, application en arrière-plan (`AppState`), `active={false}` (hors écran),
+`still`. Annulée (`cancelAnimation`) dès qu'une de ces conditions apparaît.
+
 ## Principes
 
 1. **Calme et intentionnel.** Le mouvement explique (d'où vient un écran, ce qui vient de changer), il ne décore pas. Jamais d'agressivité, jamais d'attente imposée : l'action part tout de suite, l'animation suit.
@@ -35,7 +96,7 @@ Depuis un geste (fil UI) : `motionTiming(level, …)` / `motionSpring(level, …
 
 Courbes = worklets autonomes (solveur de Bézier), identiques iOS / Android / web / Jest.
 
-Durées (ms, `theme/motion.ts`) : `instant` 90 · `fast` 160 · `base` 240 · `screen` 280 · `slow` 380 · `entrance` 520.
+Durées (ms, `theme/motion.ts`) : `instant` 90 · `fast` 160 · `base` 240 · `screen` 280 · `slow` 380 · `entrance` 520 ; v3 : `micro` 150 · `panel` 280 · `scene` 400 (familles `durationFamilies`, testées).
 
 | Ressort | damping / stiffness / mass | ζ | Usage |
 |---|---|---|---|
@@ -53,7 +114,7 @@ Durées (ms, `theme/motion.ts`) : `instant` 90 · `fast` 160 · `base` 240 · `s
 | `AnimatedNumber` | compteur numérique | 700 ms `decelerate` ; natif : texte mis à jour sur le fil UI (TextInput non éditable) ; web : re-rendu seulement quand la chaîne change ; lecteurs d'écran : valeur finale uniquement ; chiffres tabulaires |
 | `MorphIcon` | icône de module morphable | 520 ms `decelerate` + souffle d'échelle 0,94 ; `minimal` : 160 ms sans souffle |
 | `LaunchIntro` (`src/components`) | lancement maison → silhouettes → accueil | voir ci-dessous |
-| `PressSheen` / `usePressSheen` (v2) | reflet bref qui glisse sur un bouton capsule à la pression (bouton principal, bouton d'action de la barre) | bande de lumière inclinée −18°, une traversée de 520 ms `decelerate`, opacité en sinus (0 au repos et à la fin) ; `off` et `minimal` : rien n'est rendu |
+| `PressSheen` / `usePressSheen` (v2) | reflet bref qui glisse sur un bouton capsule à la pression (bouton principal, bouton d'action de la barre) | bande de lumière inclinée −18°, une traversée de 320 ms `decelerate` (v3), opacité en sinus (0 au repos et à la fin) ; `off` et `minimal` : rien n'est rendu |
 | `GlowCard` (v2, `src/components`) | carte sélectionnée / action importante / validation | activation : halo 0 → 1 en ressort `doux` + échelle 0,97 → 1 ; filet en fondu 240 ms `standard` ; faisceau unique 720 ms `decelerate`. Repos : statique. `still` (listes) : aucun mouvement. `minimal` : fondu court, ni halo ni faisceau |
 | `CompletionCheck` + `CompletionGlow` (v2) | passage d'une tâche à « terminé » | disque 0,6 → 1 en `rebondLeger`, coche tracée 240 ms (`strokeDashoffset`, 80 ms après), anneau 520 ms, haptique « succès » ; halo de ligne 180 ms + 720 ms ; décocher : fondu 200 ms. `off` : état final immédiat ; `minimal` : fondus seuls |
 | `Sheet` (v2, `components/Overlays.tsx`) | panneau du bas | ouverture : ressort `doux` (interruptible, repart de la position courante) ; fermeture : 240 ms `accelerate`, démontage via `scheduleOnRN` |
@@ -71,7 +132,7 @@ goutte → allaitement · lune → sommeil · cercle → cycle · ventre → gro
 Méthode fiable : chaque forme est un contour fermé unique rééchantillonné à 72 points équidistants, sens horaire, départ au point situé au-dessus du centre ; interpolation point à point (pas de bibliothèque de chemins, pas de commandes incompatibles).
 Démonstration : **Réglages → Mon accueil** (`src/app/settings/home.tsx`), carte en tête : choisir un module transforme l'icône.
 
-## Branchements (13/11/2026, complétés par la v2 « Lumière sur graphite »)
+## Branchements (13/11/2026, complétés par la v2 puis la v3)
 
 | Où | Primitive | Effet |
 |---|---|---|
@@ -84,7 +145,10 @@ Démonstration : **Réglages → Mon accueil** (`src/app/settings/home.tsx`), ca
 | Bouton principal (`ui.tsx` `Button variant="primary"`) | `PressSheen` | reflet qui glisse à chaque appui (en plus de l'enfoncement existant) |
 | Bouton d'action de la barre (`Dock.tsx`) | `usePressScale` + `PressSheen` | enfoncement + reflet |
 | `Card selected` / `Card emphasis` (`ui.tsx`) | `GlowCard` | halo qui grandit, filet, faisceau unique |
-| Feuilles du bas (`Overlays.tsx` `Sheet`) | `useMotion` (`spring 'doux'`, `timing 'accelerate'`) | migré d'`Animated` vers Reanimated |
+| Feuilles du bas (`Overlays.tsx` `Sheet`) | gesture-handler + `useMotion` (`springs.panneau`, `timing 'accelerate'`) | v3 : gestuel (voir plus haut) |
+| Barre d'onglets (v3) | ressort `panneau` | indicateur de verre teinté qui glisse |
+| Sélecteurs (`ChoiceGroup`, `Segmented`) | ressort `panneau` | indicateur qui glisse ; orbes qui grandissent / se resserrent |
+| Fond de coque (`DesertScene`) | `withRepeat` + `cancelAnimation` | parallaxe légère, image fixe sinon |
 | Réglages → Apparence (`app/settings/appearance.tsx`) | `GlowCard` (sélecteur, `role="radio"`), `CompletionCheck`, `CompletionGlow`, `PressSheen` | démonstration vivante ; palette Auto : couleurs interpolées par paliers de 5 min (pas d'animation, voir `HOMI_DESIGN_SYSTEM.md`) |
 
 Tout passe par `useMotion` : `off` (Réduire les animations, économie d'énergie) → état final immédiat, `minimal` (nuit) → fondus courts sans déplacement ni élévation. Transform et opacité uniquement.
@@ -109,7 +173,7 @@ Jest : Reanimated tourne dans son implémentation JS officielle grâce au résol
 
 - **Socle partagé (à migrer en premier, gain maximal)** : `components/ui.tsx` (le reflet du bouton principal est déjà en Reanimated), `Motion.tsx`, `MotionKit.tsx`, `Appear.tsx`, `Tappable.tsx`, `Screen.tsx`, `Overlays.tsx` (toasts ; la feuille `Sheet` est migrée), `States.tsx`, `Glass.tsx` (reflet au curseur), `ToolCard.tsx`, `AccountActions.tsx`, `theme/motion.ts` (helpers `springTo`, `timeTo`, `shakeX`, `successPulse`).
 - **Navigation / coque** : `app/_layout.tsx` (`components/Dock.tsx` migré le 13/11/2026, voir « Branchements »).
-- **Fonds et décors en boucle** (`Animated.loop`) : `Aurora.tsx`, `PowderSky.tsx`, `StarField.tsx`, `VideoBackdrop.tsx`, `DayClock.tsx`, `FetusArt.tsx`, `FetusOrb.tsx`, `ToolGlyph.tsx`, `features/motionViz.tsx`, `story/FamilyStoryArt.tsx`, `goldTimeline.tsx`, `pregnancyThread.tsx`, `dayThread.tsx`, `dayStrip/DayStrip.tsx`, `cycle/GuideArt.tsx`, `cycle/GoldCycleRing.tsx`, `cocoon/Cocoon.tsx`.
+- **Fonds et décors en boucle** (`Animated.loop`) : `Aurora.tsx` (`PowderSky.tsx` et `StarField.tsx` : retirés en v3), `VideoBackdrop.tsx`, `DayClock.tsx`, `FetusArt.tsx`, `FetusOrb.tsx`, `ToolGlyph.tsx`, `features/motionViz.tsx`, `story/FamilyStoryArt.tsx`, `goldTimeline.tsx`, `pregnancyThread.tsx`, `dayThread.tsx`, `dayStrip/DayStrip.tsx`, `cycle/GuideArt.tsx`, `cycle/GoldCycleRing.tsx`, `cocoon/Cocoon.tsx`.
 - **Instruments et chronomètres** : `bottleClock.tsx`, `bottleDay.tsx`, `bottleInstrument.tsx`, `childCare.tsx`.
 - **Écrans et modules** : `app/intro.tsx`, `app/calendar.tsx`, `app/cycle/calendar.tsx`, `app/child/[id]/discoveries.tsx`, `Paywall.tsx`, `subscription.tsx`, `community.tsx`, `namesSwipe.tsx`, `familyLoad.tsx`, `postpartum.tsx`, `cycle/Bars.tsx`, `cycle/PainKit.tsx`, `cycle/kit.tsx`, `cycle3/CycleCalendar.tsx`, `cycle3/ui.tsx`, `Charts.tsx`, `GrowthChart.tsx`.
 
@@ -120,7 +184,7 @@ Jest : Reanimated tourne dans son implémentation JS officielle grâce au résol
 3. **Instruments** (biberon, soins) : migrer en dernier, avec tests de non-régression des chronomètres ; aucune animation permanente pendant le suivi nocturne.
 4. **Transitions de carte** : fait pour les cartes d'outils (`ToolCard`) et les accès directs des hubs ; reste : `DetailEnter` côté écran détail, cartes propres à chaque module de l'accueil.
 5. **Morphs** : à faire — utiliser `MorphIcon` dans les en-têtes de module lors de la navigation entre modules, et icônes de module dédiées (`src/components/icons/**`, agent Iconographie). Le Dock n'en utilise pas (icônes Feather, pastille glissante).
-6. **Gestes** : react-native-gesture-handler 3.3 est présent mais non déclaré ; à déclarer avant tout geste (glisser pour fermer, tri à la main).
+6. **Gestes** : react-native-gesture-handler 3.3 est déclaré (v3) et utilisé par le panneau du bas ; prochains : tri à la main, glisser une ligne de tâche.
 7. Une fois `Animated` absent de `src/`, retirer les helpers `Animated` de `theme/motion.ts` (garder les jetons).
 
 ## Non vérifié

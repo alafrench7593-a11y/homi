@@ -1,7 +1,7 @@
 /**
  * Design system HOMI (DESIGN_SYSTEM.md) : chaque surface de verre, teinte de carte, bandeau, bouton et pastille
  * garde un texte ≥ 4,5:1 (WCAG AA), mesuré après mélange avec TOUT ce qui peut se trouver dessous (fond et les trois
- * arrêts du dégradé de page). Les ombres sont graphite (v2), jamais noir pur. Palette par défaut (Aurore) ; les quatre palettes sont couvertes par contrast.test.ts.
+ * arrêts du dégradé de page). Les ombres sont sable / obsidienne (v3), jamais noir pur. Palette par défaut (Turquoise) ; les cinq palettes, la scène et les trois matières sont couvertes par contrast.test.ts.
  */
 import { bannerColors, cardTint, glass, linesFor, physicalShadow, primaryGradient as PRIMARY_GRADIENT, SHADOW_INK, themes, tintedShadow, type ThemeName } from '@/theme/tokens';
 import { contrastRatio, over, parseColor, stack, type RGB } from '@/theme/contrast';
@@ -29,11 +29,14 @@ describe.each(NAMES)('verre lisible — thème %s', (name) => {
   it('le niveau « raised » est exactement la surface de carte du thème (aucune couleur verrouillée modifiée)', () => {
     expect(glass[name].raised.fill).toBe(c.surface);
   });
-  it('les surfaces montent en opacité avec l’élévation (inset ≤ raised ≤ floating)', () => {
+  it('v3 : creux translucide, carte MATE opaque (pas de verre pour le contenu), panneau flottant en verre givré / fumé', () => {
     const a = (s: string) => parseColor(s).a;
     if (name === 'night') return; // nuit : surfaces opaques
-    expect(a(glass[name].inset.fill)).toBeLessThanOrEqual(a(glass[name].raised.fill));
-    expect(a(glass[name].floating.fill)).toBeGreaterThan(a(glass[name].raised.fill));
+    expect(a(glass[name].raised.fill)).toBe(1);
+    expect(a(glass[name].inset.fill)).toBeLessThan(a(glass[name].floating.fill));
+    expect(a(glass[name].floating.fill)).toBeLessThan(1);
+    expect(glass[name].floating.blur).toBeGreaterThan(0);
+    expect(glass[name].raised.blur).toBe(0);
   });
   it('mode nuit : ni flou ni ombre', () => {
     if (name !== 'night') return;
@@ -85,7 +88,7 @@ describe.each(NAMES)('boutons et pastilles — thème %s', (name) => {
 });
 
 describe('ombres physiques', () => {
-  it('jamais de noir pur ; encre graphite chaude en clair (v2)', () => {
+  it('jamais de noir pur ; encre sable chaude en clair (v3)', () => {
     for (const dark of [false, true]) {
       const layers = [...physicalShadow('low', dark), ...physicalShadow('mid', dark), ...physicalShadow('high', dark), ...tintedShadow(themes.light.material.accentRgb, dark)];
       for (const l of layers) expect(l.color.startsWith('rgba(0,0,0')).toBe(false);

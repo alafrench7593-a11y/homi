@@ -1,6 +1,6 @@
 /** Feuille modale, notifications éphémères (toasts) et confirmation. */
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Easing, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Animated, Easing, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor } from './keyboard';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,67 +8,179 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing, themes } from '@/theme/tokens';
 import { Button, Icon, IconButton, Text } from './ui';
 import { LiquidGlass } from './Glass';
-import ReAnimated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import ReAnimated, { cancelAnimation, ReduceMotion, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
-import { useMotion } from '@/motion/useMotion';
+import { motionTiming, useMotion } from '@/motion/useMotion';
+import { durations, springs } from '@/motion/curves';
 import { duration, easing, spring as SPRING, springTo, timeTo } from '@/theme/motion';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
 
 /**
- * Panneau du bas (v2 « Liquid Glass ») : verre teinté de la palette, arête claire, ombre colorée douce.
- * Ouverture en ressort « doux » (Reanimated, depuis la position courante : interruptible), fermeture 240 ms
- * `accelerate`. Réduire les animations / économie d'énergie : apparition immédiate ; nuit : fondu court.
+ * Crans du panneau du bas (logique pure, testée). `y` = décalage vers le bas du panneau (0 = grand cran, ouvert au
+ * maximum) ; `h` = hauteur du panneau ; `screenH` = hauteur de l'écran.
+ *  - un panneau haut (> 62 % de l'écran) a DEUX crans : moyen (≈ 58 % de l'écran visible) et grand (tout le panneau) ;
+ *  - un panneau court n'a qu'un cran (tout le panneau) ;
+ *  - relâcher : un lancer rapide (|v| > 900 px/s) va dans le sens du lancer ; sinon, cran le plus proche ;
+ *    au-delà de 40 % de la hauteur visible sous le plus petit cran (ou lancer vers le bas depuis ce cran) : fermeture.
+ */
+export const SHEET = { mediumRatio: 0.58, tallRatio: 0.62, flingVelocity: 900, closeRatio: 0.4, rubber: 0.18 } as const;
+export function sheetSnaps(h: number, screenH: number): number[] {
+  'worklet';
+  if (h <= 0) return [0];
+  if (h > screenH * SHEET.tallRatio) return [0, Math.max(0, h - screenH * SHEET.mediumRatio)];
+  return [0];
+}
+export function sheetRelease(o: { y: number; vy: number; snaps: number[]; h: number }): { close: boolean; to: number } {
+  'worklet';
+  const { y, vy, snaps, h } = o;
+  const lowest = snaps[snaps.length - 1];
+  if (y > lowest + (h - lowest) * SHEET.closeRatio || (vy > SHEET.flingVelocity && y >= lowest - 4)) return { close: true, to: h };
+  if (Math.abs(vy) > SHEET.flingVelocity) {
+    // lancer : cran suivant dans le sens du geste (au moins 24 px plus loin, sinon on resterait sur place)
+    const ahead = vy > 0 ? snaps.filter((s) => s > y + 24) : snaps.filter((s) => s < y - 24);
+    if (ahead.length) return { close: false, to: vy > 0 ? Math.min(...ahead) : Math.max(...ahead) };
+  }
+  let best = snaps[0];
+  for (const s of snaps) if (Math.abs(s - y) < Math.abs(best - y)) best = s;
+  return { close: false, to: best };
+}
+
+/**
+ * Panneau du bas GESTUEL (v3, verre fumé / givré) — même API qu'avant : `{ visible, onClose, title, children }`.
+ *  - suit le doigt (react-native-gesture-handler 3.3 + Reanimated, fil UI) depuis la poignée et l'en-tête ;
+ *    au-dessus du grand cran : résistance élastique ;
+ *  - crans de hauteur (`sheetSnaps`) : moyen + grand pour un contenu haut, un seul cran sinon ;
+ *  - fermeture cohérente : même animation (famille « panneau », 280 ms `accelerate`) pour le geste, le voile, le
+ *    bouton Fermer, la touche retour Android et `visible={false}` ;
+ *  - clavier : la zone évite le clavier (KeyboardAvoidingView) et le panneau passe au grand cran tant qu'il est
+ *    ouvert, pour garder le champ actif visible ; fermer le panneau ferme le clavier ouvert par un de ses champs ;
+ *  - lecteurs d'écran : la poignée est un réglable (« agrandir » / « réduire ou fermer »), le bouton Fermer reste ;
+ *  - Réduire les animations / économie d'énergie : positions finales immédiates (le geste suit toujours le doigt).
  */
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  const { height: screenH } = useWindowDimensions();
   const m = useMotion();
   const [mounted, setMounted] = useState(visible);
-  const p = useSharedValue(0);
-  useEffect(() => () => cancelAnimation(p), [p]);
-  const backdropStyle = useAnimatedStyle(() => ({ opacity: Math.min(1, Math.max(0, p.value)) }));
-  const sheetStyle = useAnimatedStyle(() => ({ transform: [{ translateY: (1 - p.value) * 420 }] }));
+  const H0 = 420;
+  const h = useSharedValue(H0);
+  const y = useSharedValue(H0);
+  const y0 = useSharedValue(0);
+  const snapsSv = useSharedValue<number[]>([0]);
+  const level = useSharedValue(m.level);
+  useEffect(() => { level.value = m.level; }, [m.level, level]);
+  useEffect(() => () => cancelAnimation(y), [y]);
+  const backdropStyle = useAnimatedStyle(() => ({ opacity: Math.min(1, Math.max(0, 1 - y.value / Math.max(1, h.value))) }));
+  const sheetStyle = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }] }));
   // Clavier : le champ actif reste visible dans la feuille ; fermer la feuille ferme le clavier ouvert par un de ses champs
   const scrollRef = useRef<ScrollView>(null);
   const { scope: keyboardScope, onScroll } = useKeyboardScopeFor(scrollRef);
   useEffect(() => {
     if (!visible) keyboardScope.dismissIfOwned();
   }, [visible, keyboardScope]);
+  const settle = (to: number, vy = 0) => {
+    'worklet';
+    if (level.value === 'full') y.value = withSpring(to, { ...springs.panneau, velocity: vy, reduceMotion: ReduceMotion.Never });
+    else y.value = motionTiming(level.value, to, durations.panel, 'standard');
+  };
+  const closeAnim = () => {
+    'worklet';
+    const unmount = () => setMounted(false);
+    y.value = motionTiming(level.value, h.value + 24, durations.panel, 'accelerate', (finished) => {
+      'worklet';
+      if (finished) scheduleOnRN(unmount);
+    });
+  };
+  const opened = useRef(false);
   useEffect(() => {
     if (visible) {
       setMounted(true);
-      p.value = m.spring(1, 'doux');
+      opened.current = false;
     } else if (mounted) {
-      const unmount = () => setMounted(false);
-      p.value = m.timing(0, duration.base, 'accelerate', (finished) => {
-        'worklet';
-        if (finished) scheduleOnRN(unmount);
-      });
+      closeAnim();
     }
-  }, [visible, m.level]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Première mesure : on part de « fermé » et on se pose sur le plus petit cran
+  const onLayout = (e: { nativeEvent: { layout: { height: number } } }) => {
+    const hh = Math.round(e.nativeEvent.layout.height);
+    if (hh <= 0) return;
+    const snaps = sheetSnaps(hh, screenH);
+    h.value = hh;
+    snapsSv.value = snaps;
+    if (!opened.current && visible) {
+      opened.current = true;
+      y.value = hh + 24;
+      settle(snaps[snaps.length - 1]);
+    }
+  };
+  // Clavier ouvert : grand cran
+  useEffect(() => {
+    if (!visible) return;
+    const sub = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => settle(0));
+    return () => sub.remove();
+  }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
+  const requestClose = () => onClose();
+  const pan = Gesture.Pan()
+    .activeOffsetY([-6, 6])
+    .onStart(() => { cancelAnimation(y); y0.value = y.value; })
+    .onUpdate((e) => {
+      const next = y0.value + e.translationY;
+      // au-dessus du grand cran : résistance élastique
+      y.value = next < 0 ? next * SHEET.rubber : next;
+    })
+    .onEnd((e) => {
+      const r = sheetRelease({ y: y.value, vy: e.velocityY, snaps: snapsSv.value, h: h.value });
+      if (r.close) { closeAnim(); scheduleOnRN(requestClose); } else settle(r.to, e.velocityY);
+    });
   if (!mounted) return null;
+  const expand = () => { y.value = motionTiming(m.level, 0, durations.panel, 'standard'); };
+  const collapse = () => {
+    const snaps = snapsSv.value;
+    const lowest = snaps[snaps.length - 1];
+    if (y.value > lowest + 1 || snaps.length === 1) onClose();
+    else y.value = motionTiming(m.level, lowest, durations.panel, 'standard');
+  };
   return (
     <Modal visible transparent animationType="none" onRequestClose={onClose} accessibilityViewIsModal>
-      <ReAnimated.View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }, backdropStyle]}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={tr('common.close')} accessibilityRole="button" />
-      </ReAnimated.View>
-      {/* La feuille remonte au-dessus du clavier (iOS et Android) et ne passe jamais sous la barre d'état */}
-      <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} pointerEvents="box-none" style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', paddingTop: insets.top + spacing.sm }]}>
-      <ReAnimated.View style={[styles.sheet, styles.sheetInFlow, sheetStyle]}>
-        <LiquidGlass testID="sheet-panel" edges="top" radius={radius.xl} style={{ maxHeight: '100%', flexShrink: 1 }} contentStyle={{ paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
-          <View style={[styles.grabber, { backgroundColor: t.isDark ? 'rgba(255,255,255,0.22)' : 'rgba(28,27,32,0.16)' }]} />
-          <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg }}>
-            <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{title}</Text>
-            <IconButton icon="x" label={tr('common.close')} onPress={onClose} />
-          </View>
-          {/* flexShrink : le contenu long défile au lieu de dépasser de l'écran */}
-          <ScrollView ref={scrollRef} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64} style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled">
-            <KeyboardScopeContext.Provider value={keyboardScope}>{children}</KeyboardScopeContext.Provider>
-          </ScrollView>
-        </LiquidGlass>
-      </ReAnimated.View>
-      </KeyboardAvoidingView>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ReAnimated.View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }, backdropStyle]}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={tr('common.close')} accessibilityRole="button" testID="sheet-backdrop" />
+        </ReAnimated.View>
+        {/* La feuille remonte au-dessus du clavier (iOS et Android) et ne passe jamais sous la barre d'état */}
+        <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} pointerEvents="box-none" style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', paddingTop: insets.top + spacing.sm }]}>
+          <ReAnimated.View onLayout={onLayout} style={[styles.sheet, styles.sheetInFlow, sheetStyle]} testID="sheet">
+            <LiquidGlass testID="sheet-panel" kind="frosted" edges="top" radius={radius.sheet} style={{ maxHeight: '100%', flexShrink: 1 }} contentStyle={{ paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
+              <GestureDetector gesture={pan}>
+                <View collapsable={false} testID="sheet-handle-area">
+                  <View
+                    accessible
+                    accessibilityRole="adjustable"
+                    accessibilityLabel={tr('sheet.handle')}
+                    accessibilityHint={tr('sheet.handleHint')}
+                    accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+                    onAccessibilityAction={(e) => (e.nativeEvent.actionName === 'increment' ? expand() : collapse())}
+                    style={styles.grabberZone}
+                    testID="sheet-handle"
+                  >
+                    <View style={[styles.grabber, { backgroundColor: t.isDark ? 'rgba(255,255,255,0.28)' : 'rgba(19,24,26,0.18)' }]} />
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg }}>
+                    <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{title}</Text>
+                    <IconButton icon="x" label={tr('common.close')} onPress={onClose} tone="filled" />
+                  </View>
+                </View>
+              </GestureDetector>
+              {/* flexShrink : le contenu long défile au lieu de dépasser de l'écran */}
+              <ScrollView ref={scrollRef} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64} style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled">
+                <KeyboardScopeContext.Provider value={keyboardScope}>{children}</KeyboardScopeContext.Provider>
+              </ScrollView>
+            </LiquidGlass>
+          </ReAnimated.View>
+        </KeyboardAvoidingView>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
@@ -186,9 +298,11 @@ function ConfirmHost() {
 }
 
 const styles = StyleSheet.create({
-  sheet: { position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '88%', borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, paddingTop: spacing.xs },
+  sheet: { position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '92%', borderTopLeftRadius: radius.sheet, borderTopRightRadius: radius.sheet },
   /** Dans la zone qui évite le clavier : la feuille suit le flux (posée en bas) et rétrécit si la place manque. */
   sheetInFlow: { position: 'relative', flexShrink: 1 },
-  grabber: { width: 44, height: 5, borderRadius: 3, alignSelf: 'center', marginBottom: spacing.xs },
+  grabber: { width: 40, height: 5, borderRadius: 3, alignSelf: 'center' },
+  /** Poignée : zone tactile ≥ 48 px de haut, toute la largeur */
+  grabberZone: { minHeight: 28, paddingTop: 6, paddingBottom: 10, alignSelf: 'stretch', alignItems: 'center' },
   toast: { position: 'absolute', left: spacing.md, right: spacing.md, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md, zIndex: 1000, elevation: 10 },
 });

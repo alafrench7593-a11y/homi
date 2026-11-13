@@ -1,5 +1,5 @@
 /**
- * Carte lumineuse HOMI v2 (référence « image 1 ») : carte sombre / verre aux grands coins, FILET LUMINEUX en dégradé
+ * Carte lumineuse HOMI (v2, conservée en v3 pour LA sélection / l'action importante de l'écran ; référence « image 1 ») : carte sombre / verre aux grands coins, FILET LUMINEUX en dégradé
  * de la palette sur le contour et HALO diffus coloré derrière. Transposition React Native des idées « Shine Border »
  * et « Border Beam » de Magic UI (dégradé sur le contour + faisceau de lumière qui parcourt le bord) — aucun code web
  * repris : react-native-svg pour le filet, `boxShadow` coloré pour le halo, Reanimated pour le mouvement.

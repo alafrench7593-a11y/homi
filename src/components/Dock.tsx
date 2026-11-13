@@ -1,5 +1,6 @@
 /**
- * Barre d'onglets HOMI (v2, 13/11/2026) : Accueil · Santé · Bébé · Famille · Communauté.
+ * Barre d'onglets HOMI (v3, 13/11/2026) : Accueil · Santé · Bébé · Famille · Communauté. Capsule flottante en VERRE
+ * OPTIQUE (src/components/surfaces) avec indicateur de verre qui glisse vers l'onglet actif.
  * Style « Liquid Glass » : capsule flottante en verre (`LiquidGlass` : GlassView natif sur iOS 26+, sinon flou +
  * remplissage), teintée d'un dégradé pastel de la palette, arête claire en haut, ombre colorée douce dessous.
  * Clair : verre ivoire ; sombre : verre fumé plus clair que le graphite ; nuit : surface opaque tamisée, sans flou ni ombre.
@@ -87,16 +88,21 @@ function TabItem({ tab, width, focused, label, a11y, fontSize, onPress, onLongPr
   );
 }
 
-/** Pastille lilas de l'onglet actif : glisse d'un onglet à l'autre (transform seulement). */
+/**
+ * Indicateur de VERRE de l'onglet actif (v3, référence « Lightly ») : capsule de verre teinté de la palette, arête
+ * claire, lumière diffuse dessous ; elle GLISSE d'un onglet à l'autre (translateX, ressort « panneau » interruptible).
+ */
 function ActivePill({ x, visible }: { x: number; visible: boolean }) {
+  const t = useTheme();
   const ink = useBarInk();
   const m = useMotion();
+  const night = t.name === 'night';
   const tx = useSharedValue(x);
   const op = useSharedValue(visible ? 1 : 0);
   const placed = useRef(false);
   useEffect(() => {
-    // première position : posée sans animation ; ensuite, glissement en ressort doux (interruptible)
-    tx.value = placed.current ? m.spring(x, 'doux') : x;
+    // première position : posée sans animation ; ensuite, glissement en ressort (interruptible)
+    tx.value = placed.current ? m.spring(x, 'panneau') : x;
     placed.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [x]);
@@ -104,7 +110,10 @@ function ActivePill({ x, visible }: { x: number; visible: boolean }) {
   const style = useAnimatedStyle(() => ({ opacity: op.value, transform: [{ translateX: tx.value }] }));
   return (
     <Animated.View pointerEvents="none" testID="tab-indicator"
-      style={[{ position: 'absolute', left: 0, top: ICON_TOP, width: PILL_W, height: PILL_H, borderRadius: radius.pill, backgroundColor: tint(ink.primary, 0.24), borderWidth: 1, borderColor: tint(ink.primary, 0.34) }, style]} />
+      style={[{ position: 'absolute', left: 0, top: ICON_TOP, width: PILL_W, height: PILL_H, borderRadius: radius.pill, overflow: 'hidden', backgroundColor: tint(ink.primary, t.isDark ? 0.2 : 0.14), borderWidth: 1, borderColor: tint(ink.primary, 0.36),
+        boxShadow: night ? undefined : [{ offsetX: 0, offsetY: 4, blurRadius: 14, spreadDistance: -2, color: tint(t.tokens.accent.glow[0], t.isDark ? 0.5 : 0.4) }] }, style]}>
+      {!night ? <LinearGradient colors={['rgba(255,255,255,0.38)', 'rgba(255,255,255,0)']} start={{ x: 0.2, y: 0 }} end={{ x: 0.5, y: 0.9 }} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }} /> : null}
+    </Animated.View>
   );
 }
 
