@@ -60,11 +60,14 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width, befo
   function onPress(e: GestureResponderEvent) {
     haptic('selection');
     setPlay((p) => p + 1);
-    beforeOpen?.();
     const y = e.nativeEvent.pageY;
     // urgences : aucune attente ; sinon la carte s'élève puis l'outil s'ouvre (immédiat si le mouvement est coupé)
-    if (tool.urgent) { openTool(tool, y, true); return; }
+    if (tool.urgent) { beforeOpen?.(); openTool(tool, y, true); return; }
+    // `beforeOpen` (choix du profil d'un outil « autre profil ») seulement à l'ouverture : appelé avant l'élévation,
+    // il re-rangeait la carte dans la section du profil choisi, la démontait et annulait l'élévation (clic sans effet,
+    // audit navigation 13/11/2026, docs/audit/01_navigation.md)
     lift.open(() => {
+      beforeOpen?.();
       openTool(tool, y, true);
       setTimeout(lift.settle, durations.slow); // l'écran de l'outil recouvre déjà la carte
     });
