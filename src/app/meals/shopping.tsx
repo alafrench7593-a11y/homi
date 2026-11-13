@@ -133,7 +133,7 @@ export default function Shopping() {
         <Field ref={input} label={tr('rc.shopping.addItem')} value={label} onChangeText={(v) => { setLabel(v); setDup(null); }} maxLength={120} testID="shop-add-label"
           autoFocus={params.add === '1'} onSubmitEditing={() => void addItem()} returnKeyType="done" />
         <Row>
-          <View style={{ flex: 1 }}><Button label={tr('rc.shopping.add')} icon="plus" onPress={() => void addItem()} loading={add.isPending} testID="shop-add" /></View>
+          <View style={{ flex: 1 }}><Button label={tr('rc.shopping.add')} icon="plus" onPress={() => void addItem()} loading={add.isPending} disabled={!label.trim()} testID="shop-add" /></View>
           <Button label={tr(details ? 'shp.lessDetails' : 'shp.moreDetails')} icon={details ? 'chevron-up' : 'sliders'} variant="ghost" onPress={() => setDetails(!details)} testID="shop-details" />
         </Row>
         {details ? (

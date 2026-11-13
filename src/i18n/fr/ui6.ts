@@ -58,6 +58,7 @@ export const ui6 = {
   'u6.quick.parse': 'Comprendre',
   'u6.quick.listening': 'J’écoute…',
   'u6.quick.dictate': 'Dicter',
+  'u6.quick.dictateUnavailable': 'Dictée indisponible : vérifiez l’accès au micro, ou écrivez votre phrase.',
   'u6.quick.med_note': 'Le nom et la dose viennent uniquement du traitement déjà enregistré depuis l’ordonnance ; rien n’est ajouté ici.',
   'u6.quick.confirm_save': 'Confirmer et enregistrer',
   'u6.quick.check_save': 'Vérifier et enregistrer',
