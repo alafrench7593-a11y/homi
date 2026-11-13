@@ -91,12 +91,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setState({ session: s, ready: true });
     };
+    // Écoute branchée APRÈS le choix du backend (reprise de la démonstration) : branchée avant, le vrai backend
+    // annonçait aussitôt « aucune session » et chaque lien direct ouvert à froid repartait vers /welcome
+    // (audit navigation 13/11/2026, N-10 ; révélé par l'attente de la relecture du cache ci-dessus).
+    let off = () => {};
     initBackendMode()
       .then(async () => { lastUser.current = await readLastUser(); })
-      .then(() => backend.auth.getSession())
+      .then(() => {
+        if (mounted) off = backend.auth.onChange((s) => mounted && apply(s));
+        return backend.auth.getSession();
+      })
       .then((s) => mounted && apply(s))
       .catch(() => mounted && setState({ session: null, ready: true }));
-    const off = backend.auth.onChange((s) => mounted && apply(s));
     return () => {
       mounted = false;
       off();
