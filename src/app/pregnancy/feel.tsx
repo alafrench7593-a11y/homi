@@ -27,6 +27,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { frequentValues, withFrequentFirst } from '@/lib/domain/quickPicks';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
 
 const FREQS: Frequency[] = ['once', 'several', 'continuous'];
 const symLabel = (k: string) => tr(`care.sym.${k}` as TKey);
@@ -46,6 +47,8 @@ export default function Feel() {
   const del = useDeleteSymptom();
   const [d, setD] = useState<Draft>(EMPTY);
   const [cards, setCards] = useState<SymptomCard[] | null>(null);
+  // Les cartes (et leurs alertes de sécurité) remplacent le formulaire : un double appui sur « Enregistrer » ne les masque pas
+  const { arm, guard } = useTapShield();
   // Mes symptômes fréquents (d'après MES saisies) : en tête des choix et notables en un seul tap
   const frequent = useMemo(() => frequentValues(logs.map((l) => ({ value: l.symptom as SymptomKey, at: l.logged_at })), 4), [logs]);
   const options = useMemo(() => withFrequentFirst(symptomsFor(week), frequent), [week, frequent]);
@@ -69,6 +72,7 @@ export default function Feel() {
     const rows = d.symptoms.map((symptom) => ({ pregnancy_id: pregnancy?.id ?? null, symptom, intensity: d.intensity, started_at: startedAt(), frequency: d.frequency, note: d.note.trim() || null, week_sa: pregnancy ? week : null }));
     try {
       await save.mutateAsync({ id: d.id, rows });
+      arm();
       setCards(d.symptoms.map((symptom) => symptomCard({ symptom, intensity: d.intensity, frequency: d.frequency, weekSA: week, worried: d.worried })));
       toast(tr(d.id ? 'care.feel.updated' : 'care.feel.saved'), 'success');
       setD(EMPTY);
@@ -96,7 +100,7 @@ export default function Feel() {
   return (
     <Screen back title={tr('care.feel.title')} subtitle={pregnancy ? tr('care.feel.subtitle', { w: week }) : undefined}
       action={cards
-        ? { label: tr('care.feel.another'), icon: 'plus', onPress: () => setCards(null), testID: 'feel-another' }
+        ? { label: tr('care.feel.another'), icon: 'plus', onPress: guard(() => setCards(null)), testID: 'feel-another' }
         : { label: tr(d.id ? 'common.save' : 'care.feel.save'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'feel-save' }}>
       <TodaySummary items={[
         { icon: 'feather', value: String(todayCount), label: tr('care.feel.sumToday') },
