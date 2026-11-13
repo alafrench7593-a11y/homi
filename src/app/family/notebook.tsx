@@ -15,6 +15,7 @@ import { useHouseNotes, type HouseNote, type NoteSection } from '@/lib/data/hook
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
 
 const SECTIONS: NoteSection[] = ['contacts', 'kids', 'habits', 'school', 'health', 'home', 'codes', 'other'];
 const ICON: Record<NoteSection, 'phone' | 'smile' | 'clock' | 'book' | 'heart' | 'home' | 'key' | 'file-text'> = {
@@ -31,6 +32,8 @@ function NoteEditor({ note, visible, onClose }: { note?: HouseNote; visible: boo
   const [body, setBody] = useState('');
   const [childId, setChildId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // La feuille reste affichée pendant sa fermeture : un double appui sur « Enregistrer » n'ajoute pas la fiche deux fois
+  const { arm, guard } = useTapShield();
   React.useEffect(() => {
     if (!visible) return;
     setSection(note?.section ?? 'contacts'); setTitle(note?.title ?? ''); setBody(note?.body ?? ''); setChildId(note?.child_id ?? null);
@@ -43,7 +46,7 @@ function NoteEditor({ note, visible, onClose }: { note?: HouseNote; visible: boo
       const row = { section, title: title.trim().slice(0, 80), body: body.trim() || null, child_id: childId };
       if (note) await backend.update('house_notes', row, [eq('id', note.id)]);
       else await backend.insert('house_notes', { ...row, household_id: hid });
-      inv('house_notes'); onClose();
+      inv('house_notes'); arm(); onClose();
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
   }
   async function remove() {
@@ -62,7 +65,7 @@ function NoteEditor({ note, visible, onClose }: { note?: HouseNote; visible: boo
           {children.map((c) => <Chip key={c.id} label={c.first_name} selected={childId === c.id} onPress={() => setChildId(c.id)} />)}
         </View>
       ) : null}
-      <Button label={tr('common.save')} loading={busy} onPress={() => void save()} testID="nb-save" />
+      <Button label={tr('common.save')} loading={busy} onPress={guard(save)} testID="nb-save" />
       {note ? <Button label={tr('common.delete')} variant="ghost" onPress={() => void remove()} /> : null}
     </Sheet>
   );
