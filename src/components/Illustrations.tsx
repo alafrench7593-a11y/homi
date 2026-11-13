@@ -27,24 +27,24 @@ export function WelcomeIllustration({ size = 300 }: { size?: number }) {
           <Stop offset="100%" stopColor="#F0D9A8" />
         </RadialGradient>
         <LinearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0%" stopColor="#EBCFC8" />
-          <Stop offset="100%" stopColor="#E6D6C2" />
+          <Stop offset="0%" stopColor="#E4DAFB" />
+          <Stop offset="100%" stopColor="#ECE6F6" />
         </LinearGradient>
       </Defs>
       <Circle cx="150" cy="78" r="58" fill="url(#moon)" opacity={0.9} />
       <Circle cx="150" cy="78" r="80" fill="#F0D9A8" opacity={0.12} />
       <Path d="M0 190 C 70 150, 120 168, 160 176 C 210 186, 250 160, 300 170 L 300 240 L 0 240 Z" fill="url(#hill)" />
       <Person x={70} y={128} skin={SKIN_TONES[4]} cloth="#B9AEDB" hair="#2B2433" />
-      <Person x={96} y={150} scale={0.6} skin={SKIN_TONES[4]} cloth="#D58D72" hair="#2B2433" />
-      <Person x={150} y={118} skin={SKIN_TONES[1]} cloth="#D58D72" hair="#6B4A3A" />
-      <Person x={176} y={124} skin={SKIN_TONES[0]} cloth="#B9654C" hair="#C9A45C" />
-      <Ellipse cx="163" cy="168" rx="11" ry="8" fill="#F7F1E8" />
+      <Person x={96} y={150} scale={0.6} skin={SKIN_TONES[4]} cloth="#C9B6F2" hair="#2B2433" />
+      <Person x={150} y={118} skin={SKIN_TONES[1]} cloth="#C9B6F2" hair="#6B4A3A" />
+      <Person x={176} y={124} skin={SKIN_TONES[0]} cloth="#5B2A86" hair="#C9A45C" />
+      <Ellipse cx="163" cy="168" rx="11" ry="8" fill="#F7F4FB" />
       <Circle cx="163" cy="160" r="7" fill={SKIN_TONES[0]} />
       <Person x={236} y={130} skin={SKIN_TONES[2]} cloth="#6E5FA8" hair="#2B2433" />
-      <Person x={258} y={156} scale={0.5} skin={SKIN_TONES[2]} cloth="#EBCFC8" hair="#2B2433" />
-      <Person x={218} y={158} scale={0.5} skin={SKIN_TONES[2]} cloth="#E6D6C2" hair="#2B2433" />
+      <Person x={258} y={156} scale={0.5} skin={SKIN_TONES[2]} cloth="#E4DAFB" hair="#2B2433" />
+      <Person x={218} y={158} scale={0.5} skin={SKIN_TONES[2]} cloth="#ECE6F6" hair="#2B2433" />
       {[[30, 40], [262, 30], [230, 76], [50, 96], [110, 24]].map(([x, y], i) => (
-        <Circle key={i} cx={x} cy={y} r={i % 2 ? 1.6 : 2.4} fill="#E2AE78" opacity={0.7} />
+        <Circle key={i} cx={x} cy={y} r={i % 2 ? 1.6 : 2.4} fill="#E9CFA4" opacity={0.7} />
       ))}
     </Svg>
   );
@@ -54,8 +54,8 @@ export function WelcomeIllustration({ size = 300 }: { size?: number }) {
 export function EmptyIllustration({ kind = 'moon', size = 140 }: { kind?: 'moon' | 'leaf' | 'letter' | 'chat'; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 140 140" accessibilityElementsHidden importantForAccessibility="no">
-      <Circle cx="70" cy="70" r="62" fill="#EBCFC8" opacity={0.35} />
-      {kind === 'moon' && <Path d="M86 34 A 38 38 0 1 0 98 98 A 30 30 0 1 1 86 34 Z" fill="#E8D3A6" />}
+      <Circle cx="70" cy="70" r="62" fill="#E4DAFB" opacity={0.35} />
+      {kind === 'moon' && <Path d="M86 34 A 38 38 0 1 0 98 98 A 30 30 0 1 1 86 34 Z" fill="#E9CFA4" />}
       {kind === 'leaf' && (
         <G>
           <Path d="M40 100 C 40 50, 80 30, 108 34 C 110 64, 92 104, 40 100 Z" fill="#B9AEDB" />
@@ -64,27 +64,27 @@ export function EmptyIllustration({ kind = 'moon', size = 140 }: { kind?: 'moon'
       )}
       {kind === 'letter' && (
         <G>
-          <Path d="M32 48 H 108 V 98 H 32 Z" fill="#F7F1E8" stroke="#D58D72" strokeWidth={2} />
-          <Path d="M32 48 L 70 78 L 108 48" stroke="#D58D72" strokeWidth={2} fill="none" />
+          <Path d="M32 48 H 108 V 98 H 32 Z" fill="#F7F4FB" stroke="#C9B6F2" strokeWidth={2} />
+          <Path d="M32 48 L 70 78 L 108 48" stroke="#C9B6F2" strokeWidth={2} fill="none" />
         </G>
       )}
       {kind === 'chat' && (
         <G>
           <Path d="M30 44 H 98 A 10 10 0 0 1 108 54 V 84 A 10 10 0 0 1 98 94 H 58 L 42 108 V 94 H 30 A 10 10 0 0 1 20 84 V 54 A 10 10 0 0 1 30 44 Z" fill="#B9AEDB" />
-          <Circle cx="46" cy="69" r="4" fill="#F7F1E8" />
-          <Circle cx="64" cy="69" r="4" fill="#F7F1E8" />
-          <Circle cx="82" cy="69" r="4" fill="#F7F1E8" />
+          <Circle cx="46" cy="69" r="4" fill="#F7F4FB" />
+          <Circle cx="64" cy="69" r="4" fill="#F7F4FB" />
+          <Circle cx="82" cy="69" r="4" fill="#F7F4FB" />
         </G>
       )}
-      <Circle cx="112" cy="30" r="2.5" fill="#E2AE78" />
-      <Circle cx="26" cy="36" r="1.8" fill="#E2AE78" />
+      <Circle cx="112" cy="30" r="2.5" fill="#E9CFA4" />
+      <Circle cx="26" cy="36" r="1.8" fill="#E9CFA4" />
     </Svg>
   );
 }
 
 /** Avatar à initiales, tonalité douce stable par identifiant. */
 export function initialsColor(id: string): string {
-  const colors = ['#E3A895', '#B9AEDB', '#E2C48B', '#9CC1A2', '#D58D72', '#A79BD2'];
+  const colors = ['#E4B6CF', '#B9AEDB', '#E2C48B', '#9CC1A2', '#C9B6F2', '#A79BD2'];
   let h = 0;
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
   return colors[h % colors.length];

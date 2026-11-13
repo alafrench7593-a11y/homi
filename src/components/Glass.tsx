@@ -1,21 +1,26 @@
 /**
- * Surface « Liquid Glass » : flou d'arrière-plan, remplissage translucide, reflet supérieur,
- * liseré lumineux, ombre diffuse. Construite UNIQUEMENT avec les couleurs existantes du thème
- * (fonds de cartes, bordures, blanc des reflets, ombre rose déjà utilisée).
+ * Surface « verre lisible » du design system HOMI (voir DESIGN_SYSTEM.md) : flou d'arrière-plan, remplissage
+ * translucide, reflet supérieur, liseré lumineux (edge highlight) et ombre physique nuit violette (contact + ambiance).
+ * Toutes les valeurs viennent de `glass`, `physicalShadow` et du thème (src/theme/tokens.ts) ; le texte posé dessus
+ * reste ≥ 4,5:1 (src/__tests__/designSystem.test.ts).
  *
- * Profondeur : 1 (cartes de liste), 2 (cartes principales), 3 (panneaux flottants, feuilles, barre).
+ * Profondeur : 1 (cartes de liste, ombre basse), 2 (cartes principales, ombre moyenne), 3 (panneaux flottants,
+ * feuilles, barre : ombre haute, flou plus fort). Mode nuit : ni flou, ni reflet, ni ombre (calme, batterie).
  */
 import React from 'react';
 import { Animated, Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radius as R } from '@/theme/tokens';
+import { glass, physicalShadow, radius as R, type ElevationLevel } from '@/theme/tokens';
 
 export type GlassDepth = 1 | 2 | 3;
 
 /** Flou réel sur iOS et le web ; Android garde le remplissage translucide (flou natif trop coûteux en liste). */
 const BLUR_OK = Platform.OS === 'ios' || Platform.OS === 'web';
+const SHADOW_FOR_DEPTH: Record<GlassDepth, ElevationLevel> = { 1: 'low', 2: 'mid', 3: 'high' };
+/** Même couleur, opacité nulle (extrémités du liseré lumineux). */
+const transparentOf = (rgba: string) => rgba.replace(/,\s*[\d.]+\)$/, ',0)');
 
 export function GlassSurface({
   children, fill, borderColor, depth = 2, radius = R.lg, style, padded = 0, highlight = true, shadow = true, sheen,
@@ -35,24 +40,27 @@ export function GlassSurface({
 }) {
   const t = useTheme();
   const night = t.name === 'night';
-  const intensity = night ? 0 : depth === 3 ? 38 : depth === 2 ? 26 : 16;
+  const level = depth === 3 ? glass[t.name].floating : glass[t.name].raised;
+  const intensity = night ? 0 : depth === 1 ? Math.round(level.blur * 0.6) : level.blur;
+  const edge = level.highlight;
   return (
     <View
       style={[
-        { borderRadius: radius, borderWidth: StyleSheet.hairlineWidth * 2, borderColor: borderColor ?? t.colors.border, overflow: 'hidden', padding: padded, backgroundColor: fill },
-        shadow && !night && (t.isDark ? styles.shadowDark : depth === 3 ? styles.shadowFloat : depth === 2 ? styles.shadow : styles.shadowSoft),
+        { borderRadius: radius, borderWidth: StyleSheet.hairlineWidth * 2, borderColor: borderColor ?? level.edge, overflow: 'hidden', padding: padded, backgroundColor: fill },
+        // Ombre physique : contact net + ambiance diffuse, encre nuit violette (boxShadow : iOS, Android, web)
+        shadow && !night ? { boxShadow: physicalShadow(SHADOW_FOR_DEPTH[depth], t.isDark) } : null,
         style,
       ]}
     >
       {BLUR_OK && intensity > 0 ? <BlurView intensity={intensity} tint={t.isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} pointerEvents="none" /> : null}
-      {/* Remplissage par-dessus le flou : garde exactement la teinte de la carte */}
+      {/* Remplissage par-dessus le flou : garde exactement la teinte de la carte (donc le contraste mesuré) */}
       {BLUR_OK && intensity > 0 ? <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: fill }]} /> : null}
       {highlight && !night ? (
         <>
           {/* Reflet supérieur : la lumière vient d'en haut à gauche */}
-          <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(255,255,255,0.10)', 'rgba(255,255,255,0)'] : ['rgba(255,255,255,0.55)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0 }} end={{ x: 0.6, y: 0.55 }} style={StyleSheet.absoluteFill} />
-          {/* Liseré lumineux en haut */}
-          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: radius * 0.6, right: radius * 0.6, height: 1, backgroundColor: t.isDark ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.95)' }} />
+          <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0)'] : ['rgba(255,255,255,0.5)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0 }} end={{ x: 0.6, y: 0.55 }} style={StyleSheet.absoluteFill} />
+          {/* Liseré lumineux (edge highlight) : l'arête supérieure s'éclaire au centre et s'éteint vers les coins */}
+          <LinearGradient pointerEvents="none" colors={[transparentOf(edge), edge, transparentOf(edge)]} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ position: 'absolute', top: 0, left: radius * 0.35, right: radius * 0.35, height: 1 }} />
         </>
       ) : null}
       {sheen ? (
@@ -67,19 +75,10 @@ export function GlassSurface({
             ],
           }}
         >
-          <LinearGradient colors={['rgba(255,255,255,0)', t.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.35)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFill} />
+          <LinearGradient colors={['rgba(255,255,255,0)', t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFill} />
         </Animated.View>
       ) : null}
       {children}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  // Ombre rose déjà utilisée par les cartes (#B4507A), plus ou moins diffuse selon la profondeur
-  // Ombres chaudes (brun cuivré) et diffuses depuis la refonte du 26/10/2026
-  shadowSoft: { shadowColor: '#6B3F2E', shadowOpacity: 0.06, shadowRadius: 16, shadowOffset: { width: 0, height: 6 } },
-  shadow: { shadowColor: '#6B3F2E', shadowOpacity: 0.09, shadowRadius: 28, shadowOffset: { width: 0, height: 12 } },
-  shadowFloat: { shadowColor: '#6B3F2E', shadowOpacity: 0.16, shadowRadius: 36, shadowOffset: { width: 0, height: 16 }, elevation: 6 },
-  shadowDark: { shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 22, shadowOffset: { width: 0, height: 10 } },
-});
