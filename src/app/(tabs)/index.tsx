@@ -1,4 +1,5 @@
 /**
+ * En tête : « Aujourd'hui dans le foyer » (src/features/homeToday : tâches et missions du jour, agenda, relais, ajouter / terminer).
  * Accueil volontairement court (profil « Suivre mon cycle » : calendrier, 5 raccourcis, une carte intelligente et le prochain
  * rappel seulement) : carte principale du profil affiché, les 4 actions du quotidien, le prochain rappel,
  * une publication de la communauté choisie pour vous (+ « Voir la communauté »), une recommandation (article ou repas).
@@ -14,7 +15,7 @@ import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { Cascade } from '@/motion';
 import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
+import { Banner, Card, Icon, IconButton, Row, Text } from '@/components/ui';
 import { PostpartumHomeCard } from '@/features/postpartum';
 import { effectiveHidden, orderedHomeCards, PregnancyHero, setCycleRoute, UpcomingCard } from '@/features/home';
 import { StoryHomeStrip } from '@/features/story/StoryHomeStrip';
@@ -46,6 +47,7 @@ import { MIN_TOUCH, NACRE, previewTime, spacing } from '@/theme/tokens';
 import { AccountActions } from '@/components/AccountActions';
 import { Tappable } from '@/components/Tappable';
 import { ToolSearchButton } from '@/features/hubs/ToolSearch';
+import { HomeToday } from '@/features/homeToday';
 
 /** Parcours historiques équivalents à la portée affichée (suggestion d'articles). */
 const LEGACY_FOR: Record<Scope, Journey[]> = {
@@ -165,7 +167,9 @@ export default function Home() {
           <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
           {subtitle && !childScope ? <Text variant="small" muted>{subtitle}</Text> : null}
         </View>
-        {/* HOMI : point d'entrée de la recherche universelle des outils (favoris et récents quand le champ est vide) */}
+        {/* HOMI : « Aujourd'hui dans le foyer » en tête — ce qui est prévu, qui s'en charge, ajouter / terminer */}
+        <HomeToday />
+        {/* Seule entrée de recherche d'outils de l'accueil (la feuille donne aussi accès à « Tous les outils ») */}
         <ToolSearchButton testID="home-tool-search" />
 
         {/* 1. Parcours et profil actifs */}
@@ -187,12 +191,6 @@ export default function Home() {
           if (!node) return null;
           return <Cascade key={key} index={2 + i}><View testID={`home-card-${key}`}>{node}</View></Cascade>;
         })}
-
-        {childScope ? null : (
-          <Cascade index={2 + homeCards.length}>
-            <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID="all-tools" />
-          </Cascade>
-        )}
 
         <DemoBanner />
       </Screen>

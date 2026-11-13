@@ -63,3 +63,4 @@ export { assistantSections } from './assistantSections';
 export { diary } from './diary';
 export { nav } from './nav';
 export { missions } from './missions';
+export { homeToday } from './homeToday';
