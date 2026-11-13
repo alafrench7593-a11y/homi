@@ -20,13 +20,14 @@ interface Props {
   accessibilityLabel?: string;
 }
 
+/** Teintes HOMI : « rose » devient un mauve framboise doux (plus de rose poudré ni de pêche), « or » un champagne. */
 const HUES = {
-  rose: { core: '#F6D3C8', mid: '#E3A895', deep: '#B9654C', glow: '#F7C9B8' },
+  rose: { core: '#F1E6F6', mid: '#D3B3E3', deep: '#7A3F8E', glow: '#E4D0EE' },
   lavande: { core: '#E4DDF7', mid: '#B9AEDB', deep: '#6E5FA8', glow: '#CFC4F0' },
-  or: { core: '#F6E7C6', mid: '#E2C48B', deep: '#A9823E', glow: '#F1DDB0' },
+  or: { core: '#F6ECDA', mid: '#E9CFA4', deep: '#8F7340', glow: '#F1E2C6' },
 };
 
-export function FetusOrb({ growth, size = 280, hue = 'rose', interactive = true, accessibilityLabel }: Props) {
+export function FetusOrb({ growth, size = 280, hue = 'lavande', interactive = true, accessibilityLabel }: Props) {
   const reduce = useReduceMotion();
   const rotation = useRef(new Animated.Value(0)).current; // -1..1
   const heart = useRef(new Animated.Value(0)).current;
@@ -92,7 +93,7 @@ export function FetusOrb({ growth, size = 280, hue = 'rose', interactive = true,
               <Stop offset="100%" stopColor={c.glow} stopOpacity={0} />
             </RadialGradient>
             <RadialGradient id={`sphere${uid}`} cx="42%" cy="38%" r="62%">
-              <Stop offset="0%" stopColor="#FFF6EE" stopOpacity={0.35} />
+              <Stop offset="0%" stopColor="#F7F4FB" stopOpacity={0.35} />
               <Stop offset="55%" stopColor={c.mid} stopOpacity={0.18} />
               <Stop offset="100%" stopColor={c.deep} stopOpacity={0.35} />
             </RadialGradient>
@@ -146,9 +147,9 @@ export function FetusOrb({ growth, size = 280, hue = 'rose', interactive = true,
         <Svg width={size} height={size} viewBox="0 0 200 200">
           <Defs>
             <RadialGradient id={`heart${uid}`} cx="50%" cy="50%" r="50%">
-              <Stop offset="0%" stopColor="#FFE9C9" stopOpacity={1} />
-              <Stop offset="40%" stopColor="#F2B999" stopOpacity={0.55} />
-              <Stop offset="100%" stopColor="#F2B999" stopOpacity={0} />
+              <Stop offset="0%" stopColor="#F6ECDA" stopOpacity={1} />
+              <Stop offset="40%" stopColor="#E9CFA4" stopOpacity={0.55} />
+              <Stop offset="100%" stopColor="#E9CFA4" stopOpacity={0} />
             </RadialGradient>
           </Defs>
           <Circle cx={early ? 103 : 100 + 6 * s} cy={early ? 102 : 102 + 4 * s} r={early ? 7 : 11 * s} fill={`url(#heart${uid})`} />

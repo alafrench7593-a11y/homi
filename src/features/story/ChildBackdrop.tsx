@@ -1,24 +1,15 @@
 /**
- * Fond des pages du bébé et de l'enfant, en journée : la vidéo des galets en alternance avec le passage de l'histoire
- * en 3D qui correspond à l'âge de l'enfant (le bébé dans les bras avant 1 an, l'enfant qui marche main dans la main
- * ensuite). La nuit, le fond nocturne habituel reste.
+ * Fond des pages du bébé et de l'enfant (HOMI, 13/11/2026) : un décor vectoriel discret posé sur le ciel de
+ * l'application — halo lilas en haut, lumière champagne en bas, comme une veilleuse dans la maison.
+ * Remplace les vidéos d'« Au fil de nous » (galets, ciel rose et pêche, histoire en 3D) : plus de photo pêche
+ * derrière le Suivi, moins de batterie, rien à charger. Le soir, le ciel Minuit de la coque suffit.
+ * Décoratif, immobile, ignoré par les lecteurs d'écran.
  */
-import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { useChildren } from '@/lib/data/hooks';
-import { childAge } from '@/lib/domain/child';
+import React from 'react';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import Svg, { Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import { useTheme } from '@/theme/ThemeProvider';
-
-/** Lecteur vidéo chargé à la demande : si le module vidéo est indisponible (tests, appareil), pas de vidéo. */
-let video: typeof import('@/components/VideoBackdrop') | null | undefined;
-function videoModule() {
-  if (video === undefined) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    try { video = require('@/components/VideoBackdrop'); } catch { video = null; }
-  }
-  return video;
-}
+import { HOMI } from '@/features/homiColors';
 
 /** Adresses des pages qui parlent d'un bébé ou d'un enfant. */
 const CHILD_PATH = /^\/(child|bottle|sleep|teeth|night|track|discoveries)(\/|$)/;
@@ -28,20 +19,25 @@ export function isChildPage(pathname: string, toolId?: string | null): boolean {
 
 export function ChildBackdrop() {
   const t = useTheme();
-  const vm = videoModule();
-  const params = useLocalSearchParams<{ id?: string; childId?: string; child?: string }>();
-  const { data: children } = useChildren();
-  const want = [params.childId, params.child, params.id].find((v) => typeof v === 'string' && v.length > 0);
-  const ageYears: number | null = useMemo(() => {
-    const list = children ?? [];
-    const kid = list.find((c) => c.id === want) ?? (list.length === 1 ? list[0] : null);
-    return kid?.birth_date ? childAge(kid.birth_date).days / 365.25 : null;
-  }, [children, want]);
-  if (t.isDark || !vm) return null;
-  const story = ageYears != null && ageYears < 1 ? vm.STORY_BABY_CLIP : vm.STORY_WALK_CLIP;
+  const { width: W, height: H } = useWindowDimensions();
+  const id = React.useId().replace(/:/g, '');
+  if (t.isDark) return null;
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill} testID="child-backdrop">
-      <vm.VideoBackdrop only={[vm.GALETS_CLIP, story]} />
+    <View pointerEvents="none" style={StyleSheet.absoluteFill} testID="child-backdrop" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <Svg width={W} height={H}>
+        <Defs>
+          <RadialGradient id={`a${id}`} cx="50%" cy="50%" r="50%">
+            <Stop offset="0" stopColor={HOMI.lilac} stopOpacity="0.55" />
+            <Stop offset="1" stopColor={HOMI.lilac} stopOpacity="0" />
+          </RadialGradient>
+          <RadialGradient id={`b${id}`} cx="50%" cy="50%" r="50%">
+            <Stop offset="0" stopColor={HOMI.champagne} stopOpacity="0.38" />
+            <Stop offset="1" stopColor={HOMI.champagne} stopOpacity="0" />
+          </RadialGradient>
+        </Defs>
+        <Ellipse cx={W * 0.82} cy={H * 0.08} rx={W * 0.75} ry={H * 0.22} fill={`url(#a${id})`} />
+        <Ellipse cx={W * 0.12} cy={H * 0.94} rx={W * 0.8} ry={H * 0.2} fill={`url(#b${id})`} />
+      </Svg>
     </View>
   );
 }

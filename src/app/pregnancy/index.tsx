@@ -23,7 +23,8 @@ import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr, formatDate, getLocale } from '@/i18n';
 
-const HUES = ['rose', 'lavande', 'or'] as const;
+// HOMI : lilas d'abord (un seul bébé), puis champagne et mauve pour les jumeaux et triplés
+const HUES = ['lavande', 'or', 'rose'] as const;
 const multLabel = (m: string) => tr(`u2.preg.mult_${m}` as never);
 const countdownText = (days: number) => {
   if (days > 1) {
@@ -61,9 +62,10 @@ function rubrics(showWeight: boolean, docs: number): Rubric[] {
     { key: 'supplement', icon: 'bell', title: tr('u2.preg.r_supp'), subtitle: tr('u2.preg.r_supp_sub'), to: { pathname: '/settings/reminders', params: { new: 'supplement' } } },
   ];
 }
-const GOLD = '#E7C08F';
-const TEXT = '#F2DFC1';
-const MUTED = '#B8A88F';
+// Minuit HOMI : champagne, perle, lilas grisé (≥ 4,5:1 sur le fond sombre)
+const GOLD = '#E9CFA4';
+const TEXT = '#F7F4FB';
+const MUTED = '#C3B8DD';
 
 function BabyNotes({ baby }: { baby: ExpectedBaby }) {
   const toast = useToast();
@@ -158,8 +160,8 @@ export default function PregnancyUniverse() {
 
       <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }} accessibilityLabel={tr('u2.preg.choose_week')}>
         {Array.from({ length: 39 }, (_, i) => i + 4).map((s) => (
-          <Tappable key={s} accessibilityRole="button" accessibilityState={{ selected: s === w }} accessibilityLabel={tr('u2.preg.week_n', { n: s })} onPress={() => setWeek(s === p.weeksSA ? null : s)} style={{ width: 46, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: s === w ? '#FF8FB1' : s === p.weeksSA ? '#3A1D2E' : 'transparent', borderWidth: 1, borderColor: '#FF8FB155' }}>
-            <Text variant="small" weight="bold" color={s === w ? '#1A0A13' : undefined}>{s}</Text>
+          <Tappable key={s} accessibilityRole="button" accessibilityState={{ selected: s === w }} accessibilityLabel={tr('u2.preg.week_n', { n: s })} onPress={() => setWeek(s === p.weeksSA ? null : s)} style={{ width: 46, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: s === w ? th.colors.primary : s === p.weeksSA ? th.colors.accentSoft : 'transparent', borderWidth: 1, borderColor: th.isDark ? 'rgba(205,190,250,0.33)' : 'rgba(91,42,134,0.25)' }}>
+            <Text variant="small" weight="bold" color={s === w ? th.colors.primaryText : undefined}>{s}</Text>
           </Tappable>
         ))}
       </ScrollView>

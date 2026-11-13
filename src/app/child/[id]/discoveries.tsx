@@ -136,7 +136,7 @@ export default function Discoveries() {
   return (
     <Screen back title={tr('dc.title')} subtitle={tr('dc.subtitle', { name, age: tr('dc.age', { count: age }) })}>
       <View testID="discoveries" />
-      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(255,214,190,0.05)', 'rgba(201,184,255,0.06)'] : ['#FFF7EE', '#FDEBE0', '#F1EAFB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2400, borderRadius: 32 }} />
+      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(243,219,189,0.05)', 'rgba(201,184,255,0.06)'] : ['#FFF7EE', '#F9EDDE', '#F1EAFB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2400, borderRadius: 32 }} />
 
       {/* Résumé : progression par catégorie, sans total ni comparaison */}
       <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.55)' : 'rgba(255,255,255,0.62)'} depth={2} radius={26} padded={spacing.md}>
@@ -285,13 +285,14 @@ export default function Discoveries() {
 }
 
 const CAT_TINT: Record<FoodCategory, string> = {
+  // couleurs des familles d'aliments : sémantiques, conservées
   veg: '#7DA548', fruit: '#E5525F', starch: '#E8CF8E', cereal: '#D8A866', legume: '#E4774C', meat: '#B5654E', fish: '#6C8296',
   egg: '#F6D365', dairy: '#C9B8FF', fat: '#E9C84A', herb: '#4E9A3E', allergen: '#A8754A', other: '#B9A3D6',
 };
 
 function FoodTile({ food, entry, state, width, locked, onPress }: { food: FoodDef; entry?: FoodEntry; state: DisplayState; width: number; locked: boolean; onPress: () => void }) {
   const t = useTheme();
-  const badge: Record<DisplayState, string> = { discovered: t.colors.success ?? '#3E8E41', retry_later: '#C9822B', to_discover: t.colors.textMuted, not_yet_age: t.colors.textMuted };
+  const badge: Record<DisplayState, string> = { discovered: t.colors.success ?? '#3E8E41', retry_later: '#AD8C5E', to_discover: t.colors.textMuted, not_yet_age: t.colors.textMuted };
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={`${food.name}. ${tr(`dc.state.${state}` as TKey)}${entry?.favorite ? `. ${tr('dc.favorite')}` : ''}${locked ? `. ${tr('dc.locked')}` : ''}`}
       onPress={onPress} testID={`dc-food-${food.key}`} style={{ width }}>
@@ -301,7 +302,7 @@ function FoodTile({ food, entry, state, width, locked, onPress }: { food: FoodDe
           <Text weight="bold" variant="small" center>{food.name}</Text>
           <Text variant="caption" center color={badge[state]} testID={`dc-state-${food.key}`}>{tr(`dc.state.${state}` as TKey)}</Text>
         </View>
-        {entry?.favorite ? <View style={{ position: 'absolute', top: 6, right: 6 }}><Icon name="heart" size={14} color="#E5525F" /></View> : null}
+        {entry?.favorite ? <View style={{ position: 'absolute', top: 6, right: 6 }}><Icon name="heart" size={14} color={t.colors.heart} /></View> : null}
         {locked ? <View style={{ position: 'absolute', top: 6, left: 6 }}><Icon name="lock" size={14} color={t.colors.textMuted} /></View> : null}
       </GlassSurface>
     </Tappable>
@@ -379,7 +380,7 @@ function FoodSheet({ food, child, age, entry, entries, tastings, recipes, premiu
             <Text weight="bold" testID="dc-sheet-state">{later ? tr('dc.state.not_yet_age_long', { age: tr('dc.age', { count: food.minMonths ?? 4 }) }) : st === 'to_discover' ? tr('dc.state.to_discover_long') : tr(`dc.state.${st}` as TKey)}</Text>
             {entry?.first_tried_on ? <Text variant="caption" muted>{tr('dc.sheet.firstOn', { date: day(entry.first_tried_on) })}</Text> : null}
           </View>
-          <IconButton icon="heart" label={entry?.favorite ? tr('dc.unfavorite') : tr('dc.favorite')} color={entry?.favorite ? '#E5525F' : t.colors.textMuted}
+          <IconButton icon="heart" label={entry?.favorite ? tr('dc.unfavorite') : tr('dc.favorite')} color={entry?.favorite ? t.colors.heart : t.colors.textMuted}
             onPress={() => fav.mutate({ child, food: { key: food.key, name: food.name }, existing: entry ?? null }, { onError: (e) => (/Limite|premium/.test(String(e)) ? onQuota() : toast(friendlyError(e), 'error')) })} />
         </Row>
         <View style={{ gap: 2 }}>

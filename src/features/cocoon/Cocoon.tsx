@@ -45,31 +45,33 @@ import { LOG_TABLE, type Article, type Bottle, type Breastfeed, type Child, type
 import { useUiStore } from '@/lib/store';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { DOCK_HEIGHT } from '@/components/Dock';
-import { fonts, NACRE, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
+import { fonts, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { t as tr, type TKey } from '@/i18n';
 import { toISODate } from '@/lib/domain/dates';
+import { CATEGORY_GLOW, CATEGORY_INK, HOMI, HOMI_FILL, HOMI_WASH } from '@/features/homiColors';
 
 type Journey = 'baby' | 'child' | null | undefined;
 const BLUR_OK = Platform.OS === 'ios' || Platform.OS === 'web';
 
-// ─── Palette du cocon (teintes douces, jamais de blanc pur) ───────────────────────────────────────
+// ─── Palette du cocon (HOMI : perle, lilas, champagne, midnight violet ; jamais de blanc pur) ───────
 
 const WASH: Record<CocoonMoment, [string, string, string]> = {
-  morning: ['rgba(255,224,204,0.78)', 'rgba(255,212,224,0.58)', 'rgba(255,246,232,0.55)'],
-  day: ['rgba(212,230,255,0.62)', 'rgba(228,216,255,0.58)', 'rgba(255,238,210,0.50)'],
-  sunset: ['rgba(255,198,160,0.66)', 'rgba(236,164,184,0.56)', 'rgba(196,166,226,0.56)'],
-  night: ['rgba(46,38,104,0.78)', 'rgba(78,46,120,0.62)', 'rgba(24,22,66,0.70)'],
+  morning: ['rgba(246,236,218,0.78)', 'rgba(228,218,251,0.58)', 'rgba(251,249,254,0.55)'], // champagne de l'aube → lilas
+  day: ['rgba(214,226,255,0.6)', 'rgba(228,218,251,0.58)', 'rgba(246,236,218,0.5)'], // bleu clair → lilas → champagne
+  sunset: ['rgba(233,207,164,0.6)', 'rgba(205,190,250,0.56)', 'rgba(150,120,210,0.5)'], // champagne → lilas → prune
+  night: ['rgba(38,28,74,0.8)', 'rgba(91,42,134,0.55)', 'rgba(22,17,43,0.72)'],
 };
-const DARK_WASH: [string, string, string] = ['rgba(46,38,104,0.70)', 'rgba(78,46,120,0.55)', 'rgba(24,22,66,0.62)'];
+const DARK_WASH: [string, string, string] = HOMI_WASH.night;
 
+/** Couleurs sémantiques des événements (voir homiColors) : encre de jour, lueur de nuit. */
 const KIND_INK: Record<RibbonKind, string> = {
-  sleep: '#7B66E0', wake: '#C98A1E', bottle: '#D2693C', breastfeed: '#C2416E', meal: '#3C8C55', diaper: '#3A78B5',
-  medication: '#5E4CC2', appointment: '#C25145', symptom: '#B7791F', note: '#7A6A86',
+  sleep: CATEGORY_INK.sleep, wake: CATEGORY_INK.wake, bottle: CATEGORY_INK.bottle, breastfeed: CATEGORY_INK.breastfeed, meal: CATEGORY_INK.meal, diaper: CATEGORY_INK.diaper,
+  medication: CATEGORY_INK.medication, appointment: CATEGORY_INK.appointment, symptom: CATEGORY_INK.symptom, note: CATEGORY_INK.note,
 };
 const KIND_INK_DARK: Record<RibbonKind, string> = {
-  sleep: '#B9A8FF', wake: '#FFD27A', bottle: '#FFB08A', breastfeed: '#FF9CC0', meal: '#9EDDB2', diaper: '#A8CCFF',
-  medication: '#C5B8FF', appointment: '#FFB0A6', symptom: '#FFD08A', note: '#D9CCE6',
+  sleep: CATEGORY_GLOW.sleep, wake: CATEGORY_GLOW.wake, bottle: CATEGORY_GLOW.bottle, breastfeed: CATEGORY_GLOW.breastfeed, meal: CATEGORY_GLOW.meal, diaper: CATEGORY_GLOW.diaper,
+  medication: CATEGORY_GLOW.medication, appointment: CATEGORY_GLOW.appointment, symptom: CATEGORY_GLOW.symptom, note: CATEGORY_GLOW.note,
 };
 const TRACK_OF: Partial<Record<RibbonKind, TrackKey>> = {
   sleep: 'sleep', bottle: 'bottle', breastfeed: 'breastfeed', meal: 'meal', diaper: 'diaper', medication: 'medication', appointment: 'appointment', symptom: 'observation',
@@ -85,19 +87,19 @@ function KindGlyph({ kind, color, size = 18 }: { kind: RibbonKind; color: string
 function Glass({ children, wash, style, rounded = 30, testID, clear }: { children: React.ReactNode; wash?: [string, string, string]; style?: object; rounded?: number; testID?: string; clear?: boolean }) {
   const t = useTheme();
   const dark = t.isDark;
-  // Cadre transparent (fond vidéo visible), simple liseré champagne : grand cadre du profil de l'enfant
+  // Cadre transparent (ciel de l'application visible), simple liseré lilas : grand cadre du profil de l'enfant
   if (clear) {
     return (
-      <View testID={testID} style={[{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(205,190,250,0.28)' : 'rgba(184,134,90,0.35)' }, style]}>
+      <View testID={testID} style={[{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(205,190,250,0.28)' : 'rgba(91,42,134,0.22)' }, style]}>
         {children}
       </View>
     );
   }
   return (
-    <View testID={testID} style={[{ borderRadius: rounded, shadowColor: dark ? '#000' : '#B4507A', shadowOpacity: dark ? 0.3 : 0.13, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 4 }, style]}>
+    <View testID={testID} style={[{ borderRadius: rounded, shadowColor: dark ? '#000' : HOMI.prune, shadowOpacity: dark ? 0.3 : 0.13, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 4 }, style]}>
       <View style={{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.78)' }}>
         {BLUR_OK ? <BlurView intensity={dark ? 28 : 40} tint={dark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} pointerEvents="none" /> : null}
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: dark ? 'rgba(30,24,58,0.58)' : 'rgba(255,250,246,0.56)' }]} />
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: dark ? 'rgba(30,24,58,0.58)' : 'rgba(251,249,254,0.56)' }]} />
         {wash ? <LinearGradient pointerEvents="none" colors={wash} locations={[0, 0.55, 1]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
         <LinearGradient pointerEvents="none" colors={[dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.55)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0 }} end={{ x: 0.5, y: 0.6 }} style={StyleSheet.absoluteFill} />
         <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: rounded * 0.7, right: rounded * 0.7, height: 1, backgroundColor: dark ? 'rgba(255,255,255,0.24)' : 'rgba(255,255,255,0.98)' }} />
@@ -116,11 +118,11 @@ function MomentArt({ moment, dark }: { moment: CocoonMoment; dark: boolean }) {
     return (
       <Svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMin slice" pointerEvents="none">
         <Defs>
-          <RadialGradient id={`m${id}`} cx="50%" cy="50%" r="50%"><Stop offset="0" stopColor="#FFE9B8" stopOpacity="0.55" /><Stop offset="1" stopColor="#FFE9B8" stopOpacity="0" /></RadialGradient>
+          <RadialGradient id={`m${id}`} cx="50%" cy="50%" r="50%"><Stop offset="0" stopColor={HOMI.lilac} stopOpacity="0.5" /><Stop offset="1" stopColor={HOMI.lilac} stopOpacity="0" /></RadialGradient>
         </Defs>
         <Circle cx="246" cy="62" r="60" fill={`url(#m${id})`} />
-        <Path d="M252 38a24 24 0 1 0 12 42a19 19 0 1 1-12-42z" fill="#FFF1CF" opacity="0.92" />
-        {stars.map(([x, y, r], i) => <Circle key={i} cx={x} cy={y} r={r} fill="#FFF3D9" opacity={0.55 + (i % 3) * 0.15} />)}
+        <Path d="M252 38a24 24 0 1 0 12 42a19 19 0 1 1-12-42z" fill={HOMI.starlight} opacity="0.92" />
+        {stars.map(([x, y, r], i) => <Circle key={i} cx={x} cy={y} r={r} fill={HOMI.pearl} opacity={0.55 + (i % 3) * 0.15} />)}
       </Svg>
     );
   }
@@ -128,8 +130,8 @@ function MomentArt({ moment, dark }: { moment: CocoonMoment; dark: boolean }) {
     return (
       <Svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMin slice" pointerEvents="none">
         <Defs>
-          <RadialGradient id={`s${id}`} cx="50%" cy="50%" r="50%"><Stop offset="0" stopColor="#FFC08A" stopOpacity="0.9" /><Stop offset="0.5" stopColor="#FF9FB0" stopOpacity="0.35" /><Stop offset="1" stopColor="#FF9FB0" stopOpacity="0" /></RadialGradient>
-          <SvgLinear id={`b${id}`} x1="0" y1="0" x2="0" y2="1"><Stop offset="0" stopColor="#FFFFFF" stopOpacity="0" /><Stop offset="1" stopColor="#F3B7C6" stopOpacity="0.35" /></SvgLinear>
+          <RadialGradient id={`s${id}`} cx="50%" cy="50%" r="50%"><Stop offset="0" stopColor={HOMI.champagne} stopOpacity="0.9" /><Stop offset="0.5" stopColor={HOMI.lilac} stopOpacity="0.4" /><Stop offset="1" stopColor={HOMI.lilac} stopOpacity="0" /></RadialGradient>
+          <SvgLinear id={`b${id}`} x1="0" y1="0" x2="0" y2="1"><Stop offset="0" stopColor="#FFFFFF" stopOpacity="0" /><Stop offset="1" stopColor="#B9A6F2" stopOpacity="0.35" /></SvgLinear>
         </Defs>
         <Circle cx="40" cy="210" r="170" fill={`url(#s${id})`} />
         <Rect x="0" y="180" width="300" height="220" fill={`url(#b${id})`} />
@@ -143,8 +145,8 @@ function MomentArt({ moment, dark }: { moment: CocoonMoment; dark: boolean }) {
     <Svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMin slice" pointerEvents="none">
       <Defs>
         <RadialGradient id={`d${id}`} cx="50%" cy="50%" r="50%">
-          <Stop offset="0" stopColor={morning ? '#FFD3B0' : '#FFE7A8'} stopOpacity={morning ? 0.95 : 0.8} />
-          <Stop offset="0.45" stopColor={morning ? '#FFC2CF' : '#FFF1CC'} stopOpacity="0.32" />
+          <Stop offset="0" stopColor={morning ? HOMI.champagne : HOMI.champagnePale} stopOpacity={morning ? 0.9 : 0.8} />
+          <Stop offset="0.45" stopColor={morning ? HOMI.lilacPale : HOMI.white} stopOpacity="0.32" />
           <Stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
         </RadialGradient>
       </Defs>
@@ -171,8 +173,8 @@ function Motes({ dark, count = 7 }: { dark: boolean; count?: number }) {
       {dots.map((d, i) => (
         <Animated.View key={i} style={{
           position: 'absolute', left: d.left as `${number}%`, top: d.top as `${number}%`, width: d.size, height: d.size, borderRadius: d.size,
-          backgroundColor: dark ? '#FFF1CF' : '#FFFFFF', opacity: dark ? 0.55 : 0.85,
-          shadowColor: dark ? '#FFE3A0' : '#FFFFFF', shadowOpacity: 0.9, shadowRadius: 4,
+          backgroundColor: dark ? HOMI.starlight : '#FFFFFF', opacity: dark ? 0.55 : 0.85,
+          shadowColor: dark ? HOMI.lilac : '#FFFFFF', shadowOpacity: 0.9, shadowRadius: 4,
           transform: [{ translateY: v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, -d.amp * d.dir, 0] }) }],
         }} />
       ))}
@@ -194,7 +196,7 @@ function BreathingHalo({ size, dark, moment }: { size: number; dark: boolean; mo
     return () => loop.stop();
   }, [reduce, v]);
   const id = React.useId().replace(/:/g, '');
-  const c = dark || moment === 'night' ? '#B9A2FF' : moment === 'sunset' ? '#FFB49A' : moment === 'morning' ? '#FFC7B0' : '#C9B6FF';
+  const c = dark || moment === 'night' ? '#B9A2FF' : moment === 'sunset' ? HOMI.champagne : moment === 'morning' ? HOMI.lilac : '#C9B6FF';
   return (
     <Animated.View pointerEvents="none" style={{ position: 'absolute', width: size, height: size, opacity: v.interpolate({ inputRange: [0, 1], outputRange: [0.75, 1] }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1.05] }) }] }}>
       <Svg width={size} height={size}>
@@ -383,7 +385,7 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
         <View style={{ alignItems: 'center', paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.md, gap: 4 }}>
           <Pressable accessibilityRole="button" accessibilityLabel={tr('coc.a11y.openProfile', { name: child.first_name })} onPress={() => router.push(`/child/${child.id}`)} style={{ width: 132, height: 132, alignItems: 'center', justifyContent: 'center' }} testID="cocoon-avatar">
             <BreathingHalo size={132} dark={dark} moment={moment} />
-            <View style={{ borderRadius: 50, borderWidth: 3, borderColor: dark ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.95)', shadowColor: dark ? '#000' : '#B4507A', shadowOpacity: 0.22, shadowRadius: 14, shadowOffset: { width: 0, height: 6 } }}>
+            <View style={{ borderRadius: 50, borderWidth: 3, borderColor: dark ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.95)', shadowColor: dark ? '#000' : HOMI.prune, shadowOpacity: 0.22, shadowRadius: 14, shadowOffset: { width: 0, height: 6 } }}>
               <ChildAvatar child={child} size={88} />
             </View>
           </Pressable>
@@ -392,7 +394,7 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
           {state ? (
             <View testID="sleep-now" style={{ marginTop: spacing.xs, alignItems: 'center', gap: 2 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, backgroundColor: dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.62)' }}>
-                <Icon name={openSleep ? 'moon' : 'sun'} size={15} color={dark ? '#FFE3A0' : '#B26A2E'} />
+                <Icon name={openSleep ? 'moon' : 'sun'} size={15} color={dark ? t.colors.accent : t.colors.gold} />
                 <Text weight="bold" center testID="sleep-now-state" accessibilityLiveRegion="polite">{state}</Text>
               </View>
               {sleepOn && next ? (premium
@@ -405,8 +407,8 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
               {actions.map((a, i) => (
                 <Tappable key={a.testID} testID={a.testID} accessibilityRole="button" accessibilityLabel={`${a.label}, ${child.first_name}`} disabled={busy} onPress={() => go(a)}
                   style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: 18, borderRadius: radius.pill, opacity: busy ? 0.6 : pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }],
-                    borderWidth: 1, borderColor: i === 0 ? 'transparent' : dark ? 'rgba(205,190,250,0.22)' : 'rgba(184,134,90,0.30)',
-                    backgroundColor: i === 0 ? t.colors.primary : (dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,250,246,0.75)') })}>
+                    borderWidth: 1, borderColor: i === 0 ? 'transparent' : dark ? 'rgba(205,190,250,0.22)' : 'rgba(91,42,134,0.2)',
+                    backgroundColor: i === 0 ? t.colors.primary : (dark ? 'rgba(255,255,255,0.10)' : 'rgba(251,249,254,0.75)') })}>
                   <Icon name={a.icon} size={17} color={i === 0 ? t.colors.primaryText : t.colors.text} />
                   <Text weight="bold" color={i === 0 ? t.colors.primaryText : undefined}>{a.label}</Text>
                 </Tappable>
@@ -422,7 +424,7 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
           ) : null}
           {list.length > 1 ? (
             <View style={{ flexDirection: 'row', gap: 6, marginTop: 4 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-              {list.map((c) => <View key={c.id} style={{ width: c.id === child.id ? 16 : 6, height: 6, borderRadius: 3, backgroundColor: c.id === child.id ? (dark ? '#FFFFFF' : t.colors.text) : (dark ? 'rgba(255,255,255,0.35)' : 'rgba(43,36,51,0.22)') }} />)}
+              {list.map((c) => <View key={c.id} style={{ width: c.id === child.id ? 16 : 6, height: 6, borderRadius: 3, backgroundColor: c.id === child.id ? (dark ? '#FFFFFF' : t.colors.text) : (dark ? 'rgba(255,255,255,0.35)' : 'rgba(28,21,51,0.22)') }} />)}
             </View>
           ) : null}
         </View>
@@ -484,7 +486,7 @@ function DayRibbon({ child, events, now }: { child: Child; events: RibbonEvent[]
               const h = new Date(range.from + i * 3600_000).getHours();
               return (
                 <View key={i} pointerEvents="none" style={{ position: 'absolute', left: i * HOUR_W, top: 8, bottom: 0, alignItems: 'center', width: 1 }}>
-                  <View style={{ flex: 1, width: 1, backgroundColor: dark ? 'rgba(255,255,255,0.07)' : 'rgba(43,36,51,0.06)' }} />
+                  <View style={{ flex: 1, width: 1, backgroundColor: dark ? 'rgba(255,255,255,0.07)' : 'rgba(28,21,51,0.06)' }} />
                   {i % 2 === 0 ? <Text variant="caption" muted style={{ position: 'absolute', bottom: 0, width: 40, left: -20, textAlign: 'center', fontSize: 11 }}>{tr('coc.ribbon.hour', { h: String(h) })}</Text> : null}
                 </View>
               );
@@ -519,8 +521,8 @@ function DayRibbon({ child, events, now }: { child: Child; events: RibbonEvent[]
             })}
             {/* Heure actuelle */}
             {nowX >= 0 && nowX <= width ? (
-              <View pointerEvents="none" style={{ position: 'absolute', left: nowX - 1, top: 0, bottom: 16, width: 2, borderRadius: 1, backgroundColor: dark ? '#FFD27A' : '#E0607E' }} testID="cocoon-now-line">
-                <View style={{ position: 'absolute', top: -2, left: -4, width: 10, height: 10, borderRadius: 5, backgroundColor: dark ? '#FFD27A' : '#E0607E', borderWidth: 2, borderColor: dark ? '#1E1838' : '#FFFFFF' }} />
+              <View pointerEvents="none" style={{ position: 'absolute', left: nowX - 1, top: 0, bottom: 16, width: 2, borderRadius: 1, backgroundColor: dark ? HOMI.champagne : HOMI.prune }} testID="cocoon-now-line">
+                <View style={{ position: 'absolute', top: -2, left: -4, width: 10, height: 10, borderRadius: 5, backgroundColor: dark ? HOMI.champagne : HOMI.prune, borderWidth: 2, borderColor: dark ? '#1E1838' : '#FFFFFF' }} />
               </View>
             ) : null}
           </View>
@@ -628,9 +630,9 @@ function KeepCard({ item, child }: { item: KeepItem; child: Child }) {
   return (
     <View>
     <Pressable accessibilityRole="button" accessibilityLabel={`${tr('coc.keep.title')} : ${item.title}${item.detail ? `. ${item.detail}` : ''}${item.then ? `. ${item.then}` : ''}`} onPress={go} style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })} testID="cocoon-keep">
-      <Glass rounded={28} wash={t.isDark ? undefined : ['rgba(255,236,214,0.55)', 'rgba(255,226,236,0.35)', 'rgba(232,222,255,0.45)']}>
+      <Glass rounded={28} wash={t.isDark ? undefined : ['rgba(246,236,218,0.55)', 'rgba(228,218,251,0.4)', 'rgba(232,222,255,0.45)']}>
         <View style={{ flexDirection: 'row', gap: spacing.sm, padding: spacing.md, alignItems: 'flex-start' }}>
-          <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' }}>
+          <LinearGradient colors={HOMI_FILL} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' }}>
             <Icon name={KEEP_ICON[item.kind]} size={19} color="#FFFFFF" />
           </LinearGradient>
           <View style={{ flex: 1, gap: 2 }}>
@@ -662,10 +664,10 @@ function artTheme(a: Article): ArtTheme {
   return 'growth';
 }
 const ART: Record<ArtTheme, { c: [string, string, string]; glyph: TrackKey }> = {
-  sleep: { c: ['#C9B8FF', '#F5C7DA', '#FFE4C8'], glyph: 'sleep' },
-  food: { c: ['#FFD0B0', '#FFE9C2', '#CDEBD3'], glyph: 'meal' },
-  health: { c: ['#CFE3FF', '#E6DAFF', '#FFE0E8'], glyph: 'observation' },
-  growth: { c: ['#FFD6C4', '#DCD2FF', '#D3ECF0'], glyph: 'growth' },
+  sleep: { c: ['#C9B8FF', '#E4DAFB', '#F6ECDA'], glyph: 'sleep' }, // lilas → perle → champagne
+  food: { c: ['#F6ECDA', '#E9CFA4', '#CDEBD3'], glyph: 'meal' }, // champagne → sauge
+  health: { c: ['#CFE3FF', '#E6DAFF', '#F1ECFF'], glyph: 'observation' }, // bleu → lilas
+  growth: { c: ['#E9CFA4', '#DCD2FF', '#D3ECF0'], glyph: 'growth' }, // champagne → lilas → menthe
 };
 
 /** Illustration propre à HOMI (formes douces + pictogramme), jamais une image générée. */
@@ -685,7 +687,7 @@ function ArticleArt({ theme }: { theme: ArtTheme }) {
         <Path d="M0 94 C 30 84, 56 104, 92 90 L 92 110 L 0 110 Z" fill="#FFFFFF" opacity="0.30" />
         <Circle cx="46" cy="52" r="22" fill="#FFFFFF" opacity="0.7" />
       </Svg>
-      <View style={{ position: 'absolute', left: 0, right: 0, top: 41, alignItems: 'center' }}><TrackIcon k={a.glyph} color="#6A52D6" size={22} /></View>
+      <View style={{ position: 'absolute', left: 0, right: 0, top: 41, alignItems: 'center' }}><TrackIcon k={a.glyph} color={HOMI.lilacInk} size={22} /></View>
     </View>
   );
 }
@@ -787,8 +789,8 @@ export function CocoonAdd({ child, journey }: { child: Child; journey: Journey }
     <>
       <View pointerEvents="box-none" style={{ position: 'absolute', right: spacing.lg, bottom: Math.max(insets.bottom, 10) + DOCK_HEIGHT + 6 }}>
         <Pressable testID="cocoon-add" accessibilityRole="button" accessibilityLabel={tr('coc.add.a11y', { name: child.first_name })} onPress={() => { haptic('light'); setEditing(false); setOpen(true); }}
-          style={({ pressed }) => ({ borderRadius: radius.pill, transform: [{ scale: pressed ? 0.96 : 1 }], shadowColor: '#B4507A', shadowOpacity: 0.35, shadowRadius: 18, shadowOffset: { width: 0, height: 10 }, elevation: 8 })}>
-          <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 56, minWidth: 56, paddingHorizontal: compact ? 0 : 22, borderRadius: radius.pill, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)' }}>
+          style={({ pressed }) => ({ borderRadius: radius.pill, transform: [{ scale: pressed ? 0.96 : 1 }], shadowColor: HOMI.prune, shadowOpacity: 0.35, shadowRadius: 18, shadowOffset: { width: 0, height: 10 }, elevation: 8 })}>
+          <LinearGradient colors={HOMI_FILL} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 56, minWidth: 56, paddingHorizontal: compact ? 0 : 22, borderRadius: radius.pill, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)' }}>
             <Icon name="plus" size={compact ? 26 : 22} color="#FFFFFF" />
             {compact ? null : <Text weight="bold" color="#FFFFFF">{tr('coc.add.button')}</Text>}
           </LinearGradient>

@@ -50,7 +50,7 @@ export function DayClock({ events, size = 280, children, now = new Date(), label
       <Svg width={size} height={size}>
         {/* cadran : nuit (18h-6h) teintée, jour clair */}
         <Path d={arc(c, c, rSleep, angleOf(new Date(2000, 0, 1, 18)), angleOf(new Date(2000, 0, 1, 6)))} stroke={t.isDark ? '#262B57' : '#DCD5EE'} strokeWidth={26} fill="none" />
-        <Path d={arc(c, c, rSleep, angleOf(new Date(2000, 0, 1, 6)), angleOf(new Date(2000, 0, 1, 18)))} stroke={t.isDark ? '#1E2247' : '#F3EEE6'} strokeWidth={26} fill="none" />
+        <Path d={arc(c, c, rSleep, angleOf(new Date(2000, 0, 1, 6)), angleOf(new Date(2000, 0, 1, 18)))} stroke={t.isDark ? '#1E2247' : '#F1ECF7'} strokeWidth={26} fill="none" />
         {Array.from({ length: 24 }, (_, h) => {
           const a = (h / 24) * 360 - 90;
           const p1 = polar(c, c, c - 6, a);
@@ -120,9 +120,10 @@ function SvgLabel({ text, color }: { text: string; color: string }) {
 }
 
 /** Anneau des 40 semaines autour de l'illustration du bébé. */
-const NEON = '#FFC861';
-const NEON_CORE = '#FFE7A8';
-const NEON_HOT = '#FFF6DC';
+// HOMI : perles champagne (plus de jaune doré néon)
+const NEON = '#E2C48B';
+const NEON_CORE = '#F1E2C6';
+const NEON_HOT = '#F7F4FB';
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 /**

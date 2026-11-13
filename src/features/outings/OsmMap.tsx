@@ -83,7 +83,7 @@ export function OsmMap({ center, places, height = 320, onSelect, interactive = t
   const moved = !!view || zoom != null;
   return (
     <View onLayout={(e) => setW(Math.max(200, Math.round(e.nativeEvent.layout.width)))} testID="out-map" accessibilityLabel={tr('out.mapA11y')}
-      style={{ height, borderRadius: 24, overflow: 'hidden', backgroundColor: t.isDark ? '#2A2440' : '#F3EEE6', borderWidth: 1, borderColor: t.colors.border }}
+      style={{ height, borderRadius: 24, overflow: 'hidden', backgroundColor: t.isDark ? '#2A2440' : '#F4EEE6', borderWidth: 1, borderColor: t.colors.border }}
       {...pan.panHandlers}>
       {tiles.map((tile) => (
         <Image key={tile.key} source={{ uri: tile.url }} accessibilityIgnoresInvertColors testID="out-map-tile"

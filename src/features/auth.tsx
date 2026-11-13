@@ -108,6 +108,7 @@ function AppleNativeButton({ onPress }: { onPress: () => void }) {
 
 /** Bouton « Renvoyer l'e-mail », utilisable une fois toutes les 60 secondes. */
 export function ResendButton({ onResend, label = tr('auth.resend'), initialSentAt = Date.now() }: { onResend: () => Promise<void>; label?: string; initialSentAt?: number | null }) {
+  const t = useTheme();
   const [sentAt, setSentAt] = useState<number | null>(initialSentAt);
   const [now, setNow] = useState(Date.now());
   const [busy, setBusy] = useState(false);
@@ -136,7 +137,7 @@ export function ResendButton({ onResend, label = tr('auth.resend'), initialSentA
   return (
     <View style={{ gap: 4 }}>
       <Button label={remaining ? tr('auth.resendIn', { label, seconds: remaining }) : label} icon="send" variant="secondary" disabled={!!remaining} loading={busy} onPress={go} />
-      {msg ? <Text variant="small" color={msg.ok ? undefined : '#C2416E'} accessibilityLiveRegion="polite">{msg.text}</Text> : null}
+      {msg ? <Text variant="small" color={msg.ok ? undefined : t.colors.danger} accessibilityLiveRegion="polite">{msg.text}</Text> : null}
     </View>
   );
 }

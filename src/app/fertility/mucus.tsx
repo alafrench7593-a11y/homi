@@ -32,7 +32,7 @@ import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr } from '@/i18n';
 
-const SIGN_COLOUR = { less_fertile: '#C9B79C', intermediate: '#F2C46D', potentially_fertile: '#7FB6E8', see_professional: '#E0607E', none: '#B9B9C6' } as const;
+const SIGN_COLOUR = { less_fertile: '#CBB69C', intermediate: '#E9C594', potentially_fertile: '#7FB6E8', see_professional: '#C8283F', none: '#B9B9C6' } as const;
 
 export default function MucusScreen() {
   const t = useTheme();

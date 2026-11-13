@@ -68,17 +68,17 @@ export function SpaceTile({ forum, selected, onPress }: { forum: Forum; selected
 /** Illustrations originales : un fond doux et un motif simple (aucun visage réel, aucune marque). */
 const PRESETS: Record<string, { bg: [string, string]; ink: string; d: string }> = {
   moon: { bg: ['#E7E1FF', '#C9BCFA'], ink: '#5B47B8', d: 'M38 14a18 18 0 1 0 12 30A16 16 0 0 1 38 14z' },
-  sun: { bg: ['#FFE9C7', '#FFC98F'], ink: '#C86A1A', d: 'M32 22a10 10 0 1 1 0 20a10 10 0 1 1 0-20zM32 8v7M32 49v7M8 32h7M49 32h7M15 15l5 5M44 44l5 5M49 15l-5 5M20 44l-5 5' },
+  sun: { bg: ['#F6ECDA', '#E9CFA4'], ink: '#6B4C16', d: 'M32 22a10 10 0 1 1 0 20a10 10 0 1 1 0-20zM32 8v7M32 49v7M8 32h7M49 32h7M15 15l5 5M44 44l5 5M49 15l-5 5M20 44l-5 5' },
   leaf: { bg: ['#DDF3E4', '#B7E3C4'], ink: '#2E7D4F', d: 'M16 48C16 26 30 14 50 14c0 20-12 34-34 34zM16 48l20-20' },
   cloud: { bg: ['#E2F0FB', '#BFDDF5'], ink: '#2F6E9E', d: 'M20 44a9 9 0 0 1 0-18a12 12 0 0 1 23-3a10 10 0 0 1 2 21z' },
-  star: { bg: ['#FFF2C9', '#FFDF85'], ink: '#B07A00', d: 'M32 12l6 13l14 2l-10 10l3 14l-13-7l-13 7l3-14l-10-10l14-2z' },
-  heart: { bg: ['#FFE0E8', '#FFB8CB'], ink: '#C2416E', d: 'M32 50S12 38 12 25a10 10 0 0 1 20-3a10 10 0 0 1 20 3c0 13-20 25-20 25z' },
+  star: { bg: ['#F6EFE4', '#EBD9B5'], ink: '#6A4E10', d: 'M32 12l6 13l14 2l-10 10l3 14l-13-7l-13 7l3-14l-10-10l14-2z' },
+  heart: { bg: ['#FBE8F1', '#F2C6DC'], ink: '#8E2A5A', d: 'M32 50S12 38 12 25a10 10 0 0 1 20-3a10 10 0 0 1 20 3c0 13-20 25-20 25z' },
   wave: { bg: ['#DDF5F4', '#AEE4E1'], ink: '#1F7C78', d: 'M10 30c6-6 11-6 16 0s10 6 16 0s10-6 16 0M10 42c6-6 11-6 16 0s10 6 16 0s10-6 16 0' },
-  flower: { bg: ['#FBE3F2', '#F2C0E0'], ink: '#A23C84', d: 'M32 24a6 6 0 1 1 0 12a6 6 0 1 1 0-12zM32 12a7 7 0 0 1 0 12M32 36a7 7 0 0 1 0 12M20 30a7 7 0 0 1 12 0M32 30a7 7 0 0 1 12 0' },
+  flower: { bg: ['#F4E8F7', '#E4C8EE'], ink: '#74348A', d: 'M32 24a6 6 0 1 1 0 12a6 6 0 1 1 0-12zM32 12a7 7 0 0 1 0 12M32 36a7 7 0 0 1 0 12M20 30a7 7 0 0 1 12 0M32 30a7 7 0 0 1 12 0' },
   bird: { bg: ['#E6EEFF', '#C3D3FF'], ink: '#3550A8', d: 'M12 38c10 2 18-2 22-10c4 6 10 8 18 6c-6 8-16 12-26 10c-6-1-10-3-14-6zM40 24l6-4' },
   whale: { bg: ['#DCEBF7', '#B3D2EC'], ink: '#24537D', d: 'M10 34c4-10 20-14 32-8c6 3 10 2 12-2c2 8-4 16-14 18c-12 3-26 0-30-8zM40 22c0-4 2-6 4-8' },
-  bear: { bg: ['#F3E6DA', '#E2C8B0'], ink: '#7A5233', d: 'M32 22a14 14 0 1 1 0 28a14 14 0 1 1 0-28zM20 22a5 5 0 1 1 0-1M44 22a5 5 0 1 1 0-1M28 36h1M35 36h1M30 42q2 2 4 0' },
-  rainbow: { bg: ['#FFE8E0', '#FFD0C2'], ink: '#B4533A', d: 'M12 46a20 20 0 0 1 40 0M18 46a14 14 0 0 1 28 0M24 46a8 8 0 0 1 16 0' },
+  bear: { bg: ['#EFE9E1', '#DCCFBE'], ink: '#5E4A2E', d: 'M32 22a14 14 0 1 1 0 28a14 14 0 1 1 0-28zM20 22a5 5 0 1 1 0-1M44 22a5 5 0 1 1 0-1M28 36h1M35 36h1M30 42q2 2 4 0' },
+  rainbow: { bg: ['#EEE8FB', '#D9CCFA'], ink: '#5B2A86', d: 'M12 46a20 20 0 0 1 40 0M18 46a14 14 0 0 1 28 0M24 46a8 8 0 0 1 16 0' },
 };
 
 export function PresetAvatar({ preset, size = 44 }: { preset: string; size?: number }) {

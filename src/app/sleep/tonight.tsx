@@ -58,7 +58,7 @@ export default function Tonight() {
             <Row gap={6}><Icon name="x" color={MUTED} size={20} /><Text color={MUTED}>{tr('u4.tonight.close')}</Text></Row>
           </Tappable>
           <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.tonight.emergency')} onPress={() => router.push('/emergency')} hitSlop={10} style={{ minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="life-buoy" color="#C7A0A0" size={22} />
+            <Icon name="life-buoy" color="#AFA5C0" size={22} />
           </Tappable>
         </Row>
         <Text variant="title" color={TEXT}>{tr('u4.tonight.title')}</Text>

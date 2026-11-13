@@ -1,4 +1,4 @@
-/** Accueil avant connexion : aurore liquide, verre, titre qui se dévoile ligne par ligne. */
+/** Accueil avant connexion (HOMI) : ciel Perle ou Minuit de la coque, verre, titre qui se dévoile ligne par ligne. */
 import React from 'react';
 import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
@@ -82,8 +82,8 @@ export default function Welcome() {
         {/* Texte principal, en bas et centré */}
         <View style={{ alignItems: 'center' }}>
           <Appear kind="pop" delay={0.22}>
-            <LinearGradient colors={t.isDark ? ['rgba(231,192,143,0.45)', 'rgba(42,36,72,0.65)', 'rgba(31,35,68,0.75)'] : ['rgba(230,190,150,0.7)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, marginBottom: 18 }}>
-              <Sparkle color={t.isDark ? '#FFFFFF' : '#5B2A86'} />
+            <LinearGradient colors={t.isDark ? ['rgba(233,207,164,0.34)', 'rgba(91,42,134,0.5)', 'rgba(38,28,74,0.78)'] : ['rgba(205,190,250,0.7)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, marginBottom: 18 }}>
+              <Sparkle color={t.isDark ? t.colors.accent : t.colors.primary} />
               <Text variant="small" color={ink}>{tr('brand.tagline')}</Text>
             </LinearGradient>
           </Appear>
@@ -95,7 +95,7 @@ export default function Welcome() {
             </Appear>
             <Appear kind="mask" delay={0.62}>
               <Text center style={{ fontFamily: fonts.displayMedium, fontSize: 38, lineHeight: 46, letterSpacing: -1.6, color: ink }}>
-                <Text style={{ fontFamily: fonts.serifItalic, fontSize: 43, letterSpacing: -0.8, color: t.isDark ? '#E7C08F' : '#9A5A48' }}>{tr('welcome.title2a')}</Text>{tr('welcome.title2b')}
+                <Text style={{ fontFamily: fonts.serifItalic, fontSize: 43, letterSpacing: -0.8, color: t.isDark ? t.colors.accent : t.colors.primary }}>{tr('welcome.title2a')}</Text>{tr('welcome.title2b')}
               </Text>
             </Appear>
           </View>

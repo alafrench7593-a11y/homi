@@ -36,16 +36,18 @@ import { useUiStore } from '@/lib/store';
 import type { Bottle, Breastfeed, Child, Diaper, Meal, Observation, Pumping, Sleep } from '@/lib/types';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { CATEGORY_INK, HOMI } from '@/features/homiColors';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 
 export interface ActionModel { key: ActionKey; info: string; onOpen: () => void; onAdd: () => void; addLabel?: string; active?: boolean }
 
 const TRACK_KEYS = new Set<string>(['bottle', 'breastfeed', 'diaper', 'sleep', 'meal', 'pumping', 'observation', 'growth', 'medication', 'appointment', 'mother_sleep', 'mood', 'weight']);
 const ICON: Partial<Record<ActionKey, IconName>> = { period: 'droplet', cycle_symptom: 'activity', contraception: 'shield', ovulation_test: 'check-circle', mucus: 'cloud-drizzle', temperature: 'thermometer', feel: 'feather', echo: 'aperture', checkin: 'edit-3' };
+/** Encres sémantiques HOMI (homiColors) : une couleur par catégorie, lisible sur le verre clair. */
 const INK: Record<ActionKey, string> = {
-  period: '#C2416E', cycle_symptom: '#B7791F', mood: '#C27A2C', contraception: '#3A78B5', ovulation_test: '#6A52D6', mucus: '#2A8A80', temperature: '#C25145', appointment: '#C25145',
-  feel: '#B4507A', mother_sleep: '#4F5EC4', eat: '#3C8C55', weight: '#5B6B7C', echo: '#6A52D6', checkin: '#7A5CE0',
-  breastfeed: '#C2416E', bottle: '#D2693C', diaper: '#3A78B5', sleep: '#6A52D6', meal: '#3C8C55', medication: '#5E4CC2', growth: '#2A8A80', pumping: '#A6448A', observation: '#B7791F',
+  period: CATEGORY_INK.breastfeed, cycle_symptom: CATEGORY_INK.symptom, mood: CATEGORY_INK.wake, contraception: CATEGORY_INK.diaper, ovulation_test: CATEGORY_INK.sleep, mucus: CATEGORY_INK.bottle, temperature: CATEGORY_INK.appointment, appointment: CATEGORY_INK.appointment,
+  feel: CATEGORY_INK.feel, mother_sleep: CATEGORY_INK.mother_sleep, eat: CATEGORY_INK.meal, weight: CATEGORY_INK.weight, echo: CATEGORY_INK.sleep, checkin: CATEGORY_INK.reminder,
+  breastfeed: CATEGORY_INK.breastfeed, bottle: CATEGORY_INK.bottle, diaper: CATEGORY_INK.diaper, sleep: CATEGORY_INK.sleep, meal: CATEGORY_INK.meal, medication: CATEGORY_INK.medication, growth: CATEGORY_INK.growth, pumping: CATEGORY_INK.pumping, observation: CATEGORY_INK.symptom,
 };
 const INK_DARK = '#C9B8FF';
 
@@ -224,10 +226,10 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
   const everything = [...shown, ...more].map((k) => models[k]).filter((m): m is ActionModel => !!m);
 
   return (
-    <View testID="daily-actions" style={{ borderRadius: 28, shadowColor: dark ? '#000' : '#B4507A', shadowOpacity: dark ? 0.3 : 0.12, shadowRadius: 22, shadowOffset: { width: 0, height: 10 }, elevation: 3 }}>
+    <View testID="daily-actions" style={{ borderRadius: 28, shadowColor: dark ? '#000' : HOMI.prune, shadowOpacity: dark ? 0.3 : 0.12, shadowRadius: 22, shadowOffset: { width: 0, height: 10 }, elevation: 3 }}>
       <View style={{ borderRadius: 28, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.13)' : 'rgba(255,255,255,0.85)' }}>
         {Platform.OS === 'ios' || Platform.OS === 'web' ? <BlurView intensity={dark ? 26 : 38} tint={dark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} pointerEvents="none" /> : null}
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: dark ? 'rgba(30,24,58,0.55)' : 'rgba(255,250,246,0.58)' }]} />
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: dark ? 'rgba(30,24,58,0.55)' : 'rgba(251,249,254,0.6)' }]} />
         <LinearGradient pointerEvents="none" colors={dark ? ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0)'] : ['rgba(255,255,255,0.6)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0 }} end={{ x: 0.5, y: 0.7 }} style={StyleSheet.absoluteFill} />
         <View style={{ paddingTop: spacing.sm, paddingBottom: spacing.sm, gap: spacing.xs }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.md, gap: spacing.xs }}>
@@ -236,14 +238,14 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
               <Text variant="caption" muted>{tr(PROFILE_SUB[ctx.profile])}</Text>
             </View>
             <Tappable accessibilityRole="button" accessibilityLabel={tr('da.seeAllA11y')} onPress={() => setAll(true)} testID="track-see-all"
-              style={{ minHeight: 40, paddingHorizontal: 14, borderRadius: radius.pill, justifyContent: 'center', borderWidth: 1, borderColor: dark ? 'rgba(205,190,250,0.22)' : 'rgba(184,134,90,0.30)', backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.75)' }}>
+              style={{ minHeight: 40, paddingHorizontal: 14, borderRadius: radius.pill, justifyContent: 'center', borderWidth: 1, borderColor: dark ? 'rgba(205,190,250,0.22)' : 'rgba(91,42,134,0.2)', backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.75)' }}>
               <Text variant="small" weight="bold" color={t.colors.primary}>{tr('da.seeAll')}</Text>
             </Tappable>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md, gap: spacing.xs }} testID="track-cards">
             {list.map((m) => <Capsule key={m.key} m={m} />)}
             <Tappable accessibilityRole="button" accessibilityLabel={tr('da.customize')} testID="actions-customize" onPress={() => { setDraft(shown); setEdit(true); }}
-              style={{ width: 92, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 22, borderWidth: 1, borderStyle: 'dashed', borderColor: dark ? 'rgba(255,255,255,0.25)' : 'rgba(43,36,51,0.18)', minHeight: 132 }}>
+              style={{ width: 92, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 22, borderWidth: 1, borderStyle: 'dashed', borderColor: dark ? 'rgba(255,255,255,0.25)' : 'rgba(28,21,51,0.18)', minHeight: 132 }}>
               <Icon name="sliders" size={18} color={t.colors.textMuted} />
               <Text variant="caption" muted center>{tr('da.customizeShort')}</Text>
             </Tappable>
@@ -300,7 +302,7 @@ function Capsule({ m }: { m: ActionModel }) {
       </Tappable>
       <Tappable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={10} testID={`track-add-${m.key}`}
         onPress={() => { haptic('light'); m.onAdd(); }} pressScale={0.9} hoverLift={0}
-        style={({ pressed }) => ({ position: 'absolute', top: 8, right: 8, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, opacity: pressed ? 0.85 : 1, shadowColor: dark ? '#000000' : '#6B3F2E', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } })}>
+        style={({ pressed }) => ({ position: 'absolute', top: 8, right: 8, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, opacity: pressed ? 0.85 : 1, shadowColor: dark ? '#000000' : '#50446B', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } })}>
         <Icon name={m.active ? 'sun' : 'plus'} size={16} color={t.colors.primaryText} />
       </Tappable>
     </View>

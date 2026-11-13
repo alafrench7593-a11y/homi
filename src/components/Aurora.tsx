@@ -15,13 +15,13 @@ export type AuroraMood = 'day' | 'dawn' | 'evening' | 'night' | 'lowlight';
 const MOODS: Record<AuroraMood, { base: [string, string, string]; glows: { c: string; o: number }[]; ribbons: { c: string; o: number }[] }> = {
   dawn: {
     base: ['#FBF9FE', '#F4F0FA', '#EFE9F8'],
-    glows: [{ c: '#E4DAFB', o: 0.75 }, { c: '#F1E3C7', o: 0.55 }, { c: '#CDBEFA', o: 0.55 }, { c: '#F6EEDD', o: 0.5 }],
+    glows: [{ c: '#E4DAFB', o: 0.75 }, { c: '#F6E1C8', o: 0.55 }, { c: '#CDBEFA', o: 0.55 }, { c: '#FAEDDD', o: 0.5 }],
     ribbons: [{ c: '#D9CCFA', o: 0.35 }, { c: '#E9CFA4', o: 0.25 }],
   },
   day: {
     base: ['#FFFFFF', '#F7F4FB', '#F1ECF9'],
-    glows: [{ c: '#E9DFFC', o: 0.65 }, { c: '#F3E6CC', o: 0.5 }, { c: '#D3C6FB', o: 0.55 }, { c: '#E8E1F7', o: 0.5 }],
-    ribbons: [{ c: '#DCD0FA', o: 0.3 }, { c: '#EFDDBA', o: 0.24 }],
+    glows: [{ c: '#E9DFFC', o: 0.65 }, { c: '#F8E4CD', o: 0.5 }, { c: '#D3C6FB', o: 0.55 }, { c: '#E8E1F7', o: 0.5 }],
+    ribbons: [{ c: '#DCD0FA', o: 0.3 }, { c: '#F3DBBE', o: 0.24 }],
   },
   evening: {
     base: ['#261C4A', '#1A1433', '#110D23'],
@@ -35,7 +35,7 @@ const MOODS: Record<AuroraMood, { base: [string, string, string]; glows: { c: st
   },
   lowlight: {
     base: ['#0C0919', '#0F0B1E', '#120D24'],
-    glows: [{ c: '#5E4A9E', o: 0.22 }, { c: '#5B2A86', o: 0.18 }, { c: '#3E3470', o: 0.12 }, { c: '#7A6440', o: 0.08 }],
+    glows: [{ c: '#5E4A9E', o: 0.22 }, { c: '#5B2A86', o: 0.18 }, { c: '#3E3470', o: 0.12 }, { c: '#6E6188', o: 0.08 }],
     ribbons: [{ c: '#6A58A8', o: 0.12 }, { c: '#4A3C80', o: 0.1 }],
   },
 };

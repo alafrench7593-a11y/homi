@@ -1,6 +1,6 @@
 /**
  * Écran Premium (verrouillage strict du 08/11/2026).
- *  - Logo, puis un fil doré qui se dessine et relie les étapes de vie (projet bébé → grossesse → post-partum → bébé
+ *  - Logo, puis un trait lilas qui se dessine et relie les étapes de vie (projet bébé → grossesse → post-partum → bébé
  *    → enfant) ; « Réduire les animations » : tout est affiché directement.
  *  - Cartes des fonctions RÉELLES ouvertes par Premium (aucune fonction inventée).
  *  - Les 3 formules aux prix de la boutique (RevenueCat) ; badges et économies calculés depuis ces prix réels.
@@ -40,7 +40,7 @@ const FEATURES: { key: 'track' | 'body' | 'family' | 'assistant' | 'community'; 
   { key: 'community', icon: 'message-square' },
 ];
 
-/** Fil doré qui se dessine d'une étape à l'autre (SVG, largeur fixe mise à l'échelle). */
+/** Trait lilas (couleur primaire HOMI, plus le fil doré d'« Au fil de nous ») qui se dessine d'une étape à l'autre. */
 function GoldenThread() {
   const th = useTheme();
   const reduce = useReduceMotion();
@@ -51,7 +51,7 @@ function GoldenThread() {
   }, [draw, reduce]);
   const W = 300, H = 44, len = 360;
   const d = `M8 26 C 46 4, 74 4, 79 22 S 120 42, 150 22 S 196 2, 221 22 S 262 42, 292 22`;
-  const gold = th.colors.gold;
+  const gold = th.colors.primary;
   return (
     <View accessible accessibilityLabel={STAGES.map((s) => tr(`pw.stage.${s}` as TKey)).join(', ')} testID="pw-thread">
       <View style={{ width: '100%', aspectRatio: W / H }}>

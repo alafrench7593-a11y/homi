@@ -6,17 +6,19 @@
 import React from 'react';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import type { TrackKey } from '@/lib/domain/trackingCards';
+import { CATEGORY_INK } from './homiColors';
 
-// ─── Teintes douces (jour) et bleu nuit (nuit) ─────────────────────────────────────────────────────
+// ─── Teintes douces HOMI (jour) et midnight violet (nuit) ─────────────────────────────────────────
 
+/** Encres sémantiques partagées (homiColors) ; fonds pâles assortis, ≥ 4,5:1 pour l'encre posée dessus. */
 export const TINT: Record<TrackKey, { bg: string; ink: string }> = {
-  bottle: { bg: '#FFEFE6', ink: '#D2693C' }, breastfeed: { bg: '#FFE9F0', ink: '#C2416E' }, diaper: { bg: '#E9F4FF', ink: '#3A78B5' },
-  sleep: { bg: '#EEEAFF', ink: '#6A52D6' }, meal: { bg: '#EAF7EC', ink: '#3C8C55' }, pumping: { bg: '#FBEAF5', ink: '#A6448A' },
-  observation: { bg: '#FFF4E0', ink: '#B7791F' }, growth: { bg: '#E6F6F4', ink: '#2A8A80' }, medication: { bg: '#F1ECFF', ink: '#5E4CC2' },
-  appointment: { bg: '#FFEDEB', ink: '#C25145' }, mother_sleep: { bg: '#EAEDFF', ink: '#4F5EC4' }, mood: { bg: '#FFF3E6', ink: '#C27A2C' },
-  weight: { bg: '#EEF2F6', ink: '#5B6B7C' },
+  bottle: { bg: '#E3F1F3', ink: CATEGORY_INK.bottle }, breastfeed: { bg: '#FBE8F1', ink: CATEGORY_INK.breastfeed }, diaper: { bg: '#E6EEF8', ink: CATEGORY_INK.diaper },
+  sleep: { bg: '#EEEAFF', ink: CATEGORY_INK.sleep }, meal: { bg: '#E6F3EA', ink: CATEGORY_INK.meal }, pumping: { bg: '#F4E8F7', ink: CATEGORY_INK.pumping },
+  observation: { bg: '#F6ECDA', ink: CATEGORY_INK.symptom }, growth: { bg: '#ECF3E4', ink: CATEGORY_INK.growth }, medication: { bg: '#ECE8FB', ink: CATEGORY_INK.medication },
+  appointment: { bg: '#EFE6F7', ink: CATEGORY_INK.appointment }, mother_sleep: { bg: '#E8EAFA', ink: CATEGORY_INK.mother_sleep }, mood: { bg: '#F6ECDA', ink: CATEGORY_INK.wake },
+  weight: { bg: '#EBEEF2', ink: CATEGORY_INK.weight },
 };
-export const NIGHT = { bg: '#141A36', border: '#232B55', text: '#D6DCF5', muted: '#8E97C2', plus: '#2B3670' };
+export const NIGHT = { bg: '#1A1430', border: '#2E2650', text: '#DDD0EC', muted: '#A598C0', plus: '#3E2F7A' };
 
 /** Icônes originales (trait arrondi, 24×24). */
 export function TrackIcon({ k, color, size = 26 }: { k: TrackKey; color: string; size?: number }) {

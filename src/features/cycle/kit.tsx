@@ -24,17 +24,19 @@ export interface CyclePalette {
 }
 
 /** Contrastes calculés (WCAG AA ≥ 4,5:1) sur le fond « paper » : encre 13,2:1 (clair) / 14,4:1 (sombre), encre douce 6,4 / 9,7, couleurs d'état ≥ 5:1, texte sur « period » 5,3 / 8,0. */
+// HOMI (13/11/2026) : perle et midnight violet ; « powder » et « rose » deviennent lilas pâle et mauve framboise,
+// les règles passent du vieux rose au framboise HOMI. Les noms des clés restent (compatibilité des écrans).
 const LIGHT: CyclePalette = {
-  ink: '#2E2A33', inkSoft: '#5F5866', paper: '#FAF7F4', glass: 'rgba(255,253,251,0.86)', glassBorder: 'rgba(255,255,255,0.95)', line: '#E4DDE3',
-  powder: '#F3D9DC', rose: '#E7B7BE', lavender: '#D9CFF0', mauve: '#735C9B', beige: '#EFE3D3', pearl: '#E6E3E8', anthracite: '#2E2A33',
-  period: '#A84F5C', periodSoft: '#F3D9DC', estimate: '#B9A6D8', fertile: '#DCD3F2', info: '#3D6293', warn: '#8A5A12', danger: '#B3261E', success: '#2F6E4F',
+  ink: '#1C1533', inkSoft: '#584D72', paper: '#F7F4FB', glass: 'rgba(251,249,254,0.86)', glassBorder: 'rgba(255,255,255,0.95)', line: '#E4DEEE',
+  powder: '#ECE4FA', rose: '#D3B3E3', lavender: '#D9CFF0', mauve: '#735C9B', beige: '#F6ECDA', pearl: '#E8E4F0', anthracite: '#1C1533',
+  period: '#A8346A', periodSoft: '#FBE8F1', estimate: '#B9A6D8', fertile: '#DCD3F2', info: '#2A609C', warn: '#8A5A0E', danger: '#B3261E', success: '#2F6E4F',
   onAccent: '#FFFFFF',
 };
 const DARK: CyclePalette = {
-  ink: '#F6F1F3', inkSoft: '#CFC6D0', paper: '#1E1A22', glass: 'rgba(36,31,41,0.88)', glassBorder: 'rgba(255,255,255,0.16)', line: '#3D3542',
-  powder: '#5A3E45', rose: '#C98E97', lavender: '#4A4060', mauve: '#C2AEE6', beige: '#4A4036', pearl: '#3A3640', anthracite: '#1A171D',
-  period: '#E39AA5', periodSoft: '#5A3E45', estimate: '#8C7AB0', fertile: '#43395A', info: '#9DBAE6', warn: '#E8B66A', danger: '#FF8A80', success: '#8BD3AE',
-  onAccent: '#1A171D',
+  ink: '#F7F4FB', inkSoft: '#C3B8DD', paper: '#16112B', glass: 'rgba(29,22,56,0.88)', glassBorder: 'rgba(255,255,255,0.16)', line: '#2E2650',
+  powder: '#3A2650', rose: '#B98AB0', lavender: '#3E3470', mauve: '#C2AEE6', beige: '#3A3226', pearl: '#2A2342', anthracite: '#110D23',
+  period: '#FF9CC3', periodSoft: '#3A2036', estimate: '#8C7AB0', fertile: '#33295A', info: '#A8CCFF', warn: '#F2D49A', danger: '#FF8A80', success: '#8BD3AE',
+  onAccent: '#110D23',
 };
 export function useCyclePalette(): CyclePalette {
   const t = useTheme();

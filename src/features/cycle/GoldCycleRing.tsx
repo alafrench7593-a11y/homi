@@ -20,8 +20,8 @@ import { ambientDelay } from '@/theme/motion';
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const DAY = 86_400_000;
 const dn = (iso: string) => Math.floor(Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) / DAY);
-const NEON = '#FFC861';
-const NEON_CORE = '#FFE7A8';
+const NEON = '#F0CB9A';
+const NEON_CORE = '#FDE5C7';
 const NEON_HOT = '#FFF6DC';
 const pd = (k: string, p?: Record<string, string | number>) => tr(k as TKey, p);
 

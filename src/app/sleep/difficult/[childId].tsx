@@ -27,12 +27,13 @@ import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
 // Bleu nuit, lumière réduite (mêmes couleurs que « Aide pour cette nuit »)
-const BG = '#070B1C';
-const CARD = '#0F1530';
-const LINE = '#1B2550';
-const TEXT = '#B9C3E6';
-const MUTED = '#7C87B2';
-const ACCENT = '#8FA2E8';
+// Thème « Nuit » HOMI : midnight violet tamisé, texte perle lilas, accent lilas (contrastes ≥ 4,5:1)
+const BG = '#0F0B1E';
+const CARD = '#1A1430';
+const LINE = '#2E2650';
+const TEXT = '#DDD0EC';
+const MUTED = '#A598C0';
+const ACCENT = '#B9A6EA';
 
 const stepLabels = () => [tr('u4.dn.s1'), tr('u4.dn.s2'), tr('u4.dn.s3'), tr('u4.dn.s4'), tr('u4.dn.s5')];
 
@@ -183,7 +184,7 @@ function Pick({ label, on, onPress, testID }: { label: string; on: boolean; onPr
 function Big({ label, onPress, soft, testID }: { label: string; onPress: () => void; soft?: boolean; testID?: string }) {
   return (
     <Tappable accessibilityRole="button" onPress={onPress} testID={testID}
-      style={{ minHeight: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: soft ? CARD : '#2C3A7A', borderWidth: 1, borderColor: LINE, paddingHorizontal: spacing.md }}>
+      style={{ minHeight: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: soft ? CARD : '#3E2F7A', borderWidth: 1, borderColor: LINE, paddingHorizontal: spacing.md }}>
       <Text weight="bold" color={TEXT}>{label}</Text>
     </Tappable>
   );
